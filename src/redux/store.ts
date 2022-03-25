@@ -19,13 +19,17 @@ import {
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import storage from "redux-persist/lib/storage";
 import transactionRecoverySliceReducer from "./transactionRecoverySlice";
+import { adHocMulticallEndpoints } from "./endpoints/adHocMulticallEndpoints";
+import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
+import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
 
-export const rpcApi = initializeRpcApiSlice(
-  createApiWithReactHooks
-).injectEndpoints(allRpcEndpoints);
-export const subgraphApi = initializeSubgraphApiSlice(
-  createApiWithReactHooks
-).injectEndpoints(allSubgraphEndpoints);
+export const rpcApi = initializeRpcApiSlice(createApiWithReactHooks)
+  .injectEndpoints(allRpcEndpoints)
+  .injectEndpoints(adHocMulticallEndpoints)
+  .injectEndpoints(adHocRpcEndpoints);
+export const subgraphApi = initializeSubgraphApiSlice(createApiWithReactHooks)
+  .injectEndpoints(allSubgraphEndpoints)
+  .injectEndpoints(adHocSubgraphEndpoints);
 export const transactionSlice = initializeTransactionSlice();
 
 const transactionSlicePersistedReducer = persistReducer(
@@ -38,7 +42,7 @@ const persistedTransactionRecoveryReducer = persistReducer(
   transactionRecoverySliceReducer
 );
 
-export const store = configureStore({
+export const reduxStore = configureStore({
   reducer: {
     [rpcApi.reducerPath]: rpcApi.reducer,
     [subgraphApi.reducerPath]: subgraphApi.reducer,
@@ -55,7 +59,7 @@ export const store = configureStore({
       .concat(subgraphApi.middleware),
 });
 
-export type AppStore = typeof store;
+export type AppStore = typeof reduxStore;
 export type RootState = ReturnType<AppStore["getState"]>;
 export type AppDispatch = AppStore["dispatch"];
 
