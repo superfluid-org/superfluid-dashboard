@@ -6,16 +6,21 @@ import { CacheProvider, EmotionCache } from "@emotion/react";
 import createEmotionCache from "../createEmotionCache";
 import {
   AppBar,
+  Avatar,
   Box,
   Button,
   Chip,
   Divider,
   Drawer,
+  IconButton,
   List,
   ListItem,
+  ListItemAvatar,
   Stack,
+  styled,
   Theme,
   Toolbar,
+  Typography,
 } from "@mui/material";
 import ListItemText from "@mui/material/ListItemText";
 import Image from "next/image";
@@ -32,13 +37,19 @@ import { Network, networks, networksByChainId } from "../networks";
 import SelectNetwork from "../components/SelectNetwork";
 import Link from "next/link";
 import { Provider } from "react-redux";
-import { reduxStore } from "../redux/store";
+import { reduxStore, transactionSlice, useAppSelector } from "../redux/store";
 import { Framework } from "@superfluid-finance/sdk-core";
 import {
   setFrameworkForSdkRedux,
   setSignerForSdkRedux,
+  TrackedTransaction,
+  transactionSelectors,
 } from "@superfluid-finance/sdk-redux";
 import infuraProviders from "../infuraProviders";
+import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import TransactionList from "../components/TransactionList";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -47,7 +58,53 @@ interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
 }
 
-const drawerWidth = 240;
+const menuDrawerWidth = 240;
+const transactionDrawerWidth = 480;
+
+const DrawerBar = styled(AppBar, {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme, open }) => ({
+  transition: theme.transitions.create(["margin", "width"], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    width: `calc(100% - ${transactionDrawerWidth}px)`,
+    transition: theme.transitions.create(["margin", "width"], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginRight: transactionDrawerWidth,
+  }),
+}));
+
+const DrawerHeader = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+  justifyContent: "flex-start",
+}));
+
+const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
+  ({ theme, open }) => ({
+    flexGrow: 1,
+    padding: theme.spacing(3),
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    marginRight: -transactionDrawerWidth,
+    ...(open && {
+      transition: theme.transitions.create("margin", {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      marginRight: 0,
+    }),
+  })
+);
 
 export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
@@ -65,6 +122,16 @@ export default function MyApp(props: MyAppProps) {
       setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
     );
   });
+
+  const [open, setOpen] = useState(false);
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
 
   return (
     <CacheProvider value={emotionCache}>
@@ -99,6 +166,9 @@ export default function MyApp(props: MyAppProps) {
                       setWalletChainId(chainId);
                       setWalletAddress(address);
                       setWalletProvider(ethersProvider);
+                      setSignerForSdkRedux(Number(chainId), () =>
+                        Promise.resolve(ethersProvider.getSigner())
+                      );
 
                       infuraProviders.map((x) =>
                         setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
@@ -129,12 +199,35 @@ export default function MyApp(props: MyAppProps) {
                   }}
                 >
                   <Box sx={{ display: "flex" }}>
-                    <AppBar
+                    {/* <DrawerBar position="fixed" open={open}>
+                      <Toolbar>
+                        <Typography
+                          variant="h6"
+                          noWrap
+                          sx={{ flexGrow: 1 }}
+                          component="div"
+                        >
+                          Persistent drawer
+                        </Typography>
+                        Foo
+                        <IconButton
+                          color="inherit"
+                          aria-label="open drawer"
+                          edge="end"
+                          onClick={handleDrawerOpen}
+                          sx={{ ...(open && { display: "none" }) }}
+                        >
+                          <MenuIcon />
+                        </IconButton>
+                      </Toolbar>
+                    </DrawerBar> */}
+                    <DrawerBar
+                      open={open}
                       position="fixed"
                       sx={{
                         color: "text.primary",
-                        width: `calc(100% - ${drawerWidth}px)`,
-                        ml: `${drawerWidth}px`,
+                        width: `calc(100% - ${menuDrawerWidth}px)`,
+                        ml: `${menuDrawerWidth}px`,
                         background: "transparent",
                         boxShadow: "none",
                       }}
@@ -149,14 +242,23 @@ export default function MyApp(props: MyAppProps) {
                         <SelectNetwork></SelectNetwork>
                         <ConnectWallet></ConnectWallet>
                         <ThemeChanger></ThemeChanger>
+                        <IconButton
+                          color="primary"
+                          aria-label="open drawer"
+                          edge="end"
+                          onClick={() => setOpen(!open)}
+                          sx={{ ...(open && { display: "none" }) }}
+                        >
+                          <NotificationsOutlinedIcon />
+                        </IconButton>
                       </Stack>
-                    </AppBar>
+                    </DrawerBar>
                     <Drawer
                       sx={{
-                        width: drawerWidth,
+                        width: menuDrawerWidth,
                         flexShrink: 0,
                         "& .MuiDrawer-paper": {
-                          width: drawerWidth,
+                          width: menuDrawerWidth,
                           boxSizing: "border-box",
                         },
                       }}
@@ -178,9 +280,12 @@ export default function MyApp(props: MyAppProps) {
                       </Toolbar>
                       <Divider />
                       <List>
-                        <ListItem button>
-                          <ListItemText primary="Dashboard" />
-                        </ListItem>
+                        <Link href="/" passHref>
+                          <ListItem button>
+                            <ListItemText primary="Dashboard" />
+                          </ListItem>
+                        </Link>
+
                         <Link href="/wrap" passHref>
                           <ListItem button>
                             <ListItemText primary="Wrap" />
@@ -188,13 +293,46 @@ export default function MyApp(props: MyAppProps) {
                         </Link>
                       </List>
                     </Drawer>
+
+                    <Main open={open}>
+                      {/* 
                     <Box
                       component="main"
                       sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
-                    >
+                    > */}
                       <Toolbar />
                       <Component key={network.chainId} {...pageProps} />
-                    </Box>
+                      {/* </Box> */}
+                    </Main>
+                    <Drawer
+                      sx={{
+                        width: transactionDrawerWidth,
+                        flexShrink: 0,
+                        "& .MuiDrawer-paper": {
+                          width: transactionDrawerWidth,
+                        },
+                      }}
+                      variant="persistent"
+                      anchor="right"
+                      open={open}
+                    >
+                      <DrawerHeader>
+                        <IconButton
+                          color="primary"
+                          aria-label="open drawer"
+                          edge="end"
+                          onClick={() => setOpen(!open)}
+                        >
+                          <NotificationsOutlinedIcon />
+                        </IconButton>
+                        {/* <IconButton onClick={handleDrawerClose}>
+                          <ChevronRightIcon color="primary" />
+                        </IconButton> */}
+                        {/* <Typography variant="h5">Transactions</Typography> */}
+                      </DrawerHeader>
+                      <Divider />
+                      <TransactionList></TransactionList>
+                    </Drawer>
                   </Box>
                 </WalletContext.Provider>
               </NetworkContext.Provider>

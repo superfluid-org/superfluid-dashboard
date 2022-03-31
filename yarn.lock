@@ -943,10 +943,10 @@
     lodash "^4.17.21"
     tsify "^5.0.4"
 
-"@superfluid-finance/sdk-redux@0.2.3-PR712.61fe945.0":
-  version "0.2.3-PR712.61fe945.0"
-  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-redux/0.2.3-PR712.61fe945.0/5abd3034a28c92ea45813160f008a8d88394844c82e99414f30ef784a380f91a#b0c8a22602d8dbc248a0990ccfe0eca3f9bb2567"
-  integrity sha512-15u7NLUt77oL2Ckt5B5D22n59Cx8YiJHwifAZ+Eaw03gl7mHuAucb22/jTHJ2elSWgoCA4569M20P9mClvYtzQ==
+"@superfluid-finance/sdk-redux@0.2.3-PR712.7a7bfcb.0":
+  version "0.2.3-PR712.7a7bfcb.0"
+  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-redux/0.2.3-PR712.7a7bfcb.0/f3b0045d3bf496a6457488ac81c968e23556f8194d610ddf233b7153f77490a0#83053a83595f904c672b3bb40fc57a21277f3ef5"
+  integrity sha512-LvpSBdz0NwKLd/84wXiMMnlcYGOdlQo+CQedH8g+0qyGi2wlrAuV6nh1a+ICMCot64K9LeB68ax1JN5afQCyYw==
   dependencies:
     "@types/promise-retry" "^1.1.3"
     ethers "^5.5.4"

@@ -2,9 +2,9 @@ import { ERC20Token } from '@superfluid-finance/sdk-core';
 import {
   getFramework,
   TransactionInfo,
-  registerNewTransaction,
   getSigner,
   RpcEndpointBuilder,
+  registerNewTransactionAndReturnQueryFnResult,
 } from '@superfluid-finance/sdk-redux';
 
 export const adHocRpcEndpoints = {
@@ -41,22 +41,13 @@ export const adHocRpcEndpoints = {
           })
           .exec(signer);
 
-        await registerNewTransaction(
-          arg.chainId,
-          transactionResponse.hash,
-          true,
-          queryApi.dispatch,
-        );
-
-        return {
-          data: {
-            hash: transactionResponse.hash,
-            chainId: arg.chainId,
-          },
-          meta: {
-            monitorAddress: await signer.getAddress(),
-          },
-        };
+        return await registerNewTransactionAndReturnQueryFnResult({
+          transactionResponse,
+          chainId: arg.chainId,
+          waitForConfirmation: true,
+          dispatch: queryApi.dispatch,
+          key: "APPROVE"
+        });
       },
     }),
   }),
