@@ -2,8 +2,12 @@ import type { NextPage } from 'next';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import { TokenPanel } from '../components/TokenDialog';
+import { useRouter } from 'next/router';
 
-const Home: NextPage = () => {
+const Wrap: NextPage = () => {
+  const router = useRouter();
+  const { transactionRecoveryId } = router.query;
+
   return (
     <Container maxWidth="lg">
       <Box
@@ -15,10 +19,10 @@ const Home: NextPage = () => {
           alignItems: 'center',
         }}
       >
-        <TokenPanel></TokenPanel>
+        <TokenPanel transactionRecoveryId={transactionRecoveryId as string | undefined}></TokenPanel>
       </Box>
     </Container>
   );
 };
 
-export default Home;
+export default Wrap;

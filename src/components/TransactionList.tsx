@@ -17,8 +17,6 @@ const TransactionList: FC = () => {
     transactionSelectors.selectAll(state.transactions)
   );
 
-  // const transactionRecoveries = useAppSelector(state => );
-
   return (
     <>
       <List sx={{ width: "100%", bgcolor: "background.paper" }}>

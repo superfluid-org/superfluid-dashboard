@@ -31,8 +31,8 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
-  superTokenUpgraded,
-  superTokenUpgradedAdapter,
+  addTransactionRecovery,
+  transactionRecoverySelectors,
 } from "../redux/transactionRecoverySlice";
 import { TokenUpgradeDowngradePair } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { useWalletContext } from "../contexts/WalletContext";
@@ -53,16 +53,6 @@ const TokenItem: FC<{
   tokenName,
   balanceWei,
 }) => {
-  // const balanceOfQuery = sfApi.useBalanceOfQuery(
-  //   chainId && accountAddress
-  //     ? {
-  //         chainId,
-  //         accountAddress,
-  //         tokenAddress: tokenAddress,
-  //       }
-  //     : skipToken,
-  // );
-
   return (
     <Stack
       direction="row"
@@ -88,13 +78,6 @@ const TokenItem: FC<{
         </Stack>
         {!!accountAddress && (
           <Typography variant="body1">
-            {/* {balanceOfQuery.data ? (
-              ethers.utils.formatEther(balanceOfQuery.data)
-            ) : balanceOfQuery.isFetching ? (
-              <CircularProgress />
-            ) : (
-              '0'
-            )} */}
             {balanceWei ? (
               ethers.utils.formatEther(balanceWei)
             ) : (
@@ -489,7 +472,7 @@ const UpgradeConfirmationDialog: FC<{
         </Button>
 
         <Button
-          key="approve"
+          key="upgrade"
           disabled={!missingAllowance?.isZero()}
           color="primary"
           variant="contained"
@@ -503,7 +486,8 @@ const UpgradeConfirmationDialog: FC<{
             }).unwrap();
 
             dispatch(
-              superTokenUpgraded({
+              addTransactionRecovery({
+                key: "SUPER_TOKEN_UPGRADE",
                 transactionInfo: transactionInfo,
                 data: {
                   tokenUpgrade: tokenUpgrade,
@@ -533,6 +517,7 @@ const DowngradeConfirmationDialog: FC<{
 }> = ({ open, chainId, tokenUpgrade, amount, onClose }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const dispatch = useAppDispatch();
 
   const [downgradeTrigger, downgradeResult] =
     rpcApi.useSuperTokenDowngradeMutation();
@@ -590,14 +575,23 @@ const DowngradeConfirmationDialog: FC<{
           variant="contained"
           fullWidth={true}
           onClick={async () => {
-            await downgradeTrigger({
+            const transactionInfo = await downgradeTrigger({
               chainId: chainId,
               amountWei: amount.toString(),
               superTokenAddress: tokenUpgrade.superToken.address,
               waitForConfirmation: true,
-            });
+            }).unwrap();
 
-            alert("Booyah! Success.");
+            dispatch(
+              addTransactionRecovery({
+                key: "SUPER_TOKEN_DOWNGRADE",
+                transactionInfo: transactionInfo,
+                data: {
+                  tokenUpgrade: tokenUpgrade,
+                  amountWei: amount.toString(),
+                },
+              })
+            );
           }}
         >
           {downgradeResult.isLoading ? (
@@ -616,8 +610,7 @@ export const TokenPanel: FC<{ transactionRecoveryId?: string }> = ({
 }) => {
   let transactionRecovery = useAppSelector((state) =>
     transactionRecoveryId
-      ? superTokenUpgradedAdapter
-          .getSelectors()
+      ? transactionRecoverySelectors
           .selectById(state.transactionRecovery, transactionRecoveryId)
       : undefined
   );
@@ -680,7 +673,7 @@ export const TokenPanel: FC<{ transactionRecoveryId?: string }> = ({
   const [tabValue, setTabValue] = useState<string>("upgrade");
 
   return (
-    <Card sx={{ position: "fixed", top: "25%", width: "400px", p: 5 }}>
+    <Card sx={{ position: "fixed", top: "25%", width: "400px", p: 5 }} elevation={6}>
       <TabContext value={tabValue}>
         <TabList
           variant="scrollable"

@@ -63,7 +63,7 @@ const transactionDrawerWidth = 480;
 
 const DrawerBar = styled(AppBar, {
   shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
+})<{ open: boolean }>(({ theme, open }) => ({
   transition: theme.transitions.create(["margin", "width"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -87,7 +87,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-start",
 }));
 
-const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
+const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{ open: boolean }>(
   ({ theme, open }) => ({
     flexGrow: 1,
     padding: theme.spacing(3),

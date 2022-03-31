@@ -1,3 +1,4 @@
+import { SpeakerGroup } from '@mui/icons-material';
 import { ERC20Token } from '@superfluid-finance/sdk-core';
 import {
   getFramework,
@@ -25,7 +26,7 @@ export const adHocRpcEndpoints = {
     }),
     approve: builder.mutation<
       TransactionInfo,
-      { chainId: number; superTokenAddress: string; amountWei: string }
+      { chainId: number; superTokenAddress: string; amountWei: string, waitForcConfirmation?: boolean }
     >({
       queryFn: async (arg, queryApi) => {
         const framework = await getFramework(arg.chainId);
@@ -44,7 +45,7 @@ export const adHocRpcEndpoints = {
         return await registerNewTransactionAndReturnQueryFnResult({
           transactionResponse,
           chainId: arg.chainId,
-          waitForConfirmation: true,
+          waitForConfirmation: !!arg.waitForcConfirmation,
           dispatch: queryApi.dispatch,
           key: "APPROVE"
         });
