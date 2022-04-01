@@ -38,6 +38,7 @@ import { TokenUpgradeDowngradePair } from "../redux/endpoints/adHocSubgraphEndpo
 import { useWalletContext } from "../contexts/WalletContext";
 import { useNetworkContext } from "../contexts/NetworkContext";
 import TokenIcon from "./TokenIcon";
+import Fuse from "fuse.js";
 
 const TokenItem: FC<{
   chainId?: number;
@@ -188,7 +189,28 @@ const SuperTokenDialog: FC<{
   const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
     chainId: network.chainId,
   });
+
+  const balancesQuery = rpcApi.useMulticallQuery(
+    tokenPairsQuery.data && walletAddress
+      ? {
+          chainId: network.chainId,
+          accountAddress: walletAddress,
+          tokenAddresses: tokenPairsQuery.data.map(
+            (x) => x.underlyingToken.address
+          ),
+        }
+      : skipToken
+  );  
+
   const tokenPairs = tokenPairsQuery.data ?? [];
+
+  const searchTerm = useState("");
+
+  // const fuse = new Fuse(tokenPairs, {
+  //   keys: ['superToken', 'author.firstName']
+  // })  
+
+  // const tokenPairsSearched = searchTerm != "" ? new Fuse()  : []
 
   return (
     <Dialog
@@ -234,6 +256,11 @@ const SuperTokenDialog: FC<{
                   tokenAddress={x.underlyingToken.address}
                   tokenSymbol={x.underlyingToken.symbol}
                   tokenName={x.underlyingToken.name}
+                  balanceWei={
+                    balancesQuery.data
+                      ? balancesQuery.data.balances[x.underlyingToken.address]
+                      : undefined
+                  }
                 />
               </ListItemButton>
             </ListItem>
