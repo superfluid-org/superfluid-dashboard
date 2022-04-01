@@ -487,6 +487,8 @@ const UpgradeConfirmationDialog: FC<{
                 },
               })
             );
+
+            onClose();
           }}
         >
           {upgradeResult.isLoading ? (
@@ -584,6 +586,8 @@ const DowngradeConfirmationDialog: FC<{
                 },
               })
             );
+
+            onClose();
           }}
         >
           {downgradeResult.isLoading ? (
