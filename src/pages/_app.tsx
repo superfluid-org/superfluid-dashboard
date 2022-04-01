@@ -31,9 +31,7 @@ import SelectNetwork from "../components/SelectNetwork";
 import Link from "next/link";
 import { Provider } from "react-redux";
 import { reduxStore } from "../redux/store";
-import {
-  setFrameworkForSdkRedux,
-} from "@superfluid-finance/sdk-redux";
+import { setFrameworkForSdkRedux } from "@superfluid-finance/sdk-redux";
 import infuraProviders from "../infuraProviders";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import TransactionList from "../components/TransactionList";
@@ -192,6 +190,7 @@ export default function MyApp(props: MyAppProps) {
                     >
                       <Toolbar sx={{ height: "100px" }}>
                         <Image
+                          loader={({ src }) => src}
                           src={
                             muiTheme.palette.mode === "dark"
                               ? "/superfluid-logo-light.svg"

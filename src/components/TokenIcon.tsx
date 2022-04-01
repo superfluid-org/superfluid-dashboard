@@ -10,6 +10,7 @@ const TokenIcon: FC<{
 
   return tokenManifest ? (
     <Image
+      loader={({ src }) => src}
       width="24px"
       height="24px"
       src={`https://raw.githubusercontent.com/superfluid-finance/assets/master/public/${tokenManifest.svgIconPath}`}
