@@ -21,7 +21,10 @@ const TransactionList: FC = () => {
     <>
       <List sx={{ width: "100%", bgcolor: "background.paper" }}>
         {transactions.map((transaction) => (
-          <TransactionListItem transaction={transaction}></TransactionListItem>
+          <TransactionListItem
+            key={transaction.key}
+            transaction={transaction}
+          ></TransactionListItem>
         ))}
       </List>
     </>

@@ -37,6 +37,7 @@ import {
 import { TokenUpgradeDowngradePair } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { useWalletContext } from "../contexts/WalletContext";
 import { useNetworkContext } from "../contexts/NetworkContext";
+import Image from "next/image"
 
 const TokenItem: FC<{
   chainId?: number;
@@ -61,7 +62,7 @@ const TokenItem: FC<{
       spacing={2}
     >
       {/* TODO: src will not play for super token. */}
-      <img
+      <Image
         width="24px"
         height="24px"
         src={`https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/goerli/assets/${tokenAddress}/logo.png`}
@@ -277,7 +278,7 @@ export const UnderlyingTokenChip: FC<{
       <Chip
         icon={
           selectedToken ? (
-            <img
+            <Image
               width="24px"
               height="24px"
               src={`https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/goerli/assets/${selectedToken.underlyingToken.address}/logo.png`}
@@ -333,7 +334,7 @@ export const SuperTokenChip: FC<{
       <Chip
         icon={
           selectedToken ? (
-            <img
+            <Image
               width="24px"
               height="24px"
               src={`https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/goerli/assets/${selectedToken.underlyingToken.address}/logo.png`}
@@ -716,7 +717,7 @@ export const TokenPanel: FC<{ transactionRecoveryId?: string }> = ({
                 <Chip
                   icon={
                     selectedToken ? (
-                      <img
+                      <Image
                         width="24px"
                         height="24px"
                         src={`https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/ethereum/assets/${selectedToken.underlyingToken.address}/logo.png`}
@@ -801,7 +802,7 @@ export const TokenPanel: FC<{ transactionRecoveryId?: string }> = ({
                 <Chip
                   icon={
                     selectedToken ? (
-                      <img
+                      <Image
                         width="24px"
                         height="24px"
                         src={`https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/goerli/assets/${selectedToken.underlyingToken.address}/logo.png`}
