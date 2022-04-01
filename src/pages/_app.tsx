@@ -6,49 +6,36 @@ import { CacheProvider, EmotionCache } from "@emotion/react";
 import createEmotionCache from "../createEmotionCache";
 import {
   AppBar,
-  Avatar,
   Box,
-  Button,
-  Chip,
   Divider,
   Drawer,
   IconButton,
   List,
   ListItem,
-  ListItemAvatar,
   Stack,
   styled,
   Theme,
   Toolbar,
-  Typography,
 } from "@mui/material";
 import ListItemText from "@mui/material/ListItemText";
 import Image from "next/image";
 import ConnectWallet from "../components/ConnectWallet";
-import { ethers } from "ethers";
-import WalletContext from "../contexts/WalletContext";
+import { WalletContextProvider } from "../contexts/WalletContext";
 import { FC, ReactNode, useEffect, useState } from "react";
 import { createSuperfluidMuiTheme } from "../theme";
 import { ThemeProvider as ThemeProviderNextThemes } from "next-themes";
 import { useTheme as useThemeNextThemes } from "next-themes";
 import ThemeChanger from "../components/ThemeChanger";
-import NetworkContext from "../contexts/NetworkContext";
-import { Network, networks, networksByChainId } from "../networks";
+import { NetworkContextProvider } from "../contexts/NetworkContext";
 import SelectNetwork from "../components/SelectNetwork";
 import Link from "next/link";
 import { Provider } from "react-redux";
-import { reduxStore, transactionSlice, useAppSelector } from "../redux/store";
-import { Framework } from "@superfluid-finance/sdk-core";
+import { reduxStore } from "../redux/store";
 import {
   setFrameworkForSdkRedux,
-  setSignerForSdkRedux,
-  TrackedTransaction,
-  transactionSelectors,
 } from "@superfluid-finance/sdk-redux";
 import infuraProviders from "../infuraProviders";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import TransactionList from "../components/TransactionList";
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -87,35 +74,27 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-start",
 }));
 
-const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{ open: boolean }>(
-  ({ theme, open }) => ({
-    flexGrow: 1,
-    padding: theme.spacing(3),
+const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
+  open: boolean;
+}>(({ theme, open }) => ({
+  flexGrow: 1,
+  padding: theme.spacing(3),
+  transition: theme.transitions.create("margin", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  marginRight: -transactionDrawerWidth,
+  ...(open && {
     transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
     }),
-    marginRight: -transactionDrawerWidth,
-    ...(open && {
-      transition: theme.transitions.create("margin", {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-      marginRight: 0,
-    }),
-  })
-);
+    marginRight: 0,
+  }),
+}));
 
 export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
-
-  const [network, setNetwork] = useState<Network>(networksByChainId.get(137)!);
-
-  const [walletProvider, setWalletProvider] = useState<
-    ethers.providers.Web3Provider | undefined
-  >();
-  const [walletAddress, setWalletAddress] = useState<string | undefined>();
-  const [walletChainId, setWalletChainId] = useState<number | undefined>();
 
   useEffect(() => {
     infuraProviders.map((x) =>
@@ -142,62 +121,8 @@ export default function MyApp(props: MyAppProps) {
         <Provider store={reduxStore}>
           <Mui>
             {(muiTheme) => (
-              <NetworkContext.Provider
-                value={{
-                  network: network,
-                  setNetwork: (network) => setNetwork(network),
-                }}
-              >
-                <WalletContext.Provider
-                  value={{
-                    walletChainId: walletChainId,
-                    walletAddress: walletAddress,
-                    walletProvider: walletProvider,
-                    setProvider: async (web3Provider) => {
-                      const ethersProvider = new ethers.providers.Web3Provider(
-                        web3Provider
-                      );
-
-                      const chainId = (await ethersProvider.getNetwork())
-                        .chainId;
-                      const address = await ethersProvider
-                        .getSigner()
-                        .getAddress();
-                      setWalletChainId(chainId);
-                      setWalletAddress(address);
-                      setWalletProvider(ethersProvider);
-                      setSignerForSdkRedux(Number(chainId), () =>
-                        Promise.resolve(ethersProvider.getSigner())
-                      );
-
-                      infuraProviders.map((x) =>
-                        setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
-                      );
-
-                      web3Provider.on(
-                        "accountsChanged",
-                        (accounts: string[]) => {
-                          setWalletAddress(accounts[0]);
-
-                          setSignerForSdkRedux(chainId, () =>
-                            Promise.resolve(ethersProvider.getSigner())
-                          );
-                        }
-                      );
-
-                      web3Provider.on("chainChanged", (chainId: number) => {
-                        infuraProviders.map((x) =>
-                          setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
-                        );
-
-                        setWalletChainId(Number(chainId)); // Chain ID might be coming in hex.
-                        setSignerForSdkRedux(Number(chainId), () =>
-                          Promise.resolve(ethersProvider.getSigner())
-                        );
-                      });
-                    },
-                  }}
-                >
+              <NetworkContextProvider>
+                <WalletContextProvider>
                   <Box sx={{ display: "flex" }}>
                     {/* <DrawerBar position="fixed" open={open}>
                       <Toolbar>
@@ -301,7 +226,8 @@ export default function MyApp(props: MyAppProps) {
                       sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
                     > */}
                       <Toolbar />
-                      <Component key={network.chainId} {...pageProps} />
+                      {/* TODO: CHAINID KEY! */}
+                      <Component {...pageProps} />
                       {/* </Box> */}
                     </Main>
                     <Drawer
@@ -334,8 +260,8 @@ export default function MyApp(props: MyAppProps) {
                       <TransactionList></TransactionList>
                     </Drawer>
                   </Box>
-                </WalletContext.Provider>
-              </NetworkContext.Provider>
+                </WalletContextProvider>
+              </NetworkContextProvider>
             )}
           </Mui>
         </Provider>
