@@ -37,7 +37,7 @@ import {
 import { TokenUpgradeDowngradePair } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { useWalletContext } from "../contexts/WalletContext";
 import { useNetworkContext } from "../contexts/NetworkContext";
-import Image from "next/image"
+import TokenIcon from "./TokenIcon";
 
 const TokenItem: FC<{
   chainId?: number;
@@ -61,12 +61,7 @@ const TokenItem: FC<{
       sx={{ pl: 1, width: "100%" }}
       spacing={2}
     >
-      {/* TODO: src will not play for super token. */}
-      <Image
-        width="24px"
-        height="24px"
-        src={`https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/goerli/assets/${tokenAddress}/logo.png`}
-      />
+      <TokenIcon tokenSymbol={tokenSymbol}></TokenIcon>
       <Stack
         direction="row"
         alignItems="center"
@@ -278,10 +273,8 @@ export const UnderlyingTokenChip: FC<{
       <Chip
         icon={
           selectedToken ? (
-            <Image
-              width="24px"
-              height="24px"
-              src={`https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/goerli/assets/${selectedToken.underlyingToken.address}/logo.png`}
+            <TokenIcon
+            tokenSymbol={selectedToken.underlyingToken.symbol}
             />
           ) : (
             <></>
@@ -334,10 +327,8 @@ export const SuperTokenChip: FC<{
       <Chip
         icon={
           selectedToken ? (
-            <Image
-              width="24px"
-              height="24px"
-              src={`https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/goerli/assets/${selectedToken.underlyingToken.address}/logo.png`}
+            <TokenIcon
+            tokenSymbol={selectedToken.superToken.symbol}
             />
           ) : (
             <></>
@@ -611,8 +602,10 @@ export const TokenPanel: FC<{ transactionRecoveryId?: string }> = ({
 }) => {
   let transactionRecovery = useAppSelector((state) =>
     transactionRecoveryId
-      ? transactionRecoverySelectors
-          .selectById(state.transactionRecovery, transactionRecoveryId)
+      ? transactionRecoverySelectors.selectById(
+          state.transactionRecovery,
+          transactionRecoveryId
+        )
       : undefined
   );
 
@@ -674,7 +667,10 @@ export const TokenPanel: FC<{ transactionRecoveryId?: string }> = ({
   const [tabValue, setTabValue] = useState<string>("upgrade");
 
   return (
-    <Card sx={{ position: "fixed", top: "25%", width: "400px", p: 5 }} elevation={6}>
+    <Card
+      sx={{ position: "fixed", top: "25%", width: "400px", p: 5 }}
+      elevation={6}
+    >
       <TabContext value={tabValue}>
         <TabList
           variant="scrollable"
@@ -717,10 +713,10 @@ export const TokenPanel: FC<{ transactionRecoveryId?: string }> = ({
                 <Chip
                   icon={
                     selectedToken ? (
-                      <Image
-                        width="24px"
-                        height="24px"
-                        src={`https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/ethereum/assets/${selectedToken.underlyingToken.address}/logo.png`}
+                      <TokenIcon
+                      tokenSymbol={
+                          selectedToken.underlyingToken.symbol
+                        }
                       />
                     ) : (
                       <></>
@@ -802,10 +798,10 @@ export const TokenPanel: FC<{ transactionRecoveryId?: string }> = ({
                 <Chip
                   icon={
                     selectedToken ? (
-                      <Image
-                        width="24px"
-                        height="24px"
-                        src={`https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/goerli/assets/${selectedToken.underlyingToken.address}/logo.png`}
+                      <TokenIcon
+                      tokenSymbol={
+                          selectedToken.underlyingToken.symbol
+                        }
                       />
                     ) : (
                       <></>
