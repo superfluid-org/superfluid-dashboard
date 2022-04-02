@@ -18,7 +18,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import {
   rpcApi,
@@ -101,7 +101,6 @@ const UnderlyingTokenDialog: FC<{
   const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
     chainId: network.chainId,
   });
-  const tokenPairs = tokenPairsQuery.data ?? [];
 
   const balancesQuery = rpcApi.useMulticallQuery(
     tokenPairsQuery.data && walletAddress
@@ -114,6 +113,31 @@ const UnderlyingTokenDialog: FC<{
         }
       : skipToken
   );
+
+  const tokenPairs = tokenPairsQuery.data ?? [];
+
+  // TODO(KK): Don't think I need to debounce here because it's all client-side anyways.
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const getFuse = useCallback(
+    () =>
+      new Fuse(tokenPairs, {
+        keys: [
+          "superToken.symbol",
+          "superToken.name",
+          "underlyingToken.symbol",
+          "underlyingToken.name",
+        ],
+      }),
+    [tokenPairs]
+  );
+
+  const searchedTokenPairs =
+    searchTerm !== ""
+      ? getFuse()
+          .search(searchTerm)
+          .map((x) => x.item)
+      : [];
 
   return (
     <Dialog
@@ -139,7 +163,7 @@ const UnderlyingTokenDialog: FC<{
         </IconButton>
         <TextField
           autoFocus={true}
-          placeholder="Search name or paste address"
+          placeholder="Search name or symbol"
           fullWidth={true}
           variant="outlined"
           sx={{
@@ -150,7 +174,7 @@ const UnderlyingTokenDialog: FC<{
       </DialogTitle>
       <DialogContent dividers sx={{ p: 0 }}>
         <List>
-          {tokenPairs.map((x) => (
+          {searchedTokenPairs.map((x) => (
             <ListItem key={x.superToken.address} disablePadding>
               <ListItemButton onClick={() => handleSelected(x)}>
                 <TokenItem
@@ -195,22 +219,35 @@ const SuperTokenDialog: FC<{
       ? {
           chainId: network.chainId,
           accountAddress: walletAddress,
-          tokenAddresses: tokenPairsQuery.data.map(
-            (x) => x.underlyingToken.address
-          ),
+          tokenAddresses: tokenPairsQuery.data.map((x) => x.superToken.address),
         }
       : skipToken
-  );  
+  );
 
   const tokenPairs = tokenPairsQuery.data ?? [];
 
-  const searchTerm = useState("");
+  // TODO(KK): Don't think I need to debounce here because it's all client-side anyways.
+  const [searchTerm, setSearchTerm] = useState("");
 
-  // const fuse = new Fuse(tokenPairs, {
-  //   keys: ['superToken', 'author.firstName']
-  // })  
+  const getFuse = useCallback(
+    () =>
+      new Fuse(tokenPairs, {
+        keys: [
+          "superToken.symbol",
+          "superToken.name",
+          "underlyingToken.symbol",
+          "underlyingToken.name",
+        ],
+      }),
+    [tokenPairs]
+  );
 
-  // const tokenPairsSearched = searchTerm != "" ? new Fuse()  : []
+  const searchedTokenPairs =
+    searchTerm !== ""
+      ? getFuse()
+          .search(searchTerm)
+          .map((x) => x.item)
+      : [];
 
   return (
     <Dialog
@@ -236,18 +273,20 @@ const SuperTokenDialog: FC<{
         </IconButton>
         <TextField
           autoFocus={true}
-          placeholder="Search name or paste address"
+          placeholder="Search name or symbol"
           fullWidth={true}
           variant="outlined"
           sx={{
             pt: 2.5,
             pb: 1,
           }}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.currentTarget.value)}
         />
       </DialogTitle>
       <DialogContent dividers sx={{ p: 0 }}>
         <List>
-          {tokenPairs.map((x) => (
+          {searchedTokenPairs.map((x) => (
             <ListItem key={x.superToken.address} disablePadding>
               <ListItemButton onClick={() => handleSelected(x)}>
                 <TokenItem
@@ -300,9 +339,7 @@ export const UnderlyingTokenChip: FC<{
       <Chip
         icon={
           selectedToken ? (
-            <TokenIcon
-            tokenSymbol={selectedToken.underlyingToken.symbol}
-            />
+            <TokenIcon tokenSymbol={selectedToken.underlyingToken.symbol} />
           ) : (
             <></>
           )
@@ -354,9 +391,7 @@ export const SuperTokenChip: FC<{
       <Chip
         icon={
           selectedToken ? (
-            <TokenIcon
-            tokenSymbol={selectedToken.superToken.symbol}
-            />
+            <TokenIcon tokenSymbol={selectedToken.superToken.symbol} />
           ) : (
             <></>
           )
@@ -745,9 +780,7 @@ export const TokenPanel: FC<{ transactionRecoveryId?: string }> = ({
                   icon={
                     selectedToken ? (
                       <TokenIcon
-                      tokenSymbol={
-                          selectedToken.underlyingToken.symbol
-                        }
+                        tokenSymbol={selectedToken.underlyingToken.symbol}
                       />
                     ) : (
                       <></>
@@ -830,9 +863,7 @@ export const TokenPanel: FC<{ transactionRecoveryId?: string }> = ({
                   icon={
                     selectedToken ? (
                       <TokenIcon
-                      tokenSymbol={
-                          selectedToken.underlyingToken.symbol
-                        }
+                        tokenSymbol={selectedToken.underlyingToken.symbol}
                       />
                     ) : (
                       <></>

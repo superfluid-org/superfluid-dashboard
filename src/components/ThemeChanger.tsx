@@ -8,7 +8,7 @@ export default function ThemeChanger() {
   const isDarkTheme = (theme === "dark");
 
   return (
-    <Tooltip title={isDarkTheme ? 'Turn on the light' : 'Turn off the light'}>
+    <Tooltip title={isDarkTheme ? 'Light mode' : 'Dark mode'}>
       <IconButton color="primary" onClick={() => isDarkTheme ? setTheme("light") : setTheme("dark")}>
         {isDarkTheme ? (
           <LightModeOutlined fontSize="small" />
