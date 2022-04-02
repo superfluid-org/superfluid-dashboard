@@ -64,12 +64,14 @@ const TransactionRecoveryLink: FC<{
         </Link>
       );
     case "SUPER_TOKEN_UPGRADE":
-      return (<Link
-        href={`/wrap?transactionRecoveryId=${transactionRecovery.transactionInfo.hash}`}
-        passHref
-      >
-        {children}
-      </Link>);
+      return (
+        <Link
+          href={`/wrap?transactionRecoveryId=${transactionRecovery.transactionInfo.hash}`}
+          passHref
+        >
+          {children}
+        </Link>
+      );
     default:
       return null;
   }
@@ -84,8 +86,6 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
       transaction.hash
     )
   );
-
-  console.log({ transactionRecovery })
 
   return (
     <ListItem button alignItems="flex-start">
