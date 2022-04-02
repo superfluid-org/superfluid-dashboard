@@ -1,7 +1,7 @@
 import { List } from "@mui/material";
 import { transactionSelectors } from "@superfluid-finance/sdk-redux";
 import { FC } from "react";
-import { useAppSelector } from "../redux/store";
+import { useAppSelector } from "../../redux/store";
 import TransactionListItem from "./TransactionListItem";
 
 const TransactionList: FC = () => {

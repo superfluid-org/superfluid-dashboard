@@ -12,12 +12,12 @@ import DoneIcon from "@mui/icons-material/Done";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import CloseIcon from "@mui/icons-material/Close";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
-import { useAppSelector } from "../redux/store";
+import { useAppSelector } from "../../redux/store";
 import {
   TransactionRecoveries,
   transactionRecoverySelectors,
-} from "../redux/transactionRecoverySlice";
-import Link from "../Link";
+} from "../../redux/transactionRecoverySlice";
+import Link from "../../Link";
 
 const TransactionListItemAvatar: FC<{ transaction: TrackedTransaction }> = ({
   transaction,

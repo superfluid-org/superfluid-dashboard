@@ -1,8 +1,8 @@
 import type { NextPage } from 'next';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import { TokenPanel } from '../components/TokenDialog';
 import { useRouter } from 'next/router';
+import {TokenPanel} from "../components/TokenWrapping/TokenPanel";
 
 const Wrap: NextPage = () => {
   const router = useRouter();

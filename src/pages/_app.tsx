@@ -34,7 +34,7 @@ import { reduxStore } from "../redux/store";
 import { setFrameworkForSdkRedux } from "@superfluid-finance/sdk-redux";
 import infuraProviders from "../infuraProviders";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
-import TransactionList from "../components/TransactionList";
+import TransactionList from "../components/TransactionDrawer/TransactionList";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
