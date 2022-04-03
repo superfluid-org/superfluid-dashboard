@@ -61,16 +61,17 @@ export const SuperTokenDialog: FC<{
                     "underlyingToken.symbol",
                     "underlyingToken.name",
                 ],
+                threshold: 0.2
             }),
         [tokenPairs]
     );
 
     const searchedTokenPairs =
-        searchTerm !== ""
+        searchTerm.trim() !== ""
             ? getFuse()
-                .search(searchTerm)
+                .search(searchTerm.trim())
                 .map((x) => x.item)
-            : [];
+            : tokenPairs;
 
     return (
         <Dialog
@@ -81,7 +82,7 @@ export const SuperTokenDialog: FC<{
             onClose={handleClose}
         >
             <DialogTitle>
-                <Typography variant="subtitle1">Select a token</Typography>
+                <Typography>Select a token</Typography>
                 <IconButton
                     aria-label="close"
                     onClick={handleClose}
@@ -115,12 +116,12 @@ export const SuperTokenDialog: FC<{
                                 <TokenItem
                                     chainId={network.chainId}
                                     accountAddress={walletAddress}
-                                    tokenAddress={x.underlyingToken.address}
-                                    tokenSymbol={x.underlyingToken.symbol}
-                                    tokenName={x.underlyingToken.name}
+                                    tokenAddress={x.superToken.address}
+                                    tokenSymbol={x.superToken.symbol}
+                                    tokenName={x.superToken.name}
                                     balanceWei={
                                         balancesQuery.data
-                                            ? balancesQuery.data.balances[x.underlyingToken.address]
+                                            ? balancesQuery.data.balances[x.superToken.address]
                                             : undefined
                                     }
                                 />

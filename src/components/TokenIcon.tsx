@@ -10,6 +10,7 @@ const TokenIcon: FC<{
 
   return tokenManifest ? (
     <Image
+      unoptimized
       loader={({ src }) => src}
       width="24px"
       height="24px"

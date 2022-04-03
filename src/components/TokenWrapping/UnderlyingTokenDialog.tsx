@@ -63,16 +63,17 @@ export const UnderlyingTokenDialog: FC<{
                     "underlyingToken.symbol",
                     "underlyingToken.name",
                 ],
+                threshold: 0.2
             }),
         [tokenPairs]
     );
 
     const searchedTokenPairs =
-        searchTerm !== ""
+        searchTerm.trim() !== ""
             ? getFuse()
-                .search(searchTerm)
+                .search(searchTerm.trim())
                 .map((x) => x.item)
-            : [];
+            : tokenPairs;
 
     return (
         <Dialog
@@ -105,6 +106,7 @@ export const UnderlyingTokenDialog: FC<{
                         pt: 2.5,
                         pb: 1,
                     }}
+                    onChange={(e) => setSearchTerm(e.currentTarget.value)}
                 />
             </DialogTitle>
             <DialogContent dividers sx={{p: 0}}>
