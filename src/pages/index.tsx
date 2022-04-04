@@ -14,7 +14,7 @@ const Home: NextPage = () => {
           alignItems: 'center',
         }}
       >
-        Tere
+        Hello world!
       </Box>
     </Container>
   );

@@ -1,4 +1,4 @@
-import {FC, useCallback, useState} from "react";
+import {FC, useCallback, useState, useMemo} from "react";
 import {TokenUpgradeDowngradePair} from "../../redux/endpoints/adHocSubgraphEndpoints";
 import {
     Dialog,
@@ -47,7 +47,7 @@ export const SuperTokenDialog: FC<{
             : skipToken
     );
 
-    const tokenPairs = tokenPairsQuery.data ?? [];
+    const tokenPairs = useMemo(() => tokenPairsQuery.data ?? [], [tokenPairsQuery]);
 
     // TODO(KK): Don't think I need to debounce here because it's all client-side anyways.
     const [searchTerm, setSearchTerm] = useState("");
