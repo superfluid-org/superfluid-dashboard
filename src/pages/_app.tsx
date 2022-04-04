@@ -31,6 +31,9 @@ export default function MyApp(props: MyAppProps) {
   return (
     <NextThemesProvider>
       <CacheProvider value={emotionCache}>
+        <Head>
+          <meta name="viewport" content="initial-scale=1, width=device-width" />
+        </Head>
         <MuiProvider>
           {(_muiTheme) => (
             <ReduxProvider>

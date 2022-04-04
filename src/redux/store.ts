@@ -7,6 +7,7 @@ import {
   PERSIST,
   PURGE,
   REGISTER,
+  persistStore,
 } from "redux-persist";
 import {
   allRpcEndpoints,
@@ -27,9 +28,25 @@ export const rpcApi = initializeRpcApiSlice(createApiWithReactHooks)
   .injectEndpoints(allRpcEndpoints)
   .injectEndpoints(adHocMulticallEndpoints)
   .injectEndpoints(adHocRpcEndpoints);
-export const subgraphApi = initializeSubgraphApiSlice(createApiWithReactHooks)
+
+export const subgraphApi = initializeSubgraphApiSlice((options) =>
+  createApiWithReactHooks({
+    ...options,
+    extractRehydrationInfo(action, { reducerPath }) {
+      if (action.type === REHYDRATE && action.payload && action.payload[reducerPath]) {
+        return action.payload[reducerPath];
+      }
+    },
+  })
+)
   .injectEndpoints(allSubgraphEndpoints)
   .injectEndpoints(adHocSubgraphEndpoints);
+
+const subgraphApiPersistedReducer = persistReducer(
+  { storage, key: "subgraph-api", version: 1 },
+  subgraphApi.reducer
+);
+
 export const transactionSlice = initializeTransactionSlice();
 
 const transactionSlicePersistedReducer = persistReducer(
@@ -45,7 +62,7 @@ const persistedTransactionRecoveryReducer = persistReducer(
 export const reduxStore = configureStore({
   reducer: {
     [rpcApi.reducerPath]: rpcApi.reducer,
-    [subgraphApi.reducerPath]: subgraphApi.reducer,
+    [subgraphApi.reducerPath]: subgraphApiPersistedReducer,
     transactions: transactionSlicePersistedReducer,
     transactionRecovery: persistedTransactionRecoveryReducer,
   },
@@ -58,6 +75,8 @@ export const reduxStore = configureStore({
       .concat(rpcApi.middleware)
       .concat(subgraphApi.middleware),
 });
+
+export const reduxPersistor = persistStore(reduxStore);
 
 export type AppStore = typeof reduxStore;
 export type RootState = ReturnType<AppStore["getState"]>;

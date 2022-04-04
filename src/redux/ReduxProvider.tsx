@@ -6,4 +6,4 @@ const ReduxProvider: FC = ({ children }) => {
   return <Provider store={reduxStore}>{children}</Provider>;
 };
 
-export default ReduxProvider;
+export default ReduxProvider

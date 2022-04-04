@@ -32,6 +32,7 @@ export const adHocSubgraphEndpoints = {
       TokenUpgradeDowngradePair[],
       { chainId: number }
     >({
+      keepUnusedDataFor: 360,
       queryFn: async (arg) => {
         const subgraphClient = await getSubgraphClient(arg.chainId);
         const subgraphResult = await subgraphClient.request<{
