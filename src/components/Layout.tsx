@@ -25,6 +25,7 @@ import { NetworkContextProvider } from "../contexts/NetworkContext";
 import { WalletContextProvider } from "../contexts/WalletContext";
 import { reduxPersistor, reduxStore } from "../redux/store";
 import { PersistGate } from "redux-persist/integration/react";
+import ReduxPersistGate from "./ReduxPersistGate";
 
 const menuDrawerWidth = 240;
 const transactionDrawerWidth = 480;
@@ -73,19 +74,6 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
     marginRight: 0,
   }),
 }));
-
-/**
- * Waits for Redux state to be restored from persistance.
- * Read more: https://github.com/rt2zz/redux-persist
- * NOTE: It is critical for RTK-Query to have PersistGate around it when using persistance (had some weird race-condition anomalies otherwise where the cache didn't invalidate). 
- */
-const ReduxPersistGate: FC = ({ children }) => {
-  return (
-    <PersistGate loading={null} persistor={reduxPersistor}>
-      {children}
-    </PersistGate>
-  );
-};
 
 const Layout: FC = ({ children }) => {
   const muiTheme = useThemeMui();
@@ -198,6 +186,7 @@ const Layout: FC = ({ children }) => {
         </List>
       </Drawer>
 
+
       <Main open={open}>
         {/* 
           <Box
@@ -205,8 +194,8 @@ const Layout: FC = ({ children }) => {
             sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
           > */}
         <Toolbar />
-        <ReduxPersistGate>{children}</ReduxPersistGate>
-        {/* </Box> */}
+        
+        {children}
       </Main>
       <Drawer
         sx={{
@@ -235,10 +224,12 @@ const Layout: FC = ({ children }) => {
           {/* <Typography variant="h5">Transactions</Typography> */}
         </DrawerHeader>
         <Divider />
-        <ReduxPersistGate>
+      <ReduxPersistGate>
           <TransactionList></TransactionList>
-        </ReduxPersistGate>
+      </ReduxPersistGate>
+
       </Drawer>
+
     </Box>
   );
 };

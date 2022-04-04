@@ -18,6 +18,7 @@ import {
   transactionRecoverySelectors,
 } from "../../redux/transactionRecoverySlice";
 import Link from "../../Link";
+import { ethers } from "ethers";
 
 const TransactionListItemAvatar: FC<{ transaction: TrackedTransaction }> = ({
   transaction,
@@ -86,6 +87,10 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
       transaction.hash
     )
   );
+
+  console.log({
+    transactionResponse: ethers.utils.parseTransaction(transaction.transactionResponse)
+  })
 
   return (
     <ListItem button alignItems="flex-start">

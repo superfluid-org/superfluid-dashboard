@@ -5,7 +5,7 @@ import { FC, useEffect, useState, useMemo, ReactNode } from "react";
 import { createSuperfluidMuiTheme } from "../theme";
 import { useTheme as useThemeNextThemes } from "next-themes";
 
-const MuiProvider: FC<{ children: (muiTheme: Theme) => ReactNode}> = ({ children }) => {
+const MuiProvider: FC = ({ children }) => {
   const { theme: themeMode } = useThemeNextThemes();
   const [muiThemeMode, setMuiThemeMode] = useState<"light" | "dark">("light");
 
@@ -23,7 +23,7 @@ const MuiProvider: FC<{ children: (muiTheme: Theme) => ReactNode}> = ({ children
   return (
     <ThemeProvider theme={muiTheme}>
       <CssBaseline />
-      <Box sx={{ ...(!mounted ? { display: "none" } : {}) }}>{children(muiTheme)}</Box>
+      <Box sx={{ ...(!mounted ? { display: "none" } : {}) }}>{children}</Box>
     </ThemeProvider>
   );
 };

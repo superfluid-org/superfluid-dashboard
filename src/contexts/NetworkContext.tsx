@@ -1,4 +1,3 @@
-import { Theme } from "@emotion/react";
 import { createContext, FC, ReactNode, useContext, useState } from "react";
 import { Network, networksByChainId } from "../networks";
 

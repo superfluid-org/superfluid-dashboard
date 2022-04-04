@@ -9,8 +9,9 @@ import Layout from "../components/Layout";
 import MuiProvider from "../components/MuiProvider";
 import { NetworkContextProvider } from "../contexts/NetworkContext";
 import { WalletContextProvider } from "../contexts/WalletContext";
-import NextThemesProvider from "../components/NextThemesProvider";
 import ReduxProvider from "../redux/ReduxProvider";
+import ReduxPersistGate from "../components/ReduxPersistGate";
+import NextThemesProvider from "../components/NextThemesProvider";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -29,27 +30,30 @@ export default function MyApp(props: MyAppProps) {
   });
 
   return (
-    <NextThemesProvider>
-      <CacheProvider value={emotionCache}>
-        <Head>
-          <meta name="viewport" content="initial-scale=1, width=device-width" />
-        </Head>
-        <MuiProvider>
-          {(_muiTheme) => (
-            <ReduxProvider>
-              <NetworkContextProvider>
-                {(network) => (
-                  <WalletContextProvider>
-                    <Layout>
+    <ReduxProvider>
+      <NextThemesProvider>
+        <CacheProvider value={emotionCache}>
+          <Head>
+            <meta
+              name="viewport"
+              content="initial-scale=1, width=device-width"
+            />
+          </Head>
+          <MuiProvider>
+            <NetworkContextProvider>
+              {(network) => (
+                <WalletContextProvider>
+                  <Layout>
+                    <ReduxPersistGate>
                       <Component key={network.chainId} {...pageProps} />
-                    </Layout>
-                  </WalletContextProvider>
-                )}
-              </NetworkContextProvider>
-            </ReduxProvider>
-          )}
-        </MuiProvider>
-      </CacheProvider>
-    </NextThemesProvider>
+                    </ReduxPersistGate>
+                  </Layout>
+                </WalletContextProvider>
+              )}
+            </NetworkContextProvider>
+          </MuiProvider>
+        </CacheProvider>
+      </NextThemesProvider>
+    </ReduxProvider>
   );
 }

@@ -14,7 +14,7 @@ export default function SelectNetwork() {
   };
 
   return (
-    <div>
+    <>
       <Button
         id="basic-button"
         variant="outlined"
@@ -49,6 +49,6 @@ export default function SelectNetwork() {
           </MenuItem>
         ))}
       </Menu>
-    </div>
+    </>
   );
 }
