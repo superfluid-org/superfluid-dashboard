@@ -1,6 +1,5 @@
+import { Box, Container } from '@mui/material';
 import type { NextPage } from 'next';
-import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
 import { useRouter } from 'next/router';
 import {TokenPanel} from "../components/TokenWrapping/TokenPanel";
 

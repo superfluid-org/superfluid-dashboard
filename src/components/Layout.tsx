@@ -87,9 +87,8 @@ const Layout: FC = ({ children }) => {
   };
 
   return (
-
-          <Box sx={{ display: "flex" }}>
-            {/* <DrawerBar position="fixed" open={open}>
+    <Box sx={{ display: "flex" }}>
+      {/* <DrawerBar position="fixed" open={open}>
             <Toolbar>
               <Typography
                 variant="h6"
@@ -111,120 +110,120 @@ const Layout: FC = ({ children }) => {
               </IconButton>
             </Toolbar>
           </DrawerBar> */}
-            <DrawerBar
-              open={open}
-              position="fixed"
-              sx={{
-                color: "text.primary",
-                width: `calc(100% - ${menuDrawerWidth}px)`,
-                ml: `${menuDrawerWidth}px`,
-                background: "transparent",
-                boxShadow: "none",
-              }}
-            >
-              <Stack
-                component={Toolbar}
-                direction="row"
-                justifyContent="flex-end"
-                alignItems="center"
-                spacing={2}
-              >
-                <SelectNetwork></SelectNetwork>
-                <ConnectWallet></ConnectWallet>
-                <ThemeChanger></ThemeChanger>
-                <IconButton
-                  color="primary"
-                  aria-label="open drawer"
-                  edge="end"
-                  onClick={() => setOpen(!open)}
-                  sx={{ ...(open && { display: "none" }) }}
-                >
-                  <NotificationsOutlinedIcon />
-                </IconButton>
-              </Stack>
-            </DrawerBar>
-            <Drawer
-              sx={{
-                width: menuDrawerWidth,
-                flexShrink: 0,
-                "& .MuiDrawer-paper": {
-                  width: menuDrawerWidth,
-                  boxSizing: "border-box",
-                },
-              }}
-              variant="permanent"
-              anchor="left"
-            >
-              <Toolbar sx={{ height: "100px" }}>
-                <Image
-                  unoptimized
-                  src={
-                    muiTheme.palette.mode === "dark"
-                      ? "/superfluid-logo-light.svg"
-                      : "/superfluid-logo-dark.svg"
-                  }
-                  width={167}
-                  height={40}
-                  layout="fixed"
-                  alt="Superfluid logo"
-                />
-              </Toolbar>
-              <Divider />
-              <List>
-                <Link href="/" passHref>
-                  <ListItem button>
-                    <ListItemText primary="Dashboard" />
-                  </ListItem>
-                </Link>
+      <DrawerBar
+        open={open}
+        position="fixed"
+        sx={{
+          color: "text.primary",
+          width: `calc(100% - ${menuDrawerWidth}px)`,
+          ml: `${menuDrawerWidth}px`,
+          background: "transparent",
+          boxShadow: "none",
+        }}
+      >
+        <Stack
+          component={Toolbar}
+          direction="row"
+          justifyContent="flex-end"
+          alignItems="center"
+          spacing={2}
+        >
+          <SelectNetwork></SelectNetwork>
+          <ConnectWallet></ConnectWallet>
+          <ThemeChanger></ThemeChanger>
+          <IconButton
+            color="primary"
+            aria-label="open drawer"
+            edge="end"
+            onClick={() => setOpen(!open)}
+            sx={{ ...(open && { display: "none" }) }}
+          >
+            <NotificationsOutlinedIcon />
+          </IconButton>
+        </Stack>
+      </DrawerBar>
+      <Drawer
+        sx={{
+          width: menuDrawerWidth,
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: menuDrawerWidth,
+            boxSizing: "border-box",
+          },
+        }}
+        variant="permanent"
+        anchor="left"
+      >
+        <Toolbar sx={{ height: "100px" }}>
+          <Image
+            unoptimized
+            src={
+              muiTheme.palette.mode === "dark"
+                ? "/superfluid-logo-light.svg"
+                : "/superfluid-logo-dark.svg"
+            }
+            width={167}
+            height={40}
+            layout="fixed"
+            alt="Superfluid logo"
+          />
+        </Toolbar>
+        <Divider />
+        <List>
+          <Link href="/" passHref>
+            <ListItem button>
+              <ListItemText primary="Dashboard" />
+            </ListItem>
+          </Link>
 
-                <Link href="/wrap" passHref>
-                  <ListItem button>
-                    <ListItemText primary="Wrap" />
-                  </ListItem>
-                </Link>
-              </List>
-            </Drawer>
+          <Link href="/wrap" passHref>
+            <ListItem button>
+              <ListItemText primary="Wrap" />
+            </ListItem>
+          </Link>
+        </List>
+      </Drawer>
 
-            <Main open={open}>
-              {/* 
+      <Main open={open}>
+        {/* 
           <Box
             component="main"
             sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
           > */}
-              <Toolbar />
-              {children}
-              {/* </Box> */}
-            </Main>
-            <Drawer
-              sx={{
-                width: transactionDrawerWidth,
-                flexShrink: 0,
-                "& .MuiDrawer-paper": {
-                  width: transactionDrawerWidth,
-                },
-              }}
-              variant="persistent"
-              anchor="right"
-              open={open}
-            >
-              <DrawerHeader>
-                <IconButton
-                  color="primary"
-                  aria-label="open drawer"
-                  edge="end"
-                  onClick={() => setOpen(!open)}
-                >
-                  <NotificationsOutlinedIcon />
-                </IconButton>
-                {/* <IconButton onClick={handleDrawerClose}>
+        <Toolbar />
+        {children}
+        {/* </Box> */}
+      </Main>
+      <Drawer
+        sx={{
+          width: transactionDrawerWidth,
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: transactionDrawerWidth,
+          },
+        }}
+        variant="persistent"
+        anchor="right"
+        open={open}
+      >
+        <DrawerHeader>
+          <IconButton
+            color="primary"
+            aria-label="open drawer"
+            edge="end"
+            onClick={() => setOpen(!open)}
+          >
+            <NotificationsOutlinedIcon />
+          </IconButton>
+          {/* <IconButton onClick={handleDrawerClose}>
                 <ChevronRightIcon color="primary" />
               </IconButton> */}
-                {/* <Typography variant="h5">Transactions</Typography> */}
-              </DrawerHeader>
-              <Divider />
-              <TransactionList></TransactionList>
-            </Drawer>
-          </Box>
+          {/* <Typography variant="h5">Transactions</Typography> */}
+        </DrawerHeader>
+        <Divider />
+        <TransactionList></TransactionList>
+      </Drawer>
+    </Box>
   );
 };
 

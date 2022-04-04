@@ -1,6 +1,5 @@
 import type { NextPage } from 'next';
-import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
+import { Box, Container } from '@mui/material';
 
 const Home: NextPage = () => {
   return (

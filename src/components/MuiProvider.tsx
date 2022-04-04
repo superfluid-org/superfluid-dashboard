@@ -1,11 +1,11 @@
-import { ThemeProvider as ThemeProviderMui } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { Box, Theme } from "@mui/material";
 import { FC, useEffect, useState, useMemo, ReactNode } from "react";
 import { createSuperfluidMuiTheme } from "../theme";
 import { useTheme as useThemeNextThemes } from "next-themes";
 
-const Mui: FC<{ children: (muiTheme: Theme) => ReactNode}> = ({ children }) => {
+const MuiProvider: FC<{ children: (muiTheme: Theme) => ReactNode}> = ({ children }) => {
   const { theme: themeMode } = useThemeNextThemes();
   const [muiThemeMode, setMuiThemeMode] = useState<"light" | "dark">("light");
 
@@ -21,11 +21,11 @@ const Mui: FC<{ children: (muiTheme: Theme) => ReactNode}> = ({ children }) => {
   }, [themeMode]);
 
   return (
-    <ThemeProviderMui theme={muiTheme}>
+    <ThemeProvider theme={muiTheme}>
       <CssBaseline />
       <Box sx={{ ...(!mounted ? { display: "none" } : {}) }}>{children(muiTheme)}</Box>
-    </ThemeProviderMui>
+    </ThemeProvider>
   );
 };
 
-export default Mui;
+export default MuiProvider;

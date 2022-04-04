@@ -1,17 +1,16 @@
 import Head from "next/head";
 import { AppProps } from "next/app";
-import { CacheProvider, css, EmotionCache, Global } from "@emotion/react";
+import { CacheProvider, EmotionCache } from "@emotion/react";
 import createEmotionCache from "../createEmotionCache";
 import { useEffect } from "react";
-import { ThemeProvider as NextThemes } from "next-themes";
 import { setFrameworkForSdkRedux } from "@superfluid-finance/sdk-redux";
 import readOnlyFrameworks from "../readOnlyFrameworks";
 import Layout from "../components/Layout";
-import Mui from "../components/Mui";
-import { Provider } from "react-redux";
+import MuiProvider from "../components/MuiProvider";
 import { NetworkContextProvider } from "../contexts/NetworkContext";
 import { WalletContextProvider } from "../contexts/WalletContext";
-import { reduxStore } from "../redux/store";
+import NextThemesProvider from "../components/NextThemesProvider";
+import ReduxProvider from "../redux/ReduxProvider";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -30,28 +29,11 @@ export default function MyApp(props: MyAppProps) {
   });
 
   return (
-    <CacheProvider value={emotionCache}>
-      <Head>
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
-      </Head>
-      {/* https://github.com/pacocoursey/next-themes#without-css-variables */}
-      <Global
-        styles={css`
-          :root {
-            --fg: #000;
-            --bg: #fff;
-          }
-
-          [data-theme="dark"] {
-            --fg: #fff;
-            --bg: #000;
-          }
-        `}
-      />
-      <NextThemes disableTransitionOnChange>
-        <Mui>
+    <NextThemesProvider>
+      <CacheProvider value={emotionCache}>
+        <MuiProvider>
           {(_muiTheme) => (
-            <Provider store={reduxStore}>
+            <ReduxProvider>
               <NetworkContextProvider>
                 {(network) => (
                   <WalletContextProvider>
@@ -61,10 +43,10 @@ export default function MyApp(props: MyAppProps) {
                   </WalletContextProvider>
                 )}
               </NetworkContextProvider>
-            </Provider>
+            </ReduxProvider>
           )}
-        </Mui>
-      </NextThemes>
-    </CacheProvider>
+        </MuiProvider>
+      </CacheProvider>
+    </NextThemesProvider>
   );
 }
