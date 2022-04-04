@@ -15,7 +15,7 @@ import {
   createApiWithReactHooks,
   initializeRpcApiSlice,
   initializeSubgraphApiSlice,
-  initializeTransactionSlice,
+  initializeTransactionTrackerSlice,
 } from "@superfluid-finance/sdk-redux";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import storage from "redux-persist/lib/storage";
@@ -47,14 +47,14 @@ const subgraphApiPersistedReducer = persistReducer(
   subgraphApi.reducer
 );
 
-export const transactionSlice = initializeTransactionSlice();
+export const transactionTracker = initializeTransactionTrackerSlice();
 
-const transactionSlicePersistedReducer = persistReducer(
+const transactionTrackerPersistedReducer = persistReducer(
   { storage, key: "transactions", version: 1 },
-  transactionSlice.reducer
+  transactionTracker.reducer
 );
 
-const persistedTransactionRecoveryReducer = persistReducer(
+const transactionRecoveryPersistedReducer = persistReducer(
   { storage, key: "transaction-recovery", version: 1 },
   transactionRecoverySliceReducer
 );
@@ -63,8 +63,8 @@ export const reduxStore = configureStore({
   reducer: {
     [rpcApi.reducerPath]: rpcApi.reducer,
     [subgraphApi.reducerPath]: subgraphApiPersistedReducer,
-    transactions: transactionSlicePersistedReducer,
-    transactionRecovery: persistedTransactionRecoveryReducer,
+    transactions: transactionTrackerPersistedReducer,
+    transactionRecovery: transactionRecoveryPersistedReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

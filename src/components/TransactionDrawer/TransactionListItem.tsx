@@ -88,10 +88,6 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
     )
   );
 
-  console.log({
-    transactionResponse: ethers.utils.parseTransaction(transaction.transactionResponse)
-  })
-
   return (
     <ListItem button alignItems="flex-start">
       <ListItemAvatar>

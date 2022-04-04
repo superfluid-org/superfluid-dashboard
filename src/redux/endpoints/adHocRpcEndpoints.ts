@@ -1,12 +1,12 @@
-import { SpeakerGroup } from '@mui/icons-material';
-import { ERC20Token } from '@superfluid-finance/sdk-core';
+import { SpeakerGroup } from "@mui/icons-material";
+import { ERC20Token } from "@superfluid-finance/sdk-core";
 import {
   getFramework,
   TransactionInfo,
   getSigner,
   RpcEndpointBuilder,
   registerNewTransactionAndReturnQueryFnResult,
-} from '@superfluid-finance/sdk-redux';
+} from "@superfluid-finance/sdk-redux";
 
 export const adHocRpcEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
@@ -26,13 +26,18 @@ export const adHocRpcEndpoints = {
     }),
     approve: builder.mutation<
       TransactionInfo,
-      { chainId: number; superTokenAddress: string; amountWei: string, waitForcConfirmation?: boolean }
+      {
+        chainId: number;
+        superTokenAddress: string;
+        amountWei: string;
+        waitForcConfirmation?: boolean;
+      }
     >({
       queryFn: async (arg, queryApi) => {
         const framework = await getFramework(arg.chainId);
         const signer = await getSigner(arg.chainId);
         const superToken = await framework.loadSuperToken(
-          arg.superTokenAddress,
+          arg.superTokenAddress
         );
 
         const transactionResponse = await superToken.underlyingToken
@@ -45,9 +50,10 @@ export const adHocRpcEndpoints = {
         return await registerNewTransactionAndReturnQueryFnResult({
           transactionResponse,
           chainId: arg.chainId,
+          from: await signer.getAddress(),
           waitForConfirmation: !!arg.waitForcConfirmation,
           dispatch: queryApi.dispatch,
-          key: "APPROVE"
+          key: "APPROVE",
         });
       },
     }),
