@@ -1,4 +1,5 @@
-import { createContext, FC, useContext, useState } from "react";
+import { Theme } from "@emotion/react";
+import { createContext, FC, ReactNode, useContext, useState } from "react";
 import { Network, networksByChainId } from "../networks";
 
 const NetworkContext = createContext<{
@@ -13,7 +14,9 @@ const NetworkContext = createContext<{
 
 export default NetworkContext;
 
-export const NetworkContextProvider: FC = ({ children }) => {
+export const NetworkContextProvider: FC<{
+  children: (network: Network) => ReactNode;
+}> = ({ children }) => {
   const [network, setNetwork] = useState<Network>(networksByChainId.get(137)!);
 
   return (
@@ -23,7 +26,7 @@ export const NetworkContextProvider: FC = ({ children }) => {
         setNetwork: (network) => setNetwork(network),
       }}
     >
-      {children}
+      {children(network)}
     </NetworkContext.Provider>
   );
 };
