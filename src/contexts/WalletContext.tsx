@@ -4,21 +4,14 @@ import {
 } from "@superfluid-finance/sdk-redux";
 import { ethers } from "ethers";
 import { createContext, FC, useContext, useState } from "react";
-import infuraProviders from "../infuraProviders";
+import readOnlyFrameworks from "../readOnlyFrameworks";
 
 const WalletContext = createContext<{
   walletChainId: number | undefined;
   walletAddress: string | undefined;
   walletProvider: ethers.providers.Web3Provider | undefined;
   setProvider: (provider: any) => void; // TODO(KK): ugly
-}>({
-  walletChainId: undefined,
-  walletAddress: undefined,
-  walletProvider: undefined,
-  setProvider: () => {
-    throw new Error("`setProvider` has not been initialized.");
-  },
-});
+}>(null!);
 
 export default WalletContext;
 
@@ -49,7 +42,7 @@ export const WalletContextProvider: FC = ({ children }) => {
             Promise.resolve(ethersProvider.getSigner())
           );
 
-          infuraProviders.map((x) =>
+          readOnlyFrameworks.map((x) =>
             setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
           );
 
@@ -62,7 +55,7 @@ export const WalletContextProvider: FC = ({ children }) => {
           });
 
           web3Provider.on("chainChanged", (chainId: number) => {
-            infuraProviders.map((x) =>
+            readOnlyFrameworks.map((x) =>
               setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
             );
 

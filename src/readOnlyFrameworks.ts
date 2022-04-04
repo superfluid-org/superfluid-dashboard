@@ -2,7 +2,7 @@ import { Framework } from "@superfluid-finance/sdk-core";
 import { ethers } from "ethers";
 import { networks } from "./networks";
 
-const infuraProviders = networks.map((network) => ({
+const readOnlyFrameworks = networks.map((network) => ({
   chainId: network.chainId,
   frameworkGetter: () =>
     Framework.create({
@@ -11,4 +11,4 @@ const infuraProviders = networks.map((network) => ({
     }),
 }));
 
-export default infuraProviders;
+export default readOnlyFrameworks;

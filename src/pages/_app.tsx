@@ -5,7 +5,7 @@ import createEmotionCache from "../createEmotionCache";
 import { useEffect } from "react";
 import { ThemeProvider as NextThemes } from "next-themes";
 import { setFrameworkForSdkRedux } from "@superfluid-finance/sdk-redux";
-import infuraProviders from "../infuraProviders";
+import readOnlyFrameworks from "../readOnlyFrameworks";
 import Layout from "../components/Layout";
 import Mui from "../components/Mui";
 import { Provider } from "react-redux";
@@ -24,7 +24,7 @@ export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
   useEffect(() => {
-    infuraProviders.map((x) =>
+    readOnlyFrameworks.map((x) =>
       setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
     );
   });
