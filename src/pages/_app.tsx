@@ -12,6 +12,7 @@ import { WalletContextProvider } from "../contexts/WalletContext";
 import ReduxProvider from "../redux/ReduxProvider";
 import ReduxPersistGate from "../components/ReduxPersistGate";
 import NextThemesProvider from "../components/NextThemesProvider";
+import { TransactionDrawerContextProvider } from "../components/TransactionDrawer/TransactionDrawerContext";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -43,11 +44,13 @@ export default function MyApp(props: MyAppProps) {
             <NetworkContextProvider>
               {(network) => (
                 <WalletContextProvider>
-                  <Layout>
-                    <ReduxPersistGate>
-                      <Component key={network.chainId} {...pageProps} />
-                    </ReduxPersistGate>
-                  </Layout>
+                  <TransactionDrawerContextProvider>
+                    <Layout>
+                      <ReduxPersistGate>
+                        <Component key={network.chainId} {...pageProps} />
+                      </ReduxPersistGate>
+                    </Layout>
+                  </TransactionDrawerContextProvider>
                 </WalletContextProvider>
               )}
             </NetworkContextProvider>

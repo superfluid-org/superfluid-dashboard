@@ -14,18 +14,14 @@ import ListItemText from "@mui/material/ListItemText";
 import Image from "next/image";
 import ConnectWallet from "../components/ConnectWallet";
 import { FC, useState } from "react";
-import { useTheme as useThemeMui } from "@mui/material";
+import { useTheme as useMuiTheme } from "@mui/material";
 import ThemeChanger from "../components/ThemeChanger";
 import SelectNetwork from "../components/SelectNetwork";
 import Link from "next/link";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import TransactionList from "../components/TransactionDrawer/TransactionList";
-import { Provider } from "react-redux";
-import { NetworkContextProvider } from "../contexts/NetworkContext";
-import { WalletContextProvider } from "../contexts/WalletContext";
-import { reduxPersistor, reduxStore } from "../redux/store";
-import { PersistGate } from "redux-persist/integration/react";
 import ReduxPersistGate from "./ReduxPersistGate";
+import { useTransactionDrawerContext } from "./TransactionDrawer/TransactionDrawerContext";
 
 const menuDrawerWidth = 240;
 const transactionDrawerWidth = 480;
@@ -76,17 +72,9 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
 }));
 
 const Layout: FC = ({ children }) => {
-  const muiTheme = useThemeMui();
+  const muiTheme = useMuiTheme();
 
-  const [open, setOpen] = useState(false);
-
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
+  const { transactionDrawerOpen, setTransactionDrawerOpen } = useTransactionDrawerContext();
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -113,7 +101,7 @@ const Layout: FC = ({ children }) => {
             </Toolbar>
           </DrawerBar> */}
       <DrawerBar
-        open={open}
+        open={transactionDrawerOpen}
         position="fixed"
         sx={{
           color: "text.primary",
@@ -137,8 +125,8 @@ const Layout: FC = ({ children }) => {
             color="primary"
             aria-label="open drawer"
             edge="end"
-            onClick={() => setOpen(!open)}
-            sx={{ ...(open && { display: "none" }) }}
+            onClick={() => setTransactionDrawerOpen(!transactionDrawerOpen)}
+            sx={{ ...(transactionDrawerOpen && { display: "none" }) }}
           >
             <NotificationsOutlinedIcon />
           </IconButton>
@@ -186,15 +174,14 @@ const Layout: FC = ({ children }) => {
         </List>
       </Drawer>
 
-
-      <Main open={open}>
+      <Main open={transactionDrawerOpen}>
         {/* 
           <Box
             component="main"
             sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
           > */}
         <Toolbar />
-        
+
         {children}
       </Main>
       <Drawer
@@ -207,14 +194,14 @@ const Layout: FC = ({ children }) => {
         }}
         variant="persistent"
         anchor="right"
-        open={open}
+        open={transactionDrawerOpen}
       >
         <DrawerHeader>
           <IconButton
             color="primary"
             aria-label="open drawer"
             edge="end"
-            onClick={() => setOpen(!open)}
+            onClick={() => setTransactionDrawerOpen(!transactionDrawerOpen)}
           >
             <NotificationsOutlinedIcon />
           </IconButton>
@@ -224,12 +211,10 @@ const Layout: FC = ({ children }) => {
           {/* <Typography variant="h5">Transactions</Typography> */}
         </DrawerHeader>
         <Divider />
-      <ReduxPersistGate>
+        <ReduxPersistGate>
           <TransactionList></TransactionList>
-      </ReduxPersistGate>
-
+        </ReduxPersistGate>
       </Drawer>
-
     </Box>
   );
 };
