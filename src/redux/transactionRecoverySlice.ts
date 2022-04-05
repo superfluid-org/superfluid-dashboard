@@ -8,14 +8,14 @@ interface TransactionRecovery<T> {
   data: T;
 };
 
-interface SuperTokenDowngradeRecovery extends TransactionRecovery<{
+export interface SuperTokenDowngradeRecovery extends TransactionRecovery<{
   tokenUpgrade: TokenUpgradeDowngradePair;
   amountWei: string;
 }> {
   key: "SUPER_TOKEN_DOWNGRADE";
 }
 
-interface SuperTokenUpgradeRecovery extends TransactionRecovery<{
+export interface SuperTokenUpgradeRecovery extends TransactionRecovery<{
   tokenUpgrade: TokenUpgradeDowngradePair;
   amountWei: string;
 }> {

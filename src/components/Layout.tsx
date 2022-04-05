@@ -21,7 +21,7 @@ import Link from "next/link";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import TransactionList from "../components/TransactionDrawer/TransactionList";
 import ReduxPersistGate from "./ReduxPersistGate";
-import { useTransactionDrawerContext } from "./TransactionDrawer/TransactionDrawerContext";
+import { useTransactionContext } from "./TransactionDrawer/TransactionContext";
 
 const menuDrawerWidth = 240;
 const transactionDrawerWidth = 480;
@@ -74,7 +74,7 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
 const Layout: FC = ({ children }) => {
   const muiTheme = useMuiTheme();
 
-  const { transactionDrawerOpen, setTransactionDrawerOpen } = useTransactionDrawerContext();
+  const { transactionDrawerOpen, setTransactionDrawerOpen } = useTransactionContext();
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -166,7 +166,7 @@ const Layout: FC = ({ children }) => {
             </ListItem>
           </Link>
 
-          <Link href="/wrap" passHref>
+          <Link href="/upgrade" passHref>
             <ListItem button>
               <ListItemText primary="Wrap" />
             </ListItem>

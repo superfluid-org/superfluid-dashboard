@@ -18,7 +18,8 @@ import {
   transactionRecoverySelectors,
 } from "../../redux/transactionRecoverySlice";
 import Link from "../../Link";
-import { ethers } from "ethers";
+import { useRouter } from "next/router";
+import { useTransactionContext } from "./TransactionContext";
 
 const TransactionListItemAvatar: FC<{ transaction: TrackedTransaction }> = ({
   transaction,
@@ -51,27 +52,26 @@ const TransactionListItemAvatar: FC<{ transaction: TrackedTransaction }> = ({
   }
 };
 
-const TransactionRecoveryLink: FC<{
+const TransactionRecoveryButton: FC<{
   transactionRecovery: TransactionRecoveries;
-}> = ({ transactionRecovery, children }) => {
+}> = ({ transactionRecovery }) => {
+  const router = useRouter();
+  const { setTransactionRecovery } = useTransactionContext();
+  
   switch (transactionRecovery.key) {
     case "SUPER_TOKEN_DOWNGRADE":
       return (
-        <Link
-          href={`/wrap?transactionRecoveryId=${transactionRecovery.transactionInfo.hash}`}
-          passHref
-        >
-          {children}
-        </Link>
+        <Button variant="outlined" onClick={() => {
+          setTransactionRecovery(transactionRecovery)
+          router.push("/downgrade");
+        }}>Recover</Button>
       );
     case "SUPER_TOKEN_UPGRADE":
       return (
-        <Link
-          href={`/wrap?transactionRecoveryId=${transactionRecovery.transactionInfo.hash}`}
-          passHref
-        >
-          {children}
-        </Link>
+        <Button variant="outlined" onClick={() => {
+          setTransactionRecovery(transactionRecovery)
+          router.push("/upgrade");
+        }}>Recover</Button>
       );
     default:
       return null;
@@ -109,11 +109,10 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
             </Typography>
             {/* transaction.status === "Failed" &&  */}
             {!!transactionRecovery && (
-              <TransactionRecoveryLink
+              <TransactionRecoveryButton
                 transactionRecovery={transactionRecovery}
               >
-                <Button variant="outlined">Recover</Button>
-              </TransactionRecoveryLink>
+              </TransactionRecoveryButton>
             )}
             {/* <Typography
                     sx={{ display: "block" }}S

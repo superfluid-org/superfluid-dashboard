@@ -3,7 +3,7 @@ import { Network, networksByChainId } from "../networks";
 
 const NetworkContext = createContext<{
   network: Network;
-  setNetwork: (provider: Network) => void;
+  setNetwork: (chainId: number) => void;
 }>(null!);
 
 export default NetworkContext;
@@ -17,7 +17,7 @@ export const NetworkContextProvider: FC<{
     <NetworkContext.Provider
       value={{
         network: network,
-        setNetwork: (network) => setNetwork(network),
+        setNetwork: (chainId) => setNetwork(networksByChainId.get(chainId)!),
       }}
     >
       {children(network)}

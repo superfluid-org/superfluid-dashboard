@@ -36,16 +36,16 @@ export default function SelectNetwork() {
           "aria-labelledby": "basic-button",
         }}
       >
-        {networks.map((x) => (
+        {networks.map((network) => (
           <MenuItem
-            key={x.chainId}
+            key={network.chainId}
             onClick={() => {
               handleClose();
-              setNetwork(x);
+              setNetwork(network.chainId);
             }}
-            selected={x === network}
+            selected={network === network}
           >
-            {x.displayName}
+            {network.displayName}
           </MenuItem>
         ))}
       </Menu>
