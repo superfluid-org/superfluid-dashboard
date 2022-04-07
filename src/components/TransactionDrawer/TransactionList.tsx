@@ -9,7 +9,7 @@ const TransactionList: FC = () => {
   const { walletAddress } = useWalletContext();
 
   const transactions = useAppSelector((state) =>
-    transactionSelectors.selectAll(state.transactions).filter(x => x.from === walletAddress)
+    transactionSelectors.selectAll(state.superfluid_transactions).filter(x => x.from === walletAddress)
   );
 
   return (

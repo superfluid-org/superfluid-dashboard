@@ -1,10 +1,13 @@
 import {
+  initiateOldPendingTransactionsTrackingThunk,
   setFrameworkForSdkRedux,
   setSignerForSdkRedux,
 } from "@superfluid-finance/sdk-redux";
 import { ethers } from "ethers";
 import { createContext, FC, useContext, useState } from "react";
+import { networks } from "../networks";
 import readOnlyFrameworks from "../readOnlyFrameworks";
+import { useAppDispatch } from "../redux/store";
 
 const WalletContext = createContext<{
   walletChainId: number | undefined;
@@ -21,6 +24,7 @@ export const WalletContextProvider: FC = ({ children }) => {
   >();
   const [walletAddress, setWalletAddress] = useState<string | undefined>();
   const [walletChainId, setWalletChainId] = useState<number | undefined>();
+  const dispatch = useAppDispatch();
 
   return (
     <WalletContext.Provider
@@ -46,12 +50,26 @@ export const WalletContextProvider: FC = ({ children }) => {
             setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
           );
 
+          dispatch(
+            initiateOldPendingTransactionsTrackingThunk({
+              chainIds: networks.map((x) => x.chainId),
+              signerAddress: address,
+            }) as any
+          ); // TODO(weird version mismatch):
+
           web3Provider.on("accountsChanged", (accounts: string[]) => {
             setWalletAddress(accounts[0]);
 
             setSignerForSdkRedux(chainId, () =>
               Promise.resolve(ethersProvider.getSigner())
             );
+
+            dispatch(
+              initiateOldPendingTransactionsTrackingThunk({
+                chainIds: networks.map((x) => x.chainId),
+                signerAddress: address,
+              }) as any
+            ); // TODO(weird version mismatch):
           });
 
           web3Provider.on("chainChanged", (chainId: number) => {

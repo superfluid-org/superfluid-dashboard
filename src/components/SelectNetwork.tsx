@@ -1,4 +1,5 @@
 import { Button, Menu, MenuItem } from "@mui/material";
+import { normalize } from "path/posix";
 import { FC, useState } from "react";
 import { useNetworkContext } from "../contexts/NetworkContext";
 import { networks } from "../networks";
@@ -7,7 +8,7 @@ export default function SelectNetwork() {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
 
-  const { network, setNetwork } = useNetworkContext();
+  const { network: selectedNetwork, setNetwork: setSelectedNetwork } = useNetworkContext();
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -25,7 +26,7 @@ export default function SelectNetwork() {
           setAnchorEl(event.currentTarget);
         }}
       >
-        {network ? network.displayName : "Select network"}
+        {selectedNetwork ? selectedNetwork.displayName : "Select network"}
       </Button>
       <Menu
         id="basic-menu"
@@ -36,16 +37,16 @@ export default function SelectNetwork() {
           "aria-labelledby": "basic-button",
         }}
       >
-        {networks.map((network) => (
+        {networks.map((n) => (
           <MenuItem
-            key={network.chainId}
+            key={n.chainId}
             onClick={() => {
               handleClose();
-              setNetwork(network.chainId);
+              setSelectedNetwork(n.chainId);
             }}
-            selected={network === network}
+            selected={n.chainId === selectedNetwork.chainId}
           >
-            {network.displayName}
+            {n.displayName}
           </MenuItem>
         ))}
       </Menu>

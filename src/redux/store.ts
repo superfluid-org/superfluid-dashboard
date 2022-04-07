@@ -63,7 +63,7 @@ export const reduxStore = configureStore({
   reducer: {
     [rpcApi.reducerPath]: rpcApi.reducer,
     [subgraphApi.reducerPath]: subgraphApiPersistedReducer,
-    transactions: transactionTrackerPersistedReducer,
+    [transactionTracker.reducerPath]: transactionTrackerPersistedReducer,
     transactionRecovery: transactionRecoveryPersistedReducer,
   },
   middleware: (getDefaultMiddleware) =>

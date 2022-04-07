@@ -8,6 +8,12 @@ import {
   registerNewTransactionAndReturnQueryFnResult,
 } from "@superfluid-finance/sdk-redux";
 
+declare module "@superfluid-finance/sdk-redux" {
+  interface TransactionKeyOverrides {
+    "APPROVE": true
+  }
+}
+
 export const adHocRpcEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
     balanceOf: builder.query<
