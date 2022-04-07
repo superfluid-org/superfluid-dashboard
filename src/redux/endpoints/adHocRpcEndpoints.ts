@@ -9,8 +9,8 @@ import {
 } from "@superfluid-finance/sdk-redux";
 
 declare module "@superfluid-finance/sdk-redux" {
-  interface TransactionKeyOverrides {
-    "APPROVE": true
+  interface TransactionTitleOverrides {
+    "Approve Allowance": true
   }
 }
 
@@ -56,10 +56,11 @@ export const adHocRpcEndpoints = {
         return await registerNewTransactionAndReturnQueryFnResult({
           transactionResponse,
           chainId: arg.chainId,
-          from: await signer.getAddress(),
+          signer: await signer.getAddress(),
           waitForConfirmation: !!arg.waitForcConfirmation,
           dispatch: queryApi.dispatch,
-          key: "APPROVE",
+          title: "Approve Allowance",
+          extraData: undefined
         });
       },
     }),

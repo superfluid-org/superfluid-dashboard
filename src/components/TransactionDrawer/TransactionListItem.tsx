@@ -77,39 +77,6 @@ const TransactionRecoveryButton: FC<{
   }
 };
 
-const getTitle = (transaction: TrackedTransaction) => {
-  switch (transaction.key) {
-    case "FLOW_CREATE":
-      return "Create Stream"
-    case "FLOW_UPDATE":
-      return "Update Stream"
-    case "FLOW_DELETE":
-      return "Close Stream"
-    case "INDEX_CREATE":
-      return "Create Index"
-    case "INDEX_DISTRIBUTE":
-      return "Distribute Index"
-    case "INDEX_UPDATE_SUBSCRIPTION_UNITS":
-      return "Update Index Subscription Units"
-    case "INDEX_SUBSCRIPTION_APPROVE":
-      return "Approve Index Subscription"
-    case "INDEX_SUBSCRIPTION_CLAIM":
-      return "Claim Index Subscription"
-    case "INDEX_DELETE_SUBSCRIPTION":
-      return "Delete Index Subscription"
-    case "INDEX_SUBSCRIPTION_REVOKE":
-      return "Revoke Index Subscription"
-    case "SUPER_TOKEN_UPGRADE":
-      return "Upgrade to Super Token"
-    case "SUPER_TOKEN_DOWNGRADE":
-      return "Downgrade from Super Token"
-    case "SUPER_TOKEN_TRANSFER":
-      return "Transfer"
-    case "APPROVE":
-      return "Approve"
-  } 
-}
-
 const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
   transaction,
 }) => {
@@ -128,7 +95,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
         ></TransactionListItemAvatar>
       </ListItemAvatar>
       <ListItemText
-        primary={getTitle(transaction)}
+        primary={transaction.title}
         secondary={
           <>
             <Typography
