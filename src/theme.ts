@@ -36,5 +36,5 @@ export const createSuperfluidMuiTheme = (mode: "light" | "dark" = "light") =>
     },
     shape: {
       borderRadius: 7,
-    },
+    }
   });

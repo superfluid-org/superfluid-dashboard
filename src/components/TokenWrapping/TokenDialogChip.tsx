@@ -3,12 +3,13 @@ import { TokenUpgradeDowngradePair } from "../../redux/endpoints/adHocSubgraphEn
 import { Chip, Stack } from "@mui/material";
 import TokenIcon from "../TokenIcon";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { SuperTokenDialog } from "./SuperTokenDialog";
+import { TokenDialog } from "./TokenDialog";
 
-export const SuperTokenChip: FC<{
+export const TokenDialogChip: FC<{
   _selectedToken?: TokenUpgradeDowngradePair;
   onChange: (tokenUpgrade: TokenUpgradeDowngradePair | undefined) => void;
-}> = ({ onChange, _selectedToken }) => {
+  prioritizeSuperTokens: boolean;
+}> = ({ prioritizeSuperTokens, onChange, _selectedToken }) => {
   const [open, setOpen] = useState(false);
 
   const [selectedToken, setSelectedToken] = useState<
@@ -33,30 +34,28 @@ export const SuperTokenChip: FC<{
     setOpen(false);
   };
 
+  const tokenSymbol = prioritizeSuperTokens
+    ? selectedToken?.superToken.symbol
+    : selectedToken?.underlyingToken.symbol;
+
   return (
     <>
       <Chip
-        icon={
-          selectedToken ? (
-            <TokenIcon tokenSymbol={selectedToken.superToken.symbol} />
-          ) : (
-            <></>
-          )
-        }
+        icon={tokenSymbol ? <TokenIcon tokenSymbol={tokenSymbol} /> : <></>}
         label={
           <>
             <Stack direction="row" alignItems="center">
-              {selectedToken?.superToken.symbol ?? "Select a token"}{" "}
-              <ExpandMoreIcon />
+              {tokenSymbol ?? "Select a token"} <ExpandMoreIcon />
             </Stack>
           </>
         }
         onClick={handleTokenChipClick}
       ></Chip>
-      <SuperTokenDialog
+      <TokenDialog
+        prioritizeSuperTokens={prioritizeSuperTokens}
         open={open}
-        handleClose={handleTokenDialogClose}
-        handleSelected={handleTokenSelected}
+        onClose={handleTokenDialogClose}
+        onSelect={handleTokenSelected}
       />
     </>
   );

@@ -1,32 +1,49 @@
+import { TrackedTransaction } from "@superfluid-finance/sdk-redux";
 import { createContext, FC, useContext, useState } from "react";
-import { TransactionRecoveries } from "../../redux/transactionRecoverySlice";
+import { useNetworkContext } from "../../contexts/NetworkContext";
+import { TransactionRecoveries } from "../../redux/transactionRecoveries";
 
 const TransactionContext = createContext<{
-    transactionDrawerOpen: boolean;
-    setTransactionDrawerOpen: (open: boolean) => void;
-    transactionRecovery?: TransactionRecoveries;
-    setTransactionRecovery: (transactionRecovery?: TransactionRecoveries) => void;
-}>(
-    null!
-);
+  transactionDrawerOpen: boolean;
+  setTransactionDrawerOpen: (open: boolean) => void;
+  transactionToRecover: TrackedTransaction | undefined;
+  transactionRecovery: TransactionRecoveries | undefined;
+  setTransactionToRecover: (transaction?: TrackedTransaction) => void;
+}>(null!);
 
 export const TransactionContextProvider: FC = ({ children }) => {
-    const [transactionDrawerOpen, setTransactionDrawerOpen] = useState(false);
-    const [transactionRecovery, setTransactionRecovery] = useState<TransactionRecoveries | undefined>();
+  const { network, setNetwork } = useNetworkContext();
+  const [transactionDrawerOpen, setTransactionDrawerOpen] = useState(false);
+  const [transactionRecovery, setTransactionRecovery] = useState<
+    TransactionRecoveries | undefined
+  >();
+  const [transactionToRecover, setTransactionToRecover] = useState<
+    TrackedTransaction | undefined
+  >();
 
-    return (
-        <TransactionContext.Provider
-            value={{
-                transactionDrawerOpen,
-                setTransactionDrawerOpen,
-                transactionRecovery,
-                setTransactionRecovery
-            }}
-        >
-            {children}
-        </TransactionContext.Provider>
-    );
+  return (
+    <TransactionContext.Provider
+      value={{
+        transactionDrawerOpen,
+        setTransactionDrawerOpen,
+        transactionRecovery,
+        transactionToRecover,
+        setTransactionToRecover: (transaction?: TrackedTransaction) => {
+          if (transaction && transaction.chainId !== network.chainId) {
+            setNetwork(transaction.chainId);
+          }
+          setTransactionToRecover(transaction);
+          setTransactionRecovery(
+            (transaction?.extraData as any)?.recovery as
+              | TransactionRecoveries
+              | undefined
+          ); // TODO(KK): Ugly undefined
+        },
+      }}
+    >
+      {children}
+    </TransactionContext.Provider>
+  );
 };
 
-export const useTransactionContext = () =>
-    useContext(TransactionContext);
+export const useTransactionContext = () => useContext(TransactionContext);

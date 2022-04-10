@@ -1,11 +1,13 @@
 import {
   AppBar,
   Box,
+  Card,
   Divider,
   Drawer,
   IconButton,
   List,
   ListItem,
+  ListItemIcon,
   Stack,
   styled,
   Toolbar,
@@ -22,6 +24,8 @@ import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined
 import TransactionList from "../components/TransactionDrawer/TransactionList";
 import ReduxPersistGate from "./ReduxPersistGate";
 import { useTransactionContext } from "./TransactionDrawer/TransactionContext";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import AutoAwesomeMosaicIcon from "@mui/icons-material/AutoAwesomeMosaic";
 
 const menuDrawerWidth = 240;
 const transactionDrawerWidth = 480;
@@ -74,32 +78,11 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
 const Layout: FC = ({ children }) => {
   const muiTheme = useMuiTheme();
 
-  const { transactionDrawerOpen, setTransactionDrawerOpen } = useTransactionContext();
+  const { transactionDrawerOpen, setTransactionDrawerOpen } =
+    useTransactionContext();
 
   return (
     <Box sx={{ display: "flex" }}>
-      {/* <DrawerBar position="fixed" open={open}>
-            <Toolbar>
-              <Typography
-                variant="h6"
-                noWrap
-                sx={{ flexGrow: 1 }}
-                component="div"
-              >
-                Persistent drawer
-              </Typography>
-              Foo
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                edge="end"
-                onClick={handleDrawerOpen}
-                sx={{ ...(open && { display: "none" }) }}
-              >
-                <MenuIcon />
-              </IconButton>
-            </Toolbar>
-          </DrawerBar> */}
       <DrawerBar
         open={transactionDrawerOpen}
         position="fixed"
@@ -116,24 +99,28 @@ const Layout: FC = ({ children }) => {
           direction="row"
           justifyContent="flex-end"
           alignItems="center"
-          spacing={2}
         >
-          <SelectNetwork></SelectNetwork>
-          <ConnectWallet></ConnectWallet>
-          <ThemeChanger></ThemeChanger>
-          <IconButton
-            color="primary"
-            aria-label="open drawer"
-            edge="end"
-            onClick={() => setTransactionDrawerOpen(!transactionDrawerOpen)}
-            sx={{ ...(transactionDrawerOpen && { display: "none" }) }}
-          >
-            <NotificationsOutlinedIcon />
-          </IconButton>
+          <Card sx={{ p: 2, mt: 3 }} variant="outlined">
+            <Stack direction="row" spacing={2}>
+              <SelectNetwork></SelectNetwork>
+              <ConnectWallet></ConnectWallet>
+              <IconButton
+                color="primary"
+                aria-label="open drawer"
+                edge="end"
+                onClick={() => setTransactionDrawerOpen(!transactionDrawerOpen)}
+              >
+                <NotificationsOutlinedIcon />
+              </IconButton>
+            </Stack>
+          </Card>
         </Stack>
       </DrawerBar>
-      <Drawer
+      {/* TODO(KK): Not working properly */}
+      <Stack
+        component={Drawer}
         sx={{
+          height: "100vh",
           width: menuDrawerWidth,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
@@ -143,47 +130,66 @@ const Layout: FC = ({ children }) => {
         }}
         variant="permanent"
         anchor="left"
+        direction="column"
+        justifyContent="space-between"
+        alignItems="center"
+        spacing={0}
       >
-        <Toolbar sx={{ height: "100px" }}>
-          <Image
-            unoptimized
-            src={
-              muiTheme.palette.mode === "dark"
-                ? "/superfluid-logo-light.svg"
-                : "/superfluid-logo-dark.svg"
-            }
-            width={167}
-            height={40}
-            layout="fixed"
-            alt="Superfluid logo"
-          />
-        </Toolbar>
-        <Divider />
-        <List>
+        <Stack>
+          <Toolbar sx={{ height: "100px" }}>
+            <Image
+              unoptimized
+              src={
+                muiTheme.palette.mode === "dark"
+                  ? "/superfluid-logo-light.svg"
+                  : "/superfluid-logo-dark.svg"
+              }
+              width={167}
+              height={40}
+              layout="fixed"
+              alt="Superfluid logo"
+            />
+          </Toolbar>
+          <Divider />
+        </Stack>
+
+        <Stack
+          component={List}
+          justifyContent="center"
+          alignItems="center"
+          sx={{ flex: 1 }}
+        >
           <Link href="/" passHref>
             <ListItem button>
-              <ListItemText primary="Dashboard" />
+              <ListItemIcon>
+                <AutoAwesomeMosaicIcon></AutoAwesomeMosaicIcon>
+              </ListItemIcon>
+              <ListItemText primary="Overview" />
             </ListItem>
           </Link>
-
           <Link href="/upgrade" passHref>
             <ListItem button>
-              <ListItemText primary="Wrap" />
+              <ListItemIcon>
+                <AutoAwesomeIcon></AutoAwesomeIcon>
+              </ListItemIcon>
+              <ListItemText primary="Upgrade" />
             </ListItem>
           </Link>
-        </List>
-      </Drawer>
+        </Stack>
+
+        <Stack justifyContent="flex-end" sx={{ flex: 1 }}>
+          <Divider />
+          <Stack direction="row" justifyContent="center" sx={{m: 1}}>
+            <ThemeChanger></ThemeChanger>
+          </Stack>
+        </Stack>
+      </Stack>
 
       <Main open={transactionDrawerOpen}>
-        {/* 
-          <Box
-            component="main"
-            sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
-          > */}
         <Toolbar />
-
         {children}
       </Main>
+
       <Drawer
         sx={{
           width: transactionDrawerWidth,
@@ -196,20 +202,7 @@ const Layout: FC = ({ children }) => {
         anchor="right"
         open={transactionDrawerOpen}
       >
-        <DrawerHeader>
-          <IconButton
-            color="primary"
-            aria-label="open drawer"
-            edge="end"
-            onClick={() => setTransactionDrawerOpen(!transactionDrawerOpen)}
-          >
-            <NotificationsOutlinedIcon />
-          </IconButton>
-          {/* <IconButton onClick={handleDrawerClose}>
-                <ChevronRightIcon color="primary" />
-              </IconButton> */}
-          {/* <Typography variant="h5">Transactions</Typography> */}
-        </DrawerHeader>
+        <DrawerHeader></DrawerHeader>
         <Divider />
         <ReduxPersistGate>
           <TransactionList></TransactionList>

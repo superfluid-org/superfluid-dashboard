@@ -12,11 +12,6 @@ import DoneIcon from "@mui/icons-material/Done";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import CloseIcon from "@mui/icons-material/Close";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
-import { useAppSelector } from "../../redux/store";
-import {
-  TransactionRecoveries,
-  transactionRecoverySelectors,
-} from "../../redux/transactionRecoverySlice";
 import { useRouter } from "next/router";
 import { useTransactionContext } from "./TransactionContext";
 
@@ -52,25 +47,35 @@ const TransactionListItemAvatar: FC<{ transaction: TrackedTransaction }> = ({
 };
 
 const TransactionRecoveryButton: FC<{
-  transactionRecovery: TransactionRecoveries;
-}> = ({ transactionRecovery }) => {
+  transaction: TrackedTransaction;
+}> = ({ transaction }) => {
   const router = useRouter();
-  const { setTransactionRecovery } = useTransactionContext();
-  
-  switch (transactionRecovery.key) {
-    case "SUPER_TOKEN_DOWNGRADE":
+  const { setTransactionToRecover } = useTransactionContext();
+
+  switch (transaction.title) {
+    case "Downgrade from Super Token":
       return (
-        <Button variant="outlined" onClick={() => {
-          setTransactionRecovery(transactionRecovery)
-          router.push("/downgrade");
-        }}>Recover</Button>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            setTransactionToRecover(transaction);
+            router.push("/downgrade");
+          }}
+        >
+          Recover
+        </Button>
       );
-    case "SUPER_TOKEN_UPGRADE":
+    case "Upgrade to Super Token":
       return (
-        <Button variant="outlined" onClick={() => {
-          setTransactionRecovery(transactionRecovery)
-          router.push("/upgrade");
-        }}>Recover</Button>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            setTransactionToRecover(transaction);
+            router.push("/upgrade");
+          }}
+        >
+          Recover
+        </Button>
       );
     default:
       return null;
@@ -80,13 +85,6 @@ const TransactionRecoveryButton: FC<{
 const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
   transaction,
 }) => {
-  const transactionRecovery = useAppSelector((state) =>
-    transactionRecoverySelectors.selectById(
-      state.transactionRecovery,
-      transaction.hash
-    )
-  );
-
   return (
     <ListItem button alignItems="flex-start">
       <ListItemAvatar>
@@ -107,20 +105,10 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
               {transaction.hash}
             </Typography>
             {/* transaction.status === "Failed" &&  */}
-            {!!transactionRecovery && (
-              <TransactionRecoveryButton
-                transactionRecovery={transactionRecovery}
-              >
-              </TransactionRecoveryButton>
-            )}
-            {/* <Typography
-                    sx={{ display: "block" }}S
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
-                  >
-                    {123}
-                  </Typography> */}
+
+            <TransactionRecoveryButton
+              transaction={transaction}
+            ></TransactionRecoveryButton>
           </>
         }
       ></ListItemText>
