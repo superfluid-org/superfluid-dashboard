@@ -1,6 +1,6 @@
 import { Box, Container } from "@mui/material";
 import type { NextPage } from "next";
-import { TokenPanel } from "../components/TokenWrapping/TokenPanel";
+import { WrappingWidget } from "../components/TokenWrapping/WrappingWidget";
 
 const Downgrade: NextPage = () => {
   return (
@@ -14,9 +14,9 @@ const Downgrade: NextPage = () => {
           alignItems: "center",
         }}
       >
-        <TokenPanel
+        <WrappingWidget
           tabValue="downgrade"
-        ></TokenPanel>
+        ></WrappingWidget>
       </Box>
     </Container>
   );

@@ -70,7 +70,7 @@ export const TokenDialog: FC<{
         ? Object.entries(balancesQuery.data.balances)
             .sort(
               (a, b) =>
-                +ethers.BigNumber.from(a[1]).lt(ethers.BigNumber.from(b[1]))
+                +ethers.BigNumber.from(a[1]).lt(ethers.BigNumber.from(b[1])) // TODO(KK): Not easy to read this line?
             )
             .map(
               ([balanceAddress]) =>
