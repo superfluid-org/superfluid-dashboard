@@ -14,9 +14,7 @@ const Downgrade: NextPage = () => {
           alignItems: "center",
         }}
       >
-        <WrappingWidget
-          tabValue="downgrade"
-        ></WrappingWidget>
+        <WrappingWidget tabValue="downgrade"></WrappingWidget>
       </Box>
     </Container>
   );

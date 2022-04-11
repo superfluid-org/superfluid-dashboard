@@ -11,11 +11,12 @@ import {
   Stack,
   styled,
   Toolbar,
+  Typography,
 } from "@mui/material";
 import ListItemText from "@mui/material/ListItemText";
 import Image from "next/image";
 import ConnectWallet from "../components/ConnectWallet";
-import { FC, useState } from "react";
+import { FC } from "react";
 import { useTheme as useMuiTheme } from "@mui/material";
 import ThemeChanger from "../components/ThemeChanger";
 import SelectNetwork from "../components/SelectNetwork";
@@ -179,7 +180,7 @@ const Layout: FC = ({ children }) => {
 
         <Stack justifyContent="flex-end" sx={{ flex: 1 }}>
           <Divider />
-          <Stack direction="row" justifyContent="center" sx={{m: 1}}>
+          <Stack direction="row" justifyContent="center" sx={{ m: 1 }}>
             <ThemeChanger></ThemeChanger>
           </Stack>
         </Stack>
@@ -202,7 +203,11 @@ const Layout: FC = ({ children }) => {
         anchor="right"
         open={transactionDrawerOpen}
       >
-        <DrawerHeader></DrawerHeader>
+        <DrawerHeader>
+          <Typography variant="body1" sx={{ m: 1 }}>
+            Notifications
+          </Typography>
+        </DrawerHeader>
         <Divider />
         <ReduxPersistGate>
           <TransactionList></TransactionList>

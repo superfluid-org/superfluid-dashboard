@@ -3,17 +3,19 @@ import {
   setFrameworkForSdkRedux,
   setSignerForSdkRedux,
 } from "@superfluid-finance/sdk-redux";
+import WalletConnectProvider from "@walletconnect/web3-provider";
 import { ethers } from "ethers";
 import { createContext, FC, useContext, useState } from "react";
 import { networks } from "../networks";
 import readOnlyFrameworks from "../readOnlyFrameworks";
 import { useAppDispatch } from "../redux/store";
+import Web3Modal from "web3modal";
 
 const WalletContext = createContext<{
   walletChainId: number | undefined;
   walletAddress: string | undefined;
   walletProvider: ethers.providers.Web3Provider | undefined;
-  setProvider: (provider: any) => void; // TODO(KK): ugly
+  connect: () => void; // TODO(KK): ugly
 }>(null!);
 
 export default WalletContext;
@@ -32,7 +34,21 @@ export const WalletContextProvider: FC = ({ children }) => {
         walletChainId: walletChainId,
         walletAddress: walletAddress,
         walletProvider: walletProvider,
-        setProvider: async (web3Provider) => {
+        connect: async () => {
+          const providerOptions = {
+            walletconnect: {
+              package: WalletConnectProvider,
+              options: {
+                infuraId: "fa4dab2732ac473b9a61b1d1b3b904fa",
+              },
+            },
+          };
+          const web3Modal = new Web3Modal({
+            cacheProvider: true,
+            providerOptions,
+          });
+          const web3Provider = await web3Modal.connect();
+
           const ethersProvider = new ethers.providers.Web3Provider(
             web3Provider
           );

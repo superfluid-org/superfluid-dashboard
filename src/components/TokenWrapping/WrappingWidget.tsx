@@ -1,11 +1,14 @@
-import {FC, useEffect, useState} from "react";
-import {SuperTokenDowngradeRecovery, SuperTokenUpgradeRecovery,} from "../../redux/transactionRecoveries";
-import {Card, Tab,} from "@mui/material";
-import {TabContext, TabList, TabPanel} from "@mui/lab";
-import {useRouter} from "next/router";
-import {useTransactionContext} from "../TransactionDrawer/TransactionContext";
-import {UpgradePanel} from "./UpgradePanel";
-import {DowgradePanel} from "./DowgradePanel";
+import { FC, useEffect, useState } from "react";
+import {
+  SuperTokenDowngradeRecovery,
+  SuperTokenUpgradeRecovery,
+} from "../../redux/transactionRecoveries";
+import { Card, Tab } from "@mui/material";
+import { TabContext, TabList, TabPanel } from "@mui/lab";
+import { useRouter } from "next/router";
+import { useTransactionContext } from "../TransactionDrawer/TransactionContext";
+import { UpgradePanel } from "./UpgradePanel";
+import { DowngradePanel } from "./DowngradePanel";
 
 export const WrappingWidget: FC<{
   tabValue: "upgrade" | "downgrade";
@@ -23,21 +26,29 @@ export const WrappingWidget: FC<{
     SuperTokenDowngradeRecovery | undefined
   >();
 
-  useEffect(() => {
-    if (transactionToRecover) {
-      switch (transactionToRecover.title) {
-        case "Upgrade to Super Token":
-          setUpgradeRecovery(transactionRecovery as SuperTokenUpgradeRecovery);
-          break;
-        case "Downgrade from Super Token":
-          setDowngradeRecovery(
-            transactionRecovery as SuperTokenDowngradeRecovery
-          );
-          break;
-      }
-    }
-    setTransactionToRecover(undefined);
-  }, []);
+//   useEffect(() => {
+//     if (transactionToRecover) {
+// console.log({ 
+//   transactionToRecover
+// })
+
+//       switch (transactionToRecover.title) {
+//         case "Upgrade to Super Token":
+//           setUpgradeRecovery(
+//             (transactionToRecover.extraData as any)
+//               .recovery as SuperTokenUpgradeRecovery
+//           );
+//           break;
+//         case "Downgrade from Super Token":
+//           setDowngradeRecovery(
+//             (transactionToRecover.extraData as any)
+//               .recovery as SuperTokenDowngradeRecovery
+//           );
+//           break;
+//       }
+//     }
+//     setTransactionToRecover(undefined);
+//   }, []);
 
   return (
     <Card
@@ -62,9 +73,9 @@ export const WrappingWidget: FC<{
         </TabPanel>
 
         <TabPanel value="downgrade">
-          <DowgradePanel
+          <DowngradePanel
             transactionRecovery={downgradeRecovery}
-          ></DowgradePanel>
+          ></DowngradePanel>
         </TabPanel>
       </TabContext>
     </Card>

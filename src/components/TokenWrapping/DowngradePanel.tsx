@@ -1,49 +1,19 @@
 import { FC, useEffect, useState } from "react";
-import { SuperTokenUpgradeRecovery } from "../../redux/transactionRecoveries";
+import { SuperTokenDowngradeRecovery } from "../../redux/transactionRecoveries";
 import { useNetworkContext } from "../../contexts/NetworkContext";
 import { useWalletContext } from "../../contexts/WalletContext";
 import { TokenUpgradeDowngradePair } from "../../redux/endpoints/adHocSubgraphEndpoints";
 import { BigNumber, ethers } from "ethers";
 import { rpcApi } from "../../redux/store";
-import { skipToken } from "@reduxjs/toolkit/query";
-import {
-  Button,
-  Chip,
-  CircularProgress,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Chip, Stack, TextField } from "@mui/material";
 import { TokenDialogChip } from "./TokenDialogChip";
 import TokenIcon from "../TokenIcon";
 import { TransactionButton } from "./TransactionButton";
+import { Balance } from "./UpgradePanel";
 import { useTransactionContext } from "../TransactionDrawer/TransactionContext";
 
-export const Balance: FC<{
-  chainId: number;
-  accountAddress: string;
-  tokenAddress: string;
-}> = ({ chainId, accountAddress, tokenAddress }) => {
-  const balanceOfQuery = rpcApi.useBalanceOfQuery({
-    chainId,
-    accountAddress,
-    tokenAddress,
-  });
-
-  return (
-    <Typography variant="body2">
-      Balance:{" "}
-      {balanceOfQuery.error ? (
-        "error"
-      ) : balanceOfQuery.isUninitialized || balanceOfQuery.isFetching ? "" : (
-        ethers.utils.formatEther(balanceOfQuery?.data ?? 0).toString()
-      )}
-    </Typography>
-  );
-};
-
-export const UpgradePanel: FC<{
-  transactionRecovery: SuperTokenUpgradeRecovery | undefined;
+export const DowngradePanel: FC<{
+  transactionRecovery: SuperTokenDowngradeRecovery | undefined;
 }> = ({ transactionRecovery }) => {
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
@@ -76,44 +46,16 @@ export const UpgradePanel: FC<{
     setSelectedToken(token);
   };
 
-  const allowanceQuery = rpcApi.useSuperTokenUpgradeAllowanceQuery(
-    selectedToken && walletAddress
-      ? {
-          chainId: network.chainId,
-          accountAddress: walletAddress,
-          superTokenAddress: selectedToken.superToken.address,
-        }
-      : skipToken
-  );
-
-  const currentAllowance = allowanceQuery.data
-    ? ethers.BigNumber.from(allowanceQuery.data)
-    : null;
-
-  const missingAllowance = currentAllowance
-    ? currentAllowance.gt(amount)
-      ? ethers.BigNumber.from(0)
-      : amountWei.sub(currentAllowance)
-    : null;
-
-  const [approveTrigger, approveResult] = rpcApi.useApproveMutation();
-  const [upgradeTrigger, upgradeResult] = rpcApi.useSuperTokenUpgradeMutation();
-
-
-  const isApproveAllowanceVisible =
-    !!(selectedToken &&
-    currentAllowance &&
-    missingAllowance &&
-    missingAllowance.gt(0));
-
-  const isUpgradeDisabled = !selectedToken || !!isApproveAllowanceVisible;
+  const [downgradeTrigger, downgradeResult] =
+    rpcApi.useSuperTokenDowngradeMutation();
+  const isDowngradeDisabled = !selectedToken || !amount;
 
   return (
     <Stack direction="column" spacing={2}>
       <Stack direction="column" spacing={1}>
         <Stack direction="row" justifyContent="space-between" spacing={2}>
           <TokenDialogChip
-            prioritizeSuperTokens={false}
+            prioritizeSuperTokens={true}
             _selectedToken={selectedToken}
             onChange={onTokenChange}
           />
@@ -129,13 +71,12 @@ export const UpgradePanel: FC<{
             <Balance
               chainId={network.chainId}
               accountAddress={walletAddress}
-              tokenAddress={selectedToken.underlyingToken.address}
+              tokenAddress={selectedToken.superToken.address}
             ></Balance>
           </Stack>
         )}
       </Stack>
-
-      <Stack sx={{ ...(!selectedToken ? { display: "none" } : {}) }}>
+      <Stack sx={{ display: selectedToken ? "" : "none" }}>
         <Stack direction="row" justifyContent="space-between" spacing={2}>
           <Chip
             icon={
@@ -148,7 +89,7 @@ export const UpgradePanel: FC<{
             label={
               <>
                 <Stack direction="row" alignItems="center">
-                  {selectedToken?.superToken.symbol ?? ""}
+                  {selectedToken?.underlyingToken.symbol ?? ""}
                 </Stack>
               </>
             }
@@ -160,61 +101,31 @@ export const UpgradePanel: FC<{
             <Balance
               chainId={network.chainId}
               accountAddress={walletAddress}
-              tokenAddress={selectedToken.superToken.address}
+              tokenAddress={selectedToken.underlyingToken.address}
             ></Balance>
           </Stack>
         )}
       </Stack>
-
-      {currentAllowance && (
-        <Typography>
-          Current allowance: {currentAllowance.toString()}
-        </Typography>
-      )}
-
-      {missingAllowance && (
-        <Typography>
-          Missing allowance: {missingAllowance.toString()}
-        </Typography>
-      )}
-
-      {isApproveAllowanceVisible && (
-        <TransactionButton
-          text="Approve Allowance"
-          mutationResult={approveResult}
-          onClick={async () => {
-            await approveTrigger({
-              chainId: network.chainId,
-              amountWei: currentAllowance.add(missingAllowance).toString(),
-              superTokenAddress: selectedToken.superToken.address,
-            });
-
-            setTransactionDrawerOpen(true);
-          }}
-          disabled={false}
-        />
-      )}
-
       <TransactionButton
-        text="Upgrade to super token"
-        disabled={isUpgradeDisabled}
-        mutationResult={upgradeResult}
+        text="Downgrade"
+        disabled={isDowngradeDisabled}
+        mutationResult={downgradeResult}
         onClick={async () => {
-          if (isUpgradeDisabled) {
+          if (isDowngradeDisabled) {
             throw Error(
               "This should never happen because the token and amount must be selected for the btton to be active."
             );
           }
 
-          const transactionRecovery: SuperTokenUpgradeRecovery = {
+          const transactionRecovery: SuperTokenDowngradeRecovery = {
             chainId: network.chainId,
             tokenUpgrade: selectedToken,
             amountWei: amountWei.toString(),
           };
 
-          await upgradeTrigger({
+          await downgradeTrigger({
             chainId: network.chainId,
-            amountWei: amount.toString(),
+            amountWei: amountWei.toString(),
             superTokenAddress: selectedToken.superToken.address,
             waitForConfirmation: true,
             transactionExtraData: {
@@ -223,8 +134,9 @@ export const UpgradePanel: FC<{
           });
 
           setTransactionDrawerOpen(true);
+
           setSelectedToken(undefined);
-          setAmount(0)
+          setAmount(0);
         }}
       />
     </Stack>

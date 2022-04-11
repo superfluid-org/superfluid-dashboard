@@ -1,6 +1,7 @@
 import {
   Avatar,
   Button,
+  LinearProgress,
   ListItem,
   ListItemAvatar,
   ListItemText,
@@ -96,6 +97,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
         primary={transaction.title}
         secondary={
           <>
+            {transaction.status === "Pending" && <LinearProgress />}
             <Typography
               sx={{ display: "block" }}
               component="span"
@@ -106,9 +108,9 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
             </Typography>
             {/* transaction.status === "Failed" &&  */}
 
-            <TransactionRecoveryButton
+            {/* <TransactionRecoveryButton
               transaction={transaction}
-            ></TransactionRecoveryButton>
+            ></TransactionRecoveryButton> */}
           </>
         }
       ></ListItemText>

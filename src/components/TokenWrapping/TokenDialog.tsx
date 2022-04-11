@@ -1,6 +1,7 @@
 import { FC, useCallback, useState, useMemo, useEffect } from "react";
 import { TokenUpgradeDowngradePair } from "../../redux/endpoints/adHocSubgraphEndpoints";
 import {
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -9,6 +10,7 @@ import {
   List,
   ListItem,
   ListItemButton,
+  Stack,
   TextField,
   Typography,
   useMediaQuery,
@@ -143,6 +145,30 @@ export const TokenDialog: FC<{
       </DialogTitle>
       <DialogContent dividers sx={{ p: 0 }}>
         <List>
+          {tokenPairsQuery.isLoading && (
+            <Stack
+              component={ListItem}
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              spacing={2}
+            >
+              <CircularProgress />
+            </Stack>
+          )}
+          {!tokenPairsQuery.isUninitialized &&
+            !tokenPairsQuery.isLoading &&
+            !searchedTokenPairs.length && (
+              <Stack
+                component={ListItem}
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+                spacing={2}
+              >
+                No tokens. :(
+              </Stack>
+            )}
           {searchedTokenPairs.map((x) => (
             <ListItem key={x.superToken.address} disablePadding>
               <ListItemButton onClick={() => onSelect(x)}>

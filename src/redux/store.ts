@@ -42,14 +42,14 @@ export const subgraphApi = initializeSubgraphApiSlice((options) =>
   .injectEndpoints(adHocSubgraphEndpoints);
 
 const subgraphApiPersistedReducer = persistReducer(
-  { storage, key: "subgraph-api", version: 1 },
+  { storage, key: "subgraph-api", version: 2 },
   subgraphApi.reducer
 );
 
 export const transactionTracker = initializeTransactionTrackerSlice();
 
 const transactionTrackerPersistedReducer = persistReducer(
-  { storage, key: "transactions", version: 1 },
+  { storage, key: "transactions", version: 2 },
   transactionTracker.reducer
 );
 
