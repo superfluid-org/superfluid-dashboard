@@ -120,7 +120,7 @@ export const TokenDialog: FC<{
               ethers.BigNumber.from(b.underlyingToken.balance ?? 0)
             )
       ),
-    [openCounter, tokenPairs] // Don't depend on balances query to avoid UI hopping.
+    [openCounter, tokenPairs.length] // Don't depend on balances query to avoid UI hopping.
   );
 
 
@@ -207,7 +207,7 @@ export const TokenDialog: FC<{
                 No tokens. :(
               </Stack>
             )}
-          {tokenPairs.length &&
+          {!!tokenPairs.length &&
             searchedTokenPairs.map((x) => (
               <ListItem key={x.superToken.address} disablePadding>
                 <ListItemButton onClick={() => onSelect(x)}>

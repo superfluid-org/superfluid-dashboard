@@ -60,7 +60,7 @@ export const SuperTokenBalance: FC<{
         accountTokenSnapshotQuery.isFetching ? (
         ""
       ) : !accountTokenSnapshotQuery.data ? (
-        "0.0"
+        ethers.utils.formatEther(0)
       ) : (
         <FlowingBalance
           balance={accountTokenSnapshotQuery.data.balanceUntilUpdatedAt}
