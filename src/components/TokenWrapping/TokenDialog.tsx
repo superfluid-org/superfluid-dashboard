@@ -49,42 +49,80 @@ export const TokenDialog: FC<{
     chainId: network.chainId,
   });
 
-  const balancesQuery = rpcApi.useMulticallQuery(
-    tokenPairsQuery.data && walletAddress
+  const underlyingTokenBalancesQuery = rpcApi.useBalanceOfMulticallQuery(
+    tokenPairsQuery.data && walletAddress && !prioritizeSuperTokens
       ? {
           chainId: network.chainId,
           accountAddress: walletAddress,
-          tokenAddresses: prioritizeSuperTokens
-            ? tokenPairsQuery.data.map((x) => x.superToken.address)
-            : tokenPairsQuery.data.map((x) => x.underlyingToken.address),
+          tokenAddresses: tokenPairsQuery.data.map(
+            (x) => x.underlyingToken.address
+          ),
         }
       : skipToken
   );
 
+  const underlyingTokenBalances = useMemo(
+    () => underlyingTokenBalancesQuery.data?.balances ?? {},
+    [underlyingTokenBalancesQuery.data]
+  );
+
+  const superTokenBalancesQuery = subgraphApi.useAccountTokenSnapshotsQuery(
+    tokenPairsQuery.data && walletAddress && prioritizeSuperTokens
+      ? {
+          chainId: network.chainId,
+          filter: {
+            account: walletAddress,
+            token_in: tokenPairsQuery.data.map((x) => x.superToken.address),
+          },
+          pagination: {
+            take: Infinity,
+          },
+        }
+      : skipToken
+  );
+
+  const superTokenBalances = useMemo(
+    () =>
+      superTokenBalancesQuery.data
+        ? Object.fromEntries(
+            superTokenBalancesQuery.data.items.map((x) => [
+              x.token,
+              x,
+            ])
+          )
+        : {},
+    [superTokenBalancesQuery.data]
+  );
+
   const tokenPairs = useMemo(
-    () => tokenPairsQuery.data ?? [],
-    [tokenPairsQuery.data]
+    () =>
+      tokenPairsQuery.data?.map((x) => ({
+        superToken: {
+          ...x.superToken,
+          balance: superTokenBalances[x.superToken.address]?.balanceUntilUpdatedAt,
+        },
+        underlyingToken: {
+          ...x.underlyingToken,
+          balance: underlyingTokenBalances[x.underlyingToken.address],
+        },
+      })) ?? [],
+    [tokenPairsQuery.data, superTokenBalances, underlyingTokenBalances]
   );
 
   const tokenPairsOrdered = useMemo(
     () =>
-      tokenPairs && balancesQuery.data
-        ? Object.entries(balancesQuery.data.balances)
-            .sort(
-              (a, b) =>
-                +ethers.BigNumber.from(a[1]).lt(ethers.BigNumber.from(b[1])) // TODO(KK): Not easy to read this line?
+      tokenPairs.sort((a, b) =>
+        prioritizeSuperTokens
+          ? +ethers.BigNumber.from(a.superToken.balance ?? 0).lt(
+              ethers.BigNumber.from(b.superToken.balance ?? 0)
             )
-            .map(
-              ([balanceAddress]) =>
-                tokenPairs.find((tokenPair) =>
-                  prioritizeSuperTokens
-                    ? tokenPair.superToken.address === balanceAddress
-                    : tokenPair.underlyingToken.address === balanceAddress
-                )!
+          : +ethers.BigNumber.from(a.underlyingToken.balance ?? 0).lt(
+              ethers.BigNumber.from(b.underlyingToken.balance ?? 0)
             )
-        : tokenPairs,
+      ),
     [openCounter, tokenPairs] // Don't depend on balances query to avoid UI hopping.
   );
+
 
   const [searchTerm, setSearchTerm] = useState(""); // No need to debounce here because it's all client-side.
 
@@ -169,39 +207,53 @@ export const TokenDialog: FC<{
                 No tokens. :(
               </Stack>
             )}
-          {searchedTokenPairs.map((x) => (
-            <ListItem key={x.superToken.address} disablePadding>
-              <ListItemButton onClick={() => onSelect(x)}>
-                {prioritizeSuperTokens ? (
-                  <TokenItem
-                    chainId={network.chainId}
-                    accountAddress={walletAddress}
-                    tokenAddress={x.superToken.address}
-                    tokenSymbol={x.superToken.symbol}
-                    tokenName={x.superToken.name}
-                    balanceWei={
-                      balancesQuery.data
-                        ? balancesQuery.data.balances[x.superToken.address]
-                        : undefined
-                    }
-                  />
-                ) : (
-                  <TokenItem
-                    chainId={network.chainId}
-                    accountAddress={walletAddress}
-                    tokenAddress={x.underlyingToken.address}
-                    tokenSymbol={x.underlyingToken.symbol}
-                    tokenName={x.underlyingToken.name}
-                    balanceWei={
-                      balancesQuery.data
-                        ? balancesQuery.data.balances[x.underlyingToken.address]
-                        : undefined
-                    }
-                  />
-                )}
-              </ListItemButton>
-            </ListItem>
-          ))}
+          {tokenPairs.length &&
+            searchedTokenPairs.map((x) => (
+              <ListItem key={x.superToken.address} disablePadding>
+                <ListItemButton onClick={() => onSelect(x)}>
+                  {prioritizeSuperTokens ? (
+                    <TokenItem
+                      chainId={network.chainId}
+                      accountAddress={walletAddress}
+                      tokenAddress={x.superToken.address}
+                      tokenSymbol={x.superToken.symbol}
+                      tokenName={x.superToken.name}
+                      balanceLoading={
+                        superTokenBalancesQuery.isUninitialized ||
+                        superTokenBalancesQuery.isLoading
+                      }
+                      balanceWei={
+                        superTokenBalances[x.superToken.address]
+                          ?.balanceUntilUpdatedAt
+                      }
+                      balanceTimestamp={
+                        superTokenBalances[x.superToken.address]
+                          ?.updatedAtTimestamp
+                      }
+                      flowRate={
+                        superTokenBalances[x.superToken.address]
+                          ?.totalNetFlowRate
+                      }
+                    />
+                  ) : (
+                    <TokenItem
+                      chainId={network.chainId}
+                      accountAddress={walletAddress}
+                      tokenAddress={x.underlyingToken.address}
+                      tokenSymbol={x.underlyingToken.symbol}
+                      tokenName={x.underlyingToken.name}
+                      balanceLoading={
+                        underlyingTokenBalancesQuery.isUninitialized ||
+                        underlyingTokenBalancesQuery.isLoading
+                      }
+                      balanceWei={
+                        underlyingTokenBalances[x.underlyingToken.address]
+                      }
+                    />
+                  )}
+                </ListItemButton>
+              </ListItem>
+            ))}
         </List>
       </DialogContent>
       <DialogActions></DialogActions>

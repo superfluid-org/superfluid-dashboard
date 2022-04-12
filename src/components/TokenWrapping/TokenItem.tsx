@@ -1,7 +1,10 @@
-import {CircularProgress, Stack, Typography,} from "@mui/material";
-import {FC} from "react";
-import {ethers} from "ethers";
+import { CircularProgress, Stack, Typography } from "@mui/material";
+import { FC } from "react";
 import TokenIcon from "../TokenIcon";
+import EtherFormatted from "../EtherFormatted";
+import FlowingBalance from "../FlowingBalance";
+
+const etherDecimalPlaces = 8;
 
 export const TokenItem: FC<{
   chainId?: number;
@@ -9,14 +12,20 @@ export const TokenItem: FC<{
   tokenAddress: string;
   tokenSymbol: string;
   tokenName: string;
+  balanceLoading: boolean;
   balanceWei?: string;
+  balanceTimestamp?: number;
+  flowRate?: string;
 }> = ({
   chainId,
   accountAddress,
   tokenAddress,
   tokenSymbol,
   tokenName,
+  balanceLoading,
   balanceWei,
+  balanceTimestamp,
+  flowRate,
 }) => {
   return (
     <Stack
@@ -39,9 +48,23 @@ export const TokenItem: FC<{
         {!!accountAddress && (
           <Typography variant="body1">
             {balanceWei ? (
-              ethers.utils.formatEther(balanceWei)
-            ) : (
+              balanceTimestamp && flowRate ? (
+                <FlowingBalance
+                  balance={balanceWei}
+                  balanceTimestamp={balanceTimestamp}
+                  flowRate={flowRate}
+                  etherDecimalPlaces={etherDecimalPlaces}
+                />
+              ) : (
+                <EtherFormatted
+                  wei={balanceWei}
+                  etherDecimalPlaces={etherDecimalPlaces}
+                />
+              )
+            ) : balanceLoading ? (
               <CircularProgress />
+            ) : (
+              <EtherFormatted wei={0} />
             )}
           </Typography>
         )}
@@ -49,5 +72,3 @@ export const TokenItem: FC<{
     </Stack>
   );
 };
-
-

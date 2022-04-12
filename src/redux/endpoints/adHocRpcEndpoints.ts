@@ -1,5 +1,6 @@
-import { SpeakerGroup } from "@mui/icons-material";
-import { ERC20Token } from "@superfluid-finance/sdk-core";
+import {
+  ERC20Token
+} from "@superfluid-finance/sdk-core";
 import {
   getFramework,
   TransactionInfo,
@@ -10,7 +11,7 @@ import {
 
 declare module "@superfluid-finance/sdk-redux" {
   interface TransactionTitleOverrides {
-    "Approve Allowance": true
+    "Approve Allowance": true;
   }
 }
 
@@ -30,13 +31,40 @@ export const adHocRpcEndpoints = {
         };
       },
     }),
+    realtimeBalanceOfNow: builder.query<
+    {
+      availableBalance: string;
+      deposit: string;
+      owedDeposit: string;
+      timestampMs: number;
+    },
+      { chainId: number; tokenAddress: string; accountAddress: string }
+    >({
+      queryFn: async (arg) => {
+        const framework = await getFramework(arg.chainId);
+        const superToken = await framework.loadSuperToken(arg.tokenAddress);
+        const realtimeBalanceOfNow = await superToken.realtimeBalanceOf({
+          account: arg.accountAddress,
+          providerOrSigner: framework.settings.provider,
+          timestamp: Date.now(), // No need to worry about timezones here.
+        });
+        return {
+          data: {
+            availableBalance: realtimeBalanceOfNow.availableBalance,
+            deposit: realtimeBalanceOfNow.deposit,
+            owedDeposit: realtimeBalanceOfNow.owedDeposit,
+            timestampMs: realtimeBalanceOfNow.timestamp.getTime()
+          },
+        };
+      },
+    }),
     approve: builder.mutation<
       TransactionInfo,
       {
         chainId: number;
         superTokenAddress: string;
         amountWei: string;
-        waitForcConfirmation?: boolean;
+        waitForConfirmation?: boolean;
       }
     >({
       queryFn: async (arg, queryApi) => {
@@ -57,10 +85,10 @@ export const adHocRpcEndpoints = {
           transactionResponse,
           chainId: arg.chainId,
           signer: await signer.getAddress(),
-          waitForConfirmation: !!arg.waitForcConfirmation,
+          waitForConfirmation: !!arg.waitForConfirmation,
           dispatch: queryApi.dispatch,
           title: "Approve Allowance",
-          extraData: undefined
+          extraData: undefined,
         });
       },
     }),

@@ -4,18 +4,15 @@ import { useNetworkContext } from "../../contexts/NetworkContext";
 import { useWalletContext } from "../../contexts/WalletContext";
 import { TokenUpgradeDowngradePair } from "../../redux/endpoints/adHocSubgraphEndpoints";
 import { BigNumber, ethers } from "ethers";
-import { rpcApi } from "../../redux/store";
+import { rpcApi, subgraphApi } from "../../redux/store";
 import { skipToken } from "@reduxjs/toolkit/query";
-import {
-  Chip,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Chip, Stack, TextField, Typography } from "@mui/material";
 import { TokenDialogChip } from "./TokenDialogChip";
 import TokenIcon from "../TokenIcon";
 import { TransactionButton } from "./TransactionButton";
 import { useTransactionContext } from "../TransactionDrawer/TransactionContext";
+import FlowingBalance from "../FlowingBalance";
+import EtherFormatted from "../EtherFormatted";
 
 export const Balance: FC<{
   chainId: number;
@@ -31,11 +28,46 @@ export const Balance: FC<{
   return (
     <Typography variant="body2">
       Balance:{" "}
-      {balanceOfQuery.error
-        ? "error"
-        : balanceOfQuery.isUninitialized || balanceOfQuery.isFetching
-        ? ""
-        : ethers.utils.formatEther(balanceOfQuery?.data ?? 0).toString()}
+      {balanceOfQuery.error ? (
+        "error"
+      ) : balanceOfQuery.isUninitialized || balanceOfQuery.isFetching ? (
+        ""
+      ) : (
+        <EtherFormatted
+          wei={ethers.BigNumber.from(balanceOfQuery?.data ?? 0).toString()}
+        />
+      )}
+    </Typography>
+  );
+};
+
+export const SuperTokenBalance: FC<{
+  chainId: number;
+  accountAddress: string;
+  tokenAddress: string;
+}> = ({ chainId, accountAddress, tokenAddress }) => {
+  const accountTokenSnapshotQuery = subgraphApi.useAccountTokenSnapshotQuery({
+    chainId,
+    id: `${accountAddress}-${tokenAddress}`.toLowerCase(),
+  });
+
+  return (
+    <Typography variant="body2">
+      Balance:{" "}
+      {accountTokenSnapshotQuery.error ? (
+        "error"
+      ) : accountTokenSnapshotQuery.isUninitialized ||
+        accountTokenSnapshotQuery.isFetching ? (
+        ""
+      ) : !accountTokenSnapshotQuery.data ? (
+        "0.0"
+      ) : (
+        <FlowingBalance
+          balance={accountTokenSnapshotQuery.data.balanceUntilUpdatedAt}
+          balanceTimestamp={accountTokenSnapshotQuery.data.updatedAtTimestamp}
+          flowRate={accountTokenSnapshotQuery.data.totalNetFlowRate}
+        />
+      )}
     </Typography>
   );
 };
@@ -105,11 +137,12 @@ export const UpgradePanel: FC<{
     missingAllowance.gt(0)
   );
 
-  const isUpgradeDisabled = !selectedToken || amountWei.isZero() || !!isApproveAllowanceVisible;
+  const isUpgradeDisabled =
+    !selectedToken || amountWei.isZero() || !!isApproveAllowanceVisible;
 
   const amountInputRef = useRef<HTMLInputElement>(undefined!);
   useEffect(() => {
-    amountInputRef.current.focus()
+    amountInputRef.current.focus();
   }, [amountInputRef, selectedToken]);
 
   return (
@@ -162,11 +195,11 @@ export const UpgradePanel: FC<{
         </Stack>
         {selectedToken && walletAddress && (
           <Stack direction="row-reverse">
-            <Balance
+            <SuperTokenBalance
               chainId={network.chainId}
               accountAddress={walletAddress}
               tokenAddress={selectedToken.superToken.address}
-            ></Balance>
+            ></SuperTokenBalance>
           </Stack>
         )}
       </Stack>

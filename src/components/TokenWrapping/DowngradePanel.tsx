@@ -9,7 +9,7 @@ import { Chip, Stack, TextField } from "@mui/material";
 import { TokenDialogChip } from "./TokenDialogChip";
 import TokenIcon from "../TokenIcon";
 import { TransactionButton } from "./TransactionButton";
-import { Balance } from "./UpgradePanel";
+import { Balance, SuperTokenBalance } from "./UpgradePanel";
 import { useTransactionContext } from "../TransactionDrawer/TransactionContext";
 
 export const DowngradePanel: FC<{
@@ -74,11 +74,11 @@ export const DowngradePanel: FC<{
         </Stack>
         {selectedToken && walletAddress && (
           <Stack direction="row-reverse">
-            <Balance
+            <SuperTokenBalance
               chainId={network.chainId}
               accountAddress={walletAddress}
               tokenAddress={selectedToken.superToken.address}
-            ></Balance>
+            ></SuperTokenBalance>
           </Stack>
         )}
       </Stack>

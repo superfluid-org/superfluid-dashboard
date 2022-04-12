@@ -1,13 +1,15 @@
 import {
   getFramework,
   RpcEndpointBuilder,
-} from '@superfluid-finance/sdk-redux';
-import { ContractCallContext, Multicall } from 'ethereum-multicall';
-import { ethers } from 'ethers';
+} from "@superfluid-finance/sdk-redux";
+import { ContractCallContext, Multicall } from "ethereum-multicall";
+import { ethers } from "ethers";
+
+const multicallContractAddress = "0xcA11bde05977b3631167028862bE2a173976CA11";
 
 export const adHocMulticallEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
-    multicall: builder.query<
+    balanceOfMulticall: builder.query<
       { balances: Record<string, string> },
       { chainId: number; accountAddress: string; tokenAddresses: string[] }
     >({
@@ -16,8 +18,7 @@ export const adHocMulticallEndpoints = {
         const multicall = new Multicall({
           ethersProvider: framework.settings.provider,
           tryAggregate: true,
-          multicallCustomContractAddress:
-            '0xcA11bde05977b3631167028862bE2a173976CA11',
+          multicallCustomContractAddress: multicallContractAddress,
         });
 
         const contractCalls: ContractCallContext[] = arg.tokenAddresses.map(
@@ -29,30 +30,30 @@ export const adHocMulticallEndpoints = {
                 constant: true,
                 inputs: [
                   {
-                    name: '_owner',
-                    type: 'address',
+                    name: "_owner",
+                    type: "address",
                   },
                 ],
-                name: 'balanceOf',
+                name: "balanceOf",
                 outputs: [
                   {
-                    name: 'balance',
-                    type: 'uint256',
+                    name: "balance",
+                    type: "uint256",
                   },
                 ],
                 payable: false,
-                stateMutability: 'view',
-                type: 'function',
+                stateMutability: "view",
+                type: "function",
               },
             ],
             calls: [
               {
-                reference: 'balanceOfCall',
-                methodName: 'balanceOf',
+                reference: "balanceOfCall",
+                methodName: "balanceOf",
                 methodParameters: [ethers.utils.getAddress(arg.accountAddress)],
               },
             ],
-          }),
+          })
         );
 
         const call = await multicall.call(contractCalls);
@@ -61,9 +62,9 @@ export const adHocMulticallEndpoints = {
           Object.entries(call.results).map(([key, value]) => [
             key,
             ethers.BigNumber.from(
-              value.callsReturnContext[0].returnValues[0].hex,
+              value.callsReturnContext[0].returnValues[0].hex
             ).toString(),
-          ]),
+          ])
         );
 
         return {
@@ -72,6 +73,6 @@ export const adHocMulticallEndpoints = {
           },
         };
       },
-    }),
+    })
   }),
 };
