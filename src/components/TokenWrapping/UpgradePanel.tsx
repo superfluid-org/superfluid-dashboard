@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { SuperTokenUpgradeRecovery } from "../../redux/transactionRecoveries";
 import { useNetworkContext } from "../../contexts/NetworkContext";
 import { useWalletContext } from "../../contexts/WalletContext";
@@ -7,9 +7,7 @@ import { BigNumber, ethers } from "ethers";
 import { rpcApi } from "../../redux/store";
 import { skipToken } from "@reduxjs/toolkit/query";
 import {
-  Button,
   Chip,
-  CircularProgress,
   Stack,
   TextField,
   Typography,
@@ -33,11 +31,11 @@ export const Balance: FC<{
   return (
     <Typography variant="body2">
       Balance:{" "}
-      {balanceOfQuery.error ? (
-        "error"
-      ) : balanceOfQuery.isUninitialized || balanceOfQuery.isFetching ? "" : (
-        ethers.utils.formatEther(balanceOfQuery?.data ?? 0).toString()
-      )}
+      {balanceOfQuery.error
+        ? "error"
+        : balanceOfQuery.isUninitialized || balanceOfQuery.isFetching
+        ? ""
+        : ethers.utils.formatEther(balanceOfQuery?.data ?? 0).toString()}
     </Typography>
   );
 };
@@ -53,21 +51,21 @@ export const UpgradePanel: FC<{
     TokenUpgradeDowngradePair | undefined
   >();
 
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<string>("");
   const [amountWei, setAmountWei] = useState<BigNumber>(
-    ethers.BigNumber.from(amount)
+    ethers.BigNumber.from(0)
   );
 
-  useEffect(
-    () => setAmountWei(ethers.BigNumber.from(amount.toString())),
-    [amount]
-  );
+  useEffect(() => {
+    const amountNumber = Number(amount) || 0;
+    setAmountWei(ethers.BigNumber.from(amountNumber));
+  }, [amount]);
 
   useEffect(() => {
     if (transactionRecovery) {
       setSelectedToken(transactionRecovery.tokenUpgrade);
       setAmount(
-        Number(ethers.utils.formatUnits(transactionRecovery.amountWei, "ether"))
+        ethers.utils.formatUnits(transactionRecovery.amountWei, "ether")
       );
     }
   }, [transactionRecovery]);
@@ -91,7 +89,7 @@ export const UpgradePanel: FC<{
     : null;
 
   const missingAllowance = currentAllowance
-    ? currentAllowance.gt(amount)
+    ? currentAllowance.gt(amountWei)
       ? ethers.BigNumber.from(0)
       : amountWei.sub(currentAllowance)
     : null;
@@ -99,14 +97,20 @@ export const UpgradePanel: FC<{
   const [approveTrigger, approveResult] = rpcApi.useApproveMutation();
   const [upgradeTrigger, upgradeResult] = rpcApi.useSuperTokenUpgradeMutation();
 
-
-  const isApproveAllowanceVisible =
-    !!(selectedToken &&
+  const isApproveAllowanceVisible = !!(
+    selectedToken &&
+    !amountWei.isZero() &&
     currentAllowance &&
     missingAllowance &&
-    missingAllowance.gt(0));
+    missingAllowance.gt(0)
+  );
 
-  const isUpgradeDisabled = !selectedToken || !!isApproveAllowanceVisible;
+  const isUpgradeDisabled = !selectedToken || amountWei.isZero() || !!isApproveAllowanceVisible;
+
+  const amountInputRef = useRef<HTMLInputElement>(undefined!);
+  useEffect(() => {
+    amountInputRef.current.focus()
+  }, [amountInputRef, selectedToken]);
 
   return (
     <Stack direction="column" spacing={2}>
@@ -119,8 +123,9 @@ export const UpgradePanel: FC<{
           />
           <TextField
             disabled={!selectedToken}
+            inputRef={amountInputRef}
             value={amount}
-            onChange={(e) => setAmount(Number(e.currentTarget.value))}
+            onChange={(e) => setAmount(e.currentTarget.value)}
             sx={{ border: 0, width: "50%" }}
           />
         </Stack>
@@ -224,7 +229,7 @@ export const UpgradePanel: FC<{
 
           setTransactionDrawerOpen(true);
           setSelectedToken(undefined);
-          setAmount(0)
+          setAmount("");
         }}
       />
     </Stack>

@@ -132,7 +132,7 @@ export const TokenDialog: FC<{
         </IconButton>
         <TextField
           value={searchTerm}
-          autoFocus={true}
+          autoFocus
           placeholder="Search name or symbol"
           fullWidth={true}
           variant="outlined"

@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { SuperTokenDowngradeRecovery } from "../../redux/transactionRecoveries";
 import { useNetworkContext } from "../../contexts/NetworkContext";
 import { useWalletContext } from "../../contexts/WalletContext";
@@ -23,21 +23,21 @@ export const DowngradePanel: FC<{
     TokenUpgradeDowngradePair | undefined
   >();
 
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<string>("");
   const [amountWei, setAmountWei] = useState<BigNumber>(
-    ethers.BigNumber.from(amount)
+    ethers.BigNumber.from(0)
   );
 
-  useEffect(
-    () => setAmountWei(ethers.BigNumber.from(amount.toString())),
-    [amount]
-  );
+  useEffect(() => {
+    const amountNumber = Number(amount) || 0;
+    setAmountWei(ethers.BigNumber.from(amountNumber));
+  }, [amount]);
 
   useEffect(() => {
     if (transactionRecovery) {
       setSelectedToken(transactionRecovery.tokenUpgrade);
       setAmount(
-        Number(ethers.utils.formatUnits(transactionRecovery.amountWei, "ether"))
+        ethers.utils.formatUnits(transactionRecovery.amountWei, "ether")
       );
     }
   }, [transactionRecovery]);
@@ -48,7 +48,12 @@ export const DowngradePanel: FC<{
 
   const [downgradeTrigger, downgradeResult] =
     rpcApi.useSuperTokenDowngradeMutation();
-  const isDowngradeDisabled = !selectedToken || !amount;
+  const isDowngradeDisabled = !selectedToken || amountWei.isZero();
+
+  const amountInputRef = useRef<HTMLInputElement>(undefined!);
+  useEffect(() => {
+    amountInputRef.current.focus();
+  }, [amountInputRef, selectedToken]);
 
   return (
     <Stack direction="column" spacing={2}>
@@ -60,9 +65,10 @@ export const DowngradePanel: FC<{
             onChange={onTokenChange}
           />
           <TextField
+            inputRef={amountInputRef}
             disabled={!selectedToken}
             value={amount}
-            onChange={(e) => setAmount(Number(e.currentTarget.value))}
+            onChange={(e) => setAmount(e.currentTarget.value)}
             sx={{ border: 0, width: "50%" }}
           />
         </Stack>
@@ -136,7 +142,7 @@ export const DowngradePanel: FC<{
           setTransactionDrawerOpen(true);
 
           setSelectedToken(undefined);
-          setAmount(0);
+          setAmount("");
         }}
       />
     </Stack>
