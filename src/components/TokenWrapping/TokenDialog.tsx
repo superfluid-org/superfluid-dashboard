@@ -36,6 +36,10 @@ export const TokenDialog: FC<{
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
 
+  console.log({
+    walletAddress
+  })
+
   const [openCounter, setOpenCounter] = useState(0);
 
   useEffect(() => {

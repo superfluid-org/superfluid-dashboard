@@ -5,7 +5,7 @@ import {
 } from "@superfluid-finance/sdk-redux";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { ethers } from "ethers";
-import { createContext, FC, useContext, useState } from "react";
+import { createContext, FC, useContext, useEffect, useState } from "react";
 import { networks } from "../networks";
 import readOnlyFrameworks from "../readOnlyFrameworks";
 import { useAppDispatch } from "../redux/store";
@@ -28,6 +28,39 @@ export const WalletContextProvider: FC = ({ children }) => {
   const [walletChainId, setWalletChainId] = useState<number | undefined>();
   const dispatch = useAppDispatch();
 
+  // TODO(KK): Ugly any?
+  const onWalletProvider = async (
+    walletProvder: ethers.providers.Web3Provider
+  ) => {
+    const chainId = (await walletProvder.getNetwork()).chainId;
+    const address = await walletProvder.getSigner().getAddress();
+
+    readOnlyFrameworks.map((x) =>
+      setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
+    );
+
+    setSignerForSdkRedux(chainId, () =>
+      Promise.resolve(walletProvder.getSigner())
+    );
+
+    setWalletProvider(walletProvder);
+
+    if (chainId !== walletChainId) {
+      setWalletChainId(chainId);
+    }
+
+    if (address !== walletAddress) {
+      setWalletAddress(address);
+    }
+
+    dispatch(
+      initiateOldPendingTransactionsTrackingThunk({
+        chainIds: networks.map((x) => x.chainId),
+        signerAddress: address,
+      }) as any
+    ); // TODO(weird version mismatch):
+  };
+
   return (
     <WalletContext.Provider
       value={{
@@ -47,56 +80,18 @@ export const WalletContextProvider: FC = ({ children }) => {
             cacheProvider: true,
             providerOptions,
           });
+
+          // NOTE: This is caught in closures.
           const web3Provider = await web3Modal.connect();
 
-          const ethersProvider = new ethers.providers.Web3Provider(
-            web3Provider
-          );
+          onWalletProvider(new ethers.providers.Web3Provider(web3Provider));
 
-          const chainId = (await ethersProvider.getNetwork()).chainId;
-          const address = await ethersProvider.getSigner().getAddress();
-          setWalletChainId(chainId);
-          setWalletAddress(address);
-          setWalletProvider(ethersProvider);
-          setSignerForSdkRedux(Number(chainId), () =>
-            Promise.resolve(ethersProvider.getSigner())
-          );
-
-          readOnlyFrameworks.map((x) =>
-            setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
-          );
-
-          dispatch(
-            initiateOldPendingTransactionsTrackingThunk({
-              chainIds: networks.map((x) => x.chainId),
-              signerAddress: address,
-            }) as any
-          ); // TODO(weird version mismatch):
-
-          web3Provider.on("accountsChanged", (accounts: string[]) => {
-            setWalletAddress(accounts[0]);
-
-            setSignerForSdkRedux(chainId, () =>
-              Promise.resolve(ethersProvider.getSigner())
-            );
-
-            dispatch(
-              initiateOldPendingTransactionsTrackingThunk({
-                chainIds: networks.map((x) => x.chainId),
-                signerAddress: address,
-              }) as any
-            ); // TODO(weird version mismatch):
+          web3Provider.on("accountsChanged", async (accounts: string[]) => {
+            onWalletProvider(new ethers.providers.Web3Provider(web3Provider));
           });
 
-          web3Provider.on("chainChanged", (chainId: number) => {
-            readOnlyFrameworks.map((x) =>
-              setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
-            );
-
-            setWalletChainId(Number(chainId)); // Chain ID might be coming in hex.
-            setSignerForSdkRedux(Number(chainId), () =>
-              Promise.resolve(ethersProvider.getSigner())
-            );
+          web3Provider.on("chainChanged", async (chainId: number) => {
+            onWalletProvider(new ethers.providers.Web3Provider(web3Provider));
           });
         },
       }}
