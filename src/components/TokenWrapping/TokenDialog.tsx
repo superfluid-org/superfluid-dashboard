@@ -36,10 +36,6 @@ export const TokenDialog: FC<{
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
 
-  console.log({
-    walletAddress
-  })
-
   const [openCounter, setOpenCounter] = useState(0);
 
   useEffect(() => {
@@ -47,6 +43,7 @@ export const TokenDialog: FC<{
       setOpenCounter(openCounter + 1);
       setSearchTerm("");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
@@ -89,10 +86,7 @@ export const TokenDialog: FC<{
     () =>
       superTokenBalancesQuery.data
         ? Object.fromEntries(
-            superTokenBalancesQuery.data.items.map((x) => [
-              x.token,
-              x,
-            ])
+            superTokenBalancesQuery.data.items.map((x) => [x.token, x])
           )
         : {},
     [superTokenBalancesQuery.data]
@@ -103,7 +97,8 @@ export const TokenDialog: FC<{
       tokenPairsQuery.data?.map((x) => ({
         superToken: {
           ...x.superToken,
-          balance: superTokenBalances[x.superToken.address]?.balanceUntilUpdatedAt,
+          balance:
+            superTokenBalances[x.superToken.address]?.balanceUntilUpdatedAt,
         },
         underlyingToken: {
           ...x.underlyingToken,
@@ -124,9 +119,9 @@ export const TokenDialog: FC<{
               ethers.BigNumber.from(b.underlyingToken.balance ?? 0)
             )
       ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [openCounter, tokenPairs.length] // Don't depend on balances query to avoid UI hopping.
   );
-
 
   const [searchTerm, setSearchTerm] = useState(""); // No need to debounce here because it's all client-side.
 
