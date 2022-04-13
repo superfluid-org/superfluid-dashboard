@@ -8,13 +8,14 @@ import {
   Typography,
 } from "@mui/material";
 import { TrackedTransaction } from "@superfluid-finance/sdk-redux";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import DoneIcon from "@mui/icons-material/Done";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import CloseIcon from "@mui/icons-material/Close";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import { useRouter } from "next/router";
 import { useTransactionContext } from "./TransactionContext";
+import shortenAddress from "../../shortenAddress";
 
 const TransactionListItemAvatar: FC<{ transaction: TrackedTransaction }> = ({
   transaction,
@@ -86,6 +87,8 @@ const TransactionRecoveryButton: FC<{
 const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
   transaction,
 }) => {
+  const shortenedHash = useMemo(() => shortenAddress(transaction.hash), [transaction]);
+
   return (
     <ListItem button alignItems="flex-start">
       <ListItemAvatar>
@@ -104,7 +107,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
               variant="body2"
               color="text.primary"
             >
-              {transaction.hash}
+              {shortenedHash}
             </Typography>
             {/* transaction.status === "Failed" &&  */}
 
