@@ -2,21 +2,30 @@ import { FC } from "react";
 import { useWalletContext } from "../../contexts/WalletContext";
 import { useNetworkContext } from "../../contexts/NetworkContext";
 import { Button, ButtonProps, CircularProgress } from "@mui/material";
+import { TransactionInfo } from "@superfluid-finance/sdk-redux";
+import { useTransactionContext } from "../TransactionDrawer/TransactionContext";
 
 export const TransactionButton: FC<{
-  text: string;
+  text: string; // TODO(KK): Rename to button text
   disabled: boolean;
   mutationResult: { isLoading: boolean };
-  onClick: () => void;
+  onClick: () => {
+    infoText: string;
+    trigger: () => Promise<TransactionInfo>;
+    clean?: () => void;
+  };
   ButtonProps?: ButtonProps;
 }> = ({ text, disabled, mutationResult: { isLoading }, onClick }) => {
   const { walletAddress, walletChainId, connect } = useWalletContext();
   const { network } = useNetworkContext();
+  const { triggerTransaction } = useTransactionContext();
 
   if (disabled) {
-    return <Button color="primary" variant="contained" disabled={true}>
-      {text}
-    </Button>;
+    return (
+      <Button color="primary" variant="contained" disabled={true}>
+        {text}
+      </Button>
+    );
   }
 
   if (!walletAddress) {
@@ -51,7 +60,13 @@ export const TransactionButton: FC<{
       variant="contained"
       disabled={disabled}
       fullWidth={true}
-      onClick={onClick}
+      onClick={async () => {
+        const { trigger, infoText } = onClick();
+        triggerTransaction({
+          trigger,
+          description: infoText,
+        });
+      }}
     >
       {isLoading ? <CircularProgress /> : text}
     </Button>

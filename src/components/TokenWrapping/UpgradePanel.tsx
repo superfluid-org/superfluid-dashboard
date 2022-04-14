@@ -10,7 +10,6 @@ import { Chip, Stack, TextField, Typography } from "@mui/material";
 import { TokenDialogChip } from "./TokenDialogChip";
 import TokenIcon from "../TokenIcon";
 import { TransactionButton } from "./TransactionButton";
-import { useTransactionContext } from "../TransactionDrawer/TransactionContext";
 import FlowingBalance from "../FlowingBalance";
 import EtherFormatted from "../EtherFormatted";
 
@@ -30,7 +29,7 @@ export const Balance: FC<{
       Balance:{" "}
       {balanceOfQuery.error ? (
         "error"
-      ) : balanceOfQuery.isUninitialized || balanceOfQuery.isFetching ? (
+      ) : balanceOfQuery.isUninitialized || balanceOfQuery.isLoading ? (
         ""
       ) : (
         <EtherFormatted
@@ -57,7 +56,7 @@ export const SuperTokenBalance: FC<{
       {accountTokenSnapshotQuery.error ? (
         "error"
       ) : accountTokenSnapshotQuery.isUninitialized ||
-        accountTokenSnapshotQuery.isFetching ? (
+        accountTokenSnapshotQuery.isLoading ? (
         ""
       ) : !accountTokenSnapshotQuery.data ? (
         ethers.utils.formatEther(0)
@@ -77,7 +76,6 @@ export const UpgradePanel: FC<{
 }> = ({ transactionRecovery }) => {
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
-  const { setTransactionDrawerOpen } = useTransactionContext();
 
   const [selectedToken, setSelectedToken] = useState<
     TokenUpgradeDowngradePair | undefined
@@ -90,15 +88,13 @@ export const UpgradePanel: FC<{
 
   useEffect(() => {
     const amountNumber = Number(amount) || 0;
-    setAmountWei(ethers.BigNumber.from(amountNumber));
+    setAmountWei(ethers.utils.parseEther(amountNumber.toString()));
   }, [amount]);
 
   useEffect(() => {
     if (transactionRecovery) {
       setSelectedToken(transactionRecovery.tokenUpgrade);
-      setAmount(
-        ethers.utils.formatUnits(transactionRecovery.amountWei, "ether")
-      );
+      setAmount(ethers.utils.formatEther(transactionRecovery.amountWei));
     }
   }, [transactionRecovery]);
 
@@ -156,6 +152,7 @@ export const UpgradePanel: FC<{
           />
           <TextField
             disabled={!selectedToken}
+            placeholder="0.0"
             inputRef={amountInputRef}
             value={amount}
             onChange={(e) => setAmount(e.currentTarget.value)}
@@ -191,7 +188,12 @@ export const UpgradePanel: FC<{
               </>
             }
           ></Chip>
-          <TextField disabled value={amount} sx={{ width: "50%" }} />
+          <TextField
+            disabled
+            placeholder="0.0"
+            value={amount}
+            sx={{ width: "50%" }}
+          />
         </Stack>
         {selectedToken && walletAddress && (
           <Stack direction="row-reverse">
@@ -204,15 +206,10 @@ export const UpgradePanel: FC<{
         )}
       </Stack>
 
-      {currentAllowance && (
+      {missingAllowance?.gt(0) && (
         <Typography>
-          Current allowance: {currentAllowance.toString()}
-        </Typography>
-      )}
-
-      {missingAllowance && (
-        <Typography>
-          Missing allowance: {missingAllowance.toString()}
+          Missing allowance:{" "}
+          {ethers.utils.formatEther(missingAllowance.toString())}
         </Typography>
       )}
 
@@ -220,49 +217,63 @@ export const UpgradePanel: FC<{
         <TransactionButton
           text="Approve Allowance"
           mutationResult={approveResult}
-          onClick={async () => {
-            await approveTrigger({
-              chainId: network.chainId,
-              amountWei: currentAllowance.add(missingAllowance).toString(),
-              superTokenAddress: selectedToken.superToken.address,
-            });
-
-            setTransactionDrawerOpen(true);
-          }}
           disabled={false}
+          onClick={() => {
+            const infoText = `You are approving extra allowance of ${ethers.utils.formatEther(
+              amountWei
+            )} ${
+              selectedToken?.underlyingToken.symbol
+            } for Superfluid Protocol to use.`;
+
+            return {
+              infoText,
+              trigger: () =>
+                approveTrigger({
+                  chainId: network.chainId,
+                  amountWei: currentAllowance.add(missingAllowance).toString(),
+                  superTokenAddress: selectedToken.superToken.address,
+                }).unwrap(),
+            };
+          }}
         />
       )}
 
       <TransactionButton
-        text="Upgrade to super token"
+        text="Upgrade to Super Token"
         disabled={isUpgradeDisabled}
         mutationResult={upgradeResult}
-        onClick={async () => {
+        onClick={() => {
           if (isUpgradeDisabled) {
             throw Error(
               "This should never happen because the token and amount must be selected for the btton to be active."
             );
           }
 
-          const transactionRecovery: SuperTokenUpgradeRecovery = {
-            chainId: network.chainId,
-            tokenUpgrade: selectedToken,
-            amountWei: amountWei.toString(),
+          const infoText = `Upgrade from ${ethers.utils.formatEther(
+            amountWei
+          )} ${selectedToken.underlyingToken.symbol} to the super token ${
+            selectedToken.superToken.symbol
+          }.`;
+
+          return {
+            infoText,
+            trigger: () =>
+              upgradeTrigger({
+                chainId: network.chainId,
+                amountWei: amountWei.toString(),
+                superTokenAddress: selectedToken.superToken.address,
+                waitForConfirmation: true,
+                transactionExtraData: {
+                  recovery: {
+                    chainId: network.chainId,
+                    tokenUpgrade: selectedToken,
+                    amountWei: amountWei.toString(),
+                  } as SuperTokenUpgradeRecovery,
+                  infoText: infoText,
+                },
+              }).unwrap(),
+            clean: () => setAmount(""),
           };
-
-          await upgradeTrigger({
-            chainId: network.chainId,
-            amountWei: amount.toString(),
-            superTokenAddress: selectedToken.superToken.address,
-            waitForConfirmation: true,
-            transactionExtraData: {
-              recovery: transactionRecovery,
-            },
-          });
-
-          setTransactionDrawerOpen(true);
-          setSelectedToken(undefined);
-          setAmount("");
         }}
       />
     </Stack>

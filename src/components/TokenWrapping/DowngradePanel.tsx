@@ -11,13 +11,13 @@ import TokenIcon from "../TokenIcon";
 import { TransactionButton } from "./TransactionButton";
 import { Balance, SuperTokenBalance } from "./UpgradePanel";
 import { useTransactionContext } from "../TransactionDrawer/TransactionContext";
+import CloseIcon from "@mui/icons-material/Close";
 
 export const DowngradePanel: FC<{
   transactionRecovery: SuperTokenDowngradeRecovery | undefined;
 }> = ({ transactionRecovery }) => {
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
-  const { setTransactionDrawerOpen } = useTransactionContext();
 
   const [selectedToken, setSelectedToken] = useState<
     TokenUpgradeDowngradePair | undefined
@@ -30,15 +30,13 @@ export const DowngradePanel: FC<{
 
   useEffect(() => {
     const amountNumber = Number(amount) || 0;
-    setAmountWei(ethers.BigNumber.from(amountNumber));
+    setAmountWei(ethers.utils.parseEther(amountNumber.toString()));
   }, [amount]);
 
   useEffect(() => {
     if (transactionRecovery) {
       setSelectedToken(transactionRecovery.tokenUpgrade);
-      setAmount(
-        ethers.utils.formatUnits(transactionRecovery.amountWei, "ether")
-      );
+      setAmount(ethers.utils.formatEther(transactionRecovery.amountWei));
     }
   }, [transactionRecovery]);
 
@@ -100,7 +98,12 @@ export const DowngradePanel: FC<{
               </>
             }
           ></Chip>
-          <TextField disabled value={amount} sx={{ width: "50%" }} />
+          <TextField
+            disabled
+            placeholder="0.0"
+            value={amount}
+            sx={{ width: "50%" }}
+          />
         </Stack>
         {selectedToken && walletAddress && (
           <Stack direction="row-reverse">
@@ -116,33 +119,38 @@ export const DowngradePanel: FC<{
         text="Downgrade"
         disabled={isDowngradeDisabled}
         mutationResult={downgradeResult}
-        onClick={async () => {
+        onClick={() => {
           if (isDowngradeDisabled) {
             throw Error(
-              "This should never happen because the token and amount must be selected for the btton to be active."
+              "This should never happen because the token and amount must be selected for the button to be active."
             );
           }
 
-          const transactionRecovery: SuperTokenDowngradeRecovery = {
-            chainId: network.chainId,
-            tokenUpgrade: selectedToken,
-            amountWei: amountWei.toString(),
+          const infoText = `You are downgrading from ${ethers.utils.formatEther(
+            amountWei
+          )} ${selectedToken?.superToken.symbol} to the underlying token ${
+            selectedToken?.superToken.symbol
+          }.`;
+
+          return {
+            infoText,
+            trigger: () =>
+              downgradeTrigger({
+                chainId: network.chainId,
+                amountWei: amountWei.toString(),
+                superTokenAddress: selectedToken.superToken.address,
+                waitForConfirmation: true,
+                transactionExtraData: {
+                  recovery: {
+                    chainId: network.chainId,
+                    tokenUpgrade: selectedToken,
+                    amountWei: amountWei.toString(),
+                  } as SuperTokenDowngradeRecovery,
+                  infoText,
+                },
+              }).unwrap(),
+            clean: () => setAmount(""),
           };
-
-          await downgradeTrigger({
-            chainId: network.chainId,
-            amountWei: amountWei.toString(),
-            superTokenAddress: selectedToken.superToken.address,
-            waitForConfirmation: true,
-            transactionExtraData: {
-              recovery: transactionRecovery,
-            },
-          });
-
-          setTransactionDrawerOpen(true);
-
-          setSelectedToken(undefined);
-          setAmount("");
         }}
       />
     </Stack>
