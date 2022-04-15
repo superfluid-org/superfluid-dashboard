@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 interface TokenManifest {
   version: string;
@@ -14,7 +14,7 @@ interface TokenManifest {
 
 const useTokenManifest = (symbol: string): TokenManifest | null => {
   const [tokenManifest, setTokenManifest] = useState<TokenManifest | null>(
-    null,
+    null
   );
 
   useEffect(() => {
@@ -22,13 +22,18 @@ const useTokenManifest = (symbol: string): TokenManifest | null => {
     axios
       .get(
         `https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/${symbol.toLowerCase()}/manifest.json`,
+        {
+          validateStatus: (status) => status !== 404, // Don't worry about 404-s because not all tokens have the manifest.
+        }
       )
       .then((response) => {
         if (response.status === 200) {
           setTokenManifest(response.data);
         }
       })
-      .catch((e) => console.error(e));
+      .catch((e) => {
+        console.error(e);
+      });
   }, [symbol]);
   return tokenManifest;
 };
