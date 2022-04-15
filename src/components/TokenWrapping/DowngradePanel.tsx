@@ -10,8 +10,6 @@ import { TokenDialogChip } from "./TokenDialogChip";
 import TokenIcon from "../TokenIcon";
 import { TransactionButton } from "./TransactionButton";
 import { Balance, SuperTokenBalance } from "./UpgradePanel";
-import { useTransactionContext } from "../TransactionDrawer/TransactionContext";
-import CloseIcon from "@mui/icons-material/Close";
 
 export const DowngradePanel: FC<{
   transactionRecovery: SuperTokenDowngradeRecovery | undefined;
@@ -63,6 +61,7 @@ export const DowngradePanel: FC<{
             onChange={onTokenChange}
           />
           <TextField
+            placeholder="0.0"
             inputRef={amountInputRef}
             disabled={!selectedToken}
             value={amount}

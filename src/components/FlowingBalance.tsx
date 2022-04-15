@@ -1,4 +1,4 @@
-import { FC, ReactElement, useEffect, useMemo, useState } from "react";
+import { FC, memo, ReactElement, useEffect, useMemo, useState } from "react";
 import { BigNumberish, ethers } from "ethers";
 import { Box } from "@mui/material";
 import EtherFormatted from "./EtherFormatted";
@@ -12,15 +12,15 @@ export interface FlowingBalanceProps {
    */
   balanceTimestamp: number;
   flowRate: string;
-  etherDecimalPlaces?: number
+  etherDecimalPlaces?: number;
 }
 
-const FlowingBalance: FC<FlowingBalanceProps> = ({
+export default memo(function FlowingBalance({
   balance,
   balanceTimestamp,
   flowRate,
-  etherDecimalPlaces
-}): ReactElement => {
+  etherDecimalPlaces,
+}: FlowingBalanceProps): ReactElement {
   const [weiValue, setWeiValue] = useState<BigNumberish>(balance);
 
   const balanceTimestampMs = useMemo(
@@ -86,6 +86,4 @@ const FlowingBalance: FC<FlowingBalanceProps> = ({
       <EtherFormatted wei={weiValue} etherDecimalPlaces={etherDecimalPlaces} />
     </Box>
   );
-};
-
-export default FlowingBalance;
+});

@@ -62,7 +62,7 @@ export const TokenItem: FC<{
                 />
               )
             ) : balanceLoading ? (
-              <CircularProgress />
+              null // We could show something else for loading... but I feel like the spinners draw too much attention in this case. 
             ) : (
               <EtherFormatted wei={0} />
             )}
