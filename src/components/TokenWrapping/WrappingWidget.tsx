@@ -26,29 +26,23 @@ export const WrappingWidget: FC<{
     SuperTokenDowngradeRecovery | undefined
   >();
 
-//   useEffect(() => {
-//     if (transactionToRecover) {
-// console.log({ 
-//   transactionToRecover
-// })
-
-//       switch (transactionToRecover.title) {
-//         case "Upgrade to Super Token":
-//           setUpgradeRecovery(
-//             (transactionToRecover.extraData as any)
-//               .recovery as SuperTokenUpgradeRecovery
-//           );
-//           break;
-//         case "Downgrade from Super Token":
-//           setDowngradeRecovery(
-//             (transactionToRecover.extraData as any)
-//               .recovery as SuperTokenDowngradeRecovery
-//           );
-//           break;
-//       }
-//     }
-//     setTransactionToRecover(undefined);
-//   }, []);
+  useEffect(() => {
+    if (transactionToRecover) {
+      switch (transactionToRecover.title) {
+        case "Upgrade to Super Token":
+          setUpgradeRecovery(
+            transactionToRecover.extraData.recovery as SuperTokenUpgradeRecovery
+          );
+          break;
+        case "Downgrade from Super Token":
+          setDowngradeRecovery(
+            transactionToRecover.extraData.recovery as SuperTokenDowngradeRecovery
+          );
+          break;
+      }
+    }
+    setTransactionToRecover(undefined);
+  }, []);
 
   return (
     <Card
@@ -65,7 +59,7 @@ export const WrappingWidget: FC<{
           aria-label="tabs"
         >
           <Tab data-cy={"streams-tab"} label="Upgrade" value="upgrade" />
-          <Tab data-cy={"indexes-tab"} label="Downgrade" value="downgrade" />
+          <Tab data-cy={"indexes-tab"} label="Downgrade" value="downgrade" />+
         </TabList>
 
         <TabPanel value="upgrade">

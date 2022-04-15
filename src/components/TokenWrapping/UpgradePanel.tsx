@@ -87,8 +87,7 @@ export const UpgradePanel: FC<{
   );
 
   useEffect(() => {
-    const amountNumber = Number(amount) || 0;
-    setAmountWei(ethers.utils.parseEther(amountNumber.toString()));
+    setAmountWei(ethers.utils.parseEther(Number(amount) ? amount : "0"));
   }, [amount]);
 
   useEffect(() => {

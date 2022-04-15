@@ -111,9 +111,9 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
             </Typography>
             {/* transaction.status === "Failed" &&  */}
 
-            {/* <TransactionRecoveryButton
+            <TransactionRecoveryButton
               transaction={transaction}
-            ></TransactionRecoveryButton> */}
+            ></TransactionRecoveryButton>
           </>
         }
       ></ListItemText>
