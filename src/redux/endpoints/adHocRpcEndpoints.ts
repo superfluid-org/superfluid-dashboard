@@ -30,6 +30,10 @@ export const adHocRpcEndpoints = {
           }),
         };
       },
+      providesTags: (_result, _error, arg) => [ {
+        type: "Event",
+        id: arg.chainId // TODO(KK): Could be made more specific.
+      }],
     }),
     realtimeBalanceOfNow: builder.query<
     {
@@ -91,6 +95,10 @@ export const adHocRpcEndpoints = {
           extraData: undefined,
         });
       },
+      providesTags: (_result, _error, arg) => [ {
+        type: "Event",
+        id: arg.chainId // TODO(KK): Could be made more specific.
+      }],
     }),
   }),
 };

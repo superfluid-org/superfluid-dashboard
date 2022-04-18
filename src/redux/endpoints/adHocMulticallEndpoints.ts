@@ -73,6 +73,10 @@ export const adHocMulticallEndpoints = {
           },
         };
       },
+      providesTags: (_result, _error, arg) => [ {
+        type: "Event",
+        id: arg.chainId // TODO(KK): Could be made more specific.
+      }],
     })
   }),
 };
