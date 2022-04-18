@@ -4,7 +4,6 @@ import {
   Card,
   Divider,
   Drawer,
-  IconButton,
   List,
   ListItem,
   ListItemIcon,
@@ -21,12 +20,12 @@ import { useTheme as useMuiTheme } from "@mui/material";
 import ThemeChanger from "../components/ThemeChanger";
 import SelectNetwork from "../components/SelectNetwork";
 import Link from "next/link";
-import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import TransactionList from "../components/TransactionDrawer/TransactionList";
 import ReduxPersistGate from "./ReduxPersistGate";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import AutoAwesomeMosaicIcon from "@mui/icons-material/AutoAwesomeMosaic";
 import { useTransactionDrawerContext } from "./TransactionDrawer/TransactionDrawerContext";
+import { TransactionBell } from "./TransactionBell";
 
 const menuDrawerWidth = 240;
 const transactionDrawerWidth = 480;
@@ -79,8 +78,7 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
 const Layout: FC = ({ children }) => {
   const muiTheme = useMuiTheme();
 
-  const { transactionDrawerOpen, setTransactionDrawerOpen } =
-    useTransactionDrawerContext();
+  const { transactionDrawerOpen } = useTransactionDrawerContext();
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -105,14 +103,7 @@ const Layout: FC = ({ children }) => {
             <Stack direction="row" spacing={2}>
               <SelectNetwork></SelectNetwork>
               <ConnectWallet></ConnectWallet>
-              <IconButton
-                color="primary"
-                aria-label="open drawer"
-                edge="end"
-                onClick={() => setTransactionDrawerOpen(!transactionDrawerOpen)}
-              >
-                <NotificationsOutlinedIcon />
-              </IconButton>
+              <TransactionBell />
             </Stack>
           </Card>
         </Stack>
