@@ -24,9 +24,9 @@ import Link from "next/link";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import TransactionList from "../components/TransactionDrawer/TransactionList";
 import ReduxPersistGate from "./ReduxPersistGate";
-import { useTransactionContext } from "./TransactionDrawer/TransactionContext";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import AutoAwesomeMosaicIcon from "@mui/icons-material/AutoAwesomeMosaic";
+import { useTransactionDrawerContext } from "./TransactionDrawer/TransactionDrawerContext";
 
 const menuDrawerWidth = 240;
 const transactionDrawerWidth = 480;
@@ -80,7 +80,7 @@ const Layout: FC = ({ children }) => {
   const muiTheme = useMuiTheme();
 
   const { transactionDrawerOpen, setTransactionDrawerOpen } =
-    useTransactionContext();
+    useTransactionDrawerContext();
 
   return (
     <Box sx={{ display: "flex" }}>

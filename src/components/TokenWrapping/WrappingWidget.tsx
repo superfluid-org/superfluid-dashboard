@@ -6,17 +6,17 @@ import {
 import { Card, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { useRouter } from "next/router";
-import { useTransactionContext } from "../TransactionDrawer/TransactionContext";
 import { UpgradePanel } from "./UpgradePanel";
 import { DowngradePanel } from "./DowngradePanel";
+import { useTransactionRecoveryContext } from "../TransactionDrawer/TransactionRecoveryContext";
 
 export const WrappingWidget: FC<{
   tabValue: "upgrade" | "downgrade";
 }> = ({ tabValue }) => {
   const router = useRouter();
 
-  const { transactionToRecover, transactionRecovery, setTransactionToRecover } =
-    useTransactionContext();
+  const { transactionToRecover, setTransactionToRecover } =
+    useTransactionRecoveryContext();
 
   const [upgradeRecovery, setUpgradeRecovery] = useState<
     SuperTokenUpgradeRecovery | undefined
@@ -42,7 +42,7 @@ export const WrappingWidget: FC<{
       }
     }
     setTransactionToRecover(undefined);
-  }, []);
+  }, [setUpgradeRecovery, setDowngradeRecovery, setTransactionToRecover]);
 
   return (
     <Card

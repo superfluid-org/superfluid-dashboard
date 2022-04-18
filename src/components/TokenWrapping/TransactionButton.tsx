@@ -3,7 +3,7 @@ import { useWalletContext } from "../../contexts/WalletContext";
 import { useNetworkContext } from "../../contexts/NetworkContext";
 import { Button, ButtonProps, CircularProgress } from "@mui/material";
 import { TransactionInfo } from "@superfluid-finance/sdk-redux";
-import { useTransactionContext } from "../TransactionDrawer/TransactionContext";
+import { useTransactionDialogContext } from "../TransactionDrawer/TransactionDialogContext";
 
 export const TransactionButton: FC<{
   text: string; // TODO(KK): Rename to button text
@@ -18,7 +18,7 @@ export const TransactionButton: FC<{
 }> = ({ text, disabled, mutationResult: { isLoading }, onClick }) => {
   const { walletAddress, walletChainId, connect } = useWalletContext();
   const { network } = useNetworkContext();
-  const { triggerTransaction } = useTransactionContext();
+  const { triggerTransaction } = useTransactionDialogContext();
 
   if (disabled) {
     return (

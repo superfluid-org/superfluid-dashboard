@@ -12,7 +12,9 @@ import { WalletContextProvider } from "../contexts/WalletContext";
 import ReduxProvider from "../redux/ReduxProvider";
 import ReduxPersistGate from "../components/ReduxPersistGate";
 import NextThemesProvider from "../components/NextThemesProvider";
-import { TransactionContextProvider } from "../components/TransactionDrawer/TransactionContext";
+import { TransactionDrawerContextProvider } from "../components/TransactionDrawer/TransactionDrawerContext";
+import { TransactionRecoveryContextProvider } from "../components/TransactionDrawer/TransactionRecoveryContext";
+import { TransactionDialogContextProvider } from "../components/TransactionDrawer/TransactionDialogContext";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -44,13 +46,17 @@ export default function MyApp(props: MyAppProps) {
             <NetworkContextProvider>
               {(network) => (
                 <WalletContextProvider>
-                  <TransactionContextProvider>
-                    <Layout>
-                      <ReduxPersistGate>
-                        <Component key={network.chainId} {...pageProps} />
-                      </ReduxPersistGate>
-                    </Layout>
-                  </TransactionContextProvider>
+                  <TransactionRecoveryContextProvider>
+                    <TransactionDrawerContextProvider>
+                      <Layout>
+                        <ReduxPersistGate>
+                          <TransactionDialogContextProvider>
+                            <Component key={network.chainId} {...pageProps} />
+                          </TransactionDialogContextProvider>
+                        </ReduxPersistGate>
+                      </Layout>
+                    </TransactionDrawerContextProvider>
+                  </TransactionRecoveryContextProvider>
                 </WalletContextProvider>
               )}
             </NetworkContextProvider>
