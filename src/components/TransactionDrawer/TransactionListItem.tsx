@@ -25,7 +25,7 @@ const TransactionListItemAvatar: FC<{ transaction: TrackedTransaction }> = ({
       return (
         <Avatar sx={{ bgcolor: "yellow" }}>
           <MoreHorizIcon></MoreHorizIcon>
-        </Avatar>
+        </Avatar> 
       );
     case "Succeeded":
       return (
@@ -64,7 +64,7 @@ const TransactionRecoveryButton: FC<{
             router.push("/downgrade");
           }}
         >
-          Recover
+          Restore
         </Button>
       );
     case "Upgrade to Super Token":
@@ -76,7 +76,7 @@ const TransactionRecoveryButton: FC<{
             router.push("/upgrade");
           }}
         >
-          Recover
+          Restore
         </Button>
       );
     default:
