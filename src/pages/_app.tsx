@@ -5,16 +5,16 @@ import createEmotionCache from "../createEmotionCache";
 import { useEffect } from "react";
 import { setFrameworkForSdkRedux } from "@superfluid-finance/sdk-redux";
 import readOnlyFrameworks from "../readOnlyFrameworks";
-import Layout from "../components/Layout";
-import MuiProvider from "../components/MuiProvider";
-import { NetworkContextProvider } from "../contexts/NetworkContext";
-import { WalletContextProvider } from "../contexts/WalletContext";
+import Layout from "../components/Theme/Layout";
+import MuiProvider from "../components/Theme/MuiProvider";
+import { NetworkContextProvider } from "../components/Network/NetworkContext";
+import { WalletContextProvider } from "../components/Wallet/WalletContext";
 import ReduxProvider from "../redux/ReduxProvider";
-import ReduxPersistGate from "../components/ReduxPersistGate";
-import NextThemesProvider from "../components/NextThemesProvider";
-import { TransactionDrawerContextProvider } from "../components/TransactionDrawer/TransactionDrawerContext";
+import ReduxPersistGate from "../redux/ReduxPersistGate";
+import NextThemesProvider from "../components/Theme/NextThemesProvider";
+import { TransactionDialogContextProvider } from "../components/Transactions/TransactionDialogContext";
 import { TransactionRecoveryContextProvider } from "../components/TransactionDrawer/TransactionRecoveryContext";
-import { TransactionDialogContextProvider } from "../components/TransactionDrawer/TransactionDialogContext";
+import { TransactionDrawerContextProvider } from "../components/TransactionDrawer/TransactionDrawerContext";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();

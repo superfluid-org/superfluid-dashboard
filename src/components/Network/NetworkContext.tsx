@@ -1,5 +1,5 @@
 import { createContext, FC, ReactNode, useContext, useState } from "react";
-import { Network, networksByChainId } from "../networks";
+import { Network, networksByChainId } from "../../networks";
 
 const NetworkContext = createContext<{
   network: Network;

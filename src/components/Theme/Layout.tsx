@@ -14,18 +14,18 @@ import {
 } from "@mui/material";
 import ListItemText from "@mui/material/ListItemText";
 import Image from "next/image";
-import ConnectWallet from "../components/ConnectWallet";
+import ConnectWallet from "../Wallet/ConnectWallet";
 import { FC } from "react";
 import { useTheme as useMuiTheme } from "@mui/material";
-import ThemeChanger from "../components/ThemeChanger";
-import SelectNetwork from "../components/SelectNetwork";
+import ThemeChanger from "./ThemeChanger";
+import SelectNetwork from "../Network/SelectNetwork";
 import Link from "next/link";
-import TransactionList from "../components/TransactionDrawer/TransactionList";
-import ReduxPersistGate from "./ReduxPersistGate";
+import ReduxPersistGate from "../../redux/ReduxPersistGate";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import AutoAwesomeMosaicIcon from "@mui/icons-material/AutoAwesomeMosaic";
-import { useTransactionDrawerContext } from "./TransactionDrawer/TransactionDrawerContext";
-import { TransactionBell } from "./TransactionBell";
+import { TransactionBell } from "../Transactions/TransactionBell";
+import TransactionList from "../TransactionDrawer/TransactionList";
+import { useTransactionDrawerContext } from "../TransactionDrawer/TransactionDrawerContext";
 
 const menuDrawerWidth = 240;
 const transactionDrawerWidth = 480;

@@ -1,8 +1,8 @@
 import { Button, Menu, MenuItem } from "@mui/material";
 import { normalize } from "path/posix";
 import { FC, useState } from "react";
-import { useNetworkContext } from "../contexts/NetworkContext";
-import { networks } from "../networks";
+import { useNetworkContext } from "./NetworkContext";
+import { networks } from "../../networks";
 
 export default function SelectNetwork() {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);

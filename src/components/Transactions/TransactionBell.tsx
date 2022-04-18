@@ -1,10 +1,10 @@
 import { Badge, IconButton } from "@mui/material";
 import { transactionSelectors } from "@superfluid-finance/sdk-redux";
-import { useWalletContext } from "../contexts/WalletContext";
-import { useAppSelector } from "../redux/store";
-import { useTransactionDrawerContext } from "./TransactionDrawer/TransactionDrawerContext";
+import { useWalletContext } from "../Wallet/WalletContext";
+import { useAppSelector } from "../../redux/store";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import { FC } from "react";
+import { useTransactionDrawerContext } from "../TransactionDrawer/TransactionDrawerContext";
 
 export const TransactionBell: FC = () => {
   const { walletAddress } = useWalletContext();

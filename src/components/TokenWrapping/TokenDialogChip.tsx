@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { TokenUpgradeDowngradePair } from "../../redux/endpoints/adHocSubgraphEndpoints";
 import { Chip, Stack } from "@mui/material";
-import TokenIcon from "../TokenIcon";
+import TokenIcon from "../Token/TokenIcon";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { TokenDialog } from "./TokenDialog";
 

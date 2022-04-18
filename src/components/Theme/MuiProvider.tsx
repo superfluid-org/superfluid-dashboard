@@ -2,7 +2,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { Box, Theme } from "@mui/material";
 import { FC, useEffect, useState, useMemo, ReactNode } from "react";
-import { createSuperfluidMuiTheme } from "../theme";
+import { createSuperfluidMuiTheme } from "../../theme";
 import { useTheme as useThemeNextThemes } from "next-themes";
 
 const MuiProvider: FC = ({ children }) => {

@@ -3,9 +3,9 @@ import {
     TransactionInfo,
   } from "@superfluid-finance/sdk-redux";
   import { createContext, FC, useContext, useState } from "react";
-  import { useNetworkContext } from "../../contexts/NetworkContext";
-  import { TransactionRecoveries } from "../../redux/transactionRecoveries";
-  import { TransactionDialog } from "../TokenWrapping/TransactionDialog";
+import { useNetworkContext } from "../Network/NetworkContext";
+import { TransactionRecoveries } from "../../redux/transactionRecoveries";
+import { TransactionDialog } from "../Transactions/TransactionDialog";
   
   const TransactionRecoveryContext = createContext<{
     transactionToRecover: TrackedTransaction | undefined;

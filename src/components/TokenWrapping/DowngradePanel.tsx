@@ -1,14 +1,14 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { SuperTokenDowngradeRecovery } from "../../redux/transactionRecoveries";
-import { useNetworkContext } from "../../contexts/NetworkContext";
-import { useWalletContext } from "../../contexts/WalletContext";
+import { useNetworkContext } from "../Network/NetworkContext";
+import { useWalletContext } from "../Wallet/WalletContext";
 import { TokenUpgradeDowngradePair } from "../../redux/endpoints/adHocSubgraphEndpoints";
 import { BigNumber, ethers } from "ethers";
 import { rpcApi } from "../../redux/store";
 import { Chip, Stack, TextField } from "@mui/material";
 import { TokenDialogChip } from "./TokenDialogChip";
-import TokenIcon from "../TokenIcon";
-import { TransactionButton } from "./TransactionButton";
+import TokenIcon from "../Token/TokenIcon";
+import { TransactionButton } from "../Transactions/TransactionButton";
 import { Balance, SuperTokenBalance } from "./UpgradePanel";
 
 export const DowngradePanel: FC<{

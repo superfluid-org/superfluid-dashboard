@@ -1,6 +1,6 @@
 import { FC } from "react";
 import Image from "next/image";
-import useTokenManifest from "../hooks/useTokenManifest";
+import useTokenManifest from "../../hooks/useTokenManifest";
 import CircleIcon from "@mui/icons-material/Circle";
 
 const TokenIcon: FC<{

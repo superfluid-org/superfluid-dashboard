@@ -1,9 +1,9 @@
 import { FC } from "react";
-import { useWalletContext } from "../../contexts/WalletContext";
-import { useNetworkContext } from "../../contexts/NetworkContext";
+import { useWalletContext } from "../Wallet/WalletContext";
+import { useNetworkContext } from "../Network/NetworkContext";
 import { Button, ButtonProps, CircularProgress } from "@mui/material";
 import { TransactionInfo } from "@superfluid-finance/sdk-redux";
-import { useTransactionDialogContext } from "../TransactionDrawer/TransactionDialogContext";
+import { useTransactionDialogContext } from "./TransactionDialogContext";
 
 export const TransactionButton: FC<{
   text: string; // TODO(KK): Rename to button text

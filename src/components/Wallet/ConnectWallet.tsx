@@ -1,8 +1,8 @@
 import { Button, Stack, Typography } from "@mui/material";
 import { FC, useMemo } from "react";
-import { useNetworkContext } from "../contexts/NetworkContext";
-import { useWalletContext } from "../contexts/WalletContext";
-import shortenAddress from "../shortenAddress";
+import { useNetworkContext } from "../Network/NetworkContext";
+import { useWalletContext } from "./WalletContext";
+import shortenAddress from "../../shortenAddress";
 
 const ConnectWallet: FC = () => {
   const { network } = useNetworkContext();

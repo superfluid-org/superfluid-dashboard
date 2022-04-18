@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { PersistGate } from "redux-persist/integration/react";
-import { reduxPersistor } from "../redux/store";
+import { reduxPersistor } from "./store";
 
 /**
  * Waits for Redux state to be restored from persistance.

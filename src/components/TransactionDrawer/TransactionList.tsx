@@ -1,9 +1,9 @@
 import { List } from "@mui/material";
 import { transactionSelectors } from "@superfluid-finance/sdk-redux";
 import { FC } from "react";
-import { useWalletContext } from "../../contexts/WalletContext";
-import { useAppSelector } from "../../redux/store";
 import TransactionListItem from "./TransactionListItem";
+import {useWalletContext} from "../Wallet/WalletContext";
+import {useAppSelector} from "../../redux/store";
 
 const TransactionList: FC = () => {
   const { walletAddress } = useWalletContext();

@@ -2,7 +2,7 @@ import {
     TransactionInfo,
   } from "@superfluid-finance/sdk-redux";
   import { createContext, FC, useContext, useState } from "react";
-  import { TransactionDialog } from "../TokenWrapping/TransactionDialog";
+  import { TransactionDialog } from "./TransactionDialog";
   
   const TransactionDialogContext = createContext<{
     triggerTransaction: (params: {

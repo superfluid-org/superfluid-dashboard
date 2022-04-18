@@ -14,8 +14,8 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import CloseIcon from "@mui/icons-material/Close";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import { useRouter } from "next/router";
+import {useTransactionRecoveryContext} from "./TransactionRecoveryContext";
 import shortenAddress from "../../shortenAddress";
-import { useTransactionRecoveryContext } from "./TransactionRecoveryContext";
 
 const TransactionListItemAvatar: FC<{ transaction: TrackedTransaction }> = ({
   transaction,

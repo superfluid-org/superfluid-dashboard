@@ -1,8 +1,8 @@
 import { Stack, Typography } from "@mui/material";
 import { FC } from "react";
-import TokenIcon from "../TokenIcon";
-import EtherFormatted from "../EtherFormatted";
-import FlowingBalance from "../FlowingBalance";
+import TokenIcon from "../Token/TokenIcon";
+import EtherFormatted from "../Token/EtherFormatted";
+import FlowingBalance from "../Token/FlowingBalance";
 
 const etherDecimalPlaces = 8;
 

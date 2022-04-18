@@ -6,9 +6,9 @@ import {
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { ethers } from "ethers";
 import { createContext, FC, useContext, useEffect, useState } from "react";
-import { networks } from "../networks";
-import readOnlyFrameworks from "../readOnlyFrameworks";
-import { useAppDispatch } from "../redux/store";
+import { networks } from "../../networks";
+import readOnlyFrameworks from "../../readOnlyFrameworks";
+import { useAppDispatch } from "../../redux/store";
 import Web3Modal from "web3modal";
 
 const WalletContext = createContext<{

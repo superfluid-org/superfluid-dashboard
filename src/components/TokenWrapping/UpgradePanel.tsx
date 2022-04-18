@@ -1,17 +1,17 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { SuperTokenUpgradeRecovery } from "../../redux/transactionRecoveries";
-import { useNetworkContext } from "../../contexts/NetworkContext";
-import { useWalletContext } from "../../contexts/WalletContext";
+import { useNetworkContext } from "../Network/NetworkContext";
+import { useWalletContext } from "../Wallet/WalletContext";
 import { TokenUpgradeDowngradePair } from "../../redux/endpoints/adHocSubgraphEndpoints";
 import { BigNumber, ethers } from "ethers";
 import { rpcApi, subgraphApi } from "../../redux/store";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { Chip, Stack, TextField, Typography } from "@mui/material";
 import { TokenDialogChip } from "./TokenDialogChip";
-import TokenIcon from "../TokenIcon";
-import { TransactionButton } from "./TransactionButton";
-import FlowingBalance from "../FlowingBalance";
-import EtherFormatted from "../EtherFormatted";
+import TokenIcon from "../Token/TokenIcon";
+import { TransactionButton } from "../Transactions/TransactionButton";
+import FlowingBalance from "../Token/FlowingBalance";
+import EtherFormatted from "../Token/EtherFormatted";
 
 export const Balance: FC<{
   chainId: number;

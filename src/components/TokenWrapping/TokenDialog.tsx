@@ -16,8 +16,8 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useNetworkContext } from "../../contexts/NetworkContext";
-import { useWalletContext } from "../../contexts/WalletContext";
+import { useNetworkContext } from "../Network/NetworkContext";
+import { useWalletContext } from "../Wallet/WalletContext";
 import { rpcApi, subgraphApi } from "../../redux/store";
 import { skipToken } from "@reduxjs/toolkit/query";
 import Fuse from "fuse.js";
