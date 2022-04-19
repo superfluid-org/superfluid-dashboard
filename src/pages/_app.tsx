@@ -1,20 +1,20 @@
 import Head from "next/head";
 import { AppProps } from "next/app";
 import { CacheProvider, EmotionCache } from "@emotion/react";
-import createEmotionCache from "../createEmotionCache";
+import createEmotionCache from "../features/theme/createEmotionCache";
 import { useEffect } from "react";
 import { setFrameworkForSdkRedux } from "@superfluid-finance/sdk-redux";
-import readOnlyFrameworks from "../readOnlyFrameworks";
-import Layout from "../components/Theme/Layout";
-import MuiProvider from "../components/Theme/MuiProvider";
-import { NetworkContextProvider } from "../components/Network/NetworkContext";
-import { WalletContextProvider } from "../components/Wallet/WalletContext";
-import ReduxProvider from "../redux/ReduxProvider";
-import ReduxPersistGate from "../redux/ReduxPersistGate";
-import NextThemesProvider from "../components/Theme/NextThemesProvider";
-import { TransactionDialogContextProvider } from "../components/Transactions/TransactionDialogContext";
-import { TransactionRecoveryContextProvider } from "../components/TransactionDrawer/TransactionRecoveryContext";
-import { TransactionDrawerContextProvider } from "../components/TransactionDrawer/TransactionDrawerContext";
+import readOnlyFrameworks from "../features/network/readOnlyFrameworks";
+import Layout from "../layout/Layout";
+import MuiProvider from "../features/theme/MuiProvider";
+import { NetworkContextProvider } from "../features/network/NetworkContext";
+import { WalletContextProvider } from "../features/wallet/WalletContext";
+import ReduxProvider from "../features/redux/ReduxProvider";
+import ReduxPersistGate from "../features/redux/ReduxPersistGate";
+import NextThemesProvider from "../features/theme/NextThemesProvider";
+import { TransactionDialogContextProvider } from "../features/transactions/TransactionDialogContext";
+import { TransactionRestorationContextProvider } from "../features/transactionRestoration/TransactionRestorationContext";
+import { TransactionDrawerContextProvider } from "../features/transactionDrawer/TransactionDrawerContext";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -46,7 +46,7 @@ export default function MyApp(props: MyAppProps) {
             <NetworkContextProvider>
               {(network) => (
                 <WalletContextProvider>
-                  <TransactionRecoveryContextProvider>
+                  <TransactionRestorationContextProvider>
                     <TransactionDrawerContextProvider>
                       <Layout>
                         <ReduxPersistGate>
@@ -56,7 +56,7 @@ export default function MyApp(props: MyAppProps) {
                         </ReduxPersistGate>
                       </Layout>
                     </TransactionDrawerContextProvider>
-                  </TransactionRecoveryContextProvider>
+                  </TransactionRestorationContextProvider>
                 </WalletContextProvider>
               )}
             </NetworkContextProvider>

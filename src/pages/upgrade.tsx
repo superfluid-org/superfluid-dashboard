@@ -1,6 +1,6 @@
 import { Box, Container } from "@mui/material";
 import type { NextPage } from "next";
-import { WrappingWidget } from "../components/TokenWrapping/WrappingWidget";
+import { Wrap } from "../features/tokenWrapping/Wrap";
 
 const Upgrade: NextPage = () => {
   return (
@@ -14,7 +14,7 @@ const Upgrade: NextPage = () => {
           alignItems: "center",
         }}
       >
-        <WrappingWidget tabValue="upgrade"></WrappingWidget>
+        <Wrap tabValue="upgrade"></Wrap>
       </Box>
     </Container>
   );
