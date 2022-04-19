@@ -15,7 +15,7 @@ export interface FlowingBalanceProps {
   etherDecimalPlaces?: number;
 }
 
-export default memo(function FlowingBalance({
+export default function FlowingBalance({
   balance,
   balanceTimestamp,
   flowRate,
@@ -77,7 +77,6 @@ export default memo(function FlowingBalance({
 
   return (
     <Box
-      data-cy={"total-streamed"}
       component="span"
       sx={{
         textOverflow: "ellipsis",
@@ -86,4 +85,4 @@ export default memo(function FlowingBalance({
       <EtherFormatted wei={weiValue} etherDecimalPlaces={etherDecimalPlaces} />
     </Box>
   );
-});
+};

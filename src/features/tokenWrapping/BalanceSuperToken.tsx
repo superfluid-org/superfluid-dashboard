@@ -26,6 +26,7 @@ export const BalanceSuperToken: FC<{
                 ethers.utils.formatEther(0)
             ) : (
                 <FlowingBalance
+                    key={accountTokenSnapshotQuery.data.balanceUntilUpdatedAt} // TODO(KK): Fix this bug!
                     balance={accountTokenSnapshotQuery.data.balanceUntilUpdatedAt}
                     balanceTimestamp={accountTokenSnapshotQuery.data.updatedAtTimestamp}
                     flowRate={accountTokenSnapshotQuery.data.totalNetFlowRate}

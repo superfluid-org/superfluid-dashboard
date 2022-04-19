@@ -31,7 +31,7 @@ export const adHocRpcEndpoints = {
         };
       },
       providesTags: (_result, _error, arg) => [ {
-        type: "Event",
+        type: "GENERAL",
         id: arg.chainId // TODO(KK): Could be made more specific.
       }],
     }),
