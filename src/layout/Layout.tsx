@@ -26,6 +26,7 @@ import AutoAwesomeMosaicIcon from "@mui/icons-material/AutoAwesomeMosaic";
 import { TransactionBell } from "../features/transactions/TransactionBell";
 import TransactionList from "../features/transactionDrawer/TransactionList";
 import { useTransactionDrawerContext } from "../features/transactionDrawer/TransactionDrawerContext";
+import SwapVertIcon from '@mui/icons-material/SwapVert';
 
 const menuDrawerWidth = 240;
 const transactionDrawerWidth = 480;
@@ -159,12 +160,12 @@ const Layout: FC = ({ children }) => {
               <ListItemText primary="Overview" />
             </ListItem>
           </Link>
-          <Link href="/upgrade" passHref>
+          <Link href="/wrap?upgrade" passHref>
             <ListItem button>
               <ListItemIcon>
-                <AutoAwesomeIcon></AutoAwesomeIcon>
+                <SwapVertIcon></SwapVertIcon>
               </ListItemIcon>
-              <ListItemText primary="Upgrade" />
+              <ListItemText primary="Wrap / Unwrap" />
             </ListItem>
           </Link>
         </Stack>

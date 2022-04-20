@@ -12,6 +12,7 @@ const TransactionList: FC = () => {
     transactionSelectors
       .selectAll(state.superfluid_transactions)
       .filter((x) => x.signer === walletAddress)
+      .sort((a, b) => a.timestampMs > b.timestampMs ? -1 : 1)
   );
 
   return (

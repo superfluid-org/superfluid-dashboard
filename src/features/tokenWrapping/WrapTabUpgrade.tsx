@@ -13,9 +13,9 @@ import { TransactionButton } from "../transactions/TransactionButton";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { BalanceSuperToken } from "./BalanceSuperToken";
 
-export const WrapUpgrade: FC<{
-  transactionRestoration: SuperTokenUpgradeRestoration | undefined;
-}> = ({ transactionRestoration }) => {
+export const WrapTabUpgrade: FC<{
+  restoration: SuperTokenUpgradeRestoration | undefined;
+}> = ({ restoration }) => {
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
 
@@ -33,11 +33,11 @@ export const WrapUpgrade: FC<{
   }, [amount]);
 
   useEffect(() => {
-    if (transactionRestoration) {
-      setSelectedToken(transactionRestoration.tokenUpgrade);
-      setAmount(ethers.utils.formatEther(transactionRestoration.amountWei));
+    if (restoration) {
+      setSelectedToken(restoration.tokenUpgrade);
+      setAmount(ethers.utils.formatEther(restoration.amountWei));
     }
-  }, [transactionRestoration]);
+  }, [restoration]);
 
   const onTokenChange = (token: TokenUpgradeDowngradePair | undefined) => {
     setSelectedToken(token);
@@ -209,7 +209,7 @@ export const WrapUpgrade: FC<{
                 superTokenAddress: selectedToken.superToken.address,
                 waitForConfirmation: true,
                 transactionExtraData: {
-                  restore: {
+                  restoration: {
                     chainId: network.chainId,
                     tokenUpgrade: selectedToken,
                     amountWei: amountWei.toString(),

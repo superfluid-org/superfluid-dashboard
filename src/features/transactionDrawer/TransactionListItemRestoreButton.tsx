@@ -10,7 +10,7 @@ export const TransactionListItemRestoreButton: FC<{
   const router = useRouter();
   const { restoreTransaction } = useTransactionRestorationContext();
 
-  if (!transaction.extraData.restore) {
+  if (!transaction.extraData.restoration) {
     return null;
   }
 
@@ -21,7 +21,7 @@ export const TransactionListItemRestoreButton: FC<{
           variant="outlined"
           onClick={async () => {
             restoreTransaction(transaction);
-            await router.push("/downgrade");
+            await router.push("/wrap?downgrade");
           }}
         >
           Restore
@@ -33,7 +33,7 @@ export const TransactionListItemRestoreButton: FC<{
           variant="outlined"
           onClick={async () => {
             restoreTransaction(transaction);
-            await router.push("/upgrade");
+            await router.push("/wrap?upgrade");
           }}
         >
           Restore
