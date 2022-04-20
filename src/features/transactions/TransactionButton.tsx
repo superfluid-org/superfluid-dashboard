@@ -4,6 +4,7 @@ import { useNetworkContext } from "../network/NetworkContext";
 import { Button, ButtonProps, CircularProgress } from "@mui/material";
 import { TransactionInfo } from "@superfluid-finance/sdk-redux";
 import { useTransactionDialogContext } from "./TransactionDialogContext";
+import { LoadingButton } from "@mui/lab";
 
 export const TransactionButton: FC<{
   text: string; // TODO(KK): Rename to button text
@@ -17,7 +18,8 @@ export const TransactionButton: FC<{
   };
   ButtonProps?: ButtonProps;
 }> = ({ text, hidden, disabled, mutationResult: { isLoading }, onClick }) => {
-  const { walletAddress, walletChainId, connect } = useWalletContext();
+  const { walletAddress, walletChainId, connectWallet, isWalletConnecting } =
+    useWalletContext();
   const { network } = useNetworkContext();
   const { triggerTransaction } = useTransactionDialogContext();
 
@@ -35,14 +37,15 @@ export const TransactionButton: FC<{
 
   if (!walletAddress) {
     return (
-      <Button
+      <LoadingButton
+        loading={isWalletConnecting}
         color="primary"
         variant="contained"
         fullWidth={true}
-        onClick={connect}
+        onClick={connectWallet}
       >
         Connect Wallet
-      </Button>
+      </LoadingButton>
     );
   }
 
@@ -60,7 +63,8 @@ export const TransactionButton: FC<{
   }
 
   return (
-    <Button
+    <LoadingButton
+      loading={isLoading}
       color="primary"
       variant="contained"
       disabled={disabled}
@@ -73,7 +77,7 @@ export const TransactionButton: FC<{
         });
       }}
     >
-      {isLoading ? <CircularProgress /> : text}
-    </Button>
+      {text}
+    </LoadingButton>
   );
 };

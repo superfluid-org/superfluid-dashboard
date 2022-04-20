@@ -1,18 +1,18 @@
 import { List } from "@mui/material";
 import { transactionSelectors } from "@superfluid-finance/sdk-redux";
-import { FC } from "react";
+import { memo } from "react";
 import TransactionListItem from "./TransactionListItem";
 import { useWalletContext } from "../wallet/WalletContext";
 import { useAppSelector } from "../redux/store";
 
-const TransactionList: FC = () => {
+export default memo(function TransactionList() {
   const { walletAddress } = useWalletContext();
 
   const transactions = useAppSelector((state) =>
     transactionSelectors
       .selectAll(state.superfluid_transactions)
       .filter((x) => x.signer === walletAddress)
-      .sort((a, b) => a.timestampMs > b.timestampMs ? -1 : 1)
+      .sort((a, b) => (a.timestampMs > b.timestampMs ? -1 : 1))
   );
 
   return (
@@ -25,6 +25,4 @@ const TransactionList: FC = () => {
       ))}
     </List>
   );
-};
-
-export default TransactionList;
+});

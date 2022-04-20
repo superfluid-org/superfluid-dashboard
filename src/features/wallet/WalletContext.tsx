@@ -10,12 +10,14 @@ import { networks } from "../network/networks";
 import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import { useAppDispatch } from "../redux/store";
 import Web3Modal from "web3modal";
+import { FamilyRestroomRounded } from "@mui/icons-material";
 
 const WalletContext = createContext<{
   walletChainId: number | undefined;
   walletAddress: string | undefined;
   walletProvider: ethers.providers.Web3Provider | undefined;
-  connect: () => void; // TODO(KK): ugly
+  connectWallet: () => void;
+  isWalletConnecting: boolean;
 }>(null!);
 
 export default WalletContext;
@@ -26,12 +28,16 @@ export const WalletContextProvider: FC = ({ children }) => {
   >();
   const [walletAddress, setWalletAddress] = useState<string | undefined>();
   const [walletChainId, setWalletChainId] = useState<number | undefined>();
+  const [walletConnecting, setWalletConnecting] = useState(false);
+
   const dispatch = useAppDispatch();
 
   // TODO(KK): Ugly any?
   const onWalletProvider = async (
     walletProvder: ethers.providers.Web3Provider
   ) => {
+    setWalletConnecting(true);
+
     const chainId = (await walletProvder.getNetwork()).chainId;
     const address = await walletProvder.getSigner().getAddress();
 
@@ -59,6 +65,8 @@ export const WalletContextProvider: FC = ({ children }) => {
         signerAddress: address,
       }) as any
     ); // TODO(weird version mismatch):
+
+    setWalletConnecting(false);
   };
 
   return (
@@ -67,7 +75,9 @@ export const WalletContextProvider: FC = ({ children }) => {
         walletChainId: walletChainId,
         walletAddress: walletAddress,
         walletProvider: walletProvider,
-        connect: async () => {
+        connectWallet: async () => {
+          setWalletConnecting(true); // Do it ASAP.
+
           const providerOptions = {
             walletconnect: {
               package: WalletConnectProvider,
@@ -94,6 +104,7 @@ export const WalletContextProvider: FC = ({ children }) => {
             onWalletProvider(new ethers.providers.Web3Provider(web3Provider));
           });
         },
+        isWalletConnecting: walletConnecting
       }}
     >
       {children}

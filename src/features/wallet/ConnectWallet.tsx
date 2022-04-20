@@ -1,13 +1,19 @@
-import { Button, Stack, Typography } from "@mui/material";
-import { FC, useMemo } from "react";
+import { Button, CircularProgress, Stack, Typography } from "@mui/material";
+import { FC, memo, useMemo } from "react";
 import { useNetworkContext } from "../network/NetworkContext";
 import { useWalletContext } from "./WalletContext";
 import shortenAddress from "../../utils/shortenAddress";
+import { LoadingButton } from "@mui/lab";
 
-const ConnectWallet: FC = () => {
+export default memo(function ConnectWallet() {
   const { network } = useNetworkContext();
-  const { walletAddress, walletChainId, walletProvider, connect } =
-    useWalletContext();
+  const {
+    walletAddress,
+    walletChainId,
+    walletProvider,
+    connectWallet,
+    isWalletConnecting,
+  } = useWalletContext();
 
   const shortenedAddress = useMemo(
     () => (walletAddress ? shortenAddress(walletAddress) : ""),
@@ -35,12 +41,14 @@ const ConnectWallet: FC = () => {
           </Stack>
         </Button>
       ) : (
-        <Button variant="outlined" onClick={connect}>
+        <LoadingButton
+          loading={isWalletConnecting}
+          variant="outlined"
+          onClick={connectWallet}
+        >
           Connect
-        </Button>
+        </LoadingButton>
       )}
     </>
   );
-};
-
-export default ConnectWallet;
+});

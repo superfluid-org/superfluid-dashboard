@@ -5,7 +5,7 @@ import createEmotionCache from "../features/theme/createEmotionCache";
 import { useEffect } from "react";
 import { setFrameworkForSdkRedux } from "@superfluid-finance/sdk-redux";
 import readOnlyFrameworks from "../features/network/readOnlyFrameworks";
-import Layout from "../layout/Layout";
+import Layout from "../features/layout/Layout";
 import MuiProvider from "../features/theme/MuiProvider";
 import { NetworkContextProvider } from "../features/network/NetworkContext";
 import { WalletContextProvider } from "../features/wallet/WalletContext";

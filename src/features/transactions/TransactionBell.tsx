@@ -3,10 +3,10 @@ import { transactionSelectors } from "@superfluid-finance/sdk-redux";
 import { useWalletContext } from "../wallet/WalletContext";
 import { useAppSelector } from "../redux/store";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
-import { FC } from "react";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
+import { memo } from "react";
 
-export const TransactionBell: FC = () => {
+export default memo(function TransactionBell() {
   const { walletAddress } = useWalletContext();
   const { transactionDrawerOpen, setTransactionDrawerOpen } =
     useTransactionDrawerContext();
@@ -21,6 +21,9 @@ export const TransactionBell: FC = () => {
 
   return (
     <IconButton
+      sx={{
+        ...(walletAddress ? {} : { display: "none" }),
+      }}
       color="primary"
       aria-label="open drawer"
       edge="end"
@@ -39,4 +42,4 @@ export const TransactionBell: FC = () => {
       </Badge>
     </IconButton>
   );
-};
+});
