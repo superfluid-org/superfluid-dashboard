@@ -1,15 +1,13 @@
 import {
-  Divider,
   Drawer,
   styled,
-  Typography,
 } from "@mui/material";
 import { memo } from "react";
 import ReduxPersistGate from "../redux/ReduxPersistGate";
 import { useTransactionDrawerContext } from "./TransactionDrawerContext";
 import TransactionList from "./TransactionList";
 
-export const transactionDrawerWidth = 480;
+export const transactionDrawerWidth = 420;
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -37,11 +35,11 @@ export default memo(function TransactionDrawer() {
       open={transactionDrawerOpen}
     >
       <DrawerHeader>
-        <Typography variant="body1" sx={{ m: 1 }}>
+        {/* <Typography variant="body1" sx={{ m: 1 }}>
           Notifications
-        </Typography>
+        </Typography> */}
       </DrawerHeader>
-      <Divider />
+      {/* <Divider /> */}
       <ReduxPersistGate>
         <TransactionList></TransactionList>
       </ReduxPersistGate>

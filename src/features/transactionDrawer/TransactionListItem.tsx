@@ -20,7 +20,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
   );
 
   return (
-    <ListItem button alignItems="flex-start">
+    <ListItem button sx={{ cursor: "default" }}>
       <ListItemAvatar>
         <TransactionListItemAvatar
           transaction={transaction}
@@ -40,13 +40,12 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
               {shortenedHash}
             </Typography>
             {/* transaction.status === "Failed" &&  */}
-
-            <TransactionListItemRestoreButton
-              transaction={transaction}
-            ></TransactionListItemRestoreButton>
           </>
         }
       ></ListItemText>
+      <TransactionListItemRestoreButton
+        transaction={transaction}
+      ></TransactionListItemRestoreButton>
     </ListItem>
   );
 };

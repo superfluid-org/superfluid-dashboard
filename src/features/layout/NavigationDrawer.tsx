@@ -3,7 +3,6 @@ import {
   Drawer,
   List,
   ListItem,
-  ListItemButton,
   ListItemIcon,
   ListItemText,
   Stack,
@@ -59,7 +58,7 @@ export default memo(function NavigationDrawer() {
             />
           </Link>
         </Toolbar>
-        <Divider />
+        {/* <Divider /> */}
       </Stack>
       <Stack
         component={List}
@@ -68,23 +67,19 @@ export default memo(function NavigationDrawer() {
         sx={{ flex: 1 }}
       >
         <NextLink href={"/"} passHref>
-          <ListItem>
-            <ListItemButton>
-              <ListItemIcon>
-                <AutoAwesomeMosaicIcon></AutoAwesomeMosaicIcon>
-              </ListItemIcon>
-              <ListItemText primary="Overview" />
-            </ListItemButton>
+          <ListItem button>
+            <ListItemIcon>
+              <AutoAwesomeMosaicIcon></AutoAwesomeMosaicIcon>
+            </ListItemIcon>
+            <ListItemText primary="Overview" />
           </ListItem>
         </NextLink>
         <NextLink href={"/wrap?upgrade"} passHref>
-          <ListItem>
-            <ListItemButton>
-              <ListItemIcon>
-                <SwapVertIcon></SwapVertIcon>
-              </ListItemIcon>
-              <ListItemText primary="Wrap / Unwrap" />
-            </ListItemButton>
+          <ListItem button>
+            <ListItemIcon>
+              <SwapVertIcon></SwapVertIcon>
+            </ListItemIcon>
+            <ListItemText primary="Wrap / Unwrap" />
           </ListItem>
         </NextLink>
       </Stack>
