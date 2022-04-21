@@ -19,9 +19,15 @@ export const WrapTabUpgrade: FC<{
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
 
-  const [selectedToken, setSelectedToken] = useState<
+  const [selectedTokenPair, setSelectedTokenPair] = useState<
     TokenUpgradeDowngradePair | undefined
-  >();
+  >(network.defaultTokenPair);
+
+  useEffect(() => {
+    if (!selectedTokenPair) {
+      setSelectedTokenPair(network.defaultTokenPair);
+    }
+  }, [selectedTokenPair]);
 
   const [amount, setAmount] = useState<string>("");
   const [amountWei, setAmountWei] = useState<BigNumber>(
@@ -34,21 +40,21 @@ export const WrapTabUpgrade: FC<{
 
   useEffect(() => {
     if (restoration) {
-      setSelectedToken(restoration.tokenUpgrade);
+      setSelectedTokenPair(restoration.tokenUpgrade);
       setAmount(ethers.utils.formatEther(restoration.amountWei));
     }
   }, [restoration]);
 
   const onTokenChange = (token: TokenUpgradeDowngradePair | undefined) => {
-    setSelectedToken(token);
+    setSelectedTokenPair(token);
   };
 
   const allowanceQuery = rpcApi.useSuperTokenUpgradeAllowanceQuery(
-    selectedToken && walletAddress
+    selectedTokenPair && walletAddress
       ? {
           chainId: network.chainId,
           accountAddress: walletAddress,
-          superTokenAddress: selectedToken.superToken.address,
+          superTokenAddress: selectedTokenPair.superToken.address,
         }
       : skipToken
   );
@@ -67,7 +73,7 @@ export const WrapTabUpgrade: FC<{
   const [upgradeTrigger, upgradeResult] = rpcApi.useSuperTokenUpgradeMutation();
 
   const isApproveAllowanceVisible = !!(
-    selectedToken &&
+    selectedTokenPair &&
     !amountWei.isZero() &&
     currentAllowance &&
     missingAllowance &&
@@ -75,12 +81,12 @@ export const WrapTabUpgrade: FC<{
   );
 
   const isUpgradeDisabled =
-    !selectedToken || amountWei.isZero() || !!isApproveAllowanceVisible;
+    !selectedTokenPair || amountWei.isZero() || !!isApproveAllowanceVisible;
 
   const amountInputRef = useRef<HTMLInputElement>(undefined!);
   useEffect(() => {
     amountInputRef.current.focus();
-  }, [amountInputRef, selectedToken]);
+  }, [amountInputRef, selectedTokenPair]);
 
   return (
     <Stack direction="column" spacing={2}>
@@ -88,11 +94,11 @@ export const WrapTabUpgrade: FC<{
         <Stack direction="row" justifyContent="space-between" spacing={2}>
           <TokenDialogChip
             prioritizeSuperTokens={false}
-            selectedTokenPair={selectedToken}
+            selectedTokenPair={selectedTokenPair}
             onSelect={onTokenChange}
           />
           <TextField
-            disabled={!selectedToken}
+            disabled={!selectedTokenPair}
             placeholder="0.0"
             inputRef={amountInputRef}
             value={amount}
@@ -100,23 +106,25 @@ export const WrapTabUpgrade: FC<{
             sx={{ border: 0, width: "50%" }}
           />
         </Stack>
-        {selectedToken && walletAddress && (
+        {selectedTokenPair && walletAddress && (
           <Stack direction="row-reverse">
             <BalanceUnderlyingToken
               chainId={network.chainId}
               accountAddress={walletAddress}
-              tokenAddress={selectedToken.underlyingToken.address}
+              tokenAddress={selectedTokenPair.underlyingToken.address}
             ></BalanceUnderlyingToken>
           </Stack>
         )}
       </Stack>
 
-      <Stack sx={{ ...(!selectedToken ? { display: "none" } : {}) }}>
+      <Stack sx={{ ...(!selectedTokenPair ? { display: "none" } : {}) }}>
         <Stack direction="row" justifyContent="space-between" spacing={2}>
           <Chip
             icon={
-              selectedToken ? (
-                <TokenIcon tokenSymbol={selectedToken.underlyingToken.symbol} />
+              selectedTokenPair ? (
+                <TokenIcon
+                  tokenSymbol={selectedTokenPair.superToken.symbol}
+                />
               ) : (
                 <></>
               )
@@ -124,7 +132,7 @@ export const WrapTabUpgrade: FC<{
             label={
               <>
                 <Stack direction="row" alignItems="center">
-                  {selectedToken?.superToken.symbol ?? ""}
+                  {selectedTokenPair?.superToken.symbol ?? ""}
                 </Stack>
               </>
             }
@@ -136,12 +144,12 @@ export const WrapTabUpgrade: FC<{
             sx={{ width: "50%" }}
           />
         </Stack>
-        {selectedToken && walletAddress && (
+        {selectedTokenPair && walletAddress && (
           <Stack direction="row-reverse">
             <BalanceSuperToken
               chainId={network.chainId}
               accountAddress={walletAddress}
-              tokenAddress={selectedToken.superToken.address}
+              tokenAddress={selectedTokenPair.superToken.address}
             ></BalanceSuperToken>
           </Stack>
         )}
@@ -167,7 +175,7 @@ export const WrapTabUpgrade: FC<{
           const infoText = `You are approving extra allowance of ${ethers.utils.formatEther(
             amountWei
           )} ${
-            selectedToken?.underlyingToken.symbol
+            selectedTokenPair?.underlyingToken.symbol
           } for Superfluid Protocol to use.`;
 
           return {
@@ -176,7 +184,7 @@ export const WrapTabUpgrade: FC<{
               approveTrigger({
                 chainId: network.chainId,
                 amountWei: currentAllowance.add(missingAllowance).toString(),
-                superTokenAddress: selectedToken.superToken.address,
+                superTokenAddress: selectedTokenPair.superToken.address,
               }).unwrap(),
           };
         }}
@@ -196,8 +204,8 @@ export const WrapTabUpgrade: FC<{
 
           const infoText = `Upgrade from ${ethers.utils.formatEther(
             amountWei
-          )} ${selectedToken.underlyingToken.symbol} to the super token ${
-            selectedToken.superToken.symbol
+          )} ${selectedTokenPair.underlyingToken.symbol} to the super token ${
+            selectedTokenPair.superToken.symbol
           }.`;
 
           return {
@@ -206,12 +214,12 @@ export const WrapTabUpgrade: FC<{
               upgradeTrigger({
                 chainId: network.chainId,
                 amountWei: amountWei.toString(),
-                superTokenAddress: selectedToken.superToken.address,
+                superTokenAddress: selectedTokenPair.superToken.address,
                 waitForConfirmation: true,
                 transactionExtraData: {
                   restoration: {
                     chainId: network.chainId,
-                    tokenUpgrade: selectedToken,
+                    tokenUpgrade: selectedTokenPair,
                     amountWei: amountWei.toString(),
                   } as SuperTokenUpgradeRestoration,
                   infoText: infoText,

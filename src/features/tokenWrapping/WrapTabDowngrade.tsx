@@ -20,7 +20,13 @@ export const WrapTabDowngrade: FC<{
 
   const [selectedTokenPair, setSelectedTokenPair] = useState<
     TokenUpgradeDowngradePair | undefined
-  >();
+  >(network.defaultTokenPair);
+
+  useEffect(() => {
+    if (!selectedTokenPair) {
+      setSelectedTokenPair(network.defaultTokenPair);
+    }
+  }, [selectedTokenPair]);
 
   const [amount, setAmount] = useState<string>("");
   const [amountWei, setAmountWei] = useState<BigNumber>(
