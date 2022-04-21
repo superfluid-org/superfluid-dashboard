@@ -22,6 +22,7 @@ export default memo(function FlowingBalance({
   etherDecimalPlaces,
 }: FlowingBalanceProps): ReactElement {
   const [weiValue, setWeiValue] = useState<BigNumberish>(balance);
+  useEffect(() => setWeiValue(balance), [balance]);
 
   const balanceTimestampMs = useMemo(
     () => ethers.BigNumber.from(balanceTimestamp).mul(1000),
@@ -36,18 +37,15 @@ export default memo(function FlowingBalance({
 
     const balanceBigNumber = ethers.BigNumber.from(balance);
 
-    let stopAnimation = false;
     let lastAnimationTimestamp: DOMHighResTimeStamp = 0;
 
     const animationStep = (currentAnimationTimestamp: DOMHighResTimeStamp) => {
-      if (stopAnimation) {
-        return;
-      }
-
       if (
         currentAnimationTimestamp - lastAnimationTimestamp >
         ANIMATION_MINIMUM_STEP_TIME
       ) {
+        animationFrameId = window.requestAnimationFrame(animationStep); // Set next frame ASAP, otherwise race-conditions might happen when trying to cancel.
+
         const currentTimestampBigNumber = ethers.BigNumber.from(
           new Date().valueOf() // Milliseconds elapsed since UTC epoch, disregards timezone.
         );
@@ -63,15 +61,11 @@ export default memo(function FlowingBalance({
 
         lastAnimationTimestamp = currentAnimationTimestamp;
       }
-
-      window.requestAnimationFrame(animationStep);
     };
 
-    window.requestAnimationFrame(animationStep);
+    let animationFrameId = window.requestAnimationFrame(animationStep);
 
-    return () => {
-      stopAnimation = true;
-    };
+    return () => window.cancelAnimationFrame(animationFrameId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [balance, balanceTimestamp, flowRate]);
 
