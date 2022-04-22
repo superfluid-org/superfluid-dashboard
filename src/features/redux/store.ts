@@ -22,6 +22,7 @@ import storage from "redux-persist/lib/storage";
 import { adHocMulticallEndpoints } from "./endpoints/adHocMulticallEndpoints";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
+import { assetApiSlice } from "../token/tokenManifestSlice";
 
 export const rpcApi = initializeRpcApiSlice(createApiWithReactHooks)
   .injectEndpoints(allRpcEndpoints)
@@ -57,6 +58,7 @@ export const reduxStore = configureStore({
     [rpcApi.reducerPath]: rpcApi.reducer,
     [subgraphApi.reducerPath]: subgraphApi.reducer,
     [transactionTracker.reducerPath]: transactionTrackerPersistedReducer,
+    [assetApiSlice.reducerPath]: assetApiSlice.reducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -65,7 +67,8 @@ export const reduxStore = configureStore({
       },
     })
       .concat(rpcApi.middleware)
-      .concat(subgraphApi.middleware),
+      .concat(subgraphApi.middleware)
+      .concat(assetApiSlice.middleware),
 });
 
 export const reduxPersistor = persistStore(reduxStore);

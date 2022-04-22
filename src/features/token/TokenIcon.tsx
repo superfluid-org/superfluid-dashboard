@@ -1,14 +1,16 @@
 import { FC } from "react";
 import Image from "next/image";
-import useTokenManifest from "./useTokenManifest";
 import CircleIcon from "@mui/icons-material/Circle";
+import { assetApiSlice } from "./tokenManifestSlice";
 
 const TokenIcon: FC<{
   tokenSymbol: string;
 }> = ({ tokenSymbol }) => {
-  const tokenManifest = useTokenManifest(tokenSymbol);
+  const { data: tokenManifest } = assetApiSlice.useTokenManifestQuery({
+    tokenSymbol
+  });
 
-  return tokenManifest ? (
+  return tokenManifest?.svgIconPath ? (
     <Image
       alt={`${tokenSymbol} token icon`}
       unoptimized
