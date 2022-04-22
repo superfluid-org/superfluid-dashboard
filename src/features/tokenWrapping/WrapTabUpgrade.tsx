@@ -230,7 +230,7 @@ const UpgradePreview: FC<{
 }> = ({ restoration: { amountWei, tokenUpgrade } }) => {
   return (
     <Typography variant="body2" sx={{ my: 2 }}>
-      You are upgrading from ${ethers.utils.formatEther(amountWei)}{" "}
+      You are upgrading from {ethers.utils.formatEther(amountWei)}{" "}
       {tokenUpgrade.underlyingToken.symbol} to the super token{" "}
       {tokenUpgrade.superToken.symbol}.
     </Typography>
