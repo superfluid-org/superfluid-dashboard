@@ -1,83 +1,94 @@
-import { FC } from "react";
+import React, { FC, useState } from "react";
 import { useWalletContext } from "../wallet/WalletContext";
 import { useNetworkContext } from "../network/NetworkContext";
-import { Button, ButtonProps, CircularProgress } from "@mui/material";
-import { TransactionInfo } from "@superfluid-finance/sdk-redux";
-import { useTransactionDialogContext } from "./TransactionDialogContext";
+import { Button, ButtonProps } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
+import { TransactionDialog } from "./TransactionDialog";
+import UnknownMutationResult from "../../unknownMutationResult";
 
 export const TransactionButton: FC<{
-  text: string; // TODO(KK): Rename to button text
+  mutationResult: UnknownMutationResult;
   hidden: boolean;
   disabled: boolean;
-  mutationResult: { isLoading: boolean };
-  onClick: () => {
-    infoText: string;
-    trigger: () => Promise<TransactionInfo>;
-    clean?: () => void;
-  };
+  onClick: (
+    setTransactionDialogContent: (children: React.ReactNode) => void
+  ) => void;
   ButtonProps?: ButtonProps;
-}> = ({ text, hidden, disabled, mutationResult: { isLoading }, onClick }) => {
+}> = ({ children, disabled, onClick, mutationResult, hidden }) => {
   const { walletAddress, walletChainId, connectWallet, isWalletConnecting } =
     useWalletContext();
   const { network } = useNetworkContext();
-  const { triggerTransaction } = useTransactionDialogContext();
+  const [transactionDialogContent, setTransactionDialogContent] =
+    useState<React.ReactNode>(<></>);
+  const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
 
-  if (hidden) {
-    return null;
-  }
+  const getButton = () => {
+    if (hidden) {
+      return null;
+    }
 
-  if (disabled) {
-    return (
-      <Button color="primary" variant="contained" disabled={true}>
-        {text}
-      </Button>
-    );
-  }
+    if (disabled) {
+      return (
+        <Button color="primary" variant="contained" disabled={true}>
+          {children}
+        </Button>
+      );
+    }
 
-  if (!walletAddress) {
+    if (!walletAddress) {
+      return (
+        <LoadingButton
+          loading={isWalletConnecting}
+          color="primary"
+          variant="contained"
+          fullWidth={true}
+          onClick={connectWallet}
+        >
+          Connect Wallet
+        </LoadingButton>
+      );
+    }
+
+    if (walletChainId != network.chainId) {
+      return (
+        <Button
+          disabled={true}
+          color="primary"
+          variant="contained"
+          fullWidth={true}
+        >
+          Change Network to {network.displayName}
+        </Button>
+      );
+    }
+
     return (
       <LoadingButton
-        loading={isWalletConnecting}
+        loading={mutationResult.isLoading}
         color="primary"
         variant="contained"
+        disabled={disabled}
         fullWidth={true}
-        onClick={connectWallet}
+        onClick={() => {
+          onClick(setTransactionDialogContent);
+          setTransactionDialogOpen(true);
+        }}
       >
-        Connect Wallet
+        {children}
       </LoadingButton>
     );
-  }
-
-  if (walletChainId != network.chainId) {
-    return (
-      <Button
-        disabled={true}
-        color="primary"
-        variant="contained"
-        fullWidth={true}
-      >
-        Change Network to {network.displayName}
-      </Button>
-    );
-  }
+  };
 
   return (
-    <LoadingButton
-      loading={isLoading}
-      color="primary"
-      variant="contained"
-      disabled={disabled}
-      fullWidth={true}
-      onClick={async () => {
-        const { trigger, infoText } = onClick();
-        triggerTransaction({
-          trigger,
-          description: infoText,
-        });
-      }}
-    >
-      {text}
-    </LoadingButton>
+    <>
+      {getButton()}
+      <TransactionDialog
+        mutationResult={mutationResult}
+        onClose={() => setTransactionDialogOpen(false)}
+        open={transactionDialogOpen}
+      >
+        {transactionDialogContent}
+      </TransactionDialog>
+    </>
   );
 };

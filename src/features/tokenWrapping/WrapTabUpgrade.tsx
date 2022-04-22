@@ -122,9 +122,7 @@ export const WrapTabUpgrade: FC<{
           <Chip
             icon={
               selectedTokenPair ? (
-                <TokenIcon
-                  tokenSymbol={selectedTokenPair.superToken.symbol}
-                />
+                <TokenIcon tokenSymbol={selectedTokenPair.superToken.symbol} />
               ) : (
                 <></>
               )
@@ -163,72 +161,90 @@ export const WrapTabUpgrade: FC<{
       )}
 
       <TransactionButton
-        text="Approve Allowance"
         mutationResult={approveResult}
         hidden={!isApproveAllowanceVisible}
         disabled={false}
-        onClick={() => {
+        onClick={(setTransactionDialogContent) => {
           if (!isApproveAllowanceVisible) {
             throw Error("This should never happen.");
           }
 
-          const infoText = `You are approving extra allowance of ${ethers.utils.formatEther(
-            amountWei
-          )} ${
-            selectedTokenPair?.underlyingToken.symbol
-          } for Superfluid Protocol to use.`;
+          setTransactionDialogContent(
+            <AllowancePreview
+              amountWei={currentAllowance.add(missingAllowance).toString()}
+              symbol={selectedTokenPair.underlyingToken.symbol}
+            />
+          );
 
-          return {
-            infoText,
-            trigger: () =>
-              approveTrigger({
-                chainId: network.chainId,
-                amountWei: currentAllowance.add(missingAllowance).toString(),
-                superTokenAddress: selectedTokenPair.superToken.address,
-              }).unwrap(),
-          };
+          approveTrigger({
+            chainId: network.chainId,
+            amountWei: currentAllowance.add(missingAllowance).toString(),
+            superTokenAddress: selectedTokenPair.superToken.address,
+          });
         }}
-      />
+      >
+        Approve Allowance
+      </TransactionButton>
 
       <TransactionButton
-        text="Upgrade to Super Token"
         hidden={false}
         disabled={isUpgradeDisabled}
         mutationResult={upgradeResult}
-        onClick={() => {
+        onClick={(setTransactionDialogContent) => {
           if (isUpgradeDisabled) {
             throw Error(
               "This should never happen because the token and amount must be selected for the button to be active."
             );
           }
 
-          const infoText = `Upgrade from ${ethers.utils.formatEther(
-            amountWei
-          )} ${selectedTokenPair.underlyingToken.symbol} to the super token ${
-            selectedTokenPair.superToken.symbol
-          }.`;
-
-          return {
-            infoText,
-            trigger: () =>
-              upgradeTrigger({
-                chainId: network.chainId,
-                amountWei: amountWei.toString(),
-                superTokenAddress: selectedTokenPair.superToken.address,
-                waitForConfirmation: true,
-                transactionExtraData: {
-                  restoration: {
-                    chainId: network.chainId,
-                    tokenUpgrade: selectedTokenPair,
-                    amountWei: amountWei.toString(),
-                  } as SuperTokenUpgradeRestoration,
-                  infoText: infoText,
-                },
-              }).unwrap(),
-            clean: () => setAmount(""),
+          const restoration: SuperTokenUpgradeRestoration = {
+            chainId: network.chainId,
+            tokenUpgrade: selectedTokenPair,
+            amountWei: amountWei.toString(),
           };
+
+          upgradeTrigger({
+            chainId: network.chainId,
+            amountWei: amountWei.toString(),
+            superTokenAddress: selectedTokenPair.superToken.address,
+            waitForConfirmation: true,
+            transactionExtraData: {
+              restoration,
+            },
+          });
+
+          setAmount("");
+          setTransactionDialogContent(
+            <UpgradePreview restoration={restoration} />
+          );
         }}
-      />
+      >
+        Upgrade to Super Token
+      </TransactionButton>
     </Stack>
+  );
+};
+
+const UpgradePreview: FC<{
+  restoration: SuperTokenUpgradeRestoration;
+}> = ({ restoration: { amountWei, tokenUpgrade } }) => {
+  return (
+    <Typography variant="body2" sx={{ my: 2 }}>
+      You are upgrading from ${ethers.utils.formatEther(amountWei)}{" "}
+      {tokenUpgrade.underlyingToken.symbol} to the super token{" "}
+      {tokenUpgrade.superToken.symbol}.
+    </Typography>
+  );
+};
+
+const AllowancePreview: FC<{
+  amountWei: string;
+  symbol: string;
+}> = ({ amountWei, symbol }) => {
+  return (
+    <Typography variant="body2" sx={{ my: 2 }}>
+      You are approving extra allowance of {ethers.utils.formatEther(amountWei)}{" "}
+      {symbol} for Superfluid Protocol to use.
+    </Typography>
   );
 };

@@ -1,11 +1,11 @@
-import { FC, useEffect, useRef, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { SuperTokenDowngradeRestoration } from "../transactionRestoration/transactionRestorations";
 import { useNetworkContext } from "../network/NetworkContext";
 import { useWalletContext } from "../wallet/WalletContext";
 import { TokenUpgradeDowngradePair } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { BigNumber, ethers } from "ethers";
 import { rpcApi } from "../redux/store";
-import { Chip, Stack, TextField } from "@mui/material";
+import { Chip, Stack, TextField, Typography } from "@mui/material";
 import { TokenDialogChip } from "./TokenDialogChip";
 import TokenIcon from "../token/TokenIcon";
 import { TransactionButton } from "../transactions/TransactionButton";
@@ -51,6 +51,9 @@ export const WrapTabDowngrade: FC<{
   const [downgradeTrigger, downgradeResult] =
     rpcApi.useSuperTokenDowngradeMutation();
   const isDowngradeDisabled = !selectedTokenPair || amountWei.isZero();
+  const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
+  const [transactionDialogContent, setTransactionDialogContent] =
+    useState<React.ReactNode>("");
 
   const amountInputRef = useRef<HTMLInputElement>(undefined!);
   useEffect(() => {
@@ -122,45 +125,55 @@ export const WrapTabDowngrade: FC<{
           </Stack>
         )}
       </Stack>
+
       <TransactionButton
-        text="Downgrade"
         hidden={false}
-        disabled={isDowngradeDisabled}
         mutationResult={downgradeResult}
-        onClick={() => {
+        disabled={isDowngradeDisabled}
+        onClick={(setTransactionDialogContent) => {
           if (isDowngradeDisabled) {
             throw Error(
               "This should never happen because the token and amount must be selected for the button to be active."
             );
           }
 
-          const infoText = `You are downgrading from ${ethers.utils.formatEther(
-            amountWei
-          )} ${selectedTokenPair?.superToken.symbol} to the underlying token ${
-            selectedTokenPair?.superToken.symbol
-          }.`;
-
-          return {
-            infoText,
-            trigger: () =>
-              downgradeTrigger({
-                chainId: network.chainId,
-                amountWei: amountWei.toString(),
-                superTokenAddress: selectedTokenPair.superToken.address,
-                waitForConfirmation: true,
-                transactionExtraData: {
-                  restoration: {
-                    chainId: network.chainId,
-                    tokenUpgrade: selectedTokenPair,
-                    amountWei: amountWei.toString(),
-                  } as SuperTokenDowngradeRestoration,
-                  infoText,
-                },
-              }).unwrap(),
-            clean: () => setAmount(""),
+          const restoration: SuperTokenDowngradeRestoration = {
+            chainId: network.chainId,
+            tokenUpgrade: selectedTokenPair,
+            amountWei: amountWei.toString(),
           };
+
+          downgradeTrigger({
+            chainId: network.chainId,
+            amountWei: amountWei.toString(),
+            superTokenAddress: selectedTokenPair.superToken.address,
+            waitForConfirmation: true,
+            transactionExtraData: {
+              restoration,
+            },
+          });
+
+          setTransactionDialogContent(
+            <DowngradePreview restoration={restoration} />
+          );
+
+          setAmount("");
         }}
-      />
+      >
+        Downgrade
+      </TransactionButton>
     </Stack>
+  );
+};
+
+const DowngradePreview: FC<{
+  restoration: SuperTokenDowngradeRestoration;
+}> = ({ restoration: { amountWei, tokenUpgrade } }) => {
+  return (
+    <Typography variant="body2" sx={{ my: 2 }}>
+      You are downgrading from ${ethers.utils.formatEther(amountWei)}{" "}
+      {tokenUpgrade.superToken.symbol} to the underlying token{" "}
+      {tokenUpgrade.underlyingToken.symbol}.
+    </Typography>
   );
 };

@@ -1,10 +1,8 @@
 import { FC } from "react";
 import {
-    Alert,
-  Button,
+  Alert,
   CircularProgress,
   Dialog,
-  DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
@@ -14,27 +12,17 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useAppSelector } from "../redux/store";
-import { transactionsAdapter } from "@superfluid-finance/sdk-redux";
 import CloseIcon from "@mui/icons-material/Close";
-import DoneIcon from "@mui/icons-material/Done";
-import HourglassBottomIcon from "@mui/icons-material/HourglassBottom";
+import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
+import UnknownMutationResult from "../../unknownMutationResult";
 
 export const TransactionDialog: FC<{
   open: boolean;
   onClose: () => void;
-  transactionHash: string | undefined;
-  infoText: string;
-}> = ({ open, onClose, transactionHash, infoText }) => {
+  mutationResult: UnknownMutationResult;
+}> = ({ open, onClose, mutationResult, children }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const transaction = useAppSelector((state) =>
-    transactionHash
-      ? transactionsAdapter
-          .getSelectors()
-          .selectById(state.superfluid_transactions, transactionHash)
-      : undefined
-  ); // TODO(KK): "transactionsAdapter" not very good
 
   return (
     <Dialog
@@ -45,7 +33,7 @@ export const TransactionDialog: FC<{
       onClose={onClose}
     >
       <DialogTitle sx={{ m: 0, p: 2 }}>
-        Transaction
+        {mutationResult.isError ? "Error" : <>&nbsp;</>}
         <IconButton
           aria-label="close"
           onClick={onClose}
@@ -53,38 +41,36 @@ export const TransactionDialog: FC<{
             position: "absolute",
             right: 8,
             top: 8,
-            color: (theme) => theme.palette.grey[500],
           }}
         >
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent dividers>
+      <DialogContent>
         <DialogContentText>
-          <Stack spacing={2}>
-            <Alert severity="info">{infoText}</Alert>
-            <Stack component={Typography} direction="row" justifyContent="center">
-              {transaction ? (
-                transaction.status === "Pending" ? (
-                  <CircularProgress />
-                ) : transaction.status === "Succeeded" ? (
-                  <DoneIcon />
-                ) : transaction.status === "Failed" ? (
-                  <CloseIcon />
-                ) : null
-              ) : (
-                <HourglassBottomIcon />
-              )}
-            </Stack>
-            {!transaction && (
-              <Typography>Waiting for transaction approval...</Typography>
+          <Stack spacing={2} alignItems="center">
+            {mutationResult.isError ? (
+              <Alert severity="error" sx={{ wordBreak: "break-word"}}>{mutationResult.error?.message}</Alert>
+            ) : (
+              <>
+                <Typography>
+                  {mutationResult.isSuccess ? (
+                    <ArrowUpwardRoundedIcon />
+                  ) : (
+                    <CircularProgress />
+                  )}
+                </Typography>
+                {!mutationResult.isSuccess && (
+                  <Typography>Waiting for transaction approval...</Typography>
+                )}
+                {mutationResult.isSuccess
+                  ? "Transaction broadcasted"
+                  : children}
+              </>
             )}
           </Stack>
         </DialogContentText>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Close</Button>
-      </DialogActions>
     </Dialog>
   );
 };

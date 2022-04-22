@@ -12,7 +12,6 @@ import { WalletContextProvider } from "../features/wallet/WalletContext";
 import ReduxProvider from "../features/redux/ReduxProvider";
 import ReduxPersistGate from "../features/redux/ReduxPersistGate";
 import NextThemesProvider from "../features/theme/NextThemesProvider";
-import { TransactionDialogContextProvider } from "../features/transactions/TransactionDialogContext";
 import { TransactionRestorationContextProvider } from "../features/transactionRestoration/TransactionRestorationContext";
 import { TransactionDrawerContextProvider } from "../features/transactionDrawer/TransactionDrawerContext";
 
@@ -50,9 +49,7 @@ export default function MyApp(props: MyAppProps) {
                     <TransactionDrawerContextProvider>
                       <Layout>
                         <ReduxPersistGate>
-                          <TransactionDialogContextProvider>
-                            <Component key={network.chainId} {...pageProps} />
-                          </TransactionDialogContextProvider>
+                          <Component key={network.chainId} {...pageProps} />
                         </ReduxPersistGate>
                       </Layout>
                     </TransactionDrawerContextProvider>
