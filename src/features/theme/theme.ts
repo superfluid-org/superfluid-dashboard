@@ -7,7 +7,7 @@ const FONT_FACES = `
   font-style: normal;
   font-display: swap;
   font-weight: 400;
-  src: url(./fonts/GT-Walsheim-Pro-Regular.EOT) format('eot'), url(./fonts/GT-Walsheim-Pro-Regular.OTF) format('otf'), url(./fonts/GT-Walsheim-Pro-Regular.TTF) format('ttf'), url(./fonts/GT-Walsheim-Pro-Regular.WOFF) format('woff'), url(./fonts/GT-Walsheim-Pro-Regular.WOFF2) format('woff2');
+  src: url(./fonts/GT-Walsheim-Pro-Regular.eot) format('eot'), url(./fonts/GT-Walsheim-Pro-Regular.otf) format('otf'), url(./fonts/GT-Walsheim-Pro-Regular.ttf) format('ttf'), url(./fonts/GT-Walsheim-Pro-Regular.woff) format('woff'), url(./fonts/GT-Walsheim-Pro-Regular.woff2) format('woff2');
 }
 
 @font-face {
@@ -15,7 +15,7 @@ const FONT_FACES = `
   font-style: normal;
   font-display: swap;
   font-weight: 500;
-  src: url(./fonts/GT-Walsheim-Pro-Medium.EOT) format('eot'), url(./fonts/GT-Walsheim-Pro-Medium.OTF) format('otf'), url(./fonts/GT-Walsheim-Pro-Medium.TTF) format('ttf'), url(./fonts/GT-Walsheim-Pro-Medium.WOFF) format('woff'), url(./fonts/GT-Walsheim-Pro-Medium.WOFF2) format('woff2');
+  src: url(./fonts/GT-Walsheim-Pro-Medium.eot) format('eot'), url(./fonts/GT-Walsheim-Pro-Medium.otf) format('otf'), url(./fonts/GT-Walsheim-Pro-Medium.ttf) format('ttf'), url(./fonts/GT-Walsheim-Pro-Medium.woff) format('woff'), url(./fonts/GT-Walsheim-Pro-Medium.woff2) format('woff2');
 }
 
 @font-face {
@@ -23,7 +23,7 @@ const FONT_FACES = `
   font-style: italic;
   font-display: swap;
   font-weight: 400;
-  src: url(./fonts/GT-Walsheim-Pro-Regular-Oblique.EOT) format('eot'), url(./fonts/GT-Walsheim-Pro-Regular-Oblique.OTF) format('otf'), url(./fonts/GT-Walsheim-Pro-Regular-Oblique.TTF) format('ttf'), url(./fonts/GT-Walsheim-Pro-Regular-Oblique.WOFF) format('woff'), url(./fonts/GT-Walsheim-Pro-Regular-Oblique.WOFF2) format('woff2');
+  src: url(./fonts/GT-Walsheim-Pro-Regular-Oblique.eot) format('eot'), url(./fonts/GT-Walsheim-Pro-Regular-Oblique.otf) format('otf'), url(./fonts/GT-Walsheim-Pro-Regular-Oblique.ttf) format('ttf'), url(./fonts/GT-Walsheim-Pro-Regular-Oblique.woff) format('woff'), url(./fonts/GT-Walsheim-Pro-Regular-Oblique.woff2) format('woff2');
 }
 
 @font-face {
@@ -31,7 +31,7 @@ const FONT_FACES = `
   font-style: italic;
   font-display: swap;
   font-weight: 500;
-  src: url(./fonts/GT-Walsheim-Pro-Medium-Oblique.EOT) format('eot'), url(./fonts/GT-Walsheim-Pro-Medium-Oblique.OTF) format('otf'), url(./fonts/GT-Walsheim-Pro-Medium-Oblique.TTF) format('ttf'), url(./fonts/GT-Walsheim-Pro-Medium-Oblique.WOFF) format('woff'), url(./fonts/GT-Walsheim-Pro-Medium-Oblique.WOFF2) format('woff2');
+  src: url(./fonts/GT-Walsheim-Pro-Medium-Oblique.eot) format('eot'), url(./fonts/GT-Walsheim-Pro-Medium-Oblique.otf) format('otf'), url(./fonts/GT-Walsheim-Pro-Medium-Oblique.ttf) format('ttf'), url(./fonts/GT-Walsheim-Pro-Medium-Oblique.woff) format('woff'), url(./fonts/GT-Walsheim-Pro-Medium-Oblique.woff2) format('woff2');
 }
 `;
 

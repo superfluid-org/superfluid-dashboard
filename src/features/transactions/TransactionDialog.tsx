@@ -49,34 +49,34 @@ export const TransactionDialog: FC<{
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          <Stack spacing={2} alignItems="center">
-            {mutationResult.isError ? (
-              <Alert severity="error" sx={{ wordBreak: "break-word" }}>
-                {mutationResult.error?.message}
-              </Alert>
-            ) : (
-              <>
-                <Typography>
-                  {mutationResult.isSuccess ? (
-                    <ArrowUpwardRoundedIcon />
-                  ) : (
-                    <CircularProgress />
-                  )}
-                </Typography>
-                {!mutationResult.isSuccess && (
-                  <Typography>Waiting for transaction approval... ({ network.displayName })</Typography>
+        <Stack spacing={2} alignItems="center">
+          {mutationResult.isError ? (
+            <Alert severity="error" sx={{ wordBreak: "break-word" }}>
+              {mutationResult.error?.message}
+            </Alert>
+          ) : (
+            <>
+              <Typography>
+                {mutationResult.isSuccess ? (
+                  <ArrowUpwardRoundedIcon />
+                ) : (
+                  <CircularProgress />
                 )}
-                <Stack sx={{ my: 2 }}>
-                  {" "}
-                  {mutationResult.isSuccess
-                    ? "Transaction broadcasted"
-                    : children}
-                </Stack>
-              </>
-            )}
-          </Stack>
-        </DialogContentText>
+              </Typography>
+              {!mutationResult.isSuccess && (
+                <Typography>
+                  Waiting for transaction approval... ({network.displayName})
+                </Typography>
+              )}
+              <Stack sx={{ my: 2 }}>
+                {" "}
+                {mutationResult.isSuccess
+                  ? "Transaction broadcasted"
+                  : children}
+              </Stack>
+            </>
+          )}
+        </Stack>
       </DialogContent>
     </Dialog>
   );
