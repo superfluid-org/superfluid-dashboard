@@ -6,6 +6,7 @@ import TransactionDrawer, {
   transactionDrawerWidth,
 } from "../transactionDrawer/TransactionDrawer";
 import TopBar from "./TopBar";
+// import TransactionSnackbar from "../transactions/TransactionSnackbar";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open: boolean;
@@ -35,6 +36,7 @@ const Layout: FC = ({ children }) => {
       <NavigationDrawer />
       <Main open={transactionDrawerOpen}>
         <Toolbar />
+        {/* <TransactionSnackbar /> */}
         {children}
       </Main>
       <TransactionDrawer />

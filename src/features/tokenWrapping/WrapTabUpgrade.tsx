@@ -229,7 +229,7 @@ const UpgradePreview: FC<{
   restoration: SuperTokenUpgradeRestoration;
 }> = ({ restoration: { amountWei, tokenUpgrade } }) => {
   return (
-    <Typography variant="body2" sx={{ my: 2 }}>
+    <Typography variant="body2">
       You are upgrading from {ethers.utils.formatEther(amountWei)}{" "}
       {tokenUpgrade.underlyingToken.symbol} to the super token{" "}
       {tokenUpgrade.superToken.symbol}.
@@ -242,7 +242,7 @@ const AllowancePreview: FC<{
   symbol: string;
 }> = ({ amountWei, symbol }) => {
   return (
-    <Typography variant="body2" sx={{ my: 2 }}>
+    <Typography variant="body2">
       You are approving extra allowance of {ethers.utils.formatEther(amountWei)}{" "}
       {symbol} for Superfluid Protocol to use.
     </Typography>

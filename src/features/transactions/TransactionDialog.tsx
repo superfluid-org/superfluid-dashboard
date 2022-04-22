@@ -15,6 +15,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
 import UnknownMutationResult from "../../unknownMutationResult";
+import { useNetworkContext } from "../network/NetworkContext";
 
 export const TransactionDialog: FC<{
   open: boolean;
@@ -22,6 +23,7 @@ export const TransactionDialog: FC<{
   mutationResult: UnknownMutationResult;
 }> = ({ open, onClose, mutationResult, children }) => {
   const theme = useTheme();
+  const { network } = useNetworkContext();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
@@ -50,7 +52,9 @@ export const TransactionDialog: FC<{
         <DialogContentText>
           <Stack spacing={2} alignItems="center">
             {mutationResult.isError ? (
-              <Alert severity="error" sx={{ wordBreak: "break-word"}}>{mutationResult.error?.message}</Alert>
+              <Alert severity="error" sx={{ wordBreak: "break-word" }}>
+                {mutationResult.error?.message}
+              </Alert>
             ) : (
               <>
                 <Typography>
@@ -61,11 +65,14 @@ export const TransactionDialog: FC<{
                   )}
                 </Typography>
                 {!mutationResult.isSuccess && (
-                  <Typography>Waiting for transaction approval...</Typography>
+                  <Typography>Waiting for transaction approval... ({ network.displayName })</Typography>
                 )}
-                {mutationResult.isSuccess
-                  ? "Transaction broadcasted"
-                  : children}
+                <Stack sx={{ my: 2 }}>
+                  {" "}
+                  {mutationResult.isSuccess
+                    ? "Transaction broadcasted"
+                    : children}
+                </Stack>
               </>
             )}
           </Stack>

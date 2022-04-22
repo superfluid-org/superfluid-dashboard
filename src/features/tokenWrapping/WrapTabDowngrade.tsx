@@ -170,7 +170,7 @@ const DowngradePreview: FC<{
   restoration: SuperTokenDowngradeRestoration;
 }> = ({ restoration: { amountWei, tokenUpgrade } }) => {
   return (
-    <Typography variant="body2" sx={{ my: 2 }}>
+    <Typography variant="body2">
       You are downgrading from {ethers.utils.formatEther(amountWei)}{" "}
       {tokenUpgrade.superToken.symbol} to the underlying token{" "}
       {tokenUpgrade.underlyingToken.symbol}.
