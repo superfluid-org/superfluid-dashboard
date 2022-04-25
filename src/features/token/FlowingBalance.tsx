@@ -40,17 +40,16 @@ export default memo(function FlowingBalance({
     let lastAnimationTimestamp: DOMHighResTimeStamp = 0;
 
     const animationStep = (currentAnimationTimestamp: DOMHighResTimeStamp) => {
+      animationFrameId = window.requestAnimationFrame(animationStep); // Set next frame ASAP, otherwise race-conditions might happen when trying to cancel.
+
       if (
         currentAnimationTimestamp - lastAnimationTimestamp >
         ANIMATION_MINIMUM_STEP_TIME
       ) {
-        animationFrameId = window.requestAnimationFrame(animationStep); // Set next frame ASAP, otherwise race-conditions might happen when trying to cancel.
 
         const currentTimestampBigNumber = ethers.BigNumber.from(
           new Date().valueOf() // Milliseconds elapsed since UTC epoch, disregards timezone.
         );
-
-console.log("hmm")
 
         setWeiValue(
           balanceBigNumber.add(
