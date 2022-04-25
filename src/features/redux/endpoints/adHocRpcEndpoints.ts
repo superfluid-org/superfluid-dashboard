@@ -6,7 +6,7 @@ import {
   TransactionInfo,
   getSigner,
   RpcEndpointBuilder,
-  registerNewTransactionAndReturnQueryFnResult,
+  registerNewTransactionAndReturnQueryFnResult
 } from "@superfluid-finance/sdk-redux";
 
 declare module "@superfluid-finance/sdk-redux" {

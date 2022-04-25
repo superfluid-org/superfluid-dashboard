@@ -1,5 +1,5 @@
 import { TrackedTransaction } from "@superfluid-finance/sdk-redux";
-import { transactionTrackerSelectors } from "@superfluid-finance/sdk-redux/dist/module/reduxSlices/transactionTrackerSlice/transactionTrackerSlice";
+import { transactionTrackerSelectors } from "@superfluid-finance/sdk-redux";
 import { useMemo } from "react";
 import { useAppSelector } from "../redux/store";
 import { useWalletContext } from "./WalletContext";

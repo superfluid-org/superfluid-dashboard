@@ -20,7 +20,7 @@
     "@mui/material": "latest",
     "@reduxjs/toolkit": "latest",
     "@superfluid-finance/sdk-core": "0.3.3-dev.fb5b7e6.0",
-    "@superfluid-finance/sdk-redux": "0.3.1-PR712.46dced1.0",
+    "@superfluid-finance/sdk-redux": "0.3.1-PR712.22acad6.0",
     "@walletconnect/web3-provider": "^1.7.5",
     "axios": "^0.26.1",
     "decimal.js": "^10.3.1",

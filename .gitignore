@@ -1,6 +1,9 @@
 
-# Created by https://www.toptal.com/developers/gitignore/api/nextjs,react,webstorm,visualstudiocode
-# Edit at https://www.toptal.com/developers/gitignore?templates=nextjs,react,webstorm,visualstudiocode
+# Created by https://www.toptal.com/developers/gitignore/api/react,nextjs,webstorm,visualstudiocode,dotenv
+# Edit at https://www.toptal.com/developers/gitignore?templates=react,nextjs,webstorm,visualstudiocode,dotenv
+
+### dotenv ###
+.env
 
 ### NextJS ###
 # Next build dir
@@ -152,5 +155,4 @@ fabric.properties
 # https://plugins.jetbrains.com/plugin/12206-codestream
 .idea/codestream.xml
 
-# End of https://www.toptal.com/developers/gitignore/api/nextjs,react,webstorm,visualstudiocode
-
+# End of https://www.toptal.com/developers/gitignore/api/react,nextjs,webstorm,visualstudiocode,dotenv
