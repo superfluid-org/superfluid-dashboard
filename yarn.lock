@@ -943,10 +943,10 @@
     lodash "^4.17.21"
     tsify "^5.0.4"
 
-"@superfluid-finance/sdk-redux@0.2.3-PR712.8eb25ab.0":
-  version "0.2.3-PR712.8eb25ab.0"
-  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-redux/0.2.3-PR712.8eb25ab.0/d66aa9ef89ea65cfb7692ff0bb3a8385ec1e3426bb6ffdb59036f4385ed45b8e#fa17857ea704952eec2fa0160a7dcce4c5203c95"
-  integrity sha512-x26lvMejTdmwQmjklIBBVHbOIpOu6TOsXGPCf89ZB4lE0qzP2WG/bp9wiySm/PklvgYKtNfaekrMqlhg5xXwMA==
+"@superfluid-finance/sdk-redux@0.3.1-PR712.46dced1.0":
+  version "0.3.1-PR712.46dced1.0"
+  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-redux/0.3.1-PR712.46dced1.0/dba1fd68081311d8f731ae5de3e3c85d5f4eaf21e55ab5973d3144ca63c9803a#04209637886263352426c4063f278b8da0bbdcba"
+  integrity sha512-f6dE2m3szNUBDUKEk2D8Pm0gjKP24112O67YUR8rzYO8iwFxbPXW+hzOKHEgtWELz1R1M8VpyvJHnLHzZsFgoA==
   dependencies:
     "@types/promise-retry" "^1.1.3"
     ethers "^5.5.4"
@@ -973,6 +973,11 @@
   version "0.0.29"
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
+
+"@types/lodash@^4.14.182":
+  version "4.14.182"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.182.tgz#05301a4d5e62963227eaafe0ce04dd77c54ea5c2"
+  integrity sha512-/THyiqyQAP9AfARo4pF+aCGcyiQ94tX/Is2I7HofNRqoYLgN1PBoOWu2/zTA5zMxzP5EFutMtWtGAFRKUe961Q==
 
 "@types/node@*", "@types/node@latest":
   version "17.0.23"

@@ -50,6 +50,8 @@ export default memo(function FlowingBalance({
           new Date().valueOf() // Milliseconds elapsed since UTC epoch, disregards timezone.
         );
 
+console.log("hmm")
+
         setWeiValue(
           balanceBigNumber.add(
             currentTimestampBigNumber

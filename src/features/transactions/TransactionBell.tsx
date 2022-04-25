@@ -1,22 +1,17 @@
 import { Badge, IconButton } from "@mui/material";
-import { transactionSelectors } from "@superfluid-finance/sdk-redux";
 import { useWalletContext } from "../wallet/WalletContext";
-import { useAppSelector } from "../redux/store";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
 import { memo } from "react";
+import { useWalletTransactions } from "../wallet/useWalletTransactions";
 
 export default memo(function TransactionBell() {
   const { walletAddress } = useWalletContext();
   const { transactionDrawerOpen, setTransactionDrawerOpen } =
     useTransactionDrawerContext();
 
-  const pendingTransactions = useAppSelector((state) =>
-    walletAddress
-      ? transactionSelectors
-          .selectAll(state.superfluid_transactions)
-          .filter((x) => x.signer === walletAddress && x.status === "Pending")
-      : []
+  const pendingTransactions = useWalletTransactions((x) =>
+    x.filter((x) => x.signer === walletAddress && x.status === "Pending")
   );
 
   return (
