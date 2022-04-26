@@ -27,6 +27,12 @@ export const adHocRpcEndpoints = {
           data: await balanceFetcher.getUnderlyingBalance(arg),
         };
       },
+      providesTags: (_result, _error, arg) => [
+        {
+          type: "GENERAL",
+          id: arg.chainId, // TODO(KK): Could be made more specific.
+        },
+      ],
     }),
     realtimeBalance: builder.query<RealtimeBalance, BalanceQueryParams>({
       queryFn: async (arg) => {
@@ -34,6 +40,12 @@ export const adHocRpcEndpoints = {
           data: await balanceFetcher.getRealtimeBalance(arg),
         };
       },
+      providesTags: (_result, _error, arg) => [
+        {
+          type: "GENERAL",
+          id: arg.chainId, // TODO(KK): Could be made more specific.
+        },
+      ],
     }),
     balance: builder.query<
       string,
