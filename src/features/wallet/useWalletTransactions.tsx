@@ -14,7 +14,7 @@ export const useWalletTransactions = (
   const allTransactions = useAppSelector(transactionTrackerSelectors.selectAll);
   const walletTransactions = useMemo(
     () => allTransactions.filter((x) => x.signer === walletAddress),
-    [allTransactions]
+    [allTransactions, walletAddress]
   );
   const finalTransactions = useMemo(
     () => postProcess(walletTransactions),

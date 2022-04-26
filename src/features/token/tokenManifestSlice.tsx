@@ -17,7 +17,7 @@ export const assetApiSlice = createApi({
   endpoints: (builder) => ({
     tokenManifest: builder.query<TokenManifest | null, { tokenSymbol: string }>(
       {
-        keepUnusedDataFor: Infinity,
+        keepUnusedDataFor: 360,
         queryFn: async ({ tokenSymbol }) => {
           const manifest = await axios
             .get(

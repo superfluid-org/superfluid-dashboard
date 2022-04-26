@@ -11,6 +11,7 @@ import {
   registerNewTransactionAndReturnQueryFnResult,
 } from "@superfluid-finance/sdk-redux";
 import { COIN_ADDRESS } from "./adHocSubgraphEndpoints";
+import { balanceFetcher, BalanceQueryParams, UnderlyingBalance, RealtimeBalance } from "./balanceFetcher";
 
 declare module "@superfluid-finance/sdk-redux" {
   interface TransactionTitleOverrides {
@@ -20,6 +21,20 @@ declare module "@superfluid-finance/sdk-redux" {
 
 export const adHocRpcEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
+    underlyingBalance: builder.query<UnderlyingBalance, BalanceQueryParams>({
+      queryFn: async (arg) => {
+        return {
+          data: await balanceFetcher.getUnderlyingBalance(arg),
+        };
+      },
+    }),
+    realtimeBalance: builder.query<RealtimeBalance, BalanceQueryParams>({
+      queryFn: async (arg) => {
+        return {
+          data: await balanceFetcher.getRealtimeBalance(arg),
+        };
+      },
+    }),
     balance: builder.query<
       string,
       { chainId: number; tokenAddress: string; accountAddress: string }

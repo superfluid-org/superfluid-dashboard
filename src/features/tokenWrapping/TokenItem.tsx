@@ -3,6 +3,8 @@ import { FC } from "react";
 import TokenIcon from "../token/TokenIcon";
 import EtherFormatted from "../token/EtherFormatted";
 import FlowingBalance from "../token/FlowingBalance";
+import { rpcApi } from "../redux/store";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 const etherDecimalPlaces = 8;
 
@@ -13,21 +15,49 @@ export const TokenItem: FC<{
   tokenAddress: string;
   tokenSymbol: string;
   tokenName: string;
-  balanceLoading: boolean;
   balanceWei?: string;
   balanceTimestamp?: number;
   flowRate?: string;
-}> = ({
-  chainId,
-  accountAddress,
-  tokenAddress,
-  tokenSymbol,
-  tokenName,
-  balanceLoading,
-  balanceWei,
-  balanceTimestamp,
-  flowRate,
-}) => {
+  isSuperToken: boolean;
+}> = (arg) => {
+  const {
+    chainId,
+    accountAddress,
+    tokenAddress,
+    tokenSymbol,
+    tokenName,
+    isSuperToken,
+  } = arg;
+
+  const underlyingBalanceQuery = rpcApi.useUnderlyingBalanceQuery(
+    chainId && accountAddress && !isSuperToken
+      ? {
+          chainId,
+          accountAddress,
+          tokenAddress,
+        }
+      : skipToken
+  );
+
+  const realtimeBalanceQuery = rpcApi.useRealtimeBalanceQuery(
+    chainId && accountAddress && isSuperToken
+      ? {
+          chainId,
+          accountAddress,
+          tokenAddress,
+        }
+      : skipToken
+  );
+
+  const balanceWei = isSuperToken
+    ? realtimeBalanceQuery?.data?.balance || arg.balanceWei
+    : underlyingBalanceQuery?.data?.balance || arg.balanceWei;
+
+  const balanceTimestamp =
+    realtimeBalanceQuery?.data?.balanceTimestamp || arg.balanceTimestamp;
+
+  const flowRate = realtimeBalanceQuery?.data?.flowRate || arg.flowRate;
+
   return (
     <Stack
       direction="row"
@@ -62,11 +92,7 @@ export const TokenItem: FC<{
                   etherDecimalPlaces={etherDecimalPlaces}
                 />
               )
-            ) : balanceLoading ? (
-              null // We could show something else for loading... but I feel like the spinners draw too much attention in this case. 
-            ) : (
-              <EtherFormatted wei={0} />
-            )}
+            ) : null}
           </Typography>
         )}
       </Stack>

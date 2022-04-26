@@ -211,15 +211,12 @@ export const TokenDialog: FC<{
                 <ListItemButton onClick={() => onSelect(x)}>
                   {prioritizeSuperTokens ? (
                     <TokenItem
+                      isSuperToken={true}
                       chainId={network.chainId}
                       accountAddress={walletAddress}
                       tokenAddress={x.superToken.address}
                       tokenSymbol={x.superToken.symbol}
                       tokenName={x.superToken.name}
-                      balanceLoading={
-                        superTokenBalancesQuery.isUninitialized ||
-                        superTokenBalancesQuery.isLoading
-                      }
                       balanceWei={
                         superTokenBalances[x.superToken.address]
                           ?.balanceUntilUpdatedAt
@@ -235,15 +232,12 @@ export const TokenDialog: FC<{
                     />
                   ) : (
                     <TokenItem
+                      isSuperToken={false}
                       chainId={network.chainId}
                       accountAddress={walletAddress}
                       tokenAddress={x.underlyingToken.address}
                       tokenSymbol={x.underlyingToken.symbol}
                       tokenName={x.underlyingToken.name}
-                      balanceLoading={
-                        underlyingTokenBalancesQuery.isUninitialized ||
-                        underlyingTokenBalancesQuery.isLoading
-                      }
                       balanceWei={
                         underlyingTokenBalances[x.underlyingToken.address]
                       }
