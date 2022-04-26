@@ -1,13 +1,16 @@
 import {
-  ERC20Token
+  ERC20Token,
+  NativeAssetSuperToken,
+  WrapperSuperToken,
 } from "@superfluid-finance/sdk-core";
 import {
   getFramework,
   TransactionInfo,
   getSigner,
   RpcEndpointBuilder,
-  registerNewTransactionAndReturnQueryFnResult
+  registerNewTransactionAndReturnQueryFnResult,
 } from "@superfluid-finance/sdk-redux";
+import { COIN_ADDRESS } from "./adHocSubgraphEndpoints";
 
 declare module "@superfluid-finance/sdk-redux" {
   interface TransactionTitleOverrides {
@@ -17,31 +20,44 @@ declare module "@superfluid-finance/sdk-redux" {
 
 export const adHocRpcEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
-    balanceOf: builder.query<
+    balance: builder.query<
       string,
       { chainId: number; tokenAddress: string; accountAddress: string }
     >({
       queryFn: async (arg) => {
         const framework = await getFramework(arg.chainId);
-        return {
-          data: await new ERC20Token(arg.tokenAddress).balanceOf({
-            account: arg.accountAddress,
-            providerOrSigner: framework.settings.provider,
-          }),
-        };
+
+        if (arg.tokenAddress === COIN_ADDRESS) {
+          return {
+            data: (
+              await framework.settings.provider.getBalance(arg.accountAddress)
+            ).toString(),
+          };
+        } else {
+          return {
+            data: (
+              await new ERC20Token(arg.tokenAddress).balanceOf({
+                account: arg.accountAddress,
+                providerOrSigner: framework.settings.provider,
+              })
+            ).toString(),
+          };
+        }
       },
-      providesTags: (_result, _error, arg) => [ {
-        type: "GENERAL",
-        id: arg.chainId // TODO(KK): Could be made more specific.
-      }],
+      providesTags: (_result, _error, arg) => [
+        {
+          type: "GENERAL",
+          id: arg.chainId, // TODO(KK): Could be made more specific.
+        },
+      ],
     }),
     realtimeBalanceOfNow: builder.query<
-    {
-      availableBalance: string;
-      deposit: string;
-      owedDeposit: string;
-      timestampMs: number;
-    },
+      {
+        availableBalance: string;
+        deposit: string;
+        owedDeposit: string;
+        timestampMs: number;
+      },
       { chainId: number; tokenAddress: string; accountAddress: string }
     >({
       queryFn: async (arg) => {
@@ -57,7 +73,7 @@ export const adHocRpcEndpoints = {
             availableBalance: realtimeBalanceOfNow.availableBalance,
             deposit: realtimeBalanceOfNow.deposit,
             owedDeposit: realtimeBalanceOfNow.owedDeposit,
-            timestampMs: realtimeBalanceOfNow.timestamp.getTime()
+            timestampMs: realtimeBalanceOfNow.timestamp.getTime(),
           },
         };
       },
@@ -78,6 +94,12 @@ export const adHocRpcEndpoints = {
           arg.superTokenAddress
         );
 
+        if (!(superToken instanceof WrapperSuperToken)) {
+          throw new Error(
+            "Only wrapped ERC-20 super tokens need to approve their underlying token."
+          );
+        }
+
         const transactionResponse = await superToken.underlyingToken
           .approve({
             amount: arg.amountWei,
@@ -94,7 +116,7 @@ export const adHocRpcEndpoints = {
           title: "Approve Allowance",
           extraData: undefined,
         });
-      }
+      },
     }),
   }),
 };

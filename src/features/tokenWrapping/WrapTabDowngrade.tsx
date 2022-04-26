@@ -2,7 +2,7 @@ import React, { FC, useEffect, useRef, useState } from "react";
 import { SuperTokenDowngradeRestoration } from "../transactionRestoration/transactionRestorations";
 import { useNetworkContext } from "../network/NetworkContext";
 import { useWalletContext } from "../wallet/WalletContext";
-import { TokenUpgradeDowngradePair } from "../redux/endpoints/adHocSubgraphEndpoints";
+import { WrappedSuperTokenPair } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { BigNumber, ethers } from "ethers";
 import { rpcApi } from "../redux/store";
 import { Chip, Stack, TextField, Typography } from "@mui/material";
@@ -19,7 +19,7 @@ export const WrapTabDowngrade: FC<{
   const { walletAddress } = useWalletContext();
 
   const [selectedTokenPair, setSelectedTokenPair] = useState<
-    TokenUpgradeDowngradePair | undefined
+    WrappedSuperTokenPair | undefined
   >(network.defaultTokenPair);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export const WrapTabDowngrade: FC<{
     }
   }, [restoration]);
 
-  const onTokenChange = (token: TokenUpgradeDowngradePair | undefined) => {
+  const onTokenChange = (token: WrappedSuperTokenPair | undefined) => {
     setSelectedTokenPair(token);
   };
 

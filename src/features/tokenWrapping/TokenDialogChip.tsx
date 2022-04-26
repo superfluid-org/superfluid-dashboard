@@ -1,19 +1,19 @@
 import { FC, useEffect, useState } from "react";
-import { TokenUpgradeDowngradePair } from "../redux/endpoints/adHocSubgraphEndpoints";
+import { WrappedSuperTokenPair } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { Chip, Stack } from "@mui/material";
 import TokenIcon from "../token/TokenIcon";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { TokenDialog } from "./TokenDialog";
 
 export const TokenDialogChip: FC<{
-  selectedTokenPair?: TokenUpgradeDowngradePair;
-  onSelect: (tokenUpgrade: TokenUpgradeDowngradePair | undefined) => void;
+  selectedTokenPair?: WrappedSuperTokenPair;
+  onSelect: (tokenUpgrade: WrappedSuperTokenPair | undefined) => void;
   prioritizeSuperTokens: boolean;
 }> = ({ prioritizeSuperTokens, onSelect, selectedTokenPair }) => {
   const [open, setOpen] = useState(false);
 
   const [_selectedTokenPair, setSelectedTokenPair] = useState<
-    TokenUpgradeDowngradePair | undefined
+    WrappedSuperTokenPair | undefined
   >(selectedTokenPair);
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export const TokenDialogChip: FC<{
     setOpen(false);
   };
 
-  const _onSelect = (token: TokenUpgradeDowngradePair) => {
+  const _onSelect = (token: WrappedSuperTokenPair) => {
     setSelectedTokenPair(token);
     onSelect(token);
     setOpen(false);

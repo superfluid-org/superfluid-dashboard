@@ -3,13 +3,15 @@ import {rpcApi} from "../redux/store";
 import {Typography} from "@mui/material";
 import EtherFormatted from "../token/EtherFormatted";
 import {ethers} from "ethers";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { COIN_ADDRESS } from "../redux/endpoints/adHocSubgraphEndpoints";
 
 export const BalanceUnderlyingToken: FC<{
     chainId: number;
     accountAddress: string;
     tokenAddress: string;
 }> = ({chainId, accountAddress, tokenAddress}) => {
-    const balanceOfQuery = rpcApi.useBalanceOfQuery({
+    const balanceQuery = rpcApi.useBalanceQuery({
         chainId,
         accountAddress,
         tokenAddress,
@@ -18,13 +20,13 @@ export const BalanceUnderlyingToken: FC<{
     return (
         <Typography variant="body2">
             Balance:{" "}
-            {balanceOfQuery.error ? (
+            {balanceQuery.error ? (
                 "error"
-            ) : balanceOfQuery.isUninitialized || balanceOfQuery.isLoading ? (
+            ) : balanceQuery.isUninitialized || balanceQuery.isLoading ? (
                 ""
             ) : (
                 <EtherFormatted
-                    wei={ethers.BigNumber.from(balanceOfQuery?.data ?? 0).toString()}
+                    wei={ethers.BigNumber.from(balanceQuery?.data ?? 0).toString()}
                 />
             )}
         </Typography>

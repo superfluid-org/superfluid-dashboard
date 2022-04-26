@@ -1,5 +1,5 @@
 import { FC, useCallback, useState, useMemo, useEffect } from "react";
-import { TokenUpgradeDowngradePair } from "../redux/endpoints/adHocSubgraphEndpoints";
+import { WrappedSuperTokenPair } from "../redux/endpoints/adHocSubgraphEndpoints";
 import {
   CircularProgress,
   Dialog,
@@ -28,7 +28,7 @@ import { ethers } from "ethers";
 export const TokenDialog: FC<{
   open: boolean;
   onClose: () => void;
-  onSelect: (tokenPair: TokenUpgradeDowngradePair) => void;
+  onSelect: (tokenPair: WrappedSuperTokenPair) => void;
   prioritizeSuperTokens: boolean;
 }> = ({ open, onClose, onSelect, prioritizeSuperTokens }) => {
   const theme = useTheme();
@@ -37,11 +37,10 @@ export const TokenDialog: FC<{
   const { walletAddress } = useWalletContext();
 
   const [openCounter, setOpenCounter] = useState(0);
-
   useEffect(() => {
     if (open) {
       setOpenCounter(openCounter + 1);
-      setSearchTerm("");
+      setSearchTerm(""); // Reset the search term when the dialog opens, not when it closes (because then there would be noticable visual clearing of the field). It's smoother UI to do it on opening.
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);

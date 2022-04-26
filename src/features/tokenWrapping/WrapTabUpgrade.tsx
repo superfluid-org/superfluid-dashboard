@@ -2,7 +2,10 @@ import { FC, useEffect, useRef, useState } from "react";
 import { SuperTokenUpgradeRestoration } from "../transactionRestoration/transactionRestorations";
 import { useNetworkContext } from "../network/NetworkContext";
 import { useWalletContext } from "../wallet/WalletContext";
-import { TokenUpgradeDowngradePair } from "../redux/endpoints/adHocSubgraphEndpoints";
+import {
+  COIN_ADDRESS,
+  WrappedSuperTokenPair,
+} from "../redux/endpoints/adHocSubgraphEndpoints";
 import { BigNumber, ethers } from "ethers";
 import { rpcApi } from "../redux/store";
 import { skipToken } from "@reduxjs/toolkit/query";
@@ -20,7 +23,7 @@ export const WrapTabUpgrade: FC<{
   const { walletAddress } = useWalletContext();
 
   const [selectedTokenPair, setSelectedTokenPair] = useState<
-    TokenUpgradeDowngradePair | undefined
+    WrappedSuperTokenPair | undefined
   >(network.defaultTokenPair);
 
   useEffect(() => {
@@ -45,12 +48,15 @@ export const WrapTabUpgrade: FC<{
     }
   }, [restoration]);
 
-  const onTokenChange = (token: TokenUpgradeDowngradePair | undefined) => {
+  const onTokenChange = (token: WrappedSuperTokenPair | undefined) => {
     setSelectedTokenPair(token);
   };
 
+  const isUnderlyingBlockchainNativeAsset =
+    selectedTokenPair?.underlyingToken.address !== COIN_ADDRESS;
+
   const allowanceQuery = rpcApi.useSuperTokenUpgradeAllowanceQuery(
-    selectedTokenPair && walletAddress
+    selectedTokenPair && !isUnderlyingBlockchainNativeAsset && walletAddress
       ? {
           chainId: network.chainId,
           accountAddress: walletAddress,
@@ -67,7 +73,7 @@ export const WrapTabUpgrade: FC<{
     ? currentAllowance.gt(amountWei)
       ? ethers.BigNumber.from(0)
       : amountWei.sub(currentAllowance)
-    : null;
+    : ethers.BigNumber.from(0);
 
   const [approveTrigger, approveResult] = rpcApi.useApproveMutation();
   const [upgradeTrigger, upgradeResult] = rpcApi.useSuperTokenUpgradeMutation();

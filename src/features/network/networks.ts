@@ -1,4 +1,4 @@
-import { TokenUpgradeDowngradePair } from "../redux/endpoints/adHocSubgraphEndpoints";
+import { WrappedSuperTokenPair } from "../redux/endpoints/adHocSubgraphEndpoints";
 
 export type Network = {
   displayName: string;
@@ -9,7 +9,10 @@ export type Network = {
   getLinkForTransaction(txHash: string): string;
   getLinkForAddress(adderss: string): string;
   isTestnet: boolean;
-  defaultTokenPair: TokenUpgradeDowngradePair | undefined;
+  coin: {
+    symbol: string;
+  };
+  defaultTokenPair: WrappedSuperTokenPair | undefined;
 };
 
 export const networks: Network[] = [
@@ -25,6 +28,9 @@ export const networks: Network[] = [
       `https://ropsten.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://ropsten.etherscan.io/address/${address}`,
+    coin: {
+      symbol: "ETH"
+    },
     defaultTokenPair: {
       superToken: {
         address: "0xbf6201a6c48b56d8577edd079b84716bb4918e8a",
@@ -50,6 +56,9 @@ export const networks: Network[] = [
       `https://rinkeby.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://rinkeby.etherscan.io/address/${address}`,
+    coin: {
+      symbol: "ETH"
+    },
     defaultTokenPair: {
       superToken: {
         address: "0x745861aed1eee363b4aaa5f1994be40b1e05ff90",
@@ -76,6 +85,9 @@ export const networks: Network[] = [
       `https://goerli.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://goerli.etherscan.io/address/${address}`,
+    coin: {
+      symbol: "ETH"
+    },
     defaultTokenPair: {
       superToken: {
         address: "0xf2d68898557ccb2cf4c10c3ef2b034b2a69dad00",
@@ -101,6 +113,9 @@ export const networks: Network[] = [
       `https://kovan.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://kovan.etherscan.io/address/${address}`,
+    coin: {
+      symbol: "ETH"
+    },
     defaultTokenPair: {
       superToken: {
         address: "0xe3cb950cb164a31c66e32c320a800d477019dcff",
@@ -126,6 +141,9 @@ export const networks: Network[] = [
       `https://blockscout.com/xdai/mainnet/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://blockscout.com/xdai/mainnet/address/${address}`,
+    coin: {
+      symbol: "xDai"
+    },
     defaultTokenPair: {
       superToken: {
         address: "0x59988e47a3503aafaa0368b9def095c818fdca01",
@@ -151,6 +169,9 @@ export const networks: Network[] = [
       `https://polygonscan.com/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://polygonscan.com/address/${address}`,
+    coin: {
+      symbol: "MATIC",
+    },
     defaultTokenPair: {
       superToken: {
         address: "0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3",
@@ -176,6 +197,9 @@ export const networks: Network[] = [
       `https://mumbai.polygonscan.com/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://mumbai.polygonscan.com/address/${address}`,
+    coin: {
+      symbol: "MATIC"
+    },
     defaultTokenPair: {
       superToken: {
         address: "0x5d8b4c2554aeb7e86f387b4d6c00ac33499ed01f",
@@ -201,6 +225,9 @@ export const networks: Network[] = [
       `https://rinkeby-explorer.arbitrum.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://rinkeby-explorer.arbitrum.io/address/${address}`,
+    coin: {
+      symbol: "ETH"
+    },
     defaultTokenPair: {
       superToken: {
         address: "0x4b746f88fb25516731d54cefb1c2d00eadeff366",
@@ -226,6 +253,9 @@ export const networks: Network[] = [
       `https://kovan-optimistic.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://kovan-optimistic.etherscan.io/address/${address}`,
+    coin: {
+      symbol: "ETH"
+    },
     defaultTokenPair: {
       superToken: {
         address: "0x04d4f73e9de52a8fec544087a66bbba660a35957",
@@ -251,6 +281,9 @@ export const networks: Network[] = [
       `https://testnet.snowtrace.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://testnet.snowtrace.io/address/${address}`,
+    coin: {
+      symbol: "AVAX"
+    },
     defaultTokenPair: {
       superToken: {
         address: "0x296e9c01f80d408741f6e15d62013ddbe1041f1d",
@@ -276,6 +309,9 @@ export const networks: Network[] = [
       `https://optimistic.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://optimistic.etherscan.io/address/${address}`,
+    coin: {
+      symbol: "ETH"
+    },
     defaultTokenPair: {
       superToken: {
         address: "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
@@ -301,6 +337,9 @@ export const networks: Network[] = [
       `https://arbiscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://arbiscan.io/address/${address}`,
+    coin: {
+      symbol: "ETH"
+    },
     defaultTokenPair: undefined,
   },
 ];

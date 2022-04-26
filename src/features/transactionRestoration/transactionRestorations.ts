@@ -1,14 +1,14 @@
-import { TokenUpgradeDowngradePair } from '../redux/endpoints/adHocSubgraphEndpoints';
+import { WrappedSuperTokenPair } from '../redux/endpoints/adHocSubgraphEndpoints';
 
 export interface SuperTokenDowngradeRestoration {
   chainId: number;
-  tokenUpgrade: TokenUpgradeDowngradePair;
+  tokenUpgrade: WrappedSuperTokenPair;
   amountWei: string;
 }
 
 export interface SuperTokenUpgradeRestoration {
   chainId: number;
-  tokenUpgrade: TokenUpgradeDowngradePair;
+  tokenUpgrade: WrappedSuperTokenPair;
   amountWei: string;
 }
 
