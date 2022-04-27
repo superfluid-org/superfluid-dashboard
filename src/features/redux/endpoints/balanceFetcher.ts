@@ -27,7 +27,7 @@ export type BalanceQueryParams = {
 const getKey = (params: BalanceQueryParams): string =>
   `${params.chainId}-${params.tokenAddress}-${params.accountAddress}`.toLowerCase();
 
-const networkStates: Record<
+const mutableNetworkStates: Record<
   number,
   {
     queryBatch: { isSuperToken: boolean; params: BalanceQueryParams }[];
@@ -44,26 +44,26 @@ const createFetching = (
 ): Promise<Record<string, UnderlyingBalance | RealtimeBalance>> => {
   return new Promise(async (resolve) => {
     setTimeout(async () => {
-      const state = networkStates[chainId];
+      const state = mutableNetworkStates[chainId];
       state.nextFetching = null;
 
       if (state.queryBatch.length) {
         const queries = state.queryBatch.splice(0, state.queryBatch.length); // Makes a copy of the queries and empties the original array.
+        const framework = await getFramework(chainId);
 
         const superTokenCalls = (
           await Promise.all(
             queries
               .filter((x) => x.isSuperToken)
-              .map((x) => createSuperTokenCall(x.params))
+              .map((x) => createRealtimeBalanceCalls(framework.contracts.cfaV1.address, x.params))
           )
         ).flat();
 
         const underlyingTokenCalls = queries
           .filter((x) => !x.isSuperToken)
-          .map((x) => createRegularTokenCall(x.params));
+          .map((x) => createUnderlyingBalanceCall(x.params));
 
         const contractCalls = superTokenCalls.concat(underlyingTokenCalls);
-        const framework = await getFramework(chainId);
 
         const multicall = new Multicall({
           ethersProvider: framework.settings.provider,
@@ -119,7 +119,7 @@ export const balanceFetcher = {
   async getUnderlyingBalance(
     params: BalanceQueryParams
   ): Promise<UnderlyingBalance> {
-    const state = networkStates[params.chainId];
+    const state = mutableNetworkStates[params.chainId];
     state.queryBatch.push({
       params,
       isSuperToken: false,
@@ -128,7 +128,7 @@ export const balanceFetcher = {
     return (await state.nextFetching)[getKey(params)] as UnderlyingBalance;
   },
   async getRealtimeBalance(params: BalanceQueryParams): Promise<RealtimeBalance> {
-    const state = networkStates[params.chainId];
+    const state = mutableNetworkStates[params.chainId];
     state.queryBatch.push({
       params,
       isSuperToken: true,
@@ -138,7 +138,7 @@ export const balanceFetcher = {
   },
 };
 
-const createRegularTokenCall = (
+const createUnderlyingBalanceCall = (
   params: BalanceQueryParams
 ): ContractCallContext => {
   if (params.tokenAddress === COIN_ADDRESS) {
@@ -200,11 +200,10 @@ const createRegularTokenCall = (
   }
 };
 
-const createSuperTokenCall = async (
+const createRealtimeBalanceCalls = async (
+  cfaContractAddress: string,
   params: BalanceQueryParams
 ): Promise<[ContractCallContext, ContractCallContext]> => {
-  const framework = await getFramework(params.chainId);
-
   return [
     {
       reference: getKey(params) + "-realtimeBalanceOfNow",
@@ -255,7 +254,7 @@ const createSuperTokenCall = async (
     },
     {
       reference: getKey(params) + "-getNetFlow",
-      contractAddress: framework.contracts.cfaV1.address,
+      contractAddress: cfaContractAddress,
       abi: [
         {
           name: "getNetFlow",
