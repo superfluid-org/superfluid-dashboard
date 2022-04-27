@@ -53,7 +53,7 @@ export const WrapTabUpgrade: FC<{
   };
 
   const isUnderlyingBlockchainNativeAsset =
-    selectedTokenPair?.underlyingToken.address !== COIN_ADDRESS;
+    selectedTokenPair?.underlyingToken.address === COIN_ADDRESS;
 
   const allowanceQuery = rpcApi.useSuperTokenUpgradeAllowanceQuery(
     selectedTokenPair && !isUnderlyingBlockchainNativeAsset && walletAddress

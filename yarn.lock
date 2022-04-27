@@ -984,10 +984,10 @@
   resolved "https://registry.yarnpkg.com/@rushstack/eslint-patch/-/eslint-patch-1.1.1.tgz#782fa5da44c4f38ae9fd38e9184b54e451936118"
   integrity sha512-BUyKJGdDWqvWC5GEhyOiUrGNi9iJUr4CU0O2WxJL6QJhHeeA/NVBalH+FeK0r/x/W0rPymXt5s78TDS7d6lCwg==
 
-"@superfluid-finance/sdk-core@0.3.3-dev.873a0d9.0":
-  version "0.3.3-dev.873a0d9.0"
-  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-core/0.3.3-dev.873a0d9.0/a5d3d21101a1927714a201daca73645aa66c810c25130c35b66cb130ed7e961d#d78f565f0c376f249be740f215e5b5854d9bfe8b"
-  integrity sha512-29bW8EbH6EFHCW6Cdv9df3tm8NirQjusCobCQRsNRyqQWywYUWhCzK1leLVZwfQyiPBtjI9xgEqoO2NAMNxERA==
+"@superfluid-finance/sdk-core@0.3.3-dev.9bb2a5b.0":
+  version "0.3.3-dev.9bb2a5b.0"
+  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-core/0.3.3-dev.9bb2a5b.0/d7532ecd6b09a5a5a4c0cc8d6de354d7a3db27fc67686ed9ea86a0e9504f90be#2a8808140b4a78799e5cfb531bc5f93e79248c80"
+  integrity sha512-ZIfs5epMVnZ8e6DoPGtetpXpuXCDHaplfgT+kKsHA3Cu05R5xAEfA9Gv6qHp/cBsdFbn9vo2yYs7/Wmadx4X2w==
   dependencies:
     ajv "^8.11.0"
     browserify "^17.0.0"
@@ -996,10 +996,10 @@
     lodash "^4.17.21"
     tsify "^5.0.4"
 
-"@superfluid-finance/sdk-redux@0.3.1-PR712.22acad6.0":
-  version "0.3.1-PR712.22acad6.0"
-  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-redux/0.3.1-PR712.22acad6.0/7ad7b94caff1aa1d7d89b18b133d197a0903d055bd45345f165142ead41a3f16#d58221e10460dc26b66720b90c17f452e3a4bbc4"
-  integrity sha512-euJfkoBisDQQK4O9L7H1AVPmp/uwLgwRmXIHg9ORHWYyLYm/vwU5Y5+ngHlca2NFMDuufx+acDR4P404B67jBQ==
+"@superfluid-finance/sdk-redux@0.3.1-dev.9bb2a5b.0":
+  version "0.3.1-dev.9bb2a5b.0"
+  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-redux/0.3.1-dev.9bb2a5b.0/68bdc46b4ac92056544abe52811c4cc64e49c94c0327c725e9c2ad63eae0e8ec#6d25dc95650939ae786ea1e41925b76aaf861133"
+  integrity sha512-etY1DVWeFIVcwfnxSCvEXQjIUs8IZoHBR1btt5+8dgkWoSHGMrBmnX6PHNFiGdSr6rakhxdCYM1mSlhnWIwRIA==
   dependencies:
     "@types/promise-retry" "^1.1.3"
     ethers "^5.5.4"
