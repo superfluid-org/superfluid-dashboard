@@ -3,8 +3,7 @@ import { SuperTokenUpgradeRestoration } from "../transactionRestoration/transact
 import { useNetworkContext } from "../network/NetworkContext";
 import { useWalletContext } from "../wallet/WalletContext";
 import {
-  COIN_ADDRESS,
-  WrappedSuperTokenPair,
+  COIN_ADDRESS
 } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { BigNumber, ethers } from "ethers";
 import { rpcApi } from "../redux/store";
@@ -15,23 +14,14 @@ import TokenIcon from "../token/TokenIcon";
 import { TransactionButton } from "../transactions/TransactionButton";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { BalanceSuperToken } from "./BalanceSuperToken";
-import { getNetworkDefaultTokenPair } from "../network/networks";
+import { useSelectedTokenContext } from "./SelectedTokenPairContext";
 
 export const WrapTabUpgrade: FC<{
   restoration: SuperTokenUpgradeRestoration | undefined;
 }> = ({ restoration }) => {
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
-
-  const [selectedTokenPair, setSelectedTokenPair] = useState<
-    WrappedSuperTokenPair | undefined
-  >(getNetworkDefaultTokenPair(network));
-
-  useEffect(() => {
-    if (!selectedTokenPair) {
-      setSelectedTokenPair(getNetworkDefaultTokenPair(network));
-    }
-  }, [selectedTokenPair]);
+  const { selectedTokenPair, setSelectedTokenPair } = useSelectedTokenContext();
 
   const [amount, setAmount] = useState<string>("");
   const [amountWei, setAmountWei] = useState<BigNumber>(
@@ -48,10 +38,6 @@ export const WrapTabUpgrade: FC<{
       setAmount(ethers.utils.formatEther(restoration.amountWei));
     }
   }, [restoration]);
-
-  const onTokenChange = (token: WrappedSuperTokenPair | undefined) => {
-    setSelectedTokenPair(token);
-  };
 
   const isUnderlyingBlockchainNativeAsset =
     selectedTokenPair?.underlyingToken.address === COIN_ADDRESS;
@@ -99,11 +85,7 @@ export const WrapTabUpgrade: FC<{
     <Stack direction="column" spacing={2}>
       <Stack direction="column" spacing={1}>
         <Stack direction="row" justifyContent="space-between" spacing={2}>
-          <TokenDialogChip
-            prioritizeSuperTokens={false}
-            selectedTokenPair={selectedTokenPair}
-            onSelect={onTokenChange}
-          />
+          <TokenDialogChip prioritizeSuperTokens={false} />
           <TextField
             disabled={!selectedTokenPair}
             placeholder="0.0"

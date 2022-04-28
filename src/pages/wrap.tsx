@@ -2,6 +2,7 @@ import { Box, Container } from "@mui/material";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { SelectedTokenContextProvider } from "../features/tokenWrapping/SelectedTokenPairContext";
 import { WrapCard } from "../features/tokenWrapping/WrapCard";
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
 import {
@@ -73,13 +74,15 @@ const Wrap: NextPage = () => {
           alignItems: "center",
         }}
       >
-        {tabValue && (
-          <WrapCard
-            tabValue={tabValue}
-            upgradeRestoration={upgradeRestoration}
-            downgradeRestoration={downgradeRestoration}
-          ></WrapCard>
-        )}
+        <SelectedTokenContextProvider>
+          {tabValue && (
+            <WrapCard
+              tabValue={tabValue}
+              upgradeRestoration={upgradeRestoration}
+              downgradeRestoration={downgradeRestoration}
+            ></WrapCard>
+          )}
+        </SelectedTokenContextProvider>
       </Box>
     </Container>
   );

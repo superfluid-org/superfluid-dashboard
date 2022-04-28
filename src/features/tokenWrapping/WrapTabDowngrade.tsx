@@ -1,8 +1,7 @@
-import React, { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { SuperTokenDowngradeRestoration } from "../transactionRestoration/transactionRestorations";
 import { useNetworkContext } from "../network/NetworkContext";
 import { useWalletContext } from "../wallet/WalletContext";
-import { WrappedSuperTokenPair } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { BigNumber, ethers } from "ethers";
 import { rpcApi } from "../redux/store";
 import { Chip, Stack, TextField, Typography } from "@mui/material";
@@ -11,23 +10,14 @@ import TokenIcon from "../token/TokenIcon";
 import { TransactionButton } from "../transactions/TransactionButton";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { BalanceSuperToken } from "./BalanceSuperToken";
-import { getNetworkDefaultTokenPair } from "../network/networks";
+import { useSelectedTokenContext } from "./SelectedTokenPairContext";
 
 export const WrapTabDowngrade: FC<{
   restoration: SuperTokenDowngradeRestoration | undefined;
 }> = ({ restoration }) => {
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
-
-  const [selectedTokenPair, setSelectedTokenPair] = useState<
-    WrappedSuperTokenPair | undefined
-  >(getNetworkDefaultTokenPair(network));
-
-  useEffect(() => {
-    if (!selectedTokenPair) {
-      setSelectedTokenPair(getNetworkDefaultTokenPair(network));
-    }
-  }, [selectedTokenPair]);
+  const { selectedTokenPair, setSelectedTokenPair } = useSelectedTokenContext();
 
   const [amount, setAmount] = useState<string>("");
   const [amountWei, setAmountWei] = useState<BigNumber>(
@@ -45,16 +35,9 @@ export const WrapTabDowngrade: FC<{
     }
   }, [restoration]);
 
-  const onTokenChange = (token: WrappedSuperTokenPair | undefined) => {
-    setSelectedTokenPair(token);
-  };
-
   const [downgradeTrigger, downgradeResult] =
     rpcApi.useSuperTokenDowngradeMutation();
   const isDowngradeDisabled = !selectedTokenPair || amountWei.isZero();
-  const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
-  const [transactionDialogContent, setTransactionDialogContent] =
-    useState<React.ReactNode>("");
 
   const amountInputRef = useRef<HTMLInputElement>(undefined!);
   useEffect(() => {
@@ -65,11 +48,7 @@ export const WrapTabDowngrade: FC<{
     <Stack direction="column" spacing={2}>
       <Stack direction="column" spacing={1}>
         <Stack direction="row" justifyContent="space-between" spacing={2}>
-          <TokenDialogChip
-            prioritizeSuperTokens={true}
-            selectedTokenPair={selectedTokenPair}
-            onSelect={onTokenChange}
-          />
+          <TokenDialogChip prioritizeSuperTokens={true} />
           <TextField
             placeholder="0.0"
             inputRef={amountInputRef}

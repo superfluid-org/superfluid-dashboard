@@ -1,24 +1,17 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { WrappedSuperTokenPair } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { Chip, Stack } from "@mui/material";
 import TokenIcon from "../token/TokenIcon";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { TokenDialog } from "./TokenDialog";
+import { useSelectedTokenContext } from "./SelectedTokenPairContext";
 
 export const TokenDialogChip: FC<{
-  selectedTokenPair?: WrappedSuperTokenPair;
-  onSelect: (tokenUpgrade: WrappedSuperTokenPair | undefined) => void;
   prioritizeSuperTokens: boolean;
-}> = ({ prioritizeSuperTokens, onSelect, selectedTokenPair }) => {
+}> = ({ prioritizeSuperTokens }) => {
   const [open, setOpen] = useState(false);
 
-  const [_selectedTokenPair, setSelectedTokenPair] = useState<
-    WrappedSuperTokenPair | undefined
-  >(selectedTokenPair);
-
-  useEffect(() => {
-    setSelectedTokenPair(selectedTokenPair);
-  }, [selectedTokenPair]);
+  const { selectedTokenPair, setSelectedTokenPair } = useSelectedTokenContext();
 
   const onChipClick = () => {
     setOpen(true);
@@ -30,13 +23,12 @@ export const TokenDialogChip: FC<{
 
   const _onSelect = (token: WrappedSuperTokenPair) => {
     setSelectedTokenPair(token);
-    onSelect(token);
     setOpen(false);
   };
 
   const tokenSymbol = prioritizeSuperTokens
-    ? _selectedTokenPair?.superToken.symbol
-    : _selectedTokenPair?.underlyingToken.symbol;
+    ? selectedTokenPair?.superToken.symbol
+    : selectedTokenPair?.underlyingToken.symbol;
 
   return (
     <>
