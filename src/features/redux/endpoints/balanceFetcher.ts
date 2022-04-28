@@ -111,7 +111,7 @@ const createFetching = (
 
         resolve(mappedResult);
       }
-    }, 250);
+    }, 150);
   });
 };
 

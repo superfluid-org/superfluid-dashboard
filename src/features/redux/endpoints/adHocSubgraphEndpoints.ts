@@ -117,19 +117,40 @@ export const adHocSubgraphEndpoints = {
             } as CoinMinimal,
           }));
 
+        const nativeAssetSuperTokenAddress =
+          network.coin.superToken.address.toLowerCase();
+
         const wrapperSuperTokenPairs: WrappedSuperTokenPair[] =
-          wrapperSuperTokens.map((x) => ({
-            superToken: {
-              address: x.id,
-              symbol: x.symbol,
-              name: x.name,
-            } as TokenMinimal,
-            underlyingToken: {
-              address: x.underlyingToken.id,
-              symbol: x.underlyingToken.symbol,
-              name: x.underlyingToken.name,
-            } as TokenMinimal,
-          }));
+          wrapperSuperTokens.map((x) => {
+            // Handle exceptional legacy native asset coins first:
+            if (x.id === nativeAssetSuperTokenAddress) {
+              return {
+                superToken: {
+                  address: x.id,
+                  symbol: x.symbol,
+                  name: x.name,
+                } as TokenMinimal,
+                underlyingToken: {
+                  address: "coin",
+                  symbol: network.coin.symbol,
+                  name: `${network.displayName} Native Asset`,
+                } as CoinMinimal,
+              };
+            }
+
+            return {
+              superToken: {
+                address: x.id,
+                symbol: x.symbol,
+                name: x.name,
+              } as TokenMinimal,
+              underlyingToken: {
+                address: x.underlyingToken.id,
+                symbol: x.underlyingToken.symbol,
+                name: x.underlyingToken.name,
+              } as TokenMinimal,
+            };
+          });
 
         const result: WrappedSuperTokenPair[] = coinSuperTokenPairs.concat(
           wrapperSuperTokenPairs

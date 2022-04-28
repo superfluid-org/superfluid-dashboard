@@ -11,6 +11,7 @@ import TokenIcon from "../token/TokenIcon";
 import { TransactionButton } from "../transactions/TransactionButton";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { BalanceSuperToken } from "./BalanceSuperToken";
+import { getNetworkDefaultTokenPair } from "../network/networks";
 
 export const WrapTabDowngrade: FC<{
   restoration: SuperTokenDowngradeRestoration | undefined;
@@ -20,11 +21,11 @@ export const WrapTabDowngrade: FC<{
 
   const [selectedTokenPair, setSelectedTokenPair] = useState<
     WrappedSuperTokenPair | undefined
-  >(network.defaultTokenPair);
+  >(getNetworkDefaultTokenPair(network));
 
   useEffect(() => {
     if (!selectedTokenPair) {
-      setSelectedTokenPair(network.defaultTokenPair);
+      setSelectedTokenPair(getNetworkDefaultTokenPair(network));
     }
   }, [selectedTokenPair]);
 

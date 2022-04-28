@@ -1,8 +1,10 @@
 import { FC } from "react";
 import {
   Alert,
+  Button,
   CircularProgress,
   Dialog,
+  DialogActions,
   DialogContent,
   DialogTitle,
   IconButton,
@@ -77,6 +79,18 @@ export const TransactionDialog: FC<{
           )}
         </Stack>
       </DialogContent>
+      <DialogActions>
+        {mutationResult.isSuccess && (
+          <Button
+            color="primary"
+            variant="contained"
+            fullWidth={true}
+            onClick={onClose}
+          >
+            OK
+          </Button>
+        )}
+      </DialogActions>
     </Dialog>
   );
 };

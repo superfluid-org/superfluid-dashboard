@@ -1,3 +1,4 @@
+import { memoize } from "lodash";
 import { WrappedSuperTokenPair } from "../redux/endpoints/adHocSubgraphEndpoints";
 
 export type Network = {
@@ -11,8 +12,12 @@ export type Network = {
   isTestnet: boolean;
   coin: {
     symbol: string;
+    superToken: {
+      symbol: string;
+      name: string;
+      address: string;
+    };
   };
-  defaultTokenPair: WrappedSuperTokenPair | undefined;
 };
 
 export const networks: Network[] = [
@@ -29,18 +34,11 @@ export const networks: Network[] = [
     getLinkForAddress: (address: string): string =>
       `https://ropsten.etherscan.io/address/${address}`,
     coin: {
-      symbol: "ETH"
-    },
-    defaultTokenPair: {
+      symbol: "ETH",
       superToken: {
-        address: "0xbf6201a6c48b56d8577edd079b84716bb4918e8a",
-        name: "Super fDAI Fake Token",
-        symbol: "fDAIx",
-      },
-      underlyingToken: {
-        address: "0x15f0ca26781c3852f8166ed2ebce5d18265cceb7",
-        name: "fDAI Fake Token",
-        symbol: "fDAI",
+        symbol: "ETHx",
+        name: "Super ETH",
+        address: "0x6fc99f5591b51583ba15a8c2572408257a1d2797",
       },
     },
   },
@@ -57,19 +55,11 @@ export const networks: Network[] = [
     getLinkForAddress: (address: string): string =>
       `https://rinkeby.etherscan.io/address/${address}`,
     coin: {
-      symbol: "ETH"
-    },
-    defaultTokenPair: {
+      symbol: "ETH",
       superToken: {
-        address: "0x745861aed1eee363b4aaa5f1994be40b1e05ff90",
-        name: "Super fDAI Fake Token",
-        symbol: "fDAIx",
-      },
-
-      underlyingToken: {
-        address: "0x15f0ca26781c3852f8166ed2ebce5d18265cceb7",
-        name: "fDAI Fake Token",
-        symbol: "fDAI",
+        symbol: "ETHx",
+        address: "0xa623b2dd931c5162b7a0b25852f4024db48bb1a0",
+        name: "Super ETH",
       },
     },
   },
@@ -86,18 +76,11 @@ export const networks: Network[] = [
     getLinkForAddress: (address: string): string =>
       `https://goerli.etherscan.io/address/${address}`,
     coin: {
-      symbol: "ETH"
-    },
-    defaultTokenPair: {
+      symbol: "ETH",
       superToken: {
-        address: "0xf2d68898557ccb2cf4c10c3ef2b034b2a69dad00",
-        name: "Super fDAI Fake Token",
-        symbol: "fDAIx",
-      },
-      underlyingToken: {
-        address: "0x88271d333c72e51516b67f5567c728e702b3eee8",
-        name: "fDAI Fake Token",
-        symbol: "fDAI",
+        symbol: "ETHx",
+        address: "0x5943f705abb6834cad767e6e4bb258bc48d9c947",
+        name: "Super ETH",
       },
     },
   },
@@ -114,18 +97,11 @@ export const networks: Network[] = [
     getLinkForAddress: (address: string): string =>
       `https://kovan.etherscan.io/address/${address}`,
     coin: {
-      symbol: "ETH"
-    },
-    defaultTokenPair: {
+      symbol: "ETH",
       superToken: {
-        address: "0xe3cb950cb164a31c66e32c320a800d477019dcff",
-        name: "Super fDAI Fake Token",
-        symbol: "fDAIx",
-      },
-      underlyingToken: {
-        address: "0xb64845d53a373d35160b72492818f0d2f51292c0",
-        name: "fDAI Fake Token",
-        symbol: "fDAI",
+        symbol: "ETHx",
+        address: "0xdd5462a7db7856c9128bc77bd65c2919ee23c6e1",
+        name: "Super ETH",
       },
     },
   },
@@ -142,18 +118,11 @@ export const networks: Network[] = [
     getLinkForAddress: (address: string): string =>
       `https://blockscout.com/xdai/mainnet/address/${address}`,
     coin: {
-      symbol: "xDai"
-    },
-    defaultTokenPair: {
+      symbol: "xDai",
       superToken: {
+        symbol: "xDAIx",
         address: "0x59988e47a3503aafaa0368b9def095c818fdca01",
         name: "Super xDAI",
-        symbol: "xDAIx",
-      },
-      underlyingToken: {
-        address: "0xe91d153e0b41518a2ce8dd3d7944fa863463a97d",
-        name: "Wrapped XDAI",
-        symbol: "WXDAI",
       },
     },
   },
@@ -171,17 +140,10 @@ export const networks: Network[] = [
       `https://polygonscan.com/address/${address}`,
     coin: {
       symbol: "MATIC",
-    },
-    defaultTokenPair: {
       superToken: {
+        symbol: "MATICx",
         address: "0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3",
         name: "Super MATIC",
-        symbol: "MATICx",
-      },
-      underlyingToken: {
-        address: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
-        name: "Wrapped Matic",
-        symbol: "WMATIC",
       },
     },
   },
@@ -198,18 +160,11 @@ export const networks: Network[] = [
     getLinkForAddress: (address: string): string =>
       `https://mumbai.polygonscan.com/address/${address}`,
     coin: {
-      symbol: "MATIC"
-    },
-    defaultTokenPair: {
+      symbol: "MATIC",
       superToken: {
-        address: "0x5d8b4c2554aeb7e86f387b4d6c00ac33499ed01f",
-        name: "Super fDAI Fake Token",
-        symbol: "fDAIx",
-      },
-      underlyingToken: {
-        address: "0x15f0ca26781c3852f8166ed2ebce5d18265cceb7",
-        name: "fDAI Fake Token",
-        symbol: "fDAI",
+        symbol: "MATICx",
+        address: "0x96b82b65acf7072efeb00502f45757f254c2a0d4",
+        name: "Super MATIC",
       },
     },
   },
@@ -226,18 +181,11 @@ export const networks: Network[] = [
     getLinkForAddress: (address: string): string =>
       `https://rinkeby-explorer.arbitrum.io/address/${address}`,
     coin: {
-      symbol: "ETH"
-    },
-    defaultTokenPair: {
+      symbol: "ETH",
       superToken: {
-        address: "0x4b746f88fb25516731d54cefb1c2d00eadeff366",
-        name: "Super fDAI Fake Token",
-        symbol: "fDAIx",
-      },
-      underlyingToken: {
-        address: "0xf8d8f02b788de5191ecd20f7bdb07d80963410b5",
-        name: "fDAI Fake Token",
-        symbol: "fDAI",
+        symbol: "ETHx",
+        address: "0xbf7bcce8d60a9c3f6bfaec9346aa85b9f781a4e9",
+        name: "Super ETH",
       },
     },
   },
@@ -254,18 +202,11 @@ export const networks: Network[] = [
     getLinkForAddress: (address: string): string =>
       `https://kovan-optimistic.etherscan.io/address/${address}`,
     coin: {
-      symbol: "ETH"
-    },
-    defaultTokenPair: {
+      symbol: "ETH",
       superToken: {
-        address: "0x04d4f73e9de52a8fec544087a66bbba660a35957",
-        name: "Super fDAI Fake Token",
-        symbol: "fDAIx",
-      },
-      underlyingToken: {
-        address: "0xbe49ac1eadac65dccf204d4df81d650b50122ab2",
-        name: "fDAI Fake Token",
-        symbol: "fDAI",
+        symbol: "ETHx",
+        address: "0xe72f289584eda2be69cfe487f4638f09bac920db",
+        name: "Super ETH",
       },
     },
   },
@@ -282,18 +223,11 @@ export const networks: Network[] = [
     getLinkForAddress: (address: string): string =>
       `https://testnet.snowtrace.io/address/${address}`,
     coin: {
-      symbol: "AVAX"
-    },
-    defaultTokenPair: {
+      symbol: "AVAX",
       superToken: {
-        address: "0x296e9c01f80d408741f6e15d62013ddbe1041f1d",
-        name: "Super fDAI Fake Token",
-        symbol: "fDAIx",
-      },
-      underlyingToken: {
-        address: "0x87e00dced5670e01bee33a9a724b1dac790937ef",
-        name: "fDAI Fake Token",
-        symbol: "fDAI",
+        symbol: "AVAXx",
+        address: "0x5735c32c38f5af0fb04a7c77c832ba4d7abffec8",
+        name: "Super AVAX",
       },
     },
   },
@@ -310,18 +244,11 @@ export const networks: Network[] = [
     getLinkForAddress: (address: string): string =>
       `https://optimistic.etherscan.io/address/${address}`,
     coin: {
-      symbol: "ETH"
-    },
-    defaultTokenPair: {
+      symbol: "ETH",
       superToken: {
-        address: "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
-        name: "Super Dai Stablecoin",
-        symbol: "DAIx",
-      },
-      underlyingToken: {
-        address: "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
-        name: "Dai Stablecoin",
-        symbol: "DAI",
+        symbol: "ETHx",
+        address: "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
+        name: "Super ETH",
       },
     },
   },
@@ -338,11 +265,24 @@ export const networks: Network[] = [
     getLinkForAddress: (address: string): string =>
       `https://arbiscan.io/address/${address}`,
     coin: {
-      symbol: "ETH"
+      symbol: "ETH",
+      superToken: {
+        symbol: "ETHx",
+        address: "0xe6c8d111337d0052b9d88bf5d7d55b7f8385acd3",
+        name: "Super ETH",
+      },
     },
-    defaultTokenPair: undefined,
   },
 ];
+
+export const getNetworkDefaultTokenPair = memoize((network: Network): WrappedSuperTokenPair => ({
+  superToken: network.coin.superToken,
+  underlyingToken: {
+    address: "coin",
+    name: `${network.displayName} Native Asset`,
+    symbol: network.coin.symbol
+  }
+}));
 
 export const networksByName = new Map(
   networks.map((x) => [x.slugName.toLowerCase(), x])
