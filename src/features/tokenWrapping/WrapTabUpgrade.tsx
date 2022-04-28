@@ -2,9 +2,7 @@ import { FC, useEffect, useRef, useState } from "react";
 import { SuperTokenUpgradeRestoration } from "../transactionRestoration/transactionRestorations";
 import { useNetworkContext } from "../network/NetworkContext";
 import { useWalletContext } from "../wallet/WalletContext";
-import {
-  COIN_ADDRESS
-} from "../redux/endpoints/adHocSubgraphEndpoints";
+import { COIN_ADDRESS } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { BigNumber, ethers } from "ethers";
 import { rpcApi } from "../redux/store";
 import { skipToken } from "@reduxjs/toolkit/query";
@@ -200,9 +198,10 @@ export const WrapTabUpgrade: FC<{
             transactionExtraData: {
               restoration,
             },
+          }).then(() => {
+            setAmount("");
           });
 
-          setAmount("");
           setTransactionDialogContent(
             <UpgradePreview restoration={restoration} />
           );

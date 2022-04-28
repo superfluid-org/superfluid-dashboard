@@ -131,13 +131,13 @@ export const WrapTabDowngrade: FC<{
             transactionExtraData: {
               restoration,
             },
+          }).then(() => {
+            setAmount("");
           });
 
           setTransactionDialogContent(
             <DowngradePreview restoration={restoration} />
           );
-
-          setAmount("");
         }}
       >
         Downgrade
