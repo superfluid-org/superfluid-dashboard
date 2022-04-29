@@ -2,7 +2,6 @@ import { FC, useCallback, useState, useMemo, useEffect } from "react";
 import { WrappedSuperTokenPair } from "../redux/endpoints/adHocSubgraphEndpoints";
 import {
   CircularProgress,
-  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -13,8 +12,6 @@ import {
   Stack,
   TextField,
   Typography,
-  useMediaQuery,
-  useTheme,
 } from "@mui/material";
 import { useNetworkContext } from "../network/NetworkContext";
 import { useWalletContext } from "../wallet/WalletContext";
@@ -24,6 +21,7 @@ import Fuse from "fuse.js";
 import CloseIcon from "@mui/icons-material/Close";
 import { TokenItem } from "./TokenItem";
 import { ethers } from "ethers";
+import ResponsiveDialog from "../common/ResponsiveDialog";
 
 export const TokenDialog: FC<{
   open: boolean;
@@ -31,8 +29,6 @@ export const TokenDialog: FC<{
   onSelect: (tokenPair: WrappedSuperTokenPair) => void;
   prioritizeSuperTokens: boolean;
 }> = ({ open, onClose, onSelect, prioritizeSuperTokens }) => {
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
 
@@ -145,11 +141,8 @@ export const TokenDialog: FC<{
   );
 
   return (
-    <Dialog
+    <ResponsiveDialog
       open={open}
-      fullWidth={true}
-      maxWidth={"sm"}
-      fullScreen={fullScreen}
       onClose={onClose}
     >
       <DialogTitle>
@@ -249,6 +242,6 @@ export const TokenDialog: FC<{
         </List>
       </DialogContent>
       <DialogActions></DialogActions>
-    </Dialog>
+    </ResponsiveDialog>
   );
 };

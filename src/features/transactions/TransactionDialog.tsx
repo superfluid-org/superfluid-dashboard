@@ -3,38 +3,28 @@ import {
   Alert,
   Button,
   CircularProgress,
-  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   IconButton,
   Stack,
   Typography,
-  useMediaQuery,
-  useTheme,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
 import UnknownMutationResult from "../../unknownMutationResult";
 import { useNetworkContext } from "../network/NetworkContext";
+import ResponsiveDialog from "../common/ResponsiveDialog";
 
 export const TransactionDialog: FC<{
   open: boolean;
   onClose: () => void;
   mutationResult: UnknownMutationResult;
 }> = ({ open, onClose, mutationResult, children }) => {
-  const theme = useTheme();
   const { network } = useNetworkContext();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
-    <Dialog
-      open={open}
-      fullWidth={true}
-      maxWidth={"sm"}
-      fullScreen={fullScreen}
-      onClose={onClose}
-    >
+    <ResponsiveDialog open={open} onClose={onClose}>
       <DialogTitle sx={{ m: 0, p: 2 }}>
         {mutationResult.isError ? "Error" : <>&nbsp;</>}
         <IconButton
@@ -91,6 +81,6 @@ export const TransactionDialog: FC<{
           </Button>
         )}
       </DialogActions>
-    </Dialog>
+    </ResponsiveDialog>
   );
 };
