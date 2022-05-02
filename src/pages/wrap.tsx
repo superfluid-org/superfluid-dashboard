@@ -8,6 +8,7 @@ import { useTransactionRestorationContext } from "../features/transactionRestora
 import {
   SuperTokenDowngradeRestoration,
   SuperTokenUpgradeRestoration,
+  RestorationType,
 } from "../features/transactionRestoration/transactionRestorations";
 
 const Wrap: NextPage = () => {
@@ -27,7 +28,7 @@ const Wrap: NextPage = () => {
     }
   }, [upgrade, downgrade]);
 
-  const { transactionToRestore, onRestored } =
+  const { restoration, onRestored } =
     useTransactionRestorationContext();
 
   const [upgradeRestoration, setUpgradeRestoration] = useState<
@@ -39,19 +40,13 @@ const Wrap: NextPage = () => {
   >();
 
   useEffect(() => {
-    if (transactionToRestore) {
-      switch (transactionToRestore.title) {
-        case "Upgrade to Super Token":
-          setUpgradeRestoration(
-            transactionToRestore.extraData
-              .restoration as SuperTokenUpgradeRestoration
-          );
+    if (restoration) {
+      switch (restoration.type) {
+        case RestorationType.Upgrade:
+          setUpgradeRestoration(restoration);
           break;
-        case "Downgrade from Super Token":
-          setDowngradeRestoration(
-            transactionToRestore.extraData
-              .restoration as SuperTokenDowngradeRestoration
-          );
+        case RestorationType.Downgrade:
+          setDowngradeRestoration(restoration);
           break;
       }
       onRestored();
@@ -59,7 +54,7 @@ const Wrap: NextPage = () => {
   }, [
     setUpgradeRestoration,
     setDowngradeRestoration,
-    transactionToRestore,
+    restoration,
     onRestored,
   ]);
 

@@ -2,6 +2,7 @@ import { FC, useEffect, useRef, useState } from "react";
 import {
   ApproveAllowanceRestoration,
   SuperTokenUpgradeRestoration,
+  RestorationType,
 } from "../transactionRestoration/transactionRestorations";
 import { useNetworkContext } from "../network/NetworkContext";
 import { useWalletContext } from "../wallet/WalletContext";
@@ -163,6 +164,7 @@ export const WrapTabUpgrade: FC<{
             currentAllowance.add(missingAllowance);
 
           const restoration: ApproveAllowanceRestoration = {
+            type: RestorationType.Approve,
             chainId: network.chainId,
             amountWei: approveAllowanceAmountWei.toString(),
             token: selectedTokenPair.underlyingToken,
@@ -197,6 +199,7 @@ export const WrapTabUpgrade: FC<{
           }
 
           const restoration: SuperTokenUpgradeRestoration = {
+            type: RestorationType.Upgrade,
             chainId: network.chainId,
             tokenUpgrade: selectedTokenPair,
             amountWei: amountWei.toString(),
