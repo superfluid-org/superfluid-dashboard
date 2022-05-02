@@ -1,4 +1,4 @@
-import { WrappedSuperTokenPair } from '../redux/endpoints/adHocSubgraphEndpoints';
+import { TokenMinimal, WrappedSuperTokenPair } from '../redux/endpoints/adHocSubgraphEndpoints';
 
 export interface SuperTokenDowngradeRestoration {
   chainId: number;
@@ -12,4 +12,10 @@ export interface SuperTokenUpgradeRestoration {
   amountWei: string;
 }
 
-export type TransactionRestorations = SuperTokenDowngradeRestoration | SuperTokenUpgradeRestoration;
+export interface ApproveAllowanceRestoration {
+  chainId: number;
+  token: TokenMinimal;
+  amountWei: string;
+}
+
+export type TransactionRestorations = SuperTokenDowngradeRestoration | SuperTokenUpgradeRestoration | ApproveAllowanceRestoration;

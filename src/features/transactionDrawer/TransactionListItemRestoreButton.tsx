@@ -15,25 +15,36 @@ export const TransactionListItemRestoreButton: FC<{
     return null;
   }
 
-  return (
-    <Tooltip title="Restore">
-      <IconButton
-        color="primary"
-        onClick={async () => {
-          switch (transaction.title) {
-            case "Downgrade from Super Token":
+  switch (transaction.title) {
+    case "Downgrade from Super Token":
+      return (
+        <Tooltip title="Restore">
+          <IconButton
+            color="primary"
+            onClick={async () => {
               restoreTransaction(transaction);
               await router.push("/wrap?downgrade");
-              break;
-            case "Upgrade to Super Token":
+            }}
+          >
+            <ReplayIcon />
+          </IconButton>
+        </Tooltip>
+      );
+    case "Upgrade to Super Token":
+      return (
+        <Tooltip title="Restore">
+          <IconButton
+            color="primary"
+            onClick={async () => {
               restoreTransaction(transaction);
               await router.push("/wrap?upgrade");
-              break;
-          }
-        }}
-      >
-        <ReplayIcon />
-      </IconButton>
-    </Tooltip>
-  );
+            }}
+          >
+            <ReplayIcon />
+          </IconButton>
+        </Tooltip>
+      );
+    default:
+      return null;
+  }
 };
