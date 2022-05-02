@@ -4,6 +4,7 @@ import {
 } from "@superfluid-finance/sdk-redux";
 import { gql } from "graphql-request";
 import { networksByChainId } from "../../network/networks";
+import { request } from "graphql-request";
 
 type WrapperSuperTokenSubgraphResult = {
   id: string;
@@ -44,8 +45,38 @@ export type WrappedSuperTokenPair = {
   underlyingToken: TokenMinimal | CoinMinimal;
 };
 
+// const ensClient = new SubgraphClient(
+//   "https://api.thegraph.com/subgraphs/name/ensdomains/ens/graphql"
+// );
+
 export const adHocSubgraphEndpoints = {
   endpoints: (builder: SubgraphEndpointBuilder) => ({
+    ens1: builder.query<{ hash: string } | undefined, { name: string }>({
+      queryFn: async (arg) => {
+        const response = await request<{
+          domains: { owner: { id: string } }[];
+        }>(
+          "https://api.thegraph.com/subgraphs/name/ensdomains/ens",
+          gql`
+            query ($name: String) {
+              domains(where: { name: $name }) {
+                owner {
+                  id
+                }
+              }
+            }
+          `,
+          { name: arg.name.toLowerCase() }
+        );
+        return {
+          data: response.domains.length
+            ? {
+                hash: response.domains[0].owner.id,
+              }
+            : undefined,
+        };
+      },
+    }),
     tokenUpgradeDowngradePairs: builder.query<
       WrappedSuperTokenPair[],
       { chainId: number }

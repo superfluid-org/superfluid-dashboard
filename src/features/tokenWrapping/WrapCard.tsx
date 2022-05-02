@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { memo } from "react";
 import {
   SuperTokenDowngradeRestoration,
   SuperTokenUpgradeRestoration,
@@ -9,11 +9,15 @@ import { useRouter } from "next/router";
 import { WrapTabUpgrade } from "./WrapTabUpgrade";
 import { WrapTabDowngrade } from "./WrapTabDowngrade";
 
-export const WrapCard: FC<{
+export default memo(function WrapCard({
+  tabValue,
+  upgradeRestoration,
+  downgradeRestoration,
+}: {
   tabValue: "upgrade" | "downgrade";
-  upgradeRestoration?: SuperTokenUpgradeRestoration
-  downgradeRestoration?: SuperTokenDowngradeRestoration
-}> = ({ tabValue, upgradeRestoration, downgradeRestoration }) => {
+  upgradeRestoration?: SuperTokenUpgradeRestoration;
+  downgradeRestoration?: SuperTokenDowngradeRestoration;
+}) {
   const router = useRouter();
 
   return (
@@ -46,4 +50,4 @@ export const WrapCard: FC<{
       </TabContext>
     </Card>
   );
-};
+});

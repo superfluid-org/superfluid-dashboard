@@ -3,7 +3,7 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { SelectedTokenContextProvider } from "../features/tokenWrapping/SelectedTokenPairContext";
-import { WrapCard } from "../features/tokenWrapping/WrapCard";
+import WrapCard from "../features/tokenWrapping/WrapCard";
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
 import {
   SuperTokenDowngradeRestoration,
