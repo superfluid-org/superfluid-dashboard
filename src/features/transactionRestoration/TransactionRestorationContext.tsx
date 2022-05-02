@@ -1,11 +1,5 @@
 import { TrackedTransaction } from "@superfluid-finance/sdk-redux";
-import {
-  createContext,
-  FC,
-  useCallback,
-  useContext,
-  useState,
-} from "react";
+import { createContext, FC, useCallback, useContext, useState } from "react";
 import { useNetworkContext } from "../network/NetworkContext";
 
 const TransactionRestorationContext = createContext<{
@@ -16,9 +10,11 @@ const TransactionRestorationContext = createContext<{
 
 export const TransactionRestorationContextProvider: FC = ({ children }) => {
   const { network, setNetwork } = useNetworkContext();
+
   const [transactionToRestore, setTransactionToRestore] = useState<
     TrackedTransaction | undefined
   >();
+
   const restoreTransaction = useCallback(
     (transaction: TrackedTransaction) => {
       if (transaction && transaction.chainId !== network.chainId) {
@@ -28,8 +24,9 @@ export const TransactionRestorationContextProvider: FC = ({ children }) => {
     },
     [setNetwork, setTransactionToRestore]
   );
+
   const onRestored = useCallback(
-    () => setTimeout(() => setTransactionToRestore(undefined), 1),
+    () => setTimeout(() => setTransactionToRestore(undefined), 0),
     [setTransactionToRestore]
   );
 

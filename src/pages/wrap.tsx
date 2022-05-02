@@ -30,11 +30,11 @@ const Wrap: NextPage = () => {
   const { transactionToRestore, onRestored } =
     useTransactionRestorationContext();
 
-  const [upgradeRestoration, setUpgradeRecovery] = useState<
+  const [upgradeRestoration, setUpgradeRestoration] = useState<
     SuperTokenUpgradeRestoration | undefined
   >();
 
-  const [downgradeRestoration, setDowngradeRecovery] = useState<
+  const [downgradeRestoration, setDowngradeRestoration] = useState<
     SuperTokenDowngradeRestoration | undefined
   >();
 
@@ -42,23 +42,23 @@ const Wrap: NextPage = () => {
     if (transactionToRestore) {
       switch (transactionToRestore.title) {
         case "Upgrade to Super Token":
-          setUpgradeRecovery(
+          setUpgradeRestoration(
             transactionToRestore.extraData
               .restoration as SuperTokenUpgradeRestoration
           );
           break;
         case "Downgrade from Super Token":
-          setDowngradeRecovery(
+          setDowngradeRestoration(
             transactionToRestore.extraData
               .restoration as SuperTokenDowngradeRestoration
           );
           break;
       }
+      onRestored();
     }
-    onRestored();
   }, [
-    setUpgradeRecovery,
-    setDowngradeRecovery,
+    setUpgradeRestoration,
+    setDowngradeRestoration,
     transactionToRestore,
     onRestored,
   ]);
@@ -80,6 +80,12 @@ const Wrap: NextPage = () => {
               tabValue={tabValue}
               upgradeRestoration={upgradeRestoration}
               downgradeRestoration={downgradeRestoration}
+              onTabChange={(tabValue) => {
+                setTabValue(tabValue);
+                // Reset restorations on tab change.
+                setUpgradeRestoration(undefined);
+                setDowngradeRestoration(undefined);
+              }}
             ></WrapCard>
           )}
         </SelectedTokenContextProvider>
