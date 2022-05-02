@@ -5,21 +5,20 @@ import {
 } from "../transactionRestoration/transactionRestorations";
 import { Card, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { useRouter } from "next/router";
 import { WrapTabUpgrade } from "./WrapTabUpgrade";
 import { WrapTabDowngrade } from "./WrapTabDowngrade";
 
 export default memo(function WrapCard({
   tabValue,
+  onTabChange,
   upgradeRestoration,
   downgradeRestoration,
 }: {
   tabValue: "upgrade" | "downgrade";
+  onTabChange: (tabValue: "upgrade" | "downgrade") => void;
   upgradeRestoration?: SuperTokenUpgradeRestoration;
   downgradeRestoration?: SuperTokenDowngradeRestoration;
 }) {
-  const router = useRouter();
-
   return (
     <Card
       sx={{ position: "fixed", top: "25%", width: "400px", p: 5 }}
@@ -29,9 +28,9 @@ export default memo(function WrapCard({
         <TabList
           variant="scrollable"
           scrollButtons="auto"
-          onChange={(_event, newValue: "upgrade" | "downgrade") =>
-            router.replace(`/wrap?${newValue}`)
-          }
+          onChange={(_event, newValue: "upgrade" | "downgrade") => {
+            onTabChange(newValue);
+          }}
           aria-label="tabs"
         >
           <Tab data-cy={"streams-tab"} label="Upgrade" value="upgrade" />

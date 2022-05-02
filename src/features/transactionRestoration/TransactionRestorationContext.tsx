@@ -1,43 +1,27 @@
-import { TrackedTransaction } from "@superfluid-finance/sdk-redux";
-import {
-  createContext,
-  FC,
-  useCallback,
-  useContext,
-  useState,
-} from "react";
-import { useNetworkContext } from "../network/NetworkContext";
+import { createContext, FC, useCallback, useContext, useState } from "react";
+import { TransactionRestorations } from "./transactionRestorations";
 
 const TransactionRestorationContext = createContext<{
-  transactionToRestore: TrackedTransaction | undefined;
-  restoreTransaction: (transaction: TrackedTransaction) => void;
+  restoration: TransactionRestorations | undefined;
+  restore: (restoration: TransactionRestorations) => void;
   onRestored: () => void;
 }>(undefined!);
 
 export const TransactionRestorationContextProvider: FC = ({ children }) => {
-  const { network, setNetwork } = useNetworkContext();
-  const [transactionToRestore, setTransactionToRestore] = useState<
-    TrackedTransaction | undefined
+  const [restoration, setRestoration] = useState<
+    TransactionRestorations | undefined
   >();
-  const restoreTransaction = useCallback(
-    (transaction: TrackedTransaction) => {
-      if (transaction && transaction.chainId !== network.chainId) {
-        setNetwork(transaction.chainId);
-      }
-      setTransactionToRestore(transaction);
-    },
-    [setNetwork, setTransactionToRestore]
-  );
+
   const onRestored = useCallback(
-    () => setTimeout(() => setTransactionToRestore(undefined), 1),
-    [setTransactionToRestore]
+    () => setTimeout(() => setRestoration(undefined), 0),
+    [setRestoration]
   );
 
   return (
     <TransactionRestorationContext.Provider
       value={{
-        transactionToRestore,
-        restoreTransaction,
+        restore: setRestoration,
+        restoration,
         onRestored,
       }}
     >

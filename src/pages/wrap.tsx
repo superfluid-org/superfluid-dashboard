@@ -8,6 +8,7 @@ import { useTransactionRestorationContext } from "../features/transactionRestora
 import {
   SuperTokenDowngradeRestoration,
   SuperTokenUpgradeRestoration,
+  RestorationType,
 } from "../features/transactionRestoration/transactionRestorations";
 
 const Wrap: NextPage = () => {
@@ -27,39 +28,33 @@ const Wrap: NextPage = () => {
     }
   }, [upgrade, downgrade]);
 
-  const { transactionToRestore, onRestored } =
+  const { restoration, onRestored } =
     useTransactionRestorationContext();
 
-  const [upgradeRestoration, setUpgradeRecovery] = useState<
+  const [upgradeRestoration, setUpgradeRestoration] = useState<
     SuperTokenUpgradeRestoration | undefined
   >();
 
-  const [downgradeRestoration, setDowngradeRecovery] = useState<
+  const [downgradeRestoration, setDowngradeRestoration] = useState<
     SuperTokenDowngradeRestoration | undefined
   >();
 
   useEffect(() => {
-    if (transactionToRestore) {
-      switch (transactionToRestore.title) {
-        case "Upgrade to Super Token":
-          setUpgradeRecovery(
-            transactionToRestore.extraData
-              .restoration as SuperTokenUpgradeRestoration
-          );
+    if (restoration) {
+      switch (restoration.type) {
+        case RestorationType.Upgrade:
+          setUpgradeRestoration(restoration);
           break;
-        case "Downgrade from Super Token":
-          setDowngradeRecovery(
-            transactionToRestore.extraData
-              .restoration as SuperTokenDowngradeRestoration
-          );
+        case RestorationType.Downgrade:
+          setDowngradeRestoration(restoration);
           break;
       }
+      onRestored();
     }
-    onRestored();
   }, [
-    setUpgradeRecovery,
-    setDowngradeRecovery,
-    transactionToRestore,
+    setUpgradeRestoration,
+    setDowngradeRestoration,
+    restoration,
     onRestored,
   ]);
 
@@ -80,6 +75,12 @@ const Wrap: NextPage = () => {
               tabValue={tabValue}
               upgradeRestoration={upgradeRestoration}
               downgradeRestoration={downgradeRestoration}
+              onTabChange={(tabValue) => {
+                setTabValue(tabValue);
+                // Reset restorations on tab change.
+                setUpgradeRestoration(undefined);
+                setDowngradeRestoration(undefined);
+              }}
             ></WrapCard>
           )}
         </SelectedTokenContextProvider>

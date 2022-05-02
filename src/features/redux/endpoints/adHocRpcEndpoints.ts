@@ -112,6 +112,7 @@ export const adHocRpcEndpoints = {
         superTokenAddress: string;
         amountWei: string;
         waitForConfirmation?: boolean;
+        transactionExtraData?: Record<string, unknown>
       }
     >({
       queryFn: async (arg, queryApi) => {
@@ -141,7 +142,7 @@ export const adHocRpcEndpoints = {
           waitForConfirmation: !!arg.waitForConfirmation,
           dispatch: queryApi.dispatch,
           title: "Approve Allowance",
-          extraData: undefined,
+          extraData: arg.transactionExtraData,
         });
       },
     }),

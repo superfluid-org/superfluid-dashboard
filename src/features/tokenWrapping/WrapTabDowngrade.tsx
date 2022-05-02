@@ -1,5 +1,5 @@
 import { FC, useEffect, useRef, useState } from "react";
-import { SuperTokenDowngradeRestoration } from "../transactionRestoration/transactionRestorations";
+import { SuperTokenDowngradeRestoration, RestorationType } from "../transactionRestoration/transactionRestorations";
 import { useNetworkContext } from "../network/NetworkContext";
 import { useWalletContext } from "../wallet/WalletContext";
 import { BigNumber, ethers } from "ethers";
@@ -118,6 +118,7 @@ export const WrapTabDowngrade: FC<{
           }
 
           const restoration: SuperTokenDowngradeRestoration = {
+            type: RestorationType.Downgrade,
             chainId: network.chainId,
             tokenUpgrade: selectedTokenPair,
             amountWei: amountWei.toString(),

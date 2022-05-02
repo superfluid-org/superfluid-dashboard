@@ -1,5 +1,9 @@
 import { FC, useEffect, useRef, useState } from "react";
-import { SuperTokenUpgradeRestoration } from "../transactionRestoration/transactionRestorations";
+import {
+  ApproveAllowanceRestoration,
+  SuperTokenUpgradeRestoration,
+  RestorationType,
+} from "../transactionRestoration/transactionRestorations";
 import { useNetworkContext } from "../network/NetworkContext";
 import { useWalletContext } from "../wallet/WalletContext";
 import { COIN_ADDRESS } from "../redux/endpoints/adHocSubgraphEndpoints";
@@ -156,17 +160,27 @@ export const WrapTabUpgrade: FC<{
             throw Error("This should never happen.");
           }
 
+          const approveAllowanceAmountWei =
+            currentAllowance.add(missingAllowance);
+
+          const restoration: ApproveAllowanceRestoration = {
+            type: RestorationType.Approve,
+            chainId: network.chainId,
+            amountWei: approveAllowanceAmountWei.toString(),
+            token: selectedTokenPair.underlyingToken,
+          };
+
           setTransactionDialogContent(
-            <AllowancePreview
-              amountWei={currentAllowance.add(missingAllowance).toString()}
-              symbol={selectedTokenPair.underlyingToken.symbol}
-            />
+            <AllowancePreview restoration={restoration} />
           );
 
           approveTrigger({
             chainId: network.chainId,
-            amountWei: currentAllowance.add(missingAllowance).toString(),
+            amountWei: approveAllowanceAmountWei.toString(),
             superTokenAddress: selectedTokenPair.superToken.address,
+            transactionExtraData: {
+              restoration
+            }
           });
         }}
       >
@@ -185,6 +199,7 @@ export const WrapTabUpgrade: FC<{
           }
 
           const restoration: SuperTokenUpgradeRestoration = {
+            type: RestorationType.Upgrade,
             chainId: network.chainId,
             tokenUpgrade: selectedTokenPair,
             amountWei: amountWei.toString(),
@@ -226,13 +241,12 @@ const UpgradePreview: FC<{
 };
 
 const AllowancePreview: FC<{
-  amountWei: string;
-  symbol: string;
-}> = ({ amountWei, symbol }) => {
+  restoration: ApproveAllowanceRestoration;
+}> = ({ restoration: { amountWei, token } }) => {
   return (
     <Typography variant="body2">
       You are approving extra allowance of {ethers.utils.formatEther(amountWei)}{" "}
-      {symbol} for Superfluid Protocol to use.
+      {token.symbol} for Superfluid Protocol to use.
     </Typography>
   );
 };
