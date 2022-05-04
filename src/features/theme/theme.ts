@@ -37,7 +37,6 @@ const FONT_FACES = `
 interface PaletteCustomColors {
   other: {
     outline: string;
-    divider: string;
     backdrop: string;
     snackbar: string;
   };
@@ -116,7 +115,6 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
       },
       other: {
         outline: "#E0E0E0",
-        divider: "rgba(0, 0, 0, 0.12)",
         backdrop: "rgba(0, 0, 0, 0.5)",
         snackbar: "#323232",
       },
@@ -363,20 +361,14 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         },
       },
       MuiListItemText: {
+        defaultProps: {
+          primaryTypographyProps: {
+            variant: "h5",
+          },
+        },
         styleOverrides: {
           root: {
             margin: "4px 0",
-          },
-          primary: {
-            lineHeight: 1.334,
-            fontSize: "18px",
-            fontWeight: 500,
-          },
-          secondary: {
-            fontWeight: 400,
-            fontSize: "0.875rem",
-            lineHeight: 1.43,
-            letterSpacing: "0.17px",
           },
         },
       },
@@ -407,6 +399,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       MuiButtonBase: {
         defaultProps: {
           disableRipple: true,
+        },
+      },
+      MuiTableBody: {
+        styleOverrides: {
+          root: {
+            "tr:last-of-type td": { border: 0 },
+          },
         },
       },
       MuiTableCell: {

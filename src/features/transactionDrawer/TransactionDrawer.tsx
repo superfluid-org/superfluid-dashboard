@@ -21,7 +21,7 @@ export default memo(function TransactionDrawer() {
   return (
     <Drawer
       sx={{
-        width: transactionDrawerWidth,
+        // width: transactionDrawerOpen ? transactionDrawerWidth : 0,
         flexShrink: 0,
       }}
       variant="persistent"
