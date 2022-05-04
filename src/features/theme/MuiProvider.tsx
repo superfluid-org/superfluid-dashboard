@@ -1,9 +1,10 @@
-import { ThemeProvider } from "@mui/material/styles";
+import { Box, createTheme } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
-import { Box } from "@mui/material";
-import { FC, useEffect, useState, useMemo, ReactNode } from "react";
-import { createSuperfluidMuiTheme } from "./theme";
+import { ThemeProvider } from "@mui/material/styles";
+import { deepmerge } from "@mui/utils";
 import { useTheme as useThemeNextThemes } from "next-themes";
+import { FC, useEffect, useMemo, useState } from "react";
+import { getDesignTokens, getThemedComponents } from "./theme";
 
 const MuiProvider: FC = ({ children }) => {
   const { theme: themeMode } = useThemeNextThemes();
@@ -11,10 +12,10 @@ const MuiProvider: FC = ({ children }) => {
 
   const [mounted, setMounted] = useState(false);
 
-  const muiTheme = useMemo(
-    () => createSuperfluidMuiTheme(muiThemeMode),
-    [muiThemeMode]
-  );
+  const muiTheme = useMemo(() => {
+    const themeCreate = createTheme(getDesignTokens(muiThemeMode));
+    return deepmerge(themeCreate, getThemedComponents(themeCreate));
+  }, [muiThemeMode]);
 
   useEffect(() => {
     setMounted(true);

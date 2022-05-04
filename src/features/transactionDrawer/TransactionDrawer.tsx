@@ -1,13 +1,10 @@
-import {
-  Drawer,
-  styled,
-} from "@mui/material";
+import { Drawer, styled } from "@mui/material";
 import { memo } from "react";
 import ReduxPersistGate from "../redux/ReduxPersistGate";
 import { useTransactionDrawerContext } from "./TransactionDrawerContext";
 import TransactionList from "./TransactionList";
 
-export const transactionDrawerWidth = 420;
+export const transactionDrawerWidth = 340;
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -26,13 +23,11 @@ export default memo(function TransactionDrawer() {
       sx={{
         width: transactionDrawerWidth,
         flexShrink: 0,
-        "& .MuiDrawer-paper": {
-          width: transactionDrawerWidth,
-        },
       }}
       variant="persistent"
       anchor="right"
       open={transactionDrawerOpen}
+      PaperProps={{ sx: { width: transactionDrawerWidth } }}
     >
       <DrawerHeader>
         {/* <Typography variant="body1" sx={{ m: 1 }}>
@@ -45,4 +40,4 @@ export default memo(function TransactionDrawer() {
       </ReduxPersistGate>
     </Drawer>
   );
-})
+});

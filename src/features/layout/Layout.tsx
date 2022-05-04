@@ -1,14 +1,14 @@
 import { Box, styled, Toolbar } from "@mui/material";
 import { FC } from "react";
-import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
-import NavigationDrawer from "./NavigationDrawer";
 import TransactionDrawer, {
   transactionDrawerWidth,
 } from "../transactionDrawer/TransactionDrawer";
+import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
+import NavigationDrawer from "./NavigationDrawer";
 import TopBar from "./TopBar";
 // import TransactionSnackbar from "../transactions/TransactionSnackbar";
 
-const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
+const Main = styled("main")<{
   open: boolean;
 }>(({ theme, open }) => ({
   flexGrow: 1,
@@ -31,7 +31,7 @@ const Layout: FC = ({ children }) => {
   const { transactionDrawerOpen } = useTransactionDrawerContext();
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", minHeight: "100vh" }}>
       <TopBar />
       <NavigationDrawer />
       <Main open={transactionDrawerOpen}>

@@ -15,7 +15,7 @@ const CustomAppBar = styled(AppBar, {
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
-    width: `calc(100% - ${transactionDrawerWidth}px)`,
+    width: `calc(100% - ${transactionDrawerWidth - menuDrawerWidth}px)`,
     transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
@@ -32,11 +32,10 @@ export default memo(function TopBar() {
       open={transactionDrawerOpen}
       position="fixed"
       sx={{
-        color: "text.primary",
         width: `calc(100% - ${menuDrawerWidth}px)`,
         ml: `${menuDrawerWidth}px`,
         boxShadow: "none",
-        bgcolor: "background.paper"
+        bgcolor: "background.paper",
       }}
     >
       <Stack
@@ -51,7 +50,6 @@ export default memo(function TopBar() {
           <TransactionBell />
         </Stack>
       </Stack>
-      <Divider />
     </CustomAppBar>
   );
 });
