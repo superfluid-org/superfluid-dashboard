@@ -19,17 +19,16 @@ const Wrap: NextPage = () => {
   >();
 
   useEffect(() => {
-    if (upgrade !== undefined) {
-      setTabValue("upgrade");
-    } else if (downgrade !== undefined) {
-      setTabValue("downgrade");
-    } else {
-      setTabValue("upgrade");
+    const newTabValue = downgrade !== undefined ? "downgrade" : "upgrade"; // Default is "upgrade".
+    if (newTabValue !== tabValue) {
+      // Reset restorations on tab change.
+      setUpgradeRestoration(undefined);
+      setDowngradeRestoration(undefined);
     }
+    setTabValue(newTabValue);
   }, [upgrade, downgrade]);
 
-  const { restoration, onRestored } =
-    useTransactionRestorationContext();
+  const { restoration, onRestored } = useTransactionRestorationContext();
 
   const [upgradeRestoration, setUpgradeRestoration] = useState<
     SuperTokenUpgradeRestoration | undefined
@@ -51,12 +50,7 @@ const Wrap: NextPage = () => {
       }
       onRestored();
     }
-  }, [
-    setUpgradeRestoration,
-    setDowngradeRestoration,
-    restoration,
-    onRestored,
-  ]);
+  }, [setUpgradeRestoration, setDowngradeRestoration, restoration, onRestored]);
 
   return (
     <Container maxWidth="lg">
@@ -75,12 +69,6 @@ const Wrap: NextPage = () => {
               tabValue={tabValue}
               upgradeRestoration={upgradeRestoration}
               downgradeRestoration={downgradeRestoration}
-              onTabChange={(tabValue) => {
-                setTabValue(tabValue);
-                // Reset restorations on tab change.
-                setUpgradeRestoration(undefined);
-                setDowngradeRestoration(undefined);
-              }}
             ></WrapCard>
           )}
         </SelectedTokenContextProvider>

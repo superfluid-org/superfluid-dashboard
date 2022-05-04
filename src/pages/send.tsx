@@ -1,7 +1,6 @@
 import { Box, Container } from "@mui/material";
 import { NextPage } from "next";
 import SendCard from "../features/send/SendCard";
-import { SelectedTokenContextProvider } from "../features/tokenWrapping/SelectedTokenPairContext";
 
 const Send: NextPage = () => {
   return (
@@ -15,9 +14,7 @@ const Send: NextPage = () => {
           alignItems: "center",
         }}
       >
-        <SelectedTokenContextProvider>
-          <SendCard />
-        </SelectedTokenContextProvider>
+        <SendCard />
       </Box>
     </Container>
   );

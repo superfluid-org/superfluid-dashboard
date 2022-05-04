@@ -4,7 +4,7 @@ import {
 import { ContractCallContext, Multicall } from "ethereum-multicall";
 import { ethers } from "ethers";
 import { networks } from "../../network/networks";
-import { COIN_ADDRESS } from "./adHocSubgraphEndpoints";
+import { NATIVE_ASSET_ADDRESS } from "./adHocSubgraphEndpoints";
 
 const multicallContractAddress = "0xcA11bde05977b3631167028862bE2a173976CA11";
 
@@ -141,7 +141,7 @@ export const balanceFetcher = {
 const createUnderlyingBalanceCall = (
   params: BalanceQueryParams
 ): ContractCallContext => {
-  if (params.tokenAddress === COIN_ADDRESS) {
+  if (params.tokenAddress === NATIVE_ASSET_ADDRESS) {
     return {
       reference: getKey(params), // Keep this as the coin key because it's used as a dictionary key later!
       contractAddress: ethers.utils.getAddress(multicallContractAddress),

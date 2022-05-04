@@ -16,6 +16,7 @@ import ThemeChanger from "../theme/ThemeChanger";
 import { useTheme } from "@mui/material";
 import Link from "../common/Link";
 import { memo } from "react";
+import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 
 export const menuDrawerWidth = 240;
 
@@ -80,6 +81,14 @@ export default memo(function NavigationDrawer() {
               <SwapVertIcon></SwapVertIcon>
             </ListItemIcon>
             <ListItemText primary="Wrap / Unwrap" />
+          </ListItem>
+        </NextLink>
+        <NextLink href={"/send"} passHref>
+          <ListItem button>
+            <ListItemIcon>
+              <ArrowRightAltIcon />
+            </ListItemIcon>
+            <ListItemText primary="Send" />
           </ListItem>
         </NextLink>
       </Stack>

@@ -7,18 +7,19 @@ import { Card, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { WrapTabUpgrade } from "./WrapTabUpgrade";
 import { WrapTabDowngrade } from "./WrapTabDowngrade";
+import { useRouter } from "next/router";
 
 export default memo(function WrapCard({
   tabValue,
-  onTabChange,
   upgradeRestoration,
   downgradeRestoration,
 }: {
   tabValue: "upgrade" | "downgrade";
-  onTabChange: (tabValue: "upgrade" | "downgrade") => void;
   upgradeRestoration?: SuperTokenUpgradeRestoration;
   downgradeRestoration?: SuperTokenDowngradeRestoration;
 }) {
+  const router = useRouter();
+
   return (
     <Card
       sx={{ position: "fixed", top: "25%", width: "400px", p: 5 }}
@@ -29,7 +30,7 @@ export default memo(function WrapCard({
           variant="scrollable"
           scrollButtons="auto"
           onChange={(_event, newValue: "upgrade" | "downgrade") => {
-            onTabChange(newValue);
+            router.replace("/wrap?" + newValue);
           }}
           aria-label="tabs"
         >

@@ -1,53 +1,38 @@
 import { FC, useState } from "react";
-import { WrappedSuperTokenPair } from "../redux/endpoints/adHocSubgraphEndpoints";
+import { SuperTokenPair, TokenMinimal } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { Chip, Stack } from "@mui/material";
 import TokenIcon from "../token/TokenIcon";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { TokenDialog } from "./TokenDialog";
-import { useSelectedTokenContext } from "./SelectedTokenPairContext";
+import { TokenDialog, TokenSelectionProps } from "./TokenDialog";
 
 export const TokenDialogChip: FC<{
-  prioritizeSuperTokens: boolean;
-}> = ({ prioritizeSuperTokens }) => {
+  token: TokenMinimal | undefined,
+  tokenSelection: TokenSelectionProps,
+  onTokenSelect: (token: TokenMinimal) => void;
+}> = ({ token, tokenSelection, onTokenSelect }) => {
   const [open, setOpen] = useState(false);
-
-  const { selectedTokenPair, setSelectedTokenPair } = useSelectedTokenContext();
-
-  const onChipClick = () => {
-    setOpen(true);
-  };
-
-  const onDialogClose = () => {
-    setOpen(false);
-  };
-
-  const _onSelect = (token: WrappedSuperTokenPair) => {
-    setSelectedTokenPair(token);
-    setOpen(false);
-  };
-
-  const tokenSymbol = prioritizeSuperTokens
-    ? selectedTokenPair?.superToken.symbol
-    : selectedTokenPair?.underlyingToken.symbol;
 
   return (
     <>
       <Chip
-        icon={tokenSymbol ? <TokenIcon tokenSymbol={tokenSymbol} /> : <></>}
+        icon={!!token ? <TokenIcon tokenSymbol={token.symbol} /> : <></>}
         label={
           <>
             <Stack direction="row" alignItems="center">
-              {tokenSymbol ?? "Select a token"} <ExpandMoreIcon />
+              {!!token ? token.symbol : "Select a token"} <ExpandMoreIcon />
             </Stack>
           </>
         }
-        onClick={onChipClick}
+        onClick={() => setOpen(true)}
       ></Chip>
       <TokenDialog
-        prioritizeSuperTokens={prioritizeSuperTokens}
         open={open}
-        onClose={onDialogClose}
-        onSelect={_onSelect}
+        onClose={() => setOpen(false)}
+        onSelect={(token: TokenMinimal) => {
+          onTokenSelect(token);
+          setOpen(false);
+        }}
+        tokenSelection={tokenSelection}
       />
     </>
   );

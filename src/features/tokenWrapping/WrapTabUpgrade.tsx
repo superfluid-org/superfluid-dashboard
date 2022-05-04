@@ -6,9 +6,9 @@ import {
 } from "../transactionRestoration/transactionRestorations";
 import { useNetworkContext } from "../network/NetworkContext";
 import { useWalletContext } from "../wallet/WalletContext";
-import { COIN_ADDRESS } from "../redux/endpoints/adHocSubgraphEndpoints";
+import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { BigNumber, ethers } from "ethers";
-import { rpcApi } from "../redux/store";
+import { rpcApi, subgraphApi } from "../redux/store";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { Chip, Stack, TextField, Typography } from "@mui/material";
 import { TokenDialogChip } from "./TokenDialogChip";
@@ -42,7 +42,7 @@ export const WrapTabUpgrade: FC<{
   }, [restoration]);
 
   const isUnderlyingBlockchainNativeAsset =
-    selectedTokenPair?.underlyingToken.address === COIN_ADDRESS;
+    selectedTokenPair?.underlyingToken.address === NATIVE_ASSET_ADDRESS;
 
   const allowanceQuery = rpcApi.useSuperTokenUpgradeAllowanceQuery(
     selectedTokenPair && !isUnderlyingBlockchainNativeAsset && walletAddress
@@ -83,11 +83,31 @@ export const WrapTabUpgrade: FC<{
     amountInputRef.current.focus();
   }, [amountInputRef, selectedTokenPair]);
 
+  const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
+    chainId: network.chainId,
+  })
+  
   return (
     <Stack direction="column" spacing={2}>
       <Stack direction="column" spacing={1}>
         <Stack direction="row" justifyContent="space-between" spacing={2}>
-          <TokenDialogChip prioritizeSuperTokens={false} />
+        <TokenDialogChip
+            token={selectedTokenPair?.underlyingToken}
+            tokenSelection={{
+              tokenPairsQuery: {
+                data: tokenPairsQuery.data?.map((x) => x.underlyingToken),
+                isUninitialized: tokenPairsQuery.isUninitialized,
+                isLoading: tokenPairsQuery.isLoading,
+              },
+            }}
+            onTokenSelect={(token) =>
+              setSelectedTokenPair(
+                tokenPairsQuery?.data?.find(
+                  (x) => x.underlyingToken.address === token.address
+                )
+              )
+            }
+          />
           <TextField
             disabled={!selectedTokenPair}
             placeholder="0.0"
@@ -179,8 +199,8 @@ export const WrapTabUpgrade: FC<{
             amountWei: approveAllowanceAmountWei.toString(),
             superTokenAddress: selectedTokenPair.superToken.address,
             transactionExtraData: {
-              restoration
-            }
+              restoration,
+            },
           });
         }}
       >

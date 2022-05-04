@@ -46,11 +46,6 @@ export const subgraphApi = initializeSubgraphApiSlice((options) =>
   .injectEndpoints(allSubgraphEndpoints)
   .injectEndpoints(adHocSubgraphEndpoints);
 
-const subgraphApiPersistedReducer = persistReducer(
-  { storage, key: "subgraph-api", version: 1 },
-  subgraphApi.reducer
-);
-
 export const transactionTracker = initializeTransactionTrackerSlice();
 
 const transactionTrackerPersistedReducer = persistReducer(
@@ -61,7 +56,7 @@ const transactionTrackerPersistedReducer = persistReducer(
 export const reduxStore = configureStore({
   reducer: {
     [rpcApi.reducerPath]: rpcApi.reducer,
-    [subgraphApi.reducerPath]: subgraphApiPersistedReducer,
+    [subgraphApi.reducerPath]: subgraphApi.reducer,
     [transactionTracker.reducerPath]: transactionTrackerPersistedReducer,
     [assetApiSlice.reducerPath]: assetApiSlice.reducer,
   },

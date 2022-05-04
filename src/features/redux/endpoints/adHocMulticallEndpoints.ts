@@ -5,7 +5,7 @@ import {
 import { ContractCallContext, Multicall } from "ethereum-multicall";
 import { ethers } from "ethers";
 import { uniq } from "lodash";
-import { COIN_ADDRESS } from "./adHocSubgraphEndpoints";
+import { NATIVE_ASSET_ADDRESS } from "./adHocSubgraphEndpoints";
 
 const multicallContractAddress = "0xcA11bde05977b3631167028862bE2a173976CA11";
 
@@ -25,7 +25,7 @@ export const adHocMulticallEndpoints = {
 
         const uniqueAddresses = uniq(arg.tokenAddresses);
         const wrapperSuperTokenAddresses = uniqueAddresses.filter(
-          (x) => x !== COIN_ADDRESS
+          (x) => x !== NATIVE_ASSET_ADDRESS
         );
         const hasCoin =
           uniqueAddresses.length !== wrapperSuperTokenAddresses.length;
@@ -65,7 +65,7 @@ export const adHocMulticallEndpoints = {
           }));
 
         const coinBalanceCall: ContractCallContext = {
-          reference: COIN_ADDRESS, // Keep this as the coin key because it's used as a dictionary key later!
+          reference: NATIVE_ASSET_ADDRESS, // Keep this as the coin key because it's used as a dictionary key later!
           contractAddress: ethers.utils.getAddress(multicallContractAddress),
           abi: [
             {

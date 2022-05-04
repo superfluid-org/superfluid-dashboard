@@ -4,11 +4,13 @@ import AddressSearchDialog from "./AddressSearchDialog";
 
 export type Address = {
   hash: string;
+  name: string;
 };
 
 export default memo(function AddressSearch({
   onChange,
 }: {
+  address: Address | undefined;
   onChange: (address: Address | undefined) => void;
 }) {
   const [address, setAddress] = useState<Address | undefined>();
@@ -20,7 +22,7 @@ export default memo(function AddressSearch({
     <>
       <TextField
         label="Receiver"
-        value={address?.hash}
+        value={address?.name ?? ""}
         onClick={() => setDialogOpen(true)}
         onChange={() => setDialogOpen(true)}
       />

@@ -1,10 +1,19 @@
-import { Stack, Typography } from "@mui/material";
+import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { FC } from "react";
 import TokenIcon from "../token/TokenIcon";
 import EtherFormatted from "../token/EtherFormatted";
 import FlowingBalance from "../token/FlowingBalance";
 import { rpcApi } from "../redux/store";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import ArrowCircleUpIcon from "@mui/icons-material/ArrowCircleUp";
+import Link from "next/link";
+import { useNetworkContext } from "../network/NetworkContext";
+import {
+  isSuper,
+  isUnderlying,
+  isWrappable,
+  TokenMinimal,
+} from "../redux/endpoints/adHocSubgraphEndpoints";
 
 const etherDecimalPlaces = 8;
 
@@ -12,29 +21,26 @@ const etherDecimalPlaces = 8;
 export const TokenItem: FC<{
   chainId?: number;
   accountAddress?: string;
-  tokenAddress: string;
-  tokenSymbol: string;
-  tokenName: string;
   balanceWei?: string;
   balanceTimestamp?: number;
   flowRate?: string;
-  isSuperToken: boolean;
+  token: TokenMinimal;
+  showUpgrade: boolean;
 }> = (arg) => {
-  const {
-    chainId,
-    accountAddress,
-    tokenAddress,
-    tokenSymbol,
-    tokenName,
-    isSuperToken,
-  } = arg;
+  const { chainId, accountAddress, token, showUpgrade } = arg;
+
+  const { network } = useNetworkContext();
+
+  const isSuperToken = isSuper(token);
+  const isUnderlyingToken = isUnderlying(token);
+  const isWrappableSuperToken = isSuperToken && isWrappable(token);
 
   const underlyingBalanceQuery = rpcApi.useUnderlyingBalanceQuery(
-    chainId && accountAddress && !isSuperToken
+    chainId && accountAddress && isUnderlyingToken
       ? {
           chainId,
           accountAddress,
-          tokenAddress,
+          tokenAddress: token.address,
         }
       : skipToken
   );
@@ -44,12 +50,12 @@ export const TokenItem: FC<{
       ? {
           chainId,
           accountAddress,
-          tokenAddress,
+          tokenAddress: token.address,
         }
       : skipToken
   );
 
-  const balanceWei = isSuperToken
+  const balanceWei = isSuper(token)
     ? realtimeBalanceQuery?.data?.balance || arg.balanceWei
     : underlyingBalanceQuery?.data?.balance || arg.balanceWei;
 
@@ -65,7 +71,7 @@ export const TokenItem: FC<{
       sx={{ pl: 1, width: "100%" }}
       spacing={2}
     >
-      <TokenIcon tokenSymbol={tokenSymbol}></TokenIcon>
+      <TokenIcon tokenSymbol={token.symbol}></TokenIcon>
       <Stack
         direction="row"
         alignItems="center"
@@ -73,28 +79,42 @@ export const TokenItem: FC<{
         sx={{ width: "100%" }}
       >
         <Stack direction="column">
-          <Typography variant="body1">{tokenSymbol}</Typography>
-          <Typography variant="body2">{tokenName}</Typography>
+          <Typography variant="body1">{token.symbol}</Typography>
+          <Typography variant="body2">{token.name}</Typography>
         </Stack>
-        {!!accountAddress && (
-          <Typography variant="body1">
-            {balanceWei ? (
-              balanceTimestamp && flowRate ? (
-                <FlowingBalance
-                  balance={balanceWei}
-                  balanceTimestamp={balanceTimestamp}
-                  flowRate={flowRate}
-                  etherDecimalPlaces={etherDecimalPlaces}
-                />
-              ) : (
-                <EtherFormatted
-                  wei={balanceWei}
-                  etherDecimalPlaces={etherDecimalPlaces}
-                />
-              )
-            ) : null}
-          </Typography>
-        )}
+        <Stack direction="row">
+          {!!accountAddress && (
+            <Typography variant="body1">
+              {balanceWei ? (
+                balanceTimestamp && flowRate ? (
+                  <FlowingBalance
+                    balance={balanceWei}
+                    balanceTimestamp={balanceTimestamp}
+                    flowRate={flowRate}
+                    etherDecimalPlaces={etherDecimalPlaces}
+                  />
+                ) : (
+                  <EtherFormatted
+                    wei={balanceWei}
+                    etherDecimalPlaces={etherDecimalPlaces}
+                  />
+                )
+              ) : null}
+            </Typography>
+          )}
+          {showUpgrade && isWrappableSuperToken && (
+            <Link
+              href={`/wrap?upgrade&token=${token.address}&network=${network.slugName}`}
+              passHref
+            >
+              <Tooltip title="Wrap">
+                <IconButton>
+                  <ArrowCircleUpIcon></ArrowCircleUpIcon>
+                </IconButton>
+              </Tooltip>
+            </Link>
+          )}
+        </Stack>
       </Stack>
     </Stack>
   );

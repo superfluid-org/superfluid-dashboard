@@ -1,9 +1,12 @@
 import { FC, useEffect, useRef, useState } from "react";
-import { SuperTokenDowngradeRestoration, RestorationType } from "../transactionRestoration/transactionRestorations";
+import {
+  SuperTokenDowngradeRestoration,
+  RestorationType,
+} from "../transactionRestoration/transactionRestorations";
 import { useNetworkContext } from "../network/NetworkContext";
 import { useWalletContext } from "../wallet/WalletContext";
 import { BigNumber, ethers } from "ethers";
-import { rpcApi } from "../redux/store";
+import { rpcApi, subgraphApi } from "../redux/store";
 import { Chip, Stack, TextField, Typography } from "@mui/material";
 import { TokenDialogChip } from "./TokenDialogChip";
 import TokenIcon from "../token/TokenIcon";
@@ -44,11 +47,31 @@ export const WrapTabDowngrade: FC<{
     amountInputRef.current.focus();
   }, [amountInputRef, selectedTokenPair]);
 
+  const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
+    chainId: network.chainId,
+  });
+
   return (
     <Stack direction="column" spacing={2}>
       <Stack direction="column" spacing={1}>
         <Stack direction="row" justifyContent="space-between" spacing={2}>
-          <TokenDialogChip prioritizeSuperTokens={true} />
+          <TokenDialogChip
+            token={selectedTokenPair?.superToken}
+            tokenSelection={{
+              tokenPairsQuery: {
+                data: tokenPairsQuery.data?.map((x) => x.superToken),
+                isUninitialized: tokenPairsQuery.isUninitialized,
+                isLoading: tokenPairsQuery.isLoading,
+              },
+            }}
+            onTokenSelect={(token) =>
+              setSelectedTokenPair(
+                tokenPairsQuery?.data?.find(
+                  (x) => x.superToken.address === token.address
+                )
+              )
+            }
+          />
           <TextField
             placeholder="0.0"
             inputRef={amountInputRef}

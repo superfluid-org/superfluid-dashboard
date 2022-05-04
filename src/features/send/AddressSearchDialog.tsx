@@ -23,7 +23,7 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 export type AddressSearchDialogProps = {
   open: boolean;
   onClose: () => void;
-  onSelectAddress: (address: { hash: string }) => void;
+  onSelectAddress: (address: { hash: string; name: string }) => void;
   ResponsiveDialogProps?: ResponsiveDialogProps;
 };
 
@@ -50,11 +50,11 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
 
   useEffect(() => {
     if (ethers.utils.isAddress(searchTermDebounced)) {
-      onSelectAddress({ hash: searchTermDebounced });
+      onSelectAddress({ hash: searchTermDebounced, name: searchTermDebounced });
     }
   }, [searchTermDebounced]);
 
-  const ensQuery = subgraphApi.useEns1Query(
+  const ensQuery = subgraphApi.useEnsByNameQuery(
     searchTermDebounced
       ? {
           name: searchTermDebounced,
@@ -62,14 +62,10 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
       : skipToken
   );
 
-  // useEffect(() => {
-  //   if (ensQuery.data?.hash) {
-  //     onSelectAddress({ hash: ensQuery.data.hash });
-  //   }
-  // }, [ensQuery]);
-
   const showEns =
     (ensQuery.isSuccess && !!ensQuery.data?.hash) || ensQuery.isLoading;
+
+  const ensData = ensQuery.data;
 
   return (
     <ResponsiveDialog
@@ -91,7 +87,11 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
         >
           <CloseIcon />
         </IconButton>
-        <TextField autoFocus onChange={(e) => setSearchTerm(e.target.value)} placeholder="Address or ENS" />
+        <TextField
+          autoFocus
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Address or ENS"
+        />
       </DialogTitle>
       <DialogContent dividers>
         {searchTermDebounced ? (
@@ -113,13 +113,18 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
                     </ListItemButton>
                   </ListItem>
                 )}
-                {!!ensQuery.data?.hash && (
+                {!!ensData && (
                   <ListItem>
-                    <ListItemButton onClick={() => onSelectAddress({
-                      hash: ensQuery.data.hash
-                    })}>
+                    <ListItemButton
+                      onClick={() =>
+                        onSelectAddress({
+                          hash: ensData.hash,
+                          name: ensData.name,
+                        })
+                      }
+                    >
                       <ListItemText
-                        primary={ensQuery.data.hash}
+                        primary={ensData.hash}
                         secondary={searchTermDebounced.toLowerCase()}
                       />
                     </ListItemButton>
@@ -130,7 +135,7 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
           </List>
         ) : (
           <List>
-            <ListItem>Index</ListItem>
+            <ListItem>Index page of dialog</ListItem>
           </List>
         )}
       </DialogContent>

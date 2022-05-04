@@ -1,4 +1,4 @@
-import { TokenMinimal, WrappedSuperTokenPair } from '../redux/endpoints/adHocSubgraphEndpoints';
+import { TokenMinimal, SuperTokenPair, UnderlyingTokenType, UnderlyingToken } from '../redux/endpoints/adHocSubgraphEndpoints';
 
 export enum RestorationType {
   Downgrade = 1,
@@ -9,21 +9,21 @@ export enum RestorationType {
 export interface SuperTokenDowngradeRestoration {
   type: RestorationType.Downgrade;
   chainId: number;
-  tokenUpgrade: WrappedSuperTokenPair;
+  tokenUpgrade: SuperTokenPair;
   amountWei: string;
 }
 
 export interface SuperTokenUpgradeRestoration {
   type: RestorationType.Upgrade;
   chainId: number;
-  tokenUpgrade: WrappedSuperTokenPair;
+  tokenUpgrade: SuperTokenPair;
   amountWei: string;
 }
 
 export interface ApproveAllowanceRestoration {
   type: RestorationType.Approve;
   chainId: number;
-  token: TokenMinimal;
+  token: UnderlyingToken;
   amountWei: string;
 }
 

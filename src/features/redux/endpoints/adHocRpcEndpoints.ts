@@ -10,7 +10,7 @@ import {
   RpcEndpointBuilder,
   registerNewTransactionAndReturnQueryFnResult,
 } from "@superfluid-finance/sdk-redux";
-import { COIN_ADDRESS } from "./adHocSubgraphEndpoints";
+import { NATIVE_ASSET_ADDRESS } from "./adHocSubgraphEndpoints";
 import { balanceFetcher, BalanceQueryParams, UnderlyingBalance, RealtimeBalance } from "./balanceFetcher";
 
 declare module "@superfluid-finance/sdk-redux" {
@@ -54,7 +54,7 @@ export const adHocRpcEndpoints = {
       queryFn: async (arg) => {
         const framework = await getFramework(arg.chainId);
 
-        if (arg.tokenAddress === COIN_ADDRESS) {
+        if (arg.tokenAddress === NATIVE_ASSET_ADDRESS) {
           return {
             data: (
               await framework.settings.provider.getBalance(arg.accountAddress)
