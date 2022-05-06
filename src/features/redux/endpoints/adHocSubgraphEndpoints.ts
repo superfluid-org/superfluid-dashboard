@@ -4,7 +4,6 @@ import {
 } from "@superfluid-finance/sdk-redux";
 import { gql } from "graphql-request";
 import { Network, networksByChainId } from "../../network/networks";
-import { request } from "graphql-request";
 
 type WrapperSuperTokenSubgraphResult = {
   id: string;
@@ -105,52 +104,6 @@ export type SuperTokenPair = {
 
 export const adHocSubgraphEndpoints = {
   endpoints: (builder: SubgraphEndpointBuilder) => ({
-    ensByName: builder.query<
-      { hash: string; name: string } | null,
-      { name: string }
-    >({
-      queryFn: async (arg) => {
-        const response = await request<{
-          domainByName: { name: string; owner: { id: string } }[];
-          domainByLabel: { name: string; owner: { id: string } }[];
-        }>(
-          "https://api.thegraph.com/subgraphs/name/ensdomains/ens",
-          gql`
-            query ($name: String) {
-              domainByName: domains(where: { name: $name }) {
-                name
-                owner {
-                  id
-                }
-              }
-              domainByLabel: domains(where: { labelName: $namePlusEth }) {
-                name
-                owner {
-                  id
-                }
-              }
-            }
-          `,
-          {
-            name: arg.name.toLowerCase(),
-            namePlusEth: arg.name.toLowerCase() + ".eth",
-          }
-        );
-        return {
-          data: response.domainByLabel.length
-            ? {
-                hash: response.domainByLabel[0].owner.id,
-                name: response.domainByLabel[0].name,
-              }
-            : response.domainByName.length
-            ? {
-                hash: response.domainByName[0].owner.id,
-                name: response.domainByName[0].name,
-              }
-            : null,
-        };
-      },
-    }),
     walletSendableSuperTokens: builder.query<
       SuperTokenMinimal[],
       { chainId: number; accountAddress: string }

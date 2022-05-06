@@ -17,8 +17,8 @@ import ResponsiveDialog, {
 } from "../common/ResponsiveDialog";
 import CloseIcon from "@mui/icons-material/Close";
 import { ethers } from "ethers";
-import { subgraphApi } from "../redux/store";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { ensApiSlice } from "../ens/ensApi.slice";
 
 export type AddressSearchDialogProps = {
   open: boolean;
@@ -54,16 +54,14 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
     }
   }, [searchTermDebounced]);
 
-  const ensQuery = subgraphApi.useEnsByNameQuery(
+  const ensQuery = ensApiSlice.useResolveNameQuery(
     searchTermDebounced
-      ? {
-          name: searchTermDebounced,
-        }
+      ? searchTermDebounced
       : skipToken
   );
 
   const showEns =
-    (ensQuery.isSuccess && !!ensQuery.data?.hash) || ensQuery.isLoading;
+    (ensQuery.isSuccess && !!ensQuery.data) || ensQuery.isLoading;
 
   const ensData = ensQuery.data;
 
@@ -118,14 +116,14 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
                     <ListItemButton
                       onClick={() =>
                         onSelectAddress({
-                          hash: ensData.hash,
+                          hash: ensData.address,
                           name: ensData.name,
                         })
                       }
                     >
                       <ListItemText
-                        primary={ensData.hash}
-                        secondary={searchTermDebounced.toLowerCase()}
+                        primary={ensData.address}
+                        secondary={ensData.name}
                       />
                     </ListItemButton>
                   </ListItem>

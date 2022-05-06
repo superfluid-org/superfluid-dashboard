@@ -1,0 +1,50 @@
+import { fakeBaseQuery } from "@reduxjs/toolkit/dist/query";
+import { createApi } from "@reduxjs/toolkit/dist/query/react";
+import { ethers } from "ethers";
+
+// TODO(KK): getSerializedArgs implementation
+export const ensApiSlice = createApi({
+  reducerPath: "ens",
+  baseQuery: fakeBaseQuery(),
+  endpoints: (builder) => {
+    const mainnetProvider = new ethers.providers.InfuraProvider(
+      "mainnet",
+      "fa4dab2732ac473b9a61b1d1b3b904fa"
+    );
+
+    return {
+      resolveName: builder.query<
+        { address: string; name: string } | null,
+        string
+      >({
+        queryFn: async (name) => {
+          const address = await mainnetProvider.resolveName(name);
+          return {
+            data: address
+              ? {
+                  name,
+                  address: ethers.utils.getAddress(address),
+                }
+              : null,
+          };
+        },
+      }),
+      lookupAddress: builder.query<
+        { address: string; name: string } | null,
+        string
+      >({
+        queryFn: async (address) => {
+          const name = await mainnetProvider.lookupAddress(address);
+          return {
+            data: name
+              ? {
+                  name,
+                  address: ethers.utils.getAddress(address),
+                }
+              : null,
+          };
+        },
+      }),
+    };
+  },
+});
