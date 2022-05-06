@@ -152,9 +152,11 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         letterSpacing: "0.15px",
       },
       body1: {
+        fontWeight: 400,
         letterSpacing: 0.15,
       },
       body2: {
+        fontWeight: 400,
         letterSpacing: 0.17,
       },
       subtitle1: {
@@ -280,6 +282,9 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
     components: {
       MuiBackdrop: {
         styleOverrides: {
+          invisible: {
+            background: "transparent",
+          },
           root: {
             background: "#00000080",
           },
@@ -297,6 +302,37 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           disableElevation: true,
         },
       },
+      MuiToggleButtonGroup: {
+        styleOverrides: {
+          root: {
+            padding: theme.spacing(0.5),
+            // background: theme.palette.action.disabled,
+          },
+          grouped: {
+            border: "none",
+            ":not(:first-of-type), :not(:last-of-type)": {
+              borderRadius: "7px",
+            },
+            ":not(:first-of-type)": {
+              marginLeft: "4px",
+            },
+          },
+        },
+      },
+      MuiToggleButton: {
+        styleOverrides: {
+          root: {
+            textTransform: "inherit",
+            ...theme.typography.body1,
+          },
+          sizeMedium: {
+            letterSpacing: "0.17px",
+          },
+          selected: {
+            ...theme.typography.h6,
+          },
+        },
+      },
       MuiButton: {
         defaultProps: {
           disableElevation: true,
@@ -304,6 +340,9 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         styleOverrides: {
           root: {
             textTransform: "inherit",
+          },
+          sizeMedium: {
+            letterSpacing: "0.17px",
           },
           outlinedSecondary: {
             color: theme.palette.text.primary,

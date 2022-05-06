@@ -12,7 +12,7 @@ const Main = styled("main")<{
   open: boolean;
 }>(({ theme, open }) => ({
   flexGrow: 1,
-  padding: `${theme.spacing(2.5)} ${theme.spacing(8)}`,
+  padding: `${theme.spacing(5)} ${theme.spacing(8)}`,
   transition: theme.transitions.create("margin", {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,

@@ -1,8 +1,10 @@
 import {
+  Box,
   Divider,
   Drawer,
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Stack,
@@ -16,11 +18,13 @@ import ThemeChanger from "../theme/ThemeChanger";
 import { useTheme } from "@mui/material";
 import Link from "../common/Link";
 import { memo } from "react";
+import { useWalletContext } from "../wallet/WalletContext";
+import ConnectWallet from "../wallet/ConnectWallet";
 
 export const menuDrawerWidth = 260;
 
 export default memo(function NavigationDrawer() {
-  const muiTheme = useTheme();
+  const theme = useTheme();
 
   return (
     <Drawer
@@ -29,12 +33,12 @@ export default memo(function NavigationDrawer() {
       PaperProps={{ sx: { width: menuDrawerWidth } }}
       sx={{ width: menuDrawerWidth }}
     >
-      <Toolbar sx={{ height: "88px" }}>
+      <Toolbar sx={{ height: 88 }}>
         <Link href="/">
           <Image
             unoptimized
             src={
-              muiTheme.palette.mode === "dark"
+              theme.palette.mode === "dark"
                 ? "/superfluid-logo-light.svg"
                 : "/superfluid-logo-dark.svg"
             }
@@ -46,25 +50,39 @@ export default memo(function NavigationDrawer() {
         </Link>
       </Toolbar>
 
-      <List component={List} sx={{ flex: 1 }}>
+      <Box sx={{ px: 2, py: 1.5 }}>
+        <ConnectWallet />
+      </Box>
+
+      <Stack
+        component={List}
+        sx={{ color: theme.palette.text.secondary, px: 2 }}
+        gap={1}
+      >
         <NextLink href={"/"} passHref>
-          <ListItem button>
+          <ListItemButton sx={{ borderRadius: "10px" }}>
             <ListItemIcon>
               <AutoAwesomeMosaicIcon></AutoAwesomeMosaicIcon>
             </ListItemIcon>
-            <ListItemText primary="Overview" />
-          </ListItem>
+            <ListItemText
+              primary="Overview"
+              primaryTypographyProps={{ variant: "h6" }}
+            />
+          </ListItemButton>
         </NextLink>
 
         <NextLink href={"/wrap?upgrade"} passHref>
-          <ListItem button>
+          <ListItemButton sx={{ borderRadius: "10px" }}>
             <ListItemIcon>
               <SwapVertIcon></SwapVertIcon>
             </ListItemIcon>
-            <ListItemText primary="Wrap / Unwrap" />
-          </ListItem>
+            <ListItemText
+              primary="Wrap / Unwrap"
+              primaryTypographyProps={{ variant: "h6" }}
+            />
+          </ListItemButton>
         </NextLink>
-      </List>
+      </Stack>
 
       <Stack justifyContent="flex-end" sx={{ flex: 1 }}>
         <Divider />

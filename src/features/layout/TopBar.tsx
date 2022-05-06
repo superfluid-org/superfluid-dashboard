@@ -45,8 +45,7 @@ export default memo(function TopBar() {
         alignItems="center"
       >
         <Stack direction="row" spacing={2} alignItems="center">
-          <SelectNetwork></SelectNetwork>
-          <ConnectWallet></ConnectWallet>
+          <SelectNetwork />
           <TransactionBell />
         </Stack>
       </Stack>
