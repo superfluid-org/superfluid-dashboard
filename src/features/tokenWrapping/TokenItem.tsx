@@ -5,7 +5,7 @@ import EtherFormatted from "../token/EtherFormatted";
 import FlowingBalance from "../token/FlowingBalance";
 import { rpcApi } from "../redux/store";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import AddCircle from "@mui/icons-material/AddCircle";
+import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import Link from "next/link";
 import { useNetworkContext } from "../network/NetworkContext";
 import {
@@ -109,7 +109,7 @@ export const TokenItem: FC<{
             >
               <Tooltip title="Wrap">
                 <IconButton>
-                  <AddCircle></AddCircle>
+                  <AddCircleOutline></AddCircleOutline>
                 </IconButton>
               </Tooltip>
             </Link>

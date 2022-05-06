@@ -1,10 +1,10 @@
-import { TextField } from "@mui/material";
+import { Chip, Stack, TextField, Typography } from "@mui/material";
 import { memo, useEffect, useState } from "react";
 import AddressSearchDialog from "./AddressSearchDialog";
 
 export type Address = {
   hash: string;
-  name: string;
+  name?: string;
 };
 
 export default memo(function AddressSearch({
@@ -22,7 +22,24 @@ export default memo(function AddressSearch({
     <>
       <TextField
         label="Receiver"
-        value={address?.name ?? ""}
+        InputProps={{
+          startAdornment: address ? (
+            <Chip
+              label={
+                address.name ? (
+                  <Stack>
+                    <Typography variant="body1">{address.name}</Typography>
+                    <Typography variant="body2">{address.hash}</Typography>
+                  </Stack>
+                ) : (
+                  <Typography variant="body1">{address.hash}</Typography>
+                )
+              }
+              onDelete={() => setAddress(undefined)}
+            />
+          ) : null,
+        }}
+        value={""}
         onClick={() => setDialogOpen(true)}
         onChange={() => setDialogOpen(true)}
       />

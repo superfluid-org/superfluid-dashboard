@@ -154,7 +154,7 @@ export const TokenDialog: FC<{
         : tokenOrdered,
     [getFuse, searchTerm, tokenOrdered]
   );
-
+  
   return (
     <ResponsiveDialog open={open} onClose={onClose}>
       <DialogTitle>

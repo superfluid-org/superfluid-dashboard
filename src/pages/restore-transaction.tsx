@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useNetworkContext } from "../features/network/NetworkContext";
 import { useAppSelector } from "../features/redux/store";
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
-import { TransactionRestorations, RestorationType } from "../features/transactionRestoration/transactionRestorations";
+import { TransactionRestoration, RestorationType } from "../features/transactionRestoration/transactionRestorations";
 
 const RestoreTransaction: NextPage = () => {
   const { network, setNetwork } = useNetworkContext();
@@ -26,7 +26,7 @@ const RestoreTransaction: NextPage = () => {
     }
 
     const transactionRestoration = transaction?.extraData
-      ?.restoration as TransactionRestorations;
+      ?.restoration as TransactionRestoration;
 
     if (transactionRestoration) {
       switch (transactionRestoration.type) {

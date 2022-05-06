@@ -18,12 +18,16 @@ export const ensApiSlice = createApi({
         string
       >({
         queryFn: async (name) => {
+          if (ethers.utils.isAddress(name)) {
+            return { data: null };
+          }
+
           const address = await mainnetProvider.resolveName(name);
           return {
             data: address
               ? {
                   name,
-                  address: ethers.utils.getAddress(address),
+                  address: address,
                 }
               : null,
           };

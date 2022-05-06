@@ -19,11 +19,12 @@ import CloseIcon from "@mui/icons-material/Close";
 import { ethers } from "ethers";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { ensApiSlice } from "../ens/ensApi.slice";
+import { Address } from "./AddressSearch";
 
 export type AddressSearchDialogProps = {
   open: boolean;
   onClose: () => void;
-  onSelectAddress: (address: { hash: string; name: string }) => void;
+  onSelectAddress: (address: Address) => void;
   ResponsiveDialogProps?: ResponsiveDialogProps;
 };
 
@@ -48,22 +49,29 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
     setSearchTermDebounced(searchTerm.trim());
   };
 
+  const [openCounter, setOpenCounter] = useState(0);
+  useEffect(() => {
+    if (open) {
+      setOpenCounter(openCounter + 1);
+      setSearchTermVisible(""); // Reset the search term when the dialog opens, not when it closes (because then there would be noticable visual clearing of the field). It's smoother UI to do it on opening.
+      setSearchTermDebounced(""); // Reset the search term when the dialog opens, not when it closes (because then there would be noticable visual clearing of the field). It's smoother UI to do it on opening.
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
   useEffect(() => {
     if (ethers.utils.isAddress(searchTermDebounced)) {
-      onSelectAddress({ hash: searchTermDebounced, name: searchTermDebounced });
+      onSelectAddress({ hash: ethers.utils.getAddress(searchTermDebounced) });
     }
   }, [searchTermDebounced]);
 
   const ensQuery = ensApiSlice.useResolveNameQuery(
-    searchTermDebounced
-      ? searchTermDebounced
-      : skipToken
+    searchTermDebounced ? searchTermDebounced : skipToken
   );
 
-  const showEns =
-    (ensQuery.isSuccess && !!ensQuery.data) || ensQuery.isLoading;
+  const showEns = (ensQuery.isSuccess && !!ensQuery.data) || ensQuery.isLoading;
 
-  const ensData = ensQuery.data;
+  const ensData = ensQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!ensQuery.data` means that the data is not undefined nor null.
 
   return (
     <ResponsiveDialog
@@ -86,9 +94,11 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
           <CloseIcon />
         </IconButton>
         <TextField
+          fullWidth
           autoFocus
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Address or ENS"
+          value={searchTermVisible}
         />
       </DialogTitle>
       <DialogContent dividers>
@@ -133,7 +143,7 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
           </List>
         ) : (
           <List>
-            <ListItem>Index page of dialog</ListItem>
+            <ListItem>{/* Index page of dialog */}</ListItem>
           </List>
         )}
       </DialogContent>
