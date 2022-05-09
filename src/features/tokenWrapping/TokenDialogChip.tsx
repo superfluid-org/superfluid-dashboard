@@ -1,8 +1,8 @@
-import { FC, useState } from "react";
-import { SuperTokenPair, TokenMinimal } from "../redux/endpoints/adHocSubgraphEndpoints";
-import { Chip, Stack } from "@mui/material";
-import TokenIcon from "../token/TokenIcon";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Button } from "@mui/material";
+import { FC, useState } from "react";
+import { TokenMinimal } from "../redux/endpoints/adHocSubgraphEndpoints";
+import TokenIcon from "../token/TokenIcon";
 import { TokenDialog, TokenSelectionProps } from "./TokenDialog";
 
 export const TokenDialogChip: FC<{
@@ -14,26 +14,24 @@ export const TokenDialogChip: FC<{
 
   return (
     <>
-      <Chip
-        icon={!!token ? <TokenIcon tokenSymbol={token.symbol} /> : <></>}
-        label={
-          <>
-            <Stack direction="row" alignItems="center">
-              {!!token ? token.symbol : "Select a token"} <ExpandMoreIcon />
-            </Stack>
-          </>
-        }
+      <Button
+        variant="outlined"
+        color="secondary"
+        startIcon={!!token ? <TokenIcon tokenSymbol={token.symbol} /> : <></>}
+        endIcon={<ExpandMoreIcon />}
         onClick={() => setOpen(true)}
-      ></Chip>
-      <TokenDialog
-        open={open}
-        onClose={() => setOpen(false)}
-        onSelect={(token: TokenMinimal) => {
-          onTokenSelect(token);
-          setOpen(false);
+      >
+          {!!token ? token.symbol : "Select a token"}
+      </Button>
+            <TokenDialog
+            open={open}
+            onClose={() => setOpen(false)}
+            onSelect={(token: TokenMinimal) => {
+            onTokenSelect(token);
+            setOpen(false);
         }}
-        tokenSelection={tokenSelection}
-      />
+            tokenSelection={tokenSelection}
+            />
     </>
   );
 };

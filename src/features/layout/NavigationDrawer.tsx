@@ -1,8 +1,10 @@
 import {
+  Box,
   Divider,
   Drawer,
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Stack,
@@ -17,71 +19,69 @@ import { useTheme } from "@mui/material";
 import Link from "../common/Link";
 import { memo } from "react";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
+import { useWalletContext } from "../wallet/WalletContext";
+import ConnectWallet from "../wallet/ConnectWallet";
 
-export const menuDrawerWidth = 240;
+export const menuDrawerWidth = 260;
 
 export default memo(function NavigationDrawer() {
-  const muiTheme = useTheme();
+  const theme = useTheme();
 
   return (
-    <Stack
-      component={Drawer}
-      sx={{
-        height: "100vh",
-        width: menuDrawerWidth,
-        flexShrink: 0,
-        "& .MuiDrawer-paper": {
-          width: menuDrawerWidth,
-          boxSizing: "border-box",
-        },
-      }}
+    <Drawer
       variant="permanent"
       anchor="left"
-      direction="column"
-      justifyContent="space-between"
-      alignItems="center"
-      spacing={0}
+      PaperProps={{ sx: { width: menuDrawerWidth } }}
+      sx={{ width: menuDrawerWidth }}
     >
-      <Stack>
-        <Toolbar sx={{ height: "100px" }}>
-          <Link href={"/"}>
-            <Image
-              unoptimized
-              src={
-                muiTheme.palette.mode === "dark"
-                  ? "/superfluid-logo-light.svg"
-                  : "/superfluid-logo-dark.svg"
-              }
-              width={167}
-              height={40}
-              layout="fixed"
-              alt="Superfluid logo"
-            />
-          </Link>
-        </Toolbar>
-        {/* <Divider /> */}
-      </Stack>
+      <Toolbar sx={{ height: 88 }}>
+        <Link href="/">
+          <Image
+            unoptimized
+            src={
+              theme.palette.mode === "dark"
+                ? "/superfluid-logo-light.svg"
+                : "/superfluid-logo-dark.svg"
+            }
+            width={167}
+            height={40}
+            layout="fixed"
+            alt="Superfluid logo"
+          />
+        </Link>
+      </Toolbar>
+
+      <Box sx={{ px: 2, py: 1.5 }}>
+        <ConnectWallet />
+      </Box>
+
       <Stack
         component={List}
-        justifyContent="center"
-        alignItems="center"
-        sx={{ flex: 1 }}
+        sx={{ color: theme.palette.text.secondary, px: 2 }}
+        gap={1}
       >
         <NextLink href={"/"} passHref>
-          <ListItem button>
+          <ListItemButton sx={{ borderRadius: "10px" }}>
             <ListItemIcon>
               <AutoAwesomeMosaicIcon></AutoAwesomeMosaicIcon>
             </ListItemIcon>
-            <ListItemText primary="Overview" />
-          </ListItem>
+            <ListItemText
+              primary="Dashboard"
+              primaryTypographyProps={{ variant: "h6" }}
+            />
+          </ListItemButton>
         </NextLink>
+
         <NextLink href={"/wrap?upgrade"} passHref>
-          <ListItem button>
+          <ListItemButton sx={{ borderRadius: "10px" }}>
             <ListItemIcon>
               <SwapVertIcon></SwapVertIcon>
             </ListItemIcon>
-            <ListItemText primary="Wrap / Unwrap" />
-          </ListItem>
+            <ListItemText
+              primary="Wrap / Unwrap"
+              primaryTypographyProps={{ variant: "h6" }}
+            />
+          </ListItemButton>
         </NextLink>
         <NextLink href={"/send"} passHref>
           <ListItem button>
@@ -92,12 +92,13 @@ export default memo(function NavigationDrawer() {
           </ListItem>
         </NextLink>
       </Stack>
+
       <Stack justifyContent="flex-end" sx={{ flex: 1 }}>
         <Divider />
         <Stack direction="row" justifyContent="center" sx={{ m: 1 }}>
           <ThemeChanger />
         </Stack>
       </Stack>
-    </Stack>
+    </Drawer>
   );
 });

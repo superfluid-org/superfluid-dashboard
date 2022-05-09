@@ -1,10 +1,19 @@
-import { Button, CircularProgress, Stack, Typography } from "@mui/material";
+import {
+  Avatar,
+  Button,
+  CircularProgress,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { FC, memo, useMemo } from "react";
 import { useNetworkContext } from "../network/NetworkContext";
 import { useWalletContext } from "./WalletContext";
 import shortenAddress from "../../utils/shortenAddress";
 import { LoadingButton } from "@mui/lab";
-
+import AddIcon from "@mui/icons-material/Add";
 export default memo(function ConnectWallet() {
   const { network } = useNetworkContext();
   const {
@@ -15,38 +24,33 @@ export default memo(function ConnectWallet() {
     isWalletConnecting,
   } = useWalletContext();
 
-  const shortenedAddress = useMemo(
-    () => (walletAddress ? shortenAddress(walletAddress) : ""),
-    [walletAddress]
-  );
-
   return (
     <>
-      {walletProvider ? (
-        <Button
-          variant="outlined"
-          color={network.chainId !== walletChainId ? "error" : "primary"}
-          sx={{
-            pointerEvents: "none",
-            cursor: "default",
-          }}
-        >
-          <Stack>
-            <Typography variant="body2">
-              {network.chainId !== walletChainId
-                ? "Wrong network"
-                : "Connected"}
-            </Typography>
-            <Typography variant="body2">{shortenedAddress}</Typography>
-          </Stack>
-        </Button>
+      {walletProvider && walletAddress ? (
+        <ListItem sx={{ px: 2, py: 0 }}>
+          <ListItemAvatar>
+            <Avatar variant="rounded" />
+          </ListItemAvatar>
+          <ListItemText
+            primary={shortenAddress(walletAddress)}
+            secondary={
+              network.chainId !== walletChainId ? "Wrong network" : "Connected"
+            }
+            primaryTypographyProps={{ variant: "h6" }}
+            secondaryTypographyProps={{
+              color: network.chainId !== walletChainId ? "error" : "primary",
+            }}
+          />
+        </ListItem>
       ) : (
         <LoadingButton
           loading={isWalletConnecting}
-          variant="outlined"
+          variant="contained"
+          size="xl"
           onClick={connectWallet}
         >
-          Connect
+          <AddIcon sx={{ mr: 1 }} />
+          Connect Wallet
         </LoadingButton>
       )}
     </>

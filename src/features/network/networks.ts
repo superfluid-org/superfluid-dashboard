@@ -10,6 +10,7 @@ export type Network = {
   getLinkForTransaction(txHash: string): string;
   getLinkForAddress(adderss: string): string;
   isTestnet: boolean;
+  icon?: string;
   nativeAsset: {
     symbol: string;
     superToken: {
@@ -27,6 +28,7 @@ export const networks: Network[] = [
     slugName: "ropsten",
     chainId: 3,
     isTestnet: true,
+    icon: "/icons/network/ropsten.jpg",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/ropsten`,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-ropsten",
@@ -49,6 +51,7 @@ export const networks: Network[] = [
     slugName: "rinkeby",
     chainId: 4,
     isTestnet: true,
+    icon: "/icons/network/rinkeby.jpg",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/rinkeby`,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-rinkeby",
@@ -71,6 +74,7 @@ export const networks: Network[] = [
     slugName: "goerli",
     chainId: 5,
     isTestnet: true,
+    icon: "/icons/network/goerli.jpg",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/goerli`,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli",
@@ -93,6 +97,7 @@ export const networks: Network[] = [
     slugName: "kovan",
     chainId: 42,
     isTestnet: true,
+    icon: "/icons/network/kovan.jpg",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/kovan`,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-kovan",
@@ -115,6 +120,7 @@ export const networks: Network[] = [
     slugName: "xdai",
     chainId: 100,
     isTestnet: false,
+    icon: "/icons/network/gnosis.jpg",
     rpcUrl: "https://rpc-endpoints.superfluid.dev/xdai",
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-xdai",
@@ -137,6 +143,7 @@ export const networks: Network[] = [
     slugName: "matic",
     chainId: 137,
     isTestnet: false,
+    icon: "/icons/network/polygon.jpg",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/matic`,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-matic",
@@ -181,6 +188,7 @@ export const networks: Network[] = [
     slugName: "arbitrum-rinkeby",
     chainId: 421611,
     isTestnet: true,
+    icon: "/icons/network/rinkeby.jpg",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/arbitrum-rinkeby`,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-rinkeby",
@@ -203,6 +211,7 @@ export const networks: Network[] = [
     slugName: "optimism-kovan",
     chainId: 69,
     isTestnet: true,
+    icon: "/icons/network/kovan.jpg",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/optimism-kovan`,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-kovan",
@@ -225,6 +234,7 @@ export const networks: Network[] = [
     slugName: "avalanche-fuji",
     chainId: 43113,
     isTestnet: true,
+    icon: "/icons/network/avalanche.jpg",
     rpcUrl: "https://rpc-endpoints.superfluid.dev/avalanche-fuji",
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-avalanche-fuji",
@@ -269,6 +279,7 @@ export const networks: Network[] = [
     slugName: "arbitrum-one",
     chainId: 42161,
     isTestnet: false,
+    icon: "/icons/network/arbitrum.jpg",
     rpcUrl: "https://rpc-endpoints.superfluid.dev/arbitrum-one",
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-one",
@@ -288,15 +299,17 @@ export const networks: Network[] = [
   },
 ];
 
-export const getNetworkDefaultTokenPair = memoize((network: Network): SuperTokenPair => ({
-  superToken: network.nativeAsset.superToken,
-  underlyingToken: {
-    type: TokenType.NativeAssetUnderlyingToken,
+export const getNetworkDefaultTokenPair = memoize(
+  (network: Network): SuperTokenPair => ({
+    superToken: network.nativeAsset.superToken,
+    underlyingToken: {
+      type: TokenType.NativeAssetUnderlyingToken,
     address: NATIVE_ASSET_ADDRESS,
-    name: `${network.displayName} Native Asset`,
-    symbol: network.nativeAsset.symbol
-  }
-}));
+      name: `${network.displayName} Native Asset`,
+      symbol: network.nativeAsset.symbol,
+    },
+  })
+);
 
 export const networksByName = new Map(
   networks.map((x) => [x.slugName.toLowerCase(), x])
@@ -304,3 +317,6 @@ export const networksByName = new Map(
 
 export const networksByChainId = new Map(networks.map((x) => [x.chainId, x]));
 export const networksBySlug = new Map(networks.map((x) => [x.slugName, x]));
+
+export const mainNetworks = networks.filter((network) => !network.isTestnet);
+export const testNetworks = networks.filter((network) => network.isTestnet);

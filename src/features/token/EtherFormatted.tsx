@@ -2,12 +2,14 @@ import Decimal from "decimal.js";
 import { BigNumberish, ethers } from "ethers";
 import { memo } from "react";
 
-export default memo(function EtherFormatted({
-  wei,
-  etherDecimalPlaces = 18,
-}: {
+interface EtherFormattedProps {
   wei: BigNumberish;
   etherDecimalPlaces?: number;
+}
+
+export default memo<EtherFormattedProps>(function EtherFormatted({
+  wei,
+  etherDecimalPlaces = 18,
 }) {
   const ether = ethers.utils.formatEther(wei);
   if (ether === "0.0") {

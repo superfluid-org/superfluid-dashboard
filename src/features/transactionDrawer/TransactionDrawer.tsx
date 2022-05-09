@@ -1,13 +1,10 @@
-import {
-  Drawer,
-  styled,
-} from "@mui/material";
+import { Divider, Drawer, IconButton, styled, Typography } from "@mui/material";
 import { memo } from "react";
 import ReduxPersistGate from "../redux/ReduxPersistGate";
 import { useTransactionDrawerContext } from "./TransactionDrawerContext";
 import TransactionList from "./TransactionList";
-
-export const transactionDrawerWidth = 420;
+import CloseIcon from "@mui/icons-material/Close";
+export const transactionDrawerWidth = 340;
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -19,30 +16,32 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 export default memo(function TransactionDrawer() {
-  const { transactionDrawerOpen } = useTransactionDrawerContext();
+  const { transactionDrawerOpen, setTransactionDrawerOpen } =
+    useTransactionDrawerContext();
+
+  const closeDrawer = () => setTransactionDrawerOpen(false);
 
   return (
     <Drawer
-      sx={{
-        width: transactionDrawerWidth,
-        flexShrink: 0,
-        "& .MuiDrawer-paper": {
-          width: transactionDrawerWidth,
-        },
-      }}
       variant="persistent"
       anchor="right"
       open={transactionDrawerOpen}
+      PaperProps={{ sx: { width: transactionDrawerWidth } }}
     >
       <DrawerHeader>
-        {/* <Typography variant="body1" sx={{ m: 1 }}>
-          Notifications
-        </Typography> */}
+        <IconButton onClick={closeDrawer}>
+          <CloseIcon />
+        </IconButton>
+        <Typography variant="h5" sx={{ m: 1 }}>
+          Activity
+        </Typography>
       </DrawerHeader>
-      {/* <Divider /> */}
+
+      <Divider />
+
       <ReduxPersistGate>
-        <TransactionList></TransactionList>
+        <TransactionList />
       </ReduxPersistGate>
     </Drawer>
   );
-})
+});

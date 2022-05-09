@@ -4,6 +4,7 @@ import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
 import { memo } from "react";
 import { useWalletTransactions } from "../wallet/useWalletTransactions";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 
 export default memo(function TransactionBell() {
   const { walletAddress } = useWalletContext();
@@ -19,8 +20,6 @@ export default memo(function TransactionBell() {
       sx={{
         ...(walletAddress ? {} : { display: "none" }),
       }}
-      color="primary"
-      aria-label="open drawer"
       edge="end"
       onClick={() => setTransactionDrawerOpen(!transactionDrawerOpen)}
     >
@@ -33,7 +32,7 @@ export default memo(function TransactionBell() {
           horizontal: "right",
         }}
       >
-        <NotificationsOutlinedIcon />
+        <NotificationsIcon />
       </Badge>
     </IconButton>
   );

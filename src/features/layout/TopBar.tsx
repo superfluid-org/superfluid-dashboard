@@ -1,11 +1,10 @@
-import { FC, memo } from "react";
-import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
-import { menuDrawerWidth } from "./NavigationDrawer";
-import { AppBar, Card, Divider, Stack, styled, Toolbar } from "@mui/material";
+import { AppBar, Stack, styled, Toolbar } from "@mui/material";
+import { memo } from "react";
 import SelectNetwork from "../network/SelectNetwork";
-import ConnectWallet from "../wallet/ConnectWallet";
-import TransactionBell from "../transactions/TransactionBell";
 import { transactionDrawerWidth } from "../transactionDrawer/TransactionDrawer";
+import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
+import TransactionBell from "../transactions/TransactionBell";
+import { menuDrawerWidth } from "./NavigationDrawer";
 
 const CustomAppBar = styled(AppBar, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -15,7 +14,7 @@ const CustomAppBar = styled(AppBar, {
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
-    width: `calc(100% - ${transactionDrawerWidth}px)`,
+    width: `calc(100% - ${transactionDrawerWidth - menuDrawerWidth}px)`,
     transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
@@ -32,11 +31,10 @@ export default memo(function TopBar() {
       open={transactionDrawerOpen}
       position="fixed"
       sx={{
-        color: "text.primary",
         width: `calc(100% - ${menuDrawerWidth}px)`,
         ml: `${menuDrawerWidth}px`,
         boxShadow: "none",
-        bgcolor: "background.paper"
+        bgcolor: "background.paper",
       }}
     >
       <Stack
@@ -46,12 +44,10 @@ export default memo(function TopBar() {
         alignItems="center"
       >
         <Stack direction="row" spacing={2} alignItems="center">
-          <SelectNetwork></SelectNetwork>
-          <ConnectWallet></ConnectWallet>
+          <SelectNetwork />
           <TransactionBell />
         </Stack>
       </Stack>
-      <Divider />
     </CustomAppBar>
   );
 });
