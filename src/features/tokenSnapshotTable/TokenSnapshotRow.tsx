@@ -1,6 +1,7 @@
 import ExpandCircleDownOutlinedIcon from "@mui/icons-material/ExpandCircleDownOutlined";
 import {
   Collapse,
+  IconButton,
   ListItem,
   ListItemAvatar,
   ListItemText,
@@ -32,10 +33,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
 }) => {
   const [open, setOpen] = useState(false);
 
-  const toggleOpen = () => {
-    if (!!window.getSelection()?.toString()) return;
-    setOpen(!open);
-  };
+  const toggleOpen = () => setOpen(!open);
 
   const {
     tokenSymbol,
@@ -52,9 +50,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
     <>
       <TableRow
         hover
-        onClick={toggleOpen}
         sx={{
-          cursor: "pointer",
           ...(lastElement && {
             td: {
               border: "none",
@@ -118,10 +114,9 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         <TableCell>
           {/* TODO: change for iconbutton and add top/bottom negative margin not to push the column too high */}
           {totalNumberOfActiveStreams + totalNumberOfClosedStreams > 0 && (
-            <ExpandCircleDownOutlinedIcon
-              sx={{ display: "block" }}
-              onClick={toggleOpen}
-            />
+            <IconButton onClick={toggleOpen}>
+              <ExpandCircleDownOutlinedIcon />
+            </IconButton>
           )}
         </TableCell>
       </TableRow>
