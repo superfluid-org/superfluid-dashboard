@@ -20,6 +20,9 @@ import { ethers } from "ethers";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { ensApiSlice } from "../ens/ensApi.slice";
 import { Address } from "./AddressSearch";
+import { subgraphApi } from "../redux/store";
+import { useWalletContext } from "../wallet/WalletContext";
+import { useNetworkContext } from "../network/NetworkContext";
 
 export type AddressSearchDialogProps = {
   open: boolean;
@@ -34,6 +37,8 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
   onClose,
   ...ResponsiveDialogProps
 }) => {
+  const { network } = useNetworkContext();
+  const { walletAddress } = useWalletContext();
   const [searchTermVisible, setSearchTermVisible] = useState("");
   const [searchTermDebounced, _setSearchTermDebounced] =
     useState(searchTermVisible);
@@ -72,6 +77,20 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
   const showEns = (ensQuery.isSuccess && !!ensQuery.data) || ensQuery.isLoading;
 
   const ensData = ensQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!ensQuery.data` means that the data is not undefined nor null.
+
+  const recentsQuery = subgraphApi.useRecentsQuery(
+    walletAddress
+      ? {
+          chainId: network.chainId,
+          accountAddress: walletAddress,
+        }
+      : skipToken
+  );
+
+  const showRecents =
+    (walletAddress && recentsQuery.isSuccess && !!recentsQuery.data) ||
+    recentsQuery.isLoading;
+  const recentsData = recentsQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!ensQuery.data` means that the data is not undefined nor null.
 
   return (
     <ResponsiveDialog
@@ -141,11 +160,39 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
               </>
             )}
           </List>
-        ) : (
-          <List>
-            <ListItem>{/* Index page of dialog */}</ListItem>
-          </List>
-        )}
+        ) : showRecents ? (
+          <>
+            <ListSubheader>Recents</ListSubheader>
+            {recentsQuery.isLoading && (
+              <ListItem>
+                <ListItemButton>
+                  <ListItemText primary="Loading..." />
+                </ListItemButton>
+              </ListItem>
+            )}
+            {recentsQuery.isError && (
+              <ListItem>
+                <ListItemButton>
+                  <ListItemText primary="Error" />
+                </ListItemButton>
+              </ListItem>
+            )}
+            {!!recentsData &&
+              recentsData.map((addressHash) => (
+                <ListItem key={addressHash}>
+                  <ListItemButton
+                    onClick={() =>
+                      onSelectAddress({
+                        hash: addressHash,
+                      })
+                    }
+                  >
+                    <ListItemText primary={addressHash} />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+          </>
+        ) : null}
       </DialogContent>
     </ResponsiveDialog>
   );

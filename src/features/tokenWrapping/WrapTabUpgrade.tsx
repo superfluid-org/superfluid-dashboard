@@ -85,13 +85,13 @@ export const WrapTabUpgrade: FC<{
 
   const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
     chainId: network.chainId,
-  })
-  
+  });
+
   return (
     <Stack direction="column" spacing={2}>
       <Stack direction="column" spacing={1}>
         <Stack direction="row" justifyContent="space-between" spacing={2}>
-        <TokenDialogChip
+          <TokenDialogChip
             token={selectedTokenPair?.underlyingToken}
             tokenSelection={{
               tokenPairsQuery: {
@@ -233,9 +233,11 @@ export const WrapTabUpgrade: FC<{
             transactionExtraData: {
               restoration,
             },
-          }).then(() => {
-            setAmount("");
-          });
+          })
+            .unwrap()
+            .then(() => {
+              setAmount("");
+            });
 
           setTransactionDialogContent(
             <UpgradePreview restoration={restoration} />

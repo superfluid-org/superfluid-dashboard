@@ -42,10 +42,10 @@ const Wrap: NextPage = () => {
     if (restoration) {
       switch (restoration.type) {
         case RestorationType.Upgrade:
-          setUpgradeRestoration(restoration);
+          setUpgradeRestoration(restoration as SuperTokenUpgradeRestoration);
           break;
         case RestorationType.Downgrade:
-          setDowngradeRestoration(restoration);
+          setDowngradeRestoration(restoration as SuperTokenDowngradeRestoration);
           break;
       }
       onRestored();

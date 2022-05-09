@@ -2,7 +2,9 @@ import {
   getSubgraphClient,
   SubgraphEndpointBuilder,
 } from "@superfluid-finance/sdk-redux";
+import { ethers } from "ethers";
 import { gql } from "graphql-request";
+import { uniq } from "lodash";
 import { Network, networksByChainId } from "../../network/networks";
 
 type WrapperSuperTokenSubgraphResult = {
@@ -104,6 +106,39 @@ export type SuperTokenPair = {
 
 export const adHocSubgraphEndpoints = {
   endpoints: (builder: SubgraphEndpointBuilder) => ({
+    recents: builder.query<
+      string[],
+      { chainId: number; accountAddress: string }
+    >({
+      queryFn: async (arg) => {
+        const { chainId, accountAddress } = arg;
+        const client = await getSubgraphClient(chainId);
+        const query = gql`
+          query recents($accountAddress: String) {
+            streams(
+              where: { sender: $accountAddress }
+              orderBy: updatedAtBlockNumber
+              orderDirection: desc
+            ) {
+              receiver {
+                id
+              }
+            }
+          }
+        `;
+        const variables = {
+          accountAddress: accountAddress.toLowerCase(),
+        };
+        const response = await client.request<{
+          streams: { receiver: { id: string } }[];
+        }>(query, variables);
+        return {
+          data: uniq(response.streams.map((x) => x.receiver.id)).map((x) =>
+            ethers.utils.getAddress(x)
+          ),
+        };
+      },
+    }),
     walletSendableSuperTokens: builder.query<
       SuperTokenMinimal[],
       { chainId: number; accountAddress: string }

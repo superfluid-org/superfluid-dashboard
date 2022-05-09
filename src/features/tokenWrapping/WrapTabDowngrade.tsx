@@ -155,9 +155,11 @@ export const WrapTabDowngrade: FC<{
             transactionExtraData: {
               restoration,
             },
-          }).then(() => {
-            setAmount("");
-          });
+          })
+            .unwrap()
+            .then(() => {
+              setAmount("");
+            });
 
           setTransactionDialogContent(
             <DowngradePreview restoration={restoration} />

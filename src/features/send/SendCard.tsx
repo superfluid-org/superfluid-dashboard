@@ -253,13 +253,15 @@ export default memo(function SendCard() {
               superTokenAddress: selectedToken.address,
               userDataBytes: undefined,
               waitForConfirmation: false,
-              transactionExtraData: {
-                restoration,
-              },
-            }).then(() => {
-              setReceiver(undefined);
-              setFlowRate(undefined);
-            });
+              // transactionExtraData: {
+              //   restoration,
+              // },
+            })
+              .unwrap()
+              .then(() => {
+                setReceiver(undefined);
+                setFlowRate(undefined);
+              });
 
             setTransactionDialogContent(
               <SendStreamPreview restoration={restoration} />
@@ -290,14 +292,15 @@ const SendStreamPreview: FC<{ restoration: SendStreamRestoration }> = ({
             primary="Flow rate"
             secondary={
               <>
-                <Typography>{`${ethers.utils.formatEther(
+                <Typography component="span">{`${ethers.utils.formatEther(
                   restoration.flowRate.amountWei
                 )}${
                   timeMultiplierAbbreviationMap[
                     restoration.flowRate.timeMultiplier
                   ]
                 }`}</Typography>
-                <Typography>{`${ethers.utils.formatEther(
+                <br />
+                <Typography component="span">{`${ethers.utils.formatEther(
                   calculateTotalAmountWei(restoration.flowRate)
                 )}${timeMultiplierAbbreviationMap[1]}`}</Typography>
               </>
