@@ -38,7 +38,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
     },
   });
 
-  const tokenSnapshots = tokensQuery.data?.data || [];
+  const tokenSnapshots = tokensQuery.data?.items || [];
 
   if (
     tokensQuery.isLoading ||

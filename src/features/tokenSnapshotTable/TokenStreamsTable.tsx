@@ -7,7 +7,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import { FC, memo } from "react";
+import { FC, memo, useMemo } from "react";
 import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
 import TokenStreamRow from "./TokenStreamRow";
@@ -59,19 +59,24 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
     },
   });
 
-  const data = [
-    ...(incomingStreamsQuery.data?.data || []),
-    ...(outgoingStreamsQuery.data?.data || []),
-  ].sort((s1, s2) => s1.updatedAtTimestamp - s2.updatedAtTimestamp);
+  const data = useMemo(
+    () =>
+      [
+        ...(incomingStreamsQuery.data?.data || []),
+        ...(outgoingStreamsQuery.data?.data || []),
+      ].sort((s1, s2) => s1.updatedAtTimestamp - s2.updatedAtTimestamp),
+    [incomingStreamsQuery, outgoingStreamsQuery]
+  );
 
   return (
     <Table
       size="small"
       sx={{
-        ...(lastElement && { borderTop: `1px solid ${theme.palette.divider}` }),
-        ...(!lastElement && {
-          borderBottom: `1px solid ${theme.palette.divider}`,
-        }),
+        ...(lastElement
+          ? { borderTop: `1px solid ${theme.palette.divider}` }
+          : {
+              borderBottom: `1px solid ${theme.palette.divider}`,
+            }),
         background: theme.palette.action.hover,
         borderRadius: lastElement ? "0 0 20px 20px" : 0,
       }}
