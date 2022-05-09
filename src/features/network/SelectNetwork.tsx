@@ -60,8 +60,12 @@ export default memo(function SelectNetwork() {
     setSelectedNetwork(chainId);
   };
 
-  const handleShowTestnetsChange = (_e: unknown, testActive: boolean) =>
-    setShowTestnets(testActive);
+  const handleShowTestnetsChange = (
+    _e: unknown,
+    testActive: boolean | null
+  ) => {
+    if (testActive !== null) setShowTestnets(testActive);
+  };
 
   return (
     <>
@@ -86,17 +90,18 @@ export default memo(function SelectNetwork() {
         PaperProps={{ sx: { minWidth: 280 } }}
         sx={{ marginTop: theme.spacing(1.5) }}
       >
-        {mainNetworks.map((network) => (
-          <NetworkItem
-            key={network.chainId}
-            onClick={onNetworkSelected(network.chainId)}
-            selected={network.chainId === selectedNetwork.chainId}
-            network={network}
-          />
-        ))}
+        <Collapse in={!showTestnets} timeout="auto" unmountOnExit>
+          {mainNetworks.map((network) => (
+            <NetworkItem
+              key={network.chainId}
+              onClick={onNetworkSelected(network.chainId)}
+              selected={network.chainId === selectedNetwork.chainId}
+              network={network}
+            />
+          ))}
+        </Collapse>
 
         <Collapse in={showTestnets} timeout="auto" unmountOnExit>
-          <Divider />
           {testNetworks.map((network) => (
             <NetworkItem
               key={network.chainId}

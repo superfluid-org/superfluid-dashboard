@@ -1,52 +1,18 @@
-import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import ExpandCircleDownOutlinedIcon from "@mui/icons-material/ExpandCircleDownOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
-import {
-  Avatar,
-  Box,
-  Button,
-  Collapse,
-  Container,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Paper,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from "@mui/material";
-import { useTheme } from "@mui/system";
-import {
-  AccountTokenSnapshot,
-  Address,
-  Stream,
-} from "@superfluid-finance/sdk-core";
-import { format } from "date-fns";
+import { Button, Container, Stack, Typography } from "@mui/material";
 import type { NextPage } from "next";
-import { FC, memo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
+  mainNetworks,
   Network,
   networks,
-  mainNetworks,
   testNetworks,
 } from "../features/network/networks";
 import NetworkSelectionFilter, {
   NetworkStates,
 } from "../features/network/NetworkSelectionFilter";
-import { subgraphApi } from "../features/redux/store";
-import EtherFormatted from "../features/token/EtherFormatted";
-import FlowingBalance from "../features/token/FlowingBalance";
-import TokenIcon from "../features/token/TokenIcon";
+import TokenSnapshotTable from "../features/tokenSnapshotTable/TokenSnapshotTable";
 import { useWalletContext } from "../features/wallet/WalletContext";
-import shortenAddress from "../utils/shortenAddress";
 
 const buildNetworkStates = (
   networkList: Array<Network>,
@@ -65,22 +31,23 @@ const Home: NextPage = () => {
 
   const networkSelectionRef = useRef<HTMLButtonElement>(null);
 
-  const [showTestnets, setShowTestnets] = useState(true); // TODO: Turn to false after testing
+  const [showTestnets, setShowTestnets] = useState(false);
 
   const [networkStates, setNetworkStates] = useState<NetworkStates>({
     ...buildNetworkStates(mainNetworks, true),
-    ...buildNetworkStates(testNetworks, true), // TODO: Turn to false after testing
+    ...buildNetworkStates(testNetworks, false),
   });
 
   const onTestnetsChange = (testActive: boolean) => {
     setShowTestnets(testActive);
-
-    if (!testActive) {
-      setNetworkStates({
-        ...networkStates,
-        ...buildNetworkStates(testNetworks, false),
-      });
-    }
+    setTimeout(
+      () =>
+        setNetworkStates({
+          ...buildNetworkStates(testNetworks, testActive),
+          ...buildNetworkStates(mainNetworks, !testActive),
+        }),
+      200
+    );
   };
 
   const onNetworkChange = (chainId: number, active: boolean) =>
@@ -91,7 +58,7 @@ const Home: NextPage = () => {
   const openNetworkSelection = () => setNetworkSelectionOpen(true);
   const closeNetworkSelection = () => setNetworkSelectionOpen(false);
 
-  if (!walletAddress) return <Container maxWidth="lg">NO TACO</Container>;
+  if (!walletAddress) return <Container maxWidth="lg">EMPTY VIEW</Container>;
 
   return (
     <Container maxWidth="lg">
@@ -131,340 +98,12 @@ const Home: NextPage = () => {
           .map((network) => (
             <TokenSnapshotTable
               key={network.chainId}
-              address={"0x3be39EA586E565683e0C57d1243Aa950Ba466c89".toLowerCase()}
+              address={walletAddress}
               network={network}
             />
           ))}
       </Stack>
     </Container>
-  );
-};
-
-interface TokenSnapshotTableProps {
-  address: Address;
-  network: Network;
-}
-
-const TokenSnapshotTable = memo<TokenSnapshotTableProps>(
-  function TokenSnapshotTable({ address, network }) {
-    const theme = useTheme();
-
-    const tokensQuery = subgraphApi.useAccountTokenSnapshotsQuery({
-      chainId: network.chainId,
-      filter: {
-        account: address,
-      },
-      pagination: {
-        take: 10,
-        skip: 0,
-      },
-    });
-
-    const tokenSnapshots = tokensQuery.data?.data || [];
-
-    if (!tokensQuery.isLoading && tokenSnapshots.length === 0) return null;
-
-    return (
-      <Box>
-        <Paper sx={{ borderRadius: "20px" }}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            gap={theme.spacing(2)}
-            sx={{ py: 3, px: 4 }}
-          >
-            <Avatar src={network.icon} />
-            <Typography variant="h5">{network.displayName}</Typography>
-          </Stack>
-
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Asset</TableCell>
-                  <TableCell width="300px">Balance</TableCell>
-                  <TableCell width="300px">Net Flow</TableCell>
-                  <TableCell width="300px">Inflow/Outflow</TableCell>
-                  <TableCell width="24px">
-                    <KeyboardDoubleArrowDownIcon />
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {tokenSnapshots.map((snapshot, index) => (
-                  <TokenSnapshotRow
-                    key={snapshot.id}
-                    address={address.toLowerCase()}
-                    network={network}
-                    snapshot={snapshot}
-                    lastElement={tokenSnapshots.length <= index + 1}
-                  />
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
-      </Box>
-    );
-  }
-);
-
-interface TokenSnapshotRowProps extends TokenSnapshotTableProps {
-  snapshot: AccountTokenSnapshot;
-  lastElement: boolean;
-}
-
-const TokenSnapshotRow = memo<TokenSnapshotRowProps>(function TokenSnapshotRow({
-  address,
-  network,
-  snapshot,
-  lastElement,
-}) {
-  const [open, setOpen] = useState(false);
-
-  const toggleOpen = () => {
-    if (!!window.getSelection()?.toString()) return;
-    setOpen(!open);
-  };
-
-  const {
-    tokenSymbol,
-    balanceUntilUpdatedAt,
-    totalNetFlowRate,
-    totalInflowRate,
-    totalOutflowRate,
-    updatedAtTimestamp,
-    totalNumberOfActiveStreams,
-    totalNumberOfClosedStreams,
-  } = snapshot;
-
-  return (
-    <>
-      <TableRow
-        hover
-        onClick={toggleOpen}
-        sx={{
-          cursor: "pointer",
-          ...(lastElement && {
-            td: {
-              border: "none",
-              ":first-child": { borderRadius: "0 0 0 20px" },
-              ":last-child": { borderRadius: "0 0 20px" },
-            },
-          }),
-        }}
-      >
-        <TableCell>
-          <ListItem sx={{ p: 0 }}>
-            <ListItemAvatar>
-              <TokenIcon tokenSymbol={tokenSymbol} />
-            </ListItemAvatar>
-            <ListItemText
-              primaryTypographyProps={{ variant: "h6" }}
-              primary={tokenSymbol}
-              secondary="$1.00"
-            />
-          </ListItem>
-        </TableCell>
-        <TableCell>
-          <ListItemText
-            primaryTypographyProps={{ variant: "h6" }}
-            primary={
-              <FlowingBalance
-                balance={balanceUntilUpdatedAt}
-                flowRate={totalNetFlowRate}
-                balanceTimestamp={updatedAtTimestamp}
-              />
-            }
-            secondary="$1.00"
-          />
-        </TableCell>
-        <TableCell>
-          {totalNumberOfActiveStreams > 0 ? (
-            <>
-              <EtherFormatted wei={totalNetFlowRate} />
-              /mo
-            </>
-          ) : (
-            "-"
-          )}
-        </TableCell>
-        <TableCell>
-          {totalNumberOfActiveStreams > 0 ? (
-            <Stack>
-              <Typography variant="body2" color="primary">
-                + <EtherFormatted wei={totalInflowRate} />
-                /mo
-              </Typography>
-              <Typography variant="body2" color="error">
-                - <EtherFormatted wei={totalOutflowRate} />
-                /mo
-              </Typography>
-            </Stack>
-          ) : (
-            "-"
-          )}
-        </TableCell>
-        <TableCell>
-          {/* TODO: change for iconbutton and add top/bottom negative margin not to push the column too high */}
-          {totalNumberOfActiveStreams + totalNumberOfClosedStreams > 0 && (
-            <ExpandCircleDownOutlinedIcon
-              sx={{ display: "block" }}
-              onClick={toggleOpen}
-            />
-          )}
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell colSpan={5} sx={{ padding: 0, border: "none" }}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <TokenStreamsTable
-              address={address}
-              network={network}
-              token={snapshot.token}
-              lastElement={lastElement}
-            />
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </>
-  );
-});
-
-interface TokenStreamsTableProps extends TokenSnapshotTableProps {
-  token: Address;
-  lastElement: boolean;
-}
-
-const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
-  address,
-  network,
-  token,
-  lastElement,
-}) => {
-  const theme = useTheme();
-
-  const incomingStreamsQuery = subgraphApi.useStreamsQuery({
-    chainId: network.chainId,
-    filter: {
-      receiver: address,
-      token: token,
-    },
-    pagination: {
-      take: Infinity,
-      skip: 0,
-    },
-    order: {
-      orderBy: "updatedAtTimestamp",
-      orderDirection: "desc",
-    },
-  });
-
-  const outgoingStreamsQuery = subgraphApi.useStreamsQuery({
-    chainId: network.chainId,
-    filter: {
-      sender: address,
-      token: token,
-    },
-    pagination: {
-      take: Infinity,
-      skip: 0,
-    },
-    order: {
-      orderBy: "updatedAtTimestamp",
-      orderDirection: "desc",
-    },
-  });
-
-  const data = [
-    ...(incomingStreamsQuery.data?.data || []),
-    ...(outgoingStreamsQuery.data?.data || []),
-  ].sort((s1, s2) => s1.updatedAtTimestamp - s2.updatedAtTimestamp);
-
-  return (
-    <Table
-      size="small"
-      sx={{
-        ...(lastElement && { borderTop: `1px solid ${theme.palette.divider}` }),
-        ...(!lastElement && {
-          borderBottom: `1px solid ${theme.palette.divider}`,
-        }),
-        background: theme.palette.action.hover,
-        borderRadius: lastElement ? "0 0 20px 20px" : 0,
-      }}
-    >
-      <TableHead>
-        <TableRow>
-          <TableCell sx={{ pl: "72px" }}>To / From</TableCell>
-          <TableCell width="200px">Start / End Date</TableCell>
-          <TableCell width="260px">Monthly Flow</TableCell>
-          <TableCell width="260px">All Time Flow</TableCell>
-          <TableCell>Filter</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {data.map((stream) => (
-          <StreamRow key={stream.id} address={address} stream={stream} />
-        ))}
-      </TableBody>
-    </Table>
-  );
-};
-
-interface StreamRowProps {
-  address: Address;
-  stream: Stream;
-}
-
-const StreamRow: FC<StreamRowProps> = ({ address, stream }) => {
-  const {
-    sender,
-    receiver,
-    currentFlowRate,
-    streamedUntilUpdatedAt,
-    updatedAtTimestamp,
-  } = stream;
-
-  const outgoing = sender === address;
-  const ongoing = Number(currentFlowRate) > 0;
-
-  return (
-    <TableRow hover>
-      <TableCell sx={{ pl: "72px" }}>
-        <Stack direction="row" alignItems="center" gap={1.5}>
-          {outgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
-          <Avatar variant="rounded" />
-          <Typography variant="h6">
-            {shortenAddress(outgoing ? receiver : sender)}
-          </Typography>
-        </Stack>
-      </TableCell>
-      <TableCell>
-        <Stack direction="row" alignItems="center" gap={1}>
-          {format(updatedAtTimestamp * 1000, "d MMM. yyyy")}
-          {ongoing && <AllInclusiveIcon />}
-        </Stack>
-      </TableCell>
-      <TableCell>
-        {ongoing ? (
-          <>
-            {outgoing ? "- " : "+ "}
-            <EtherFormatted wei={currentFlowRate} />
-            /mo
-          </>
-        ) : (
-          "-"
-        )}
-      </TableCell>
-      <TableCell>
-        <FlowingBalance
-          balance={streamedUntilUpdatedAt}
-          flowRate={currentFlowRate}
-          balanceTimestamp={updatedAtTimestamp}
-        />
-      </TableCell>
-      <TableCell>Cancel</TableCell>
-    </TableRow>
   );
 };
 

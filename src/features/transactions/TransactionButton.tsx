@@ -29,7 +29,7 @@ export const TransactionButton: FC<{
 
     if (disabled) {
       return (
-        <Button color="primary" variant="contained" disabled={true}>
+        <Button color="primary" variant="contained" size="xl" disabled={true}>
           {children}
         </Button>
       );
@@ -41,6 +41,7 @@ export const TransactionButton: FC<{
           loading={isWalletConnecting}
           color="primary"
           variant="contained"
+          size="xl"
           fullWidth={true}
           onClick={connectWallet}
         >
@@ -55,6 +56,7 @@ export const TransactionButton: FC<{
           disabled={true}
           color="primary"
           variant="contained"
+          size="xl"
           fullWidth={true}
         >
           Change Network to {network.displayName}
@@ -67,6 +69,7 @@ export const TransactionButton: FC<{
         loading={mutationResult.isLoading}
         color="primary"
         variant="contained"
+        size="xl"
         disabled={disabled}
         fullWidth={true}
         onClick={() => {

@@ -65,7 +65,7 @@ export default memo(function NavigationDrawer() {
               <AutoAwesomeMosaicIcon></AutoAwesomeMosaicIcon>
             </ListItemIcon>
             <ListItemText
-              primary="Overview"
+              primary="Dashboard"
               primaryTypographyProps={{ variant: "h6" }}
             />
           </ListItemButton>

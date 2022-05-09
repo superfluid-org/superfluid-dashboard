@@ -49,8 +49,8 @@ export default function MyApp(props: MyAppProps) {
                     <TransactionDrawerContextProvider>
                       <Layout>
                         <ReduxPersistGate>
-                          {/* TODO: Is this key necessary? It triggers rerendering */}
-                          <Component key={network.chainId} {...pageProps} />
+                          {/* TODO: Is this key={network.chainId} necessary? It triggers rerendering   */}
+                          <Component {...pageProps} />
                         </ReduxPersistGate>
                       </Layout>
                     </TransactionDrawerContextProvider>

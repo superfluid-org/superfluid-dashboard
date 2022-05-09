@@ -31,7 +31,7 @@ const Layout: FC = ({ children }) => {
   const { transactionDrawerOpen } = useTransactionDrawerContext();
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh" }}>
+    <Box sx={{ display: "flex", minHeight: "100vh", scrollY: "auto" }}>
       <TopBar />
       <NavigationDrawer />
       <Main open={transactionDrawerOpen}>

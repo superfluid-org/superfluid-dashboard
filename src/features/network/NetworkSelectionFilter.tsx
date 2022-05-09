@@ -63,8 +63,9 @@ const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
 }) => {
   const theme = useTheme();
 
-  const onNetworkTypeChange = (_e: unknown, testActive: boolean) =>
-    onTestnetsChange(testActive);
+  const onNetworkTypeChange = (_e: unknown, testActive: boolean | null) => {
+    if (testActive !== null) onTestnetsChange(testActive);
+  };
 
   const onNetworkToggled = (chainId: number) => (active: boolean) =>
     onNetworkChange(chainId, active);
@@ -82,16 +83,18 @@ const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
       PaperProps={{ sx: { minWidth: 280 } }}
       sx={{ marginTop: theme.spacing(1.5) }}
     >
-      {mainnets.map((network) => (
-        <NetworkItem
-          key={network.chainId}
-          network={network}
-          active={networkStates[network.chainId]}
-          onChange={onNetworkToggled(network.chainId)}
-        />
-      ))}
+      <Collapse in={!showTestnets} timeout="auto" unmountOnExit>
+        {mainnets.map((network) => (
+          <NetworkItem
+            key={network.chainId}
+            network={network}
+            active={networkStates[network.chainId]}
+            onChange={onNetworkToggled(network.chainId)}
+          />
+        ))}
+      </Collapse>
+
       <Collapse in={showTestnets} timeout="auto" unmountOnExit>
-        <Divider />
         {testnets.map((network) => (
           <NetworkItem
             key={network.chainId}

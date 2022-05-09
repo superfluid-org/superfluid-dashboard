@@ -3,7 +3,7 @@ import {
   SuperTokenDowngradeRestoration,
   SuperTokenUpgradeRestoration,
 } from "../transactionRestoration/transactionRestorations";
-import { Card, Tab } from "@mui/material";
+import { Card, Tab, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { WrapTabUpgrade } from "./WrapTabUpgrade";
 import { WrapTabDowngrade } from "./WrapTabDowngrade";
@@ -11,37 +11,44 @@ import { WrapTabDowngrade } from "./WrapTabDowngrade";
 export const WrapCard: FC<{
   tabValue: "upgrade" | "downgrade";
   onTabChange: (tabValue: "upgrade" | "downgrade") => void;
-  upgradeRestoration?: SuperTokenUpgradeRestoration
-  downgradeRestoration?: SuperTokenDowngradeRestoration
+  upgradeRestoration?: SuperTokenUpgradeRestoration;
+  downgradeRestoration?: SuperTokenDowngradeRestoration;
 }> = ({ tabValue, upgradeRestoration, downgradeRestoration, onTabChange }) => {
+  const handleTabChange = (_e: unknown, newTab: "upgrade" | "downgrade") =>
+    onTabChange(newTab);
+
   return (
     <Card
-      sx={{ position: "fixed", top: "25%", width: "400px", p: 5 }}
-      elevation={6}
+      sx={{
+        position: "fixed",
+        top: "25%",
+        width: "500px",
+        p: 4,
+        borderRadius: "20px",
+      }}
+      elevation={1}
     >
-      <TabContext value={tabValue}>
-        <TabList
-          variant="scrollable"
-          scrollButtons="auto"
-          onChange={(_event, newValue: "upgrade" | "downgrade") => {
-            onTabChange(newValue);
-          }}
-          aria-label="tabs"
-        >
-          <Tab data-cy={"streams-tab"} label="Upgrade" value="upgrade" />
-          <Tab data-cy={"indexes-tab"} label="Downgrade" value="downgrade" />+
-        </TabList>
+      <ToggleButtonGroup
+        exclusive
+        size="large"
+        color="primary"
+        value={tabValue}
+        onChange={handleTabChange}
+        sx={{ mb: 4 }}
+      >
+        <ToggleButton value="upgrade" size="large">
+          Wrap
+        </ToggleButton>
+        <ToggleButton value="downgrade">Unwrap</ToggleButton>
+      </ToggleButtonGroup>
 
-        <TabPanel value="upgrade">
-          <WrapTabUpgrade restoration={upgradeRestoration}></WrapTabUpgrade>
-        </TabPanel>
+      {tabValue === "upgrade" && (
+        <WrapTabUpgrade restoration={upgradeRestoration}></WrapTabUpgrade>
+      )}
 
-        <TabPanel value="downgrade">
-          <WrapTabDowngrade
-            restoration={downgradeRestoration}
-          ></WrapTabDowngrade>
-        </TabPanel>
-      </TabContext>
+      {tabValue === "downgrade" && (
+        <WrapTabDowngrade restoration={downgradeRestoration} />
+      )}
     </Card>
   );
 };

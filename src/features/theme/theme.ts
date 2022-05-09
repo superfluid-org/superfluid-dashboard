@@ -302,6 +302,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           disableElevation: true,
         },
       },
+      MuiIconButton: {
+        styleOverrides: {
+          root: {
+            color: theme.palette.text.primary,
+          },
+        },
+      },
       MuiToggleButtonGroup: {
         styleOverrides: {
           root: {
@@ -311,7 +318,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           grouped: {
             border: "none",
             ":not(:first-of-type), :not(:last-of-type)": {
-              borderRadius: "7px",
+              borderRadius: "10px",
             },
             ":not(:first-of-type)": {
               marginLeft: "4px",
@@ -327,6 +334,9 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
           sizeMedium: {
             letterSpacing: "0.17px",
+          },
+          sizeLarge: {
+            ...theme.typography.h5,
           },
           selected: {
             ...theme.typography.h6,

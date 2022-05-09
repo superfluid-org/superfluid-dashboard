@@ -10,13 +10,21 @@ import { COIN_ADDRESS } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { BigNumber, ethers } from "ethers";
 import { rpcApi } from "../redux/store";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { Chip, Stack, TextField, Typography } from "@mui/material";
+import {
+  Button,
+  Chip,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { TokenDialogChip } from "./TokenDialogChip";
 import TokenIcon from "../token/TokenIcon";
 import { TransactionButton } from "../transactions/TransactionButton";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { BalanceSuperToken } from "./BalanceSuperToken";
 import { useSelectedTokenContext } from "./SelectedTokenPairContext";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 export const WrapTabUpgrade: FC<{
   restoration: SuperTokenUpgradeRestoration | undefined;
@@ -79,69 +87,133 @@ export const WrapTabUpgrade: FC<{
     !selectedTokenPair || amountWei.isZero() || !!isApproveAllowanceVisible;
 
   const amountInputRef = useRef<HTMLInputElement>(undefined!);
+
   useEffect(() => {
     amountInputRef.current.focus();
   }, [amountInputRef, selectedTokenPair]);
 
   return (
     <Stack direction="column" spacing={2}>
-      <Stack direction="column" spacing={1}>
+      <Stack
+        variant="outlined"
+        component={Paper}
+        spacing={1}
+        sx={{ px: 2.5, py: 1.5 }}
+      >
         <Stack direction="row" justifyContent="space-between" spacing={2}>
-          <TokenDialogChip prioritizeSuperTokens={false} />
           <TextField
             disabled={!selectedTokenPair}
             placeholder="0.0"
             inputRef={amountInputRef}
             value={amount}
+            type="number"
             onChange={(e) => setAmount(e.currentTarget.value)}
-            sx={{ border: 0, width: "50%" }}
+            sx={{
+              width: "50%",
+              fieldset: {
+                display: "none",
+              },
+            }}
+            inputProps={{
+              sx: {
+                fontStyle: "normal",
+                fontWeight: 500,
+                fontSize: "30px",
+                lineHeight: "150%",
+                letterSpacing: "0.15px",
+                p: 0,
+                "&::-webkit-outer-spin-button, &::-webkit-inner-spin-button": {
+                  "-webkit-appearance": "none",
+                  m: 0,
+                },
+                "&[type=number]": {
+                  "-moz-appearance": "textfield",
+                },
+              },
+            }}
           />
+          <TokenDialogChip prioritizeSuperTokens={false} />
         </Stack>
-        {selectedTokenPair && walletAddress && (
-          <Stack direction="row-reverse">
+        <Stack direction="row" justifyContent="space-between">
+          <Typography variant="body2" color="text.secondary">
+            ${Number(amount || 0).toFixed(2)}
+          </Typography>
+          {selectedTokenPair && walletAddress && (
             <BalanceUnderlyingToken
               chainId={network.chainId}
               accountAddress={walletAddress}
               tokenAddress={selectedTokenPair.underlyingToken.address}
-            ></BalanceUnderlyingToken>
-          </Stack>
-        )}
+            />
+          )}
+        </Stack>
       </Stack>
 
       <Stack sx={{ ...(!selectedTokenPair ? { display: "none" } : {}) }}>
-        <Stack direction="row" justifyContent="space-between" spacing={2}>
-          <Chip
-            icon={
-              selectedTokenPair ? (
-                <TokenIcon tokenSymbol={selectedTokenPair.superToken.symbol} />
-              ) : (
-                <></>
-              )
-            }
-            label={
-              <>
-                <Stack direction="row" alignItems="center">
-                  {selectedTokenPair?.superToken.symbol ?? ""}
-                </Stack>
-              </>
-            }
-          ></Chip>
-          <TextField
-            disabled
-            placeholder="0.0"
-            value={amount}
-            sx={{ width: "50%" }}
-          />
-        </Stack>
-        {selectedTokenPair && walletAddress && (
-          <Stack direction="row-reverse">
-            <BalanceSuperToken
-              chainId={network.chainId}
-              accountAddress={walletAddress}
-              tokenAddress={selectedTokenPair.superToken.address}
-            ></BalanceSuperToken>
+        <Stack
+          component={Paper}
+          variant="outlined"
+          spacing={1}
+          sx={{ px: 2.5, py: 1.5 }}
+        >
+          <Stack direction="row" justifyContent="space-between">
+            <TextField
+              disabled
+              placeholder="0.0"
+              value={amount}
+              sx={{
+                width: "50%",
+                fieldset: {
+                  display: "none",
+                },
+              }}
+              inputProps={{
+                sx: {
+                  fontStyle: "normal",
+                  fontWeight: 500,
+                  fontSize: "30px",
+                  lineHeight: "150%",
+                  letterSpacing: "0.15px",
+                  p: 0,
+                  "&::-webkit-outer-spin-button, &::-webkit-inner-spin-button":
+                    {
+                      "-webkit-appearance": "none",
+                      m: 0,
+                    },
+                  "&[type=number]": {
+                    "-moz-appearance": "textfield",
+                  },
+                },
+              }}
+            />
+            <Button
+              variant="outlined"
+              color="secondary"
+              startIcon={
+                selectedTokenPair && (
+                  <TokenIcon
+                    tokenSymbol={selectedTokenPair.superToken.symbol}
+                    size={24}
+                  />
+                )
+              }
+              endIcon={<ExpandMoreIcon />}
+            >
+              {selectedTokenPair?.superToken.symbol ?? ""}
+            </Button>
           </Stack>
-        )}
+          <Stack direction="row" justifyContent="space-between">
+            <Typography variant="body2" color="text.secondary">
+              ${Number(amount || 0).toFixed(2)}
+            </Typography>
+            {selectedTokenPair && walletAddress && (
+              <BalanceSuperToken
+                chainId={network.chainId}
+                accountAddress={walletAddress}
+                tokenAddress={selectedTokenPair.superToken.address}
+              />
+            )}
+          </Stack>
+        </Stack>
       </Stack>
 
       {missingAllowance?.gt(0) && (
@@ -179,8 +251,8 @@ export const WrapTabUpgrade: FC<{
             amountWei: approveAllowanceAmountWei.toString(),
             superTokenAddress: selectedTokenPair.superToken.address,
             transactionExtraData: {
-              restoration
-            }
+              restoration,
+            },
           });
         }}
       >

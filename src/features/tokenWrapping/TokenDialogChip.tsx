@@ -1,10 +1,10 @@
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Button } from "@mui/material";
 import { FC, useState } from "react";
 import { WrappedSuperTokenPair } from "../redux/endpoints/adHocSubgraphEndpoints";
-import { Chip, Stack } from "@mui/material";
 import TokenIcon from "../token/TokenIcon";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { TokenDialog } from "./TokenDialog";
 import { useSelectedTokenContext } from "./SelectedTokenPairContext";
+import { TokenDialog } from "./TokenDialog";
 
 export const TokenDialogChip: FC<{
   prioritizeSuperTokens: boolean;
@@ -32,17 +32,21 @@ export const TokenDialogChip: FC<{
 
   return (
     <>
-      <Chip
-        icon={tokenSymbol ? <TokenIcon tokenSymbol={tokenSymbol} /> : <></>}
-        label={
-          <>
-            <Stack direction="row" alignItems="center">
-              {tokenSymbol ?? "Select a token"} <ExpandMoreIcon />
-            </Stack>
-          </>
+      <Button
+        variant="outlined"
+        color="secondary"
+        startIcon={
+          tokenSymbol ? (
+            <TokenIcon tokenSymbol={tokenSymbol} size={24} />
+          ) : (
+            <></>
+          )
         }
+        endIcon={<ExpandMoreIcon />}
         onClick={onChipClick}
-      ></Chip>
+      >
+        {tokenSymbol ?? "Select a token"}
+      </Button>
       <TokenDialog
         prioritizeSuperTokens={prioritizeSuperTokens}
         open={open}

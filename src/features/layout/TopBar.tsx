@@ -1,11 +1,10 @@
-import { FC, memo } from "react";
-import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
-import { menuDrawerWidth } from "./NavigationDrawer";
-import { AppBar, Card, Divider, Stack, styled, Toolbar } from "@mui/material";
+import { AppBar, Stack, styled, Toolbar } from "@mui/material";
+import { memo } from "react";
 import SelectNetwork from "../network/SelectNetwork";
-import ConnectWallet from "../wallet/ConnectWallet";
-import TransactionBell from "../transactions/TransactionBell";
 import { transactionDrawerWidth } from "../transactionDrawer/TransactionDrawer";
+import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
+import TransactionBell from "../transactions/TransactionBell";
+import { menuDrawerWidth } from "./NavigationDrawer";
 
 const CustomAppBar = styled(AppBar, {
   shouldForwardProp: (prop) => prop !== "open",

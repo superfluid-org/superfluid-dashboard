@@ -9,12 +9,9 @@ export default memo(function TransactionList() {
   );
 
   return (
-    <List sx={{ width: "100%", bgcolor: "background.paper" }}>
+    <List>
       {transactions.map((transaction) => (
-        <TransactionListItem
-          key={transaction.hash}
-          transaction={transaction}
-        ></TransactionListItem>
+        <TransactionListItem key={transaction.hash} transaction={transaction} />
       ))}
     </List>
   );

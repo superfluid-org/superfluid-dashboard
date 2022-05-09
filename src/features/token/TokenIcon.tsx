@@ -1,10 +1,11 @@
 import { Avatar } from "@mui/material";
 import { FC } from "react";
 import { assetApiSlice } from "./tokenManifestSlice";
-
-const TokenIcon: FC<{
+interface TokenIconProps {
   tokenSymbol: string;
-}> = ({ tokenSymbol }) => {
+  size?: number;
+}
+const TokenIcon: FC<TokenIconProps> = ({ tokenSymbol, size = 36 }) => {
   const { data: tokenManifest } = assetApiSlice.useTokenManifestQuery({
     tokenSymbol,
   });
@@ -13,6 +14,7 @@ const TokenIcon: FC<{
     <Avatar
       imgProps={{ sx: { objectFit: "contain" } }}
       alt={`${tokenSymbol} token icon`}
+      sx={{ width: `${size}px`, height: `${size}px` }}
       src={
         tokenManifest?.svgIconPath &&
         `https://raw.githubusercontent.com/superfluid-finance/assets/master/public/${tokenManifest.svgIconPath}`
