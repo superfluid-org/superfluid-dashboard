@@ -1,13 +1,8 @@
 import { TextField } from "@mui/material";
 import { memo, useState } from "react";
 import { useStateWithDep } from "../../useStateWithDep";
-import AddressChip from "./AddressChip";
+import DisplayAddressChip, {DisplayAddress} from "./DisplayAddressChip";
 import AddressSearchDialog from "./AddressSearchDialog";
-
-export type DisplayAddress = {
-  hash: string;
-  name?: string;
-};
 
 export default memo(function AddressSearch({
   onChange,
@@ -25,7 +20,7 @@ export default memo(function AddressSearch({
         label="Receiver"
         InputProps={{
           startAdornment: address ? (
-            <AddressChip
+            <DisplayAddressChip
               hash={address.hash}
               name={address.name}
               tryGetEns={false}

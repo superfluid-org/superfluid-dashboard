@@ -1,117 +1,20 @@
-import {
-  Card,
-  Divider,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { BigNumber, ethers } from "ethers";
+import {Card, Divider, IconButton, Stack, TextField, Tooltip, Typography,} from "@mui/material";
+import {BigNumber} from "ethers";
 import Link from "next/link";
-import { FC, memo, useEffect, useMemo, useState } from "react";
-import { useNetworkContext } from "../network/NetworkContext";
-import {
-  getSuperTokenType,
-  isSuper,
-  isWrappable,
-  SuperTokenMinimal,
-} from "../redux/endpoints/adHocSubgraphEndpoints";
-import { rpcApi, subgraphApi } from "../redux/store";
-import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
-import { TokenDialogChip } from "../tokenWrapping/TokenDialogChip";
-import {
-  RestorationType,
-  SendStreamRestoration,
-} from "../transactionRestoration/transactionRestorations";
-import { TransactionButton } from "../transactions/TransactionButton";
-import { useWalletContext } from "../wallet/WalletContext";
-import AddressSearch, { DisplayAddress } from "./AddressSearch";
+import {memo, useMemo, useState} from "react";
+import {useNetworkContext} from "../network/NetworkContext";
+import {getSuperTokenType, isSuper, isWrappable, SuperTokenMinimal,} from "../redux/endpoints/adHocSubgraphEndpoints";
+import {rpcApi, subgraphApi} from "../redux/store";
+import {BalanceSuperToken} from "../tokenWrapping/BalanceSuperToken";
+import {TokenDialogChip} from "../tokenWrapping/TokenDialogChip";
+import {RestorationType, SendStreamRestoration,} from "../transactionRestoration/transactionRestorations";
+import {TransactionButton} from "../transactions/TransactionButton";
+import {useWalletContext} from "../wallet/WalletContext";
+import AddressSearch from "./AddressSearch";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
-
-// TODO(KK): What's a better name?
-enum TimeMultiplier {
-  Second = 1,
-  Minute = 60,
-  Hour = 3600,
-  Day = 86400,
-}
-
-const timeMultiplierAbbreviationMap = {
-  [TimeMultiplier.Second]: "/second",
-  [TimeMultiplier.Minute]: "/minute",
-  [TimeMultiplier.Hour]: "/hour",
-  [TimeMultiplier.Day]: "/day",
-};
-
-export type FlowRate = {
-  amountWei: BigNumber;
-  timeMultiplier: TimeMultiplier;
-};
-
-// TODO(KK): memoize
-const calculateTotalAmountWei = (flowRate: FlowRate) =>
-  flowRate.amountWei.div(flowRate.timeMultiplier);
-
-const FlowRateInput: FC<{
-  flowRate: FlowRate | undefined;
-  onChange: (flowRate: FlowRate) => void;
-}> = ({ flowRate, onChange }) => {
-  const [amount, setAmount] = useState<string>(
-    flowRate ? ethers.utils.formatEther(flowRate.amountWei) : ""
-  );
-
-  const [amountWei, setAmountWei] = useState<BigNumber>(
-    ethers.BigNumber.from(flowRate?.amountWei ?? 0)
-  );
-
-  const [timeMultiplier, setTimeMultiplier] = useState<TimeMultiplier>(
-    flowRate?.timeMultiplier ?? TimeMultiplier.Hour
-  );
-
-  useEffect(
-    () => setAmountWei(ethers.utils.parseEther(Number(amount) ? amount : "0")),
-    [amount]
-  );
-
-  useEffect(
-    () =>
-      onChange({
-        amountWei: amountWei,
-        timeMultiplier: timeMultiplier,
-      }),
-    [amountWei, timeMultiplier]
-  );
-
-  return (
-    <>
-      <TextField
-        placeholder="0.0"
-        value={amount}
-        onChange={(e) => setAmount(e.currentTarget.value)}
-        sx={{ border: 0, width: "50%" }}
-      />
-      <Select
-        value={timeMultiplier}
-        label="Time multiplier"
-        onChange={(e) => setTimeMultiplier(Number(e.target.value))}
-      >
-        <MenuItem value={1}>{timeMultiplierAbbreviationMap[1]}</MenuItem>
-        <MenuItem value={60}>{timeMultiplierAbbreviationMap[60]}</MenuItem>
-        <MenuItem value={3600}>{timeMultiplierAbbreviationMap[3600]}</MenuItem>
-        <MenuItem value={86400}>
-          {timeMultiplierAbbreviationMap[86400]}
-        </MenuItem>
-      </Select>
-    </>
-  );
-};
+import {DisplayAddress} from "./DisplayAddressChip";
+import {calculateTotalAmountWei, FlowRate, FlowRateInput} from "./FlowRateInput";
+import {SendStreamPreview} from "./SendStreamPreview";
 
 export default memo(function SendCard() {
   const { network } = useNetworkContext();
@@ -129,7 +32,10 @@ export default memo(function SendCard() {
   const [flowCreateTrigger, flowCreateResult] = rpcApi.useFlowCreateMutation();
 
   const isSendDisabled =
-    !receiver || !selectedToken || !flowRate || flowRate.amountWei.isZero();
+    !receiver ||
+    !selectedToken ||
+    !flowRate ||
+    BigNumber.from(flowRate.amountWei).isZero();
 
   const listedTokensQuery = subgraphApi.useTokensQuery({
     chainId: network.chainId,
@@ -275,42 +181,3 @@ export default memo(function SendCard() {
   );
 });
 
-const SendStreamPreview: FC<{ restoration: SendStreamRestoration }> = ({
-  restoration,
-}) => {
-  return (
-    <Card>
-      <List>
-        <ListItem>
-          <ListItemText
-            primary="Receiver"
-            secondary={restoration.receiver.hash}
-          />
-        </ListItem>
-        <ListItem>
-          <ListItemText
-            primary="Flow rate"
-            secondary={
-              <>
-                <Typography component="span">{`${ethers.utils.formatEther(
-                  restoration.flowRate.amountWei
-                )}${
-                  timeMultiplierAbbreviationMap[
-                    restoration.flowRate.timeMultiplier
-                  ]
-                }`}</Typography>
-                <br />
-                <Typography component="span">{`${ethers.utils.formatEther(
-                  calculateTotalAmountWei(restoration.flowRate)
-                )}${timeMultiplierAbbreviationMap[1]}`}</Typography>
-              </>
-            }
-          />
-        </ListItem>
-        <ListItem>
-          <ListItemText primary="Ends on" secondary={"Never"} />
-        </ListItem>
-      </List>
-    </Card>
-  );
-};

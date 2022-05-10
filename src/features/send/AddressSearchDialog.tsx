@@ -19,10 +19,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import { ethers } from "ethers";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { ensApi } from "../ens/ensApi.slice";
-import { DisplayAddress } from "./AddressSearch";
 import { subgraphApi } from "../redux/store";
 import { useWalletContext } from "../wallet/WalletContext";
 import { useNetworkContext } from "../network/NetworkContext";
+import {DisplayAddress} from "./DisplayAddressChip";
 
 export type AddressSearchDialogProps = {
   open: boolean;
@@ -73,10 +73,8 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
   const ensQuery = ensApi.useResolveNameQuery(
     searchTermDebounced ? searchTermDebounced : skipToken
   );
-
-  const showEns = (ensQuery.isSuccess && !!ensQuery.data) || ensQuery.isLoading;
-
   const ensData = ensQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!ensQuery.data` means that the data is not undefined nor null.
+  const showEns = (ensQuery.isSuccess && !!ensQuery.data) || ensQuery.isLoading;
 
   const recentsQuery = subgraphApi.useRecentsQuery(
     walletAddress
@@ -86,11 +84,10 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
         }
       : skipToken
   );
-
-  const showRecents =
-    (walletAddress && recentsQuery.isSuccess && !!recentsQuery.data) ||
-    recentsQuery.isLoading;
   const recentsData = recentsQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!ensQuery.data` means that the data is not undefined nor null.
+  const showRecents =
+    (walletAddress && recentsQuery.isSuccess && recentsQuery.data?.length) ||
+    recentsQuery.isLoading;
 
   return (
     <ResponsiveDialog

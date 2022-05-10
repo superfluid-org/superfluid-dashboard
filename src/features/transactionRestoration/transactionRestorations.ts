@@ -1,6 +1,6 @@
 import {  SuperTokenPair, UnderlyingToken, SuperTokenMinimal } from '../redux/endpoints/adHocSubgraphEndpoints';
-import { DisplayAddress } from '../send/AddressSearch';
-import { FlowRate } from '../send/SendCard';
+import {DisplayAddress} from "../send/DisplayAddressChip";
+import {FlowRate} from "../send/FlowRateInput";
 
 export enum RestorationType {
   Downgrade = 1,
