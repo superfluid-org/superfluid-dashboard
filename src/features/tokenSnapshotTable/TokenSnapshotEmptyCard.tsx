@@ -2,7 +2,6 @@ import AddIcon from "@mui/icons-material/Add";
 import InboxIcon from "@mui/icons-material/Inbox";
 import { Avatar, Button, Card, Stack, Typography } from "@mui/material";
 import { Box, lighten, styled } from "@mui/system";
-import { FC } from "react";
 
 const WrapperAvatar = styled(Avatar)(({ theme }) => ({
   width: 70,
@@ -17,7 +16,7 @@ const TokenSnapshotEmptyCard = () => (
     component={Stack}
     gap={3}
     alignItems="center"
-    elevation={2}
+    elevation={1}
   >
     <WrapperAvatar>
       <InboxIcon color="primary" sx={{ fontSize: 51 }} />

@@ -28,8 +28,7 @@ const Wrap: NextPage = () => {
     }
   }, [upgrade, downgrade]);
 
-  const { restoration, onRestored } =
-    useTransactionRestorationContext();
+  const { restoration, onRestored } = useTransactionRestorationContext();
 
   const [upgradeRestoration, setUpgradeRestoration] = useState<
     SuperTokenUpgradeRestoration | undefined
@@ -51,12 +50,7 @@ const Wrap: NextPage = () => {
       }
       onRestored();
     }
-  }, [
-    setUpgradeRestoration,
-    setDowngradeRestoration,
-    restoration,
-    onRestored,
-  ]);
+  }, [setUpgradeRestoration, setDowngradeRestoration, restoration, onRestored]);
 
   return (
     <Container maxWidth="lg">
@@ -81,7 +75,7 @@ const Wrap: NextPage = () => {
                 setUpgradeRestoration(undefined);
                 setDowngradeRestoration(undefined);
               }}
-            ></WrapCard>
+            />
           )}
         </SelectedTokenContextProvider>
       </Box>

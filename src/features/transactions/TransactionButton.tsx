@@ -29,7 +29,13 @@ export const TransactionButton: FC<{
 
     if (disabled) {
       return (
-        <Button color="primary" variant="contained" size="xl" disabled={true}>
+        <Button
+          fullWidth
+          disabled
+          color="primary"
+          variant="contained"
+          size="xl"
+        >
           {children}
         </Button>
       );
@@ -38,11 +44,11 @@ export const TransactionButton: FC<{
     if (!walletAddress) {
       return (
         <LoadingButton
+          fullWidth
           loading={isWalletConnecting}
           color="primary"
           variant="contained"
           size="xl"
-          fullWidth={true}
           onClick={connectWallet}
         >
           Connect Wallet
@@ -53,11 +59,11 @@ export const TransactionButton: FC<{
     if (walletChainId != network.chainId) {
       return (
         <Button
-          disabled={true}
+          disabled
           color="primary"
           variant="contained"
           size="xl"
-          fullWidth={true}
+          fullWidth
         >
           Change Network to {network.displayName}
         </Button>
@@ -66,12 +72,12 @@ export const TransactionButton: FC<{
 
     return (
       <LoadingButton
+        fullWidth
         loading={mutationResult.isLoading}
         color="primary"
         variant="contained"
         size="xl"
         disabled={disabled}
-        fullWidth={true}
         onClick={() => {
           onClick(setTransactionDialogContent);
           setTransactionDialogOpen(true);

@@ -1,12 +1,11 @@
+import { Card, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { FC } from "react";
 import {
   SuperTokenDowngradeRestoration,
   SuperTokenUpgradeRestoration,
 } from "../transactionRestoration/transactionRestorations";
-import { Card, Tab, ToggleButton, ToggleButtonGroup } from "@mui/material";
-import { TabContext, TabList, TabPanel } from "@mui/lab";
-import { WrapTabUpgrade } from "./WrapTabUpgrade";
 import { WrapTabDowngrade } from "./WrapTabDowngrade";
+import { WrapTabUpgrade } from "./WrapTabUpgrade";
 
 export const WrapCard: FC<{
   tabValue: "upgrade" | "downgrade";
@@ -15,16 +14,14 @@ export const WrapCard: FC<{
   downgradeRestoration?: SuperTokenDowngradeRestoration;
 }> = ({ tabValue, upgradeRestoration, downgradeRestoration, onTabChange }) => {
   const handleTabChange = (_e: unknown, newTab: "upgrade" | "downgrade") =>
-    onTabChange(newTab);
+    newTab && onTabChange(newTab);
 
   return (
     <Card
       sx={{
-        position: "fixed",
-        top: "25%",
-        width: "500px",
-        p: 4,
+        maxWidth: "500px",
         borderRadius: "20px",
+        p: 4,
       }}
       elevation={1}
     >
@@ -36,9 +33,7 @@ export const WrapCard: FC<{
         onChange={handleTabChange}
         sx={{ mb: 4 }}
       >
-        <ToggleButton value="upgrade" size="large">
-          Wrap
-        </ToggleButton>
+        <ToggleButton value="upgrade">Wrap</ToggleButton>
         <ToggleButton value="downgrade">Unwrap</ToggleButton>
       </ToggleButtonGroup>
 

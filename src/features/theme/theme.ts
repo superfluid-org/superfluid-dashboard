@@ -1,38 +1,26 @@
 import { Theme, ThemeOptions } from "@mui/material/styles";
+import { FONT_FACES } from "./fonts";
 
-const FONT_FACES = `
-@font-face {
-  font-family: 'Walsheim';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 400;
-  src: url(./fonts/GT-Walsheim-Pro-Regular.eot) format('eot'), url(./fonts/GT-Walsheim-Pro-Regular.otf) format('otf'), url(./fonts/GT-Walsheim-Pro-Regular.ttf) format('ttf'), url(./fonts/GT-Walsheim-Pro-Regular.woff) format('woff'), url(./fonts/GT-Walsheim-Pro-Regular.woff2) format('woff2');
+// TODO: Move to separate declaration file to make theme file cleaner?
+
+// TYPOGRAHY
+
+interface TypographyCustomVariants {
+  largeInput: React.CSSProperties;
 }
 
-@font-face {
-  font-family: 'Walsheim';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 500;
-  src: url(./fonts/GT-Walsheim-Pro-Medium.eot) format('eot'), url(./fonts/GT-Walsheim-Pro-Medium.otf) format('otf'), url(./fonts/GT-Walsheim-Pro-Medium.ttf) format('ttf'), url(./fonts/GT-Walsheim-Pro-Medium.woff) format('woff'), url(./fonts/GT-Walsheim-Pro-Medium.woff2) format('woff2');
+declare module "@mui/material/styles" {
+  interface TypographyVariants extends TypographyCustomVariants {}
+  interface TypographyVariantsOptions extends TypographyCustomVariants {}
 }
 
-@font-face {
-  font-family: 'Walsheim';
-  font-style: italic;
-  font-display: swap;
-  font-weight: 400;
-  src: url(./fonts/GT-Walsheim-Pro-Regular-Oblique.eot) format('eot'), url(./fonts/GT-Walsheim-Pro-Regular-Oblique.otf) format('otf'), url(./fonts/GT-Walsheim-Pro-Regular-Oblique.ttf) format('ttf'), url(./fonts/GT-Walsheim-Pro-Regular-Oblique.woff) format('woff'), url(./fonts/GT-Walsheim-Pro-Regular-Oblique.woff2) format('woff2');
+declare module "@mui/material/Typography" {
+  interface TypographyPropsVariantOverrides {
+    largeInput: true;
+  }
 }
 
-@font-face {
-  font-family: 'Walsheim';
-  font-style: italic;
-  font-display: swap;
-  font-weight: 500;
-  src: url(./fonts/GT-Walsheim-Pro-Medium-Oblique.eot) format('eot'), url(./fonts/GT-Walsheim-Pro-Medium-Oblique.otf) format('otf'), url(./fonts/GT-Walsheim-Pro-Medium-Oblique.ttf) format('ttf'), url(./fonts/GT-Walsheim-Pro-Medium-Oblique.woff) format('woff'), url(./fonts/GT-Walsheim-Pro-Medium-Oblique.woff2) format('woff2');
-}
-`;
+// COLOR PALETTE
 
 interface PaletteCustomColors {
   other: {
@@ -46,6 +34,8 @@ declare module "@mui/material/styles/createPalette" {
   interface Palette extends PaletteCustomColors {}
   interface PaletteOptions extends PaletteCustomColors {}
 }
+
+// BUTTONS
 
 declare module "@mui/material/Button" {
   interface ButtonPropsSizeOverrides {
@@ -171,6 +161,13 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
       overline: {
         letterSpacing: "1px",
       },
+      largeInput: {
+        fontStyle: "normal",
+        fontWeight: 500,
+        fontSize: "30px",
+        lineHeight: "150%",
+        letterSpacing: "0.15px",
+      },
     },
     shadows: [
       "none",
@@ -290,6 +287,31 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         },
       },
+      MuiInputBase: {
+        styleOverrides: {
+          input: {
+            ...theme.typography.largeInput,
+            "&[type=number]::-webkit-outer-spin-button, &[type=number]::-webkit-inner-spin-button":
+              {
+                "-webkit-appearance": "none",
+                m: 0,
+              },
+            "&[type=number]": {
+              "-moz-appearance": "textfield",
+            },
+          },
+        },
+      },
+      MuiAppBar: {
+        defaultProps: {
+          color: "default",
+        },
+        styleOverrides: {
+          colorDefault: {
+            backgroundColor: theme.palette.background.paper,
+          },
+        },
+      },
       MuiSnackbarContent: {
         styleOverrides: {
           root: {
@@ -300,6 +322,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       MuiButtonGroup: {
         defaultProps: {
           disableElevation: true,
+        },
+      },
+      MuiSvgIcon: {
+        styleOverrides: {
+          fontSizeLarge: {
+            fontSize: 48,
+          },
         },
       },
       MuiIconButton: {
@@ -350,6 +379,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         styleOverrides: {
           root: {
             textTransform: "inherit",
+            flexShrink: 0,
           },
           sizeMedium: {
             letterSpacing: "0.17px",

@@ -1,20 +1,27 @@
-import { FC, useEffect, useRef, useState } from "react";
-import { SuperTokenDowngradeRestoration, RestorationType } from "../transactionRestoration/transactionRestorations";
-import { useNetworkContext } from "../network/NetworkContext";
-import { useWalletContext } from "../wallet/WalletContext";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Avatar, Button, Input, Paper, Stack, Typography } from "@mui/material";
+import { useTheme } from "@mui/system";
 import { BigNumber, ethers } from "ethers";
+import { FC, useEffect, useRef, useState } from "react";
+import { useNetworkContext } from "../network/NetworkContext";
 import { rpcApi } from "../redux/store";
-import { Chip, Stack, TextField, Typography } from "@mui/material";
-import { TokenDialogChip } from "./TokenDialogChip";
 import TokenIcon from "../token/TokenIcon";
+import {
+  RestorationType,
+  SuperTokenDowngradeRestoration,
+} from "../transactionRestoration/transactionRestorations";
 import { TransactionButton } from "../transactions/TransactionButton";
-import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
+import { useWalletContext } from "../wallet/WalletContext";
 import { BalanceSuperToken } from "./BalanceSuperToken";
+import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { useSelectedTokenContext } from "./SelectedTokenPairContext";
+import { TokenDialogChip } from "./TokenDialogChip";
 
 export const WrapTabDowngrade: FC<{
   restoration: SuperTokenDowngradeRestoration | undefined;
 }> = ({ restoration }) => {
+  const theme = useTheme();
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
   const { selectedTokenPair, setSelectedTokenPair } = useSelectedTokenContext();
@@ -33,6 +40,7 @@ export const WrapTabDowngrade: FC<{
       setSelectedTokenPair(restoration.tokenUpgrade);
       setAmount(ethers.utils.formatEther(restoration.amountWei));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [restoration]);
 
   const [downgradeTrigger, downgradeResult] =
@@ -40,71 +48,121 @@ export const WrapTabDowngrade: FC<{
   const isDowngradeDisabled = !selectedTokenPair || amountWei.isZero();
 
   const amountInputRef = useRef<HTMLInputElement>(undefined!);
+
   useEffect(() => {
     amountInputRef.current.focus();
   }, [amountInputRef, selectedTokenPair]);
 
   return (
-    <Stack direction="column" spacing={2}>
-      <Stack direction="column" spacing={1}>
-        <Stack direction="row" justifyContent="space-between" spacing={2}>
-          <TokenDialogChip prioritizeSuperTokens={true} />
-          <TextField
+    <Stack direction="column" alignItems="center">
+      <Stack
+        variant="outlined"
+        component={Paper}
+        spacing={1}
+        sx={{ px: 2.5, py: 1.5 }}
+      >
+        <Stack direction="row" spacing={2}>
+          <Input
+            fullWidth
+            disableUnderline
+            type="number"
             placeholder="0.0"
             inputRef={amountInputRef}
             disabled={!selectedTokenPair}
             value={amount}
             onChange={(e) => setAmount(e.currentTarget.value)}
-            sx={{ border: 0, width: "50%" }}
+            inputProps={{
+              sx: {
+                p: 0,
+              },
+            }}
           />
+          <TokenDialogChip prioritizeSuperTokens={true} />
         </Stack>
-        {selectedTokenPair && walletAddress && (
-          <Stack direction="row-reverse">
+        <Stack direction="row" justifyContent="space-between">
+          <Typography variant="body2" color="text.secondary">
+            ${Number(amount || 0).toFixed(2)}
+          </Typography>
+
+          {selectedTokenPair && walletAddress && (
             <BalanceSuperToken
               chainId={network.chainId}
               accountAddress={walletAddress}
               tokenAddress={selectedTokenPair.superToken.address}
-            ></BalanceSuperToken>
-          </Stack>
-        )}
-      </Stack>
-      <Stack sx={{ display: selectedTokenPair ? "" : "none" }}>
-        <Stack direction="row" justifyContent="space-between" spacing={2}>
-          <Chip
-            icon={
-              selectedTokenPair ? (
-                <TokenIcon
-                  tokenSymbol={selectedTokenPair.underlyingToken.symbol}
-                />
-              ) : (
-                <></>
-              )
-            }
-            label={
-              <>
-                <Stack direction="row" alignItems="center">
-                  {selectedTokenPair?.underlyingToken.symbol ?? ""}
-                </Stack>
-              </>
-            }
-          ></Chip>
-          <TextField
-            disabled
-            placeholder="0.0"
-            value={amount}
-            sx={{ width: "50%" }}
-          />
+              typographyProps={{ color: "text.secondary" }}
+            />
+          )}
         </Stack>
-        {selectedTokenPair && walletAddress && (
-          <Stack direction="row-reverse">
-            <BalanceUnderlyingToken
-              chainId={network.chainId}
-              accountAddress={walletAddress}
-              tokenAddress={selectedTokenPair.underlyingToken.address}
-            ></BalanceUnderlyingToken>
-          </Stack>
-        )}
       </Stack>
+
+      <Avatar
+        component={Paper}
+        elevation={1}
+        sx={{
+          width: 30,
+          height: 30,
+          background: theme.palette.background.paper,
+          my: -1,
+        }}
+      >
+        <ArrowDownwardIcon color="primary" fontSize="small" />
+      </Avatar>
+
+      {selectedTokenPair && (
+        <Stack
+          component={Paper}
+          variant="outlined"
+          spacing={1}
+          sx={{ px: 2.5, py: 1.5 }}
+        >
+          <Stack direction="row" spacing={2}>
+            <Input
+              disabled
+              fullWidth
+              disableUnderline
+              placeholder="0.0"
+              value={amount}
+              inputProps={{
+                sx: {
+                  p: 0,
+                },
+              }}
+            />
+            <Button
+              variant="outlined"
+              color="secondary"
+              startIcon={
+                <TokenIcon
+                  tokenSymbol={selectedTokenPair.superToken.symbol}
+                  size={24}
+                />
+              }
+              endIcon={<ExpandMoreIcon />}
+            >
+              {selectedTokenPair?.underlyingToken.symbol ?? ""}
+            </Button>
+          </Stack>
+
+          <Stack direction="row" justifyContent="space-between">
+            <Typography variant="body2" color="text.secondary">
+              ${Number(amount || 0).toFixed(2)}
+            </Typography>
+            {selectedTokenPair && walletAddress && (
+              <BalanceUnderlyingToken
+                chainId={network.chainId}
+                accountAddress={walletAddress}
+                tokenAddress={selectedTokenPair.underlyingToken.address}
+              />
+            )}
+          </Stack>
+        </Stack>
+      )}
+
+      {selectedTokenPair && (
+        <Typography align="center" sx={{ my: 3 }}>
+          {`1 ${selectedTokenPair.superToken.symbol} = 1 ${selectedTokenPair.underlyingToken.symbol}`}
+        </Typography>
+      )}
 
       <TransactionButton
         hidden={false}
