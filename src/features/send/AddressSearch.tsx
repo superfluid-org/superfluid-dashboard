@@ -1,21 +1,22 @@
-import { Chip, Stack, TextField, Typography } from "@mui/material";
-import { memo, useEffect, useState } from "react";
+import { TextField } from "@mui/material";
+import { memo, useState } from "react";
+import { useStateWithDep } from "../../useStateWithDep";
+import AddressChip from "./AddressChip";
 import AddressSearchDialog from "./AddressSearchDialog";
 
-export type Address = {
+export type DisplayAddress = {
   hash: string;
   name?: string;
 };
 
 export default memo(function AddressSearch({
   onChange,
+  ...props
 }: {
-  address: Address | undefined;
-  onChange: (address: Address | undefined) => void;
+  address: DisplayAddress | undefined;
+  onChange: (address: DisplayAddress | undefined) => void;
 }) {
-  const [address, setAddress] = useState<Address | undefined>();
-  useEffect(() => onChange(address), [address]);
-
+  const [address, setAddress] = useStateWithDep<DisplayAddress | undefined>(props.address);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   return (
@@ -24,18 +25,13 @@ export default memo(function AddressSearch({
         label="Receiver"
         InputProps={{
           startAdornment: address ? (
-            <Chip
-              label={
-                address.name ? (
-                  <Stack>
-                    <Typography variant="body1">{address.name}</Typography>
-                    <Typography variant="body2">{address.hash}</Typography>
-                  </Stack>
-                ) : (
-                  <Typography variant="body1">{address.hash}</Typography>
-                )
-              }
-              onDelete={() => setAddress(undefined)}
+            <AddressChip
+              hash={address.hash}
+              name={address.name}
+              tryGetEns={false}
+              ChipProps={{
+                onDelete: () => setAddress(undefined),
+              }}
             />
           ) : null,
         }}

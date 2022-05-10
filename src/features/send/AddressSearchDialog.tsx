@@ -18,8 +18,8 @@ import ResponsiveDialog, {
 import CloseIcon from "@mui/icons-material/Close";
 import { ethers } from "ethers";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { ensApiSlice } from "../ens/ensApi.slice";
-import { Address } from "./AddressSearch";
+import { ensApi } from "../ens/ensApi.slice";
+import { DisplayAddress } from "./AddressSearch";
 import { subgraphApi } from "../redux/store";
 import { useWalletContext } from "../wallet/WalletContext";
 import { useNetworkContext } from "../network/NetworkContext";
@@ -27,7 +27,7 @@ import { useNetworkContext } from "../network/NetworkContext";
 export type AddressSearchDialogProps = {
   open: boolean;
   onClose: () => void;
-  onSelectAddress: (address: Address) => void;
+  onSelectAddress: (address: DisplayAddress) => void;
   ResponsiveDialogProps?: ResponsiveDialogProps;
 };
 
@@ -70,7 +70,7 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
     }
   }, [searchTermDebounced]);
 
-  const ensQuery = ensApiSlice.useResolveNameQuery(
+  const ensQuery = ensApi.useResolveNameQuery(
     searchTermDebounced ? searchTermDebounced : skipToken
   );
 

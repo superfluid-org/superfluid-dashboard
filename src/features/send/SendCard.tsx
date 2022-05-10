@@ -32,7 +32,7 @@ import {
 } from "../transactionRestoration/transactionRestorations";
 import { TransactionButton } from "../transactions/TransactionButton";
 import { useWalletContext } from "../wallet/WalletContext";
-import AddressSearch, { Address } from "./AddressSearch";
+import AddressSearch, { DisplayAddress } from "./AddressSearch";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 
 // TODO(KK): What's a better name?
@@ -116,7 +116,7 @@ const FlowRateInput: FC<{
 export default memo(function SendCard() {
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
-  const [receiver, setReceiver] = useState<Address | undefined>();
+  const [receiver, setReceiver] = useState<DisplayAddress | undefined>();
   const [selectedToken, setSelectedToken] = useState<
     SuperTokenMinimal | undefined
   >();

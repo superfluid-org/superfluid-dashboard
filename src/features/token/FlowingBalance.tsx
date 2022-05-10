@@ -2,6 +2,7 @@ import { FC, memo, ReactElement, useEffect, useMemo, useState } from "react";
 import { BigNumberish, ethers } from "ethers";
 import { Box } from "@mui/material";
 import EtherFormatted from "./EtherFormatted";
+import { useStateWithDep } from "../../useStateWithDep";
 
 const ANIMATION_MINIMUM_STEP_TIME = 80;
 
@@ -21,8 +22,7 @@ export default memo(function FlowingBalance({
   flowRate,
   etherDecimalPlaces,
 }: FlowingBalanceProps): ReactElement {
-  const [weiValue, setWeiValue] = useState<BigNumberish>(balance);
-  useEffect(() => setWeiValue(balance), [balance]);
+  const [weiValue, setWeiValue] = useStateWithDep<BigNumberish>(balance);
 
   const balanceTimestampMs = useMemo(
     () => ethers.BigNumber.from(balanceTimestamp).mul(1000),
