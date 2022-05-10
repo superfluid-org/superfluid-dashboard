@@ -30,11 +30,10 @@ export default memo(function TopBar() {
     <CustomAppBar
       open={transactionDrawerOpen}
       position="fixed"
+      elevation={0}
       sx={{
         width: `calc(100% - ${menuDrawerWidth}px)`,
         ml: `${menuDrawerWidth}px`,
-        boxShadow: "none",
-        bgcolor: "background.paper",
       }}
     >
       <Stack

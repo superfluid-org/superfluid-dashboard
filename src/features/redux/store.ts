@@ -61,7 +61,7 @@ const transactionTrackerPersistedReducer = persistReducer(
 export const reduxStore = configureStore({
   reducer: {
     [rpcApi.reducerPath]: rpcApi.reducer,
-    [subgraphApi.reducerPath]: subgraphApiPersistedReducer,
+    [subgraphApi.reducerPath]: subgraphApi.reducer,
     [transactionTracker.reducerPath]: transactionTrackerPersistedReducer,
     [assetApiSlice.reducerPath]: assetApiSlice.reducer,
   },

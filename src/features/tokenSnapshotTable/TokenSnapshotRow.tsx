@@ -54,8 +54,8 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           ...(lastElement && {
             td: {
               border: "none",
-              ":first-child": { borderRadius: "0 0 0 20px" },
-              ":last-child": { borderRadius: "0 0 20px" },
+              ":first-of-type": { borderRadius: "0 0 0 20px" },
+              ":last-of-type": { borderRadius: "0 0 20px" },
             },
           }),
         }}
@@ -112,7 +112,6 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           )}
         </TableCell>
         <TableCell>
-          {/* TODO: change for iconbutton and add top/bottom negative margin not to push the column too high */}
           {totalNumberOfActiveStreams + totalNumberOfClosedStreams > 0 && (
             <IconButton onClick={toggleOpen}>
               <ExpandCircleDownOutlinedIcon />
