@@ -1,10 +1,7 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { Card, List, ListItem, ListItemText, Typography } from "@mui/material";
-import { ethers } from "ethers";
-import {
-  FlowRateWithTime,
-  timeUnitWordMap,
-} from "./FlowRateInput";
+import { BigNumber, ethers } from "ethers";
+import { FlowRateWithTime, timeUnitWordMap } from "./FlowRateInput";
 import { calculateBufferAmount } from "./calculateBufferAmounts";
 import { DisplayAddress } from "./DisplayAddressChip";
 import { SuperTokenMinimal } from "../redux/endpoints/adHocSubgraphEndpoints";
@@ -34,7 +31,15 @@ export const SendStreamPreview: FC<{
   const realtimeBalance = realtimeBalanceQuery.data;
 
   // TODO(KK): useMemo
-  const bufferAmount = calculateBufferAmount({ network, flowRateWithTime });
+  const bufferAmount = useMemo(
+    () => calculateBufferAmount({ network, flowRateWithTime }),
+    [network, flowRateWithTime]
+  );
+
+  const balanceAfterBuffer = useMemo(
+    () => BigNumber.from(realtimeBalance?.balance ?? 0).sub(bufferAmount),
+    [realtimeBalance, bufferAmount]
+  );
 
   return (
     <Card>
@@ -66,7 +71,7 @@ export const SendStreamPreview: FC<{
               secondary={
                 realtimeBalance ? (
                   <FlowingBalance
-                    balance={realtimeBalance.balance}
+                    balance={balanceAfterBuffer.toString()}
                     balanceTimestamp={realtimeBalance.balanceTimestamp}
                     flowRate={realtimeBalance.flowRate}
                   ></FlowingBalance>
