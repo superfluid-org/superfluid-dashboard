@@ -6,6 +6,10 @@ import { FONT_FACES } from "./fonts";
 // TYPOGRAHY
 
 interface TypographyCustomVariants {
+  h5mono: React.CSSProperties;
+  h6mono: React.CSSProperties;
+  body1mono: React.CSSProperties;
+  body2mono: React.CSSProperties;
   largeInput: React.CSSProperties;
 }
 
@@ -16,6 +20,10 @@ declare module "@mui/material/styles" {
 
 declare module "@mui/material/Typography" {
   interface TypographyPropsVariantOverrides {
+    h5mono: true;
+    h6mono: true;
+    body1mono: true;
+    body2mono: true;
     largeInput: true;
   }
 }
@@ -42,6 +50,9 @@ declare module "@mui/material/Button" {
     xl: true;
   }
 }
+
+const FONT_FAMILY = "'Walsheim', Arial";
+const FONT_FAMILY_MONO = "'Azeret Mono', monospace;";
 
 export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
   const getModeStyle = (lightStyle: string, darkStyle: string) =>
@@ -111,7 +122,7 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
       divider: getModeStyle("#0000001F", "#FFFFFF1F"),
     },
     typography: {
-      fontFamily: "Walsheim, Arial",
+      fontFamily: FONT_FAMILY,
       h1: {
         fontSize: "64px",
         letterSpacing: "-1.5px",
@@ -135,19 +146,40 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         fontSize: "18px",
         fontWeight: 500,
       },
+      h5mono: {
+        fontSize: "18px",
+        fontWeight: 500,
+        fontFamily: FONT_FAMILY_MONO,
+      },
       h6: {
         fontSize: "16px",
         fontWeight: 500,
         lineHeight: "150%",
         letterSpacing: "0.15px",
       },
+      h6mono: {
+        fontSize: "16px",
+        fontWeight: 500,
+        lineHeight: "150%",
+        fontFamily: FONT_FAMILY_MONO,
+      },
       body1: {
         fontWeight: 400,
         letterSpacing: 0.15,
       },
+      body1mono: {
+        fontWeight: 400,
+        whiteSpace: "pre",
+        fontFamily: FONT_FAMILY_MONO,
+      },
       body2: {
         fontWeight: 400,
         letterSpacing: 0.17,
+      },
+      body2mono: {
+        fontWeight: 400,
+        whiteSpace: "pre",
+        fontFamily: FONT_FAMILY_MONO,
       },
       subtitle1: {
         letterSpacing: "0.15px",
@@ -487,18 +519,32 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         },
       },
+      // TODO: If we get tables to fit better then change paddings back to 8px 32px
+      MuiTableRow: {
+        styleOverrides: {
+          root: {
+            "td:first-of-type, th:first-of-type": {
+              padding: "8px 24px 8px 32px",
+            },
+            "td:last-of-type, th:last-of-type": {
+              padding: "8px 32px 8px 24px",
+            },
+          },
+        },
+      },
+      // TODO: If we get tables to fit better then change paddings back to 8px 32px
       MuiTableCell: {
         styleOverrides: {
           head: {
             ...theme.typography.body2,
             fontSize: "14px",
             color: theme.palette.text.secondary,
-            padding: "8px 32px",
+            padding: "8px 24px",
             minHeight: 0,
           },
           body: {
             ...theme.typography.body2,
-            padding: "12px 32px",
+            padding: "12px 24px",
           },
         },
       },

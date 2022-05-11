@@ -83,11 +83,13 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
     >
       <TableHead>
         <TableRow>
-          <TableCell sx={{ pl: "72px" }}>To / From</TableCell>
-          <TableCell width="200px">Start / End Date</TableCell>
-          <TableCell width="260px">Monthly Flow</TableCell>
-          <TableCell width="260px">All Time Flow</TableCell>
-          <TableCell>Filter</TableCell>
+          <TableCell sx={{ pl: "72px" }} width="185">
+            To / From
+          </TableCell>
+          <TableCell>All Time Flow</TableCell>
+          <TableCell width="280">Monthly Flow</TableCell>
+          <TableCell width="200">Start / End Date</TableCell>
+          <TableCell width="110">Filter</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>

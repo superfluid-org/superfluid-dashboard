@@ -133,7 +133,7 @@ export const WrapTabDowngrade: FC<{
               color="secondary"
               startIcon={
                 <TokenIcon
-                  tokenSymbol={selectedTokenPair.superToken.symbol}
+                  tokenSymbol={selectedTokenPair.underlyingToken.symbol}
                   size={24}
                 />
               }

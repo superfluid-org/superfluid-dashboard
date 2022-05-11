@@ -38,28 +38,30 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ address, stream }) => {
         </Stack>
       </TableCell>
       <TableCell>
-        <Stack direction="row" alignItems="center" gap={1}>
-          {format(updatedAtTimestamp * 1000, "d MMM. yyyy")}
-          {ongoing && <AllInclusiveIcon />}
-        </Stack>
+        <Typography variant="body2mono">
+          <FlowingBalance
+            balance={streamedUntilUpdatedAt}
+            flowRate={currentFlowRate}
+            balanceTimestamp={updatedAtTimestamp}
+          />
+        </Typography>
       </TableCell>
       <TableCell>
         {ongoing ? (
-          <>
+          <Typography variant="body2mono">
             {outgoing ? "- " : "+ "}
             <EtherFormatted wei={currentFlowRate} />
             /mo
-          </>
+          </Typography>
         ) : (
           "-"
         )}
       </TableCell>
       <TableCell>
-        <FlowingBalance
-          balance={streamedUntilUpdatedAt}
-          flowRate={currentFlowRate}
-          balanceTimestamp={updatedAtTimestamp}
-        />
+        <Stack direction="row" alignItems="center" gap={1}>
+          {format(updatedAtTimestamp * 1000, "d MMM. yyyy")}
+          {ongoing && <AllInclusiveIcon />}
+        </Stack>
       </TableCell>
       <TableCell>Cancel</TableCell>
     </TableRow>
