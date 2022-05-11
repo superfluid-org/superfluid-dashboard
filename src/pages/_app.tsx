@@ -29,7 +29,7 @@ export default function MyApp(props: MyAppProps) {
     readOnlyFrameworks.map((x) =>
       setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
     );
-  });
+  }, []);
 
   return (
     <ReduxProvider>

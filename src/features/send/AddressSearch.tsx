@@ -9,7 +9,7 @@ export default memo(function AddressSearch({
   ...props
 }: {
   address: DisplayAddress | undefined;
-  onChange: (address: DisplayAddress | undefined) => void;
+  onChange: (address: DisplayAddress | undefined) => void; // TODO(KK): better name19
 }) {
   const [address, setAddress] = useStateWithDep<DisplayAddress | undefined>(props.address);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -40,6 +40,7 @@ export default memo(function AddressSearch({
         onSelectAddress={(address) => {
           setAddress(address);
           setDialogOpen(false);
+          onChange(address);
         }}
       />
     </>

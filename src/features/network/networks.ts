@@ -11,6 +11,7 @@ export type Network = {
   getLinkForAddress(adderss: string): string;
   isTestnet: boolean;
   icon?: string;
+  bufferTimeInMinutes: number; // Hard-code'ing this per network is actually incorrect approach. It's token-based and can be governed.
   nativeAsset: {
     symbol: string;
     superToken: {
@@ -28,6 +29,7 @@ export const networks: Network[] = [
     slugName: "ropsten",
     chainId: 3,
     isTestnet: true,
+    bufferTimeInMinutes: 60,
     icon: "/icons/network/ropsten.jpg",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/ropsten`,
     subgraphUrl:
@@ -51,6 +53,7 @@ export const networks: Network[] = [
     slugName: "rinkeby",
     chainId: 4,
     isTestnet: true,
+    bufferTimeInMinutes: 60,
     icon: "/icons/network/rinkeby.jpg",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/rinkeby`,
     subgraphUrl:
@@ -74,6 +77,7 @@ export const networks: Network[] = [
     slugName: "goerli",
     chainId: 5,
     isTestnet: true,
+    bufferTimeInMinutes: 60,
     icon: "/icons/network/goerli.jpg",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/goerli`,
     subgraphUrl:
@@ -97,6 +101,7 @@ export const networks: Network[] = [
     slugName: "kovan",
     chainId: 42,
     isTestnet: true,
+    bufferTimeInMinutes: 60,
     icon: "/icons/network/kovan.jpg",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/kovan`,
     subgraphUrl:
@@ -120,6 +125,7 @@ export const networks: Network[] = [
     slugName: "xdai",
     chainId: 100,
     isTestnet: false,
+    bufferTimeInMinutes: 240,
     icon: "/icons/network/gnosis.jpg",
     rpcUrl: "https://rpc-endpoints.superfluid.dev/xdai",
     subgraphUrl:
@@ -143,6 +149,7 @@ export const networks: Network[] = [
     slugName: "matic",
     chainId: 137,
     isTestnet: false,
+    bufferTimeInMinutes: 240,
     icon: "/icons/network/polygon.jpg",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/matic`,
     subgraphUrl:
@@ -166,6 +173,7 @@ export const networks: Network[] = [
     slugName: "mumbai",
     chainId: 80001,
     isTestnet: true,
+    bufferTimeInMinutes: 60,
     rpcUrl: `https://rpc-endpoints.superfluid.dev/mumbai`,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-mumbai",
@@ -188,6 +196,7 @@ export const networks: Network[] = [
     slugName: "arbitrum-rinkeby",
     chainId: 421611,
     isTestnet: true,
+    bufferTimeInMinutes: 60,
     icon: "/icons/network/rinkeby.jpg",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/arbitrum-rinkeby`,
     subgraphUrl:
@@ -211,6 +220,7 @@ export const networks: Network[] = [
     slugName: "optimism-kovan",
     chainId: 69,
     isTestnet: true,
+    bufferTimeInMinutes: 60,
     icon: "/icons/network/kovan.jpg",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/optimism-kovan`,
     subgraphUrl:
@@ -234,6 +244,7 @@ export const networks: Network[] = [
     slugName: "avalanche-fuji",
     chainId: 43113,
     isTestnet: true,
+    bufferTimeInMinutes: 60,
     icon: "/icons/network/avalanche.jpg",
     rpcUrl: "https://rpc-endpoints.superfluid.dev/avalanche-fuji",
     subgraphUrl:
@@ -257,6 +268,7 @@ export const networks: Network[] = [
     slugName: "optimism-mainnet",
     chainId: 10,
     isTestnet: false,
+    bufferTimeInMinutes: 240,
     rpcUrl: `https://rpc-endpoints.superfluid.dev/optimism-mainnet`,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-mainnet",
@@ -279,6 +291,7 @@ export const networks: Network[] = [
     slugName: "arbitrum-one",
     chainId: 42161,
     isTestnet: false,
+    bufferTimeInMinutes: 240,
     icon: "/icons/network/arbitrum.jpg",
     rpcUrl: "https://rpc-endpoints.superfluid.dev/arbitrum-one",
     subgraphUrl:

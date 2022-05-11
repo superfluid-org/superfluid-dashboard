@@ -1,9 +1,9 @@
 import {Card, Divider, IconButton, Stack, TextField, Tooltip, Typography,} from "@mui/material";
 import {BigNumber} from "ethers";
 import Link from "next/link";
-import {memo, useMemo, useState} from "react";
+import {memo, useCallback, useMemo, useState} from "react";
 import {useNetworkContext} from "../network/NetworkContext";
-import {getSuperTokenType, isSuper, isWrappable, SuperTokenMinimal,} from "../redux/endpoints/adHocSubgraphEndpoints";
+import {getSuperTokenType, isSuper, isWrappable, SuperTokenMinimal, TokenMinimal,} from "../redux/endpoints/adHocSubgraphEndpoints";
 import {rpcApi, subgraphApi} from "../redux/store";
 import {BalanceSuperToken} from "../tokenWrapping/BalanceSuperToken";
 import {TokenDialogChip} from "../tokenWrapping/TokenDialogChip";
@@ -13,7 +13,7 @@ import {useWalletContext} from "../wallet/WalletContext";
 import AddressSearch from "./AddressSearch";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import {DisplayAddress} from "./DisplayAddressChip";
-import {calculateTotalAmountWei, FlowRate, FlowRateInput} from "./FlowRateInput";
+import {calculateTotalAmountWei, FlowRateWithTime, FlowRateInput} from "./FlowRateInput";
 import {SendStreamPreview} from "./SendStreamPreview";
 
 export default memo(function SendCard() {
@@ -27,7 +27,7 @@ export default memo(function SendCard() {
     ? isWrappable(selectedToken)
     : false;
 
-  const [flowRate, setFlowRate] = useState<FlowRate | undefined>();
+  const [flowRate, setFlowRate] = useState<FlowRateWithTime | undefined>();
 
   const [flowCreateTrigger, flowCreateResult] = rpcApi.useFlowCreateMutation();
 
@@ -55,7 +55,7 @@ export default memo(function SendCard() {
     [listedTokensQuery.data]
   );
 
-  const restoration2: SendStreamRestoration | undefined = isSendDisabled
+  const restoration: SendStreamRestoration | undefined = isSendDisabled
     ? undefined
     : {
         type: RestorationType.SendStream,
@@ -64,6 +64,14 @@ export default memo(function SendCard() {
         receiver: receiver,
         flowRate: flowRate,
       };
+
+      const onTokenSelect = useCallback((token: TokenMinimal) => {
+        if (isSuper(token)) {
+          setSelectedToken(token);
+        } else {
+          throw new Error("Only super token selection is supported");
+        }
+      }, [setSelectedToken]);
 
   return (
     <Card
@@ -76,7 +84,10 @@ export default memo(function SendCard() {
         </Typography>
         <AddressSearch
           address={receiver}
-          onChange={(address) => setReceiver(address)}
+          onChange={(address) => {
+            console.log("foo")
+setReceiver(address)
+          }}
         />
         <Stack direction="row">
           <TokenDialogChip
@@ -89,17 +100,11 @@ export default memo(function SendCard() {
                 isUninitialized: listedTokensQuery.isUninitialized,
               },
             }}
-            onTokenSelect={(token) => {
-              if (isSuper(token)) {
-                setSelectedToken(token);
-              } else {
-                throw new Error("Only super token seleciton is supported");
-              }
-            }}
+            onTokenSelect={onTokenSelect}
           />
           <FlowRateInput
-            flowRate={flowRate}
-            onChange={(flowRate) => setFlowRate(flowRate)}
+            flowRateWithTime={flowRate}
+            onChange={setFlowRate}
           />
           <TextField label="Until" value={"∞"} disabled></TextField>
         </Stack>
@@ -124,14 +129,13 @@ export default memo(function SendCard() {
             )}
           </Stack>
         )}
-        {restoration2 && (
+        {restoration && (
           <>
             <Divider />
             <Typography variant="h6" component="h2">
               Preview
             </Typography>
-
-            <SendStreamPreview restoration={restoration2}></SendStreamPreview>
+            <SendStreamPreview receiver={restoration.receiver} token={restoration.token} flowRateWithTime={restoration.flowRate}></SendStreamPreview>
             <Divider />
           </>
         )}
@@ -169,9 +173,9 @@ export default memo(function SendCard() {
                 setFlowRate(undefined);
               });
 
-            setTransactionDialogContent(
-              <SendStreamPreview restoration={restoration} />
-            );
+            // setTransactionDialogContent(
+            //   <SendStreamPreview restoration={restoration} />
+            // );
           }}
         >
           Send

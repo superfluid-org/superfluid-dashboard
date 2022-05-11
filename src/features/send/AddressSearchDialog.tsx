@@ -84,6 +84,7 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
         }
       : skipToken
   );
+  
   const recentsData = recentsQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!ensQuery.data` means that the data is not undefined nor null.
   const showRecents =
     (walletAddress && recentsQuery.isSuccess && recentsQuery.data?.length) ||
