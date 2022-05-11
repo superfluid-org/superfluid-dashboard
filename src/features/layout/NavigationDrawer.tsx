@@ -63,7 +63,7 @@ export default memo(function NavigationDrawer() {
         <NextLink href={"/"} passHref>
           <ListItemButton sx={{ borderRadius: "10px" }}>
             <ListItemIcon>
-              <AutoAwesomeMosaicIcon></AutoAwesomeMosaicIcon>
+              <AutoAwesomeMosaicIcon />
             </ListItemIcon>
             <ListItemText
               primary="Dashboard"
@@ -75,7 +75,7 @@ export default memo(function NavigationDrawer() {
         <NextLink href={"/wrap?upgrade"} passHref>
           <ListItemButton sx={{ borderRadius: "10px" }}>
             <ListItemIcon>
-              <SwapVertIcon></SwapVertIcon>
+              <SwapVertIcon />
             </ListItemIcon>
             <ListItemText
               primary="Wrap / Unwrap"
@@ -84,12 +84,15 @@ export default memo(function NavigationDrawer() {
           </ListItemButton>
         </NextLink>
         <NextLink href={"/send"} passHref>
-          <ListItem button>
+          <ListItemButton sx={{ borderRadius: "10px" }}>
             <ListItemIcon>
               <ArrowRightAltIcon />
             </ListItemIcon>
-            <ListItemText primary="Send" />
-          </ListItem>
+            <ListItemText
+              primary="Send"
+              primaryTypographyProps={{ variant: "h6" }}
+            />
+          </ListItemButton>
         </NextLink>
       </Stack>
 

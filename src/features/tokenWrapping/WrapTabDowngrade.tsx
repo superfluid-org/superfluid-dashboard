@@ -16,7 +16,7 @@ import { useWalletContext } from "../wallet/WalletContext";
 import { BalanceSuperToken } from "./BalanceSuperToken";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { useSelectedTokenContext } from "./SelectedTokenPairContext";
-import { TokenDialogChip } from "./TokenDialogChip";
+import { TokenDialogButton } from "./TokenDialogButton";
 
 export const WrapTabDowngrade: FC<{
   restoration: SuperTokenDowngradeRestoration | undefined;
@@ -58,47 +58,47 @@ export const WrapTabDowngrade: FC<{
   });
 
   return (
-      <Stack direction="column" alignItems="center">
-          <Stack
-              variant="outlined"
-              component={Paper}
-              spacing={1}
-              sx={{ px: 2.5, py: 1.5 }}
-          >
-              <Stack direction="row" spacing={2}>
-                <Input
-                    fullWidth
-                    disableUnderline
-                    type="number"
-                    placeholder="0.0"
-                    inputRef={amountInputRef}
-                    disabled={!selectedTokenPair}
-                    value={amount}
-                    onChange={(e) => setAmount(e.currentTarget.value)}
-                    inputProps={{
-                        sx: {
-                            p: 0,
-                        },
-                    }}
-                />
+    <Stack direction="column" alignItems="center">
+      <Stack
+        variant="outlined"
+        component={Paper}
+        spacing={1}
+        sx={{ px: 2.5, py: 1.5 }}
+      >
+        <Stack direction="row" spacing={2}>
+          <Input
+            fullWidth
+            disableUnderline
+            type="number"
+            placeholder="0.0"
+            inputRef={amountInputRef}
+            disabled={!selectedTokenPair}
+            value={amount}
+            onChange={(e) => setAmount(e.currentTarget.value)}
+            inputProps={{
+              sx: {
+                p: 0,
+              },
+            }}
+          />
 
-                <TokenDialogChip
-                    token={selectedTokenPair?.superToken}
-                    tokenSelection={{
-                        tokenPairsQuery: {
-                            data: tokenPairsQuery.data?.map((x) => x.superToken),
-                            isUninitialized: tokenPairsQuery.isUninitialized,
-                            isLoading: tokenPairsQuery.isLoading,
-                        },
-                    }}
-                    onTokenSelect={(token) =>
-                        setSelectedTokenPair(
-                            tokenPairsQuery?.data?.find(
-                                (x) => x.superToken.address === token.address
-                            )
-                        )
-                    }
-                />
+          <TokenDialogButton
+            token={selectedTokenPair?.superToken}
+            tokenSelection={{
+              tokenPairsQuery: {
+                data: tokenPairsQuery.data?.map((x) => x.superToken),
+                isUninitialized: tokenPairsQuery.isUninitialized,
+                isLoading: tokenPairsQuery.isLoading,
+              },
+            }}
+            onTokenSelect={(token) =>
+              setSelectedTokenPair(
+                tokenPairsQuery?.data?.find(
+                  (x) => x.superToken.address === token.address
+                )
+              )
+            }
+          />
         </Stack>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="body2" color="text.secondary">

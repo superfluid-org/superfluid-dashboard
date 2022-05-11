@@ -1,20 +1,50 @@
-import {Card, Divider, IconButton, Stack, TextField, Tooltip, Typography,} from "@mui/material";
-import {BigNumber} from "ethers";
-import Link from "next/link";
-import {memo, useCallback, useMemo, useState} from "react";
-import {useNetworkContext} from "../network/NetworkContext";
-import {getSuperTokenType, isSuper, isWrappable, SuperTokenMinimal, TokenMinimal,} from "../redux/endpoints/adHocSubgraphEndpoints";
-import {rpcApi, subgraphApi} from "../redux/store";
-import {BalanceSuperToken} from "../tokenWrapping/BalanceSuperToken";
-import {TokenDialogChip} from "../tokenWrapping/TokenDialogChip";
-import {RestorationType, SendStreamRestoration,} from "../transactionRestoration/transactionRestorations";
-import {TransactionButton} from "../transactions/TransactionButton";
-import {useWalletContext} from "../wallet/WalletContext";
-import AddressSearch from "./AddressSearch";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
-import {DisplayAddress} from "./DisplayAddressChip";
-import {calculateTotalAmountWei, FlowRateWithTime, FlowRateInput} from "./FlowRateInput";
-import {SendStreamPreview} from "./SendStreamPreview";
+import InfoIcon from "@mui/icons-material/Info";
+import {
+  Box,
+  Card,
+  Divider,
+  Grid,
+  IconButton,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import { BigNumber } from "ethers";
+import Link from "next/link";
+import { FC, memo, useCallback, useMemo, useState } from "react";
+import { useNetworkContext } from "../network/NetworkContext";
+import {
+  getSuperTokenType,
+  isSuper,
+  isWrappable,
+  SuperTokenMinimal,
+  TokenMinimal,
+} from "../redux/endpoints/adHocSubgraphEndpoints";
+import { rpcApi, subgraphApi } from "../redux/store";
+import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
+import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
+import {
+  RestorationType,
+  SendStreamRestoration,
+} from "../transactionRestoration/transactionRestorations";
+import { TransactionButton } from "../transactions/TransactionButton";
+import { useWalletContext } from "../wallet/WalletContext";
+import AddressSearch from "./AddressSearch";
+import { DisplayAddress } from "./DisplayAddressChip";
+import {
+  calculateTotalAmountWei,
+  FlowRateInput,
+  FlowRateWithTime,
+} from "./FlowRateInput";
+import { SendStreamPreview } from "./SendStreamPreview";
+
+const FormLabel: FC = ({ children }) => (
+  <Typography variant="h6" sx={{ ml: 1.25, mb: 0.75 }}>
+    {children}
+  </Typography>
+);
 
 export default memo(function SendCard() {
   const { network } = useNetworkContext();
@@ -65,48 +95,100 @@ export default memo(function SendCard() {
         flowRate: flowRate,
       };
 
-      const onTokenSelect = useCallback((token: TokenMinimal) => {
-        if (isSuper(token)) {
-          setSelectedToken(token);
-        } else {
-          throw new Error("Only super token selection is supported");
-        }
-      }, [setSelectedToken]);
+  const onTokenSelect = useCallback(
+    (token: TokenMinimal) => {
+      if (isSuper(token)) {
+        setSelectedToken(token);
+      } else {
+        throw new Error("Only super token selection is supported");
+      }
+    },
+    [setSelectedToken]
+  );
 
   return (
     <Card
-      sx={{ position: "fixed", top: "25%", width: "480px", p: 5 }}
-      elevation={6}
+      sx={{
+        maxWidth: "600px",
+        borderRadius: "20px",
+        p: 4,
+      }}
+      elevation={1}
     >
-      <Stack spacing={3}>
-        <Typography variant="h5" component="h1">
+      <Stack spacing={4}>
+        <Typography variant="h4" component="h1">
           Send Stream
         </Typography>
-        <AddressSearch
-          address={receiver}
-          onChange={(address) => {
-            console.log("foo")
-setReceiver(address)
-          }}
-        />
-        <Stack direction="row">
-          <TokenDialogChip
-            token={selectedToken}
-            tokenSelection={{
-              showUpgrade: true,
-              tokenPairsQuery: {
-                data: tokens,
-                isLoading: listedTokensQuery.isLoading,
-                isUninitialized: listedTokensQuery.isUninitialized,
-              },
-            }}
-            onTokenSelect={onTokenSelect}
-          />
-          <FlowRateInput
-            flowRateWithTime={flowRate}
-            onChange={setFlowRate}
-          />
-          <TextField label="Until" value={"∞"} disabled></TextField>
+
+        <Stack spacing={2.5}>
+          <Box>
+            <FormLabel>Receiver Wallet Address</FormLabel>
+            <AddressSearch
+              address={receiver}
+              onChange={(address) => {
+                console.log("foo");
+                setReceiver(address);
+              }}
+            />
+          </Box>
+
+          <Box
+            sx={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 2.5 }}
+          >
+            <Stack justifyContent="stretch">
+              <FormLabel>Super Token</FormLabel>
+              <TokenDialogButton
+                token={selectedToken}
+                tokenSelection={{
+                  showUpgrade: true,
+                  tokenPairsQuery: {
+                    data: tokens,
+                    isLoading: listedTokensQuery.isLoading,
+                    isUninitialized: listedTokensQuery.isUninitialized,
+                  },
+                }}
+                onTokenSelect={onTokenSelect}
+              />
+            </Stack>
+
+            <Box>
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                sx={{ mr: 0.75 }}
+              >
+                <FormLabel>Flow Rate</FormLabel>
+                <InfoIcon fontSize="small" />
+              </Stack>
+
+              <FlowRateInput
+                flowRateWithTime={flowRate}
+                onChange={setFlowRate}
+              />
+            </Box>
+          </Box>
+
+          <Box
+            sx={{ display: "grid", gridTemplateColumns: "4fr 3fr", gap: 2.5 }}
+          >
+            <Box>
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                sx={{ mr: 0.75 }}
+              >
+                <FormLabel>Ends on</FormLabel>
+                <InfoIcon fontSize="small" />
+              </Stack>
+              <TextField value="∞" disabled fullWidth />
+            </Box>
+            <Box>
+              <FormLabel>Amount per second</FormLabel>
+              <TextField disabled value="~0.000342342" fullWidth />
+            </Box>
+          </Box>
         </Stack>
         {selectedToken && walletAddress && (
           <Stack direction="row">
@@ -115,6 +197,7 @@ setReceiver(address)
               accountAddress={walletAddress}
               tokenAddress={selectedToken.address}
             />
+
             {isWrappableSuperToken && (
               <Link
                 href={`/wrap?upgrade&token=${selectedToken.address}&network=${network.slugName}`}
@@ -122,23 +205,29 @@ setReceiver(address)
               >
                 <Tooltip title="Wrap">
                   <IconButton>
-                    <AddCircleOutline></AddCircleOutline>
+                    <AddCircleOutline />
                   </IconButton>
                 </Tooltip>
               </Link>
             )}
           </Stack>
         )}
+
         {restoration && (
           <>
             <Divider />
             <Typography variant="h6" component="h2">
               Preview
             </Typography>
-            <SendStreamPreview receiver={restoration.receiver} token={restoration.token} flowRateWithTime={restoration.flowRate}></SendStreamPreview>
+            <SendStreamPreview
+              receiver={restoration.receiver}
+              token={restoration.token}
+              flowRateWithTime={restoration.flowRate}
+            />
             <Divider />
           </>
         )}
+
         <TransactionButton
           hidden={false}
           disabled={isSendDisabled}
@@ -184,4 +273,3 @@ setReceiver(address)
     </Card>
   );
 });
-

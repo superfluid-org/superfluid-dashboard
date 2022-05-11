@@ -25,8 +25,8 @@ import { TransactionButton } from "../transactions/TransactionButton";
 import { BalanceSuperToken } from "./BalanceSuperToken";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { useSelectedTokenContext } from "./SelectedTokenPairContext";
-import { TokenDialogChip } from "./TokenDialogChip";
-import {NATIVE_ASSET_ADDRESS} from "../redux/endpoints/adHocSubgraphEndpoints";
+import { TokenDialogButton } from "./TokenDialogButton";
+import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/adHocSubgraphEndpoints";
 
 export const WrapTabUpgrade: FC<{
   restoration: SuperTokenUpgradeRestoration | undefined;
@@ -125,23 +125,23 @@ export const WrapTabUpgrade: FC<{
               },
             }}
           />
-            <TokenDialogChip
-                token={selectedTokenPair?.underlyingToken}
-                tokenSelection={{
-                    tokenPairsQuery: {
-                        data: tokenPairsQuery.data?.map((x) => x.underlyingToken),
-                        isUninitialized: tokenPairsQuery.isUninitialized,
-                        isLoading: tokenPairsQuery.isLoading,
-                    },
-                }}
-                onTokenSelect={(token) =>
-                    setSelectedTokenPair(
-                        tokenPairsQuery?.data?.find(
-                            (x) => x.underlyingToken.address === token.address
-                        )
-                    )
-                }
-            />
+          <TokenDialogButton
+            token={selectedTokenPair?.underlyingToken}
+            tokenSelection={{
+              tokenPairsQuery: {
+                data: tokenPairsQuery.data?.map((x) => x.underlyingToken),
+                isUninitialized: tokenPairsQuery.isUninitialized,
+                isLoading: tokenPairsQuery.isLoading,
+              },
+            }}
+            onTokenSelect={(token) =>
+              setSelectedTokenPair(
+                tokenPairsQuery?.data?.find(
+                  (x) => x.underlyingToken.address === token.address
+                )
+              )
+            }
+          />
         </Stack>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="body2" color="text.secondary">
@@ -300,10 +300,10 @@ export const WrapTabUpgrade: FC<{
                 restoration,
               },
             })
-            .unwrap()
-            .then(() => {
-              setAmount("");
-            });
+              .unwrap()
+              .then(() => {
+                setAmount("");
+              });
 
             setTransactionDialogContent(
               <UpgradePreview restoration={restoration} />
