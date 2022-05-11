@@ -1,7 +1,14 @@
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Avatar, Button, Input, Paper, Stack, Typography } from "@mui/material";
-import { useTheme } from "@mui/system";
+import {
+  Avatar,
+  Button,
+  Input,
+  Paper,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { BigNumber, ethers } from "ethers";
 import { FC, useEffect, useRef, useState } from "react";
@@ -109,6 +116,7 @@ export const WrapTabUpgrade: FC<{
             onChange={(e) => setAmount(e.currentTarget.value)}
             inputProps={{
               sx: {
+                ...theme.typography.largeInput,
                 p: 0,
               },
             }}
@@ -158,6 +166,7 @@ export const WrapTabUpgrade: FC<{
               value={amount}
               inputProps={{
                 sx: {
+                  ...theme.typography.largeInput,
                   p: 0,
                 },
               }}

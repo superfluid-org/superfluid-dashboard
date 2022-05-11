@@ -1,13 +1,53 @@
 import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { Avatar, Stack, TableCell, TableRow, Typography } from "@mui/material";
+import {
+  Avatar,
+  Skeleton,
+  Stack,
+  TableCell,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import { Address, Stream } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { FC, memo } from "react";
 import shortenAddress from "../../utils/shortenAddress";
 import EtherFormatted from "../token/EtherFormatted";
 import FlowingBalance from "../token/FlowingBalance";
+
+export const TokenStreamRowLoading = () => (
+  <TableRow>
+    <TableCell sx={{ pl: "72px" }}>
+      <Stack direction="row" alignItems="center" gap={1.5}>
+        <Skeleton variant="circular" width={24} height={24} />
+        <Skeleton
+          variant="circular"
+          width={36}
+          height={36}
+          sx={{ borderRadius: "10px" }}
+        />
+        <Typography variant="h6">
+          <Skeleton width={100} />
+        </Typography>
+      </Stack>
+    </TableCell>
+    <TableCell>
+      <Typography variant="body2mono">
+        <Skeleton width={150} />
+      </Typography>
+    </TableCell>
+    <TableCell>
+      <Typography variant="body2mono">
+        <Skeleton width={150} />
+      </Typography>
+    </TableCell>
+    <TableCell>
+      <Skeleton width={100} />
+    </TableCell>
+    <TableCell>Cancel</TableCell>
+  </TableRow>
+);
 
 interface TokenStreamRowProps {
   address: Address;

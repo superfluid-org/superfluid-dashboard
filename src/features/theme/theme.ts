@@ -322,10 +322,9 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       MuiInputBase: {
         styleOverrides: {
           input: {
-            ...theme.typography.largeInput,
             "&[type=number]::-webkit-outer-spin-button, &[type=number]::-webkit-inner-spin-button":
               {
-                "-webkit-appearance": "none",
+                WebkitAppearance: "none",
                 m: 0,
               },
             "&[type=number]": {
@@ -512,13 +511,14 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           disableRipple: true,
         },
       },
-      MuiTableBody: {
-        styleOverrides: {
-          root: {
-            "tr:last-of-type td": { border: 0 },
-          },
-        },
-      },
+      // TODO: Double check if this is still needed
+      // MuiTableBody: {
+      //   styleOverrides: {
+      //     root: {
+      //       // "tr:last-of-type > td": { border: 0 },
+      //     },
+      //   },
+      // },
       // TODO: If we get tables to fit better then change paddings back to 8px 32px
       MuiTableRow: {
         styleOverrides: {
