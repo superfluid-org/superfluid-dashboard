@@ -10,9 +10,7 @@ const Home: NextPage = () => {
   return (
     <Container maxWidth="lg">
       {walletAddress ? (
-        <TokenSnapshotTables
-          address={"0x3be39EA586E565683e0C57d1243Aa950Ba466c89".toLowerCase()}
-        />
+        <TokenSnapshotTables address={walletAddress} />
       ) : (
         <div>Wallet selection page</div>
       )}

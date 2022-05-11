@@ -1,6 +1,4 @@
 import { Avatar, styled, useTheme } from "@mui/material";
-import { Box } from "@mui/system";
-import { size } from "lodash";
 import { FC } from "react";
 import { assetApiSlice } from "./tokenManifestSlice";
 
