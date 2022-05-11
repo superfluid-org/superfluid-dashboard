@@ -18,8 +18,8 @@ export default memo(function WrapCard({
   downgradeRestoration?: SuperTokenDowngradeRestoration;
 }) {
   const router = useRouter();
-    const handleTabChange = (_e: unknown, newTab: "upgrade" | "downgrade") =>
-        newTab && router.replace("/wrap?" + newTab);
+  const handleTabChange = (_e: unknown, newTab: "upgrade" | "downgrade") =>
+    newTab && router.replace("/wrap?" + newTab);
 
   return (
     <Card

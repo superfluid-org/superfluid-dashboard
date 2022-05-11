@@ -1,7 +1,7 @@
 // TODO(KK): What's a better name?
 import { BigNumber, BigNumberish, ethers } from "ethers";
 import { FC, useEffect, useState } from "react";
-import { MenuItem, Select, TextField } from "@mui/material";
+import { Box, MenuItem, Select, Stack, TextField } from "@mui/material";
 
 /**
  * Enum numerical value is expressed in seconds.
@@ -69,22 +69,24 @@ export const FlowRateInput: FC<{
   );
 
   return (
-    <>
+    <Box sx={{ display: "grid", gridTemplateColumns: "6fr 4fr" }}>
       <TextField
         placeholder="0.0"
         value={amount}
         onChange={(e) => setAmount(e.currentTarget.value)}
-        sx={{ border: 0, width: "50%" }}
+        inputProps={{ sx: { borderRadius: "10px 0 0 10px" } }}
       />
       <Select
         value={unitOfTime}
-        label="Time multiplier"
         onChange={(e) => setUnitOfTime(Number(e.target.value))}
+        sx={{ minWidth: "100px" }}
       >
         {unitOfTimeList.map((unitOfTime) => (
-          <MenuItem key={`${unitOfTime}-second(s)`} value={unitOfTime}>{timeUnitWordMap[unitOfTime]}</MenuItem>
+          <MenuItem key={`${unitOfTime}-second(s)`} value={unitOfTime}>
+            {`/ ${timeUnitWordMap[unitOfTime]}`}
+          </MenuItem>
         ))}
       </Select>
-    </>
+    </Box>
   );
 };

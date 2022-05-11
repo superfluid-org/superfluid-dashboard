@@ -333,6 +333,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         },
       },
+      MuiOutlinedInput: {
+        styleOverrides: {
+          notchedOutline: {
+            borderColor: theme.palette.other.outline,
+          },
+        },
+      },
       MuiAppBar: {
         defaultProps: {
           color: "default",

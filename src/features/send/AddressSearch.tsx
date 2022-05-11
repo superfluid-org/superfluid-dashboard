@@ -1,9 +1,9 @@
 import { TextField } from "@mui/material";
 import { memo, useState } from "react";
 import { useStateWithDep } from "../../useStateWithDep";
-import DisplayAddressChip, {DisplayAddress} from "./DisplayAddressChip";
+import DisplayAddressChip, { DisplayAddress } from "./DisplayAddressChip";
 import AddressSearchDialog from "./AddressSearchDialog";
-
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 export default memo(function AddressSearch({
   onChange,
   ...props
@@ -11,15 +11,18 @@ export default memo(function AddressSearch({
   address: DisplayAddress | undefined;
   onChange: (address: DisplayAddress | undefined) => void; // TODO(KK): better name19
 }) {
-  const [address, setAddress] = useStateWithDep<DisplayAddress | undefined>(props.address);
+  const [address, setAddress] = useStateWithDep<DisplayAddress | undefined>(
+    props.address
+  );
   const [dialogOpen, setDialogOpen] = useState(false);
 
   return (
     <>
       <TextField
-        label="Receiver"
+        fullWidth
+        placeholder="Public Address or ENS"
         InputProps={{
-          startAdornment: address ? (
+          startAdornment: address && (
             <DisplayAddressChip
               hash={address.hash}
               name={address.name}
@@ -28,9 +31,9 @@ export default memo(function AddressSearch({
                 onDelete: () => setAddress(undefined),
               }}
             />
-          ) : null,
+          ),
+          endAdornment: <KeyboardArrowDownIcon />,
         }}
-        value={""}
         onClick={() => setDialogOpen(true)}
         onChange={() => setDialogOpen(true)}
       />
