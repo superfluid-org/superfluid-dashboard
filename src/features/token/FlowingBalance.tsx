@@ -5,6 +5,7 @@ import EtherFormatted from "./EtherFormatted";
 import { useStateWithDep } from "../../useStateWithDep";
 
 const ANIMATION_MINIMUM_STEP_TIME = 80;
+const ANIMATING_NR_COUNT = 5;
 
 export interface FlowingBalanceProps {
   balance: string;
@@ -23,6 +24,18 @@ export default memo(function FlowingBalance({
   etherDecimalPlaces,
 }: FlowingBalanceProps): ReactElement {
   const [weiValue, setWeiValue] = useStateWithDep<BigNumberish>(balance);
+
+  /*
+ * TODO: When using this variable then ~ sign in EtherFormatted should be disabled
+ * Calculating decimals based on the flow rate.
+ * This is configurable by ANIMATING_NR_COUNT and should shows
+ * roughly how many trailing numbers will animate each second.
+ */
+  // const decimals = useMemo(
+  //   () =>
+  //     Math.min(18 - flowRate.replace("-", "").length + ANIMATING_NR_COUNT, 18),
+  //   [flowRate]
+  // );
 
   const balanceTimestampMs = useMemo(
     () => ethers.BigNumber.from(balanceTimestamp).mul(1000),
@@ -46,7 +59,6 @@ export default memo(function FlowingBalance({
         currentAnimationTimestamp - lastAnimationTimestamp >
         ANIMATION_MINIMUM_STEP_TIME
       ) {
-
         const currentTimestampBigNumber = ethers.BigNumber.from(
           new Date().valueOf() // Milliseconds elapsed since UTC epoch, disregards timezone.
         );

@@ -19,16 +19,14 @@ export default memo(function WrapCard({
 }) {
   const router = useRouter();
     const handleTabChange = (_e: unknown, newTab: "upgrade" | "downgrade") =>
-        router.replace("/wrap?" + newTab);
+        newTab && router.replace("/wrap?" + newTab);
 
   return (
     <Card
       sx={{
-        position: "fixed",
-        top: "25%",
-        width: "500px",
-        p: 4,
+        maxWidth: "500px",
         borderRadius: "20px",
+        p: 4,
       }}
       elevation={1}
     >
@@ -40,9 +38,7 @@ export default memo(function WrapCard({
         onChange={handleTabChange}
         sx={{ mb: 4 }}
       >
-        <ToggleButton value="upgrade" size="large">
-          Wrap
-        </ToggleButton>
+        <ToggleButton value="upgrade">Wrap</ToggleButton>
         <ToggleButton value="downgrade">Unwrap</ToggleButton>
       </ToggleButtonGroup>
 

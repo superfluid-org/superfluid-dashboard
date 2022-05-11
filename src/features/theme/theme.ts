@@ -1,38 +1,34 @@
 import { Theme, ThemeOptions } from "@mui/material/styles";
+import { FONT_FACES } from "./fonts";
 
-const FONT_FACES = `
-@font-face {
-  font-family: 'Walsheim';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 400;
-  src: url(./fonts/GT-Walsheim-Pro-Regular.eot) format('eot'), url(./fonts/GT-Walsheim-Pro-Regular.otf) format('otf'), url(./fonts/GT-Walsheim-Pro-Regular.ttf) format('ttf'), url(./fonts/GT-Walsheim-Pro-Regular.woff) format('woff'), url(./fonts/GT-Walsheim-Pro-Regular.woff2) format('woff2');
+// TODO: Move to separate declaration file to make theme file cleaner?
+
+// TYPOGRAHY
+
+interface TypographyCustomVariants {
+  h5mono: React.CSSProperties;
+  h6mono: React.CSSProperties;
+  body1mono: React.CSSProperties;
+  body2mono: React.CSSProperties;
+  largeInput: React.CSSProperties;
 }
 
-@font-face {
-  font-family: 'Walsheim';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 500;
-  src: url(./fonts/GT-Walsheim-Pro-Medium.eot) format('eot'), url(./fonts/GT-Walsheim-Pro-Medium.otf) format('otf'), url(./fonts/GT-Walsheim-Pro-Medium.ttf) format('ttf'), url(./fonts/GT-Walsheim-Pro-Medium.woff) format('woff'), url(./fonts/GT-Walsheim-Pro-Medium.woff2) format('woff2');
+declare module "@mui/material/styles" {
+  interface TypographyVariants extends TypographyCustomVariants {}
+  interface TypographyVariantsOptions extends TypographyCustomVariants {}
 }
 
-@font-face {
-  font-family: 'Walsheim';
-  font-style: italic;
-  font-display: swap;
-  font-weight: 400;
-  src: url(./fonts/GT-Walsheim-Pro-Regular-Oblique.eot) format('eot'), url(./fonts/GT-Walsheim-Pro-Regular-Oblique.otf) format('otf'), url(./fonts/GT-Walsheim-Pro-Regular-Oblique.ttf) format('ttf'), url(./fonts/GT-Walsheim-Pro-Regular-Oblique.woff) format('woff'), url(./fonts/GT-Walsheim-Pro-Regular-Oblique.woff2) format('woff2');
+declare module "@mui/material/Typography" {
+  interface TypographyPropsVariantOverrides {
+    h5mono: true;
+    h6mono: true;
+    body1mono: true;
+    body2mono: true;
+    largeInput: true;
+  }
 }
 
-@font-face {
-  font-family: 'Walsheim';
-  font-style: italic;
-  font-display: swap;
-  font-weight: 500;
-  src: url(./fonts/GT-Walsheim-Pro-Medium-Oblique.eot) format('eot'), url(./fonts/GT-Walsheim-Pro-Medium-Oblique.otf) format('otf'), url(./fonts/GT-Walsheim-Pro-Medium-Oblique.ttf) format('ttf'), url(./fonts/GT-Walsheim-Pro-Medium-Oblique.woff) format('woff'), url(./fonts/GT-Walsheim-Pro-Medium-Oblique.woff2) format('woff2');
-}
-`;
+// COLOR PALETTE
 
 interface PaletteCustomColors {
   other: {
@@ -47,11 +43,16 @@ declare module "@mui/material/styles/createPalette" {
   interface PaletteOptions extends PaletteCustomColors {}
 }
 
+// BUTTONS
+
 declare module "@mui/material/Button" {
   interface ButtonPropsSizeOverrides {
     xl: true;
   }
 }
+
+const FONT_FAMILY = "'Walsheim', Arial";
+const FONT_FAMILY_MONO = "'Azeret Mono', monospace;";
 
 export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
   const getModeStyle = (lightStyle: string, darkStyle: string) =>
@@ -121,7 +122,7 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
       divider: getModeStyle("#0000001F", "#FFFFFF1F"),
     },
     typography: {
-      fontFamily: "Walsheim, Arial",
+      fontFamily: FONT_FAMILY,
       h1: {
         fontSize: "64px",
         letterSpacing: "-1.5px",
@@ -145,19 +146,40 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         fontSize: "18px",
         fontWeight: 500,
       },
+      h5mono: {
+        fontSize: "18px",
+        fontWeight: 500,
+        fontFamily: FONT_FAMILY_MONO,
+      },
       h6: {
         fontSize: "16px",
         fontWeight: 500,
         lineHeight: "150%",
         letterSpacing: "0.15px",
       },
+      h6mono: {
+        fontSize: "16px",
+        fontWeight: 500,
+        lineHeight: "150%",
+        fontFamily: FONT_FAMILY_MONO,
+      },
       body1: {
         fontWeight: 400,
         letterSpacing: 0.15,
       },
+      body1mono: {
+        fontWeight: 400,
+        whiteSpace: "pre",
+        fontFamily: FONT_FAMILY_MONO,
+      },
       body2: {
         fontWeight: 400,
         letterSpacing: 0.17,
+      },
+      body2mono: {
+        fontWeight: 400,
+        whiteSpace: "pre",
+        fontFamily: FONT_FAMILY_MONO,
       },
       subtitle1: {
         letterSpacing: "0.15px",
@@ -170,6 +192,13 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
       },
       overline: {
         letterSpacing: "1px",
+      },
+      largeInput: {
+        fontStyle: "normal",
+        fontWeight: 500,
+        fontSize: "30px",
+        lineHeight: "150%",
+        letterSpacing: "0.15px",
       },
     },
     shadows: [
@@ -290,6 +319,30 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         },
       },
+      MuiInputBase: {
+        styleOverrides: {
+          input: {
+            "&[type=number]::-webkit-outer-spin-button, &[type=number]::-webkit-inner-spin-button":
+              {
+                WebkitAppearance: "none",
+                m: 0,
+              },
+            "&[type=number]": {
+              "-moz-appearance": "textfield",
+            },
+          },
+        },
+      },
+      MuiAppBar: {
+        defaultProps: {
+          color: "default",
+        },
+        styleOverrides: {
+          colorDefault: {
+            backgroundColor: theme.palette.background.paper,
+          },
+        },
+      },
       MuiSnackbarContent: {
         styleOverrides: {
           root: {
@@ -300,6 +353,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       MuiButtonGroup: {
         defaultProps: {
           disableElevation: true,
+        },
+      },
+      MuiSvgIcon: {
+        styleOverrides: {
+          fontSizeLarge: {
+            fontSize: 48,
+          },
         },
       },
       MuiIconButton: {
@@ -350,6 +410,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         styleOverrides: {
           root: {
             textTransform: "inherit",
+            flexShrink: 0,
           },
           sizeMedium: {
             letterSpacing: "0.17px",
@@ -450,25 +511,40 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           disableRipple: true,
         },
       },
-      MuiTableBody: {
+      // TODO: Double check if this is still needed
+      // MuiTableBody: {
+      //   styleOverrides: {
+      //     root: {
+      //       // "tr:last-of-type > td": { border: 0 },
+      //     },
+      //   },
+      // },
+      // TODO: If we get tables to fit better then change paddings back to 8px 32px
+      MuiTableRow: {
         styleOverrides: {
           root: {
-            "tr:last-of-type td": { border: 0 },
+            "td:first-of-type, th:first-of-type": {
+              padding: "8px 24px 8px 32px",
+            },
+            "td:last-of-type, th:last-of-type": {
+              padding: "8px 32px 8px 24px",
+            },
           },
         },
       },
+      // TODO: If we get tables to fit better then change paddings back to 8px 32px
       MuiTableCell: {
         styleOverrides: {
           head: {
             ...theme.typography.body2,
             fontSize: "14px",
             color: theme.palette.text.secondary,
-            padding: "8px 32px",
+            padding: "8px 24px",
             minHeight: 0,
           },
           body: {
             ...theme.typography.body2,
-            padding: "12px 32px",
+            padding: "12px 24px",
           },
         },
       },

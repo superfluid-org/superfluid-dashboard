@@ -1,16 +1,19 @@
 import {
+  Box,
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import { FC, memo, useMemo } from "react";
+import { FC, memo, useMemo, useState } from "react";
 import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
-import TokenStreamRow from "./TokenStreamRow";
+import TokenStreamRow, { TokenStreamRowLoading } from "./TokenStreamRow";
 
 interface TokenStreamsTableProps {
   address: Address;
@@ -26,6 +29,9 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
   lastElement,
 }) => {
   const theme = useTheme();
+
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0);
 
   const incomingStreamsQuery = subgraphApi.useStreamsQuery({
     chainId: network.chainId,
@@ -68,34 +74,72 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
     [incomingStreamsQuery, outgoingStreamsQuery]
   );
 
+  const handleChangePage = (_e: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const isLoading =
+    data.length === 0 &&
+    (incomingStreamsQuery.isLoading || incomingStreamsQuery.isLoading);
+
   return (
-    <Table
-      size="small"
+    <Box
       sx={{
-        ...(lastElement
-          ? { borderTop: `1px solid ${theme.palette.divider}` }
-          : {
-              borderBottom: `1px solid ${theme.palette.divider}`,
-            }),
         background: theme.palette.action.hover,
         borderRadius: lastElement ? "0 0 20px 20px" : 0,
       }}
     >
-      <TableHead>
-        <TableRow>
-          <TableCell sx={{ pl: "72px" }}>To / From</TableCell>
-          <TableCell width="200px">Start / End Date</TableCell>
-          <TableCell width="260px">Monthly Flow</TableCell>
-          <TableCell width="260px">All Time Flow</TableCell>
-          <TableCell>Filter</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {data.map((stream) => (
-          <TokenStreamRow key={stream.id} address={address} stream={stream} />
-        ))}
-      </TableBody>
-    </Table>
+      <TableContainer>
+        <Table
+          size="small"
+          sx={{
+            ...(lastElement && {
+              borderTop: `1px solid ${theme.palette.divider}`,
+            }),
+          }}
+        >
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ pl: "72px" }} width="185">
+                To / From
+              </TableCell>
+              <TableCell>All Time Flow</TableCell>
+              <TableCell width="280">Monthly Flow</TableCell>
+              <TableCell width="200">Start / End Date</TableCell>
+              <TableCell width="110">Filter</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {isLoading && <TokenStreamRowLoading />}
+            {data
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((stream) => (
+                <TokenStreamRow
+                  key={stream.id}
+                  address={address}
+                  stream={stream}
+                />
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={data.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+    </Box>
   );
 };
 

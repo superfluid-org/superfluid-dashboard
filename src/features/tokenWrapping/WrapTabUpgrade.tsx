@@ -1,4 +1,5 @@
-import { FC, useEffect, useRef, useState } from "react";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   ApproveAllowanceRestoration,
   SuperTokenUpgradeRestoration,
@@ -6,29 +7,31 @@ import {
 } from "../transactionRestoration/transactionRestorations";
 import { useNetworkContext } from "../network/NetworkContext";
 import { useWalletContext } from "../wallet/WalletContext";
-import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { BigNumber, ethers } from "ethers";
 import { rpcApi, subgraphApi } from "../redux/store";
-import { skipToken } from "@reduxjs/toolkit/query";
 import {
+  Avatar,
   Button,
-  Chip,
+  Input,
   Paper,
   Stack,
-  TextField,
   Typography,
+  useTheme,
 } from "@mui/material";
-import { TokenDialogChip } from "./TokenDialogChip";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { FC, useEffect, useRef, useState } from "react";
 import TokenIcon from "../token/TokenIcon";
 import { TransactionButton } from "../transactions/TransactionButton";
-import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { BalanceSuperToken } from "./BalanceSuperToken";
+import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { useSelectedTokenContext } from "./SelectedTokenPairContext";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { TokenDialogChip } from "./TokenDialogChip";
+import {NATIVE_ASSET_ADDRESS} from "../redux/endpoints/adHocSubgraphEndpoints";
 
 export const WrapTabUpgrade: FC<{
   restoration: SuperTokenUpgradeRestoration | undefined;
 }> = ({ restoration }) => {
+  const theme = useTheme();
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
   const { selectedTokenPair, setSelectedTokenPair } = useSelectedTokenContext();
@@ -47,6 +50,7 @@ export const WrapTabUpgrade: FC<{
       setSelectedTokenPair(restoration.tokenUpgrade);
       setAmount(ethers.utils.formatEther(restoration.amountWei));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [restoration]);
 
   const isUnderlyingBlockchainNativeAsset =
@@ -97,42 +101,27 @@ export const WrapTabUpgrade: FC<{
   });
 
   return (
-    <Stack direction="column" spacing={2}>
+    <Stack direction="column" alignItems="center">
       <Stack
         variant="outlined"
         component={Paper}
         spacing={1}
         sx={{ px: 2.5, py: 1.5 }}
       >
-        <Stack direction="row" justifyContent="space-between" spacing={2}>
-          <TextField
+        <Stack direction="row" spacing={2}>
+          <Input
+            fullWidth
+            disableUnderline
             disabled={!selectedTokenPair}
             placeholder="0.0"
             inputRef={amountInputRef}
             value={amount}
             type="number"
             onChange={(e) => setAmount(e.currentTarget.value)}
-            sx={{
-              width: "50%",
-              fieldset: {
-                display: "none",
-              },
-            }}
             inputProps={{
               sx: {
-                fontStyle: "normal",
-                fontWeight: 500,
-                fontSize: "30px",
-                lineHeight: "150%",
-                letterSpacing: "0.15px",
+                ...theme.typography.largeInput,
                 p: 0,
-                "&::-webkit-outer-spin-button, &::-webkit-inner-spin-button": {
-                  "-webkit-appearance": "none",
-                  m: 0,
-                },
-                "&[type=number]": {
-                  "-moz-appearance": "textfield",
-                },
               },
             }}
           />
@@ -168,40 +157,37 @@ export const WrapTabUpgrade: FC<{
         </Stack>
       </Stack>
 
-      <Stack sx={{ ...(!selectedTokenPair ? { display: "none" } : {}) }}>
+      <Avatar
+        component={Paper}
+        elevation={1}
+        sx={{
+          width: 30,
+          height: 30,
+          background: theme.palette.background.paper,
+          my: -1,
+        }}
+      >
+        <ArrowDownwardIcon color="primary" fontSize="small" />
+      </Avatar>
+
+      {selectedTokenPair && (
         <Stack
           component={Paper}
           variant="outlined"
           spacing={1}
           sx={{ px: 2.5, py: 1.5 }}
         >
-          <Stack direction="row" justifyContent="space-between">
-            <TextField
+          <Stack direction="row" spacing={2}>
+            <Input
               disabled
+              fullWidth
+              disableUnderline
               placeholder="0.0"
               value={amount}
-              sx={{
-                width: "50%",
-                fieldset: {
-                  display: "none",
-                },
-              }}
               inputProps={{
                 sx: {
-                  fontStyle: "normal",
-                  fontWeight: 500,
-                  fontSize: "30px",
-                  lineHeight: "150%",
-                  letterSpacing: "0.15px",
+                  ...theme.typography.largeInput,
                   p: 0,
-                  "&::-webkit-outer-spin-button, &::-webkit-inner-spin-button":
-                    {
-                      "-webkit-appearance": "none",
-                      m: 0,
-                    },
-                  "&[type=number]": {
-                    "-moz-appearance": "textfield",
-                  },
                 },
               }}
             />
@@ -209,18 +195,17 @@ export const WrapTabUpgrade: FC<{
               variant="outlined"
               color="secondary"
               startIcon={
-                selectedTokenPair && (
-                  <TokenIcon
-                    tokenSymbol={selectedTokenPair.superToken.symbol}
-                    size={24}
-                  />
-                )
+                <TokenIcon
+                  tokenSymbol={selectedTokenPair.superToken.symbol}
+                  size={24}
+                />
               }
               endIcon={<ExpandMoreIcon />}
             >
-              {selectedTokenPair?.superToken.symbol ?? ""}
+              {selectedTokenPair.superToken.symbol ?? ""}
             </Button>
           </Stack>
+
           <Stack direction="row" justifyContent="space-between">
             <Typography variant="body2" color="text.secondary">
               ${Number(amount || 0).toFixed(2)}
@@ -230,94 +215,104 @@ export const WrapTabUpgrade: FC<{
                 chainId={network.chainId}
                 accountAddress={walletAddress}
                 tokenAddress={selectedTokenPair.superToken.address}
+                typographyProps={{ color: "text.secondary" }}
               />
             )}
           </Stack>
         </Stack>
-      </Stack>
+      )}
 
-      {missingAllowance?.gt(0) && (
-        <Typography>
-          Missing allowance:{" "}
-          {ethers.utils.formatEther(missingAllowance.toString())}
+      {selectedTokenPair && (
+        <Typography align="center" sx={{ my: 3 }}>
+          {`1 ${selectedTokenPair.underlyingToken.symbol} = 1 ${selectedTokenPair.superToken.symbol}`}
         </Typography>
       )}
 
-      <TransactionButton
-        mutationResult={approveResult}
-        hidden={!isApproveAllowanceVisible}
-        disabled={false}
-        onClick={(setTransactionDialogContent) => {
-          if (!isApproveAllowanceVisible) {
-            throw Error("This should never happen.");
-          }
+      {missingAllowance?.gt(0) && (
+        <Typography>
+          {`Missing allowance: ${ethers.utils.formatEther(
+            missingAllowance.toString()
+          )}`}
+        </Typography>
+      )}
 
-          const approveAllowanceAmountWei =
-            currentAllowance.add(missingAllowance);
+      <Stack gap={2} direction="column" sx={{ width: "100%" }}>
+        <TransactionButton
+          mutationResult={approveResult}
+          hidden={!isApproveAllowanceVisible}
+          disabled={false}
+          onClick={(setTransactionDialogContent) => {
+            if (!isApproveAllowanceVisible) {
+              throw Error("This should never happen.");
+            }
 
-          const restoration: ApproveAllowanceRestoration = {
-            type: RestorationType.Approve,
-            chainId: network.chainId,
-            amountWei: approveAllowanceAmountWei.toString(),
-            token: selectedTokenPair.underlyingToken,
-          };
+            const approveAllowanceAmountWei =
+              currentAllowance.add(missingAllowance);
 
-          setTransactionDialogContent(
-            <AllowancePreview restoration={restoration} />
-          );
+            const restoration: ApproveAllowanceRestoration = {
+              type: RestorationType.Approve,
+              chainId: network.chainId,
+              amountWei: approveAllowanceAmountWei.toString(),
+              token: selectedTokenPair.underlyingToken,
+            };
 
-          approveTrigger({
-            chainId: network.chainId,
-            amountWei: approveAllowanceAmountWei.toString(),
-            superTokenAddress: selectedTokenPair.superToken.address,
-            transactionExtraData: {
-              restoration,
-            },
-          });
-        }}
-      >
-        Approve Allowance
-      </TransactionButton>
-
-      <TransactionButton
-        hidden={false}
-        disabled={isUpgradeDisabled}
-        mutationResult={upgradeResult}
-        onClick={(setTransactionDialogContent) => {
-          if (isUpgradeDisabled) {
-            throw Error(
-              "This should never happen because the token and amount must be selected for the button to be active."
+            setTransactionDialogContent(
+              <AllowancePreview restoration={restoration} />
             );
-          }
 
-          const restoration: SuperTokenUpgradeRestoration = {
-            type: RestorationType.Upgrade,
-            chainId: network.chainId,
-            tokenUpgrade: selectedTokenPair,
-            amountWei: amountWei.toString(),
-          };
+            approveTrigger({
+              chainId: network.chainId,
+              amountWei: approveAllowanceAmountWei.toString(),
+              superTokenAddress: selectedTokenPair.superToken.address,
+              transactionExtraData: {
+                restoration,
+              },
+            });
+          }}
+        >
+          Approve Allowance
+        </TransactionButton>
 
-          upgradeTrigger({
-            chainId: network.chainId,
-            amountWei: amountWei.toString(),
-            superTokenAddress: selectedTokenPair.superToken.address,
-            waitForConfirmation: true,
-            transactionExtraData: {
-              restoration,
-            },
-          })
+        <TransactionButton
+          hidden={false}
+          disabled={isUpgradeDisabled}
+          mutationResult={upgradeResult}
+          onClick={(setTransactionDialogContent) => {
+            if (isUpgradeDisabled) {
+              throw Error(
+                "This should never happen because the token and amount must be selected for the button to be active."
+              );
+            }
+
+            const restoration: SuperTokenUpgradeRestoration = {
+              type: RestorationType.Upgrade,
+              chainId: network.chainId,
+              tokenUpgrade: selectedTokenPair,
+              amountWei: amountWei.toString(),
+            };
+
+            upgradeTrigger({
+              chainId: network.chainId,
+              amountWei: amountWei.toString(),
+              superTokenAddress: selectedTokenPair.superToken.address,
+              waitForConfirmation: true,
+              transactionExtraData: {
+                restoration,
+              },
+            })
             .unwrap()
             .then(() => {
               setAmount("");
             });
 
-          setTransactionDialogContent(
-            <UpgradePreview restoration={restoration} />
-          );
-        }}
-      >
-        Upgrade to Super Token
-      </TransactionButton>
+            setTransactionDialogContent(
+              <UpgradePreview restoration={restoration} />
+            );
+          }}
+        >
+          Upgrade to Super Token
+        </TransactionButton>
+      </Stack>
     </Stack>
   );
 };
@@ -326,7 +321,7 @@ const UpgradePreview: FC<{
   restoration: SuperTokenUpgradeRestoration;
 }> = ({ restoration: { amountWei, tokenUpgrade } }) => {
   return (
-    <Typography variant="body2">
+    <Typography variant="h5" color="text.secondary">
       You are upgrading from {ethers.utils.formatEther(amountWei)}{" "}
       {tokenUpgrade.underlyingToken.symbol} to the super token{" "}
       {tokenUpgrade.superToken.symbol}.
@@ -338,7 +333,7 @@ const AllowancePreview: FC<{
   restoration: ApproveAllowanceRestoration;
 }> = ({ restoration: { amountWei, token } }) => {
   return (
-    <Typography variant="body2">
+    <Typography variant="h5" color="text.secondary">
       You are approving extra allowance of {ethers.utils.formatEther(amountWei)}{" "}
       {token.symbol} for Superfluid Protocol to use.
     </Typography>

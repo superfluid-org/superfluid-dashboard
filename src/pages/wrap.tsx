@@ -69,7 +69,7 @@ const Wrap: NextPage = () => {
               tabValue={tabValue}
               upgradeRestoration={upgradeRestoration}
               downgradeRestoration={downgradeRestoration}
-            ></WrapCard>
+            />
           )}
         </SelectedTokenContextProvider>
       </Box>

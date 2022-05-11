@@ -9,6 +9,7 @@ import {
   TableCell,
   TableRow,
   Typography,
+  styled,
 } from "@mui/material";
 import { AccountTokenSnapshot, Address } from "@superfluid-finance/sdk-core";
 import { FC, memo, useState } from "react";
@@ -17,6 +18,20 @@ import EtherFormatted from "../token/EtherFormatted";
 import FlowingBalance from "../token/FlowingBalance";
 import TokenIcon from "../token/TokenIcon";
 import TokenStreamsTable from "./TokenStreamsTable";
+
+interface OpenIconProps {
+  open: boolean;
+}
+
+const OpenIcon = styled(ExpandCircleDownOutlinedIcon)<OpenIconProps>(
+  ({ theme, open }) => ({
+    transform: `rotate(${open ? 180 : 0}deg)`,
+    transition: theme.transitions.create("transform", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+  })
+);
 
 interface TokenSnapshotRowProps {
   address: Address;
@@ -33,8 +48,6 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
 }) => {
   const [open, setOpen] = useState(false);
 
-  const toggleOpen = () => setOpen(!open);
-
   const {
     tokenSymbol,
     balanceUntilUpdatedAt,
@@ -46,16 +59,23 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
     totalNumberOfClosedStreams,
   } = snapshot;
 
+  const hasStreams =
+    totalNumberOfActiveStreams + totalNumberOfClosedStreams > 0;
+
+  const toggleOpen = () => hasStreams && setOpen(!open);
+
   return (
     <>
       <TableRow
         hover
+        onClick={toggleOpen}
         sx={{
+          cursor: hasStreams ? "pointer" : "initial",
           ...(lastElement && {
             td: {
               border: "none",
-              ":first-child": { borderRadius: "0 0 0 20px" },
-              ":last-child": { borderRadius: "0 0 20px" },
+              ":first-of-type": { borderRadius: "0 0 0 20px" },
+              ":last-of-type": { borderRadius: "0 0 20px" },
             },
           }),
         }}
@@ -66,15 +86,18 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               <TokenIcon tokenSymbol={tokenSymbol} />
             </ListItemAvatar>
             <ListItemText
-              primaryTypographyProps={{ variant: "h6" }}
               primary={tokenSymbol}
               secondary="$1.00"
+              primaryTypographyProps={{ variant: "h6" }}
+              secondaryTypographyProps={{
+                variant: "body2mono",
+                color: "text.secondary",
+              }}
             />
           </ListItem>
         </TableCell>
         <TableCell>
           <ListItemText
-            primaryTypographyProps={{ variant: "h6" }}
             primary={
               <FlowingBalance
                 balance={balanceUntilUpdatedAt}
@@ -83,14 +106,19 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               />
             }
             secondary="$1.00"
+            primaryTypographyProps={{ variant: "h6mono" }}
+            secondaryTypographyProps={{
+              variant: "body2mono",
+              color: "text.secondary",
+            }}
           />
         </TableCell>
         <TableCell>
           {totalNumberOfActiveStreams > 0 ? (
-            <>
+            <Typography variant="body2mono">
               <EtherFormatted wei={totalNetFlowRate} />
               /mo
-            </>
+            </Typography>
           ) : (
             "-"
           )}
@@ -98,11 +126,11 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         <TableCell>
           {totalNumberOfActiveStreams > 0 ? (
             <Stack>
-              <Typography variant="body2" color="primary">
+              <Typography variant="body2mono" color="primary">
                 + <EtherFormatted wei={totalInflowRate} />
                 /mo
               </Typography>
-              <Typography variant="body2" color="error">
+              <Typography variant="body2mono" color="error">
                 - <EtherFormatted wei={totalOutflowRate} />
                 /mo
               </Typography>
@@ -112,16 +140,20 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           )}
         </TableCell>
         <TableCell>
-          {/* TODO: change for iconbutton and add top/bottom negative margin not to push the column too high */}
-          {totalNumberOfActiveStreams + totalNumberOfClosedStreams > 0 && (
+          {hasStreams && (
             <IconButton onClick={toggleOpen}>
-              <ExpandCircleDownOutlinedIcon />
+              <OpenIcon open={open} />
             </IconButton>
           )}
         </TableCell>
       </TableRow>
-      <TableRow>
-        <TableCell colSpan={5} sx={{ padding: 0, border: "none" }}>
+      <TableRow sx={{ "td:first-of-type": { padding: 0 } }}>
+        <TableCell
+          colSpan={5}
+          sx={{
+            border: "none",
+          }}
+        >
           <Collapse in={open} timeout="auto" unmountOnExit>
             <TokenStreamsTable
               address={address}
