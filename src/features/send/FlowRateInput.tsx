@@ -75,11 +75,24 @@ export const FlowRateInput: FC<{
         value={amount}
         onChange={(e) => setAmount(e.currentTarget.value)}
         inputProps={{ sx: { borderRadius: "10px 0 0 10px" } }}
+        sx={{
+          ":hover, .Mui-focused": {
+            zIndex: 1, // This helps to bring active right side border on top of select's border.
+          },
+          ".MuiOutlinedInput-notchedOutline": {
+            borderRadius: "10px 0 0 10px",
+          },
+        }}
       />
       <Select
         value={unitOfTime}
         onChange={(e) => setUnitOfTime(Number(e.target.value))}
-        sx={{ minWidth: "100px" }}
+        sx={{
+          marginLeft: "-1px",
+          ".MuiOutlinedInput-notchedOutline": {
+            borderRadius: "0 10px 10px 0",
+          },
+        }}
       >
         {unitOfTimeList.map((unitOfTime) => (
           <MenuItem key={`${unitOfTime}-second(s)`} value={unitOfTime}>
