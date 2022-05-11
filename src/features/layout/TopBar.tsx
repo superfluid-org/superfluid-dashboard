@@ -49,8 +49,6 @@ export default memo(function TopBar() {
   const scrollTop = useScrollPosition();
   const { transactionDrawerOpen } = useTransactionDrawerContext();
 
-  console.log(scrollTop > 0);
-
   return (
     <CustomAppBar
       open={transactionDrawerOpen}

@@ -147,8 +147,13 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           )}
         </TableCell>
       </TableRow>
-      <TableRow>
-        <TableCell colSpan={5} sx={{ padding: "0 !important", border: "none" }}>
+      <TableRow sx={{ "td:first-of-type": { padding: 0 } }}>
+        <TableCell
+          colSpan={5}
+          sx={{
+            border: "none",
+          }}
+        >
           <Collapse in={open} timeout="auto" unmountOnExit>
             <TokenStreamsTable
               address={address}
