@@ -24,12 +24,14 @@ import { BalanceSuperToken } from "./BalanceSuperToken";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { useSelectedTokenContext } from "./SelectedTokenPairContext";
 import { TokenDialogButton } from "./TokenDialogButton";
+import { useRouter } from "next/router";
 
 export const WrapTabDowngrade: FC<{
   restoration: SuperTokenDowngradeRestoration | undefined;
 }> = ({ restoration }) => {
   const theme = useTheme();
   const { network } = useNetworkContext();
+  const router = useRouter();
   const { walletAddress } = useWalletContext();
   const { selectedTokenPair, setSelectedTokenPair } = useSelectedTokenContext();
 

@@ -16,6 +16,7 @@ import {
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { BigNumber, ethers } from "ethers";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { FC, memo, useCallback, useMemo, useState } from "react";
 import { useNetworkContext } from "../network/NetworkContext";
 import {
@@ -40,6 +41,7 @@ import {
   calculateTotalAmountWei,
   FlowRateInput,
   FlowRateWithTime,
+  UnitOfTime,
 } from "./FlowRateInput";
 import { SendStreamPreview } from "./SendStreamPreview";
 
@@ -49,12 +51,18 @@ const FormLabel: FC = ({ children }) => (
   </Typography>
 );
 
+const createDefaultFlowRate = () => ({
+  amountWei: "0",
+  unitOfTime: UnitOfTime.Hour,
+});
+
 export default memo(function SendCard(props: {
   restoration: SendStreamRestoration | undefined;
 }) {
   const theme = useTheme();
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
+  const router = useRouter();
 
   const [receiver, setReceiver] = useState<DisplayAddress | undefined>(
     props.restoration?.receiver
@@ -62,8 +70,8 @@ export default memo(function SendCard(props: {
   const [selectedToken, setSelectedToken] = useState<
     SuperTokenMinimal | undefined
   >(props.restoration?.token);
-  const [flowRate, setFlowRate] = useState<FlowRateWithTime | undefined>(
-    props.restoration?.flowRate
+  const [flowRate, setFlowRate] = useState<FlowRateWithTime>(
+    props.restoration?.flowRate ?? createDefaultFlowRate()
   );
 
   const amountPerSecond = useMemo(
@@ -94,12 +102,6 @@ export default memo(function SendCard(props: {
 
   const [flowCreateTrigger, flowCreateResult] = rpcApi.useFlowCreateMutation();
 
-  const isSendDisabled =
-    !receiver ||
-    !selectedToken ||
-    !flowRate ||
-    BigNumber.from(flowRate.amountWei).isZero();
-
   const superTokensQuery = subgraphApi.useTokensQuery({
     chainId: network.chainId,
     filter: {
@@ -118,17 +120,6 @@ export default memo(function SendCard(props: {
     [superTokensQuery.data]
   );
 
-  const sendStreamRestoration: SendStreamRestoration | undefined =
-    isSendDisabled
-      ? undefined
-      : {
-          type: RestorationType.SendStream,
-          chainId: network.chainId,
-          token: selectedToken,
-          receiver: receiver,
-          flowRate: flowRate,
-        };
-
   const shouldSearchForExistingStreams =
     !!walletAddress && !!receiver && !!selectedToken && !!flowRate;
   const existingStreams = subgraphApi.useStreamsQuery(
@@ -138,6 +129,7 @@ export default memo(function SendCard(props: {
           filter: {
             sender: walletAddress,
             receiver: receiver.hash,
+            token: selectedToken.address,
             currentFlowRate_not: "0",
           },
           pagination: {
@@ -148,6 +140,25 @@ export default memo(function SendCard(props: {
       : skipToken
   );
   const existingStream = existingStreams.data?.items?.[0];
+
+  const hasAllDataForStream =
+    receiver &&
+    selectedToken &&
+    flowRate &&
+    !BigNumber.from(flowRate.amountWei).isZero();
+
+  const isSendDisabled = !!existingStream || !hasAllDataForStream;
+
+  const sendStreamRestoration: SendStreamRestoration | undefined =
+    hasAllDataForStream
+      ? {
+          type: RestorationType.SendStream,
+          chainId: network.chainId,
+          token: selectedToken,
+          receiver: receiver,
+          flowRate: flowRate,
+        }
+      : undefined;
 
   return (
     <Card
@@ -278,17 +289,18 @@ export default memo(function SendCard(props: {
                 </Typography>
 
                 {/** TODO(KK): Create separate preview? */}
-                {!!existingStream && (
+                {existingStream ? (
                   <Typography variant="body2">
-                    You already have a stream...
+                    You already have a stream... Updating a stream is currently
+                    not supported.
                   </Typography>
+                ) : (
+                  <SendStreamPreview
+                    receiver={sendStreamRestoration.receiver}
+                    token={sendStreamRestoration.token}
+                    flowRateWithTime={sendStreamRestoration.flowRate}
+                  />
                 )}
-
-                <SendStreamPreview
-                  receiver={sendStreamRestoration.receiver}
-                  token={sendStreamRestoration.token}
-                  flowRateWithTime={sendStreamRestoration.flowRate}
-                />
               </Paper>
             </>
           )}
@@ -302,14 +314,6 @@ export default memo(function SendCard(props: {
                 throw Error("This should never happen.");
               }
 
-              const restoration: SendStreamRestoration = {
-                type: RestorationType.SendStream,
-                chainId: network.chainId,
-                token: selectedToken,
-                receiver: receiver,
-                flowRate: flowRate,
-              };
-
               flowCreateTrigger({
                 chainId: network.chainId,
                 flowRateWei: calculateTotalAmountWei(flowRate).toString(),
@@ -322,10 +326,7 @@ export default memo(function SendCard(props: {
                 },
               })
                 .unwrap()
-                .then(() => {
-                  setReceiver(undefined);
-                  setFlowRate(undefined);
-                });
+                .then(() => router.push("/"));
 
               // setTransactionDialogContent(
               //   <SendStreamPreview restoration={restoration} />

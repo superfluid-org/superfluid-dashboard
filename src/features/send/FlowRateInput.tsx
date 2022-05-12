@@ -1,7 +1,7 @@
 // TODO(KK): What's a better name?
-import { BigNumber, BigNumberish, ethers } from "ethers";
-import { FC, useEffect, useState } from "react";
-import { Box, MenuItem, Select, Stack, TextField } from "@mui/material";
+import { BigNumber, ethers } from "ethers";
+import { FC, useCallback, useEffect, useState } from "react";
+import { Box, MenuItem, Select, TextField } from "@mui/material";
 
 /**
  * Enum numerical value is expressed in seconds.
@@ -42,41 +42,47 @@ export const calculateTotalAmountWei = ({
 }: FlowRateWithTime) => BigNumber.from(amountWei).div(unitOfTime);
 
 export const FlowRateInput: FC<{
-  flowRateWithTime: FlowRateWithTime | undefined;
+  flowRateWithTime: FlowRateWithTime;
   onChange: (flowRate: FlowRateWithTime) => void;
-}> = ({ flowRateWithTime: flowRate, onChange }) => {
+}> = ({ flowRateWithTime, onChange }) => {
   const [amount, setAmount] = useState<string>(
-    flowRate ? ethers.utils.formatEther(flowRate.amountWei) : ""
+    !ethers.BigNumber.from(flowRateWithTime.amountWei).isZero()
+      ? ethers.utils.formatEther(flowRateWithTime.amountWei)
+      : ""
   );
 
-  const [amountWei, setAmountWei] = useState<BigNumber>(
-    ethers.BigNumber.from(flowRate?.amountWei ?? 0)
-  );
-
-  const [unitOfTime, setUnitOfTime] = useState<UnitOfTime>(
-    flowRate?.unitOfTime ?? UnitOfTime.Hour
-  );
-
-  useEffect(
-    () => setAmountWei(ethers.utils.parseEther(Number(amount) ? amount : "0")),
-    [amount]
-  );
-
-  useEffect(
-    () =>
+  const onAmountChange = useCallback(
+    () => (e: React.ChangeEvent<HTMLInputElement>) => {
+      setAmount(e.currentTarget.value);
+      const amountWei = ethers.utils.parseEther(
+        Number(e.currentTarget.value)
+          ? Number(e.currentTarget.value).toString()
+          : "0"
+      );
       onChange({
+        ...flowRateWithTime,
         amountWei: amountWei.toString(),
-        unitOfTime: unitOfTime,
-      }),
-    [onChange, amountWei, unitOfTime] // Don't put "onChange" here.
+      });
+    },
+    []
   );
-      
+
+  const onUnitOfTimeChange = useCallback(
+    () => (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange({
+        ...flowRateWithTime,
+        unitOfTime: Number(e.target.value),
+      });
+    },
+    []
+  );
+
   return (
     <Box sx={{ display: "grid", gridTemplateColumns: "6fr 4fr" }}>
       <TextField
         placeholder="0.0"
         value={amount}
-        onChange={(e) => setAmount(e.currentTarget.value)}
+        onChange={onAmountChange}
         inputProps={{ sx: { borderRadius: "10px 0 0 10px" } }}
         sx={{
           ":hover, .Mui-focused": {
@@ -88,8 +94,8 @@ export const FlowRateInput: FC<{
         }}
       />
       <Select
-        value={unitOfTime}
-        onChange={(e) => setUnitOfTime(Number(e.target.value))}
+        value={flowRateWithTime.unitOfTime}
+        onChange={onUnitOfTimeChange}
         sx={{
           marginLeft: "-1px",
           ".MuiOutlinedInput-notchedOutline": {

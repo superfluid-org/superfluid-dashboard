@@ -27,12 +27,14 @@ import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { useSelectedTokenContext } from "./SelectedTokenPairContext";
 import { TokenDialogButton } from "./TokenDialogButton";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/adHocSubgraphEndpoints";
+import { useRouter } from "next/router";
 
 export const WrapTabUpgrade: FC<{
   restoration: SuperTokenUpgradeRestoration | undefined;
 }> = ({ restoration }) => {
   const theme = useTheme();
   const { network } = useNetworkContext();
+  const router = useRouter();
   const { walletAddress } = useWalletContext();
   const { selectedTokenPair, setSelectedTokenPair } = useSelectedTokenContext();
 
@@ -301,9 +303,7 @@ export const WrapTabUpgrade: FC<{
               },
             })
               .unwrap()
-              .then(() => {
-                setAmount("");
-              });
+              .then(() => router.push("/"));
 
             setTransactionDialogContent(
               <UpgradePreview restoration={restoration} />
