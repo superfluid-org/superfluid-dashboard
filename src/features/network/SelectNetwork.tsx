@@ -77,6 +77,7 @@ export default memo(function SelectNetwork() {
         }
         endIcon={<KeyboardArrowDownIcon />}
         onClick={handleOpen}
+        sx={{ ".MuiButton-startIcon > *:nth-of-type(1)": { fontSize: "16px" } }}
       >
         {selectedNetwork.displayName}
       </Button>
