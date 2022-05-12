@@ -1,12 +1,4 @@
-import { FC, useCallback, useState, useMemo, useEffect } from "react";
-import {
-  SuperTokenPair,
-  TokenMinimal,
-  TokenType,
-  UnderlyingTokenType,
-  isUnderlying,
-  isSuper,
-} from "../redux/endpoints/adHocSubgraphEndpoints";
+import CloseIcon from "@mui/icons-material/Close";
 import {
   CircularProgress,
   DialogActions,
@@ -19,16 +11,22 @@ import {
   Stack,
   TextField,
   Typography,
+  useTheme,
 } from "@mui/material";
-import { useNetworkContext } from "../network/NetworkContext";
-import { useWalletContext } from "../wallet/WalletContext";
-import { rpcApi, subgraphApi } from "../redux/store";
 import { skipToken } from "@reduxjs/toolkit/query";
-import Fuse from "fuse.js";
-import CloseIcon from "@mui/icons-material/Close";
-import { TokenItem } from "./TokenItem";
 import { ethers } from "ethers";
+import Fuse from "fuse.js";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import ResponsiveDialog from "../common/ResponsiveDialog";
+import { useNetworkContext } from "../network/NetworkContext";
+import {
+  isSuper,
+  isUnderlying,
+  TokenMinimal,
+} from "../redux/endpoints/adHocSubgraphEndpoints";
+import { rpcApi, subgraphApi } from "../redux/store";
+import { useWalletContext } from "../wallet/WalletContext";
+import { TokenListItem } from "./TokenListItem";
 
 export type TokenSelectionProps = {
   showUpgrade?: boolean;
@@ -50,6 +48,7 @@ export const TokenDialog: FC<{
   onSelect,
   tokenSelection: { tokenPairsQuery, showUpgrade = false },
 }) => {
+  const theme = useTheme();
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
 
@@ -154,33 +153,33 @@ export const TokenDialog: FC<{
         : tokenOrdered,
     [getFuse, searchTerm, tokenOrdered]
   );
-  
+
   return (
-    <ResponsiveDialog open={open} onClose={onClose}>
-      <DialogTitle>
-        <Typography>Select a token</Typography>
+    <ResponsiveDialog
+      open={open}
+      onClose={onClose}
+      PaperProps={{ sx: { borderRadius: "20px", maxWidth: 500 } }}
+    >
+      <DialogTitle sx={{ p: 3 }}>
+        <Typography variant="h4" sx={{ mb: 3 }}>
+          Select a token
+        </Typography>
         <IconButton
-          aria-label="close"
           onClick={onClose}
           sx={{
             position: "absolute",
-            right: 8,
-            top: 8,
-            color: (t) => t.palette.grey[500],
+            right: theme.spacing(3),
+            top: theme.spacing(3),
           }}
         >
           <CloseIcon />
         </IconButton>
         <TextField
-          value={searchTerm}
           autoFocus
+          fullWidth
+          value={searchTerm}
           placeholder="Search name or symbol"
-          fullWidth={true}
           variant="outlined"
-          sx={{
-            pt: 2.5,
-            pb: 1,
-          }}
           onChange={(e) => setSearchTerm(e.currentTarget.value)}
         />
       </DialogTitle>
@@ -188,7 +187,6 @@ export const TokenDialog: FC<{
         <List>
           {tokenPairsQuery.isLoading && (
             <Stack
-              component={ListItem}
               direction="row"
               justifyContent="center"
               alignItems="center"
@@ -208,45 +206,36 @@ export const TokenDialog: FC<{
                 alignItems="center"
                 spacing={2}
               >
-                No tokens. :(
+                Could not find any tokens. :(
               </Stack>
             )}
 
           {!!tokens.length &&
             searchedTokens.map((token) => (
-              <ListItem key={token.address} disablePadding>
-                <ListItemButton onClick={() => onSelect(token)}>
-                  {isSuper(token) ? (
-                    <TokenItem
-                      token={token}
-                      chainId={network.chainId}
-                      accountAddress={walletAddress}
-                      balanceWei={
-                        superTokenBalances[token.address]?.balanceUntilUpdatedAt
-                      }
-                      balanceTimestamp={
-                        superTokenBalances[token.address]?.updatedAtTimestamp
-                      }
-                      flowRate={
-                        superTokenBalances[token.address]?.totalNetFlowRate
-                      }
-                      showUpgrade={showUpgrade}
-                    />
-                  ) : (
-                    <TokenItem
-                      token={token}
-                      chainId={network.chainId}
-                      accountAddress={walletAddress}
-                      balanceWei={underlyingTokenBalances[token.address]}
-                      showUpgrade={showUpgrade}
-                    />
-                  )}
-                </ListItemButton>
-              </ListItem>
+              <TokenListItem
+                key={token.address}
+                token={token}
+                chainId={network.chainId}
+                accountAddress={walletAddress}
+                balanceWei={
+                  superTokenBalances[token.address]?.balanceUntilUpdatedAt
+                }
+                balanceTimestamp={
+                  isSuper(token)
+                    ? superTokenBalances[token.address]?.updatedAtTimestamp
+                    : undefined
+                }
+                flowRate={
+                  isSuper(token)
+                    ? superTokenBalances[token.address]?.totalNetFlowRate
+                    : undefined
+                }
+                showUpgrade={showUpgrade}
+                onClick={() => onSelect(token)}
+              />
             ))}
         </List>
       </DialogContent>
-      <DialogActions></DialogActions>
     </ResponsiveDialog>
   );
 };

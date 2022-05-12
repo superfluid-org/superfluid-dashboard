@@ -495,7 +495,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       MuiListItemText: {
         defaultProps: {
           primaryTypographyProps: {
-            variant: "h5",
+            variant: "h6",
           },
         },
         styleOverrides: {

@@ -30,9 +30,7 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, active, onChange }) => {
       <ListItemAvatar sx={{ mr: 1 }}>
         <Avatar sx={{ width: 24, height: 24 }} src={network.icon} />
       </ListItemAvatar>
-      <ListItemText primaryTypographyProps={{ variant: "h6" }}>
-        {network.displayName}
-      </ListItemText>
+      <ListItemText>{network.displayName}</ListItemText>
       <Switch checked={active} onChange={onNetworkToggled} />
     </MenuItem>
   );

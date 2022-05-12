@@ -36,7 +36,6 @@ export default memo(function ConnectWallet() {
             secondary={
               network.chainId !== walletChainId ? "Wrong network" : "Connected"
             }
-            primaryTypographyProps={{ variant: "h6" }}
             secondaryTypographyProps={{
               color: network.chainId !== walletChainId ? "error" : "primary",
             }}

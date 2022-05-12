@@ -61,7 +61,6 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
             </Stack>
           </>
         }
-        primaryTypographyProps={{ variant: "h6" }}
       />
       <TransactionListItemRestoreButton transaction={transaction} />
     </ListItem>

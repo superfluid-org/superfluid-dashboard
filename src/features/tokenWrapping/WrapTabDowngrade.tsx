@@ -1,7 +1,14 @@
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Avatar, Button, Input, Paper, Stack, Typography } from "@mui/material";
-import { useTheme } from "@mui/system";
+import {
+  Avatar,
+  Button,
+  Input,
+  Paper,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { BigNumber, ethers } from "ethers";
 import { FC, useEffect, useRef, useState } from "react";
 import {
@@ -77,6 +84,7 @@ export const WrapTabDowngrade: FC<{
             onChange={(e) => setAmount(e.currentTarget.value)}
             inputProps={{
               sx: {
+                ...theme.typography.largeInput,
                 p: 0,
               },
             }}
@@ -100,20 +108,20 @@ export const WrapTabDowngrade: FC<{
             }
           />
         </Stack>
-        <Stack direction="row" justifyContent="space-between">
-          <Typography variant="body2" color="text.secondary">
+        {selectedTokenPair && walletAddress && (
+          <Stack direction="row" justifyContent="flex-end">
+            {/* <Typography variant="body2" color="text.secondary">
             ${Number(amount || 0).toFixed(2)}
-          </Typography>
+          </Typography> */}
 
-          {selectedTokenPair && walletAddress && (
             <BalanceSuperToken
               chainId={network.chainId}
               accountAddress={walletAddress}
               tokenAddress={selectedTokenPair.superToken.address}
               typographyProps={{ color: "text.secondary" }}
             />
-          )}
-        </Stack>
+          </Stack>
+        )}
       </Stack>
 
       <Avatar
@@ -145,6 +153,7 @@ export const WrapTabDowngrade: FC<{
               value={amount}
               inputProps={{
                 sx: {
+                  ...theme.typography.largeInput,
                   p: 0,
                 },
               }}
@@ -164,18 +173,18 @@ export const WrapTabDowngrade: FC<{
             </Button>
           </Stack>
 
-          <Stack direction="row" justifyContent="space-between">
-            <Typography variant="body2" color="text.secondary">
+          {selectedTokenPair && walletAddress && (
+            <Stack direction="row" justifyContent="flex-end">
+              {/* <Typography variant="body2" color="text.secondary">
               ${Number(amount || 0).toFixed(2)}
-            </Typography>
-            {selectedTokenPair && walletAddress && (
+            </Typography> */}
               <BalanceUnderlyingToken
                 chainId={network.chainId}
                 accountAddress={walletAddress}
                 tokenAddress={selectedTokenPair.underlyingToken.address}
               />
-            )}
-          </Stack>
+            </Stack>
+          )}
         </Stack>
       )}
 

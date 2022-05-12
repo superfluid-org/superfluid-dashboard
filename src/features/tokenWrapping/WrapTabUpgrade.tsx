@@ -143,18 +143,18 @@ export const WrapTabUpgrade: FC<{
             }
           />
         </Stack>
-        <Stack direction="row" justifyContent="flex-end">
-          {/* <Typography variant="body2" color="text.secondary">
+        {selectedTokenPair && walletAddress && (
+          <Stack direction="row" justifyContent="flex-end">
+            {/* <Typography variant="body2" color="text.secondary">
             ${Number(amount || 0).toFixed(2)}
           </Typography> */}
-          {selectedTokenPair && walletAddress && (
             <BalanceUnderlyingToken
               chainId={network.chainId}
               accountAddress={walletAddress}
               tokenAddress={selectedTokenPair.underlyingToken.address}
             />
-          )}
-        </Stack>
+          </Stack>
+        )}
       </Stack>
 
       <Avatar
@@ -206,19 +206,19 @@ export const WrapTabUpgrade: FC<{
             </Button>
           </Stack>
 
-          <Stack direction="row" justifyContent="flex-end">
-            {/* <Typography variant="body2" color="text.secondary">
+          {selectedTokenPair && walletAddress && (
+            <Stack direction="row" justifyContent="flex-end">
+              {/* <Typography variant="body2" color="text.secondary">
               ${Number(amount || 0).toFixed(2)}
             </Typography> */}
-            {selectedTokenPair && walletAddress && (
               <BalanceSuperToken
                 chainId={network.chainId}
                 accountAddress={walletAddress}
                 tokenAddress={selectedTokenPair.superToken.address}
                 typographyProps={{ color: "text.secondary" }}
               />
-            )}
-          </Stack>
+            </Stack>
+          )}
         </Stack>
       )}
 
