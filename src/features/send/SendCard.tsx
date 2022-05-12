@@ -5,7 +5,6 @@ import {
   Box,
   Card,
   Divider,
-  Grid,
   IconButton,
   Paper,
   Stack,
@@ -14,6 +13,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { BigNumber, ethers } from "ethers";
 import Link from "next/link";
 import { FC, memo, useCallback, useMemo, useState } from "react";
@@ -49,66 +49,38 @@ const FormLabel: FC = ({ children }) => (
   </Typography>
 );
 
-export default memo(function SendCard() {
+export default memo(function SendCard(props: {
+  restoration: SendStreamRestoration | undefined;
+}) {
   const theme = useTheme();
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
-  const [receiver, setReceiver] = useState<DisplayAddress | undefined>();
+
+  const [receiver, setReceiver] = useState<DisplayAddress | undefined>(
+    props.restoration?.receiver
+  );
   const [selectedToken, setSelectedToken] = useState<
     SuperTokenMinimal | undefined
-  >();
-  const isWrappableSuperToken = selectedToken
-    ? isWrappable(selectedToken)
-    : false;
-
-  const [flowRate, setFlowRate] = useState<FlowRateWithTime | undefined>();
+  >(props.restoration?.token);
+  const [flowRate, setFlowRate] = useState<FlowRateWithTime | undefined>(
+    props.restoration?.flowRate
+  );
 
   const amountPerSecond = useMemo(
     () =>
       flowRate
-        ? ethers.utils.formatEther(
-            BigNumber.from(flowRate.amountWei).div(flowRate.unitOfTime)
-          ).toString()
+        ? ethers.utils
+            .formatEther(
+              BigNumber.from(flowRate.amountWei).div(flowRate.unitOfTime)
+            )
+            .toString()
         : "",
     [flowRate?.amountWei, flowRate?.unitOfTime]
   );
 
-  const [flowCreateTrigger, flowCreateResult] = rpcApi.useFlowCreateMutation();
-
-  const isSendDisabled =
-    !receiver ||
-    !selectedToken ||
-    !flowRate ||
-    BigNumber.from(flowRate.amountWei).isZero();
-
-  const listedTokensQuery = subgraphApi.useTokensQuery({
-    chainId: network.chainId,
-    filter: {
-      isListed: true,
-    },
-  });
-
-  const tokens = useMemo(
-    () =>
-      listedTokensQuery.data?.items?.map((x) => ({
-        type: getSuperTokenType({ ...x, network, address: x.id }),
-        address: x.id,
-        name: x.name,
-        symbol: x.symbol,
-      })),
-    [listedTokensQuery.data]
-  );
-
-  const restoration: SendStreamRestoration | undefined = isSendDisabled
-    ? undefined
-    : {
-        type: RestorationType.SendStream,
-        chainId: network.chainId,
-        token: selectedToken,
-        receiver: receiver,
-        flowRate: flowRate,
-      };
-
+  const isWrappableSuperToken = selectedToken
+    ? isWrappable(selectedToken)
+    : false;
   const onTokenSelect = useCallback(
     (token: TokenMinimal) => {
       if (isSuper(token)) {
@@ -119,6 +91,63 @@ export default memo(function SendCard() {
     },
     [setSelectedToken]
   );
+
+  const [flowCreateTrigger, flowCreateResult] = rpcApi.useFlowCreateMutation();
+
+  const isSendDisabled =
+    !receiver ||
+    !selectedToken ||
+    !flowRate ||
+    BigNumber.from(flowRate.amountWei).isZero();
+
+  const superTokensQuery = subgraphApi.useTokensQuery({
+    chainId: network.chainId,
+    filter: {
+      isSuperToken: true,
+      isListed: true,
+    },
+  });
+  const superTokens = useMemo(
+    () =>
+      superTokensQuery.data?.items?.map((x) => ({
+        type: getSuperTokenType({ ...x, network, address: x.id }),
+        address: x.id,
+        name: x.name,
+        symbol: x.symbol,
+      })),
+    [superTokensQuery.data]
+  );
+
+  const sendStreamRestoration: SendStreamRestoration | undefined =
+    isSendDisabled
+      ? undefined
+      : {
+          type: RestorationType.SendStream,
+          chainId: network.chainId,
+          token: selectedToken,
+          receiver: receiver,
+          flowRate: flowRate,
+        };
+
+  const shouldSearchForExistingStreams =
+    !!walletAddress && !!receiver && !!selectedToken && !!flowRate;
+  const existingStreams = subgraphApi.useStreamsQuery(
+    shouldSearchForExistingStreams
+      ? {
+          chainId: network.chainId,
+          filter: {
+            sender: walletAddress,
+            receiver: receiver.hash,
+            currentFlowRate_not: "0",
+          },
+          pagination: {
+            skip: 0,
+            take: 1,
+          },
+        }
+      : skipToken
+  );
+  const existingStream = existingStreams.data?.items?.[0];
 
   return (
     <Card
@@ -155,9 +184,9 @@ export default memo(function SendCard() {
                 tokenSelection={{
                   showUpgrade: true,
                   tokenPairsQuery: {
-                    data: tokens,
-                    isLoading: listedTokensQuery.isLoading,
-                    isUninitialized: listedTokensQuery.isUninitialized,
+                    data: superTokens,
+                    isLoading: superTokensQuery.isLoading,
+                    isUninitialized: superTokensQuery.isUninitialized,
                   },
                 }}
                 onTokenSelect={onTokenSelect}
@@ -199,7 +228,6 @@ export default memo(function SendCard() {
             </Box>
             <Box>
               <FormLabel>Amount per second</FormLabel>
-              {/* TODO: Fix amount per sec */}
               <TextField
                 disabled
                 value={amountPerSecond.toString()}
@@ -235,7 +263,7 @@ export default memo(function SendCard() {
         <Stack gap={2.5}>
           <Divider />
 
-          {restoration && (
+          {sendStreamRestoration && (
             <Paper
               variant="outlined"
               sx={{
@@ -248,10 +276,18 @@ export default memo(function SendCard() {
               <Typography variant="h6" component="h2">
                 Preview
               </Typography>
+
+              {/** TODO(KK): Create separate preview? */}
+              {!!existingStream && (
+                <Typography variant="body2">
+                  You already have a stream...
+                </Typography>
+              )}
+
               <SendStreamPreview
-                receiver={restoration.receiver}
-                token={restoration.token}
-                flowRateWithTime={restoration.flowRate}
+                receiver={sendStreamRestoration.receiver}
+                token={sendStreamRestoration.token}
+                flowRateWithTime={sendStreamRestoration.flowRate}
               />
             </Paper>
           )}
@@ -280,9 +316,9 @@ export default memo(function SendCard() {
                 superTokenAddress: selectedToken.address,
                 userDataBytes: undefined,
                 waitForConfirmation: false,
-                // transactionExtraData: {
-                //   restoration,
-                // },
+                transactionExtraData: {
+                  restoration: sendStreamRestoration,
+                },
               })
                 .unwrap()
                 .then(() => {

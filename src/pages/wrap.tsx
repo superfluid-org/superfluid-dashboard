@@ -20,37 +20,25 @@ const Wrap: NextPage = () => {
 
   useEffect(() => {
     const newTabValue = downgrade !== undefined ? "downgrade" : "upgrade"; // Default is "upgrade".
-    if (newTabValue !== tabValue) {
-      // Reset restorations on tab change.
-      setUpgradeRestoration(undefined);
-      setDowngradeRestoration(undefined);
-    }
     setTabValue(newTabValue);
   }, [upgrade, downgrade]);
 
   const { restoration, onRestored } = useTransactionRestorationContext();
 
-  const [upgradeRestoration, setUpgradeRestoration] = useState<
-    SuperTokenUpgradeRestoration | undefined
-  >();
+  let upgradeRestoration: SuperTokenUpgradeRestoration | undefined;
+  let downgradeRestoration: SuperTokenDowngradeRestoration | undefined;
 
-  const [downgradeRestoration, setDowngradeRestoration] = useState<
-    SuperTokenDowngradeRestoration | undefined
-  >();
-
-  useEffect(() => {
-    if (restoration) {
-      switch (restoration.type) {
-        case RestorationType.Upgrade:
-          setUpgradeRestoration(restoration as SuperTokenUpgradeRestoration);
-          break;
-        case RestorationType.Downgrade:
-          setDowngradeRestoration(restoration as SuperTokenDowngradeRestoration);
-          break;
-      }
-      onRestored();
+  if (restoration) {
+    switch (restoration.type) {
+      case RestorationType.Upgrade:
+        upgradeRestoration = restoration as SuperTokenUpgradeRestoration;
+        break;
+      case RestorationType.Downgrade:
+        downgradeRestoration = restoration as SuperTokenDowngradeRestoration;
+        break;
     }
-  }, [setUpgradeRestoration, setDowngradeRestoration, restoration, onRestored]);
+    onRestored();
+  }
 
   return (
     <Container maxWidth="lg">

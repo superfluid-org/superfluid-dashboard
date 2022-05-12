@@ -40,7 +40,7 @@ export default function MyApp(props: MyAppProps) {
               name="viewport"
               content="initial-scale=1, width=device-width"
             />
-          </Head>
+          </Head>2
           <MuiProvider>
             <NetworkContextProvider>
               {(network) => (
@@ -50,7 +50,7 @@ export default function MyApp(props: MyAppProps) {
                       <Layout>
                         <ReduxPersistGate>
                           {/* TODO: Is this key={network.chainId} necessary? It triggers rerendering   */}
-                          <Component {...pageProps} />
+                          <Component key={`${network.slugName}`} {...pageProps} />
                         </ReduxPersistGate>
                       </Layout>
                     </TransactionDrawerContextProvider>

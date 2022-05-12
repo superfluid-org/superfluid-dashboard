@@ -2838,10 +2838,10 @@ ethereum-cryptography@^0.1.3:
     secp256k1 "^4.0.1"
     setimmediate "^1.0.5"
 
-ethereum-multicall@^2.10.0:
-  version "2.10.0"
-  resolved "https://registry.yarnpkg.com/ethereum-multicall/-/ethereum-multicall-2.10.0.tgz#db8e41109e01c63058cf99a1b00770c93e8abb75"
-  integrity sha512-H5rYoNJ+ukV5Z932AkxsEzV9MveJgb1Y5aFfS5SmenFuUkTwx9gje1d1JSl44+Wa8PBLuu9+7BHIX1mdJdQLSg==
+ethereum-multicall@^2.11.0:
+  version "2.11.0"
+  resolved "https://registry.yarnpkg.com/ethereum-multicall/-/ethereum-multicall-2.11.0.tgz#4d1a1ea575a9b248685a6f09f5cf6c91df95031e"
+  integrity sha512-PUgMuahgRjGFBk9CNDq1T+PZrSPWm60JBoAjGjFhVJuFK1GjL2idoeKOTh7PteVetKPhGdd+Grg6pvmGipRJaw==
   dependencies:
     "@ethersproject/providers" "^5.0.10"
     ethers "^5.0.15"
@@ -4610,7 +4610,7 @@ randomfill@^1.0.3:
     randombytes "^2.0.5"
     safe-buffer "^5.1.0"
 
-react-blockies@^1.4.1:
+react-blockies@1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/react-blockies/-/react-blockies-1.4.1.tgz#d4f0faf95ac197213a297a370a4d7f77ea3d0b08"
   integrity sha512-4N015X5oPNnD3xQPsiqolOFzPZSSWyc5mJhJUZShUCHtiGUxVN+1qsWTcglkHMNySux9hUofaispqcw9QkWP5Q==

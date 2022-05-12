@@ -1,7 +1,6 @@
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Stack, styled } from "@mui/material";
 import { memo, MouseEvent, useState } from "react";
-import { useStateWithDep } from "../../useStateWithDep";
 import AddressSearchDialog from "./AddressSearchDialog";
 import DisplayAddressChip, { DisplayAddress } from "./DisplayAddressChip";
 
@@ -25,15 +24,11 @@ const AddressButton = styled(Stack)<AddressButtonProps>(
 
 export default memo(function AddressSearch({
   onChange,
-  ...props
+  address
 }: {
   address: DisplayAddress | undefined;
   onChange: (address: DisplayAddress | undefined) => void; // TODO(KK): better name19
 }) {
-  const [address, setAddress] = useStateWithDep<DisplayAddress | undefined>(
-    props.address
-  );
-
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const onOpenDialog = (event: MouseEvent<HTMLDivElement>) => {
@@ -58,7 +53,6 @@ export default memo(function AddressSearch({
             tryGetEns={false}
             ChipProps={{
               onDelete: () => {
-                setAddress(undefined);
                 onChange(undefined);
               },
               sx: { flex: 1, background: "transparent" },
@@ -76,7 +70,6 @@ export default memo(function AddressSearch({
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
         onSelectAddress={(address) => {
-          setAddress(address);
           setDialogOpen(false);
           onChange(address);
         }}

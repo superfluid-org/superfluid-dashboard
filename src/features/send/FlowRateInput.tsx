@@ -28,7 +28,7 @@ export const timeUnitWordMap = {
 };
 
 export type FlowRateWithTime = {
-  amountWei: BigNumberish;
+  amountWei: string;
   unitOfTime: UnitOfTime;
 };
 
@@ -62,12 +62,12 @@ export const FlowRateInput: FC<{
   useEffect(
     () =>
       onChange({
-        amountWei: amountWei,
+        amountWei: amountWei.toString(),
         unitOfTime: unitOfTime,
       }),
     [onChange, amountWei, unitOfTime] // Don't put "onChange" here.
   );
-
+      
   return (
     <Box sx={{ display: "grid", gridTemplateColumns: "6fr 4fr" }}>
       <TextField

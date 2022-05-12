@@ -14,6 +14,7 @@ export const TransactionListItemRestoreButton: FC<{
   }
 
   switch (transaction.title) {
+    case "Create Stream":
     case "Downgrade from Super Token":
     case "Upgrade to Super Token":
       return (

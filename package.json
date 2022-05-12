@@ -25,7 +25,7 @@
     "axios": "^0.26.1",
     "date-fns": "^2.28.0",
     "decimal.js": "^10.3.1",
-    "ethereum-multicall": "^2.10.0",
+    "ethereum-multicall": "^2.11.0",
     "ethers": "latest",
     "fuse.js": "^6.5.3",
     "graphql": "latest",

@@ -6,7 +6,10 @@ import { useEffect } from "react";
 import { useNetworkContext } from "../features/network/NetworkContext";
 import { useAppSelector } from "../features/redux/store";
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
-import { TransactionRestoration, RestorationType } from "../features/transactionRestoration/transactionRestorations";
+import {
+  TransactionRestoration,
+  RestorationType,
+} from "../features/transactionRestoration/transactionRestorations";
 
 const RestoreTransaction: NextPage = () => {
   const { network, setNetwork } = useNetworkContext();
@@ -31,14 +34,16 @@ const RestoreTransaction: NextPage = () => {
     if (transactionRestoration) {
       switch (transactionRestoration.type) {
         case RestorationType.Upgrade:
-          router
-            .replace("/wrap?upgrade")
-            .then(() => restore(transactionRestoration));
+          router.replace("/wrap?upgrade");
+          restore(transactionRestoration);
           break;
         case RestorationType.Downgrade:
-          router
-            .replace("/wrap?downgrade")
-            .then(() => restore(transactionRestoration));
+          restore(transactionRestoration);
+          router.replace("/wrap?downgrade");
+          break;
+        case RestorationType.SendStream:
+          restore(transactionRestoration);
+          router.replace("/send");
           break;
         default:
           router.replace("/");
