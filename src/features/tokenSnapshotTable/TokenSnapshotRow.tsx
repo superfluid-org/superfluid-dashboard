@@ -147,7 +147,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           )}
         </TableCell>
       </TableRow>
-      <TableRow sx={{ "td:first-of-type": { padding: 0 } }}>
+      <TableRow sx={{ "> td:first-of-type": { padding: 0 } }}>
         <TableCell
           colSpan={5}
           sx={{

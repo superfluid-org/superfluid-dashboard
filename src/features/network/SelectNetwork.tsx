@@ -43,7 +43,7 @@ export default memo(function SelectNetwork() {
   const theme = useTheme();
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const [showTestnets, setShowTestnets] = useState(true);
+  const [showTestnets, setShowTestnets] = useState(false);
 
   const open = Boolean(anchorEl);
 

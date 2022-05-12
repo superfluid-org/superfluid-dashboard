@@ -117,16 +117,19 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {isLoading && <TokenStreamRowLoading />}
-            {data
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((stream) => (
-                <TokenStreamRow
-                  key={stream.id}
-                  address={address}
-                  stream={stream}
-                />
-              ))}
+            {isLoading ? (
+              <TokenStreamRowLoading />
+            ) : (
+              data
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((stream) => (
+                  <TokenStreamRow
+                    key={stream.id}
+                    address={address}
+                    stream={stream}
+                  />
+                ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>
