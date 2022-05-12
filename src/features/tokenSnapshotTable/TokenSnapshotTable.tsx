@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, memo } from "react";
+import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
 import TokenSnapshotRow from "./TokenSnapshotRow";
@@ -44,7 +45,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
   return (
     <Paper sx={{ borderRadius: "20px" }}>
       <Stack direction="row" alignItems="center" gap={2} sx={{ py: 3, px: 4 }}>
-        <Avatar src={network.icon} />
+        <NetworkIcon network={network} />
         <Typography variant="h5">{network.displayName}</Typography>
       </Stack>
 

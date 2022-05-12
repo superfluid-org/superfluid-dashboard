@@ -15,6 +15,7 @@ import {
 import { useTheme } from "@mui/system";
 import { FC, memo, MouseEvent, useState } from "react";
 import { useNetworkContext } from "./NetworkContext";
+import NetworkIcon from "./NetworkIcon";
 import { mainNetworks, Network, testNetworks } from "./networks";
 
 interface NetworkItemProps {
@@ -31,7 +32,7 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
     sx={{ height: 50 }}
   >
     <ListItemAvatar sx={{ mr: 1 }}>
-      <Avatar sx={{ width: 24, height: 24 }} src={network.icon} />
+      <NetworkIcon network={network} size={24} fontSize={16} />
     </ListItemAvatar>
     <ListItemText>{network.displayName}</ListItemText>
   </MenuItem>
@@ -72,7 +73,7 @@ export default memo(function SelectNetwork() {
         color="secondary"
         size="large"
         startIcon={
-          <Avatar sx={{ width: 24, height: 24 }} src={selectedNetwork.icon} />
+          <NetworkIcon network={selectedNetwork} size={24} fontSize={16} />
         }
         endIcon={<KeyboardArrowDownIcon />}
         onClick={handleOpen}
