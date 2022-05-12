@@ -94,7 +94,7 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ address, stream }) => {
       <TableCell>
         {ongoing ? (
           <Typography variant="body2mono">
-            {outgoing ? "- " : "+ "}
+            {outgoing ? "-" : "+"}
             <EtherFormatted
               wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
             />
