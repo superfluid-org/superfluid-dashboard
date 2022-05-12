@@ -54,7 +54,13 @@ const DisplayAddressChip: FC<{
         </Stack>
       }
       {...ChipProps}
-      sx={{ ".MuiChip-label": { flex: 1 }, ...ChipSx }}
+      sx={{
+        ".MuiChip-label": {
+          flex: 1,
+        },
+        cursor: "pointer",
+        ...ChipSx,
+      }}
     ></Chip>
   );
 };

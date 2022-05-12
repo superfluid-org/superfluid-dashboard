@@ -66,9 +66,11 @@ export default memo(function SendCard() {
   const amountPerSecond = useMemo(
     () =>
       flowRate
-        ? ethers.utils.formatEther(
-            BigNumber.from(flowRate.amountWei).div(flowRate.unitOfTime)
-          ).toString()
+        ? ethers.utils
+            .formatEther(
+              BigNumber.from(flowRate.amountWei).div(flowRate.unitOfTime)
+            )
+            .toString()
         : "",
     [flowRate?.amountWei, flowRate?.unitOfTime]
   );
@@ -233,27 +235,25 @@ export default memo(function SendCard() {
         </Stack>
 
         <Stack gap={2.5}>
-          <Divider />
-
           {restoration && (
-            <Paper
-              variant="outlined"
-              sx={{
-                p: [2.5, 3],
-                color: theme.palette.primary.main,
-                borderColor: theme.palette.primary.main,
-                backgroundColor: alpha(theme.palette.primary.main, 0.04),
-              }}
-            >
-              <Typography variant="h6" component="h2">
-                Preview
-              </Typography>
-              <SendStreamPreview
-                receiver={restoration.receiver}
-                token={restoration.token}
-                flowRateWithTime={restoration.flowRate}
-              />
-            </Paper>
+            <>
+              <Divider />
+              <Paper
+                variant="outlined"
+                sx={{
+                  p: [2.5, 3],
+                  color: theme.palette.primary.main,
+                  borderColor: theme.palette.primary.main,
+                  backgroundColor: alpha(theme.palette.primary.main, 0.04),
+                }}
+              >
+                <SendStreamPreview
+                  receiver={restoration.receiver}
+                  token={restoration.token}
+                  flowRateWithTime={restoration.flowRate}
+                />
+              </Paper>
+            </>
           )}
 
           <TransactionButton

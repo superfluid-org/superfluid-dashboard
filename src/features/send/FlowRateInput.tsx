@@ -6,11 +6,12 @@ import { Box, MenuItem, Select, Stack, TextField } from "@mui/material";
 /**
  * Enum numerical value is expressed in seconds.
  */
-enum UnitOfTime {
+export enum UnitOfTime {
   Second = 1,
   Minute = 60,
   Hour = 3600,
   Day = 86400,
+  Month = 2592000,
 }
 
 const unitOfTimeList = [
@@ -18,6 +19,7 @@ const unitOfTimeList = [
   UnitOfTime.Minute,
   UnitOfTime.Hour,
   UnitOfTime.Day,
+  UnitOfTime.Month,
 ];
 
 export const timeUnitWordMap = {
@@ -25,6 +27,7 @@ export const timeUnitWordMap = {
   [UnitOfTime.Minute]: "minute",
   [UnitOfTime.Hour]: "hour",
   [UnitOfTime.Day]: "day",
+  [UnitOfTime.Month]: "month",
 };
 
 export type FlowRateWithTime = {

@@ -143,10 +143,10 @@ export const WrapTabUpgrade: FC<{
             }
           />
         </Stack>
-        <Stack direction="row" justifyContent="space-between">
-          <Typography variant="body2" color="text.secondary">
+        <Stack direction="row" justifyContent="flex-end">
+          {/* <Typography variant="body2" color="text.secondary">
             ${Number(amount || 0).toFixed(2)}
-          </Typography>
+          </Typography> */}
           {selectedTokenPair && walletAddress && (
             <BalanceUnderlyingToken
               chainId={network.chainId}
@@ -206,10 +206,10 @@ export const WrapTabUpgrade: FC<{
             </Button>
           </Stack>
 
-          <Stack direction="row" justifyContent="space-between">
-            <Typography variant="body2" color="text.secondary">
+          <Stack direction="row" justifyContent="flex-end">
+            {/* <Typography variant="body2" color="text.secondary">
               ${Number(amount || 0).toFixed(2)}
-            </Typography>
+            </Typography> */}
             {selectedTokenPair && walletAddress && (
               <BalanceSuperToken
                 chainId={network.chainId}

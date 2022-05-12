@@ -1,4 +1,4 @@
-import { Theme, ThemeOptions } from "@mui/material/styles";
+import { alpha, Theme, ThemeOptions } from "@mui/material/styles";
 import { FONT_FACES } from "./fonts";
 
 // TODO: Move to separate declaration file to make theme file cleaner?
@@ -476,6 +476,19 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         styleOverrides: {
           root: {
             padding: "8px 24px",
+          },
+        },
+      },
+      // TODO: Figure out why styleOverrides.selected does not work and replace hardcoded classes
+      MuiListItemButton: {
+        styleOverrides: {
+          root: {
+            "&.Mui-selected": {
+              color: theme.palette.primary.main,
+              ".MuiSvgIcon-root": {
+                color: theme.palette.primary.main,
+              },
+            },
           },
         },
       },

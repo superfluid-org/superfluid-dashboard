@@ -1,31 +1,34 @@
+import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
+import AutoAwesomeMosaicIcon from "@mui/icons-material/AutoAwesomeMosaic";
+import SwapVertIcon from "@mui/icons-material/SwapVert";
 import {
   Box,
   Divider,
   Drawer,
   List,
-  ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
   Stack,
   Toolbar,
+  useTheme,
 } from "@mui/material";
 import Image from "next/image";
 import NextLink from "next/link";
-import AutoAwesomeMosaicIcon from "@mui/icons-material/AutoAwesomeMosaic";
-import SwapVertIcon from "@mui/icons-material/SwapVert";
-import ThemeChanger from "../theme/ThemeChanger";
-import { useTheme } from "@mui/material";
-import Link from "../common/Link";
+import { useRouter } from "next/router";
 import { memo } from "react";
-import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
-import { useWalletContext } from "../wallet/WalletContext";
+import Link from "../common/Link";
+import ThemeChanger from "../theme/ThemeChanger";
 import ConnectWallet from "../wallet/ConnectWallet";
 
 export const menuDrawerWidth = 260;
 
 export default memo(function NavigationDrawer() {
   const theme = useTheme();
+
+  const router = useRouter();
+
+  const isActiveRoute = (route: string) => router.route === route;
 
   return (
     <Drawer
@@ -61,7 +64,10 @@ export default memo(function NavigationDrawer() {
         gap={1}
       >
         <NextLink href={"/"} passHref>
-          <ListItemButton sx={{ borderRadius: "10px" }}>
+          <ListItemButton
+            sx={{ borderRadius: "10px" }}
+            selected={isActiveRoute("/")}
+          >
             <ListItemIcon>
               <AutoAwesomeMosaicIcon />
             </ListItemIcon>
@@ -73,7 +79,10 @@ export default memo(function NavigationDrawer() {
         </NextLink>
 
         <NextLink href={"/wrap?upgrade"} passHref>
-          <ListItemButton sx={{ borderRadius: "10px" }}>
+          <ListItemButton
+            sx={{ borderRadius: "10px" }}
+            selected={isActiveRoute("/wrap")}
+          >
             <ListItemIcon>
               <SwapVertIcon />
             </ListItemIcon>
@@ -84,7 +93,10 @@ export default memo(function NavigationDrawer() {
           </ListItemButton>
         </NextLink>
         <NextLink href={"/send"} passHref>
-          <ListItemButton sx={{ borderRadius: "10px" }}>
+          <ListItemButton
+            sx={{ borderRadius: "10px" }}
+            selected={isActiveRoute("/send")}
+          >
             <ListItemIcon>
               <ArrowRightAltIcon />
             </ListItemIcon>
