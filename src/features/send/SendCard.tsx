@@ -11,7 +11,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import Link from "next/link";
 import { FC, memo, useCallback, useMemo, useState } from "react";
 import { useNetworkContext } from "../network/NetworkContext";
@@ -58,6 +58,16 @@ export default memo(function SendCard() {
     : false;
 
   const [flowRate, setFlowRate] = useState<FlowRateWithTime | undefined>();
+
+  const amountPerSecond = useMemo(
+    () =>
+      flowRate
+        ? ethers.utils.formatEther(
+            BigNumber.from(flowRate.amountWei).div(flowRate.unitOfTime)
+          ).toString()
+        : "",
+    [flowRate?.amountWei, flowRate?.unitOfTime]
+  );
 
   const [flowCreateTrigger, flowCreateResult] = rpcApi.useFlowCreateMutation();
 
@@ -126,7 +136,6 @@ export default memo(function SendCard() {
             <AddressSearch
               address={receiver}
               onChange={(address) => {
-                console.log("foo");
                 setReceiver(address);
               }}
             />
@@ -186,7 +195,11 @@ export default memo(function SendCard() {
             </Box>
             <Box>
               <FormLabel>Amount per second</FormLabel>
-              <TextField disabled value="~0.000342342" fullWidth />
+              <TextField
+                disabled
+                value={amountPerSecond.toString()}
+                fullWidth
+              />
             </Box>
           </Box>
         </Stack>
