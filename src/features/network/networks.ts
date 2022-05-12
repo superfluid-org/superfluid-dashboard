@@ -17,6 +17,7 @@ export type Network = {
   getLinkForAddress(adderss: string): string;
   isTestnet: boolean;
   icon?: string;
+  color?: string;
   bufferTimeInMinutes: number; // Hard-code'ing this per network is actually incorrect approach. It's token-based and can be governed.
   nativeAsset: {
     symbol: string;
@@ -37,6 +38,7 @@ export const networks: Network[] = [
     isTestnet: true,
     bufferTimeInMinutes: 60,
     icon: "/icons/network/ropsten.jpg",
+    color: "#29b6af",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/ropsten`,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-ropsten",
@@ -59,6 +61,7 @@ export const networks: Network[] = [
     slugName: "rinkeby",
     chainId: 4,
     isTestnet: true,
+    color: "#ff4a8d",
     bufferTimeInMinutes: 60,
     icon: "/icons/network/rinkeby.jpg",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/rinkeby`,
@@ -85,6 +88,7 @@ export const networks: Network[] = [
     isTestnet: true,
     bufferTimeInMinutes: 60,
     icon: "/icons/network/goerli.jpg",
+    color: "#9064ff",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/goerli`,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli",
@@ -109,6 +113,7 @@ export const networks: Network[] = [
     isTestnet: true,
     bufferTimeInMinutes: 60,
     icon: "/icons/network/kovan.jpg",
+    color: "#f6c343",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/kovan`,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-kovan",
@@ -180,6 +185,7 @@ export const networks: Network[] = [
     chainId: 80001,
     isTestnet: true,
     bufferTimeInMinutes: 60,
+    color: "#3099f2",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/mumbai`,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-mumbai",
@@ -204,6 +210,7 @@ export const networks: Network[] = [
     isTestnet: true,
     bufferTimeInMinutes: 60,
     icon: "/icons/network/arbitrum.svg",
+    color: "#29b6af",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/arbitrum-rinkeby`,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-rinkeby",
@@ -228,6 +235,7 @@ export const networks: Network[] = [
     isTestnet: true,
     bufferTimeInMinutes: 60,
     icon: "/icons/network/optimism.svg",
+    color: "#8b45b6",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/optimism-kovan`,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-kovan",

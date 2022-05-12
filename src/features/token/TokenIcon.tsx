@@ -77,8 +77,9 @@ const TokenIcon: FC<TokenIconProps> = ({ tokenSymbol, size = 36 }) => {
         }}
         imgProps={{ sx: { objectFit: "contain", borderRadius: "50%" } }}
         src={
-          tokenManifest?.svgIconPath &&
-          `https://raw.githubusercontent.com/superfluid-finance/assets/master/public/${tokenManifest.svgIconPath}`
+          tokenManifest?.svgIconPath
+            ? `https://raw.githubusercontent.com/superfluid-finance/assets/master/public/${tokenManifest.svgIconPath}`
+            : "/icons/token-default.webp"
         }
       />
     </AvatarWrapper>

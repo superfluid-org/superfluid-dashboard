@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/system";
 import { FC, useState } from "react";
+import NetworkIcon from "./NetworkIcon";
 import { Network, networks } from "./networks";
 
 interface NetworkItemProps {
@@ -28,7 +29,7 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, active, onChange }) => {
   return (
     <MenuItem>
       <ListItemAvatar sx={{ mr: 1 }}>
-        <Avatar sx={{ width: 24, height: 24 }} src={network.icon} />
+        <NetworkIcon size={24} fontSize={16} network={network} />
       </ListItemAvatar>
       <ListItemText>{network.displayName}</ListItemText>
       <Switch checked={active} onChange={onNetworkToggled} />
