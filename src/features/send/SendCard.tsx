@@ -1,15 +1,18 @@
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import InfoIcon from "@mui/icons-material/Info";
 import {
+  alpha,
   Box,
   Card,
   Divider,
   Grid,
   IconButton,
+  Paper,
   Stack,
   TextField,
   Tooltip,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { BigNumber, ethers } from "ethers";
 import Link from "next/link";
@@ -47,6 +50,7 @@ const FormLabel: FC = ({ children }) => (
 );
 
 export default memo(function SendCard() {
+  const theme = useTheme();
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
   const [receiver, setReceiver] = useState<DisplayAddress | undefined>();
@@ -195,6 +199,7 @@ export default memo(function SendCard() {
             </Box>
             <Box>
               <FormLabel>Amount per second</FormLabel>
+              {/* TODO: Fix amount per sec */}
               <TextField
                 disabled
                 value={amountPerSecond.toString()}
@@ -202,86 +207,97 @@ export default memo(function SendCard() {
               />
             </Box>
           </Box>
+
+          {selectedToken && walletAddress && (
+            <Stack direction="row" alignItems="center" justifyContent="center">
+              <BalanceSuperToken
+                chainId={network.chainId}
+                accountAddress={walletAddress}
+                tokenAddress={selectedToken.address}
+              />
+
+              {isWrappableSuperToken && (
+                <Link
+                  href={`/wrap?upgrade&token=${selectedToken.address}&network=${network.slugName}`}
+                  passHref
+                >
+                  <Tooltip title="Wrap">
+                    <IconButton>
+                      <AddCircleOutline />
+                    </IconButton>
+                  </Tooltip>
+                </Link>
+              )}
+            </Stack>
+          )}
         </Stack>
-        {selectedToken && walletAddress && (
-          <Stack direction="row">
-            <BalanceSuperToken
-              chainId={network.chainId}
-              accountAddress={walletAddress}
-              tokenAddress={selectedToken.address}
-            />
 
-            {isWrappableSuperToken && (
-              <Link
-                href={`/wrap?upgrade&token=${selectedToken.address}&network=${network.slugName}`}
-                passHref
-              >
-                <Tooltip title="Wrap">
-                  <IconButton>
-                    <AddCircleOutline />
-                  </IconButton>
-                </Tooltip>
-              </Link>
-            )}
-          </Stack>
-        )}
+        <Stack gap={2.5}>
+          <Divider />
 
-        {restoration && (
-          <>
-            <Divider />
-            <Typography variant="h6" component="h2">
-              Preview
-            </Typography>
-            <SendStreamPreview
-              receiver={restoration.receiver}
-              token={restoration.token}
-              flowRateWithTime={restoration.flowRate}
-            />
-            <Divider />
-          </>
-        )}
+          {restoration && (
+            <Paper
+              variant="outlined"
+              sx={{
+                p: [2.5, 3],
+                color: theme.palette.primary.main,
+                borderColor: theme.palette.primary.main,
+                backgroundColor: alpha(theme.palette.primary.main, 0.04),
+              }}
+            >
+              <Typography variant="h6" component="h2">
+                Preview
+              </Typography>
+              <SendStreamPreview
+                receiver={restoration.receiver}
+                token={restoration.token}
+                flowRateWithTime={restoration.flowRate}
+              />
+            </Paper>
+          )}
 
-        <TransactionButton
-          hidden={false}
-          disabled={isSendDisabled}
-          mutationResult={flowCreateResult}
-          onClick={(setTransactionDialogContent) => {
-            if (isSendDisabled) {
-              throw Error("This should never happen.");
-            }
+          <TransactionButton
+            hidden={false}
+            disabled={isSendDisabled}
+            mutationResult={flowCreateResult}
+            onClick={(setTransactionDialogContent) => {
+              if (isSendDisabled) {
+                throw Error("This should never happen.");
+              }
 
-            const restoration: SendStreamRestoration = {
-              type: RestorationType.SendStream,
-              chainId: network.chainId,
-              token: selectedToken,
-              receiver: receiver,
-              flowRate: flowRate,
-            };
+              const restoration: SendStreamRestoration = {
+                type: RestorationType.SendStream,
+                chainId: network.chainId,
+                token: selectedToken,
+                receiver: receiver,
+                flowRate: flowRate,
+              };
 
-            flowCreateTrigger({
-              chainId: network.chainId,
-              flowRateWei: calculateTotalAmountWei(flowRate).toString(),
-              receiverAddress: receiver.hash,
-              superTokenAddress: selectedToken.address,
-              userDataBytes: undefined,
-              waitForConfirmation: false,
-              // transactionExtraData: {
-              //   restoration,
-              // },
-            })
-              .unwrap()
-              .then(() => {
-                setReceiver(undefined);
-                setFlowRate(undefined);
-              });
+              flowCreateTrigger({
+                chainId: network.chainId,
+                flowRateWei: calculateTotalAmountWei(flowRate).toString(),
+                receiverAddress: receiver.hash,
+                superTokenAddress: selectedToken.address,
+                userDataBytes: undefined,
+                waitForConfirmation: false,
+                // transactionExtraData: {
+                //   restoration,
+                // },
+              })
+                .unwrap()
+                .then(() => {
+                  setReceiver(undefined);
+                  setFlowRate(undefined);
+                });
 
-            // setTransactionDialogContent(
-            //   <SendStreamPreview restoration={restoration} />
-            // );
-          }}
-        >
-          Send
-        </TransactionButton>
+              // setTransactionDialogContent(
+              //   <SendStreamPreview restoration={restoration} />
+              // );
+            }}
+          >
+            Send
+          </TransactionButton>
+        </Stack>
       </Stack>
     </Card>
   );

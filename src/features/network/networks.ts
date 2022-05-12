@@ -1,5 +1,11 @@
 import { memoize } from "lodash";
-import { NATIVE_ASSET_ADDRESS, SuperTokenPair, SuperTokenType, TokenType, UnderlyingTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
+import {
+  NATIVE_ASSET_ADDRESS,
+  SuperTokenPair,
+  SuperTokenType,
+  TokenType,
+  UnderlyingTokenType,
+} from "../redux/endpoints/adHocSubgraphEndpoints";
 
 export type Network = {
   displayName: string;
@@ -126,7 +132,7 @@ export const networks: Network[] = [
     chainId: 100,
     isTestnet: false,
     bufferTimeInMinutes: 240,
-    icon: "/icons/network/gnosis.jpg",
+    icon: "/icons/network/gnosis.svg",
     rpcUrl: "https://rpc-endpoints.superfluid.dev/xdai",
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-xdai",
@@ -150,7 +156,7 @@ export const networks: Network[] = [
     chainId: 137,
     isTestnet: false,
     bufferTimeInMinutes: 240,
-    icon: "/icons/network/polygon.jpg",
+    icon: "/icons/network/polygon.svg",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/matic`,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-matic",
@@ -197,7 +203,7 @@ export const networks: Network[] = [
     chainId: 421611,
     isTestnet: true,
     bufferTimeInMinutes: 60,
-    icon: "/icons/network/rinkeby.jpg",
+    icon: "/icons/network/arbitrum.svg",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/arbitrum-rinkeby`,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-rinkeby",
@@ -221,7 +227,7 @@ export const networks: Network[] = [
     chainId: 69,
     isTestnet: true,
     bufferTimeInMinutes: 60,
-    icon: "/icons/network/kovan.jpg",
+    icon: "/icons/network/optimism.svg",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/optimism-kovan`,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-kovan",
@@ -269,6 +275,7 @@ export const networks: Network[] = [
     chainId: 10,
     isTestnet: false,
     bufferTimeInMinutes: 240,
+    icon: "/icons/network/optimism.svg",
     rpcUrl: `https://rpc-endpoints.superfluid.dev/optimism-mainnet`,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-mainnet",
@@ -292,7 +299,7 @@ export const networks: Network[] = [
     chainId: 42161,
     isTestnet: false,
     bufferTimeInMinutes: 240,
-    icon: "/icons/network/arbitrum.jpg",
+    icon: "/icons/network/arbitrum.svg",
     rpcUrl: "https://rpc-endpoints.superfluid.dev/arbitrum-one",
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-one",
@@ -317,7 +324,7 @@ export const getNetworkDefaultTokenPair = memoize(
     superToken: network.nativeAsset.superToken,
     underlyingToken: {
       type: TokenType.NativeAssetUnderlyingToken,
-    address: NATIVE_ASSET_ADDRESS,
+      address: NATIVE_ASSET_ADDRESS,
       name: `${network.displayName} Native Asset`,
       symbol: network.nativeAsset.symbol,
     },

@@ -173,10 +173,12 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         fontFamily: FONT_FAMILY_MONO,
       },
       body2: {
+        fontSize: "14px",
         fontWeight: 400,
         letterSpacing: 0.17,
       },
       body2mono: {
+        fontSize: "14px",
         fontWeight: 400,
         whiteSpace: "pre",
         fontFamily: FONT_FAMILY_MONO,
@@ -544,7 +546,6 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         styleOverrides: {
           head: {
             ...theme.typography.body2,
-            fontSize: "14px",
             color: theme.palette.text.secondary,
             padding: "8px 24px",
             minHeight: 0,

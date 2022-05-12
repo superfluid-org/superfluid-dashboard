@@ -27,10 +27,7 @@ export default memo(function TransactionBell() {
         invisible={!pendingTransactions.length || transactionDrawerOpen}
         badgeContent={""}
         color="warning"
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
+        variant="dot"
       >
         <NotificationsIcon />
       </Badge>
