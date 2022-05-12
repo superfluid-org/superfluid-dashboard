@@ -24,7 +24,7 @@ const AddressButton = styled(Stack)<AddressButtonProps>(
 
 export default memo(function AddressSearch({
   onChange,
-  address
+  address,
 }: {
   address: DisplayAddress | undefined;
   onChange: (address: DisplayAddress | undefined) => void; // TODO(KK): better name19
@@ -38,7 +38,6 @@ export default memo(function AddressSearch({
 
   return (
     <>
-      {/* TODO: Handle hover state. Should we keep the chip or split it into smaller pieces? */}
       <AddressButton
         hasAddress={!address}
         direction="row"
@@ -52,9 +51,7 @@ export default memo(function AddressSearch({
             name={address.name}
             tryGetEns={false}
             ChipProps={{
-              onDelete: () => {
-                onChange(undefined);
-              },
+              onDelete: () => onChange(undefined),
               sx: { flex: 1, background: "transparent" },
             }}
           />

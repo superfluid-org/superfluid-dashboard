@@ -6,12 +6,11 @@ import {
   ListItemAvatar,
   ListItemText,
   Stack,
-  Typography,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
-import { ensApi } from "../ens/ensApi.slice";
 import Blockies from "react-blockies";
+import { ensApi } from "../ens/ensApi.slice";
 
 export type DisplayAddress = {
   hash: string;

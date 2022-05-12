@@ -472,6 +472,16 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         },
       },
+      MuiListSubheader: {
+        styleOverrides: {
+          root: {
+            color: theme.palette.text.primary,
+            backgroundColor: alpha(theme.palette.text.primary, 0.04),
+            ...theme.typography.body2,
+            lineHeight: "48px",
+          },
+        },
+      },
       MuiListItem: {
         styleOverrides: {
           root: {
