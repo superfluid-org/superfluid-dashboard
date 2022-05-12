@@ -25,6 +25,7 @@ import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { useSelectedTokenContext } from "./SelectedTokenPairContext";
 import { TokenDialogButton } from "./TokenDialogButton";
 import { useRouter } from "next/router";
+import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
 
 export const WrapTabDowngrade: FC<{
   restoration: SuperTokenDowngradeRestoration | undefined;
@@ -34,6 +35,7 @@ export const WrapTabDowngrade: FC<{
   const router = useRouter();
   const { walletAddress } = useWalletContext();
   const { selectedTokenPair, setSelectedTokenPair } = useSelectedTokenContext();
+  const { setTransactionDrawerOpen } = useTransactionDrawerContext();
 
   const [amount, setAmount] = useState<string>("");
   const [amountWei, setAmountWei] = useState<BigNumber>(
@@ -224,9 +226,7 @@ export const WrapTabDowngrade: FC<{
             },
           })
             .unwrap()
-            .then(() => {
-              setAmount("");
-            });
+            .then(() => { router.push("/").then(() => setTransactionDrawerOpen(true)) });
 
           setTransactionDialogContent(
             <DowngradePreview restoration={restoration} />

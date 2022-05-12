@@ -141,7 +141,7 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
           value={searchTermVisible}
         />
       </DialogTitle>
-      <DialogContent dividers sx={{ p: 0 }}>
+      <DialogContent dividers={!!showEns || !!showRecents} sx={{ p: 0 }}>
         <List sx={{ pt: 0 }}>
           {searchTermDebounced ? (
             <>

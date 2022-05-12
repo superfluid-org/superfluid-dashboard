@@ -29,6 +29,7 @@ import {
 import { rpcApi, subgraphApi } from "../redux/store";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
+import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
 import {
   RestorationType,
   SendStreamRestoration,
@@ -62,6 +63,7 @@ export default memo(function SendCard(props: {
   const theme = useTheme();
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
+  const { setTransactionDrawerOpen } = useTransactionDrawerContext();
   const router = useRouter();
 
   const [receiver, setReceiver] = useState<DisplayAddress | undefined>(
@@ -284,9 +286,9 @@ export default memo(function SendCard(props: {
                   backgroundColor: alpha(theme.palette.primary.main, 0.04),
                 }}
               >
-                <Typography variant="h6" component="h2">
+                {/* <Typography variant="h6" component="h2">
                   Preview
-                </Typography>
+                </Typography> */}
 
                 {/** TODO(KK): Create separate preview? */}
                 {existingStream ? (
@@ -326,7 +328,7 @@ export default memo(function SendCard(props: {
                 },
               })
                 .unwrap()
-                .then(() => router.push("/"));
+                .then(() => { router.push("/").then(() => setTransactionDrawerOpen(true)) });
 
               // setTransactionDialogContent(
               //   <SendStreamPreview restoration={restoration} />

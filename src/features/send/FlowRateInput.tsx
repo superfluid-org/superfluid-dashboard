@@ -51,38 +51,23 @@ export const FlowRateInput: FC<{
       : ""
   );
 
-  const onAmountChange = useCallback(
-    () => (e: React.ChangeEvent<HTMLInputElement>) => {
-      setAmount(e.currentTarget.value);
-      const amountWei = ethers.utils.parseEther(
-        Number(e.currentTarget.value)
-          ? Number(e.currentTarget.value).toString()
-          : "0"
-      );
-      onChange({
-        ...flowRateWithTime,
-        amountWei: amountWei.toString(),
-      });
-    },
-    []
-  );
-
-  const onUnitOfTimeChange = useCallback(
-    () => (e: React.ChangeEvent<HTMLInputElement>) => {
-      onChange({
-        ...flowRateWithTime,
-        unitOfTime: Number(e.target.value),
-      });
-    },
-    []
-  );
-
   return (
     <Box sx={{ display: "grid", gridTemplateColumns: "6fr 4fr" }}>
       <TextField
         placeholder="0.0"
         value={amount}
-        onChange={onAmountChange}
+        onChange={(e) => {
+          setAmount(e.currentTarget.value);
+          const amountWei = ethers.utils.parseEther(
+            Number(e.currentTarget.value)
+              ? Number(e.currentTarget.value).toString()
+              : "0"
+          );
+          onChange({
+            ...flowRateWithTime,
+            amountWei: amountWei.toString(),
+          });
+        }}
         inputProps={{ sx: { borderRadius: "10px 0 0 10px" } }}
         sx={{
           ":hover, .Mui-focused": {
@@ -95,7 +80,12 @@ export const FlowRateInput: FC<{
       />
       <Select
         value={flowRateWithTime.unitOfTime}
-        onChange={onUnitOfTimeChange}
+        onChange={(e) => {
+          onChange({
+            ...flowRateWithTime,
+            unitOfTime: Number(e.target.value),
+          });
+        }}
         sx={{
           marginLeft: "-1px",
           ".MuiOutlinedInput-notchedOutline": {
