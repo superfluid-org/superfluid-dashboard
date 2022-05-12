@@ -1,45 +1,35 @@
-# Next.js with TypeScript example
+<h1 align="center">Welcome to the Superfluid Dashboard v2 Repo👋</h1>
 
-## How to use
+<p>
+  <a href="https://twitter.com/Superfluid_HQ/status/" target="_blank">
+    <img alt="Twitter: Superfluid_HQ" src="https://img.shields.io/twitter/follow/Superfluid_HQ.svg?style=social" />
+  </a>
+</p>
 
-Download the example [or clone the repo](https://github.com/mui/material-ui):
+> Resources for the Superfluid Dashboard
 
-<!-- #default-branch-switch -->
+### ⚡ [Dashboard v2 Product Requirements Notion](https://www.notion.so/superfluidhq/Superfluid-Dashboard-98caed8aab04448aaa6d22a8be0aadbb)
 
-```sh
-curl https://codeload.github.com/mui/material-ui/tar.gz/master | tar -xz --strip=2  material-ui-master/examples/nextjs-with-typescript
-cd nextjs-with-typescript
-```
+### 📃 [Dashboard v2 Backlog Notion](https://www.notion.so/superfluidhq/4c888d49859043f6b9a5712007d5007b?v=62de36cb74c044258b8b0edc8d96a481)
 
-Install it and run:
+### 📲 [Dashboard v2 Figma](https://www.figma.com/file/FzYRC5kTtAW8HYhhvIUIsQ/User-Dashboard-v2)
 
-```sh
-npm install
-npm run dev
-```
+### 📊 [Superfluid Design System Figma](https://www.figma.com/file/jjsALikq4lj8gHI8p9xAFy/Design-System-v2---MUI)
 
-or:
 
-<!-- #default-branch-switch -->
+> Resources for the Superfluid Protocol
 
-[![Edit on StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/mui/material-ui/tree/master/examples/nextjs-with-typescript)
+### 🏠 [Homepage](https://superfluid.finance)
 
-[![Edit on CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/mui/material-ui/tree/master/examples/nextjs-with-typescript)
+### ✨ [Superfluid Dashboard v1](https://app.superfluid.finance/)
 
-## The idea behind the example
+### ✨ [Superfluid Console](https://console.superfluid.finance/)
 
-The project uses [Next.js](https://github.com/vercel/next.js), which is a framework for server-rendered React apps.
-It includes `@mui/material` and its peer dependencies, including `emotion`, the default style engine in MUI v5. If you prefer, you can [use styled-components instead](https://mui.com/guides/interoperability/#styled-components).
+### 📖 [Docs](https://docs.superfluid.finance)
 
-## The link component
+The Superfluid Dashboard is the primary user-facing window into the Superfluid protocol. 
+It allows them to send and receive streaming payments as well as see their various flows visualised. 
+It provides a jumping-off point for users in the Superfluid ecosystem to access value-add products. 
+It teaches end-users and developers the fundamental principles of streaming
 
-Next.js has [a custom Link component](https://nextjs.org/docs/api-reference/next/link).
-The example folder provides adapters for usage with MUI.
-More information [in the documentation](https://mui.com/guides/routing/#next-js).
-
-## What's next?
-
-<!-- #default-branch-switch -->
-
-You now have a working example project.
-You can head back to the documentation, continuing browsing it from the [templates](https://mui.com/getting-started/templates/) section.
+This repository implements the Superfluid Dashboard v2 as a Next.js web app built on Superfluid's SDK-CORE and SDK-REDUX. 
