@@ -261,35 +261,36 @@ export default memo(function SendCard(props: {
         </Stack>
 
         <Stack gap={2.5}>
-          <Divider />
-
           {sendStreamRestoration && (
-            <Paper
-              variant="outlined"
-              sx={{
-                p: [2.5, 3],
-                color: theme.palette.primary.main,
-                borderColor: theme.palette.primary.main,
-                backgroundColor: alpha(theme.palette.primary.main, 0.04),
-              }}
-            >
-              <Typography variant="h6" component="h2">
-                Preview
-              </Typography>
-
-              {/** TODO(KK): Create separate preview? */}
-              {!!existingStream && (
-                <Typography variant="body2">
-                  You already have a stream...
+            <>
+              <Divider />
+              <Paper
+                variant="outlined"
+                sx={{
+                  p: [2.5, 3],
+                  color: theme.palette.primary.main,
+                  borderColor: theme.palette.primary.main,
+                  backgroundColor: alpha(theme.palette.primary.main, 0.04),
+                }}
+              >
+                <Typography variant="h6" component="h2">
+                  Preview
                 </Typography>
-              )}
 
-              <SendStreamPreview
-                receiver={sendStreamRestoration.receiver}
-                token={sendStreamRestoration.token}
-                flowRateWithTime={sendStreamRestoration.flowRate}
-              />
-            </Paper>
+                {/** TODO(KK): Create separate preview? */}
+                {!!existingStream && (
+                  <Typography variant="body2">
+                    You already have a stream...
+                  </Typography>
+                )}
+
+                <SendStreamPreview
+                  receiver={sendStreamRestoration.receiver}
+                  token={sendStreamRestoration.token}
+                  flowRateWithTime={sendStreamRestoration.flowRate}
+                />
+              </Paper>
+            </>
           )}
 
           <TransactionButton

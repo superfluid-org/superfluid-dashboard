@@ -87,8 +87,12 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             </ListItemAvatar>
             <ListItemText
               primary={tokenSymbol}
-              secondary="$1.00"
-              primaryTypographyProps={{ variant: "h6" }}
+              /**
+               * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
+               * This is just used to make table row look better
+               */
+              // secondary="$1.00"
+              primaryTypographyProps={{ variant: "h6", lineHeight: "46px" }}
               secondaryTypographyProps={{
                 variant: "body2mono",
                 color: "text.secondary",
@@ -105,7 +109,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 balanceTimestamp={updatedAtTimestamp}
               />
             }
-            secondary="$1.00"
+            // secondary="$1.00"
             primaryTypographyProps={{ variant: "h6mono" }}
             secondaryTypographyProps={{
               variant: "body2mono",

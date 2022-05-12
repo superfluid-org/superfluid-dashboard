@@ -2,6 +2,7 @@ import AddIcon from "@mui/icons-material/Add";
 import InboxIcon from "@mui/icons-material/Inbox";
 import { Avatar, Button, Card, Stack, Typography } from "@mui/material";
 import { Box, lighten, styled } from "@mui/system";
+import NextLink from "next/link";
 
 const WrapperAvatar = styled(Avatar)(({ theme }) => ({
   width: 70,
@@ -27,14 +28,16 @@ const TokenSnapshotEmptyCard = () => (
         Wrap some tokens to start streaming payments in real time.
       </Typography>
     </Box>
-    <Button
-      variant="contained"
-      color="primary"
-      size="large"
-      endIcon={<AddIcon />}
-    >
-      Wrap
-    </Button>
+    <NextLink href={"/wrap?upgrade"} passHref>
+      <Button
+        variant="contained"
+        color="primary"
+        size="large"
+        endIcon={<AddIcon />}
+      >
+        Wrap
+      </Button>
+    </NextLink>
   </Card>
 );
 
