@@ -2,6 +2,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Button, Stack, Typography } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { useNetworkContext } from "../network/NetworkContext";
 import {
   mainNetworks,
   Network,
@@ -33,6 +34,10 @@ interface TokenSnapshotTablesProps {
 }
 
 const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
+  const {
+    network: { isTestnet },
+  } = useNetworkContext();
+
   const networkSelectionRef = useRef<HTMLButtonElement>(null);
   const [hasContent, setHasContent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -40,11 +45,11 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
   const [tokenSnapshotsQueryTrigger] =
     subgraphApi.useLazyAccountTokenSnapshotsQuery();
 
-  const [showTestnets, setShowTestnets] = useState(false);
+  const [showTestnets, setShowTestnets] = useState(isTestnet);
 
   const [networkStates, setNetworkStates] = useState<NetworkStates>({
-    ...buildNetworkStates(mainNetworks, true),
-    ...buildNetworkStates(testNetworks, false),
+    ...buildNetworkStates(mainNetworks, !showTestnets),
+    ...buildNetworkStates(testNetworks, showTestnets),
   });
 
   const onTestnetsChange = (testActive: boolean) => {
