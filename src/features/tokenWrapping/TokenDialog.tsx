@@ -129,7 +129,7 @@ export const TokenDialog: FC<{
         );
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [openCounter, tokens.length] // Don't depend on balances query to avoid UI hopping.
+    [open, tokens.length] // Don't depend on balances query to avoid UI hopping.
   );
 
   const [searchTerm, setSearchTerm] = useState(""); // No need to debounce here because it's all client-side.
