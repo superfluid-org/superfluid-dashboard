@@ -64,12 +64,15 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
   const realtimeBalance = rpcApi.useRealtimeBalanceQuery({
     chainId: network.chainId,
     accountAddress: account,
-    tokenAddress: token
+    tokenAddress: token,
   });
 
-  const balance = realtimeBalance?.data?.balance ?? snapshot.balanceUntilUpdatedAt;
-  const balanceTimestamp = realtimeBalance?.data?.balanceTimestamp ?? snapshot.updatedAtTimestamp;
-  const netFlowRate = realtimeBalance?.data?.flowRate ?? snapshot.totalNetFlowRate;
+  const balance =
+    realtimeBalance?.data?.balance ?? snapshot.balanceUntilUpdatedAt;
+  const balanceTimestamp =
+    realtimeBalance?.data?.balanceTimestamp ?? snapshot.updatedAtTimestamp;
+  const netFlowRate =
+    realtimeBalance?.data?.flowRate ?? snapshot.totalNetFlowRate;
 
   const hasStreams =
     totalNumberOfActiveStreams + totalNumberOfClosedStreams > 0;
@@ -119,6 +122,8 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 balance={balance}
                 flowRate={netFlowRate}
                 balanceTimestamp={balanceTimestamp}
+                etherDecimalPlaces={8}
+                disableRoundingIndicator
               />
             }
             // secondary="$1.00"
@@ -132,7 +137,12 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         <TableCell>
           {totalNumberOfActiveStreams > 0 ? (
             <Typography variant="body2mono">
-              <EtherFormatted wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)} />
+              {netFlowRate.charAt(0) !== "-" && "+"}
+              <EtherFormatted
+                wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
+                etherDecimalPlaces={8}
+                disableRoundingIndicator
+              />
               /mo
             </Typography>
           ) : (
@@ -143,11 +153,21 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           {totalNumberOfActiveStreams > 0 ? (
             <Stack>
               <Typography variant="body2mono" color="primary">
-                +<EtherFormatted wei={BigNumber.from(totalInflowRate).mul(UnitOfTime.Month)} />
+                +
+                <EtherFormatted
+                  wei={BigNumber.from(totalInflowRate).mul(UnitOfTime.Month)}
+                  etherDecimalPlaces={8}
+                  disableRoundingIndicator
+                />
                 /mo
               </Typography>
               <Typography variant="body2mono" color="error">
-                -<EtherFormatted wei={BigNumber.from(totalOutflowRate).mul(UnitOfTime.Month)} />
+                -
+                <EtherFormatted
+                  wei={BigNumber.from(totalOutflowRate).mul(UnitOfTime.Month)}
+                  etherDecimalPlaces={8}
+                  disableRoundingIndicator
+                />
                 /mo
               </Typography>
             </Stack>
