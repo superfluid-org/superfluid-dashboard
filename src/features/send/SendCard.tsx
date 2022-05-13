@@ -1,10 +1,14 @@
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import InfoIcon from "@mui/icons-material/Info";
 import {
+  Alert,
   alpha,
   Box,
   Card,
+  Checkbox,
   Divider,
+  FormControlLabel,
+  FormGroup,
   IconButton,
   Paper,
   Stack,
@@ -75,6 +79,8 @@ export default memo(function SendCard(props: {
   const [flowRate, setFlowRate] = useState<FlowRateWithTime>(
     props.restoration?.flowRate ?? createDefaultFlowRate()
   );
+  const [understandLiquidationRisk, setUnderstandLiquidationRisk] =
+    useState(false);
 
   const amountPerSecond = useMemo(
     () =>
@@ -149,7 +155,8 @@ export default memo(function SendCard(props: {
     flowRate &&
     !BigNumber.from(flowRate.amountWei).isZero();
 
-  const isSendDisabled = !!existingStream || !hasAllDataForStream;
+  const isSendDisabled =
+    !!existingStream || !hasAllDataForStream || !understandLiquidationRisk;
 
   const sendStreamRestoration: SendStreamRestoration | undefined =
     hasAllDataForStream
@@ -304,6 +311,32 @@ export default memo(function SendCard(props: {
                   />
                 )}
               </Paper>
+
+              <Alert severity="warning">
+                <Stack>
+                  <Typography variant="h6">
+                    If you do not cancel this stream before your balance reaches
+                    zero, you will lose your buffer.
+                  </Typography>
+                  <Stack direction="row">
+                    <FormGroup>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={understandLiquidationRisk}
+                            onChange={() =>
+                              setUnderstandLiquidationRisk(
+                                !understandLiquidationRisk
+                              )
+                            }
+                          />
+                        }
+                        label="I understand the risk."
+                      />
+                    </FormGroup>
+                  </Stack>
+                </Stack>
+              </Alert>
             </>
           )}
 
@@ -328,7 +361,9 @@ export default memo(function SendCard(props: {
                 },
               })
                 .unwrap()
-                .then(() => { router.push("/").then(() => setTransactionDrawerOpen(true)) });
+                .then(() => {
+                  router.push("/").then(() => setTransactionDrawerOpen(true));
+                });
 
               // setTransactionDialogContent(
               //   <SendStreamPreview restoration={restoration} />

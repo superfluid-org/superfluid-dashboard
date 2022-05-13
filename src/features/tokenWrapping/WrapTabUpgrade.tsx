@@ -44,7 +44,7 @@ export const WrapTabUpgrade: FC<{
   const [amountWei, setAmountWei] = useState<BigNumber>(
     ethers.BigNumber.from(0)
   );
-
+  
   useEffect(() => {
     setAmountWei(ethers.utils.parseEther(Number(amount) ? amount : "0"));
   }, [amount]);
