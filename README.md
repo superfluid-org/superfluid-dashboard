@@ -6,7 +6,17 @@
   </a>
 </p>
 
-> Resources for the Superfluid Dashboard
+## Superfluid Dashboard v2
+
+The Superfluid Dashboard is the primary user-facing window into the Superfluid protocol.
+
+It allows users to send and receive streaming payments as well as see their various flows visualised. </br>
+It provides a jumping-off point for users in the Superfluid ecosystem to access value-add products. </br>
+It teaches end-users and developers the fundamental principles of streaming
+
+This repository implements the Superfluid Dashboard v2 as a Next.js web app built on Superfluid's SDK-CORE and SDK-REDUX. 
+
+## Resources for the Superfluid Dashboard
 
 ### ⚡ [Dashboard v2 Product Requirements Notion](https://www.notion.so/superfluidhq/Superfluid-Dashboard-98caed8aab04448aaa6d22a8be0aadbb)
 
@@ -17,7 +27,7 @@
 ### 📊 [Superfluid Design System Figma](https://www.figma.com/file/jjsALikq4lj8gHI8p9xAFy/Design-System-v2---MUI)
 
 
-> Resources for the Superfluid Protocol
+## Resources for the Superfluid Protocol
 
 ### 🏠 [Homepage](https://superfluid.finance)
 
@@ -26,10 +36,3 @@
 ### ✨ [Superfluid Console](https://console.superfluid.finance/)
 
 ### 📖 [Docs](https://docs.superfluid.finance)
-
-The Superfluid Dashboard is the primary user-facing window into the Superfluid protocol. 
-It allows them to send and receive streaming payments as well as see their various flows visualised. 
-It provides a jumping-off point for users in the Superfluid ecosystem to access value-add products. 
-It teaches end-users and developers the fundamental principles of streaming
-
-This repository implements the Superfluid Dashboard v2 as a Next.js web app built on Superfluid's SDK-CORE and SDK-REDUX. 
