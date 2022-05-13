@@ -110,9 +110,9 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
               <TableCell sx={{ pl: "72px" }} width="185">
                 To / From
               </TableCell>
-              <TableCell>All Time Flow</TableCell>
-              <TableCell width="280">Monthly Flow</TableCell>
-              <TableCell width="200">Start / End Date</TableCell>
+              <TableCell width="290">All Time Flow</TableCell>
+              <TableCell width="300">Monthly Flow</TableCell>
+              <TableCell width="300">Start / End Date</TableCell>
               <TableCell width="110">Filter</TableCell>
             </TableRow>
           </TableHead>
@@ -141,6 +141,7 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
+        sx={{ visibility: data.length <= 5 ? "hidden" : "visible" }}
       />
     </Box>
   );

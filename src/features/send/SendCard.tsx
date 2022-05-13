@@ -2,6 +2,7 @@ import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import InfoIcon from "@mui/icons-material/Info";
 import {
   Alert,
+  AlertTitle,
   alpha,
   Box,
   Card,
@@ -52,7 +53,11 @@ import {
 } from "./FlowRateInput";
 import { SendStreamPreview } from "./SendStreamPreview";
 
-const FormLabel: FC = ({ children }) => (
+interface FormLabelProps {
+  children?: React.ReactNode;
+}
+
+const FormLabel: FC<FormLabelProps> = ({ children }) => (
   <Typography variant="h6" sx={{ ml: 1.25, mb: 0.75 }}>
     {children}
   </Typography>
@@ -286,58 +291,59 @@ export default memo(function SendCard(props: {
           {sendStreamRestoration && (
             <>
               <Divider />
-              <Paper
-                variant="outlined"
-                sx={{
-                  p: [2.5, 3],
-                  color: theme.palette.primary.main,
-                  borderColor: theme.palette.primary.main,
-                  backgroundColor: alpha(theme.palette.primary.main, 0.04),
-                }}
-              >
-                {/* <Typography variant="h6" component="h2">
-                  Preview
-                </Typography> */}
-
-                {/** TODO(KK): Create separate preview? */}
-                {existingStream ? (
-                  <Typography variant="body2">
-                    You already have a stream... Updating a stream is currently
-                    not supported.
-                  </Typography>
-                ) : (
+              {!existingStream && (
+                <Paper
+                  variant="outlined"
+                  sx={{
+                    p: [2.5, 3],
+                    color: theme.palette.primary.main,
+                    borderColor: theme.palette.primary.main,
+                    backgroundColor: alpha(theme.palette.primary.main, 0.04),
+                  }}
+                >
+                  {/** TODO(KK): Create separate preview? */}
                   <SendStreamPreview
                     receiver={sendStreamRestoration.receiver}
                     token={sendStreamRestoration.token}
                     flowRateWithTime={sendStreamRestoration.flowRate}
                   />
-                )}
-              </Paper>
+                </Paper>
+              )}
+
+              {existingStream && (
+                <Alert severity="error">
+                  <AlertTitle>Stream already exists!</AlertTitle>
+                  <Typography variant="body2">
+                    Updating a stream is currently not supported.
+                  </Typography>
+                </Alert>
+              )}
 
               <Alert severity="warning">
-                <Stack>
-                  <Typography variant="h6">
-                    If you do not cancel this stream before your balance reaches
-                    zero, you will lose your buffer.
-                  </Typography>
-                  <Stack direction="row">
-                    <FormGroup>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={understandLiquidationRisk}
-                            onChange={() =>
-                              setUnderstandLiquidationRisk(
-                                !understandLiquidationRisk
-                              )
-                            }
-                          />
+                <AlertTitle>Protect your buffer!</AlertTitle>
+                <Typography variant="body2">
+                  If you do not cancel this stream before your balance reaches
+                  zero, you will lose your buffer.
+                </Typography>
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={understandLiquidationRisk}
+                        onChange={() =>
+                          setUnderstandLiquidationRisk(
+                            !understandLiquidationRisk
+                          )
                         }
-                        label="I understand the risk."
                       />
-                    </FormGroup>
-                  </Stack>
-                </Stack>
+                    }
+                    label={
+                      <Typography variant="body2">
+                        I understand the risk.
+                      </Typography>
+                    }
+                  />
+                </FormGroup>
               </Alert>
             </>
           )}

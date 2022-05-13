@@ -337,6 +337,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       },
       MuiOutlinedInput: {
         styleOverrides: {
+          root: {
+            // TODO: Figure out why styleOverrides.disabled is not working and replace .Mui-disabled hardcoded class.
+            ".Mui-disabled": {
+              backgroundColor: alpha(theme.palette.secondary.main, 0.3),
+              borderRadius: "10px",
+            },
+          },
           notchedOutline: {
             borderColor: theme.palette.other.outline,
           },
@@ -543,39 +550,29 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           disableRipple: true,
         },
       },
-      // TODO: Double check if this is still needed
-      // MuiTableBody: {
-      //   styleOverrides: {
-      //     root: {
-      //       // "tr:last-of-type > td": { border: 0 },
-      //     },
-      //   },
-      // },
-      // TODO: If we get tables to fit better then change paddings back to 8px 32px
       MuiTableRow: {
         styleOverrides: {
           root: {
             "td:first-of-type, th:first-of-type": {
-              padding: "8px 24px 8px 32px",
+              padding: "8px 32px",
             },
             "td:last-of-type, th:last-of-type": {
-              padding: "8px 32px 8px 24px",
+              padding: "8px 32px",
             },
           },
         },
       },
-      // TODO: If we get tables to fit better then change paddings back to 8px 32px
       MuiTableCell: {
         styleOverrides: {
           head: {
             ...theme.typography.body2,
             color: theme.palette.text.secondary,
-            padding: "8px 24px",
+            padding: "8px 32px",
             minHeight: 0,
           },
           body: {
             ...theme.typography.body2,
-            padding: "12px 24px",
+            padding: "12px 32px",
           },
         },
       },

@@ -88,6 +88,8 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ address, stream }) => {
             balance={streamedUntilUpdatedAt}
             flowRate={currentFlowRate}
             balanceTimestamp={updatedAtTimestamp}
+            etherDecimalPlaces={8}
+            disableRoundingIndicator
           />
         </Typography>
       </TableCell>
@@ -97,6 +99,8 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ address, stream }) => {
             {outgoing ? "-" : "+"}
             <EtherFormatted
               wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
+              etherDecimalPlaces={8}
+              disableRoundingIndicator
             />
             /mo
           </Typography>

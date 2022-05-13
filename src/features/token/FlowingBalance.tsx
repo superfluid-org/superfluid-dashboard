@@ -5,7 +5,7 @@ import EtherFormatted from "./EtherFormatted";
 import { useStateWithDep } from "../../useStateWithDep";
 
 const ANIMATION_MINIMUM_STEP_TIME = 80;
-const ANIMATING_NR_COUNT = 5;
+const ANIMATING_NR_COUNT = 3;
 
 export interface FlowingBalanceProps {
   balance: string;
@@ -15,6 +15,7 @@ export interface FlowingBalanceProps {
   balanceTimestamp: number;
   flowRate: string;
   etherDecimalPlaces?: number;
+  disableRoundingIndicator?: boolean;
 }
 
 export default memo(function FlowingBalance({
@@ -26,16 +27,16 @@ export default memo(function FlowingBalance({
   const [weiValue, setWeiValue] = useStateWithDep<BigNumberish>(balance);
 
   /*
- * TODO: When using this variable then ~ sign in EtherFormatted should be disabled
- * Calculating decimals based on the flow rate.
- * This is configurable by ANIMATING_NR_COUNT and should shows
- * roughly how many trailing numbers will animate each second.
- */
-  // const decimals = useMemo(
-  //   () =>
-  //     Math.min(18 - flowRate.replace("-", "").length + ANIMATING_NR_COUNT, 18),
-  //   [flowRate]
-  // );
+   * TODO: When using this variable then ~ sign in EtherFormatted should be disabled
+   * Calculating decimals based on the flow rate.
+   * This is configurable by ANIMATING_NR_COUNT and should shows
+   * roughly how many trailing numbers will animate each second.
+   */
+  const decimals = useMemo(
+    () =>
+      Math.min(18 - flowRate.replace("-", "").length + ANIMATING_NR_COUNT, 18),
+    [flowRate]
+  );
 
   const balanceTimestampMs = useMemo(
     () => ethers.BigNumber.from(balanceTimestamp).mul(1000),
@@ -89,7 +90,11 @@ export default memo(function FlowingBalance({
         textOverflow: "ellipsis",
       }}
     >
-      <EtherFormatted wei={weiValue} etherDecimalPlaces={etherDecimalPlaces} />
+      <EtherFormatted
+        disableRoundingIndicator
+        wei={weiValue}
+        etherDecimalPlaces={etherDecimalPlaces || decimals}
+      />
     </Box>
   );
 });
