@@ -316,22 +316,24 @@ export const WrapTabUpgrade: FC<{
               label: <UpgradePreview restoration={restoration} />,
               successActions: (
                 <TransactionDialogActions>
-                  <TransactionDialogButton
-                    color="secondary"
-                    onClick={closeTransactionDialog}
-                  >
-                    Wrap more tokens
-                  </TransactionDialogButton>
-                  <TransactionDialogButton
-                    color="primary"
-                    onClick={() =>
-                      router
-                        .push("/")
-                        .then(() => setTransactionDrawerOpen(true))
-                    }
-                  >
-                    Go to tokens page ➜
-                  </TransactionDialogButton>
+                  <Stack gap={1} sx={{ width: "100%" }}>
+                    <TransactionDialogButton
+                      color="secondary"
+                      onClick={closeTransactionDialog}
+                    >
+                      Wrap more tokens
+                    </TransactionDialogButton>
+                    <TransactionDialogButton
+                      color="primary"
+                      onClick={() =>
+                        router
+                          .push("/")
+                          .then(() => setTransactionDrawerOpen(true))
+                      }
+                    >
+                      Go to tokens page ➜
+                    </TransactionDialogButton>
+                  </Stack>
                 </TransactionDialogActions>
               ),
             });
