@@ -310,7 +310,7 @@ export const WrapTabUpgrade: FC<{
               },
             })
               .unwrap()
-              .then(() => setAmountWei(ethers.BigNumber.from("0")));
+              .then(() => setAmount(""));
 
             setTransactionDialogContent({
               label: <UpgradePreview restoration={restoration} />,

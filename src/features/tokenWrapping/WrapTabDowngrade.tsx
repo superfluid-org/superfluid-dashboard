@@ -60,6 +60,12 @@ export const WrapTabDowngrade: FC<{
     rpcApi.useSuperTokenDowngradeMutation();
   const isDowngradeDisabled = !selectedTokenPair || amountWei.isZero();
 
+  console.log({
+    isDowngradeDisabled,
+    selectedTokenPair,
+    amount: amountWei.toString()
+  })
+
   const amountInputRef = useRef<HTMLInputElement>(undefined!);
 
   useEffect(() => {
@@ -228,7 +234,7 @@ export const WrapTabDowngrade: FC<{
             },
           })
             .unwrap()
-            .then(() => setAmountWei(ethers.BigNumber.from("0")));
+            .then(() => setAmount(""));
 
           setTransactionDialogContent({
             label: <DowngradePreview restoration={restoration} />,
