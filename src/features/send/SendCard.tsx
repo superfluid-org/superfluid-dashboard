@@ -6,6 +6,7 @@ import {
   Box,
   Card,
   Checkbox,
+  DialogActions,
   Divider,
   FormControlLabel,
   FormGroup,
@@ -39,6 +40,7 @@ import {
   SendStreamRestoration,
 } from "../transactionRestoration/transactionRestorations";
 import { TransactionButton } from "../transactions/TransactionButton";
+import { TransactionDialogActions, TransactionDialogButton } from "../transactions/TransactionDialog";
 import { useWalletContext } from "../wallet/WalletContext";
 import AddressSearch from "./AddressSearch";
 import { DisplayAddress } from "./DisplayAddressChip";
@@ -361,13 +363,24 @@ export default memo(function SendCard(props: {
                 },
               })
                 .unwrap()
-                .then(() => {
-                  router.push("/").then(() => setTransactionDrawerOpen(true));
-                });
+                .then(() => {});
 
-              // setTransactionDialogContent(
-              //   <SendStreamPreview restoration={restoration} />
-              // );
+              setTransactionDialogContent({
+                successActions: (
+                  <TransactionDialogActions>
+                    <TransactionDialogButton
+                      color="primary"
+                      onClick={() =>
+                        router
+                          .push("/")
+                          .then(() => setTransactionDrawerOpen(true))
+                      }
+                    >
+                      Go to tokens page ➜
+                    </TransactionDialogButton>
+                  </TransactionDialogActions>
+                ),
+              });
             }}
           >
             Send

@@ -1,9 +1,13 @@
 import React, { FC, useState } from "react";
 import { useWalletContext } from "../wallet/WalletContext";
 import { useNetworkContext } from "../network/NetworkContext";
-import { Button, ButtonProps } from "@mui/material";
+import { Button, ButtonProps, Dialog, DialogActions } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
-import { TransactionDialog } from "./TransactionDialog";
+import {
+  TransactionDialog,
+  TransactionDialogActions,
+  TransactionDialogButton,
+} from "./TransactionDialog";
 import UnknownMutationResult from "../../unknownMutationResult";
 
 export const TransactionButton: FC<{
@@ -11,15 +15,22 @@ export const TransactionButton: FC<{
   hidden: boolean;
   disabled: boolean;
   onClick: (
-    setTransactionDialogContent: (children: React.ReactNode) => void
+    setTransactionDialogContent: (arg: {
+      label?: React.ReactNode;
+      successActions?: ReturnType<typeof TransactionDialogActions>;
+    }) => void,
+    closeTransactionDialog: () => void
   ) => void;
   ButtonProps?: ButtonProps;
 }> = ({ children, disabled, onClick, mutationResult, hidden }) => {
   const { walletAddress, walletChainId, connectWallet, isWalletConnecting } =
     useWalletContext();
   const { network } = useNetworkContext();
-  const [transactionDialogContent, setTransactionDialogContent] =
-    useState<React.ReactNode>(<></>);
+  const [transactionDialogLabel, setTransactionDialogLabel] = useState<
+    React.ReactNode | undefined
+  >();
+  const [transactionDialogSuccessActions, setTransactionDialogSuccessActions] =
+    useState<ReturnType<typeof TransactionDialogActions> | undefined>();
   const [transactionDialogOpen, setTransactionDialogOpen] = useState(false);
 
   const getButton = () => {
@@ -79,7 +90,16 @@ export const TransactionButton: FC<{
         size="xl"
         disabled={disabled}
         onClick={() => {
-          onClick(setTransactionDialogContent);
+          onClick(
+            (arg: {
+              label?: React.ReactNode;
+              successActions?: ReturnType<typeof TransactionDialogActions>;
+            }) => {
+              setTransactionDialogLabel(arg?.label);
+              setTransactionDialogSuccessActions(arg?.successActions);
+            },
+            () => setTransactionDialogOpen(false)
+          );
           setTransactionDialogOpen(true);
         }}
       >
@@ -95,9 +115,19 @@ export const TransactionButton: FC<{
         mutationResult={mutationResult}
         onClose={() => setTransactionDialogOpen(false)}
         open={transactionDialogOpen}
-      >
-        {transactionDialogContent}
-      </TransactionDialog>
+        label={transactionDialogLabel}
+        successActions={
+          transactionDialogSuccessActions ?? (
+            <DialogActions sx={{ p: 3, pt: 0 }}>
+              <TransactionDialogButton
+                onClick={() => setTransactionDialogOpen(false)}
+              >
+                OK
+              </TransactionDialogButton>
+            </DialogActions>
+          )
+        }
+      ></TransactionDialog>
     </>
   );
 };

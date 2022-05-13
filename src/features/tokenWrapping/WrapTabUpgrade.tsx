@@ -12,6 +12,7 @@ import { rpcApi, subgraphApi } from "../redux/store";
 import {
   Avatar,
   Button,
+  DialogActions,
   Input,
   Paper,
   Stack,
@@ -29,6 +30,10 @@ import { TokenDialogButton } from "./TokenDialogButton";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { useRouter } from "next/router";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
+import {
+  TransactionDialogActions,
+  TransactionDialogButton,
+} from "../transactions/TransactionDialog";
 
 export const WrapTabUpgrade: FC<{
   restoration: SuperTokenUpgradeRestoration | undefined;
@@ -44,7 +49,7 @@ export const WrapTabUpgrade: FC<{
   const [amountWei, setAmountWei] = useState<BigNumber>(
     ethers.BigNumber.from(0)
   );
-  
+
   useEffect(() => {
     setAmountWei(ethers.utils.parseEther(Number(amount) ? amount : "0"));
   }, [amount]);
@@ -260,9 +265,9 @@ export const WrapTabUpgrade: FC<{
               token: selectedTokenPair.underlyingToken,
             };
 
-            setTransactionDialogContent(
-              <AllowancePreview restoration={restoration} />
-            );
+            setTransactionDialogContent({
+              label: <AllowancePreview restoration={restoration} />,
+            });
 
             approveTrigger({
               chainId: network.chainId,
@@ -281,7 +286,7 @@ export const WrapTabUpgrade: FC<{
           hidden={false}
           disabled={isUpgradeDisabled}
           mutationResult={upgradeResult}
-          onClick={(setTransactionDialogContent) => {
+          onClick={(setTransactionDialogContent, closeTransactionDialog) => {
             if (isUpgradeDisabled) {
               throw Error(
                 "This should never happen because the token and amount must be selected for the button to be active."
@@ -305,11 +310,31 @@ export const WrapTabUpgrade: FC<{
               },
             })
               .unwrap()
-              .then(() => { router.push("/").then(() => setTransactionDrawerOpen(true)) });
+              .then(() => setAmountWei(ethers.BigNumber.from("0")));
 
-            setTransactionDialogContent(
-              <UpgradePreview restoration={restoration} />
-            );
+            setTransactionDialogContent({
+              label: <UpgradePreview restoration={restoration} />,
+              successActions: (
+                <TransactionDialogActions>
+                  <TransactionDialogButton
+                    color="secondary"
+                    onClick={closeTransactionDialog}
+                  >
+                    Wrap more tokens
+                  </TransactionDialogButton>
+                  <TransactionDialogButton
+                    color="primary"
+                    onClick={() =>
+                      router
+                        .push("/")
+                        .then(() => setTransactionDrawerOpen(true))
+                    }
+                  >
+                    Go to tokens page ➜
+                  </TransactionDialogButton>
+                </TransactionDialogActions>
+              ),
+            });
           }}
         >
           Upgrade to Super Token

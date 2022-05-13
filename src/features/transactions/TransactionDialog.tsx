@@ -4,8 +4,10 @@ import {
   Avatar,
   Box,
   Button,
+  ButtonProps,
   CircularProgress,
   DialogActions,
+  DialogActionsProps,
   DialogContent,
   DialogTitle,
   IconButton,
@@ -27,11 +29,35 @@ const OutlineIcon = styled(Avatar)(({ theme }) => ({
   background: "transparent",
 }));
 
+export const TransactionDialogButton: FC<ButtonProps> = ({
+  children,
+  ...props
+}) => {
+  return (
+    <Button fullWidth variant="contained" size="xl" {...(props ?? {})}>
+      {children}
+    </Button>
+  );
+};
+
+export const TransactionDialogActions: FC<DialogActionsProps> = ({
+  children,
+  ...props
+}) => {
+  return (
+    <Stack component={DialogActions} spacing={1} sx={{ p: 3, pt: 0 }} {...(props ?? {})}>
+      {children}
+    </Stack>
+  );
+};
+
 export const TransactionDialog: FC<{
   open: boolean;
   onClose: () => void;
   mutationResult: UnknownMutationResult;
-}> = ({ open, onClose, mutationResult, children }) => {
+  label: React.ReactNode | null;
+  successActions: ReturnType<typeof TransactionDialogActions>;
+}> = ({ open, onClose, mutationResult, label, successActions }) => {
   const theme = useTheme();
   const { network } = useNetworkContext();
 
@@ -85,26 +111,14 @@ export const TransactionDialog: FC<{
                     Transaction broadcasted
                   </Typography>
                 ) : (
-                  children
+                  label
                 )}
               </Stack>
             </>
           )}
         </Stack>
       </DialogContent>
-      {mutationResult.isSuccess && (
-        <DialogActions sx={{ p: 3, pt: 0 }}>
-          <Button
-            fullWidth
-            color="primary"
-            variant="contained"
-            size="xl"
-            onClick={onClose}
-          >
-            OK
-          </Button>
-        </DialogActions>
-      )}
+      {mutationResult.isSuccess && !!successActions && successActions}
     </ResponsiveDialog>
   );
 };

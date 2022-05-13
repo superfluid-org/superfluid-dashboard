@@ -3,6 +3,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   Avatar,
   Button,
+  DialogActions,
   Input,
   Paper,
   Stack,
@@ -26,6 +27,7 @@ import { useSelectedTokenContext } from "./SelectedTokenPairContext";
 import { TokenDialogButton } from "./TokenDialogButton";
 import { useRouter } from "next/router";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
+import { TransactionDialogActions, TransactionDialogButton } from "../transactions/TransactionDialog";
 
 export const WrapTabDowngrade: FC<{
   restoration: SuperTokenDowngradeRestoration | undefined;
@@ -202,7 +204,7 @@ export const WrapTabDowngrade: FC<{
         hidden={false}
         mutationResult={downgradeResult}
         disabled={isDowngradeDisabled}
-        onClick={(setTransactionDialogContent) => {
+        onClick={(setTransactionDialogContent, closeTransactionDialog) => {
           if (isDowngradeDisabled) {
             throw Error(
               "This should never happen because the token and amount must be selected for the button to be active."
@@ -226,11 +228,29 @@ export const WrapTabDowngrade: FC<{
             },
           })
             .unwrap()
-            .then(() => { router.push("/").then(() => setTransactionDrawerOpen(true)) });
+            .then(() => setAmountWei(ethers.BigNumber.from("0")));
 
-          setTransactionDialogContent(
-            <DowngradePreview restoration={restoration} />
-          );
+          setTransactionDialogContent({
+            label: <DowngradePreview restoration={restoration} />,
+            successActions: (
+              <TransactionDialogActions>
+                <TransactionDialogButton
+                  color="secondary"
+                  onClick={closeTransactionDialog}
+                >
+                  Unwrap more tokens
+                </TransactionDialogButton>
+                <TransactionDialogButton
+                  color="primary"
+                  onClick={() =>
+                    router.push("/").then(() => setTransactionDrawerOpen(true))
+                  }
+                >
+                  Go to tokens page ➜
+                </TransactionDialogButton>
+              </TransactionDialogActions>
+            ),
+          });
         }}
       >
         Downgrade
