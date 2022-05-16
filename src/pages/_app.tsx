@@ -14,6 +14,7 @@ import ReduxPersistGate from "../features/redux/ReduxPersistGate";
 import NextThemesProvider from "../features/theme/NextThemesProvider";
 import { TransactionRestorationContextProvider } from "../features/transactionRestoration/TransactionRestorationContext";
 import { TransactionDrawerContextProvider } from "../features/transactionDrawer/TransactionDrawerContext";
+import { hotjar } from "react-hotjar";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -29,6 +30,17 @@ export default function MyApp(props: MyAppProps) {
     readOnlyFrameworks.map((x) =>
       setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
     );
+  }, []);
+
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_HJID && process.env.NEXT_PUBLIC_HJSV) {
+      hotjar.initialize(
+        Number(process.env.NEXT_PUBLIC_HJID),
+        Number(process.env.NEXT_PUBLIC_HJSV)
+      );
+    } else {
+      console.warn("Hotjar not initialized.");
+    }
   }, []);
 
   return (
