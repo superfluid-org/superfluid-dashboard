@@ -34,7 +34,7 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
     <ListItemAvatar sx={{ mr: 1 }}>
       <NetworkIcon network={network} size={24} fontSize={16} />
     </ListItemAvatar>
-    <ListItemText>{network.displayName}</ListItemText>
+    {network.displayName}
   </MenuItem>
 );
 

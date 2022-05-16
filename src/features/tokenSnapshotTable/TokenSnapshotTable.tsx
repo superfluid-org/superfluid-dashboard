@@ -57,7 +57,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
               <TableCell width="400">Balance</TableCell>
               <TableCell width="300">Net Flow</TableCell>
               <TableCell width="300">Inflow/Outflow</TableCell>
-              <TableCell width="40" align="center">
+              <TableCell width="120" align="center">
                 <KeyboardDoubleArrowDownIcon />
               </TableCell>
             </TableRow>
