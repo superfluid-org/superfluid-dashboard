@@ -14,7 +14,6 @@ import { FC } from "react";
 import TokenSnapshotTables from "../features/tokenSnapshotTable/TokenSnapshotTables";
 import { useWalletContext } from "../features/wallet/WalletContext";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import SearchIcon from "@mui/icons-material/Search";
 import ConnectWallet from "../features/wallet/ConnectWallet";
 
 const WalletOptions = [
