@@ -67,7 +67,7 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         disabled: getModeStyle("#12141E61", "#FFFFFF99"),
       },
       primary: {
-        main: getModeStyle("#10BB35FF", "#69E07FFF"),
+        main: getModeStyle("#10BB35FF", "#10BB35"),
         dark: getModeStyle("#0B8225FF", "#008900FF"),
         light: getModeStyle("#3FC85DFF", "#5FEF66FF"),
         contrastText: getModeStyle("#FFFFFFFF", "#FFFFFFDE"),
@@ -204,7 +204,7 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
       },
     },
     shadows: [
-      "none",
+      "none", // elevation 0
       getModeStyle(
         "0px 0px 6px 3px rgba(204, 204, 204, 0.25)",
         "0px 0px 6px 3px rgba(204, 204, 204, 0.25)"

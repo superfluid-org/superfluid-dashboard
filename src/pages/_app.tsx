@@ -40,7 +40,7 @@ export default function MyApp(props: MyAppProps) {
               name="viewport"
               content="initial-scale=1, width=device-width"
             />
-          </Head>2
+          </Head>
           <MuiProvider>
             <NetworkContextProvider>
               {(network) => (
@@ -49,7 +49,10 @@ export default function MyApp(props: MyAppProps) {
                     <TransactionDrawerContextProvider>
                       <Layout>
                         <ReduxPersistGate>
-                          <Component key={`${network.slugName}`} {...pageProps} />
+                          <Component
+                            key={`${network.slugName}`}
+                            {...pageProps}
+                          />
                         </ReduxPersistGate>
                       </Layout>
                     </TransactionDrawerContextProvider>
