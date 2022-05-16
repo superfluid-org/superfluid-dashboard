@@ -105,9 +105,7 @@ const Home: NextPage = () => {
   return (
     <Container maxWidth="lg">
       {walletAddress ? (
-        <TokenSnapshotTables
-          address={"0x3be39EA586E565683e0C57d1243Aa950Ba466c89".toString()}
-        />
+        <TokenSnapshotTables address={walletAddress} />
       ) : (
         <PlaceholderConnectView />
       )}
