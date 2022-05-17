@@ -1,14 +1,13 @@
 import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Avatar,
   Button,
   CircularProgress,
-  DialogActions,
   ListItemAvatar,
   ListItemText,
-  Menu,
   MenuItem,
   MenuList,
   Popover,
@@ -19,24 +18,29 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { Address, Stream } from "@superfluid-finance/sdk-core";
+import { Stream } from "@superfluid-finance/sdk-core";
+import { TrackedTransaction } from "@superfluid-finance/sdk-redux";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { FC, memo, MouseEvent, useState } from "react";
+import Blockies from "react-blockies";
+import { useSelector } from "react-redux";
 import shortenAddress from "../../utils/shortenAddress";
+import { Network } from "../network/networks";
+import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
 import EtherFormatted from "../token/EtherFormatted";
 import FlowingBalance from "../token/FlowingBalance";
-import Blockies from "react-blockies";
-import { rpcApi } from "../redux/store";
-import { useNetworkContext } from "../network/NetworkContext";
-import CloseIcon from "@mui/icons-material/Close";
-import { useWalletContext } from "../wallet/WalletContext";
-import { Network } from "../network/networks";
 import {
   TransactionDialog,
+  TransactionDialogActions,
   TransactionDialogButton,
 } from "../transactions/TransactionDialog";
+import {
+  useWalletTransactionsSelector,
+  transactionByHashSelector,
+} from "../wallet/useWalletTransactions";
+import { useWalletContext } from "../wallet/WalletContext";
 
 export const TokenStreamRowLoading = () => (
   <TableRow>
@@ -90,13 +94,17 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
   const [flowDeleteTrigger, flowDeleteMutation] =
     rpcApi.useFlowDeleteMutation();
 
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const flowDeleteTransaction = useWalletTransactionsSelector(
+    transactionByHashSelector(flowDeleteMutation.data?.hash)
+  );
+
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const openMenu = (event: MouseEvent<HTMLButtonElement>) =>
-    setAnchorEl(event.currentTarget);
+    setMenuAnchor(event.currentTarget);
 
-  const closeMenu = () => setAnchorEl(null);
+  const closeMenu = () => setMenuAnchor(null);
 
   const closeCancelDialog = () => setShowCancelDialog(false);
 
@@ -119,7 +127,7 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
     }) === 0;
 
   const isActive = currentFlowRate !== "0";
-  const menuOpen = Boolean(anchorEl);
+  const menuOpen = Boolean(menuAnchor);
 
   return (
     <TableRow hover>
@@ -167,9 +175,10 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
         </Stack>
       </TableCell>
       <TableCell align="center">
-        {isActive && (
+        {isActive && flowDeleteTransaction?.status !== "Succeeded" && (
           <>
-            {flowDeleteMutation.isLoading ? (
+            {flowDeleteMutation.isLoading ||
+            flowDeleteTransaction?.status === "Pending" ? (
               <Stack direction="row" alignItems="center" gap={1}>
                 <CircularProgress color="warning" size="16px" />
                 <Typography variant="caption">Pending</Typography>
@@ -194,7 +203,7 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
                 </Tooltip>
                 <Popover
                   open={menuOpen}
-                  anchorEl={anchorEl}
+                  anchorEl={menuAnchor}
                   onClose={closeMenu}
                   transformOrigin={{ horizontal: "right", vertical: "top" }}
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
@@ -223,11 +232,11 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
               onClose={closeCancelDialog}
               open={showCancelDialog}
               successActions={
-                <DialogActions sx={{ p: 3, pt: 0 }}>
+                <TransactionDialogActions>
                   <TransactionDialogButton onClick={closeCancelDialog}>
                     OK
                   </TransactionDialogButton>
-                </DialogActions>
+                </TransactionDialogActions>
               }
             />
           </>

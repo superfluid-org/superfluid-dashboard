@@ -70,7 +70,7 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
       [
         ...(incomingStreamsQuery.data?.data || []),
         ...(outgoingStreamsQuery.data?.data || []),
-      ].sort((s1, s2) => s1.updatedAtTimestamp - s2.updatedAtTimestamp),
+      ].sort((s1, s2) => s2.updatedAtTimestamp - s1.updatedAtTimestamp),
     [incomingStreamsQuery, outgoingStreamsQuery]
   );
 

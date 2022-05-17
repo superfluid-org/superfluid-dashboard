@@ -1,11 +1,14 @@
 import { List } from "@mui/material";
 import { memo } from "react";
 import TransactionListItem from "./TransactionListItem";
-import { useWalletTransactions } from "../wallet/useWalletTransactions";
+import {
+  useWalletTransactionsSelector,
+  transactionsByTimestampSelector,
+} from "../wallet/useWalletTransactions";
 
 export default memo(function TransactionList() {
-  const transactions = useWalletTransactions((x) =>
-    x.sort((a, b) => (a.timestampMs > b.timestampMs ? -1 : 1))
+  const transactions = useWalletTransactionsSelector(
+    transactionsByTimestampSelector
   );
 
   return (

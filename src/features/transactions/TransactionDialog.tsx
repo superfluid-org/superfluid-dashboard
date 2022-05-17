@@ -41,18 +41,16 @@ export const TransactionDialogButton: FC<ButtonProps> = ({
 export const TransactionDialogActions: FC<DialogActionsProps> = ({
   children,
   ...props
-}) => {
-  return (
-    <Stack
-      component={DialogActions}
-      spacing={1}
-      sx={{ p: 3, pt: 0 }}
-      {...(props ?? {})}
-    >
-      {children}
-    </Stack>
-  );
-};
+}) => (
+  <Stack
+    component={DialogActions}
+    spacing={1}
+    sx={{ p: 3, pt: 0 }}
+    {...(props ?? {})}
+  >
+    {children}
+  </Stack>
+);
 
 export const TransactionDialog: FC<{
   open: boolean;
