@@ -71,7 +71,9 @@ export const TokenStreamRowLoading = () => (
     <TableCell>
       <Skeleton width={100} />
     </TableCell>
-    <TableCell>Cancel</TableCell>
+    <TableCell>
+      <Skeleton width={60} />
+    </TableCell>
   </TableRow>
 );
 
