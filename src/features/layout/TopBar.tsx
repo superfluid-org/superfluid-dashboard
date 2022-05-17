@@ -52,7 +52,7 @@ export default memo(function TopBar() {
   return (
     <CustomAppBar
       open={transactionDrawerOpen}
-      scrolled={scrollTop > 0}
+      scrolled={scrollTop > 0 || undefined}
       position="fixed"
       elevation={0}
     >

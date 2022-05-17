@@ -237,14 +237,6 @@ export const WrapTabUpgrade: FC<{
         </Typography>
       )}
 
-      {missingAllowance?.gt(0) && (
-        <Typography>
-          {`Missing allowance: ${ethers.utils.formatEther(
-            missingAllowance.toString()
-          )}`}
-        </Typography>
-      )}
-
       <Stack gap={2} direction="column" sx={{ width: "100%" }}>
         <TransactionButton
           mutationResult={approveResult}

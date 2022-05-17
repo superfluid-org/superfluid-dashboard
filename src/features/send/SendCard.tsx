@@ -41,7 +41,10 @@ import {
   SendStreamRestoration,
 } from "../transactionRestoration/transactionRestorations";
 import { TransactionButton } from "../transactions/TransactionButton";
-import { TransactionDialogActions, TransactionDialogButton } from "../transactions/TransactionDialog";
+import {
+  TransactionDialogActions,
+  TransactionDialogButton,
+} from "../transactions/TransactionDialog";
 import { useWalletContext } from "../wallet/WalletContext";
 import AddressSearch from "./AddressSearch";
 import { DisplayAddress } from "./DisplayAddressChip";
