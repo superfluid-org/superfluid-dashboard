@@ -11,6 +11,7 @@ import {
   Switch,
   ToggleButton,
   ToggleButtonGroup,
+  Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/system";
 import { FC, useState } from "react";
@@ -31,7 +32,9 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, active, onChange }) => {
       <ListItemAvatar sx={{ mr: 1 }}>
         <NetworkIcon size={24} fontSize={16} network={network} />
       </ListItemAvatar>
-      <ListItemText>{network.displayName}</ListItemText>
+      <ListItemText primaryTypographyProps={{ variant: "menuItem" }}>
+        {network.displayName}
+      </ListItemText>
       <Switch checked={active} onChange={onNetworkToggled} />
     </MenuItem>
   );

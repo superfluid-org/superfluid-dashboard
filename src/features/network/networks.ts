@@ -2,9 +2,7 @@ import { memoize } from "lodash";
 import {
   NATIVE_ASSET_ADDRESS,
   SuperTokenPair,
-  SuperTokenType,
   TokenType,
-  UnderlyingTokenType,
 } from "../redux/endpoints/adHocSubgraphEndpoints";
 
 export type Network = {

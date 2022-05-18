@@ -122,7 +122,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 balance={balance}
                 flowRate={netFlowRate}
                 balanceTimestamp={balanceTimestamp}
-                etherDecimalPlaces={8}
+                etherDecimalPlaces={netFlowRate === "0" ? 8 : undefined}
                 disableRoundingIndicator
               />
             }
@@ -175,7 +175,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             "-"
           )}
         </TableCell>
-        <TableCell>
+        <TableCell align="center">
           {hasStreams && (
             <IconButton onClick={toggleOpen}>
               <OpenIcon open={open} />
@@ -192,7 +192,6 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         >
           <Collapse in={open} timeout="auto" unmountOnExit>
             <TokenStreamsTable
-              address={address}
               network={network}
               token={snapshot.token}
               lastElement={lastElement}

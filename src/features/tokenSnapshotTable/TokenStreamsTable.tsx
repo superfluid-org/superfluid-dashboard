@@ -13,22 +13,22 @@ import { Address } from "@superfluid-finance/sdk-core";
 import { FC, memo, useMemo, useState } from "react";
 import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
+import { useWalletContext } from "../wallet/WalletContext";
 import TokenStreamRow, { TokenStreamRowLoading } from "./TokenStreamRow";
 
 interface TokenStreamsTableProps {
-  address: Address;
   network: Network;
   token: Address;
   lastElement: boolean;
 }
 
 const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
-  address,
   network,
   token,
   lastElement,
 }) => {
   const theme = useTheme();
+  const { walletAddress } = useWalletContext();
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
@@ -36,7 +36,7 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
   const incomingStreamsQuery = subgraphApi.useStreamsQuery({
     chainId: network.chainId,
     filter: {
-      receiver: address,
+      receiver: walletAddress,
       token: token,
     },
     pagination: {
@@ -52,7 +52,7 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
   const outgoingStreamsQuery = subgraphApi.useStreamsQuery({
     chainId: network.chainId,
     filter: {
-      sender: address,
+      sender: walletAddress,
       token: token,
     },
     pagination: {
@@ -70,7 +70,7 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
       [
         ...(incomingStreamsQuery.data?.data || []),
         ...(outgoingStreamsQuery.data?.data || []),
-      ].sort((s1, s2) => s1.updatedAtTimestamp - s2.updatedAtTimestamp),
+      ].sort((s1, s2) => s2.updatedAtTimestamp - s1.updatedAtTimestamp),
     [incomingStreamsQuery, outgoingStreamsQuery]
   );
 
@@ -113,7 +113,9 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
               <TableCell width="290">All Time Flow</TableCell>
               <TableCell width="300">Monthly Flow</TableCell>
               <TableCell width="300">Start / End Date</TableCell>
-              <TableCell width="110">Filter</TableCell>
+              <TableCell width="120" align="center">
+                Filter
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -125,8 +127,8 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
                 .map((stream) => (
                   <TokenStreamRow
                     key={stream.id}
-                    address={address}
                     stream={stream}
+                    network={network}
                   />
                 ))
             )}
