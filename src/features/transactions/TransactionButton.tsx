@@ -23,7 +23,7 @@ export const TransactionButton: FC<{
   ) => void;
   ButtonProps?: ButtonProps;
 }> = ({ children, disabled, onClick, mutationResult, hidden }) => {
-  const { walletAddress, walletChainId, connectWallet, isWalletConnecting } =
+  const { walletAddress, walletChainId, switchNetwork, connectWallet, isWalletConnecting } =
     useWalletContext();
   const { network } = useNetworkContext();
   const [transactionDialogLabel, setTransactionDialogLabel] = useState<
@@ -70,11 +70,16 @@ export const TransactionButton: FC<{
     if (walletChainId != network.chainId) {
       return (
         <Button
-          disabled
+          disabled={!switchNetwork}
           color="primary"
           variant="contained"
           size="xl"
           fullWidth
+          onClick={() => {
+            if (switchNetwork) {
+              switchNetwork(network.chainId);
+            }
+          }}
         >
           Change Network to {network.displayName}
         </Button>

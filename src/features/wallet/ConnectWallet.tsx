@@ -5,8 +5,6 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Stack,
-  Typography,
 } from "@mui/material";
 import { FC, memo, useMemo } from "react";
 import { useNetworkContext } from "../network/NetworkContext";

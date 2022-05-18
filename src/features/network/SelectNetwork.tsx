@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/system";
 import { FC, memo, MouseEvent, useState } from "react";
+import { useWalletContext } from "../wallet/WalletContext";
 import { useNetworkContext } from "./NetworkContext";
 import NetworkIcon from "./NetworkIcon";
 import { mainNetworks, Network, testNetworks } from "./networks";
@@ -40,7 +41,8 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
 
 export default memo(function SelectNetwork() {
   const theme = useTheme();
-
+  const { isWalletConnected, switchNetwork } = useWalletContext();
+  
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [showTestnets, setShowTestnets] = useState(false);
 
@@ -57,6 +59,10 @@ export default memo(function SelectNetwork() {
   const onNetworkSelected = (chainId: number) => () => {
     handleClose();
     setSelectedNetwork(chainId);
+
+    if (switchNetwork) {
+      switchNetwork(chainId);
+    }
   };
 
   const handleShowTestnetsChange = (
