@@ -143,7 +143,11 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        sx={{ visibility: data.length <= 5 ? "hidden" : "visible" }}
+        sx={{
+          "> *": {
+            visibility: data.length <= 5 ? "hidden" : "visible",
+          },
+        }}
       />
     </Box>
   );

@@ -1,4 +1,5 @@
 import { alpha, Theme, ThemeOptions } from "@mui/material/styles";
+import React from "react";
 import { FONT_FACES } from "./fonts";
 
 // TODO: Move to separate declaration file to make theme file cleaner?
@@ -12,6 +13,7 @@ interface TypographyCustomVariants {
   body2mono: React.CSSProperties;
   largeInput: React.CSSProperties;
   menuItem: React.CSSProperties;
+  tooltip: React.CSSProperties;
 }
 
 declare module "@mui/material/styles" {
@@ -27,6 +29,7 @@ declare module "@mui/material/Typography" {
     body2mono: true;
     largeInput: true;
     menuItem: true;
+    tooltip: true;
   }
 }
 
@@ -73,7 +76,7 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         disabled: getModeStyle("#12141E61", "#FFFFFF99"),
       },
       primary: {
-        main: getModeStyle("#10BB35FF", "#10BB35"),
+        main: getModeStyle("#10BB35FF", "#10BB35FF"),
         dark: getModeStyle("#0B8225FF", "#008900FF"),
         light: getModeStyle("#3FC85DFF", "#5FEF66FF"),
         contrastText: getModeStyle("#FFFFFFFF", "#FFFFFFDE"),
@@ -214,56 +217,57 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         lineHeight: "150%",
         letterSpacing: "0.15px",
       },
+      tooltip: {
+        fontSize: "12px",
+        fontWeight: 400,
+      },
     },
     shadows: [
       "none", // elevation 0
-      getModeStyle(
-        "0px 0px 6px 3px rgba(204, 204, 204, 0.25)",
-        "0px 0px 6px 3px rgba(204, 204, 204, 0.25)"
-      ), // elevation 1
+      getModeStyle("0px 0px 6px 3px rgba(204, 204, 204, 0.25)", "none"), // elevation 1
       getModeStyle(
         "0px 0px 30px -2px rgba(204, 204, 204, 0.4), 0px 0px 6px rgba(204, 204, 204, 0.25)",
-        "0px 0px 30px -2px rgba(204, 204, 204, 0.4), 0px 0px 6px rgba(204, 204, 204, 0.25)"
+        "none"
       ), // elevation 2
       getModeStyle(
-        "0px 3px 3px -2px rgba(0, 0, 0, 0.2), 0px 3px 4px rgba(0, 0, 0, 0.14), 0px 1px 8px rgba(0, 0, 0, 0.12)",
-        "0px 3px 3px -2px rgba(0, 0, 0, 0.2), 0px 3px 4px rgba(0, 0, 0, 0.14), 0px 1px 8px rgba(0, 0, 0, 0.12)"
+        "0px 0px 3px -2px rgba(0, 0, 0, 0.2), 0px 0px 25px rgba(0, 0, 0, 0.14), 0px 0px 8px rgba(0, 0, 0, 0.12)",
+        "0px 0px 3px -2px rgba(0, 0, 0, 0.2), 0px 0px 25px rgba(0, 0, 0, 0.14), 0px 0px 8px rgba(0, 0, 0, 0.12)"
       ), // elevation 3
       getModeStyle(
-        "0px 0px 6px rgba(0, 0, 0, 0.12)",
-        "0px 0px 6px rgba(0, 0, 0, 0.12)"
+        "0px 0px 8px rgba(0, 0, 0, 0.15), 0px 0px 3px -2px rgba(0, 0, 0, 0.23), 0px 0px 25px rgba(0, 0, 0, 0.17)",
+        "0px 0px 8px rgba(0, 0, 0, 0.15), 0px 0px 3px -2px rgba(0, 0, 0, 0.23), 0px 0px 25px rgba(0, 0, 0, 0.17)"
       ), // elevation 4
       getModeStyle(
-        "0px 0px 1px -1px rgba(0, 0, 0, 0.2), 0px 0px 7px rgba(0, 0, 0, 0.12)",
-        "0px 0px 1px -1px rgba(0, 0, 0, 0.2), 0px 0px 7px rgba(0, 0, 0, 0.12)"
+        "0px 0px 8px rgba(0, 0, 0, 0.18), 0px 0px 3px -2px rgba(0, 0, 0, 0.26), 0px 0px 25px rgba(0, 0, 0, 0.2)",
+        "0px 0px 8px rgba(0, 0, 0, 0.18), 0px 0px 3px -2px rgba(0, 0, 0, 0.26), 0px 0px 25px rgba(0, 0, 0, 0.2)"
       ), // elevation 5
       getModeStyle(
-        "0px 0px 6px 2px rgba(0, 0, 0, 0.12)",
-        "0px 0px 6px 2px rgba(0, 0, 0, 0.12)"
+        "0px 0px 8px rgba(0, 0, 0, 0.21), 0px 0px 3px -2px rgba(0, 0, 0, 0.29), 0px 0px 25px rgba(0, 0, 0, 0.23)",
+        "0px 0px 8px rgba(0, 0, 0, 0.21), 0px 0px 3px -2px rgba(0, 0, 0, 0.29), 0px 0px 25px rgba(0, 0, 0, 0.23)"
       ), // elevation 6
       getModeStyle(
-        "0px 4px 5px -2px rgba(0, 0, 0, 0.2), 0px 7px 10px 1px rgba(0, 0, 0, 0.14), 0px 2px 16px 1px rgba(0, 0, 0, 0.12)",
-        "0px 4px 5px -2px rgba(0, 0, 0, 0.2), 0px 7px 10px 1px rgba(0, 0, 0, 0.14), 0px 2px 16px 1px rgba(0, 0, 0, 0.12)"
+        "0px 0px 8px rgba(0, 0, 0, 0.24), 0px 0px 3px -2px rgba(0, 0, 0, 0.32), 0px 0px 25px rgba(0, 0, 0, 0.26)",
+        "0px 0px 8px rgba(0, 0, 0, 0.24), 0px 0px 3px -2px rgba(0, 0, 0, 0.32), 0px 0px 25px rgba(0, 0, 0, 0.26)"
       ), // elevation 7
       getModeStyle(
-        "0px 0px 5px -3px rgba(0, 0, 0, 0.14), 0px 0px 10px 1px rgba(0, 0, 0, 0.1), 0px 0px 14px 2px rgba(0, 0, 0, 0.05)",
-        "0px 0px 5px -3px rgba(0, 0, 0, 0.14), 0px 0px 10px 1px rgba(0, 0, 0, 0.1), 0px 0px 14px 2px rgba(0, 0, 0, 0.05)"
+        "0px 0px 8px rgba(0, 0, 0, 0.27), 0px 0px 3px -2px rgba(0, 0, 0, 0.35), 0px 0px 25px rgba(0, 0, 0, 0.29)",
+        "0px 0px 8px rgba(0, 0, 0, 0.27), 0px 0px 3px -2px rgba(0, 0, 0, 0.35), 0px 0px 25px rgba(0, 0, 0, 0.29)"
       ), // elevation 8
       getModeStyle(
-        "0px 5px 6px -3px rgba(0, 0, 0, 0.2), 0px 9px 12px 1px rgba(0, 0, 0, 0.14), 0px 3px 16px 2px rgba(0, 0, 0, 0.12)",
-        "0px 5px 6px -3px rgba(0, 0, 0, 0.2), 0px 9px 12px 1px rgba(0, 0, 0, 0.14), 0px 3px 16px 2px rgba(0, 0, 0, 0.12)"
+        "0px 0px 8px rgba(0, 0, 0, 0.3), 0px 0px 3px -2px rgba(0, 0, 0, 0.38), 0px 0px 25px rgba(0, 0, 0, 0.32)",
+        "0px 0px 8px rgba(0, 0, 0, 0.3), 0px 0px 3px -2px rgba(0, 0, 0, 0.38), 0px 0px 25px rgba(0, 0, 0, 0.32)"
       ), // elevation 9
       getModeStyle(
-        "0px 6px 6px -3px rgba(0, 0, 0, 0.2), 0px 10px 14px 1px rgba(0, 0, 0, 0.14), 0px 4px 18px 3px rgba(0, 0, 0, 0.12)",
-        "0px 6px 6px -3px rgba(0, 0, 0, 0.2), 0px 10px 14px 1px rgba(0, 0, 0, 0.14), 0px 4px 18px 3px rgba(0, 0, 0, 0.12)"
+        "0px 0px 8px rgba(0, 0, 0, 0.33), 0px 0px 3px -2px rgba(0, 0, 0, 0.41), 0px 0px 25px rgba(0, 0, 0, 0.35)",
+        "0px 0px 8px rgba(0, 0, 0, 0.33), 0px 0px 3px -2px rgba(0, 0, 0, 0.41), 0px 0px 25px rgba(0, 0, 0, 0.35)"
       ), // elevation 10
       getModeStyle(
-        "0px 6px 7px -4px rgba(0, 0, 0, 0.2), 0px 11px 15px 1px rgba(0, 0, 0, 0.14), 0px 4px 20px 3px rgba(0, 0, 0, 0.12)",
-        "0px 6px 7px -4px rgba(0, 0, 0, 0.2), 0px 11px 15px 1px rgba(0, 0, 0, 0.14), 0px 4px 20px 3px rgba(0, 0, 0, 0.12)"
+        "0px 0px 8px rgba(0, 0, 0, 0.36), 0px 0px 3px -2px rgba(0, 0, 0, 0.44), 0px 0px 25px rgba(0, 0, 0, 0.38)",
+        "0px 0px 8px rgba(0, 0, 0, 0.36), 0px 0px 3px -2px rgba(0, 0, 0, 0.44), 0px 0px 25px rgba(0, 0, 0, 0.38)"
       ), // elevation 11
       getModeStyle(
-        "0px 7px 8px -4px rgba(0, 0, 0, 0.2), 0px 12px 17px 2px rgba(0, 0, 0, 0.14), 0px 5px 22px 4px rgba(0, 0, 0, 0.12)",
-        "0px 7px 8px -4px rgba(0, 0, 0, 0.2), 0px 12px 17px 2px rgba(0, 0, 0, 0.14), 0px 5px 22px 4px rgba(0, 0, 0, 0.12)"
+        "0px 0px 8px rgba(0, 0, 0, 0.39), 0px 0px 3px -2px rgba(0, 0, 0, 0.47), 0px 0px 25px rgba(0, 0, 0, 0.41)",
+        "0px 0px 8px rgba(0, 0, 0, 0.39), 0px 0px 3px -2px rgba(0, 0, 0, 0.47), 0px 0px 25px rgba(0, 0, 0, 0.41)"
       ), // elevation 12
       getModeStyle(
         "0px 7px 8px -4px rgba(0, 0, 0, 0.2), 0px 13px 19px 2px rgba(0, 0, 0, 0.14), 0px 5px 24px 4px rgba(0, 0, 0, 0.12)",
@@ -314,6 +318,23 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         "0px 11px 15px -7px rgba(0, 0, 0, 0.2), 0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(0, 0, 0, 0.12)"
       ), // elevation 24
     ],
+    transitions: {
+      easing: {
+        easeInOut: "cubic-bezier(0.4, 0, 0.2, 1)",
+        easeOut: "cubic-bezier(0, 0, 0.2, 1)",
+        easeIn: "cubic-bezier(0.4, 0, 1, 1)",
+        sharp: "cubic-bezier(0.4, 0, 0.6, 1)",
+      },
+      duration: {
+        shortest: 150,
+        shorter: 200,
+        short: 250,
+        standard: 300,
+        complex: 375,
+        enteringScreen: 225,
+        leavingScreen: 195,
+      },
+    },
   };
 };
 
@@ -394,6 +415,22 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         styleOverrides: {
           root: {
             color: theme.palette.text.primary,
+            borderRadius: "8px",
+            padding: theme.spacing(0.75),
+          },
+          colorPrimary: {},
+          colorSecondary: {
+            boxShadow: theme.shadows[0],
+            border: `1px solid`,
+            borderColor: theme.palette.other.outline,
+            transition: theme.transitions.create("all", {
+              easing: theme.transitions.easing.easeInOut,
+              duration: theme.transitions.duration.short,
+            }),
+            "&:hover": {
+              background: alpha(theme.palette.action.hover, 0.04),
+              boxShadow: theme.shadows[2],
+            },
           },
         },
       },
@@ -599,6 +636,31 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         },
       },
+      MuiTablePagination: {
+        styleOverrides: {
+          root: {
+            borderTop: `1px solid`,
+            borderColor: theme.palette.divider,
+          },
+        },
+      },
+      MuiTableRow: {
+        styleOverrides: {
+          root: {
+            "&.MuiTableRow-hover:hover": {
+              background: "transparent",
+              td: {
+                background: theme.palette.action.hover,
+              },
+            },
+            "&:last-of-type": {
+              td: {
+                border: "none",
+              },
+            },
+          },
+        },
+      },
       MuiTableCell: {
         styleOverrides: {
           head: {
@@ -617,12 +679,11 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         styleOverrides: {
           tooltip: {
             backgroundColor: theme.palette.background.paper,
+            color: theme.palette.text.secondary,
             boxShadow: theme.shadows[5],
             padding: `${theme.spacing(0.5)} ${theme.spacing(1)}`,
-            color: theme.palette.text.secondary,
-            fontSize: "12px",
             borderRadius: "4px",
-            textAlign: "center",
+            ...theme.typography.tooltip,
           },
           arrow: {
             color: theme.palette.background.paper,

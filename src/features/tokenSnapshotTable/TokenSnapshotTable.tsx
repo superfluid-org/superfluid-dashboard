@@ -1,6 +1,5 @@
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import {
-  Avatar,
   Paper,
   Stack,
   Table,
@@ -66,7 +65,6 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
             {tokenSnapshots.map((snapshot, index) => (
               <TokenSnapshotRow
                 key={snapshot.id}
-                address={address.toLowerCase()}
                 network={network}
                 snapshot={snapshot}
                 lastElement={tokenSnapshots.length <= index + 1}
