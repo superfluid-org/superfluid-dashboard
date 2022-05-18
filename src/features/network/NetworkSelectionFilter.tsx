@@ -1,20 +1,16 @@
 import {
-  Avatar,
   Box,
   Collapse,
-  Divider,
   ListItemAvatar,
   ListItemText,
   Menu,
   MenuItem,
-  MenuList,
   Switch,
   ToggleButton,
   ToggleButtonGroup,
-  Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/system";
-import { FC, useState } from "react";
+import { FC } from "react";
 import NetworkIcon from "./NetworkIcon";
 import { Network, networks } from "./networks";
 

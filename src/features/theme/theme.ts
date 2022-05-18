@@ -51,6 +51,10 @@ declare module "@mui/material/Button" {
   interface ButtonPropsSizeOverrides {
     xl: true;
   }
+
+  interface ButtonPropsVariantOverrides {
+    textContained: true;
+  }
 }
 
 const FONT_FAMILY = "'Walsheim', Arial";
@@ -397,7 +401,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         styleOverrides: {
           root: {
             padding: theme.spacing(0.5),
-            // background: theme.palette.action.disabled,
+            backgroundColor: alpha(theme.palette.action.disabled, 0.12),
           },
           grouped: {
             border: "none",
@@ -415,15 +419,17 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           root: {
             textTransform: "inherit",
             ...theme.typography.body1,
+            "&.Mui-selected": {
+              ...theme.typography.h6,
+              color: theme.palette.primary.main,
+              background: theme.palette.primary.contrastText,
+            },
           },
           sizeMedium: {
             letterSpacing: "0.17px",
           },
           sizeLarge: {
             ...theme.typography.h5,
-          },
-          selected: {
-            ...theme.typography.h6,
           },
         },
       },
@@ -463,6 +469,28 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
               padding: "14px 0",
               width: "100%",
               ...theme.typography.h6,
+            },
+          },
+          {
+            props: {
+              variant: "textContained",
+              color: "primary",
+            },
+            style: {
+              color: theme.palette.primary.main,
+              backgroundColor: alpha(theme.palette.primary.main, 0.08),
+              "&:hover": {
+                backgroundColor: alpha(theme.palette.primary.main, 0.08),
+              },
+            },
+          },
+          {
+            props: {
+              variant: "textContained",
+              color: "secondary",
+            },
+            style: {
+              color: theme.palette.text.disabled,
             },
           },
         ],

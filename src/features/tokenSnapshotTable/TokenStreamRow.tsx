@@ -19,12 +19,10 @@ import {
   Typography,
 } from "@mui/material";
 import { Stream } from "@superfluid-finance/sdk-core";
-import { TrackedTransaction } from "@superfluid-finance/sdk-redux";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { FC, memo, MouseEvent, useState } from "react";
 import Blockies from "react-blockies";
-import { useSelector } from "react-redux";
 import shortenAddress from "../../utils/shortenAddress";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
@@ -37,8 +35,8 @@ import {
   TransactionDialogButton,
 } from "../transactions/TransactionDialog";
 import {
-  useWalletTransactionsSelector,
   transactionByHashSelector,
+  useWalletTransactionsSelector,
 } from "../wallet/useWalletTransactions";
 import { useWalletContext } from "../wallet/WalletContext";
 

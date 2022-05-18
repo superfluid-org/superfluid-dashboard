@@ -111,7 +111,7 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
                 To / From
               </TableCell>
               <TableCell width="290">All Time Flow</TableCell>
-              <TableCell width="300">Monthly Flow</TableCell>
+              <TableCell width="300">Flow rate</TableCell>
               <TableCell width="300">Start / End Date</TableCell>
               <TableCell width="120" align="center">
                 Filter

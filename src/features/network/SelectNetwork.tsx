@@ -1,22 +1,34 @@
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import {
-  Avatar,
   Box,
   Button,
   Collapse,
-  Divider,
   ListItemAvatar,
-  ListItemText,
   Menu,
   MenuItem,
   ToggleButton,
   ToggleButtonGroup,
+  styled,
+  useTheme,
 } from "@mui/material";
-import { useTheme } from "@mui/system";
 import { FC, memo, MouseEvent, useState } from "react";
 import { useNetworkContext } from "./NetworkContext";
 import NetworkIcon from "./NetworkIcon";
 import { mainNetworks, Network, testNetworks } from "./networks";
+
+interface OpenIconProps {
+  open: boolean;
+}
+
+export const OpenIcon = styled(KeyboardArrowDownIcon)<OpenIconProps>(
+  ({ theme, open }) => ({
+    transform: `rotate(${open ? 180 : 0}deg)`,
+    transition: theme.transitions.create("transform", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+  })
+);
 
 interface NetworkItemProps {
   network: Network;
@@ -75,7 +87,7 @@ export default memo(function SelectNetwork() {
         startIcon={
           <NetworkIcon network={selectedNetwork} size={24} fontSize={16} />
         }
-        endIcon={<KeyboardArrowDownIcon />}
+        endIcon={<OpenIcon open={open} />}
         onClick={handleOpen}
         sx={{ ".MuiButton-startIcon > *:nth-of-type(1)": { fontSize: "16px" } }}
       >
