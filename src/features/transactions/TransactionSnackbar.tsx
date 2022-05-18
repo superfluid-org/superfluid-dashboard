@@ -1,13 +1,11 @@
 import { Alert, Snackbar, SnackbarContent, Stack } from "@mui/material";
 import Grow from "@mui/material/Grow";
-import {
-  TrackedTransaction,
-} from "@superfluid-finance/sdk-redux";
+import { TrackedTransaction } from "@superfluid-finance/sdk-redux";
 import _ from "lodash";
 import { useEffect, useState } from "react";
 import { useAppSelector } from "../redux/store";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
-import { useWalletTransactions } from "../wallet/useWalletTransactions";
+import useWalletTransactions from "../wallet/useWalletTransactions";
 import { useWalletContext } from "../wallet/WalletContext";
 
 export default function TransactionSnackbar() {

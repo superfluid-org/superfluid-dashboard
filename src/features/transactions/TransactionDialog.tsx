@@ -1,4 +1,5 @@
-import { FC } from "react";
+import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Alert,
   Avatar,
@@ -14,12 +15,12 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
-import UnknownMutationResult from "../../unknownMutationResult";
-import { useNetworkContext } from "../network/NetworkContext";
-import ResponsiveDialog from "../common/ResponsiveDialog";
 import { styled, useTheme } from "@mui/system";
+import { FC } from "react";
+import UnknownMutationResult from "../../unknownMutationResult";
+import ResponsiveDialog from "../common/ResponsiveDialog";
+import { useNetworkContext } from "../network/NetworkContext";
+import { Network } from "../network/networks";
 
 const OutlineIcon = styled(Avatar)(({ theme }) => ({
   borderRadius: "50%",
@@ -32,34 +33,38 @@ const OutlineIcon = styled(Avatar)(({ theme }) => ({
 export const TransactionDialogButton: FC<ButtonProps> = ({
   children,
   ...props
-}) => {
-  return (
-    <Button fullWidth variant="contained" size="xl" {...(props ?? {})}>
-      {children}
-    </Button>
-  );
-};
+}) => (
+  <Button fullWidth variant="contained" size="xl" {...(props ?? {})}>
+    {children}
+  </Button>
+);
 
 export const TransactionDialogActions: FC<DialogActionsProps> = ({
   children,
   ...props
-}) => {
-  return (
-    <Stack component={DialogActions} spacing={1} sx={{ p: 3, pt: 0 }} {...(props ?? {})}>
-      {children}
-    </Stack>
-  );
-};
+}) => (
+  <Stack
+    component={DialogActions}
+    spacing={1}
+    sx={{ p: 3, pt: 0 }}
+    {...(props ?? {})}
+  >
+    {children}
+  </Stack>
+);
 
 export const TransactionDialog: FC<{
   open: boolean;
-  onClose: () => void;
   mutationResult: UnknownMutationResult;
-  label: React.ReactNode | null;
   successActions: ReturnType<typeof TransactionDialogActions>;
-}> = ({ open, onClose, mutationResult, label, successActions }) => {
+  label?: React.ReactNode | null;
+  network?: Network;
+  onClose: () => void;
+}> = ({ open, mutationResult, successActions, label, network, onClose }) => {
   const theme = useTheme();
-  const { network } = useNetworkContext();
+
+  // Using app network name as a fallback if network is not specified in props
+  const { network: selectedNetwork } = useNetworkContext();
 
   return (
     <ResponsiveDialog
@@ -101,7 +106,8 @@ export const TransactionDialog: FC<{
 
               {!mutationResult.isSuccess && (
                 <Typography variant="h4">
-                  Waiting for transaction approval... ({network.displayName})
+                  Waiting for transaction approval... (
+                  {network?.displayName || selectedNetwork.displayName})
                 </Typography>
               )}
 

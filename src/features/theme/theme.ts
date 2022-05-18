@@ -11,6 +11,7 @@ interface TypographyCustomVariants {
   body1mono: React.CSSProperties;
   body2mono: React.CSSProperties;
   largeInput: React.CSSProperties;
+  menuItem: React.CSSProperties;
 }
 
 declare module "@mui/material/styles" {
@@ -25,6 +26,7 @@ declare module "@mui/material/Typography" {
     body1mono: true;
     body2mono: true;
     largeInput: true;
+    menuItem: true;
   }
 }
 
@@ -199,6 +201,12 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         fontStyle: "normal",
         fontWeight: 500,
         fontSize: "30px",
+        lineHeight: "150%",
+        letterSpacing: "0.15px",
+      },
+      menuItem: {
+        fontSize: "16px",
+        fontWeight: 400,
         lineHeight: "150%",
         letterSpacing: "0.15px",
       },
@@ -438,6 +446,12 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         },
         variants: [
           {
+            props: { size: "small" },
+            style: {
+              ...theme.typography.caption,
+            },
+          },
+          {
             props: { size: "large" },
             style: {
               fontSize: 16,
@@ -550,15 +564,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           disableRipple: true,
         },
       },
-      MuiTableRow: {
+      MuiMenuItem: {
         styleOverrides: {
           root: {
-            "td:first-of-type, th:first-of-type": {
-              padding: "8px 32px",
-            },
-            "td:last-of-type, th:last-of-type": {
-              padding: "8px 32px",
-            },
+            ...theme.typography.menuItem,
           },
         },
       },
@@ -567,12 +576,28 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           head: {
             ...theme.typography.body2,
             color: theme.palette.text.secondary,
-            padding: "8px 32px",
+            padding: "12px 32px",
             minHeight: 0,
           },
           body: {
             ...theme.typography.body2,
-            padding: "12px 32px",
+            padding: "8px 32px",
+          },
+        },
+      },
+      MuiTooltip: {
+        styleOverrides: {
+          tooltip: {
+            backgroundColor: theme.palette.background.paper,
+            boxShadow: theme.shadows[5],
+            padding: `${theme.spacing(0.5)} ${theme.spacing(1)}`,
+            color: theme.palette.text.secondary,
+            fontSize: "12px",
+            borderRadius: "4px",
+            textAlign: "center",
+          },
+          arrow: {
+            color: theme.palette.background.paper,
           },
         },
       },

@@ -60,7 +60,7 @@ export const reduxStore = configureStore({
     [subgraphApi.reducerPath]: subgraphApi.reducer,
     [transactionTracker.reducerPath]: transactionTrackerPersistedReducer,
     [assetApiSlice.reducerPath]: assetApiSlice.reducer,
-    [ensApi.reducerPath]: ensApi.reducer
+    [ensApi.reducerPath]: ensApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
