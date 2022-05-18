@@ -20,6 +20,7 @@ import { FC } from "react";
 import UnknownMutationResult from "../../unknownMutationResult";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import { useNetworkContext } from "../network/NetworkContext";
+import { Network } from "../network/networks";
 
 const OutlineIcon = styled(Avatar)(({ theme }) => ({
   borderRadius: "50%",
@@ -54,14 +55,16 @@ export const TransactionDialogActions: FC<DialogActionsProps> = ({
 
 export const TransactionDialog: FC<{
   open: boolean;
-  onClose: () => void;
   mutationResult: UnknownMutationResult;
-  label?: React.ReactNode | null;
   successActions: ReturnType<typeof TransactionDialogActions>;
-}> = ({ open, onClose, mutationResult, label, successActions }) => {
+  label?: React.ReactNode | null;
+  network?: Network;
+  onClose: () => void;
+}> = ({ open, mutationResult, successActions, label, network, onClose }) => {
   const theme = useTheme();
 
-  const { network } = useNetworkContext();
+  // Using app network name as a fallback if network is not specified in props
+  const { network: selectedNetwork } = useNetworkContext();
 
   return (
     <ResponsiveDialog
@@ -103,7 +106,8 @@ export const TransactionDialog: FC<{
 
               {!mutationResult.isSuccess && (
                 <Typography variant="h4">
-                  Waiting for transaction approval... ({network.displayName})
+                  Waiting for transaction approval... (
+                  {network?.displayName || selectedNetwork.displayName})
                 </Typography>
               )}
 

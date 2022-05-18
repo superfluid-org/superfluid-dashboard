@@ -231,6 +231,7 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
 
             <TransactionDialog
               mutationResult={flowDeleteMutation}
+              network={network}
               onClose={closeCancelDialog}
               open={showCancelDialog}
               successActions={
