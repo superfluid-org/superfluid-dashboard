@@ -9,11 +9,11 @@ export default function ThemeChanger() {
 
   const isDarkTheme = muiTheme.palette.mode === "dark";
 
+  const toggleTheme = () => setTheme(isDarkTheme ? "light" : "dark");
+
   return (
     <Tooltip title={isDarkTheme ? "Light mode" : "Dark mode"}>
-      <IconButton
-        onClick={() => (isDarkTheme ? setTheme("light") : setTheme("dark"))}
-      >
+      <IconButton onClick={toggleTheme}>
         {isDarkTheme ? (
           <LightModeOutlined fontSize="small" />
         ) : (

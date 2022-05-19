@@ -35,7 +35,6 @@ export default memo(function TopBar() {
   const isScrolled = useBodyScrolled();
   const { transactionDrawerOpen } = useTransactionDrawerContext();
 
-  console.log("RENDERING HEADER");
   return (
     <CustomAppBar
       open={transactionDrawerOpen}
