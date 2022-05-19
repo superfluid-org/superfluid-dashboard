@@ -294,22 +294,11 @@ export default memo(function SendCard(props: {
             <>
               <Divider />
               {!existingStream && (
-                <Paper
-                  variant="outlined"
-                  sx={{
-                    p: [2.5, 3],
-                    color: theme.palette.primary.main,
-                    borderColor: theme.palette.primary.main,
-                    backgroundColor: alpha(theme.palette.primary.main, 0.04),
-                  }}
-                >
-                  {/** TODO(KK): Create separate preview? */}
-                  <SendStreamPreview
-                    receiver={sendStreamRestoration.receiver}
-                    token={sendStreamRestoration.token}
-                    flowRateWithTime={sendStreamRestoration.flowRate}
-                  />
-                </Paper>
+                <SendStreamPreview
+                  receiver={sendStreamRestoration.receiver}
+                  token={sendStreamRestoration.token}
+                  flowRateWithTime={sendStreamRestoration.flowRate}
+                />
               )}
 
               {existingStream && (

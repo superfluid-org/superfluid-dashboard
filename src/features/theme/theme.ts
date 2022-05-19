@@ -346,6 +346,12 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
     components: {
       MuiPaper: {
         styleOverrides: {
+          root: {
+            borderRadius: "12px",
+          },
+          rounded: {
+            borderRadius: "20px",
+          },
           elevation1: {
             background: getModeStyle(
               "#FFFFFF",
@@ -679,6 +685,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           disableRipple: true,
         },
       },
+      MuiMenu: {
+        defaultProps: {
+          PaperProps: {
+            square: true,
+          },
+        },
+      },
       MuiMenuItem: {
         styleOverrides: {
           root: {
@@ -694,11 +707,36 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         },
       },
+      MuiTableContainer: {
+        styleOverrides: {
+          root: {
+            borderRadius: "20px",
+            border: "1px solid",
+            borderColor: theme.palette.other.outline,
+          },
+        },
+      },
+      MuiTable: {
+        variants: [
+          {
+            props: { size: "small" },
+            style: {
+              tr: {
+                background: "transparent",
+                "&.MuiTableRow-hover:hover": {
+                  background: "transparent",
+                },
+              },
+            },
+          },
+        ],
+      },
       MuiTableRow: {
         styleOverrides: {
           root: {
+            background: theme.palette.background.paper,
             "&.MuiTableRow-hover:hover": {
-              background: "transparent",
+              background: theme.palette.background.paper,
               td: {
                 background: theme.palette.action.hover,
               },

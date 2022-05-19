@@ -1,14 +1,22 @@
 import AddIcon from "@mui/icons-material/Add";
 import InboxIcon from "@mui/icons-material/Inbox";
-import { Avatar, Button, Card, Stack, Typography } from "@mui/material";
-import { Box, lighten, styled } from "@mui/system";
+import {
+  alpha,
+  Avatar,
+  Box,
+  Button,
+  Card,
+  Stack,
+  styled,
+  Typography,
+} from "@mui/material";
 import NextLink from "next/link";
 
 const WrapperAvatar = styled(Avatar)(({ theme }) => ({
   width: 70,
   height: 70,
   borderRadius: "50%",
-  background: lighten(theme.palette.primary.main, 0.92),
+  background: alpha(theme.palette.primary.main, 0.08),
 }));
 
 const TokenSnapshotEmptyCard = () => (
