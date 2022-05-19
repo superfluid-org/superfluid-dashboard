@@ -31,7 +31,7 @@ const OpenIcon = styled(ExpandCircleDownOutlinedIcon)<OpenIconProps>(
   ({ theme, open }) => ({
     transform: `rotate(${open ? 180 : 0}deg)`,
     transition: theme.transitions.create("transform", {
-      easing: theme.transitions.easing.sharp,
+      easing: theme.transitions.easing.easeInOut,
       duration: theme.transitions.duration.leavingScreen,
     }),
   })

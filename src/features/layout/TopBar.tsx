@@ -1,6 +1,6 @@
 import { alpha, AppBar, Stack, styled, Toolbar } from "@mui/material";
 import { memo } from "react";
-import useScrollPosition from "../../hooks/useScrollPosition";
+import useBodyScrolled from "../../hooks/useBodyScrolled";
 import SelectNetwork from "../network/SelectNetwork";
 import { transactionDrawerWidth } from "../transactionDrawer/TransactionDrawer";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
@@ -9,50 +9,37 @@ import { menuDrawerWidth } from "./NavigationDrawer";
 
 interface CustomAppBarProps {
   open: boolean;
-  scrolled: boolean;
+  isScrolled?: boolean;
 }
 const CustomAppBar = styled(AppBar)<CustomAppBarProps>(
-  ({ theme, open, scrolled }) => ({
+  ({ theme, open, isScrolled }) => ({
     width: `calc(100% - ${menuDrawerWidth}px)`,
     marginLeft: `${menuDrawerWidth}px`,
-    transition: [
-      theme.transitions.create(["margin", "width"], {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-      }),
-      theme.transitions.create(["border-bottom"], {
-        easing: theme.transitions.easing.easeInOut,
-        duration: theme.transitions.duration.short,
-      }),
-    ].join(", "),
+    background: alpha(theme.palette.background.paper, isScrolled ? 1 : 0),
+    transition: theme.transitions.create("all", {
+      easing: theme.transitions.easing.easeInOut,
+      duration: theme.transitions.duration.standard,
+    }),
     ...(open && {
       width: `calc(100% - ${transactionDrawerWidth - menuDrawerWidth}px)`,
-      transition: [
-        theme.transitions.create(["margin", "width"], {
-          easing: theme.transitions.easing.easeOut,
-          duration: theme.transitions.duration.enteringScreen,
-        }),
-        theme.transitions.create(["border-bottom"], {
-          easing: theme.transitions.easing.easeInOut,
-          duration: theme.transitions.duration.short,
-        }),
-      ].join(", "),
       marginRight: transactionDrawerWidth,
     }),
-    borderBottom: `1px solid ${
-      scrolled ? theme.palette.divider : "transparent"
-    }`,
+    borderBottom: `1px solid ${alpha(
+      theme.palette.divider,
+      isScrolled ? 0.12 : 0 // 0.12 is divider's default alpha channel
+    )}`,
   })
 );
 
 export default memo(function TopBar() {
-  const scrollTop = useScrollPosition();
+  const isScrolled = useBodyScrolled();
   const { transactionDrawerOpen } = useTransactionDrawerContext();
 
+  console.log("RENDERING HEADER");
   return (
     <CustomAppBar
       open={transactionDrawerOpen}
-      scrolled={scrollTop > 0 || undefined}
+      isScrolled={isScrolled}
       position="fixed"
       elevation={0}
     >

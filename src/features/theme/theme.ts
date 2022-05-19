@@ -121,10 +121,10 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
       },
       background: {
         paper: getModeStyle("#FFFFFFFF", "#151619"),
-        default: getModeStyle("#FFFFFFFF", "#151619FF"),
+        default: getModeStyle("#FFFFFFFF", "#151619"),
       },
       other: {
-        outline: "#E0E0E0",
+        outline: getModeStyle("#E0E0E0", "#2D2D2D"),
         backdrop: "rgba(0, 0, 0, 0.5)",
         snackbar: "#323232",
       },
@@ -320,7 +320,7 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
     ],
     transitions: {
       easing: {
-        easeInOut: "cubic-bezier(0.4, 0, 0.2, 1)",
+        easeInOut: "cubic-bezier(.55, 0, 0.1, 1)",
         easeOut: "cubic-bezier(0, 0, 0.2, 1)",
         easeIn: "cubic-bezier(0.4, 0, 1, 1)",
         sharp: "cubic-bezier(0.4, 0, 0.6, 1)",
@@ -344,6 +344,70 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
 
   return {
     components: {
+      MuiPaper: {
+        styleOverrides: {
+          elevation1: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.05) 100%), #121212"
+            ),
+          },
+          elevation2: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.07) 100%), #121212"
+            ),
+          },
+          elevation3: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.08) 100%), #121212"
+            ),
+          },
+          elevation4: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.09) 100%), #121212"
+            ),
+          },
+          elevation5: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%), #121212"
+            ),
+          },
+          elevation6: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.11) 100%), #121212"
+            ),
+          },
+          elevation7: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.11) 100%), #121212"
+            ),
+          },
+          elevation8: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.12) 100%), #121212"
+            ),
+          },
+          elevation9: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.12) 100%), #121212"
+            ),
+          },
+          elevation10: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.13) 100%), #121212"
+            ),
+          },
+        },
+      },
       MuiBackdrop: {
         styleOverrides: {
           invisible: {
@@ -382,6 +446,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         },
       },
+      MuiSvgIcon: {
+        styleOverrides: {
+          fontSizeLarge: {
+            fontSize: 48,
+          },
+        },
+      },
       MuiAppBar: {
         defaultProps: {
           color: "default",
@@ -404,33 +475,12 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           disableElevation: true,
         },
       },
-      MuiSvgIcon: {
-        styleOverrides: {
-          fontSizeLarge: {
-            fontSize: 48,
-          },
-        },
-      },
       MuiIconButton: {
         styleOverrides: {
           root: {
             color: theme.palette.text.primary,
             borderRadius: "8px",
             padding: theme.spacing(0.75),
-          },
-          colorPrimary: {},
-          colorSecondary: {
-            boxShadow: theme.shadows[0],
-            border: `1px solid`,
-            borderColor: theme.palette.other.outline,
-            transition: theme.transitions.create("all", {
-              easing: theme.transitions.easing.easeInOut,
-              duration: theme.transitions.duration.short,
-            }),
-            "&:hover": {
-              background: alpha(theme.palette.action.hover, 0.04),
-              boxShadow: theme.shadows[2],
-            },
           },
         },
       },
@@ -683,6 +733,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             boxShadow: theme.shadows[5],
             padding: `${theme.spacing(0.5)} ${theme.spacing(1)}`,
             borderRadius: "4px",
+            maxWidth: "180px",
             ...theme.typography.tooltip,
           },
           arrow: {

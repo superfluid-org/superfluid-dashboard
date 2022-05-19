@@ -22,7 +22,7 @@ export const TransactionListItemRestoreButton: FC<{
     case "Upgrade to Super Token":
       return (
         <Tooltip title="Restore">
-          <IconButton color="secondary" onClick={restoreTransaction}>
+          <IconButton onClick={restoreTransaction}>
             <ReplayIcon />
           </IconButton>
         </Tooltip>

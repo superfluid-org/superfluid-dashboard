@@ -24,8 +24,8 @@ export const OpenIcon = styled(KeyboardArrowDownIcon)<OpenIconProps>(
   ({ theme, open }) => ({
     transform: `rotate(${open ? 180 : 0}deg)`,
     transition: theme.transitions.create("transform", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
+      easing: theme.transitions.easing.easeInOut,
+      duration: theme.transitions.duration.short,
     }),
   })
 );
