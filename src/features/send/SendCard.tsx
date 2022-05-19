@@ -1,5 +1,4 @@
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
-import InfoIcon from "@mui/icons-material/Info";
 import {
   Alert,
   AlertTitle,
@@ -23,6 +22,7 @@ import { BigNumber, ethers } from "ethers";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, memo, useCallback, useMemo, useState } from "react";
+import TooltipIcon from "../common/TooltipIcon";
 import { useNetworkContext } from "../network/NetworkContext";
 import {
   getSuperTokenType,
@@ -73,7 +73,6 @@ const createDefaultFlowRate = () => ({
 export default memo(function SendCard(props: {
   restoration: SendStreamRestoration | undefined;
 }) {
-  const theme = useTheme();
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
@@ -230,7 +229,7 @@ export default memo(function SendCard(props: {
                 sx={{ mr: 0.75 }}
               >
                 <FormLabel>Flow Rate</FormLabel>
-                <InfoIcon fontSize="small" />
+                <TooltipIcon title="Flow rate is the velocity of tokens being streamed." />
               </Stack>
 
               <FlowRateInput
@@ -251,7 +250,7 @@ export default memo(function SendCard(props: {
                 sx={{ mr: 0.75 }}
               >
                 <FormLabel>Ends on</FormLabel>
-                <InfoIcon fontSize="small" />
+                <TooltipIcon title="If the end date is not specified, stream will run indefinitely or until you run out of tokens." />
               </Stack>
               <TextField value="∞" disabled fullWidth />
             </Box>

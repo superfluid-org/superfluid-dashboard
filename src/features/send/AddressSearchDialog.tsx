@@ -41,8 +41,8 @@ const AddressListItem: FC<AddressListItemProps> = ({
 }) => (
   <ListItemButton onClick={onClick} sx={LIST_ITEM_STYLE}>
     <ListItemAvatar>
-      <Avatar variant="rounded" sx={{ width: 32, height: 32 }}>
-        <Blockies seed={address} />
+      <Avatar variant="rounded">
+        <Blockies seed={address} size={12} scale={3} />
       </Avatar>
     </ListItemAvatar>
     <ListItemText primary={name || address} secondary={name && address} />

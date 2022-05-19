@@ -54,6 +54,7 @@ export const FlowRateInput: FC<{
   return (
     <Box sx={{ display: "grid", gridTemplateColumns: "6fr 4fr" }}>
       <TextField
+        type="number"
         placeholder="0.0"
         value={amount}
         onChange={(e) => {

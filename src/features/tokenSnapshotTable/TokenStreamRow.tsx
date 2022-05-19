@@ -134,8 +134,12 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
       <TableCell sx={{ pl: "72px" }}>
         <Stack direction="row" alignItems="center" gap={1.5}>
           {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
-          <Avatar variant="rounded" sx={{ width: 32, height: 32 }}>
-            <Blockies seed={isOutgoing ? receiver : sender} />
+          <Avatar variant="rounded">
+            <Blockies
+              seed={isOutgoing ? receiver : sender}
+              size={12}
+              scale={3}
+            />
           </Avatar>
           <Typography variant="h6">
             {shortenAddress(isOutgoing ? receiver : sender)}

@@ -1,19 +1,12 @@
-import {
-  Avatar,
-  Button,
-  CircularProgress,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Stack,
-  Typography,
-} from "@mui/material";
-import { FC, memo, useMemo } from "react";
+import AddIcon from "@mui/icons-material/Add";
+import { LoadingButton } from "@mui/lab";
+import { Avatar, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
+import { memo } from "react";
+import Blockies from "react-blockies";
+import shortenAddress from "../../utils/shortenAddress";
 import { useNetworkContext } from "../network/NetworkContext";
 import { useWalletContext } from "./WalletContext";
-import shortenAddress from "../../utils/shortenAddress";
-import { LoadingButton } from "@mui/lab";
-import AddIcon from "@mui/icons-material/Add";
+
 export default memo(function ConnectWallet() {
   const { network } = useNetworkContext();
   const {
@@ -29,7 +22,9 @@ export default memo(function ConnectWallet() {
       {walletProvider && walletAddress ? (
         <ListItem sx={{ px: 2, py: 0 }}>
           <ListItemAvatar>
-            <Avatar variant="rounded" />
+            <Avatar variant="rounded">
+              <Blockies seed={walletAddress} size={12} scale={3} />
+            </Avatar>
           </ListItemAvatar>
           <ListItemText
             primary={shortenAddress(walletAddress)}
