@@ -66,6 +66,10 @@ export const SendStreamPreview: FC<{
         color: theme.palette.primary.main,
         borderColor: theme.palette.primary.main,
         backgroundColor: alpha(theme.palette.primary.main, 0.04),
+        //TODO: This alert message rule should be looked deeper into. This should not be needed
+        ".MuiAlert-message": {
+          flex: 1,
+        },
       }}
     >
       <Stack gap={0.5}>

@@ -96,7 +96,9 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
         borderRadius: lastElement ? "0 0 20px 20px" : 0,
       }}
     >
-      <TableContainer sx={{ borderRadius: 0, border: "none" }}>
+      <TableContainer
+        sx={{ borderRadius: 0, border: "none", boxShadow: "none" }}
+      >
         <Table
           size="small"
           sx={{

@@ -12,7 +12,7 @@ const DarkGlow = styled("div")({
   position: "fixed",
   top: "50%",
   left: "50%",
-  width: "20vw",
+  width: "200px",
   height: "80vh",
   zIndex: -1,
   background: `linear-gradient(180deg, rgba(16, 187, 53, 0.4) 0%, rgba(16, 187, 53, 0.2) 100%)`,

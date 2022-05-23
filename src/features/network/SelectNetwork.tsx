@@ -99,7 +99,7 @@ export default memo(function SelectNetwork() {
         onClose={handleClose}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-        PaperProps={{ sx: { minWidth: 280 } }}
+        PaperProps={{ sx: { minWidth: 280 }, square: true, elevation: 2 }}
         sx={{ marginTop: theme.spacing(1.5) }}
       >
         <Collapse in={!showTestnets} timeout="auto" unmountOnExit>

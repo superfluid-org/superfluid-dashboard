@@ -213,7 +213,7 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
       },
       menuItem: {
         fontSize: "16px",
-        fontWeight: 400,
+        fontWeight: 500,
         lineHeight: "150%",
         letterSpacing: "0.15px",
       },
@@ -352,6 +352,12 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           rounded: {
             borderRadius: "20px",
           },
+          outlined: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.05) 100%), #121212"
+            ),
+          },
           elevation1: {
             background: getModeStyle(
               "#FFFFFF",
@@ -411,6 +417,17 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
               "#FFFFFF",
               "linear-gradient(180deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.13) 100%), #121212"
             ),
+          },
+        },
+      },
+      MuiDialog: {
+        styleOverrides: {
+          paper: {
+            backgroundColor: getModeStyle(
+              theme.palette.background.paper,
+              "#181a1c" // TODO: Move to palette variable
+            ),
+            backgroundImage: "none",
           },
         },
       },
@@ -512,10 +529,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           root: {
             textTransform: "inherit",
             ...theme.typography.body1,
-            "&.Mui-selected": {
+            "&.Mui-selected, &.Mui-selected:hover": {
               ...theme.typography.h6,
-              color: theme.palette.primary.main,
-              background: theme.palette.primary.contrastText,
+              color:
+                theme.palette.mode === "dark"
+                  ? theme.palette.primary.contrastText
+                  : theme.palette.primary.main,
+              background: theme.palette.background.default,
             },
           },
           sizeMedium: {
@@ -713,6 +733,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             borderRadius: "20px",
             border: "1px solid",
             borderColor: theme.palette.other.outline,
+            boxShadow: theme.shadows[1],
           },
         },
       },
@@ -771,7 +792,8 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             boxShadow: theme.shadows[5],
             padding: `${theme.spacing(0.5)} ${theme.spacing(1)}`,
             borderRadius: "4px",
-            maxWidth: "180px",
+            maxWidth: "220px",
+            width: "100%", // TODO: This should have a better solution.
             ...theme.typography.tooltip,
           },
           arrow: {

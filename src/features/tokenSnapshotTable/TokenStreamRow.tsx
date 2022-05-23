@@ -209,6 +209,7 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
                   open={menuOpen}
                   anchorEl={menuAnchor}
                   onClose={closeMenu}
+                  PaperProps={{ square: true }}
                   transformOrigin={{ horizontal: "right", vertical: "top" }}
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                 >

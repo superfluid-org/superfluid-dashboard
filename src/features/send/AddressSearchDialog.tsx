@@ -152,7 +152,7 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
           {showEns ? (
             <>
               <ListSubheader sx={{ px: 3 }}>ENS</ListSubheader>
-              {(ensQuery.isLoading || ensQuery.isFetching || !searchSynced) && (
+              {(ensQuery.isFetching || !searchSynced) && (
                 <ListItem sx={LIST_ITEM_STYLE}>
                   <ListItemText primary="Loading..." />
                 </ListItem>
