@@ -29,12 +29,14 @@ import Blockies from "react-blockies";
 interface AddressListItemProps {
   address: string;
   name?: string;
+  dataCy: string;
   onClick: () => void;
 }
 
 const AddressListItem: FC<AddressListItemProps> = ({
   address,
   name,
+  dataCy,
   onClick,
 }) => (
   <ListItemButton onClick={onClick} sx={{ px: 3, minHeight: 68 }}>
@@ -43,7 +45,7 @@ const AddressListItem: FC<AddressListItemProps> = ({
         <Blockies seed={address} />
       </Avatar>
     </ListItemAvatar>
-    <ListItemText primary={name || address} secondary={name && address} />
+    <ListItemText data-cy={dataCy} primary={name || address} secondary={name && address} />
   </ListItemButton>
 );
 
@@ -134,6 +136,7 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
           <CloseIcon />
         </IconButton>
         <TextField
+          data-cy={"address-dialog-input"}
           fullWidth
           autoFocus
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -147,7 +150,7 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
             <>
               {showEns && (
                 <>
-                  <ListSubheader sx={{ px: 3 }}>ENS</ListSubheader>
+                  <ListSubheader data-cy="ens-entries" sx={{ px: 3 }}>ENS</ListSubheader>
                   {ensQuery.isLoading && (
                     <ListItem>
                       <ListItemButton>
@@ -164,6 +167,7 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
                   )}
                   {!!ensData && (
                     <AddressListItem
+                      dataCy={"ens-entry"}
                       address={ensData.address}
                       name={ensData.name}
                       onClick={() =>
@@ -197,6 +201,7 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
               {!!recentsData &&
                 recentsData.map((addressHash) => (
                   <AddressListItem
+                    dataCy={"recents-entry"}
                     key={addressHash}
                     address={addressHash}
                     onClick={() =>

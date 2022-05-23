@@ -38,7 +38,7 @@ const TokenIcon: FC<TokenIconProps> = ({ tokenSymbol, size = 36 }) => {
   return (
     <AvatarWrapper border={tokenManifest?.isSuperToken}>
       {tokenManifest?.isSuperToken && (
-        <BorderSvg viewBox="0 0 36 36">
+        <BorderSvg data-cy={"animation"} viewBox="0 0 36 36">
           <clipPath id="clip">
             <polygon points="18,18, 30.5,0 36,10.2" />
           </clipPath>
@@ -70,6 +70,7 @@ const TokenIcon: FC<TokenIconProps> = ({ tokenSymbol, size = 36 }) => {
         </BorderSvg>
       )}
       <Avatar
+        data-cy={"token-icon"}
         alt={`${tokenSymbol} token icon`}
         sx={{
           width: size - (tokenManifest?.isSuperToken ? 4 : 0),

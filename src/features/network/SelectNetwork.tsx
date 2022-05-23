@@ -26,6 +26,7 @@ interface NetworkItemProps {
 
 const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
   <MenuItem
+    data-cy={`${network.slugName}-button`}
     key={network.chainId}
     onClick={onClick}
     selected={selected}
@@ -121,8 +122,8 @@ export default memo(function SelectNetwork() {
             value={showTestnets}
             onChange={handleShowTestnetsChange}
           >
-            <ToggleButton value={false}>Mainnets</ToggleButton>
-            <ToggleButton value={true}>Testnets</ToggleButton>
+            <ToggleButton data-cy={"mainnets-button"} value={false}>Mainnets</ToggleButton>
+            <ToggleButton data-cy={"testnets-button"} value={true}>Testnets</ToggleButton>
           </ToggleButtonGroup>
         </Box>
       </Menu>

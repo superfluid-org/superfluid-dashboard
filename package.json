@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "predev:instrumented": "rm -rf .nyc_output coverage .next",
+    "dev:instrumented": "INSTRUMENT_CODE=1 next dev",
     "build": "next build",
     "export": "next export",
     "start": "next start",
@@ -42,11 +44,21 @@
     "web3modal": "^1.9.5"
   },
   "devDependencies": {
+    "@cypress/code-coverage": "^3.9.11",
+    "@cypress/instrument-cra": "latest",
+    "@truffle/hdwallet-provider": "latest",
     "@types/lodash": "^4.14.182",
     "@types/node": "latest",
     "@types/react": "latest",
+    "babel-plugin-istanbul": "latest",
+    "cypress": "^9.6.1",
+    "cypress-cucumber-preprocessor": "^4.3.1",
+    "web3": "^1.7.3",
     "eslint": "latest",
     "eslint-config-next": "latest",
     "typescript": "latest"
+  },
+  "cypress-cucumber-preprocessor": {
+    "nonGlobalStepDefinitions": true
   }
 }

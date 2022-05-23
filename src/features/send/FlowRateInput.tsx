@@ -54,6 +54,7 @@ export const FlowRateInput: FC<{
   return (
     <Box sx={{ display: "grid", gridTemplateColumns: "6fr 4fr" }}>
       <TextField
+        data-cy={"flow-rate-input"}
         placeholder="0.0"
         value={amount}
         onChange={(e) => {
@@ -79,6 +80,7 @@ export const FlowRateInput: FC<{
         }}
       />
       <Select
+        data-cy={"time-unit-selection-button"}
         value={flowRateWithTime.unitOfTime}
         onChange={(e) => {
           onChange({

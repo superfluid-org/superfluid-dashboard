@@ -1,0 +1,38 @@
+{
+  "goerli": {
+
+  },
+  "kovan": {
+
+  },
+  "rinkeby": {
+
+  },
+  "ropsten": {
+
+  },
+  "mumbai": {
+
+  },
+  "matic": {
+
+  },
+  "xdai": {
+
+  },
+  "avalanche-fuji": {
+
+  },
+  "avalanche-c": {
+
+  },
+  "optimism-kovan": {
+
+  },
+  "arbitrum-one": {
+
+  },
+  "arbitrum-mainnet": {
+
+  }
+}

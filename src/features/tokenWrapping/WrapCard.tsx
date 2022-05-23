@@ -38,8 +38,8 @@ export default memo(function WrapCard({
         onChange={handleTabChange}
         sx={{ mb: 4 }}
       >
-        <ToggleButton value="upgrade">Wrap</ToggleButton>
-        <ToggleButton value="downgrade">Unwrap</ToggleButton>
+        <ToggleButton data-cy="wrap-toggle" value="upgrade">Wrap</ToggleButton>
+        <ToggleButton data-cy="unwrap-toggle" value="downgrade">Unwrap</ToggleButton>
       </ToggleButtonGroup>
 
       {tabValue === "upgrade" && (

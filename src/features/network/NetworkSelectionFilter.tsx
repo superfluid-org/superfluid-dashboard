@@ -88,6 +88,7 @@ const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
       <Collapse in={!showTestnets} timeout="auto" unmountOnExit>
         {mainnets.map((network) => (
           <NetworkItem
+            data-cy={`${network.slugName}-button`}
             key={network.chainId}
             network={network}
             active={networkStates[network.chainId]}
@@ -116,8 +117,8 @@ const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
           value={showTestnets}
           onChange={onNetworkTypeChange}
         >
-          <ToggleButton value={false}>Mainnets</ToggleButton>
-          <ToggleButton value={true}>Testnets</ToggleButton>
+          <ToggleButton data-cy={"mainnets-button"} value={false}>Mainnets</ToggleButton>
+          <ToggleButton data-cy={"testnets-button"} value={true}>Testnets</ToggleButton>
         </ToggleButtonGroup>
       </Box>
     </Menu>

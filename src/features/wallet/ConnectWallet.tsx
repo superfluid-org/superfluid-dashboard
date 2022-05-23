@@ -43,6 +43,7 @@ export default memo(function ConnectWallet() {
         </ListItem>
       ) : (
         <LoadingButton
+          data-cy={"connect-wallet-button"}
           loading={isWalletConnecting}
           variant="contained"
           size="xl"

@@ -10,7 +10,7 @@ export default function ThemeChanger() {
   const isDarkTheme = (muiTheme.palette.mode === "dark");
 
   return (
-    <Tooltip title={isDarkTheme ? 'Light mode' : 'Dark mode'}>
+    <Tooltip data-cy={"light-switch"} title={isDarkTheme ? 'Light mode' : 'Dark mode'}>
       <IconButton color="primary" onClick={() => isDarkTheme ? setTheme("light") : setTheme("dark")}>
         {isDarkTheme ? (
           <LightModeOutlined fontSize="small" />

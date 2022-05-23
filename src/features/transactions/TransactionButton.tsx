@@ -22,7 +22,8 @@ export const TransactionButton: FC<{
     closeTransactionDialog: () => void
   ) => void;
   ButtonProps?: ButtonProps;
-}> = ({ children, disabled, onClick, mutationResult, hidden }) => {
+  dataCy?: string;
+}> = ({ children, disabled, onClick, mutationResult, hidden ,dataCy}) => {
   const { walletAddress, walletChainId, connectWallet, isWalletConnecting } =
     useWalletContext();
   const { network } = useNetworkContext();
@@ -41,6 +42,7 @@ export const TransactionButton: FC<{
     if (disabled) {
       return (
         <Button
+          data-cy={dataCy}
           fullWidth
           disabled
           color="primary"
@@ -55,6 +57,7 @@ export const TransactionButton: FC<{
     if (!walletAddress) {
       return (
         <LoadingButton
+          data-cy={dataCy}
           fullWidth
           loading={isWalletConnecting}
           color="primary"
@@ -70,6 +73,7 @@ export const TransactionButton: FC<{
     if (walletChainId != network.chainId) {
       return (
         <Button
+          data-cy={dataCy}
           disabled
           color="primary"
           variant="contained"
@@ -83,6 +87,7 @@ export const TransactionButton: FC<{
 
     return (
       <LoadingButton
+        data-cy={dataCy}
         fullWidth
         loading={mutationResult.isLoading}
         color="primary"

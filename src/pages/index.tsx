@@ -90,7 +90,7 @@ const ConnectView: FC = () => {
 const PlaceholderConnectView = () => {
   return (
     <Stack sx={{ maxWidth: 360, my: 4, mx: "auto" }} gap={4}>
-      <Typography variant="h4" textAlign="center">
+      <Typography data-cy={"dashboard-placeholder-connect"} variant="h4" textAlign="center">
         Connect to Superfluid
       </Typography>
       <ConnectWallet />
