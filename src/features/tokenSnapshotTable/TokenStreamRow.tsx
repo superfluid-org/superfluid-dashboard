@@ -19,12 +19,10 @@ import {
   Typography,
 } from "@mui/material";
 import { Stream } from "@superfluid-finance/sdk-core";
-import { TrackedTransaction } from "@superfluid-finance/sdk-redux";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { FC, memo, MouseEvent, useState } from "react";
 import Blockies from "react-blockies";
-import { useSelector } from "react-redux";
 import { useAccount, useNetwork } from "wagmi";
 import shortenAddress from "../../utils/shortenAddress";
 import { Network } from "../network/networks";
@@ -38,10 +36,9 @@ import {
   TransactionDialogButton,
 } from "../transactions/TransactionDialog";
 import {
-  useWalletTransactionsSelector,
   transactionByHashSelector,
+  useWalletTransactionsSelector,
 } from "../wallet/useWalletTransactions";
-import { useWalletContext } from "../wallet/WalletContext";
 
 export const TokenStreamRowLoading = () => (
   <TableRow>
@@ -138,8 +135,12 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
       <TableCell sx={{ pl: "72px" }}>
         <Stack direction="row" alignItems="center" gap={1.5}>
           {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
-          <Avatar variant="rounded" sx={{ width: 32, height: 32 }}>
-            <Blockies seed={isOutgoing ? receiver : sender} />
+          <Avatar variant="rounded">
+            <Blockies
+              seed={isOutgoing ? receiver : sender}
+              size={12}
+              scale={3}
+            />
           </Avatar>
           <Typography variant="h6">
             {shortenAddress(isOutgoing ? receiver : sender)}
@@ -209,6 +210,7 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
                   open={menuOpen}
                   anchorEl={menuAnchor}
                   onClose={closeMenu}
+                  PaperProps={{ square: true }}
                   transformOrigin={{ horizontal: "right", vertical: "top" }}
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                 >

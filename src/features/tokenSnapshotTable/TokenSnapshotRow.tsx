@@ -6,21 +6,22 @@ import {
   ListItemAvatar,
   ListItemText,
   Stack,
+  styled,
   TableCell,
   TableRow,
   Typography,
-  styled,
+  useTheme,
 } from "@mui/material";
-import { AccountTokenSnapshot, Address } from "@superfluid-finance/sdk-core";
+import { AccountTokenSnapshot } from "@superfluid-finance/sdk-core";
+import { BigNumber } from "ethers";
 import { FC, memo, useState } from "react";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
+import { UnitOfTime } from "../send/FlowRateInput";
 import EtherFormatted from "../token/EtherFormatted";
 import FlowingBalance from "../token/FlowingBalance";
 import TokenIcon from "../token/TokenIcon";
 import TokenStreamsTable from "./TokenStreamsTable";
-import { BigNumber } from "ethers";
-import { UnitOfTime } from "../send/FlowRateInput";
 
 interface OpenIconProps {
   open: boolean;
@@ -30,25 +31,56 @@ const OpenIcon = styled(ExpandCircleDownOutlinedIcon)<OpenIconProps>(
   ({ theme, open }) => ({
     transform: `rotate(${open ? 180 : 0}deg)`,
     transition: theme.transitions.create("transform", {
-      easing: theme.transitions.easing.sharp,
+      easing: theme.transitions.easing.easeInOut,
       duration: theme.transitions.duration.leavingScreen,
     }),
   })
 );
 
+interface SnapshotRowProps {
+  hasStreams?: boolean;
+  lastElement?: boolean;
+  open?: boolean;
+}
+
+const SnapshotRow = styled(TableRow)<SnapshotRowProps>(
+  ({ hasStreams, lastElement, open, theme }) => ({
+    cursor: hasStreams ? "pointer" : "initial",
+    ...(lastElement && {
+      td: {
+        border: "none",
+        ":first-of-type": { borderRadius: "0 0 0 20px" },
+        ":last-of-type": { borderRadius: "0 0 20px 0" },
+        transition: theme.transitions.create("border-radius", {
+          duration: theme.transitions.duration.shortest,
+          easing: theme.transitions.easing.easeOut,
+          delay: theme.transitions.duration.shorter,
+        }),
+        ...(open && {
+          ":first-of-type": { borderRadius: "0" },
+          ":last-of-type": { borderRadius: "0" },
+          transition: theme.transitions.create("border-radius", {
+            duration: theme.transitions.duration.shortest,
+            easing: theme.transitions.easing.easeInOut,
+          }),
+        }),
+      },
+    }),
+  })
+);
+
 interface TokenSnapshotRowProps {
-  address: Address;
   network: Network;
   snapshot: AccountTokenSnapshot;
   lastElement: boolean;
 }
 
 const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
-  address,
   network,
   snapshot,
   lastElement,
 }) => {
+  const theme = useTheme();
   const [open, setOpen] = useState(false);
 
   const {
@@ -81,19 +113,12 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
 
   return (
     <>
-      <TableRow
+      <SnapshotRow
         hover
+        hasStreams={hasStreams}
+        lastElement={lastElement}
+        open={open}
         onClick={toggleOpen}
-        sx={{
-          cursor: hasStreams ? "pointer" : "initial",
-          ...(lastElement && {
-            td: {
-              border: "none",
-              ":first-of-type": { borderRadius: "0 0 0 20px" },
-              ":last-of-type": { borderRadius: "0 0 20px" },
-            },
-          }),
-        }}
       >
         <TableCell>
           <ListItem sx={{ p: 0 }}>
@@ -107,7 +132,10 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                * This is just used to make table row look better
                */
               // secondary="$1.00"
-              primaryTypographyProps={{ lineHeight: "46px" }}
+              primaryTypographyProps={{
+                variant: "h6",
+                sx: { lineHeight: "46px" },
+              }}
               secondaryTypographyProps={{
                 variant: "body2mono",
                 color: "text.secondary",
@@ -182,15 +210,21 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             </IconButton>
           )}
         </TableCell>
-      </TableRow>
-      <TableRow sx={{ "> td:first-of-type": { padding: 0 } }}>
+      </SnapshotRow>
+      <TableRow
+        sx={{ background: "transparent", "> td:first-of-type": { padding: 0 } }}
+      >
         <TableCell
           colSpan={5}
           sx={{
             border: "none",
           }}
         >
-          <Collapse in={open} timeout="auto" unmountOnExit>
+          <Collapse
+            in={open}
+            timeout={theme.transitions.duration.standard}
+            unmountOnExit
+          >
             <TokenStreamsTable
               network={network}
               token={snapshot.token}

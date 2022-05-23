@@ -1,4 +1,11 @@
-import { Divider, Drawer, IconButton, styled, Typography } from "@mui/material";
+import {
+  Divider,
+  Drawer,
+  IconButton,
+  styled,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { memo } from "react";
 import ReduxPersistGate from "../redux/ReduxPersistGate";
 import { useTransactionDrawerContext } from "./TransactionDrawerContext";
@@ -16,6 +23,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 export default memo(function TransactionDrawer() {
+  const theme = useTheme();
   const { transactionDrawerOpen, setTransactionDrawerOpen } =
     useTransactionDrawerContext();
 
@@ -26,7 +34,15 @@ export default memo(function TransactionDrawer() {
       variant="persistent"
       anchor="right"
       open={transactionDrawerOpen}
-      PaperProps={{ sx: { width: transactionDrawerWidth } }}
+      transitionDuration={theme.transitions.duration.standard}
+      SlideProps={{
+        easing: theme.transitions.easing.easeInOut,
+      }}
+      PaperProps={{
+        sx: {
+          width: transactionDrawerWidth,
+        },
+      }}
     >
       <DrawerHeader>
         <IconButton onClick={closeDrawer}>

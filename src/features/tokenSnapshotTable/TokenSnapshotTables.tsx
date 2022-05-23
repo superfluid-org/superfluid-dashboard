@@ -12,6 +12,7 @@ import {
 import NetworkSelectionFilter, {
   NetworkStates,
 } from "../network/NetworkSelectionFilter";
+import { OpenIcon } from "../network/SelectNetwork";
 import { subgraphApi } from "../redux/store";
 import TokenSnapshotEmptyCard from "./TokenSnapshotEmptyCard";
 import TokenSnapshotLoadingTable from "./TokenSnapshotLoadingTable";
@@ -124,7 +125,7 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
           ref={networkSelectionRef}
           variant="outlined"
           color="secondary"
-          endIcon={<KeyboardArrowDownIcon />}
+          endIcon={<OpenIcon open={networkSelectionOpen} />}
           onClick={openNetworkSelection}
         >
           All networks

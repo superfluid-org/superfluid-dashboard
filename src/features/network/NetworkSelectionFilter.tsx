@@ -1,20 +1,16 @@
 import {
-  Avatar,
   Box,
   Collapse,
-  Divider,
   ListItemAvatar,
   ListItemText,
   Menu,
   MenuItem,
-  MenuList,
   Switch,
   ToggleButton,
   ToggleButtonGroup,
-  Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/system";
-import { FC, useState } from "react";
+import { FC } from "react";
 import NetworkIcon from "./NetworkIcon";
 import { Network, networks } from "./networks";
 
@@ -82,7 +78,7 @@ const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
       onClose={onClose}
       transformOrigin={{ horizontal: "right", vertical: "top" }}
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-      PaperProps={{ sx: { minWidth: 280 } }}
+      PaperProps={{ sx: { minWidth: 280 }, square: true, elevation: 2 }}
       sx={{ marginTop: theme.spacing(1.5) }}
     >
       <Collapse in={!showTestnets} timeout="auto" unmountOnExit>

@@ -26,6 +26,8 @@ import { useWalletContext } from "../wallet/WalletContext";
 import { DisplayAddress } from "./DisplayAddressChip";
 import Blockies from "react-blockies";
 
+const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
+
 interface AddressListItemProps {
   address: string;
   name?: string;
@@ -37,10 +39,10 @@ const AddressListItem: FC<AddressListItemProps> = ({
   name,
   onClick,
 }) => (
-  <ListItemButton onClick={onClick} sx={{ px: 3, minHeight: 68 }}>
+  <ListItemButton onClick={onClick} sx={LIST_ITEM_STYLE}>
     <ListItemAvatar>
-      <Avatar variant="rounded" sx={{ width: 32, height: 32 }}>
-        <Blockies seed={address} />
+      <Avatar variant="rounded">
+        <Blockies seed={address} size={12} scale={3} />
       </Avatar>
     </ListItemAvatar>
     <ListItemText primary={name || address} secondary={name && address} />
@@ -96,8 +98,10 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
   const ensQuery = ensApi.useResolveNameQuery(
     searchTermDebounced ? searchTermDebounced : skipToken
   );
+
   const ensData = ensQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!ensQuery.data` means that the data is not undefined nor null.
-  const showEns = (ensQuery.isSuccess && !!ensQuery.data) || ensQuery.isLoading;
+  const showEns =
+    !!searchTermDebounced && !ethers.utils.isAddress(searchTermDebounced);
 
   const recentsQuery = subgraphApi.useRecentsQuery(
     walletAddress
@@ -112,6 +116,8 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
   const showRecents =
     (walletAddress && recentsQuery.isSuccess && recentsQuery.data?.length) ||
     recentsQuery.isLoading;
+
+  const searchSynced = searchTermDebounced === searchTermVisible;
 
   return (
     <ResponsiveDialog
@@ -143,26 +149,23 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
       </DialogTitle>
       <DialogContent dividers={!!showEns || !!showRecents} sx={{ p: 0 }}>
         <List sx={{ pt: 0 }}>
-          {searchTermDebounced ? (
+          {showEns ? (
             <>
-              {showEns && (
+              <ListSubheader sx={{ px: 3 }}>ENS</ListSubheader>
+              {(ensQuery.isFetching || !searchSynced) && (
+                <ListItem sx={LIST_ITEM_STYLE}>
+                  <ListItemText primary="Loading..." />
+                </ListItem>
+              )}
+              {ensQuery.isError && (
+                <ListItem sx={LIST_ITEM_STYLE}>
+                  <ListItemText primary="Error" />
+                </ListItem>
+              )}
+
+              {!ensQuery.isLoading && !ensQuery.isFetching && searchSynced && (
                 <>
-                  <ListSubheader sx={{ px: 3 }}>ENS</ListSubheader>
-                  {ensQuery.isLoading && (
-                    <ListItem>
-                      <ListItemButton>
-                        <ListItemText primary="Loading..." />
-                      </ListItemButton>
-                    </ListItem>
-                  )}
-                  {ensQuery.isError && (
-                    <ListItem>
-                      <ListItemButton>
-                        <ListItemText primary="Error" />
-                      </ListItemButton>
-                    </ListItem>
-                  )}
-                  {!!ensData && (
+                  {!!ensData ? (
                     <AddressListItem
                       address={ensData.address}
                       name={ensData.name}
@@ -173,6 +176,10 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
                         })
                       }
                     />
+                  ) : (
+                    <ListItem sx={LIST_ITEM_STYLE}>
+                      <ListItemText primary="No results" />
+                    </ListItem>
                   )}
                 </>
               )}
