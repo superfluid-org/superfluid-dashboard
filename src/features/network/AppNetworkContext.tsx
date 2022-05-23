@@ -13,18 +13,18 @@ import { useNetwork } from "wagmi";
 import { wagmiClient } from "../wallet/WagmiManager";
 import { Network, networksByChainId, networksBySlug } from "./networks";
 
-interface NetworkContextValue {
+interface AppNetworkContextValue {
   network: Network;
   setNetwork: (chainId: number) => void;
 }
 
-const NetworkContext = createContext<NetworkContextValue>(null!);
+const AppNetworkContext = createContext<AppNetworkContextValue>(null!);
 
-export const NetworkContextProvider: FC<{
+export const AppNetworkProvider: FC<{
   children: (network: Network) => ReactNode;
 }> = ({ children }) => {
   const [network, setNetwork] = useState<Network>(networksByChainId.get(137)!);
-  const contextValue: NetworkContextValue = useMemo(
+  const contextValue: AppNetworkContextValue = useMemo(
     () => ({
       network,
       setNetwork: (chainId: number) =>
@@ -80,10 +80,10 @@ export const NetworkContextProvider: FC<{
   }, [networkQueryParam]);
 
   return (
-    <NetworkContext.Provider value={contextValue}>
+    <AppNetworkContext.Provider value={contextValue}>
       {children(network)}
-    </NetworkContext.Provider>
+    </AppNetworkContext.Provider>
   );
 };
 
-export const useNetworkContext = () => useContext(NetworkContext);
+export const useAppNetwork = () => useContext(AppNetworkContext);

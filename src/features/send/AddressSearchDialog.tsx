@@ -20,9 +20,9 @@ import { ethers } from "ethers";
 import { FC, useEffect, useState } from "react";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import { ensApi } from "../ens/ensApi.slice";
-import { useNetworkContext } from "../network/NetworkContext";
+import { useAppNetwork } from "../network/AppNetworkContext";
 import { subgraphApi } from "../redux/store";
-import { useWalletContext } from "../wallet/WalletContext";
+import { useAppWallet } from "../wallet/AppWalletContext";
 import { DisplayAddress } from "./DisplayAddressChip";
 import Blockies from "react-blockies";
 
@@ -61,8 +61,8 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
   onClose,
 }) => {
   const theme = useTheme();
-  const { network } = useNetworkContext();
-  const { walletAddress } = useWalletContext();
+  const { network } = useAppNetwork();
+  const { walletAddress } = useAppWallet();
   const [searchTermVisible, setSearchTermVisible] = useState("");
   const [searchTermDebounced, _setSearchTermDebounced] =
     useState(searchTermVisible);

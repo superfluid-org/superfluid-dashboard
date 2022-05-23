@@ -23,7 +23,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, memo, useCallback, useMemo, useState } from "react";
 import TooltipIcon from "../common/TooltipIcon";
-import { useNetworkContext } from "../network/NetworkContext";
+import { useAppNetwork } from "../network/AppNetworkContext";
 import {
   getSuperTokenType,
 } from "../redux/endpoints/adHocSubgraphEndpoints";
@@ -46,7 +46,7 @@ import {
   TransactionDialogActions,
   TransactionDialogButton,
 } from "../transactions/TransactionDialog";
-import { useWalletContext } from "../wallet/WalletContext";
+import { useAppWallet } from "../wallet/AppWalletContext";
 import AddressSearch from "./AddressSearch";
 import { DisplayAddress } from "./DisplayAddressChip";
 import {
@@ -75,8 +75,8 @@ const createDefaultFlowRate = () => ({
 export default memo(function SendCard(props: {
   restoration: SendStreamRestoration | undefined;
 }) {
-  const { network } = useNetworkContext();
-  const { walletAddress } = useWalletContext();
+  const { network } = useAppNetwork();
+  const { walletAddress } = useAppWallet();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
   const router = useRouter();
 

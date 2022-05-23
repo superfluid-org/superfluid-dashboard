@@ -2,11 +2,11 @@ import { Alert, alpha, Stack, Typography, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { BigNumber, ethers } from "ethers";
 import { FC, useMemo } from "react";
-import { useNetworkContext } from "../network/NetworkContext";
+import { useAppNetwork } from "../network/AppNetworkContext";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { rpcApi } from "../redux/store";
 import FlowingBalance from "../token/FlowingBalance";
-import { useWalletContext } from "../wallet/WalletContext";
+import { useAppWallet } from "../wallet/AppWalletContext";
 import { calculateBufferAmount } from "./calculateBufferAmounts";
 import { DisplayAddress } from "./DisplayAddressChip";
 import { FlowRateWithTime, timeUnitWordMap } from "./FlowRateInput";
@@ -30,8 +30,8 @@ export const SendStreamPreview: FC<{
   flowRateWithTime: FlowRateWithTime;
 }> = ({ receiver, token, flowRateWithTime }) => {
   const theme = useTheme();
-  const { network } = useNetworkContext();
-  const { walletAddress } = useWalletContext();
+  const { network } = useAppNetwork();
+  const { walletAddress } = useAppWallet();
 
   const realtimeBalanceQuery = rpcApi.useRealtimeBalanceQuery(
     walletAddress

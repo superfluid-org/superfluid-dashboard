@@ -3,12 +3,10 @@ import { AppProps } from "next/app";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import createEmotionCache from "../features/theme/createEmotionCache";
 import { useEffect } from "react";
-import { setFrameworkForSdkRedux } from "@superfluid-finance/sdk-redux";
-import readOnlyFrameworks from "../features/network/readOnlyFrameworks";
 import Layout from "../features/layout/Layout";
 import MuiProvider from "../features/theme/MuiProvider";
-import { NetworkContextProvider } from "../features/network/NetworkContext";
-import { WalletContextProvider } from "../features/wallet/WalletContext";
+import { AppNetworkProvider } from "../features/network/AppNetworkContext";
+import { AppWalletProvider } from "../features/wallet/AppWalletContext";
 import ReduxProvider from "../features/redux/ReduxProvider";
 import ReduxPersistGate from "../features/redux/ReduxPersistGate";
 import NextThemesProvider from "../features/theme/NextThemesProvider";
@@ -47,14 +45,13 @@ export default function MyApp(props: MyAppProps) {
           <meta name="viewport" content="initial-scale=1, width=device-width" />
         </Head>
         <WagmiManager>
-          <ReduxProvider>
-            <MuiProvider>
-              {(_muiTheme) => (
-                <RainbowKitManager>
-                  {/* TOOD(KK): Move some providers out of MUI theme? */}
-                  <NetworkContextProvider>
-                    {(network) => (
-                      <WalletContextProvider>
+          <AppNetworkProvider>
+            {(network) => (
+              <AppWalletProvider>
+                <ReduxProvider>
+                  <MuiProvider>
+                    {(_muiTheme) => (
+                      <RainbowKitManager>
                         <TransactionRestorationContextProvider>
                           <TransactionDrawerContextProvider>
                             <Layout>
@@ -67,13 +64,13 @@ export default function MyApp(props: MyAppProps) {
                             </Layout>
                           </TransactionDrawerContextProvider>
                         </TransactionRestorationContextProvider>
-                      </WalletContextProvider>
+                      </RainbowKitManager>
                     )}
-                  </NetworkContextProvider>
-                </RainbowKitManager>
-              )}
-            </MuiProvider>
-          </ReduxProvider>
+                  </MuiProvider>
+                </ReduxProvider>
+              </AppWalletProvider>
+            )}
+          </AppNetworkProvider>
         </WagmiManager>
       </CacheProvider>
     </NextThemesProvider>

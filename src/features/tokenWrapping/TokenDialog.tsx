@@ -18,14 +18,14 @@ import { ethers } from "ethers";
 import Fuse from "fuse.js";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import ResponsiveDialog from "../common/ResponsiveDialog";
-import { useNetworkContext } from "../network/NetworkContext";
+import { useAppNetwork } from "../network/AppNetworkContext";
 import {
   isSuper,
   isUnderlying,
   TokenMinimal
 } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
-import { useWalletContext } from "../wallet/WalletContext";
+import { useAppWallet } from "../wallet/AppWalletContext";
 import { TokenListItem } from "./TokenListItem";
 
 export type TokenSelectionProps = {
@@ -49,8 +49,8 @@ export const TokenDialog: FC<{
   tokenSelection: { tokenPairsQuery, showUpgrade = false },
 }) => {
   const theme = useTheme();
-  const { network } = useNetworkContext();
-  const { walletAddress } = useWalletContext();
+  const { network } = useAppNetwork();
+  const { walletAddress } = useAppWallet();
 
   const [openCounter, setOpenCounter] = useState(0);
   useEffect(() => {

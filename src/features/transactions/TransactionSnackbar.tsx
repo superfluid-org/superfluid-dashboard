@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useAppSelector } from "../redux/store";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
 import useWalletTransactions from "../wallet/useWalletTransactions";
-import { useWalletContext } from "../wallet/WalletContext";
+import { useAppWallet } from "../wallet/AppWalletContext";
 
 export default function TransactionSnackbar() {
   const { transactionDrawerOpen } = useTransactionDrawerContext();

@@ -15,7 +15,7 @@ import { rpcApi } from "../redux/store";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import Link from "next/link";
-import { useNetworkContext } from "../network/NetworkContext";
+import { useAppNetwork } from "../network/AppNetworkContext";
 import {
   isSuper,
   isUnderlying,
@@ -47,7 +47,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
   flowRate,
   onClick,
 }) => {
-  const { network } = useNetworkContext();
+  const { network } = useAppNetwork();
 
   const isSuperToken = isSuper(token);
   const isUnderlyingToken = isUnderlying(token);

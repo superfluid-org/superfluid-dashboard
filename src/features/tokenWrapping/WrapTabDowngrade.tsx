@@ -16,11 +16,11 @@ import {
   SuperTokenDowngradeRestoration,
   RestorationType,
 } from "../transactionRestoration/transactionRestorations";
-import { useNetworkContext } from "../network/NetworkContext";
+import { useAppNetwork } from "../network/AppNetworkContext";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
 import { TransactionButton } from "../transactions/TransactionButton";
-import { useWalletContext } from "../wallet/WalletContext";
+import { useAppWallet } from "../wallet/AppWalletContext";
 import { BalanceSuperToken } from "./BalanceSuperToken";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { useSelectedTokenContext } from "./SelectedTokenPairContext";
@@ -33,9 +33,9 @@ export const WrapTabDowngrade: FC<{
   restoration: SuperTokenDowngradeRestoration | undefined;
 }> = ({ restoration }) => {
   const theme = useTheme();
-  const { network } = useNetworkContext();
+  const { network } = useAppNetwork();
   const router = useRouter();
-  const { walletAddress } = useWalletContext();
+  const { walletAddress } = useAppWallet();
   const { selectedTokenPair, setSelectedTokenPair } = useSelectedTokenContext();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
 

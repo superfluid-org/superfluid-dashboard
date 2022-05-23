@@ -12,7 +12,7 @@ import {
 import type { NextPage } from "next";
 import { FC } from "react";
 import TokenSnapshotTables from "../features/tokenSnapshotTable/TokenSnapshotTables";
-import { useWalletContext } from "../features/wallet/WalletContext";
+import { useAppWallet } from "../features/wallet/AppWalletContext";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ConnectWallet from "../features/wallet/ConnectWallet";
 
@@ -99,7 +99,7 @@ const PlaceholderConnectView = () => {
 };
 
 const Home: NextPage = () => {
-  const { walletAddress } = useWalletContext();
+  const { walletAddress } = useAppWallet();
 
   return (
     <Container maxWidth="lg">

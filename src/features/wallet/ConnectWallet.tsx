@@ -1,6 +1,6 @@
 import { Avatar, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
 import { memo } from "react";
-import { useNetworkContext } from "../network/NetworkContext";
+import { useAppNetwork } from "../network/AppNetworkContext";
 import shortenAddress from "../../utils/shortenAddress";
 import { LoadingButton } from "@mui/lab";
 import AddIcon from "@mui/icons-material/Add";
@@ -9,7 +9,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Blockies from "react-blockies";
 
 export default memo(function ConnectWallet() {
-  const { network } = useNetworkContext();
+  const { network } = useAppNetwork();
 
   const { data: wagmiAccount } = useAccount();
   const { activeChain } = useNetwork();

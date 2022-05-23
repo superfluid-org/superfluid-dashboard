@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { useNetworkContext } from "../network/NetworkContext";
+import { useAppNetwork } from "../network/AppNetworkContext";
 import { Button, ButtonProps, Dialog, DialogActions } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import {
@@ -28,7 +28,7 @@ export const TransactionButton: FC<{
   const { activeChain, switchNetwork } = useNetwork();
   const { data: wagmiAccount } = useAccount();
 
-  const { network } = useNetworkContext();
+  const { network } = useAppNetwork();
   const [transactionDialogLabel, setTransactionDialogLabel] = useState<
     React.ReactNode | undefined
   >();

@@ -13,7 +13,7 @@ import { Address } from "@superfluid-finance/sdk-core";
 import { FC, memo, useMemo, useState } from "react";
 import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
-import { useWalletContext } from "../wallet/WalletContext";
+import { useAppWallet } from "../wallet/AppWalletContext";
 import TokenStreamRow, { TokenStreamRowLoading } from "./TokenStreamRow";
 
 interface TokenStreamsTableProps {
@@ -28,7 +28,7 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
   lastElement,
 }) => {
   const theme = useTheme();
-  const { walletAddress } = useWalletContext();
+  const { walletAddress } = useAppWallet();
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);

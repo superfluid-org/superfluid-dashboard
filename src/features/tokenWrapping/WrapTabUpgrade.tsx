@@ -5,8 +5,8 @@ import {
   SuperTokenUpgradeRestoration,
   RestorationType,
 } from "../transactionRestoration/transactionRestorations";
-import { useNetworkContext } from "../network/NetworkContext";
-import { useWalletContext } from "../wallet/WalletContext";
+import { useAppNetwork } from "../network/AppNetworkContext";
+import { useAppWallet } from "../wallet/AppWalletContext";
 import { BigNumber, ethers } from "ethers";
 import { rpcApi, subgraphApi } from "../redux/store";
 import {
@@ -39,9 +39,9 @@ export const WrapTabUpgrade: FC<{
   restoration: SuperTokenUpgradeRestoration | undefined;
 }> = ({ restoration }) => {
   const theme = useTheme();
-  const { network } = useNetworkContext();
+  const { network } = useAppNetwork();
   const router = useRouter();
-  const { walletAddress } = useWalletContext();
+  const { walletAddress } = useAppWallet();
   const { selectedTokenPair, setSelectedTokenPair } = useSelectedTokenContext();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
 
