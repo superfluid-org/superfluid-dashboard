@@ -1,5 +1,4 @@
 import React, { FC, useState } from "react";
-import { useWalletContext } from "../wallet/WalletContext";
 import { useNetworkContext } from "../network/NetworkContext";
 import { Button, ButtonProps, Dialog, DialogActions } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
@@ -9,7 +8,7 @@ import {
   TransactionDialogButton,
 } from "./TransactionDialog";
 import UnknownMutationResult from "../../unknownMutationResult";
-import { useConnect, useNetwork } from "wagmi";
+import { useAccount, useConnect, useNetwork } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export const TransactionButton: FC<{
@@ -26,9 +25,9 @@ export const TransactionButton: FC<{
   ButtonProps?: ButtonProps;
 }> = ({ children, disabled, onClick, mutationResult, hidden }) => {
   const { isConnecting } = useConnect();
-  const { switchNetwork } = useNetwork();
+  const { activeChain, switchNetwork } = useNetwork();
+  const { data: wagmiAccount } = useAccount();
 
-  const { walletAddress, walletChainId } = useWalletContext();
   const { network } = useNetworkContext();
   const [transactionDialogLabel, setTransactionDialogLabel] = useState<
     React.ReactNode | undefined
@@ -56,7 +55,7 @@ export const TransactionButton: FC<{
       );
     }
 
-    if (!walletAddress) {
+    if (!wagmiAccount?.address) {
       return (
         <ConnectButton.Custom>
           {({ openConnectModal }) => (
@@ -75,7 +74,7 @@ export const TransactionButton: FC<{
       );
     }
 
-    if (walletChainId != network.chainId) {
+    if (network.chainId !== activeChain?.id) {
       return (
         <Button
           disabled={!switchNetwork}

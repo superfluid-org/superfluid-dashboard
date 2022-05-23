@@ -35,6 +35,7 @@ export const NetworkContextProvider: FC<{
 
   const router = useRouter();
   const { activeChain } = useNetwork();
+  
   useEffect(() => {
     // TODO(KK): Flaky and hard to maintain logic. Refactor when doing form contexts.
     const inputFormPaths = ["/wrap", "/send"];

@@ -25,6 +25,7 @@ import { BigNumber } from "ethers";
 import { FC, memo, MouseEvent, useState } from "react";
 import Blockies from "react-blockies";
 import { useSelector } from "react-redux";
+import { useAccount, useNetwork } from "wagmi";
 import shortenAddress from "../../utils/shortenAddress";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
@@ -91,7 +92,8 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
     updatedAtTimestamp,
   } = stream;
 
-  const { walletAddress = "", walletChainId } = useWalletContext();
+  const { data: wagmiAccount } = useAccount();
+  const { activeChain } = useNetwork();
 
   const [flowDeleteTrigger, flowDeleteMutation] =
     rpcApi.useFlowDeleteMutation();
@@ -124,7 +126,7 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
   };
 
   const isOutgoing =
-    sender.localeCompare(walletAddress, undefined, {
+    sender.localeCompare(wagmiAccount?.address ?? "", undefined, {
       sensitivity: "accent",
     }) === 0;
 
@@ -190,14 +192,14 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
                 <Tooltip
                   arrow
                   title={`Please switch provider network to ${network.displayName} in order to cancel the stream.`}
-                  disableHoverListener={network.chainId === walletChainId}
+                  disableHoverListener={network.chainId === activeChain?.id}
                 >
                   <span>
                     <Button
                       color="error"
                       size="small"
                       onClick={openMenu}
-                      disabled={network.chainId !== walletChainId}
+                      disabled={network.chainId !== activeChain?.id}
                     >
                       Cancel
                     </Button>
