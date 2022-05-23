@@ -26,11 +26,13 @@ import { FC, memo, useCallback, useMemo, useState } from "react";
 import { useNetworkContext } from "../network/NetworkContext";
 import {
   getSuperTokenType,
+} from "../redux/endpoints/adHocSubgraphEndpoints";
+import {
   isSuper,
   isWrappable,
   SuperTokenMinimal,
-  TokenMinimal,
-} from "../redux/endpoints/adHocSubgraphEndpoints";
+  TokenMinimal
+} from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";

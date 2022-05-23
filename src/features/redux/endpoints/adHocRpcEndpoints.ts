@@ -10,7 +10,7 @@ import {
   RpcEndpointBuilder,
   registerNewTransactionAndReturnQueryFnResult,
 } from "@superfluid-finance/sdk-redux";
-import { NATIVE_ASSET_ADDRESS } from "./adHocSubgraphEndpoints";
+import { NATIVE_ASSET_ADDRESS } from "./tokenTypes";
 import { balanceFetcher, BalanceQueryParams, UnderlyingBalance, RealtimeBalance } from "./balanceFetcher";
 
 declare module "@superfluid-finance/sdk-redux" {

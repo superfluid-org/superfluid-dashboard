@@ -9,6 +9,8 @@ import {
   TransactionDialogButton,
 } from "./TransactionDialog";
 import UnknownMutationResult from "../../unknownMutationResult";
+import { useConnect, useNetwork } from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export const TransactionButton: FC<{
   mutationResult: UnknownMutationResult;
@@ -23,8 +25,10 @@ export const TransactionButton: FC<{
   ) => void;
   ButtonProps?: ButtonProps;
 }> = ({ children, disabled, onClick, mutationResult, hidden }) => {
-  const { walletAddress, walletChainId, switchNetwork, connectWallet, isWalletConnecting } =
-    useWalletContext();
+  const { isConnecting } = useConnect();
+  const { switchNetwork } = useNetwork();
+
+  const { walletAddress, walletChainId } = useWalletContext();
   const { network } = useNetworkContext();
   const [transactionDialogLabel, setTransactionDialogLabel] = useState<
     React.ReactNode | undefined
@@ -54,16 +58,20 @@ export const TransactionButton: FC<{
 
     if (!walletAddress) {
       return (
-        <LoadingButton
-          fullWidth
-          loading={isWalletConnecting}
-          color="primary"
-          variant="contained"
-          size="xl"
-          onClick={connectWallet}
-        >
-          Connect Wallet
-        </LoadingButton>
+        <ConnectButton.Custom>
+          {({ openConnectModal }) => (
+            <LoadingButton
+              fullWidth
+              loading={isConnecting}
+              color="primary"
+              variant="contained"
+              size="xl"
+              onClick={openConnectModal}
+            >
+              Connect Wallet
+            </LoadingButton>
+          )}
+        </ConnectButton.Custom>
       );
     }
 

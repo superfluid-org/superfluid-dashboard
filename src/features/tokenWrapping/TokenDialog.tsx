@@ -22,8 +22,8 @@ import { useNetworkContext } from "../network/NetworkContext";
 import {
   isSuper,
   isUnderlying,
-  TokenMinimal,
-} from "../redux/endpoints/adHocSubgraphEndpoints";
+  TokenMinimal
+} from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import { useWalletContext } from "../wallet/WalletContext";
 import { TokenListItem } from "./TokenListItem";

@@ -6,7 +6,7 @@ import { DisplayAddress } from "./DisplayAddressChip";
 import { Stack, Typography } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { useNetworkContext } from "../network/NetworkContext";
-import { SuperTokenMinimal } from "../redux/endpoints/adHocSubgraphEndpoints";
+import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { rpcApi } from "../redux/store";
 import FlowingBalance from "../token/FlowingBalance";
 import { useWalletContext } from "../wallet/WalletContext";

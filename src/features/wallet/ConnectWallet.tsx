@@ -1,30 +1,27 @@
 import {
   Avatar,
-  Button,
-  CircularProgress,
   ListItem,
   ListItemAvatar,
   ListItemText,
 } from "@mui/material";
-import { FC, memo, useMemo } from "react";
+import { memo } from "react";
 import { useNetworkContext } from "../network/NetworkContext";
 import { useWalletContext } from "./WalletContext";
 import shortenAddress from "../../utils/shortenAddress";
 import { LoadingButton } from "@mui/lab";
 import AddIcon from "@mui/icons-material/Add";
+import { useConnect } from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+
 export default memo(function ConnectWallet() {
+  const { isConnecting } = useConnect();
+
   const { network } = useNetworkContext();
-  const {
-    walletAddress,
-    walletChainId,
-    walletProvider,
-    connectWallet,
-    isWalletConnecting,
-  } = useWalletContext();
+  const { walletAddress, walletChainId } = useWalletContext();
 
   return (
     <>
-      {walletProvider && walletAddress ? (
+      {walletAddress ? (
         <ListItem sx={{ px: 2, py: 0 }}>
           <ListItemAvatar>
             <Avatar variant="rounded" />
@@ -40,15 +37,19 @@ export default memo(function ConnectWallet() {
           />
         </ListItem>
       ) : (
-        <LoadingButton
-          loading={isWalletConnecting}
-          variant="contained"
-          size="xl"
-          onClick={connectWallet}
-        >
-          <AddIcon sx={{ mr: 1 }} />
-          Connect Wallet
-        </LoadingButton>
+        <ConnectButton.Custom>
+          {({ openConnectModal }) => (
+            <LoadingButton
+              loading={isConnecting}
+              variant="contained"
+              size="xl"
+              onClick={openConnectModal}
+            >
+              <AddIcon sx={{ mr: 1 }} />
+              Connect Wallet
+            </LoadingButton>
+          )}
+        </ConnectButton.Custom>
       )}
     </>
   );

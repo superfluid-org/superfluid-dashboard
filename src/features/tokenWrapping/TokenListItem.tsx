@@ -20,8 +20,8 @@ import {
   isSuper,
   isUnderlying,
   isWrappable,
-  TokenMinimal,
-} from "../redux/endpoints/adHocSubgraphEndpoints";
+  TokenMinimal
+} from "../redux/endpoints/tokenTypes";
 
 const etherDecimalPlaces = 8;
 

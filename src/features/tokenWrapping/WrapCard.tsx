@@ -3,7 +3,11 @@ import {
   SuperTokenDowngradeRestoration,
   SuperTokenUpgradeRestoration,
 } from "../transactionRestoration/transactionRestorations";
-import { Card, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import {
+  Card,
+  ToggleButton,
+  ToggleButtonGroup,
+} from "@mui/material";
 import { WrapTabUpgrade } from "./WrapTabUpgrade";
 import { WrapTabDowngrade } from "./WrapTabDowngrade";
 import { useRouter } from "next/router";

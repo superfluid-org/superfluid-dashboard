@@ -15,6 +15,9 @@ import NextThemesProvider from "../features/theme/NextThemesProvider";
 import { TransactionRestorationContextProvider } from "../features/transactionRestoration/TransactionRestorationContext";
 import { TransactionDrawerContextProvider } from "../features/transactionDrawer/TransactionDrawerContext";
 import { hotjar } from "react-hotjar";
+import WagmiManager, {
+  RainbowKitManager,
+} from "../features/wallet/WagmiManager";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -25,12 +28,6 @@ interface MyAppProps extends AppProps {
 
 export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
-
-  useEffect(() => {
-    readOnlyFrameworks.map((x) =>
-      setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
-    );
-  }, []);
 
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_HJID && process.env.NEXT_PUBLIC_HJSV) {
@@ -44,37 +41,41 @@ export default function MyApp(props: MyAppProps) {
   }, []);
 
   return (
-    <ReduxProvider>
-      <NextThemesProvider>
-        <CacheProvider value={emotionCache}>
-          <Head>
-            <meta
-              name="viewport"
-              content="initial-scale=1, width=device-width"
-            />
-          </Head>
-          <MuiProvider>
-            <NetworkContextProvider>
-              {(network) => (
-                <WalletContextProvider>
-                  <TransactionRestorationContextProvider>
-                    <TransactionDrawerContextProvider>
-                      <Layout>
-                        <ReduxPersistGate>
-                          <Component
-                            key={`${network.slugName}`}
-                            {...pageProps}
-                          />
-                        </ReduxPersistGate>
-                      </Layout>
-                    </TransactionDrawerContextProvider>
-                  </TransactionRestorationContextProvider>
-                </WalletContextProvider>
+    <NextThemesProvider>
+      <CacheProvider value={emotionCache}>
+        <Head>
+          <meta name="viewport" content="initial-scale=1, width=device-width" />
+        </Head>
+        <WagmiManager>
+          <ReduxProvider>
+            <MuiProvider>
+              {(_muiTheme) => (
+                <RainbowKitManager>
+                  {/* TOOD(KK): Move some providers out of MUI theme? */}
+                  <NetworkContextProvider>
+                    {(network) => (
+                      <WalletContextProvider>
+                        <TransactionRestorationContextProvider>
+                          <TransactionDrawerContextProvider>
+                            <Layout>
+                              <ReduxPersistGate>
+                                <Component
+                                  key={`${network.slugName}`}
+                                  {...pageProps}
+                                />
+                              </ReduxPersistGate>
+                            </Layout>
+                          </TransactionDrawerContextProvider>
+                        </TransactionRestorationContextProvider>
+                      </WalletContextProvider>
+                    )}
+                  </NetworkContextProvider>
+                </RainbowKitManager>
               )}
-            </NetworkContextProvider>
-          </MuiProvider>
-        </CacheProvider>
-      </NextThemesProvider>
-    </ReduxProvider>
+            </MuiProvider>
+          </ReduxProvider>
+        </WagmiManager>
+      </CacheProvider>
+    </NextThemesProvider>
   );
 }
