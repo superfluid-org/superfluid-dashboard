@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import { useNetwork } from "wagmi";
+import { wagmiClient } from "../wallet/WagmiManager";
 import { Network, networksByChainId, networksBySlug } from "./networks";
 
 interface NetworkContextValue {
@@ -32,10 +33,18 @@ export const NetworkContextProvider: FC<{
     [network, setNetwork]
   );
 
-  // # Set network based on the wallet.
+  const router = useRouter();
   const { activeChain } = useNetwork();
   useEffect(() => {
-    if (activeChain) {
+    // TODO(KK): Flaky and hard to maintain logic. Refactor when doing form contexts.
+    const inputFormPaths = ["/wrap", "/send"];
+    const isCurrentlyOnInputFormPath = inputFormPaths.includes(router.pathname);
+    if (isCurrentlyOnInputFormPath) {
+      // If user is filling a form, don't change the network because it resets the form.
+      return;
+    }
+
+    if (activeChain && (activeChain.id !== network.chainId)) {
       const networkFromWallet = networksByChainId.get(activeChain.id);
       if (networkFromWallet) {
         setNetwork(networkFromWallet);
@@ -43,8 +52,20 @@ export const NetworkContextProvider: FC<{
     }
   }, [activeChain]);
 
+  // # Set network based on the wallet on autoconnect.
+  useEffect(() => {
+    // NOTE: The autoConnet is also invoked higher up in the component hierachy.
+    wagmiClient.autoConnect().then((provider) => {
+      if (provider?.chain) {
+        const networkFromConnect = networksByChainId.get(provider.chain.id);
+        if (networkFromConnect) {
+          setNetwork(networkFromConnect);
+        }
+      }
+    });
+  }, []);
+
   // # Set network based on the URL querystring.
-  const router = useRouter();
   const { network: networkQueryParam } = router.query;
   useEffect(() => {
     if (isString(networkQueryParam)) {

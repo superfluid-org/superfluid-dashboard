@@ -3,29 +3,21 @@ import {
   setFrameworkForSdkRedux,
   setSignerForSdkRedux,
 } from "@superfluid-finance/sdk-redux";
-import WalletConnectProvider from "@walletconnect/web3-provider";
-import { ethers } from "ethers";
 import {
   createContext,
   FC,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
-  useState,
 } from "react";
 import { networks } from "../network/networks";
 import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import { useAppDispatch } from "../redux/store";
-import Web3Modal from "web3modal";
 import {
   useAccount,
-  useConnect,
   useNetwork,
-  useProvider,
   useSigner,
 } from "wagmi";
-import { Framework } from "@superfluid-finance/sdk-core";
 
 interface WalletContextValue {
   walletChainId: number | undefined;

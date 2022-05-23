@@ -1,9 +1,4 @@
-import {
-  Avatar,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-} from "@mui/material";
+import { Avatar, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
 import { memo } from "react";
 import { useNetworkContext } from "../network/NetworkContext";
 import { useWalletContext } from "./WalletContext";
@@ -20,37 +15,37 @@ export default memo(function ConnectWallet() {
   const { walletAddress, walletChainId } = useWalletContext();
 
   return (
-    <>
-      {walletAddress ? (
-        <ListItem sx={{ px: 2, py: 0 }}>
-          <ListItemAvatar>
-            <Avatar variant="rounded" />
-          </ListItemAvatar>
-          <ListItemText
-            primary={shortenAddress(walletAddress)}
-            secondary={
-              network.chainId !== walletChainId ? "Wrong network" : "Connected"
-            }
-            secondaryTypographyProps={{
-              color: network.chainId !== walletChainId ? "error" : "primary",
-            }}
-          />
-        </ListItem>
-      ) : (
-        <ConnectButton.Custom>
-          {({ openConnectModal }) => (
-            <LoadingButton
-              loading={isConnecting}
-              variant="contained"
-              size="xl"
-              onClick={openConnectModal}
-            >
-              <AddIcon sx={{ mr: 1 }} />
-              Connect Wallet
-            </LoadingButton>
-          )}
-        </ConnectButton.Custom>
-      )}
-    </>
+    <ConnectButton.Custom>
+      {({ openConnectModal, openAccountModal }) =>
+        walletAddress ? (
+          <ListItem sx={{ px: 2, py: 0 }} onClick={openAccountModal}>
+            <ListItemAvatar>
+              <Avatar variant="rounded" />
+            </ListItemAvatar>
+            <ListItemText
+              primary={shortenAddress(walletAddress)}
+              secondary={
+                network.chainId !== walletChainId
+                  ? "Wrong network"
+                  : "Connected"
+              }
+              secondaryTypographyProps={{
+                color: network.chainId !== walletChainId ? "error" : "primary",
+              }}
+            />
+          </ListItem>
+        ) : (
+          <LoadingButton
+            loading={isConnecting}
+            variant="contained"
+            size="xl"
+            onClick={openConnectModal}
+          >
+            <AddIcon sx={{ mr: 1 }} />
+            Connect Wallet
+          </LoadingButton>
+        )
+      }
+    </ConnectButton.Custom>
   );
 });

@@ -34,18 +34,12 @@ const { connectors } = getDefaultWallets({
 });
 
 export const wagmiClient = createWagmiClient({
+  autoConnect: true,
   connectors,
   provider,
 });
 
 const WagmiManager: FC = ({ children }) => {
-  useEffect(() => {
-    wagmiClient.autoConnect().then((provider) => {
-      if (provider?.chain) {
-      }
-    });
-  }, []);
-
   return <WagmiProvider client={wagmiClient}>{children}</WagmiProvider>;
 };
 
