@@ -1,6 +1,4 @@
 import { Badge, IconButton } from "@mui/material";
-import { useWalletContext } from "../wallet/WalletContext";
-import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
 import { memo } from "react";
 import {
@@ -8,9 +6,11 @@ import {
   useWalletTransactionsSelector,
 } from "../wallet/useWalletTransactions";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import { useAccount } from "wagmi";
 
 export default memo(function TransactionBell() {
-  const { walletAddress } = useWalletContext();
+  const { data: wagmiAccount } = useAccount();
+
   const { transactionDrawerOpen, setTransactionDrawerOpen } =
     useTransactionDrawerContext();
 
@@ -21,7 +21,7 @@ export default memo(function TransactionBell() {
   return (
     <IconButton
       sx={{
-        ...(walletAddress ? {} : { display: "none" }),
+        ...(wagmiAccount ? {} : { display: "none" }),
       }}
       edge="end"
       onClick={() => setTransactionDrawerOpen(!transactionDrawerOpen)}

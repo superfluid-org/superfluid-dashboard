@@ -1,4 +1,4 @@
-import {  SuperTokenPair, UnderlyingToken, SuperTokenMinimal } from '../redux/endpoints/adHocSubgraphEndpoints';
+import { SuperTokenPair, UnderlyingToken, SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import {DisplayAddress} from "../send/DisplayAddressChip";
 import {FlowRateWithTime} from "../send/FlowRateInput";
 

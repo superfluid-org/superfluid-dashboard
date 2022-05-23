@@ -1,4 +1,5 @@
 import { alpha, Theme, ThemeOptions } from "@mui/material/styles";
+import React from "react";
 import { FONT_FACES } from "./fonts";
 
 // TODO: Move to separate declaration file to make theme file cleaner?
@@ -12,6 +13,7 @@ interface TypographyCustomVariants {
   body2mono: React.CSSProperties;
   largeInput: React.CSSProperties;
   menuItem: React.CSSProperties;
+  tooltip: React.CSSProperties;
 }
 
 declare module "@mui/material/styles" {
@@ -27,6 +29,7 @@ declare module "@mui/material/Typography" {
     body2mono: true;
     largeInput: true;
     menuItem: true;
+    tooltip: true;
   }
 }
 
@@ -51,10 +54,14 @@ declare module "@mui/material/Button" {
   interface ButtonPropsSizeOverrides {
     xl: true;
   }
+
+  interface ButtonPropsVariantOverrides {
+    textContained: true;
+  }
 }
 
-const FONT_FAMILY = "'Walsheim', Arial";
-const FONT_FAMILY_MONO = "'Azeret Mono', monospace;";
+export const FONT_FAMILY = "'Walsheim', Arial";
+export const FONT_FAMILY_MONO = "'Azeret Mono', monospace;";
 
 export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
   const getModeStyle = (lightStyle: string, darkStyle: string) =>
@@ -69,7 +76,7 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         disabled: getModeStyle("#12141E61", "#FFFFFF99"),
       },
       primary: {
-        main: getModeStyle("#10BB35FF", "#10BB35"),
+        main: getModeStyle("#10BB35FF", "#10BB35FF"),
         dark: getModeStyle("#0B8225FF", "#008900FF"),
         light: getModeStyle("#3FC85DFF", "#5FEF66FF"),
         contrastText: getModeStyle("#FFFFFFFF", "#FFFFFFDE"),
@@ -114,10 +121,10 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
       },
       background: {
         paper: getModeStyle("#FFFFFFFF", "#151619"),
-        default: getModeStyle("#FFFFFFFF", "#151619FF"),
+        default: getModeStyle("#FFFFFFFF", "#151619"),
       },
       other: {
-        outline: "#E0E0E0",
+        outline: getModeStyle("#E0E0E0", "#2D2D2D"),
         backdrop: "rgba(0, 0, 0, 0.5)",
         snackbar: "#323232",
       },
@@ -206,60 +213,61 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
       },
       menuItem: {
         fontSize: "16px",
-        fontWeight: 400,
+        fontWeight: 500,
         lineHeight: "150%",
         letterSpacing: "0.15px",
+      },
+      tooltip: {
+        fontSize: "12px",
+        fontWeight: 400,
       },
     },
     shadows: [
       "none", // elevation 0
-      getModeStyle(
-        "0px 0px 6px 3px rgba(204, 204, 204, 0.25)",
-        "0px 0px 6px 3px rgba(204, 204, 204, 0.25)"
-      ), // elevation 1
+      getModeStyle("0px 0px 6px 3px rgba(204, 204, 204, 0.25)", "none"), // elevation 1
       getModeStyle(
         "0px 0px 30px -2px rgba(204, 204, 204, 0.4), 0px 0px 6px rgba(204, 204, 204, 0.25)",
-        "0px 0px 30px -2px rgba(204, 204, 204, 0.4), 0px 0px 6px rgba(204, 204, 204, 0.25)"
+        "none"
       ), // elevation 2
       getModeStyle(
-        "0px 3px 3px -2px rgba(0, 0, 0, 0.2), 0px 3px 4px rgba(0, 0, 0, 0.14), 0px 1px 8px rgba(0, 0, 0, 0.12)",
-        "0px 3px 3px -2px rgba(0, 0, 0, 0.2), 0px 3px 4px rgba(0, 0, 0, 0.14), 0px 1px 8px rgba(0, 0, 0, 0.12)"
+        "0px 0px 3px -2px rgba(0, 0, 0, 0.2), 0px 0px 25px rgba(0, 0, 0, 0.14), 0px 0px 8px rgba(0, 0, 0, 0.12)",
+        "0px 0px 3px -2px rgba(0, 0, 0, 0.2), 0px 0px 25px rgba(0, 0, 0, 0.14), 0px 0px 8px rgba(0, 0, 0, 0.12)"
       ), // elevation 3
       getModeStyle(
-        "0px 0px 6px rgba(0, 0, 0, 0.12)",
-        "0px 0px 6px rgba(0, 0, 0, 0.12)"
+        "0px 0px 8px rgba(0, 0, 0, 0.15), 0px 0px 3px -2px rgba(0, 0, 0, 0.23), 0px 0px 25px rgba(0, 0, 0, 0.17)",
+        "0px 0px 8px rgba(0, 0, 0, 0.15), 0px 0px 3px -2px rgba(0, 0, 0, 0.23), 0px 0px 25px rgba(0, 0, 0, 0.17)"
       ), // elevation 4
       getModeStyle(
-        "0px 0px 1px -1px rgba(0, 0, 0, 0.2), 0px 0px 7px rgba(0, 0, 0, 0.12)",
-        "0px 0px 1px -1px rgba(0, 0, 0, 0.2), 0px 0px 7px rgba(0, 0, 0, 0.12)"
+        "0px 0px 8px rgba(0, 0, 0, 0.18), 0px 0px 3px -2px rgba(0, 0, 0, 0.26), 0px 0px 25px rgba(0, 0, 0, 0.2)",
+        "0px 0px 8px rgba(0, 0, 0, 0.18), 0px 0px 3px -2px rgba(0, 0, 0, 0.26), 0px 0px 25px rgba(0, 0, 0, 0.2)"
       ), // elevation 5
       getModeStyle(
-        "0px 0px 6px 2px rgba(0, 0, 0, 0.12)",
-        "0px 0px 6px 2px rgba(0, 0, 0, 0.12)"
+        "0px 0px 8px rgba(0, 0, 0, 0.21), 0px 0px 3px -2px rgba(0, 0, 0, 0.29), 0px 0px 25px rgba(0, 0, 0, 0.23)",
+        "0px 0px 8px rgba(0, 0, 0, 0.21), 0px 0px 3px -2px rgba(0, 0, 0, 0.29), 0px 0px 25px rgba(0, 0, 0, 0.23)"
       ), // elevation 6
       getModeStyle(
-        "0px 4px 5px -2px rgba(0, 0, 0, 0.2), 0px 7px 10px 1px rgba(0, 0, 0, 0.14), 0px 2px 16px 1px rgba(0, 0, 0, 0.12)",
-        "0px 4px 5px -2px rgba(0, 0, 0, 0.2), 0px 7px 10px 1px rgba(0, 0, 0, 0.14), 0px 2px 16px 1px rgba(0, 0, 0, 0.12)"
+        "0px 0px 8px rgba(0, 0, 0, 0.24), 0px 0px 3px -2px rgba(0, 0, 0, 0.32), 0px 0px 25px rgba(0, 0, 0, 0.26)",
+        "0px 0px 8px rgba(0, 0, 0, 0.24), 0px 0px 3px -2px rgba(0, 0, 0, 0.32), 0px 0px 25px rgba(0, 0, 0, 0.26)"
       ), // elevation 7
       getModeStyle(
-        "0px 0px 5px -3px rgba(0, 0, 0, 0.14), 0px 0px 10px 1px rgba(0, 0, 0, 0.1), 0px 0px 14px 2px rgba(0, 0, 0, 0.05)",
-        "0px 0px 5px -3px rgba(0, 0, 0, 0.14), 0px 0px 10px 1px rgba(0, 0, 0, 0.1), 0px 0px 14px 2px rgba(0, 0, 0, 0.05)"
+        "0px 0px 8px rgba(0, 0, 0, 0.27), 0px 0px 3px -2px rgba(0, 0, 0, 0.35), 0px 0px 25px rgba(0, 0, 0, 0.29)",
+        "0px 0px 8px rgba(0, 0, 0, 0.27), 0px 0px 3px -2px rgba(0, 0, 0, 0.35), 0px 0px 25px rgba(0, 0, 0, 0.29)"
       ), // elevation 8
       getModeStyle(
-        "0px 5px 6px -3px rgba(0, 0, 0, 0.2), 0px 9px 12px 1px rgba(0, 0, 0, 0.14), 0px 3px 16px 2px rgba(0, 0, 0, 0.12)",
-        "0px 5px 6px -3px rgba(0, 0, 0, 0.2), 0px 9px 12px 1px rgba(0, 0, 0, 0.14), 0px 3px 16px 2px rgba(0, 0, 0, 0.12)"
+        "0px 0px 8px rgba(0, 0, 0, 0.3), 0px 0px 3px -2px rgba(0, 0, 0, 0.38), 0px 0px 25px rgba(0, 0, 0, 0.32)",
+        "0px 0px 8px rgba(0, 0, 0, 0.3), 0px 0px 3px -2px rgba(0, 0, 0, 0.38), 0px 0px 25px rgba(0, 0, 0, 0.32)"
       ), // elevation 9
       getModeStyle(
-        "0px 6px 6px -3px rgba(0, 0, 0, 0.2), 0px 10px 14px 1px rgba(0, 0, 0, 0.14), 0px 4px 18px 3px rgba(0, 0, 0, 0.12)",
-        "0px 6px 6px -3px rgba(0, 0, 0, 0.2), 0px 10px 14px 1px rgba(0, 0, 0, 0.14), 0px 4px 18px 3px rgba(0, 0, 0, 0.12)"
+        "0px 0px 8px rgba(0, 0, 0, 0.33), 0px 0px 3px -2px rgba(0, 0, 0, 0.41), 0px 0px 25px rgba(0, 0, 0, 0.35)",
+        "0px 0px 8px rgba(0, 0, 0, 0.33), 0px 0px 3px -2px rgba(0, 0, 0, 0.41), 0px 0px 25px rgba(0, 0, 0, 0.35)"
       ), // elevation 10
       getModeStyle(
-        "0px 6px 7px -4px rgba(0, 0, 0, 0.2), 0px 11px 15px 1px rgba(0, 0, 0, 0.14), 0px 4px 20px 3px rgba(0, 0, 0, 0.12)",
-        "0px 6px 7px -4px rgba(0, 0, 0, 0.2), 0px 11px 15px 1px rgba(0, 0, 0, 0.14), 0px 4px 20px 3px rgba(0, 0, 0, 0.12)"
+        "0px 0px 8px rgba(0, 0, 0, 0.36), 0px 0px 3px -2px rgba(0, 0, 0, 0.44), 0px 0px 25px rgba(0, 0, 0, 0.38)",
+        "0px 0px 8px rgba(0, 0, 0, 0.36), 0px 0px 3px -2px rgba(0, 0, 0, 0.44), 0px 0px 25px rgba(0, 0, 0, 0.38)"
       ), // elevation 11
       getModeStyle(
-        "0px 7px 8px -4px rgba(0, 0, 0, 0.2), 0px 12px 17px 2px rgba(0, 0, 0, 0.14), 0px 5px 22px 4px rgba(0, 0, 0, 0.12)",
-        "0px 7px 8px -4px rgba(0, 0, 0, 0.2), 0px 12px 17px 2px rgba(0, 0, 0, 0.14), 0px 5px 22px 4px rgba(0, 0, 0, 0.12)"
+        "0px 0px 8px rgba(0, 0, 0, 0.39), 0px 0px 3px -2px rgba(0, 0, 0, 0.47), 0px 0px 25px rgba(0, 0, 0, 0.41)",
+        "0px 0px 8px rgba(0, 0, 0, 0.39), 0px 0px 3px -2px rgba(0, 0, 0, 0.47), 0px 0px 25px rgba(0, 0, 0, 0.41)"
       ), // elevation 12
       getModeStyle(
         "0px 7px 8px -4px rgba(0, 0, 0, 0.2), 0px 13px 19px 2px rgba(0, 0, 0, 0.14), 0px 5px 24px 4px rgba(0, 0, 0, 0.12)",
@@ -310,6 +318,23 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         "0px 11px 15px -7px rgba(0, 0, 0, 0.2), 0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(0, 0, 0, 0.12)"
       ), // elevation 24
     ],
+    transitions: {
+      easing: {
+        easeInOut: "cubic-bezier(.55, 0, 0.1, 1)",
+        easeOut: "cubic-bezier(0, 0, 0.2, 1)",
+        easeIn: "cubic-bezier(0.4, 0, 1, 1)",
+        sharp: "cubic-bezier(0.4, 0, 0.6, 1)",
+      },
+      duration: {
+        shortest: 150,
+        shorter: 200,
+        short: 250,
+        standard: 300,
+        complex: 375,
+        enteringScreen: 225,
+        leavingScreen: 195,
+      },
+    },
   };
 };
 
@@ -319,6 +344,93 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
 
   return {
     components: {
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            borderRadius: "12px",
+          },
+          rounded: {
+            borderRadius: "20px",
+          },
+          outlined: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.05) 100%), #121212"
+            ),
+          },
+          elevation1: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.05) 100%), #121212"
+            ),
+          },
+          elevation2: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.07) 100%), #121212"
+            ),
+          },
+          elevation3: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.08) 100%), #121212"
+            ),
+          },
+          elevation4: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.09) 100%), #121212"
+            ),
+          },
+          elevation5: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%), #121212"
+            ),
+          },
+          elevation6: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.11) 100%), #121212"
+            ),
+          },
+          elevation7: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.11) 100%), #121212"
+            ),
+          },
+          elevation8: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.12) 100%), #121212"
+            ),
+          },
+          elevation9: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.12) 100%), #121212"
+            ),
+          },
+          elevation10: {
+            background: getModeStyle(
+              "#FFFFFF",
+              "linear-gradient(180deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.13) 100%), #121212"
+            ),
+          },
+        },
+      },
+      MuiDialog: {
+        styleOverrides: {
+          paper: {
+            backgroundColor: getModeStyle(
+              theme.palette.background.paper,
+              "#181a1c" // TODO: Move to palette variable
+            ),
+            backgroundImage: "none",
+          },
+        },
+      },
       MuiBackdrop: {
         styleOverrides: {
           invisible: {
@@ -357,6 +469,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         },
       },
+      MuiSvgIcon: {
+        styleOverrides: {
+          fontSizeLarge: {
+            fontSize: 48,
+          },
+        },
+      },
       MuiAppBar: {
         defaultProps: {
           color: "default",
@@ -379,17 +498,12 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           disableElevation: true,
         },
       },
-      MuiSvgIcon: {
-        styleOverrides: {
-          fontSizeLarge: {
-            fontSize: 48,
-          },
-        },
-      },
       MuiIconButton: {
         styleOverrides: {
           root: {
             color: theme.palette.text.primary,
+            borderRadius: "8px",
+            padding: theme.spacing(0.75),
           },
         },
       },
@@ -397,7 +511,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         styleOverrides: {
           root: {
             padding: theme.spacing(0.5),
-            // background: theme.palette.action.disabled,
+            backgroundColor: alpha(theme.palette.action.disabled, 0.12),
           },
           grouped: {
             border: "none",
@@ -415,15 +529,20 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           root: {
             textTransform: "inherit",
             ...theme.typography.body1,
+            "&.Mui-selected, &.Mui-selected:hover": {
+              ...theme.typography.h6,
+              color:
+                theme.palette.mode === "dark"
+                  ? theme.palette.primary.contrastText
+                  : theme.palette.primary.main,
+              background: theme.palette.background.default,
+            },
           },
           sizeMedium: {
             letterSpacing: "0.17px",
           },
           sizeLarge: {
             ...theme.typography.h5,
-          },
-          selected: {
-            ...theme.typography.h6,
           },
         },
       },
@@ -463,6 +582,28 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
               padding: "14px 0",
               width: "100%",
               ...theme.typography.h6,
+            },
+          },
+          {
+            props: {
+              variant: "textContained",
+              color: "primary",
+            },
+            style: {
+              color: theme.palette.primary.main,
+              backgroundColor: alpha(theme.palette.primary.main, 0.08),
+              "&:hover": {
+                backgroundColor: alpha(theme.palette.primary.main, 0.08),
+              },
+            },
+          },
+          {
+            props: {
+              variant: "textContained",
+              color: "secondary",
+            },
+            style: {
+              color: theme.palette.text.disabled,
             },
           },
         ],
@@ -564,10 +705,68 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           disableRipple: true,
         },
       },
+      MuiMenu: {
+        defaultProps: {
+          PaperProps: {
+            square: true,
+          },
+        },
+      },
       MuiMenuItem: {
         styleOverrides: {
           root: {
             ...theme.typography.menuItem,
+          },
+        },
+      },
+      MuiTablePagination: {
+        styleOverrides: {
+          root: {
+            borderTop: `1px solid`,
+            borderColor: theme.palette.divider,
+          },
+        },
+      },
+      MuiTableContainer: {
+        styleOverrides: {
+          root: {
+            borderRadius: "20px",
+            border: "1px solid",
+            borderColor: theme.palette.other.outline,
+            boxShadow: theme.shadows[1],
+          },
+        },
+      },
+      MuiTable: {
+        variants: [
+          {
+            props: { size: "small" },
+            style: {
+              tr: {
+                background: "transparent",
+                "&.MuiTableRow-hover:hover": {
+                  background: "transparent",
+                },
+              },
+            },
+          },
+        ],
+      },
+      MuiTableRow: {
+        styleOverrides: {
+          root: {
+            background: theme.palette.background.paper,
+            "&.MuiTableRow-hover:hover": {
+              background: theme.palette.background.paper,
+              td: {
+                background: theme.palette.action.hover,
+              },
+            },
+            "&:last-of-type": {
+              td: {
+                border: "none",
+              },
+            },
           },
         },
       },
@@ -589,12 +788,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         styleOverrides: {
           tooltip: {
             backgroundColor: theme.palette.background.paper,
+            color: theme.palette.text.secondary,
             boxShadow: theme.shadows[5],
             padding: `${theme.spacing(0.5)} ${theme.spacing(1)}`,
-            color: theme.palette.text.secondary,
-            fontSize: "12px",
             borderRadius: "4px",
-            textAlign: "center",
+            maxWidth: "220px",
+            width: "100%", // TODO: This should have a better solution.
+            ...theme.typography.tooltip,
           },
           arrow: {
             color: theme.palette.background.paper,

@@ -60,12 +60,6 @@ export const WrapTabDowngrade: FC<{
     rpcApi.useSuperTokenDowngradeMutation();
   const isDowngradeDisabled = !selectedTokenPair || amountWei.isZero();
 
-  console.log({
-    isDowngradeDisabled,
-    selectedTokenPair,
-    amount: amountWei.toString()
-  })
-
   const amountInputRef = useRef<HTMLInputElement>(undefined!);
 
   useEffect(() => {

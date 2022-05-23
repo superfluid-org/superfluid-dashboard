@@ -95,7 +95,7 @@ export default memo(function NavigationDrawer() {
             <ListItemIcon>
               <ArrowRightAltIcon />
             </ListItemIcon>
-            <ListItemText data-cy={"nav-send"} primary="Send" />
+            <ListItemText data-cy={"nav-send"} primary="Send Stream" />
           </ListItemButton>
         </NextLink>
       </Stack>

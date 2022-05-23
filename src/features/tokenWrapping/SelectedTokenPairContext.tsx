@@ -1,6 +1,6 @@
 import { createContext, FC, useContext, useEffect, useState } from "react";
 import { getNetworkDefaultTokenPair } from "../network/networks";
-import { SuperTokenPair } from "../redux/endpoints/adHocSubgraphEndpoints";
+import { SuperTokenPair } from "../redux/endpoints/tokenTypes";
 import { useNetworkContext } from "../network/NetworkContext";
 import { useRouter } from "next/router";
 import { isString } from "lodash";

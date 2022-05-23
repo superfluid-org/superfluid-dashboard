@@ -1,7 +1,7 @@
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Button } from "@mui/material";
 import { FC, useState } from "react";
-import { TokenMinimal } from "../redux/endpoints/adHocSubgraphEndpoints";
+import { TokenMinimal } from "../redux/endpoints/tokenTypes";
 import TokenIcon from "../token/TokenIcon";
 import { TokenDialog, TokenSelectionProps } from "./TokenDialog";
 

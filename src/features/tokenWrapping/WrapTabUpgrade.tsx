@@ -27,7 +27,7 @@ import { BalanceSuperToken } from "./BalanceSuperToken";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { useSelectedTokenContext } from "./SelectedTokenPairContext";
 import { TokenDialogButton } from "./TokenDialogButton";
-import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/adHocSubgraphEndpoints";
+import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import { useRouter } from "next/router";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
 import {
@@ -236,14 +236,6 @@ export const WrapTabUpgrade: FC<{
       {selectedTokenPair && (
         <Typography data-cy="token-pair" align="center" sx={{ my: 3 }}>
           {`1 ${selectedTokenPair.underlyingToken.symbol} = 1 ${selectedTokenPair.superToken.symbol}`}
-        </Typography>
-      )}
-
-      {missingAllowance?.gt(0) && (
-        <Typography data-cy={"missing-allowance"}>
-          {`Missing allowance: ${ethers.utils.formatEther(
-            missingAllowance.toString()
-          )}`}
         </Typography>
       )}
 

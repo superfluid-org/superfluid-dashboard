@@ -1,15 +1,15 @@
-import { FC, useMemo } from "react";
-import { BigNumber, ethers } from "ethers";
-import { FlowRateWithTime, timeUnitWordMap } from "./FlowRateInput";
-import { calculateBufferAmount } from "./calculateBufferAmounts";
-import { DisplayAddress } from "./DisplayAddressChip";
-import { Stack, Typography } from "@mui/material";
+import { Alert, alpha, Stack, Typography, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { BigNumber, ethers } from "ethers";
+import { FC, useMemo } from "react";
 import { useNetworkContext } from "../network/NetworkContext";
-import { SuperTokenMinimal } from "../redux/endpoints/adHocSubgraphEndpoints";
+import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { rpcApi } from "../redux/store";
 import FlowingBalance from "../token/FlowingBalance";
 import { useWalletContext } from "../wallet/WalletContext";
+import { calculateBufferAmount } from "./calculateBufferAmounts";
+import { DisplayAddress } from "./DisplayAddressChip";
+import { FlowRateWithTime, timeUnitWordMap } from "./FlowRateInput";
 
 interface PreviewItemProps {
   label: string;
@@ -30,6 +30,7 @@ export const SendStreamPreview: FC<{
   token: SuperTokenMinimal;
   flowRateWithTime: FlowRateWithTime;
 }> = ({ receiver, token, flowRateWithTime }) => {
+  const theme = useTheme();
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
 
@@ -56,32 +57,49 @@ export const SendStreamPreview: FC<{
   );
 
   return (
-    <Stack gap={0.5}>
-      <PreviewItem dataCy="preview-receiver" label="Recipient">{receiver.hash}</PreviewItem>
+    <Alert
+      icon={false}
+      variant="outlined"
+      severity="success"
+      sx={{
+        py: 1,
+        px: 2.5,
+        color: theme.palette.primary.main,
+        borderColor: theme.palette.primary.main,
+        backgroundColor: alpha(theme.palette.primary.main, 0.04),
+        //TODO: This alert message rule should be looked deeper into. This should not be needed
+        ".MuiAlert-message": {
+          flex: 1,
+        },
+      }}
+    >
+      <Stack gap={0.5}>
+        <PreviewItem dataCy="preview-receiver" label="Recipient">{receiver.hash}</PreviewItem>
 
-      <PreviewItem dataCy="preview-flow-rate" label="Flow rate">
-        {`${ethers.utils.formatEther(flowRateWithTime.amountWei)} ${
-          token.symbol
-        }/${timeUnitWordMap[flowRateWithTime.unitOfTime]}`}
-      </PreviewItem>
-
-      <PreviewItem dataCy="preview-ends-on" label="Ends on">Never</PreviewItem>
-
-      {walletAddress && (
-        <PreviewItem dataCy="preview-balance-after-buffer" label="Balance after buffer">
-          {realtimeBalance && (
-            <FlowingBalance
-              balance={balanceAfterBuffer.toString()}
-              balanceTimestamp={realtimeBalance.balanceTimestamp}
-              flowRate={realtimeBalance.flowRate}
-            />
-          )}
+        <PreviewItem dataCy="preview-flow-rate" label="Flow rate">
+          {`${ethers.utils.formatEther(flowRateWithTime.amountWei)} ${
+            token.symbol
+          }/${timeUnitWordMap[flowRateWithTime.unitOfTime]}`}
         </PreviewItem>
-      )}
 
-      <PreviewItem dataCy="preview-upfront-buffer" label="Upfront buffer">
-        {`${ethers.utils.formatEther(bufferAmount)} ${token.symbol}`}
-      </PreviewItem>
-    </Stack>
+        <PreviewItem dataCy="preview-ends-on" label="Ends on">Never</PreviewItem>
+
+        {walletAddress && (
+          <PreviewItem dataCy="preview-balance-after-buffer" label="Balance after buffer">
+            {realtimeBalance && (
+              <FlowingBalance
+                balance={balanceAfterBuffer.toString()}
+                balanceTimestamp={realtimeBalance.balanceTimestamp}
+                flowRate={realtimeBalance.flowRate}
+              />
+            )}
+          </PreviewItem>
+        )}
+
+        <PreviewItem dataCy="preview-upfront-buffer" label="Upfront buffer">
+          {`${ethers.utils.formatEther(bufferAmount)} ${token.symbol}`}
+        </PreviewItem>
+      </Stack>
+    </Alert>
   );
 };

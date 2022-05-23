@@ -1,5 +1,4 @@
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
-import InfoIcon from "@mui/icons-material/Info";
 import {
   Alert,
   AlertTitle,
@@ -23,14 +22,17 @@ import { BigNumber, ethers } from "ethers";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, memo, useCallback, useMemo, useState } from "react";
+import TooltipIcon from "../common/TooltipIcon";
 import { useNetworkContext } from "../network/NetworkContext";
 import {
   getSuperTokenType,
+} from "../redux/endpoints/adHocSubgraphEndpoints";
+import {
   isSuper,
   isWrappable,
   SuperTokenMinimal,
-  TokenMinimal,
-} from "../redux/endpoints/adHocSubgraphEndpoints";
+  TokenMinimal
+} from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
@@ -73,7 +75,6 @@ const createDefaultFlowRate = () => ({
 export default memo(function SendCard(props: {
   restoration: SendStreamRestoration | undefined;
 }) {
-  const theme = useTheme();
   const { network } = useNetworkContext();
   const { walletAddress } = useWalletContext();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
@@ -182,7 +183,6 @@ export default memo(function SendCard(props: {
     <Card
       sx={{
         maxWidth: "600px",
-        borderRadius: "20px",
         p: 4,
       }}
       elevation={1}
@@ -230,7 +230,7 @@ export default memo(function SendCard(props: {
                 sx={{ mr: 0.75 }}
               >
                 <FormLabel>Flow Rate</FormLabel>
-                <InfoIcon fontSize="small" />
+                <TooltipIcon title="Flow rate is the velocity of tokens being streamed." />
               </Stack>
 
               <FlowRateInput
@@ -251,7 +251,7 @@ export default memo(function SendCard(props: {
                 sx={{ mr: 0.75 }}
               >
                 <FormLabel>Ends on</FormLabel>
-                <InfoIcon fontSize="small" />
+                <TooltipIcon title="If the end date is not specified, stream will run indefinitely or until you run out of tokens." />
               </Stack>
               <TextField data-cy={"ends-on"} value="∞" disabled fullWidth />
             </Box>
@@ -296,22 +296,11 @@ export default memo(function SendCard(props: {
             <>
               <Divider />
               {!existingStream && (
-                <Paper
-                  variant="outlined"
-                  sx={{
-                    p: [2.5, 3],
-                    color: theme.palette.primary.main,
-                    borderColor: theme.palette.primary.main,
-                    backgroundColor: alpha(theme.palette.primary.main, 0.04),
-                  }}
-                >
-                  {/** TODO(KK): Create separate preview? */}
-                  <SendStreamPreview
-                    receiver={sendStreamRestoration.receiver}
-                    token={sendStreamRestoration.token}
-                    flowRateWithTime={sendStreamRestoration.flowRate}
-                  />
-                </Paper>
+                <SendStreamPreview
+                  receiver={sendStreamRestoration.receiver}
+                  token={sendStreamRestoration.token}
+                  flowRateWithTime={sendStreamRestoration.flowRate}
+                />
               )}
 
               {existingStream && (

@@ -1,22 +1,36 @@
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import {
-  Avatar,
   Box,
   Button,
   Collapse,
-  Divider,
   ListItemAvatar,
-  ListItemText,
   Menu,
   MenuItem,
   ToggleButton,
   ToggleButtonGroup,
+  styled,
+  useTheme,
 } from "@mui/material";
-import { useTheme } from "@mui/system";
 import { FC, memo, MouseEvent, useState } from "react";
+import { useAccount, useNetwork } from "wagmi";
+import { useWalletContext } from "../wallet/WalletContext";
 import { useNetworkContext } from "./NetworkContext";
 import NetworkIcon from "./NetworkIcon";
 import { mainNetworks, Network, testNetworks } from "./networks";
+
+interface OpenIconProps {
+  open: boolean;
+}
+
+export const OpenIcon = styled(KeyboardArrowDownIcon)<OpenIconProps>(
+  ({ theme, open }) => ({
+    transform: `rotate(${open ? 180 : 0}deg)`,
+    transition: theme.transitions.create("transform", {
+      easing: theme.transitions.easing.easeInOut,
+      duration: theme.transitions.duration.short,
+    }),
+  })
+);
 
 interface NetworkItemProps {
   network: Network;
@@ -41,6 +55,8 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
 
 export default memo(function SelectNetwork() {
   const theme = useTheme();
+  const { data: account } = useAccount();
+  const { switchNetwork } = useNetwork();
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [showTestnets, setShowTestnets] = useState(false);
@@ -58,6 +74,10 @@ export default memo(function SelectNetwork() {
   const onNetworkSelected = (chainId: number) => () => {
     handleClose();
     setSelectedNetwork(chainId);
+
+    if (account && switchNetwork) {
+      switchNetwork(chainId);
+    }
   };
 
   const handleShowTestnetsChange = (
@@ -76,7 +96,7 @@ export default memo(function SelectNetwork() {
         startIcon={
           <NetworkIcon network={selectedNetwork} size={24} fontSize={16} />
         }
-        endIcon={<KeyboardArrowDownIcon />}
+        endIcon={<OpenIcon open={open} />}
         onClick={handleOpen}
         sx={{ ".MuiButton-startIcon > *:nth-of-type(1)": { fontSize: "16px" } }}
       >
@@ -88,7 +108,7 @@ export default memo(function SelectNetwork() {
         onClose={handleClose}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-        PaperProps={{ sx: { minWidth: 280 } }}
+        PaperProps={{ sx: { minWidth: 280 }, square: true, elevation: 2 }}
         sx={{ marginTop: theme.spacing(1.5) }}
       >
         <Collapse in={!showTestnets} timeout="auto" unmountOnExit>

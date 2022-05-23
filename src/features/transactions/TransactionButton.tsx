@@ -1,5 +1,4 @@
 import React, { FC, useState } from "react";
-import { useWalletContext } from "../wallet/WalletContext";
 import { useNetworkContext } from "../network/NetworkContext";
 import { Button, ButtonProps, Dialog, DialogActions } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
@@ -9,6 +8,8 @@ import {
   TransactionDialogButton,
 } from "./TransactionDialog";
 import UnknownMutationResult from "../../unknownMutationResult";
+import { useAccount, useConnect, useNetwork } from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export const TransactionButton: FC<{
   mutationResult: UnknownMutationResult;
@@ -24,8 +25,9 @@ export const TransactionButton: FC<{
   ButtonProps?: ButtonProps;
   dataCy?: string;
 }> = ({ children, disabled, onClick, mutationResult, hidden ,dataCy}) => {
-  const { walletAddress, walletChainId, connectWallet, isWalletConnecting } =
-    useWalletContext();
+  const { isConnecting } = useConnect();
+  const { activeChain, switchNetwork } = useNetwork();
+  const { data: wagmiAccount } = useAccount();
   const { network } = useNetworkContext();
   const [transactionDialogLabel, setTransactionDialogLabel] = useState<
     React.ReactNode | undefined
@@ -54,31 +56,40 @@ export const TransactionButton: FC<{
       );
     }
 
-    if (!walletAddress) {
+    if (!wagmiAccount?.address) {
       return (
-        <LoadingButton
-          data-cy={dataCy}
-          fullWidth
-          loading={isWalletConnecting}
-          color="primary"
-          variant="contained"
-          size="xl"
-          onClick={connectWallet}
-        >
-          Connect Wallet
-        </LoadingButton>
+        <ConnectButton.Custom>
+          {({ openConnectModal }) => (
+            <LoadingButton
+              data-cy={dataCy}
+              fullWidth
+              loading={isConnecting}
+              color="primary"
+              variant="contained"
+              size="xl"
+              onClick={openConnectModal}
+            >
+              Connect Wallet
+            </LoadingButton>
+          )}
+        </ConnectButton.Custom>
       );
     }
 
-    if (walletChainId != network.chainId) {
+    if (network.chainId !== activeChain?.id) {
       return (
         <Button
           data-cy={dataCy}
-          disabled
+          disabled={!switchNetwork}
           color="primary"
           variant="contained"
           size="xl"
           fullWidth
+          onClick={() => {
+            if (switchNetwork) {
+              switchNetwork(network.chainId);
+            }
+          }}
         >
           Change Network to {network.displayName}
         </Button>

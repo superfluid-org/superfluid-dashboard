@@ -40,8 +40,8 @@ const DisplayAddressChip: FC<{
           {/* Read about the Blockies API here: https://github.com/stephensprinkle-zz/react-blockies */}
           <ListItem sx={{ p: 0 }}>
             <ListItemAvatar>
-              <Avatar variant="rounded" sx={{ width: 32, height: 32 }}>
-                <Blockies seed={hash} />
+              <Avatar variant="rounded">
+                <Blockies seed={hash} size={12} scale={3} />
               </Avatar>
             </ListItemAvatar>
             <ListItemText

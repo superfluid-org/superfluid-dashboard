@@ -13,20 +13,16 @@ export const TransactionListItemRestoreButton: FC<{
     return null;
   }
 
+  const restoreTransaction = async () =>
+    await router.push(`/restore-transaction?hash=${transaction.hash}`);
+
   switch (transaction.title) {
     case "Create Stream":
     case "Downgrade from Super Token":
     case "Upgrade to Super Token":
       return (
         <Tooltip title="Restore">
-          <IconButton
-            color="primary"
-            onClick={async () => {
-              await router.push(
-                `/restore-transaction?hash=${transaction.hash}`
-              );
-            }}
-          >
+          <IconButton onClick={restoreTransaction}>
             <ReplayIcon />
           </IconButton>
         </Tooltip>

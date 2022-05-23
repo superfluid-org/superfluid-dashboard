@@ -96,7 +96,9 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
         borderRadius: lastElement ? "0 0 20px 20px" : 0,
       }}
     >
-      <TableContainer>
+      <TableContainer
+        sx={{ borderRadius: 0, border: "none", boxShadow: "none" }}
+      >
         <Table
           size="small"
           sx={{
@@ -111,7 +113,7 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
                 To / From
               </TableCell>
               <TableCell width="290">All Time Flow</TableCell>
-              <TableCell width="300">Monthly Flow</TableCell>
+              <TableCell width="300">Flow rate</TableCell>
               <TableCell width="300">Start / End Date</TableCell>
               <TableCell width="120" align="center">
                 Filter
@@ -143,7 +145,11 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        sx={{ visibility: data.length <= 5 ? "hidden" : "visible" }}
+        sx={{
+          "> *": {
+            visibility: data.length <= 5 ? "hidden" : "visible",
+          },
+        }}
       />
     </Box>
   );
