@@ -19,11 +19,6 @@ export const VisibleAddressProvider: FC = ({ children }) => {
     [impersonatedAddress, account]
   );
 
-console.log({
-  visibleAddress: contextValue.visibleAddress,
-  impersonatedAddress
-})
-
   return (
     <VisibleAddressContext.Provider value={contextValue}>
       {children}

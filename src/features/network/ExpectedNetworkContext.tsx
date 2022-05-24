@@ -13,21 +13,21 @@ import { useNetwork } from "wagmi";
 import { wagmiClient } from "../wallet/WagmiManager";
 import { Network, networksByChainId, networksBySlug } from "./networks";
 
-interface AppNetworkContextValue {
+interface ExpectedNetworkContextValue {
   network: Network;
-  setNetwork: (chainId: number) => void;
+  setExpectedNetwork: (chainId: number) => void;
 }
 
-const AppNetworkContext = createContext<AppNetworkContextValue>(null!);
+const ExpectedNetworkContext = createContext<ExpectedNetworkContextValue>(null!);
 
-export const AppNetworkProvider: FC<{
+export const ExpectedNetworkProvider: FC<{
   children: (network: Network) => ReactNode;
 }> = ({ children }) => {
   const [network, setNetwork] = useState<Network>(networksByChainId.get(137)!);
-  const contextValue: AppNetworkContextValue = useMemo(
+  const contextValue: ExpectedNetworkContextValue = useMemo(
     () => ({
       network,
-      setNetwork: (chainId: number) =>
+      setExpectedNetwork: (chainId: number) =>
         setNetwork(networksByChainId.get(chainId)!),
     }),
     [network, setNetwork]
@@ -80,10 +80,10 @@ export const AppNetworkProvider: FC<{
   }, [networkQueryParam]);
 
   return (
-    <AppNetworkContext.Provider value={contextValue}>
+    <ExpectedNetworkContext.Provider value={contextValue}>
       {children(network)}
-    </AppNetworkContext.Provider>
+    </ExpectedNetworkContext.Provider>
   );
 };
 
-export const useAppNetwork = () => useContext(AppNetworkContext);
+export const useExpectedNetwork = () => useContext(ExpectedNetworkContext);

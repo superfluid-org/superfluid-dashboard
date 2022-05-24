@@ -20,7 +20,7 @@ import { ethers } from "ethers";
 import { FC, useEffect, useState } from "react";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import { ensApi } from "../ens/ensApi.slice";
-import { useAppNetwork } from "../network/AppNetworkContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { subgraphApi } from "../redux/store";
 import { DisplayAddress } from "./DisplayAddressChip";
 import Blockies from "react-blockies";
@@ -61,7 +61,7 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
   onClose,
 }) => {
   const theme = useTheme();
-  const { network } = useAppNetwork();
+  const { network } = useExpectedNetwork();
   const { visibleAddress: visibleAddress } = useVisibleAddress();
   const [searchTermVisible, setSearchTermVisible] = useState("");
   const [searchTermDebounced, _setSearchTermDebounced] =

@@ -6,7 +6,7 @@ import { createContext, FC, useContext, useEffect, useMemo, useState } from "rea
 interface ImpersonationContextValue {
   isImpersonated: boolean;
   impersonatedAddress: string | undefined;
-  stop: () => void;
+  stopImpersonation: () => void;
   impersonate: (address: string) => void;
 }
 
@@ -21,7 +21,7 @@ export const ImpersonationProvider: FC = ({ children }) => {
     () => ({
       impersonatedAddress,
       isImpersonated: !!impersonatedAddress,
-      stop: () => setImpersonatedAddress(undefined),
+      stopImpersonation: () => setImpersonatedAddress(undefined),
       impersonate: (address: string) => setImpersonatedAddress(getAddress(address))
     }),
     [impersonatedAddress]

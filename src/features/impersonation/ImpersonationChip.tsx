@@ -5,7 +5,7 @@ import { useImpersonation } from "./ImpersonationContext";
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 
 const ImpersonationChip: FC<ChipProps> = ({ ...props }) => {
-  const { isImpersonated, impersonatedAddress, stop: stopImpersonation } =
+  const { isImpersonated, impersonatedAddress, stopImpersonation: stopImpersonation } =
     useImpersonation();
 
   return isImpersonated ? (

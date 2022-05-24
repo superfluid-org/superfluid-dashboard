@@ -5,7 +5,7 @@ import {
   SuperTokenUpgradeRestoration,
   RestorationType,
 } from "../transactionRestoration/transactionRestorations";
-import { useAppNetwork } from "../network/AppNetworkContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { BigNumber, ethers } from "ethers";
 import { rpcApi, subgraphApi } from "../redux/store";
 import {
@@ -39,7 +39,7 @@ export const WrapTabUpgrade: FC<{
   restoration: SuperTokenUpgradeRestoration | undefined;
 }> = ({ restoration }) => {
   const theme = useTheme();
-  const { network } = useAppNetwork();
+  const { network } = useExpectedNetwork();
   const router = useRouter();
   const { visibleAddress: visibleAddress } = useVisibleAddress();
   const { selectedTokenPair, setSelectedTokenPair } = useSelectedTokenContext();

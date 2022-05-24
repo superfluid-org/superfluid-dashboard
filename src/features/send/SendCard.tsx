@@ -23,7 +23,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, memo, useCallback, useMemo, useState } from "react";
 import TooltipIcon from "../common/TooltipIcon";
-import { useAppNetwork } from "../network/AppNetworkContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   getSuperTokenType,
 } from "../redux/endpoints/adHocSubgraphEndpoints";
@@ -75,7 +75,7 @@ const createDefaultFlowRate = () => ({
 export default memo(function SendCard(props: {
   restoration: SendStreamRestoration | undefined;
 }) {
-  const { network } = useAppNetwork();
+  const { network } = useExpectedNetwork();
   const { visibleAddress: visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
   const router = useRouter();

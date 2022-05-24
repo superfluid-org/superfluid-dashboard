@@ -2,7 +2,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Button, Stack, Typography } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
-import { useAppNetwork } from "../network/AppNetworkContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   mainNetworks,
   Network,
@@ -37,7 +37,7 @@ interface TokenSnapshotTablesProps {
 const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
   const {
     network: { isTestnet },
-  } = useAppNetwork();
+  } = useExpectedNetwork();
 
   const networkSelectionRef = useRef<HTMLButtonElement>(null);
   const [hasContent, setHasContent] = useState(false);

@@ -1,7 +1,7 @@
 import { createContext, FC, useContext, useEffect, useState } from "react";
 import { getNetworkDefaultTokenPair } from "../network/networks";
 import { SuperTokenPair } from "../redux/endpoints/tokenTypes";
-import { useAppNetwork } from "../network/AppNetworkContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { useRouter } from "next/router";
 import { isString } from "lodash";
 import { subgraphApi } from "../redux/store";
@@ -12,7 +12,7 @@ const SelectedTokenContext = createContext<{
 }>(null!);
 
 export const SelectedTokenContextProvider: FC = ({ children }) => {
-  const { network } = useAppNetwork();
+  const { network } = useExpectedNetwork();
   const router = useRouter();
   const { token: tokenQueryParam } = router.query;
 

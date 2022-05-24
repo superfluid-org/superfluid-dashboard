@@ -2,7 +2,7 @@ import { Alert, alpha, Stack, Typography, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { BigNumber, ethers } from "ethers";
 import { FC, useMemo } from "react";
-import { useAppNetwork } from "../network/AppNetworkContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { rpcApi } from "../redux/store";
 import FlowingBalance from "../token/FlowingBalance";
@@ -30,7 +30,7 @@ export const SendStreamPreview: FC<{
   flowRateWithTime: FlowRateWithTime;
 }> = ({ receiver, token, flowRateWithTime }) => {
   const theme = useTheme();
-  const { network } = useAppNetwork();
+  const { network } = useExpectedNetwork();
   const { visibleAddress: visibleAddress } = useVisibleAddress();
 
   const realtimeBalanceQuery = rpcApi.useRealtimeBalanceQuery(

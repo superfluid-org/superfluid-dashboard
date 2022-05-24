@@ -1,6 +1,6 @@
 import { Avatar, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
 import { memo } from "react";
-import { useAppNetwork } from "../network/AppNetworkContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import shortenAddress from "../../utils/shortenAddress";
 import { LoadingButton } from "@mui/lab";
 import { useAccount, useNetwork } from "wagmi";
@@ -10,13 +10,13 @@ import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalance
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 
 export default memo(function ConnectWallet() {
-  const { network } = useAppNetwork();
+  const { network } = useExpectedNetwork();
 
   // TODO(KK): `isLoading` might not be the correct thing to look at for button loading state.
   const { data: account, isLoading } = useAccount();
   const { activeChain } = useNetwork();
 
-  const { stop: stopImpersonation } = useImpersonation();
+  const { stopImpersonation: stopImpersonation } = useImpersonation();
 
   return (
     <ConnectButton.Custom>

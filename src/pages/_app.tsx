@@ -5,7 +5,7 @@ import createEmotionCache from "../features/theme/createEmotionCache";
 import { useEffect } from "react";
 import Layout from "../features/layout/Layout";
 import MuiProvider from "../features/theme/MuiProvider";
-import { AppNetworkProvider } from "../features/network/AppNetworkContext";
+import { ExpectedNetworkProvider } from "../features/network/ExpectedNetworkContext";
 import ReduxProvider from "../features/redux/ReduxProvider";
 import ReduxPersistGate from "../features/redux/ReduxPersistGate";
 import NextThemesProvider from "../features/theme/NextThemesProvider";
@@ -47,7 +47,7 @@ export default function MyApp(props: MyAppProps) {
         </Head>
         <WagmiManager>
           <ImpersonationProvider>
-            <AppNetworkProvider>
+            <ExpectedNetworkProvider>
               {(network) => (
                 <ReduxProvider>
                   <MuiProvider>
@@ -72,7 +72,7 @@ export default function MyApp(props: MyAppProps) {
                   </MuiProvider>
                 </ReduxProvider>
               )}
-            </AppNetworkProvider>
+            </ExpectedNetworkProvider>
           </ImpersonationProvider>
         </WagmiManager>
       </CacheProvider>

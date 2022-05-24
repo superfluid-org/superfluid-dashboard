@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { useAppNetwork } from "../network/AppNetworkContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { Button, ButtonProps, Dialog, DialogActions } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import {
@@ -28,9 +28,9 @@ export const TransactionButton: FC<{
   const { isConnecting } = useConnect();
   const { activeChain, switchNetwork } = useNetwork();
   const { data: account } = useAccount();
-  const { isImpersonated, stop: stopImpersonation } = useImpersonation();
+  const { isImpersonated, stopImpersonation: stopImpersonation } = useImpersonation();
 
-  const { network } = useAppNetwork();
+  const { network } = useExpectedNetwork();
   const [transactionDialogLabel, setTransactionDialogLabel] = useState<
     React.ReactNode | undefined
   >();

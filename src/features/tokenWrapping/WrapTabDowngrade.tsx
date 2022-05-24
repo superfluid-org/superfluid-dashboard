@@ -16,7 +16,7 @@ import {
   SuperTokenDowngradeRestoration,
   RestorationType,
 } from "../transactionRestoration/transactionRestorations";
-import { useAppNetwork } from "../network/AppNetworkContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
 import { TransactionButton } from "../transactions/TransactionButton";
@@ -33,7 +33,7 @@ export const WrapTabDowngrade: FC<{
   restoration: SuperTokenDowngradeRestoration | undefined;
 }> = ({ restoration }) => {
   const theme = useTheme();
-  const { network } = useAppNetwork();
+  const { network } = useExpectedNetwork();
   const router = useRouter();
   const { visibleAddress: visibleAddress } = useVisibleAddress();
   const { selectedTokenPair, setSelectedTokenPair } = useSelectedTokenContext();

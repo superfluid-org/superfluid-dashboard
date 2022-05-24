@@ -18,7 +18,7 @@ import { ethers } from "ethers";
 import Fuse from "fuse.js";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import ResponsiveDialog from "../common/ResponsiveDialog";
-import { useAppNetwork } from "../network/AppNetworkContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   isSuper,
   isUnderlying,
@@ -49,7 +49,7 @@ export const TokenDialog: FC<{
   tokenSelection: { tokenPairsQuery, showUpgrade = false },
 }) => {
   const theme = useTheme();
-  const { network } = useAppNetwork();
+  const { network } = useExpectedNetwork();
   const { visibleAddress: visibleAddress } = useVisibleAddress();
 
   const [openCounter, setOpenCounter] = useState(0);

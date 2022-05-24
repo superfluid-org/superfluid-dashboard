@@ -19,7 +19,7 @@ import { styled, useTheme } from "@mui/system";
 import { FC } from "react";
 import UnknownMutationResult from "../../unknownMutationResult";
 import ResponsiveDialog from "../common/ResponsiveDialog";
-import { useAppNetwork } from "../network/AppNetworkContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { Network } from "../network/networks";
 
 const OutlineIcon = styled(Avatar)(({ theme }) => ({
@@ -64,7 +64,7 @@ export const TransactionDialog: FC<{
   const theme = useTheme();
 
   // Using app network name as a fallback if network is not specified in props
-  const { network: selectedNetwork } = useAppNetwork();
+  const { network: selectedNetwork } = useExpectedNetwork();
 
   return (
     <ResponsiveDialog

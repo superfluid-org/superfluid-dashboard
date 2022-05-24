@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { FC, memo, MouseEvent, useState } from "react";
 import { useAccount, useNetwork } from "wagmi";
-import { useAppNetwork } from "./AppNetworkContext";
+import { useExpectedNetwork } from "./ExpectedNetworkContext";
 import NetworkIcon from "./NetworkIcon";
 import { mainNetworks, Network, testNetworks } from "./networks";
 
@@ -62,8 +62,8 @@ export default memo(function SelectNetwork() {
 
   const open = Boolean(anchorEl);
 
-  const { network: selectedNetwork, setNetwork: setSelectedNetwork } =
-    useAppNetwork();
+  const { network: selectedNetwork, setExpectedNetwork: setSelectedNetwork } =
+    useExpectedNetwork();
 
   const handleOpen = (event: MouseEvent<HTMLButtonElement>) =>
     setAnchorEl(event.currentTarget);
