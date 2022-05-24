@@ -4,8 +4,10 @@ import { useRouter } from "next/router";
 import { createContext, FC, useContext, useEffect, useMemo, useState } from "react";
 
 interface ImpersonationContextValue {
-  impersonatedAddress: string | undefined;
   isImpersonated: boolean;
+  impersonatedAddress: string | undefined;
+  stop: () => void;
+  impersonate: (address: string) => void;
 }
 
 const ImpersonationContext = createContext<ImpersonationContextValue>(null!);
@@ -18,7 +20,9 @@ export const ImpersonationProvider: FC = ({ children }) => {
   const contextValue = useMemo(
     () => ({
       impersonatedAddress,
-      isImpersonated: !!impersonatedAddress
+      isImpersonated: !!impersonatedAddress,
+      stop: () => setImpersonatedAddress(undefined),
+      impersonate: (address: string) => setImpersonatedAddress(getAddress(address))
     }),
     [impersonatedAddress]
   );

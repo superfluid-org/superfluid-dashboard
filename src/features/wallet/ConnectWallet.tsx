@@ -3,17 +3,20 @@ import { memo } from "react";
 import { useAppNetwork } from "../network/AppNetworkContext";
 import shortenAddress from "../../utils/shortenAddress";
 import { LoadingButton } from "@mui/lab";
-import AddIcon from "@mui/icons-material/Add";
-import { useAccount, useConnect, useNetwork } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Blockies from "react-blockies";
+import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
+import { useImpersonation } from "../impersonation/ImpersonationContext";
 
 export default memo(function ConnectWallet() {
   const { network } = useAppNetwork();
 
-  const { data: account } = useAccount();
+  // TODO(KK): `isLoading` might not be the correct thing to look at for button loading state.
+  const { data: account, isLoading } = useAccount();
   const { activeChain } = useNetwork();
-  const { isConnecting } = useConnect();
+
+  const { stop: stopImpersonation } = useImpersonation();
 
   return (
     <ConnectButton.Custom>
@@ -43,12 +46,15 @@ export default memo(function ConnectWallet() {
           </ListItem>
         ) : (
           <LoadingButton
-            loading={isConnecting}
+            loading={isLoading}
             variant="contained"
             size="xl"
-            onClick={openConnectModal}
+            onClick={() => {
+              openConnectModal();
+              stopImpersonation();
+            }}
           >
-            <AddIcon sx={{ mr: 1 }} />
+            <AccountBalanceWalletOutlinedIcon sx={{ mr: 1 }} />
             Connect Wallet
           </LoadingButton>
         )

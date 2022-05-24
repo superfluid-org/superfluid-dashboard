@@ -15,7 +15,7 @@ import { hotjar } from "react-hotjar";
 import WagmiManager, {
   RainbowKitManager,
 } from "../features/wallet/WagmiManager";
-import { ImpersonationProvider } from "../features/wallet/ImpersonationContext";
+import { ImpersonationProvider } from "../features/impersonation/ImpersonationContext";
 import { VisibleAddressProvider } from "../features/wallet/VisibleAddressContext";
 
 // Client-side cache, shared for the whole session of the user in the browser.

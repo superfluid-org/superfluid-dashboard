@@ -10,7 +10,7 @@ import {
 import UnknownMutationResult from "../../unknownMutationResult";
 import { useAccount, useConnect, useNetwork } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useImpersonation } from "../wallet/ImpersonationContext";
+import { useImpersonation } from "../impersonation/ImpersonationContext";
 
 export const TransactionButton: FC<{
   mutationResult: UnknownMutationResult;
@@ -28,7 +28,7 @@ export const TransactionButton: FC<{
   const { isConnecting } = useConnect();
   const { activeChain, switchNetwork } = useNetwork();
   const { data: account } = useAccount();
-  const { isImpersonated } = useImpersonation();
+  const { isImpersonated, stop: stopImpersonation } = useImpersonation();
 
   const { network } = useAppNetwork();
   const [transactionDialogLabel, setTransactionDialogLabel] = useState<
@@ -61,12 +61,12 @@ export const TransactionButton: FC<{
       return (
         <Button
           fullWidth
-          disabled
-          color="error"
+          color="warning"
           variant="contained"
           size="xl"
+          onClick={stopImpersonation}
         >
-          Disabled When Impersonated
+          Stop Viewing an Address
         </Button>
       );
     }

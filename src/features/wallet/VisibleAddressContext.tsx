@@ -1,6 +1,6 @@
 import { createContext, FC, useContext, useMemo } from "react";
 import { useAccount } from "wagmi";
-import { useImpersonation } from "./ImpersonationContext";
+import { useImpersonation } from "../impersonation/ImpersonationContext";
 
 interface VisibleAddressContextValue {
   visibleAddress: string | undefined;
