@@ -10,16 +10,15 @@ import {
 import { createWagmiClient, WagmiProvider } from "wagmi";
 import "@rainbow-me/rainbowkit/styles.css";
 import { useTheme } from "@mui/material";
-import { networks } from "../network/networks";
+import { networks, networksByChainId } from "../network/networks";
 
-const { chains, provider } = configureChains(
-  networks,
-  [
-    apiProvider.jsonRpc((chain) => ({
-      rpcUrl: networks[chain.id].rpcUrls.superfluid,
-    }))
-  ]
-);
+const { chains, provider } = configureChains(networks, [
+  apiProvider.jsonRpc((chain) => {
+    return {
+      rpcUrl: networksByChainId.get(chain.id)!.rpcUrls.superfluid,
+    };
+  }),
+]);
 
 const { connectors } = getDefaultWallets({
   appName: "Superfluid Dashboard",
