@@ -36,7 +36,7 @@ export const SendStreamPreview: FC<{
   const realtimeBalanceQuery = rpcApi.useRealtimeBalanceQuery(
     visibleAddress
       ? {
-          chainId: network.chainId,
+          chainId: network.id,
           tokenAddress: token.address,
           accountAddress: visibleAddress,
         }

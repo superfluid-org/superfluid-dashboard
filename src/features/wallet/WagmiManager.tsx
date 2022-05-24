@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import {
   apiProvider,
   configureChains,
@@ -7,24 +7,17 @@ import {
   darkTheme,
   lightTheme,
 } from "@rainbow-me/rainbowkit";
-import { Chain, createWagmiClient, WagmiProvider } from "wagmi";
+import { createWagmiClient, WagmiProvider } from "wagmi";
 import "@rainbow-me/rainbowkit/styles.css";
 import { useTheme } from "@mui/material";
 import { networks } from "../network/networks";
 
-const wagmiChains: Chain[] = networks.map(network => ({
-  id: network.chainId,
-  name: network.displayName,
-  rpcUrls: {
-    default: network.rpcUrl
-  }
-}));
 const { chains, provider } = configureChains(
-  wagmiChains,
+  networks,
   [
     apiProvider.jsonRpc((chain) => ({
-      rpcUrl: chain.rpcUrls.default,
-    })),
+      rpcUrl: networks[chain.id].rpcUrls.superfluid,
+    }))
   ]
 );
 

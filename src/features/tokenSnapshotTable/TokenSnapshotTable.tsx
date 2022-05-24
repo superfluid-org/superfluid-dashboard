@@ -27,7 +27,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
   network,
 }) => {
   const tokensQuery = subgraphApi.useAccountTokenSnapshotsQuery({
-    chainId: network.chainId,
+    chainId: network.id,
     filter: {
       account: address,
     },
@@ -55,7 +55,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
               >
                 <NetworkIcon network={network} />
                 <Typography variant="h5" color="text.primary">
-                  {network.displayName}
+                  {network.name}
                 </Typography>
               </Stack>
             </TableCell>

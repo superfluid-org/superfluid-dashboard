@@ -24,7 +24,7 @@ const RestoreTransaction: NextPage = () => {
   const { restore } = useTransactionRestorationContext();
 
   useEffect(() => {
-    if (transaction && transaction.chainId !== network.chainId) {
+    if (transaction && transaction.chainId !== network.id) {
       setNetwork(transaction.chainId);
     }
 

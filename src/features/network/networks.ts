@@ -1,19 +1,18 @@
 import { memoize } from "lodash";
+import { chain, Chain } from "wagmi";
 import {
   NATIVE_ASSET_ADDRESS,
   SuperTokenPair
 } from "../redux/endpoints/tokenTypes";
 import {TokenType} from "../redux/endpoints/tokenTypes";
 
-export type Network = {
-  displayName: string;
-  slugName: string;
-  chainId: number;
-  rpcUrl: string;
+// id == chainId
+// name == displayName
+export type Network = Chain & {
+  slugName: string
   subgraphUrl: string;
   getLinkForTransaction(txHash: string): string;
   getLinkForAddress(adderss: string): string;
-  isTestnet: boolean;
   icon?: string;
   color?: string;
   bufferTimeInMinutes: number; // Hard-code'ing this per network is actually incorrect approach. It's token-based and can be governed.
@@ -26,18 +25,35 @@ export type Network = {
       address: string;
     };
   };
+  rpcUrls: Chain["rpcUrls"] & { superfluid: string }
 };
+
+const superfluidRpcUrls = {
+  ropsten: "https://rpc-endpoints.superfluid.dev/ropsten",
+  rinkeby: "https://rpc-endpoints.superfluid.dev/rinkeby",
+  goerli: "https://rpc-endpoints.superfluid.dev/goerli",
+  kovan: "https://rpc-endpoints.superfluid.dev/kovan",
+  gnosis: "https://rpc-endpoints.superfluid.dev/xdai",
+  polygon: "https://rpc-endpoints.superfluid.dev/matic",
+  polygonMumbai: "https://rpc-endpoints.superfluid.dev/mumbai",
+  arbitrum: "https://rpc-endpoints.superfluid.dev/arbitrum-one",
+  arbitrumRinkeby: "https://rpc-endpoints.superfluid.dev/arbitrum-rinkeby",
+  optimism: "https://rpc-endpoints.superfluid.dev/optimism-mainnet",
+  optimismKovan: "https://rpc-endpoints.superfluid.dev/optimism-kovan",
+  avalancheFuji: "https://rpc-endpoints.superfluid.dev/avalanche-fuji"
+}
 
 export const networks: Network[] = [
   {
-    displayName: "Ropsten",
+    ...chain.ropsten,
     slugName: "ropsten",
-    chainId: 3,
-    isTestnet: true,
     bufferTimeInMinutes: 60,
     icon: "/icons/network/ropsten.jpg",
     color: "#29b6af",
-    rpcUrl: `https://rpc-endpoints.superfluid.dev/ropsten`,
+    rpcUrls: {
+      ...chain.ropsten.rpcUrls,
+      superfluid: superfluidRpcUrls.ropsten,
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-ropsten",
     getLinkForTransaction: (txHash: string): string =>
@@ -55,14 +71,15 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Rinkeby",
+    ...chain.rinkeby,
     slugName: "rinkeby",
-    chainId: 4,
-    isTestnet: true,
     color: "#ff4a8d",
     bufferTimeInMinutes: 60,
     icon: "/icons/network/rinkeby.jpg",
-    rpcUrl: `https://rpc-endpoints.superfluid.dev/rinkeby`,
+    rpcUrls: {
+      ...chain.rinkeby.rpcUrls,
+      superfluid: superfluidRpcUrls.rinkeby,
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-rinkeby",
     getLinkForTransaction: (txHash: string): string =>
@@ -80,14 +97,15 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Goerli",
+    ...chain.goerli,
     slugName: "goerli",
-    chainId: 5,
-    isTestnet: true,
     bufferTimeInMinutes: 60,
     icon: "/icons/network/goerli.jpg",
     color: "#9064ff",
-    rpcUrl: `https://rpc-endpoints.superfluid.dev/goerli`,
+    rpcUrls: {
+      ...chain.goerli.rpcUrls,
+      superfluid: superfluidRpcUrls.goerli,
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli",
     getLinkForTransaction: (txHash: string): string =>
@@ -105,14 +123,15 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Kovan",
+    ...chain.kovan,
     slugName: "kovan",
-    chainId: 42,
-    isTestnet: true,
     bufferTimeInMinutes: 60,
     icon: "/icons/network/kovan.jpg",
     color: "#f6c343",
-    rpcUrl: `https://rpc-endpoints.superfluid.dev/kovan`,
+    rpcUrls: {
+      ...chain.kovan.rpcUrls,
+      superfluid: superfluidRpcUrls.kovan,
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-kovan",
     getLinkForTransaction: (txHash: string): string =>
@@ -130,13 +149,13 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Gnosis Chain",
-    slugName: "xdai",
-    chainId: 100,
-    isTestnet: false,
+    name: "Gnosis Chain",
+    slugName: "gnosis",
+    id: 100,
+    testnet: false,
     bufferTimeInMinutes: 240,
     icon: "/icons/network/gnosis.svg",
-    rpcUrl: "https://rpc-endpoints.superfluid.dev/xdai",
+    rpcUrls: { superfluid: superfluidRpcUrls.gnosis, default: "https://rpc.gnosischain.com/" },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-xdai",
     getLinkForTransaction: (txHash: string): string =>
@@ -154,13 +173,14 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Polygon",
-    slugName: "matic",
-    chainId: 137,
-    isTestnet: false,
+    ...chain.polygon,
+    slugName: "polygon",
     bufferTimeInMinutes: 240,
     icon: "/icons/network/polygon.svg",
-    rpcUrl: `https://rpc-endpoints.superfluid.dev/matic`,
+    rpcUrls: {
+      ...chain.polygon.rpcUrls,
+      superfluid: superfluidRpcUrls.polygon
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-matic",
     getLinkForTransaction: (txHash: string): string =>
@@ -178,13 +198,14 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Mumbai",
+    ...chain.polygonMumbai,
     slugName: "mumbai",
-    chainId: 80001,
-    isTestnet: true,
     bufferTimeInMinutes: 60,
     color: "#3099f2",
-    rpcUrl: `https://rpc-endpoints.superfluid.dev/mumbai`,
+    rpcUrls: {
+      ...chain.polygonMumbai.rpcUrls,
+      superfluid: superfluidRpcUrls.polygonMumbai
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-mumbai",
     getLinkForTransaction: (txHash: string): string =>
@@ -202,14 +223,15 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Arbitrum-Rinkeby",
+    ...chain.arbitrumRinkeby,
     slugName: "arbitrum-rinkeby",
-    chainId: 421611,
-    isTestnet: true,
     bufferTimeInMinutes: 60,
     icon: "/icons/network/arbitrum.svg",
     color: "#29b6af",
-    rpcUrl: `https://rpc-endpoints.superfluid.dev/arbitrum-rinkeby`,
+    rpcUrls: {
+      ...chain.arbitrumRinkeby.rpcUrls,
+      superfluid: superfluidRpcUrls.arbitrumRinkeby
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-rinkeby",
     getLinkForTransaction: (txHash: string): string =>
@@ -227,14 +249,15 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Optimism-Kovan",
+    ...chain.optimismKovan,
     slugName: "optimism-kovan",
-    chainId: 69,
-    isTestnet: true,
     bufferTimeInMinutes: 60,
     icon: "/icons/network/optimism.svg",
     color: "#8b45b6",
-    rpcUrl: `https://rpc-endpoints.superfluid.dev/optimism-kovan`,
+    rpcUrls: {
+      ...chain.optimismKovan.rpcUrls,
+      superfluid: superfluidRpcUrls.optimismKovan
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-kovan",
     getLinkForTransaction: (txHash: string): string =>
@@ -252,13 +275,16 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Avalanche-Fuji",
+    name: "Avalanche-Fuji",
     slugName: "avalanche-fuji",
-    chainId: 43113,
-    isTestnet: true,
+    id: 43113,
+    testnet: true,
     bufferTimeInMinutes: 60,
     icon: "/icons/network/avalanche.jpg",
-    rpcUrl: "https://rpc-endpoints.superfluid.dev/avalanche-fuji",
+    rpcUrls: {
+      superfluid: superfluidRpcUrls.avalancheFuji,
+      default: "https://api.avax-test.network/ext/C/rpc"
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-avalanche-fuji",
     getLinkForTransaction: (txHash: string): string =>
@@ -276,13 +302,14 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Optimism",
+    ...chain.optimism,
     slugName: "optimism-mainnet",
-    chainId: 10,
-    isTestnet: false,
     bufferTimeInMinutes: 240,
     icon: "/icons/network/optimism.svg",
-    rpcUrl: `https://rpc-endpoints.superfluid.dev/optimism-mainnet`,
+    rpcUrls: {
+      ...chain.optimism.rpcUrls,
+      superfluid: superfluidRpcUrls.optimism,
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-mainnet",
     getLinkForTransaction: (txHash: string): string =>
@@ -300,13 +327,14 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Arbitrum One",
+    ...chain.arbitrum,
     slugName: "arbitrum-one",
-    chainId: 42161,
-    isTestnet: false,
     bufferTimeInMinutes: 240,
     icon: "/icons/network/arbitrum.svg",
-    rpcUrl: "https://rpc-endpoints.superfluid.dev/arbitrum-one",
+    rpcUrls: {
+      ...chain.arbitrum.rpcUrls,
+      superfluid: superfluidRpcUrls.arbitrum
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-one",
     getLinkForTransaction: (txHash: string): string =>
@@ -331,7 +359,7 @@ export const getNetworkDefaultTokenPair = memoize(
     underlyingToken: {
       type: TokenType.NativeAssetUnderlyingToken,
       address: NATIVE_ASSET_ADDRESS,
-      name: `${network.displayName} Native Asset`,
+      name: `${network.name} Native Asset`,
       symbol: network.nativeAsset.symbol,
     },
   })
@@ -341,8 +369,8 @@ export const networksByName = new Map(
   networks.map((x) => [x.slugName.toLowerCase(), x])
 );
 
-export const networksByChainId = new Map(networks.map((x) => [x.chainId, x]));
+export const networksByChainId = new Map(networks.map((x) => [x.id, x]));
 export const networksBySlug = new Map(networks.map((x) => [x.slugName, x]));
 
-export const mainNetworks = networks.filter((network) => !network.isTestnet);
-export const testNetworks = networks.filter((network) => network.isTestnet);
+export const mainNetworks = networks.filter((network) => !network.testnet);
+export const testNetworks = networks.filter((network) => network.testnet);

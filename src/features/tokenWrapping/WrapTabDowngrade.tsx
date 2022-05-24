@@ -67,7 +67,7 @@ export const WrapTabDowngrade: FC<{
   }, [amountInputRef, selectedTokenPair]);
 
   const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
-    chainId: network.chainId,
+    chainId: network.id,
   });
 
   return (
@@ -121,7 +121,7 @@ export const WrapTabDowngrade: FC<{
           </Typography> */}
 
             <BalanceSuperToken
-              chainId={network.chainId}
+              chainId={network.id}
               accountAddress={visibleAddress}
               tokenAddress={selectedTokenPair.superToken.address}
               typographyProps={{ color: "text.secondary" }}
@@ -185,7 +185,7 @@ export const WrapTabDowngrade: FC<{
               ${Number(amount || 0).toFixed(2)}
             </Typography> */}
               <BalanceUnderlyingToken
-                chainId={network.chainId}
+                chainId={network.id}
                 accountAddress={visibleAddress}
                 tokenAddress={selectedTokenPair.underlyingToken.address}
               />
@@ -213,13 +213,13 @@ export const WrapTabDowngrade: FC<{
 
           const restoration: SuperTokenDowngradeRestoration = {
             type: RestorationType.Downgrade,
-            chainId: network.chainId,
+            chainId: network.id,
             tokenUpgrade: selectedTokenPair,
             amountWei: amountWei.toString(),
           };
 
           downgradeTrigger({
-            chainId: network.chainId,
+            chainId: network.id,
             amountWei: amountWei.toString(),
             superTokenAddress: selectedTokenPair.superToken.address,
             waitForConfirmation: true,

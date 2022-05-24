@@ -175,7 +175,7 @@ export const adHocSubgraphEndpoints = {
               type: TokenType.NativeAssetUnderlyingToken,
               address: NATIVE_ASSET_ADDRESS,
               symbol: network.nativeAsset.symbol,
-              name: `${network.displayName} Native Asset`,
+              name: `${network.name} Native Asset`,
             },
           }));
 
@@ -197,7 +197,7 @@ export const adHocSubgraphEndpoints = {
                   type: TokenType.NativeAssetUnderlyingToken,
                   address: NATIVE_ASSET_ADDRESS,
                   symbol: network.nativeAsset.symbol,
-                  name: `${network.displayName} Native Asset`,
+                  name: `${network.name} Native Asset`,
                 },
               };
             }

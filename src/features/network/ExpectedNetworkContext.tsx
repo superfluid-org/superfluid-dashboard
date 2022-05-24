@@ -45,7 +45,7 @@ export const ExpectedNetworkProvider: FC<{
       return;
     }
 
-    if (activeChain && (activeChain.id !== network.chainId)) {
+    if (activeChain && (activeChain.id !== network.id)) {
       const networkFromWallet = networksByChainId.get(activeChain.id);
       if (networkFromWallet) {
         setNetwork(networkFromWallet);

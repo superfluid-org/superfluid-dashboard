@@ -25,7 +25,7 @@ const ReduxProviderCore: FC = ({ children }) => {
     if (walletAddress) {
       dispatch(
         initiateOldPendingTransactionsTrackingThunk({
-          chainIds: networks.map((x) => x.chainId),
+          chainIds: networks.map((x) => x.id),
           signerAddress: walletAddress,
         }) as any
       ); // TODO(weird version mismatch):

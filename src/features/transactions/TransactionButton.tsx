@@ -90,7 +90,7 @@ export const TransactionButton: FC<{
       );
     }
 
-    if (network.chainId !== activeChain?.id) {
+    if (network.id !== activeChain?.id) {
       return (
         <Button
           disabled={!switchNetwork}
@@ -100,11 +100,11 @@ export const TransactionButton: FC<{
           fullWidth
           onClick={() => {
             if (switchNetwork) {
-              switchNetwork(network.chainId);
+              switchNetwork(network.id);
             }
           }}
         >
-          Change Network to {network.displayName}
+          Change Network to {network.name}
         </Button>
       );
     }

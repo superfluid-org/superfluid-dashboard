@@ -106,7 +106,7 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
   const recentsQuery = subgraphApi.useRecentsQuery(
     visibleAddress
       ? {
-          chainId: network.chainId,
+          chainId: network.id,
           accountAddress: visibleAddress,
         }
       : skipToken

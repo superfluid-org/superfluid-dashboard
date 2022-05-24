@@ -34,7 +34,7 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
   const [page, setPage] = useState(0);
 
   const incomingStreamsQuery = subgraphApi.useStreamsQuery({
-    chainId: network.chainId,
+    chainId: network.id,
     filter: {
       receiver: visibleAddress,
       token: token,
@@ -50,7 +50,7 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
   });
 
   const outgoingStreamsQuery = subgraphApi.useStreamsQuery({
-    chainId: network.chainId,
+    chainId: network.id,
     filter: {
       sender: visibleAddress,
       token: token,

@@ -68,7 +68,7 @@ export const WrapTabUpgrade: FC<{
   const allowanceQuery = rpcApi.useSuperTokenUpgradeAllowanceQuery(
     selectedTokenPair && !isUnderlyingBlockchainNativeAsset && visibleAddress
       ? {
-          chainId: network.chainId,
+          chainId: network.id,
           accountAddress: visibleAddress,
           superTokenAddress: selectedTokenPair.superToken.address,
         }
@@ -106,7 +106,7 @@ export const WrapTabUpgrade: FC<{
   }, [amountInputRef, selectedTokenPair]);
 
   const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
-    chainId: network.chainId,
+    chainId: network.id,
   });
 
   return (
@@ -158,7 +158,7 @@ export const WrapTabUpgrade: FC<{
             ${Number(amount || 0).toFixed(2)}
           </Typography> */}
             <BalanceUnderlyingToken
-              chainId={network.chainId}
+              chainId={network.id}
               accountAddress={visibleAddress}
               tokenAddress={selectedTokenPair.underlyingToken.address}
             />
@@ -221,7 +221,7 @@ export const WrapTabUpgrade: FC<{
               ${Number(amount || 0).toFixed(2)}
             </Typography> */}
               <BalanceSuperToken
-                chainId={network.chainId}
+                chainId={network.id}
                 accountAddress={visibleAddress}
                 tokenAddress={selectedTokenPair.superToken.address}
                 typographyProps={{ color: "text.secondary" }}
@@ -252,7 +252,7 @@ export const WrapTabUpgrade: FC<{
 
             const restoration: ApproveAllowanceRestoration = {
               type: RestorationType.Approve,
-              chainId: network.chainId,
+              chainId: network.id,
               amountWei: approveAllowanceAmountWei.toString(),
               token: selectedTokenPair.underlyingToken,
             };
@@ -262,7 +262,7 @@ export const WrapTabUpgrade: FC<{
             });
 
             approveTrigger({
-              chainId: network.chainId,
+              chainId: network.id,
               amountWei: approveAllowanceAmountWei.toString(),
               superTokenAddress: selectedTokenPair.superToken.address,
               transactionExtraData: {
@@ -287,13 +287,13 @@ export const WrapTabUpgrade: FC<{
 
             const restoration: SuperTokenUpgradeRestoration = {
               type: RestorationType.Upgrade,
-              chainId: network.chainId,
+              chainId: network.id,
               tokenUpgrade: selectedTokenPair,
               amountWei: amountWei.toString(),
             };
 
             upgradeTrigger({
-              chainId: network.chainId,
+              chainId: network.id,
               amountWei: amountWei.toString(),
               superTokenAddress: selectedTokenPair.superToken.address,
               waitForConfirmation: true,

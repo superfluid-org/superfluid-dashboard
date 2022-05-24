@@ -121,7 +121,7 @@ export default memo(function SendCard(props: {
   const [flowCreateTrigger, flowCreateResult] = rpcApi.useFlowCreateMutation();
 
   const superTokensQuery = subgraphApi.useTokensQuery({
-    chainId: network.chainId,
+    chainId: network.id,
     filter: {
       isSuperToken: true,
       isListed: true,
@@ -143,7 +143,7 @@ export default memo(function SendCard(props: {
   const existingStreams = subgraphApi.useStreamsQuery(
     shouldSearchForExistingStreams
       ? {
-          chainId: network.chainId,
+          chainId: network.id,
           filter: {
             sender: visibleAddress,
             receiver: receiver.hash,
@@ -172,7 +172,7 @@ export default memo(function SendCard(props: {
     hasAllDataForStream
       ? {
           type: RestorationType.SendStream,
-          chainId: network.chainId,
+          chainId: network.id,
           token: selectedToken,
           receiver: receiver,
           flowRate: flowRate,
@@ -268,7 +268,7 @@ export default memo(function SendCard(props: {
           {selectedToken && visibleAddress && (
             <Stack direction="row" alignItems="center" justifyContent="center">
               <BalanceSuperToken
-                chainId={network.chainId}
+                chainId={network.id}
                 accountAddress={visibleAddress}
                 tokenAddress={selectedToken.address}
               />
@@ -349,7 +349,7 @@ export default memo(function SendCard(props: {
               }
 
               flowCreateTrigger({
-                chainId: network.chainId,
+                chainId: network.id,
                 flowRateWei: calculateTotalAmountWei(flowRate).toString(),
                 receiverAddress: receiver.hash,
                 superTokenAddress: selectedToken.address,

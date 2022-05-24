@@ -111,7 +111,7 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
 
   const deleteStream = () => {
     flowDeleteTrigger({
-      chainId: network.chainId,
+      chainId: network.id,
       receiverAddress: receiver,
       senderAddress: sender,
       superTokenAddress: stream.token,
@@ -192,15 +192,15 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
               <>
                 <Tooltip
                   arrow
-                  title={`Please switch provider network to ${network.displayName} in order to cancel the stream.`}
-                  disableHoverListener={network.chainId === activeChain?.id}
+                  title={`Please switch provider network to ${network.name} in order to cancel the stream.`}
+                  disableHoverListener={network.id === activeChain?.id}
                 >
                   <span>
                     <Button
                       color="error"
                       size="small"
                       onClick={openMenu}
-                      disabled={network.chainId !== activeChain?.id}
+                      disabled={network.id !== activeChain?.id}
                     >
                       Cancel
                     </Button>

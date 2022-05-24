@@ -35,12 +35,12 @@ export default memo(function ConnectWallet() {
             <ListItemText
               primary={shortenAddress(account.address)}
               secondary={
-                network.chainId !== activeChain.id
+                network.id !== activeChain.id
                   ? "Wrong network"
                   : "Connected"
               }
               secondaryTypographyProps={{
-                color: network.chainId !== activeChain.id ? "error" : "primary",
+                color: network.id !== activeChain.id ? "error" : "primary",
               }}
             />
           </ListItem>

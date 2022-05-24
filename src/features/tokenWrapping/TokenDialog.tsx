@@ -77,7 +77,7 @@ export const TokenDialog: FC<{
   const underlyingTokenBalancesQuery = rpcApi.useBalanceOfMulticallQuery(
     underlyingTokens.length && visibleAddress
       ? {
-          chainId: network.chainId,
+          chainId: network.id,
           accountAddress: visibleAddress,
           tokenAddresses: underlyingTokens.map((x) => x.address),
         }
@@ -92,7 +92,7 @@ export const TokenDialog: FC<{
   const superTokenBalancesQuery = subgraphApi.useAccountTokenSnapshotsQuery(
     tokenPairsQuery.data && visibleAddress
       ? {
-          chainId: network.chainId,
+          chainId: network.id,
           filter: {
             account: visibleAddress,
             token_in: superTokens.map((x) => x.address),
@@ -215,7 +215,7 @@ export const TokenDialog: FC<{
               <TokenListItem
                 key={token.address}
                 token={token}
-                chainId={network.chainId}
+                chainId={network.id}
                 accountAddress={visibleAddress}
                 balanceWei={
                   superTokenBalances[token.address]?.balanceUntilUpdatedAt

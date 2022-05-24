@@ -27,7 +27,7 @@ export const SelectedTokenContextProvider: FC = ({ children }) => {
   }, [selectedTokenPair]);
 
   const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
-    chainId: network.chainId,
+    chainId: network.id,
   });
 
   useEffect(() => {

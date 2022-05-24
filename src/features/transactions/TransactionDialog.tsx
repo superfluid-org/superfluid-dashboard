@@ -107,7 +107,7 @@ export const TransactionDialog: FC<{
               {!mutationResult.isSuccess && (
                 <Typography variant="h4">
                   Waiting for transaction approval... (
-                  {network?.displayName || selectedNetwork.displayName})
+                  {network?.name || selectedNetwork.name})
                 </Typography>
               )}
 

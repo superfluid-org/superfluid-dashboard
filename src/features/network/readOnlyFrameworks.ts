@@ -3,11 +3,11 @@ import { ethers } from "ethers";
 import { networks } from "./networks";
 
 const readOnlyFrameworks = networks.map((network) => ({
-  chainId: network.chainId,
+  chainId: network.id,
   frameworkGetter: () =>
     Framework.create({
-      chainId: network.chainId,
-      provider: new ethers.providers.JsonRpcProvider(network.rpcUrl),
+      chainId: network.id,
+      provider: new ethers.providers.JsonRpcProvider(network.rpcUrls.superfluid),
     }),
 }));
 
