@@ -6,7 +6,6 @@ import {
   RestorationType,
 } from "../transactionRestoration/transactionRestorations";
 import { useAppNetwork } from "../network/AppNetworkContext";
-import { useAppWallet } from "../wallet/AppWalletContext";
 import { BigNumber, ethers } from "ethers";
 import { rpcApi, subgraphApi } from "../redux/store";
 import {
@@ -34,6 +33,7 @@ import {
   TransactionDialogActions,
   TransactionDialogButton,
 } from "../transactions/TransactionDialog";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 export const WrapTabUpgrade: FC<{
   restoration: SuperTokenUpgradeRestoration | undefined;
@@ -41,7 +41,7 @@ export const WrapTabUpgrade: FC<{
   const theme = useTheme();
   const { network } = useAppNetwork();
   const router = useRouter();
-  const { walletAddress } = useAppWallet();
+  const { visibleAddress: visibleAddress } = useVisibleAddress();
   const { selectedTokenPair, setSelectedTokenPair } = useSelectedTokenContext();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
 
@@ -66,10 +66,10 @@ export const WrapTabUpgrade: FC<{
     selectedTokenPair?.underlyingToken.address === NATIVE_ASSET_ADDRESS;
 
   const allowanceQuery = rpcApi.useSuperTokenUpgradeAllowanceQuery(
-    selectedTokenPair && !isUnderlyingBlockchainNativeAsset && walletAddress
+    selectedTokenPair && !isUnderlyingBlockchainNativeAsset && visibleAddress
       ? {
           chainId: network.chainId,
-          accountAddress: walletAddress,
+          accountAddress: visibleAddress,
           superTokenAddress: selectedTokenPair.superToken.address,
         }
       : skipToken
@@ -152,14 +152,14 @@ export const WrapTabUpgrade: FC<{
             }
           />
         </Stack>
-        {selectedTokenPair && walletAddress && (
+        {selectedTokenPair && visibleAddress && (
           <Stack direction="row" justifyContent="flex-end">
             {/* <Typography variant="body2" color="text.secondary">
             ${Number(amount || 0).toFixed(2)}
           </Typography> */}
             <BalanceUnderlyingToken
               chainId={network.chainId}
-              accountAddress={walletAddress}
+              accountAddress={visibleAddress}
               tokenAddress={selectedTokenPair.underlyingToken.address}
             />
           </Stack>
@@ -215,14 +215,14 @@ export const WrapTabUpgrade: FC<{
             </Button>
           </Stack>
 
-          {selectedTokenPair && walletAddress && (
+          {selectedTokenPair && visibleAddress && (
             <Stack direction="row" justifyContent="flex-end">
               {/* <Typography variant="body2" color="text.secondary">
               ${Number(amount || 0).toFixed(2)}
             </Typography> */}
               <BalanceSuperToken
                 chainId={network.chainId}
-                accountAddress={walletAddress}
+                accountAddress={visibleAddress}
                 tokenAddress={selectedTokenPair.superToken.address}
                 typographyProps={{ color: "text.secondary" }}
               />

@@ -2,12 +2,12 @@ import { List } from "@mui/material";
 import { memo } from "react";
 import TransactionListItem from "./TransactionListItem";
 import {
-  useWalletTransactionsSelector,
+  useAccountTransactionsSelector,
   transactionsByTimestampSelector,
-} from "../wallet/useWalletTransactions";
+} from "../wallet/useAccountTransactions";
 
 export default memo(function TransactionList() {
-  const transactions = useWalletTransactionsSelector(
+  const transactions = useAccountTransactionsSelector(
     transactionsByTimestampSelector
   );
 

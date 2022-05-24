@@ -6,9 +6,6 @@ import { transactionDrawerWidth } from "../transactionDrawer/TransactionDrawer";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
 import TransactionBell from "../transactions/TransactionBell";
 import { menuDrawerWidth } from "./NavigationDrawer";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useNetwork } from "wagmi";
-
 
 interface CustomAppBarProps {
   open: boolean;

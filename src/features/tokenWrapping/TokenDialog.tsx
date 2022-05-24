@@ -25,7 +25,7 @@ import {
   TokenMinimal
 } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
-import { useAppWallet } from "../wallet/AppWalletContext";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { TokenListItem } from "./TokenListItem";
 
 export type TokenSelectionProps = {
@@ -50,7 +50,7 @@ export const TokenDialog: FC<{
 }) => {
   const theme = useTheme();
   const { network } = useAppNetwork();
-  const { walletAddress } = useAppWallet();
+  const { visibleAddress: visibleAddress } = useVisibleAddress();
 
   const [openCounter, setOpenCounter] = useState(0);
   useEffect(() => {
@@ -75,10 +75,10 @@ export const TokenDialog: FC<{
   );
 
   const underlyingTokenBalancesQuery = rpcApi.useBalanceOfMulticallQuery(
-    underlyingTokens.length && walletAddress
+    underlyingTokens.length && visibleAddress
       ? {
           chainId: network.chainId,
-          accountAddress: walletAddress,
+          accountAddress: visibleAddress,
           tokenAddresses: underlyingTokens.map((x) => x.address),
         }
       : skipToken
@@ -90,11 +90,11 @@ export const TokenDialog: FC<{
   );
 
   const superTokenBalancesQuery = subgraphApi.useAccountTokenSnapshotsQuery(
-    tokenPairsQuery.data && walletAddress
+    tokenPairsQuery.data && visibleAddress
       ? {
           chainId: network.chainId,
           filter: {
-            account: walletAddress,
+            account: visibleAddress,
             token_in: superTokens.map((x) => x.address),
           },
           pagination: {
@@ -216,7 +216,7 @@ export const TokenDialog: FC<{
                 key={token.address}
                 token={token}
                 chainId={network.chainId}
-                accountAddress={walletAddress}
+                accountAddress={visibleAddress}
                 balanceWei={
                   superTokenBalances[token.address]?.balanceUntilUpdatedAt
                 }

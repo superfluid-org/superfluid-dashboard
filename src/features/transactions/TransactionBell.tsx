@@ -3,25 +3,25 @@ import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDra
 import { memo } from "react";
 import {
   pendingTransactionsSelector,
-  useWalletTransactionsSelector,
-} from "../wallet/useWalletTransactions";
+  useAccountTransactionsSelector,
+} from "../wallet/useAccountTransactions";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { useAccount } from "wagmi";
 
 export default memo(function TransactionBell() {
-  const { data: wagmiAccount } = useAccount();
+  const { data: account } = useAccount();
 
   const { transactionDrawerOpen, setTransactionDrawerOpen } =
     useTransactionDrawerContext();
 
-  const pendingTransactions = useWalletTransactionsSelector(
+  const pendingTransactions = useAccountTransactionsSelector(
     pendingTransactionsSelector
   );
 
   return (
     <IconButton
       sx={{
-        ...(wagmiAccount ? {} : { display: "none" }),
+        ...(account ? {} : { display: "none" }),
       }}
       edge="end"
       onClick={() => setTransactionDrawerOpen(!transactionDrawerOpen)}

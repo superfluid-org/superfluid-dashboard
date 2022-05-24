@@ -6,7 +6,7 @@ import { useAppNetwork } from "../network/AppNetworkContext";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { rpcApi } from "../redux/store";
 import FlowingBalance from "../token/FlowingBalance";
-import { useAppWallet } from "../wallet/AppWalletContext";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { calculateBufferAmount } from "./calculateBufferAmounts";
 import { DisplayAddress } from "./DisplayAddressChip";
 import { FlowRateWithTime, timeUnitWordMap } from "./FlowRateInput";
@@ -31,14 +31,14 @@ export const SendStreamPreview: FC<{
 }> = ({ receiver, token, flowRateWithTime }) => {
   const theme = useTheme();
   const { network } = useAppNetwork();
-  const { walletAddress } = useAppWallet();
+  const { visibleAddress: visibleAddress } = useVisibleAddress();
 
   const realtimeBalanceQuery = rpcApi.useRealtimeBalanceQuery(
-    walletAddress
+    visibleAddress
       ? {
           chainId: network.chainId,
           tokenAddress: token.address,
-          accountAddress: walletAddress,
+          accountAddress: visibleAddress,
         }
       : skipToken
   );
@@ -83,7 +83,7 @@ export const SendStreamPreview: FC<{
 
         <PreviewItem label="Ends on">Never</PreviewItem>
 
-        {walletAddress && (
+        {visibleAddress && (
           <PreviewItem label="Balance after buffer">
             {realtimeBalance && (
               <FlowingBalance

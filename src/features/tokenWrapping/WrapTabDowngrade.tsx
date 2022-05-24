@@ -20,7 +20,6 @@ import { useAppNetwork } from "../network/AppNetworkContext";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
 import { TransactionButton } from "../transactions/TransactionButton";
-import { useAppWallet } from "../wallet/AppWalletContext";
 import { BalanceSuperToken } from "./BalanceSuperToken";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { useSelectedTokenContext } from "./SelectedTokenPairContext";
@@ -28,6 +27,7 @@ import { TokenDialogButton } from "./TokenDialogButton";
 import { useRouter } from "next/router";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
 import { TransactionDialogActions, TransactionDialogButton } from "../transactions/TransactionDialog";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 export const WrapTabDowngrade: FC<{
   restoration: SuperTokenDowngradeRestoration | undefined;
@@ -35,7 +35,7 @@ export const WrapTabDowngrade: FC<{
   const theme = useTheme();
   const { network } = useAppNetwork();
   const router = useRouter();
-  const { walletAddress } = useAppWallet();
+  const { visibleAddress: visibleAddress } = useVisibleAddress();
   const { selectedTokenPair, setSelectedTokenPair } = useSelectedTokenContext();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
 
@@ -114,7 +114,7 @@ export const WrapTabDowngrade: FC<{
             }
           />
         </Stack>
-        {selectedTokenPair && walletAddress && (
+        {selectedTokenPair && visibleAddress && (
           <Stack direction="row" justifyContent="flex-end">
             {/* <Typography variant="body2" color="text.secondary">
             ${Number(amount || 0).toFixed(2)}
@@ -122,7 +122,7 @@ export const WrapTabDowngrade: FC<{
 
             <BalanceSuperToken
               chainId={network.chainId}
-              accountAddress={walletAddress}
+              accountAddress={visibleAddress}
               tokenAddress={selectedTokenPair.superToken.address}
               typographyProps={{ color: "text.secondary" }}
             />
@@ -179,14 +179,14 @@ export const WrapTabDowngrade: FC<{
             </Button>
           </Stack>
 
-          {selectedTokenPair && walletAddress && (
+          {selectedTokenPair && visibleAddress && (
             <Stack direction="row" justifyContent="flex-end">
               {/* <Typography variant="body2" color="text.secondary">
               ${Number(amount || 0).toFixed(2)}
             </Typography> */}
               <BalanceUnderlyingToken
                 chainId={network.chainId}
-                accountAddress={walletAddress}
+                accountAddress={visibleAddress}
                 tokenAddress={selectedTokenPair.underlyingToken.address}
               />
             </Stack>

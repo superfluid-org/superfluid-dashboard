@@ -46,7 +46,7 @@ import {
   TransactionDialogActions,
   TransactionDialogButton,
 } from "../transactions/TransactionDialog";
-import { useAppWallet } from "../wallet/AppWalletContext";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import AddressSearch from "./AddressSearch";
 import { DisplayAddress } from "./DisplayAddressChip";
 import {
@@ -76,7 +76,7 @@ export default memo(function SendCard(props: {
   restoration: SendStreamRestoration | undefined;
 }) {
   const { network } = useAppNetwork();
-  const { walletAddress } = useAppWallet();
+  const { visibleAddress: visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
   const router = useRouter();
 
@@ -139,13 +139,13 @@ export default memo(function SendCard(props: {
   );
 
   const shouldSearchForExistingStreams =
-    !!walletAddress && !!receiver && !!selectedToken && !!flowRate;
+    !!visibleAddress && !!receiver && !!selectedToken && !!flowRate;
   const existingStreams = subgraphApi.useStreamsQuery(
     shouldSearchForExistingStreams
       ? {
           chainId: network.chainId,
           filter: {
-            sender: walletAddress,
+            sender: visibleAddress,
             receiver: receiver.hash,
             token: selectedToken.address,
             currentFlowRate_not: "0",
@@ -265,11 +265,11 @@ export default memo(function SendCard(props: {
             </Box>
           </Box>
 
-          {selectedToken && walletAddress && (
+          {selectedToken && visibleAddress && (
             <Stack direction="row" alignItems="center" justifyContent="center">
               <BalanceSuperToken
                 chainId={network.chainId}
-                accountAddress={walletAddress}
+                accountAddress={visibleAddress}
                 tokenAddress={selectedToken.address}
               />
 

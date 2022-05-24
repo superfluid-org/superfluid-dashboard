@@ -22,9 +22,9 @@ import ResponsiveDialog from "../common/ResponsiveDialog";
 import { ensApi } from "../ens/ensApi.slice";
 import { useAppNetwork } from "../network/AppNetworkContext";
 import { subgraphApi } from "../redux/store";
-import { useAppWallet } from "../wallet/AppWalletContext";
 import { DisplayAddress } from "./DisplayAddressChip";
 import Blockies from "react-blockies";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
@@ -62,7 +62,7 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
 }) => {
   const theme = useTheme();
   const { network } = useAppNetwork();
-  const { walletAddress } = useAppWallet();
+  const { visibleAddress: visibleAddress } = useVisibleAddress();
   const [searchTermVisible, setSearchTermVisible] = useState("");
   const [searchTermDebounced, _setSearchTermDebounced] =
     useState(searchTermVisible);
@@ -104,17 +104,17 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
     !!searchTermDebounced && !ethers.utils.isAddress(searchTermDebounced);
 
   const recentsQuery = subgraphApi.useRecentsQuery(
-    walletAddress
+    visibleAddress
       ? {
           chainId: network.chainId,
-          accountAddress: walletAddress,
+          accountAddress: visibleAddress,
         }
       : skipToken
   );
 
   const recentsData = recentsQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!ensQuery.data` means that the data is not undefined nor null.
   const showRecents =
-    (walletAddress && recentsQuery.isSuccess && recentsQuery.data?.length) ||
+    (visibleAddress && recentsQuery.isSuccess && recentsQuery.data?.length) ||
     recentsQuery.isLoading;
 
   const searchSynced = searchTermDebounced === searchTermVisible;

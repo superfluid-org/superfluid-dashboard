@@ -11,14 +11,14 @@ import Blockies from "react-blockies";
 export default memo(function ConnectWallet() {
   const { network } = useAppNetwork();
 
-  const { data: wagmiAccount } = useAccount();
+  const { data: account } = useAccount();
   const { activeChain } = useNetwork();
   const { isConnecting } = useConnect();
 
   return (
     <ConnectButton.Custom>
       {({ openConnectModal, openAccountModal }) =>
-        wagmiAccount?.address && activeChain ? (
+        account?.address && activeChain ? (
           // TODO(KK): Better solution for pointer/click
           <ListItem
             sx={{ px: 2, py: 0, cursor: "pointer" }}
@@ -26,11 +26,11 @@ export default memo(function ConnectWallet() {
           >
             <ListItemAvatar>
               <Avatar variant="rounded">
-                <Blockies seed={wagmiAccount?.address} size={12} scale={3} />
+                <Blockies seed={account?.address} size={12} scale={3} />
               </Avatar>
             </ListItemAvatar>
             <ListItemText
-              primary={shortenAddress(wagmiAccount.address)}
+              primary={shortenAddress(account.address)}
               secondary={
                 network.chainId !== activeChain.id
                   ? "Wrong network"

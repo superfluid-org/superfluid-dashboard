@@ -37,8 +37,8 @@ import {
 } from "../transactions/TransactionDialog";
 import {
   transactionByHashSelector,
-  useWalletTransactionsSelector,
-} from "../wallet/useWalletTransactions";
+  useAccountTransactionsSelector,
+} from "../wallet/useAccountTransactions";
 
 export const TokenStreamRowLoading = () => (
   <TableRow>
@@ -89,13 +89,13 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
     updatedAtTimestamp,
   } = stream;
 
-  const { data: wagmiAccount } = useAccount();
+  const { data: account } = useAccount();
   const { activeChain } = useNetwork();
 
   const [flowDeleteTrigger, flowDeleteMutation] =
     rpcApi.useFlowDeleteMutation();
 
-  const flowDeleteTransaction = useWalletTransactionsSelector(
+  const flowDeleteTransaction = useAccountTransactionsSelector(
     transactionByHashSelector(flowDeleteMutation.data?.hash)
   );
 
@@ -123,7 +123,7 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
   };
 
   const isOutgoing =
-    sender.localeCompare(wagmiAccount?.address ?? "", undefined, {
+    sender.localeCompare(account?.address ?? "", undefined, {
       sensitivity: "accent",
     }) === 0;
 

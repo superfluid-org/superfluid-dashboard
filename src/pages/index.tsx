@@ -12,9 +12,9 @@ import {
 import type { NextPage } from "next";
 import { FC } from "react";
 import TokenSnapshotTables from "../features/tokenSnapshotTable/TokenSnapshotTables";
-import { useAppWallet } from "../features/wallet/AppWalletContext";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ConnectWallet from "../features/wallet/ConnectWallet";
+import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 
 const WalletOptions = [
   "Metamask",
@@ -99,12 +99,12 @@ const PlaceholderConnectView = () => {
 };
 
 const Home: NextPage = () => {
-  const { walletAddress } = useAppWallet();
+  const { visibleAddress } = useVisibleAddress();
 
   return (
     <Container maxWidth="lg">
-      {walletAddress ? (
-        <TokenSnapshotTables address={walletAddress} />
+      {visibleAddress ? (
+        <TokenSnapshotTables address={visibleAddress} />
       ) : (
         <PlaceholderConnectView />
       )}

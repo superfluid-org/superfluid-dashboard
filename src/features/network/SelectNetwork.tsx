@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import { FC, memo, MouseEvent, useState } from "react";
 import { useAccount, useNetwork } from "wagmi";
-import { useAppWallet } from "../wallet/AppWalletContext";
 import { useAppNetwork } from "./AppNetworkContext";
 import NetworkIcon from "./NetworkIcon";
 import { mainNetworks, Network, testNetworks } from "./networks";
@@ -54,6 +53,7 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
 
 export default memo(function SelectNetwork() {
   const theme = useTheme();
+  
   const { data: account } = useAccount();
   const { switchNetwork } = useNetwork();
 
