@@ -41,7 +41,7 @@ export const WrapTabUpgrade: FC<{
   const theme = useTheme();
   const { network } = useExpectedNetwork();
   const router = useRouter();
-  const { visibleAddress: visibleAddress } = useVisibleAddress();
+  const { visibleAddress } = useVisibleAddress();
   const { selectedTokenPair, setSelectedTokenPair } = useSelectedTokenContext();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
 

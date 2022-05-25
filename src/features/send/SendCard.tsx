@@ -76,7 +76,7 @@ export default memo(function SendCard(props: {
   restoration: SendStreamRestoration | undefined;
 }) {
   const { network } = useExpectedNetwork();
-  const { visibleAddress: visibleAddress } = useVisibleAddress();
+  const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
   const router = useRouter();
 

@@ -62,7 +62,7 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
 }) => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
-  const { visibleAddress: visibleAddress } = useVisibleAddress();
+  const { visibleAddress } = useVisibleAddress();
   const [searchTermVisible, setSearchTermVisible] = useState("");
   const [searchTermDebounced, _setSearchTermDebounced] =
     useState(searchTermVisible);

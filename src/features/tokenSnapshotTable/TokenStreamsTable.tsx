@@ -28,7 +28,7 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
   lastElement,
 }) => {
   const theme = useTheme();
-  const { visibleAddress: visibleAddress } = useVisibleAddress();
+  const { visibleAddress } = useVisibleAddress();
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);

@@ -12,7 +12,7 @@ import {
 } from "../features/transactionRestoration/transactionRestorations";
 
 const RestoreTransaction: NextPage = () => {
-  const { network, setExpectedNetwork: setNetwork } = useExpectedNetwork();
+  const { network, setExpectedNetwork } = useExpectedNetwork();
   const router = useRouter();
   const { hash } = router.query;
 
@@ -25,7 +25,7 @@ const RestoreTransaction: NextPage = () => {
 
   useEffect(() => {
     if (transaction && transaction.chainId !== network.id) {
-      setNetwork(transaction.chainId);
+      setExpectedNetwork(transaction.chainId);
     }
 
     const transactionRestoration = transaction?.extraData

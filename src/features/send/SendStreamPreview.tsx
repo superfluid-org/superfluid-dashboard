@@ -31,7 +31,7 @@ export const SendStreamPreview: FC<{
 }> = ({ receiver, token, flowRateWithTime }) => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
-  const { visibleAddress: visibleAddress } = useVisibleAddress();
+  const { visibleAddress } = useVisibleAddress();
 
   const realtimeBalanceQuery = rpcApi.useRealtimeBalanceQuery(
     visibleAddress

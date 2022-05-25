@@ -50,7 +50,7 @@ export const TokenDialog: FC<{
 }) => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
-  const { visibleAddress: visibleAddress } = useVisibleAddress();
+  const { visibleAddress } = useVisibleAddress();
 
   const [openCounter, setOpenCounter] = useState(0);
   useEffect(() => {
