@@ -2,7 +2,6 @@ import { FC } from "react";
 import {
   apiProvider,
   configureChains,
-  getDefaultWallets,
   RainbowKitProvider,
   darkTheme,
   lightTheme,
@@ -11,6 +10,7 @@ import { createWagmiClient, WagmiProvider } from "wagmi";
 import "@rainbow-me/rainbowkit/styles.css";
 import { useTheme } from "@mui/material";
 import { networks, networksByChainId } from "../network/networks";
+import { getAppWallets } from "./getAppWallets";
 
 const { chains, provider } = configureChains(networks, [
   apiProvider.jsonRpc((chain) => {
@@ -20,7 +20,7 @@ const { chains, provider } = configureChains(networks, [
   }),
 ]);
 
-const { connectors } = getDefaultWallets({
+const { connectors } = getAppWallets({
   appName: "Superfluid Dashboard",
   chains: chains,
 });
