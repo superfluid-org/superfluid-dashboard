@@ -20,8 +20,8 @@ export default memo(function ConnectWallet() {
 
   return (
     <ConnectButton.Custom>
-      {({ openConnectModal, openAccountModal }) =>
-        account?.address && activeChain ? (
+      {({ openConnectModal, openAccountModal, mounted }) =>
+        account?.address && activeChain && mounted ? (
           // TODO(KK): Better solution for pointer/click
           <ListItem
             sx={{ px: 2, py: 0, cursor: "pointer" }}
@@ -46,7 +46,7 @@ export default memo(function ConnectWallet() {
           </ListItem>
         ) : (
           <LoadingButton
-            loading={isLoading}
+            loading={!mounted || isLoading}
             variant="contained"
             size="xl"
             onClick={() => {
