@@ -1,15 +1,17 @@
+import { BlockExplorer } from "@wagmi/core/dist/declarations/src/constants";
 import { memoize } from "lodash";
 import { chain, Chain } from "wagmi";
+import ensureDefined from "../../utils/ensureDefined";
 import {
   NATIVE_ASSET_ADDRESS,
-  SuperTokenPair
+  SuperTokenPair,
 } from "../redux/endpoints/tokenTypes";
-import {TokenType} from "../redux/endpoints/tokenTypes";
+import { TokenType } from "../redux/endpoints/tokenTypes";
 
 // id == chainId
 // name == displayName
 export type Network = Chain & {
-  slugName: string
+  slugName: string;
   subgraphUrl: string;
   getLinkForTransaction(txHash: string): string;
   getLinkForAddress(adderss: string): string;
@@ -25,7 +27,8 @@ export type Network = Chain & {
       address: string;
     };
   };
-  rpcUrls: Chain["rpcUrls"] & { superfluid: string }
+  rpcUrls: Chain["rpcUrls"] & { superfluid: string };
+  nativeCurrency: Chain["nativeCurrency"];
 };
 
 const superfluidRpcUrls = {
@@ -40,12 +43,32 @@ const superfluidRpcUrls = {
   arbitrumRinkeby: "https://rpc-endpoints.superfluid.dev/arbitrum-rinkeby",
   optimism: "https://rpc-endpoints.superfluid.dev/optimism-mainnet",
   optimismKovan: "https://rpc-endpoints.superfluid.dev/optimism-kovan",
-  avalancheFuji: "https://rpc-endpoints.superfluid.dev/avalanche-fuji"
-}
+  avalancheFuji: "https://rpc-endpoints.superfluid.dev/avalanche-fuji",
+};
+
+const blockscoutBlockExplorers = {
+  gnosis: {
+    name: "Blockscout",
+    url: "https://blockscout.com/xdai/mainnet/",
+  },
+};
+
+const snowtraceBlockExplorers = {
+  avalanche: {
+    name: "SnowTrace",
+    url: "https://snowtrace.io/",
+  },
+  avalancheFuji: {
+    name: "SnowTrace",
+    url: "https://testnet.snowtrace.io",
+  },
+};
 
 export const networks: Network[] = [
   {
     ...chain.ropsten,
+    blockExplorers: ensureDefined(chain.ropsten.blockExplorers),
+    nativeCurrency: ensureDefined(chain.ropsten.nativeCurrency),
     slugName: "ropsten",
     bufferTimeInMinutes: 60,
     icon: "/icons/network/ropsten.jpg",
@@ -72,6 +95,8 @@ export const networks: Network[] = [
   },
   {
     ...chain.rinkeby,
+    blockExplorers: ensureDefined(chain.rinkeby.blockExplorers),
+    nativeCurrency: ensureDefined(chain.rinkeby.nativeCurrency),
     slugName: "rinkeby",
     color: "#ff4a8d",
     bufferTimeInMinutes: 60,
@@ -98,6 +123,8 @@ export const networks: Network[] = [
   },
   {
     ...chain.goerli,
+    blockExplorers: ensureDefined(chain.goerli.blockExplorers),
+    nativeCurrency: ensureDefined(chain.goerli.nativeCurrency),
     slugName: "goerli",
     bufferTimeInMinutes: 60,
     icon: "/icons/network/goerli.jpg",
@@ -124,6 +151,8 @@ export const networks: Network[] = [
   },
   {
     ...chain.kovan,
+    blockExplorers: ensureDefined(chain.kovan.blockExplorers),
+    nativeCurrency: ensureDefined(chain.kovan.nativeCurrency),
     slugName: "kovan",
     bufferTimeInMinutes: 60,
     icon: "/icons/network/kovan.jpg",
@@ -150,18 +179,30 @@ export const networks: Network[] = [
   },
   {
     name: "Gnosis Chain",
+    blockExplorers: {
+      etherscan: undefined!,
+      default: blockscoutBlockExplorers.gnosis,
+    },
     slugName: "gnosis",
     id: 100,
     testnet: false,
     bufferTimeInMinutes: 240,
     icon: "/icons/network/gnosis.svg",
-    rpcUrls: { superfluid: superfluidRpcUrls.gnosis, default: "https://rpc.gnosischain.com/" },
+    rpcUrls: {
+      superfluid: superfluidRpcUrls.gnosis,
+      default: "https://rpc.gnosischain.com/",
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-xdai",
     getLinkForTransaction: (txHash: string): string =>
       `https://blockscout.com/xdai/mainnet/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://blockscout.com/xdai/mainnet/address/${address}`,
+    nativeCurrency: {
+      name: "xDai",
+      symbol: "XDAI",
+      decimals: 18,
+    },
     nativeAsset: {
       symbol: "xDai",
       superToken: {
@@ -174,12 +215,14 @@ export const networks: Network[] = [
   },
   {
     ...chain.polygon,
+    blockExplorers: ensureDefined(chain.polygon.blockExplorers),
+    nativeCurrency: ensureDefined(chain.polygon.nativeCurrency),
     slugName: "polygon",
     bufferTimeInMinutes: 240,
     icon: "/icons/network/polygon.svg",
     rpcUrls: {
       ...chain.polygon.rpcUrls,
-      superfluid: superfluidRpcUrls.polygon
+      superfluid: superfluidRpcUrls.polygon,
     },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-matic",
@@ -199,12 +242,14 @@ export const networks: Network[] = [
   },
   {
     ...chain.polygonMumbai,
+    blockExplorers: ensureDefined(chain.polygonMumbai.blockExplorers),
+    nativeCurrency: ensureDefined(chain.polygonMumbai.nativeCurrency),
     slugName: "mumbai",
     bufferTimeInMinutes: 60,
     color: "#3099f2",
     rpcUrls: {
       ...chain.polygonMumbai.rpcUrls,
-      superfluid: superfluidRpcUrls.polygonMumbai
+      superfluid: superfluidRpcUrls.polygonMumbai,
     },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-mumbai",
@@ -224,13 +269,15 @@ export const networks: Network[] = [
   },
   {
     ...chain.arbitrumRinkeby,
+    blockExplorers: ensureDefined(chain.arbitrumRinkeby.blockExplorers),
+    nativeCurrency: ensureDefined(chain.arbitrumRinkeby.nativeCurrency),
     slugName: "arbitrum-rinkeby",
     bufferTimeInMinutes: 60,
     icon: "/icons/network/arbitrum.svg",
     color: "#29b6af",
     rpcUrls: {
       ...chain.arbitrumRinkeby.rpcUrls,
-      superfluid: superfluidRpcUrls.arbitrumRinkeby
+      superfluid: superfluidRpcUrls.arbitrumRinkeby,
     },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-rinkeby",
@@ -250,13 +297,15 @@ export const networks: Network[] = [
   },
   {
     ...chain.optimismKovan,
+    blockExplorers: ensureDefined(chain.optimismKovan.blockExplorers),
+    nativeCurrency: ensureDefined(chain.optimismKovan.nativeCurrency),
     slugName: "optimism-kovan",
     bufferTimeInMinutes: 60,
     icon: "/icons/network/optimism.svg",
     color: "#8b45b6",
     rpcUrls: {
       ...chain.optimismKovan.rpcUrls,
-      superfluid: superfluidRpcUrls.optimismKovan
+      superfluid: superfluidRpcUrls.optimismKovan,
     },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-kovan",
@@ -283,7 +332,7 @@ export const networks: Network[] = [
     icon: "/icons/network/avalanche.jpg",
     rpcUrls: {
       superfluid: superfluidRpcUrls.avalancheFuji,
-      default: "https://api.avax-test.network/ext/C/rpc"
+      default: "https://api.avax-test.network/ext/C/rpc",
     },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-avalanche-fuji",
@@ -291,6 +340,16 @@ export const networks: Network[] = [
       `https://testnet.snowtrace.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://testnet.snowtrace.io/address/${address}`,
+    blockExplorers: {
+      etherscan: undefined!,
+      snowtrace: snowtraceBlockExplorers.avalancheFuji,
+      default: snowtraceBlockExplorers.avalancheFuji,
+    },
+    nativeCurrency: {
+      name: "AVAX",
+      symbol: "AVAX",
+      decimals: 18,
+    },
     nativeAsset: {
       symbol: "AVAX",
       superToken: {
@@ -303,6 +362,8 @@ export const networks: Network[] = [
   },
   {
     ...chain.optimism,
+    blockExplorers: ensureDefined(chain.optimism.blockExplorers),
+    nativeCurrency: ensureDefined(chain.optimism.nativeCurrency),
     slugName: "optimism-mainnet",
     bufferTimeInMinutes: 240,
     icon: "/icons/network/optimism.svg",
@@ -328,12 +389,14 @@ export const networks: Network[] = [
   },
   {
     ...chain.arbitrum,
+    blockExplorers: ensureDefined(chain.arbitrum.blockExplorers),
+    nativeCurrency: ensureDefined(chain.arbitrum.nativeCurrency),
     slugName: "arbitrum-one",
     bufferTimeInMinutes: 240,
     icon: "/icons/network/arbitrum.svg",
     rpcUrls: {
       ...chain.arbitrum.rpcUrls,
-      superfluid: superfluidRpcUrls.arbitrum
+      superfluid: superfluidRpcUrls.arbitrum,
     },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-one",
