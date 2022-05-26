@@ -6,7 +6,7 @@ import {
   darkTheme,
   lightTheme,
 } from "@rainbow-me/rainbowkit";
-import { createWagmiClient, WagmiProvider } from "wagmi";
+import { createClient as createWagmiClient, WagmiConfig } from "wagmi";
 import "@rainbow-me/rainbowkit/styles.css";
 import { useTheme } from "@mui/material";
 import { networks, networksByChainId } from "../network/networks";
@@ -32,7 +32,7 @@ export const wagmiClient = createWagmiClient({
 });
 
 const WagmiManager: FC = ({ children }) => {
-  return <WagmiProvider client={wagmiClient}>{children}</WagmiProvider>;
+  return <WagmiConfig client={wagmiClient}>{children}</WagmiConfig>;
 };
 
 export default WagmiManager;

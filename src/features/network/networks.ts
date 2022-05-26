@@ -184,6 +184,7 @@ export const networks: Network[] = [
       default: blockscoutBlockExplorers.gnosis,
     },
     slugName: "gnosis",
+    network: "xdai",
     id: 100,
     testnet: false,
     bufferTimeInMinutes: 240,
@@ -324,8 +325,9 @@ export const networks: Network[] = [
     },
   },
   {
-    name: "Avalanche-Fuji",
+    name: "Fuji (C-Chain)",
     slugName: "avalanche-fuji",
+    network: "avalanche-fuji",
     id: 43113,
     testnet: true,
     bufferTimeInMinutes: 60,
