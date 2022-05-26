@@ -13,7 +13,7 @@ export default memo(function ConnectWallet() {
   const { network } = useExpectedNetwork();
 
   // TODO(KK): `isLoading` might not be the correct thing to look at for button loading state.
-  const { data: account, isLoading } = useAccount();
+  const { data: account } = useAccount();
   const { activeChain } = useNetwork();
 
   const { stopImpersonation: stopImpersonation } = useImpersonation();
@@ -46,7 +46,7 @@ export default memo(function ConnectWallet() {
           </ListItem>
         ) : (
           <LoadingButton
-            loading={!mounted || isLoading}
+            loading={!mounted}
             variant="contained"
             size="xl"
             onClick={() => {
