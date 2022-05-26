@@ -7,8 +7,10 @@ import { FONT_FACES } from "./fonts";
 // TYPOGRAHY
 
 interface TypographyCustomVariants {
+  h7: React.CSSProperties;
   h5mono: React.CSSProperties;
   h6mono: React.CSSProperties;
+  h7mono: React.CSSProperties;
   body1mono: React.CSSProperties;
   body2mono: React.CSSProperties;
   largeInput: React.CSSProperties;
@@ -23,8 +25,10 @@ declare module "@mui/material/styles" {
 
 declare module "@mui/material/Typography" {
   interface TypographyPropsVariantOverrides {
+    h7: true;
     h5mono: true;
     h6mono: true;
+    h7mono: true;
     body1mono: true;
     body2mono: true;
     largeInput: true;
@@ -53,6 +57,7 @@ declare module "@mui/material/styles/createPalette" {
 declare module "@mui/material/Button" {
   interface ButtonPropsSizeOverrides {
     xl: true;
+    xs: true;
   }
 
   interface ButtonPropsVariantOverrides {
@@ -64,7 +69,7 @@ const FONT_FAMILY = "'Walsheim', Arial";
 const FONT_FAMILY_MONO = "'Azeret Mono', monospace;";
 
 export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
-  const getModeStyle = (lightStyle: string, darkStyle: string) =>
+  const getModeStyle = <T>(lightStyle: T, darkStyle: T): T =>
     mode === "dark" ? darkStyle : lightStyle;
 
   return {
@@ -82,7 +87,7 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         contrastText: getModeStyle("#FFFFFFFF", "#FFFFFFDE"),
       },
       secondary: {
-        main: getModeStyle("#E0E0E0FF", "#E0E0E0FF"),
+        main: getModeStyle("#12141e61", "#ffffff99"), //getModeStyle("#E0E0E0FF", "#E0E0E0FF"),
         dark: getModeStyle("#AEAEAEFF", "#AEAEAEFF"),
         light: getModeStyle("#FFFFFFFF", "#FFFFFFFF"),
         contrastText: getModeStyle("#FFFFFFFF", "#FFFFFFDE"),
@@ -168,6 +173,18 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
       },
       h6mono: {
         fontSize: "16px",
+        fontWeight: 500,
+        lineHeight: "150%",
+        fontFamily: FONT_FAMILY_MONO,
+      },
+      h7: {
+        fontSize: "14px",
+        fontWeight: 500,
+        lineHeight: "150%",
+        letterSpacing: "0.15px",
+      },
+      h7mono: {
+        fontSize: "14px",
         fontWeight: 500,
         lineHeight: "150%",
         fontFamily: FONT_FAMILY_MONO,
@@ -339,7 +356,7 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
 };
 
 export function getThemedComponents(theme: Theme): ThemeOptions {
-  const getModeStyle = (lightStyle: string, darkStyle: string) =>
+  const getModeStyle = <T>(lightStyle: T, darkStyle: T): T =>
     theme.palette.mode === "dark" ? darkStyle : lightStyle;
 
   return {
@@ -450,7 +467,16 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
                 m: 0,
               },
             "&[type=number]": {
-              "-moz-appearance": "textfield",
+              MozAppearance: "textfield",
+            },
+          },
+        },
+      },
+      MuiSelect: {
+        defaultProps: {
+          MenuProps: {
+            PaperProps: {
+              square: true,
             },
           },
         },
@@ -500,8 +526,19 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       },
       MuiIconButton: {
         styleOverrides: {
-          root: {
+          colorInherit: {
             color: theme.palette.text.primary,
+          },
+          colorPrimary: {
+            backgroundColor: alpha(theme.palette.primary.main, 0.08),
+            "&:hover": {
+              backgroundColor: alpha(
+                theme.palette.primary.main,
+                getModeStyle(0.12, 0.16)
+              ),
+            },
+          },
+          root: {
             borderRadius: "8px",
             padding: theme.spacing(0.75),
           },
@@ -585,6 +622,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             },
           },
           {
+            props: { size: "xs" },
+            style: {
+              padding: "4px 8px",
+              minWidth: "0",
+            },
+          },
+          {
             props: {
               variant: "textContained",
               color: "primary",
@@ -608,10 +652,23 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         ],
       },
+      MuiTab: {
+        styleOverrides: {
+          root: {
+            textTransform: "inherit",
+            ...theme.typography.h6,
+          },
+        },
+      },
       MuiChip: {
         styleOverrides: {
           root: {
             borderRadius: "10px",
+          },
+          sizeSmall: {
+            ".MuiAvatar-root": {
+              marginLeft: "3px",
+            },
           },
           sizeMedium: {
             borderColor: getModeStyle("#E0E0E0", "#595A5F"),
@@ -712,6 +769,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         },
       },
+      MuiPopover: {
+        defaultProps: {
+          PaperProps: {
+            square: true,
+          },
+        },
+      },
       MuiMenuItem: {
         styleOverrides: {
           root: {
@@ -724,6 +788,11 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           root: {
             borderTop: `1px solid`,
             borderColor: theme.palette.divider,
+          },
+          toolbar: {
+            "@media (min-width: 600px)": {
+              paddingRight: theme.spacing(4),
+            },
           },
         },
       },
@@ -775,7 +844,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           head: {
             ...theme.typography.body2,
             color: theme.palette.text.secondary,
-            padding: "12px 32px",
+            padding: "10px 32px",
             minHeight: 0,
           },
           body: {

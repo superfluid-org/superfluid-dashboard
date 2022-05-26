@@ -18,11 +18,11 @@ export default memo(function TransactionBell() {
     pendingTransactionsSelector
   );
 
+  if (!walletAddress) return null;
+
   return (
     <IconButton
-      sx={{
-        ...(walletAddress ? {} : { display: "none" }),
-      }}
+      color="inherit"
       edge="end"
       onClick={() => setTransactionDrawerOpen(!transactionDrawerOpen)}
     >

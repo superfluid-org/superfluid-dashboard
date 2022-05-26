@@ -14,14 +14,16 @@ import {
 } from "@mui/material";
 import { AccountTokenSnapshot } from "@superfluid-finance/sdk-core";
 import { BigNumber } from "ethers";
+import NextLink from "next/link";
+import { useRouter } from "next/router";
 import { FC, memo, useState } from "react";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
+import StreamsTable from "../streamsTable/StreamsTable";
 import EtherFormatted from "../token/EtherFormatted";
 import FlowingBalance from "../token/FlowingBalance";
 import TokenIcon from "../token/TokenIcon";
-import TokenStreamsTable from "./TokenStreamsTable";
 
 interface OpenIconProps {
   open: boolean;
@@ -81,6 +83,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
   lastElement,
 }) => {
   const theme = useTheme();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   const {
@@ -111,6 +114,10 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
 
   const toggleOpen = () => hasStreams && setOpen(!open);
 
+  const openTokenPage = () => {
+    router.push(`/${network.slugName}/token?token=${token}`);
+  };
+
   return (
     <>
       <SnapshotRow
@@ -122,7 +129,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
       >
         <TableCell>
           <ListItem sx={{ p: 0 }}>
-            <ListItemAvatar>
+            <ListItemAvatar onClick={openTokenPage}>
               <TokenIcon tokenSymbol={tokenSymbol} />
             </ListItemAvatar>
             <ListItemText
@@ -205,7 +212,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         </TableCell>
         <TableCell align="center">
           {hasStreams && (
-            <IconButton onClick={toggleOpen}>
+            <IconButton color="inherit" onClick={toggleOpen}>
               <OpenIcon open={open} />
             </IconButton>
           )}
@@ -218,6 +225,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           colSpan={5}
           sx={{
             border: "none",
+            minHeight: 0,
           }}
         >
           <Collapse
@@ -225,9 +233,10 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             timeout={theme.transitions.duration.standard}
             unmountOnExit
           >
-            <TokenStreamsTable
+            <StreamsTable
+              subTable
               network={network}
-              token={snapshot.token}
+              tokenAddress={snapshot.token}
               lastElement={lastElement}
             />
           </Collapse>

@@ -20,7 +20,7 @@ export const NetworkContextProvider: FC<{
 }> = ({ children }) => {
   const [network, setNetwork] = useState<Network>(networksByChainId.get(137)!);
   const router = useRouter();
-  const { network: networkQueryParam } = router.query;
+  const { _network: networkQueryParam } = router.query;
 
   useEffect(() => {
     if (isString(networkQueryParam)) {

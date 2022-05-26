@@ -40,9 +40,9 @@ import {
 } from "../wallet/useWalletTransactions";
 import { useWalletContext } from "../wallet/WalletContext";
 
-export const TokenStreamRowLoading = () => (
+export const StreamRowLoading = () => (
   <TableRow>
-    <TableCell sx={{ pl: "72px" }}>
+    <TableCell>
       <Stack direction="row" alignItems="center" gap={1.5}>
         <Skeleton variant="circular" width={24} height={24} />
         <Skeleton
@@ -75,12 +75,25 @@ export const TokenStreamRowLoading = () => (
   </TableRow>
 );
 
-interface TokenStreamRowProps {
+interface EmptyRowProps {
+  span: number;
+  height?: number;
+}
+
+export const EmptyRow: FC<EmptyRowProps> = ({ span, height = 58 }) => (
+  <TableRow>
+    <TableCell colSpan={span} align="center" sx={{ height }}>
+      <Typography variant="h6">No data</Typography>
+    </TableCell>
+  </TableRow>
+);
+
+interface StreamRowProps {
   stream: Stream;
   network: Network;
 }
 
-const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
+const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
   const {
     sender,
     receiver,
@@ -131,7 +144,7 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
 
   return (
     <TableRow hover>
-      <TableCell sx={{ pl: "72px" }}>
+      <TableCell>
         <Stack direction="row" alignItems="center" gap={1.5}>
           {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
           <Avatar variant="rounded">
@@ -147,7 +160,7 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
         </Stack>
       </TableCell>
       <TableCell>
-        <Typography variant="body2mono">
+        <Typography variant="h7mono">
           <FlowingBalance
             balance={streamedUntilUpdatedAt}
             flowRate={currentFlowRate}
@@ -209,7 +222,6 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
                   open={menuOpen}
                   anchorEl={menuAnchor}
                   onClose={closeMenu}
-                  PaperProps={{ square: true }}
                   transformOrigin={{ horizontal: "right", vertical: "top" }}
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                 >
@@ -252,4 +264,4 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
   );
 };
 
-export default memo(TokenStreamRow);
+export default memo(StreamRow);
