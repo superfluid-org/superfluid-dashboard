@@ -1,6 +1,7 @@
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import { TabContext, TabList } from "@mui/lab";
 import {
-  Box,
   Button,
   Card,
   Container,
@@ -17,6 +18,8 @@ import { NextPage } from "next";
 import Error from "next/error";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import SubscriptionsTable from "../../features/index/SubscriptionsTable";
+import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import { subgraphApi } from "../../features/redux/store";
 import { UnitOfTime } from "../../features/send/FlowRateInput";
 import StreamsTable from "../../features/streamsTable/StreamsTable";
@@ -24,11 +27,7 @@ import EtherFormatted from "../../features/token/EtherFormatted";
 import FlowingBalance from "../../features/token/FlowingBalance";
 import TokenBalanceGraph from "../../features/token/TokenBalanceGraph";
 import TokenToolbar from "../../features/token/TokenToolbar";
-import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import SubscriptionsTable from "../../features/index/SubscriptionsTable";
 import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
-import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 
 enum TokenDetailsTabs {
   Streams = "streams",

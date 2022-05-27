@@ -27,9 +27,13 @@ const LoaderSvg = styled("svg")`
       x: 1;
       y: 3;
     }
-    75% {
+    65% {
       x: 1;
       y: 3;
+    }
+    85% {
+      x: 0;
+      y: 4;
     }
     100% {
       x: 0;
@@ -74,7 +78,7 @@ const LoaderSvg = styled("svg")`
   }
 
   &:hover {
-    animation: spin 1000ms cubic-bezier(0.55, 0, 0.1, 1);
+    animation: spin 1000ms cubic-bezier(0.6, 0, 0.4, 1);
     animation-iteration-count: infinite;
 
     .rect1 {

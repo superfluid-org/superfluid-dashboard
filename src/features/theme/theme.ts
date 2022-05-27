@@ -165,12 +165,12 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
       h3: {
         fontSize: "36px",
         fontWeight: 500,
-        fontVariantNumeric: "tabular-nums",
-        // fontFamily: FONT_FAMILY_MONO,
       },
       h3mono: {
         fontSize: "36px",
         fontWeight: 500,
+        fontVariantNumeric: "tabular-nums",
+        // fontFamily: FONT_FAMILY_MONO,
       },
       h4: {
         fontSize: "24px",

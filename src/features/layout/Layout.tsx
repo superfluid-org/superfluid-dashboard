@@ -15,7 +15,7 @@ const DarkGlow = styled("div")({
   width: "100vw",
   height: "100vh",
   zIndex: -1,
-  background: `radial-gradient(ellipse at 55% 40%, rgba(16, 187, 53, 0.15) 0%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 100%) `,
+  background: `radial-gradient(ellipse at 55% 40%, rgba(16, 187, 53, 0.1) 0%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 100%) `,
   transform: "rotate(-30deg)",
   transformOrigin: "center center",
 });

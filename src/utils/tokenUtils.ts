@@ -1,5 +1,8 @@
 import { BigNumber } from "ethers";
 
+export const MAX_SAFE_SECONDS = BigNumber.from(8640000000000); //In seconds, https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#the_ecmascript_epoch_and_timestamps
+const BIG_NUMBER_ZERO = BigNumber.from(0);
+
 export const subscriptionWeiAmountReceived = (
   publisherIndexValue: BigNumber,
   subscriberTotalAmountReceivedUntilUpdatedAt: BigNumber,
@@ -17,9 +20,7 @@ export const subscriptionWeiAmountReceived = (
   return totalAmountReceived;
 };
 
-export const MAX_SAFE_SECONDS = BigNumber.from(8640000000000); //In seconds, https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#the_ecmascript_epoch_and_timestamps
-const BIG_NUMBER_ZERO = BigNumber.from(0);
-
+// TODO: This needs to be tested
 export function calculateMaybeCriticalAtTimestamp(
   updatedAtTimestamp: BigNumber,
   balanceUntilUpdatedAt: BigNumber,
@@ -38,6 +39,7 @@ export function calculateMaybeCriticalAtTimestamp(
   return calculatedCriticalTimestamp;
 }
 
+// TODO: This needs to be tested
 export function calculateBuffer(
   streamedUntilUpdatedAt: BigNumber,
   currentFlowRate: BigNumber,
