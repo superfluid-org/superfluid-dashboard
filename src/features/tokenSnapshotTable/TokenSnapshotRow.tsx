@@ -125,7 +125,6 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         hasStreams={hasStreams}
         lastElement={lastElement}
         open={open}
-        onClick={toggleOpen}
       >
         <TableCell>
           <ListItem sx={{ p: 0 }}>

@@ -111,8 +111,10 @@ const StreamsTable: FC<StreamsTableProps> = ({
     setPage(0);
   };
 
-  const setStreamTypeFilter = (type: StreamTypeFilter) => () =>
+  const setStreamTypeFilter = (type: StreamTypeFilter) => () => {
+    setPage(0);
     setStreamsFilter({ ...streamsFilter, type });
+  };
 
   const toggleSelectActive = () => setSelectActive(!selectActive);
 
@@ -128,7 +130,6 @@ const StreamsTable: FC<StreamsTableProps> = ({
       sx={
         subTable
           ? {
-              background: theme.palette.action.hover,
               borderRadius: lastElement ? "0 0 20px 20px" : 0,
               border: "none",
               boxShadow: "none",
@@ -227,6 +228,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
         sx={{
+          ...(subTable ? { background: "transparent" } : {}),
           "> *": {
             visibility: streams.length <= 5 ? "hidden" : "visible",
           },

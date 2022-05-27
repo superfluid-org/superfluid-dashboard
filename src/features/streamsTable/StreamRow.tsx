@@ -40,6 +40,7 @@ import {
   transactionByHashSelector,
   useAccountTransactionsSelector,
 } from "../wallet/useAccountTransactions";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 export const StreamRowLoading = () => (
   <TableRow>
@@ -88,11 +89,12 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
     receiver,
     currentFlowRate,
     streamedUntilUpdatedAt,
+    createdAtTimestamp,
     updatedAtTimestamp,
   } = stream;
 
   const router = useRouter();
-  const { data: account } = useAccount();
+  const { visibleAddress } = useVisibleAddress();
   const { activeChain } = useNetwork();
 
   const [flowDeleteTrigger, flowDeleteMutation] =
@@ -132,7 +134,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
   };
 
   const isOutgoing =
-    sender.localeCompare(account?.address ?? "", undefined, {
+    sender.localeCompare(visibleAddress ?? "", undefined, {
       sensitivity: "accent",
     }) === 0;
 
@@ -184,7 +186,10 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
       </TableCell>
       <TableCell>
         <Stack direction="row" alignItems="center" gap={1}>
-          {format(updatedAtTimestamp * 1000, "d MMM. yyyy")}
+          {format(
+            (isActive ? createdAtTimestamp : updatedAtTimestamp) * 1000,
+            "d MMM. yyyy"
+          )}
           {isActive && <AllInclusiveIcon />}
         </Stack>
       </TableCell>
@@ -201,7 +206,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
               <>
                 <Tooltip
                   arrow
-                  title={`Please switch provider network to ${network.name} in order to cancel the stream.`}
+                  title={`Please connect your wallet and switch provider network to ${network.name} in order to cancel the stream.`}
                   disableHoverListener={network.id === activeChain?.id}
                 >
                   <span>

@@ -44,7 +44,7 @@ const Token: NextPage = () => {
   const [activeTab, setActiveTab] = useState(TokenDetailsTabs.Streams);
 
   const tokenId = (router.query.token || "") as string;
-  console.log(visibleAddress, network, tokenId);
+
   const tokenQuery = subgraphApi.useTokenQuery({
     chainId: network.id,
     id: tokenId.toLowerCase(),
@@ -96,8 +96,10 @@ const Token: NextPage = () => {
         <Card sx={{ px: 4, pt: 3, pb: 2 }}>
           <Stack direction="row" justifyContent="space-between" sx={{ mb: 4 }}>
             <Stack gap={0.5}>
-              <Typography variant="h5">Balance</Typography>
-              <Typography variant="h3">
+              <Typography variant="body1" color="text.secondary">
+                Balance
+              </Typography>
+              <Typography variant="h3mono">
                 <FlowingBalance
                   balance={balanceUntilUpdatedAt}
                   flowRate={totalNetFlowRate}
@@ -106,9 +108,14 @@ const Token: NextPage = () => {
                   disableRoundingIndicator
                 />
               </Typography>
-              <Typography variant="body2">
-                Liquidation Date: June 15th, 2022{" "}
-              </Typography>
+              <Stack direction="row" alignItems="center" gap={1}>
+                <Typography variant="body2" color="text.secondary">
+                  Liquidation Date:
+                </Typography>
+                <Typography variant="h7" color="text.secondary">
+                  June 15th, 2022
+                </Typography>
+              </Stack>
             </Stack>
 
             <Stack alignItems="end" justifyContent="space-between">
@@ -138,7 +145,7 @@ const Token: NextPage = () => {
 
               <Stack alignItems="end">
                 <Stack direction="row" alignItems="center">
-                  <Typography variant="h7mono">
+                  <Typography variant="h5mono">
                     <EtherFormatted
                       wei={BigNumber.from(totalInflowRate).mul(
                         UnitOfTime.Month
@@ -146,13 +153,13 @@ const Token: NextPage = () => {
                       etherDecimalPlaces={8}
                       disableRoundingIndicator
                     />
+                    {` /mo`}
                   </Typography>
-                  <Typography variant="h7">/mo</Typography>
                   <ArrowDropUpIcon color="primary" />
                 </Stack>
 
                 <Stack direction="row" alignItems="center">
-                  <Typography variant="h7mono">
+                  <Typography variant="h5mono">
                     <EtherFormatted
                       wei={BigNumber.from(totalOutflowRate).mul(
                         UnitOfTime.Month
@@ -160,8 +167,8 @@ const Token: NextPage = () => {
                       etherDecimalPlaces={8}
                       disableRoundingIndicator
                     />
+                    {` /mo`}
                   </Typography>
-                  <Typography variant="h7">/mo</Typography>
                   <ArrowDropDownIcon color="error" />
                 </Stack>
               </Stack>

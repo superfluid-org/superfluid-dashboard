@@ -33,9 +33,9 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
   const [approvedFilter, setApprovedFilter] = useState<boolean | null>(null);
 
   const subscriptionsQuery = subgraphApi.useIndexSubscriptionsQuery({
-    chainId: network.id,
+    chainId: 5, //network.id,
     filter: {
-      subscriber: visibleAddress.toLowerCase(), //"0x808B74C4f37F664010F1182de87bD5b65772788e".toLowerCase(),
+      subscriber: "0x808B74C4f37F664010F1182de87bD5b65772788e".toLowerCase(), // visibleAddress.toLowerCase()
     },
     pagination: {
       take: Infinity,

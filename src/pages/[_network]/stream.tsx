@@ -1,20 +1,24 @@
 import ShareIcon from "@mui/icons-material/Share";
+import { BigNumber } from "ethers";
 import {
   Avatar,
+  Box,
   Container,
   Divider,
+  IconButton,
   ListItemText,
   Paper,
   Stack,
   styled,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { format } from "date-fns";
-import { BigNumber } from "ethers";
 import { NextPage } from "next";
 import Error from "next/error";
+import Image from "next/image";
 import { useRouter } from "next/router";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import Blockies from "react-blockies";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import NetworkIcon from "../../features/network/NetworkIcon";
@@ -24,94 +28,15 @@ import EtherFormatted from "../../features/token/EtherFormatted";
 import FlowingBalance from "../../features/token/FlowingBalance";
 import TokenIcon from "../../features/token/TokenIcon";
 import shortenAddress from "../../utils/shortenAddress";
-
-const LoaderSvg = styled("svg")`
-  position: relative;
-
-  .rect1 {
-    x: 0;
-    y: 4;
-  }
-
-  .rect2 {
-    opacity: 0;
-    rx: 0;
-  }
-
-  polygon {
-    transform: translate(0, 0);
-  }
-
-  @keyframes rectIn {
-    0% {
-      x: 0;
-      y: 4;
-    }
-    25% {
-      x: 1;
-      y: 3;
-    }
-    75% {
-      x: 1;
-      y: 3;
-    }
-    100% {
-      x: 0;
-      y: 4;
-    }
-  }
-
-  @keyframes polyIn {
-    0% {
-      transform: translate(0, 0);
-    }
-    25% {
-      transform: translate(-1px, 1px);
-    }
-    65% {
-      transform: translate(-1px, 1px);
-    }
-    85% {
-      transform: translate(0, 0);
-    }
-    100% {
-      transform: translate(0, 0);
-    }
-  }
-
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    15% {
-      transform: rotate(0deg);
-    }
-    65% {
-      transform: rotate(360deg);
-    }
-    99% {
-      transform: rotate(360deg);
-    }
-    100% {
-      transform: rotate(0);
-    }
-  }
-
-  &:hover {
-    animation: spin 1000ms cubic-bezier(0.55, 0, 0.1, 1);
-    animation-iteration-count: infinite;
-
-    .rect1 {
-      animation: rectIn 1000ms cubic-bezier(0.6, 0, 0.4, 1);
-      animation-iteration-count: infinite;
-    }
-
-    polygon {
-      animation: polyIn 1000ms cubic-bezier(0.6, 0, 0.4, 1);
-      animation-iteration-count: infinite;
-    }
-  }
-`;
+import LinkIcon from "@mui/icons-material/Link";
+import {
+  calculateMaybeCriticalAtTimestamp,
+  calculateBuffer,
+} from "../../utils/tokenUtils";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import EditIcon from "@mui/icons-material/Edit";
+import CancelIcon from "@mui/icons-material/Cancel";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface OverviewItemProps {
   label: string;
@@ -128,52 +53,135 @@ const OverviewItem: FC<OverviewItemProps> = ({ label, value }) => (
 );
 
 const Stream: NextPage = () => {
+  const theme = useTheme();
   const router = useRouter();
 
   const { network } = useExpectedNetwork();
   const streamId = (router.query.stream || "") as string;
+  const [senderAddress = "", receiverAddress = "", tokenAddress = ""] =
+    streamId.split("-");
 
   const streamQuery = subgraphApi.useStreamQuery({
     chainId: network.id,
     id: streamId,
   });
 
-  if (streamQuery.isLoading || streamQuery.isFetching) {
+  const tokenSnapshotQuery = subgraphApi.useAccountTokenSnapshotQuery({
+    chainId: network.id,
+    id: `${senderAddress.toLowerCase()}-${tokenAddress.toLowerCase()}`,
+  });
+
+  const liquidationDate = useMemo(() => {
+    if (!tokenSnapshotQuery.data) return null;
+
+    const {
+      balanceUntilUpdatedAt,
+      totalNetFlowRate,
+      updatedAtTimestamp: snapshotUpdatedAtTimestamp,
+    } = tokenSnapshotQuery.data;
+
+    return new Date(
+      calculateMaybeCriticalAtTimestamp(
+        BigNumber.from(snapshotUpdatedAtTimestamp),
+        BigNumber.from(balanceUntilUpdatedAt),
+        BigNumber.from(0),
+        BigNumber.from(totalNetFlowRate)
+      ).toNumber() * 1000
+    );
+  }, [tokenSnapshotQuery.data]);
+
+  const bufferSize = useMemo(() => {
+    if (!streamQuery.data) return null;
+
+    const { currentFlowRate, createdAtTimestamp, streamedUntilUpdatedAt } =
+      streamQuery.data;
+
+    return calculateBuffer(
+      BigNumber.from(streamedUntilUpdatedAt),
+      BigNumber.from(currentFlowRate),
+      createdAtTimestamp,
+      network.bufferTimeInMinutes
+    );
+  }, [streamQuery.data, network]);
+
+  if (
+    streamQuery.isLoading ||
+    streamQuery.isFetching ||
+    tokenSnapshotQuery.isLoading ||
+    tokenSnapshotQuery.isFetching
+  ) {
     return <Container>Loading</Container>;
   }
 
-  if (!streamQuery.data) {
+  if (!streamQuery.data || !tokenSnapshotQuery.data) {
     return <Error statusCode={404} />;
   }
+
+  const handleBack = () => router.back();
 
   const {
     streamedUntilUpdatedAt,
     currentFlowRate,
-    updatedAtTimestamp,
-    token,
     tokenSymbol,
     receiver,
     sender,
     createdAtTimestamp,
+    updatedAtTimestamp,
   } = streamQuery.data;
+
+  const isActive = currentFlowRate !== "0";
+
+  console.log(network.bufferTimeInMinutes, streamQuery.data);
 
   // TODO: This container max width should be configured in theme. Something between small and medium
   return (
     <Container>
-      {/* <LoaderSvg viewBox="0 0 6 6" width="40" height="40">
-        <rect className="rect1" x="0" y="4" width="2" height="2" fill="black" />
-        <rect className="rect2" x="1" y="1" width="4" height="4" fill="black" />
-        <polygon points="2,0 6,0 6,4 4,4 4,2 2,2" fill="black" />
-      </LoaderSvg> */}
-
       <Stack
         alignItems="center"
         gap={3}
         sx={{ maxWidth: "760px", margin: "0 auto" }}
       >
-        <Typography variant="h5" color="error">
-          Cancelled by sender on 10 August 2022 at 11:30 PM GMT
-        </Typography>
+        <Stack
+          alignItems="center"
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "1fr auto 1fr",
+            mb: 7,
+            mt: 3,
+            width: "100%",
+          }}
+        >
+          <Box>
+            <IconButton color="inherit" onClick={handleBack}>
+              <ArrowBackIcon />
+            </IconButton>
+          </Box>
+          <Stack direction="row" alignItems="center" gap={1}>
+            {!isActive && updatedAtTimestamp && (
+              <>
+                <CloseIcon color="error" />
+                <Typography variant="h5" color="error">
+                  {`Cancelled on ${format(
+                    updatedAtTimestamp * 1000,
+                    "d MMMM yyyy"
+                  )} at ${format(updatedAtTimestamp * 1000, "h:mm aaa")}`}
+                </Typography>
+              </>
+            )}
+          </Stack>
+          <Stack direction="row" justifyContent="flex-end" gap={1}>
+            {isActive && (
+              <>
+                <IconButton color="primary">
+                  <EditIcon />
+                </IconButton>
+                <IconButton color="error">
+                  <CancelIcon />
+                </IconButton>
+              </>
+            )}
+          </Stack>
+        </Stack>
 
         <Stack alignItems="center" gap={1} sx={{ mb: 4 }}>
           <Typography variant="h5">Total Amount Streamed</Typography>
@@ -206,15 +214,22 @@ const Stream: NextPage = () => {
         </Stack>
 
         <Stack
-          direction="row"
-          alignItems="end"
-          justifyContent="stretch"
-          sx={{ width: "100%" }}
+          alignItems="center"
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "1fr 88px 1fr",
+            rowGap: 2,
+            width: "100%",
+          }}
         >
+          <Typography variant="h6" sx={{ pl: 1 }}>
+            Sender
+          </Typography>
+          <Box />
+          <Typography variant="h6" sx={{ pl: 1 }}>
+            Receiver
+          </Typography>
           <Stack flex={1} gap={2}>
-            <Typography variant="h6" sx={{ pl: 1 }}>
-              Sender
-            </Typography>
             <Paper
               component={Stack}
               direction="row"
@@ -230,12 +245,18 @@ const Stream: NextPage = () => {
             </Paper>
           </Stack>
 
-          <img src="/gifs/stream-loop.gif" alt="Stream loop" width="92px" />
+          <Box sx={{ mx: -0.25, height: 48, zIndex: -1 }}>
+            <Image
+              unoptimized
+              src="/gifs/stream-loop.gif"
+              width={92}
+              height={48}
+              layout="fixed"
+              alt="Superfluid stream"
+            />
+          </Box>
 
           <Stack flex={1} gap={2}>
-            <Typography variant="h6" sx={{ pl: 1 }}>
-              Receiver
-            </Typography>
             <Paper
               component={Stack}
               direction="row"
@@ -281,8 +302,29 @@ const Stream: NextPage = () => {
             label="Start Date:"
             value={format(createdAtTimestamp * 1000, "d MMM. yyyy h:mm aaa")}
           />
-          <OverviewItem label="Buffer:" value="80.54992 USDCx" />
-          <OverviewItem label="End Date:" value="14 August 2022 " />
+          <OverviewItem
+            label="Buffer:"
+            value={
+              bufferSize && (
+                <>
+                  <EtherFormatted
+                    wei={bufferSize}
+                    etherDecimalPlaces={10}
+                    disableRoundingIndicator
+                  />{" "}
+                  {tokenSymbol}
+                </>
+              )
+            }
+          />
+          <OverviewItem
+            label={`${isActive ? "Updated" : "End"} Date:`}
+            value={
+              updatedAtTimestamp
+                ? format(updatedAtTimestamp * 1000, "d MMM. yyyy h:mm aaa")
+                : "-"
+            }
+          />
           <OverviewItem
             label="Network Name:"
             value={
@@ -294,7 +336,11 @@ const Stream: NextPage = () => {
           />
           <OverviewItem
             label="Projected Liquidation:"
-            value="14 August 2022 "
+            value={
+              isActive && liquidationDate
+                ? format(liquidationDate, "d MMM. yyyy h:mm aaa")
+                : "-"
+            }
           />
           <OverviewItem
             label="Transaction ID:"
@@ -305,8 +351,48 @@ const Stream: NextPage = () => {
         <Divider sx={{ maxWidth: "375px", width: "100%", my: 1 }} />
 
         <Stack direction="row" alignItems="center" gap={1}>
-          <ShareIcon />
-          <Typography variant="h5">Share:</Typography>
+          <ShareIcon sx={{ width: 18, height: 18 }} />
+          <Typography variant="h5" sx={{ mr: 1 }}>
+            Share:
+          </Typography>
+
+          <Avatar
+            sx={{
+              backgroundColor: theme.palette.primary.main,
+              color: "#fff",
+              width: 30,
+              height: 30,
+            }}
+          >
+            <LinkIcon
+              sx={{ transform: "rotate(135deg)", width: 20, height: 20 }}
+            />
+          </Avatar>
+
+          <Image
+            unoptimized
+            src="/icons/social/twitter.svg"
+            width={30}
+            height={30}
+            layout="fixed"
+            alt="Twitter logo"
+          />
+          <Image
+            unoptimized
+            src="/icons/social/discord.svg"
+            width={30}
+            height={30}
+            layout="fixed"
+            alt="Discord logo"
+          />
+          <Image
+            unoptimized
+            src="/icons/social/telegram.svg"
+            width={30}
+            height={30}
+            layout="fixed"
+            alt="Telegram logo"
+          />
         </Stack>
       </Stack>
     </Container>
