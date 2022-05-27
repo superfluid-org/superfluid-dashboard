@@ -133,6 +133,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               <TokenIcon tokenSymbol={tokenSymbol} />
             </ListItemAvatar>
             <ListItemText
+              onClick={openTokenPage}
               primary={tokenSymbol}
               /**
                * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back

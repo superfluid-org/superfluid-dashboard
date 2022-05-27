@@ -12,11 +12,13 @@ import {
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
+import { useRouter } from "next/router";
 import { FC, memo, useMemo, useState } from "react";
+import { EmptyRow } from "../common/EmptyRow";
 import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
 import { useWalletContext } from "../wallet/WalletContext";
-import StreamRow, { EmptyRow, StreamRowLoading } from "./StreamRow";
+import StreamRow, { StreamRowLoading } from "./StreamRow";
 
 enum StreamTypeFilter {
   All,
@@ -83,17 +85,17 @@ const StreamsTable: FC<StreamsTableProps> = ({
     },
   });
 
-  const data = useMemo(() => {
+  const streams = useMemo(() => {
     return [
       ...([StreamTypeFilter.All, StreamTypeFilter.Incoming].includes(
         streamsFilter.type
       )
-        ? incomingStreamsQuery.data?.data || []
+        ? incomingStreamsQuery.data?.items || []
         : []),
       ...([StreamTypeFilter.All, StreamTypeFilter.Outgoing].includes(
         streamsFilter.type
       )
-        ? outgoingStreamsQuery.data?.data || []
+        ? outgoingStreamsQuery.data?.items || []
         : []),
     ].sort((s1, s2) => s2.updatedAtTimestamp - s1.updatedAtTimestamp);
   }, [incomingStreamsQuery, outgoingStreamsQuery, streamsFilter]);
@@ -118,7 +120,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
     type === streamsFilter.type ? "primary" : "secondary";
 
   const isLoading =
-    data.length === 0 &&
+    streams.length === 0 &&
     (incomingStreamsQuery.isLoading || incomingStreamsQuery.isLoading);
 
   return (
@@ -135,7 +137,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
       }
     >
       <Table
-        size="small"
+        size={subTable ? "small" : "medium"}
         sx={{
           ...(lastElement && {
             borderTop: `1px solid ${theme.palette.divider}`,
@@ -205,10 +207,10 @@ const StreamsTable: FC<StreamsTableProps> = ({
         <TableBody>
           {isLoading ? (
             <StreamRowLoading />
-          ) : data.length === 0 ? (
+          ) : streams.length === 0 ? (
             <EmptyRow span={5} />
           ) : (
-            data
+            streams
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((stream) => (
                 <StreamRow key={stream.id} stream={stream} network={network} />
@@ -219,14 +221,14 @@ const StreamsTable: FC<StreamsTableProps> = ({
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={data.length}
+        count={streams.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
         sx={{
           "> *": {
-            visibility: data.length <= 5 ? "hidden" : "visible",
+            visibility: streams.length <= 5 ? "hidden" : "visible",
           },
         }}
       />

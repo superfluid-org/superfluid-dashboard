@@ -8,6 +8,8 @@ import { FONT_FACES } from "./fonts";
 
 interface TypographyCustomVariants {
   h7: React.CSSProperties;
+  h1mono: React.CSSProperties;
+  h4mono: React.CSSProperties;
   h5mono: React.CSSProperties;
   h6mono: React.CSSProperties;
   h7mono: React.CSSProperties;
@@ -26,6 +28,8 @@ declare module "@mui/material/styles" {
 declare module "@mui/material/Typography" {
   interface TypographyPropsVariantOverrides {
     h7: true;
+    h1mono: true;
+    h4mono: true;
     h5mono: true;
     h6mono: true;
     h7mono: true;
@@ -140,7 +144,13 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
       h1: {
         fontSize: "64px",
         letterSpacing: "-1.5px",
-        fontWeight: 400,
+        fontWeight: 500,
+      },
+      h1mono: {
+        fontSize: "64px",
+        letterSpacing: "-1.5px",
+        fontWeight: 500,
+        fontFamily: FONT_FAMILY_MONO,
       },
       h2: {
         fontSize: "48px",
@@ -155,6 +165,12 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         fontSize: "24px",
         fontWeight: 500,
         letterSpacing: "0.25px",
+      },
+      h4mono: {
+        fontSize: "24px",
+        fontWeight: 500,
+        letterSpacing: "0.25px",
+        fontFamily: FONT_FAMILY_MONO,
       },
       h5: {
         fontSize: "18px",
@@ -637,7 +653,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
               color: theme.palette.primary.main,
               backgroundColor: alpha(theme.palette.primary.main, 0.08),
               "&:hover": {
-                backgroundColor: alpha(theme.palette.primary.main, 0.08),
+                backgroundColor: alpha(
+                  theme.palette.primary.main,
+                  getModeStyle(0.12, 0.16)
+                ),
               },
             },
           },

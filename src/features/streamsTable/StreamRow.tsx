@@ -21,6 +21,7 @@ import {
 import { Stream } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
+import { useRouter } from "next/router";
 import { FC, memo, MouseEvent, useState } from "react";
 import Blockies from "react-blockies";
 import shortenAddress from "../../utils/shortenAddress";
@@ -75,19 +76,6 @@ export const StreamRowLoading = () => (
   </TableRow>
 );
 
-interface EmptyRowProps {
-  span: number;
-  height?: number;
-}
-
-export const EmptyRow: FC<EmptyRowProps> = ({ span, height = 58 }) => (
-  <TableRow>
-    <TableCell colSpan={span} align="center" sx={{ height }}>
-      <Typography variant="h6">No data</Typography>
-    </TableCell>
-  </TableRow>
-);
-
 interface StreamRowProps {
   stream: Stream;
   network: Network;
@@ -95,6 +83,7 @@ interface StreamRowProps {
 
 const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
   const {
+    id,
     sender,
     receiver,
     currentFlowRate,
@@ -102,6 +91,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
     updatedAtTimestamp,
   } = stream;
 
+  const router = useRouter();
   const { walletAddress = "", walletChainId } = useWalletContext();
 
   const [flowDeleteTrigger, flowDeleteMutation] =
@@ -114,8 +104,14 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
-  const openMenu = (event: MouseEvent<HTMLButtonElement>) =>
+  const openStreamDetails = () => {
+    console.log("openStreamDetails");
+    router.push(`/${network.slugName}/stream?stream=${id}`);
+  };
+
+  const openMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setMenuAnchor(event.currentTarget);
+  };
 
   const closeMenu = () => setMenuAnchor(null);
 
@@ -154,7 +150,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
               scale={3}
             />
           </Avatar>
-          <Typography variant="h6">
+          <Typography variant="h6" onClick={openStreamDetails}>
             {shortenAddress(isOutgoing ? receiver : sender)}
           </Typography>
         </Stack>

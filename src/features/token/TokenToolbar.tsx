@@ -2,21 +2,23 @@ import { FC } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import RemoveIcon from "@mui/icons-material/Remove";
-import { Stack, IconButton, Typography, Chip } from "@mui/material";
+import { Stack, IconButton, Typography, Chip, Tooltip } from "@mui/material";
 import NetworkIcon from "../network/NetworkIcon";
 import TokenIcon from "./TokenIcon";
 import { Address, Token } from "@superfluid-finance/sdk-core";
 import { useNetworkContext } from "../network/NetworkContext";
 import { subgraphApi } from "../redux/store";
+import Link from "next/link";
+import { Network } from "../network/networks";
 
 interface TokenToolbarProps {
-  symbol: string;
-  name: string;
+  token: Token;
+  network: Network;
   onBack?: () => void;
 }
 
-const TokenToolbar: FC<TokenToolbarProps> = ({ symbol, name, onBack }) => {
-  const { network } = useNetworkContext();
+const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
+  const { symbol, name } = token;
 
   return (
     <Stack direction="row" alignItems="center" gap={2}>
@@ -41,12 +43,26 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ symbol, name, onBack }) => {
         alignItems="center"
         justifyContent="flex-end"
       >
-        <IconButton color="primary">
-          <AddIcon />
-        </IconButton>
-        <IconButton color="primary">
-          <RemoveIcon />
-        </IconButton>
+        <Link
+          href={`/wrap?upgrade&token=${token.id}&network=${network.slugName}`}
+          passHref
+        >
+          <Tooltip title="Wrap">
+            <IconButton color="primary">
+              <AddIcon />
+            </IconButton>
+          </Tooltip>
+        </Link>
+        <Link
+          href={`/wrap?downgrade&token=${token.id}&network=${network.slugName}`}
+          passHref
+        >
+          <Tooltip title="Unwrap">
+            <IconButton color="primary">
+              <RemoveIcon />
+            </IconButton>
+          </Tooltip>
+        </Link>
       </Stack>
     </Stack>
   );

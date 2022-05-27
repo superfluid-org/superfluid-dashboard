@@ -28,6 +28,7 @@ import TokenToolbar from "../../features/token/TokenToolbar";
 import { useWalletContext } from "../../features/wallet/WalletContext";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import SubscriptionsTable from "../../features/index/SubscriptionsTable";
 
 enum TokenDetailsTabs {
   Streams = "streams",
@@ -80,17 +81,16 @@ const Token: NextPage = () => {
     updatedAtTimestamp,
   } = tokenSnapshotQuery.data;
 
-  const { symbol, name, id } = tokenQuery.data;
+  const { id: tokenAddress } = tokenQuery.data;
 
   return (
     <Container maxWidth="lg">
-      <Stack
-        sx={{
-          my: 4,
-        }}
-        gap={4}
-      >
-        <TokenToolbar name={name} symbol={symbol} onBack={handleBack} />
+      <Stack gap={4}>
+        <TokenToolbar
+          token={tokenQuery.data}
+          network={network}
+          onBack={handleBack}
+        />
 
         <Card sx={{ px: 4, pt: 3, pb: 2 }}>
           <Stack direction="row" justifyContent="space-between" sx={{ mb: 4 }}>
@@ -194,11 +194,11 @@ const Token: NextPage = () => {
           </TabList>
 
           {activeTab === TokenDetailsTabs.Streams && (
-            <StreamsTable network={network} tokenAddress={id} />
+            <StreamsTable network={network} tokenAddress={tokenAddress} />
           )}
 
           {activeTab === TokenDetailsTabs.Distributions && (
-            <div>Distributions</div>
+            <SubscriptionsTable network={network} tokenAddress={tokenAddress} />
           )}
 
           {activeTab === TokenDetailsTabs.Transfers && <div>Transfers</div>}

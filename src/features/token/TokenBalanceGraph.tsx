@@ -1,4 +1,4 @@
-import { alpha, Box, Card, Typography, useTheme } from "@mui/material";
+import { alpha, Box, useTheme } from "@mui/material";
 import Chart, { ScriptableLineSegmentContext } from "chart.js/auto";
 import { FC, useEffect, useRef } from "react";
 
@@ -102,7 +102,7 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({ height = 180 }) => {
   }, [canvasRef]);
 
   return (
-    <Box sx={{ height, mx: -1 }}>
+    <Box sx={{ height, mx: -0.5 }}>
       <canvas ref={canvasRef} />
     </Box>
   );
