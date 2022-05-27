@@ -3,7 +3,7 @@ import { isString } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { useNetworkContext } from "../features/network/NetworkContext";
+import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import { useAppSelector } from "../features/redux/store";
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
 import {
@@ -12,7 +12,7 @@ import {
 } from "../features/transactionRestoration/transactionRestorations";
 
 const RestoreTransaction: NextPage = () => {
-  const { network, setNetwork } = useNetworkContext();
+  const { network, setExpectedNetwork } = useExpectedNetwork();
   const router = useRouter();
   const { hash } = router.query;
 
@@ -24,8 +24,8 @@ const RestoreTransaction: NextPage = () => {
   const { restore } = useTransactionRestorationContext();
 
   useEffect(() => {
-    if (transaction && transaction.chainId !== network.chainId) {
-      setNetwork(transaction.chainId);
+    if (transaction && transaction.chainId !== network.id) {
+      setExpectedNetwork(transaction.chainId);
     }
 
     const transactionRestoration = transaction?.extraData

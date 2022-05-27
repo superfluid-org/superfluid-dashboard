@@ -1,19 +1,20 @@
+import { BlockExplorer } from "@wagmi/core/dist/declarations/src/constants";
 import { memoize } from "lodash";
+import { chain, Chain } from "wagmi";
+import ensureDefined from "../../utils/ensureDefined";
 import {
   NATIVE_ASSET_ADDRESS,
   SuperTokenPair,
-  TokenType,
-} from "../redux/endpoints/adHocSubgraphEndpoints";
+} from "../redux/endpoints/tokenTypes";
+import { TokenType } from "../redux/endpoints/tokenTypes";
 
-export type Network = {
-  displayName: string;
+// id == chainId
+// name == displayName
+export type Network = Chain & {
   slugName: string;
-  chainId: number;
-  rpcUrl: string;
   subgraphUrl: string;
   getLinkForTransaction(txHash: string): string;
   getLinkForAddress(adderss: string): string;
-  isTestnet: boolean;
   icon?: string;
   color?: string;
   bufferTimeInMinutes: number; // Hard-code'ing this per network is actually incorrect approach. It's token-based and can be governed.
@@ -26,18 +27,56 @@ export type Network = {
       address: string;
     };
   };
+  rpcUrls: Chain["rpcUrls"] & { superfluid: string };
+  nativeCurrency: Chain["nativeCurrency"];
+};
+
+const superfluidRpcUrls = {
+  ropsten: "https://rpc-endpoints.superfluid.dev/ropsten",
+  rinkeby: "https://rpc-endpoints.superfluid.dev/rinkeby",
+  goerli: "https://rpc-endpoints.superfluid.dev/goerli",
+  kovan: "https://rpc-endpoints.superfluid.dev/kovan",
+  gnosis: "https://rpc-endpoints.superfluid.dev/xdai",
+  polygon: "https://rpc-endpoints.superfluid.dev/matic",
+  polygonMumbai: "https://rpc-endpoints.superfluid.dev/mumbai",
+  arbitrum: "https://rpc-endpoints.superfluid.dev/arbitrum-one",
+  arbitrumRinkeby: "https://rpc-endpoints.superfluid.dev/arbitrum-rinkeby",
+  optimism: "https://rpc-endpoints.superfluid.dev/optimism-mainnet",
+  optimismKovan: "https://rpc-endpoints.superfluid.dev/optimism-kovan",
+  avalancheFuji: "https://rpc-endpoints.superfluid.dev/avalanche-fuji",
+};
+
+const blockscoutBlockExplorers = {
+  gnosis: {
+    name: "Blockscout",
+    url: "https://blockscout.com/xdai/mainnet/",
+  },
+};
+
+const snowtraceBlockExplorers = {
+  avalanche: {
+    name: "SnowTrace",
+    url: "https://snowtrace.io/",
+  },
+  avalancheFuji: {
+    name: "SnowTrace",
+    url: "https://testnet.snowtrace.io",
+  },
 };
 
 export const networks: Network[] = [
   {
-    displayName: "Ropsten",
+    ...chain.ropsten,
+    blockExplorers: ensureDefined(chain.ropsten.blockExplorers),
+    nativeCurrency: ensureDefined(chain.ropsten.nativeCurrency),
     slugName: "ropsten",
-    chainId: 3,
-    isTestnet: true,
     bufferTimeInMinutes: 60,
     icon: "/icons/network/ropsten.jpg",
     color: "#29b6af",
-    rpcUrl: `https://rpc-endpoints.superfluid.dev/ropsten`,
+    rpcUrls: {
+      ...chain.ropsten.rpcUrls,
+      superfluid: superfluidRpcUrls.ropsten,
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-ropsten",
     getLinkForTransaction: (txHash: string): string =>
@@ -55,14 +94,17 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Rinkeby",
+    ...chain.rinkeby,
+    blockExplorers: ensureDefined(chain.rinkeby.blockExplorers),
+    nativeCurrency: ensureDefined(chain.rinkeby.nativeCurrency),
     slugName: "rinkeby",
-    chainId: 4,
-    isTestnet: true,
     color: "#ff4a8d",
     bufferTimeInMinutes: 60,
     icon: "/icons/network/rinkeby.jpg",
-    rpcUrl: `https://rpc-endpoints.superfluid.dev/rinkeby`,
+    rpcUrls: {
+      ...chain.rinkeby.rpcUrls,
+      superfluid: superfluidRpcUrls.rinkeby,
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-rinkeby",
     getLinkForTransaction: (txHash: string): string =>
@@ -80,14 +122,17 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Goerli",
+    ...chain.goerli,
+    blockExplorers: ensureDefined(chain.goerli.blockExplorers),
+    nativeCurrency: ensureDefined(chain.goerli.nativeCurrency),
     slugName: "goerli",
-    chainId: 5,
-    isTestnet: true,
     bufferTimeInMinutes: 60,
     icon: "/icons/network/goerli.jpg",
     color: "#9064ff",
-    rpcUrl: `https://rpc-endpoints.superfluid.dev/goerli`,
+    rpcUrls: {
+      ...chain.goerli.rpcUrls,
+      superfluid: superfluidRpcUrls.goerli,
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli",
     getLinkForTransaction: (txHash: string): string =>
@@ -105,14 +150,17 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Kovan",
+    ...chain.kovan,
+    blockExplorers: ensureDefined(chain.kovan.blockExplorers),
+    nativeCurrency: ensureDefined(chain.kovan.nativeCurrency),
     slugName: "kovan",
-    chainId: 42,
-    isTestnet: true,
     bufferTimeInMinutes: 60,
     icon: "/icons/network/kovan.jpg",
     color: "#f6c343",
-    rpcUrl: `https://rpc-endpoints.superfluid.dev/kovan`,
+    rpcUrls: {
+      ...chain.kovan.rpcUrls,
+      superfluid: superfluidRpcUrls.kovan,
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-kovan",
     getLinkForTransaction: (txHash: string): string =>
@@ -130,19 +178,32 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Gnosis Chain",
-    slugName: "xdai",
-    chainId: 100,
-    isTestnet: false,
+    name: "Gnosis Chain",
+    blockExplorers: {
+      etherscan: undefined!,
+      default: blockscoutBlockExplorers.gnosis,
+    },
+    slugName: "gnosis",
+    network: "xdai",
+    id: 100,
+    testnet: false,
     bufferTimeInMinutes: 240,
     icon: "/icons/network/gnosis.svg",
-    rpcUrl: "https://rpc-endpoints.superfluid.dev/xdai",
+    rpcUrls: {
+      superfluid: superfluidRpcUrls.gnosis,
+      default: "https://rpc.gnosischain.com/",
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-xdai",
     getLinkForTransaction: (txHash: string): string =>
       `https://blockscout.com/xdai/mainnet/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://blockscout.com/xdai/mainnet/address/${address}`,
+    nativeCurrency: {
+      name: "xDai",
+      symbol: "XDAI",
+      decimals: 18,
+    },
     nativeAsset: {
       symbol: "xDai",
       superToken: {
@@ -154,13 +215,16 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Polygon",
-    slugName: "matic",
-    chainId: 137,
-    isTestnet: false,
+    ...chain.polygon,
+    blockExplorers: ensureDefined(chain.polygon.blockExplorers),
+    nativeCurrency: ensureDefined(chain.polygon.nativeCurrency),
+    slugName: "polygon",
     bufferTimeInMinutes: 240,
     icon: "/icons/network/polygon.svg",
-    rpcUrl: `https://rpc-endpoints.superfluid.dev/matic`,
+    rpcUrls: {
+      ...chain.polygon.rpcUrls,
+      superfluid: superfluidRpcUrls.polygon,
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-matic",
     getLinkForTransaction: (txHash: string): string =>
@@ -178,13 +242,16 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Mumbai",
+    ...chain.polygonMumbai,
+    blockExplorers: ensureDefined(chain.polygonMumbai.blockExplorers),
+    nativeCurrency: ensureDefined(chain.polygonMumbai.nativeCurrency),
     slugName: "mumbai",
-    chainId: 80001,
-    isTestnet: true,
     bufferTimeInMinutes: 60,
     color: "#3099f2",
-    rpcUrl: `https://rpc-endpoints.superfluid.dev/mumbai`,
+    rpcUrls: {
+      ...chain.polygonMumbai.rpcUrls,
+      superfluid: superfluidRpcUrls.polygonMumbai,
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-mumbai",
     getLinkForTransaction: (txHash: string): string =>
@@ -202,14 +269,17 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Arbitrum-Rinkeby",
+    ...chain.arbitrumRinkeby,
+    blockExplorers: ensureDefined(chain.arbitrumRinkeby.blockExplorers),
+    nativeCurrency: ensureDefined(chain.arbitrumRinkeby.nativeCurrency),
     slugName: "arbitrum-rinkeby",
-    chainId: 421611,
-    isTestnet: true,
     bufferTimeInMinutes: 60,
     icon: "/icons/network/arbitrum.svg",
     color: "#29b6af",
-    rpcUrl: `https://rpc-endpoints.superfluid.dev/arbitrum-rinkeby`,
+    rpcUrls: {
+      ...chain.arbitrumRinkeby.rpcUrls,
+      superfluid: superfluidRpcUrls.arbitrumRinkeby,
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-rinkeby",
     getLinkForTransaction: (txHash: string): string =>
@@ -227,14 +297,17 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Optimism-Kovan",
+    ...chain.optimismKovan,
+    blockExplorers: ensureDefined(chain.optimismKovan.blockExplorers),
+    nativeCurrency: ensureDefined(chain.optimismKovan.nativeCurrency),
     slugName: "optimism-kovan",
-    chainId: 69,
-    isTestnet: true,
     bufferTimeInMinutes: 60,
     icon: "/icons/network/optimism.svg",
     color: "#8b45b6",
-    rpcUrl: `https://rpc-endpoints.superfluid.dev/optimism-kovan`,
+    rpcUrls: {
+      ...chain.optimismKovan.rpcUrls,
+      superfluid: superfluidRpcUrls.optimismKovan,
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-kovan",
     getLinkForTransaction: (txHash: string): string =>
@@ -252,19 +325,33 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Avalanche-Fuji",
+    name: "Fuji (C-Chain)",
     slugName: "avalanche-fuji",
-    chainId: 43113,
-    isTestnet: true,
+    network: "avalanche-fuji",
+    id: 43113,
+    testnet: true,
     bufferTimeInMinutes: 60,
     icon: "/icons/network/avalanche.jpg",
-    rpcUrl: "https://rpc-endpoints.superfluid.dev/avalanche-fuji",
+    rpcUrls: {
+      superfluid: superfluidRpcUrls.avalancheFuji,
+      default: "https://api.avax-test.network/ext/C/rpc",
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-avalanche-fuji",
     getLinkForTransaction: (txHash: string): string =>
       `https://testnet.snowtrace.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://testnet.snowtrace.io/address/${address}`,
+    blockExplorers: {
+      etherscan: undefined!,
+      snowtrace: snowtraceBlockExplorers.avalancheFuji,
+      default: snowtraceBlockExplorers.avalancheFuji,
+    },
+    nativeCurrency: {
+      name: "AVAX",
+      symbol: "AVAX",
+      decimals: 18,
+    },
     nativeAsset: {
       symbol: "AVAX",
       superToken: {
@@ -276,13 +363,16 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Optimism",
+    ...chain.optimism,
+    blockExplorers: ensureDefined(chain.optimism.blockExplorers),
+    nativeCurrency: ensureDefined(chain.optimism.nativeCurrency),
     slugName: "optimism-mainnet",
-    chainId: 10,
-    isTestnet: false,
     bufferTimeInMinutes: 240,
     icon: "/icons/network/optimism.svg",
-    rpcUrl: `https://rpc-endpoints.superfluid.dev/optimism-mainnet`,
+    rpcUrls: {
+      ...chain.optimism.rpcUrls,
+      superfluid: superfluidRpcUrls.optimism,
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-mainnet",
     getLinkForTransaction: (txHash: string): string =>
@@ -300,13 +390,16 @@ export const networks: Network[] = [
     },
   },
   {
-    displayName: "Arbitrum One",
+    ...chain.arbitrum,
+    blockExplorers: ensureDefined(chain.arbitrum.blockExplorers),
+    nativeCurrency: ensureDefined(chain.arbitrum.nativeCurrency),
     slugName: "arbitrum-one",
-    chainId: 42161,
-    isTestnet: false,
     bufferTimeInMinutes: 240,
     icon: "/icons/network/arbitrum.svg",
-    rpcUrl: "https://rpc-endpoints.superfluid.dev/arbitrum-one",
+    rpcUrls: {
+      ...chain.arbitrum.rpcUrls,
+      superfluid: superfluidRpcUrls.arbitrum,
+    },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-one",
     getLinkForTransaction: (txHash: string): string =>
@@ -331,7 +424,7 @@ export const getNetworkDefaultTokenPair = memoize(
     underlyingToken: {
       type: TokenType.NativeAssetUnderlyingToken,
       address: NATIVE_ASSET_ADDRESS,
-      name: `${network.displayName} Native Asset`,
+      name: `${network.name} Native Asset`,
       symbol: network.nativeAsset.symbol,
     },
   })
@@ -341,8 +434,8 @@ export const networksByName = new Map(
   networks.map((x) => [x.slugName.toLowerCase(), x])
 );
 
-export const networksByChainId = new Map(networks.map((x) => [x.chainId, x]));
+export const networksByChainId = new Map(networks.map((x) => [x.id, x]));
 export const networksBySlug = new Map(networks.map((x) => [x.slugName, x]));
 
-export const mainNetworks = networks.filter((network) => !network.isTestnet);
-export const testNetworks = networks.filter((network) => network.isTestnet);
+export const mainNetworks = networks.filter((network) => !network.testnet);
+export const testNetworks = networks.filter((network) => network.testnet);

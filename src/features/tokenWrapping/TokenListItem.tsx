@@ -15,13 +15,13 @@ import { rpcApi } from "../redux/store";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import Link from "next/link";
-import { useNetworkContext } from "../network/NetworkContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   isSuper,
   isUnderlying,
   isWrappable,
-  TokenMinimal,
-} from "../redux/endpoints/adHocSubgraphEndpoints";
+  TokenMinimal
+} from "../redux/endpoints/tokenTypes";
 
 const etherDecimalPlaces = 8;
 
@@ -47,7 +47,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
   flowRate,
   onClick,
 }) => {
-  const { network } = useNetworkContext();
+  const { network } = useExpectedNetwork();
 
   const isSuperToken = isSuper(token);
   const isUnderlyingToken = isUnderlying(token);

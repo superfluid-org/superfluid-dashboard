@@ -1,15 +1,13 @@
-import { FC } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import RemoveIcon from "@mui/icons-material/Remove";
-import { Stack, IconButton, Typography, Chip, Tooltip } from "@mui/material";
-import NetworkIcon from "../network/NetworkIcon";
-import TokenIcon from "./TokenIcon";
-import { Address, Token } from "@superfluid-finance/sdk-core";
-import { useNetworkContext } from "../network/NetworkContext";
-import { subgraphApi } from "../redux/store";
+import { Chip, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Token } from "@superfluid-finance/sdk-core";
 import Link from "next/link";
+import { FC } from "react";
+import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
+import TokenIcon from "./TokenIcon";
 
 interface TokenToolbarProps {
   token: Token;
@@ -32,7 +30,7 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
       </Typography>
       <Chip
         size="small"
-        label={network.displayName}
+        label={network.name}
         avatar={<NetworkIcon network={network} size={18} fontSize={14} />}
       />
 

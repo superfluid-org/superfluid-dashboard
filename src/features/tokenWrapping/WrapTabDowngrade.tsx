@@ -16,11 +16,10 @@ import {
   SuperTokenDowngradeRestoration,
   RestorationType,
 } from "../transactionRestoration/transactionRestorations";
-import { useNetworkContext } from "../network/NetworkContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
 import { TransactionButton } from "../transactions/TransactionButton";
-import { useWalletContext } from "../wallet/WalletContext";
 import { BalanceSuperToken } from "./BalanceSuperToken";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { useSelectedTokenContext } from "./SelectedTokenPairContext";
@@ -28,14 +27,15 @@ import { TokenDialogButton } from "./TokenDialogButton";
 import { useRouter } from "next/router";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
 import { TransactionDialogActions, TransactionDialogButton } from "../transactions/TransactionDialog";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 export const WrapTabDowngrade: FC<{
   restoration: SuperTokenDowngradeRestoration | undefined;
 }> = ({ restoration }) => {
   const theme = useTheme();
-  const { network } = useNetworkContext();
+  const { network } = useExpectedNetwork();
   const router = useRouter();
-  const { walletAddress } = useWalletContext();
+  const { visibleAddress } = useVisibleAddress();
   const { selectedTokenPair, setSelectedTokenPair } = useSelectedTokenContext();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
 
@@ -60,12 +60,6 @@ export const WrapTabDowngrade: FC<{
     rpcApi.useSuperTokenDowngradeMutation();
   const isDowngradeDisabled = !selectedTokenPair || amountWei.isZero();
 
-  console.log({
-    isDowngradeDisabled,
-    selectedTokenPair,
-    amount: amountWei.toString()
-  })
-
   const amountInputRef = useRef<HTMLInputElement>(undefined!);
 
   useEffect(() => {
@@ -73,7 +67,7 @@ export const WrapTabDowngrade: FC<{
   }, [amountInputRef, selectedTokenPair]);
 
   const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
-    chainId: network.chainId,
+    chainId: network.id,
   });
 
   return (
@@ -120,15 +114,15 @@ export const WrapTabDowngrade: FC<{
             }
           />
         </Stack>
-        {selectedTokenPair && walletAddress && (
+        {selectedTokenPair && visibleAddress && (
           <Stack direction="row" justifyContent="flex-end">
             {/* <Typography variant="body2" color="text.secondary">
             ${Number(amount || 0).toFixed(2)}
           </Typography> */}
 
             <BalanceSuperToken
-              chainId={network.chainId}
-              accountAddress={walletAddress}
+              chainId={network.id}
+              accountAddress={visibleAddress}
               tokenAddress={selectedTokenPair.superToken.address}
               typographyProps={{ color: "text.secondary" }}
             />
@@ -185,14 +179,14 @@ export const WrapTabDowngrade: FC<{
             </Button>
           </Stack>
 
-          {selectedTokenPair && walletAddress && (
+          {selectedTokenPair && visibleAddress && (
             <Stack direction="row" justifyContent="flex-end">
               {/* <Typography variant="body2" color="text.secondary">
               ${Number(amount || 0).toFixed(2)}
             </Typography> */}
               <BalanceUnderlyingToken
-                chainId={network.chainId}
-                accountAddress={walletAddress}
+                chainId={network.id}
+                accountAddress={visibleAddress}
                 tokenAddress={selectedTokenPair.underlyingToken.address}
               />
             </Stack>
@@ -219,13 +213,13 @@ export const WrapTabDowngrade: FC<{
 
           const restoration: SuperTokenDowngradeRestoration = {
             type: RestorationType.Downgrade,
-            chainId: network.chainId,
+            chainId: network.id,
             tokenUpgrade: selectedTokenPair,
             amountWei: amountWei.toString(),
           };
 
           downgradeTrigger({
-            chainId: network.chainId,
+            chainId: network.id,
             amountWei: amountWei.toString(),
             superTokenAddress: selectedTokenPair.superToken.address,
             waitForConfirmation: true,

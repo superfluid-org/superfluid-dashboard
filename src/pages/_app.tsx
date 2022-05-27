@@ -3,18 +3,20 @@ import { AppProps } from "next/app";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import createEmotionCache from "../features/theme/createEmotionCache";
 import { useEffect } from "react";
-import { setFrameworkForSdkRedux } from "@superfluid-finance/sdk-redux";
-import readOnlyFrameworks from "../features/network/readOnlyFrameworks";
 import Layout from "../features/layout/Layout";
 import MuiProvider from "../features/theme/MuiProvider";
-import { NetworkContextProvider } from "../features/network/NetworkContext";
-import { WalletContextProvider } from "../features/wallet/WalletContext";
+import { ExpectedNetworkProvider } from "../features/network/ExpectedNetworkContext";
 import ReduxProvider from "../features/redux/ReduxProvider";
 import ReduxPersistGate from "../features/redux/ReduxPersistGate";
 import NextThemesProvider from "../features/theme/NextThemesProvider";
 import { TransactionRestorationContextProvider } from "../features/transactionRestoration/TransactionRestorationContext";
 import { TransactionDrawerContextProvider } from "../features/transactionDrawer/TransactionDrawerContext";
 import { hotjar } from "react-hotjar";
+import WagmiManager, {
+  RainbowKitManager,
+} from "../features/wallet/WagmiManager";
+import { ImpersonationProvider } from "../features/impersonation/ImpersonationContext";
+import { VisibleAddressProvider } from "../features/wallet/VisibleAddressContext";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -25,12 +27,6 @@ interface MyAppProps extends AppProps {
 
 export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
-
-  useEffect(() => {
-    readOnlyFrameworks.map((x) =>
-      setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
-    );
-  }, []);
 
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_HJID && process.env.NEXT_PUBLIC_HJSV) {
@@ -44,37 +40,42 @@ export default function MyApp(props: MyAppProps) {
   }, []);
 
   return (
-    <ReduxProvider>
-      <NextThemesProvider>
-        <CacheProvider value={emotionCache}>
-          <Head>
-            <meta
-              name="viewport"
-              content="initial-scale=1, width=device-width"
-            />
-          </Head>
-          <MuiProvider>
-            <NetworkContextProvider>
+    <NextThemesProvider>
+      <CacheProvider value={emotionCache}>
+        <Head>
+          <meta name="viewport" content="initial-scale=1, width=device-width" />
+        </Head>
+        <WagmiManager>
+          <ImpersonationProvider>
+            <ExpectedNetworkProvider>
               {(network) => (
-                <WalletContextProvider>
-                  <TransactionRestorationContextProvider>
-                    <TransactionDrawerContextProvider>
-                      <Layout>
-                        <ReduxPersistGate>
-                          <Component
-                            key={`${network.slugName}`}
-                            {...pageProps}
-                          />
-                        </ReduxPersistGate>
-                      </Layout>
-                    </TransactionDrawerContextProvider>
-                  </TransactionRestorationContextProvider>
-                </WalletContextProvider>
+                <ReduxProvider>
+                  <MuiProvider>
+                    {(_muiTheme) => (
+                      <RainbowKitManager>
+                        <VisibleAddressProvider>
+                          <TransactionRestorationContextProvider>
+                            <TransactionDrawerContextProvider>
+                              <Layout>
+                                <ReduxPersistGate>
+                                  <Component
+                                    key={`${network.slugName}`}
+                                    {...pageProps}
+                                  />
+                                </ReduxPersistGate>
+                              </Layout>
+                            </TransactionDrawerContextProvider>
+                          </TransactionRestorationContextProvider>
+                        </VisibleAddressProvider>
+                      </RainbowKitManager>
+                    )}
+                  </MuiProvider>
+                </ReduxProvider>
               )}
-            </NetworkContextProvider>
-          </MuiProvider>
-        </CacheProvider>
-      </NextThemesProvider>
-    </ReduxProvider>
+            </ExpectedNetworkProvider>
+          </ImpersonationProvider>
+        </WagmiManager>
+      </CacheProvider>
+    </NextThemesProvider>
   );
 }

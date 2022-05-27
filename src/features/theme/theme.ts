@@ -69,8 +69,8 @@ declare module "@mui/material/Button" {
   }
 }
 
-const FONT_FAMILY = "'Walsheim', Arial";
-const FONT_FAMILY_MONO = "'Azeret Mono', monospace;";
+export const FONT_FAMILY = "'Walsheim', Arial";
+export const FONT_FAMILY_MONO = "'Azeret Mono', monospace;";
 
 export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
   const getModeStyle = <T>(lightStyle: T, darkStyle: T): T =>

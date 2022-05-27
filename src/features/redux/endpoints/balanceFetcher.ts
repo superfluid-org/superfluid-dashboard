@@ -4,7 +4,7 @@ import {
 import { ContractCallContext, Multicall } from "ethereum-multicall";
 import { ethers } from "ethers";
 import { networks } from "../../network/networks";
-import { NATIVE_ASSET_ADDRESS } from "./adHocSubgraphEndpoints";
+import { NATIVE_ASSET_ADDRESS } from "./tokenTypes";
 
 const multicallContractAddress = "0xcA11bde05977b3631167028862bE2a173976CA11";
 
@@ -36,7 +36,7 @@ const mutableNetworkStates: Record<
     > | null;
   }
 > = Object.fromEntries(
-  networks.map((x) => [x.chainId, { nextFetching: null, queryBatch: [] }])
+  networks.map((x) => [x.id, { nextFetching: null, queryBatch: [] }])
 );
 
 const createFetching = (

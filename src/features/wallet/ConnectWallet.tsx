@@ -1,52 +1,64 @@
-import AddIcon from "@mui/icons-material/Add";
-import { LoadingButton } from "@mui/lab";
 import { Avatar, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
 import { memo } from "react";
-import Blockies from "react-blockies";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import shortenAddress from "../../utils/shortenAddress";
-import { useNetworkContext } from "../network/NetworkContext";
-import { useWalletContext } from "./WalletContext";
+import { LoadingButton } from "@mui/lab";
+import { useAccount, useNetwork } from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import Blockies from "react-blockies";
+import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
+import { useImpersonation } from "../impersonation/ImpersonationContext";
 
 export default memo(function ConnectWallet() {
-  const { network } = useNetworkContext();
-  const {
-    walletAddress,
-    walletChainId,
-    walletProvider,
-    connectWallet,
-    isWalletConnecting,
-  } = useWalletContext();
+  const { network } = useExpectedNetwork();
+
+  // TODO(KK): `isLoading` might not be the correct thing to look at for button loading state.
+  const { data: account } = useAccount();
+  const { activeChain } = useNetwork();
+
+  const { stopImpersonation: stopImpersonation } = useImpersonation();
 
   return (
-    <>
-      {walletProvider && walletAddress ? (
-        <ListItem sx={{ px: 2, py: 0 }}>
-          <ListItemAvatar>
-            <Avatar variant="rounded">
-              <Blockies seed={walletAddress} size={12} scale={3} />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText
-            primary={shortenAddress(walletAddress)}
-            secondary={
-              network.chainId !== walletChainId ? "Wrong network" : "Connected"
-            }
-            secondaryTypographyProps={{
-              color: network.chainId !== walletChainId ? "error" : "primary",
+    <ConnectButton.Custom>
+      {({ openConnectModal, openAccountModal, mounted }) =>
+        account?.address && activeChain && mounted ? (
+          // TODO(KK): Better solution for pointer/click
+          <ListItem
+            sx={{ px: 2, py: 0, cursor: "pointer" }}
+            onClick={openAccountModal}
+          >
+            <ListItemAvatar>
+              <Avatar variant="rounded">
+                <Blockies seed={account?.address} size={12} scale={3} />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={shortenAddress(account.address)}
+              secondary={
+                network.id !== activeChain.id
+                  ? "Wrong network"
+                  : "Connected"
+              }
+              secondaryTypographyProps={{
+                color: network.id !== activeChain.id ? "error" : "primary",
+              }}
+            />
+          </ListItem>
+        ) : (
+          <LoadingButton
+            loading={!mounted}
+            variant="contained"
+            size="xl"
+            onClick={() => {
+              openConnectModal();
+              stopImpersonation();
             }}
-          />
-        </ListItem>
-      ) : (
-        <LoadingButton
-          loading={isWalletConnecting}
-          variant="contained"
-          size="xl"
-          onClick={connectWallet}
-        >
-          <AddIcon sx={{ mr: 1 }} />
-          Connect Wallet
-        </LoadingButton>
-      )}
-    </>
+          >
+            <AccountBalanceWalletOutlinedIcon sx={{ mr: 1 }} />
+            Connect Wallet
+          </LoadingButton>
+        )
+      }
+    </ConnectButton.Custom>
   );
 });

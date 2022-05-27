@@ -12,7 +12,8 @@ import {
   useTheme,
 } from "@mui/material";
 import { FC, memo, MouseEvent, useState } from "react";
-import { useNetworkContext } from "./NetworkContext";
+import { useAccount, useNetwork } from "wagmi";
+import { useExpectedNetwork } from "./ExpectedNetworkContext";
 import NetworkIcon from "./NetworkIcon";
 import { mainNetworks, Network, testNetworks } from "./networks";
 
@@ -38,7 +39,7 @@ interface NetworkItemProps {
 
 const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
   <MenuItem
-    key={network.chainId}
+    key={network.id}
     onClick={onClick}
     selected={selected}
     sx={{ height: 50 }}
@@ -46,20 +47,23 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
     <ListItemAvatar sx={{ mr: 1 }}>
       <NetworkIcon network={network} size={24} fontSize={16} />
     </ListItemAvatar>
-    {network.displayName}
+    {network.name}
   </MenuItem>
 );
 
 export default memo(function SelectNetwork() {
   const theme = useTheme();
+  
+  const { data: account } = useAccount();
+  const { switchNetwork } = useNetwork();
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [showTestnets, setShowTestnets] = useState(false);
 
   const open = Boolean(anchorEl);
 
-  const { network: selectedNetwork, setNetwork: setSelectedNetwork } =
-    useNetworkContext();
+  const { network: selectedNetwork, setExpectedNetwork: setSelectedNetwork } =
+    useExpectedNetwork();
 
   const handleOpen = (event: MouseEvent<HTMLButtonElement>) =>
     setAnchorEl(event.currentTarget);
@@ -69,6 +73,10 @@ export default memo(function SelectNetwork() {
   const onNetworkSelected = (chainId: number) => () => {
     handleClose();
     setSelectedNetwork(chainId);
+
+    if (account && switchNetwork) {
+      switchNetwork(chainId);
+    }
   };
 
   const handleShowTestnetsChange = (
@@ -91,7 +99,7 @@ export default memo(function SelectNetwork() {
         onClick={handleOpen}
         sx={{ ".MuiButton-startIcon > *:nth-of-type(1)": { fontSize: "16px" } }}
       >
-        {selectedNetwork.displayName}
+        {selectedNetwork.name}
       </Button>
       <Menu
         anchorEl={anchorEl}
@@ -105,9 +113,9 @@ export default memo(function SelectNetwork() {
         <Collapse in={!showTestnets} timeout="auto" unmountOnExit>
           {mainNetworks.map((network) => (
             <NetworkItem
-              key={network.chainId}
-              onClick={onNetworkSelected(network.chainId)}
-              selected={network.chainId === selectedNetwork.chainId}
+              key={network.id}
+              onClick={onNetworkSelected(network.id)}
+              selected={network.id === selectedNetwork.id}
               network={network}
             />
           ))}
@@ -116,9 +124,9 @@ export default memo(function SelectNetwork() {
         <Collapse in={showTestnets} timeout="auto" unmountOnExit>
           {testNetworks.map((network) => (
             <NetworkItem
-              key={network.chainId}
-              onClick={onNetworkSelected(network.chainId)}
-              selected={network.chainId === selectedNetwork.chainId}
+              key={network.id}
+              onClick={onNetworkSelected(network.id)}
+              selected={network.id === selectedNetwork.id}
               network={network}
             />
           ))}

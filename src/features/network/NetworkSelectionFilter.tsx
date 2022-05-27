@@ -29,7 +29,7 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, active, onChange }) => {
         <NetworkIcon size={24} fontSize={16} network={network} />
       </ListItemAvatar>
       <ListItemText primaryTypographyProps={{ variant: "menuItem" }}>
-        {network.displayName}
+        {network.name}
       </ListItemText>
       <Switch checked={active} onChange={onNetworkToggled} />
     </MenuItem>
@@ -68,8 +68,8 @@ const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
   const onNetworkToggled = (chainId: number) => (active: boolean) =>
     onNetworkChange(chainId, active);
 
-  const mainnets = networks.filter((network) => !network.isTestnet);
-  const testnets = networks.filter((network) => network.isTestnet);
+  const mainnets = networks.filter((network) => !network.testnet);
+  const testnets = networks.filter((network) => network.testnet);
 
   return (
     <Menu
@@ -84,10 +84,10 @@ const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
       <Collapse in={!showTestnets} timeout="auto" unmountOnExit>
         {mainnets.map((network) => (
           <NetworkItem
-            key={network.chainId}
+            key={network.id}
             network={network}
-            active={networkStates[network.chainId]}
-            onChange={onNetworkToggled(network.chainId)}
+            active={networkStates[network.id]}
+            onChange={onNetworkToggled(network.id)}
           />
         ))}
       </Collapse>
@@ -95,10 +95,10 @@ const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
       <Collapse in={showTestnets} timeout="auto" unmountOnExit>
         {testnets.map((network) => (
           <NetworkItem
-            key={network.chainId}
+            key={network.id}
             network={network}
-            active={networkStates[network.chainId]}
-            onChange={onNetworkToggled(network.chainId)}
+            active={networkStates[network.id]}
+            onChange={onNetworkToggled(network.id)}
           />
         ))}
       </Collapse>

@@ -2,7 +2,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Button, Stack, Typography } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
-import { useNetworkContext } from "../network/NetworkContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   mainNetworks,
   Network,
@@ -25,7 +25,7 @@ const buildNetworkStates = (
   networkList.reduce(
     (activeStates, network) => ({
       ...activeStates,
-      [network.chainId]: defaultActive,
+      [network.id]: defaultActive,
     }),
     {}
   );
@@ -36,8 +36,8 @@ interface TokenSnapshotTablesProps {
 
 const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
   const {
-    network: { isTestnet },
-  } = useNetworkContext();
+    network: { testnet },
+  } = useExpectedNetwork();
 
   const networkSelectionRef = useRef<HTMLButtonElement>(null);
   const [hasContent, setHasContent] = useState(false);
@@ -46,7 +46,7 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
   const [tokenSnapshotsQueryTrigger] =
     subgraphApi.useLazyAccountTokenSnapshotsQuery();
 
-  const [showTestnets, setShowTestnets] = useState(isTestnet);
+  const [showTestnets, setShowTestnets] = useState(!!testnet);
 
   const [networkStates, setNetworkStates] = useState<NetworkStates>({
     ...buildNetworkStates(mainNetworks, !showTestnets),
@@ -74,7 +74,7 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
   const closeNetworkSelection = () => setNetworkSelectionOpen(false);
 
   const activeNetworks = useMemo(
-    () => networks.filter((network) => networkStates[network.chainId]),
+    () => networks.filter((network) => networkStates[network.id]),
     [networkStates]
   );
 
@@ -86,7 +86,7 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
       activeNetworks.map(async (n) => {
         const result = await tokenSnapshotsQueryTrigger(
           {
-            chainId: n.chainId,
+            chainId: n.id,
             filter: {
               account: address,
             },
@@ -152,7 +152,7 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
         <Stack gap={4}>
           {activeNetworks.map((network) => (
             <TokenSnapshotTable
-              key={network.chainId}
+              key={network.id}
               address={address}
               network={network}
             />

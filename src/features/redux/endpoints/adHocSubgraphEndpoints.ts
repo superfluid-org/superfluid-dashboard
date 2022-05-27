@@ -1,11 +1,10 @@
-import {
-  getSubgraphClient,
-  SubgraphEndpointBuilder,
-} from "@superfluid-finance/sdk-redux";
-import { ethers } from "ethers";
-import { gql } from "graphql-request";
-import { uniq } from "lodash";
-import { Network, networksByChainId } from "../../network/networks";
+import {getSubgraphClient, SubgraphEndpointBuilder,} from "@superfluid-finance/sdk-redux";
+import {ethers} from "ethers";
+import {gql} from "graphql-request";
+import {uniq} from "lodash";
+import {Network, networksByChainId} from "../../network/networks";
+import { SuperTokenMinimal, SuperTokenPair, NATIVE_ASSET_ADDRESS } from "./tokenTypes";
+import {TokenType} from "./tokenTypes";
 
 type WrapperSuperTokenSubgraphResult = {
   id: string;
@@ -22,86 +21,6 @@ type NativeAssetSuperTokenSubgraphResult = {
   id: string;
   name: string;
   symbol: string;
-};
-
-export enum TokenType {
-  NativeAssetUnderlyingToken = 1,
-  ERC20UnderlyingToken = 2,
-  NativeAssetSuperToken = 3,
-  WrapperSuperToken = 4,
-  PureSuperToken = 5,
-}
-
-export type UnderlyingTokenType =
-  | TokenType.NativeAssetUnderlyingToken
-  | TokenType.ERC20UnderlyingToken;
-
-export type SuperTokenType =
-  | TokenType.NativeAssetSuperToken
-  | TokenType.WrapperSuperToken
-  | TokenType.PureSuperToken;
-
-export type TokenMinimal = {
-  type: UnderlyingTokenType | SuperTokenType;
-  address: string;
-  name: string;
-  symbol: string;
-};
-
-export const isUnderlying = (
-  x: TokenMinimal
-): x is ERC20TokenMinimal | NativeAsset =>
-  x.type === TokenType.NativeAssetUnderlyingToken ||
-  x.type === TokenType.ERC20UnderlyingToken;
-
-export const isWrappable = (x: TokenMinimal): boolean =>
-  x.type === TokenType.NativeAssetSuperToken ||
-  x.type === TokenType.WrapperSuperToken;
-
-export const isSuper = (x: TokenMinimal): x is SuperTokenMinimal =>
-  isWrappable(x) || x.type === TokenType.PureSuperToken;
-
-export type SuperTokenMinimal = {
-  type: SuperTokenType;
-  address: string;
-  name: string;
-  symbol: string;
-};
-
-export type ERC20TokenMinimal = {
-  type: TokenType.ERC20UnderlyingToken;
-  address: string;
-  name: string;
-  symbol: string;
-};
-
-/**
- * A dummy address to signal that the token is the blockchain's coin (native asset).
- */
-export const NATIVE_ASSET_ADDRESS = "native-asset";
-
-export type NativeAsset = {
-  type: TokenType.NativeAssetUnderlyingToken;
-  address: typeof NATIVE_ASSET_ADDRESS;
-  name: string;
-  symbol: string;
-};
-
-export type PureSuperToken = {
-  address: string;
-  name: string;
-  symbol: string;
-};
-
-export type UnderlyingToken = {
-  address: string;
-  name: string;
-  symbol: string;
-};
-
-export type SuperTokenPair = {
-  superToken: SuperTokenMinimal;
-  underlyingToken: ERC20TokenMinimal | NativeAsset;
 };
 
 export const adHocSubgraphEndpoints = {
@@ -256,7 +175,7 @@ export const adHocSubgraphEndpoints = {
               type: TokenType.NativeAssetUnderlyingToken,
               address: NATIVE_ASSET_ADDRESS,
               symbol: network.nativeAsset.symbol,
-              name: `${network.displayName} Native Asset`,
+              name: `${network.name} Native Asset`,
             },
           }));
 
@@ -278,7 +197,7 @@ export const adHocSubgraphEndpoints = {
                   type: TokenType.NativeAssetUnderlyingToken,
                   address: NATIVE_ASSET_ADDRESS,
                   symbol: network.nativeAsset.symbol,
-                  name: `${network.displayName} Native Asset`,
+                  name: `${network.name} Native Asset`,
                 },
               };
             }

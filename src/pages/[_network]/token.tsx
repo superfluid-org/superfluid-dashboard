@@ -17,7 +17,6 @@ import { NextPage } from "next";
 import Error from "next/error";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { useNetworkContext } from "../../features/network/NetworkContext";
 import { subgraphApi } from "../../features/redux/store";
 import { UnitOfTime } from "../../features/send/FlowRateInput";
 import StreamsTable from "../../features/streamsTable/StreamsTable";
@@ -25,10 +24,11 @@ import EtherFormatted from "../../features/token/EtherFormatted";
 import FlowingBalance from "../../features/token/FlowingBalance";
 import TokenBalanceGraph from "../../features/token/TokenBalanceGraph";
 import TokenToolbar from "../../features/token/TokenToolbar";
-import { useWalletContext } from "../../features/wallet/WalletContext";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import SubscriptionsTable from "../../features/index/SubscriptionsTable";
+import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
+import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 
 enum TokenDetailsTabs {
   Streams = "streams",
@@ -39,24 +39,25 @@ enum TokenDetailsTabs {
 const Token: NextPage = () => {
   const theme = useTheme();
   const router = useRouter();
-  const { network } = useNetworkContext();
-  const { walletAddress = "" } = useWalletContext();
+  const { network } = useExpectedNetwork();
+  const { visibleAddress = "" } = useVisibleAddress();
   const [activeTab, setActiveTab] = useState(TokenDetailsTabs.Streams);
 
   const tokenId = (router.query.token || "") as string;
-
+  console.log(visibleAddress, network, tokenId);
   const tokenQuery = subgraphApi.useTokenQuery({
-    chainId: network.chainId,
+    chainId: network.id,
     id: tokenId.toLowerCase(),
   });
 
   const tokenSnapshotQuery = subgraphApi.useAccountTokenSnapshotQuery({
-    chainId: network.chainId,
-    id: `${walletAddress.toLowerCase()}-${tokenId.toLowerCase()}`,
+    chainId: network.id,
+    id: `${visibleAddress.toLowerCase()}-${tokenId.toLowerCase()}`,
   });
 
   const handleBack = () => router.back();
 
+  console.log(tokenQuery, tokenSnapshotQuery);
   if (
     tokenQuery.isUninitialized ||
     tokenQuery.isLoading ||

@@ -13,7 +13,7 @@ const NetworkIcon: FC<NetworkIconProps> = ({
   fontSize = 20,
   size = 36,
 }) => {
-  if (!network.isTestnet)
+  if (!network.testnet)
     return <Avatar src={network.icon} sx={{ width: size, height: size }} />;
 
   return (
@@ -25,7 +25,7 @@ const NetworkIcon: FC<NetworkIconProps> = ({
         backgroundColor: network.color,
       }}
     >
-      {network.displayName.charAt(0)}
+      {network.name.charAt(0)}
     </Avatar>
   );
 };

@@ -18,14 +18,14 @@ import { ethers } from "ethers";
 import Fuse from "fuse.js";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import ResponsiveDialog from "../common/ResponsiveDialog";
-import { useNetworkContext } from "../network/NetworkContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   isSuper,
   isUnderlying,
-  TokenMinimal,
-} from "../redux/endpoints/adHocSubgraphEndpoints";
+  TokenMinimal
+} from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
-import { useWalletContext } from "../wallet/WalletContext";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { TokenListItem } from "./TokenListItem";
 
 export type TokenSelectionProps = {
@@ -49,8 +49,8 @@ export const TokenDialog: FC<{
   tokenSelection: { tokenPairsQuery, showUpgrade = false },
 }) => {
   const theme = useTheme();
-  const { network } = useNetworkContext();
-  const { walletAddress } = useWalletContext();
+  const { network } = useExpectedNetwork();
+  const { visibleAddress } = useVisibleAddress();
 
   const [openCounter, setOpenCounter] = useState(0);
   useEffect(() => {
@@ -75,10 +75,10 @@ export const TokenDialog: FC<{
   );
 
   const underlyingTokenBalancesQuery = rpcApi.useBalanceOfMulticallQuery(
-    underlyingTokens.length && walletAddress
+    underlyingTokens.length && visibleAddress
       ? {
-          chainId: network.chainId,
-          accountAddress: walletAddress,
+          chainId: network.id,
+          accountAddress: visibleAddress,
           tokenAddresses: underlyingTokens.map((x) => x.address),
         }
       : skipToken
@@ -90,11 +90,11 @@ export const TokenDialog: FC<{
   );
 
   const superTokenBalancesQuery = subgraphApi.useAccountTokenSnapshotsQuery(
-    tokenPairsQuery.data && walletAddress
+    tokenPairsQuery.data && visibleAddress
       ? {
-          chainId: network.chainId,
+          chainId: network.id,
           filter: {
-            account: walletAddress,
+            account: visibleAddress,
             token_in: superTokens.map((x) => x.address),
           },
           pagination: {
@@ -215,8 +215,8 @@ export const TokenDialog: FC<{
               <TokenListItem
                 key={token.address}
                 token={token}
-                chainId={network.chainId}
-                accountAddress={walletAddress}
+                chainId={network.id}
+                accountAddress={visibleAddress}
                 balanceWei={
                   superTokenBalances[token.address]?.balanceUntilUpdatedAt
                 }

@@ -24,6 +24,7 @@ import { BigNumber } from "ethers";
 import { useRouter } from "next/router";
 import { FC, memo, MouseEvent, useState } from "react";
 import Blockies from "react-blockies";
+import { useAccount, useNetwork } from "wagmi";
 import shortenAddress from "../../utils/shortenAddress";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
@@ -37,9 +38,8 @@ import {
 } from "../transactions/TransactionDialog";
 import {
   transactionByHashSelector,
-  useWalletTransactionsSelector,
-} from "../wallet/useWalletTransactions";
-import { useWalletContext } from "../wallet/WalletContext";
+  useAccountTransactionsSelector,
+} from "../wallet/useAccountTransactions";
 
 export const StreamRowLoading = () => (
   <TableRow>
@@ -92,12 +92,13 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
   } = stream;
 
   const router = useRouter();
-  const { walletAddress = "", walletChainId } = useWalletContext();
+  const { data: account } = useAccount();
+  const { activeChain } = useNetwork();
 
   const [flowDeleteTrigger, flowDeleteMutation] =
     rpcApi.useFlowDeleteMutation();
 
-  const flowDeleteTransaction = useWalletTransactionsSelector(
+  const flowDeleteTransaction = useAccountTransactionsSelector(
     transactionByHashSelector(flowDeleteMutation.data?.hash)
   );
 
@@ -119,7 +120,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
 
   const deleteStream = () => {
     flowDeleteTrigger({
-      chainId: network.chainId,
+      chainId: network.id,
       receiverAddress: receiver,
       senderAddress: sender,
       superTokenAddress: stream.token,
@@ -131,7 +132,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
   };
 
   const isOutgoing =
-    sender.localeCompare(walletAddress, undefined, {
+    sender.localeCompare(account?.address ?? "", undefined, {
       sensitivity: "accent",
     }) === 0;
 
@@ -200,15 +201,15 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
               <>
                 <Tooltip
                   arrow
-                  title={`Please switch provider network to ${network.displayName} in order to cancel the stream.`}
-                  disableHoverListener={network.chainId === walletChainId}
+                  title={`Please switch provider network to ${network.name} in order to cancel the stream.`}
+                  disableHoverListener={network.id === activeChain?.id}
                 >
                   <span>
                     <Button
                       color="error"
                       size="small"
                       onClick={openMenu}
-                      disabled={network.chainId !== walletChainId}
+                      disabled={network.id !== activeChain?.id}
                     >
                       Cancel
                     </Button>

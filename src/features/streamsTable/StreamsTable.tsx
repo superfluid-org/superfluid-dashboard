@@ -17,8 +17,8 @@ import { FC, memo, useMemo, useState } from "react";
 import { EmptyRow } from "../common/EmptyRow";
 import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
-import { useWalletContext } from "../wallet/WalletContext";
 import StreamRow, { StreamRowLoading } from "./StreamRow";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 enum StreamTypeFilter {
   All,
@@ -44,7 +44,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
   lastElement,
 }) => {
   const theme = useTheme();
-  const { walletAddress } = useWalletContext();
+  const { visibleAddress } = useVisibleAddress();
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
@@ -54,9 +54,9 @@ const StreamsTable: FC<StreamsTableProps> = ({
   });
 
   const incomingStreamsQuery = subgraphApi.useStreamsQuery({
-    chainId: network.chainId,
+    chainId: network.id,
     filter: {
-      receiver: walletAddress,
+      receiver: visibleAddress,
       token: tokenAddress,
     },
     pagination: {
@@ -70,9 +70,9 @@ const StreamsTable: FC<StreamsTableProps> = ({
   });
 
   const outgoingStreamsQuery = subgraphApi.useStreamsQuery({
-    chainId: network.chainId,
+    chainId: network.id,
     filter: {
-      sender: walletAddress,
+      sender: visibleAddress,
       token: tokenAddress,
     },
     pagination: {

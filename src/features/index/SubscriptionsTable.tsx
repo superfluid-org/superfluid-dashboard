@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Button,
   Stack,
   Table,
@@ -9,19 +8,14 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Typography,
 } from "@mui/material";
-import {
-  Address,
-  IndexSubscription_Filter,
-} from "@superfluid-finance/sdk-core";
+import { Address } from "@superfluid-finance/sdk-core";
 import { FC, useMemo, useState } from "react";
+import { EmptyRow } from "../common/EmptyRow";
 import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
-import { useWalletContext } from "../wallet/WalletContext";
-import shortenAddress from "../../utils/shortenAddress";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import SubscriptionRow, { SubscriptionLoadingRow } from "./SubscriptionRow";
-import { EmptyRow } from "../common/EmptyRow";
 
 interface SubscriptionsTableProps {
   tokenAddress: Address;
@@ -32,16 +26,16 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
   tokenAddress,
   network,
 }) => {
-  const { walletAddress = "" } = useWalletContext();
+  const { visibleAddress = "" } = useVisibleAddress();
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
   const [approvedFilter, setApprovedFilter] = useState<boolean | null>(null);
 
   const subscriptionsQuery = subgraphApi.useIndexSubscriptionsQuery({
-    chainId: network.chainId,
+    chainId: network.id,
     filter: {
-      subscriber: walletAddress.toLowerCase(), //"0x808B74C4f37F664010F1182de87bD5b65772788e".toLowerCase(),
+      subscriber: visibleAddress.toLowerCase(), //"0x808B74C4f37F664010F1182de87bD5b65772788e".toLowerCase(),
     },
     pagination: {
       take: Infinity,

@@ -1,6 +1,5 @@
 import React, { FC, useState } from "react";
-import { useWalletContext } from "../wallet/WalletContext";
-import { useNetworkContext } from "../network/NetworkContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { Button, ButtonProps, Dialog, DialogActions } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import {
@@ -9,6 +8,9 @@ import {
   TransactionDialogButton,
 } from "./TransactionDialog";
 import UnknownMutationResult from "../../unknownMutationResult";
+import { useAccount, useConnect, useNetwork } from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useImpersonation } from "../impersonation/ImpersonationContext";
 
 export const TransactionButton: FC<{
   mutationResult: UnknownMutationResult;
@@ -23,9 +25,12 @@ export const TransactionButton: FC<{
   ) => void;
   ButtonProps?: ButtonProps;
 }> = ({ children, disabled, onClick, mutationResult, hidden }) => {
-  const { walletAddress, walletChainId, connectWallet, isWalletConnecting } =
-    useWalletContext();
-  const { network } = useNetworkContext();
+  const { isConnecting } = useConnect();
+  const { activeChain, switchNetwork } = useNetwork();
+  const { data: account } = useAccount();
+  const { isImpersonated, stopImpersonation: stopImpersonation } = useImpersonation();
+
+  const { network } = useExpectedNetwork();
   const [transactionDialogLabel, setTransactionDialogLabel] = useState<
     React.ReactNode | undefined
   >();
@@ -52,31 +57,54 @@ export const TransactionButton: FC<{
       );
     }
 
-    if (!walletAddress) {
+    if (isImpersonated) {
       return (
-        <LoadingButton
+        <Button
           fullWidth
-          loading={isWalletConnecting}
-          color="primary"
+          color="warning"
           variant="contained"
           size="xl"
-          onClick={connectWallet}
+          onClick={stopImpersonation}
         >
-          Connect Wallet
-        </LoadingButton>
+          Stop Viewing an Address
+        </Button>
       );
     }
 
-    if (walletChainId != network.chainId) {
+    if (!account?.address) {
+      return (
+        <ConnectButton.Custom>
+          {({ openConnectModal }) => (
+            <LoadingButton
+              fullWidth
+              loading={isConnecting}
+              color="primary"
+              variant="contained"
+              size="xl"
+              onClick={openConnectModal}
+            >
+              Connect Wallet
+            </LoadingButton>
+          )}
+        </ConnectButton.Custom>
+      );
+    }
+
+    if (network.id !== activeChain?.id) {
       return (
         <Button
-          disabled
+          disabled={!switchNetwork}
           color="primary"
           variant="contained"
           size="xl"
           fullWidth
+          onClick={() => {
+            if (switchNetwork) {
+              switchNetwork(network.id);
+            }
+          }}
         >
-          Change Network to {network.displayName}
+          Change Network to {network.name}
         </Button>
       );
     }

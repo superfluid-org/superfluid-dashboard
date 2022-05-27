@@ -23,14 +23,16 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, memo, useCallback, useMemo, useState } from "react";
 import TooltipIcon from "../common/TooltipIcon";
-import { useNetworkContext } from "../network/NetworkContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   getSuperTokenType,
+} from "../redux/endpoints/adHocSubgraphEndpoints";
+import {
   isSuper,
   isWrappable,
   SuperTokenMinimal,
-  TokenMinimal,
-} from "../redux/endpoints/adHocSubgraphEndpoints";
+  TokenMinimal
+} from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
@@ -44,7 +46,7 @@ import {
   TransactionDialogActions,
   TransactionDialogButton,
 } from "../transactions/TransactionDialog";
-import { useWalletContext } from "../wallet/WalletContext";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import AddressSearch from "./AddressSearch";
 import { DisplayAddress } from "./DisplayAddressChip";
 import {
@@ -73,8 +75,8 @@ const createDefaultFlowRate = () => ({
 export default memo(function SendCard(props: {
   restoration: SendStreamRestoration | undefined;
 }) {
-  const { network } = useNetworkContext();
-  const { walletAddress } = useWalletContext();
+  const { network } = useExpectedNetwork();
+  const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
   const router = useRouter();
 
@@ -119,7 +121,7 @@ export default memo(function SendCard(props: {
   const [flowCreateTrigger, flowCreateResult] = rpcApi.useFlowCreateMutation();
 
   const superTokensQuery = subgraphApi.useTokensQuery({
-    chainId: network.chainId,
+    chainId: network.id,
     filter: {
       isSuperToken: true,
       isListed: true,
@@ -137,13 +139,13 @@ export default memo(function SendCard(props: {
   );
 
   const shouldSearchForExistingStreams =
-    !!walletAddress && !!receiver && !!selectedToken && !!flowRate;
+    !!visibleAddress && !!receiver && !!selectedToken && !!flowRate;
   const existingStreams = subgraphApi.useStreamsQuery(
     shouldSearchForExistingStreams
       ? {
-          chainId: network.chainId,
+          chainId: network.id,
           filter: {
-            sender: walletAddress,
+            sender: visibleAddress,
             receiver: receiver.hash,
             token: selectedToken.address,
             currentFlowRate_not: "0",
@@ -170,7 +172,7 @@ export default memo(function SendCard(props: {
     hasAllDataForStream
       ? {
           type: RestorationType.SendStream,
-          chainId: network.chainId,
+          chainId: network.id,
           token: selectedToken,
           receiver: receiver,
           flowRate: flowRate,
@@ -263,11 +265,11 @@ export default memo(function SendCard(props: {
             </Box>
           </Box>
 
-          {selectedToken && walletAddress && (
+          {selectedToken && visibleAddress && (
             <Stack direction="row" alignItems="center" justifyContent="center">
               <BalanceSuperToken
-                chainId={network.chainId}
-                accountAddress={walletAddress}
+                chainId={network.id}
+                accountAddress={visibleAddress}
                 tokenAddress={selectedToken.address}
               />
 
@@ -347,7 +349,7 @@ export default memo(function SendCard(props: {
               }
 
               flowCreateTrigger({
-                chainId: network.chainId,
+                chainId: network.id,
                 flowRateWei: calculateTotalAmountWei(flowRate).toString(),
                 receiverAddress: receiver.hash,
                 superTokenAddress: selectedToken.address,

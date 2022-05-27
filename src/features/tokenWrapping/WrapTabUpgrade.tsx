@@ -5,8 +5,7 @@ import {
   SuperTokenUpgradeRestoration,
   RestorationType,
 } from "../transactionRestoration/transactionRestorations";
-import { useNetworkContext } from "../network/NetworkContext";
-import { useWalletContext } from "../wallet/WalletContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { BigNumber, ethers } from "ethers";
 import { rpcApi, subgraphApi } from "../redux/store";
 import {
@@ -27,21 +26,22 @@ import { BalanceSuperToken } from "./BalanceSuperToken";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { useSelectedTokenContext } from "./SelectedTokenPairContext";
 import { TokenDialogButton } from "./TokenDialogButton";
-import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/adHocSubgraphEndpoints";
+import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import { useRouter } from "next/router";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
 import {
   TransactionDialogActions,
   TransactionDialogButton,
 } from "../transactions/TransactionDialog";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 export const WrapTabUpgrade: FC<{
   restoration: SuperTokenUpgradeRestoration | undefined;
 }> = ({ restoration }) => {
   const theme = useTheme();
-  const { network } = useNetworkContext();
+  const { network } = useExpectedNetwork();
   const router = useRouter();
-  const { walletAddress } = useWalletContext();
+  const { visibleAddress } = useVisibleAddress();
   const { selectedTokenPair, setSelectedTokenPair } = useSelectedTokenContext();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
 
@@ -66,10 +66,10 @@ export const WrapTabUpgrade: FC<{
     selectedTokenPair?.underlyingToken.address === NATIVE_ASSET_ADDRESS;
 
   const allowanceQuery = rpcApi.useSuperTokenUpgradeAllowanceQuery(
-    selectedTokenPair && !isUnderlyingBlockchainNativeAsset && walletAddress
+    selectedTokenPair && !isUnderlyingBlockchainNativeAsset && visibleAddress
       ? {
-          chainId: network.chainId,
-          accountAddress: walletAddress,
+          chainId: network.id,
+          accountAddress: visibleAddress,
           superTokenAddress: selectedTokenPair.superToken.address,
         }
       : skipToken
@@ -106,7 +106,7 @@ export const WrapTabUpgrade: FC<{
   }, [amountInputRef, selectedTokenPair]);
 
   const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
-    chainId: network.chainId,
+    chainId: network.id,
   });
 
   return (
@@ -152,14 +152,14 @@ export const WrapTabUpgrade: FC<{
             }
           />
         </Stack>
-        {selectedTokenPair && walletAddress && (
+        {selectedTokenPair && visibleAddress && (
           <Stack direction="row" justifyContent="flex-end">
             {/* <Typography variant="body2" color="text.secondary">
             ${Number(amount || 0).toFixed(2)}
           </Typography> */}
             <BalanceUnderlyingToken
-              chainId={network.chainId}
-              accountAddress={walletAddress}
+              chainId={network.id}
+              accountAddress={visibleAddress}
               tokenAddress={selectedTokenPair.underlyingToken.address}
             />
           </Stack>
@@ -215,14 +215,14 @@ export const WrapTabUpgrade: FC<{
             </Button>
           </Stack>
 
-          {selectedTokenPair && walletAddress && (
+          {selectedTokenPair && visibleAddress && (
             <Stack direction="row" justifyContent="flex-end">
               {/* <Typography variant="body2" color="text.secondary">
               ${Number(amount || 0).toFixed(2)}
             </Typography> */}
               <BalanceSuperToken
-                chainId={network.chainId}
-                accountAddress={walletAddress}
+                chainId={network.id}
+                accountAddress={visibleAddress}
                 tokenAddress={selectedTokenPair.superToken.address}
                 typographyProps={{ color: "text.secondary" }}
               />
@@ -252,7 +252,7 @@ export const WrapTabUpgrade: FC<{
 
             const restoration: ApproveAllowanceRestoration = {
               type: RestorationType.Approve,
-              chainId: network.chainId,
+              chainId: network.id,
               amountWei: approveAllowanceAmountWei.toString(),
               token: selectedTokenPair.underlyingToken,
             };
@@ -262,7 +262,7 @@ export const WrapTabUpgrade: FC<{
             });
 
             approveTrigger({
-              chainId: network.chainId,
+              chainId: network.id,
               amountWei: approveAllowanceAmountWei.toString(),
               superTokenAddress: selectedTokenPair.superToken.address,
               transactionExtraData: {
@@ -287,13 +287,13 @@ export const WrapTabUpgrade: FC<{
 
             const restoration: SuperTokenUpgradeRestoration = {
               type: RestorationType.Upgrade,
-              chainId: network.chainId,
+              chainId: network.id,
               tokenUpgrade: selectedTokenPair,
               amountWei: amountWei.toString(),
             };
 
             upgradeTrigger({
-              chainId: network.chainId,
+              chainId: network.id,
               amountWei: amountWei.toString(),
               superTokenAddress: selectedTokenPair.superToken.address,
               waitForConfirmation: true,

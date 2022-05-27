@@ -97,7 +97,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
   } = snapshot;
 
   const realtimeBalance = rpcApi.useRealtimeBalanceQuery({
-    chainId: network.chainId,
+    chainId: network.id,
     accountAddress: account,
     tokenAddress: token,
   });

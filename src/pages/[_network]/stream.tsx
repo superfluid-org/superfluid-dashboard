@@ -1,6 +1,6 @@
+import ShareIcon from "@mui/icons-material/Share";
 import {
   Avatar,
-  Card,
   Container,
   Divider,
   ListItemText,
@@ -9,22 +9,21 @@ import {
   styled,
   Typography,
 } from "@mui/material";
+import { format } from "date-fns";
+import { BigNumber } from "ethers";
 import { NextPage } from "next";
 import Error from "next/error";
 import { useRouter } from "next/router";
-import { useNetworkContext } from "../../features/network/NetworkContext";
-import { subgraphApi } from "../../features/redux/store";
-import FlowingBalance from "../../features/token/FlowingBalance";
-import shortenAddress from "../../utils/shortenAddress";
-import Blockies from "react-blockies";
-import EtherFormatted from "../../features/token/EtherFormatted";
-import { BigNumber } from "ethers";
-import { UnitOfTime } from "../../features/send/FlowRateInput";
-import TokenIcon from "../../features/token/TokenIcon";
-import NetworkIcon from "../../features/network/NetworkIcon";
 import { FC } from "react";
-import ShareIcon from "@mui/icons-material/Share";
-import { format } from "date-fns";
+import Blockies from "react-blockies";
+import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
+import NetworkIcon from "../../features/network/NetworkIcon";
+import { subgraphApi } from "../../features/redux/store";
+import { UnitOfTime } from "../../features/send/FlowRateInput";
+import EtherFormatted from "../../features/token/EtherFormatted";
+import FlowingBalance from "../../features/token/FlowingBalance";
+import TokenIcon from "../../features/token/TokenIcon";
+import shortenAddress from "../../utils/shortenAddress";
 
 const LoaderSvg = styled("svg")`
   position: relative;
@@ -130,12 +129,12 @@ const OverviewItem: FC<OverviewItemProps> = ({ label, value }) => (
 
 const Stream: NextPage = () => {
   const router = useRouter();
-  const { network } = useNetworkContext();
 
+  const { network } = useExpectedNetwork();
   const streamId = (router.query.stream || "") as string;
 
   const streamQuery = subgraphApi.useStreamQuery({
-    chainId: network.chainId,
+    chainId: network.id,
     id: streamId,
   });
 
@@ -289,7 +288,7 @@ const Stream: NextPage = () => {
             value={
               <Stack direction="row" alignItems="center" gap={0.5}>
                 <NetworkIcon network={network} size={16} fontSize={12} />
-                <Typography variant="h6">{network.displayName}</Typography>
+                <Typography variant="h6">{network.name}</Typography>
               </Stack>
             }
           />
