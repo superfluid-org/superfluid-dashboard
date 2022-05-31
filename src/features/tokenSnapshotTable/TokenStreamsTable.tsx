@@ -91,6 +91,7 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
 
   return (
     <Box
+      data-cy={`${token}-streams`}
       sx={{
         background: theme.palette.action.hover,
         borderRadius: lastElement ? "0 0 20px 20px" : 0,

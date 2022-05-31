@@ -1,16 +1,18 @@
 Feature: Common element test cases
 
-#  Scenario: Switching between pages using navigation drawer
-#    Given "Dashboard page" is open without connecting a wallet
-#    And User clicks on the "dashboard" navigation button
-#    Then Dashboard page is open when users wallet is not connected
-#    And User clicks on the "wrap-unwrap" navigation button
-#    Then Wrap/Unwrap page is open and the wrap container is visible
-#    And User clicks on the "send" navigation button
-#    Then Send page is open and the send container is visible
+  Scenario: Switching between pages using navigation drawer
+    Given "Dashboard page" is open without connecting a wallet
+    And User clicks on the "dashboard" navigation button
+    Then Dashboard page is open when users wallet is not connected
+    And User clicks on the "wrap-unwrap" navigation button
+    Then Wrap/Unwrap page is open and the wrap container is visible
+    And User clicks on the "send" navigation button
+    Then Send page is open and the send container is visible
 
-  Scenario: Testing mocked web3 provider
-    #Given "Dashboard page" is open without connecting a wallet
-    Given "Dashboard page" is open with a mocked web3 provider
-    #And User clicks on the connect wallet button
-    Then Wait for 10 seconds
+    Scenario: Wallet connection status in the navigation drawer
+      Given "Dashboard Page" is open with a mocked connection to "ongoingStreamsAccount" on "matic"
+      And The navigation drawer shows connect wallet button
+      And User connects their wallet to the dashboard
+      And The navigation drawer shows that "ongoingStreamsAccount" is "Connected"
+      And User changes their network to "optimism-mainnet"
+      And The navigation drawer shows that "ongoingStreamsAccount" is "Wrong network"

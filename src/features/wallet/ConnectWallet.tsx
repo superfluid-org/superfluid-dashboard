@@ -30,6 +30,7 @@ export default memo(function ConnectWallet() {
               </Avatar>
             </ListItemAvatar>
             <ListItemText
+              data-cy={"wallet-connection-status"}
               primary={shortenAddress(wagmiAccount.address)}
               secondary={
                 network.chainId !== activeChain.id

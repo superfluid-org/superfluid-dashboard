@@ -90,6 +90,7 @@ export default memo(function SelectNetwork() {
   return (
     <>
       <Button
+        data-cy={"top-bar-network-button"}
         variant="outlined"
         color="secondary"
         size="large"

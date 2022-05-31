@@ -114,6 +114,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
   return (
     <>
       <SnapshotRow
+        data-cy={`${tokenSymbol}-cell`}
         hover
         hasStreams={hasStreams}
         lastElement={lastElement}
@@ -126,6 +127,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               <TokenIcon tokenSymbol={tokenSymbol} />
             </ListItemAvatar>
             <ListItemText
+                data-cy={"token-symbol"}
               primary={tokenSymbol}
               /**
                * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
@@ -162,9 +164,9 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             }}
           />
         </TableCell>
-        <TableCell>
+        <TableCell data-cy={"net-flow"}>
           {totalNumberOfActiveStreams > 0 ? (
-            <Typography variant="body2mono">
+            <Typography data-cy={"net-flow-value"} variant="body2mono">
               {netFlowRate.charAt(0) !== "-" && "+"}
               <EtherFormatted
                 wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
@@ -180,7 +182,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         <TableCell>
           {totalNumberOfActiveStreams > 0 ? (
             <Stack>
-              <Typography variant="body2mono" color="primary">
+              <Typography data-cy={"inflow"} variant="body2mono" color="primary">
                 +
                 <EtherFormatted
                   wei={BigNumber.from(totalInflowRate).mul(UnitOfTime.Month)}
@@ -189,7 +191,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 />
                 /mo
               </Typography>
-              <Typography variant="body2mono" color="error">
+              <Typography data-cy={"outflow"} variant="body2mono" color="error">
                 -
                 <EtherFormatted
                   wei={BigNumber.from(totalOutflowRate).mul(UnitOfTime.Month)}
@@ -205,7 +207,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         </TableCell>
         <TableCell align="center">
           {hasStreams && (
-            <IconButton onClick={toggleOpen}>
+            <IconButton data-cy={"show-streams-button"} onClick={toggleOpen}>
               <OpenIcon open={open} />
             </IconButton>
           )}
@@ -221,6 +223,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           }}
         >
           <Collapse
+            data-cy={"streams-table"}
             in={open}
             timeout={theme.transitions.duration.standard}
             unmountOnExit

@@ -32,6 +32,7 @@ export default memo(function NavigationDrawer() {
 
   return (
     <Drawer
+      data-cy={"navigation-drawer"}
       variant="permanent"
       anchor="left"
       PaperProps={{ sx: { width: menuDrawerWidth } }}

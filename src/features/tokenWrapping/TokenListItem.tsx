@@ -95,6 +95,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
         component={Stack}
         direction="row"
         alignItems="center"
+        data-cy={"token-balance"}
       >
         {!!accountAddress &&
           checkedBalanceWei &&

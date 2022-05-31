@@ -47,16 +47,17 @@
     "@cypress/code-coverage": "^3.9.11",
     "@cypress/instrument-cra": "latest",
     "@truffle/hdwallet-provider": "latest",
+    "@rsksmart/mock-web3-provider": "1.0.0",
     "@types/lodash": "^4.14.182",
     "@types/node": "latest",
     "@types/react": "latest",
     "babel-plugin-istanbul": "latest",
     "cypress": "^9.6.1",
     "cypress-cucumber-preprocessor": "^4.3.1",
-    "web3": "^1.7.3",
     "eslint": "latest",
     "eslint-config-next": "latest",
-    "typescript": "latest"
+    "typescript": "latest",
+    "@synthetixio/synpress": "latest"
   },
   "cypress-cucumber-preprocessor": {
     "nonGlobalStepDefinitions": true

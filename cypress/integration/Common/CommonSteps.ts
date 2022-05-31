@@ -23,12 +23,28 @@ Then(/^Wrap\/Unwrap page is open and the wrap container is visible$/, function (
 Then(/^Send page is open and the send container is visible$/, function () {
     SendPage.checkIfSendContainerIsVisible();
 });
-Given(/^"([^"]*)" is open with a mocked web3 provider$/, function () {
-    Common.openPageWithMockedProvider();
-});
+
 Then(/^Wait for (\d+) seconds$/, function (seconds:number) {
     cy.wait(seconds * 1000)
 });
 Given(/^User clicks on the connect wallet button$/, function () {
     Common.clickConnectWallet();
+});
+
+Given(/^"([^"]*)" is open with a mocked connection to "([^"]*)" on "([^"]*)"$/, function (page:string,account:string,network:string) {
+    Common.openPageWithMockedProvider(page,account,network)
+});
+Given(/^User connects their wallet to the dashboard$/, function () {
+    Common.clickConnectWallet()
+    Common.clickInjectedWallet()
+});
+
+Given(/^User changes their network to "([^"]*)"$/, function (network:string) {
+    Common.changeNetwork(network)
+});
+Given(/^The navigation drawer shows that "([^"]*)" is "([^"]*)"$/, function (account:string,message:string) {
+    Common.checkNavBarWalletStatus(account,message)
+});
+Given(/^The navigation drawer shows connect wallet button$/, function () {
+    Common.drawerConnectWalletButtonIsVisible()
 });

@@ -142,7 +142,7 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
               scale={3}
             />
           </Avatar>
-          <Typography variant="h6">
+          <Typography data-cy={"sender-receiver-address"} variant="h6">
             {shortenAddress(isOutgoing ? receiver : sender)}
           </Typography>
         </Stack>
@@ -160,7 +160,7 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
       </TableCell>
       <TableCell>
         {isActive ? (
-          <Typography variant="body2mono">
+          <Typography data-cy={"flow-rate"} variant="body2mono">
             {isOutgoing ? "-" : "+"}
             <EtherFormatted
               wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
@@ -170,11 +170,11 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
             /mo
           </Typography>
         ) : (
-          "-"
+            <Typography data-cy={"flow-rate"}>{"-"}</Typography>
         )}
       </TableCell>
       <TableCell>
-        <Stack direction="row" alignItems="center" gap={1}>
+        <Stack data-cy={"start-end-date"} direction="row" alignItems="center" gap={1}>
           {format(updatedAtTimestamp * 1000, "d MMM. yyyy")}
           {isActive && <AllInclusiveIcon />}
         </Stack>
@@ -191,12 +191,14 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
             ) : (
               <>
                 <Tooltip
+                  data-cy={"switch-network-tooltip"}
                   arrow
                   title={`Please switch provider network to ${network.displayName} in order to cancel the stream.`}
                   disableHoverListener={network.chainId === activeChain?.id}
                 >
                   <span>
                     <Button
+                      data-cy={"cancel-button"}
                       color="error"
                       size="small"
                       onClick={openMenu}
@@ -215,7 +217,7 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                 >
                   <MenuList sx={{ py: 0.5 }}>
-                    <MenuItem onClick={deleteStream}>
+                    <MenuItem data-cy={"cancel-stream-button"} onClick={deleteStream}>
                       <ListItemAvatar
                         sx={{ mr: 1, width: "20px", height: "20px" }}
                       >
