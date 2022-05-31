@@ -9,7 +9,7 @@ Feature: Send Page test cases
     Then Send button is enabled and asks user to Connect their wallet
 
   Scenario: Receiver dialog recents and ENS support
-    Given "Send" is open with a mocked connection to "staticBalanceAccount" on "matic"
+    Given "Send Page" is open with a mocked connection to "staticBalanceAccount" on "matic"
     And User opens the receiver dialog
     Then The recent receivers are shown on "matic"
     And User closes the receiver dialog
@@ -63,4 +63,6 @@ Feature: Send Page test cases
         Then stream amounts per second and preview buffer values are shown correctly for a "second" timeframe
 
       Scenario: Wrong network warnings in the send page
+
+
       Scenario: View mode warnings in send page

@@ -1,34 +1,26 @@
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import {
   apiProvider,
   configureChains,
-  getDefaultWallets,
   RainbowKitProvider,
   darkTheme,
   lightTheme,
 } from "@rainbow-me/rainbowkit";
-import { Chain, createWagmiClient, WagmiProvider } from "wagmi";
+import { createClient as createWagmiClient, WagmiConfig } from "wagmi";
 import "@rainbow-me/rainbowkit/styles.css";
 import { useTheme } from "@mui/material";
-import { networks } from "../network/networks";
+import { networks, networksByChainId } from "../network/networks";
+import { getAppWallets } from "./getAppWallets";
 
-const wagmiChains: Chain[] = networks.map(network => ({
-  id: network.chainId,
-  name: network.displayName,
-  rpcUrls: {
-    default: network.rpcUrl
-  }
-}));
-const { chains, provider } = configureChains(
-  wagmiChains,
-  [
-    apiProvider.jsonRpc((chain) => ({
-      rpcUrl: chain.rpcUrls.default,
-    })),
-  ]
-);
+const { chains, provider } = configureChains(networks, [
+  apiProvider.jsonRpc((chain) => {
+    return {
+      rpcUrl: networksByChainId.get(chain.id)!.rpcUrls.superfluid,
+    };
+  }),
+]);
 
-const { connectors } = getDefaultWallets({
+const { connectors } = getAppWallets({
   appName: "Superfluid Dashboard",
   chains: chains,
 });
@@ -40,7 +32,7 @@ export const wagmiClient = createWagmiClient({
 });
 
 const WagmiManager: FC = ({ children }) => {
-  return <WagmiProvider client={wagmiClient}>{children}</WagmiProvider>;
+  return <WagmiConfig client={wagmiClient}>{children}</WagmiConfig>;
 };
 
 export default WagmiManager;

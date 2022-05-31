@@ -1,6 +1,7 @@
 import { alpha, AppBar, Button, Stack, styled, Toolbar } from "@mui/material";
 import { memo } from "react";
 import useBodyScrolled from "../../hooks/useBodyScrolled";
+import ImpersonationChip from "../impersonation/ImpersonationChip";
 import SelectNetwork from "../network/SelectNetwork";
 import { transactionDrawerWidth } from "../transactionDrawer/TransactionDrawer";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
@@ -52,6 +53,7 @@ export default memo(function TopBar() {
         alignItems="center"
       >
         <Stack direction="row" spacing={2} alignItems="center">
+          <ImpersonationChip />
           <SelectNetwork />
           <TransactionBell />
         </Stack>

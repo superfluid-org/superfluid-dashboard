@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { useNetworkContext } from "../network/NetworkContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { Button, ButtonProps, Dialog, DialogActions } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import {
@@ -10,6 +10,7 @@ import {
 import UnknownMutationResult from "../../unknownMutationResult";
 import { useAccount, useConnect, useNetwork } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useImpersonation } from "../impersonation/ImpersonationContext";
 
 export const TransactionButton: FC<{
   mutationResult: UnknownMutationResult;
@@ -27,8 +28,10 @@ export const TransactionButton: FC<{
 }> = ({ children, disabled, onClick, mutationResult, hidden ,dataCy}) => {
   const { isConnecting } = useConnect();
   const { activeChain, switchNetwork } = useNetwork();
-  const { data: wagmiAccount } = useAccount();
-  const { network } = useNetworkContext();
+  const { data: account } = useAccount();
+  const { isImpersonated, stopImpersonation: stopImpersonation } = useImpersonation();
+
+  const { network } = useExpectedNetwork();
   const [transactionDialogLabel, setTransactionDialogLabel] = useState<
     React.ReactNode | undefined
   >();
@@ -56,12 +59,25 @@ export const TransactionButton: FC<{
       );
     }
 
-    if (!wagmiAccount?.address) {
+    if (isImpersonated) {
+      return (
+        <Button
+          fullWidth
+          color="warning"
+          variant="contained"
+          size="xl"
+          onClick={stopImpersonation}
+        >
+          Stop Viewing an Address
+        </Button>
+      );
+    }
+
+    if (!account?.address) {
       return (
         <ConnectButton.Custom>
           {({ openConnectModal }) => (
             <LoadingButton
-              data-cy={dataCy}
               fullWidth
               loading={isConnecting}
               color="primary"
@@ -76,10 +92,9 @@ export const TransactionButton: FC<{
       );
     }
 
-    if (network.chainId !== activeChain?.id) {
+    if (network.id !== activeChain?.id) {
       return (
         <Button
-          data-cy={dataCy}
           disabled={!switchNetwork}
           color="primary"
           variant="contained"
@@ -87,11 +102,11 @@ export const TransactionButton: FC<{
           fullWidth
           onClick={() => {
             if (switchNetwork) {
-              switchNetwork(network.chainId);
+              switchNetwork(network.id);
             }
           }}
         >
-          Change Network to {network.displayName}
+          Change Network to {network.name}
         </Button>
       );
     }

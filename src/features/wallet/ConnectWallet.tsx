@@ -1,24 +1,27 @@
 import { Avatar, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
 import { memo } from "react";
-import { useNetworkContext } from "../network/NetworkContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import shortenAddress from "../../utils/shortenAddress";
 import { LoadingButton } from "@mui/lab";
-import AddIcon from "@mui/icons-material/Add";
-import { useAccount, useConnect, useNetwork } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Blockies from "react-blockies";
+import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
+import { useImpersonation } from "../impersonation/ImpersonationContext";
 
 export default memo(function ConnectWallet() {
-  const { network } = useNetworkContext();
+  const { network } = useExpectedNetwork();
 
-  const { data: wagmiAccount } = useAccount();
+  // TODO(KK): `isLoading` might not be the correct thing to look at for button loading state.
+  const { data: account } = useAccount();
   const { activeChain } = useNetwork();
-  const { isConnecting } = useConnect();
+
+  const { stopImpersonation: stopImpersonation } = useImpersonation();
 
   return (
     <ConnectButton.Custom>
-      {({ openConnectModal, openAccountModal }) =>
-        wagmiAccount?.address && activeChain ? (
+      {({ openConnectModal, openAccountModal, mounted }) =>
+        account?.address && activeChain && mounted ? (
           // TODO(KK): Better solution for pointer/click
           <ListItem
             sx={{ px: 2, py: 0, cursor: "pointer" }}
@@ -26,31 +29,34 @@ export default memo(function ConnectWallet() {
           >
             <ListItemAvatar>
               <Avatar variant="rounded">
-                <Blockies seed={wagmiAccount?.address} size={12} scale={3} />
+                <Blockies seed={account?.address} size={12} scale={3} />
               </Avatar>
             </ListItemAvatar>
             <ListItemText
               data-cy={"wallet-connection-status"}
-              primary={shortenAddress(wagmiAccount.address)}
+              primary={shortenAddress(account.address)}
               secondary={
-                network.chainId !== activeChain.id
+                network.id !== activeChain.id
                   ? "Wrong network"
                   : "Connected"
               }
               secondaryTypographyProps={{
-                color: network.chainId !== activeChain.id ? "error" : "primary",
+                color: network.id !== activeChain.id ? "error" : "primary",
               }}
             />
           </ListItem>
         ) : (
           <LoadingButton
             data-cy={"connect-wallet-button"}
-            loading={isConnecting}
+            loading={!mounted}
             variant="contained"
             size="xl"
-            onClick={openConnectModal}
+            onClick={() => {
+              openConnectModal();
+              stopImpersonation();
+            }}
           >
-            <AddIcon sx={{ mr: 1 }} />
+            <AccountBalanceWalletOutlinedIcon sx={{ mr: 1 }} />
             Connect Wallet
           </LoadingButton>
         )

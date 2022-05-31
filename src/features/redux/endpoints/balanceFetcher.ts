@@ -36,7 +36,7 @@ const mutableNetworkStates: Record<
     > | null;
   }
 > = Object.fromEntries(
-  networks.map((x) => [x.chainId, { nextFetching: null, queryBatch: [] }])
+  networks.map((x) => [x.id, { nextFetching: null, queryBatch: [] }])
 );
 
 const createFetching = (

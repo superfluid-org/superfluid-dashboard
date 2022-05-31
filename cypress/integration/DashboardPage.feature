@@ -54,7 +54,7 @@ Feature: Dashboard Page test cases
 
 
 #    Scenario: Changing token stream table pages and amount of results shown
-#      Given "Dashboard Page" is open with a mocked connection to "ongoingStreamAccount" on "matic"
+#      Given "Dashboard Page" is open in view mode looking at "accountWithLotsOfData"
 #      And User connects their wallet to the dashboard
 #      And User clicks on "token" row
 #      And User changes the amount of rows shown to "10"

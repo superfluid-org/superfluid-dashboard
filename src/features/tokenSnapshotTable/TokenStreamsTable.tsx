@@ -13,7 +13,7 @@ import { Address } from "@superfluid-finance/sdk-core";
 import { FC, memo, useMemo, useState } from "react";
 import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
-import { useWalletContext } from "../wallet/WalletContext";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import TokenStreamRow, { TokenStreamRowLoading } from "./TokenStreamRow";
 
 interface TokenStreamsTableProps {
@@ -28,15 +28,15 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
   lastElement,
 }) => {
   const theme = useTheme();
-  const { walletAddress } = useWalletContext();
+  const { visibleAddress } = useVisibleAddress();
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
 
   const incomingStreamsQuery = subgraphApi.useStreamsQuery({
-    chainId: network.chainId,
+    chainId: network.id,
     filter: {
-      receiver: walletAddress,
+      receiver: visibleAddress,
       token: token,
     },
     pagination: {
@@ -50,9 +50,9 @@ const TokenStreamsTable: FC<TokenStreamsTableProps> = ({
   });
 
   const outgoingStreamsQuery = subgraphApi.useStreamsQuery({
-    chainId: network.chainId,
+    chainId: network.id,
     filter: {
-      sender: walletAddress,
+      sender: visibleAddress,
       token: token,
     },
     pagination: {
