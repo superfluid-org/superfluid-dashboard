@@ -27,15 +27,19 @@ export function calculateMaybeCriticalAtTimestamp(
   totalDeposit: BigNumber,
   totalNetFlowRate: BigNumber
 ): BigNumber {
-  if (balanceUntilUpdatedAt.lt(BIG_NUMBER_ZERO)) return BIG_NUMBER_ZERO;
-  if (totalNetFlowRate.gt(BIG_NUMBER_ZERO)) return BIG_NUMBER_ZERO;
+  if (
+    balanceUntilUpdatedAt.lte(BIG_NUMBER_ZERO) ||
+    totalNetFlowRate.gte(BIG_NUMBER_ZERO)
+  ) {
+    return BIG_NUMBER_ZERO;
+  }
+
   const criticalTimestamp = balanceUntilUpdatedAt
     .add(totalDeposit)
     .div(totalNetFlowRate.abs());
   const calculatedCriticalTimestamp = criticalTimestamp.add(updatedAtTimestamp);
-  if (calculatedCriticalTimestamp.gt(MAX_SAFE_SECONDS)) {
-    return MAX_SAFE_SECONDS;
-  }
+
+  if (calculatedCriticalTimestamp.gt(MAX_SAFE_SECONDS)) return MAX_SAFE_SECONDS;
   return calculatedCriticalTimestamp;
 }
 

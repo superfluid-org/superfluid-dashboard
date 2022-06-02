@@ -139,7 +139,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
 
   return (
     <TableRow hover>
-      <TableCell>
+      <TableCell onClick={openStreamDetails} sx={{ cursor: "pointer" }}>
         <Stack direction="row" alignItems="center" gap={1.5}>
           {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
           <Avatar variant="rounded">
@@ -149,12 +149,12 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
               scale={3}
             />
           </Avatar>
-          <Typography variant="h6" onClick={openStreamDetails}>
+          <Typography variant="h6">
             {shortenAddress(isOutgoing ? receiver : sender)}
           </Typography>
         </Stack>
       </TableCell>
-      <TableCell>
+      <TableCell onClick={openStreamDetails} sx={{ cursor: "pointer" }}>
         <Typography variant="h7mono">
           <FlowingBalance
             balance={streamedUntilUpdatedAt}
@@ -165,7 +165,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
           />
         </Typography>
       </TableCell>
-      <TableCell>
+      <TableCell onClick={openStreamDetails} sx={{ cursor: "pointer" }}>
         {isActive ? (
           <Typography variant="body2mono">
             {isOutgoing ? "-" : "+"}
@@ -180,7 +180,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
           "-"
         )}
       </TableCell>
-      <TableCell>
+      <TableCell onClick={openStreamDetails} sx={{ cursor: "pointer" }}>
         <Stack direction="row" alignItems="center" gap={1}>
           {format(
             (isActive ? createdAtTimestamp : updatedAtTimestamp) * 1000,

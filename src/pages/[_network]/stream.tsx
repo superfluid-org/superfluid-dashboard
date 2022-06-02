@@ -130,6 +130,7 @@ const Stream: NextPage = () => {
   } = streamQuery.data;
 
   const isActive = currentFlowRate !== "0";
+
   // TODO: This container max width should be configured in theme. Something between small and medium
   return (
     <Container>
@@ -167,7 +168,7 @@ const Stream: NextPage = () => {
             )}
           </Stack>
           <Stack direction="row" justifyContent="flex-end" gap={1}>
-            {isActive && (
+            {/* {isActive && (
               <>
                 <IconButton color="primary">
                   <EditIcon />
@@ -176,7 +177,7 @@ const Stream: NextPage = () => {
                   <CancelIcon />
                 </IconButton>
               </>
-            )}
+            )} */}
           </Stack>
         </Stack>
 

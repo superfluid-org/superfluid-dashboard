@@ -40,14 +40,13 @@ const OpenIcon = styled(ExpandCircleDownOutlinedIcon)<OpenIconProps>(
 );
 
 interface SnapshotRowProps {
-  hasStreams?: boolean;
   lastElement?: boolean;
   open?: boolean;
 }
 
 const SnapshotRow = styled(TableRow)<SnapshotRowProps>(
-  ({ hasStreams, lastElement, open, theme }) => ({
-    cursor: hasStreams ? "pointer" : "initial",
+  ({ lastElement, open, theme }) => ({
+    cursor: "pointer",
     ...(lastElement && {
       td: {
         border: "none",
@@ -114,21 +113,15 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
 
   const toggleOpen = () => hasStreams && setOpen(!open);
 
-  const openTokenPage = () => {
+  const openTokenPage = () =>
     router.push(`/${network.slugName}/token?token=${token}`);
-  };
 
   return (
     <>
-      <SnapshotRow
-        hover
-        hasStreams={hasStreams}
-        lastElement={lastElement}
-        open={open}
-      >
-        <TableCell>
+      <SnapshotRow hover lastElement={lastElement} open={open}>
+        <TableCell onClick={openTokenPage}>
           <ListItem sx={{ p: 0 }}>
-            <ListItemAvatar onClick={openTokenPage}>
+            <ListItemAvatar>
               <TokenIcon tokenSymbol={tokenSymbol} />
             </ListItemAvatar>
             <ListItemText
@@ -150,7 +143,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             />
           </ListItem>
         </TableCell>
-        <TableCell>
+        <TableCell onClick={openTokenPage}>
           <ListItemText
             primary={
               <FlowingBalance
@@ -169,7 +162,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             }}
           />
         </TableCell>
-        <TableCell>
+        <TableCell onClick={openTokenPage}>
           {totalNumberOfActiveStreams > 0 ? (
             <Typography variant="body2mono">
               {netFlowRate.charAt(0) !== "-" && "+"}
@@ -184,7 +177,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             "-"
           )}
         </TableCell>
-        <TableCell>
+        <TableCell onClick={openTokenPage}>
           {totalNumberOfActiveStreams > 0 ? (
             <Stack>
               <Typography variant="body2mono" color="primary">
@@ -210,7 +203,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             "-"
           )}
         </TableCell>
-        <TableCell align="center">
+        <TableCell align="center" sx={{ cursor: "initial" }}>
           {hasStreams && (
             <IconButton color="inherit" onClick={toggleOpen}>
               <OpenIcon open={open} />
