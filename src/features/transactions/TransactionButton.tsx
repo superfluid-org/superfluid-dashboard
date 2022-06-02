@@ -62,6 +62,7 @@ export const TransactionButton: FC<{
     if (isImpersonated) {
       return (
         <Button
+          data-cy={"view-mode-button"}
           fullWidth
           color="warning"
           variant="contained"
@@ -78,6 +79,7 @@ export const TransactionButton: FC<{
         <ConnectButton.Custom>
           {({ openConnectModal }) => (
             <LoadingButton
+              data-cy={"connect-wallet"}
               fullWidth
               loading={isConnecting}
               color="primary"
@@ -95,6 +97,7 @@ export const TransactionButton: FC<{
     if (network.id !== activeChain?.id) {
       return (
         <Button
+          data-cy={"change-network-button"}
           disabled={!switchNetwork}
           color="primary"
           variant="contained"

@@ -1,7 +1,6 @@
 export class BasePage {
-    
     static click(selector: string, index: number = 0) {
-       cy.get(selector).eq(index).click();
+        cy.get(selector).eq(index).click();
     }
 
     static clickVisible(selector: string) {
@@ -20,12 +19,15 @@ export class BasePage {
         cy.get(selector).filter(":visible").type(text, {delay: 0});
     }
 
-    static hasText(selector: string, text?: JQuery<HTMLElement> | string | string[]) {
+    static hasText(
+        selector: string,
+        text?: JQuery<HTMLElement> | string | string[]
+    ) {
         cy.get(selector).filter(":visible").should("have.text", text);
     }
 
-    static check(selector:string) {
-        cy.get(selector).check()
+    static check(selector: string) {
+        cy.get(selector).check();
     }
 
     static scrollToAndhasText(selector: string, text: string) {
@@ -49,7 +51,7 @@ export class BasePage {
     }
 
     static isFocused(selector: string) {
-        cy.get(selector).should("have.focus")
+        cy.get(selector).should("have.focus");
     }
 
     static isNotDisabled(selector: string) {
@@ -84,47 +86,31 @@ export class BasePage {
         cy.get(selector).filter(":visible").clear();
     }
 
-    static visitBasePage() {
-        cy.visit("/");
-    }
-
     static hasLength(selector: string, length: number) {
-        cy.get(selector).should("have.length", length)
+        cy.get(selector).should("have.length", length);
     }
 
-    static hasValue(selector:string , value:string) {
-        cy.get(selector).should("have.value", value)
+    static hasValue(selector: string, value: string) {
+        cy.get(selector).should("have.value", value);
     }
 
-    static hasAttributeWithValue(selector: string, attribute: string, value: string) {
+    static hasAttributeWithValue(
+        selector: string,
+        attribute: string,
+        value: string
+    ) {
         cy.get(selector).should("have.attr", attribute, value);
     }
 
-    static notContains(text: string) {
-        cy.contains(text).should("not.exist")
-    }
-
-    static wasOpenFunctionCalled() {
-        cy.get("@newTab").should("be.called");
-    }
-
-    static replaceSpacesAndAssertText(selector: string, text: string, index = 0) {
-        cy.get(selector).eq(index).invoke("text").invoke("replace", /\u00a0/g, ' ').should("eq", text)
-    }
-
-    static getShortenedAddress(address: string, chars = 6) {
-        return address.slice(0, chars + 2) + "..." + address.slice(address.length - chars, address.length)
+    static getShortenedAddress(address: JQuery<HTMLElement> | string, chars = 4) {
+        return (
+            address.slice(0, chars + 2) +
+            "..." +
+            address.slice(address.length - chars, address.length)
+        );
     }
 
     static getShortenedHashAddress(hash: string, chars = 6) {
-        return hash.slice(0, chars) + "..."
-    }
-
-    static validateChip(selector: string, text: string) {
-        this.hasText(selector, text)
-    }
-
-    static caseInsensitive(selector: string, text: string) {
-        cy.get(selector).contains(text, {matchCase: false})
+        return hash.slice(0, chars) + "...";
     }
 }

@@ -10,6 +10,7 @@ const ImpersonationChip: FC<ChipProps> = ({ ...props }) => {
 
   return isImpersonated ? (
     <Chip
+      data-cy={"view-mode-chip"}
       color="warning"
       size="medium"
       icon={<PersonSearchIcon />}

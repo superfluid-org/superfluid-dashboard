@@ -165,3 +165,6 @@ fabric.properties
 coverage
 cypress/screenshots
 cypress/videos
+
+# Ignoring synpress for now
+tests

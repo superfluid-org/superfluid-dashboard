@@ -38,7 +38,7 @@ const TokenSnapshotEmptyCard = () => (
     </Box>
     <NextLink href={"/wrap?upgrade"} passHref>
       <Button
-          data-cy={"no-balance-wrap-button"}
+        data-cy={"no-balance-wrap-button"}
         variant="contained"
         color="primary"
         size="large"

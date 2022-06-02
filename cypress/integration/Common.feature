@@ -9,10 +9,10 @@ Feature: Common element test cases
     And User clicks on the "send" navigation button
     Then Send page is open and the send container is visible
 
-    Scenario: Wallet connection status in the navigation drawer
-      Given "Dashboard Page" is open with a mocked connection to "ongoingStreamsAccount" on "matic"
-      And The navigation drawer shows connect wallet button
-      And User connects their wallet to the dashboard
-      And The navigation drawer shows that "ongoingStreamsAccount" is "Connected"
-      And User changes their network to "optimism-mainnet"
-      And The navigation drawer shows that "ongoingStreamsAccount" is "Wrong network"
+  Scenario: Wallet connection status in the navigation drawer
+    Given "Dashboard Page" is open with a mocked connection to "ongoingStreamAccount" on "polygon"
+    And The navigation drawer shows connect wallet button
+    And User connects their wallet to the dashboard
+    And The navigation drawer shows that "ongoingStreamAccount" is "Connected"
+    And User changes their network to "optimism-mainnet"
+    And The navigation drawer shows that "ongoingStreamAccount" is "Wrong network"
