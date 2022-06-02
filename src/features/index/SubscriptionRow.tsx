@@ -10,7 +10,7 @@ import {
 import { IndexSubscription } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import Blockies from "react-blockies";
 import shortenAddress from "../../utils/shortenAddress";
 import { subscriptionWeiAmountReceived } from "../../utils/tokenUtils";
@@ -42,9 +42,9 @@ export const SubscriptionLoadingRow = () => (
     <TableCell>
       <Skeleton width={100} />
     </TableCell>
-    <TableCell>
+    {/* <TableCell>
       <Skeleton width={60} />
-    </TableCell>
+    </TableCell> */}
   </TableRow>
 );
 
@@ -53,6 +53,29 @@ interface SubscriptionRowProps {
 }
 
 const SubscriptionRow: FC<SubscriptionRowProps> = ({ subscription }) => {
+  const {
+    indexValueCurrent,
+    totalAmountReceivedUntilUpdatedAt,
+    indexValueUntilUpdatedAt,
+    units,
+  } = subscription;
+
+  const amountReceived = useMemo(
+    () =>
+      subscriptionWeiAmountReceived(
+        BigNumber.from(indexValueCurrent),
+        BigNumber.from(totalAmountReceivedUntilUpdatedAt),
+        BigNumber.from(indexValueUntilUpdatedAt),
+        BigNumber.from(units)
+      ),
+    [
+      indexValueCurrent,
+      totalAmountReceivedUntilUpdatedAt,
+      indexValueUntilUpdatedAt,
+      units,
+    ]
+  );
+
   return (
     <TableRow>
       <TableCell>
@@ -68,12 +91,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({ subscription }) => {
       <TableCell>
         <Typography variant="h7mono">
           <EtherFormatted
-            wei={subscriptionWeiAmountReceived(
-              BigNumber.from(subscription.indexValueCurrent),
-              BigNumber.from(subscription.totalAmountReceivedUntilUpdatedAt),
-              BigNumber.from(subscription.indexValueUntilUpdatedAt),
-              BigNumber.from(subscription.units)
-            )}
+            wei={amountReceived}
             etherDecimalPlaces={8}
             disableRoundingIndicator
           />
@@ -90,13 +108,13 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({ subscription }) => {
       <TableCell>
         {format(subscription.updatedAtTimestamp * 1000, "d MMM. yyyy")}
       </TableCell>
-      <TableCell>
+      {/* <TableCell>
         {!subscription.approved && (
           <Button variant="textContained" color="primary" size="small">
             Approve
           </Button>
         )}
-      </TableCell>
+      </TableCell> */}
     </TableRow>
   );
 };

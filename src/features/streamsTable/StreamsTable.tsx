@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Stack,
   Table,
@@ -12,13 +11,12 @@ import {
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import { useRouter } from "next/router";
 import { FC, memo, useMemo, useState } from "react";
 import { EmptyRow } from "../common/EmptyRow";
 import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
-import StreamRow, { StreamRowLoading } from "./StreamRow";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import StreamRow, { StreamRowLoading } from "./StreamRow";
 
 enum StreamTypeFilter {
   All,
@@ -98,11 +96,9 @@ const StreamsTable: FC<StreamsTableProps> = ({
         ? outgoingStreamsQuery.data?.items || []
         : []),
     ].sort((s1, s2) => s2.updatedAtTimestamp - s1.updatedAtTimestamp);
-  }, [incomingStreamsQuery, outgoingStreamsQuery, streamsFilter]);
+  }, [incomingStreamsQuery.data, outgoingStreamsQuery.data, streamsFilter]);
 
-  const handleChangePage = (_e: unknown, newPage: number) => {
-    setPage(newPage);
-  };
+  const handleChangePage = (_e: unknown, newPage: number) => setPage(newPage);
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -123,7 +119,10 @@ const StreamsTable: FC<StreamsTableProps> = ({
 
   const isLoading =
     streams.length === 0 &&
-    (incomingStreamsQuery.isLoading || incomingStreamsQuery.isLoading);
+    (incomingStreamsQuery.isLoading ||
+      incomingStreamsQuery.isFetching ||
+      outgoingStreamsQuery.isLoading ||
+      outgoingStreamsQuery.isFetching);
 
   return (
     <TableContainer

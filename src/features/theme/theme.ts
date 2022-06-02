@@ -73,8 +73,8 @@ declare module "@mui/material/Button" {
 
 const ELEVATION1_BG =
   "linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.03) 100%)";
+
 export const FONT_FAMILY = "'Walsheim', Arial";
-// export const FONT_FAMILY_MONO = "'Azeret Mono', monospace;";
 
 export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
   const getModeStyle = <T>(lightStyle: T, darkStyle: T): T =>
@@ -155,7 +155,6 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         letterSpacing: "-1.5px",
         fontWeight: 500,
         fontVariantNumeric: "tabular-nums",
-        // fontFamily: FONT_FAMILY_MONO,
       },
       h2: {
         fontSize: "48px",
@@ -165,12 +164,13 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
       h3: {
         fontSize: "36px",
         fontWeight: 500,
+        lineHeight: "116.7%",
       },
       h3mono: {
         fontSize: "36px",
         fontWeight: 500,
+        lineHeight: "116.7%",
         fontVariantNumeric: "tabular-nums",
-        // fontFamily: FONT_FAMILY_MONO,
       },
       h4: {
         fontSize: "24px",
@@ -182,7 +182,6 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         fontWeight: 500,
         letterSpacing: "0.25px",
         fontVariantNumeric: "tabular-nums",
-        // fontFamily: FONT_FAMILY_MONO,
       },
       h5: {
         fontSize: "18px",
@@ -192,7 +191,6 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         fontSize: "18px",
         fontWeight: 500,
         fontVariantNumeric: "tabular-nums",
-        // fontFamily: FONT_FAMILY_MONO,
       },
       h6: {
         fontSize: "16px",
@@ -205,7 +203,6 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         fontWeight: 500,
         lineHeight: "150%",
         fontVariantNumeric: "tabular-nums",
-        // fontFamily: FONT_FAMILY_MONO,
       },
       h7: {
         fontSize: "14px",
@@ -218,7 +215,6 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         fontWeight: 500,
         lineHeight: "150%",
         fontVariantNumeric: "tabular-nums",
-        // fontFamily: FONT_FAMILY_MONO,
       },
       body1: {
         fontWeight: 400,
@@ -228,7 +224,6 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         fontWeight: 400,
         whiteSpace: "pre",
         fontVariantNumeric: "tabular-nums",
-        // fontFamily: FONT_FAMILY_MONO,
       },
       body2: {
         fontSize: "14px",
@@ -240,7 +235,6 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         fontWeight: 400,
         whiteSpace: "pre",
         fontVariantNumeric: "tabular-nums",
-        // fontFamily: FONT_FAMILY_MONO,
       },
       subtitle1: {
         letterSpacing: "0.15px",

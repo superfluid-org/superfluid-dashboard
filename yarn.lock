@@ -1528,10 +1528,10 @@
   dependencies:
     "@sentry/cli" "^1.73.0"
 
-"@superfluid-finance/sdk-core@0.4.2":
-  version "0.4.2"
-  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-core/0.4.2/c941ffd9682699df7e58f860520aaa90e27449bb7dae7fe569c865c077a678fc#fbb88a35e4b202e648fe4e360fef825190becf37"
-  integrity sha512-MGO0xuyRWCRgay0SJx2JoIiODsGsKvZov6RLnI4Xapk/sB3E/9Le954hUwE9hkb+Cc9R2YpxenFCDly2KyFVzw==
+"@superfluid-finance/sdk-core@0.4.3-dev.3df6de8.0":
+  version "0.4.3-dev.3df6de8.0"
+  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-core/0.4.3-dev.3df6de8.0/657bfe1f61997b44c955394d468af96814201218fae00950363bd87b65f10b72#86ef74843601fe8293d513cd43d91eb55e9e79eb"
+  integrity sha512-sj438SPGshrNPkvJi5jBTBmMRI+7dfYCQgIKukJeqPl90ceTXWy4zH6TKKr6ZEAPtUYP9y8fOidwBbIDsLBVpg==
   dependencies:
     ajv "^8.11.0"
     browserify "^17.0.0"
@@ -1540,10 +1540,10 @@
     lodash "^4.17.21"
     tsify "^5.0.4"
 
-"@superfluid-finance/sdk-redux@0.3.0":
-  version "0.3.0"
-  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-redux/0.3.0/5c387925971354f3ea850d5027ffa82c81216c4e7c28c332559f6537378139d1#b1d463e52ed712dc701f376852f22cac1120301f"
-  integrity sha512-Z8uHXk5HSheBbn2scsEBjuMyYmNK1PD9N+mfNaUlP7uslR6Oa3/WXp+DTm0c+NYxFV2cuMdXeaWiTw/IwgiTjA==
+"@superfluid-finance/sdk-redux@0.3.1-dev.3df6de8.0":
+  version "0.3.1-dev.3df6de8.0"
+  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-redux/0.3.1-dev.3df6de8.0/e633f5e27dbe1af45cfc3b19e62cfa170038f8073a02a083a56ad4108fa15d35#2a5a84c698d8ff33a382a952677dca8a3900d283"
+  integrity sha512-zSRydpiWPiLWIbFlVFG4mf8NRyxCohMjAe3GV24pNQ8RH3cSHq2GZcGOUutohBsX1y+lCQk93uRMmcxk0BpP+Q==
   dependencies:
     "@types/promise-retry" "^1.1.3"
     ethers "^5.5.4"

@@ -13,20 +13,26 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { format } from "date-fns";
 import { BigNumber } from "ethers";
+import { isString } from "lodash";
 import { NextPage } from "next";
 import Error from "next/error";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SubscriptionsTable from "../../features/index/SubscriptionsTable";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
-import { subgraphApi } from "../../features/redux/store";
+import { rpcApi, subgraphApi } from "../../features/redux/store";
 import { UnitOfTime } from "../../features/send/FlowRateInput";
 import StreamsTable from "../../features/streamsTable/StreamsTable";
 import EtherFormatted from "../../features/token/EtherFormatted";
 import FlowingBalance from "../../features/token/FlowingBalance";
-import TokenBalanceGraph from "../../features/token/TokenBalanceGraph";
+import TokenBalanceGraph, {
+  GraphType,
+} from "../../features/token/TokenBalanceGraph";
 import TokenToolbar from "../../features/token/TokenToolbar";
+import TransferEventsTable from "../../features/transfers/TransferEventsTable";
 import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
 
 enum TokenDetailsTabs {
@@ -39,24 +45,48 @@ const Token: NextPage = () => {
   const theme = useTheme();
   const router = useRouter();
   const { network } = useExpectedNetwork();
-  const { visibleAddress = "" } = useVisibleAddress();
+  const { visibleAddress } = useVisibleAddress();
+
   const [activeTab, setActiveTab] = useState(TokenDetailsTabs.Streams);
+  const [graphType, setGraphType] = useState(GraphType.YTD);
 
-  const tokenId = (router.query.token || "") as string;
+  const tokenId = isString(router.query.token) ? router.query.token : undefined;
 
-  const tokenQuery = subgraphApi.useTokenQuery({
-    chainId: network.id,
-    id: tokenId.toLowerCase(),
-  });
+  const realTimeBalanceQuery = rpcApi.useRealtimeBalanceQuery(
+    tokenId && visibleAddress
+      ? {
+          chainId: network.id,
+          tokenAddress: tokenId,
+          accountAddress: visibleAddress,
+        }
+      : skipToken
+  );
 
-  const tokenSnapshotQuery = subgraphApi.useAccountTokenSnapshotQuery({
-    chainId: network.id,
-    id: `${visibleAddress.toLowerCase()}-${tokenId.toLowerCase()}`,
-  });
+  const tokenQuery = subgraphApi.useTokenQuery(
+    tokenId
+      ? {
+          chainId: network.id,
+          id: tokenId.toLowerCase(),
+        }
+      : skipToken
+  );
+
+  const tokenSnapshotQuery = subgraphApi.useAccountTokenSnapshotQuery(
+    tokenId && visibleAddress
+      ? {
+          chainId: network.id,
+          id: `${visibleAddress.toLowerCase()}-${tokenId.toLowerCase()}`,
+        }
+      : skipToken
+  );
+
+  useEffect(() => {
+    if (!tokenId || !visibleAddress) router.push("/");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tokenId, visibleAddress]);
 
   const handleBack = () => router.back();
 
-  console.log(tokenQuery, tokenSnapshotQuery);
   if (
     tokenQuery.isUninitialized ||
     tokenQuery.isLoading ||
@@ -73,13 +103,26 @@ const Token: NextPage = () => {
   const onTabChange = (_e: unknown, newTab: TokenDetailsTabs) =>
     setActiveTab(newTab);
 
+  const onGraphTypeChange = (newGraphType: GraphType) => () =>
+    setGraphType(newGraphType);
+
+  const getGraphFilterColor = (type: GraphType) =>
+    graphType === type ? "primary" : "secondary";
+
   const {
     balanceUntilUpdatedAt,
     totalNetFlowRate,
     totalInflowRate,
     totalOutflowRate,
     updatedAtTimestamp,
+    maybeCriticalAtTimestamp,
   } = tokenSnapshotQuery.data;
+
+  const {
+    balance = balanceUntilUpdatedAt,
+    balanceTimestamp = updatedAtTimestamp,
+    flowRate = totalNetFlowRate,
+  } = realTimeBalanceQuery.data || {};
 
   const { id: tokenAddress } = tokenQuery.data;
 
@@ -100,10 +143,10 @@ const Token: NextPage = () => {
               </Typography>
               <Typography variant="h3mono">
                 <FlowingBalance
-                  balance={balanceUntilUpdatedAt}
-                  flowRate={totalNetFlowRate}
-                  balanceTimestamp={updatedAtTimestamp}
-                  etherDecimalPlaces={totalNetFlowRate === "0" ? 8 : undefined}
+                  balance={balance}
+                  flowRate={flowRate}
+                  balanceTimestamp={balanceTimestamp}
+                  etherDecimalPlaces={flowRate === "0" ? 8 : undefined}
                   disableRoundingIndicator
                 />
               </Typography>
@@ -112,32 +155,72 @@ const Token: NextPage = () => {
                   Liquidation Date:
                 </Typography>
                 <Typography variant="h7" color="text.secondary">
-                  June 15th, 2022
+                  {maybeCriticalAtTimestamp !== "0"
+                    ? format(
+                        Number(maybeCriticalAtTimestamp) * 1000,
+                        "MMMM do, yyyy"
+                      )
+                    : "-"}
                 </Typography>
               </Stack>
             </Stack>
 
             <Stack alignItems="end" justifyContent="space-between">
               <Stack direction="row" gap={0.5}>
-                <Button variant="textContained" size="xs">
+                <Button
+                  variant="textContained"
+                  color={getGraphFilterColor(GraphType.Day)}
+                  onClick={onGraphTypeChange(GraphType.Day)}
+                  size="xs"
+                >
                   1D
                 </Button>
-                <Button variant="textContained" color="secondary" size="xs">
+                <Button
+                  variant="textContained"
+                  color={getGraphFilterColor(GraphType.Week)}
+                  onClick={onGraphTypeChange(GraphType.Week)}
+                  size="xs"
+                >
                   7D
                 </Button>
-                <Button variant="textContained" color="secondary" size="xs">
+                <Button
+                  variant="textContained"
+                  color={getGraphFilterColor(GraphType.Month)}
+                  onClick={onGraphTypeChange(GraphType.Month)}
+                  size="xs"
+                >
                   1M
                 </Button>
-                <Button variant="textContained" color="secondary" size="xs">
+                <Button
+                  variant="textContained"
+                  color={getGraphFilterColor(GraphType.Quarter)}
+                  onClick={onGraphTypeChange(GraphType.Quarter)}
+                  size="xs"
+                >
                   3M
                 </Button>
-                <Button variant="textContained" color="secondary" size="xs">
+                <Button
+                  variant="textContained"
+                  color={getGraphFilterColor(GraphType.Year)}
+                  onClick={onGraphTypeChange(GraphType.Year)}
+                  size="xs"
+                >
                   1Y
                 </Button>
-                <Button variant="textContained" color="secondary" size="xs">
+                <Button
+                  variant="textContained"
+                  color={getGraphFilterColor(GraphType.YTD)}
+                  onClick={onGraphTypeChange(GraphType.YTD)}
+                  size="xs"
+                >
                   YTD
                 </Button>
-                <Button variant="textContained" color="secondary" size="xs">
+                <Button
+                  variant="textContained"
+                  color={getGraphFilterColor(GraphType.All)}
+                  onClick={onGraphTypeChange(GraphType.All)}
+                  size="xs"
+                >
                   All
                 </Button>
               </Stack>
@@ -174,9 +257,17 @@ const Token: NextPage = () => {
             </Stack>
           </Stack>
 
-          <TokenBalanceGraph height={180} />
+          {visibleAddress && tokenId && (
+            <TokenBalanceGraph
+              graphType={graphType}
+              network={network}
+              account={visibleAddress}
+              token={tokenId}
+              height={180}
+            />
+          )}
 
-          <Stack direction="row" justifyContent="flex-end" sx={{ mt: 2 }}>
+          {/* <Stack direction="row" justifyContent="flex-end" sx={{ mt: 2 }}>
             <FormGroup>
               <FormControlLabel
                 control={<Switch defaultChecked />}
@@ -184,7 +275,7 @@ const Token: NextPage = () => {
                 labelPlacement="start"
               />
             </FormGroup>
-          </Stack>
+          </Stack> */}
         </Card>
 
         <TabContext value={activeTab}>
@@ -208,7 +299,12 @@ const Token: NextPage = () => {
             <SubscriptionsTable network={network} tokenAddress={tokenAddress} />
           )}
 
-          {activeTab === TokenDetailsTabs.Transfers && <div>Transfers</div>}
+          {activeTab === TokenDetailsTabs.Transfers && (
+            <TransferEventsTable
+              network={network}
+              tokenAddress={tokenAddress}
+            />
+          )}
         </TabContext>
       </Stack>
     </Container>

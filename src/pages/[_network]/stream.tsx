@@ -73,7 +73,6 @@ const Stream: NextPage = () => {
 
   const liquidationDate = useMemo(() => {
     if (!tokenSnapshotQuery.data) return null;
-
     const {
       balanceUntilUpdatedAt,
       totalNetFlowRate,
@@ -91,7 +90,8 @@ const Stream: NextPage = () => {
   }, [tokenSnapshotQuery.data]);
 
   const bufferSize = useMemo(() => {
-    if (!streamQuery.data) return null;
+    if (!streamQuery.data || streamQuery.data.currentFlowRate === "0")
+      return null;
 
     const { currentFlowRate, createdAtTimestamp, streamedUntilUpdatedAt } =
       streamQuery.data;
@@ -130,9 +130,6 @@ const Stream: NextPage = () => {
   } = streamQuery.data;
 
   const isActive = currentFlowRate !== "0";
-
-  console.log(network.bufferTimeInMinutes, streamQuery.data);
-
   // TODO: This container max width should be configured in theme. Something between small and medium
   return (
     <Container>
@@ -273,25 +270,27 @@ const Stream: NextPage = () => {
           </Stack>
         </Stack>
 
-        <Stack direction="row" alignItems="center" gap={0.5}>
-          <Typography variant="h6">
-            <EtherFormatted
-              wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
-              etherDecimalPlaces={8}
-              disableRoundingIndicator
-            />
-          </Typography>
+        {currentFlowRate !== "0" && (
+          <Stack direction="row" alignItems="center" gap={0.5}>
+            <Typography variant="h6">
+              <EtherFormatted
+                wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
+                etherDecimalPlaces={8}
+                disableRoundingIndicator
+              />
+            </Typography>
 
-          <Typography variant="h6" color="text.secondary">
-            per month
-          </Typography>
-        </Stack>
+            <Typography variant="h6" color="text.secondary">
+              per month
+            </Typography>
+          </Stack>
+        )}
 
         <Stack
           rowGap={0.5}
           columnGap={6}
           sx={{
-            maxWidth: "680px",
+            maxWidth: "740px",
             width: "100%",
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
@@ -300,12 +299,12 @@ const Stream: NextPage = () => {
         >
           <OverviewItem
             label="Start Date:"
-            value={format(createdAtTimestamp * 1000, "d MMM. yyyy h:mm aaa")}
+            value={format(createdAtTimestamp * 1000, "d MMM. yyyy H:mm")}
           />
           <OverviewItem
             label="Buffer:"
             value={
-              bufferSize && (
+              bufferSize ? (
                 <>
                   <EtherFormatted
                     wei={bufferSize}
@@ -314,6 +313,8 @@ const Stream: NextPage = () => {
                   />{" "}
                   {tokenSymbol}
                 </>
+              ) : (
+                "-"
               )
             }
           />
@@ -321,7 +322,7 @@ const Stream: NextPage = () => {
             label={`${isActive ? "Updated" : "End"} Date:`}
             value={
               updatedAtTimestamp
-                ? format(updatedAtTimestamp * 1000, "d MMM. yyyy h:mm aaa")
+                ? format(updatedAtTimestamp * 1000, "d MMM. yyyy H:mm")
                 : "-"
             }
           />
@@ -338,7 +339,7 @@ const Stream: NextPage = () => {
             label="Projected Liquidation:"
             value={
               isActive && liquidationDate
-                ? format(liquidationDate, "d MMM. yyyy h:mm aaa")
+                ? format(liquidationDate, "d MMM. yyyy H:mm")
                 : "-"
             }
           />

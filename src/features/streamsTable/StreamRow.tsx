@@ -24,7 +24,7 @@ import { BigNumber } from "ethers";
 import { useRouter } from "next/router";
 import { FC, memo, MouseEvent, useState } from "react";
 import Blockies from "react-blockies";
-import { useAccount, useNetwork } from "wagmi";
+import { useNetwork } from "wagmi";
 import shortenAddress from "../../utils/shortenAddress";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
@@ -108,7 +108,6 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const openStreamDetails = () => {
-    console.log("openStreamDetails");
     router.push(`/${network.slugName}/stream?stream=${id}`);
   };
 
@@ -133,10 +132,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
     setShowCancelDialog(true);
   };
 
-  const isOutgoing =
-    sender.localeCompare(visibleAddress ?? "", undefined, {
-      sensitivity: "accent",
-    }) === 0;
+  const isOutgoing = visibleAddress?.toLowerCase() === sender.toLowerCase();
 
   const isActive = currentFlowRate !== "0";
   const menuOpen = Boolean(menuAnchor);

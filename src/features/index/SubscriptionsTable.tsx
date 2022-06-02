@@ -32,10 +32,10 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
   const [page, setPage] = useState(0);
   const [approvedFilter, setApprovedFilter] = useState<boolean | null>(null);
 
-  const subscriptionsQuery = subgraphApi.useIndexSubscriptionsQuery({
-    chainId: 5, //network.id,
+  const indexSubscriptionsQuery = subgraphApi.useIndexSubscriptionsQuery({
+    chainId: network.id,
     filter: {
-      subscriber: "0x808B74C4f37F664010F1182de87bD5b65772788e".toLowerCase(), // visibleAddress.toLowerCase()
+      subscriber: visibleAddress.toLowerCase(),
     },
     pagination: {
       take: Infinity,
@@ -47,24 +47,31 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
     },
   });
 
-  const tokenSubscriptions = useMemo(
+  const indexSubscriptions = useMemo(
     () =>
-      (subscriptionsQuery.data?.items || []).filter((subscription) =>
+      (indexSubscriptionsQuery.data?.items || []).filter(
+        (subscription) => subscription.token === tokenAddress
+      ),
+    [indexSubscriptionsQuery.data, tokenAddress]
+  );
+
+  const filteredIndexSubscriptions = useMemo(
+    () =>
+      indexSubscriptions.filter((subscription) =>
         approvedFilter === null
           ? true
           : subscription.approved === approvedFilter
-      ), //   .filter((subscription) => subscription.token === tokenAddress);
-
-    [subscriptionsQuery.data, approvedFilter, tokenAddress]
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [indexSubscriptions, approvedFilter]
   );
 
   const { approvedCount, unapprovedCount } = useMemo(() => {
-    const subscriptions = subscriptionsQuery.data?.items || [];
     return {
-      approvedCount: subscriptions.filter((s) => s.approved).length,
-      unapprovedCount: subscriptions.filter((s) => !s.approved).length,
+      approvedCount: indexSubscriptions.filter((s) => s.approved).length,
+      unapprovedCount: indexSubscriptions.filter((s) => !s.approved).length,
     };
-  }, [subscriptionsQuery.data]);
+  }, [indexSubscriptions]);
 
   const handleChangePage = (_e: unknown, newPage: number) => {
     setPage(newPage);
@@ -84,8 +91,8 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
     approvedFilter === approved ? "primary" : "secondary";
 
   const isLoading =
-    (tokenSubscriptions.length === 0 && subscriptionsQuery.isLoading) ||
-    subscriptionsQuery.isFetching;
+    indexSubscriptions.length === 0 &&
+    (indexSubscriptionsQuery.isLoading || indexSubscriptionsQuery.isFetching);
 
   return (
     <TableContainer>
@@ -99,7 +106,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
                   color={getFilterBtnColor(null)}
                   onClick={changeApprovedFilter(null)}
                 >
-                  All {!isLoading && ` (${approvedCount + unapprovedCount})`}
+                  All {!isLoading && ` (${indexSubscriptions.length})`}
                 </Button>
                 <Button
                   variant="textContained"
@@ -133,16 +140,16 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
             <TableCell>Total Amount Received</TableCell>
             <TableCell>Status</TableCell>
             <TableCell>Updated At</TableCell>
-            <TableCell width="100"></TableCell>
+            {/* <TableCell width="100"></TableCell> */}
           </TableRow>
         </TableHead>
         <TableBody>
           {isLoading ? (
             <SubscriptionLoadingRow />
-          ) : tokenSubscriptions.length === 0 ? (
+          ) : filteredIndexSubscriptions.length === 0 ? (
             <EmptyRow span={5} />
           ) : (
-            tokenSubscriptions.map((subscription) => (
+            filteredIndexSubscriptions.map((subscription) => (
               <SubscriptionRow
                 key={subscription.id}
                 subscription={subscription}
@@ -154,14 +161,14 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={tokenSubscriptions.length}
+        count={indexSubscriptions.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
         sx={{
           "> *": {
-            visibility: tokenSubscriptions.length <= 5 ? "hidden" : "visible",
+            visibility: indexSubscriptions.length <= 5 ? "hidden" : "visible",
           },
         }}
       />
