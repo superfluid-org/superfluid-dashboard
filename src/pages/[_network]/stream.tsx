@@ -9,7 +9,6 @@ import {
   ListItemText,
   Paper,
   Stack,
-  styled,
   Typography,
   useTheme,
 } from "@mui/material";
@@ -20,7 +19,6 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { FC, useMemo } from "react";
 import Blockies from "react-blockies";
-import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import NetworkIcon from "../../features/network/NetworkIcon";
 import { subgraphApi } from "../../features/redux/store";
 import { UnitOfTime } from "../../features/send/FlowRateInput";
@@ -37,6 +35,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import EditIcon from "@mui/icons-material/Edit";
 import CancelIcon from "@mui/icons-material/Cancel";
 import CloseIcon from "@mui/icons-material/Close";
+import withPathNetwork, { NetworkPage } from "../../hoc/withPathNetwork";
 
 interface OverviewItemProps {
   label: string;
@@ -52,11 +51,10 @@ const OverviewItem: FC<OverviewItemProps> = ({ label, value }) => (
   </Stack>
 );
 
-const Stream: NextPage = () => {
+const Stream: FC<NetworkPage> = ({ network }) => {
   const theme = useTheme();
   const router = useRouter();
 
-  const { network } = useExpectedNetwork();
   const streamId = (router.query.stream || "") as string;
   const [senderAddress = "", receiverAddress = "", tokenAddress = ""] =
     streamId.split("-");
@@ -110,7 +108,7 @@ const Stream: NextPage = () => {
     tokenSnapshotQuery.isLoading ||
     tokenSnapshotQuery.isFetching
   ) {
-    return <Container>Loading</Container>;
+    return <Container />;
   }
 
   if (!streamQuery.data || !tokenSnapshotQuery.data) {
@@ -401,4 +399,4 @@ const Stream: NextPage = () => {
   );
 };
 
-export default Stream;
+export default withPathNetwork(Stream);

@@ -5,10 +5,7 @@ import {
   Button,
   Card,
   Container,
-  FormControlLabel,
-  FormGroup,
   Stack,
-  Switch,
   Tab,
   Typography,
   useTheme,
@@ -17,12 +14,10 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { isString } from "lodash";
-import { NextPage } from "next";
 import Error from "next/error";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import SubscriptionsTable from "../../features/index/SubscriptionsTable";
-import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import { rpcApi, subgraphApi } from "../../features/redux/store";
 import { UnitOfTime } from "../../features/send/FlowRateInput";
 import StreamsTable from "../../features/streamsTable/StreamsTable";
@@ -34,6 +29,7 @@ import TokenBalanceGraph, {
 import TokenToolbar from "../../features/token/TokenToolbar";
 import TransferEventsTable from "../../features/transfers/TransferEventsTable";
 import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
+import withPathNetwork, { NetworkPage } from "../../hoc/withPathNetwork";
 
 enum TokenDetailsTabs {
   Streams = "streams",
@@ -41,10 +37,10 @@ enum TokenDetailsTabs {
   Transfers = "transfers",
 }
 
-const Token: NextPage = () => {
+const Token: FC<NetworkPage> = ({ network }) => {
   const theme = useTheme();
   const router = useRouter();
-  const { network } = useExpectedNetwork();
+  // const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
 
   const [activeTab, setActiveTab] = useState(TokenDetailsTabs.Streams);
@@ -93,7 +89,7 @@ const Token: NextPage = () => {
     tokenSnapshotQuery.isUninitialized ||
     tokenSnapshotQuery.isLoading
   ) {
-    return <Container maxWidth="lg">LOADING</Container>;
+    return <Container />;
   }
 
   if (!tokenQuery.data || !tokenSnapshotQuery.data) {
@@ -311,4 +307,4 @@ const Token: NextPage = () => {
   );
 };
 
-export default Token;
+export default withPathNetwork(Token);

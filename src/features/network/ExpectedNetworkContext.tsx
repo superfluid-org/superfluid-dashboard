@@ -26,6 +26,7 @@ export const ExpectedNetworkProvider: FC<{
   children: (network: Network) => ReactNode;
 }> = ({ children }) => {
   const [network, setNetwork] = useState<Network>(networksByChainId.get(137)!);
+
   const contextValue: ExpectedNetworkContextValue = useMemo(
     () => ({
       network,
@@ -53,6 +54,7 @@ export const ExpectedNetworkProvider: FC<{
         setNetwork(networkFromWallet);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeChain]);
 
   // # Set network based on the wallet on autoconnect.
@@ -69,7 +71,9 @@ export const ExpectedNetworkProvider: FC<{
   }, []);
 
   // # Set network based on the URL querystring.
-  const { _network: networkQueryParam } = router.query;
+  const { network: networkQueryParam, _network: networkPathParam } =
+    router.query;
+
   useEffect(() => {
     if (isString(networkQueryParam)) {
       const networkFromQuery = networksBySlug.get(networkQueryParam);
@@ -79,6 +83,7 @@ export const ExpectedNetworkProvider: FC<{
       const { network, ...networkQueryParamRemoved } = router.query;
       router.replace({ query: networkQueryParamRemoved });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [networkQueryParam]);
 
   return (
