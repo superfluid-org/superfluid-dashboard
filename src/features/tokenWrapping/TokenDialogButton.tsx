@@ -6,10 +6,10 @@ import TokenIcon from "../token/TokenIcon";
 import { TokenDialog, TokenSelectionProps } from "./TokenDialog";
 
 export const TokenDialogButton: FC<{
-  token: TokenMinimal | undefined;
+  token: TokenMinimal | null | undefined;
   tokenSelection: TokenSelectionProps;
   onTokenSelect: (token: TokenMinimal) => void;
-}> = ({ token, tokenSelection, onTokenSelect }) => {
+}> = ({ token = null, tokenSelection, onTokenSelect }) => {
   const [open, setOpen] = useState(false);
 
   return (

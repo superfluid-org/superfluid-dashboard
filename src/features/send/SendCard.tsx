@@ -1,3 +1,4 @@
+import { ErrorMessage } from "@hookform/error-message";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import {
   Alert,
@@ -22,16 +23,15 @@ import { BigNumber, ethers } from "ethers";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, memo, useCallback, useMemo, useState } from "react";
+import { Controller, useFormContext } from "react-hook-form";
 import TooltipIcon from "../common/TooltipIcon";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import {
-  getSuperTokenType,
-} from "../redux/endpoints/adHocSubgraphEndpoints";
+import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 import {
   isSuper,
   isWrappable,
   SuperTokenMinimal,
-  TokenMinimal
+  TokenMinimal,
 } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
@@ -56,6 +56,7 @@ import {
   UnitOfTime,
 } from "./FlowRateInput";
 import { SendStreamPreview } from "./SendStreamPreview";
+import StreamingFormProvider, { StreamingForm } from "./StreamingFormProvider";
 
 interface FormLabelProps {
   children?: React.ReactNode;
@@ -80,17 +81,29 @@ export default memo(function SendCard(props: {
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
   const router = useRouter();
 
-  const [receiver, setReceiver] = useState<DisplayAddress | undefined>(
-    props.restoration?.receiver
-  );
-  const [selectedToken, setSelectedToken] = useState<
-    SuperTokenMinimal | undefined
-  >(props.restoration?.token);
-  const [flowRate, setFlowRate] = useState<FlowRateWithTime>(
-    props.restoration?.flowRate ?? createDefaultFlowRate()
-  );
-  const [understandLiquidationRisk, setUnderstandLiquidationRisk] =
-    useState(false);
+  const {
+    watch,
+    control,
+    setValue,
+    formState: { errors },
+  } = useFormContext<StreamingForm>();
+
+  if (props.restoration) {
+    setValue("root.token", props.restoration.token);
+    setValue("root.receiver", props.restoration.receiver);
+    setValue("root.flowRate", props.restoration.flowRate);
+  }
+
+  const [receiver, selectedToken, flowRate, understandLiquidationRisk] = watch([
+    "root.receiver",
+    "root.token",
+    "root.flowRate",
+    "root.understandLiquidationRisk",
+  ]);
+
+  const isWrappableSuperToken = selectedToken
+    ? isWrappable(selectedToken)
+    : false;
 
   const amountPerSecond = useMemo(
     () =>
@@ -102,20 +115,6 @@ export default memo(function SendCard(props: {
             .toString()
         : "",
     [flowRate?.amountWei, flowRate?.unitOfTime]
-  );
-
-  const isWrappableSuperToken = selectedToken
-    ? isWrappable(selectedToken)
-    : false;
-  const onTokenSelect = useCallback(
-    (token: TokenMinimal) => {
-      if (isSuper(token)) {
-        setSelectedToken(token);
-      } else {
-        throw new Error("Only super token selection is supported");
-      }
-    },
-    [setSelectedToken]
   );
 
   const [flowCreateTrigger, flowCreateResult] = rpcApi.useFlowCreateMutation();
@@ -192,14 +191,30 @@ export default memo(function SendCard(props: {
           Send Stream
         </Typography>
 
+        {errors?.root?.receiver && (
+          <ErrorMessage
+            as={<Alert severity="error"></Alert>}
+            name="root.receiver"
+            render={({ messages }) => {
+              return (
+                messages &&
+                Object.entries(messages).map(([type, message]) => (
+                  <p key={type}>{message}</p>
+                ))
+              );
+            }}
+          />
+        )}
+
         <Stack spacing={2.5}>
           <Box>
             <FormLabel>Receiver Wallet Address</FormLabel>
-            <AddressSearch
-              address={receiver}
-              onChange={(address) => {
-                setReceiver(address);
-              }}
+            <Controller
+              control={control}
+              name="root.receiver"
+              render={({ field: { onChange } }) => (
+                <AddressSearch address={receiver} onChange={onChange} />
+              )}
             />
           </Box>
 
@@ -208,17 +223,23 @@ export default memo(function SendCard(props: {
           >
             <Stack justifyContent="stretch">
               <FormLabel>Super Token</FormLabel>
-              <TokenDialogButton
-                token={selectedToken}
-                tokenSelection={{
-                  showUpgrade: true,
-                  tokenPairsQuery: {
-                    data: superTokens,
-                    isLoading: superTokensQuery.isLoading,
-                    isUninitialized: superTokensQuery.isUninitialized,
-                  },
-                }}
-                onTokenSelect={onTokenSelect}
+              <Controller
+                control={control}
+                name="root.token"
+                render={({ field: { onChange } }) => (
+                  <TokenDialogButton
+                    token={selectedToken}
+                    tokenSelection={{
+                      showUpgrade: true,
+                      tokenPairsQuery: {
+                        data: superTokens,
+                        isLoading: superTokensQuery.isLoading,
+                        isUninitialized: superTokensQuery.isUninitialized,
+                      },
+                    }}
+                    onTokenSelect={onChange}
+                  />
+                )}
               />
             </Stack>
 
@@ -233,9 +254,15 @@ export default memo(function SendCard(props: {
                 <TooltipIcon title="Flow rate is the velocity of tokens being streamed." />
               </Stack>
 
-              <FlowRateInput
-                flowRateWithTime={flowRate}
-                onChange={setFlowRate}
+              <Controller
+                control={control}
+                name="root.flowRate"
+                render={({ field: { onChange } }) => (
+                  <FlowRateInput
+                    flowRateWithTime={flowRate}
+                    onChange={onChange}
+                  />
+                )}
               />
             </Box>
           </Box>
@@ -317,22 +344,24 @@ export default memo(function SendCard(props: {
                   zero, you will lose your buffer.
                 </Typography>
                 <FormGroup>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={understandLiquidationRisk}
-                        onChange={() =>
-                          setUnderstandLiquidationRisk(
-                            !understandLiquidationRisk
-                          )
+                  <Controller
+                    control={control}
+                    name="root.understandLiquidationRisk"
+                    render={({ field: { onChange } }) => (
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={understandLiquidationRisk}
+                            onChange={onChange}
+                          />
+                        }
+                        label={
+                          <Typography variant="body2">
+                            I understand the risk.
+                          </Typography>
                         }
                       />
-                    }
-                    label={
-                      <Typography variant="body2">
-                        I understand the risk.
-                      </Typography>
-                    }
+                    )}
                   />
                 </FormGroup>
               </Alert>

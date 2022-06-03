@@ -26,8 +26,8 @@ export default memo(function AddressSearch({
   onChange,
   address,
 }: {
-  address: DisplayAddress | undefined;
-  onChange: (address: DisplayAddress | undefined) => void; // TODO(KK): better name19
+  address: DisplayAddress | null;
+  onChange: (address: DisplayAddress | null) => void; // TODO(KK): better name
 }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -51,7 +51,7 @@ export default memo(function AddressSearch({
             name={address.name}
             tryGetEns={false}
             ChipProps={{
-              onDelete: () => onChange(undefined),
+              onDelete: () => onChange(null),
               sx: { flex: 1, background: "transparent" },
             }}
           />

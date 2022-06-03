@@ -1,8 +1,12 @@
 import { Box, Container } from "@mui/material";
 import { NextPage } from "next";
 import SendCard from "../features/send/SendCard";
+import StreamingFormProvider from "../features/send/StreamingFormProvider";
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
-import { RestorationType, SendStreamRestoration } from "../features/transactionRestoration/transactionRestorations";
+import {
+  RestorationType,
+  SendStreamRestoration,
+} from "../features/transactionRestoration/transactionRestorations";
 
 const Send: NextPage = () => {
   const { restoration, onRestored } = useTransactionRestorationContext();
@@ -29,7 +33,9 @@ const Send: NextPage = () => {
           alignItems: "center",
         }}
       >
-        <SendCard restoration={sendStreamRestoration} />
+        <StreamingFormProvider>
+          <SendCard restoration={sendStreamRestoration} />
+        </StreamingFormProvider>
       </Box>
     </Container>
   );

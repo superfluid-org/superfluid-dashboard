@@ -54,7 +54,10 @@ export const FlowRateInput: FC<{
   return (
     <Box sx={{ display: "grid", gridTemplateColumns: "6fr 4fr" }}>
       <TextField
-        type="number"
+        type="text"
+        inputMode="decimal"
+        autoComplete="off"
+        autoCorrect="off"
         placeholder="0.0"
         value={amount}
         onChange={(e) => {
@@ -69,7 +72,12 @@ export const FlowRateInput: FC<{
             amountWei: amountWei.toString(),
           });
         }}
-        inputProps={{ sx: { borderRadius: "10px 0 0 10px" } }}
+        inputProps={{
+          sx: { borderRadius: "10px 0 0 10px" },
+          pattern: "^[0-9]*[.,]?[0-9]*$",
+          minlength: "1",
+          maxLength: "79",
+        }}
         sx={{
           ":hover, .Mui-focused": {
             zIndex: 1, // This helps to bring active right side border on top of select's border.
