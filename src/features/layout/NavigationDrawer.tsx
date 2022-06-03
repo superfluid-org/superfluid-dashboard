@@ -1,4 +1,5 @@
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
+import HistoryIcon from "@mui/icons-material/History";
 import AutoAwesomeMosaicIcon from "@mui/icons-material/AutoAwesomeMosaic";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import {
@@ -97,6 +98,17 @@ export default memo(function NavigationDrawer() {
               <ArrowRightAltIcon />
             </ListItemIcon>
             <ListItemText primary="Send Stream" />
+          </ListItemButton>
+        </NextLink>
+        <NextLink href={"/history"} passHref>
+          <ListItemButton
+            sx={{ borderRadius: "10px" }}
+            selected={isActiveRoute("/history")}
+          >
+            <ListItemIcon>
+              <HistoryIcon />
+            </ListItemIcon>
+            <ListItemText primary="Activity History" />
           </ListItemButton>
         </NextLink>
       </Stack>

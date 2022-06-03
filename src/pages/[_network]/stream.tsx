@@ -205,7 +205,7 @@ const Stream: FC<NetworkPage> = ({ network }) => {
           </Stack>
 
           <Typography variant="h4" color="text.secondary">
-            $2241.30486 USD
+            {/* $2241.30486 USD */}
           </Typography>
         </Stack>
 

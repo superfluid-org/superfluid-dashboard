@@ -40,7 +40,6 @@ enum TokenDetailsTabs {
 const Token: FC<NetworkPage> = ({ network }) => {
   const theme = useTheme();
   const router = useRouter();
-  // const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
 
   const [activeTab, setActiveTab] = useState(TokenDetailsTabs.Streams);

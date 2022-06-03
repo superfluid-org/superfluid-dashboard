@@ -16,7 +16,7 @@ export type Network = Chain & {
   getLinkForTransaction(txHash: string): string;
   getLinkForAddress(adderss: string): string;
   icon?: string;
-  color?: string;
+  color: string;
   bufferTimeInMinutes: number; // Hard-code'ing this per network is actually incorrect approach. It's token-based and can be governed.
   nativeAsset: {
     symbol: string;
@@ -189,6 +189,7 @@ export const networks: Network[] = [
     testnet: false,
     bufferTimeInMinutes: 240,
     icon: "/icons/network/gnosis.svg",
+    color: "#04795b",
     rpcUrls: {
       superfluid: superfluidRpcUrls.gnosis,
       default: "https://rpc.gnosischain.com/",
@@ -221,6 +222,7 @@ export const networks: Network[] = [
     slugName: "polygon",
     bufferTimeInMinutes: 240,
     icon: "/icons/network/polygon.svg",
+    color: "#7c3fe4",
     rpcUrls: {
       ...chain.polygon.rpcUrls,
       superfluid: superfluidRpcUrls.polygon,
@@ -332,6 +334,7 @@ export const networks: Network[] = [
     testnet: true,
     bufferTimeInMinutes: 60,
     icon: "/icons/network/avalanche.jpg",
+    color: "#2b374b",
     rpcUrls: {
       superfluid: superfluidRpcUrls.avalancheFuji,
       default: "https://api.avax-test.network/ext/C/rpc",
@@ -369,6 +372,7 @@ export const networks: Network[] = [
     slugName: "optimism-mainnet",
     bufferTimeInMinutes: 240,
     icon: "/icons/network/optimism.svg",
+    color: "#ff0320",
     rpcUrls: {
       ...chain.optimism.rpcUrls,
       superfluid: superfluidRpcUrls.optimism,
@@ -396,6 +400,7 @@ export const networks: Network[] = [
     slugName: "arbitrum-one",
     bufferTimeInMinutes: 240,
     icon: "/icons/network/arbitrum.svg",
+    color: "#2b374b",
     rpcUrls: {
       ...chain.arbitrum.rpcUrls,
       superfluid: superfluidRpcUrls.arbitrum,

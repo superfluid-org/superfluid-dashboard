@@ -62,7 +62,6 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
           ? true
           : subscription.approved === approvedFilter
       ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [indexSubscriptions, approvedFilter]
   );
 

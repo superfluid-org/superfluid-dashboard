@@ -159,8 +159,8 @@ const StreamsTable: FC<StreamsTableProps> = ({
                   onClick={setStreamTypeFilter(StreamTypeFilter.All)}
                 >
                   All (
-                  {(incomingStreamsQuery.data?.data.length || 0) +
-                    (outgoingStreamsQuery.data?.data.length || 0)}
+                  {(incomingStreamsQuery.data?.items.length || 0) +
+                    (outgoingStreamsQuery.data?.items.length || 0)}
                   )
                 </Button>
                 <Button
@@ -170,7 +170,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
                 >
                   Incoming{" "}
                   {incomingStreamsQuery.isSuccess &&
-                    `(${incomingStreamsQuery.data?.data.length})`}
+                    `(${incomingStreamsQuery.data?.items.length})`}
                 </Button>
                 <Button
                   variant="textContained"
@@ -179,7 +179,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
                 >
                   Outgoing{" "}
                   {outgoingStreamsQuery.isSuccess &&
-                    `(${outgoingStreamsQuery.data?.data.length})`}
+                    `(${outgoingStreamsQuery.data?.items.length})`}
                 </Button>
 
                 <Stack flex={1} direction="row" justifyContent="flex-end">
