@@ -49,7 +49,7 @@ const RestoreTransaction: NextPage = () => {
           router.replace("/");
       }
     }
-  }, [transaction]);
+  }, [transaction, setExpectedNetwork, network, router, restore]);
 
   return <></>; // TODO(KK): Show a spinner or message here?
 };
