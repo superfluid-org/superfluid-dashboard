@@ -6,7 +6,8 @@ export enum RestorationType {
   Downgrade = 1,
   Upgrade = 2,
   Approve = 3,
-  SendStream = 4
+  SendStream = 4,
+  ModifyStream = 5
 }
 
 export interface TransactionRestoration {
@@ -34,10 +35,17 @@ export interface ApproveAllowanceRestoration extends TransactionRestoration {
   amountWei: string;
 }
 
-export interface SendStreamRestoration extends TransactionRestoration {
-  type: RestorationType.SendStream;
+interface UpsertStreamRestoration extends TransactionRestoration {
   chainId: number;
   token: SuperTokenMinimal;
   receiver: DisplayAddress;
   flowRate: FlowRateWithTime;
+}
+
+export interface SendStreamRestoration extends UpsertStreamRestoration {
+  type: RestorationType.SendStream;
+}
+
+export interface ModifyStreamRestoration extends UpsertStreamRestoration {
+  type: RestorationType.ModifyStream;
 }

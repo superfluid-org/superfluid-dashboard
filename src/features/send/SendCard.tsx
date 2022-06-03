@@ -38,6 +38,7 @@ import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
 import {
+  ModifyStreamRestoration,
   RestorationType,
   SendStreamRestoration,
 } from "../transactionRestoration/transactionRestorations";
@@ -68,11 +69,6 @@ const FormLabel: FC<FormLabelProps> = ({ children }) => (
   </Typography>
 );
 
-const createDefaultFlowRate = () => ({
-  amountWei: "0",
-  unitOfTime: UnitOfTime.Hour,
-});
-
 export default memo(function SendCard(props: {
   restoration: SendStreamRestoration | undefined;
 }) {
@@ -86,6 +82,7 @@ export default memo(function SendCard(props: {
     control,
     setValue,
     formState: { errors },
+    reset: resetForm,
   } = useFormContext<StreamingForm>();
 
   if (props.restoration) {
@@ -118,6 +115,7 @@ export default memo(function SendCard(props: {
   );
 
   const [flowCreateTrigger, flowCreateResult] = rpcApi.useFlowCreateMutation();
+  const [flowUpdateTrigger, flowUpdateResult] = rpcApi.useFlowUpdateMutation();
 
   const superTokensQuery = subgraphApi.useTokensQuery({
     chainId: network.id,
@@ -168,9 +166,20 @@ export default memo(function SendCard(props: {
     !!existingStream || !hasAllDataForStream || !understandLiquidationRisk;
 
   const sendStreamRestoration: SendStreamRestoration | undefined =
-    hasAllDataForStream
+    hasAllDataForStream && !existingStream
       ? {
           type: RestorationType.SendStream,
+          chainId: network.id,
+          token: selectedToken,
+          receiver: receiver,
+          flowRate: flowRate,
+        }
+      : undefined;
+
+  const modifyStreamRestoration: ModifyStreamRestoration | undefined =
+    hasAllDataForStream && existingStream
+      ? {
+          type: RestorationType.ModifyStream,
           chainId: network.id,
           token: selectedToken,
           receiver: receiver,
@@ -328,15 +337,6 @@ export default memo(function SendCard(props: {
                 />
               )}
 
-              {existingStream && (
-                <Alert severity="error">
-                  <AlertTitle>Stream already exists!</AlertTitle>
-                  <Typography variant="body2">
-                    Updating a stream is currently not supported.
-                  </Typography>
-                </Alert>
-              )}
-
               <Alert severity="warning">
                 <AlertTitle>Protect your buffer!</AlertTitle>
                 <Typography variant="body2">
@@ -368,49 +368,95 @@ export default memo(function SendCard(props: {
             </>
           )}
 
-          <TransactionButton
-            hidden={false}
-            disabled={isSendDisabled}
-            mutationResult={flowCreateResult}
-            onClick={(setTransactionDialogContent) => {
-              if (isSendDisabled) {
-                throw Error("This should never happen.");
-              }
+          {!existingStream ? (
+            <TransactionButton
+              hidden={false}
+              disabled={isSendDisabled}
+              mutationResult={flowCreateResult}
+              onClick={(setTransactionDialogContent) => {
+                if (isSendDisabled) {
+                  throw Error("This should never happen.");
+                }
 
-              flowCreateTrigger({
-                chainId: network.id,
-                flowRateWei: calculateTotalAmountWei(flowRate).toString(),
-                receiverAddress: receiver.hash,
-                superTokenAddress: selectedToken.address,
-                userDataBytes: undefined,
-                waitForConfirmation: false,
-                transactionExtraData: {
-                  restoration: sendStreamRestoration,
-                },
-              })
-                .unwrap()
-                .then(() => {});
+                flowCreateTrigger({
+                  chainId: network.id,
+                  flowRateWei: calculateTotalAmountWei(flowRate).toString(),
+                  receiverAddress: receiver.hash,
+                  superTokenAddress: selectedToken.address,
+                  userDataBytes: undefined,
+                  waitForConfirmation: false,
+                  transactionExtraData: {
+                    restoration: sendStreamRestoration,
+                  },
+                })
+                  .unwrap()
+                  .then(() => resetForm());
 
-              setTransactionDialogContent({
-                successActions: (
-                  <TransactionDialogActions>
-                    <TransactionDialogButton
-                      color="primary"
-                      onClick={() =>
-                        router
-                          .push("/")
-                          .then(() => setTransactionDrawerOpen(true))
-                      }
-                    >
-                      Go to tokens page ➜
-                    </TransactionDialogButton>
-                  </TransactionDialogActions>
-                ),
-              });
-            }}
-          >
-            Send
-          </TransactionButton>
+                setTransactionDialogContent({
+                  successActions: (
+                    <TransactionDialogActions>
+                      <TransactionDialogButton
+                        color="primary"
+                        onClick={() =>
+                          router
+                            .push("/")
+                            .then(() => setTransactionDrawerOpen(true))
+                        }
+                      >
+                        Go to tokens page ➜
+                      </TransactionDialogButton>
+                    </TransactionDialogActions>
+                  ),
+                });
+              }}
+            >
+              Send
+            </TransactionButton>
+          ) : (
+            <TransactionButton
+              hidden={false}
+              disabled={isSendDisabled}
+              mutationResult={flowUpdateResult}
+              onClick={(setTransactionDialogContent) => {
+                if (isSendDisabled) {
+                  throw Error("This should never happen.");
+                }
+
+                flowUpdateTrigger({
+                  chainId: network.id,
+                  flowRateWei: calculateTotalAmountWei(flowRate).toString(),
+                  receiverAddress: receiver.hash,
+                  superTokenAddress: selectedToken.address,
+                  userDataBytes: undefined,
+                  waitForConfirmation: false,
+                  transactionExtraData: {
+                    restoration: modifyStreamRestoration,
+                  },
+                })
+                  .unwrap()
+                  .then(() => resetForm());
+
+                setTransactionDialogContent({
+                  successActions: (
+                    <TransactionDialogActions>
+                      <TransactionDialogButton
+                        color="primary"
+                        onClick={() =>
+                          router
+                            .push("/")
+                            .then(() => setTransactionDrawerOpen(true))
+                        }
+                      >
+                        Go to tokens page ➜
+                      </TransactionDialogButton>
+                    </TransactionDialogActions>
+                  ),
+                });
+              }}
+            >
+              Modify
+            </TransactionButton>
+          )}
         </Stack>
       </Stack>
     </Card>
