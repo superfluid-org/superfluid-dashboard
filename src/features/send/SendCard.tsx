@@ -3,7 +3,6 @@ import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import {
   Alert,
   AlertTitle,
-  alpha,
   Box,
   Card,
   Checkbox,
@@ -11,36 +10,27 @@ import {
   FormControlLabel,
   FormGroup,
   IconButton,
-  Paper,
   Stack,
   TextField,
   Tooltip,
   Typography,
-  useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { BigNumber, ethers } from "ethers";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FC, memo, useCallback, useMemo, useState } from "react";
+import { FC, memo, useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import TooltipIcon from "../common/TooltipIcon";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
-import {
-  isSuper,
-  isWrappable,
-  SuperTokenMinimal,
-  TokenMinimal,
-} from "../redux/endpoints/tokenTypes";
+import { isWrappable } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
 import {
-  ModifyStreamRestoration,
   RestorationType,
-  SendStreamRestoration,
 } from "../transactionRestoration/transactionRestorations";
 import { TransactionButton } from "../transactions/TransactionButton";
 import {
@@ -49,15 +39,9 @@ import {
 } from "../transactions/TransactionDialog";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import AddressSearch from "./AddressSearch";
-import { DisplayAddress } from "./DisplayAddressChip";
-import {
-  calculateTotalAmountWei,
-  FlowRateInput,
-  FlowRateWithTime,
-  UnitOfTime,
-} from "./FlowRateInput";
-import { SendStreamPreview } from "./SendStreamPreview";
-import StreamingFormProvider, { StreamingForm } from "./StreamingFormProvider";
+import { calculateTotalAmountWei, FlowRateInput } from "./FlowRateInput";
+import { StreamingPreview } from "./SendStreamPreview";
+import { StreamingForm } from "./StreamingFormProvider";
 
 interface FormLabelProps {
   children?: React.ReactNode;
@@ -69,9 +53,7 @@ const FormLabel: FC<FormLabelProps> = ({ children }) => (
   </Typography>
 );
 
-export default memo(function SendCard(props: {
-  restoration: SendStreamRestoration | undefined;
-}) {
+export default memo(function SendCard() {
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
@@ -85,17 +67,11 @@ export default memo(function SendCard(props: {
     reset: resetForm,
   } = useFormContext<StreamingForm>();
 
-  if (props.restoration) {
-    setValue("root.token", props.restoration.token);
-    setValue("root.receiver", props.restoration.receiver);
-    setValue("root.flowRate", props.restoration.flowRate);
-  }
-
   const [receiver, selectedToken, flowRate, understandLiquidationRisk] = watch([
-    "root.receiver",
-    "root.token",
-    "root.flowRate",
-    "root.understandLiquidationRisk",
+    "form.receiver",
+    "form.token",
+    "form.flowRate",
+    "form.understandLiquidationRisk",
   ]);
 
   const isWrappableSuperToken = selectedToken
@@ -136,7 +112,8 @@ export default memo(function SendCard(props: {
   );
 
   const shouldSearchForExistingStreams =
-    !!visibleAddress && !!receiver && !!selectedToken && !!flowRate;
+    !!visibleAddress && !!receiver && !!selectedToken;
+
   const existingStreams = subgraphApi.useStreamsQuery(
     shouldSearchForExistingStreams
       ? {
@@ -162,30 +139,7 @@ export default memo(function SendCard(props: {
     flowRate &&
     !BigNumber.from(flowRate.amountWei).isZero();
 
-  const isSendDisabled =
-    !!existingStream || !hasAllDataForStream || !understandLiquidationRisk;
-
-  const sendStreamRestoration: SendStreamRestoration | undefined =
-    hasAllDataForStream && !existingStream
-      ? {
-          type: RestorationType.SendStream,
-          chainId: network.id,
-          token: selectedToken,
-          receiver: receiver,
-          flowRate: flowRate,
-        }
-      : undefined;
-
-  const modifyStreamRestoration: ModifyStreamRestoration | undefined =
-    hasAllDataForStream && existingStream
-      ? {
-          type: RestorationType.ModifyStream,
-          chainId: network.id,
-          token: selectedToken,
-          receiver: receiver,
-          flowRate: flowRate,
-        }
-      : undefined;
+  const isSendDisabled = !hasAllDataForStream || !understandLiquidationRisk;
 
   return (
     <Card
@@ -197,13 +151,13 @@ export default memo(function SendCard(props: {
     >
       <Stack spacing={4}>
         <Typography variant="h4" component="h1">
-          Send Stream
+          {existingStream ? "Modify Stream" : "Send Stream"}
         </Typography>
 
-        {errors?.root?.receiver && (
+        {errors?.form?.receiver && (
           <ErrorMessage
             as={<Alert severity="error"></Alert>}
-            name="root.receiver"
+            name="form.receiver"
             render={({ messages }) => {
               return (
                 messages &&
@@ -220,7 +174,7 @@ export default memo(function SendCard(props: {
             <FormLabel>Receiver Wallet Address</FormLabel>
             <Controller
               control={control}
-              name="root.receiver"
+              name="form.receiver"
               render={({ field: { onChange } }) => (
                 <AddressSearch address={receiver} onChange={onChange} />
               )}
@@ -232,9 +186,10 @@ export default memo(function SendCard(props: {
           >
             <Stack justifyContent="stretch">
               <FormLabel>Super Token</FormLabel>
+
               <Controller
                 control={control}
-                name="root.token"
+                name="form.token"
                 render={({ field: { onChange } }) => (
                   <TokenDialogButton
                     token={selectedToken}
@@ -265,7 +220,7 @@ export default memo(function SendCard(props: {
 
               <Controller
                 control={control}
-                name="root.flowRate"
+                name="form.flowRate"
                 render={({ field: { onChange } }) => (
                   <FlowRateInput
                     flowRateWithTime={flowRate}
@@ -326,16 +281,15 @@ export default memo(function SendCard(props: {
         </Stack>
 
         <Stack gap={2.5}>
-          {sendStreamRestoration && (
+          {hasAllDataForStream && (
             <>
               <Divider />
-              {!existingStream && (
-                <SendStreamPreview
-                  receiver={sendStreamRestoration.receiver}
-                  token={sendStreamRestoration.token}
-                  flowRateWithTime={sendStreamRestoration.flowRate}
-                />
-              )}
+              <StreamingPreview
+                receiver={receiver}
+                token={selectedToken}
+                flowRateWithTime={flowRate}
+                existingStream={existingStream ?? null}
+              />
 
               <Alert severity="warning">
                 <AlertTitle>Protect your buffer!</AlertTitle>
@@ -346,7 +300,7 @@ export default memo(function SendCard(props: {
                 <FormGroup>
                   <Controller
                     control={control}
-                    name="root.understandLiquidationRisk"
+                    name="form.understandLiquidationRisk"
                     render={({ field: { onChange } }) => (
                       <FormControlLabel
                         control={
@@ -386,7 +340,13 @@ export default memo(function SendCard(props: {
                   userDataBytes: undefined,
                   waitForConfirmation: false,
                   transactionExtraData: {
-                    restoration: sendStreamRestoration,
+                    restoration: {
+                      type: RestorationType.SendStream,
+                      chainId: network.id,
+                      token: selectedToken,
+                      receiver: receiver,
+                      flowRate: flowRate,
+                    },
                   },
                 })
                   .unwrap()
@@ -430,7 +390,13 @@ export default memo(function SendCard(props: {
                   userDataBytes: undefined,
                   waitForConfirmation: false,
                   transactionExtraData: {
-                    restoration: modifyStreamRestoration,
+                    restoration: {
+                      type: RestorationType.ModifyStream,
+                      chainId: network.id,
+                      token: selectedToken,
+                      receiver: receiver,
+                      flowRate: flowRate,
+                    },
                   },
                 })
                   .unwrap()

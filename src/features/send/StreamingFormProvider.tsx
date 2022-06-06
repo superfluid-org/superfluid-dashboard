@@ -5,13 +5,16 @@ import { useAccount, useNetwork } from "wagmi";
 import { bool, number, object, ObjectSchema, string } from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { rpcApi } from "../redux/store";
-import { SendStreamRestoration } from "../transactionRestoration/transactionRestorations";
+import {
+  ModifyStreamRestoration,
+  SendStreamRestoration,
+} from "../transactionRestoration/transactionRestorations";
 import { UnitOfTime } from "./FlowRateInput";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { TurnedInTwoTone } from "@mui/icons-material";
 
 export type StreamingForm = {
-  root: {
+  form: {
     token: SendStreamRestoration["token"] | null;
     receiver: SendStreamRestoration["receiver"] | null;
     flowRate: SendStreamRestoration["flowRate"];
@@ -19,7 +22,9 @@ export type StreamingForm = {
   };
 };
 
-const StreamingFormProvider: FC = ({ children }) => {
+const StreamingFormProvider: FC<{
+  restoration: SendStreamRestoration | ModifyStreamRestoration | undefined;
+}> = ({ restoration, children }) => {
   const { data: account } = useAccount();
   const { activeChain } = useNetwork();
   const { network } = useExpectedNetwork();
@@ -27,7 +32,7 @@ const StreamingFormProvider: FC = ({ children }) => {
   const yupSchema: ObjectSchema<StreamingForm> = useMemo(
     () =>
       object({
-        root: object({
+        form: object({
           token: object({
             type: number().required(),
             address: string().required(),
@@ -56,10 +61,10 @@ const StreamingFormProvider: FC = ({ children }) => {
   );
 
   const defaultValues: StreamingForm = {
-    root: {
-      token: null,
-      receiver: null,
-      flowRate: {
+    form: {
+      token: restoration?.token ?? null,
+      receiver: restoration?.receiver ?? null,
+      flowRate: restoration?.flowRate ?? {
         amountWei: "0",
         unitOfTime: UnitOfTime.Day,
       },
@@ -91,18 +96,18 @@ const StreamingFormProvider: FC = ({ children }) => {
     });
   }, [errors]);
 
-  //   const [tokenAddress, flowRate] = watch(["tokenAddress", "flowRate"]);
-  //   (activeChain && account) ? {
-  //     chainId: activeChain.id,
-  //     accountAddress: account.address,
-  //     tokenAddress:
-  // }
-  //   const [triggerRealtimeBalanceQuery] = rpcApi.useLazyRealtimeBalanceQuery(); // Use cache result?
-
   return <FormProvider {...formMethods}>{children}</FormProvider>;
 };
 
 export default StreamingFormProvider;
+
+//   const [tokenAddress, flowRate] = watch(["tokenAddress", "flowRate"]);
+//   (activeChain && account) ? {
+//     chainId: activeChain.id,
+//     accountAddress: account.address,
+//     tokenAddress:
+// }
+//   const [triggerRealtimeBalanceQuery] = rpcApi.useLazyRealtimeBalanceQuery(); // Use cache result?
 
 // interface StreamingForm {
 //   receiverAddress: string;

@@ -35,6 +35,18 @@ export type FlowRateWithTime = {
   unitOfTime: UnitOfTime;
 };
 
+export const flowRateWithTimeToString = (
+  flowRateWithTime: FlowRateWithTime,
+  tokenSymbol?: string
+) =>
+  tokenSymbol
+    ? `${ethers.utils.formatEther(flowRateWithTime.amountWei)} ${tokenSymbol}/${
+        timeUnitWordMap[flowRateWithTime.unitOfTime]
+      }`
+    : `${ethers.utils.formatEther(flowRateWithTime.amountWei)}/${
+        timeUnitWordMap[flowRateWithTime.unitOfTime]
+      }`;
+
 // TODO(KK): memoize
 export const calculateTotalAmountWei = ({
   amountWei,

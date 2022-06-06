@@ -6,17 +6,21 @@ import { useTransactionRestorationContext } from "../features/transactionRestora
 import {
   RestorationType,
   SendStreamRestoration,
+  ModifyStreamRestoration
 } from "../features/transactionRestoration/transactionRestorations";
 
 const Send: NextPage = () => {
   const { restoration, onRestored } = useTransactionRestorationContext();
 
-  let sendStreamRestoration: SendStreamRestoration | undefined;
+  let streamingRestoration: SendStreamRestoration | ModifyStreamRestoration | undefined;
 
   if (restoration) {
     switch (restoration.type) {
       case RestorationType.SendStream:
-        sendStreamRestoration = restoration as SendStreamRestoration;
+        streamingRestoration = restoration as SendStreamRestoration;
+        break;
+      case RestorationType.ModifyStream:
+        streamingRestoration = restoration as ModifyStreamRestoration;
         break;
     }
     onRestored();
@@ -33,8 +37,8 @@ const Send: NextPage = () => {
           alignItems: "center",
         }}
       >
-        <StreamingFormProvider>
-          <SendCard restoration={sendStreamRestoration} />
+        <StreamingFormProvider restoration={streamingRestoration}>
+          <SendCard />
         </StreamingFormProvider>
       </Box>
     </Container>

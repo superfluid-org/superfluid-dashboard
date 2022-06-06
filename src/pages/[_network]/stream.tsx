@@ -81,7 +81,6 @@ const Stream: FC<NetworkPage> = ({ network }) => {
       calculateMaybeCriticalAtTimestamp(
         BigNumber.from(snapshotUpdatedAtTimestamp),
         BigNumber.from(balanceUntilUpdatedAt),
-        BigNumber.from(0),
         BigNumber.from(totalNetFlowRate)
       ).toNumber() * 1000
     );

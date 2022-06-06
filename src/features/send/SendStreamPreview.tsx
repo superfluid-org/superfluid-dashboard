@@ -1,7 +1,16 @@
-import { Alert, alpha, Stack, Typography, useTheme } from "@mui/material";
+import {
+  Alert,
+  alpha,
+  Stack,
+  Tooltip,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { format } from "date-fns";
 import { BigNumber, ethers } from "ethers";
-import { FC, useMemo } from "react";
+import { FC, ReactNode, useMemo } from "react";
+import { calculateMaybeCriticalAtTimestamp2 } from "../../utils/tokenUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { rpcApi } from "../redux/store";
@@ -9,26 +18,39 @@ import FlowingBalance from "../token/FlowingBalance";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { calculateBufferAmount } from "./calculateBufferAmounts";
 import { DisplayAddress } from "./DisplayAddressChip";
-import { FlowRateWithTime, timeUnitWordMap } from "./FlowRateInput";
+import {
+  calculateTotalAmountWei,
+  FlowRateWithTime,
+  flowRateWithTimeToString,
+  UnitOfTime,
+} from "./FlowRateInput";
 
-interface PreviewItemProps {
+const PreviewItem: FC<{
   label: string;
-}
-
-const PreviewItem: FC<PreviewItemProps> = ({ label, children }) => (
+  oldValue?: ReactNode;
+}> = ({ label, children, oldValue }) => (
   <Stack direction="row" alignItems="center" justifyContent="space-between">
     <Typography variant="body2">{label}</Typography>
     <Typography variant="body2" fontWeight="500">
-      {children}
+      {oldValue ? (
+        <Tooltip title={<>{oldValue}</>}>
+          <>{children}</>
+        </Tooltip>
+      ) : (
+        children
+      )}
     </Typography>
   </Stack>
 );
 
-export const SendStreamPreview: FC<{
+export const StreamingPreview: FC<{
   receiver: DisplayAddress;
   token: SuperTokenMinimal;
   flowRateWithTime: FlowRateWithTime;
-}> = ({ receiver, token, flowRateWithTime }) => {
+  existingStream: {
+    currentFlowRate: string;
+  } | null;
+}> = ({ receiver, token, flowRateWithTime, existingStream }) => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
@@ -44,15 +66,96 @@ export const SendStreamPreview: FC<{
   );
   const realtimeBalance = realtimeBalanceQuery.data;
 
-  // TODO(KK): useMemo
-  const bufferAmount = useMemo(
+  const newBufferAmount = useMemo(
     () => calculateBufferAmount({ network, flowRateWithTime }),
-    [network, flowRateWithTime]
+    [network, flowRateWithTime] // TODO(KK): Spread flowRateWithTime?
+  );
+
+  const oldBufferAmount = useMemo(
+    () =>
+      existingStream
+        ? calculateBufferAmount({
+            network,
+            flowRateWithTime: {
+              amountWei: existingStream.currentFlowRate,
+              unitOfTime: UnitOfTime.Second,
+            },
+          })
+        : BigNumber.from(0),
+    [network, existingStream] // TODO(KK): Spread flowRateWithTime?
+  );
+
+  const bufferDelta = useMemo(
+    () => newBufferAmount.sub(oldBufferAmount),
+    [newBufferAmount, oldBufferAmount]
   );
 
   const balanceAfterBuffer = useMemo(
-    () => BigNumber.from(realtimeBalance?.balance ?? 0).sub(bufferAmount),
-    [realtimeBalance, bufferAmount]
+    () => BigNumber.from(realtimeBalance?.balance ?? 0).sub(bufferDelta),
+    [realtimeBalance, newBufferAmount]
+  );
+
+  const newFlowRate = useMemo(
+    () =>
+      calculateTotalAmountWei({
+        amountWei: flowRateWithTime.amountWei,
+        unitOfTime: flowRateWithTime.unitOfTime,
+      }),
+    [flowRateWithTime]
+  );
+
+  const flowRateDelta = useMemo(
+    () =>
+      existingStream
+        ? newFlowRate.sub(BigNumber.from(existingStream.currentFlowRate))
+        : newFlowRate,
+    [newFlowRate, existingStream]
+  );
+
+  const newTotalFlowRate = useMemo(
+    () =>
+      flowRateDelta && realtimeBalance
+        ? BigNumber.from(realtimeBalance.flowRate).sub(flowRateDelta)
+        : undefined,
+    [flowRateDelta, realtimeBalance]
+  );
+
+  const oldDateWhenBalanceCritical = useMemo(
+    () =>
+      realtimeBalance && newTotalFlowRate
+        ? newTotalFlowRate.isNegative()
+          ? new Date(
+              calculateMaybeCriticalAtTimestamp2({
+                balanceUntilUpdatedAtWei: realtimeBalance.balance.toString(),
+                updatedAtTimestamp: realtimeBalance.balanceTimestamp,
+                totalNetFlowRateWei: newTotalFlowRate.toString(),
+              })
+                .mul(1000)
+                .toNumber()
+            )
+          : undefined
+        : undefined,
+    [realtimeBalance, newTotalFlowRate]
+  );
+
+  const newDateWhenBalanceCritical = useMemo(
+    () =>
+      realtimeBalance && newTotalFlowRate && flowRateDelta
+        ? newTotalFlowRate.isNegative()
+          ? new Date(
+              calculateMaybeCriticalAtTimestamp2({
+                balanceUntilUpdatedAtWei: realtimeBalance.balance.toString(),
+                updatedAtTimestamp: realtimeBalance.balanceTimestamp,
+                totalNetFlowRateWei: BigNumber.from(realtimeBalance.flowRate)
+                  .sub(flowRateDelta)
+                  .toString(),
+              })
+                .mul(1000)
+                .toNumber()
+            )
+          : undefined
+        : undefined,
+    [flowRateDelta, realtimeBalance]
   );
 
   return (
@@ -73,12 +176,23 @@ export const SendStreamPreview: FC<{
       }}
     >
       <Stack gap={0.5}>
-        <PreviewItem label="Recipient">{receiver.hash}</PreviewItem>
+        <PreviewItem label="Receiver">{receiver.hash}</PreviewItem>
 
-        <PreviewItem label="Flow rate">
-          {`${ethers.utils.formatEther(flowRateWithTime.amountWei)} ${
-            token.symbol
-          }/${timeUnitWordMap[flowRateWithTime.unitOfTime]}`}
+        <PreviewItem
+          label="Flow rate"
+          oldValue={
+            existingStream
+              ? flowRateWithTimeToString(
+                  {
+                    amountWei: existingStream.currentFlowRate,
+                    unitOfTime: UnitOfTime.Second,
+                  },
+                  token.symbol
+                )
+              : undefined
+          }
+        >
+          {flowRateWithTimeToString(flowRateWithTime, token.symbol)}
         </PreviewItem>
 
         <PreviewItem label="Ends on">Never</PreviewItem>
@@ -95,9 +209,30 @@ export const SendStreamPreview: FC<{
           </PreviewItem>
         )}
 
-        <PreviewItem label="Upfront buffer">
-          {`${ethers.utils.formatEther(bufferAmount)} ${token.symbol}`}
+        <PreviewItem
+          label="Upfront buffer"
+          oldValue={
+            oldBufferAmount
+              ? `${ethers.utils.formatEther(oldBufferAmount)} ${token.symbol}`
+              : undefined
+          }
+        >
+          {`${ethers.utils.formatEther(newBufferAmount)} ${token.symbol}`}
         </PreviewItem>
+
+        {newTotalFlowRate?.isNegative() && (
+          <PreviewItem
+            label="Date when balance critical"
+            oldValue={
+              oldDateWhenBalanceCritical
+                ? format(oldDateWhenBalanceCritical, "d MMM. yyyy")
+                : undefined
+            }
+          >
+            {newDateWhenBalanceCritical &&
+              format(newDateWhenBalanceCritical, "d MMM. yyyy")}
+          </PreviewItem>
+        )}
       </Stack>
     </Alert>
   );

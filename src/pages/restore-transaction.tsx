@@ -45,6 +45,10 @@ const RestoreTransaction: NextPage = () => {
           restore(transactionRestoration);
           router.replace("/send");
           break;
+        case RestorationType.ModifyStream:
+          restore(transactionRestoration);
+          router.replace("/send");
+          break;
         default:
           router.replace("/");
       }
