@@ -4,21 +4,20 @@ import TransactionDrawer, {
   transactionDrawerWidth,
 } from "../transactionDrawer/TransactionDrawer";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
-import NavigationDrawer from "./NavigationDrawer";
+import NavigationDrawer, { menuDrawerWidth } from "./NavigationDrawer";
 import TopBar from "./TopBar";
 // import TransactionSnackbar from "../transactions/TransactionSnackbar";
 
 const DarkGlow = styled("div")({
   position: "fixed",
-  top: "50%",
-  left: "50%",
-  width: "200px",
-  height: "80vh",
+  top: 0,
+  left: 0,
+  width: "100vw",
+  height: "100vh",
   zIndex: -1,
-  background: `linear-gradient(180deg, rgba(16, 187, 53, 0.4) 0%, rgba(16, 187, 53, 0.2) 100%)`,
-  filter: "blur(500px)",
-  transform: "translate(-50%, -50%) rotate(30deg)",
-  transformOrigin: "center",
+  background: `radial-gradient(ellipse at 55% 40%, rgba(16, 187, 53, 0.1) 0%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 100%) `,
+  transform: "rotate(-30deg)",
+  transformOrigin: "center center",
 });
 
 const Main = styled("main")<{

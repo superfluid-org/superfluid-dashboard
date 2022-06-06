@@ -1,10 +1,23 @@
-import {getSubgraphClient, SubgraphEndpointBuilder,} from "@superfluid-finance/sdk-redux";
-import {ethers} from "ethers";
-import {gql} from "graphql-request";
-import {uniq} from "lodash";
-import {Network, networksByChainId} from "../../network/networks";
-import { SuperTokenMinimal, SuperTokenPair, NATIVE_ASSET_ADDRESS } from "./tokenTypes";
-import {TokenType} from "./tokenTypes";
+import {
+  getSubgraphClient,
+  SubgraphEndpointBuilder,
+} from "@superfluid-finance/sdk-redux";
+import { ethers } from "ethers";
+import { gql } from "graphql-request";
+import { uniq } from "lodash";
+import { Network, networksByChainId } from "../../network/networks";
+import {
+  SuperTokenMinimal,
+  SuperTokenPair,
+  NATIVE_ASSET_ADDRESS,
+} from "./tokenTypes";
+import { TokenType } from "./tokenTypes";
+
+export type TokenBalance = {
+  balance: string;
+  totalNetFlowRate: string;
+  timestamp: number;
+};
 
 type WrapperSuperTokenSubgraphResult = {
   id: string;
@@ -25,6 +38,72 @@ type NativeAssetSuperTokenSubgraphResult = {
 
 export const adHocSubgraphEndpoints = {
   endpoints: (builder: SubgraphEndpointBuilder) => ({
+    accountTokenBalanceHistory: builder.query<
+      TokenBalance[],
+      {
+        chainId: number;
+        accountAddress: string;
+        tokenAddress: string;
+        timestamp_gte?: number;
+        timestamp_lte?: number;
+      }
+    >({
+      queryFn: async ({
+        chainId,
+        accountAddress,
+        tokenAddress,
+        timestamp_gte = 0,
+        timestamp_lte = Math.floor(Date.now() / 1000),
+      }) => {
+        const client = await getSubgraphClient(chainId);
+        const query = gql`
+          query tokenBalanceHistoryQuery(
+            $accountAddress: String
+            $tokenAddress: String
+            $timestamp_gte: BigInt
+            $timestamp_lte: BigInt
+          ) {
+            accountTokenSnapshotLogs(
+              where: {
+                account: $accountAddress
+                token: $tokenAddress
+                timestamp_gte: $timestamp_gte
+                timestamp_lte: $timestamp_lte
+              }
+              orderBy: order
+              orderDirection: desc
+              first: 1000
+            ) {
+              balance
+              totalNetFlowRate
+              timestamp
+            }
+          }
+        `;
+        const variables = {
+          accountAddress: accountAddress.toLowerCase(),
+          tokenAddress: tokenAddress.toLowerCase(),
+          timestamp_gte: timestamp_gte.toString(),
+          timestamp_lte: timestamp_lte.toString(),
+        };
+
+        const response = await client.request<{
+          accountTokenSnapshotLogs: {
+            balance: string;
+            timestamp: string;
+            totalNetFlowRate: string;
+          }[];
+        }>(query, variables);
+
+        return {
+          data: response.accountTokenSnapshotLogs.map((tokenSnapshot) => ({
+            ...tokenSnapshot,
+            timestamp: Number(tokenSnapshot.timestamp),
+          })),
+        };
+      },
+    }),
+
     recents: builder.query<
       string[],
       { chainId: number; accountAddress: string }

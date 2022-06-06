@@ -1,8 +1,6 @@
-import {
-  getFramework
-} from "@superfluid-finance/sdk-redux";
+import { getFramework } from "@superfluid-finance/sdk-redux";
 import { ContractCallContext, Multicall } from "ethereum-multicall";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { networks } from "../../network/networks";
 import { NATIVE_ASSET_ADDRESS } from "./tokenTypes";
 
@@ -55,7 +53,12 @@ const createFetching = (
           await Promise.all(
             queries
               .filter((x) => x.isSuperToken)
-              .map((x) => createRealtimeBalanceCalls(framework.contracts.cfaV1.address, x.params))
+              .map((x) =>
+                createRealtimeBalanceCalls(
+                  framework.contracts.cfaV1.address,
+                  x.params
+                )
+              )
           )
         ).flat();
 
@@ -88,11 +91,13 @@ const createFetching = (
                   balance: ethers.BigNumber.from(
                     realtimeBalanceOfNowCall.returnValues[0]
                   ).toString(),
-                  balanceTimestamp: realtimeBalanceOfNowCall.returnValues[3],
+                  balanceTimestamp: BigNumber.from(
+                    realtimeBalanceOfNowCall.returnValues[3]
+                  ).toNumber(),
                   flowRate: ethers.BigNumber.from(
                     getNetFlowCall.returnValues[0]
                   ).toString(),
-                },
+                } as RealtimeBalance,
               ];
             } else {
               const balanceOfCall =
@@ -127,7 +132,9 @@ export const balanceFetcher = {
     state.nextFetching = state.nextFetching || createFetching(params.chainId);
     return (await state.nextFetching)[getKey(params)] as UnderlyingBalance;
   },
-  async getRealtimeBalance(params: BalanceQueryParams): Promise<RealtimeBalance> {
+  async getRealtimeBalance(
+    params: BalanceQueryParams
+  ): Promise<RealtimeBalance> {
     const state = mutableNetworkStates[params.chainId];
     state.queryBatch.push({
       params,

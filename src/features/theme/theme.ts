@@ -7,8 +7,13 @@ import { FONT_FACES } from "./fonts";
 // TYPOGRAHY
 
 interface TypographyCustomVariants {
+  h7: React.CSSProperties;
+  h1mono: React.CSSProperties;
+  h3mono: React.CSSProperties;
+  h4mono: React.CSSProperties;
   h5mono: React.CSSProperties;
   h6mono: React.CSSProperties;
+  h7mono: React.CSSProperties;
   body1mono: React.CSSProperties;
   body2mono: React.CSSProperties;
   largeInput: React.CSSProperties;
@@ -23,8 +28,13 @@ declare module "@mui/material/styles" {
 
 declare module "@mui/material/Typography" {
   interface TypographyPropsVariantOverrides {
+    h7: true;
+    h1mono: true;
+    h3mono: true;
+    h4mono: true;
     h5mono: true;
     h6mono: true;
+    h7mono: true;
     body1mono: true;
     body2mono: true;
     largeInput: true;
@@ -53,6 +63,7 @@ declare module "@mui/material/styles/createPalette" {
 declare module "@mui/material/Button" {
   interface ButtonPropsSizeOverrides {
     xl: true;
+    xs: true;
   }
 
   interface ButtonPropsVariantOverrides {
@@ -60,11 +71,13 @@ declare module "@mui/material/Button" {
   }
 }
 
+const ELEVATION1_BG =
+  "linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.03) 100%)";
+
 export const FONT_FAMILY = "'Walsheim', Arial";
-export const FONT_FAMILY_MONO = "'Azeret Mono', monospace;";
 
 export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
-  const getModeStyle = (lightStyle: string, darkStyle: string) =>
+  const getModeStyle = <T>(lightStyle: T, darkStyle: T): T =>
     mode === "dark" ? darkStyle : lightStyle;
 
   return {
@@ -82,7 +95,7 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         contrastText: getModeStyle("#FFFFFFFF", "#FFFFFFDE"),
       },
       secondary: {
-        main: getModeStyle("#E0E0E0FF", "#E0E0E0FF"),
+        main: getModeStyle("#12141e61", "#ffffff99"), //getModeStyle("#E0E0E0FF", "#E0E0E0FF"),
         dark: getModeStyle("#AEAEAEFF", "#AEAEAEFF"),
         light: getModeStyle("#FFFFFFFF", "#FFFFFFFF"),
         contrastText: getModeStyle("#FFFFFFFF", "#FFFFFFDE"),
@@ -135,7 +148,13 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
       h1: {
         fontSize: "64px",
         letterSpacing: "-1.5px",
-        fontWeight: 400,
+        fontWeight: 500,
+      },
+      h1mono: {
+        fontSize: "64px",
+        letterSpacing: "-1.5px",
+        fontWeight: 500,
+        fontVariantNumeric: "tabular-nums",
       },
       h2: {
         fontSize: "48px",
@@ -145,11 +164,24 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
       h3: {
         fontSize: "36px",
         fontWeight: 500,
+        lineHeight: "116.7%",
+      },
+      h3mono: {
+        fontSize: "36px",
+        fontWeight: 500,
+        lineHeight: "116.7%",
+        fontVariantNumeric: "tabular-nums",
       },
       h4: {
         fontSize: "24px",
         fontWeight: 500,
         letterSpacing: "0.25px",
+      },
+      h4mono: {
+        fontSize: "24px",
+        fontWeight: 500,
+        letterSpacing: "0.25px",
+        fontVariantNumeric: "tabular-nums",
       },
       h5: {
         fontSize: "18px",
@@ -158,7 +190,7 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
       h5mono: {
         fontSize: "18px",
         fontWeight: 500,
-        fontFamily: FONT_FAMILY_MONO,
+        fontVariantNumeric: "tabular-nums",
       },
       h6: {
         fontSize: "16px",
@@ -170,7 +202,19 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         fontSize: "16px",
         fontWeight: 500,
         lineHeight: "150%",
-        fontFamily: FONT_FAMILY_MONO,
+        fontVariantNumeric: "tabular-nums",
+      },
+      h7: {
+        fontSize: "14px",
+        fontWeight: 500,
+        lineHeight: "150%",
+        letterSpacing: "0.15px",
+      },
+      h7mono: {
+        fontSize: "14px",
+        fontWeight: 500,
+        lineHeight: "150%",
+        fontVariantNumeric: "tabular-nums",
       },
       body1: {
         fontWeight: 400,
@@ -179,7 +223,7 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
       body1mono: {
         fontWeight: 400,
         whiteSpace: "pre",
-        fontFamily: FONT_FAMILY_MONO,
+        fontVariantNumeric: "tabular-nums",
       },
       body2: {
         fontSize: "14px",
@@ -190,7 +234,7 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         fontSize: "14px",
         fontWeight: 400,
         whiteSpace: "pre",
-        fontFamily: FONT_FAMILY_MONO,
+        fontVariantNumeric: "tabular-nums",
       },
       subtitle1: {
         letterSpacing: "0.15px",
@@ -339,7 +383,7 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
 };
 
 export function getThemedComponents(theme: Theme): ThemeOptions {
-  const getModeStyle = (lightStyle: string, darkStyle: string) =>
+  const getModeStyle = <T>(lightStyle: T, darkStyle: T): T =>
     theme.palette.mode === "dark" ? darkStyle : lightStyle;
 
   return {
@@ -348,75 +392,14 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         styleOverrides: {
           root: {
             borderRadius: "12px",
+            border: getModeStyle("none", "1px solid"),
+            borderColor: theme.palette.other.outline,
           },
           rounded: {
             borderRadius: "20px",
           },
-          outlined: {
-            background: getModeStyle(
-              "#FFFFFF",
-              "linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.05) 100%), #121212"
-            ),
-          },
           elevation1: {
-            background: getModeStyle(
-              "#FFFFFF",
-              "linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.05) 100%), #121212"
-            ),
-          },
-          elevation2: {
-            background: getModeStyle(
-              "#FFFFFF",
-              "linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.07) 100%), #121212"
-            ),
-          },
-          elevation3: {
-            background: getModeStyle(
-              "#FFFFFF",
-              "linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.08) 100%), #121212"
-            ),
-          },
-          elevation4: {
-            background: getModeStyle(
-              "#FFFFFF",
-              "linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.09) 100%), #121212"
-            ),
-          },
-          elevation5: {
-            background: getModeStyle(
-              "#FFFFFF",
-              "linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%), #121212"
-            ),
-          },
-          elevation6: {
-            background: getModeStyle(
-              "#FFFFFF",
-              "linear-gradient(180deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.11) 100%), #121212"
-            ),
-          },
-          elevation7: {
-            background: getModeStyle(
-              "#FFFFFF",
-              "linear-gradient(180deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.11) 100%), #121212"
-            ),
-          },
-          elevation8: {
-            background: getModeStyle(
-              "#FFFFFF",
-              "linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.12) 100%), #121212"
-            ),
-          },
-          elevation9: {
-            background: getModeStyle(
-              "#FFFFFF",
-              "linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.12) 100%), #121212"
-            ),
-          },
-          elevation10: {
-            background: getModeStyle(
-              "#FFFFFF",
-              "linear-gradient(180deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.13) 100%), #121212"
-            ),
+            backgroundImage: getModeStyle("none", ELEVATION1_BG),
           },
         },
       },
@@ -450,7 +433,16 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
                 m: 0,
               },
             "&[type=number]": {
-              "-moz-appearance": "textfield",
+              MozAppearance: "textfield",
+            },
+          },
+        },
+      },
+      MuiSelect: {
+        defaultProps: {
+          MenuProps: {
+            PaperProps: {
+              square: true,
             },
           },
         },
@@ -500,12 +492,37 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       },
       MuiIconButton: {
         styleOverrides: {
-          root: {
+          colorInherit: {
             color: theme.palette.text.primary,
+          },
+          colorPrimary: {
+            backgroundColor: alpha(theme.palette.primary.main, 0.08),
+            "&:hover": {
+              backgroundColor: alpha(
+                theme.palette.primary.main,
+                getModeStyle(0.12, 0.16)
+              ),
+            },
+          },
+          root: {
             borderRadius: "8px",
             padding: theme.spacing(0.75),
           },
         },
+        variants: [
+          {
+            props: { color: "error" },
+            style: {
+              backgroundColor: alpha(theme.palette.error.main, 0.08),
+              "&:hover": {
+                backgroundColor: alpha(
+                  theme.palette.error.main,
+                  getModeStyle(0.12, 0.16)
+                ),
+              },
+            },
+          },
+        ],
       },
       MuiToggleButtonGroup: {
         styleOverrides: {
@@ -585,6 +602,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             },
           },
           {
+            props: { size: "xs" },
+            style: {
+              padding: "4px 8px",
+              minWidth: "0",
+            },
+          },
+          {
             props: {
               variant: "textContained",
               color: "primary",
@@ -593,7 +617,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
               color: theme.palette.primary.main,
               backgroundColor: alpha(theme.palette.primary.main, 0.08),
               "&:hover": {
-                backgroundColor: alpha(theme.palette.primary.main, 0.08),
+                backgroundColor: alpha(
+                  theme.palette.primary.main,
+                  getModeStyle(0.12, 0.16)
+                ),
               },
             },
           },
@@ -608,10 +635,23 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         ],
       },
+      MuiTab: {
+        styleOverrides: {
+          root: {
+            textTransform: "inherit",
+            ...theme.typography.h6,
+          },
+        },
+      },
       MuiChip: {
         styleOverrides: {
           root: {
             borderRadius: "10px",
+          },
+          sizeSmall: {
+            ".MuiAvatar-root": {
+              marginLeft: "3px",
+            },
           },
           sizeMedium: {
             borderColor: getModeStyle("#E0E0E0", "#595A5F"),
@@ -712,6 +752,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         },
       },
+      MuiPopover: {
+        defaultProps: {
+          PaperProps: {
+            square: true,
+          },
+        },
+      },
       MuiMenuItem: {
         styleOverrides: {
           root: {
@@ -722,8 +769,15 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       MuiTablePagination: {
         styleOverrides: {
           root: {
+            background: theme.palette.background.paper,
+            backgroundImage: getModeStyle("none", ELEVATION1_BG),
             borderTop: `1px solid`,
             borderColor: theme.palette.divider,
+          },
+          toolbar: {
+            "@media (min-width: 600px)": {
+              paddingRight: theme.spacing(4),
+            },
           },
         },
       },
@@ -752,18 +806,21 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         ],
       },
+      MuiTableBody: {},
       MuiTableRow: {
         styleOverrides: {
           root: {
             background: theme.palette.background.paper,
+            backgroundImage: getModeStyle("none", ELEVATION1_BG),
             "&.MuiTableRow-hover:hover": {
               background: theme.palette.background.paper,
+              backgroundImage: getModeStyle("none", ELEVATION1_BG),
               td: {
                 background: theme.palette.action.hover,
               },
             },
             "&:last-of-type": {
-              td: {
+              "> td": {
                 border: "none",
               },
             },
@@ -775,7 +832,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           head: {
             ...theme.typography.body2,
             color: theme.palette.text.secondary,
-            padding: "12px 32px",
+            padding: "10px 32px",
             minHeight: 0,
           },
           body: {

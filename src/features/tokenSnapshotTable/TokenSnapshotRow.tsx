@@ -14,14 +14,16 @@ import {
 } from "@mui/material";
 import { AccountTokenSnapshot } from "@superfluid-finance/sdk-core";
 import { BigNumber } from "ethers";
+import NextLink from "next/link";
+import { useRouter } from "next/router";
 import { FC, memo, useState } from "react";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
+import StreamsTable from "../streamsTable/StreamsTable";
 import EtherFormatted from "../token/EtherFormatted";
 import FlowingBalance from "../token/FlowingBalance";
 import TokenIcon from "../token/TokenIcon";
-import TokenStreamsTable from "./TokenStreamsTable";
 
 interface OpenIconProps {
   open: boolean;
@@ -38,14 +40,13 @@ const OpenIcon = styled(ExpandCircleDownOutlinedIcon)<OpenIconProps>(
 );
 
 interface SnapshotRowProps {
-  hasStreams?: boolean;
   lastElement?: boolean;
   open?: boolean;
 }
 
 const SnapshotRow = styled(TableRow)<SnapshotRowProps>(
-  ({ hasStreams, lastElement, open, theme }) => ({
-    cursor: hasStreams ? "pointer" : "initial",
+  ({ lastElement, open, theme }) => ({
+    cursor: "pointer",
     ...(lastElement && {
       td: {
         border: "none",
@@ -81,6 +82,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
   lastElement,
 }) => {
   const theme = useTheme();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   const {
@@ -111,21 +113,19 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
 
   const toggleOpen = () => hasStreams && setOpen(!open);
 
+  const openTokenPage = () =>
+    router.push(`/${network.slugName}/token?token=${token}`);
+
   return (
     <>
-      <SnapshotRow
-        hover
-        hasStreams={hasStreams}
-        lastElement={lastElement}
-        open={open}
-        onClick={toggleOpen}
-      >
-        <TableCell>
+      <SnapshotRow hover lastElement={lastElement} open={open}>
+        <TableCell onClick={openTokenPage}>
           <ListItem sx={{ p: 0 }}>
             <ListItemAvatar>
               <TokenIcon tokenSymbol={tokenSymbol} />
             </ListItemAvatar>
             <ListItemText
+              onClick={openTokenPage}
               primary={tokenSymbol}
               /**
                * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
@@ -143,7 +143,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             />
           </ListItem>
         </TableCell>
-        <TableCell>
+        <TableCell onClick={openTokenPage}>
           <ListItemText
             primary={
               <FlowingBalance
@@ -162,7 +162,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             }}
           />
         </TableCell>
-        <TableCell>
+        <TableCell onClick={openTokenPage}>
           {totalNumberOfActiveStreams > 0 ? (
             <Typography variant="body2mono">
               {netFlowRate.charAt(0) !== "-" && "+"}
@@ -177,7 +177,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             "-"
           )}
         </TableCell>
-        <TableCell>
+        <TableCell onClick={openTokenPage}>
           {totalNumberOfActiveStreams > 0 ? (
             <Stack>
               <Typography variant="body2mono" color="primary">
@@ -203,9 +203,9 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             "-"
           )}
         </TableCell>
-        <TableCell align="center">
+        <TableCell align="center" sx={{ cursor: "initial" }}>
           {hasStreams && (
-            <IconButton onClick={toggleOpen}>
+            <IconButton color="inherit" onClick={toggleOpen}>
               <OpenIcon open={open} />
             </IconButton>
           )}
@@ -218,6 +218,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           colSpan={5}
           sx={{
             border: "none",
+            minHeight: 0,
           }}
         >
           <Collapse
@@ -225,9 +226,10 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             timeout={theme.transitions.duration.standard}
             unmountOnExit
           >
-            <TokenStreamsTable
+            <StreamsTable
+              subTable
               network={network}
-              token={snapshot.token}
+              tokenAddress={snapshot.token}
               lastElement={lastElement}
             />
           </Collapse>

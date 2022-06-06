@@ -13,7 +13,7 @@ export default function ThemeChanger() {
 
   return (
     <Tooltip title={isDarkTheme ? "Light mode" : "Dark mode"}>
-      <IconButton onClick={toggleTheme}>
+      <IconButton color="inherit" onClick={toggleTheme}>
         {isDarkTheme ? (
           <LightModeOutlined fontSize="small" />
         ) : (

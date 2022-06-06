@@ -21,9 +21,10 @@ import {
 import { Stream } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
+import { useRouter } from "next/router";
 import { FC, memo, MouseEvent, useState } from "react";
 import Blockies from "react-blockies";
-import { useAccount, useNetwork } from "wagmi";
+import { useNetwork } from "wagmi";
 import shortenAddress from "../../utils/shortenAddress";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
@@ -39,10 +40,11 @@ import {
   transactionByHashSelector,
   useAccountTransactionsSelector,
 } from "../wallet/useAccountTransactions";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
-export const TokenStreamRowLoading = () => (
+export const StreamRowLoading = () => (
   <TableRow>
-    <TableCell sx={{ pl: "72px" }}>
+    <TableCell>
       <Stack direction="row" alignItems="center" gap={1.5}>
         <Skeleton variant="circular" width={24} height={24} />
         <Skeleton
@@ -75,21 +77,24 @@ export const TokenStreamRowLoading = () => (
   </TableRow>
 );
 
-interface TokenStreamRowProps {
+interface StreamRowProps {
   stream: Stream;
   network: Network;
 }
 
-const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
+const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
   const {
+    id,
     sender,
     receiver,
     currentFlowRate,
     streamedUntilUpdatedAt,
+    createdAtTimestamp,
     updatedAtTimestamp,
   } = stream;
 
-  const { data: account } = useAccount();
+  const router = useRouter();
+  const { visibleAddress } = useVisibleAddress();
   const { activeChain } = useNetwork();
 
   const [flowDeleteTrigger, flowDeleteMutation] =
@@ -102,8 +107,13 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
-  const openMenu = (event: MouseEvent<HTMLButtonElement>) =>
+  const openStreamDetails = () => {
+    router.push(`/${network.slugName}/stream?stream=${id}`);
+  };
+
+  const openMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setMenuAnchor(event.currentTarget);
+  };
 
   const closeMenu = () => setMenuAnchor(null);
 
@@ -122,17 +132,14 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
     setShowCancelDialog(true);
   };
 
-  const isOutgoing =
-    sender.localeCompare(account?.address ?? "", undefined, {
-      sensitivity: "accent",
-    }) === 0;
+  const isOutgoing = visibleAddress?.toLowerCase() === sender.toLowerCase();
 
   const isActive = currentFlowRate !== "0";
   const menuOpen = Boolean(menuAnchor);
 
   return (
     <TableRow hover>
-      <TableCell sx={{ pl: "72px" }}>
+      <TableCell onClick={openStreamDetails} sx={{ cursor: "pointer" }}>
         <Stack direction="row" alignItems="center" gap={1.5}>
           {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
           <Avatar variant="rounded">
@@ -147,8 +154,8 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
           </Typography>
         </Stack>
       </TableCell>
-      <TableCell>
-        <Typography variant="body2mono">
+      <TableCell onClick={openStreamDetails} sx={{ cursor: "pointer" }}>
+        <Typography variant="h7mono">
           <FlowingBalance
             balance={streamedUntilUpdatedAt}
             flowRate={currentFlowRate}
@@ -158,7 +165,7 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
           />
         </Typography>
       </TableCell>
-      <TableCell>
+      <TableCell onClick={openStreamDetails} sx={{ cursor: "pointer" }}>
         {isActive ? (
           <Typography variant="body2mono">
             {isOutgoing ? "-" : "+"}
@@ -173,9 +180,12 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
           "-"
         )}
       </TableCell>
-      <TableCell>
+      <TableCell onClick={openStreamDetails} sx={{ cursor: "pointer" }}>
         <Stack direction="row" alignItems="center" gap={1}>
-          {format(updatedAtTimestamp * 1000, "d MMM. yyyy")}
+          {format(
+            (isActive ? createdAtTimestamp : updatedAtTimestamp) * 1000,
+            "d MMM. yyyy"
+          )}
           {isActive && <AllInclusiveIcon />}
         </Stack>
       </TableCell>
@@ -192,7 +202,7 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
               <>
                 <Tooltip
                   arrow
-                  title={`Please switch provider network to ${network.name} in order to cancel the stream.`}
+                  title={`Please connect your wallet and switch provider network to ${network.name} in order to cancel the stream.`}
                   disableHoverListener={network.id === activeChain?.id}
                 >
                   <span>
@@ -210,7 +220,6 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
                   open={menuOpen}
                   anchorEl={menuAnchor}
                   onClose={closeMenu}
-                  PaperProps={{ square: true }}
                   transformOrigin={{ horizontal: "right", vertical: "top" }}
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                 >
@@ -253,4 +262,4 @@ const TokenStreamRow: FC<TokenStreamRowProps> = ({ stream, network }) => {
   );
 };
 
-export default memo(TokenStreamRow);
+export default memo(StreamRow);

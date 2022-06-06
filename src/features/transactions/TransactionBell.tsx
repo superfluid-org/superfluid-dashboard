@@ -18,8 +18,11 @@ export default memo(function TransactionBell() {
     pendingTransactionsSelector
   );
 
-  return account ? (
+  if (!account) return null;
+
+  return (
     <IconButton
+      color="inherit"
       edge="end"
       onClick={() => setTransactionDrawerOpen(!transactionDrawerOpen)}
     >
@@ -32,5 +35,5 @@ export default memo(function TransactionBell() {
         <NotificationsIcon />
       </Badge>
     </IconButton>
-  ) : null;
+  );
 });

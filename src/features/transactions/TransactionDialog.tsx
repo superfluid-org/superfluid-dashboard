@@ -16,7 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import { styled, useTheme } from "@mui/system";
-import { FC } from "react";
+import React, { FC } from "react";
 import UnknownMutationResult from "../../unknownMutationResult";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";

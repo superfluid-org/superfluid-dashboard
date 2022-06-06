@@ -9,6 +9,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Paper,
   Stack,
   Toolbar,
   useTheme,
@@ -28,13 +29,14 @@ export default memo(function NavigationDrawer() {
 
   const router = useRouter();
 
-  const isActiveRoute = (route: string) => router.route === route;
+  const isActiveRoute = (...routes: Array<string>) =>
+    routes.includes(router.route);
 
   return (
     <Drawer
       variant="permanent"
       anchor="left"
-      PaperProps={{ sx: { width: menuDrawerWidth } }}
+      PaperProps={{ sx: { width: menuDrawerWidth, borderRadius: 0 } }}
       sx={{ width: menuDrawerWidth }}
     >
       <Toolbar sx={{ height: 88 }}>
@@ -66,7 +68,7 @@ export default memo(function NavigationDrawer() {
         <NextLink href={"/"} passHref>
           <ListItemButton
             sx={{ borderRadius: "10px" }}
-            selected={isActiveRoute("/")}
+            selected={isActiveRoute("/", "/[_network]/token")}
           >
             <ListItemIcon>
               <AutoAwesomeMosaicIcon />

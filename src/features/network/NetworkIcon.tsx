@@ -1,4 +1,4 @@
-import { Avatar } from "@mui/material";
+import { Avatar, AvatarProps } from "@mui/material";
 import { FC } from "react";
 import { Network } from "./networks";
 
