@@ -18,12 +18,15 @@ interface ExpectedNetworkContextValue {
   setExpectedNetwork: (chainId: number) => void;
 }
 
-const ExpectedNetworkContext = createContext<ExpectedNetworkContextValue>(null!);
+const ExpectedNetworkContext = createContext<ExpectedNetworkContextValue>(
+  null!
+);
 
 export const ExpectedNetworkProvider: FC<{
   children: (network: Network) => ReactNode;
 }> = ({ children }) => {
   const [network, setNetwork] = useState<Network>(networksByChainId.get(137)!);
+
   const contextValue: ExpectedNetworkContextValue = useMemo(
     () => ({
       network,
@@ -35,7 +38,7 @@ export const ExpectedNetworkProvider: FC<{
 
   const router = useRouter();
   const { activeChain } = useNetwork();
-  
+
   useEffect(() => {
     // TODO(KK): Flaky and hard to maintain logic. Refactor when doing form contexts.
     const inputFormPaths = ["/wrap", "/send"];
@@ -45,12 +48,13 @@ export const ExpectedNetworkProvider: FC<{
       return;
     }
 
-    if (activeChain && (activeChain.id !== network.id)) {
+    if (activeChain && activeChain.id !== network.id) {
       const networkFromWallet = networksByChainId.get(activeChain.id);
       if (networkFromWallet) {
         setNetwork(networkFromWallet);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeChain]);
 
   // # Set network based on the wallet on autoconnect.
@@ -67,7 +71,9 @@ export const ExpectedNetworkProvider: FC<{
   }, []);
 
   // # Set network based on the URL querystring.
-  const { network: networkQueryParam } = router.query;
+  const { network: networkQueryParam, _network: networkPathParam } =
+    router.query;
+
   useEffect(() => {
     if (isString(networkQueryParam)) {
       const networkFromQuery = networksBySlug.get(networkQueryParam);
@@ -77,6 +83,7 @@ export const ExpectedNetworkProvider: FC<{
       const { network, ...networkQueryParamRemoved } = router.query;
       router.replace({ query: networkQueryParamRemoved });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [networkQueryParam]);
 
   return (

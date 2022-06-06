@@ -13,7 +13,7 @@ export default function ThemeChanger() {
 
   return (
     <Tooltip data-cy={"light-switch"} title={isDarkTheme ? "Light mode" : "Dark mode"}>
-      <IconButton onClick={toggleTheme}>
+      <IconButton color="inherit" onClick={toggleTheme}>
         {isDarkTheme ? (
           <LightModeOutlined fontSize="small" />
         ) : (

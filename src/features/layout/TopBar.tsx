@@ -16,6 +16,7 @@ const CustomAppBar = styled(AppBar)<CustomAppBarProps>(
   ({ theme, open, isScrolled }) => ({
     width: `calc(100% - ${menuDrawerWidth}px)`,
     marginLeft: `${menuDrawerWidth}px`,
+    borderRadius: 0,
     background: alpha(theme.palette.background.paper, isScrolled ? 1 : 0),
     transition: theme.transitions.create("all", {
       easing: theme.transitions.easing.easeInOut,

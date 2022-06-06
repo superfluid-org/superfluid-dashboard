@@ -281,7 +281,7 @@ export default memo(function SendCard(props: {
                   passHref
                 >
                   <Tooltip title="Wrap">
-                    <IconButton data-cy={"balance-wrap-button"}>
+                    <IconButton data-cy={"balance-wrap-button"} color="inherit">
                       <AddCircleOutline />
                     </IconButton>
                   </Tooltip>
