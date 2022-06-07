@@ -78,23 +78,23 @@ const StreamingFormProvider: FC<{
     mode: "onChange",
   });
 
-  const {
-    watch,
-    formState: { errors },
-    trigger,
-  } = formMethods;
-  useEffect(() => {
-    const subscription = watch((value, { name, type }) =>
-      console.log(value, name, type)
-    );
-    return () => subscription.unsubscribe();
-  }, [watch]);
+  // const {
+  //   watch,
+  //   formState: { errors },
+  //   trigger,
+  // } = formMethods;
+  // useEffect(() => {
+  //   const subscription = watch((value, { name, type }) =>
+  //     console.log(value, name, type)
+  //   );
+  //   return () => subscription.unsubscribe();
+  // }, [watch]);
 
-  useEffect(() => {
-    console.log({
-      errors,
-    });
-  }, [errors]);
+  // useEffect(() => {
+  //   console.log({
+  //     errors,
+  //   });
+  // }, [errors]);
 
   return <FormProvider {...formMethods}>{children}</FormProvider>;
 };

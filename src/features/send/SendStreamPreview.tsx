@@ -28,20 +28,26 @@ import {
 const PreviewItem: FC<{
   label: string;
   oldValue?: ReactNode;
-}> = ({ label, children, oldValue }) => (
-  <Stack direction="row" alignItems="center" justifyContent="space-between">
-    <Typography variant="body2">{label}</Typography>
+}> = ({ label, children, oldValue }) => {
+  const valueTypography = (
     <Typography variant="body2" fontWeight="500">
+      {children}
+    </Typography>
+  );
+
+  return (
+    <Stack direction="row" alignItems="center" justifyContent="space-between">
+      <Typography variant="body2">{label}</Typography>
       {oldValue ? (
-        <Tooltip title={<>{oldValue}</>}>
-          <>TEST {children}</>
+        <Tooltip title={<>Current: {oldValue}</>} arrow placement="top">
+          {valueTypography}
         </Tooltip>
       ) : (
-        children
+        valueTypography
       )}
-    </Typography>
-  </Stack>
-);
+    </Stack>
+  );
+};
 
 export const StreamingPreview: FC<{
   receiver: DisplayAddress;
@@ -204,6 +210,7 @@ export const StreamingPreview: FC<{
                 balance={balanceAfterBuffer.toString()}
                 balanceTimestamp={realtimeBalance.balanceTimestamp}
                 flowRate={realtimeBalance.flowRate}
+                tokenSymbol={token.symbol}
               />
             )}
           </PreviewItem>

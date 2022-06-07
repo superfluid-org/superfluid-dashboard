@@ -13,7 +13,6 @@ import {
   useTheme,
 } from "@mui/material";
 import { format } from "date-fns";
-import { NextPage } from "next";
 import Error from "next/error";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -32,8 +31,6 @@ import {
   calculateBuffer,
 } from "../../utils/tokenUtils";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import EditIcon from "@mui/icons-material/Edit";
-import CancelIcon from "@mui/icons-material/Cancel";
 import CloseIcon from "@mui/icons-material/Close";
 import withPathNetwork, { NetworkPage } from "../../hoc/withPathNetwork";
 

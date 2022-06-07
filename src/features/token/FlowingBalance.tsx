@@ -16,6 +16,7 @@ export interface FlowingBalanceProps {
   flowRate: string;
   etherDecimalPlaces?: number;
   disableRoundingIndicator?: boolean;
+  tokenSymbol?: string;
 }
 
 export default memo(function FlowingBalance({
@@ -23,6 +24,7 @@ export default memo(function FlowingBalance({
   balanceTimestamp,
   flowRate,
   etherDecimalPlaces,
+  tokenSymbol
 }: FlowingBalanceProps): ReactElement {
   const [weiValue, setWeiValue] = useStateWithDep<BigNumberish>(balance);
 
@@ -94,7 +96,7 @@ export default memo(function FlowingBalance({
         disableRoundingIndicator
         wei={weiValue}
         etherDecimalPlaces={etherDecimalPlaces || decimals}
-      />
+      /> {tokenSymbol}
     </Box>
   );
 });
