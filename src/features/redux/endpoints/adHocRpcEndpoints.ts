@@ -11,7 +11,12 @@ import {
   registerNewTransactionAndReturnQueryFnResult,
 } from "@superfluid-finance/sdk-redux";
 import { NATIVE_ASSET_ADDRESS } from "./tokenTypes";
-import { balanceFetcher, BalanceQueryParams, UnderlyingBalance, RealtimeBalance } from "./balanceFetcher";
+import {
+  balanceFetcher,
+  BalanceQueryParams,
+  UnderlyingBalance,
+  RealtimeBalance,
+} from "./balanceFetcher";
 
 declare module "@superfluid-finance/sdk-redux" {
   interface TransactionTitleOverrides {
@@ -19,8 +24,50 @@ declare module "@superfluid-finance/sdk-redux" {
   }
 }
 
+interface Web3FlowInfo {
+  updatedAtTimestamp: number;
+  flowRateWei: string;
+  depositWei: string;
+  owedDepositWei: string;
+}
+
 export const adHocRpcEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
+    getActiveFlow: builder.query<
+      Web3FlowInfo | null,
+      {
+        chainId: number;
+        tokenAddress: string;
+        senderAddress: string;
+        receiverAddress: string;
+      }
+    >({
+      queryFn: async (arg) => {
+        const framework = await getFramework(arg.chainId);
+        const token = await framework.loadSuperToken(arg.tokenAddress);
+        const result: Web3FlowInfo = await token
+          .getFlow({
+            sender: arg.senderAddress,
+            receiver: arg.receiverAddress,
+            providerOrSigner: framework.settings.provider,
+          })
+          .then((x) => ({
+            updatedAtTimestamp: x.timestamp.getTime(),
+            depositWei: x.deposit,
+            flowRateWei: x.flowRate,
+            owedDepositWei: x.owedDeposit,
+          }));
+        return {
+          data: result.flowRateWei !== "0" ? result : null,
+        };
+      },
+      providesTags: (_result, _error, arg) => [
+        {
+          type: "GENERAL",
+          id: arg.chainId, // TODO(KK): Could be made more specific.
+        },
+      ],
+    }),
     underlyingBalance: builder.query<UnderlyingBalance, BalanceQueryParams>({
       queryFn: async (arg) => {
         return {
@@ -112,7 +159,7 @@ export const adHocRpcEndpoints = {
         superTokenAddress: string;
         amountWei: string;
         waitForConfirmation?: boolean;
-        transactionExtraData?: Record<string, unknown>
+        transactionExtraData?: Record<string, unknown>;
       }
     >({
       queryFn: async (arg, queryApi) => {

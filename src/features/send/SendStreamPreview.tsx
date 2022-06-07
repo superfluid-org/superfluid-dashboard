@@ -10,7 +10,7 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
 import { BigNumber, ethers } from "ethers";
 import { FC, ReactNode, useMemo } from "react";
-import { calculateMaybeCriticalAtTimestamp2 } from "../../utils/tokenUtils";
+import { calculateMaybeCriticalAtTimestamp } from "../../utils/tokenUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { rpcApi } from "../redux/store";
@@ -34,7 +34,7 @@ const PreviewItem: FC<{
     <Typography variant="body2" fontWeight="500">
       {oldValue ? (
         <Tooltip title={<>{oldValue}</>}>
-          <>{children}</>
+          <>TEST {children}</>
         </Tooltip>
       ) : (
         children
@@ -48,7 +48,7 @@ export const StreamingPreview: FC<{
   token: SuperTokenMinimal;
   flowRateWithTime: FlowRateWithTime;
   existingStream: {
-    currentFlowRate: string;
+    flowRateWei: string;
   } | null;
 }> = ({ receiver, token, flowRateWithTime, existingStream }) => {
   const theme = useTheme();
@@ -77,7 +77,7 @@ export const StreamingPreview: FC<{
         ? calculateBufferAmount({
             network,
             flowRateWithTime: {
-              amountWei: existingStream.currentFlowRate,
+              amountWei: existingStream.flowRateWei,
               unitOfTime: UnitOfTime.Second,
             },
           })
@@ -107,7 +107,7 @@ export const StreamingPreview: FC<{
   const flowRateDelta = useMemo(
     () =>
       existingStream
-        ? newFlowRate.sub(BigNumber.from(existingStream.currentFlowRate))
+        ? newFlowRate.sub(BigNumber.from(existingStream.flowRateWei))
         : newFlowRate,
     [newFlowRate, existingStream]
   );
@@ -125,7 +125,7 @@ export const StreamingPreview: FC<{
       realtimeBalance && newTotalFlowRate
         ? newTotalFlowRate.isNegative()
           ? new Date(
-              calculateMaybeCriticalAtTimestamp2({
+              calculateMaybeCriticalAtTimestamp({
                 balanceUntilUpdatedAtWei: realtimeBalance.balance.toString(),
                 updatedAtTimestamp: realtimeBalance.balanceTimestamp,
                 totalNetFlowRateWei: newTotalFlowRate.toString(),
@@ -143,7 +143,7 @@ export const StreamingPreview: FC<{
       realtimeBalance && newTotalFlowRate && flowRateDelta
         ? newTotalFlowRate.isNegative()
           ? new Date(
-              calculateMaybeCriticalAtTimestamp2({
+              calculateMaybeCriticalAtTimestamp({
                 balanceUntilUpdatedAtWei: realtimeBalance.balance.toString(),
                 updatedAtTimestamp: realtimeBalance.balanceTimestamp,
                 totalNetFlowRateWei: BigNumber.from(realtimeBalance.flowRate)
@@ -184,7 +184,7 @@ export const StreamingPreview: FC<{
             existingStream
               ? flowRateWithTimeToString(
                   {
-                    amountWei: existingStream.currentFlowRate,
+                    amountWei: existingStream.flowRateWei,
                     unitOfTime: UnitOfTime.Second,
                   },
                   token.symbol

@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers";
+import { BigNumber, BigNumberish } from "ethers";
 import { number, string } from "yup";
 
 export const MAX_SAFE_SECONDS = BigNumber.from(8640000000000); //In seconds, https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#the_ecmascript_epoch_and_timestamps
@@ -21,12 +21,15 @@ export const subscriptionWeiAmountReceived = (
   return totalAmountReceived;
 };
 
-// TODO: This needs to be tested
-export function calculateMaybeCriticalAtTimestamp(
-  updatedAtTimestamp: BigNumber,
-  balanceUntilUpdatedAt: BigNumber,
-  totalNetFlowRate: BigNumber
-): BigNumber {
+export function calculateMaybeCriticalAtTimestamp(params: {
+  updatedAtTimestamp: BigNumberish;
+  balanceUntilUpdatedAtWei: BigNumberish;
+  totalNetFlowRateWei: BigNumberish;
+}): BigNumber {
+  const updatedAtTimestamp = BigNumber.from(params.updatedAtTimestamp);
+  const balanceUntilUpdatedAt = BigNumber.from(params.balanceUntilUpdatedAtWei);
+  const totalNetFlowRate = BigNumber.from(params.totalNetFlowRateWei);
+
   if (
     balanceUntilUpdatedAt.lte(BIG_NUMBER_ZERO) ||
     totalNetFlowRate.gte(BIG_NUMBER_ZERO)
@@ -40,22 +43,6 @@ export function calculateMaybeCriticalAtTimestamp(
 
   if (calculatedCriticalTimestamp.gt(MAX_SAFE_SECONDS)) return MAX_SAFE_SECONDS;
   return calculatedCriticalTimestamp;
-}
-
-export function calculateMaybeCriticalAtTimestamp2({
-  updatedAtTimestamp,
-  balanceUntilUpdatedAtWei,
-  totalNetFlowRateWei,
-}: {
-  updatedAtTimestamp: number;
-  balanceUntilUpdatedAtWei: string;
-  totalNetFlowRateWei: string;
-}): BigNumber {
-  return calculateMaybeCriticalAtTimestamp(
-    BigNumber.from(updatedAtTimestamp),
-    BigNumber.from(balanceUntilUpdatedAtWei),
-    BigNumber.from(totalNetFlowRateWei)
-  );
 }
 
 // TODO: This needs to be tested

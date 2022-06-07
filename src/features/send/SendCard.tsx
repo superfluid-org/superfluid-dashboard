@@ -29,9 +29,7 @@ import { rpcApi, subgraphApi } from "../redux/store";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
-import {
-  RestorationType,
-} from "../transactionRestoration/transactionRestorations";
+import { RestorationType } from "../transactionRestoration/transactionRestorations";
 import { TransactionButton } from "../transactions/TransactionButton";
 import {
   TransactionDialogActions,
@@ -114,24 +112,16 @@ export default memo(function SendCard() {
   const shouldSearchForExistingStreams =
     !!visibleAddress && !!receiver && !!selectedToken;
 
-  const existingStreams = subgraphApi.useStreamsQuery(
+  const { data: existingFlow } = rpcApi.useGetActiveFlowQuery(
     shouldSearchForExistingStreams
       ? {
           chainId: network.id,
-          filter: {
-            sender: visibleAddress,
-            receiver: receiver.hash,
-            token: selectedToken.address,
-            currentFlowRate_not: "0",
-          },
-          pagination: {
-            skip: 0,
-            take: 1,
-          },
+          tokenAddress: selectedToken.address,
+          senderAddress: visibleAddress,
+          receiverAddress: receiver.hash,
         }
       : skipToken
   );
-  const existingStream = existingStreams.data?.items?.[0];
 
   const hasAllDataForStream =
     receiver &&
@@ -151,7 +141,7 @@ export default memo(function SendCard() {
     >
       <Stack spacing={4}>
         <Typography variant="h4" component="h1">
-          {existingStream ? "Modify Stream" : "Send Stream"}
+          {existingFlow ? "Modify Stream" : "Send Stream"}
         </Typography>
 
         {errors?.form?.receiver && (
@@ -288,7 +278,7 @@ export default memo(function SendCard() {
                 receiver={receiver}
                 token={selectedToken}
                 flowRateWithTime={flowRate}
-                existingStream={existingStream ?? null}
+                existingStream={existingFlow ?? null}
               />
 
               <Alert severity="warning">
@@ -322,7 +312,7 @@ export default memo(function SendCard() {
             </>
           )}
 
-          {!existingStream ? (
+          {!existingFlow ? (
             <TransactionButton
               hidden={false}
               disabled={isSendDisabled}

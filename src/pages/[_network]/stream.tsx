@@ -78,11 +78,11 @@ const Stream: FC<NetworkPage> = ({ network }) => {
     } = tokenSnapshotQuery.data;
 
     return new Date(
-      calculateMaybeCriticalAtTimestamp(
-        BigNumber.from(snapshotUpdatedAtTimestamp),
-        BigNumber.from(balanceUntilUpdatedAt),
-        BigNumber.from(totalNetFlowRate)
-      ).toNumber() * 1000
+      calculateMaybeCriticalAtTimestamp({
+        updatedAtTimestamp: snapshotUpdatedAtTimestamp,
+        balanceUntilUpdatedAtWei: balanceUntilUpdatedAt,
+        totalNetFlowRateWei: totalNetFlowRate
+      }).toNumber() * 1000
     );
   }, [tokenSnapshotQuery.data]);
 
