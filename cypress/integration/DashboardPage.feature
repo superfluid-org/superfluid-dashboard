@@ -2,7 +2,7 @@ Feature: Dashboard Page test cases
 
   Scenario: Connect wallet button shown to a user who hasn't got their wallet connected
     Given "Dashboard Page" is open without connecting a wallet
-    Then Dashboard page is open when users wallet is not connected
+    Then Dashboard page is open when wallet of the user is not connected
 
   Scenario: Dashboard page showing correct wallet balances for account with no streams
     Given "Dashboard Page" is open with a mocked connection to "staticBalanceAccount" on "polygon"

@@ -108,11 +108,11 @@ export class SendPage extends BasePage {
         cy.fixture("commonData").then((commonData) => {
             this.hasText(PREVIEW_RECEIVER, commonData.staticBalanceAccount);
             cy.get("@lastChosenToken").then((lastChosenToken) => {
-                this.hasText(PREVIEW_FLOW_RATE, "1.0 " + lastChosenToken + "/hour");
+                this.hasText(PREVIEW_FLOW_RATE, `1.0 ${lastChosenToken}/hour`);
                 //A rounding error from the dashboard? Will probably change when we do some formatting changes
                 this.hasText(
                     PREVIEW_UPFRONT_BUFFER,
-                    "3.9999999999999888 " + lastChosenToken
+                    `3.9999999999999888 ${lastChosenToken}`
                 );
             });
         });
@@ -199,7 +199,7 @@ export class SendPage extends BasePage {
         cy.fixture("networkSpecificData").then((networkSpecificData) => {
             networkSpecificData[network][account].tokenValues.forEach(
                 (values: any) => {
-                    let specificToken = "[data-cy=" + values.token + "-list-item] ";
+                    let specificToken = `[data-cy=${values.token}-list-item] `;
                     this.scrollToAndhasText(
                         specificToken + TOKEN_SELECT_SYMBOL,
                         values.token
@@ -224,17 +224,17 @@ export class SendPage extends BasePage {
     }
 
     static tokenSelectionWrapToken(token: string) {
-        let specificToken = "[data-cy=" + token + "-list-item] ";
+        let specificToken = `[data-cy=${token}-list-item] `;
         this.click(specificToken + RESULTS_WRAP_BUTTONS);
     }
 
     static selectTokenForStreaming(token: string) {
         this.click(SELECT_TOKEN_BUTTON);
-        this.click("[data-cy=" + token + "-list-item]");
+        this.click(`[data-cy=${token}-list-item]`);
     }
 
     static nativeTokenDoesNotHaveWrapButtons(token: string) {
-        let specificToken = "[data-cy=" + token + "-list-item] ";
+        let specificToken = `[data-cy=${token}-list-item] `;
         this.doesNotExist(specificToken + RESULTS_WRAP_BUTTONS);
     }
 
@@ -244,7 +244,7 @@ export class SendPage extends BasePage {
     }
 
     static selectTokenFromTokenList(token: string) {
-        this.click("[data-cy=" + token + "-list-item]");
+        this.click(`[data-cy=${token}-list-item]`);
     }
 
     static tokenSearchResultsOnlyContain(token: string) {

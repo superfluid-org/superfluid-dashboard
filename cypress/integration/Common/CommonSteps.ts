@@ -12,7 +12,7 @@ Given(/^User clicks on the "([^"]*)" navigation button$/, function (button: stri
     Common.clickNavBarButton(button);
 });
 
-Then(/^Dashboard page is open when users wallet is not connected$/, function () {
+Then(/^Dashboard page is open when wallet of the user is not connected$/, function () {
     DashboardPage.checkIfDashboardConnectIsVisible();
 });
 

@@ -72,7 +72,7 @@ export class WrapPage extends BasePage {
     static changeNetworkButtonShowsCorrectNetwork(network: string) {
         this.hasText(
             CHANGE_NETWORK_BUTTON,
-            "Change Network to " + networksBySlug.get(network)?.name
+            `Change Network to ${networksBySlug.get(network)?.name}`
         );
     }
 
@@ -101,7 +101,7 @@ export class WrapPage extends BasePage {
             )[0];
             this.hasText(
                 UNDERLYING_BALANCE,
-                "Balance: " + filteredToken.underlyingBalance
+                `Balance: ${filteredToken.underlyingBalance}`
             );
             this.hasText(SUPER_TOKEN_BALANCE, filteredToken.balance);
         });
@@ -116,7 +116,7 @@ export class WrapPage extends BasePage {
             networkSpecificData[network].staticBalanceAccount.tokenValues.forEach(
                 (values: any) => {
                     let specificToken =
-                        "[data-cy=" + values.underlyingTokenSymbol + "-list-item] ";
+                        `[data-cy=${values.underlyingTokenSymbol}-list-item] `;
                     if (values.underlyingBalance) {
                         this.scrollToAndhasText(
                             specificToken + TOKEN_SELECT_SYMBOL,
@@ -155,14 +155,14 @@ export class WrapPage extends BasePage {
     }
 
     static chooseTokenToWrap(token: string) {
-        this.click("[data-cy=" + token + "-list-item]");
+        this.click(`[data-cy=${token}-list-item]`);
     }
 
     static validateUnwrapTokenSelectionBalances(network: string) {
         cy.fixture("networkSpecificData").then((networkSpecificData) => {
             networkSpecificData[network].staticBalanceAccount.tokenValues.forEach(
                 (values: any) => {
-                    let specificToken = "[data-cy=" + values.token + "-list-item] ";
+                    let specificToken = `[data-cy=${values.token}-list-item] `;
                     this.scrollToAndhasText(
                         specificToken + TOKEN_SELECT_SYMBOL,
                         values.token

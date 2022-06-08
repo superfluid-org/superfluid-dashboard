@@ -41,20 +41,12 @@ export class DashboardPage extends BasePage {
                 networkSpecificData[network.slugName][account].tokenValues.forEach(
                     (tokenValues: any, index: number) => {
                         cy.get(
-                            "[data-cy=" +
-                            network.slugName +
-                            NETWORK_SNAPSHOT_TABLE_APPENDIX +
-                            " " +
-                            TOKEN_SYMBOLS
+                            `[data-cy=${network.slugName}${NETWORK_SNAPSHOT_TABLE_APPENDIX} ${TOKEN_SYMBOLS}`
                         )
                             .eq(index)
                             .should("have.text", tokenValues.token);
                         cy.get(
-                            "[data-cy=" +
-                            network.slugName +
-                            NETWORK_SNAPSHOT_TABLE_APPENDIX +
-                            " " +
-                            TOKEN_BALANCES
+                            `[data-cy=${network.slugName}${NETWORK_SNAPSHOT_TABLE_APPENDIX} ${TOKEN_BALANCES}`
                         )
                             .eq(index)
                             .should("have.text", tokenValues.balance.toFixed(8));
@@ -73,11 +65,11 @@ export class DashboardPage extends BasePage {
     }
 
     static clickNetworkSelectionToogle(network: string) {
-        this.click("[data-cy=" + network + NETWORK_SELECTION_TOGGLE_APPENDIX);
+        this.click(`[data-cy=${network}${NETWORK_SELECTION_TOGGLE_APPENDIX}`);
     }
 
     static tokenBalancesAreNotVisible(network: string) {
-        this.doesNotExist("[data-cy=" + network + NETWORK_SNAPSHOT_TABLE_APPENDIX);
+        this.doesNotExist(`[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX}`);
     }
 
     static noBalancesScreenIsVisible() {
@@ -104,12 +96,7 @@ export class DashboardPage extends BasePage {
 
     static clickTokenStreamRow(network: string, token: string) {
         this.click(
-            "[data-cy=" +
-            network +
-            NETWORK_SNAPSHOT_TABLE_APPENDIX +
-            " [data-cy=" +
-            token +
-            "-cell]"
+            `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell]`
         );
     }
 
@@ -118,33 +105,15 @@ export class DashboardPage extends BasePage {
             let flowValues =
                 networkSpecificData[network].ongoingStreamsAccount.tokenValues;
             this.hasText(
-                "[data-cy=" +
-                network +
-                NETWORK_SNAPSHOT_TABLE_APPENDIX +
-                " [data-cy=" +
-                token +
-                "-cell] " +
-                NET_FLOW_VALUES,
+                `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${NET_FLOW_VALUES}`,
                 flowValues.netFlowRate
             );
             this.hasText(
-                "[data-cy=" +
-                network +
-                NETWORK_SNAPSHOT_TABLE_APPENDIX +
-                " [data-cy=" +
-                token +
-                "-cell] " +
-                OUTFLOW_VALUES,
+                `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${OUTFLOW_VALUES}`,
                 flowValues.outFlow
             );
             this.hasText(
-                "[data-cy=" +
-                network +
-                NETWORK_SNAPSHOT_TABLE_APPENDIX +
-                " [data-cy=" +
-                token +
-                "-cell] " +
-                INFLOW_VALUES,
+                `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${INFLOW_VALUES}`,
                 flowValues.inFlow
             );
         });
@@ -153,14 +122,9 @@ export class DashboardPage extends BasePage {
     static validateTokenStreams(network: string) {
         cy.fixture("networkSpecificData").then((networkSpecificData) => {
             let specificSelector =
-                "[data-cy=" +
-                network +
-                NETWORK_SNAPSHOT_TABLE_APPENDIX +
-                " [data-cy=" +
-                networkSpecificData[
+                `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${networkSpecificData[
                     network
-                    ].ongoingStreamsAccount.tokenValues.tokenAddress.toLowerCase() +
-                "-streams] ";
+                    ].ongoingStreamsAccount.tokenValues.tokenAddress.toLowerCase()}-streams] `;
             networkSpecificData[
                 network
                 ].ongoingStreamsAccount.tokenValues.streams.forEach(
@@ -198,14 +162,9 @@ export class DashboardPage extends BasePage {
     static validateAllCancelButtonsDisabledForToken(network: string) {
         cy.fixture("networkSpecificData").then((networkSpecificData) => {
             cy.get(
-                "[data-cy=" +
-                network +
-                NETWORK_SNAPSHOT_TABLE_APPENDIX +
-                " [data-cy=" +
-                networkSpecificData[
+                `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${networkSpecificData[
                     network
-                    ].ongoingStreamsAccount.tokenValues.tokenAddress.toLowerCase() +
-                "-streams] [data-cy=cancel-button]"
+                    ].ongoingStreamsAccount.tokenValues.tokenAddress.toLowerCase()}-streams] [data-cy=cancel-button]`
             ).each((button: any) => {
                 cy.wrap(button).should("have.attr", "disabled");
             });
@@ -214,10 +173,7 @@ export class DashboardPage extends BasePage {
 
     static hoverOnFirstCancelButton(network: string) {
         cy.get(
-            "[data-cy=" +
-            network +
-            NETWORK_SNAPSHOT_TABLE_APPENDIX +
-            " [data-cy=switch-network-tooltip]"
+            `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=switch-network-tooltip]`
         )
             .first()
             .trigger("mouseover");
@@ -225,16 +181,14 @@ export class DashboardPage extends BasePage {
 
     static validateChangeNetworkTooltip(network: string) {
         let expectedMessage =
-            "Please switch provider network to " +
-            networksBySlug.get(network)?.name +
-            " in order to cancel the stream.";
+            `Please switch provider network to ${networksBySlug.get(network)?.name} in order to cancel the stream.`;
         this.isVisible(TOOLTIPS);
         this.hasText(TOOLTIPS, expectedMessage);
     }
 
     static changeRowsPerPageShown(amount: number) {
         cy.get(ROWS_PER_PAGE_ARROW).parent().click();
-        this.click("[data-value=" + amount + "]");
+        this.click(`[data-value=${amount}]`);
     }
 
     static checkVisibleRowsAmount(amount: string, token: string) {
@@ -245,7 +199,7 @@ export class DashboardPage extends BasePage {
                     .tokenAddress.toLowerCase();
             let expectedAmount = parseInt(amount) + 1;
             let lastRowData: string[] = [];
-            cy.get('[data-cy="' + tokenAddress + '-streams"] tr')
+            cy.get(`[data-cy="${tokenAddress}-streams"] tr`)
                 .should("have.length", expectedAmount)
                 .and(($el) => {
                     lastRowData.push($el.text());
@@ -272,12 +226,12 @@ export class DashboardPage extends BasePage {
 
                 this.click(NEXT_PAGE_BUTTON);
                 this.hasLength(
-                    '[data-cy="' + tokenAddress + '-streams"] tr',
+                    `[data-cy="${tokenAddress}-streams"] tr`,
                     amountOfExpectedPagesInNewPage
                 );
                 let newRows: string[] = [];
                 cy.get("@lastStreamRows").then((rows) => {
-                    cy.get('[data-cy="' + tokenAddress + '-streams"] tr').then(($el) => {
+                    cy.get(`[data-cy="${tokenAddress}-streams"] tr`).then(($el) => {
                         newRows.push($el.text());
                         cy.wrap(newRows).should("not.equal", rows);
                     });
@@ -285,7 +239,7 @@ export class DashboardPage extends BasePage {
                 cy.get(DISPLAYED_ROWS).then((el) => {
                     cy.wrap(el.text()).should(
                         "eq",
-                        currentPagesVisible + 1 + "–" + totalRows + " of " + totalRows
+                        `${currentPagesVisible + 1}–${totalRows} of ${totalRows}`
                     );
                 });
             });

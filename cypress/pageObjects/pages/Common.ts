@@ -19,7 +19,7 @@ const WAGMI_CONNECT_WALLET_TITLE = "#rk_connect_title";
 
 export class Common extends BasePage {
     static clickNavBarButton(button: string) {
-        this.click(NAVIGATION_BUTTON_PREFIX + button + "]");
+        this.click(`${NAVIGATION_BUTTON_PREFIX + button}]`);
     }
 
     static openPage(
@@ -33,13 +33,13 @@ export class Common extends BasePage {
                 this.visitPage("/", mocked, account, network);
                 break;
             case "wrap page":
-                this.visitPage("/wrap?upgrade", mocked, account, network);
+                this.visitPage("/wrap", mocked, account, network);
                 break;
             case "send page":
                 this.visitPage("/send", mocked, account, network);
                 break;
             default:
-                throw new Error("Hmm, you haven't set up the link for : " + page);
+                throw new Error(`Hmm, you haven't set up the link for : ${page}`);
         }
     }
 
@@ -83,7 +83,7 @@ export class Common extends BasePage {
 
     static changeNetwork(network: string) {
         this.click(TOP_BAR_NETWORK_BUTTON);
-        this.click("[data-cy=" + network + "-button]");
+        this.click(`[data-cy=${network}-button]`);
     }
 
     static checkNavBarWalletStatus(account: string, message: string) {
@@ -94,7 +94,7 @@ export class Common extends BasePage {
     }
 
     static drawerConnectWalletButtonIsVisible() {
-        this.isVisible(NAVIGATION_DRAWER + " " + CONNECT_WALLET_BUTTON);
+        this.isVisible(`${NAVIGATION_DRAWER} ${CONNECT_WALLET_BUTTON}`);
     }
 
     static viewAccount(account: string) {

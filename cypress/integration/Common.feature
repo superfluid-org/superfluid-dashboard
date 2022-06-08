@@ -3,7 +3,7 @@ Feature: Common element test cases
   Scenario: Switching between pages using navigation drawer
     Given "Dashboard page" is open without connecting a wallet
     And User clicks on the "dashboard" navigation button
-    Then Dashboard page is open when users wallet is not connected
+    Then Dashboard page is open when wallet of the user is not connected
     And User clicks on the "wrap-unwrap" navigation button
     Then Wrap/Unwrap page is open and the wrap container is visible
     And User clicks on the "send" navigation button
