@@ -61,15 +61,16 @@ export default memo(function SendCard() {
     watch,
     control,
     setValue,
-    formState: { errors },
+    formState,
     reset: resetForm,
   } = useFormContext<StreamingForm>();
+  const doesFormHaveErrors = !!Object.keys(formState.errors).length;
 
   const [receiver, selectedToken, flowRate, understandLiquidationRisk] = watch([
-    "receiver",
-    "token",
-    "flowRate",
-    "understandLiquidationRisk",
+    "root.receiver",
+    "root.token",
+    "root.flowRate",
+    "root.understandLiquidationRisk",
   ]);
 
   const isWrappableSuperToken = selectedToken
@@ -130,7 +131,7 @@ export default memo(function SendCard() {
     flowRate &&
     !BigNumber.from(flowRate.amountWei).isZero();
 
-  const isSendDisabled = !hasAllDataForStream || !understandLiquidationRisk;
+  const isSendDisabled = !hasAllDataForStream || !formState.isValid || doesFormHaveErrors;
 
   return (
     <Card
@@ -145,10 +146,10 @@ export default memo(function SendCard() {
           {existingFlow ? "Modify Stream" : "Send Stream"}
         </Typography>
 
-        {errors?.receiver && (
+        {doesFormHaveErrors && (
           <ErrorMessage
             as={<Alert severity="error"></Alert>}
-            name="receiver"
+            name="root.flowRate"
             render={({ messages }) => {
               return (
                 messages &&
@@ -165,9 +166,13 @@ export default memo(function SendCard() {
             <FormLabel>Receiver Wallet Address</FormLabel>
             <Controller
               control={control}
-              name="receiver"
+              name="root.receiver"
               render={({ field: { onChange, onBlur } }) => (
-                <AddressSearch address={receiver} onChange={onChange} onBlur={onBlur} />
+                <AddressSearch
+                  address={receiver}
+                  onChange={onChange}
+                  onBlur={onBlur}
+                />
               )}
             />
           </Box>
@@ -180,7 +185,7 @@ export default memo(function SendCard() {
 
               <Controller
                 control={control}
-                name="token"
+                name="root.token"
                 render={({ field: { onChange, onBlur } }) => (
                   <TokenDialogButton
                     token={selectedToken}
@@ -212,7 +217,7 @@ export default memo(function SendCard() {
 
               <Controller
                 control={control}
-                name="flowRate"
+                name="root.flowRate"
                 render={({ field: { onChange, onBlur } }) => (
                   <FlowRateInput
                     flowRateWithTime={flowRate}
@@ -224,7 +229,7 @@ export default memo(function SendCard() {
             </Box>
           </Box>
 
-          <Box
+          {/* <Box
             sx={{ display: "grid", gridTemplateColumns: "4fr 3fr", gap: 2.5 }}
           >
             <Box>
@@ -247,7 +252,37 @@ export default memo(function SendCard() {
                 fullWidth
               />
             </Box>
-          </Box>
+          </Box> */}
+
+          <Alert severity="warning">
+            <AlertTitle>Protect your buffer!</AlertTitle>
+            <Typography variant="body2">
+              If you do not cancel the stream before your balance reaches zero,
+              you will lose your buffer.
+            </Typography>
+            <FormGroup>
+              <Controller
+                control={control}
+                name="root.understandLiquidationRisk"
+                render={({ field: { onChange, onBlur } }) => (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={understandLiquidationRisk}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                      />
+                    }
+                    label={
+                      <Typography variant="body2">
+                        I understand the risk.
+                      </Typography>
+                    }
+                  />
+                )}
+              />
+            </FormGroup>
+          </Alert>
 
           {selectedToken && visibleAddress && (
             <Stack direction="row" alignItems="center" justifyContent="center">
@@ -283,36 +318,6 @@ export default memo(function SendCard() {
                 flowRateWithTime={flowRate}
                 existingStream={existingFlow ?? null}
               />
-
-              <Alert severity="warning">
-                <AlertTitle>Protect your buffer!</AlertTitle>
-                <Typography variant="body2">
-                  If you do not cancel this stream before your balance reaches
-                  zero, you will lose your buffer.
-                </Typography>
-                <FormGroup>
-                  <Controller
-                    control={control}
-                    name="understandLiquidationRisk"
-                    render={({ field: { onChange, onBlur } }) => (
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={understandLiquidationRisk}
-                            onChange={onChange}
-                            onBlur={onBlur}
-                          />
-                        }
-                        label={
-                          <Typography variant="body2">
-                            I understand the risk.
-                          </Typography>
-                        }
-                      />
-                    )}
-                  />
-                </FormGroup>
-              </Alert>
             </>
           )}
 

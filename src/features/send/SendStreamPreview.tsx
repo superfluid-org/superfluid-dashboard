@@ -9,9 +9,12 @@ import {
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
 import { BigNumber, ethers } from "ethers";
-import { FC, ReactNode, useMemo } from "react";
+import { FC, ReactNode, useCallback, useMemo } from "react";
 import { calculateMaybeCriticalAtTimestamp } from "../../utils/tokenUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
+import { Network } from "../network/networks";
+import { Web3FlowInfo } from "../redux/endpoints/adHocRpcEndpoints";
+import { RealtimeBalance } from "../redux/endpoints/balanceFetcher";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { rpcApi } from "../redux/store";
 import FlowingBalance from "../token/FlowingBalance";
@@ -27,10 +30,15 @@ import {
 
 const PreviewItem: FC<{
   label: string;
+  isError?: boolean;
   oldValue?: ReactNode;
-}> = ({ label, children, oldValue }) => {
+}> = ({ label, children, oldValue, isError }) => {
+  const theme = useTheme();
+
   const valueTypography = (
-    <Typography variant="body2" fontWeight="500">
+    <Typography variant="body2" fontWeight="500" sx={{
+      color: isError ? theme.palette.error : theme.palette.primary.main
+    }}>
       {children}
     </Typography>
   );
@@ -48,6 +56,96 @@ const PreviewItem: FC<{
     </Stack>
   );
 };
+
+export const useCalculateBufferInfo = () =>
+  useCallback(
+    (
+      network: Network,
+      realtimeBalance: RealtimeBalance,
+      activeFlow: Web3FlowInfo | null,
+      flowRate: FlowRateWithTime
+    ) => {
+      const newBufferAmount = calculateBufferAmount({
+        network,
+        flowRateWithTime: flowRate,
+      });
+
+      const oldBufferAmount = activeFlow
+        ? calculateBufferAmount({
+            network,
+            flowRateWithTime: {
+              amountWei: activeFlow.flowRateWei,
+              unitOfTime: UnitOfTime.Second,
+            },
+          })
+        : BigNumber.from(0);
+
+      const bufferDelta = newBufferAmount.sub(oldBufferAmount);
+
+      const balanceAfterBuffer = BigNumber.from(
+        realtimeBalance?.balance ?? 0
+      ).sub(bufferDelta);
+
+      const newFlowRate = calculateTotalAmountWei({
+        amountWei: flowRate.amountWei,
+        unitOfTime: flowRate.unitOfTime,
+      });
+
+      const flowRateDelta = activeFlow
+        ? newFlowRate.sub(BigNumber.from(activeFlow.flowRateWei))
+        : newFlowRate;
+
+      const newTotalFlowRate =
+        flowRateDelta && realtimeBalance
+          ? BigNumber.from(realtimeBalance.flowRate).sub(flowRateDelta)
+          : undefined;
+
+      const oldDateWhenBalanceCritical =
+        realtimeBalance && newTotalFlowRate
+          ? newTotalFlowRate.isNegative()
+            ? new Date(
+                calculateMaybeCriticalAtTimestamp({
+                  balanceUntilUpdatedAtWei: realtimeBalance.balance.toString(),
+                  updatedAtTimestamp: realtimeBalance.balanceTimestamp,
+                  totalNetFlowRateWei: newTotalFlowRate.toString(),
+                })
+                  .mul(1000)
+                  .toNumber()
+              )
+            : undefined
+          : undefined;
+
+      const newDateWhenBalanceCritical =
+        realtimeBalance && newTotalFlowRate && flowRateDelta
+          ? newTotalFlowRate.isNegative()
+            ? new Date(
+                calculateMaybeCriticalAtTimestamp({
+                  balanceUntilUpdatedAtWei: realtimeBalance.balance.toString(),
+                  updatedAtTimestamp: realtimeBalance.balanceTimestamp,
+                  totalNetFlowRateWei: BigNumber.from(realtimeBalance.flowRate)
+                    .sub(flowRateDelta)
+                    .toString(),
+                })
+                  .mul(1000)
+                  .toNumber()
+              )
+            : undefined
+          : undefined;
+
+      return {
+        newBufferAmount,
+        oldBufferAmount,
+        bufferDelta,
+        balanceAfterBuffer,
+        newFlowRate,
+        flowRateDelta,
+        newTotalFlowRate,
+        oldDateWhenBalanceCritical,
+        newDateWhenBalanceCritical,
+      };
+    },
+    []
+  );
 
 export const StreamingPreview: FC<{
   receiver: DisplayAddress;
@@ -72,97 +170,34 @@ export const StreamingPreview: FC<{
   );
   const realtimeBalance = realtimeBalanceQuery.data;
 
-  const newBufferAmount = useMemo(
-    () => calculateBufferAmount({ network, flowRateWithTime }),
-    [network, flowRateWithTime] // TODO(KK): Spread flowRateWithTime?
+  const { data: existingFlow } = rpcApi.useGetActiveFlowQuery(
+    visibleAddress
+      ? {
+          chainId: network.id,
+          tokenAddress: token.address,
+          senderAddress: visibleAddress,
+          receiverAddress: receiver.hash,
+        }
+      : skipToken
   );
 
-  const oldBufferAmount = useMemo(
-    () =>
-      existingStream
-        ? calculateBufferAmount({
-            network,
-            flowRateWithTime: {
-              amountWei: existingStream.flowRateWei,
-              unitOfTime: UnitOfTime.Second,
-            },
-          })
-        : BigNumber.from(0),
-    [network, existingStream] // TODO(KK): Spread flowRateWithTime?
-  );
+  const calculateBufferInfo = useCalculateBufferInfo();
 
-  const bufferDelta = useMemo(
-    () => newBufferAmount.sub(oldBufferAmount),
-    [newBufferAmount, oldBufferAmount]
-  );
-
-  const balanceAfterBuffer = useMemo(
-    () => BigNumber.from(realtimeBalance?.balance ?? 0).sub(bufferDelta),
-    [realtimeBalance, newBufferAmount]
-  );
-
-  const newFlowRate = useMemo(
-    () =>
-      calculateTotalAmountWei({
-        amountWei: flowRateWithTime.amountWei,
-        unitOfTime: flowRateWithTime.unitOfTime,
-      }),
-    [flowRateWithTime]
-  );
-
-  const flowRateDelta = useMemo(
-    () =>
-      existingStream
-        ? newFlowRate.sub(BigNumber.from(existingStream.flowRateWei))
-        : newFlowRate,
-    [newFlowRate, existingStream]
-  );
-
-  const newTotalFlowRate = useMemo(
-    () =>
-      flowRateDelta && realtimeBalance
-        ? BigNumber.from(realtimeBalance.flowRate).sub(flowRateDelta)
-        : undefined,
-    [flowRateDelta, realtimeBalance]
-  );
-
-  const oldDateWhenBalanceCritical = useMemo(
-    () =>
-      realtimeBalance && newTotalFlowRate
-        ? newTotalFlowRate.isNegative()
-          ? new Date(
-              calculateMaybeCriticalAtTimestamp({
-                balanceUntilUpdatedAtWei: realtimeBalance.balance.toString(),
-                updatedAtTimestamp: realtimeBalance.balanceTimestamp,
-                totalNetFlowRateWei: newTotalFlowRate.toString(),
-              })
-                .mul(1000)
-                .toNumber()
-            )
-          : undefined
-        : undefined,
-    [realtimeBalance, newTotalFlowRate]
-  );
-
-  const newDateWhenBalanceCritical = useMemo(
-    () =>
-      realtimeBalance && newTotalFlowRate && flowRateDelta
-        ? newTotalFlowRate.isNegative()
-          ? new Date(
-              calculateMaybeCriticalAtTimestamp({
-                balanceUntilUpdatedAtWei: realtimeBalance.balance.toString(),
-                updatedAtTimestamp: realtimeBalance.balanceTimestamp,
-                totalNetFlowRateWei: BigNumber.from(realtimeBalance.flowRate)
-                  .sub(flowRateDelta)
-                  .toString(),
-              })
-                .mul(1000)
-                .toNumber()
-            )
-          : undefined
-        : undefined,
-    [flowRateDelta, realtimeBalance]
-  );
+  const {
+    balanceAfterBuffer,
+    oldBufferAmount,
+    newBufferAmount,
+    newTotalFlowRate,
+    oldDateWhenBalanceCritical,
+    newDateWhenBalanceCritical,
+  } = realtimeBalance
+    ? calculateBufferInfo(
+        network,
+        realtimeBalance,
+        existingFlow ?? null,
+        flowRateWithTime
+      )
+    : ({} as Record<string, any>); // TODO(KK): Handle existing flow better.
 
   return (
     <Alert
@@ -172,7 +207,6 @@ export const StreamingPreview: FC<{
       sx={{
         py: 1,
         px: 2.5,
-        color: theme.palette.primary.main,
         borderColor: theme.palette.primary.main,
         backgroundColor: alpha(theme.palette.primary.main, 0.04),
         //TODO: This alert message rule should be looked deeper into. This should not be needed
@@ -204,7 +238,7 @@ export const StreamingPreview: FC<{
         <PreviewItem label="Ends on">Never</PreviewItem>
 
         {visibleAddress && (
-          <PreviewItem label="Balance after buffer">
+          <PreviewItem label="Balance after buffer" isError={balanceAfterBuffer.isNegative()}>
             {realtimeBalance && (
               <FlowingBalance
                 balance={balanceAfterBuffer.toString()}
@@ -224,7 +258,8 @@ export const StreamingPreview: FC<{
               : undefined
           }
         >
-          {`${ethers.utils.formatEther(newBufferAmount)} ${token.symbol}`}
+          {newBufferAmount &&
+            `${ethers.utils.formatEther(newBufferAmount)} ${token.symbol}`}
         </PreviewItem>
 
         {newTotalFlowRate?.isNegative() && (

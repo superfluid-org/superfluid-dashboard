@@ -24,7 +24,7 @@ declare module "@superfluid-finance/sdk-redux" {
   }
 }
 
-interface Web3FlowInfo {
+export interface Web3FlowInfo {
   updatedAtTimestamp: number;
   flowRateWei: string;
   depositWei: string;
