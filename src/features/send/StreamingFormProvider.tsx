@@ -1,15 +1,7 @@
-import { isAddress } from "ethers/lib/utils";
 import { FC, useCallback, useEffect, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useAccount, useNetwork } from "wagmi";
-import {
-  bool,
-  number,
-  object,
-  ObjectSchema,
-  string,
-  ValidationError,
-} from "yup";
+import { useAccount } from "wagmi";
+import { bool, number, object, ObjectSchema, string } from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { rpcApi } from "../redux/store";
 import {
@@ -18,24 +10,14 @@ import {
 } from "../transactionRestoration/transactionRestorations";
 import { UnitOfTime } from "./FlowRateInput";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { TurnedInTwoTone } from "@mui/icons-material";
-import { useCalculateBufferInfo } from "./SendStreamPreview";
+import useCalculateBufferInfo from "./useCalculateBufferInfo";
 
 export type StreamingForm = {
-  root: {
-    token: SendStreamRestoration["token"] | null;
-    receiver: SendStreamRestoration["receiver"] | null;
-    flowRate: SendStreamRestoration["flowRate"];
-    understandLiquidationRisk: boolean;
-  };
-};
-
-export type StreamingFormFilled = {
   root: {
     token: SendStreamRestoration["token"];
     receiver: SendStreamRestoration["receiver"];
     flowRate: SendStreamRestoration["flowRate"];
-    understandLiquidationRisk: true;
+    understandLiquidationRisk: boolean;
   };
 };
 
@@ -45,7 +27,7 @@ const StreamingFormProvider: FC<{
   const { data: account } = useAccount();
   const { network } = useExpectedNetwork();
 
-  const primarySchema: ObjectSchema<StreamingFormFilled> = useMemo(
+  const primarySchema: ObjectSchema<StreamingForm> = useMemo(
     () =>
       object({
         root: object({
@@ -70,40 +52,43 @@ const StreamingFormProvider: FC<{
             amountWei: string().required(),
             unitOfTime: number().required(),
           }),
-          understandLiquidationRisk: bool().isTrue().required(),
-          random: string(),
+          understandLiquidationRisk: bool().isTrue().required()
         }),
       }),
     [account, network]
   );
-
-  const defaultValues: StreamingForm = {
-    root: {
-      token: restoration?.token ?? null,
-      receiver: restoration?.receiver ?? null,
-      flowRate: restoration?.flowRate ?? {
-        amountWei: "0",
-        unitOfTime: UnitOfTime.Day,
-      },
-      understandLiquidationRisk: false,
-    },
-  };
 
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryActiveFlow] = rpcApi.useLazyGetActiveFlowQuery();
 
   const calculateBufferInfo = useCalculateBufferInfo();
 
-  const formMethods = useForm({
-    defaultValues,
+  const formMethods = useForm<StreamingForm>({
+    defaultValues: {
+      root: {
+        receiver: null!,
+        token: null!,
+        flowRate: {
+          amountWei: "0",
+          unitOfTime: UnitOfTime.Second,
+        },
+        understandLiquidationRisk: false
+      },
+    },
     resolver: yupResolver(primarySchema),
     mode: "onChange",
   });
 
-  const { formState, setError, getValues } = formMethods;
+  const { setValue, formState, setError, getValues } = formMethods;
+
+  if (restoration) {
+    setValue("root.receiver", restoration.receiver);
+    setValue("root.token", restoration.token);
+    setValue("root.flowRate", restoration.flowRate);
+  }
 
   const validateRoot = useCallback(
-    async (validForm: StreamingFormFilled) => {
+    async (validForm: StreamingForm) => {
       const accountAddress = account?.address;
       const tokenAddress = validForm.root.token?.address;
       const receiverAddress = validForm.root.receiver?.hash;
@@ -148,10 +133,14 @@ const StreamingFormProvider: FC<{
 
   useEffect(() => {
     if (formState.isValid) {
-      const validForm = getValues() as StreamingFormFilled;
+      const validForm = getValues() as StreamingForm;
       validateRoot(validForm);
     }
   }, [formState.isValidating]);
+
+  useEffect(() => {
+    console.log(formState)
+  }, [formState])
 
   return <FormProvider {...formMethods}>{children}</FormProvider>;
 };

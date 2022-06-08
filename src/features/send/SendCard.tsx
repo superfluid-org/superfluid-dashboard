@@ -60,7 +60,6 @@ export default memo(function SendCard() {
   const {
     watch,
     control,
-    setValue,
     formState,
     reset: resetForm,
   } = useFormContext<StreamingForm>();
@@ -111,11 +110,11 @@ export default memo(function SendCard() {
     [superTokensQuery.data]
   );
 
-  const shouldSearchForExistingStreams =
+  const shouldSearchForActiveFlow =
     !!visibleAddress && !!receiver && !!selectedToken;
 
-  const { data: existingFlow } = rpcApi.useGetActiveFlowQuery(
-    shouldSearchForExistingStreams
+  const { data: activeFlow } = rpcApi.useGetActiveFlowQuery(
+    shouldSearchForActiveFlow
       ? {
           chainId: network.id,
           tokenAddress: selectedToken.address,
@@ -125,13 +124,7 @@ export default memo(function SendCard() {
       : skipToken
   );
 
-  const hasAllDataForStream =
-    receiver &&
-    selectedToken &&
-    flowRate &&
-    !BigNumber.from(flowRate.amountWei).isZero();
-
-  const isSendDisabled = !hasAllDataForStream || !formState.isValid || doesFormHaveErrors;
+  const isSendDisabled = !formState.isValid;
 
   return (
     <Card
@@ -143,7 +136,7 @@ export default memo(function SendCard() {
     >
       <Stack spacing={4}>
         <Typography variant="h4" component="h1">
-          {existingFlow ? "Modify Stream" : "Send Stream"}
+          {activeFlow ? "Modify Stream" : "Send Stream"}
         </Typography>
 
         {doesFormHaveErrors && (
@@ -309,19 +302,19 @@ export default memo(function SendCard() {
         </Stack>
 
         <Stack gap={2.5}>
-          {hasAllDataForStream && (
+          {formState.isValid && (
             <>
               <Divider />
               <StreamingPreview
                 receiver={receiver}
                 token={selectedToken}
                 flowRateWithTime={flowRate}
-                existingStream={existingFlow ?? null}
+                existingStream={activeFlow ?? null}
               />
             </>
           )}
 
-          {!existingFlow ? (
+          {!activeFlow ? (
             <TransactionButton
               hidden={false}
               disabled={isSendDisabled}

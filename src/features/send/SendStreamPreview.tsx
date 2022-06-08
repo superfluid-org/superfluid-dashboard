@@ -8,25 +8,20 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
-import { BigNumber, ethers } from "ethers";
-import { FC, ReactNode, useCallback, useMemo } from "react";
-import { calculateMaybeCriticalAtTimestamp } from "../../utils/tokenUtils";
+import { ethers } from "ethers";
+import { FC, ReactNode, useMemo } from "react";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { Network } from "../network/networks";
-import { Web3FlowInfo } from "../redux/endpoints/adHocRpcEndpoints";
-import { RealtimeBalance } from "../redux/endpoints/balanceFetcher";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { rpcApi } from "../redux/store";
 import FlowingBalance from "../token/FlowingBalance";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import { calculateBufferAmount } from "./calculateBufferAmounts";
 import { DisplayAddress } from "./DisplayAddressChip";
 import {
-  calculateTotalAmountWei,
   FlowRateWithTime,
   flowRateWithTimeToString,
   UnitOfTime,
 } from "./FlowRateInput";
+import useCalculateBufferInfo from "./useCalculateBufferInfo";
 
 const PreviewItem: FC<{
   label: string;
@@ -37,7 +32,7 @@ const PreviewItem: FC<{
 
   const valueTypography = (
     <Typography variant="body2" fontWeight="500" sx={{
-      color: isError ? theme.palette.error : theme.palette.primary.main
+      color: isError ? "red" : theme.palette.primary.main // TODO(KK): handle colors better?
     }}>
       {children}
     </Typography>
@@ -56,96 +51,6 @@ const PreviewItem: FC<{
     </Stack>
   );
 };
-
-export const useCalculateBufferInfo = () =>
-  useCallback(
-    (
-      network: Network,
-      realtimeBalance: RealtimeBalance,
-      activeFlow: Web3FlowInfo | null,
-      flowRate: FlowRateWithTime
-    ) => {
-      const newBufferAmount = calculateBufferAmount({
-        network,
-        flowRateWithTime: flowRate,
-      });
-
-      const oldBufferAmount = activeFlow
-        ? calculateBufferAmount({
-            network,
-            flowRateWithTime: {
-              amountWei: activeFlow.flowRateWei,
-              unitOfTime: UnitOfTime.Second,
-            },
-          })
-        : BigNumber.from(0);
-
-      const bufferDelta = newBufferAmount.sub(oldBufferAmount);
-
-      const balanceAfterBuffer = BigNumber.from(
-        realtimeBalance?.balance ?? 0
-      ).sub(bufferDelta);
-
-      const newFlowRate = calculateTotalAmountWei({
-        amountWei: flowRate.amountWei,
-        unitOfTime: flowRate.unitOfTime,
-      });
-
-      const flowRateDelta = activeFlow
-        ? newFlowRate.sub(BigNumber.from(activeFlow.flowRateWei))
-        : newFlowRate;
-
-      const newTotalFlowRate =
-        flowRateDelta && realtimeBalance
-          ? BigNumber.from(realtimeBalance.flowRate).sub(flowRateDelta)
-          : undefined;
-
-      const oldDateWhenBalanceCritical =
-        realtimeBalance && newTotalFlowRate
-          ? newTotalFlowRate.isNegative()
-            ? new Date(
-                calculateMaybeCriticalAtTimestamp({
-                  balanceUntilUpdatedAtWei: realtimeBalance.balance.toString(),
-                  updatedAtTimestamp: realtimeBalance.balanceTimestamp,
-                  totalNetFlowRateWei: newTotalFlowRate.toString(),
-                })
-                  .mul(1000)
-                  .toNumber()
-              )
-            : undefined
-          : undefined;
-
-      const newDateWhenBalanceCritical =
-        realtimeBalance && newTotalFlowRate && flowRateDelta
-          ? newTotalFlowRate.isNegative()
-            ? new Date(
-                calculateMaybeCriticalAtTimestamp({
-                  balanceUntilUpdatedAtWei: realtimeBalance.balance.toString(),
-                  updatedAtTimestamp: realtimeBalance.balanceTimestamp,
-                  totalNetFlowRateWei: BigNumber.from(realtimeBalance.flowRate)
-                    .sub(flowRateDelta)
-                    .toString(),
-                })
-                  .mul(1000)
-                  .toNumber()
-              )
-            : undefined
-          : undefined;
-
-      return {
-        newBufferAmount,
-        oldBufferAmount,
-        bufferDelta,
-        balanceAfterBuffer,
-        newFlowRate,
-        flowRateDelta,
-        newTotalFlowRate,
-        oldDateWhenBalanceCritical,
-        newDateWhenBalanceCritical,
-      };
-    },
-    []
-  );
 
 export const StreamingPreview: FC<{
   receiver: DisplayAddress;
