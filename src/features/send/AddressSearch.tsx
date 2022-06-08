@@ -25,9 +25,11 @@ const AddressButton = styled(Stack)<AddressButtonProps>(
 export default memo(function AddressSearch({
   onChange,
   address,
+  onBlur = () => {},
 }: {
   address: DisplayAddress | null;
   onChange: (address: DisplayAddress | null) => void; // TODO(KK): better name
+  onBlur: () => void;
 }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -65,10 +67,14 @@ export default memo(function AddressSearch({
 
       <AddressSearchDialog
         open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
+        onClose={() => {
+          setDialogOpen(false);
+          onBlur();
+        }}
         onSelectAddress={(address) => {
           setDialogOpen(false);
           onChange(address);
+          onBlur();
         }}
       />
     </>

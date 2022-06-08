@@ -46,7 +46,7 @@ export const TokenDialog: FC<{
   open,
   onClose,
   onSelect,
-  tokenSelection: { tokenPairsQuery, showUpgrade = false },
+  tokenSelection: { tokenPairsQuery, showUpgrade = false }
 }) => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();

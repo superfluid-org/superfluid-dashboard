@@ -66,10 +66,10 @@ export default memo(function SendCard() {
   } = useFormContext<StreamingForm>();
 
   const [receiver, selectedToken, flowRate, understandLiquidationRisk] = watch([
-    "form.receiver",
-    "form.token",
-    "form.flowRate",
-    "form.understandLiquidationRisk",
+    "receiver",
+    "token",
+    "flowRate",
+    "understandLiquidationRisk",
   ]);
 
   const isWrappableSuperToken = selectedToken
@@ -98,6 +98,7 @@ export default memo(function SendCard() {
       isListed: true,
     },
   });
+
   const superTokens = useMemo(
     () =>
       superTokensQuery.data?.items?.map((x) => ({
@@ -144,10 +145,10 @@ export default memo(function SendCard() {
           {existingFlow ? "Modify Stream" : "Send Stream"}
         </Typography>
 
-        {errors?.form?.receiver && (
+        {errors?.receiver && (
           <ErrorMessage
             as={<Alert severity="error"></Alert>}
-            name="form.receiver"
+            name="receiver"
             render={({ messages }) => {
               return (
                 messages &&
@@ -164,9 +165,9 @@ export default memo(function SendCard() {
             <FormLabel>Receiver Wallet Address</FormLabel>
             <Controller
               control={control}
-              name="form.receiver"
-              render={({ field: { onChange } }) => (
-                <AddressSearch address={receiver} onChange={onChange} />
+              name="receiver"
+              render={({ field: { onChange, onBlur } }) => (
+                <AddressSearch address={receiver} onChange={onChange} onBlur={onBlur} />
               )}
             />
           </Box>
@@ -179,8 +180,8 @@ export default memo(function SendCard() {
 
               <Controller
                 control={control}
-                name="form.token"
-                render={({ field: { onChange } }) => (
+                name="token"
+                render={({ field: { onChange, onBlur } }) => (
                   <TokenDialogButton
                     token={selectedToken}
                     tokenSelection={{
@@ -192,6 +193,7 @@ export default memo(function SendCard() {
                       },
                     }}
                     onTokenSelect={onChange}
+                    onBlur={onBlur}
                   />
                 )}
               />
@@ -210,11 +212,12 @@ export default memo(function SendCard() {
 
               <Controller
                 control={control}
-                name="form.flowRate"
-                render={({ field: { onChange } }) => (
+                name="flowRate"
+                render={({ field: { onChange, onBlur } }) => (
                   <FlowRateInput
                     flowRateWithTime={flowRate}
                     onChange={onChange}
+                    onBlur={onBlur}
                   />
                 )}
               />
@@ -290,13 +293,14 @@ export default memo(function SendCard() {
                 <FormGroup>
                   <Controller
                     control={control}
-                    name="form.understandLiquidationRisk"
-                    render={({ field: { onChange } }) => (
+                    name="understandLiquidationRisk"
+                    render={({ field: { onChange, onBlur } }) => (
                       <FormControlLabel
                         control={
                           <Checkbox
                             checked={understandLiquidationRisk}
                             onChange={onChange}
+                            onBlur={onBlur}
                           />
                         }
                         label={

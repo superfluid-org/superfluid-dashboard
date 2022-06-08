@@ -56,7 +56,8 @@ export const calculateTotalAmountWei = ({
 export const FlowRateInput: FC<{
   flowRateWithTime: FlowRateWithTime;
   onChange: (flowRate: FlowRateWithTime) => void;
-}> = ({ flowRateWithTime, onChange }) => {
+  onBlur: () => void;
+}> = ({ flowRateWithTime, onChange, onBlur }) => {
   const [amount, setAmount] = useState<string>(
     !ethers.BigNumber.from(flowRateWithTime.amountWei).isZero()
       ? ethers.utils.formatEther(flowRateWithTime.amountWei)
@@ -72,6 +73,7 @@ export const FlowRateInput: FC<{
         autoCorrect="off"
         placeholder="0.0"
         value={amount}
+        onBlur={onBlur}
         onChange={(e) => {
           setAmount(e.currentTarget.value);
           const amountWei = ethers.utils.parseEther(
@@ -101,6 +103,7 @@ export const FlowRateInput: FC<{
       />
       <Select
         value={flowRateWithTime.unitOfTime}
+        onBlur={onBlur}
         onChange={(e) => {
           onChange({
             ...flowRateWithTime,

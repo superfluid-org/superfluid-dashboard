@@ -9,7 +9,8 @@ export const TokenDialogButton: FC<{
   token: TokenMinimal | null | undefined;
   tokenSelection: TokenSelectionProps;
   onTokenSelect: (token: TokenMinimal) => void;
-}> = ({ token = null, tokenSelection, onTokenSelect }) => {
+  onBlur?: () => void;
+}> = ({ token = null, tokenSelection, onTokenSelect, onBlur = () => {} }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -34,10 +35,14 @@ export const TokenDialogButton: FC<{
 
       <TokenDialog
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={() => {
+          setOpen(false);
+          onBlur();
+        }}
         onSelect={(token: TokenMinimal) => {
           onTokenSelect(token);
           setOpen(false);
+          onBlur();
         }}
         tokenSelection={tokenSelection}
       />
