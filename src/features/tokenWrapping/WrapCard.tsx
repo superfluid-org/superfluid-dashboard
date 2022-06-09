@@ -10,12 +10,8 @@ import { WrapTabUpgrade } from "./WrapTabUpgrade";
 
 export default memo(function WrapCard({
   tabValue,
-  upgradeRestoration,
-  downgradeRestoration,
 }: {
   tabValue: "upgrade" | "downgrade";
-  upgradeRestoration?: SuperTokenUpgradeRestoration;
-  downgradeRestoration?: SuperTokenDowngradeRestoration;
 }) {
   const router = useRouter();
 

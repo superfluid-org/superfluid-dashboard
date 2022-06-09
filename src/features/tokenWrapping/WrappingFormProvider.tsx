@@ -34,7 +34,7 @@ const WrappingFormProvider: FC<{
     | SuperTokenDowngradeRestoration
     | undefined;
 }> = ({ restoration, children }) => {
-  const { network } = useExpectedNetwork();
+  const { network, stopAutoSwitchToAccountNetwork } = useExpectedNetwork();
   const router = useRouter();
   const { token: tokenQueryParam } = router.query;
 
@@ -73,13 +73,21 @@ const WrappingFormProvider: FC<{
     resolver: yupResolver(formSchema),
   });
 
-  const { setValue } = formMethods;
+  const { formState, setValue } = formMethods;
 
   const [hasRestored, setHasRestored] = useState(!restoration);
   useEffect(() => {
     if (restoration) {
-      setValue("data.amountEthers", formatEther(restoration.amountWei), formRestorationOptions);
-      setValue("data.tokenUpgrade", restoration.tokenUpgrade, formRestorationOptions);
+      setValue(
+        "data.amountEthers",
+        formatEther(restoration.amountWei),
+        formRestorationOptions
+      );
+      setValue(
+        "data.tokenUpgrade",
+        restoration.tokenUpgrade,
+        formRestorationOptions
+      );
       setHasRestored(true);
     }
   }, [restoration]);
@@ -102,6 +110,14 @@ const WrappingFormProvider: FC<{
       router.replace({ query: tokenQueryParamRemoved });
     }
   }, [tokenQueryParam, tokenPairsQuery.data]);
+
+  useEffect(() => {
+    if (formState.dirtyFields) {
+      console.log("dirty")
+      stopAutoSwitchToAccountNetwork();
+    }
+    console.log("not dirty")
+  }, [formState.isDirty]);
 
   return hasRestored ? (
     <FormProvider {...formMethods}>{children}</FormProvider>

@@ -40,7 +40,7 @@ const StreamingFormProvider: FC<{
   restoration: SendStreamRestoration | ModifyStreamRestoration | undefined;
 }> = ({ restoration, children }) => {
   const { data: account } = useAccount();
-  const { network } = useExpectedNetwork();
+  const { network, stopAutoSwitchToAccountNetwork } = useExpectedNetwork();
 
   const formSchema: ObjectSchema<ValidStreamingForm> = useMemo(
     () =>
@@ -154,7 +154,15 @@ const StreamingFormProvider: FC<{
     }
   }, [formState.isValidating, validateHigher]);
 
-  return hasRestored ? <FormProvider {...formMethods}>{children}</FormProvider> : null;
+  useEffect(() => {
+    if (formState.isDirty) {
+      stopAutoSwitchToAccountNetwork();
+    }
+  }, [formState.isDirty]);
+
+  return hasRestored ? (
+    <FormProvider {...formMethods}>{children}</FormProvider>
+  ) : null;
 };
 
 export default StreamingFormProvider;
