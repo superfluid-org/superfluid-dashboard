@@ -10,22 +10,28 @@ export enum RestorationType {
   ModifyStream = 5
 }
 
+export const formRestorationOptions = {
+  shouldValidate: true,
+  shouldDirty: true,
+  shouldTouch: false,
+}
+
 export interface TransactionRestoration {
   type: RestorationType;
 }
 
-export interface SuperTokenDowngradeRestoration extends TransactionRestoration {
-  type: RestorationType.Downgrade;
+interface WrappingRestoration extends TransactionRestoration{
   chainId: number;
   tokenUpgrade: SuperTokenPair;
   amountWei: string;
 }
 
-export interface SuperTokenUpgradeRestoration extends TransactionRestoration {
+export interface SuperTokenDowngradeRestoration extends WrappingRestoration {
+  type: RestorationType.Downgrade;
+}
+
+export interface SuperTokenUpgradeRestoration extends WrappingRestoration {
   type: RestorationType.Upgrade;
-  chainId: number;
-  tokenUpgrade: SuperTokenPair;
-  amountWei: string;
 }
 
 export interface ApproveAllowanceRestoration extends TransactionRestoration {

@@ -50,13 +50,8 @@ export default memo(function WrapCard({
         </Button>
       </Stack>
 
-      {tabValue === "upgrade" && (
-        <WrapTabUpgrade restoration={upgradeRestoration}></WrapTabUpgrade>
-      )}
-
-      {tabValue === "downgrade" && (
-        <WrapTabDowngrade restoration={downgradeRestoration} />
-      )}
+      {tabValue === "upgrade" && <WrapTabUpgrade />}
+      {tabValue === "downgrade" && <WrapTabDowngrade />}
     </Card>
   );
 });

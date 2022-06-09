@@ -19,7 +19,7 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { BigNumber, ethers } from "ethers";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FC, memo, useMemo } from "react";
+import { FC, memo, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import TooltipIcon from "../common/TooltipIcon";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -39,7 +39,10 @@ import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import AddressSearch from "./AddressSearch";
 import { calculateTotalAmountWei, FlowRateInput } from "./FlowRateInput";
 import { StreamingPreview } from "./SendStreamPreview";
-import { StreamingForm } from "./StreamingFormProvider";
+import {
+  PartialStreamingForm,
+  ValidStreamingForm,
+} from "./StreamingFormProvider";
 
 interface FormLabelProps {
   children?: React.ReactNode;
@@ -61,15 +64,16 @@ export default memo(function SendCard() {
     watch,
     control,
     formState,
+    getValues,
     reset: resetForm,
-  } = useFormContext<StreamingForm>();
+  } = useFormContext<PartialStreamingForm>();
   const doesFormHaveErrors = !!Object.keys(formState.errors).length;
 
   const [receiver, selectedToken, flowRate, understandLiquidationRisk] = watch([
-    "root.receiver",
-    "root.token",
-    "root.flowRate",
-    "root.understandLiquidationRisk",
+    "data.receiver",
+    "data.token",
+    "data.flowRate",
+    "data.understandLiquidationRisk",
   ]);
 
   const isWrappableSuperToken = selectedToken
@@ -124,7 +128,7 @@ export default memo(function SendCard() {
       : skipToken
   );
 
-  const isSendDisabled = !formState.isValid;
+  const isSendDisabled = formState.isValidating || !formState.isValid;
 
   return (
     <Card
@@ -142,7 +146,7 @@ export default memo(function SendCard() {
         {doesFormHaveErrors && (
           <ErrorMessage
             as={<Alert severity="error"></Alert>}
-            name="root.flowRate"
+            name="data.flowRate"
             render={({ messages }) => {
               return (
                 messages &&
@@ -159,7 +163,7 @@ export default memo(function SendCard() {
             <FormLabel>Receiver Wallet Address</FormLabel>
             <Controller
               control={control}
-              name="root.receiver"
+              name="data.receiver"
               render={({ field: { onChange, onBlur } }) => (
                 <AddressSearch
                   address={receiver}
@@ -178,7 +182,7 @@ export default memo(function SendCard() {
 
               <Controller
                 control={control}
-                name="root.token"
+                name="data.token"
                 render={({ field: { onChange, onBlur } }) => (
                   <TokenDialogButton
                     token={selectedToken}
@@ -210,7 +214,7 @@ export default memo(function SendCard() {
 
               <Controller
                 control={control}
-                name="root.flowRate"
+                name="data.flowRate"
                 render={({ field: { onChange, onBlur } }) => (
                   <FlowRateInput
                     flowRateWithTime={flowRate}
@@ -256,7 +260,7 @@ export default memo(function SendCard() {
             <FormGroup>
               <Controller
                 control={control}
-                name="root.understandLiquidationRisk"
+                name="data.understandLiquidationRisk"
                 render={({ field: { onChange, onBlur } }) => (
                   <FormControlLabel
                     control={
@@ -302,7 +306,7 @@ export default memo(function SendCard() {
         </Stack>
 
         <Stack gap={2.5}>
-          {formState.isValid && (
+          {formState.isValid && receiver && selectedToken && (
             <>
               <Divider />
               <StreamingPreview
@@ -320,29 +324,33 @@ export default memo(function SendCard() {
               disabled={isSendDisabled}
               mutationResult={flowCreateResult}
               onClick={(setTransactionDialogContent) => {
-                if (isSendDisabled) {
-                  throw Error("This should never happen.");
+                if (!formState.isValid) {
+                  throw Error(`This should never happen. Form state: ${JSON.stringify(formState, null, 2)}`);
                 }
+
+                const { data: formData } = getValues() as ValidStreamingForm;
 
                 flowCreateTrigger({
                   chainId: network.id,
                   flowRateWei: calculateTotalAmountWei(flowRate).toString(),
-                  receiverAddress: receiver.hash,
-                  superTokenAddress: selectedToken.address,
+                  receiverAddress: formData.receiver.hash,
+                  superTokenAddress: formData.token.address,
                   userDataBytes: undefined,
                   waitForConfirmation: false,
                   transactionExtraData: {
                     restoration: {
                       type: RestorationType.SendStream,
                       chainId: network.id,
-                      token: selectedToken,
-                      receiver: receiver,
-                      flowRate: flowRate,
+                      token: formData.token,
+                      receiver: formData.receiver,
+                      flowRate: formData.flowRate,
                     },
                   },
                 })
                   .unwrap()
-                  .then(() => resetForm());
+                  .then(() =>
+                    resetForm()
+                  );
 
                 setTransactionDialogContent({
                   successActions: (
@@ -370,29 +378,35 @@ export default memo(function SendCard() {
               disabled={isSendDisabled}
               mutationResult={flowUpdateResult}
               onClick={(setTransactionDialogContent) => {
-                if (isSendDisabled) {
+                if (!formState.isValid) {
                   throw Error("This should never happen.");
                 }
 
+                const { data: formData } = getValues() as ValidStreamingForm;
+
                 flowUpdateTrigger({
                   chainId: network.id,
-                  flowRateWei: calculateTotalAmountWei(flowRate).toString(),
-                  receiverAddress: receiver.hash,
-                  superTokenAddress: selectedToken.address,
+                  flowRateWei: calculateTotalAmountWei(
+                    formData.flowRate
+                  ).toString(),
+                  receiverAddress: formData.receiver.hash,
+                  superTokenAddress: formData.token.address,
                   userDataBytes: undefined,
                   waitForConfirmation: false,
                   transactionExtraData: {
                     restoration: {
                       type: RestorationType.ModifyStream,
                       chainId: network.id,
-                      token: selectedToken,
-                      receiver: receiver,
-                      flowRate: flowRate,
+                      token: formData.token,
+                      receiver: formData.receiver,
+                      flowRate: formData.flowRate,
                     },
                   },
                 })
                   .unwrap()
-                  .then(() => resetForm());
+                  .then(() =>
+                    resetForm()
+                  );
 
                 setTransactionDialogContent({
                   successActions: (

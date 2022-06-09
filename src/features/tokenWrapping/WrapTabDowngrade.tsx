@@ -22,43 +22,41 @@ import TokenIcon from "../token/TokenIcon";
 import { TransactionButton } from "../transactions/TransactionButton";
 import { BalanceSuperToken } from "./BalanceSuperToken";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
-import { useSelectedTokenContext } from "./SelectedTokenPairContext";
 import { TokenDialogButton } from "./TokenDialogButton";
 import { useRouter } from "next/router";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
-import { TransactionDialogActions, TransactionDialogButton } from "../transactions/TransactionDialog";
+import {
+  TransactionDialogActions,
+  TransactionDialogButton,
+} from "../transactions/TransactionDialog";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import { Controller, useFormContext } from "react-hook-form";
+import { WrappingForm, ValidWrappingForm } from "./WrappingFormProvider";
+import { parseEther } from "ethers/lib/utils";
 
-export const WrapTabDowngrade: FC<{
-  restoration: SuperTokenDowngradeRestoration | undefined;
-}> = ({ restoration }) => {
+export const WrapTabDowngrade: FC = () => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
   const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
-  const { selectedTokenPair, setSelectedTokenPair } = useSelectedTokenContext();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
 
-  const [amount, setAmount] = useState<string>("");
-  const [amountWei, setAmountWei] = useState<BigNumber>(
-    ethers.BigNumber.from(0)
-  );
+  const {
+    watch,
+    control,
+    formState,
+    getValues,
+    reset: resetForm,
+  } = useFormContext<WrappingForm>();
 
-  useEffect(() => {
-    setAmountWei(ethers.utils.parseEther(Number(amount) ? amount : "0"));
-  }, [amount]);
-
-  useEffect(() => {
-    if (restoration) {
-      setSelectedTokenPair(restoration.tokenUpgrade);
-      setAmount(ethers.utils.formatEther(restoration.amountWei));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [restoration]);
+  const [selectedTokenPair, amount] = watch([
+    "data.tokenUpgrade",
+    "data.amountEthers",
+  ]);
 
   const [downgradeTrigger, downgradeResult] =
     rpcApi.useSuperTokenDowngradeMutation();
-  const isDowngradeDisabled = !selectedTokenPair || amountWei.isZero();
+  const isDowngradeDisabled = formState.isValidating || !formState.isValid;
 
   const amountInputRef = useRef<HTMLInputElement>(undefined!);
 
@@ -79,39 +77,53 @@ export const WrapTabDowngrade: FC<{
         sx={{ px: 2.5, py: 1.5 }}
       >
         <Stack direction="row" spacing={2}>
-          <Input
-            fullWidth
-            disableUnderline
-            type="number"
-            placeholder="0.0"
-            inputRef={amountInputRef}
-            disabled={!selectedTokenPair}
-            value={amount}
-            onChange={(e) => setAmount(e.currentTarget.value)}
-            inputProps={{
-              sx: {
-                ...theme.typography.largeInput,
-                p: 0,
-              },
-            }}
+          <Controller
+            control={control}
+            name="data.amountEthers"
+            render={({ field: { onChange, onBlur } }) => (
+              <Input
+                fullWidth
+                disableUnderline
+                type="number"
+                placeholder="0.0"
+                inputRef={amountInputRef}
+                disabled={!selectedTokenPair}
+                value={amount}
+                onChange={onChange}
+                onBlur={onBlur}
+                inputProps={{
+                  sx: {
+                    ...theme.typography.largeInput,
+                    p: 0,
+                  },
+                }}
+              />
+            )}
           />
 
-          <TokenDialogButton
-            token={selectedTokenPair?.superToken}
-            tokenSelection={{
-              tokenPairsQuery: {
-                data: tokenPairsQuery.data?.map((x) => x.superToken),
-                isUninitialized: tokenPairsQuery.isUninitialized,
-                isLoading: tokenPairsQuery.isLoading,
-              },
-            }}
-            onTokenSelect={(token) =>
-              setSelectedTokenPair(
-                tokenPairsQuery?.data?.find(
-                  (x) => x.superToken.address === token.address
-                )
-              )
-            }
+          <Controller
+            control={control}
+            name="data.tokenUpgrade"
+            render={({ field: { onChange, onBlur } }) => (
+              <TokenDialogButton
+                token={selectedTokenPair?.superToken}
+                tokenSelection={{
+                  tokenPairsQuery: {
+                    data: tokenPairsQuery.data?.map((x) => x.superToken),
+                    isUninitialized: tokenPairsQuery.isUninitialized,
+                    isLoading: tokenPairsQuery.isLoading,
+                  },
+                }}
+                onTokenSelect={(token) =>
+                  onChange(
+                    tokenPairsQuery?.data?.find(
+                      (x) => x.superToken.address === token.address
+                    )
+                  )
+                }
+                onBlur={onBlur}
+              />
+            )}
           />
         </Stack>
         {selectedTokenPair && visibleAddress && (
@@ -205,30 +217,36 @@ export const WrapTabDowngrade: FC<{
         mutationResult={downgradeResult}
         disabled={isDowngradeDisabled}
         onClick={(setTransactionDialogContent, closeTransactionDialog) => {
-          if (isDowngradeDisabled) {
+          if (!formState.isValid) {
             throw Error(
-              "This should never happen because the token and amount must be selected for the button to be active."
+              `This should never happen. Form state: ${JSON.stringify(
+                formState,
+                null,
+                2
+              )}`
             );
           }
+
+          const { data: formData } = getValues() as ValidWrappingForm;
 
           const restoration: SuperTokenDowngradeRestoration = {
             type: RestorationType.Downgrade,
             chainId: network.id,
-            tokenUpgrade: selectedTokenPair,
-            amountWei: amountWei.toString(),
+            tokenUpgrade: formData.tokenUpgrade,
+            amountWei: parseEther(formData.amountEthers).toString(),
           };
 
           downgradeTrigger({
             chainId: network.id,
-            amountWei: amountWei.toString(),
-            superTokenAddress: selectedTokenPair.superToken.address,
+            amountWei: parseEther(formData.amountEthers).toString(),
+            superTokenAddress: formData.tokenUpgrade.superToken.address,
             waitForConfirmation: true,
             transactionExtraData: {
               restoration,
             },
           })
             .unwrap()
-            .then(() => setAmount(""));
+            .then(() => resetForm());
 
           setTransactionDialogContent({
             label: <DowngradePreview restoration={restoration} />,

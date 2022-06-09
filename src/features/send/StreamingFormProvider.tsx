@@ -1,10 +1,11 @@
-import { FC, useCallback, useEffect, useMemo } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
 import { bool, number, object, ObjectSchema, string } from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { rpcApi } from "../redux/store";
 import {
+  formRestorationOptions,
   ModifyStreamRestoration,
   SendStreamRestoration,
 } from "../transactionRestoration/transactionRestorations";
@@ -12,11 +13,25 @@ import { UnitOfTime } from "./FlowRateInput";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import useCalculateBufferInfo from "./useCalculateBufferInfo";
 
-export type StreamingForm = {
-  root: {
+export type ValidStreamingForm = {
+  data: {
     token: SendStreamRestoration["token"];
     receiver: SendStreamRestoration["receiver"];
     flowRate: SendStreamRestoration["flowRate"];
+    understandLiquidationRisk: true;
+  };
+};
+
+const defaultFlowRate = {
+  amountWei: "0",
+  unitOfTime: UnitOfTime.Second,
+};
+
+export type PartialStreamingForm = {
+  data: {
+    token: ValidStreamingForm["data"]["token"] | null;
+    receiver: ValidStreamingForm["data"]["receiver"] | null;
+    flowRate: ValidStreamingForm["data"]["flowRate"] | typeof defaultFlowRate;
     understandLiquidationRisk: boolean;
   };
 };
@@ -27,10 +42,10 @@ const StreamingFormProvider: FC<{
   const { data: account } = useAccount();
   const { network } = useExpectedNetwork();
 
-  const primarySchema: ObjectSchema<StreamingForm> = useMemo(
+  const formSchema: ObjectSchema<ValidStreamingForm> = useMemo(
     () =>
       object({
-        root: object({
+        data: object({
           token: object({
             type: number().required(),
             address: string().required(),
@@ -51,11 +66,11 @@ const StreamingFormProvider: FC<{
           flowRate: object({
             amountWei: string().required(),
             unitOfTime: number().required(),
-          }),
-          understandLiquidationRisk: bool().isTrue().required()
+          }).default(defaultFlowRate),
+          understandLiquidationRisk: bool().isTrue().required(),
         }),
       }),
-    [account, network]
+    [account]
   );
 
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
@@ -63,35 +78,36 @@ const StreamingFormProvider: FC<{
 
   const calculateBufferInfo = useCalculateBufferInfo();
 
-  const formMethods = useForm<StreamingForm>({
+  const formMethods = useForm<PartialStreamingForm>({
     defaultValues: {
-      root: {
-        receiver: null!,
-        token: null!,
-        flowRate: {
-          amountWei: "0",
-          unitOfTime: UnitOfTime.Second,
-        },
-        understandLiquidationRisk: false
+      data: {
+        flowRate: defaultFlowRate,
+        receiver: null,
+        token: null,
+        understandLiquidationRisk: false,
       },
     },
-    resolver: yupResolver(primarySchema),
+    resolver: yupResolver(formSchema),
     mode: "onChange",
   });
 
-  const { setValue, formState, setError, getValues } = formMethods;
+  const { formState, setError, getValues, setValue } = formMethods;
 
-  if (restoration) {
-    setValue("root.receiver", restoration.receiver);
-    setValue("root.token", restoration.token);
-    setValue("root.flowRate", restoration.flowRate);
-  }
+  const [hasRestored, setHasRestored] = useState(!restoration);
+  useEffect(() => {
+    if (restoration) {
+      setValue("data.flowRate", restoration.flowRate, formRestorationOptions);
+      setValue("data.receiver", restoration.receiver, formRestorationOptions);
+      setValue("data.token", restoration.token, formRestorationOptions);
+      setHasRestored(true);
+    }
+  }, [restoration]);
 
-  const validateRoot = useCallback(
-    async (validForm: StreamingForm) => {
+  const validateHigher = useCallback(
+    async (validForm: ValidStreamingForm) => {
       const accountAddress = account?.address;
-      const tokenAddress = validForm.root.token?.address;
-      const receiverAddress = validForm.root.receiver?.hash;
+      const tokenAddress = validForm.data.token?.address;
+      const receiverAddress = validForm.data.receiver?.hash;
 
       if (accountAddress && tokenAddress && receiverAddress) {
         const realtimeBalance = await queryRealtimeBalance(
@@ -117,11 +133,11 @@ const StreamingFormProvider: FC<{
           network,
           realtimeBalance,
           activeFlow,
-          validForm.root.flowRate
+          validForm.data.flowRate
         );
 
         if (balanceAfterBuffer.isNegative()) {
-          setError("root.flowRate", {
+          setError("data.flowRate", {
             type: "validation",
             message: "Balance after buffer is negative.",
           });
@@ -133,16 +149,12 @@ const StreamingFormProvider: FC<{
 
   useEffect(() => {
     if (formState.isValid) {
-      const validForm = getValues() as StreamingForm;
-      validateRoot(validForm);
+      const validForm = getValues() as ValidStreamingForm;
+      validateHigher(validForm);
     }
-  }, [formState.isValidating]);
+  }, [formState.isValidating, validateHigher]);
 
-  useEffect(() => {
-    console.log(formState)
-  }, [formState])
-
-  return <FormProvider {...formMethods}>{children}</FormProvider>;
+  return hasRestored ? <FormProvider {...formMethods}>{children}</FormProvider> : null;
 };
 
 export default StreamingFormProvider;
