@@ -2,6 +2,8 @@
 import { BigNumber, ethers } from "ethers";
 import { FC, useCallback, useEffect, useState } from "react";
 import { Box, MenuItem, Select, TextField } from "@mui/material";
+import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
+import { parseEtherOrZero } from "../../utils/tokenUtils";
 
 /**
  * Enum numerical value is expressed in seconds.
@@ -30,40 +32,58 @@ export const timeUnitWordMap = {
   [UnitOfTime.Month]: "month",
 };
 
-export type FlowRateWithTime = {
+export type FlowRateWei = {
   amountWei: string;
   unitOfTime: UnitOfTime;
 };
 
-export const flowRateWithTimeToString = (
-  flowRateWithTime: FlowRateWithTime,
+export type FlowRateEther = {
+  amountEther: string;
+  unitOfTime: UnitOfTime;
+};
+
+export const flowRateWeiToString = (
+  flowRateWei: FlowRateWei,
   tokenSymbol?: string
 ) =>
   tokenSymbol
-    ? `${ethers.utils.formatEther(flowRateWithTime.amountWei)} ${tokenSymbol}/${
-        timeUnitWordMap[flowRateWithTime.unitOfTime]
+    ? `${ethers.utils.formatEther(flowRateWei.amountWei)} ${tokenSymbol}/${
+        timeUnitWordMap[flowRateWei.unitOfTime]
       }`
-    : `${ethers.utils.formatEther(flowRateWithTime.amountWei)}/${
-        timeUnitWordMap[flowRateWithTime.unitOfTime]
+    : `${ethers.utils.formatEther(flowRateWei.amountWei)}/${
+        timeUnitWordMap[flowRateWei.unitOfTime]
       }`;
 
-// TODO(KK): memoize
-export const calculateTotalAmountWei = ({
-  amountWei,
-  unitOfTime,
-}: FlowRateWithTime) => BigNumber.from(amountWei).div(unitOfTime);
+export const flowRateEtherToString = (
+  flowRateEther: FlowRateEther,
+  tokenSymbol?: string
+) =>
+  tokenSymbol
+    ? `${flowRateEther.amountEther} ${tokenSymbol}/${
+        timeUnitWordMap[flowRateEther.unitOfTime]
+      }`
+    : `${flowRateEther.amountEther}/${
+        timeUnitWordMap[flowRateEther.unitOfTime]
+      }`;
+
+export const calculateTotalAmountWei = (
+  flowRate: FlowRateWei | FlowRateEther
+) =>
+  isFlowRateWei(flowRate)
+    ? BigNumber.from(flowRate.amountWei).div(flowRate.unitOfTime)
+    : parseEtherOrZero(flowRate.amountEther).isZero()
+    ? BigNumber.from("0")
+    : parseEther(flowRate.amountEther).div(flowRate.unitOfTime);
+
+const isFlowRateWei = (
+  flowRate: FlowRateWei | FlowRateEther
+): flowRate is FlowRateWei => !!(flowRate as any).amountWei;
 
 export const FlowRateInput: FC<{
-  flowRateWithTime: FlowRateWithTime;
-  onChange: (flowRate: FlowRateWithTime) => void;
+  flowRateEther: FlowRateEther;
+  onChange: (flowRate: FlowRateEther) => void;
   onBlur: () => void;
-}> = ({ flowRateWithTime, onChange, onBlur }) => {
-  const [amount, setAmount] = useState<string>(
-    !ethers.BigNumber.from(flowRateWithTime.amountWei).isZero()
-      ? ethers.utils.formatEther(flowRateWithTime.amountWei)
-      : ""
-  );
-
+}> = ({ flowRateEther: flowRate, onChange, onBlur }) => {
   return (
     <Box sx={{ display: "grid", gridTemplateColumns: "6fr 4fr" }}>
       <TextField
@@ -72,25 +92,16 @@ export const FlowRateInput: FC<{
         autoComplete="off"
         autoCorrect="off"
         placeholder="0.0"
-        value={amount}
+        value={flowRate.amountEther}
         onBlur={onBlur}
         onChange={(e) => {
-          setAmount(e.currentTarget.value);
-          const amountWei = ethers.utils.parseEther(
-            Number(e.currentTarget.value)
-              ? Number(e.currentTarget.value).toString()
-              : "0"
-          );
           onChange({
-            ...flowRateWithTime,
-            amountWei: amountWei.toString(),
+            ...flowRate,
+            amountEther: e.currentTarget.value,
           });
         }}
         inputProps={{
           sx: { borderRadius: "10px 0 0 10px" },
-          pattern: "^[0-9]*[.,]?[0-9]*$",
-          minlength: "1",
-          maxLength: "79",
         }}
         sx={{
           ":hover, .Mui-focused": {
@@ -102,11 +113,11 @@ export const FlowRateInput: FC<{
         }}
       />
       <Select
-        value={flowRateWithTime.unitOfTime}
+        value={flowRate.unitOfTime}
         onBlur={onBlur}
         onChange={(e) => {
           onChange({
-            ...flowRateWithTime,
+            ...flowRate,
             unitOfTime: Number(e.target.value),
           });
         }}

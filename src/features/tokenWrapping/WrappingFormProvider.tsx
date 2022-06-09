@@ -12,19 +12,20 @@ import {
 import { getNetworkDefaultTokenPair } from "../network/networks";
 import { isString } from "lodash";
 import { subgraphApi } from "../redux/store";
-import { formatEther } from "ethers/lib/utils";
+import { formatEther, parseEther } from "ethers/lib/utils";
+import { BigNumber } from "ethers";
 
 export type WrappingForm = {
   data: {
     tokenUpgrade: SuperTokenUpgradeRestoration["tokenUpgrade"];
-    amountEthers: string;
+    amountEther: string;
   };
 };
 
 export type ValidWrappingForm = {
   data: {
     tokenUpgrade: WrappingForm["data"]["tokenUpgrade"];
-    amountEthers: WrappingForm["data"]["amountEthers"];
+    amountEther: WrappingForm["data"]["amountEther"];
   };
 };
 
@@ -56,7 +57,19 @@ const WrappingFormProvider: FC<{
               symbol: string().required(),
             }).required(),
           }).required(),
-          amountEthers: string().required(),
+          amountEther: string()
+            .required()
+            .matches(
+              /^[0-9]*[.,]?[0-9]*$/,
+              "Amount has to be a positive number."
+            )
+            .test("not-zero", "Enter an amount.", (x) => {
+              try {
+                return !parseEther(x).isZero();
+              } catch (error) {
+                return false;
+              }
+            }),
         }),
       }),
     []
@@ -66,7 +79,7 @@ const WrappingFormProvider: FC<{
     defaultValues: {
       data: {
         tokenUpgrade: getNetworkDefaultTokenPair(network),
-        amountEthers: "",
+        amountEther: "",
       },
     },
     mode: "onChange",
@@ -79,7 +92,7 @@ const WrappingFormProvider: FC<{
   useEffect(() => {
     if (restoration) {
       setValue(
-        "data.amountEthers",
+        "data.amountEther",
         formatEther(restoration.amountWei),
         formRestorationOptions
       );
@@ -113,10 +126,8 @@ const WrappingFormProvider: FC<{
 
   useEffect(() => {
     if (formState.dirtyFields) {
-      console.log("dirty")
       stopAutoSwitchToAccountNetwork();
     }
-    console.log("not dirty")
   }, [formState.isDirty]);
 
   return hasRestored ? (

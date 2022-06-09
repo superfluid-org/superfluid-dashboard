@@ -16,7 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { BigNumber, ethers } from "ethers";
+import { parseEther } from "ethers/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, memo, useMemo, useState } from "react";
@@ -65,11 +65,12 @@ export default memo(function SendCard() {
     control,
     formState,
     getValues,
+    getFieldState,
     reset: resetForm,
   } = useFormContext<PartialStreamingForm>();
   const doesFormHaveErrors = !!Object.keys(formState.errors).length;
 
-  const [receiver, selectedToken, flowRate, understandLiquidationRisk] = watch([
+  const [receiver, selectedToken, flowRateEther, understandLiquidationRisk] = watch([
     "data.receiver",
     "data.token",
     "data.flowRate",
@@ -80,17 +81,14 @@ export default memo(function SendCard() {
     ? isWrappable(selectedToken)
     : false;
 
-  const amountPerSecond = useMemo(
-    () =>
-      flowRate
-        ? ethers.utils
-            .formatEther(
-              BigNumber.from(flowRate.amountWei).div(flowRate.unitOfTime)
-            )
-            .toString()
-        : "",
-    [flowRate?.amountWei, flowRate?.unitOfTime]
-  );
+  // TODO(KK): Can cause error when amountEther is invalid
+  // const amountPerSecond = useMemo(
+  //   () =>
+  //     flowRateEther
+  //       ? parseEther(flowRateEther.amountEther).div(flowRateEther.unitOfTime).toString()
+  //       : "",
+  //   [flowRateEther?.amountEther, flowRateEther?.unitOfTime]
+  // );
 
   const [flowCreateTrigger, flowCreateResult] = rpcApi.useFlowCreateMutation();
   const [flowUpdateTrigger, flowUpdateResult] = rpcApi.useFlowUpdateMutation();
@@ -146,7 +144,7 @@ export default memo(function SendCard() {
         {doesFormHaveErrors && (
           <ErrorMessage
             as={<Alert severity="error"></Alert>}
-            name="data.flowRate"
+            name="data"
             render={({ messages }) => {
               return (
                 messages &&
@@ -217,7 +215,7 @@ export default memo(function SendCard() {
                 name="data.flowRate"
                 render={({ field: { onChange, onBlur } }) => (
                   <FlowRateInput
-                    flowRateWithTime={flowRate}
+                    flowRateEther={flowRateEther}
                     onChange={onChange}
                     onBlur={onBlur}
                   />
@@ -306,13 +304,13 @@ export default memo(function SendCard() {
         </Stack>
 
         <Stack gap={2.5}>
-          {formState.isValid && receiver && selectedToken && (
+          {formState.isValid && receiver && selectedToken && understandLiquidationRisk && (
             <>
               <Divider />
               <StreamingPreview
                 receiver={receiver}
                 token={selectedToken}
-                flowRateWithTime={flowRate}
+                flowRateEther={flowRateEther}
                 existingStream={activeFlow ?? null}
               />
             </>
@@ -325,14 +323,20 @@ export default memo(function SendCard() {
               mutationResult={flowCreateResult}
               onClick={(setTransactionDialogContent) => {
                 if (!formState.isValid) {
-                  throw Error(`This should never happen. Form state: ${JSON.stringify(formState, null, 2)}`);
+                  throw Error(
+                    `This should never happen. Form state: ${JSON.stringify(
+                      formState,
+                      null,
+                      2
+                    )}`
+                  );
                 }
 
                 const { data: formData } = getValues() as ValidStreamingForm;
 
                 flowCreateTrigger({
                   chainId: network.id,
-                  flowRateWei: calculateTotalAmountWei(flowRate).toString(),
+                  flowRateWei: calculateTotalAmountWei(flowRateEther).toString(),
                   receiverAddress: formData.receiver.hash,
                   superTokenAddress: formData.token.address,
                   userDataBytes: undefined,
@@ -348,9 +352,7 @@ export default memo(function SendCard() {
                   },
                 })
                   .unwrap()
-                  .then(() =>
-                    resetForm()
-                  );
+                  .then(() => resetForm());
 
                 setTransactionDialogContent({
                   successActions: (
@@ -386,9 +388,12 @@ export default memo(function SendCard() {
 
                 flowUpdateTrigger({
                   chainId: network.id,
-                  flowRateWei: calculateTotalAmountWei(
-                    formData.flowRate
-                  ).toString(),
+                  flowRateWei: calculateTotalAmountWei({
+                    amountWei: parseEther(
+                      formData.flowRate.amountEther
+                    ).toString(),
+                    unitOfTime: formData.flowRate.unitOfTime,
+                  }).toString(),
                   receiverAddress: formData.receiver.hash,
                   superTokenAddress: formData.token.address,
                   userDataBytes: undefined,
@@ -404,9 +409,7 @@ export default memo(function SendCard() {
                   },
                 })
                   .unwrap()
-                  .then(() =>
-                    resetForm()
-                  );
+                  .then(() => resetForm());
 
                 setTransactionDialogContent({
                   successActions: (

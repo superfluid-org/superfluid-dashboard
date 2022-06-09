@@ -1,6 +1,6 @@
 import { SuperTokenPair, UnderlyingToken, SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import {DisplayAddress} from "../send/DisplayAddressChip";
-import {FlowRateWithTime} from "../send/FlowRateInput";
+import {FlowRateWei} from "../send/FlowRateInput";
 
 export enum RestorationType {
   Downgrade = 1,
@@ -45,7 +45,7 @@ interface UpsertStreamRestoration extends TransactionRestoration {
   chainId: number;
   token: SuperTokenMinimal;
   receiver: DisplayAddress;
-  flowRate: FlowRateWithTime;
+  flowRate: FlowRateWei;
 }
 
 export interface SendStreamRestoration extends UpsertStreamRestoration {

@@ -9,7 +9,9 @@ import {
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
 import { ethers } from "ethers";
+import { parseEther } from "ethers/lib/utils";
 import { FC, ReactNode, useMemo } from "react";
+import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { rpcApi } from "../redux/store";
@@ -17,8 +19,10 @@ import FlowingBalance from "../token/FlowingBalance";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { DisplayAddress } from "./DisplayAddressChip";
 import {
-  FlowRateWithTime,
-  flowRateWithTimeToString,
+  FlowRateEther,
+  flowRateEtherToString,
+  FlowRateWei,
+  flowRateWeiToString,
   UnitOfTime,
 } from "./FlowRateInput";
 import useCalculateBufferInfo from "./useCalculateBufferInfo";
@@ -31,9 +35,13 @@ const PreviewItem: FC<{
   const theme = useTheme();
 
   const valueTypography = (
-    <Typography variant="body2" fontWeight="500" sx={{
-      color: isError ? "red" : theme.palette.primary.main // TODO(KK): handle colors better?
-    }}>
+    <Typography
+      variant="body2"
+      fontWeight="500"
+      sx={{
+        color: isError ? "red" : theme.palette.primary.main, // TODO(KK): handle colors better?
+      }}
+    >
       {children}
     </Typography>
   );
@@ -55,11 +63,11 @@ const PreviewItem: FC<{
 export const StreamingPreview: FC<{
   receiver: DisplayAddress;
   token: SuperTokenMinimal;
-  flowRateWithTime: FlowRateWithTime;
+  flowRateEther: FlowRateEther;
   existingStream: {
     flowRateWei: string;
   } | null;
-}> = ({ receiver, token, flowRateWithTime, existingStream }) => {
+}> = ({ receiver, token, flowRateEther, existingStream }) => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
@@ -73,9 +81,11 @@ export const StreamingPreview: FC<{
         }
       : skipToken
   );
-  const realtimeBalance = realtimeBalanceQuery.data;
+  const realtimeBalance = visibleAddress
+    ? realtimeBalanceQuery.data
+    : undefined;
 
-  const { data: existingFlow } = rpcApi.useGetActiveFlowQuery(
+  const activeFlowQuery = rpcApi.useGetActiveFlowQuery(
     visibleAddress
       ? {
           chainId: network.id,
@@ -85,6 +95,7 @@ export const StreamingPreview: FC<{
         }
       : skipToken
   );
+  const existingFlow = visibleAddress ? activeFlowQuery.data : undefined;
 
   const calculateBufferInfo = useCalculateBufferInfo();
 
@@ -95,14 +106,16 @@ export const StreamingPreview: FC<{
     newTotalFlowRate,
     oldDateWhenBalanceCritical,
     newDateWhenBalanceCritical,
-  } = realtimeBalance
-    ? calculateBufferInfo(
-        network,
-        realtimeBalance,
-        existingFlow ?? null,
-        flowRateWithTime
-      )
-    : ({} as Record<string, any>); // TODO(KK): Handle existing flow better.
+  } = useMemo(
+    () =>
+      realtimeBalance
+        ? calculateBufferInfo(network, realtimeBalance, existingFlow ?? null, {
+            amountWei: parseEtherOrZero(flowRateEther.amountEther).toString(),
+            unitOfTime: flowRateEther.unitOfTime,
+          })
+        : ({} as Record<string, any>),
+    [network, realtimeBalance, existingFlow, flowRateEther]
+  ); // TODO(KK): Handle existing flow better.
 
   return (
     <Alert
@@ -127,7 +140,7 @@ export const StreamingPreview: FC<{
           label="Flow rate"
           oldValue={
             existingStream
-              ? flowRateWithTimeToString(
+              ? flowRateWeiToString(
                   {
                     amountWei: existingStream.flowRateWei,
                     unitOfTime: UnitOfTime.Second,
@@ -137,13 +150,16 @@ export const StreamingPreview: FC<{
               : undefined
           }
         >
-          {flowRateWithTimeToString(flowRateWithTime, token.symbol)}
+          {flowRateEtherToString(flowRateEther, token.symbol)}
         </PreviewItem>
 
         <PreviewItem label="Ends on">Never</PreviewItem>
 
-        {visibleAddress && (
-          <PreviewItem label="Balance after buffer" isError={balanceAfterBuffer.isNegative()}>
+        {visibleAddress && balanceAfterBuffer && (
+          <PreviewItem
+            label="Balance after buffer"
+            isError={balanceAfterBuffer.isNegative()}
+          >
             {realtimeBalance && (
               <FlowingBalance
                 balance={balanceAfterBuffer.toString()}
@@ -155,17 +171,18 @@ export const StreamingPreview: FC<{
           </PreviewItem>
         )}
 
-        <PreviewItem
-          label="Upfront buffer"
-          oldValue={
-            oldBufferAmount
-              ? `${ethers.utils.formatEther(oldBufferAmount)} ${token.symbol}`
-              : undefined
-          }
-        >
-          {newBufferAmount &&
-            `${ethers.utils.formatEther(newBufferAmount)} ${token.symbol}`}
-        </PreviewItem>
+        {newBufferAmount && (
+          <PreviewItem
+            label="Upfront buffer"
+            oldValue={
+              oldBufferAmount
+                ? `${ethers.utils.formatEther(oldBufferAmount)} ${token.symbol}`
+                : undefined
+            }
+          >
+            {`${ethers.utils.formatEther(newBufferAmount)} ${token.symbol}`}
+          </PreviewItem>
+        )}
 
         {newTotalFlowRate?.isNegative() && (
           <PreviewItem

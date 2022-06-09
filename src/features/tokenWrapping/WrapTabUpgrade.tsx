@@ -49,13 +49,12 @@ export const WrapTabUpgrade: FC = () => {
     control,
     reset: resetForm,
     formState,
-    getValues,
-    trigger: validateForm,
+    getValues
   } = useFormContext<WrappingForm>();
 
   const [selectedTokenPair, amount] = watch([
     "data.tokenUpgrade",
-    "data.amountEthers",
+    "data.amountEther",
   ]);
 
   const [amountWei, setAmountWei] = useState<BigNumber>(
@@ -124,7 +123,7 @@ export const WrapTabUpgrade: FC = () => {
         <Stack direction="row" spacing={2}>
           <Controller
             control={control}
-            name="data.amountEthers"
+            name="data.amountEther"
             render={({ field: { onChange, onBlur } }) => (
               <Input
                 fullWidth
@@ -313,12 +312,12 @@ export const WrapTabUpgrade: FC = () => {
               type: RestorationType.Upgrade,
               chainId: network.id,
               tokenUpgrade: selectedTokenPair,
-              amountWei: parseEther(formData.amountEthers).toString(),
+              amountWei: parseEther(formData.amountEther).toString(),
             };
 
             upgradeTrigger({
               chainId: network.id,
-              amountWei: parseEther(formData.amountEthers).toString(),
+              amountWei: parseEther(formData.amountEther).toString(),
               superTokenAddress: formData.tokenUpgrade.superToken.address,
               waitForConfirmation: true,
               transactionExtraData: {

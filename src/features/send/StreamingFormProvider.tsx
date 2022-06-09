@@ -12,18 +12,23 @@ import {
 import { UnitOfTime } from "./FlowRateInput";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import useCalculateBufferInfo from "./useCalculateBufferInfo";
+import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
+import { BigNumber } from "ethers";
 
 export type ValidStreamingForm = {
   data: {
     token: SendStreamRestoration["token"];
     receiver: SendStreamRestoration["receiver"];
-    flowRate: SendStreamRestoration["flowRate"];
+    flowRate: {
+      amountEther: string;
+      unitOfTime: UnitOfTime;
+    };
     understandLiquidationRisk: true;
   };
 };
 
 const defaultFlowRate = {
-  amountWei: "0",
+  amountEther: "",
   unitOfTime: UnitOfTime.Second,
 };
 
@@ -33,7 +38,7 @@ export type PartialStreamingForm = {
     receiver: ValidStreamingForm["data"]["receiver"] | null;
     flowRate: ValidStreamingForm["data"]["flowRate"] | typeof defaultFlowRate;
     understandLiquidationRisk: boolean;
-  };
+  }
 };
 
 const StreamingFormProvider: FC<{
@@ -64,7 +69,19 @@ const StreamingFormProvider: FC<{
               return x.hash.toLowerCase() !== account.address?.toLowerCase();
             }),
           flowRate: object({
-            amountWei: string().required(),
+            amountEther: string()
+              .required()
+              .matches(
+                /^[0-9]*[.,]?[0-9]*$/,
+                "Amount has to be a positive number."
+              )
+              .test("not-zero", "Enter an amount.", (x) => {
+                try {
+                  return !parseEther(x).isZero();
+                } catch (error) {
+                  return false;
+                }
+              }),
             unitOfTime: number().required(),
           }).default(defaultFlowRate),
           understandLiquidationRisk: bool().isTrue().required(),
@@ -85,18 +102,38 @@ const StreamingFormProvider: FC<{
         receiver: null,
         token: null,
         understandLiquidationRisk: false,
-      },
+      }
     },
-    resolver: yupResolver(formSchema),
-    mode: "onChange",
+    resolver: async (values, context, options) => {
+      const yupResult = await yupResolver(formSchema)(values, context, options);
+
+      if (!Object.keys(yupResult.errors).length) {
+        const validForm = values as ValidStreamingForm;
+        await validateHigher(validForm);
+      } else {
+        clearErrors("data");
+      }
+
+      return yupResult;
+    },
+    mode: "onBlur",
   });
 
-  const { formState, setError, getValues, setValue } = formMethods;
+  const { formState, setError, getValues, setValue, clearErrors } = formMethods;
 
   const [hasRestored, setHasRestored] = useState(!restoration);
   useEffect(() => {
     if (restoration) {
-      setValue("data.flowRate", restoration.flowRate, formRestorationOptions);
+      setValue(
+        "data.flowRate",
+        {
+          amountEther: BigNumber.from(
+            restoration.flowRate.amountWei
+          ).toString(),
+          unitOfTime: restoration.flowRate.unitOfTime,
+        },
+        formRestorationOptions
+      );
       setValue("data.receiver", restoration.receiver, formRestorationOptions);
       setValue("data.token", restoration.token, formRestorationOptions);
       setHasRestored(true);
@@ -133,11 +170,16 @@ const StreamingFormProvider: FC<{
           network,
           realtimeBalance,
           activeFlow,
-          validForm.data.flowRate
+          {
+            amountWei: parseEther(
+              validForm.data.flowRate.amountEther
+            ).toString(),
+            unitOfTime: validForm.data.flowRate.unitOfTime,
+          }
         );
 
         if (balanceAfterBuffer.isNegative()) {
-          setError("data.flowRate", {
+          setError("data", {
             type: "validation",
             message: "Balance after buffer is negative.",
           });
@@ -147,18 +189,22 @@ const StreamingFormProvider: FC<{
     [account]
   );
 
-  useEffect(() => {
-    if (formState.isValid) {
-      const validForm = getValues() as ValidStreamingForm;
-      validateHigher(validForm);
-    }
-  }, [formState.isValidating, validateHigher]);
+  // useEffect(() => {
+  //   const validForm = getValues() as ValidStreamingForm;
+  //   if (formState.isValid) {
+  //     validateHigher(validForm);
+  //   }
+  // }, [formState.isValidating, validateHigher]);
 
   useEffect(() => {
     if (formState.isDirty) {
       stopAutoSwitchToAccountNetwork();
     }
   }, [formState.isDirty]);
+
+  // useEffect(() => {
+  //   console.log(formState);
+  // }, [formState]);
 
   return hasRestored ? (
     <FormProvider {...formMethods}>{children}</FormProvider>

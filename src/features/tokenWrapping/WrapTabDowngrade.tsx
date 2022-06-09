@@ -51,7 +51,7 @@ export const WrapTabDowngrade: FC = () => {
 
   const [selectedTokenPair, amount] = watch([
     "data.tokenUpgrade",
-    "data.amountEthers",
+    "data.amountEther",
   ]);
 
   const [downgradeTrigger, downgradeResult] =
@@ -79,7 +79,7 @@ export const WrapTabDowngrade: FC = () => {
         <Stack direction="row" spacing={2}>
           <Controller
             control={control}
-            name="data.amountEthers"
+            name="data.amountEther"
             render={({ field: { onChange, onBlur } }) => (
               <Input
                 fullWidth
@@ -233,12 +233,12 @@ export const WrapTabDowngrade: FC = () => {
             type: RestorationType.Downgrade,
             chainId: network.id,
             tokenUpgrade: formData.tokenUpgrade,
-            amountWei: parseEther(formData.amountEthers).toString(),
+            amountWei: parseEther(formData.amountEther).toString(),
           };
 
           downgradeTrigger({
             chainId: network.id,
-            amountWei: parseEther(formData.amountEthers).toString(),
+            amountWei: parseEther(formData.amountEther).toString(),
             superTokenAddress: formData.tokenUpgrade.superToken.address,
             waitForConfirmation: true,
             transactionExtraData: {

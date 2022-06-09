@@ -1,8 +1,16 @@
+import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
 import { BigNumber, BigNumberish } from "ethers";
-import { number, string } from "yup";
 
 export const MAX_SAFE_SECONDS = BigNumber.from(8640000000000); //In seconds, https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#the_ecmascript_epoch_and_timestamps
 const BIG_NUMBER_ZERO = BigNumber.from(0);
+
+export const parseEtherOrZero = (etherString: string): BigNumber => {
+  try {
+    return parseEther(etherString);
+  } catch (error) {
+    return BigNumber.from("0");
+  }
+};
 
 export const subscriptionWeiAmountReceived = (
   publisherIndexValue: BigNumber,
@@ -37,8 +45,7 @@ export function calculateMaybeCriticalAtTimestamp(params: {
     return BIG_NUMBER_ZERO;
   }
 
-  const criticalTimestamp = balanceUntilUpdatedAt
-    .div(totalNetFlowRate.abs());
+  const criticalTimestamp = balanceUntilUpdatedAt.div(totalNetFlowRate.abs());
   const calculatedCriticalTimestamp = criticalTimestamp.add(updatedAtTimestamp);
 
   if (calculatedCriticalTimestamp.gt(MAX_SAFE_SECONDS)) return MAX_SAFE_SECONDS;

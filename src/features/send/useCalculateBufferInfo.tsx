@@ -6,12 +6,12 @@ import { Web3FlowInfo } from "../redux/endpoints/adHocRpcEndpoints";
 import { RealtimeBalance } from "../redux/endpoints/balanceFetcher";
 import {
   calculateTotalAmountWei,
-  FlowRateWithTime,
+  FlowRateWei,
   UnitOfTime,
 } from "./FlowRateInput";
 
 const calculateBufferAmount = (params: {
-  flowRateWithTime: FlowRateWithTime;
+  flowRateWithTime: FlowRateWei;
   network: Network;
 }): BigNumber => {
   const { flowRateWithTime, network } = params;
@@ -30,7 +30,7 @@ export default function useCalculateBufferInfo() {
       network: Network,
       realtimeBalance: RealtimeBalance,
       activeFlow: Web3FlowInfo | null,
-      flowRate: FlowRateWithTime
+      flowRate: FlowRateWei
     ) => {
       const newBufferAmount = calculateBufferAmount({
         network,
