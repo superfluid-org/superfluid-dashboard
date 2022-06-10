@@ -143,16 +143,29 @@ const WrappingFormProvider: FC<{
               const flowRateBigNumber = BigNumber.from(
                 realtimeBalance.flowRate
               );
+              const currentBalanceBigNumber = BigNumber.from(
+                realtimeBalance.balance
+              ).add(
+                BigNumber.from(new Date().getTime())
+                  .sub(realtimeBalance.balanceTimestamp * 1000)
+                  .mul(flowRateBigNumber)
+                  .div(1000)
+              );
+
+              const amountBigNumber = parseEther(validForm.data.amountEther);
+              const isWrappingIntoNegative =
+                currentBalanceBigNumber.lt(amountBigNumber);
+              if (isWrappingIntoNegative) {
+                throw context.createError({
+                  path: "data.amountEther.hov",
+                  message: "You do not have enough balance.",
+                });
+              }
 
               if (flowRateBigNumber.isNegative()) {
-                const amountBigNumber = parseEther(validForm.data.amountEther);
-                const newBalanceBigNumber = BigNumber.from(
-                  realtimeBalance.balance
-                ).sub(amountBigNumber);
-
                 const dateWhenBalanceCritical = new Date(
                   calculateMaybeCriticalAtTimestamp({
-                    balanceUntilUpdatedAtWei: newBalanceBigNumber,
+                    balanceUntilUpdatedAtWei: currentBalanceBigNumber,
                     updatedAtTimestamp: realtimeBalance.balanceTimestamp,
                     totalNetFlowRateWei: flowRateBigNumber,
                   })

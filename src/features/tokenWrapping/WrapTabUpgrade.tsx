@@ -33,7 +33,7 @@ import {
 } from "../transactions/TransactionDialog";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { WrappingForm, ValidWrappingForm } from "./WrappingFormProvider";
-import { Controller, useFormContext } from "react-hook-form";
+import { Controller, useForm, useFormContext } from "react-hook-form";
 import { parseEther } from "ethers/lib/utils";
 
 export const WrapTabUpgrade: FC = () => {
@@ -49,7 +49,7 @@ export const WrapTabUpgrade: FC = () => {
     reset: resetForm,
     formState,
     getValues,
-    setValue,
+    setValue
   } = useFormContext<WrappingForm>();
 
   setValue("type", RestorationType.Upgrade, {
