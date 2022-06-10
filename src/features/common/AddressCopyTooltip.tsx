@@ -35,7 +35,7 @@ const AddressCopyTooltip: FC<AddressCopyTooltipProps> = ({
       arrow
       title={
         isCopied ? (
-          <Typography variant="tooltip">Copied to clipboard!</Typography>
+          <Typography variant="body1">Copied to clipboard!</Typography>
         ) : (
           <Stack
             direction="row"
@@ -44,7 +44,7 @@ const AddressCopyTooltip: FC<AddressCopyTooltipProps> = ({
             sx={{ cursor: "pointer" }}
             onClick={copyAddress}
           >
-            <Typography variant="tooltip">{address}</Typography>
+            <Typography variant="body1">{address}</Typography>
             <ContentCopyRoundedIcon sx={{ fontSize: "16px" }} />
           </Stack>
         )
