@@ -29,7 +29,11 @@ import { rpcApi, subgraphApi } from "../redux/store";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
-import { RestorationType } from "../transactionRestoration/transactionRestorations";
+import {
+  ModifyStreamRestoration,
+  RestorationType,
+  SendStreamRestoration,
+} from "../transactionRestoration/transactionRestorations";
 import { TransactionButton } from "../transactions/TransactionButton";
 import {
   TransactionDialogActions,
@@ -348,8 +352,13 @@ export default memo(function SendCard() {
                       chainId: network.id,
                       token: formData.token,
                       receiver: formData.receiver,
-                      flowRate: formData.flowRate,
-                    },
+                      flowRate: {
+                        amountWei: parseEther(
+                          formData.flowRate.amountEther
+                        ).toString(),
+                        unitOfTime: formData.flowRate.unitOfTime,
+                      },
+                    } as SendStreamRestoration,
                   },
                 })
                   .unwrap()
@@ -386,7 +395,6 @@ export default memo(function SendCard() {
                 }
 
                 const { data: formData } = getValues() as ValidStreamingForm;
-
                 flowUpdateTrigger({
                   chainId: network.id,
                   flowRateWei: calculateTotalAmountWei({
@@ -405,8 +413,13 @@ export default memo(function SendCard() {
                       chainId: network.id,
                       token: formData.token,
                       receiver: formData.receiver,
-                      flowRate: formData.flowRate,
-                    },
+                      flowRate: {
+                        amountWei: parseEther(
+                          formData.flowRate.amountEther
+                        ).toString(),
+                        unitOfTime: formData.flowRate.unitOfTime,
+                      },
+                    } as ModifyStreamRestoration,
                   },
                 })
                   .unwrap()

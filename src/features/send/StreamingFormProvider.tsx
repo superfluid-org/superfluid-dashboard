@@ -20,6 +20,7 @@ import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import useCalculateBufferInfo from "./useCalculateBufferInfo";
 import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
 import { BigNumber } from "ethers";
+import { formatEther } from "ethers/lib/utils";
 
 export type ValidStreamingForm = {
   data: {
@@ -181,9 +182,9 @@ const StreamingFormProvider: FC<{
       setValue(
         "data.flowRate",
         {
-          amountEther: BigNumber.from(
+          amountEther: formatEther(
             restoration.flowRate.amountWei
-          ).toString(),
+          ),
           unitOfTime: restoration.flowRate.unitOfTime,
         },
         formRestorationOptions
