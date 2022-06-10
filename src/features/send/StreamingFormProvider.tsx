@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
 import {
@@ -6,8 +6,7 @@ import {
   number,
   object,
   ObjectSchema,
-  string,
-  ValidationError,
+  string
 } from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { rpcApi } from "../redux/store";
@@ -53,6 +52,9 @@ const StreamingFormProvider: FC<{
 }> = ({ restoration, children }) => {
   const { data: account } = useAccount();
   const { network, stopAutoSwitchToAccountNetwork } = useExpectedNetwork();
+  const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
+  const [queryActiveFlow] = rpcApi.useLazyGetActiveFlowQuery();
+  const calculateBufferInfo = useCalculateBufferInfo();
 
   const formSchema = useMemo(
     () =>
@@ -91,7 +93,7 @@ const StreamingFormProvider: FC<{
                   }
                 }),
               unitOfTime: number().required(),
-            }).default(defaultFlowRate),
+            }),
             understandLiquidationRisk: bool().isTrue().required(),
           }),
         });
@@ -99,23 +101,64 @@ const StreamingFormProvider: FC<{
         await primaryValidation.validate(values);
         const validForm = values as ValidStreamingForm;
 
-        // Higher order validation
-        if (await isBufferNegative(validForm)) {
-          throw context.createError({
-            path: "data.flowRate.hov",
-            message: "Buffer is negative.",
-          });
+        // # Higher order validation
+        const accountAddress = account?.address;
+        const tokenAddress = validForm.data.token?.address;
+        const receiverAddress = validForm.data.receiver?.hash;
+
+        if (accountAddress && tokenAddress && receiverAddress) {
+          const [realtimeBalance, activeFlow] = await Promise.all([
+            queryRealtimeBalance(
+              {
+                accountAddress,
+                chainId: network.id,
+                tokenAddress: tokenAddress,
+              },
+              true
+            ).unwrap(),
+            queryActiveFlow(
+              {
+                tokenAddress,
+                receiverAddress,
+                chainId: network.id,
+                senderAddress: accountAddress,
+              },
+              true
+            ).unwrap(),
+          ]);
+
+          const { newDateWhenBalanceCritical } = calculateBufferInfo(
+            network,
+            realtimeBalance,
+            activeFlow,
+            {
+              amountWei: parseEther(
+                validForm.data.flowRate.amountEther
+              ).toString(),
+              unitOfTime: validForm.data.flowRate.unitOfTime,
+            }
+          );
+
+          if (newDateWhenBalanceCritical) {
+            const minimumStreamTime = network.bufferTimeInMinutes * 60 * 2;
+
+            const secondsToCritical = Math.round(
+              (newDateWhenBalanceCritical.getTime() - Date.now()) / 1000
+            );
+
+            if (secondsToCritical < minimumStreamTime) {
+              throw context.createError({
+                path: "data.flowRate.hov",
+                message: `You need to leave enough balance to stream for ${minimumStreamTime} seconds.`,
+              });
+            }
+          }
         }
 
         return true;
       }),
-    [account]
+    [network, account]
   );
-
-  const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
-  const [queryActiveFlow] = rpcApi.useLazyGetActiveFlowQuery();
-
-  const calculateBufferInfo = useCalculateBufferInfo();
 
   const formMethods = useForm<PartialStreamingForm>({
     defaultValues: {
@@ -127,7 +170,7 @@ const StreamingFormProvider: FC<{
       },
     },
     resolver: yupResolver(formSchema),
-    mode: "onBlur",
+    mode: "onChange",
   });
 
   const { formState, setValue, trigger } = formMethods;
@@ -151,50 +194,6 @@ const StreamingFormProvider: FC<{
     }
   }, [restoration]);
 
-  const isBufferNegative = useCallback(
-    async (validForm: ValidStreamingForm) => {
-      const accountAddress = account?.address;
-      const tokenAddress = validForm.data.token?.address;
-      const receiverAddress = validForm.data.receiver?.hash;
-
-      if (accountAddress && tokenAddress && receiverAddress) {
-        const realtimeBalance = await queryRealtimeBalance(
-          {
-            accountAddress,
-            chainId: network.id,
-            tokenAddress: tokenAddress,
-          },
-          true
-        ).unwrap();
-
-        const activeFlow = await queryActiveFlow(
-          {
-            tokenAddress,
-            receiverAddress,
-            chainId: network.id,
-            senderAddress: accountAddress,
-          },
-          true
-        ).unwrap();
-
-        const { balanceAfterBuffer } = calculateBufferInfo(
-          network,
-          realtimeBalance,
-          activeFlow,
-          {
-            amountWei: parseEther(
-              validForm.data.flowRate.amountEther
-            ).toString(),
-            unitOfTime: validForm.data.flowRate.unitOfTime,
-          }
-        );
-
-        return balanceAfterBuffer.isNegative();
-      }
-    },
-    [account]
-  );
-
   useEffect(() => {
     if (formState.isDirty) {
       stopAutoSwitchToAccountNetwork();
@@ -202,7 +201,7 @@ const StreamingFormProvider: FC<{
   }, [formState.isDirty]);
 
   useEffect(() => {
-    if (formState.isValid) {
+    if (formState.isDirty) {
       trigger();
     }
   }, [account]);

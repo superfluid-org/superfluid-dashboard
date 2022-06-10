@@ -67,7 +67,6 @@ export default memo(function SendCard() {
     getValues,
     reset: resetForm,
   } = useFormContext<PartialStreamingForm>();
-  const doesFormHaveErrors = !!Object.keys(formState.errors).length;
 
   const [receiver, selectedToken, flowRateEther, understandLiquidationRisk] =
     watch([

@@ -3,7 +3,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   Avatar,
   Button,
-  DialogActions,
   Input,
   Paper,
   Stack,
@@ -46,8 +45,15 @@ export const WrapTabDowngrade: FC = () => {
     control,
     formState,
     getValues,
+    setValue,
     reset: resetForm,
   } = useFormContext<WrappingForm>();
+
+  setValue("type", RestorationType.Downgrade, {
+    shouldDirty: false,
+    shouldTouch: false,
+    shouldValidate: false,
+  });
 
   const [selectedTokenPair, amount] = watch([
     "data.tokenUpgrade",

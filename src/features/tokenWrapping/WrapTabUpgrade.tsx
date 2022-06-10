@@ -11,7 +11,6 @@ import { rpcApi, subgraphApi } from "../redux/store";
 import {
   Avatar,
   Button,
-  DialogActions,
   Input,
   Paper,
   Stack,
@@ -49,8 +48,15 @@ export const WrapTabUpgrade: FC = () => {
     control,
     reset: resetForm,
     formState,
-    getValues
+    getValues,
+    setValue,
   } = useFormContext<WrappingForm>();
+
+  setValue("type", RestorationType.Upgrade, {
+    shouldDirty: false,
+    shouldTouch: false,
+    shouldValidate: false,
+  });
 
   const [selectedTokenPair, amount] = watch([
     "data.tokenUpgrade",
