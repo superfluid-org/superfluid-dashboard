@@ -71,7 +71,7 @@ declare module "@mui/material/Button" {
   }
 }
 
-const ELEVATION1_BG =
+export const ELEVATION1_BG =
   "linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.03) 100%)";
 
 export const FONT_FAMILY = "'Walsheim', Arial";

@@ -1,3 +1,4 @@
+import AppsRoundedIcon from "@mui/icons-material/AppsRounded";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import HistoryIcon from "@mui/icons-material/History";
 import AutoAwesomeMosaicIcon from "@mui/icons-material/AutoAwesomeMosaic";
@@ -18,12 +19,36 @@ import {
 import Image from "next/image";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { memo } from "react";
+import { memo, FC } from "react";
 import Link from "../common/Link";
 import ThemeChanger from "../theme/ThemeChanger";
 import ConnectWallet from "../wallet/ConnectWallet";
+import { SvgIconComponent } from "@mui/icons-material";
 
 export const menuDrawerWidth = 260;
+
+interface NavigationItemProps {
+  title: string;
+  href: string;
+  active: boolean;
+  icon: SvgIconComponent;
+}
+
+const NavigationItem: FC<NavigationItemProps> = ({
+  title,
+  href,
+  active,
+  icon: Icon,
+}) => (
+  <NextLink href={href} passHref>
+    <ListItemButton sx={{ borderRadius: "10px" }} selected={active}>
+      <ListItemIcon>
+        <Icon />
+      </ListItemIcon>
+      <ListItemText primary={title} />
+    </ListItemButton>
+  </NextLink>
+);
 
 export default memo(function NavigationDrawer() {
   const theme = useTheme();
@@ -66,51 +91,40 @@ export default memo(function NavigationDrawer() {
         sx={{ color: theme.palette.text.secondary, px: 2 }}
         gap={1}
       >
-        <NextLink href={"/"} passHref>
-          <ListItemButton
-            sx={{ borderRadius: "10px" }}
-            selected={isActiveRoute("/", "/[_network]/token")}
-          >
-            <ListItemIcon>
-              <AutoAwesomeMosaicIcon />
-            </ListItemIcon>
-            <ListItemText primary="Dashboard" />
-          </ListItemButton>
-        </NextLink>
+        <NavigationItem
+          title="Dashboard"
+          href="/"
+          active={isActiveRoute("/", "/[_network]/token")}
+          icon={AutoAwesomeMosaicIcon}
+        />
 
-        <NextLink href={"/wrap?upgrade"} passHref>
-          <ListItemButton
-            sx={{ borderRadius: "10px" }}
-            selected={isActiveRoute("/wrap")}
-          >
-            <ListItemIcon>
-              <SwapVertIcon />
-            </ListItemIcon>
-            <ListItemText primary="Wrap / Unwrap" />
-          </ListItemButton>
-        </NextLink>
-        <NextLink href={"/send"} passHref>
-          <ListItemButton
-            sx={{ borderRadius: "10px" }}
-            selected={isActiveRoute("/send")}
-          >
-            <ListItemIcon>
-              <ArrowRightAltIcon />
-            </ListItemIcon>
-            <ListItemText primary="Send Stream" />
-          </ListItemButton>
-        </NextLink>
-        <NextLink href={"/history"} passHref>
-          <ListItemButton
-            sx={{ borderRadius: "10px" }}
-            selected={isActiveRoute("/history")}
-          >
-            <ListItemIcon>
-              <HistoryIcon />
-            </ListItemIcon>
-            <ListItemText primary="Activity History" />
-          </ListItemButton>
-        </NextLink>
+        <NavigationItem
+          title="Wrap / Unwrap"
+          href="/wrap?upgrade"
+          active={isActiveRoute("/wrap")}
+          icon={SwapVertIcon}
+        />
+
+        <NavigationItem
+          title="Send Stream"
+          href="/send"
+          active={isActiveRoute("/send")}
+          icon={ArrowRightAltIcon}
+        />
+
+        <NavigationItem
+          title="Activity History"
+          href="/history"
+          active={isActiveRoute("/history")}
+          icon={HistoryIcon}
+        />
+
+        {/* <NavigationItem
+          title="Ecosystem"
+          href="/ecosystem"
+          active={isActiveRoute("/ecosystem")}
+          icon={AppsRoundedIcon}
+        /> */}
       </Stack>
 
       <Stack justifyContent="flex-end" sx={{ flex: 1 }}>

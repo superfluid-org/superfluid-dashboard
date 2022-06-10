@@ -13,6 +13,7 @@ import {
   TableBody,
   TableContainer,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { endOfDay, format, startOfDay, startOfMonth } from "date-fns";
 import flatten from "lodash/fp/flatten";
@@ -28,6 +29,7 @@ import ActivityTypeFilter, {
   AllActivityTypes,
 } from "../features/activityHistory/ActivityTypeFilter";
 import LoadingActivityGroup from "../features/activityHistory/LoadingActivityGroup";
+import PlaceholderActivityTable from "../features/activityHistory/PlaceholderActivityTable";
 import DatePicker from "../features/common/DatePicker";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import {
@@ -50,6 +52,7 @@ import shortenAddress from "../utils/shortenAddress";
 const History: NextPage = () => {
   const dateNow = useMemo(() => new Date(), []);
 
+  const theme = useTheme();
   const { visibleAddress = "" } = useVisibleAddress();
   const {
     network: { testnet },
@@ -250,7 +253,11 @@ const History: NextPage = () => {
                       shortenAddress(addressSearch.hash, 12)}
                   </Typography>
                   <IconButton
-                    onClick={() => setAddressSearch(null)}
+                    onClick={(e: MouseEvent<HTMLButtonElement>) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setAddressSearch(null);
+                    }}
                     sx={{ m: -1 }}
                   >
                     <CloseIcon />
@@ -331,6 +338,17 @@ const History: NextPage = () => {
               Transactions including wrapping tokens and sending streams will
               appear here.
             </Typography>
+            {/* <PlaceholderActivityTable
+              sx={{ mt: 5, position: "relative", left: theme.spacing(-4) }}
+            />
+            <PlaceholderActivityTable
+              sx={{
+                position: "relative",
+                right: theme.spacing(-4),
+                top: theme.spacing(-4),
+                mb: theme.spacing(-4),
+              }}
+            /> */}
           </Paper>
         )}
 
