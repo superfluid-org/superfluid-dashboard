@@ -29,7 +29,6 @@ import ActivityTypeFilter, {
   AllActivityTypes,
 } from "../features/activityHistory/ActivityTypeFilter";
 import LoadingActivityGroup from "../features/activityHistory/LoadingActivityGroup";
-import PlaceholderActivityTable from "../features/activityHistory/PlaceholderActivityTable";
 import DatePicker from "../features/common/DatePicker";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import {
