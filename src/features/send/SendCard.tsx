@@ -65,17 +65,17 @@ export default memo(function SendCard() {
     control,
     formState,
     getValues,
-    getFieldState,
     reset: resetForm,
   } = useFormContext<PartialStreamingForm>();
   const doesFormHaveErrors = !!Object.keys(formState.errors).length;
 
-  const [receiver, selectedToken, flowRateEther, understandLiquidationRisk] = watch([
-    "data.receiver",
-    "data.token",
-    "data.flowRate",
-    "data.understandLiquidationRisk",
-  ]);
+  const [receiver, selectedToken, flowRateEther, understandLiquidationRisk] =
+    watch([
+      "data.receiver",
+      "data.token",
+      "data.flowRate",
+      "data.understandLiquidationRisk",
+    ]);
 
   const isWrappableSuperToken = selectedToken
     ? isWrappable(selectedToken)
@@ -141,20 +141,18 @@ export default memo(function SendCard() {
           {activeFlow ? "Modify Stream" : "Send Stream"}
         </Typography>
 
-        {doesFormHaveErrors && (
-          <ErrorMessage
-            as={<Alert severity="error"></Alert>}
-            name="data"
-            render={({ messages }) => {
-              return (
-                messages &&
-                Object.entries(messages).map(([type, message]) => (
-                  <p key={type}>{message}</p>
-                ))
-              );
-            }}
-          />
-        )}
+        <ErrorMessage
+          as={<Alert severity="error"></Alert>}
+          name="data.flowRate.hov"
+          render={({ messages }) => {
+            return (
+              messages &&
+              Object.entries(messages).map(([type, message]) => (
+                <p key={type}>{message}</p>
+              ))
+            );
+          }}
+        />
 
         <Stack spacing={2.5}>
           <Box>
@@ -304,17 +302,20 @@ export default memo(function SendCard() {
         </Stack>
 
         <Stack gap={2.5}>
-          {formState.isValid && receiver && selectedToken && understandLiquidationRisk && (
-            <>
-              <Divider />
-              <StreamingPreview
-                receiver={receiver}
-                token={selectedToken}
-                flowRateEther={flowRateEther}
-                existingStream={activeFlow ?? null}
-              />
-            </>
-          )}
+          {formState.isValid &&
+            receiver &&
+            selectedToken &&
+            understandLiquidationRisk && (
+              <>
+                <Divider />
+                <StreamingPreview
+                  receiver={receiver}
+                  token={selectedToken}
+                  flowRateEther={flowRateEther}
+                  existingStream={activeFlow ?? null}
+                />
+              </>
+            )}
 
           {!activeFlow ? (
             <TransactionButton
@@ -336,7 +337,8 @@ export default memo(function SendCard() {
 
                 flowCreateTrigger({
                   chainId: network.id,
-                  flowRateWei: calculateTotalAmountWei(flowRateEther).toString(),
+                  flowRateWei:
+                    calculateTotalAmountWei(flowRateEther).toString(),
                   receiverAddress: formData.receiver.hash,
                   superTokenAddress: formData.token.address,
                   userDataBytes: undefined,

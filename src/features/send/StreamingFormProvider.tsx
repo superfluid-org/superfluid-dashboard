@@ -1,7 +1,14 @@
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
-import { bool, number, object, ObjectSchema, string } from "yup";
+import {
+  bool,
+  number,
+  object,
+  ObjectSchema,
+  string,
+  ValidationError,
+} from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { rpcApi } from "../redux/store";
 import {
@@ -38,7 +45,7 @@ export type PartialStreamingForm = {
     receiver: ValidStreamingForm["data"]["receiver"] | null;
     flowRate: ValidStreamingForm["data"]["flowRate"] | typeof defaultFlowRate;
     understandLiquidationRisk: boolean;
-  }
+  };
 };
 
 const StreamingFormProvider: FC<{
@@ -47,45 +54,60 @@ const StreamingFormProvider: FC<{
   const { data: account } = useAccount();
   const { network, stopAutoSwitchToAccountNetwork } = useExpectedNetwork();
 
-  const formSchema: ObjectSchema<ValidStreamingForm> = useMemo(
+  const formSchema = useMemo(
     () =>
-      object({
-        data: object({
-          token: object({
-            type: number().required(),
-            address: string().required(),
-            name: string().required(),
-            symbol: string().required(),
-          }).required(),
-          receiver: object({
-            hash: string().required(),
-            name: string().optional(),
-          })
-            .required()
-            .test("no-self-flow", "You can't stream to yourself.", (x) => {
-              if (!x || !account) {
-                return true;
-              }
-              return x.hash.toLowerCase() !== account.address?.toLowerCase();
-            }),
-          flowRate: object({
-            amountEther: string()
+      object().test(async (values, context) => {
+        const primaryValidation: ObjectSchema<ValidStreamingForm> = object({
+          data: object({
+            token: object({
+              type: number().required(),
+              address: string().required(),
+              name: string().required(),
+              symbol: string().required(),
+            }).required(),
+            receiver: object({
+              hash: string().required(),
+              name: string().optional(),
+            })
               .required()
-              .matches(
-                /^[0-9]*[.,]?[0-9]*$/,
-                "Amount has to be a positive number."
-              )
-              .test("not-zero", "Enter an amount.", (x) => {
-                try {
-                  return !parseEther(x).isZero();
-                } catch (error) {
-                  return false;
+              .test("no-self-flow", "You can't stream to yourself.", (x) => {
+                if (!x || !account) {
+                  return true;
                 }
+                return x.hash.toLowerCase() !== account.address?.toLowerCase();
               }),
-            unitOfTime: number().required(),
-          }).default(defaultFlowRate),
-          understandLiquidationRisk: bool().isTrue().required(),
-        }),
+            flowRate: object({
+              amountEther: string()
+                .required()
+                .matches(
+                  /^[0-9]*[.,]?[0-9]*$/,
+                  "Amount has to be a positive number."
+                )
+                .test("not-zero", "Enter an amount.", (x) => {
+                  try {
+                    return !parseEther(x).isZero();
+                  } catch (error) {
+                    return false;
+                  }
+                }),
+              unitOfTime: number().required(),
+            }).default(defaultFlowRate),
+            understandLiquidationRisk: bool().isTrue().required(),
+          }),
+        });
+
+        await primaryValidation.validate(values);
+        const validForm = values as ValidStreamingForm;
+
+        // Higher order validation
+        if (await isBufferNegative(validForm)) {
+          throw context.createError({
+            path: "data.flowRate.hov",
+            message: "Buffer is negative.",
+          });
+        }
+
+        return true;
       }),
     [account]
   );
@@ -102,24 +124,13 @@ const StreamingFormProvider: FC<{
         receiver: null,
         token: null,
         understandLiquidationRisk: false,
-      }
+      },
     },
-    resolver: async (values, context, options) => {
-      const yupResult = await yupResolver(formSchema)(values, context, options);
-
-      if (!Object.keys(yupResult.errors).length) {
-        const validForm = values as ValidStreamingForm;
-        await validateHigher(validForm);
-      } else {
-        clearErrors("data");
-      }
-
-      return yupResult;
-    },
+    resolver: yupResolver(formSchema),
     mode: "onBlur",
   });
 
-  const { formState, setError, getValues, setValue, clearErrors } = formMethods;
+  const { formState, setValue, trigger } = formMethods;
 
   const [hasRestored, setHasRestored] = useState(!restoration);
   useEffect(() => {
@@ -140,7 +151,7 @@ const StreamingFormProvider: FC<{
     }
   }, [restoration]);
 
-  const validateHigher = useCallback(
+  const isBufferNegative = useCallback(
     async (validForm: ValidStreamingForm) => {
       const accountAddress = account?.address;
       const tokenAddress = validForm.data.token?.address;
@@ -178,23 +189,11 @@ const StreamingFormProvider: FC<{
           }
         );
 
-        if (balanceAfterBuffer.isNegative()) {
-          setError("data", {
-            type: "validation",
-            message: "Balance after buffer is negative.",
-          });
-        }
+        return balanceAfterBuffer.isNegative();
       }
     },
     [account]
   );
-
-  // useEffect(() => {
-  //   const validForm = getValues() as ValidStreamingForm;
-  //   if (formState.isValid) {
-  //     validateHigher(validForm);
-  //   }
-  // }, [formState.isValidating, validateHigher]);
 
   useEffect(() => {
     if (formState.isDirty) {
@@ -202,9 +201,11 @@ const StreamingFormProvider: FC<{
     }
   }, [formState.isDirty]);
 
-  // useEffect(() => {
-  //   console.log(formState);
-  // }, [formState]);
+  useEffect(() => {
+    if (formState.isValid) {
+      trigger();
+    }
+  }, [account]);
 
   return hasRestored ? (
     <FormProvider {...formMethods}>{children}</FormProvider>

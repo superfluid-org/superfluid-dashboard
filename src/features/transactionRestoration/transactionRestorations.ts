@@ -13,7 +13,7 @@ export enum RestorationType {
 export const formRestorationOptions = {
   shouldValidate: true,
   shouldDirty: true,
-  shouldTouch: false,
+  shouldTouch: true,
 }
 
 export interface TransactionRestoration {
