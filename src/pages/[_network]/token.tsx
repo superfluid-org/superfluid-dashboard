@@ -18,7 +18,12 @@ import Error from "next/error";
 import { useRouter } from "next/router";
 import { FC, useEffect, useState } from "react";
 import SubscriptionsTable from "../../features/index/SubscriptionsTable";
+import { Network } from "../../features/network/networks";
 import { rpcApi, subgraphApi } from "../../features/redux/store";
+import {
+  getNetworkStaticPaths,
+  getNetworkStaticProps,
+} from "../../features/routing/networkPaths";
 import { UnitOfTime } from "../../features/send/FlowRateInput";
 import StreamsTable from "../../features/streamsTable/StreamsTable";
 import EtherFormatted from "../../features/token/EtherFormatted";
@@ -304,3 +309,6 @@ const Token: FC<NetworkPage> = ({ network }) => {
 };
 
 export default withPathNetwork(Token);
+
+export const getStaticPaths = getNetworkStaticPaths;
+export const getStaticProps = getNetworkStaticProps;

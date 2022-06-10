@@ -1,7 +1,6 @@
-import AppsRoundedIcon from "@mui/icons-material/AppsRounded";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
-import HistoryIcon from "@mui/icons-material/History";
 import AutoAwesomeMosaicIcon from "@mui/icons-material/AutoAwesomeMosaic";
+import HistoryIcon from "@mui/icons-material/History";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import {
   Box,
@@ -11,19 +10,18 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Paper,
   Stack,
+  SvgIcon,
   Toolbar,
   useTheme,
 } from "@mui/material";
 import Image from "next/image";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { memo, FC } from "react";
+import { FC, memo } from "react";
 import Link from "../common/Link";
 import ThemeChanger from "../theme/ThemeChanger";
 import ConnectWallet from "../wallet/ConnectWallet";
-import { SvgIconComponent } from "@mui/icons-material";
 
 export const menuDrawerWidth = 260;
 
@@ -31,7 +29,7 @@ interface NavigationItemProps {
   title: string;
   href: string;
   active: boolean;
-  icon: SvgIconComponent;
+  icon: typeof SvgIcon;
 }
 
 const NavigationItem: FC<NavigationItemProps> = ({

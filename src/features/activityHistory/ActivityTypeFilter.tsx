@@ -12,6 +12,7 @@ import {
   Menu,
   MenuItem,
   Popover,
+  SvgIcon,
   Switch,
   useTheme,
 } from "@mui/material";
@@ -22,7 +23,6 @@ import {
   FlowUpdatedEvent,
   FlowUpdateType,
 } from "@superfluid-finance/sdk-core";
-import { SvgIconComponent } from "@mui/icons-material";
 
 export enum ActivityType {
   SendStream = "Send Stream",
@@ -49,7 +49,7 @@ export const AllActivityTypes = [
 
 interface ActivityFilter {
   key: ActivityType;
-  icon: SvgIconComponent;
+  icon: typeof SvgIcon;
   filter: (keyEvent: AllEvents, address: Address) => boolean;
 }
 

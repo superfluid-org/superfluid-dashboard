@@ -1,5 +1,7 @@
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import CloseIcon from "@mui/icons-material/Close";
+import LinkIcon from "@mui/icons-material/Link";
 import ShareIcon from "@mui/icons-material/Share";
-import { BigNumber } from "ethers";
 import {
   Avatar,
   Box,
@@ -13,7 +15,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { format } from "date-fns";
-import { NextPage } from "next";
+import { BigNumber } from "ethers";
 import Error from "next/error";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -21,21 +23,20 @@ import { FC, useMemo } from "react";
 import Blockies from "react-blockies";
 import NetworkIcon from "../../features/network/NetworkIcon";
 import { subgraphApi } from "../../features/redux/store";
+import {
+  getNetworkStaticPaths,
+  getNetworkStaticProps,
+} from "../../features/routing/networkPaths";
 import { UnitOfTime } from "../../features/send/FlowRateInput";
 import EtherFormatted from "../../features/token/EtherFormatted";
 import FlowingBalance from "../../features/token/FlowingBalance";
 import TokenIcon from "../../features/token/TokenIcon";
-import shortenAddress from "../../utils/shortenAddress";
-import LinkIcon from "@mui/icons-material/Link";
-import {
-  calculateMaybeCriticalAtTimestamp,
-  calculateBuffer,
-} from "../../utils/tokenUtils";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import EditIcon from "@mui/icons-material/Edit";
-import CancelIcon from "@mui/icons-material/Cancel";
-import CloseIcon from "@mui/icons-material/Close";
 import withPathNetwork, { NetworkPage } from "../../hoc/withPathNetwork";
+import shortenAddress from "../../utils/shortenAddress";
+import {
+  calculateBuffer,
+  calculateMaybeCriticalAtTimestamp,
+} from "../../utils/tokenUtils";
 
 interface OverviewItemProps {
   label: string;
@@ -400,3 +401,6 @@ const Stream: FC<NetworkPage> = ({ network }) => {
 };
 
 export default withPathNetwork(Stream);
+
+export const getStaticPaths = getNetworkStaticPaths;
+export const getStaticProps = getNetworkStaticProps;

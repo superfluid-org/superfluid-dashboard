@@ -1,9 +1,8 @@
-import { SvgIconComponent } from "@mui/icons-material";
-import { Avatar, ListItemAvatar } from "@mui/material";
+import { Avatar, ListItemAvatar, SvgIcon } from "@mui/material";
 import { FC } from "react";
 
 interface ActivityIconProps {
-  icon: SvgIconComponent;
+  icon: typeof SvgIcon;
 }
 
 const ActivityIcon: FC<ActivityIconProps> = ({ icon: Icon }) => (
