@@ -6,6 +6,7 @@ import {
   Container,
   Input,
   OutlinedInput,
+  Paper,
   Stack,
   Table,
   TableBody,
@@ -189,6 +190,11 @@ const History: NextPage = () => {
     );
   }, [activities, validateActivityFilters]);
 
+  const hasContent = useMemo(
+    () => Object.keys(filteredActivitiesGroups).length > 0,
+    [filteredActivitiesGroups]
+  );
+
   return (
     <Container maxWidth="lg">
       <Stack gap={4.5}>
@@ -260,7 +266,20 @@ const History: NextPage = () => {
         </Stack>
 
         {isLoading && <LoadingActivityGroup />}
+        {!isLoading && !hasContent && (
+          <Paper elevation={1} sx={{ px: 12, py: 7 }}>
+            <Typography variant="h4" textAlign="center">
+              No Activity History Available
+            </Typography>
+            <Typography color="text.secondary" textAlign="center">
+              Transactions including wrapping tokens and sending streams will
+              appear here.
+            </Typography>
+          </Paper>
+        )}
+
         {!isLoading &&
+          hasContent &&
           Object.entries(filteredActivitiesGroups).map(
             ([dateKey, activities]) => (
               <Box key={dateKey}>

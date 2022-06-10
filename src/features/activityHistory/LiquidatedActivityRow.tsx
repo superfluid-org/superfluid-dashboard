@@ -6,6 +6,7 @@ import {
   ListItemText,
   TableCell,
   TableRow,
+  Typography,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
@@ -13,6 +14,7 @@ import { FC, memo, useMemo } from "react";
 import Blockies from "react-blockies";
 import { AgreementLiquidatedActivity } from "../../utils/activityUtils";
 import shortenAddress from "../../utils/shortenAddress";
+import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
@@ -69,7 +71,7 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
             )}
           </ListItemAvatar>
           <ListItemText
-            primary={"-12.59 ETH"}
+            primary={"-"}
             /**
              * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
              * This is just used to make table row look better
@@ -99,13 +101,16 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
           </ListItemAvatar>
           <ListItemText
             primary={isOutgoing ? "To" : "From"}
-            secondary={shortenAddress(isOutgoing ? receiver : sender)}
+            secondary={
+              <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
+                <Typography variant="h6" color="text.primary" component="span">
+                  {shortenAddress(isOutgoing ? receiver : sender)}
+                </Typography>
+              </AddressCopyTooltip>
+            }
             primaryTypographyProps={{
               variant: "body2mono",
               color: "text.secondary",
-            }}
-            secondaryTypographyProps={{
-              variant: "h6",
             }}
           />
         </ListItem>

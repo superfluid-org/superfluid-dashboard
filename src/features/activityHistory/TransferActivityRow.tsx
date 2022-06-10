@@ -7,6 +7,7 @@ import {
   ListItemText,
   TableCell,
   TableRow,
+  Typography,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { TransferEvent } from "@superfluid-finance/sdk-core";
@@ -15,6 +16,7 @@ import { FC, memo, useMemo } from "react";
 import Blockies from "react-blockies";
 import { Activity } from "../../utils/activityUtils";
 import shortenAddress from "../../utils/shortenAddress";
+import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
@@ -102,14 +104,16 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
           </ListItemAvatar>
           <ListItemText
             primary={isOutgoing ? "To" : "From"}
-            secondary={shortenAddress(isOutgoing ? to : from)}
+            secondary={
+              <AddressCopyTooltip address={isOutgoing ? to : from}>
+                <Typography variant="h6" color="text.primary" component="span">
+                  {shortenAddress(isOutgoing ? to : from)}
+                </Typography>
+              </AddressCopyTooltip>
+            }
             primaryTypographyProps={{
               variant: "body2",
               color: "text.secondary",
-            }}
-            secondaryTypographyProps={{
-              variant: "h6",
-              color: "text.primary",
             }}
           />
         </ListItem>

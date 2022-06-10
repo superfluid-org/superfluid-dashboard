@@ -9,6 +9,7 @@ import {
   ListItemText,
   TableCell,
   TableRow,
+  Typography,
 } from "@mui/material";
 import { FlowUpdatedEvent, FlowUpdateType } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
@@ -17,6 +18,7 @@ import { FC, memo, useMemo } from "react";
 import Blockies from "react-blockies";
 import { Activity } from "../../utils/activityUtils";
 import shortenAddress from "../../utils/shortenAddress";
+import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
@@ -138,14 +140,16 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
           </ListItemAvatar>
           <ListItemText
             primary={isOutgoing ? "To" : "From"}
-            secondary={shortenAddress(isOutgoing ? receiver : sender)}
+            secondary={
+              <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
+                <Typography variant="h6" color="text.primary" component="span">
+                  {shortenAddress(isOutgoing ? receiver : sender)}
+                </Typography>
+              </AddressCopyTooltip>
+            }
             primaryTypographyProps={{
               variant: "body2",
               color: "text.secondary",
-            }}
-            secondaryTypographyProps={{
-              variant: "h6",
-              color: "text.primary",
             }}
           />
         </ListItem>
