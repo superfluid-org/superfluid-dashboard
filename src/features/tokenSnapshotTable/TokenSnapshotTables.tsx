@@ -10,6 +10,7 @@ import {
   testNetworks,
 } from "../network/networks";
 import NetworkSelectionFilter, {
+  buildNetworkStates,
   NetworkStates,
 } from "../network/NetworkSelectionFilter";
 import { OpenIcon } from "../network/SelectNetwork";
@@ -17,18 +18,6 @@ import { subgraphApi } from "../redux/store";
 import TokenSnapshotEmptyCard from "./TokenSnapshotEmptyCard";
 import TokenSnapshotLoadingTable from "./TokenSnapshotLoadingTable";
 import TokenSnapshotTable from "./TokenSnapshotTable";
-
-const buildNetworkStates = (
-  networkList: Array<Network>,
-  defaultActive: boolean
-) =>
-  networkList.reduce(
-    (activeStates, network) => ({
-      ...activeStates,
-      [network.id]: defaultActive,
-    }),
-    {}
-  );
 
 interface TokenSnapshotTablesProps {
   address: Address;
@@ -42,16 +31,14 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
   const networkSelectionRef = useRef<HTMLButtonElement>(null);
   const [hasContent, setHasContent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  const [tokenSnapshotsQueryTrigger] =
-    subgraphApi.useLazyAccountTokenSnapshotsQuery();
-
   const [showTestnets, setShowTestnets] = useState(!!testnet);
-
   const [networkStates, setNetworkStates] = useState<NetworkStates>({
     ...buildNetworkStates(mainNetworks, !showTestnets),
     ...buildNetworkStates(testNetworks, showTestnets),
   });
+
+  const [tokenSnapshotsQueryTrigger] =
+    subgraphApi.useLazyAccountTokenSnapshotsQuery();
 
   const onTestnetsChange = (testActive: boolean) => {
     setShowTestnets(testActive);

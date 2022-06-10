@@ -1,40 +1,39 @@
-import EditIcon from "@mui/icons-material/Edit";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
-import Blockies from "react-blockies";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import CloseIcon from "@mui/icons-material/Close";
+import EditIcon from "@mui/icons-material/Edit";
 import {
-  TableRow,
-  TableCell,
+  Avatar,
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Avatar,
-  IconButton,
+  TableCell,
+  TableRow,
 } from "@mui/material";
-import { FC } from "react";
-import shortenAddress from "../../utils/shortenAddress";
-import NetworkBadge from "../network/NetworkBadge";
-import TokenIcon from "../token/TokenIcon";
-import { AllEvents, FlowUpdatedEvent } from "@superfluid-finance/sdk-core";
-import { Network } from "../network/networks";
+import { FlowUpdatedEvent, FlowUpdateType } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
-import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import EtherFormatted from "../token/EtherFormatted";
+import { BigNumber } from "ethers";
+import { FC, memo, useMemo } from "react";
+import Blockies from "react-blockies";
+import { Activity } from "../../utils/activityUtils";
+import shortenAddress from "../../utils/shortenAddress";
+import TxHashLink from "../common/TxHashLink";
+import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
+import { UnitOfTime } from "../send/FlowRateInput";
+import EtherFormatted from "../token/EtherFormatted";
+import TokenIcon from "../token/TokenIcon";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import ActivityIcon from "./ActivityIcon";
 
-interface FlowUpdatedEventRowProps {
-  event: FlowUpdatedEvent;
-  network: Network;
-}
-
-const FlowUpdatedEventRow: FC<FlowUpdatedEventRowProps> = ({
-  event,
+const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
+  keyEvent,
   network,
 }) => {
   const { visibleAddress } = useVisibleAddress();
 
   const {
+    type,
     deposit,
     flowRate,
     receiver,
@@ -42,24 +41,45 @@ const FlowUpdatedEventRow: FC<FlowUpdatedEventRowProps> = ({
     timestamp,
     token,
     transactionHash,
-  } = event;
+  } = keyEvent;
 
   const tokenQuery = subgraphApi.useTokenQuery({
     chainId: network.id,
     id: token,
   });
 
-  const isOutgoing = visibleAddress?.toLowerCase() === sender.toLowerCase();
+  const isOutgoing = useMemo(
+    () => visibleAddress?.toLowerCase() === sender.toLowerCase(),
+    [visibleAddress, sender]
+  );
+
+  const { title, icon } = useMemo(() => {
+    switch (type) {
+      case FlowUpdateType.Create:
+        return {
+          title: isOutgoing ? "Send Stream" : "Receive Stream",
+          icon: isOutgoing ? ArrowForwardIcon : ArrowBackIcon,
+        };
+      case FlowUpdateType.Update:
+        return {
+          title: "Stream Updated",
+          icon: EditIcon,
+        };
+      case FlowUpdateType.Terminate:
+        return {
+          title: "Stream Cancelled",
+          icon: CloseIcon,
+        };
+    }
+  }, [isOutgoing, type]);
 
   return (
     <TableRow>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ListItemAvatar>
-            {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
-          </ListItemAvatar>
+          <ActivityIcon icon={icon} />
           <ListItemText
-            primary={isOutgoing ? "Send Stream" : "Receive Stream"}
+            primary={title}
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
               variant: "h6",
@@ -79,14 +99,23 @@ const FlowUpdatedEventRow: FC<FlowUpdatedEventRowProps> = ({
             )}
           </ListItemAvatar>
           <ListItemText
-            primary={<EtherFormatted wei={flowRate} />}
+            primary={
+              <>
+                <EtherFormatted
+                  wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)}
+                  etherDecimalPlaces={8}
+                  disableRoundingIndicator
+                />
+                /mo
+              </>
+            }
             /**
              * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
              * This is just used to make table row look better
              */
             // secondary="$12.59"
             primaryTypographyProps={{
-              variant: "h6",
+              variant: "h6mono",
               sx: { lineHeight: "46px" },
             }}
             secondaryTypographyProps={{
@@ -111,19 +140,19 @@ const FlowUpdatedEventRow: FC<FlowUpdatedEventRowProps> = ({
             primary={isOutgoing ? "To" : "From"}
             secondary={shortenAddress(isOutgoing ? receiver : sender)}
             primaryTypographyProps={{
-              variant: "h6",
+              variant: "body2",
+              color: "text.secondary",
             }}
             secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
+              variant: "h6",
+              color: "text.primary",
             }}
           />
         </ListItem>
       </TableCell>
       <TableCell sx={{ position: "relative" }}>
-        <IconButton color="inherit">
-          <LaunchRoundedIcon />
-        </IconButton>
+        <TxHashLink txHash={transactionHash} network={network} />
+
         <NetworkBadge
           network={network}
           sx={{ position: "absolute", top: "0px", right: "16px" }}
@@ -133,4 +162,4 @@ const FlowUpdatedEventRow: FC<FlowUpdatedEventRowProps> = ({
   );
 };
 
-export default FlowUpdatedEventRow;
+export default memo(FlowUpdatedActivityRow);

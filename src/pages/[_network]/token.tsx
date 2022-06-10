@@ -150,11 +150,8 @@ const Token: FC<NetworkPage> = ({ network }) => {
                   Liquidation Date:
                 </Typography>
                 <Typography variant="h7" color="text.secondary">
-                  {maybeCriticalAtTimestamp !== "0"
-                    ? format(
-                        Number(maybeCriticalAtTimestamp) * 1000,
-                        "MMMM do, yyyy"
-                      )
+                  {maybeCriticalAtTimestamp > 0
+                    ? format(maybeCriticalAtTimestamp * 1000, "MMMM do, yyyy")
                     : "-"}
                 </Typography>
               </Stack>

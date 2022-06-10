@@ -426,6 +426,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       },
       MuiInputBase: {
         styleOverrides: {
+          root: {
+            background: theme.palette.background.paper,
+            backgroundImage: getModeStyle("none", ELEVATION1_BG),
+          },
           input: {
             "&[type=number]::-webkit-outer-spin-button, &[type=number]::-webkit-inner-spin-button":
               {
@@ -434,6 +438,11 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
               },
             "&[type=number]": {
               MozAppearance: "textfield",
+            },
+          },
+          adornedStart: {
+            ".MuiSvgIcon-root": {
+              marginRight: theme.spacing(1),
             },
           },
         },
@@ -578,6 +587,8 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           outlinedSecondary: {
             color: theme.palette.text.primary,
             borderColor: theme.palette.other.outline,
+            background: theme.palette.background.paper,
+            backgroundImage: getModeStyle("none", ELEVATION1_BG),
           },
         },
         variants: [
@@ -720,14 +731,14 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         styleOverrides: {
           root: {
             minWidth: "auto",
-            marginRight: 16,
+            marginRight: theme.spacing(2),
           },
         },
       },
       MuiListItemAvatar: {
         styleOverrides: {
           root: {
-            marginRight: 16,
+            marginRight: theme.spacing(2),
             minWidth: "auto",
           },
         },
@@ -763,6 +774,9 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         styleOverrides: {
           root: {
             ...theme.typography.menuItem,
+            ".MuiListItemIcon-root": {
+              minWidth: "auto",
+            },
           },
         },
       },

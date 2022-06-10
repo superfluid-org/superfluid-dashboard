@@ -14,6 +14,18 @@ import { FC } from "react";
 import NetworkIcon from "./NetworkIcon";
 import { Network, networks } from "./networks";
 
+export const buildNetworkStates = (
+  networkList: Array<Network>,
+  defaultActive: boolean
+) =>
+  networkList.reduce(
+    (activeStates, network) => ({
+      ...activeStates,
+      [network.id]: defaultActive,
+    }),
+    {}
+  );
+
 interface NetworkItemProps {
   network: Network;
   active: boolean;

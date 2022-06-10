@@ -1,39 +1,32 @@
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
-import Blockies from "react-blockies";
 import {
-  TableRow,
-  TableCell,
+  Avatar,
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Avatar,
-  IconButton,
+  TableCell,
+  TableRow,
 } from "@mui/material";
-import { FC } from "react";
+import { format } from "date-fns";
+import { FC, memo } from "react";
+import Blockies from "react-blockies";
+import { Activity } from "../../utils/activityUtils";
 import shortenAddress from "../../utils/shortenAddress";
+import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
 import TokenIcon from "../token/TokenIcon";
-import { AllEvents } from "@superfluid-finance/sdk-core";
-import { Network } from "../network/networks";
-import { format } from "date-fns";
+import ActivityIcon from "./ActivityIcon";
 
-interface TransferEventRowProps {
-  event: AllEvents;
-  network: Network;
-}
-
-const TransferEventRow: FC<TransferEventRowProps> = ({ event, network }) => {
+const DefaultActivityRow: FC<Activity> = ({ keyEvent, network }) => {
+  const { name, timestamp, transactionHash } = keyEvent;
   return (
     <TableRow>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ListItemAvatar>
-            <ArrowForwardIcon />
-          </ListItemAvatar>
+          <ActivityIcon icon={ArrowForwardIcon} />
           <ListItemText
-            primary={event.name}
-            secondary={format(event.timestamp * 1000, "HH:mm")}
+            primary={`FIX: ${name}`}
+            secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
               variant: "h6",
             }}
@@ -55,7 +48,6 @@ const TransferEventRow: FC<TransferEventRowProps> = ({ event, network }) => {
              * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
              * This is just used to make table row look better
              */
-            // secondary="$12.59"
             primaryTypographyProps={{
               variant: "h6",
               sx: { lineHeight: "46px" },
@@ -94,9 +86,8 @@ const TransferEventRow: FC<TransferEventRowProps> = ({ event, network }) => {
         </ListItem>
       </TableCell>
       <TableCell sx={{ position: "relative" }}>
-        <IconButton color="inherit">
-          <LaunchRoundedIcon />
-        </IconButton>
+        <TxHashLink txHash={transactionHash} network={network} />
+
         <NetworkBadge
           network={network}
           sx={{ position: "absolute", top: "0px", right: "16px" }}
@@ -106,4 +97,4 @@ const TransferEventRow: FC<TransferEventRowProps> = ({ event, network }) => {
   );
 };
 
-export default TransferEventRow;
+export default memo(DefaultActivityRow);

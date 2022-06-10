@@ -1,42 +1,56 @@
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
-import Blockies from "react-blockies";
+import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import {
-  TableRow,
-  TableCell,
+  Avatar,
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Avatar,
-  IconButton,
+  TableCell,
+  TableRow,
 } from "@mui/material";
-import { FC } from "react";
-import shortenAddress from "../../utils/shortenAddress";
-import NetworkBadge from "../network/NetworkBadge";
-import TokenIcon from "../token/TokenIcon";
-import { AllEvents } from "@superfluid-finance/sdk-core";
-import { Network } from "../network/networks";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
+import { FC, memo, useMemo } from "react";
+import Blockies from "react-blockies";
+import { AgreementLiquidatedActivity } from "../../utils/activityUtils";
+import shortenAddress from "../../utils/shortenAddress";
+import TxHashLink from "../common/TxHashLink";
+import NetworkBadge from "../network/NetworkBadge";
+import { subgraphApi } from "../redux/store";
+import TokenIcon from "../token/TokenIcon";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import ActivityIcon from "./ActivityIcon";
 
-interface TokenDowngradedEventRowProps {
-  event: AllEvents;
-  network: Network;
-}
-
-const TokenDowngradedEventRow: FC<TokenDowngradedEventRowProps> = ({
-  event,
+const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
+  keyEvent,
+  flowUpdatedEvent = {},
   network,
 }) => {
+  const { token, timestamp, transactionHash } = keyEvent;
+  const { sender = "", receiver = "" } = flowUpdatedEvent;
+  const { visibleAddress } = useVisibleAddress();
+
+  const tokenQuery = subgraphApi.useTokenQuery(
+    token
+      ? {
+          chainId: network.id,
+          id: token,
+        }
+      : skipToken
+  );
+
+  const isOutgoing = useMemo(
+    () => visibleAddress?.toLowerCase() === sender?.toLowerCase(),
+    [visibleAddress, sender]
+  );
+
   return (
     <TableRow>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ListItemAvatar>
-            <ArrowForwardIcon />
-          </ListItemAvatar>
+          <ActivityIcon icon={PriorityHighIcon} />
           <ListItemText
-            primary={event.name}
-            secondary={format(event.timestamp * 1000, "HH:mm")}
+            primary={"Liquidated"}
+            secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
               variant: "h6",
             }}
@@ -50,7 +64,9 @@ const TokenDowngradedEventRow: FC<TokenDowngradedEventRowProps> = ({
       <TableCell>
         <ListItem sx={{ p: 0 }}>
           <ListItemAvatar>
-            <TokenIcon tokenSymbol={"fDAIx"} />
+            {tokenQuery.data && (
+              <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
+            )}
           </ListItemAvatar>
           <ListItemText
             primary={"-12.59 ETH"}
@@ -75,31 +91,28 @@ const TokenDowngradedEventRow: FC<TokenDowngradedEventRowProps> = ({
           <ListItemAvatar>
             <Avatar variant="rounded">
               <Blockies
-                seed={"0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"}
+                seed={isOutgoing ? receiver : sender}
                 size={12}
                 scale={3}
               />
             </Avatar>
           </ListItemAvatar>
           <ListItemText
-            primary={"To"}
-            secondary={shortenAddress(
-              "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"
-            )}
+            primary={isOutgoing ? "To" : "From"}
+            secondary={shortenAddress(isOutgoing ? receiver : sender)}
             primaryTypographyProps={{
-              variant: "h6",
-            }}
-            secondaryTypographyProps={{
               variant: "body2mono",
               color: "text.secondary",
+            }}
+            secondaryTypographyProps={{
+              variant: "h6",
             }}
           />
         </ListItem>
       </TableCell>
       <TableCell sx={{ position: "relative" }}>
-        <IconButton color="inherit">
-          <LaunchRoundedIcon />
-        </IconButton>
+        <TxHashLink txHash={transactionHash} network={network} />
+
         <NetworkBadge
           network={network}
           sx={{ position: "absolute", top: "0px", right: "16px" }}
@@ -109,4 +122,4 @@ const TokenDowngradedEventRow: FC<TokenDowngradedEventRowProps> = ({
   );
 };
 
-export default TokenDowngradedEventRow;
+export default memo(LiquidatedActivityRow);
