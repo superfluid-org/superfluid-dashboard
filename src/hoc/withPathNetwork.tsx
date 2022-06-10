@@ -1,7 +1,7 @@
 import { isString } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import Redirect from "../features/common/Redirect";
 import { Network, networksBySlug } from "../features/network/networks";
 
@@ -12,17 +12,26 @@ export interface NetworkPage {
 const withPathNetwork = (Component: FC<NetworkPage>) => {
   const ComponentWithPathNetwork: NextPage = ({ ...props }) => {
     const router = useRouter();
-    const { _network: pathNetwork } = router.query;
+    const { _network } = router.query;
+    const [pathNetwork, setPathNetwork] = useState<Network | null>(null);
 
-    if (isString(pathNetwork)) {
-      const network = networksBySlug.get(pathNetwork);
+    useEffect(() => {
+      if (router.isReady) {
+        if (isString(_network)) {
+          const network = networksBySlug.get(_network);
 
-      if (network) {
-        return <Component network={network} {...props} />;
+          if (network) {
+            setPathNetwork(network);
+            return;
+          }
+        }
+
+        router.push("/not-found");
       }
-    }
+    }, [_network, router]);
 
-    return <Redirect to="/" />;
+    if (!pathNetwork) return null;
+    return <Component network={pathNetwork} {...props} />;
   };
 
   return ComponentWithPathNetwork;
