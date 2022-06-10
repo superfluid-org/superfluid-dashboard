@@ -607,7 +607,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           {
             props: { size: "xl" },
             style: {
-              padding: "14px 0",
+              padding: "14px 21px", // These paddings are used to match "large" button.
               width: "100%",
               ...theme.typography.h6,
             },

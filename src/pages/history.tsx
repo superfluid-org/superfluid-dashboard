@@ -1,11 +1,12 @@
-import SearchIcon from "@mui/icons-material/Search";
+import CloseIcon from "@mui/icons-material/Close";
 import DateRangeIcon from "@mui/icons-material/DateRange";
+import SearchIcon from "@mui/icons-material/Search";
 import {
+  Avatar,
   Box,
   Button,
   Container,
-  Input,
-  OutlinedInput,
+  IconButton,
   Paper,
   Stack,
   Table,
@@ -13,21 +14,24 @@ import {
   TableContainer,
   Typography,
 } from "@mui/material";
-import {
-  endOfDay,
-  endOfMonth,
-  format,
-  startOfDay,
-  startOfMonth,
-} from "date-fns";
+import { endOfDay, format, startOfDay, startOfMonth } from "date-fns";
+import flatten from "lodash/fp/flatten";
 import groupBy from "lodash/fp/groupBy";
+import orderBy from "lodash/fp/orderBy";
 import { NextPage } from "next";
 import { MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
+import Blockies from "react-blockies";
 import ActivityRow from "../features/activityHistory/ActivityRow";
+import ActivityTypeFilter, {
+  ActivityType,
+  ActivityTypeFilters,
+  AllActivityTypes,
+} from "../features/activityHistory/ActivityTypeFilter";
+import LoadingActivityGroup from "../features/activityHistory/LoadingActivityGroup";
+import DatePicker from "../features/common/DatePicker";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import {
   mainNetworks,
-  Network,
   networks,
   testNetworks,
 } from "../features/network/networks";
@@ -37,17 +41,11 @@ import NetworkSelectionFilter, {
 } from "../features/network/NetworkSelectionFilter";
 import { OpenIcon } from "../features/network/SelectNetwork";
 import { subgraphApi } from "../features/redux/store";
+import AddressSearchDialog from "../features/send/AddressSearchDialog";
+import { DisplayAddress } from "../features/send/DisplayAddressChip";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { Activity, mapActivitiesFromEvents } from "../utils/activityUtils";
-import flatten from "lodash/fp/flatten";
-import orderBy from "lodash/fp/orderBy";
-import LoadingActivityGroup from "../features/activityHistory/LoadingActivityGroup";
-import DatePicker from "../features/common/DatePicker";
-import ActivityTypeFilter, {
-  ActivityType,
-  ActivityTypeFilters,
-  AllActivityTypes,
-} from "../features/activityHistory/ActivityTypeFilter";
+import shortenAddress from "../utils/shortenAddress";
 
 const History: NextPage = () => {
   const dateNow = useMemo(() => new Date(), []);
@@ -77,6 +75,12 @@ const History: NextPage = () => {
   const [startDate, setStartDate] = useState(startOfMonth(dateNow));
   const [endDate, setEndDate] = useState(endOfDay(dateNow));
 
+  const [addressSearchOpen, setAddressSearchOpen] = useState(false);
+
+  const [addressSearch, setAddressSearch] = useState<DisplayAddress | null>(
+    null
+  );
+
   const [eventsQueryTrigger] = subgraphApi.useLazyEventsQuery();
 
   const activeNetworks = useMemo(
@@ -94,7 +98,12 @@ const History: NextPage = () => {
             {
               chainId: network.id,
               filter: {
-                addresses_contains: [visibleAddress.toLowerCase()],
+                addresses_contains: addressSearch
+                  ? [
+                      visibleAddress.toLowerCase(),
+                      addressSearch.hash.toLowerCase(),
+                    ]
+                  : [visibleAddress.toLowerCase()],
                 timestamp_gte: Math.floor(
                   startOfDay(startDate).getTime() / 1000
                 ).toString(),
@@ -129,7 +138,15 @@ const History: NextPage = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visibleAddress, activeNetworks, startDate, endDate]);
+  }, [visibleAddress, activeNetworks, startDate, endDate, addressSearch]);
+
+  const onAddressSearchChange = (address: DisplayAddress) => {
+    setAddressSearch(address);
+    closeAddressSearchDialog();
+  };
+
+  const openAddressSearchDialog = () => setAddressSearchOpen(true);
+  const closeAddressSearchDialog = () => setAddressSearchOpen(false);
 
   const onTestnetsChange = (testActive: boolean) => {
     setShowTestnets(testActive);
@@ -202,18 +219,57 @@ const History: NextPage = () => {
 
         <Stack gap={2.5}>
           <Stack direction="row" justifyContent="space-between">
-            <OutlinedInput
-              fullWidth
-              startAdornment={<SearchIcon />}
-              placeholder="Filter by address"
-              sx={{
-                maxWidth: "460px",
-              }}
+            <Button
+              variant="outlined"
+              color="secondary"
+              size="xl"
+              startIcon={
+                addressSearch ? (
+                  <Avatar
+                    variant="rounded"
+                    sx={{ width: "24px", height: "24px" }}
+                  >
+                    <Blockies seed={addressSearch.hash} size={12} scale={2} />
+                  </Avatar>
+                ) : (
+                  <SearchIcon />
+                )
+              }
+              onClick={openAddressSearchDialog}
+              sx={{ maxWidth: "400px", justifyContent: "flex-start" }}
+            >
+              {addressSearch ? (
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  flex={1}
+                >
+                  <Typography variant="body1">
+                    {addressSearch.name ||
+                      shortenAddress(addressSearch.hash, 12)}
+                  </Typography>
+                  <IconButton
+                    onClick={() => setAddressSearch(null)}
+                    sx={{ m: -1 }}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                </Stack>
+              ) : (
+                <>Filter by address</>
+              )}
+            </Button>
+            <AddressSearchDialog
+              open={addressSearchOpen}
+              onClose={closeAddressSearchDialog}
+              onSelectAddress={onAddressSearchChange}
             />
 
             <Button
               variant="outlined"
               color="secondary"
+              size="large"
               startIcon={<DateRangeIcon />}
               onClick={openDatePicker}
             >{`${format(startDate, "d MMMM yyyy")} - ${format(
