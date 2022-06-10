@@ -230,7 +230,7 @@ const History: NextPage = () => {
               endIcon={<OpenIcon open={!!activitySelectionAnchor} />}
               onClick={openActivitySelection}
             >
-              Transaction Type
+              Activity Type
             </Button>
             <ActivityTypeFilter
               anchorEl={activitySelectionAnchor}
@@ -245,7 +245,7 @@ const History: NextPage = () => {
               endIcon={<OpenIcon open={!!networkSelectionAnchor} />}
               onClick={openNetworkSelection}
             >
-              All networks
+              All Networks
             </Button>
             <NetworkSelectionFilter
               open={!!networkSelectionAnchor}
@@ -268,7 +268,26 @@ const History: NextPage = () => {
                   {format(new Date(dateKey), "MMMM d, yyyy")}
                 </Typography>
                 <TableContainer>
-                  <Table>
+                  <Table
+                    sx={{
+                      // TODO: Make all table layouts fixed
+                      tableLayout: "fixed",
+                      td: {
+                        "&:nth-of-type(1)": {
+                          width: "30%",
+                        },
+                        "&:nth-of-type(2)": {
+                          width: "30%",
+                        },
+                        "&:nth-of-type(3)": {
+                          width: "30%",
+                        },
+                        "&:nth-of-type(4)": {
+                          width: "140px",
+                        },
+                      },
+                    }}
+                  >
                     <TableBody>
                       {activities.map((activity) => (
                         <ActivityRow
