@@ -18,7 +18,12 @@ import Error from "next/error";
 import { useRouter } from "next/router";
 import { FC, useEffect, useState } from "react";
 import SubscriptionsTable from "../../features/index/SubscriptionsTable";
+import { Network } from "../../features/network/networks";
 import { rpcApi, subgraphApi } from "../../features/redux/store";
+import {
+  getNetworkStaticPaths,
+  getNetworkStaticProps,
+} from "../../features/routing/networkPaths";
 import { UnitOfTime } from "../../features/send/FlowRateInput";
 import StreamsTable from "../../features/streamsTable/StreamsTable";
 import EtherFormatted from "../../features/token/EtherFormatted";
@@ -40,7 +45,6 @@ enum TokenDetailsTabs {
 const Token: FC<NetworkPage> = ({ network }) => {
   const theme = useTheme();
   const router = useRouter();
-  // const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
 
   const [activeTab, setActiveTab] = useState(TokenDetailsTabs.Streams);
@@ -151,11 +155,8 @@ const Token: FC<NetworkPage> = ({ network }) => {
                   Liquidation Date:
                 </Typography>
                 <Typography variant="h7" color="text.secondary">
-                  {maybeCriticalAtTimestamp !== "0"
-                    ? format(
-                        Number(maybeCriticalAtTimestamp) * 1000,
-                        "MMMM do, yyyy"
-                      )
+                  {maybeCriticalAtTimestamp > 0
+                    ? format(maybeCriticalAtTimestamp * 1000, "MMMM do, yyyy")
                     : "-"}
                 </Typography>
               </Stack>
@@ -308,3 +309,6 @@ const Token: FC<NetworkPage> = ({ network }) => {
 };
 
 export default withPathNetwork(Token);
+
+export const getStaticPaths = getNetworkStaticPaths;
+export const getStaticProps = getNetworkStaticProps;

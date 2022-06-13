@@ -4,7 +4,7 @@ import Chart from "chart.js/auto";
 import { endOfDay, format, isSameDay, startOfYear, sub } from "date-fns";
 import { BigNumber, ethers } from "ethers";
 import minBy from "lodash/fp/minBy";
-import { FC, useEffect, useMemo, useRef } from "react";
+import { FC, useCallback, useEffect, useMemo, useRef } from "react";
 import {
   buildDefaultDatasetConf,
   DEFAULT_LINE_CHART_OPTIONS,
@@ -95,53 +95,53 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
     }
   };
 
-  const mapDatesWithData = (
-    tokenBalances: Array<TokenBalance>,
-    dates: Array<Date>
-  ) =>
-    dates.reduce<{
-      data: Array<DataPoint>;
-      lastTokenBalance: TokenBalance;
-    }>(
-      ({ data, lastTokenBalance }, date) => {
-        const currentTokenBalance =
-          tokenBalances.find(({ timestamp }) =>
-            isSameDay(date, new Date(timestamp * 1000))
-          ) || lastTokenBalance;
+  const mapDatesWithData = useCallback(
+    (tokenBalances: Array<TokenBalance>, dates: Array<Date>) =>
+      dates.reduce<{
+        data: Array<DataPoint>;
+        lastTokenBalance: TokenBalance;
+      }>(
+        ({ data, lastTokenBalance }, date) => {
+          const currentTokenBalance =
+            tokenBalances.find(({ timestamp }) =>
+              isSameDay(date, new Date(timestamp * 1000))
+            ) || lastTokenBalance;
 
-        const { balance, totalNetFlowRate, timestamp } = currentTokenBalance;
+          const { balance, totalNetFlowRate, timestamp } = currentTokenBalance;
 
-        const flowingBalance =
-          totalNetFlowRate !== "0"
-            ? BigNumber.from(totalNetFlowRate).mul(
-                BigNumber.from(Math.floor(date.getTime() / 1000) - timestamp)
-              )
-            : BigNumber.from(0);
-
-        return {
-          data: [
-            ...data,
-            {
-              value: Number(
-                ethers.utils.formatEther(
-                  BigNumber.from(balance).add(flowingBalance)
+          const flowingBalance =
+            totalNetFlowRate !== "0"
+              ? BigNumber.from(totalNetFlowRate).mul(
+                  BigNumber.from(Math.floor(date.getTime() / 1000) - timestamp)
                 )
-              ),
-              date,
-            },
-          ],
-          lastTokenBalance: currentTokenBalance,
-        };
-      },
-      {
-        data: [],
-        lastTokenBalance: {
-          balance: "0",
-          totalNetFlowRate: "0",
-          timestamp: Math.floor(Date.now() / 1000),
-        } as TokenBalance,
-      }
-    ).data;
+              : BigNumber.from(0);
+
+          return {
+            data: [
+              ...data,
+              {
+                value: Number(
+                  ethers.utils.formatEther(
+                    BigNumber.from(balance).add(flowingBalance)
+                  )
+                ),
+                date,
+              },
+            ],
+            lastTokenBalance: currentTokenBalance,
+          };
+        },
+        {
+          data: [],
+          lastTokenBalance: {
+            balance: "0",
+            totalNetFlowRate: "0",
+            timestamp: Math.floor(Date.now() / 1000),
+          } as TokenBalance,
+        }
+      ).data,
+    []
+  );
 
   const graphData = useMemo(
     () => {

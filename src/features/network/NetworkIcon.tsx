@@ -1,4 +1,4 @@
-import { Avatar, AvatarProps } from "@mui/material";
+import { Avatar, AvatarProps, SxProps, Theme, useTheme } from "@mui/material";
 import { FC } from "react";
 import { Network } from "./networks";
 
@@ -6,15 +6,21 @@ interface NetworkIconProps {
   network: Network;
   fontSize?: number;
   size?: number;
+  sx?: SxProps<Theme>;
 }
 
 const NetworkIcon: FC<NetworkIconProps> = ({
   network,
   fontSize = 20,
   size = 36,
+  sx = {},
 }) => {
+  const theme = useTheme();
+
   if (!network.testnet)
-    return <Avatar src={network.icon} sx={{ width: size, height: size }} />;
+    return (
+      <Avatar src={network.icon} sx={{ width: size, height: size, ...sx }} />
+    );
 
   return (
     <Avatar
@@ -23,6 +29,7 @@ const NetworkIcon: FC<NetworkIconProps> = ({
         height: size,
         fontSize: `${fontSize}px`,
         backgroundColor: network.color,
+        ...sx,
       }}
     >
       {network.name.charAt(0)}

@@ -1,7 +1,7 @@
-import { DarkModeOutlined, LightModeOutlined } from "@mui/icons-material";
-import { IconButton, Tooltip } from "@mui/material";
+import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
+import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
+import { IconButton, Tooltip, useTheme as useThemeMui } from "@mui/material";
 import { useTheme as useThemeNextThemes } from "next-themes";
-import { useTheme as useThemeMui } from "@mui/material";
 
 export default function ThemeChanger() {
   const { setTheme } = useThemeNextThemes();
@@ -15,9 +15,9 @@ export default function ThemeChanger() {
     <Tooltip data-cy={"light-switch"} title={isDarkTheme ? "Light mode" : "Dark mode"}>
       <IconButton color="inherit" onClick={toggleTheme}>
         {isDarkTheme ? (
-          <LightModeOutlined fontSize="small" />
+          <LightModeOutlinedIcon fontSize="small" />
         ) : (
-          <DarkModeOutlined fontSize="small" />
+          <DarkModeOutlinedIcon fontSize="small" />
         )}
       </IconButton>
     </Tooltip>

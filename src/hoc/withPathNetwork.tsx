@@ -10,28 +10,14 @@ export interface NetworkPage {
 }
 
 const withPathNetwork = (Component: FC<NetworkPage>) => {
-  const ComponentWithPathNetwork: NextPage = ({ ...props }) => {
-    const router = useRouter();
-    const { _network } = router.query;
-    const [pathNetwork, setPathNetwork] = useState<Network | null>(null);
+  const ComponentWithPathNetwork: FC<{ _network: string }> = ({ _network }) => {
+    const network = networksBySlug.get(_network);
 
-    useEffect(() => {
-      if (router.isReady) {
-        if (isString(_network)) {
-          const network = networksBySlug.get(_network);
+    if (network) {
+      return <Component network={network} />;
+    }
 
-          if (network) {
-            setPathNetwork(network);
-            return;
-          }
-        }
-
-        router.push("/not-found");
-      }
-    }, [_network, router]);
-
-    if (!pathNetwork) return null;
-    return <Component network={pathNetwork} {...props} />;
+    return <Redirect to="not-found" />;
   };
 
   return ComponentWithPathNetwork;

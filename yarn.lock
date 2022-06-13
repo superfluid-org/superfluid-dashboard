@@ -2920,10 +2920,10 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
   integrity sha512-9NET910DNaIPngYnLLPeg+Ogzqsi9uM4mSboU5y6p8S5DzMTVEsJZrawi+BoDNUVBa2DhJqQYUFvMDfgU062LQ==
 
-"@superfluid-finance/sdk-core@0.4.3-dev.3df6de8.0":
-  version "0.4.3-dev.3df6de8.0"
-  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-core/0.4.3-dev.3df6de8.0/657bfe1f61997b44c955394d468af96814201218fae00950363bd87b65f10b72#86ef74843601fe8293d513cd43d91eb55e9e79eb"
-  integrity sha512-sj438SPGshrNPkvJi5jBTBmMRI+7dfYCQgIKukJeqPl90ceTXWy4zH6TKKr6ZEAPtUYP9y8fOidwBbIDsLBVpg==
+"@superfluid-finance/sdk-core@0.4.4-dev.4b89f01.0":
+  version "0.4.4-dev.4b89f01.0"
+  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-core/0.4.4-dev.4b89f01.0/dac44fe4ed370b59c6b6420bc6313c20428dc093c221eca755a783abc546cf20#1f4240775edc5e804198bb52543d0f596aa4f9a2"
+  integrity sha512-qxskaVAsaGbc41Dyo5dxiGI8Wbq79xRVA41L2SFmul2zsTgcv9V/56PHAnhAvfFhIJdLzX4nUMJMj7xWCrZg9w==
   dependencies:
     ajv "^8.11.0"
     browserify "^17.0.0"
@@ -2932,10 +2932,10 @@
     lodash "^4.17.21"
     tsify "^5.0.4"
 
-"@superfluid-finance/sdk-redux@0.3.1-dev.3df6de8.0":
-  version "0.3.1-dev.3df6de8.0"
-  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-redux/0.3.1-dev.3df6de8.0/e633f5e27dbe1af45cfc3b19e62cfa170038f8073a02a083a56ad4108fa15d35#2a5a84c698d8ff33a382a952677dca8a3900d283"
-  integrity sha512-zSRydpiWPiLWIbFlVFG4mf8NRyxCohMjAe3GV24pNQ8RH3cSHq2GZcGOUutohBsX1y+lCQk93uRMmcxk0BpP+Q==
+"@superfluid-finance/sdk-redux@0.3.1-dev.4b89f01.0":
+  version "0.3.1-dev.4b89f01.0"
+  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-redux/0.3.1-dev.4b89f01.0/1501d8ad6ceb19b0ada19184bef9271589724acd7329e29e6ab34ba3809587dd#d82c54e03b52e4cb84bbcddf586810c76c57a13b"
+  integrity sha512-isOJAmT3sADF9nkD078Gx4YPHuG56U9aVzseb5k1K0OVxuHw75+/XV7QZHnqos8OyOCHeNscgW4tCFKUb/jKAA==
   dependencies:
     "@types/promise-retry" "^1.1.3"
     ethers "^5.5.4"

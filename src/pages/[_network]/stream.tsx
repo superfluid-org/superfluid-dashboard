@@ -1,5 +1,7 @@
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import CloseIcon from "@mui/icons-material/Close";
+import LinkIcon from "@mui/icons-material/Link";
 import ShareIcon from "@mui/icons-material/Share";
-import { BigNumber } from "ethers";
 import {
   Avatar,
   Box,
@@ -20,19 +22,21 @@ import { FC, useMemo } from "react";
 import Blockies from "react-blockies";
 import NetworkIcon from "../../features/network/NetworkIcon";
 import { subgraphApi } from "../../features/redux/store";
+import {
+  getNetworkStaticPaths,
+  getNetworkStaticProps,
+} from "../../features/routing/networkPaths";
 import { UnitOfTime } from "../../features/send/FlowRateInput";
 import EtherFormatted from "../../features/token/EtherFormatted";
 import FlowingBalance from "../../features/token/FlowingBalance";
 import TokenIcon from "../../features/token/TokenIcon";
 import shortenAddress from "../../utils/shortenAddress";
-import LinkIcon from "@mui/icons-material/Link";
 import {
-  calculateMaybeCriticalAtTimestamp,
   calculateBuffer,
+  calculateMaybeCriticalAtTimestamp,
 } from "../../utils/tokenUtils";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import CloseIcon from "@mui/icons-material/Close";
 import withPathNetwork, { NetworkPage } from "../../hoc/withPathNetwork";
+import { BigNumber } from "ethers";
 
 interface OverviewItemProps {
   label: string;
@@ -201,7 +205,7 @@ const Stream: FC<NetworkPage> = ({ network }) => {
           </Stack>
 
           <Typography variant="h4" color="text.secondary">
-            $2241.30486 USD
+            {/* $2241.30486 USD */}
           </Typography>
         </Stack>
 
@@ -396,3 +400,6 @@ const Stream: FC<NetworkPage> = ({ network }) => {
 };
 
 export default withPathNetwork(Stream);
+
+export const getStaticPaths = getNetworkStaticPaths;
+export const getStaticProps = getNetworkStaticProps;
