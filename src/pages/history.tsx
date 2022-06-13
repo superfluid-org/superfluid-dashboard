@@ -13,7 +13,6 @@ import {
   TableBody,
   TableContainer,
   Typography,
-  useTheme,
 } from "@mui/material";
 import { endOfDay, format, startOfDay, startOfMonth } from "date-fns";
 import flatten from "lodash/fp/flatten";
