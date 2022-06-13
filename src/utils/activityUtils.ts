@@ -50,18 +50,33 @@ export const mapActivitiesFromEvents = (
     []
   );
 
-const validateRelatedEvents = (
+/**
+ *
+ * @param   relatedEventNames - Pattern of event names to find.
+ * @param   events - Events to search from.
+ * @returns eventsFound - Events until the related event names pattern matches the names in array that we are searching from.
+ *          eventsRemaining - Events that were left over or did not match the pattern anymore. They are used to match the next pattern.
+ */
+const findEventsByNameRecursive = (
   relatedEventNames: Array<string>,
-  events: Array<AllEvents>
-): [Array<AllEvents | undefined>, Array<AllEvents>] => {
-  const notRelatedEvents = events.slice(relatedEventNames.length);
+  patternStartEvents: Array<AllEvents>
+): {
+  eventsFound: Array<AllEvents | undefined>;
+  eventsRemaining: Array<AllEvents>;
+} => {
+  const [eventNameToFind, ...otherEventNamesToFind] = relatedEventNames;
+  const [eventToMatch, ...otherEvents] = patternStartEvents;
 
-  return [
-    relatedEventNames.map((eventName, index) => {
-      return events[index]?.name === eventName ? events[index] : undefined;
-    }),
-    notRelatedEvents,
-  ];
+  if (eventNameToFind && eventToMatch?.name === eventNameToFind) {
+    const { eventsFound, eventsRemaining } = findEventsByNameRecursive(
+      otherEventNamesToFind,
+      otherEvents
+    );
+
+    return { eventsFound: [eventToMatch, ...eventsFound], eventsRemaining };
+  }
+
+  return { eventsFound: [], eventsRemaining: patternStartEvents };
 };
 
 const mapTransactionActivityRecursive = (
@@ -75,11 +90,16 @@ const mapTransactionActivityRecursive = (
 
   switch (keyEvent.name) {
     case "Minted": {
-      const [[transferEvent, tokenUpgradedEvent], remainingEvents] =
-        validateRelatedEvents(["Transfer", "TokenUpgraded"], transactionEvents);
+      const {
+        eventsFound: [transferEvent, tokenUpgradedEvent],
+        eventsRemaining,
+      } = findEventsByNameRecursive(
+        ["Transfer", "TokenUpgraded"],
+        transactionEvents
+      );
 
       return mapTransactionActivityRecursive(
-        remainingEvents,
+        eventsRemaining,
         network,
         activities.concat([
           {
@@ -93,14 +113,16 @@ const mapTransactionActivityRecursive = (
     }
 
     case "Burned": {
-      const [[transferEvent, tokenDowngradedEvent], remainingEvents] =
-        validateRelatedEvents(
-          ["Transfer", "TokenDowngraded"],
-          transactionEvents
-        );
+      const {
+        eventsFound: [transferEvent, tokenDowngradedEvent],
+        eventsRemaining,
+      } = findEventsByNameRecursive(
+        ["Transfer", "TokenDowngraded"],
+        transactionEvents
+      );
 
       return mapTransactionActivityRecursive(
-        remainingEvents,
+        eventsRemaining,
         network,
         activities.concat([
           {
@@ -115,13 +137,13 @@ const mapTransactionActivityRecursive = (
 
     case "AgreementLiquidatedBy":
     case "AgreementLiquidatedV2": {
-      const [[flowUpdatedEvent], remainingEvents] = validateRelatedEvents(
-        ["FlowUpdated"],
-        transactionEvents
-      );
+      const {
+        eventsFound: [flowUpdatedEvent],
+        eventsRemaining,
+      } = findEventsByNameRecursive(["FlowUpdated"], transactionEvents);
 
       return mapTransactionActivityRecursive(
-        remainingEvents,
+        eventsRemaining,
         network,
         activities.concat([
           {
