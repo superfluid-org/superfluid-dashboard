@@ -33,6 +33,7 @@ export default memo(function WrapCard({
     >
       <Stack direction="row" gap={1} sx={{ mb: 4 }}>
         <Button
+          data-cy="wrap-toggle"
           color={tabValue === "upgrade" ? "primary" : "secondary"}
           variant="textContained"
           size="large"
@@ -41,6 +42,7 @@ export default memo(function WrapCard({
           Wrap
         </Button>
         <Button
+          data-cy="unwrap-toggle"
           color={tabValue === "downgrade" ? "primary" : "secondary"}
           variant="textContained"
           size="large"

@@ -39,6 +39,7 @@ export default memo(function AddressSearch({
   return (
     <>
       <AddressButton
+        data-cy={"address-button"}
         hasAddress={!address}
         direction="row"
         alignItems={address ? "stretch" : "center"}

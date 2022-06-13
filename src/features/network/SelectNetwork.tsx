@@ -39,6 +39,7 @@ interface NetworkItemProps {
 
 const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
   <MenuItem
+    data-cy={`${network.slugName}-button`}
     key={network.id}
     onClick={onClick}
     selected={selected}
@@ -53,7 +54,7 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
 
 export default memo(function SelectNetwork() {
   const theme = useTheme();
-  
+
   const { data: account } = useAccount();
   const { switchNetwork } = useNetwork();
 
@@ -89,6 +90,7 @@ export default memo(function SelectNetwork() {
   return (
     <>
       <Button
+        data-cy={"top-bar-network-button"}
         variant="outlined"
         color="secondary"
         size="large"
@@ -141,8 +143,8 @@ export default memo(function SelectNetwork() {
             value={showTestnets}
             onChange={handleShowTestnetsChange}
           >
-            <ToggleButton value={false}>Mainnets</ToggleButton>
-            <ToggleButton value={true}>Testnets</ToggleButton>
+            <ToggleButton data-cy={"mainnets-button"} value={false}>Mainnets</ToggleButton>
+            <ToggleButton data-cy={"testnets-button"} value={true}>Testnets</ToggleButton>
           </ToggleButtonGroup>
         </Box>
       </Menu>

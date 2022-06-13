@@ -42,11 +42,12 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
   if (tokensQuery.isLoading || tokenSnapshots.length === 0) return null;
 
   return (
-    <TableContainer>
+    <TableContainer data-cy={network.slugName + "-token-snapshot-table"}>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell colSpan={5} sx={{ border: "none", p: 0 }}>
+            <TableCell
+                colSpan={5} sx={{ border: "none", p: 0 }}>
               <Stack
                 direction="row"
                 alignItems="center"
@@ -54,7 +55,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
                 sx={{ py: 2.75, px: 4 }}
               >
                 <NetworkIcon network={network} />
-                <Typography variant="h5" color="text.primary">
+                <Typography data-cy="network-name" variant="h5" color="text.primary">
                   {network.name}
                 </Typography>
               </Stack>

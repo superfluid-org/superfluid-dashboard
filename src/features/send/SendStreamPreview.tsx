@@ -13,12 +13,13 @@ import { FlowRateWithTime, timeUnitWordMap } from "./FlowRateInput";
 
 interface PreviewItemProps {
   label: string;
+  dataCy?: string
 }
 
-const PreviewItem: FC<PreviewItemProps> = ({ label, children }) => (
+const PreviewItem: FC<PreviewItemProps> = ({ label,dataCy ,children }) => (
   <Stack direction="row" alignItems="center" justifyContent="space-between">
     <Typography variant="body2">{label}</Typography>
-    <Typography variant="body2" fontWeight="500">
+    <Typography data-cy={dataCy} variant="body2" fontWeight="500">
       {children}
     </Typography>
   </Stack>
@@ -73,18 +74,18 @@ export const SendStreamPreview: FC<{
       }}
     >
       <Stack gap={0.5}>
-        <PreviewItem label="Recipient">{receiver.hash}</PreviewItem>
+        <PreviewItem dataCy="preview-receiver" label="Recipient">{receiver.hash}</PreviewItem>
 
-        <PreviewItem label="Flow rate">
+        <PreviewItem dataCy="preview-flow-rate" label="Flow rate">
           {`${ethers.utils.formatEther(flowRateWithTime.amountWei)} ${
             token.symbol
           }/${timeUnitWordMap[flowRateWithTime.unitOfTime]}`}
         </PreviewItem>
 
-        <PreviewItem label="Ends on">Never</PreviewItem>
+        <PreviewItem dataCy="preview-ends-on" label="Ends on">Never</PreviewItem>
 
         {visibleAddress && (
-          <PreviewItem label="Balance after buffer">
+          <PreviewItem dataCy="preview-balance-after-buffer" label="Balance after buffer">
             {realtimeBalance && (
               <FlowingBalance
                 balance={balanceAfterBuffer.toString()}
@@ -95,7 +96,7 @@ export const SendStreamPreview: FC<{
           </PreviewItem>
         )}
 
-        <PreviewItem label="Upfront buffer">
+        <PreviewItem dataCy="preview-upfront-buffer" label="Upfront buffer">
           {`${ethers.utils.formatEther(bufferAmount)} ${token.symbol}`}
         </PreviewItem>
       </Stack>

@@ -26,6 +26,7 @@ import ConnectWallet from "../wallet/ConnectWallet";
 export const menuDrawerWidth = 260;
 
 interface NavigationItemProps {
+  id: string;
   title: string;
   href: string;
   active: boolean;
@@ -33,6 +34,7 @@ interface NavigationItemProps {
 }
 
 const NavigationItem: FC<NavigationItemProps> = ({
+  id,
   title,
   href,
   active,
@@ -43,7 +45,7 @@ const NavigationItem: FC<NavigationItemProps> = ({
       <ListItemIcon>
         <Icon />
       </ListItemIcon>
-      <ListItemText primary={title} />
+      <ListItemText data-cy={id} primary={title} />
     </ListItemButton>
   </NextLink>
 );
@@ -58,6 +60,7 @@ export default memo(function NavigationDrawer() {
 
   return (
     <Drawer
+      data-cy={"navigation-drawer"}
       variant="permanent"
       anchor="left"
       PaperProps={{ sx: { width: menuDrawerWidth, borderRadius: 0 } }}
@@ -66,6 +69,7 @@ export default memo(function NavigationDrawer() {
       <Toolbar sx={{ height: 88 }}>
         <Link href="/">
           <Image
+            data-cy={"superfluid-logo"}
             unoptimized
             src={
               theme.palette.mode === "dark"
@@ -90,6 +94,7 @@ export default memo(function NavigationDrawer() {
         gap={1}
       >
         <NavigationItem
+          id="nav-dashboard"
           title="Dashboard"
           href="/"
           active={isActiveRoute("/", "/[_network]/token")}
@@ -97,6 +102,7 @@ export default memo(function NavigationDrawer() {
         />
 
         <NavigationItem
+          id="nav-wrap-unwrap"
           title="Wrap / Unwrap"
           href="/wrap?upgrade"
           active={isActiveRoute("/wrap")}
@@ -104,6 +110,7 @@ export default memo(function NavigationDrawer() {
         />
 
         <NavigationItem
+          id="nav-send"
           title="Send Stream"
           href="/send"
           active={isActiveRoute("/send")}
@@ -111,6 +118,7 @@ export default memo(function NavigationDrawer() {
         />
 
         <NavigationItem
+          id="nav-history"
           title="Activity History"
           href="/history"
           active={isActiveRoute("/history")}
@@ -118,6 +126,7 @@ export default memo(function NavigationDrawer() {
         />
 
         {/* <NavigationItem
+          id="nav-ecosystem"
           title="Ecosystem"
           href="/ecosystem"
           active={isActiveRoute("/ecosystem")}

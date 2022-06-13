@@ -83,18 +83,19 @@ export const TokenListItem: FC<TokenListItemProps> = ({
   const fRate = realtimeBalanceQuery?.data?.flowRate || flowRate;
 
   return (
-    <ListItemButton onClick={onClick} sx={{ px: 3 }}>
+    <ListItemButton data-cy={`${token.symbol}-list-item`} onClick={onClick} sx={{ px: 3 }}>
       <ListItemAvatar>
         <TokenIcon tokenSymbol={token.symbol}></TokenIcon>
       </ListItemAvatar>
 
-      <ListItemText primary={token.symbol} secondary={token.name} />
+      <ListItemText data-cy={"token-symbol-and-name"} primary={token.symbol} secondary={token.name} />
 
       <Typography
         variant="h6mono"
         component={Stack}
         direction="row"
         alignItems="center"
+        data-cy={"token-balance"}
       >
         {!!accountAddress &&
           checkedBalanceWei &&
@@ -117,7 +118,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
             passHref
           >
             <Tooltip title="Wrap">
-              <IconButton>
+              <IconButton data-cy={"wrap-button"}>
                 <AddCircleOutline></AddCircleOutline>
               </IconButton>
             </Tooltip>

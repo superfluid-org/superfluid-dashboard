@@ -109,6 +109,7 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
         </Typography>
 
         <Button
+          data-cy={"network-selection-button"}
           ref={networkSelectionRef}
           variant="outlined"
           color="secondary"

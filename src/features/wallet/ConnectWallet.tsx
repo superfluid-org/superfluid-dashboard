@@ -33,6 +33,7 @@ export default memo(function ConnectWallet() {
               </Avatar>
             </ListItemAvatar>
             <ListItemText
+              data-cy={"wallet-connection-status"}
               primary={shortenAddress(account.address)}
               secondary={
                 network.id !== activeChain.id
@@ -46,6 +47,7 @@ export default memo(function ConnectWallet() {
           </ListItem>
         ) : (
           <LoadingButton
+            data-cy={"connect-wallet-button"}
             loading={!mounted}
             variant="contained"
             size="xl"

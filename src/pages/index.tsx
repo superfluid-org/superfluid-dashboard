@@ -44,7 +44,7 @@ const ConnectView: FC = () => {
         <Typography variant="h6" sx={{ mb: 1 }}>
           View any account
         </Typography>
-        <Stack direction="row" gap={2.5}>
+        <Stack data-cy={"view-mode-inputs"} direction="row" gap={2.5}>
           <TextField
             hiddenLabel
             placeholder="Paste any account address"
@@ -63,6 +63,7 @@ const ConnectView: FC = () => {
             }}
           />
           <IconButton
+            data-cy={"view-mode-search-button"}
             disabled={!isValidImpersonateAddress}
             title="View address"
             sx={{
