@@ -31,11 +31,13 @@ const PreviewItem: FC<{
   label: string;
   isError?: boolean;
   oldValue?: ReactNode;
-}> = ({ label, children, oldValue, isError }) => {
+    dataCy?: string;
+}> = ({ label, children, oldValue, isError, dataCy }) => {
   const theme = useTheme();
 
   const valueTypography = (
     <Typography
+        data-cy={dataCy}
       variant="body2"
       fontWeight="500"
       sx={{
@@ -134,10 +136,10 @@ export const StreamingPreview: FC<{
       }}
     >
       <Stack gap={0.5}>
-        <PreviewItem label="Receiver">{receiver.hash}</PreviewItem>
+        <PreviewItem dataCy="preview-receiver" label="Receiver">{receiver.hash}</PreviewItem>
 
         <PreviewItem
-          label="Flow rate"
+         dataCy="preview-flow-rate" label="Flow rate"
           oldValue={
             existingStream
               ? flowRateWeiToString(
@@ -153,11 +155,11 @@ export const StreamingPreview: FC<{
           {flowRateEtherToString(flowRateEther, token.symbol)}
         </PreviewItem>
 
-        <PreviewItem label="Ends on">Never</PreviewItem>
+        <PreviewItem dataCy="preview-ends-on" label="Ends on">Never</PreviewItem>
 
         {visibleAddress && balanceAfterBuffer && (
           <PreviewItem
-            label="Balance after buffer"
+           dataCy="preview-balance-after-buffer" label="Balance after buffer"
             isError={balanceAfterBuffer.isNegative()}
           >
             {realtimeBalance && (
@@ -173,7 +175,7 @@ export const StreamingPreview: FC<{
 
         {newBufferAmount && (
           <PreviewItem
-            label="Upfront buffer"
+           dataCy="preview-upfront-buffer" label="Upfront buffer"
             oldValue={
               oldBufferAmount
                 ? `${ethers.utils.formatEther(oldBufferAmount)} ${token.symbol}`

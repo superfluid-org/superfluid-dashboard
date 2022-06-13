@@ -91,6 +91,7 @@ export default memo(function FlowingBalance({
       sx={{
         textOverflow: "ellipsis",
       }}
+      data-cy={"balance"}
     >
       <EtherFormatted
         disableRoundingIndicator

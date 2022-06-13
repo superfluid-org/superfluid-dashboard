@@ -238,11 +238,12 @@ export default memo(function SendCard() {
                 <FormLabel>Ends on</FormLabel>
                 <TooltipIcon title="If the end date is not specified, stream will run indefinitely or until you run out of tokens." />
               </Stack>
-              <TextField value="∞" disabled fullWidth />
+              <TextField data-cy={"ends-on"} value="∞" disabled fullWidth />
             </Box>
             <Box>
               <FormLabel>Amount per second</FormLabel>
               <TextField
+                data-cy={"amount-per-second"}
                 disabled
                 value={amountPerSecond.toString()}
                 fullWidth
@@ -251,7 +252,7 @@ export default memo(function SendCard() {
           </Box> */}
 
           <Alert severity="warning">
-            <AlertTitle>Protect your buffer!</AlertTitle>
+            <AlertTitle data-cy={"protect-buffer-error"}>Protect your buffer!</AlertTitle>
             <Typography variant="body2">
               If you do not cancel the stream before your balance reaches zero,
               you will lose your buffer.
@@ -264,6 +265,7 @@ export default memo(function SendCard() {
                   <FormControlLabel
                     control={
                       <Checkbox
+                          data-cy={"risk-checkbox"}
                         checked={understandLiquidationRisk}
                         onChange={onChange}
                         onBlur={onBlur}
@@ -283,6 +285,7 @@ export default memo(function SendCard() {
           {selectedToken && visibleAddress && (
             <Stack direction="row" alignItems="center" justifyContent="center">
               <BalanceSuperToken
+                data-cy={"balance"}
                 chainId={network.id}
                 accountAddress={visibleAddress}
                 tokenAddress={selectedToken.address}
@@ -294,7 +297,7 @@ export default memo(function SendCard() {
                   passHref
                 >
                   <Tooltip title="Wrap">
-                    <IconButton color="inherit">
+                    <IconButton data-cy={"balance-wrap-button"} color="inherit">
                       <AddCircleOutline />
                     </IconButton>
                   </Tooltip>
@@ -322,7 +325,7 @@ export default memo(function SendCard() {
 
           {!activeFlow ? (
             <TransactionButton
-              hidden={false}
+              dataCy={"send-transaction-button"}hidden={false}
               disabled={isSendDisabled}
               mutationResult={flowCreateResult}
               onClick={(setTransactionDialogContent) => {

@@ -21,7 +21,7 @@ export const BalanceUnderlyingToken: FC<{
   const { error, isUninitialized, isLoading, data } = underlyingBalanceQuery;
 
   return (
-    <Typography variant="body2" color="text.secondary">
+    <Typography data-cy={"underlying-balance"} variant="body2" color="text.secondary">
       Balance:{" "}
       {error ? (
         "error"

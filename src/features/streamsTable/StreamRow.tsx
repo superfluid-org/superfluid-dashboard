@@ -149,7 +149,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
               scale={3}
             />
           </Avatar>
-          <Typography variant="h6">
+          <Typography data-cy={"sender-receiver-address"} variant="h6">
             {shortenAddress(isOutgoing ? receiver : sender)}
           </Typography>
         </Stack>
@@ -167,7 +167,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
       </TableCell>
       <TableCell onClick={openStreamDetails} sx={{ cursor: "pointer" }}>
         {isActive ? (
-          <Typography variant="body2mono">
+          <Typography data-cy={"flow-rate"} variant="body2mono">
             {isOutgoing ? "-" : "+"}
             <EtherFormatted
               wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
@@ -177,11 +177,11 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
             /mo
           </Typography>
         ) : (
-          "-"
+            <Typography data-cy={"flow-rate"}>{"-"}</Typography>
         )}
       </TableCell>
       <TableCell onClick={openStreamDetails} sx={{ cursor: "pointer" }}>
-        <Stack direction="row" alignItems="center" gap={1}>
+        <Stack data-cy={"start-end-date"} direction="row" alignItems="center" gap={1}>
           {format(
             (isActive ? createdAtTimestamp : updatedAtTimestamp) * 1000,
             "d MMM. yyyy"
@@ -201,12 +201,14 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
             ) : (
               <>
                 <Tooltip
+                  data-cy={"switch-network-tooltip"}
                   arrow
                   title={`Please connect your wallet and switch provider network to ${network.name} in order to cancel the stream.`}
                   disableHoverListener={network.id === activeChain?.id}
                 >
                   <span>
                     <Button
+                      data-cy={"cancel-button"}
                       color="error"
                       size="small"
                       onClick={openMenu}
@@ -224,7 +226,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                 >
                   <MenuList sx={{ py: 0.5 }}>
-                    <MenuItem onClick={deleteStream}>
+                    <MenuItem data-cy={"cancel-stream-button"} onClick={deleteStream}>
                       <ListItemAvatar
                         sx={{ mr: 1, width: "20px", height: "20px" }}
                       >

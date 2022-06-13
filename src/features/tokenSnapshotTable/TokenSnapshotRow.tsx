@@ -118,13 +118,14 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
 
   return (
     <>
-      <SnapshotRow hover lastElement={lastElement} open={open}>
+      <SnapshotRow hover lastElement={lastElement} open={open} data-cy={`${tokenSymbol}-cell`}>
         <TableCell onClick={openTokenPage}>
           <ListItem sx={{ p: 0 }}>
             <ListItemAvatar>
               <TokenIcon tokenSymbol={tokenSymbol} />
             </ListItemAvatar>
             <ListItemText
+              data-cy={"token-symbol"}
               onClick={openTokenPage}
               primary={tokenSymbol}
               /**
@@ -162,9 +163,9 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             }}
           />
         </TableCell>
-        <TableCell onClick={openTokenPage}>
+        <TableCell data-cy={"net-flow"} onClick={openTokenPage}>
           {totalNumberOfActiveStreams > 0 ? (
-            <Typography variant="body2mono">
+            <Typography data-cy={"net-flow-value"} variant="body2mono">
               {netFlowRate.charAt(0) !== "-" && "+"}
               <EtherFormatted
                 wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
@@ -180,7 +181,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         <TableCell onClick={openTokenPage}>
           {totalNumberOfActiveStreams > 0 ? (
             <Stack>
-              <Typography variant="body2mono" color="primary">
+              <Typography data-cy={"inflow"} variant="body2mono" color="primary">
                 +
                 <EtherFormatted
                   wei={BigNumber.from(totalInflowRate).mul(UnitOfTime.Month)}
@@ -189,7 +190,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 />
                 /mo
               </Typography>
-              <Typography variant="body2mono" color="error">
+              <Typography data-cy={"outflow"} variant="body2mono" color="error">
                 -
                 <EtherFormatted
                   wei={BigNumber.from(totalOutflowRate).mul(UnitOfTime.Month)}
@@ -205,7 +206,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         </TableCell>
         <TableCell align="center" sx={{ cursor: "initial" }}>
           {hasStreams && (
-            <IconButton color="inherit" onClick={toggleOpen}>
+            <IconButton data-cy={"show-streams-button"} color="inherit" onClick={toggleOpen}>
               <OpenIcon open={open} />
             </IconButton>
           )}
@@ -222,6 +223,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           }}
         >
           <Collapse
+            data-cy={"streams-table"}
             in={open}
             timeout={theme.transitions.duration.standard}
             unmountOnExit

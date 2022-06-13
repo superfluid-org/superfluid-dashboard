@@ -16,6 +16,7 @@ export const TokenDialogButton: FC<{
   return (
     <>
       <Button
+        data-cy={"select-token-button"}
         variant="outlined"
         color="secondary"
         startIcon={

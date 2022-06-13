@@ -175,6 +175,7 @@ export const TokenDialog: FC<{
           <CloseIcon />
         </IconButton>
         <TextField
+          data-cy="token-search-input"
           autoFocus
           fullWidth
           value={searchTerm}
@@ -187,6 +188,7 @@ export const TokenDialog: FC<{
         <List>
           {tokenPairsQuery.isLoading && (
             <Stack
+              data-cy="test"
               direction="row"
               justifyContent="center"
               alignItems="center"
@@ -200,6 +202,7 @@ export const TokenDialog: FC<{
             !tokenPairsQuery.isLoading &&
             !searchedTokens.length && (
               <Stack
+                data-cy={"token-search-no-results"}
                 component={ListItem}
                 direction="row"
                 justifyContent="center"

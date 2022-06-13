@@ -12,7 +12,7 @@ export default function ThemeChanger() {
   const toggleTheme = () => setTheme(isDarkTheme ? "light" : "dark");
 
   return (
-    <Tooltip title={isDarkTheme ? "Light mode" : "Dark mode"}>
+    <Tooltip data-cy={"light-switch"} title={isDarkTheme ? "Light mode" : "Dark mode"}>
       <IconButton color="inherit" onClick={toggleTheme}>
         {isDarkTheme ? (
           <LightModeOutlined fontSize="small" />

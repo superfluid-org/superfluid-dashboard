@@ -87,6 +87,7 @@ export const FlowRateInput: FC<{
   return (
     <Box sx={{ display: "grid", gridTemplateColumns: "6fr 4fr" }}>
       <TextField
+        data-cy={"flow-rate-input"}
         type="text"
         inputMode="decimal"
         autoComplete="off"
@@ -113,6 +114,7 @@ export const FlowRateInput: FC<{
         }}
       />
       <Select
+        data-cy={"time-unit-selection-button"}
         value={flowRate.unitOfTime}
         onBlur={onBlur}
         onChange={(e) => {

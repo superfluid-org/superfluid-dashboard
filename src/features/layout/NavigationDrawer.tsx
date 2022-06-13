@@ -34,6 +34,7 @@ export default memo(function NavigationDrawer() {
 
   return (
     <Drawer
+      data-cy={"navigation-drawer"}
       variant="permanent"
       anchor="left"
       PaperProps={{ sx: { width: menuDrawerWidth, borderRadius: 0 } }}
@@ -42,6 +43,7 @@ export default memo(function NavigationDrawer() {
       <Toolbar sx={{ height: 88 }}>
         <Link href="/">
           <Image
+            data-cy={"superfluid-logo"}
             unoptimized
             src={
               theme.palette.mode === "dark"
@@ -73,7 +75,7 @@ export default memo(function NavigationDrawer() {
             <ListItemIcon>
               <AutoAwesomeMosaicIcon />
             </ListItemIcon>
-            <ListItemText primary="Dashboard" />
+            <ListItemText data-cy="nav-dashboard" primary="Dashboard" />
           </ListItemButton>
         </NextLink>
 
@@ -85,7 +87,7 @@ export default memo(function NavigationDrawer() {
             <ListItemIcon>
               <SwapVertIcon />
             </ListItemIcon>
-            <ListItemText primary="Wrap / Unwrap" />
+            <ListItemText data-cy="nav-wrap-unwrap" primary="Wrap / Unwrap" />
           </ListItemButton>
         </NextLink>
         <NextLink href={"/send"} passHref>
@@ -96,7 +98,7 @@ export default memo(function NavigationDrawer() {
             <ListItemIcon>
               <ArrowRightAltIcon />
             </ListItemIcon>
-            <ListItemText primary="Send Stream" />
+            <ListItemText data-cy={"nav-send"} primary="Send Stream" />
           </ListItemButton>
         </NextLink>
       </Stack>

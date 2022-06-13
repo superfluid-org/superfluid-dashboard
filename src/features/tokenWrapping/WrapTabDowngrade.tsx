@@ -88,7 +88,7 @@ export const WrapTabDowngrade: FC = () => {
             name="data.amountEther"
             render={({ field: { onChange, onBlur } }) => (
               <Input
-                fullWidth
+                data-cy={"unwrap-input"}fullWidth
                 disableUnderline
                 type="number"
                 placeholder="0.0"
@@ -170,6 +170,7 @@ export const WrapTabDowngrade: FC = () => {
         >
           <Stack direction="row" spacing={2}>
             <Input
+              data-cy={"unwrap-amount-preview"}
               disabled
               fullWidth
               disableUnderline
@@ -213,12 +214,13 @@ export const WrapTabDowngrade: FC = () => {
       )}
 
       {selectedTokenPair && (
-        <Typography align="center" sx={{ my: 3 }}>
+        <Typography data-cy={"token-pair"} align="center" sx={{ my: 3 }}>
           {`1 ${selectedTokenPair.superToken.symbol} = 1 ${selectedTokenPair.underlyingToken.symbol}`}
         </Typography>
       )}
 
       <TransactionButton
+        dataCy={"downgrade-button"}
         hidden={false}
         mutationResult={downgradeResult}
         disabled={isDowngradeDisabled}

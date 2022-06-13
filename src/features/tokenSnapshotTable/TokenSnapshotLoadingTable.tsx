@@ -17,7 +17,7 @@ import { Box } from "@mui/system";
 import { FC } from "react";
 
 const SnapshotRowSkeleton = () => (
-  <TableRow>
+  <TableRow data-cy={"loading-skeletons"}>
     <TableCell>
       <Stack direction="row" gap={2}>
         <Skeleton variant="circular" width={36} height={36} />

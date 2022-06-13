@@ -132,7 +132,7 @@ export const WrapTabUpgrade: FC = () => {
             name="data.amountEther"
             render={({ field: { onChange, onBlur } }) => (
               <Input
-                fullWidth
+                data-cy={"wrap-input"}fullWidth
                 disableUnderline
                 disabled={!selectedTokenPair}
                 placeholder="0.0"
@@ -211,6 +211,7 @@ export const WrapTabUpgrade: FC = () => {
         >
           <Stack direction="row" spacing={2}>
             <Input
+              data-cy={"wrapable-amount"}
               disabled
               fullWidth
               disableUnderline
@@ -255,13 +256,14 @@ export const WrapTabUpgrade: FC = () => {
       )}
 
       {selectedTokenPair && (
-        <Typography align="center" sx={{ my: 3 }}>
+        <Typography data-cy="token-pair" align="center" sx={{ my: 3 }}>
           {`1 ${selectedTokenPair.underlyingToken.symbol} = 1 ${selectedTokenPair.superToken.symbol}`}
         </Typography>
       )}
 
       <Stack gap={2} direction="column" sx={{ width: "100%" }}>
         <TransactionButton
+          dataCy={"approve-allowance-button"}
           mutationResult={approveResult}
           hidden={!isApproveAllowanceVisible}
           disabled={false}
@@ -298,6 +300,7 @@ export const WrapTabUpgrade: FC = () => {
         </TransactionButton>
 
         <TransactionButton
+          dataCy={"upgrade-button"}
           hidden={false}
           disabled={isUpgradeDisabled}
           mutationResult={upgradeResult}

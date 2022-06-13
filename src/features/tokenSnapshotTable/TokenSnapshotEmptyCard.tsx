@@ -31,13 +31,14 @@ const TokenSnapshotEmptyCard = () => (
       <InboxIcon color="primary" sx={{ fontSize: 51 }} />
     </WrapperAvatar>
     <Box>
-      <Typography variant="h4">No Super Token Balance</Typography>
+      <Typography data-cy={"no-balance-message"} variant="h4">No Super Token Balance</Typography>
       <Typography>
         Wrap some tokens to start streaming payments in real time.
       </Typography>
     </Box>
     <NextLink href={"/wrap?upgrade"} passHref>
       <Button
+        data-cy={"no-balance-wrap-button"}
         variant="contained"
         color="primary"
         size="large"
