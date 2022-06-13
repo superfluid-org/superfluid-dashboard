@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
-import { FC, memo } from "react";
+import { FC, memo, useMemo } from "react";
 import { BurnedActivity } from "../../utils/activityUtils";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
@@ -25,8 +25,16 @@ const BurnActivity: FC<BurnedActivity> = ({
   const { amount, transactionHash, timestamp } = keyEvent;
   const { token } = transferEvent || {};
 
+  const nativeAsset = useMemo(
+    () =>
+      network.nativeAsset.superToken.address === token
+        ? network.nativeAsset
+        : undefined,
+    [network, token]
+  );
+
   const tokenQuery = subgraphApi.useTokenQuery(
-    token
+    !nativeAsset && token
       ? {
           chainId: network.id,
           id: token,
@@ -35,12 +43,22 @@ const BurnActivity: FC<BurnedActivity> = ({
   );
 
   const underlyingTokenQuery = subgraphApi.useTokenQuery(
-    tokenQuery.data
+    !nativeAsset && tokenQuery.data
       ? {
           chainId: network.id,
           id: tokenQuery.data.underlyingAddress,
         }
       : skipToken
+  );
+
+  const tokenSymbol = useMemo(
+    () => nativeAsset?.superToken.symbol || tokenQuery.data?.symbol,
+    [nativeAsset, tokenQuery.data]
+  );
+
+  const underlyingTokenSymbol = useMemo(
+    () => nativeAsset?.symbol || underlyingTokenQuery.data?.symbol,
+    [nativeAsset, underlyingTokenQuery.data]
   );
 
   return (
@@ -64,9 +82,7 @@ const BurnActivity: FC<BurnedActivity> = ({
       <TableCell>
         <ListItem sx={{ p: 0 }}>
           <ListItemAvatar>
-            {tokenQuery.data && (
-              <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
-            )}
+            {tokenSymbol && <TokenIcon tokenSymbol={tokenSymbol} />}
           </ListItemAvatar>
           <ListItemText
             primary={
@@ -98,8 +114,8 @@ const BurnActivity: FC<BurnedActivity> = ({
       <TableCell>
         <ListItem sx={{ p: 0 }}>
           <ListItemAvatar>
-            {underlyingTokenQuery.data && (
-              <TokenIcon tokenSymbol={underlyingTokenQuery.data.symbol} />
+            {underlyingTokenSymbol && (
+              <TokenIcon tokenSymbol={underlyingTokenSymbol} />
             )}
           </ListItemAvatar>
           <ListItemText
