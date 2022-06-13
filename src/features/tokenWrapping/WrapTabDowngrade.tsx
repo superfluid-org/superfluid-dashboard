@@ -1,6 +1,7 @@
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
+  Alert,
   Avatar,
   Button,
   Input,
@@ -32,6 +33,7 @@ import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { Controller, useFormContext } from "react-hook-form";
 import { WrappingForm, ValidWrappingForm } from "./WrappingFormProvider";
 import { parseEther } from "ethers/lib/utils";
+import { ErrorMessage } from "@hookform/error-message";
 
 export const WrapTabDowngrade: FC = () => {
   const theme = useTheme();
@@ -39,6 +41,7 @@ export const WrapTabDowngrade: FC = () => {
   const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
+  const [mounted, setMounted ] = useState(false);
 
   const {
     watch,
@@ -47,13 +50,19 @@ export const WrapTabDowngrade: FC = () => {
     getValues,
     setValue,
     reset: resetForm,
+    trigger,
   } = useFormContext<WrappingForm>();
 
-  setValue("type", RestorationType.Downgrade, {
-    shouldDirty: false,
-    shouldTouch: false,
-    shouldValidate: false,
-  });
+  // The reason to set the type and clear errors is that a single form context is used both for wrapping and unwrapping.
+  useEffect(() => {
+    setValue("type", RestorationType.Downgrade, {
+      shouldDirty: false,
+      shouldTouch: false,
+      shouldValidate: false,
+    });
+    trigger();
+    setMounted(true); 
+  }, []);
 
   const [selectedTokenPair, amount] = watch([
     "data.tokenUpgrade",
@@ -76,6 +85,20 @@ export const WrapTabDowngrade: FC = () => {
 
   return (
     <Stack direction="column" alignItems="center">
+      {mounted && (
+        <ErrorMessage
+          as={<Alert severity="error"></Alert>}
+          name="data.amountEther.hov"
+          render={({ messages }) => {
+            return (
+              messages &&
+              Object.entries(messages).map(([type, message]) => (
+                <p key={type}>{message}</p>
+              ))
+            );
+          }}
+        />
+      )}
       <Stack
         variant="outlined"
         component={Paper}
@@ -88,7 +111,8 @@ export const WrapTabDowngrade: FC = () => {
             name="data.amountEther"
             render={({ field: { onChange, onBlur } }) => (
               <Input
-                data-cy={"unwrap-input"}fullWidth
+                data-cy={"unwrap-input"}
+                fullWidth
                 disableUnderline
                 type="number"
                 placeholder="0.0"

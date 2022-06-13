@@ -44,20 +44,6 @@ export default memo(function WrapCard({
           Unwrap
         </Button>
       </Stack>
-
-      <ErrorMessage
-        as={<Alert severity="error"></Alert>}
-        name="data.amountEther.hov"
-        render={({ messages }) => {
-          return (
-            messages &&
-            Object.entries(messages).map(([type, message]) => (
-              <p key={type}>{message}</p>
-            ))
-          );
-        }}
-      />
-
       {tabValue === "upgrade" && <WrapTabUpgrade />}
       {tabValue === "downgrade" && <WrapTabDowngrade />}
     </Card>

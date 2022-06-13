@@ -9,6 +9,7 @@ import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { BigNumber, ethers } from "ethers";
 import { rpcApi, subgraphApi } from "../redux/store";
 import {
+  Alert,
   Avatar,
   Button,
   Input,
@@ -33,8 +34,9 @@ import {
 } from "../transactions/TransactionDialog";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { WrappingForm, ValidWrappingForm } from "./WrappingFormProvider";
-import { Controller, useForm, useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import { parseEther } from "ethers/lib/utils";
+import { ErrorMessage } from "@hookform/error-message";
 
 export const WrapTabUpgrade: FC = () => {
   const theme = useTheme();
@@ -42,6 +44,7 @@ export const WrapTabUpgrade: FC = () => {
   const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
+  const [mounted, setMounted] = useState(false);
 
   const {
     watch,
@@ -49,14 +52,20 @@ export const WrapTabUpgrade: FC = () => {
     reset: resetForm,
     formState,
     getValues,
-    setValue
+    setValue,
+    trigger,
   } = useFormContext<WrappingForm>();
 
-  setValue("type", RestorationType.Upgrade, {
-    shouldDirty: false,
-    shouldTouch: false,
-    shouldValidate: false,
-  });
+  // The reason to set the type and clear errors is that a single form context is used both for wrapping and unwrapping.
+  useEffect(() => {
+    setValue("type", RestorationType.Upgrade, {
+      shouldDirty: false,
+      shouldTouch: false,
+      shouldValidate: false,
+    });
+    trigger();
+    setMounted(true);
+  }, []);
 
   const [selectedTokenPair, amount] = watch([
     "data.tokenUpgrade",
@@ -120,6 +129,20 @@ export const WrapTabUpgrade: FC = () => {
 
   return (
     <Stack direction="column" alignItems="center">
+      {mounted && (
+        <ErrorMessage
+          as={<Alert severity="error"></Alert>}
+          name="data.amountEther.hov"
+          render={({ messages }) => {
+            return (
+              messages &&
+              Object.entries(messages).map(([type, message]) => (
+                <p key={type}>{message}</p>
+              ))
+            );
+          }}
+        />
+      )}
       <Stack
         variant="outlined"
         component={Paper}
@@ -132,7 +155,8 @@ export const WrapTabUpgrade: FC = () => {
             name="data.amountEther"
             render={({ field: { onChange, onBlur } }) => (
               <Input
-                data-cy={"wrap-input"}fullWidth
+                data-cy={"wrap-input"}
+                fullWidth
                 disableUnderline
                 disabled={!selectedTokenPair}
                 placeholder="0.0"
