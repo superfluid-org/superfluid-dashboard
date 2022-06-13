@@ -51,7 +51,6 @@ import shortenAddress from "../utils/shortenAddress";
 const History: NextPage = () => {
   const dateNow = useMemo(() => new Date(), []);
 
-  const theme = useTheme();
   const { visibleAddress = "" } = useVisibleAddress();
   const {
     network: { testnet },
@@ -138,6 +137,8 @@ const History: NextPage = () => {
 
         setIsLoading(false);
       });
+    } else {
+      setActivities([]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visibleAddress, activeNetworks, startDate, endDate, addressSearch]);
@@ -337,17 +338,6 @@ const History: NextPage = () => {
               Transactions including wrapping tokens and sending streams will
               appear here.
             </Typography>
-            {/* <PlaceholderActivityTable
-              sx={{ mt: 5, position: "relative", left: theme.spacing(-4) }}
-            />
-            <PlaceholderActivityTable
-              sx={{
-                position: "relative",
-                right: theme.spacing(-4),
-                top: theme.spacing(-4),
-                mb: theme.spacing(-4),
-              }}
-            /> */}
           </Paper>
         )}
 
