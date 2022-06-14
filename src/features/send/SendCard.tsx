@@ -16,11 +16,12 @@ import {
   Typography,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { parseEther } from "ethers/lib/utils";
+import { formatEther, parseEther } from "ethers/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, memo, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import { parseEtherOrZero } from "../../utils/tokenUtils";
 import TooltipIcon from "../common/TooltipIcon";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
@@ -84,14 +85,15 @@ export default memo(function SendCard() {
     ? isWrappable(selectedToken)
     : false;
 
-  // TODO(KK): Can cause error when amountEther is invalid
-  // const amountPerSecond = useMemo(
-  //   () =>
-  //     flowRateEther
-  //       ? parseEther(flowRateEther.amountEther).div(flowRateEther.unitOfTime).toString()
-  //       : "",
-  //   [flowRateEther?.amountEther, flowRateEther?.unitOfTime]
-  // );
+  const amountPerSecond = useMemo(
+    () =>
+      formatEther(
+        parseEtherOrZero(flowRateEther.amountEther).div(
+          flowRateEther.unitOfTime
+        )
+      ),
+    [flowRateEther?.amountEther, flowRateEther?.unitOfTime]
+  );
 
   const [flowCreateTrigger, flowCreateResult] = rpcApi.useFlowCreateMutation();
   const [flowUpdateTrigger, flowUpdateResult] = rpcApi.useFlowUpdateMutation();
@@ -223,7 +225,7 @@ export default memo(function SendCard() {
             </Box>
           </Box>
 
-          {/* <Box
+          <Box
             sx={{ display: "grid", gridTemplateColumns: "4fr 3fr", gap: 2.5 }}
           >
             <Box>
@@ -247,16 +249,9 @@ export default memo(function SendCard() {
                 fullWidth
               />
             </Box>
-          </Box> */}
+          </Box>
 
-          <Alert severity="warning">
-            <AlertTitle data-cy={"protect-buffer-error"}>
-              Protect your buffer!
-            </AlertTitle>
-            <Typography variant="body2">
-              If you do not cancel the stream before your balance reaches zero,
-              you will lose your buffer.
-            </Typography>
+          <Alert severity="warning" icon={false}>
             <FormGroup>
               <Controller
                 control={control}
@@ -273,7 +268,12 @@ export default memo(function SendCard() {
                     }
                     label={
                       <Typography variant="body2">
-                        I understand the risk.
+                        I understand that if I have to{" "}
+                        <strong>
+                          cancel the stream before my balance reaches zero
+                        </strong>{" "}
+                        or else I will be liquidated and{" "}
+                        <strong>lose my buffer</strong>.
                       </Typography>
                     }
                   />

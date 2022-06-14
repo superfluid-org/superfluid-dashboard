@@ -102,7 +102,7 @@ export const FlowRateInput: FC<{
           });
         }}
         inputProps={{
-          sx: { borderRadius: "10px 0 0 10px" },
+          sx: { borderRadius: "10px 0 0 10px" }
         }}
         sx={{
           ":hover, .Mui-focused": {
