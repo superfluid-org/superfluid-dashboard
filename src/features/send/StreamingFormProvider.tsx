@@ -193,9 +193,9 @@ const StreamingFormProvider: FC<{
     }
   }, [account]);
 
-  useEffect(() => {
-    console.log(formState);
-  }, [formState]);
+  // useEffect(() => {
+  //   console.log(formState);
+  // }, [formState]);
 
   return hasRestored ? (
     <FormProvider {...formMethods}>{children}</FormProvider>

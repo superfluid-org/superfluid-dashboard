@@ -1,6 +1,7 @@
 import { BigNumber } from "ethers";
 import { isAddress } from "ethers/lib/utils";
 import { AnyObject, TestFunction } from "yup";
+import { NATIVE_ASSET_ADDRESS } from "../features/redux/endpoints/tokenTypes";
 
 interface IsEtherAmountOptions {
   notNegative?: boolean;
@@ -9,7 +10,7 @@ interface IsEtherAmountOptions {
 
 export const testAddress: () => TestFunction<string, AnyObject> =
   () => (value, context) => {
-    if (!isAddress(value)) {
+    if (!isAddress(value) && value !== NATIVE_ASSET_ADDRESS) {
       throw context.createError({
         message: "Not an address.",
       });
