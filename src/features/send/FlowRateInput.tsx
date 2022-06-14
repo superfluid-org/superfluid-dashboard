@@ -101,7 +101,7 @@ export const FlowRateInput: FC<{
             amountEther: e.currentTarget.value,
           });
         }}
-        inputProps={{
+        InputProps={{
           sx: { borderRadius: "10px 0 0 10px" }
         }}
         sx={{

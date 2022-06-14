@@ -23,13 +23,24 @@ export const TransactionButton: FC<{
     }) => void,
     closeTransactionDialog: () => void
   ) => void;
-  ButtonProps?: ButtonProps;
+  ButtonProps?: {
+    variant?: ButtonProps["variant"];
+  };
   dataCy?: string;
-}> = ({ children, disabled, onClick, mutationResult, hidden ,dataCy}) => {
+}> = ({
+  children,
+  disabled,
+  onClick,
+  mutationResult,
+  hidden,
+  dataCy,
+  ButtonProps = {},
+}) => {
   const { isConnecting } = useConnect();
   const { activeChain, switchNetwork } = useNetwork();
   const { data: account } = useAccount();
-  const { isImpersonated, stopImpersonation: stopImpersonation } = useImpersonation();
+  const { isImpersonated, stopImpersonation: stopImpersonation } =
+    useImpersonation();
 
   const { network } = useExpectedNetwork();
   const [transactionDialogLabel, setTransactionDialogLabel] = useState<
@@ -136,6 +147,7 @@ export const TransactionButton: FC<{
           );
           setTransactionDialogOpen(true);
         }}
+        {...ButtonProps}
       >
         {children}
       </LoadingButton>

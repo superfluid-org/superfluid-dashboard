@@ -4,6 +4,7 @@ import {
   Alert,
   AlertTitle,
   Box,
+  ButtonGroup,
   Card,
   Checkbox,
   Divider,
@@ -97,6 +98,7 @@ export default memo(function SendCard() {
 
   const [flowCreateTrigger, flowCreateResult] = rpcApi.useFlowCreateMutation();
   const [flowUpdateTrigger, flowUpdateResult] = rpcApi.useFlowUpdateMutation();
+  const [flowDeleteTrigger, flowDeleteResult] = rpcApi.useFlowDeleteMutation();
 
   const superTokensQuery = subgraphApi.useTokensQuery({
     chainId: network.id,
@@ -120,7 +122,7 @@ export default memo(function SendCard() {
   const shouldSearchForActiveFlow =
     !!visibleAddress && !!receiver && !!selectedToken;
 
-  const { data: activeFlow } = rpcApi.useGetActiveFlowQuery(
+  const activeFlowQuery= rpcApi.useGetActiveFlowQuery(
     shouldSearchForActiveFlow
       ? {
           chainId: network.id,
@@ -130,6 +132,7 @@ export default memo(function SendCard() {
         }
       : skipToken
   );
+  const activeFlow = (visibleAddress && receiver) ? activeFlowQuery.data : undefined 
 
   const isSendDisabled = formState.isValidating || !formState.isValid;
 
@@ -389,66 +392,98 @@ export default memo(function SendCard() {
               Send
             </TransactionButton>
           ) : (
-            <TransactionButton
-              hidden={false}
-              disabled={isSendDisabled}
-              mutationResult={flowUpdateResult}
-              onClick={(setTransactionDialogContent) => {
-                if (!formState.isValid) {
-                  throw Error("This should never happen.");
-                }
+            <Stack direction="column" gap={1}>
+              <TransactionButton
+                hidden={false}
+                disabled={isSendDisabled}
+                mutationResult={flowUpdateResult}
+                onClick={(setTransactionDialogContent) => {
+                  if (!formState.isValid) {
+                    throw Error("This should never happen.");
+                  }
 
-                const { data: formData } = getValues() as ValidStreamingForm;
-                flowUpdateTrigger({
-                  chainId: network.id,
-                  flowRateWei: calculateTotalAmountWei({
-                    amountWei: parseEther(
-                      formData.flowRate.amountEther
-                    ).toString(),
-                    unitOfTime: formData.flowRate.unitOfTime,
-                  }).toString(),
-                  receiverAddress: formData.receiver.hash,
-                  superTokenAddress: formData.token.address,
-                  userDataBytes: undefined,
-                  waitForConfirmation: false,
-                  transactionExtraData: {
-                    restoration: {
-                      type: RestorationType.ModifyStream,
-                      chainId: network.id,
-                      token: formData.token,
-                      receiver: formData.receiver,
-                      flowRate: {
-                        amountWei: parseEther(
-                          formData.flowRate.amountEther
-                        ).toString(),
-                        unitOfTime: formData.flowRate.unitOfTime,
-                      },
-                    } as ModifyStreamRestoration,
-                  },
-                })
-                  .unwrap()
-                  .then(() => resetForm());
+                  const { data: formData } = getValues() as ValidStreamingForm;
+                  flowUpdateTrigger({
+                    chainId: network.id,
+                    flowRateWei: calculateTotalAmountWei({
+                      amountWei: parseEther(
+                        formData.flowRate.amountEther
+                      ).toString(),
+                      unitOfTime: formData.flowRate.unitOfTime,
+                    }).toString(),
+                    receiverAddress: formData.receiver.hash,
+                    superTokenAddress: formData.token.address,
+                    userDataBytes: undefined,
+                    waitForConfirmation: false,
+                    transactionExtraData: {
+                      restoration: {
+                        type: RestorationType.ModifyStream,
+                        chainId: network.id,
+                        token: formData.token,
+                        receiver: formData.receiver,
+                        flowRate: {
+                          amountWei: parseEther(
+                            formData.flowRate.amountEther
+                          ).toString(),
+                          unitOfTime: formData.flowRate.unitOfTime,
+                        },
+                      } as ModifyStreamRestoration,
+                    },
+                  })
+                    .unwrap()
+                    .then(() => resetForm());
 
-                setTransactionDialogContent({
-                  successActions: (
-                    <TransactionDialogActions>
-                      <TransactionDialogButton
-                        color="primary"
-                        onClick={() =>
-                          router
-                            .push("/")
-                            .then(() => setTransactionDrawerOpen(true))
-                        }
-                      >
-                        Go to tokens page ➜
-                      </TransactionDialogButton>
-                    </TransactionDialogActions>
-                  ),
-                });
-              }}
-            >
-              Modify
-            </TransactionButton>
+                  setTransactionDialogContent({
+                    successActions: (
+                      <TransactionDialogActions>
+                        <TransactionDialogButton
+                          color="primary"
+                          onClick={() =>
+                            router
+                              .push("/")
+                              .then(() => setTransactionDrawerOpen(true))
+                          }
+                        >
+                          Go to tokens page ➜
+                        </TransactionDialogButton>
+                      </TransactionDialogActions>
+                    ),
+                  });
+                }}
+              >
+                Modify
+              </TransactionButton>
+              <TransactionButton
+                dataCy={"cancel-stream-button"}
+                hidden={false}
+                disabled={false}
+                mutationResult={flowDeleteResult}
+                ButtonProps={{
+                  variant: "outlined"
+                }}
+                onClick={() => {
+                  const receiverAddress = receiver?.hash;
+                  const superTokenAddress = selectedToken?.address;
+                  const senderAddress = visibleAddress;
+                  if (!receiverAddress || !superTokenAddress || !senderAddress) {
+                    throw Error("This should never happen.");
+                  }
+
+                  flowDeleteTrigger({
+                    receiverAddress,
+                    superTokenAddress,
+                    senderAddress,
+                    chainId: network.id,
+                    userDataBytes: undefined,
+                    waitForConfirmation: false,
+                  }).unwrap().then(() => resetForm());
+
+                  // Don't reset form here.
+                }}
+              >
+                Cancel Stream
+              </TransactionButton>
+            </Stack>
           )}
         </Stack>
       </Stack>
