@@ -84,6 +84,7 @@ const WrappingFormProvider: FC<{
           }),
         });
 
+        clearErrors("data");
         await primarySchema.validate(values);
         const validForm = values as ValidWrappingForm;
 
@@ -108,10 +109,8 @@ const WrappingFormProvider: FC<{
             const isWrappingIntoNegative =
               underlyingBalanceBigNumber.lt(wrapAmountBigNumber);
             if (isWrappingIntoNegative) {
-              throw context.createError({
-                path: "data.amountEther.hov",
-                message: "You do not have enough balance.",
-              });
+              setError("data", { message: "You do not have enough balance." });
+              return false;
             }
 
             const isNativeAsset = tokenAddress === NATIVE_ASSET_ADDRESS;
@@ -120,11 +119,11 @@ const WrappingFormProvider: FC<{
                 underlyingBalanceBigNumber
               ).eq(wrapAmountBigNumber);
               if (isWrappingIntoZero) {
-                throw context.createError({
-                  path: "data.amountEther.hov",
+                setError("data", {
                   message:
                     "You are wrapping out of native asset used for gas. You need to leave some gas tokens for the transaction to succeed.",
                 });
+                return false;
               }
             }
           }
@@ -156,10 +155,10 @@ const WrappingFormProvider: FC<{
               const isWrappingIntoNegative =
                 currentBalanceBigNumber.lt(amountBigNumber);
               if (isWrappingIntoNegative) {
-                throw context.createError({
-                  path: "data.amountEther.hov",
+                setError("data", {
                   message: "You do not have enough balance.",
                 });
+                return false;
               }
 
               if (flowRateBigNumber.isNegative()) {
@@ -179,10 +178,10 @@ const WrappingFormProvider: FC<{
                 );
 
                 if (secondsToCritical < minimumStreamTime) {
-                  throw context.createError({
-                    path: "data.amountEther.hov",
+                  setError("data", {
                     message: `You need to leave enough balance to stream for ${minimumStreamTime} seconds.`,
                   });
+                  return false;
                 }
               }
             }
@@ -205,7 +204,7 @@ const WrappingFormProvider: FC<{
     resolver: yupResolver(formSchema),
   });
 
-  const { formState, setValue, trigger } = formMethods;
+  const { formState, setValue, trigger, clearErrors, setError } = formMethods;
 
   const [hasRestored, setHasRestored] = useState(!restoration);
   useEffect(() => {
@@ -260,9 +259,9 @@ const WrappingFormProvider: FC<{
     }
   }, [account]);
 
-useEffect(() => {
-  console.log(formState)
-}, [formState])
+  useEffect(() => {
+    console.log(formState);
+  }, [formState]);
 
   return hasRestored ? (
     <FormProvider {...formMethods}>{children}</FormProvider>

@@ -145,16 +145,14 @@ export default memo(function SendCard() {
         </Typography>
 
         <ErrorMessage
-          as={<Alert severity="error"></Alert>}
-          name="data.flowRate.hov"
-          render={({ messages }) => {
-            return (
-              messages &&
-              Object.entries(messages).map(([type, message]) => (
-                <p key={type}>{message}</p>
-              ))
-            );
-          }}
+          name="data"
+          render={({ message }) =>
+            !!message && (
+              <Alert severity="error" sx={{ mb: 1 }}>
+                {message}
+              </Alert>
+            )
+          }
         />
 
         <Stack spacing={2.5}>
@@ -252,7 +250,9 @@ export default memo(function SendCard() {
           </Box> */}
 
           <Alert severity="warning">
-            <AlertTitle data-cy={"protect-buffer-error"}>Protect your buffer!</AlertTitle>
+            <AlertTitle data-cy={"protect-buffer-error"}>
+              Protect your buffer!
+            </AlertTitle>
             <Typography variant="body2">
               If you do not cancel the stream before your balance reaches zero,
               you will lose your buffer.
@@ -265,7 +265,7 @@ export default memo(function SendCard() {
                   <FormControlLabel
                     control={
                       <Checkbox
-                          data-cy={"risk-checkbox"}
+                        data-cy={"risk-checkbox"}
                         checked={understandLiquidationRisk}
                         onChange={onChange}
                         onBlur={onBlur}
@@ -325,7 +325,8 @@ export default memo(function SendCard() {
 
           {!activeFlow ? (
             <TransactionButton
-              dataCy={"send-transaction-button"}hidden={false}
+              dataCy={"send-transaction-button"}
+              hidden={false}
               disabled={isSendDisabled}
               mutationResult={flowCreateResult}
               onClick={(setTransactionDialogContent) => {

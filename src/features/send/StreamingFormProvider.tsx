@@ -99,6 +99,7 @@ const StreamingFormProvider: FC<{
           }),
         });
 
+        clearErrors("data");
         await primaryValidation.validate(values);
         const validForm = values as ValidStreamingForm;
 
@@ -148,10 +149,10 @@ const StreamingFormProvider: FC<{
             );
 
             if (secondsToCritical < minimumStreamTime) {
-              throw context.createError({
-                path: "data.flowRate.hov",
-                message: `You need to leave enough balance to stream for ${minimumStreamTime} seconds.`,
+              setError("data", {
+                message: `You need to leave enough balance to stream for ${minimumStreamTime} seconds.`
               });
+              return false;
             }
           }
         }
@@ -174,7 +175,7 @@ const StreamingFormProvider: FC<{
     mode: "onChange",
   });
 
-  const { formState, setValue, trigger } = formMethods;
+  const { formState, setValue, trigger, clearErrors, setError } = formMethods;
 
   const [hasRestored, setHasRestored] = useState(!restoration);
   useEffect(() => {
@@ -206,6 +207,10 @@ const StreamingFormProvider: FC<{
       trigger();
     }
   }, [account]);
+
+  useEffect(() => {
+    console.log(formState)
+  }, [formState])
 
   return hasRestored ? (
     <FormProvider {...formMethods}>{children}</FormProvider>

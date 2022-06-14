@@ -3,6 +3,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   Alert,
   Avatar,
+  Box,
   Button,
   Input,
   Paper,
@@ -41,7 +42,7 @@ export const WrapTabDowngrade: FC = () => {
   const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
-  const [mounted, setMounted ] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const {
     watch,
@@ -61,7 +62,7 @@ export const WrapTabDowngrade: FC = () => {
       shouldValidate: false,
     });
     trigger();
-    setMounted(true); 
+    setMounted(true);
   }, []);
 
   const [selectedTokenPair, amount] = watch([
@@ -87,16 +88,14 @@ export const WrapTabDowngrade: FC = () => {
     <Stack direction="column" alignItems="center">
       {mounted && (
         <ErrorMessage
-          as={<Alert severity="error"></Alert>}
-          name="data.amountEther.hov"
-          render={({ messages }) => {
-            return (
-              messages &&
-              Object.entries(messages).map(([type, message]) => (
-                <p key={type}>{message}</p>
-              ))
-            );
-          }}
+          name="data"
+          render={({ message }) =>
+            !!message && (
+              <Alert severity="error" sx={{ mb: 1 }}>
+                {message}
+              </Alert>
+            )
+          }
         />
       )}
       <Stack
