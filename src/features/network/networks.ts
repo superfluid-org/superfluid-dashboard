@@ -44,23 +44,31 @@ const superfluidRpcUrls = {
   optimism: "https://rpc-endpoints.superfluid.dev/optimism-mainnet",
   optimismKovan: "https://rpc-endpoints.superfluid.dev/optimism-kovan",
   avalancheFuji: "https://rpc-endpoints.superfluid.dev/avalanche-fuji",
+  avalancheC: "https://rpc-endpoints.superfluid.dev/avalanche-c",
 };
 
-const blockscoutBlockExplorers = {
-  gnosis: {
-    name: "Blockscout",
-    url: "https://blockscout.com/xdai/mainnet/",
+const blockExplorers = {
+  blockscout: {
+    gnosis: {
+      name: "Blockscout",
+      url: "https://blockscout.com/xdai/mainnet/",
+    },
   },
-};
-
-const snowtraceBlockExplorers = {
-  avalanche: {
-    name: "SnowTrace",
-    url: "https://snowtrace.io/",
+  snowtrace: {
+    avalancheC: {
+      name: "SnowTrace",
+      url: "https://snowtrace.io/",
+    },
+    avalancheFuji: {
+      name: "SnowTrace",
+      url: "https://testnet.snowtrace.io/",
+    },
   },
-  avalancheFuji: {
-    name: "SnowTrace",
-    url: "https://testnet.snowtrace.io",
+  avascan: {
+    avalancheC: {
+      name: "Avascan",
+      url: "https://avascan.info/",
+    },
   },
 };
 
@@ -71,7 +79,6 @@ export const networks: Network[] = [
     nativeCurrency: ensureDefined(chain.ropsten.nativeCurrency),
     slugName: "ropsten",
     bufferTimeInMinutes: 60,
-    icon: "/icons/network/ropsten.jpg",
     color: "#29b6af",
     rpcUrls: {
       ...chain.ropsten.rpcUrls,
@@ -100,7 +107,6 @@ export const networks: Network[] = [
     slugName: "rinkeby",
     color: "#ff4a8d",
     bufferTimeInMinutes: 60,
-    icon: "/icons/network/rinkeby.jpg",
     rpcUrls: {
       ...chain.rinkeby.rpcUrls,
       superfluid: superfluidRpcUrls.rinkeby,
@@ -127,7 +133,6 @@ export const networks: Network[] = [
     nativeCurrency: ensureDefined(chain.goerli.nativeCurrency),
     slugName: "goerli",
     bufferTimeInMinutes: 60,
-    icon: "/icons/network/goerli.jpg",
     color: "#9064ff",
     rpcUrls: {
       ...chain.goerli.rpcUrls,
@@ -155,7 +160,6 @@ export const networks: Network[] = [
     nativeCurrency: ensureDefined(chain.kovan.nativeCurrency),
     slugName: "kovan",
     bufferTimeInMinutes: 60,
-    icon: "/icons/network/kovan.jpg",
     color: "#f6c343",
     rpcUrls: {
       ...chain.kovan.rpcUrls,
@@ -181,7 +185,7 @@ export const networks: Network[] = [
     name: "Gnosis Chain",
     blockExplorers: {
       etherscan: undefined!,
-      default: blockscoutBlockExplorers.gnosis,
+      default: blockExplorers.blockscout.gnosis,
     },
     slugName: "gnosis",
     network: "xdai",
@@ -276,7 +280,6 @@ export const networks: Network[] = [
     nativeCurrency: ensureDefined(chain.arbitrumRinkeby.nativeCurrency),
     slugName: "arbitrum-rinkeby",
     bufferTimeInMinutes: 60,
-    icon: "/icons/network/arbitrum.svg",
     color: "#29b6af",
     rpcUrls: {
       ...chain.arbitrumRinkeby.rpcUrls,
@@ -304,7 +307,6 @@ export const networks: Network[] = [
     nativeCurrency: ensureDefined(chain.optimismKovan.nativeCurrency),
     slugName: "optimism-kovan",
     bufferTimeInMinutes: 60,
-    icon: "/icons/network/optimism.svg",
     color: "#8b45b6",
     rpcUrls: {
       ...chain.optimismKovan.rpcUrls,
@@ -333,7 +335,6 @@ export const networks: Network[] = [
     id: 43113,
     testnet: true,
     bufferTimeInMinutes: 60,
-    icon: "/icons/network/avalanche.jpg",
     color: "#2b374b",
     rpcUrls: {
       superfluid: superfluidRpcUrls.avalancheFuji,
@@ -347,8 +348,8 @@ export const networks: Network[] = [
       `https://testnet.snowtrace.io/address/${address}`,
     blockExplorers: {
       etherscan: undefined!,
-      snowtrace: snowtraceBlockExplorers.avalancheFuji,
-      default: snowtraceBlockExplorers.avalancheFuji,
+      snowtrace: blockExplorers.snowtrace.avalancheFuji,
+      default: blockExplorers.snowtrace.avalancheFuji,
     },
     nativeCurrency: {
       name: "AVAX",
@@ -418,6 +419,46 @@ export const networks: Network[] = [
         symbol: "ETHx",
         address: "0xe6c8d111337d0052b9d88bf5d7d55b7f8385acd3",
         name: "Super ETH",
+      },
+    },
+  },
+  {
+    name: "Avalanche C",
+    slugName: "avalanche-c",
+    network: "avalanche-c",
+    id: 43114,
+    testnet: false,
+    bufferTimeInMinutes: 240,
+    icon: "/icons/network/avalanche.svg",
+    color: "#e84142",
+    rpcUrls: {
+      superfluid: superfluidRpcUrls.avalancheC,
+      default: "https://api.avax.network/ext/bc/C/rpc",
+    },
+    subgraphUrl:
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-avalanche-c",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://avascan.info/blockchain/c/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://avascan.info/blockchain/c/address/${address}`,
+    blockExplorers: {
+      etherscan: undefined!,
+      snowtrace: blockExplorers.snowtrace.avalancheC,
+      avascan: blockExplorers.avascan.avalancheC,
+      default: blockExplorers.avascan.avalancheC,
+    },
+    nativeCurrency: {
+      name: "AVAX",
+      symbol: "AVAX",
+      decimals: 18,
+    },
+    nativeAsset: {
+      symbol: "AVAX",
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "AVAXx",
+        address: "0xBE916845D8678b5d2F7aD79525A62D7c08ABba7e",
+        name: "Super AVAX",
       },
     },
   },
