@@ -1,13 +1,7 @@
 import { FC, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
-import {
-  bool,
-  number,
-  object,
-  ObjectSchema,
-  string
-} from "yup";
+import { bool, number, object, ObjectSchema, string } from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { rpcApi } from "../redux/store";
 import {
@@ -71,14 +65,7 @@ const StreamingFormProvider: FC<{
             receiver: object({
               hash: string().required(),
               name: string().optional(),
-            })
-              .required()
-              .test("no-self-flow", "You can't stream to yourself.", (x) => {
-                if (!x || !account) {
-                  return true;
-                }
-                return x.hash.toLowerCase() !== account.address?.toLowerCase();
-              }),
+            }).required(),
             flowRate: object({
               amountEther: string()
                 .required()
@@ -105,8 +92,18 @@ const StreamingFormProvider: FC<{
 
         // # Higher order validation
         const accountAddress = account?.address;
-        const tokenAddress = validForm.data.token?.address;
-        const receiverAddress = validForm.data.receiver?.hash;
+        const tokenAddress = validForm.data.token.address;
+        const receiverAddress = validForm.data.receiver.hash;
+
+        if (
+          accountAddress &&
+          accountAddress.toLowerCase() === receiverAddress.toLowerCase()
+        ) {
+          setError("data", {
+            message: `You can't stream to yourself.`,
+          });
+          return false;
+        }
 
         if (accountAddress && tokenAddress && receiverAddress) {
           const [realtimeBalance, activeFlow] = await Promise.all([
@@ -150,7 +147,7 @@ const StreamingFormProvider: FC<{
 
             if (secondsToCritical < minimumStreamTime) {
               setError("data", {
-                message: `You need to leave enough balance to stream for ${minimumStreamTime} seconds.`
+                message: `You need to leave enough balance to stream for ${minimumStreamTime} seconds.`,
               });
               return false;
             }
@@ -183,9 +180,7 @@ const StreamingFormProvider: FC<{
       setValue(
         "data.flowRate",
         {
-          amountEther: formatEther(
-            restoration.flowRate.amountWei
-          ),
+          amountEther: formatEther(restoration.flowRate.amountWei),
           unitOfTime: restoration.flowRate.unitOfTime,
         },
         formRestorationOptions
@@ -209,8 +204,8 @@ const StreamingFormProvider: FC<{
   }, [account]);
 
   useEffect(() => {
-    console.log(formState)
-  }, [formState])
+    console.log(formState);
+  }, [formState]);
 
   return hasRestored ? (
     <FormProvider {...formMethods}>{children}</FormProvider>
