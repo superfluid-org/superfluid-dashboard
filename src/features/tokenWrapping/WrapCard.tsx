@@ -44,6 +44,16 @@ export default memo(function WrapCard({
           Unwrap
         </Button>
       </Stack>
+      <ErrorMessage
+        name="data"
+        render={({ message }) =>
+          !!message && (
+            <Alert severity="error" sx={{ mb: 1 }}>
+              {message}
+            </Alert>
+          )
+        }
+      />
       {tabValue === "upgrade" && <WrapTabUpgrade />}
       {tabValue === "downgrade" && <WrapTabDowngrade />}
     </Card>

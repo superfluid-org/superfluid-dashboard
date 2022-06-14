@@ -44,7 +44,6 @@ export const WrapTabUpgrade: FC = () => {
   const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
-  const [mounted, setMounted] = useState(false);
 
   const {
     watch,
@@ -52,8 +51,7 @@ export const WrapTabUpgrade: FC = () => {
     reset: resetForm,
     formState,
     getValues,
-    setValue,
-    trigger,
+    setValue
   } = useFormContext<WrappingForm>();
 
   // The reason to set the type and clear errors is that a single form context is used both for wrapping and unwrapping.
@@ -61,10 +59,8 @@ export const WrapTabUpgrade: FC = () => {
     setValue("type", RestorationType.Upgrade, {
       shouldDirty: false,
       shouldTouch: false,
-      shouldValidate: false,
+      shouldValidate: true,
     });
-    trigger();
-    setMounted(true);
   }, []);
 
   const [selectedTokenPair, amount] = watch([
@@ -129,18 +125,6 @@ export const WrapTabUpgrade: FC = () => {
 
   return (
     <Stack direction="column" alignItems="center">
-      {mounted && (
-        <ErrorMessage
-          name="data"
-          render={({ message }) =>
-            !!message && (
-              <Alert severity="error" sx={{ mb: 1 }}>
-                {message}
-              </Alert>
-            )
-          }
-        />
-      )}
       <Stack
         variant="outlined"
         component={Paper}
