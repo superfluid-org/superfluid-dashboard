@@ -5,7 +5,10 @@ import {
   Button,
   Card,
   Container,
+  FormControlLabel,
+  FormGroup,
   Stack,
+  Switch,
   Tab,
   Typography,
   useTheme,
@@ -49,6 +52,7 @@ const Token: FC<NetworkPage> = ({ network }) => {
 
   const [activeTab, setActiveTab] = useState(TokenDetailsTabs.Streams);
   const [graphType, setGraphType] = useState(GraphType.YTD);
+  const [showForecast, setShowForecast] = useState(true);
 
   const tokenId = isString(router.query.token) ? router.query.token : undefined;
 
@@ -84,6 +88,9 @@ const Token: FC<NetworkPage> = ({ network }) => {
     if (!tokenId || !visibleAddress) router.push("/");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenId, visibleAddress]);
+
+  const onShowForecastChange = (_e: unknown, checked: boolean) =>
+    setShowForecast(checked);
 
   const handleBack = () => router.back();
 
@@ -260,19 +267,25 @@ const Token: FC<NetworkPage> = ({ network }) => {
               network={network}
               account={visibleAddress}
               token={tokenId}
+              showForecast={showForecast}
               height={180}
             />
           )}
 
-          {/* <Stack direction="row" justifyContent="flex-end" sx={{ mt: 2 }}>
+          <Stack direction="row" justifyContent="flex-end" sx={{ mt: 2 }}>
             <FormGroup>
               <FormControlLabel
-                control={<Switch defaultChecked />}
+                control={
+                  <Switch
+                    checked={showForecast}
+                    onChange={onShowForecastChange}
+                  />
+                }
                 label="Forecast"
                 labelPlacement="start"
               />
             </FormGroup>
-          </Stack> */}
+          </Stack>
         </Card>
 
         <TabContext value={activeTab}>
