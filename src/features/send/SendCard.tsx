@@ -122,7 +122,7 @@ export default memo(function SendCard() {
   const shouldSearchForActiveFlow =
     !!visibleAddress && !!receiver && !!selectedToken;
 
-  const activeFlowQuery= rpcApi.useGetActiveFlowQuery(
+  const activeFlowQuery = rpcApi.useGetActiveFlowQuery(
     shouldSearchForActiveFlow
       ? {
           chainId: network.id,
@@ -132,7 +132,8 @@ export default memo(function SendCard() {
         }
       : skipToken
   );
-  const activeFlow = (visibleAddress && receiver) ? activeFlowQuery.data : undefined 
+  const activeFlow =
+    visibleAddress && receiver ? activeFlowQuery.data : undefined;
 
   const isSendDisabled = formState.isValidating || !formState.isValid;
 
@@ -459,13 +460,17 @@ export default memo(function SendCard() {
                 disabled={false}
                 mutationResult={flowDeleteResult}
                 ButtonProps={{
-                  variant: "outlined"
+                  variant: "outlined",
                 }}
                 onClick={() => {
                   const receiverAddress = receiver?.hash;
                   const superTokenAddress = selectedToken?.address;
                   const senderAddress = visibleAddress;
-                  if (!receiverAddress || !superTokenAddress || !senderAddress) {
+                  if (
+                    !receiverAddress ||
+                    !superTokenAddress ||
+                    !senderAddress
+                  ) {
                     throw Error("This should never happen.");
                   }
 
@@ -476,9 +481,9 @@ export default memo(function SendCard() {
                     chainId: network.id,
                     userDataBytes: undefined,
                     waitForConfirmation: false,
-                  }).unwrap().then(() => resetForm());
-
-                  // Don't reset form here.
+                  })
+                    .unwrap()
+                    .then(() => resetForm());
                 }}
               >
                 Cancel Stream
