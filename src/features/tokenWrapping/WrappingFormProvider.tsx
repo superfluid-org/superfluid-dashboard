@@ -18,6 +18,7 @@ import { useAccount } from "wagmi";
 import { BigNumber } from "ethers";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import { calculateMaybeCriticalAtTimestamp } from "../../utils/tokenUtils";
+import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 
 export type WrappingForm = {
   type: RestorationType.Downgrade | RestorationType.Upgrade;
@@ -57,30 +58,20 @@ const WrappingFormProvider: FC<{
             tokenUpgrade: object({
               superToken: object({
                 type: number().required(),
-                address: string().required(),
+                address: string().required().test(testAddress()),
                 name: string().required(),
                 symbol: string().required(),
               }).required(),
               underlyingToken: object({
                 type: number().required(),
-                address: string().required(),
+                address: string().required().test(testAddress()),
                 name: string().required(),
                 symbol: string().required(),
               }).required(),
             }).required(),
             amountEther: string()
               .required()
-              .matches(
-                /^[0-9]*[.,]?[0-9]*$/,
-                "Amount has to be a positive number."
-              )
-              .test("not-zero", "Enter an amount.", (x) => {
-                try {
-                  return !parseEther(x).isZero();
-                } catch (error) {
-                  return false;
-                }
-              }),
+              .test(testEtherAmount({ notNegative: true, notZero: true })),
           }),
         });
 

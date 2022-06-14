@@ -13,8 +13,8 @@ import { UnitOfTime } from "./FlowRateInput";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import useCalculateBufferInfo from "./useCalculateBufferInfo";
 import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
-import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils";
+import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 
 export type ValidStreamingForm = {
   data: {
@@ -58,28 +58,18 @@ const StreamingFormProvider: FC<{
           data: object({
             token: object({
               type: number().required(),
-              address: string().required(),
+              address: string().required().test(testAddress()),
               name: string().required(),
               symbol: string().required(),
             }).required(),
             receiver: object({
-              hash: string().required(),
+              hash: string().required().test(testAddress()),
               name: string().optional(),
             }).required(),
             flowRate: object({
               amountEther: string()
                 .required()
-                .matches(
-                  /^[0-9]*[.,]?[0-9]*$/,
-                  "Amount has to be a positive number."
-                )
-                .test("not-zero", "Enter an amount.", (x) => {
-                  try {
-                    return !parseEther(x).isZero();
-                  } catch (error) {
-                    return false;
-                  }
-                }),
+                .test(testEtherAmount({ notNegative: true, notZero: true })),
               unitOfTime: number().required(),
             }),
             understandLiquidationRisk: bool().isTrue().required(),
