@@ -311,7 +311,7 @@ export default memo(function SendCard() {
         </Stack>
 
         <Stack gap={2.5}>
-          {formState.isValid && receiver && selectedToken && (
+          {receiver && selectedToken && (
             <>
               <Divider />
               <StreamingPreview
