@@ -1,17 +1,13 @@
 import { fakeBaseQuery } from "@reduxjs/toolkit/dist/query";
 import { createApi } from "@reduxjs/toolkit/dist/query/react";
-import { ethers } from "ethers";
+import { ethers, getDefaultProvider } from "ethers";
 
 // TODO(KK): getSerializedArgs implementation
 export const ensApi = createApi({
   reducerPath: "ens",
   baseQuery: fakeBaseQuery(),
   endpoints: (builder) => {
-    const mainnetProvider = new ethers.providers.InfuraProvider(
-      "mainnet",
-      "fa4dab2732ac473b9a61b1d1b3b904fa" // TODO(KK): Kaspar's personal free tier Infura key
-    );
-
+    const mainnetProvider = new ethers.providers.JsonRpcBatchProvider("https://cloudflare-eth.com", "mainnet");
     return {
       resolveName: builder.query<
         { address: string; name: string } | null,
