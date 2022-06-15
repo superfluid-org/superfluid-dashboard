@@ -22,7 +22,7 @@ import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   isSuper,
   isUnderlying,
-  TokenMinimal
+  TokenMinimal,
 } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
@@ -46,7 +46,7 @@ export const TokenDialog: FC<{
   open,
   onClose,
   onSelect,
-  tokenSelection: { tokenPairsQuery, showUpgrade = false }
+  tokenSelection: { tokenPairsQuery, showUpgrade = false },
 }) => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
@@ -58,7 +58,6 @@ export const TokenDialog: FC<{
       setOpenCounter(openCounter + 1);
       setSearchTerm(""); // Reset the search term when the dialog opens, not when it closes (because then there would be noticable visual clearing of the field). It's smoother UI to do it on opening.
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const underlyingTokens = useMemo(
@@ -74,44 +73,46 @@ export const TokenDialog: FC<{
     [superTokens, underlyingTokens]
   );
 
-  const underlyingTokenBalancesQuery = rpcApi.useBalanceOfMulticallQuery(
-    underlyingTokens.length && visibleAddress
-      ? {
-          chainId: network.id,
-          accountAddress: visibleAddress,
-          tokenAddresses: underlyingTokens.map((x) => x.address),
-        }
-      : skipToken
-  );
+  const { data: _discard, ...underlyingTokenBalancesQuery } =
+    rpcApi.useBalanceOfMulticallQuery(
+      underlyingTokens.length && visibleAddress
+        ? {
+            chainId: network.id,
+            accountAddress: visibleAddress,
+            tokenAddresses: underlyingTokens.map((x) => x.address),
+          }
+        : skipToken
+    );
 
   const underlyingTokenBalances = useMemo(
-    () => underlyingTokenBalancesQuery.data?.balances ?? {},
-    [underlyingTokenBalancesQuery.data]
+    () => underlyingTokenBalancesQuery.currentData?.balances ?? {},
+    [underlyingTokenBalancesQuery.currentData]
   );
 
-  const superTokenBalancesQuery = subgraphApi.useAccountTokenSnapshotsQuery(
-    tokenPairsQuery.data && visibleAddress
-      ? {
-          chainId: network.id,
-          filter: {
-            account: visibleAddress,
-            token_in: superTokens.map((x) => x.address),
-          },
-          pagination: {
-            take: Infinity,
-          },
-        }
-      : skipToken
-  );
+  const { data: _discard2, ...superTokenBalancesQuery } =
+    subgraphApi.useAccountTokenSnapshotsQuery(
+      tokenPairsQuery.data && visibleAddress
+        ? {
+            chainId: network.id,
+            filter: {
+              account: visibleAddress,
+              token_in: superTokens.map((x) => x.address),
+            },
+            pagination: {
+              take: Infinity,
+            },
+          }
+        : skipToken
+    );
 
   const superTokenBalances = useMemo(
     () =>
-      superTokenBalancesQuery.data
+      superTokenBalancesQuery.currentData
         ? Object.fromEntries(
-            superTokenBalancesQuery.data.items.map((x) => [x.token, x])
+            superTokenBalancesQuery.currentData.items.map((x) => [x.token, x])
           )
         : {},
-    [superTokenBalancesQuery.data]
+    [superTokenBalancesQuery.currentData]
   );
 
   const tokenOrdered = useMemo(
@@ -124,9 +125,16 @@ export const TokenDialog: FC<{
           ? superTokenBalances[b.address]?.balanceUntilUpdatedAt
           : underlyingTokenBalances[b.address];
 
-        return +ethers.BigNumber.from(aBalance ?? 0).lt(
-          ethers.BigNumber.from(bBalance ?? 0)
-        );
+        const aBigNumber = ethers.BigNumber.from(aBalance ?? 0);
+        const bBigNumber = ethers.BigNumber.from(bBalance ?? 0);
+
+        if (aBigNumber.lt(bBigNumber)) {
+          return 1;
+        }
+        if (aBigNumber.gt(bBigNumber)) {
+          return -1;
+        }
+        return 0;
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [open, tokens.length] // Don't depend on balances query to avoid UI hopping.

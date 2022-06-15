@@ -74,7 +74,7 @@ export const StreamingPreview: FC<{
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
 
-  const realtimeBalanceQuery = rpcApi.useRealtimeBalanceQuery(
+  const { currentData: realtimeBalance, data: _discard} = rpcApi.useRealtimeBalanceQuery(
     visibleAddress
       ? {
           chainId: network.id,
@@ -83,11 +83,8 @@ export const StreamingPreview: FC<{
         }
       : skipToken
   );
-  const realtimeBalance = visibleAddress
-    ? realtimeBalanceQuery.data
-    : undefined;
 
-  const activeFlowQuery = rpcApi.useGetActiveFlowQuery(
+  const { currentData: existingFlow, data: _discard2} = rpcApi.useGetActiveFlowQuery(
     visibleAddress
       ? {
           chainId: network.id,
@@ -97,7 +94,6 @@ export const StreamingPreview: FC<{
         }
       : skipToken
   );
-  const existingFlow = visibleAddress ? activeFlowQuery.data : undefined;
 
   const calculateBufferInfo = useCalculateBufferInfo();
 

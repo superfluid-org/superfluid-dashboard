@@ -53,7 +53,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
   const isUnderlyingToken = isUnderlying(token);
   const isWrappableSuperToken = isSuperToken && isWrappable(token);
 
-  const underlyingBalanceQuery = rpcApi.useUnderlyingBalanceQuery(
+  const { data: _discard, ...underlyingBalanceQuery } = rpcApi.useUnderlyingBalanceQuery(
     chainId && accountAddress && isUnderlyingToken
       ? {
           chainId,
@@ -63,7 +63,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
       : skipToken
   );
 
-  const realtimeBalanceQuery = rpcApi.useRealtimeBalanceQuery(
+  const { data: _discard2, ...realtimeBalanceQuery } = rpcApi.useRealtimeBalanceQuery(
     chainId && accountAddress && isSuperToken
       ? {
           chainId,
@@ -74,13 +74,13 @@ export const TokenListItem: FC<TokenListItemProps> = ({
   );
 
   const checkedBalanceWei = isSuper(token)
-    ? realtimeBalanceQuery?.data?.balance || balanceWei
-    : underlyingBalanceQuery?.data?.balance || balanceWei;
+    ? realtimeBalanceQuery?.currentData?.balance || balanceWei
+    : underlyingBalanceQuery?.currentData?.balance || balanceWei;
 
   const balanceTS =
-    realtimeBalanceQuery?.data?.balanceTimestamp || balanceTimestamp;
+    realtimeBalanceQuery?.currentData?.balanceTimestamp || balanceTimestamp;
 
-  const fRate = realtimeBalanceQuery?.data?.flowRate || flowRate;
+  const fRate = realtimeBalanceQuery?.currentData?.flowRate || flowRate;
 
   return (
     <ListItemButton data-cy={`${token.symbol}-list-item`} onClick={onClick} sx={{ px: 3 }}>

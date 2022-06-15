@@ -28,8 +28,7 @@ const DisplayAddressChip: FC<{
   // TOOD(KK): getAddress for nice hash?
 
   const ensQuery = ensApi.useLookupAddressQuery(tryGetEns ? hash : skipToken);
-
-  const name = ensQuery.data?.name || initialName;
+  const name = ensQuery.currentData?.name || initialName;
 
   const { sx: ChipSx = {} } = ChipProps;
 

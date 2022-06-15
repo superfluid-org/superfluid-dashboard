@@ -52,7 +52,7 @@ const Token: FC<NetworkPage> = ({ network }) => {
 
   const tokenId = isString(router.query.token) ? router.query.token : undefined;
 
-  const realTimeBalanceQuery = rpcApi.useRealtimeBalanceQuery(
+  const { data: _discard, ...realTimeBalanceQuery } = rpcApi.useRealtimeBalanceQuery(
     tokenId && visibleAddress
       ? {
           chainId: network.id,
@@ -122,7 +122,7 @@ const Token: FC<NetworkPage> = ({ network }) => {
     balance = balanceUntilUpdatedAt,
     balanceTimestamp = updatedAtTimestamp,
     flowRate = totalNetFlowRate,
-  } = realTimeBalanceQuery.data || {};
+  } = realTimeBalanceQuery.currentData || {};
 
   const { id: tokenAddress } = tokenQuery.data;
 

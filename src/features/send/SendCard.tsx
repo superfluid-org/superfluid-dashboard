@@ -122,7 +122,7 @@ export default memo(function SendCard() {
   const shouldSearchForActiveFlow =
     !!visibleAddress && !!receiver && !!selectedToken;
 
-  const activeFlowQuery = rpcApi.useGetActiveFlowQuery(
+  const { currentData: activeFlow, data: _discard } = rpcApi.useGetActiveFlowQuery(
     shouldSearchForActiveFlow
       ? {
           chainId: network.id,
@@ -132,8 +132,6 @@ export default memo(function SendCard() {
         }
       : skipToken
   );
-  const activeFlow =
-    visibleAddress && receiver ? activeFlowQuery.data : undefined;
 
   const isSendDisabled = formState.isValidating || !formState.isValid;
 

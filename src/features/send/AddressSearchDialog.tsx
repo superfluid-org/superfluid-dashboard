@@ -105,7 +105,7 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
   const showEns =
     !!searchTermDebounced && !ethers.utils.isAddress(searchTermDebounced);
 
-  const recentsQuery = subgraphApi.useRecentsQuery(
+  const { currentData: recents, data: _discard, ...recentsQuery} = subgraphApi.useRecentsQuery(
     visibleAddress
       ? {
           chainId: network.id,
@@ -114,9 +114,8 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
       : skipToken
   );
 
-  const recentsData = recentsQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!ensQuery.data` means that the data is not undefined nor null.
   const showRecents =
-    (visibleAddress && recentsQuery.isSuccess && recentsQuery.data?.length) ||
+    (visibleAddress && recentsQuery.isSuccess && recents?.length) ||
     recentsQuery.isLoading;
 
   const searchSynced = searchTermDebounced === searchTermVisible;
@@ -205,8 +204,8 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
                   </ListItemButton>
                 </ListItem>
               )}
-              {!!recentsData &&
-                recentsData.map((addressHash) => (
+              {!!recents &&
+                recents.map((addressHash) => (
                   <AddressListItem
                     dataCy={"recents-entry"}
                     key={addressHash}

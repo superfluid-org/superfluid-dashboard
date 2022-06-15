@@ -79,7 +79,7 @@ export const WrapTabUpgrade: FC = () => {
   const isUnderlyingBlockchainNativeAsset =
     selectedTokenPair?.underlyingToken.address === NATIVE_ASSET_ADDRESS;
 
-  const allowanceQuery = rpcApi.useSuperTokenUpgradeAllowanceQuery(
+  const { data: _discard, ...allowanceQuery } = rpcApi.useSuperTokenUpgradeAllowanceQuery(
     selectedTokenPair && !isUnderlyingBlockchainNativeAsset && visibleAddress
       ? {
           chainId: network.id,
@@ -89,8 +89,8 @@ export const WrapTabUpgrade: FC = () => {
       : skipToken
   );
 
-  const currentAllowance = allowanceQuery.data
-    ? ethers.BigNumber.from(allowanceQuery.data)
+  const currentAllowance = allowanceQuery.currentData
+    ? ethers.BigNumber.from(allowanceQuery.currentData)
     : null;
 
   const missingAllowance = currentAllowance
