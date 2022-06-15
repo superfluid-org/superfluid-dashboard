@@ -33,7 +33,7 @@ export interface Web3FlowInfo {
 
 export const adHocRpcEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
-    getActiveFlow: builder.query<
+    getActiveFlow: builder.query< // TODO(KK): Create equivalent endpoint in the SDK
       Web3FlowInfo | null,
       {
         chainId: number;

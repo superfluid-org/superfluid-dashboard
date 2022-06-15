@@ -16,6 +16,9 @@ import { Network, networksByChainId, networksBySlug } from "./networks";
 interface ExpectedNetworkContextValue {
   network: Network;
   setExpectedNetwork: (chainId: number) => void;
+  /**
+   * So that connected wallet's network wouldn't force the "expected network". The use-case here are pre-filled form links and user filling a form before connecting their wallet.
+   */
   stopAutoSwitchToAccountNetwork: () => void;
 }
 
@@ -41,6 +44,8 @@ export const ExpectedNetworkProvider: FC<{
   );
 
   const router = useRouter();
+
+  // When user navigates to a new page then enable automatic switching to user wallet's network again.
   useEffect(() => {
     const onBeforeHistoryChange = () => {
       setStopAutoSwitch(false);

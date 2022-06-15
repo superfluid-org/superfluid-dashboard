@@ -74,7 +74,7 @@ export const StreamingPreview: FC<{
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
 
-  const { currentData: realtimeBalance, data: _discard} = rpcApi.useRealtimeBalanceQuery(
+  const { data: _discard, currentData: realtimeBalance, ...realtimeBalanceQuery} = rpcApi.useRealtimeBalanceQuery(
     visibleAddress
       ? {
           chainId: network.id,
@@ -84,7 +84,7 @@ export const StreamingPreview: FC<{
       : skipToken
   );
 
-  const { currentData: existingFlow, data: _discard2} = rpcApi.useGetActiveFlowQuery(
+  const { data: _discard2, currentData: existingFlow, ...activeFlowQuery} = rpcApi.useGetActiveFlowQuery(
     visibleAddress
       ? {
           chainId: network.id,
@@ -106,14 +106,14 @@ export const StreamingPreview: FC<{
     newDateWhenBalanceCritical,
   } = useMemo(
     () =>
-      realtimeBalance
+      (realtimeBalance && realtimeBalanceQuery.isSuccess && activeFlowQuery.isSuccess)
         ? calculateBufferInfo(network, realtimeBalance, existingFlow ?? null, {
             amountWei: parseEtherOrZero(flowRateEther.amountEther).toString(),
             unitOfTime: flowRateEther.unitOfTime,
           })
         : ({} as Record<string, any>),
-    [network, realtimeBalance, existingFlow, flowRateEther]
-  ); // TODO(KK): Handle existing flow better.
+    [network, realtimeBalanceQuery, activeFlowQuery, flowRateEther]
+  );
 
   return (
     <Alert

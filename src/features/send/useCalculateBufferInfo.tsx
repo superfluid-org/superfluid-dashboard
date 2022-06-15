@@ -10,13 +10,8 @@ import {
   UnitOfTime,
 } from "./FlowRateInput";
 
-const calculateBufferAmount = (params: {
-  flowRateWithTime: FlowRateWei;
-  network: Network;
-}): BigNumber => {
-  const { flowRateWithTime, network } = params;
-
-  const bufferAmount = calculateTotalAmountWei(flowRateWithTime)
+const calculateBufferAmount = (network: Network, flowRateWei: FlowRateWei): BigNumber => {
+  const bufferAmount = calculateTotalAmountWei(flowRateWei)
     .mul(network.bufferTimeInMinutes)
     .mul(60);
 
@@ -32,19 +27,19 @@ export default function useCalculateBufferInfo() {
       activeFlow: Web3FlowInfo | null,
       flowRate: FlowRateWei
     ) => {
-      const newBufferAmount = calculateBufferAmount({
+      const newBufferAmount = calculateBufferAmount(
         network,
-        flowRateWithTime: flowRate,
-      });
+        flowRate
+      );
 
       const oldBufferAmount = activeFlow
-        ? calculateBufferAmount({
+        ? calculateBufferAmount(
             network,
-            flowRateWithTime: {
+            {
               amountWei: activeFlow.flowRateWei,
               unitOfTime: UnitOfTime.Second,
             },
-          })
+          )
         : BigNumber.from(0);
 
       const bufferDelta = newBufferAmount.sub(oldBufferAmount);
