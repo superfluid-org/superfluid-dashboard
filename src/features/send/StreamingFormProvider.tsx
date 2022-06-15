@@ -81,6 +81,20 @@ const StreamingFormProvider: FC<{
         const validForm = values as ValidStreamingForm;
 
         // # Higher order validation
+        const handleHigherOrderValidationError = ({
+          message,
+        }: {
+          message: string;
+        }) => {
+          setError("data", {
+            message: message,
+          });
+          throw context.createError({
+            path: "data",
+            message: message,
+          });
+        };
+
         const accountAddress = account?.address;
         const tokenAddress = validForm.data.token.address;
         const receiverAddress = validForm.data.receiver.hash;
@@ -89,10 +103,9 @@ const StreamingFormProvider: FC<{
           accountAddress &&
           accountAddress.toLowerCase() === receiverAddress.toLowerCase()
         ) {
-          setError("data", {
+          handleHigherOrderValidationError({
             message: `You can't stream to yourself.`,
           });
-          return false;
         }
 
         if (accountAddress && tokenAddress && receiverAddress) {
@@ -136,10 +149,9 @@ const StreamingFormProvider: FC<{
             );
 
             if (secondsToCritical < minimumStreamTime) {
-              setError("data", {
+              handleHigherOrderValidationError({
                 message: `You need to leave enough balance to stream for ${minimumStreamTime} seconds.`,
               });
-              return false;
             }
           }
         }

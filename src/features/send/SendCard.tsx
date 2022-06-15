@@ -122,16 +122,17 @@ export default memo(function SendCard() {
   const shouldSearchForActiveFlow =
     !!visibleAddress && !!receiver && !!selectedToken;
 
-  const { currentData: activeFlow, data: _discard } = rpcApi.useGetActiveFlowQuery(
-    shouldSearchForActiveFlow
-      ? {
-          chainId: network.id,
-          tokenAddress: selectedToken.address,
-          senderAddress: visibleAddress,
-          receiverAddress: receiver.hash,
-        }
-      : skipToken
-  );
+  const { currentData: activeFlow, data: _discard } =
+    rpcApi.useGetActiveFlowQuery(
+      shouldSearchForActiveFlow
+        ? {
+            chainId: network.id,
+            tokenAddress: selectedToken.address,
+            senderAddress: visibleAddress,
+            receiverAddress: receiver.hash,
+          }
+        : skipToken
+    );
 
   const isSendDisabled = formState.isValidating || !formState.isValid;
 
@@ -310,20 +311,17 @@ export default memo(function SendCard() {
         </Stack>
 
         <Stack gap={2.5}>
-          {formState.isValid &&
-            receiver &&
-            selectedToken &&
-            understandLiquidationRisk && (
-              <>
-                <Divider />
-                <StreamingPreview
-                  receiver={receiver}
-                  token={selectedToken}
-                  flowRateEther={flowRateEther}
-                  existingStream={activeFlow ?? null}
-                />
-              </>
-            )}
+          {receiver && selectedToken && (
+            <>
+              <Divider />
+              <StreamingPreview
+                receiver={receiver}
+                token={selectedToken}
+                flowRateEther={flowRateEther}
+                existingStream={activeFlow ?? null}
+              />
+            </>
+          )}
 
           {!activeFlow ? (
             <TransactionButton

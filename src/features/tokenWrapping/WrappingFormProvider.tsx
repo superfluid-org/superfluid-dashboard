@@ -80,6 +80,20 @@ const WrappingFormProvider: FC<{
         const validForm = values as ValidWrappingForm;
 
         // # Higher order validation
+        const handleHigherOrderValidationError = ({
+          message,
+        }: {
+          message: string;
+        }) => {
+          setError("data", {
+            message: message,
+          });
+          throw context.createError({
+            path: "data",
+            message: message,
+          });
+        };
+
         const accountAddress = account?.address;
 
         if (accountAddress) {
@@ -100,8 +114,9 @@ const WrappingFormProvider: FC<{
             const isWrappingIntoNegative =
               underlyingBalanceBigNumber.lt(wrapAmountBigNumber);
             if (isWrappingIntoNegative) {
-              setError("data", { message: "You do not have enough balance." });
-              return false;
+              handleHigherOrderValidationError({
+                message: "You do not have enough balance.",
+              });
             }
 
             const isNativeAsset = tokenAddress === NATIVE_ASSET_ADDRESS;
@@ -110,11 +125,10 @@ const WrappingFormProvider: FC<{
                 underlyingBalanceBigNumber
               ).eq(wrapAmountBigNumber);
               if (isWrappingIntoZero) {
-                setError("data", {
+                handleHigherOrderValidationError({
                   message:
                     "You are wrapping out of native asset used for gas. You need to leave some gas tokens for the transaction to succeed.",
                 });
-                return false;
               }
             }
           }
@@ -146,10 +160,9 @@ const WrappingFormProvider: FC<{
               const isWrappingIntoNegative =
                 currentBalanceBigNumber.lt(amountBigNumber);
               if (isWrappingIntoNegative) {
-                setError("data", {
+                handleHigherOrderValidationError({
                   message: "You do not have enough balance.",
                 });
-                return false;
               }
 
               if (flowRateBigNumber.isNegative()) {
@@ -169,10 +182,9 @@ const WrappingFormProvider: FC<{
                 );
 
                 if (secondsToCritical < minimumStreamTime) {
-                  setError("data", {
+                  handleHigherOrderValidationError({
                     message: `You need to leave enough balance to stream for ${minimumStreamTime} seconds.`,
                   });
-                  return false;
                 }
               }
             }
