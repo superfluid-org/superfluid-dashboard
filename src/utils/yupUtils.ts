@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { isAddress } from "ethers/lib/utils";
+import { isAddress, parseEther } from "ethers/lib/utils";
 import { AnyObject, TestFunction } from "yup";
 import { NATIVE_ASSET_ADDRESS } from "../features/redux/endpoints/tokenTypes";
 
@@ -24,7 +24,7 @@ export const testEtherAmount: (
 ) => TestFunction<string, AnyObject> = (options) => (value, context) => {
   let bigNumber: BigNumber;
   try {
-    bigNumber = BigNumber.from(value);
+    bigNumber = parseEther(value);
   } catch (error) {
     throw context.createError({
       message: "Not a number.",
