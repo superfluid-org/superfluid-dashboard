@@ -1,9 +1,29 @@
 import { ErrorMessage } from "@hookform/error-message";
-import { Alert, Button, Card, Stack } from "@mui/material";
+import { Alert, Button, Card, Paper, Stack, useTheme } from "@mui/material";
 import { useRouter } from "next/router";
-import { memo } from "react";
+import { FC, memo } from "react";
 import { WrapTabDowngrade } from "./WrapTabDowngrade";
 import { WrapTabUpgrade } from "./WrapTabUpgrade";
+
+export const WrapInputCard: FC = ({ children }) => {
+  const theme = useTheme();
+
+  return (
+    <Stack
+      component={Paper}
+      elevation={theme.palette.mode === "dark" ? 4 : 1}
+      spacing={1}
+      sx={{
+        px: 2.5,
+        py: 1.5,
+        borderWidth: "1px",
+        borderStyle: "solid",
+      }}
+    >
+      {children}
+    </Stack>
+  );
+};
 
 export default memo(function WrapCard({
   tabValue,

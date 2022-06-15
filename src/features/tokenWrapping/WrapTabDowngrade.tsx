@@ -35,6 +35,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { WrappingForm, ValidWrappingForm } from "./WrappingFormProvider";
 import { parseEther } from "ethers/lib/utils";
 import { ErrorMessage } from "@hookform/error-message";
+import { WrapInputCard } from "./WrapCard";
 
 export const WrapTabDowngrade: FC = () => {
   const theme = useTheme();
@@ -49,7 +50,7 @@ export const WrapTabDowngrade: FC = () => {
     formState,
     getValues,
     setValue,
-    reset: resetForm
+    reset: resetForm,
   } = useFormContext<WrappingForm>();
 
   // The reason to set the type and clear errors is that a single form context is used both for wrapping and unwrapping.
@@ -82,12 +83,7 @@ export const WrapTabDowngrade: FC = () => {
 
   return (
     <Stack direction="column" alignItems="center">
-      <Stack
-        variant="outlined"
-        component={Paper}
-        spacing={1}
-        sx={{ px: 2.5, py: 1.5 }}
-      >
+      <WrapInputCard>
         <Stack direction="row" spacing={2}>
           <Controller
             control={control}
@@ -110,6 +106,7 @@ export const WrapTabDowngrade: FC = () => {
                     p: 0,
                   },
                 }}
+                sx={{ background: "transparent" }}
               />
             )}
           />
@@ -153,7 +150,7 @@ export const WrapTabDowngrade: FC = () => {
             />
           </Stack>
         )}
-      </Stack>
+      </WrapInputCard>
 
       <Avatar
         component={Paper}
@@ -169,12 +166,7 @@ export const WrapTabDowngrade: FC = () => {
       </Avatar>
 
       {selectedTokenPair && (
-        <Stack
-          component={Paper}
-          variant="outlined"
-          spacing={1}
-          sx={{ px: 2.5, py: 1.5 }}
-        >
+        <WrapInputCard>
           <Stack direction="row" spacing={2}>
             <Input
               data-cy={"unwrap-amount-preview"}
@@ -189,6 +181,7 @@ export const WrapTabDowngrade: FC = () => {
                   p: 0,
                 },
               }}
+              sx={{ background: "transparent" }}
             />
             <Button
               variant="outlined"
@@ -217,7 +210,7 @@ export const WrapTabDowngrade: FC = () => {
               />
             </Stack>
           )}
-        </Stack>
+        </WrapInputCard>
       )}
 
       {selectedTokenPair && (

@@ -1,15 +1,6 @@
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
-  ApproveAllowanceRestoration,
-  SuperTokenUpgradeRestoration,
-  RestorationType,
-} from "../transactionRestoration/transactionRestorations";
-import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { BigNumber, ethers } from "ethers";
-import { rpcApi, subgraphApi } from "../redux/store";
-import {
-  Alert,
   Avatar,
   Button,
   Input,
@@ -19,25 +10,33 @@ import {
   useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { FC, useEffect, useRef, useState } from "react";
-import TokenIcon from "../token/TokenIcon";
-import { TransactionButton } from "../transactions/TransactionButton";
-import { BalanceSuperToken } from "./BalanceSuperToken";
-import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
-import { TokenDialogButton } from "./TokenDialogButton";
-import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
+import { BigNumber, ethers } from "ethers";
+import { parseEther } from "ethers/lib/utils";
 import { useRouter } from "next/router";
+import { FC, useEffect, useRef, useState } from "react";
+import { Controller, useFormContext } from "react-hook-form";
+import { parseEtherOrZero } from "../../utils/tokenUtils";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
+import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
+import { rpcApi, subgraphApi } from "../redux/store";
+import TokenIcon from "../token/TokenIcon";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
+import {
+  ApproveAllowanceRestoration,
+  RestorationType,
+  SuperTokenUpgradeRestoration,
+} from "../transactionRestoration/transactionRestorations";
+import { TransactionButton } from "../transactions/TransactionButton";
 import {
   TransactionDialogActions,
   TransactionDialogButton,
 } from "../transactions/TransactionDialog";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import { WrappingForm, ValidWrappingForm } from "./WrappingFormProvider";
-import { Controller, useFormContext } from "react-hook-form";
-import { parseEther } from "ethers/lib/utils";
-import { ErrorMessage } from "@hookform/error-message";
-import { parseEtherOrZero } from "../../utils/tokenUtils";
+import { BalanceSuperToken } from "./BalanceSuperToken";
+import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
+import { TokenDialogButton } from "./TokenDialogButton";
+import { WrapInputCard } from "./WrapCard";
+import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 
 export const WrapTabUpgrade: FC = () => {
   const theme = useTheme();
@@ -52,7 +51,7 @@ export const WrapTabUpgrade: FC = () => {
     reset: resetForm,
     formState,
     getValues,
-    setValue
+    setValue,
   } = useFormContext<WrappingForm>();
 
   // The reason to set the type and clear errors is that a single form context is used both for wrapping and unwrapping.
@@ -80,15 +79,16 @@ export const WrapTabUpgrade: FC = () => {
   const isUnderlyingBlockchainNativeAsset =
     selectedTokenPair?.underlyingToken.address === NATIVE_ASSET_ADDRESS;
 
-  const { data: _discard, ...allowanceQuery } = rpcApi.useSuperTokenUpgradeAllowanceQuery(
-    selectedTokenPair && !isUnderlyingBlockchainNativeAsset && visibleAddress
-      ? {
-          chainId: network.id,
-          accountAddress: visibleAddress,
-          superTokenAddress: selectedTokenPair.superToken.address,
-        }
-      : skipToken
-  );
+  const { data: _discard, ...allowanceQuery } =
+    rpcApi.useSuperTokenUpgradeAllowanceQuery(
+      selectedTokenPair && !isUnderlyingBlockchainNativeAsset && visibleAddress
+        ? {
+            chainId: network.id,
+            accountAddress: visibleAddress,
+            superTokenAddress: selectedTokenPair.superToken.address,
+          }
+        : skipToken
+    );
 
   const currentAllowance = allowanceQuery.currentData
     ? ethers.BigNumber.from(allowanceQuery.currentData)
@@ -126,12 +126,7 @@ export const WrapTabUpgrade: FC = () => {
 
   return (
     <Stack direction="column" alignItems="center">
-      <Stack
-        variant="outlined"
-        component={Paper}
-        spacing={1}
-        sx={{ px: 2.5, py: 1.5 }}
-      >
+      <WrapInputCard>
         <Stack direction="row" spacing={2}>
           <Controller
             control={control}
@@ -154,6 +149,7 @@ export const WrapTabUpgrade: FC = () => {
                     p: 0,
                   },
                 }}
+                sx={{ background: "transparent" }}
               />
             )}
           />
@@ -194,7 +190,7 @@ export const WrapTabUpgrade: FC = () => {
             />
           </Stack>
         )}
-      </Stack>
+      </WrapInputCard>
 
       <Avatar
         component={Paper}
@@ -210,12 +206,7 @@ export const WrapTabUpgrade: FC = () => {
       </Avatar>
 
       {selectedTokenPair && (
-        <Stack
-          component={Paper}
-          variant="outlined"
-          spacing={1}
-          sx={{ px: 2.5, py: 1.5 }}
-        >
+        <WrapInputCard>
           <Stack direction="row" spacing={2}>
             <Input
               data-cy={"wrapable-amount"}
@@ -230,6 +221,7 @@ export const WrapTabUpgrade: FC = () => {
                   p: 0,
                 },
               }}
+              sx={{ background: "transparent" }}
             />
             <Button
               variant="outlined"
@@ -259,7 +251,7 @@ export const WrapTabUpgrade: FC = () => {
               />
             </Stack>
           )}
-        </Stack>
+        </WrapInputCard>
       )}
 
       {selectedTokenPair && (

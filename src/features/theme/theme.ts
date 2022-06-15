@@ -460,15 +460,26 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         styleOverrides: {
           root: {
             // TODO: Figure out why styleOverrides.disabled is not working and replace .Mui-disabled hardcoded class.
-            ".Mui-disabled": {
-              backgroundColor: alpha(theme.palette.secondary.main, 0.3),
+            "&.Mui-disabled": {
+              background: theme.palette.action.disabledBackground, //alpha(, 0.3),
               borderRadius: "10px",
+              ".MuiOutlinedInput-notchedOutline": {
+                borderColor: theme.palette.other.outline,
+              },
             },
           },
           notchedOutline: {
             borderColor: theme.palette.other.outline,
           },
         },
+        variants: [
+          {
+            props: { disabled: true, notched: true },
+            style: {
+              borderColor: theme.palette.other.outline,
+            },
+          },
+        ],
       },
       MuiSvgIcon: {
         styleOverrides: {
