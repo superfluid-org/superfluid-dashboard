@@ -21,7 +21,6 @@ import Error from "next/error";
 import { useRouter } from "next/router";
 import { FC, useEffect, useState } from "react";
 import SubscriptionsTable from "../../features/index/SubscriptionsTable";
-import { Network } from "../../features/network/networks";
 import { rpcApi, subgraphApi } from "../../features/redux/store";
 import {
   getNetworkStaticPaths,
@@ -51,7 +50,7 @@ const Token: FC<NetworkPage> = ({ network }) => {
   const { visibleAddress } = useVisibleAddress();
 
   const [activeTab, setActiveTab] = useState(TokenDetailsTabs.Streams);
-  const [graphType, setGraphType] = useState(GraphType.YTD);
+  const [graphType, setGraphType] = useState(GraphType.All);
   const [showForecast, setShowForecast] = useState(true);
 
   const tokenId = isString(router.query.token) ? router.query.token : undefined;
@@ -171,14 +170,14 @@ const Token: FC<NetworkPage> = ({ network }) => {
 
             <Stack alignItems="end" justifyContent="space-between">
               <Stack direction="row" gap={0.5}>
-                <Button
+                {/* <Button
                   variant="textContained"
                   color={getGraphFilterColor(GraphType.Day)}
                   onClick={onGraphTypeChange(GraphType.Day)}
                   size="xs"
                 >
                   1D
-                </Button>
+                </Button> */}
                 <Button
                   variant="textContained"
                   color={getGraphFilterColor(GraphType.Week)}

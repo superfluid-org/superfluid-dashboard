@@ -29,7 +29,7 @@ export const DEFAULT_LINE_CHART_OPTIONS: ChartOptions<"line"> = {
     },
     x: {
       display: false,
-      grace: 0,
+      type: "logarithmic",
     },
   },
 };

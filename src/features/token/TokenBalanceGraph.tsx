@@ -1,35 +1,28 @@
 import { Box, useTheme } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import Chart, {
-  ScriptableLineSegmentContext,
-  TooltipItem,
-} from "chart.js/auto";
+import Chart, { TooltipItem } from "chart.js/auto";
 import {
   add,
+  differenceInDays,
   endOfDay,
   format,
   isSameDay,
-  startOfDay,
   startOfYear,
   sub,
 } from "date-fns";
 import { BigNumber, ethers } from "ethers";
 import minBy from "lodash/fp/minBy";
+import set from "lodash/fp/set";
+import mutateSet from "lodash/set";
 import { FC, useCallback, useEffect, useMemo, useRef } from "react";
 import {
   buildDefaultDatasetConf,
-  createCTXGradient,
   DEFAULT_LINE_CHART_OPTIONS,
 } from "../../utils/chartUtils";
 import { getDatesBetween } from "../../utils/dateUtils";
 import { Network } from "../network/networks";
 import { TokenBalance } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { rpcApi, subgraphApi } from "../redux/store";
-import set from "lodash/fp/set";
-
-export const forecastEstimation =
-  (dataLength: number) => (result: any) => (c: ScriptableLineSegmentContext) =>
-    c.p1DataIndex > dataLength ? result : undefined;
 
 export enum GraphType {
   Day,
@@ -47,12 +40,7 @@ interface DataPoint {
   ether: string;
 }
 
-interface GraphData {
-  data: Array<DataPoint>;
-  labels: string[];
-}
-
-type MappedData = Array<{ value: DataPoint; date: Date }>;
+type MappedData = Array<DataPoint>;
 
 interface TokenBalanceGraphProps {
   graphType: GraphType;
@@ -71,8 +59,16 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
   showForecast,
   height = 180,
 }) => {
+  const currentDate = useMemo(() => new Date(), []);
   const theme = useTheme();
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const chartRef = useRef<Chart<"line"> | null>(null);
+
+  const realTimeBalanceQuery = rpcApi.useRealtimeBalanceQuery({
+    chainId: network.id,
+    tokenAddress: token,
+    accountAddress: account,
+  });
 
   const accountTokenBalanceHistoryQuery =
     subgraphApi.useAccountTokenBalanceHistoryQuery({
@@ -85,43 +81,6 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
     () => accountTokenBalanceHistoryQuery.data || [],
     [accountTokenBalanceHistoryQuery.data]
   );
-
-  const realTimeBalanceQuery = rpcApi.useRealtimeBalanceQuery({
-    chainId: network.id,
-    tokenAddress: token,
-    accountAddress: account,
-  });
-
-  const getGraphStartDate = (type: GraphType) => {
-    const currentDate = new Date();
-
-    switch (type) {
-      case GraphType.Day:
-        return sub(currentDate, {
-          days: 1,
-        });
-      case GraphType.Week:
-        return sub(currentDate, {
-          days: 7,
-        });
-      case GraphType.Month:
-        return sub(currentDate, {
-          months: 1,
-        });
-      case GraphType.Quarter:
-        return sub(currentDate, {
-          months: 3,
-        });
-      case GraphType.Year:
-        return sub(currentDate, {
-          years: 1,
-        });
-      case GraphType.YTD:
-        return startOfYear(currentDate);
-      default:
-        return startOfYear(currentDate);
-    }
-  };
 
   const mapDatesWithData = useCallback(
     (tokenBalances: Array<TokenBalance>, dates: Array<Date>): MappedData =>
@@ -144,20 +103,19 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
                 )
               : BigNumber.from(0);
 
+          const wei = BigNumber.from(balance).add(flowingBalance);
+
           const pointValue = ethers.utils.formatEther(
-            BigNumber.from(balance).add(flowingBalance)
+            wei.gt(BigNumber.from(0)) ? wei : BigNumber.from(0)
           );
 
           return {
             data: [
               ...data,
               {
-                value: {
-                  x: 0,
-                  y: Number(pointValue),
-                  ether: pointValue,
-                },
-                date,
+                x: date.getTime(),
+                y: Number(pointValue),
+                ether: pointValue,
               },
             ],
             lastTokenBalance: currentTokenBalance,
@@ -175,162 +133,172 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
     []
   );
 
+  const graphStartDate = useMemo(() => {
+    switch (graphType) {
+      case GraphType.Day:
+        return sub(currentDate, {
+          days: 1,
+        });
+      case GraphType.Week:
+        return sub(currentDate, {
+          days: 7,
+        });
+      case GraphType.Month:
+        return sub(currentDate, {
+          months: 1,
+        });
+      case GraphType.Quarter:
+        return sub(currentDate, {
+          months: 3,
+        });
+      case GraphType.Year:
+        return sub(currentDate, {
+          years: 1,
+        });
+      case GraphType.YTD:
+        return startOfYear(currentDate);
+      default: {
+        const smallestDate =
+          minBy("timestamp", tokenBalances)?.timestamp ||
+          Math.floor(Date.now() / 1000);
+
+        return add(new Date(smallestDate * 1000), { days: -1 });
+      }
+    }
+  }, [tokenBalances, graphType, currentDate]);
+
   const graphData = useMemo(
     () => {
       if (tokenBalances.length === 0) return [];
 
+      const smallestDate =
+        minBy("timestamp", tokenBalances)?.timestamp ||
+        Math.floor(Date.now() / 1000);
+
       return mapDatesWithData(
         tokenBalances,
         getDatesBetween(
-          endOfDay(
-            new Date(
-              ((minBy("timestamp", tokenBalances)?.timestamp || 0) -
-                60 * 60 * 24) *
-                1000
-            )
-          ),
-          new Date()
+          endOfDay(add(new Date(smallestDate * 1000), { days: -1 })),
+          currentDate
         )
       );
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [tokenBalances]
+    [tokenBalances, currentDate]
   );
 
-  const filteredGraphData = useMemo(() => {
-    if (graphType === GraphType.All) return graphData;
+  const forecast = useMemo(
+    () => {
+      if (!realTimeBalanceQuery.data) return [];
 
-    const startDate = getGraphStartDate(graphType);
-    return graphData.filter(({ date }) => date > startDate);
-  }, [graphData, graphType]);
+      const { balance, balanceTimestamp, flowRate } = realTimeBalanceQuery.data;
+      const balanceBigNumber = BigNumber.from(balance);
 
-  const generateForecast = useCallback(
-    (
-      balance: string,
-      balanceTimestamp: number,
-      flowRate: string,
-      length: number
-    ) => {
-      const dates = getDatesBetween(
-        startOfDay(add(new Date(), { days: 1 })),
-        startOfDay(add(new Date(), { days: length })) // Forecast is 1/5 of the graph.
-      );
-
-      return dates.map((date) => {
-        const flowedBalance =
-          flowRate === "0"
-            ? BigNumber.from(0)
-            : BigNumber.from(
+      return getDatesBetween(
+        currentDate,
+        endOfDay(
+          add(currentDate, {
+            days: differenceInDays(
+              add(currentDate, { months: 4 }),
+              currentDate
+            ),
+          })
+        )
+      ).map((date) => {
+        const ethersAtDate = ethers.utils.formatEther(
+          balanceBigNumber.add(
+            BigNumber.from(flowRate).mul(
+              BigNumber.from(
                 Math.floor(date.getTime() / 1000) - balanceTimestamp
-              ).mul(BigNumber.from(flowRate));
-
-        const balanceAtTime = ethers.utils.formatEther(
-          BigNumber.from(balance).add(flowedBalance)
+              )
+            )
+          )
         );
+
         return {
-          value: {
-            x: 0,
-            y: Number(balanceAtTime),
-            ether: balanceAtTime,
-          },
-          date,
+          x: date.getTime(),
+          y: Number(ethersAtDate),
+          ether: ethersAtDate,
         };
       });
     },
-    []
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [realTimeBalanceQuery.data, currentDate]
   );
 
-  const generatedForecast = useMemo(() => {
-    if (
-      filteredGraphData.length > 0 &&
-      realTimeBalanceQuery.data &&
-      showForecast
-    ) {
-      const { balance, balanceTimestamp, flowRate } = realTimeBalanceQuery.data;
-      return generateForecast(
-        balance,
-        balanceTimestamp,
-        flowRate,
-        Math.floor(filteredGraphData.length / 4)
-      );
-    }
-
-    return [];
-  }, [
-    filteredGraphData.length,
-    realTimeBalanceQuery.data,
-    generateForecast,
-    showForecast,
-  ]);
-
   useEffect(() => {
-    let chart: Chart | null = null;
+    const canvasContext = canvasRef.current?.getContext("2d");
+    if (!canvasContext) return;
 
-    if (canvasRef.current) {
-      const ctx = canvasRef.current.getContext("2d");
-
-      if (ctx) {
-        const { data, labels } = filteredGraphData
-          .concat(generatedForecast)
-          .reduce<GraphData>(
-            (mappedData, dataPoint) => ({
-              data: [...mappedData.data, dataPoint.value],
-              labels: [
-                ...mappedData.labels,
-                format(dataPoint.date, "MMMM do, yyyy"),
-              ],
-            }),
-            { data: [], labels: [] }
-          );
-
-        const forecastGradient = createCTXGradient(
-          ctx,
-          theme.palette.secondary.main,
-          height
-        );
-
-        const forecastEstimationFunc = forecastEstimation(
-          filteredGraphData.length
-        );
-
-        chart = new Chart(ctx, {
-          type: "line",
-          data: {
-            labels,
-            datasets: [
-              {
-                data,
-                ...buildDefaultDatasetConf(
-                  ctx,
-                  theme.palette.primary.main,
-                  height
-                ),
-                segment: {
-                  borderColor: forecastEstimationFunc(
-                    theme.palette.secondary.main
-                  ),
-                  borderDash: forecastEstimationFunc([6, 6]),
-                  backgroundColor: forecastEstimationFunc(forecastGradient),
-                },
-              },
-            ],
+    const chart = new Chart(canvasContext, {
+      type: "line",
+      data: {
+        labels: [],
+        datasets: [
+          {
+            data: [],
+            ...buildDefaultDatasetConf(
+              canvasContext,
+              theme.palette.primary.main,
+              height
+            ),
           },
-          options: set(
-            "plugins.tooltip.callbacks.label",
-            (context: TooltipItem<"line">) => {
-              return (context.raw as DataPoint).ether;
-            },
-            DEFAULT_LINE_CHART_OPTIONS
-          ),
-        });
-      }
-    }
+          {
+            data: [],
+            ...buildDefaultDatasetConf(
+              canvasContext,
+              theme.palette.secondary.main,
+              height
+            ),
+            borderDash: [6, 6],
+          },
+        ],
+      },
+      options: set(
+        "plugins.tooltip.callbacks",
+        {
+          title: (context: Array<TooltipItem<"line">>) =>
+            format(new Date((context[0]?.raw as DataPoint).x), "MMMM do, yyyy"),
+          label: (context: TooltipItem<"line">) =>
+            (context.raw as DataPoint).ether,
+        },
+        DEFAULT_LINE_CHART_OPTIONS
+      ),
+    });
+
+    chartRef.current = chart;
 
     return () => {
-      if (chart) chart.destroy();
+      chart.destroy();
     };
+  }, [height, theme]);
+
+  useEffect(() => {
+    if (!chartRef.current) return;
+
+    if (graphData.length > 0) {
+      mutateSet(chartRef.current.data.datasets, "[0].data", graphData);
+      mutateSet(chartRef.current.data.datasets, "[1].data", forecast);
+    }
+
+    const timespan = Math.floor(Date.now() - graphStartDate.getTime());
+    const spacing = timespan / 100; // 1% of the y axis will be spacing or else clipping will occur.
+    const forecastLength = showForecast ? timespan / 3 : 0; // Forecast will be 25% of the graph.
+
+    mutateSet(
+      chartRef.current.options,
+      "scales.x.min",
+      graphStartDate.getTime() - spacing
+    );
+    mutateSet(
+      chartRef.current.options,
+      "scales.x.max",
+      Date.now() + forecastLength
+    );
+
+    chartRef.current.update();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canvasRef, filteredGraphData, generatedForecast]);
+  }, [chartRef, graphData, graphStartDate, forecast, showForecast]);
 
   return (
     <Box sx={{ height, mx: -0.5 }}>
