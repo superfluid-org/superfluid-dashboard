@@ -7,29 +7,17 @@ import {
   ListItemText,
   Stack,
 } from "@mui/material";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import useAddressName from "../../hooks/useAddressName";
 import shortenHex from "../../utils/shortenHex";
-import { ensApi } from "../ens/ensApi.slice";
-
-export type DisplayAddress = {
-  hash: string;
-  name?: string;
-};
 
 // TODO(KK): memo
 const DisplayAddressChip: FC<{
-  hash: string;
-  name?: string;
-  tryGetEns: boolean;
+  address: string;
   ChipProps?: ChipProps;
-}> = ({ hash, name: initialName, tryGetEns, ChipProps = {} }) => {
-  // TOOD(KK): getAddress for nice hash?
-
-  const ensQuery = ensApi.useLookupAddressQuery(tryGetEns ? hash : skipToken);
-  const name = ensQuery.currentData?.name || initialName;
-
+}> = ({ address, ChipProps = {} }) => {
+  const addressName = useAddressName(address);
   const { sx: ChipSx = {} } = ChipProps;
 
   return (
@@ -38,11 +26,13 @@ const DisplayAddressChip: FC<{
         <Stack direction="row">
           <ListItem sx={{ p: 0 }}>
             <ListItemAvatar>
-              <AddressAvatar address={hash} />
+              <AddressAvatar address={addressName.checksumHex} />
             </ListItemAvatar>
             <ListItemText
-              primary={name || shortenHex(hash)}
-              secondary={name && shortenHex(hash)}
+              primary={addressName.name || shortenHex(addressName.checksumHex)}
+              secondary={
+                addressName.name && shortenHex(addressName.checksumHex)
+              }
               primaryTypographyProps={{ variant: "body1" }}
               secondaryTypographyProps={{ variant: "body2" }}
             />

@@ -9,7 +9,6 @@ import {
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
 import { ethers } from "ethers";
-import { parseEther } from "ethers/lib/utils";
 import { FC, ReactNode, useMemo } from "react";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -17,11 +16,9 @@ import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { rpcApi } from "../redux/store";
 import FlowingBalance from "../token/FlowingBalance";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import { DisplayAddress } from "./DisplayAddressChip";
 import {
   FlowRateEther,
   flowRateEtherToString,
-  FlowRateWei,
   flowRateWeiToString,
   UnitOfTime,
 } from "./FlowRateInput";
@@ -63,7 +60,7 @@ const PreviewItem: FC<{
 };
 
 export const StreamingPreview: FC<{
-  receiver: DisplayAddress;
+  receiver: string;
   token: SuperTokenMinimal;
   flowRateEther: FlowRateEther;
   existingStream: {
@@ -90,7 +87,7 @@ export const StreamingPreview: FC<{
           chainId: network.id,
           tokenAddress: token.address,
           senderAddress: visibleAddress,
-          receiverAddress: receiver.hash,
+          receiverAddress: receiver,
         }
       : skipToken
   );
@@ -132,7 +129,7 @@ export const StreamingPreview: FC<{
       }}
     >
       <Stack gap={0.5}>
-        <PreviewItem dataCy="preview-receiver" label="Receiver">{receiver.hash}</PreviewItem>
+        <PreviewItem dataCy="preview-receiver" label="Receiver">{receiver}</PreviewItem>
 
         <PreviewItem
          dataCy="preview-flow-rate" label="Flow rate"

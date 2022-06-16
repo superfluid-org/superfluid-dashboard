@@ -42,7 +42,6 @@ import NetworkSelectionFilter, {
 import { OpenIcon } from "../features/network/SelectNetwork";
 import { subgraphApi } from "../features/redux/store";
 import AddressSearchDialog from "../features/send/AddressSearchDialog";
-import { DisplayAddress } from "../features/send/DisplayAddressChip";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { Activity, mapActivitiesFromEvents } from "../utils/activityUtils";
 
@@ -76,7 +75,7 @@ const History: NextPage = () => {
 
   const [addressSearchOpen, setAddressSearchOpen] = useState(false);
 
-  const [addressSearch, setAddressSearch] = useState<DisplayAddress | null>(
+  const [searchedAddress, setAddressSearch] = useState<string | null>(
     null
   );
 
@@ -97,10 +96,10 @@ const History: NextPage = () => {
             {
               chainId: network.id,
               filter: {
-                addresses_contains: addressSearch
+                addresses_contains: searchedAddress
                   ? [
                       visibleAddress.toLowerCase(),
-                      addressSearch.hash.toLowerCase(),
+                      searchedAddress.toLowerCase(),
                     ]
                   : [visibleAddress.toLowerCase()],
                 timestamp_gte: Math.floor(
@@ -139,9 +138,9 @@ const History: NextPage = () => {
       setActivities([]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visibleAddress, activeNetworks, startDate, endDate, addressSearch]);
+  }, [visibleAddress, activeNetworks, startDate, endDate, searchedAddress]);
 
-  const onAddressSearchChange = (address: DisplayAddress) => {
+  const onAddressSearchChange = (address: string) => {
     setAddressSearch(address);
     closeAddressSearchDialog();
   };
@@ -225,9 +224,9 @@ const History: NextPage = () => {
               color="secondary"
               size="xl"
               startIcon={
-                addressSearch ? (
+                searchedAddress ? (
                   <AddressAvatar
-                    address={addressSearch.hash}
+                    address={searchedAddress}
                     AvatarProps={{
                       sx: {
                         width: "24px",
@@ -242,7 +241,7 @@ const History: NextPage = () => {
               onClick={openAddressSearchDialog}
               sx={{ maxWidth: "400px", justifyContent: "flex-start" }}
             >
-              {addressSearch ? (
+              {searchedAddress ? (
                 <Stack
                   direction="row"
                   alignItems="center"
@@ -250,7 +249,7 @@ const History: NextPage = () => {
                   flex={1}
                 >
                   <Typography variant="body1">
-                    <AddressName address={addressSearch.hash} />
+                    <AddressName address={searchedAddress} />
                   </Typography>
                   <IconButton
                     onClick={(e: MouseEvent<HTMLButtonElement>) => {

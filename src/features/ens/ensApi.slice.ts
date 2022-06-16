@@ -1,6 +1,11 @@
 import { fakeBaseQuery } from "@reduxjs/toolkit/dist/query";
 import { createApi } from "@reduxjs/toolkit/dist/query/react";
-import { ethers, getDefaultProvider } from "ethers";
+import { ethers } from "ethers";
+
+export interface ResolveNameResult {
+  address: string;
+  name: string;
+}
 
 // TODO(KK): getSerializedArgs implementation
 export const ensApi = createApi({
@@ -10,11 +15,11 @@ export const ensApi = createApi({
     const mainnetProvider = new ethers.providers.JsonRpcBatchProvider("https://cloudflare-eth.com", "mainnet");
     return {
       resolveName: builder.query<
-        { address: string; name: string } | null,
+        ResolveNameResult | null,
         string
       >({
         queryFn: async (name) => {
-          if (ethers.utils.isAddress(name)) {
+          if (!name.includes(".")) {
             return { data: null };
           }
 

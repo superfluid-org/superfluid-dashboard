@@ -2,9 +2,7 @@ import { ErrorMessage } from "@hookform/error-message";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import {
   Alert,
-  AlertTitle,
   Box,
-  ButtonGroup,
   Card,
   Checkbox,
   Divider,
@@ -20,7 +18,7 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FC, memo, useMemo, useState } from "react";
+import { FC, memo, useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import TooltipIcon from "../common/TooltipIcon";
@@ -129,7 +127,7 @@ export default memo(function SendCard() {
             chainId: network.id,
             tokenAddress: selectedToken.address,
             senderAddress: visibleAddress,
-            receiverAddress: receiver.hash,
+            receiverAddress: receiver,
           }
         : skipToken
     );
@@ -346,7 +344,7 @@ export default memo(function SendCard() {
                   chainId: network.id,
                   flowRateWei:
                     calculateTotalAmountWei(flowRateEther).toString(),
-                  receiverAddress: formData.receiver.hash,
+                  receiverAddress: formData.receiver,
                   superTokenAddress: formData.token.address,
                   userDataBytes: undefined,
                   waitForConfirmation: false,
@@ -408,7 +406,7 @@ export default memo(function SendCard() {
                       ).toString(),
                       unitOfTime: formData.flowRate.unitOfTime,
                     }).toString(),
-                    receiverAddress: formData.receiver.hash,
+                    receiverAddress: formData.receiver,
                     superTokenAddress: formData.token.address,
                     userDataBytes: undefined,
                     waitForConfirmation: false,
@@ -459,7 +457,7 @@ export default memo(function SendCard() {
                   variant: "outlined",
                 }}
                 onClick={() => {
-                  const receiverAddress = receiver?.hash;
+                  const receiverAddress = receiver;
                   const superTokenAddress = selectedToken?.address;
                   const senderAddress = visibleAddress;
                   if (

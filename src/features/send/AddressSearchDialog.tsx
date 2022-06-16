@@ -21,9 +21,11 @@ import ResponsiveDialog from "../common/ResponsiveDialog";
 import { ensApi } from "../ens/ensApi.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { subgraphApi } from "../redux/store";
-import { DisplayAddress } from "./DisplayAddressChip";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import useSearchAddress from "../../hooks/useSearchAddress";
+import { getAddress, isAddress } from "../../utils/memoizedEthersUtils";
+import useAddressName from "../../hooks/useAddressName";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
@@ -36,26 +38,28 @@ interface AddressListItemProps {
 
 const AddressListItem: FC<AddressListItemProps> = ({
   address,
-  name,
   dataCy,
   onClick,
-}) => (
-  <ListItemButton onClick={onClick} sx={LIST_ITEM_STYLE}>
-    <ListItemAvatar>
-      <AddressAvatar address={address} />
-    </ListItemAvatar>
-    <ListItemText
-      data-cy={dataCy}
-      primary={name || address}
-      secondary={name && address}
-    />
-  </ListItemButton>
-);
+}) => {
+  const { name, checksumHex } = useAddressName(address);
+  return (
+    <ListItemButton onClick={onClick} sx={LIST_ITEM_STYLE}>
+      <ListItemAvatar>
+        <AddressAvatar address={address} />
+      </ListItemAvatar>
+      <ListItemText
+        data-cy={dataCy}
+        primary={name || address}
+        secondary={name && address}
+      />
+    </ListItemButton>
+  );
+};
 
 export type AddressSearchDialogProps = {
   open: boolean;
   onClose: () => void;
-  onSelectAddress: (address: DisplayAddress) => void;
+  onSelectAddress: (address: string) => void;
 };
 
 const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
@@ -66,6 +70,7 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
   const theme = useTheme();
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
+
   const [searchTermVisible, setSearchTermVisible] = useState("");
   const [searchTermDebounced, _setSearchTermDebounced] =
     useState(searchTermVisible);
@@ -92,19 +97,15 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
   }, [open]);
 
   useEffect(() => {
-    if (ethers.utils.isAddress(searchTermDebounced)) {
-      onSelectAddress({ hash: ethers.utils.getAddress(searchTermDebounced) });
+    if (isAddress(searchTermDebounced)) {
+      onSelectAddress(getAddress(searchTermDebounced));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTermDebounced]);
 
-  const ensQuery = ensApi.useResolveNameQuery(
-    searchTermDebounced ? searchTermDebounced : skipToken
-  );
-
+  const { ensQuery } = useSearchAddress(searchTermDebounced);
   const ensData = ensQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!ensQuery.data` means that the data is not undefined nor null.
-  const showEns =
-    !!searchTermDebounced && !ethers.utils.isAddress(searchTermDebounced);
+  const showEns = !!searchTermDebounced && !isAddress(searchTermDebounced);
 
   const {
     currentData: recents,
@@ -154,6 +155,7 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
           value={searchTermVisible}
         />
       </DialogTitle>
+
       <DialogContent dividers={!!showEns || !!showRecents} sx={{ p: 0 }}>
         <List sx={{ pt: 0 }}>
           {showEns ? (
@@ -176,13 +178,7 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
                     <AddressListItem
                       dataCy={"ens-entry"}
                       address={ensData.address}
-                      name={ensData.name}
-                      onClick={() =>
-                        onSelectAddress({
-                          hash: ensData.address,
-                          name: ensData.name,
-                        })
-                      }
+                      onClick={() => onSelectAddress(ensData.address)}
                     />
                   ) : (
                     <ListItem sx={LIST_ITEM_STYLE}>
@@ -210,16 +206,12 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
                 </ListItem>
               )}
               {!!recents &&
-                recents.map((addressHash) => (
+                recents.map((address) => (
                   <AddressListItem
                     dataCy={"recents-entry"}
-                    key={addressHash}
-                    address={addressHash}
-                    onClick={() =>
-                      onSelectAddress({
-                        hash: addressHash,
-                      })
-                    }
+                    key={address}
+                    address={address}
+                    onClick={() => onSelectAddress(address)}
                   />
                 ))}
             </>
