@@ -62,12 +62,13 @@ declare module "@mui/material/styles/createPalette" {
 
 declare module "@mui/material/Button" {
   interface ButtonPropsSizeOverrides {
-    xl: true;
     xs: true;
+    xl: true;
   }
 
   interface ButtonPropsVariantOverrides {
     textContained: true;
+    input: true;
   }
 }
 
@@ -461,7 +462,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           root: {
             // TODO: Figure out why styleOverrides.disabled is not working and replace .Mui-disabled hardcoded class.
             "&.Mui-disabled": {
-              background: theme.palette.action.disabledBackground, //alpha(, 0.3),
+              background: theme.palette.action.disabledBackground,
               borderRadius: "10px",
               ".MuiOutlinedInput-notchedOutline": {
                 borderColor: theme.palette.other.outline,
@@ -470,16 +471,12 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
           notchedOutline: {
             borderColor: theme.palette.other.outline,
+            transition: theme.transitions.create("all", {
+              easing: theme.transitions.easing.easeInOut,
+              duration: theme.transitions.duration.short,
+            }),
           },
         },
-        variants: [
-          {
-            props: { disabled: true, notched: true },
-            style: {
-              borderColor: theme.palette.other.outline,
-            },
-          },
-        ],
       },
       MuiSvgIcon: {
         styleOverrides: {
@@ -512,6 +509,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       },
       MuiIconButton: {
         styleOverrides: {
+          root: {
+            borderRadius: "8px",
+            padding: theme.spacing(0.75),
+          },
           colorInherit: {
             color: theme.palette.text.primary,
           },
@@ -524,9 +525,11 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
               ),
             },
           },
-          root: {
-            borderRadius: "8px",
-            padding: theme.spacing(0.75),
+          sizeSmall: {
+            padding: theme.spacing(0.5),
+            ".MuiSvgIcon-root": {
+              fontSize: "18px",
+            },
           },
         },
         variants: [
@@ -600,19 +603,33 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             borderColor: theme.palette.other.outline,
             background: theme.palette.background.paper,
             backgroundImage: getModeStyle("none", ELEVATION1_BG),
+            "&:hover": {
+              boxShadow: theme.shadows[2],
+              ...getModeStyle(
+                {
+                  background: theme.palette.background.paper,
+                  backgroundImage: "none",
+                  borderColor: theme.palette.other.outline,
+                },
+                {
+                  backgroundImage: ELEVATION1_BG,
+                }
+              ),
+            },
+          },
+          sizeSmall: {
+            ...theme.typography.caption,
+          },
+          sizeLarge: {
+            fontSize: 16,
           },
         },
         variants: [
           {
-            props: { size: "small" },
+            props: { size: "xs" },
             style: {
-              ...theme.typography.caption,
-            },
-          },
-          {
-            props: { size: "large" },
-            style: {
-              fontSize: 16,
+              padding: "4px 8px",
+              minWidth: "0",
             },
           },
           {
@@ -624,10 +641,24 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             },
           },
           {
-            props: { size: "xs" },
+            props: { variant: "input" },
             style: {
-              padding: "4px 8px",
-              minWidth: "0",
+              border: "1px solid",
+              color: theme.palette.text.primary,
+              borderColor: theme.palette.other.outline,
+              background: theme.palette.background.paper,
+              backgroundImage: getModeStyle("none", ELEVATION1_BG),
+              justifyContent: "flex-start",
+              textAlign: "left",
+              minHeight: 54,
+              ".MuiButton-endIcon": {
+                marginLeft: "auto",
+              },
+              "&:hover": {
+                borderColor: theme.palette.text.primary,
+                background: theme.palette.background.paper,
+                backgroundImage: getModeStyle("none", ELEVATION1_BG),
+              },
             },
           },
           {
@@ -693,6 +724,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
           deleteIconMedium: {
             marginRight: "12px",
+          },
+        },
+      },
+      MuiAlert: {
+        styleOverrides: {
+          root: {
+            borderRadius: "12px",
           },
         },
       },

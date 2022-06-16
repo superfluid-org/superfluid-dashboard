@@ -1,70 +1,79 @@
+import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { Stack, styled } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import { Avatar, Button, ButtonProps, IconButton } from "@mui/material";
 import { memo, MouseEvent, useState } from "react";
+import Blockies from "react-blockies";
+import shortenAddress from "../../utils/shortenAddress";
 import AddressSearchDialog from "./AddressSearchDialog";
-import DisplayAddressChip, { DisplayAddress } from "./DisplayAddressChip";
-
-interface AddressButtonProps {
-  hasAddress?: boolean;
-}
-
-const AddressButton = styled(Stack)<AddressButtonProps>(
-  ({ hasAddress, theme }) => ({
-    minHeight: 54,
-    border: `1px solid ${theme.palette.other.outline}`,
-    borderRadius: "10px",
-    padding: `0 ${hasAddress ? theme.spacing(1.75) : 0}`,
-    lineHeight: "54px",
-    cursor: "pointer",
-    color: hasAddress
-      ? theme.palette.text.secondary
-      : theme.palette.text.primary,
-  })
-);
+import { DisplayAddress } from "./DisplayAddressChip";
 
 export default memo(function AddressSearch({
-  onChange,
   address,
+  onChange,
+  placeholder = "Public Address or ENS",
+  shortenAddr,
+  ButtonProps = {},
   onBlur = () => {},
 }: {
   address: DisplayAddress | null;
   onChange: (address: DisplayAddress | null) => void; // TODO(KK): better name
-  onBlur: () => void;
+  placeholder?: string;
+  shortenAddr?: number;
+  ButtonProps?: ButtonProps;
+  onBlur?: () => void;
 }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const onOpenDialog = (event: MouseEvent<HTMLDivElement>) => {
+  const onOpenDialog = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     setDialogOpen(true);
   };
 
+  const clearSearch = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    event.preventDefault();
+    onChange(null);
+  };
+
   return (
     <>
-      <AddressButton
+      <Button
         data-cy={"address-button"}
-        hasAddress={!address}
-        direction="row"
-        alignItems={address ? "stretch" : "center"}
-        justifyContent="space-between"
+        variant="input"
         onClick={onOpenDialog}
-      >
-        {address ? (
-          <DisplayAddressChip
-            hash={address.hash}
-            name={address.name}
-            tryGetEns={false}
-            ChipProps={{
-              onDelete: () => onChange(null),
-              sx: { flex: 1, background: "transparent" },
-            }}
-          />
-        ) : (
-          <>
-            <span>Public Address or ENS</span>
+        startIcon={
+          address ? (
+            <Avatar variant="rounded">
+              <Blockies seed={address.hash} size={12} scale={3} />
+            </Avatar>
+          ) : (
+            <SearchIcon />
+          )
+        }
+        endIcon={
+          address ? (
+            <IconButton
+              onClick={clearSearch}
+              color="inherit"
+              sx={{ marginLeft: "auto", marginRight: "-6px" }}
+            >
+              <CloseIcon sx={{ fontSize: "22px" }} />
+            </IconButton>
+          ) : (
             <KeyboardArrowDownIcon />
-          </>
-        )}
-      </AddressButton>
+          )
+        }
+        {...ButtonProps}
+      >
+        <span>
+          {address
+            ? shortenAddr
+              ? shortenAddress(address.hash, shortenAddr)
+              : address.hash
+            : placeholder}
+        </span>
+      </Button>
 
       <AddressSearchDialog
         open={dialogOpen}

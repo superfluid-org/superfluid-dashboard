@@ -1,5 +1,5 @@
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Button } from "@mui/material";
+import { Button, ButtonProps } from "@mui/material";
 import { FC, useState } from "react";
 import { TokenMinimal } from "../redux/endpoints/tokenTypes";
 import TokenIcon from "../token/TokenIcon";
@@ -8,9 +8,16 @@ import { TokenDialog, TokenSelectionProps } from "./TokenDialog";
 export const TokenDialogButton: FC<{
   token: TokenMinimal | null | undefined;
   tokenSelection: TokenSelectionProps;
+  ButtonProps?: ButtonProps;
   onTokenSelect: (token: TokenMinimal) => void;
   onBlur?: () => void;
-}> = ({ token = null, tokenSelection, onTokenSelect, onBlur = () => {} }) => {
+}> = ({
+  token = null,
+  tokenSelection,
+  ButtonProps = {},
+  onTokenSelect,
+  onBlur = () => {},
+}) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -30,6 +37,7 @@ export const TokenDialogButton: FC<{
             ml: "auto",
           },
         }}
+        {...ButtonProps}
       >
         {!!token ? token.symbol : "Select a token"}
       </Button>

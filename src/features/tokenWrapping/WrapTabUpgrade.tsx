@@ -247,7 +247,7 @@ export const WrapTabUpgrade: FC = () => {
                 chainId={network.id}
                 accountAddress={visibleAddress}
                 tokenAddress={selectedTokenPair.superToken.address}
-                typographyProps={{ color: "text.secondary" }}
+                TypographyProps={{ color: "text.secondary" }}
               />
             </Stack>
           )}

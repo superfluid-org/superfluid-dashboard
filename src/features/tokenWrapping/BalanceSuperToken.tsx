@@ -8,8 +8,8 @@ export const BalanceSuperToken: FC<{
   chainId: number;
   accountAddress: string;
   tokenAddress: string;
-  typographyProps?: TypographyProps;
-}> = ({ chainId, accountAddress, tokenAddress, typographyProps = {} }) => {
+  TypographyProps?: TypographyProps;
+}> = ({ chainId, accountAddress, tokenAddress, TypographyProps = {} }) => {
   const superBalanceQuery = rpcApi.useRealtimeBalanceQuery({
     chainId,
     accountAddress,
@@ -17,7 +17,7 @@ export const BalanceSuperToken: FC<{
   });
 
   return (
-    <Typography variant="body2" {...typographyProps}>
+    <Typography variant="body2mono" {...TypographyProps}>
       Balance:{" "}
       {superBalanceQuery.error ? (
         "error"

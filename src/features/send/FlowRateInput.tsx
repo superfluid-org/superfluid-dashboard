@@ -1,6 +1,6 @@
 // TODO(KK): What's a better name?
 import { BigNumber, ethers } from "ethers";
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, MouseEvent, useCallback, useEffect, useState } from "react";
 import { Box, MenuItem, Select, TextField } from "@mui/material";
 import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
@@ -84,6 +84,17 @@ export const FlowRateInput: FC<{
   onChange: (flowRate: FlowRateEther) => void;
   onBlur: () => void;
 }> = ({ flowRateEther: flowRate, onChange, onBlur }) => {
+  const [flowRateFocused, setFlowRateFocused] = useState(false);
+
+  const onFlowRateFocus = () => {
+    setFlowRateFocused(true);
+  };
+
+  const onFlowRateBlur = () => {
+    onBlur();
+    setFlowRateFocused(false);
+  };
+
   return (
     <Box sx={{ display: "grid", gridTemplateColumns: "6fr 4fr" }}>
       <TextField
@@ -94,7 +105,8 @@ export const FlowRateInput: FC<{
         autoCorrect="off"
         placeholder="0.0"
         value={flowRate.amountEther}
-        onBlur={onBlur}
+        onBlur={onFlowRateBlur}
+        onFocus={onFlowRateFocus}
         onChange={(e) => {
           onChange({
             ...flowRate,
@@ -102,15 +114,29 @@ export const FlowRateInput: FC<{
           });
         }}
         InputProps={{
-          sx: { borderRadius: "10px 0 0 10px" }
+          sx: { borderRadius: "10px 0 0 10px" },
         }}
         sx={{
-          ":hover, .Mui-focused": {
-            zIndex: 1, // This helps to bring active right side border on top of select's border.
-          },
           ".MuiOutlinedInput-notchedOutline": {
             borderRadius: "10px 0 0 10px",
+            borderRight: 0,
           },
+          "> .Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderRight: 0,
+          },
+          // TODO: This should have easier solution. Only with css would be perfect.
+          ...(flowRateFocused
+            ? {
+                "& + .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+                  borderLeftColor: "primary.main",
+                },
+              }
+            : {
+                "&:hover + .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":
+                  {
+                    borderLeftColor: "text.primary",
+                  },
+              }),
         }}
       />
       <Select
@@ -127,6 +153,7 @@ export const FlowRateInput: FC<{
           marginLeft: "-1px",
           ".MuiOutlinedInput-notchedOutline": {
             borderRadius: "0 10px 10px 0",
+            ...(flowRateFocused && { borderLeft: "2px solid" }),
           },
         }}
       >

@@ -16,8 +16,9 @@ export const WrapInputCard: FC = ({ children }) => {
       sx={{
         px: 2.5,
         py: 1.5,
-        borderWidth: "1px",
-        borderStyle: "solid",
+        border: "1px solid",
+        borderColor: theme.palette.other.outline,
+        borderRadius: "15px",
       }}
     >
       {children}

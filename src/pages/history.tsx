@@ -41,6 +41,7 @@ import NetworkSelectionFilter, {
 } from "../features/network/NetworkSelectionFilter";
 import { OpenIcon } from "../features/network/SelectNetwork";
 import { subgraphApi } from "../features/redux/store";
+import AddressSearch from "../features/send/AddressSearch";
 import AddressSearchDialog from "../features/send/AddressSearchDialog";
 import { DisplayAddress } from "../features/send/DisplayAddressChip";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
@@ -221,57 +222,25 @@ const History: NextPage = () => {
 
         <Stack gap={2.5}>
           <Stack direction="row" justifyContent="space-between">
-            <Button
-              variant="outlined"
-              color="secondary"
-              size="xl"
-              startIcon={
-                addressSearch ? (
-                  <Avatar
-                    variant="rounded"
-                    sx={{ width: "24px", height: "24px" }}
-                  >
-                    <Blockies seed={addressSearch.hash} size={12} scale={2} />
-                  </Avatar>
-                ) : (
-                  <SearchIcon />
-                )
-              }
-              onClick={openAddressSearchDialog}
-              sx={{ maxWidth: "400px", justifyContent: "flex-start" }}
-            >
-              {addressSearch ? (
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  flex={1}
-                >
-                  <Typography variant="body1">
-                    {addressSearch.name ||
-                      shortenAddress(addressSearch.hash, 12)}
-                  </Typography>
-                  <IconButton
-                    onClick={(e: MouseEvent<HTMLButtonElement>) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      setAddressSearch(null);
-                    }}
-                    sx={{ m: -1 }}
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                </Stack>
-              ) : (
-                <>Filter by address</>
-              )}
-            </Button>
-            <AddressSearchDialog
-              open={addressSearchOpen}
-              onClose={closeAddressSearchDialog}
-              onSelectAddress={onAddressSearchChange}
+            <AddressSearch
+              address={addressSearch}
+              placeholder="Filter by public address or ENS"
+              shortenAddr={12}
+              onChange={setAddressSearch}
+              ButtonProps={{
+                variant: "outlined",
+                color: "secondary",
+                size: "large",
+                sx: {
+                  width: "420px",
+                  height: "52px",
+                  justifyContent: "flex-start",
+                  ".MuiButton-endIcon": {
+                    marginLeft: "auto",
+                  },
+                },
+              }}
             />
-
             <Button
               variant="outlined"
               color="secondary"
