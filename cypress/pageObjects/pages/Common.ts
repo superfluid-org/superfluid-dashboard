@@ -2,7 +2,7 @@ import {BasePage} from "../BasePage";
 import {networksBySlug} from "../../../src/features/network/networks";
 // @ts-ignore
 import {MockProvider} from "@rsksmart/mock-web3-provider";
-import shortenAddress from "../../../src/utils/shortenAddress";
+import shortenHex from "../../../src/utils/shortenHex";
 
 const NAVIGATION_BUTTON_PREFIX = "[data-cy=nav-";
 const TOP_BAR_NETWORK_BUTTON = "[data-cy=top-bar-network-button]";
@@ -89,7 +89,7 @@ export class Common extends BasePage {
     static checkNavBarWalletStatus(account: string, message: string) {
         cy.fixture("commonData").then((commonData) => {
             this.hasText(WALLET_CONNECTION_STATUS, message);
-            this.hasText(CONNECTED_WALLET, shortenAddress(commonData[account]));
+            this.hasText(CONNECTED_WALLET, shortenHex(commonData[account]));
         });
     }
 

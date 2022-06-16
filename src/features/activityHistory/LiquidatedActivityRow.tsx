@@ -12,8 +12,8 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
 import { FC, memo, useMemo } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressName from "../../components/AddressName/AddressName";
 import { AgreementLiquidatedActivity } from "../../utils/activityUtils";
-import shortenAddress from "../../utils/shortenAddress";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
@@ -100,7 +100,7 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
             secondary={
               <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
                 <Typography variant="h6" color="text.primary" component="span">
-                  {shortenAddress(isOutgoing ? receiver : sender)}
+                  <AddressName address={isOutgoing ? receiver : sender} />
                 </Typography>
               </AddressCopyTooltip>
             }

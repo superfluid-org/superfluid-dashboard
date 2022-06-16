@@ -9,8 +9,8 @@ import {
 import { format } from "date-fns";
 import { FC, memo } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressName from "../../components/AddressName/AddressName";
 import { Activity } from "../../utils/activityUtils";
-import shortenAddress from "../../utils/shortenAddress";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
 import TokenIcon from "../token/TokenIcon";
@@ -61,13 +61,17 @@ const DefaultActivityRow: FC<Activity> = ({ keyEvent, network }) => {
       <TableCell>
         <ListItem sx={{ p: 0 }}>
           <ListItemAvatar>
-            <AddressAvatar address={"0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"} />
+            <AddressAvatar
+              address={"0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"}
+            />
           </ListItemAvatar>
           <ListItemText
             primary={"To"}
-            secondary={shortenAddress(
-              "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"
-            )}
+            secondary={
+              <AddressName
+                address={"0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"}
+              />
+            }
             primaryTypographyProps={{
               variant: "h6",
             }}

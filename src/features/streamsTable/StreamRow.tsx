@@ -24,7 +24,8 @@ import { BigNumber } from "ethers";
 import { useRouter } from "next/router";
 import { FC, memo, MouseEvent, useState } from "react";
 import { useNetwork } from "wagmi";
-import shortenAddress from "../../utils/shortenAddress";
+import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressName from "../../components/AddressName/AddressName";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
@@ -143,7 +144,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
           {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
           <AddressAvatar address={isOutgoing ? receiver : sender} />
           <Typography data-cy={"sender-receiver-address"} variant="h6">
-            {shortenAddress(isOutgoing ? receiver : sender)}
+            <AddressName address={isOutgoing ? receiver : sender} />
           </Typography>
         </Stack>
       </TableCell>

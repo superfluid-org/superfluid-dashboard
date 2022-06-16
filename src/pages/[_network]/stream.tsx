@@ -29,7 +29,6 @@ import { UnitOfTime } from "../../features/send/FlowRateInput";
 import EtherFormatted from "../../features/token/EtherFormatted";
 import FlowingBalance from "../../features/token/FlowingBalance";
 import TokenIcon from "../../features/token/TokenIcon";
-import shortenAddress from "../../utils/shortenAddress";
 import {
   calculateBuffer,
   calculateMaybeCriticalAtTimestamp,
@@ -37,6 +36,8 @@ import {
 import withPathNetwork, { NetworkPage } from "../../hoc/withPathNetwork";
 import { BigNumber } from "ethers";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressName from "../../components/AddressName/AddressName";
+import shortenHex from "../../utils/shortenHex";
 
 interface OverviewItemProps {
   label: string;
@@ -234,7 +235,9 @@ const Stream: FC<NetworkPage> = ({ network }) => {
               sx={{ py: 2, px: 3 }}
             >
               <AddressAvatar address={sender} />
-              <ListItemText primary={shortenAddress(sender, 8)} />
+              <ListItemText
+                primary={<AddressName address={sender} length="medium" />}
+              />
             </Paper>
           </Stack>
 
@@ -258,7 +261,9 @@ const Stream: FC<NetworkPage> = ({ network }) => {
               sx={{ py: 2, px: 3 }}
             >
               <AddressAvatar address={receiver} />
-              <ListItemText primary={shortenAddress(receiver, 8)} />
+              <ListItemText
+                primary={<AddressName address={receiver} length="medium" />}
+              />
             </Paper>
           </Stack>
         </Stack>
@@ -338,7 +343,7 @@ const Stream: FC<NetworkPage> = ({ network }) => {
           />
           <OverviewItem
             label="Transaction ID:"
-            value={shortenAddress(streamId, 6)}
+            value={shortenHex(streamId, 6)}
           />
         </Stack>
 

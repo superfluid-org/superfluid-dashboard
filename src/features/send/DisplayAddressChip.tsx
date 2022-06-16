@@ -10,7 +10,7 @@ import {
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
-import shortenAddress from "../../utils/shortenAddress";
+import shortenHex from "../../utils/shortenHex";
 import { ensApi } from "../ens/ensApi.slice";
 
 export type DisplayAddress = {
@@ -41,8 +41,8 @@ const DisplayAddressChip: FC<{
               <AddressAvatar address={hash} />
             </ListItemAvatar>
             <ListItemText
-              primary={name || shortenAddress(hash)}
-              secondary={name && shortenAddress(hash)}
+              primary={name || shortenHex(hash)}
+              secondary={name && shortenHex(hash)}
               primaryTypographyProps={{ variant: "body1" }}
               secondaryTypographyProps={{ variant: "body2" }}
             />

@@ -11,8 +11,8 @@ import {
   TransactionStatus,
 } from "@superfluid-finance/sdk-redux";
 import { format } from "date-fns";
-import { FC, useMemo } from "react";
-import shortenAddress from "../../utils/shortenAddress";
+import { FC } from "react";
+import shortenHex from "../../utils/shortenHex";
 import { TransactionListItemAvatar } from "./TransactionListItemAvatar";
 import { TransactionListItemRestoreButton } from "./TransactionListItemRestoreButton";
 
@@ -32,12 +32,6 @@ export const getTransactionStatusColor = (status: TransactionStatus) => {
 const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
   transaction,
 }) => {
-  // This seems to be a little overkill :D
-  const shortenedHash = useMemo(
-    () => shortenAddress(transaction.hash),
-    [transaction]
-  );
-
   return (
     <ListItem button sx={{ cursor: "default" }}>
       <ListItemAvatar>
@@ -57,7 +51,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
               >
                 {`${format(transaction.timestampMs, "d MMM")} •`}
               </Typography>
-              <Typography variant="body2">{shortenedHash}</Typography>
+              <Typography variant="body2">{shortenHex(transaction.hash)}</Typography>
             </Stack>
           </>
         }

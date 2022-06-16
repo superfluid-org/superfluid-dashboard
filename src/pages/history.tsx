@@ -2,7 +2,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import SearchIcon from "@mui/icons-material/Search";
 import {
-  Avatar,
   Box,
   Button,
   Container,
@@ -21,6 +20,7 @@ import orderBy from "lodash/fp/orderBy";
 import { NextPage } from "next";
 import { MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
 import AddressAvatar from "../components/AddressAvatar/AddressAvatar";
+import AddressName from "../components/AddressName/AddressName";
 import ActivityRow from "../features/activityHistory/ActivityRow";
 import ActivityTypeFilter, {
   ActivityType,
@@ -45,7 +45,6 @@ import AddressSearchDialog from "../features/send/AddressSearchDialog";
 import { DisplayAddress } from "../features/send/DisplayAddressChip";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { Activity, mapActivitiesFromEvents } from "../utils/activityUtils";
-import shortenAddress from "../utils/shortenAddress";
 
 const History: NextPage = () => {
   const dateNow = useMemo(() => new Date(), []);
@@ -251,8 +250,7 @@ const History: NextPage = () => {
                   flex={1}
                 >
                   <Typography variant="body1">
-                    {addressSearch.name ||
-                      shortenAddress(addressSearch.hash, 12)}
+                    <AddressName address={addressSearch.hash} />
                   </Typography>
                   <IconButton
                     onClick={(e: MouseEvent<HTMLButtonElement>) => {

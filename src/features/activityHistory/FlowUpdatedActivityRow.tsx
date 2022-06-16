@@ -3,7 +3,6 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import {
-  Avatar,
   ListItem,
   ListItemAvatar,
   ListItemText,
@@ -16,8 +15,8 @@ import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { FC, memo, useMemo } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressName from "../../components/AddressName/AddressName";
 import { Activity } from "../../utils/activityUtils";
-import shortenAddress from "../../utils/shortenAddress";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
@@ -137,7 +136,7 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
             secondary={
               <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
                 <Typography variant="h6" color="text.primary" component="span">
-                  {shortenAddress(isOutgoing ? receiver : sender)}
+                  <AddressName address={isOutgoing ? receiver : sender} />
                 </Typography>
               </AddressCopyTooltip>
             }
@@ -150,7 +149,6 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
       </TableCell>
       <TableCell sx={{ position: "relative" }}>
         <TxHashLink txHash={transactionHash} network={network} />
-
         <NetworkBadge
           network={network}
           sx={{ position: "absolute", top: "0px", right: "16px" }}

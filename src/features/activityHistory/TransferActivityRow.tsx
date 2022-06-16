@@ -13,8 +13,8 @@ import { TransferEvent } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { FC, memo, useMemo } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressName from "../../components/AddressName/AddressName";
 import { Activity } from "../../utils/activityUtils";
-import shortenAddress from "../../utils/shortenAddress";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
@@ -104,7 +104,7 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
             secondary={
               <AddressCopyTooltip address={isOutgoing ? to : from}>
                 <Typography variant="h6" color="text.primary" component="span">
-                  {shortenAddress(isOutgoing ? to : from)}
+                  <AddressName address={isOutgoing ? to : from} />
                 </Typography>
               </AddressCopyTooltip>
             }
@@ -117,7 +117,6 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
       </TableCell>
       <TableCell sx={{ position: "relative" }}>
         <TxHashLink txHash={transactionHash} network={network} />
-
         <NetworkBadge
           network={network}
           sx={{ position: "absolute", top: "0px", right: "16px" }}

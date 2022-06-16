@@ -12,7 +12,7 @@ import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { FC, useMemo } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
-import shortenAddress from "../../utils/shortenAddress";
+import AddressName from "../../components/AddressName/AddressName";
 import { subscriptionWeiAmountReceived } from "../../utils/tokenUtils";
 import EtherFormatted from "../token/EtherFormatted";
 
@@ -82,7 +82,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({ subscription }) => {
         <Stack direction="row" alignItems="center" gap={1.5}>
           <AddressAvatar address={subscription.publisher} />
           <Typography variant="h6">
-            {shortenAddress(subscription.publisher)}
+            <AddressName address={subscription.publisher} />
           </Typography>
         </Stack>
       </TableCell>
