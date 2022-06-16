@@ -11,7 +11,7 @@ import { IndexSubscription } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { FC, useMemo } from "react";
-import Blockies from "react-blockies";
+import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import shortenAddress from "../../utils/shortenAddress";
 import { subscriptionWeiAmountReceived } from "../../utils/tokenUtils";
 import EtherFormatted from "../token/EtherFormatted";
@@ -80,9 +80,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({ subscription }) => {
     <TableRow>
       <TableCell>
         <Stack direction="row" alignItems="center" gap={1.5}>
-          <Avatar variant="rounded">
-            <Blockies seed={subscription.publisher} size={12} scale={3} />
-          </Avatar>
+          <AddressAvatar address={subscription.publisher} />
           <Typography variant="h6">
             {shortenAddress(subscription.publisher)}
           </Typography>

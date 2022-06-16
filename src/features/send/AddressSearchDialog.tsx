@@ -1,6 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close";
 import {
-  Avatar,
   debounce,
   DialogContent,
   DialogTitle,
@@ -23,8 +22,8 @@ import { ensApi } from "../ens/ensApi.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { subgraphApi } from "../redux/store";
 import { DisplayAddress } from "./DisplayAddressChip";
-import Blockies from "react-blockies";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
@@ -43,11 +42,13 @@ const AddressListItem: FC<AddressListItemProps> = ({
 }) => (
   <ListItemButton onClick={onClick} sx={LIST_ITEM_STYLE}>
     <ListItemAvatar>
-      <Avatar variant="rounded">
-        <Blockies seed={address} size={12} scale={3} />
-      </Avatar>
+      <AddressAvatar address={address} />
     </ListItemAvatar>
-    <ListItemText data-cy={dataCy} primary={name || address} secondary={name && address} />
+    <ListItemText
+      data-cy={dataCy}
+      primary={name || address}
+      secondary={name && address}
+    />
   </ListItemButton>
 );
 
@@ -105,7 +106,11 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
   const showEns =
     !!searchTermDebounced && !ethers.utils.isAddress(searchTermDebounced);
 
-  const { currentData: recents, data: _discard, ...recentsQuery} = subgraphApi.useRecentsQuery(
+  const {
+    currentData: recents,
+    data: _discard,
+    ...recentsQuery
+  } = subgraphApi.useRecentsQuery(
     visibleAddress
       ? {
           chainId: network.id,

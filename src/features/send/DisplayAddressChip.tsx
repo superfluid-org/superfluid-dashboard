@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
-import Blockies from "react-blockies";
+import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import shortenAddress from "../../utils/shortenAddress";
 import { ensApi } from "../ens/ensApi.slice";
 
@@ -36,12 +36,9 @@ const DisplayAddressChip: FC<{
     <Chip
       label={
         <Stack direction="row">
-          {/* Read about the Blockies API here: https://github.com/stephensprinkle-zz/react-blockies */}
           <ListItem sx={{ p: 0 }}>
             <ListItemAvatar>
-              <Avatar variant="rounded">
-                <Blockies seed={hash} size={12} scale={3} />
-              </Avatar>
+              <AddressAvatar address={hash} />
             </ListItemAvatar>
             <ListItemText
               primary={name || shortenAddress(hash)}

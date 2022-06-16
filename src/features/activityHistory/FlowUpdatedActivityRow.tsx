@@ -15,7 +15,7 @@ import { FlowUpdatedEvent, FlowUpdateType } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { FC, memo, useMemo } from "react";
-import Blockies from "react-blockies";
+import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import { Activity } from "../../utils/activityUtils";
 import shortenAddress from "../../utils/shortenAddress";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
@@ -130,13 +130,7 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
       <TableCell>
         <ListItem sx={{ p: 0 }}>
           <ListItemAvatar>
-            <Avatar variant="rounded">
-              <Blockies
-                seed={isOutgoing ? receiver : sender}
-                size={12}
-                scale={3}
-              />
-            </Avatar>
+            <AddressAvatar address={isOutgoing ? receiver : sender} />
           </ListItemAvatar>
           <ListItemText
             primary={isOutgoing ? "To" : "From"}

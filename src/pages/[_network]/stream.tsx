@@ -19,7 +19,6 @@ import Error from "next/error";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { FC, useMemo } from "react";
-import Blockies from "react-blockies";
 import NetworkIcon from "../../features/network/NetworkIcon";
 import { subgraphApi } from "../../features/redux/store";
 import {
@@ -37,6 +36,7 @@ import {
 } from "../../utils/tokenUtils";
 import withPathNetwork, { NetworkPage } from "../../hoc/withPathNetwork";
 import { BigNumber } from "ethers";
+import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 
 interface OverviewItemProps {
   label: string;
@@ -82,7 +82,7 @@ const Stream: FC<NetworkPage> = ({ network }) => {
       calculateMaybeCriticalAtTimestamp({
         updatedAtTimestamp: snapshotUpdatedAtTimestamp,
         balanceUntilUpdatedAtWei: balanceUntilUpdatedAt,
-        totalNetFlowRateWei: totalNetFlowRate
+        totalNetFlowRateWei: totalNetFlowRate,
       }).toNumber() * 1000
     );
   }, [tokenSnapshotQuery.data]);
@@ -233,10 +233,7 @@ const Stream: FC<NetworkPage> = ({ network }) => {
               gap={2}
               sx={{ py: 2, px: 3 }}
             >
-              <Avatar variant="rounded">
-                <Blockies seed={sender} size={12} scale={3} />
-              </Avatar>
-
+              <AddressAvatar address={sender} />
               <ListItemText primary={shortenAddress(sender, 8)} />
             </Paper>
           </Stack>
@@ -260,10 +257,7 @@ const Stream: FC<NetworkPage> = ({ network }) => {
               gap={2}
               sx={{ py: 2, px: 3 }}
             >
-              <Avatar variant="rounded">
-                <Blockies seed={receiver} size={12} scale={3} />
-              </Avatar>
-
+              <AddressAvatar address={receiver} />
               <ListItemText primary={shortenAddress(receiver, 8)} />
             </Paper>
           </Stack>

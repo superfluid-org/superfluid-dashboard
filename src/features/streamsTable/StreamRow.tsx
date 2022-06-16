@@ -23,7 +23,6 @@ import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { useRouter } from "next/router";
 import { FC, memo, MouseEvent, useState } from "react";
-import Blockies from "react-blockies";
 import { useNetwork } from "wagmi";
 import shortenAddress from "../../utils/shortenAddress";
 import { Network } from "../network/networks";
@@ -142,13 +141,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
       <TableCell onClick={openStreamDetails} sx={{ cursor: "pointer" }}>
         <Stack direction="row" alignItems="center" gap={1.5}>
           {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
-          <Avatar variant="rounded">
-            <Blockies
-              seed={isOutgoing ? receiver : sender}
-              size={12}
-              scale={3}
-            />
-          </Avatar>
+          <AddressAvatar address={isOutgoing ? receiver : sender} />
           <Typography data-cy={"sender-receiver-address"} variant="h6">
             {shortenAddress(isOutgoing ? receiver : sender)}
           </Typography>
@@ -177,11 +170,16 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
             /mo
           </Typography>
         ) : (
-            <Typography data-cy={"flow-rate"}>{"-"}</Typography>
+          <Typography data-cy={"flow-rate"}>{"-"}</Typography>
         )}
       </TableCell>
       <TableCell onClick={openStreamDetails} sx={{ cursor: "pointer" }}>
-        <Stack data-cy={"start-end-date"} direction="row" alignItems="center" gap={1}>
+        <Stack
+          data-cy={"start-end-date"}
+          direction="row"
+          alignItems="center"
+          gap={1}
+        >
           {format(
             (isActive ? createdAtTimestamp : updatedAtTimestamp) * 1000,
             "d MMM. yyyy"
@@ -226,7 +224,10 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                 >
                   <MenuList sx={{ py: 0.5 }}>
-                    <MenuItem data-cy={"cancel-stream-button"} onClick={deleteStream}>
+                    <MenuItem
+                      data-cy={"cancel-stream-button"}
+                      onClick={deleteStream}
+                    >
                       <ListItemAvatar
                         sx={{ mr: 1, width: "20px", height: "20px" }}
                       >

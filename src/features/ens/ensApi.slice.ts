@@ -45,6 +45,14 @@ export const ensApi = createApi({
           };
         },
       }),
+      getAvatar: builder.query<any, string>({
+        queryFn: async (address) => {
+          const avatarUrl = await mainnetProvider.getAvatar(address);
+          return {
+            data: avatarUrl
+          }
+        }
+      })
     };
   },
 });

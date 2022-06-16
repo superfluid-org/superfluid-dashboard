@@ -20,7 +20,7 @@ import groupBy from "lodash/fp/groupBy";
 import orderBy from "lodash/fp/orderBy";
 import { NextPage } from "next";
 import { MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
-import Blockies from "react-blockies";
+import AddressAvatar from "../components/AddressAvatar/AddressAvatar";
 import ActivityRow from "../features/activityHistory/ActivityRow";
 import ActivityTypeFilter, {
   ActivityType,
@@ -227,12 +227,15 @@ const History: NextPage = () => {
               size="xl"
               startIcon={
                 addressSearch ? (
-                  <Avatar
-                    variant="rounded"
-                    sx={{ width: "24px", height: "24px" }}
-                  >
-                    <Blockies seed={addressSearch.hash} size={12} scale={2} />
-                  </Avatar>
+                  <AddressAvatar
+                    address={addressSearch.hash}
+                    AvatarProps={{
+                      sx: {
+                        width: "24px",
+                        height: "24px",
+                      },
+                    }}
+                  />
                 ) : (
                   <SearchIcon />
                 )

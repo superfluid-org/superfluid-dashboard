@@ -11,7 +11,7 @@ import {
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
 import { FC, memo, useMemo } from "react";
-import Blockies from "react-blockies";
+import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import { AgreementLiquidatedActivity } from "../../utils/activityUtils";
 import shortenAddress from "../../utils/shortenAddress";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
@@ -92,11 +92,7 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
         <ListItem sx={{ p: 0 }}>
           <ListItemAvatar>
             <Avatar variant="rounded">
-              <Blockies
-                seed={isOutgoing ? receiver : sender}
-                size={12}
-                scale={3}
-              />
+              <AddressAvatar address={isOutgoing ? receiver : sender} />
             </Avatar>
           </ListItemAvatar>
           <ListItemText

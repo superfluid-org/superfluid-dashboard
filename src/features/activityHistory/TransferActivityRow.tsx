@@ -1,7 +1,6 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import {
-  Avatar,
   ListItem,
   ListItemAvatar,
   ListItemText,
@@ -13,7 +12,7 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { TransferEvent } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { FC, memo, useMemo } from "react";
-import Blockies from "react-blockies";
+import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import { Activity } from "../../utils/activityUtils";
 import shortenAddress from "../../utils/shortenAddress";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
@@ -98,9 +97,7 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
       <TableCell>
         <ListItem sx={{ p: 0 }}>
           <ListItemAvatar>
-            <Avatar variant="rounded">
-              <Blockies seed={isOutgoing ? to : from} size={12} scale={3} />
-            </Avatar>
+            <AddressAvatar address={isOutgoing ? to : from} />
           </ListItemAvatar>
           <ListItemText
             primary={isOutgoing ? "To" : "From"}

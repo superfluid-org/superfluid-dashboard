@@ -1,6 +1,5 @@
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import {
-  Avatar,
   ListItem,
   ListItemAvatar,
   ListItemText,
@@ -9,7 +8,7 @@ import {
 } from "@mui/material";
 import { format } from "date-fns";
 import { FC, memo } from "react";
-import Blockies from "react-blockies";
+import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import { Activity } from "../../utils/activityUtils";
 import shortenAddress from "../../utils/shortenAddress";
 import TxHashLink from "../common/TxHashLink";
@@ -62,13 +61,7 @@ const DefaultActivityRow: FC<Activity> = ({ keyEvent, network }) => {
       <TableCell>
         <ListItem sx={{ p: 0 }}>
           <ListItemAvatar>
-            <Avatar variant="rounded">
-              <Blockies
-                seed={"0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"}
-                size={12}
-                scale={3}
-              />
-            </Avatar>
+            <AddressAvatar address={"0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"} />
           </ListItemAvatar>
           <ListItemText
             primary={"To"}
