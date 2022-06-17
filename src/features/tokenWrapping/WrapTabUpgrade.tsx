@@ -1,14 +1,4 @@
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {
-  Avatar,
-  Button,
-  Input,
-  Paper,
-  Stack,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Button, Input, Stack, Typography, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { BigNumber, ethers } from "ethers";
 import { parseEther } from "ethers/lib/utils";
@@ -35,7 +25,7 @@ import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { BalanceSuperToken } from "./BalanceSuperToken";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { TokenDialogButton } from "./TokenDialogButton";
-import { WrapInputCard } from "./WrapCard";
+import { ArrowDownIcon, WrapInputCard } from "./WrapCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 
 export const WrapTabUpgrade: FC = () => {
@@ -144,6 +134,7 @@ export const WrapTabUpgrade: FC = () => {
                 onChange={onChange}
                 onBlur={onBlur}
                 inputProps={{
+                  min: 0,
                   sx: {
                     ...theme.typography.largeInput,
                     p: 0,
@@ -174,6 +165,10 @@ export const WrapTabUpgrade: FC = () => {
                   )
                 }
                 onBlur={onBlur}
+                ButtonProps={{
+                  variant:
+                    theme.palette.mode === "light" ? "outlined" : "token",
+                }}
               />
             )}
           />
@@ -192,18 +187,7 @@ export const WrapTabUpgrade: FC = () => {
         )}
       </WrapInputCard>
 
-      <Avatar
-        component={Paper}
-        elevation={1}
-        sx={{
-          width: 30,
-          height: 30,
-          background: theme.palette.background.paper,
-          my: -1,
-        }}
-      >
-        <ArrowDownwardIcon color="primary" fontSize="small" />
-      </Avatar>
+      <ArrowDownIcon />
 
       {selectedTokenPair && (
         <WrapInputCard>
@@ -224,7 +208,7 @@ export const WrapTabUpgrade: FC = () => {
               sx={{ background: "transparent" }}
             />
             <Button
-              variant="outlined"
+              variant={theme.palette.mode === "light" ? "outlined" : "token"}
               color="secondary"
               startIcon={
                 <TokenIcon
@@ -232,7 +216,7 @@ export const WrapTabUpgrade: FC = () => {
                   size={24}
                 />
               }
-              endIcon={<ExpandMoreIcon />}
+              sx={{ pointerEvents: "none" }}
             >
               {selectedTokenPair.superToken.symbol ?? ""}
             </Button>

@@ -1,4 +1,5 @@
 import { alpha, Theme, ThemeOptions } from "@mui/material/styles";
+import { template } from "lodash";
 import React from "react";
 import { FONT_FACES } from "./fonts";
 
@@ -69,11 +70,11 @@ declare module "@mui/material/Button" {
   interface ButtonPropsVariantOverrides {
     textContained: true;
     input: true;
+    token: true;
   }
 }
 
-export const ELEVATION1_BG =
-  "linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.03) 100%)";
+export const ELEVATION1_BG = `linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.03) 100%)`;
 
 export const FONT_FAMILY = "'Walsheim', Arial";
 
@@ -658,6 +659,24 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
                 borderColor: theme.palette.text.primary,
                 background: theme.palette.background.paper,
                 backgroundImage: getModeStyle("none", ELEVATION1_BG),
+              },
+            },
+          },
+          {
+            props: { variant: "token" },
+            style: {
+              color: theme.palette.text.primary,
+              borderColor: theme.palette.other.outline,
+              background: getModeStyle(
+                theme.palette.background.paper,
+                "#37393b"
+              ),
+              "&:hover": {
+                boxShadow: theme.shadows[2],
+                background: getModeStyle(
+                  theme.palette.background.paper,
+                  "#1b1d20"
+                ),
               },
             },
           },

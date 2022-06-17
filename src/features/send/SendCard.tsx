@@ -2,9 +2,8 @@ import { ErrorMessage } from "@hookform/error-message";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import {
   Alert,
-  AlertTitle,
   Box,
-  ButtonGroup,
+  Button,
   Card,
   Checkbox,
   Divider,
@@ -20,7 +19,7 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FC, memo, useMemo, useState } from "react";
+import { FC, memo, useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import TooltipIcon from "../common/TooltipIcon";
@@ -145,9 +144,14 @@ export default memo(function SendCard() {
       elevation={1}
     >
       <Stack spacing={4}>
-        <Typography variant="h4" component="h1">
+        <Button
+          color="primary"
+          variant="textContained"
+          size="large"
+          sx={{ alignSelf: "flex-start", pointerEvents: "none" }}
+        >
           {activeFlow ? "Modify Stream" : "Send Stream"}
-        </Typography>
+        </Button>
 
         <ErrorMessage
           name="data"

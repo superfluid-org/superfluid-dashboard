@@ -1,5 +1,14 @@
 import { ErrorMessage } from "@hookform/error-message";
-import { Alert, Button, Card, Paper, Stack, useTheme } from "@mui/material";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import {
+  Alert,
+  Avatar,
+  Button,
+  Card,
+  Paper,
+  Stack,
+  useTheme,
+} from "@mui/material";
 import { useRouter } from "next/router";
 import { FC, memo } from "react";
 import { WrapTabDowngrade } from "./WrapTabDowngrade";
@@ -23,6 +32,30 @@ export const WrapInputCard: FC = ({ children }) => {
     >
       {children}
     </Stack>
+  );
+};
+
+export const ArrowDownIcon: FC = () => {
+  const theme = useTheme();
+
+  return (
+    <Paper
+      component={Avatar}
+      elevation={theme.palette.mode === "light" ? 1 : 16}
+      sx={{
+        width: 30,
+        height: 30,
+        my: -1,
+        ...(theme.palette.mode === "dark" && {
+          boxShadow: "none",
+        }),
+      }}
+    >
+      <ArrowDownwardIcon
+        color={theme.palette.mode === "light" ? "primary" : "inherit"}
+        fontSize="small"
+      />
+    </Paper>
   );
 };
 

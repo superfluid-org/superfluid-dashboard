@@ -1,41 +1,28 @@
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {
-  Alert,
-  Avatar,
-  Box,
-  Button,
-  Input,
-  Paper,
-  Stack,
-  Typography,
-  useTheme,
-} from "@mui/material";
-import { BigNumber, ethers } from "ethers";
-import { FC, useEffect, useRef, useState } from "react";
-import {
-  SuperTokenDowngradeRestoration,
-  RestorationType,
-} from "../transactionRestoration/transactionRestorations";
+import { Button, Input, Stack, Typography, useTheme } from "@mui/material";
+import { ethers } from "ethers";
+import { parseEther } from "ethers/lib/utils";
+import { useRouter } from "next/router";
+import { FC, useEffect, useRef } from "react";
+import { Controller, useFormContext } from "react-hook-form";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
-import { TransactionButton } from "../transactions/TransactionButton";
-import { BalanceSuperToken } from "./BalanceSuperToken";
-import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
-import { TokenDialogButton } from "./TokenDialogButton";
-import { useRouter } from "next/router";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
+import {
+  RestorationType,
+  SuperTokenDowngradeRestoration,
+} from "../transactionRestoration/transactionRestorations";
+import { TransactionButton } from "../transactions/TransactionButton";
 import {
   TransactionDialogActions,
   TransactionDialogButton,
 } from "../transactions/TransactionDialog";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import { Controller, useFormContext } from "react-hook-form";
-import { WrappingForm, ValidWrappingForm } from "./WrappingFormProvider";
-import { parseEther } from "ethers/lib/utils";
-import { ErrorMessage } from "@hookform/error-message";
-import { WrapInputCard } from "./WrapCard";
+import { BalanceSuperToken } from "./BalanceSuperToken";
+import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
+import { TokenDialogButton } from "./TokenDialogButton";
+import { ArrowDownIcon, WrapInputCard } from "./WrapCard";
+import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 
 export const WrapTabDowngrade: FC = () => {
   const theme = useTheme();
@@ -101,6 +88,7 @@ export const WrapTabDowngrade: FC = () => {
                 onChange={onChange}
                 onBlur={onBlur}
                 inputProps={{
+                  min: 0,
                   sx: {
                     ...theme.typography.largeInput,
                     p: 0,
@@ -132,6 +120,10 @@ export const WrapTabDowngrade: FC = () => {
                   )
                 }
                 onBlur={onBlur}
+                ButtonProps={{
+                  variant:
+                    theme.palette.mode === "light" ? "outlined" : "token",
+                }}
               />
             )}
           />
@@ -152,18 +144,7 @@ export const WrapTabDowngrade: FC = () => {
         )}
       </WrapInputCard>
 
-      <Avatar
-        component={Paper}
-        elevation={1}
-        sx={{
-          width: 30,
-          height: 30,
-          background: theme.palette.background.paper,
-          my: -1,
-        }}
-      >
-        <ArrowDownwardIcon color="primary" fontSize="small" />
-      </Avatar>
+      <ArrowDownIcon />
 
       {selectedTokenPair && (
         <WrapInputCard>
@@ -183,8 +164,9 @@ export const WrapTabDowngrade: FC = () => {
               }}
               sx={{ background: "transparent" }}
             />
+
             <Button
-              variant="outlined"
+              variant={theme.palette.mode === "light" ? "outlined" : "token"}
               color="secondary"
               startIcon={
                 <TokenIcon
@@ -192,7 +174,7 @@ export const WrapTabDowngrade: FC = () => {
                   size={24}
                 />
               }
-              endIcon={<ExpandMoreIcon />}
+              sx={{ pointerEvents: "none" }}
             >
               {selectedTokenPair?.underlyingToken.symbol ?? ""}
             </Button>
