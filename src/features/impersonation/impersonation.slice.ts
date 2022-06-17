@@ -8,7 +8,15 @@ export interface Impersonation {
 
 const adapter = createEntityAdapter<Impersonation>({
   selectId: (x) => getAddress(x.address),
-  sortComparer: (x) => x.timestampMs,
+  sortComparer: (a, b) => {
+    if (a.timestampMs > b.timestampMs) {
+      return -1;
+    }
+    if (a.timestampMs < b.timestampMs) {
+      return 1;
+    }
+    return 0;
+  },
 });
 
 export const impersonationSlice = createSlice({
