@@ -1,26 +1,23 @@
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import {
-  useTheme,
-  Container,
-  Stack,
-  Typography,
-  IconButton,
   Box,
+  Button,
+  Container,
   InputAdornment,
+  Stack,
   TextField,
+  Typography,
 } from "@mui/material";
+import { isAddress } from "ethers/lib/utils";
 import type { NextPage } from "next";
 import { FC, useMemo, useState } from "react";
+import { useImpersonation } from "../features/impersonation/ImpersonationContext";
 import TokenSnapshotTables from "../features/tokenSnapshotTable/TokenSnapshotTables";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ConnectWallet from "../features/wallet/ConnectWallet";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
-import PersonSearchIcon from "@mui/icons-material/PersonSearch";
-import { isAddress } from "ethers/lib/utils";
-import { useImpersonation } from "../features/impersonation/ImpersonationContext";
 
 const ConnectView: FC = () => {
-  const theme = useTheme();
-
   const { impersonate } = useImpersonation();
   const [impersonateAddress, setImpersonateAddress] = useState("");
   const isValidImpersonateAddress = useMemo(
@@ -29,16 +26,26 @@ const ConnectView: FC = () => {
   );
 
   return (
-    <Stack sx={{ maxWidth: 500, m: "0 auto" }} gap={6}>
-      <Typography variant="h4">Connect to Superfluid</Typography>
+    <Stack sx={{ maxWidth: 500, m: "0 auto" }}>
+      <Typography variant="h4" textAlign="center" sx={{ mb: 1 }}>
+        Connect to Superfluid
+      </Typography>
+      <Typography
+        variant="h6"
+        color="text.secondary"
+        textAlign="center"
+        sx={{ mb: 6 }}
+      >
+        Connect your wallet, view any wallet, or take a look around!
+      </Typography>
 
-      <Box>
+      <Box sx={{ mb: 2 }}>
         <ConnectWallet />
       </Box>
 
-      <Box alignContent="center">
-        <Typography variant="h6">-or-</Typography>
-      </Box>
+      <Typography variant="h6" textAlign="center" sx={{ mb: 1 }}>
+        -or-
+      </Typography>
 
       <Box>
         <Typography variant="h6" sx={{ mb: 1 }}>
@@ -62,18 +69,18 @@ const ConnectView: FC = () => {
               ),
             }}
           />
-          <IconButton
+          <Button
             data-cy={"view-mode-search-button"}
             disabled={!isValidImpersonateAddress}
             title="View address"
-            sx={{
-              border: `1px solid ${theme.palette.other.outline}`,
-              borderRadius: "10px",
-            }}
+            variant="outlined"
+            color="secondary"
+            size="small"
+            sx={{ p: 0, minWidth: "56px", justifyContent: "center" }}
             onClick={() => impersonate(impersonateAddress)}
           >
             <ArrowForwardIcon />
-          </IconButton>
+          </Button>
         </Stack>
       </Box>
     </Stack>
