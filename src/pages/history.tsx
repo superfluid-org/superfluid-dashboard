@@ -41,7 +41,7 @@ import NetworkSelectionFilter, {
 } from "../features/network/NetworkSelectionFilter";
 import { OpenIcon } from "../features/network/SelectNetwork";
 import { subgraphApi } from "../features/redux/store";
-import AddressSearchDialog from "../features/send/AddressSearchDialog";
+import AddressSearchDialog from "../components/AddressSearchDialog/AddressSearchDialog";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { Activity, mapActivitiesFromEvents } from "../utils/activityUtils";
 
@@ -75,9 +75,7 @@ const History: NextPage = () => {
 
   const [addressSearchOpen, setAddressSearchOpen] = useState(false);
 
-  const [searchedAddress, setAddressSearch] = useState<string | null>(
-    null
-  );
+  const [searchedAddress, setAddressSearch] = useState<string | null>(null);
 
   const [eventsQueryTrigger] = subgraphApi.useLazyEventsQuery();
 
@@ -267,11 +265,12 @@ const History: NextPage = () => {
               )}
             </Button>
             <AddressSearchDialog
+              title="Select address to filter by"
               open={addressSearchOpen}
               onClose={closeAddressSearchDialog}
               onSelectAddress={onAddressSearchChange}
+              index={null}
             />
-
             <Button
               variant="outlined"
               color="secondary"

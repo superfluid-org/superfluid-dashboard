@@ -14,15 +14,9 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { ethers } from "ethers";
-import { FC, useEffect, useState } from "react";
-import ResponsiveDialog from "../common/ResponsiveDialog";
-import { ensApi } from "../ens/ensApi.slice";
-import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { subgraphApi } from "../redux/store";
-import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import { FC, memo, ReactNode, useEffect, useState } from "react";
+import ResponsiveDialog from "../../features/common/ResponsiveDialog";
+import AddressAvatar from "../AddressAvatar/AddressAvatar";
 import useSearchAddress from "../../hooks/useSearchAddress";
 import { getAddress, isAddress } from "../../utils/memoizedEthersUtils";
 import useAddressName from "../../hooks/useAddressName";
@@ -32,11 +26,11 @@ const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 interface AddressListItemProps {
   address: string;
   name?: string;
-  dataCy: string;
+  dataCy?: string;
   onClick: () => void;
 }
 
-const AddressListItem: FC<AddressListItemProps> = ({
+export const AddressListItem: FC<AddressListItemProps> = ({
   address,
   dataCy,
   onClick,
@@ -48,7 +42,7 @@ const AddressListItem: FC<AddressListItemProps> = ({
         <AddressAvatar address={checksumHex} />
       </ListItemAvatar>
       <ListItemText
-        data-cy={dataCy}
+        {...(dataCy ? { "data-cy": dataCy } : {})}
         primary={name || checksumHex}
         secondary={name && checksumHex}
       />
@@ -60,16 +54,18 @@ export type AddressSearchDialogProps = {
   open: boolean;
   onClose: () => void;
   onSelectAddress: (address: string) => void;
+  title: string;
+  index: ReactNode | null;
 };
 
-const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
+export default memo(function AddressSearchDialog({
   open,
   onSelectAddress,
   onClose,
-}) => {
+  title,
+  index,
+}: AddressSearchDialogProps) {
   const theme = useTheme();
-  const { network } = useExpectedNetwork();
-  const { visibleAddress } = useVisibleAddress();
 
   const [searchTermVisible, setSearchTermVisible] = useState("");
   const [searchTermDebounced, _setSearchTermDebounced] =
@@ -107,23 +103,6 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
   const ensData = ensQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!ensQuery.data` means that the data is not undefined nor null.
   const showEns = !!searchTermDebounced && !isAddress(searchTermDebounced);
 
-  const {
-    currentData: recents,
-    data: _discard,
-    ...recentsQuery
-  } = subgraphApi.useRecentsQuery(
-    visibleAddress
-      ? {
-          chainId: network.id,
-          accountAddress: visibleAddress,
-        }
-      : skipToken
-  );
-
-  const showRecents =
-    (visibleAddress && recentsQuery.isSuccess && recents?.length) ||
-    recentsQuery.isLoading;
-
   const searchSynced = searchTermDebounced === searchTermVisible;
 
   return (
@@ -134,7 +113,7 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
     >
       <DialogTitle sx={{ p: 3 }}>
         <Typography variant="h4" sx={{ mb: 3 }}>
-          Select a recipient
+          {title}
         </Typography>
         <IconButton
           onClick={onClose}
@@ -155,71 +134,44 @@ const AddressSearchDialog: FC<AddressSearchDialogProps> = ({
           value={searchTermVisible}
         />
       </DialogTitle>
-
-      <DialogContent dividers={!!showEns || !!showRecents} sx={{ p: 0 }}>
-        <List sx={{ pt: 0 }}>
-          {showEns ? (
-            <>
-              <ListSubheader sx={{ px: 3 }}>ENS</ListSubheader>
-              {(ensQuery.isFetching || !searchSynced) && (
-                <ListItem sx={LIST_ITEM_STYLE}>
-                  <ListItemText primary="Loading..." />
-                </ListItem>
-              )}
-              {ensQuery.isError && (
-                <ListItem sx={LIST_ITEM_STYLE}>
-                  <ListItemText primary="Error" />
-                </ListItem>
-              )}
-
-              {!ensQuery.isLoading && !ensQuery.isFetching && searchSynced && (
-                <>
-                  {!!ensData ? (
-                    <AddressListItem
-                      dataCy={"ens-entry"}
-                      address={ensData.address}
-                      onClick={() => onSelectAddress(ensData.address)}
-                    />
-                  ) : (
-                    <ListItem sx={LIST_ITEM_STYLE}>
-                      <ListItemText primary="No results" />
-                    </ListItem>
-                  )}
-                </>
-              )}
-            </>
-          ) : showRecents ? (
-            <>
-              <ListSubheader sx={{ px: 3 }}>Recents</ListSubheader>
-              {recentsQuery.isLoading && (
-                <ListItem>
-                  <ListItemButton>
+      <DialogContent dividers={false} sx={{ p: 0 }}>
+        {!searchTermVisible ? (
+          index
+        ) : (
+          <List sx={{ pt: 0 }}>
+            {showEns ? (
+              <>
+                <ListSubheader sx={{ px: 3 }}>ENS</ListSubheader>
+                {(ensQuery.isFetching || !searchSynced) && (
+                  <ListItem sx={LIST_ITEM_STYLE}>
                     <ListItemText primary="Loading..." />
-                  </ListItemButton>
-                </ListItem>
-              )}
-              {recentsQuery.isError && (
-                <ListItem>
-                  <ListItemButton>
+                  </ListItem>
+                )}
+                {ensQuery.isError && (
+                  <ListItem sx={LIST_ITEM_STYLE}>
                     <ListItemText primary="Error" />
-                  </ListItemButton>
-                </ListItem>
-              )}
-              {!!recents &&
-                recents.map((address) => (
-                  <AddressListItem
-                    dataCy={"recents-entry"}
-                    key={address}
-                    address={address}
-                    onClick={() => onSelectAddress(address)}
-                  />
-                ))}
-            </>
-          ) : null}
-        </List>
+                  </ListItem>
+                )}
+                {!ensQuery.isLoading && !ensQuery.isFetching && searchSynced && (
+                  <>
+                    {!!ensData ? (
+                      <AddressListItem
+                        dataCy={"ens-entry"}
+                        address={ensData.address}
+                        onClick={() => onSelectAddress(ensData.address)}
+                      />
+                    ) : (
+                      <ListItem sx={LIST_ITEM_STYLE}>
+                        <ListItemText primary="No results" />
+                      </ListItem>
+                    )}
+                  </>
+                )}
+              </>
+            ) : null}
+          </List>
+        )}
       </DialogContent>
     </ResponsiveDialog>
   );
-};
-
-export default AddressSearchDialog;
+});

@@ -1,7 +1,11 @@
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import { Stack, styled } from "@mui/material";
+import {
+  Stack,
+  styled,
+} from "@mui/material";
 import { memo, MouseEvent, useState } from "react";
-import AddressSearchDialog from "./AddressSearchDialog";
+import AddressSearchDialog from "../../components/AddressSearchDialog/AddressSearchDialog";
+import AddressSearchIndex from "./AddressSearchIndex";
 import DisplayAddressChip from "./DisplayAddressChip";
 
 interface AddressButtonProps {
@@ -38,6 +42,12 @@ export default memo(function AddressSearch({
     setDialogOpen(true);
   };
 
+  const onSelectAddress = (address: string) => {
+    setDialogOpen(false);
+    onChange(address);
+    onBlur();
+  };
+
   return (
     <>
       <AddressButton
@@ -64,16 +74,14 @@ export default memo(function AddressSearch({
         )}
       </AddressButton>
       <AddressSearchDialog
+        title={"Select a receiver"}
+        index={<AddressSearchIndex onSelectAddress={onSelectAddress} />}
         open={dialogOpen}
         onClose={() => {
           setDialogOpen(false);
           onBlur();
         }}
-        onSelectAddress={(address) => {
-          setDialogOpen(false);
-          onChange(address);
-          onBlur();
-        }}
+        onSelectAddress={onSelectAddress}
       />
     </>
   );
