@@ -55,6 +55,11 @@ const transactionTrackerPersistedReducer = persistReducer(
   transactionTracker.reducer
 );
 
+const impersonationPersistedReducer = persistReducer(
+  { storage, key: "impersonations", version: 1 },
+  impersonationSlice.reducer
+);
+
 export const reduxStore = configureStore({
   reducer: {
     [rpcApi.reducerPath]: rpcApi.reducer,
@@ -62,7 +67,7 @@ export const reduxStore = configureStore({
     [transactionTracker.reducerPath]: transactionTrackerPersistedReducer,
     [assetApiSlice.reducerPath]: assetApiSlice.reducer,
     [ensApi.reducerPath]: ensApi.reducer,
-    impersonations: impersonationSlice.reducer,
+    impersonations: impersonationPersistedReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
