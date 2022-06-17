@@ -39,11 +39,9 @@ const ConnectView: FC = () => {
         Connect your wallet, view any wallet, or take a look around!
       </Typography>
 
-      <Box sx={{ mb: 2 }}>
-        <ConnectWallet />
-      </Box>
+      <ConnectWallet />
 
-      <Typography variant="h6" textAlign="center" sx={{ mb: 1 }}>
+      <Typography variant="h6" textAlign="center" sx={{ my: 2 }}>
         -or-
       </Typography>
 
