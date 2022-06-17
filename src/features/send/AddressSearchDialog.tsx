@@ -41,16 +41,16 @@ const AddressListItem: FC<AddressListItemProps> = ({
   dataCy,
   onClick,
 }) => {
-  const { name, checksumHex } = useAddressName(address);
+  const { name, addressChecksummed: checksumHex } = useAddressName(address);
   return (
     <ListItemButton onClick={onClick} sx={LIST_ITEM_STYLE}>
       <ListItemAvatar>
-        <AddressAvatar address={address} />
+        <AddressAvatar address={checksumHex} />
       </ListItemAvatar>
       <ListItemText
         data-cy={dataCy}
-        primary={name || address}
-        secondary={name && address}
+        primary={name || checksumHex}
+        secondary={name && checksumHex}
       />
     </ListItemButton>
   );

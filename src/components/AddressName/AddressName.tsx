@@ -18,8 +18,8 @@ export default memo(function AddressName({
     return (
       <>
         {length === "long"
-          ? addressName.checksumHex
-          : shortenHex(addressName.checksumHex, length === "medium" ? 8 : 4)}
+          ? addressName.addressChecksummed
+          : shortenHex(addressName.addressChecksummed, length === "medium" ? 8 : 4)}
       </>
     );
   }

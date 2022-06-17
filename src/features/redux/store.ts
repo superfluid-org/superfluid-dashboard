@@ -24,6 +24,7 @@ import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
 import { assetApiSlice } from "../token/tokenManifestSlice";
 import { ensApi } from "../ens/ensApi.slice";
+import { impersonationSlice } from "../impersonation/impersonation.slice";
 
 export const rpcApi = initializeRpcApiSlice(createApiWithReactHooks)
   .injectEndpoints(allRpcEndpoints)
@@ -61,6 +62,7 @@ export const reduxStore = configureStore({
     [transactionTracker.reducerPath]: transactionTrackerPersistedReducer,
     [assetApiSlice.reducerPath]: assetApiSlice.reducer,
     [ensApi.reducerPath]: ensApi.reducer,
+    impersonations: impersonationSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -26,12 +26,12 @@ const DisplayAddressChip: FC<{
         <Stack direction="row">
           <ListItem sx={{ p: 0 }}>
             <ListItemAvatar>
-              <AddressAvatar address={addressName.checksumHex} />
+              <AddressAvatar address={addressName.addressChecksummed} />
             </ListItemAvatar>
             <ListItemText
-              primary={addressName.name || shortenHex(addressName.checksumHex)}
+              primary={addressName.name || shortenHex(addressName.addressChecksummed)}
               secondary={
-                addressName.name && shortenHex(addressName.checksumHex)
+                addressName.name && shortenHex(addressName.addressChecksummed)
               }
               primaryTypographyProps={{ variant: "body1" }}
               secondaryTypographyProps={{ variant: "body2" }}
