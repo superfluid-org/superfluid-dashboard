@@ -3,7 +3,7 @@ import { Button } from "@mui/material";
 import { FC, useState } from "react";
 import { TokenMinimal } from "../redux/endpoints/tokenTypes";
 import TokenIcon from "../token/TokenIcon";
-import { TokenDialog, TokenSelectionProps } from "./TokenDialog";
+import TokenDialog, { TokenSelectionProps } from "./TokenDialog";
 
 export const TokenDialogButton: FC<{
   token: TokenMinimal | null | undefined;
