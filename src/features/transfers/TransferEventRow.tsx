@@ -9,12 +9,12 @@ import {
 import { TransferEvent } from "@superfluid-finance/sdk-core";
 import { FC } from "react";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import Blockies from "react-blockies";
-import shortenAddress from "../../utils/shortenAddress";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import EtherFormatted from "../token/EtherFormatted";
 import { format } from "date-fns";
+import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressName from "../../components/AddressName/AddressName";
 
 export const TransferEventLoadingRow = () => (
   <TableRow>
@@ -58,11 +58,9 @@ const TransferEventRow: FC<TransferEventRowProps> = ({ transferEvent }) => {
       <TableCell>
         <Stack direction="row" alignItems="center" gap={1.5}>
           {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
-          <Avatar variant="rounded">
-            <Blockies seed={isOutgoing ? to : from} size={12} scale={3} />
-          </Avatar>
+          <AddressAvatar address={isOutgoing ? to : from} />
           <Typography variant="h6">
-            {shortenAddress(isOutgoing ? to : from)}
+            <AddressName address={isOutgoing ? to : from} />
           </Typography>
         </Stack>
       </TableCell>

@@ -128,7 +128,7 @@ export default memo(function SendCard() {
             chainId: network.id,
             tokenAddress: selectedToken.address,
             senderAddress: visibleAddress,
-            receiverAddress: receiver.hash,
+            receiverAddress: receiver,
           }
         : skipToken
     );
@@ -362,7 +362,7 @@ export default memo(function SendCard() {
                   chainId: network.id,
                   flowRateWei:
                     calculateTotalAmountWei(flowRateEther).toString(),
-                  receiverAddress: formData.receiver.hash,
+                  receiverAddress: formData.receiver,
                   superTokenAddress: formData.token.address,
                   userDataBytes: undefined,
                   waitForConfirmation: false,
@@ -424,7 +424,7 @@ export default memo(function SendCard() {
                       ).toString(),
                       unitOfTime: formData.flowRate.unitOfTime,
                     }).toString(),
-                    receiverAddress: formData.receiver.hash,
+                    receiverAddress: formData.receiver,
                     superTokenAddress: formData.token.address,
                     userDataBytes: undefined,
                     waitForConfirmation: false,
@@ -475,7 +475,7 @@ export default memo(function SendCard() {
                   variant: "outlined",
                 }}
                 onClick={() => {
-                  const receiverAddress = receiver?.hash;
+                  const receiverAddress = receiver;
                   const superTokenAddress = selectedToken?.address;
                   const senderAddress = visibleAddress;
                   if (

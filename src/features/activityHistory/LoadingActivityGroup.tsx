@@ -12,7 +12,6 @@ import {
   Typography,
 } from "@mui/material";
 import { FC, memo } from "react";
-import ActivityIcon from "./ActivityIcon";
 
 const LoadingActivityRow = () => (
   <TableRow>

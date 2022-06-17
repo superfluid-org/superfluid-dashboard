@@ -29,17 +29,12 @@ export const DEFAULT_LINE_CHART_OPTIONS: ChartOptions<"line"> = {
     },
     x: {
       display: false,
-      grace: 0,
+      type: "logarithmic",
     },
   },
 };
 
-// TODO: This should be used as segment filter for balance estimation
-const estimation =
-  (length: number, result: any) => (c: ScriptableLineSegmentContext) =>
-    c.p1DataIndex > length - 4 ? result : undefined;
-
-const createGradient = (
+export const createCTXGradient = (
   ctx: CanvasRenderingContext2D,
   color: string,
   height: number
@@ -54,8 +49,8 @@ export const buildDefaultDatasetConf = (
   ctx: CanvasRenderingContext2D,
   color: string,
   height: number
-): ChartDataset<"line"> => ({
-  backgroundColor: createGradient(ctx, color, height),
+): Omit<ChartDataset<"line">, "data"> => ({
+  backgroundColor: createCTXGradient(ctx, color, height),
   label: "Balance",
   fill: true,
   borderWidth: 3,
@@ -64,5 +59,4 @@ export const buildDefaultDatasetConf = (
   pointBorderColor: "transparent",
   pointBackgroundColor: "transparent",
   tension: 0.1,
-  data: [], // Placeholder, should be overridden
 });

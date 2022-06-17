@@ -103,7 +103,6 @@ export const adHocSubgraphEndpoints = {
         };
       },
     }),
-
     recents: builder.query<
       string[],
       { chainId: number; accountAddress: string }

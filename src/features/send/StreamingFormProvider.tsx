@@ -19,7 +19,7 @@ import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 export type ValidStreamingForm = {
   data: {
     token: SendStreamRestoration["token"];
-    receiver: SendStreamRestoration["receiver"];
+    receiver: string;
     flowRate: {
       amountEther: string;
       unitOfTime: UnitOfTime;
@@ -62,10 +62,7 @@ const StreamingFormProvider: FC<{
               name: string().required(),
               symbol: string().required(),
             }).required(),
-            receiver: object({
-              hash: string().required().test(testAddress()),
-              name: string().optional(),
-            }).required(),
+            receiver: string().required().test(testAddress()).required(),
             flowRate: object({
               amountEther: string()
                 .required()
@@ -97,7 +94,7 @@ const StreamingFormProvider: FC<{
 
         const accountAddress = account?.address;
         const tokenAddress = validForm.data.token.address;
-        const receiverAddress = validForm.data.receiver.hash;
+        const receiverAddress = validForm.data.receiver;
 
         if (
           accountAddress &&

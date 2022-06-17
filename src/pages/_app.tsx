@@ -46,10 +46,10 @@ export default function MyApp(props: MyAppProps) {
           <meta name="viewport" content="initial-scale=1, width=device-width" />
         </Head>
         <WagmiManager>
-          <ImpersonationProvider>
-            <ExpectedNetworkProvider>
-              {(network) => (
-                <ReduxProvider>
+          <ReduxProvider>
+            <ImpersonationProvider>
+              <ExpectedNetworkProvider>
+                {(network) => (
                   <MuiProvider>
                     {(_muiTheme) => (
                       <RainbowKitManager>
@@ -70,10 +70,10 @@ export default function MyApp(props: MyAppProps) {
                       </RainbowKitManager>
                     )}
                   </MuiProvider>
-                </ReduxProvider>
-              )}
-            </ExpectedNetworkProvider>
-          </ImpersonationProvider>
+                )}
+              </ExpectedNetworkProvider>
+            </ImpersonationProvider>
+          </ReduxProvider>
         </WagmiManager>
       </CacheProvider>
     </NextThemesProvider>

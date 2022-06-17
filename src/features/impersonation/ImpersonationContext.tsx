@@ -1,7 +1,17 @@
-import { getAddress, isAddress } from "ethers/lib/utils";
 import { isString } from "lodash";
 import { useRouter } from "next/router";
-import { createContext, FC, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  FC,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { getAddress, isAddress } from "../../utils/memoizedEthersUtils";
+import { useAppDispatch } from "../redux/store";
+import { impersonated } from "./impersonation.slice";
 
 interface ImpersonationContextValue {
   isImpersonated: boolean;
@@ -13,6 +23,8 @@ interface ImpersonationContextValue {
 const ImpersonationContext = createContext<ImpersonationContextValue>(null!);
 
 export const ImpersonationProvider: FC = ({ children }) => {
+  const dispatch = useAppDispatch();
+
   const [impersonatedAddress, setImpersonatedAddress] = useState<
     string | undefined
   >();
@@ -21,23 +33,61 @@ export const ImpersonationProvider: FC = ({ children }) => {
     () => ({
       impersonatedAddress,
       isImpersonated: !!impersonatedAddress,
-      stopImpersonation: () => setImpersonatedAddress(undefined),
-      impersonate: (address: string) => setImpersonatedAddress(getAddress(address))
+      stopImpersonation: () => {
+        removeImpersonatedAddressQueryParam();
+        return setImpersonatedAddress(undefined);
+      },
+      impersonate: (address: string) => {
+        const checksumAddress = getAddress(address);
+        dispatch(
+          impersonated({
+            address: checksumAddress,
+            timestampMs: Date.now(),
+          })
+        );
+        setImpersonatedAddressQueryParam(checksumAddress);
+        return setImpersonatedAddress(checksumAddress);
+      },
     }),
     [impersonatedAddress]
   );
 
   const router = useRouter();
-  const { view: viewAddressQueryParam } = router.query;
+  const setImpersonatedAddressQueryParam = useCallback(
+    (address) => {
+      router.replace({
+        query: {
+          ...router.query,
+          view: address,
+        },
+      });
+    },
+    [router]
+  );
+  const removeImpersonatedAddressQueryParam = useCallback(() => {
+    const { view: viewAddressQueryParam, ...queryWithoutParam } = router.query;
+    router.replace({
+      query: queryWithoutParam,
+    });
+  }, [router]);
+
+  // Get impersonated address from query string
   useEffect(() => {
-    if (isString(viewAddressQueryParam)) {
+    const { view: viewAddressQueryParam } = router.query;
+    if (!impersonatedAddress && isString(viewAddressQueryParam)) {
       if (isAddress(viewAddressQueryParam)) {
-        setImpersonatedAddress(getAddress(viewAddressQueryParam))
+        setImpersonatedAddress(getAddress(viewAddressQueryParam));
       }
-      const { view, ...viewAddressQueryParamRemoved } = router.query;
-      router.replace({ query: viewAddressQueryParamRemoved });
     }
-  }, [viewAddressQueryParam]);
+  }, [router.isReady]);
+
+  // Actively keep impersonated address in query string
+  useEffect(() => {
+    const { view: viewAddressQueryParam } = router.query;
+    if (impersonatedAddress && !viewAddressQueryParam) {
+      setImpersonatedAddressQueryParam(impersonatedAddress);
+    }
+  }, [router.route]);
 
   return (
     <ImpersonationContext.Provider value={contextValue}>

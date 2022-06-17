@@ -7,45 +7,32 @@ import {
   ListItemText,
   Stack,
 } from "@mui/material";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
-import Blockies from "react-blockies";
-import shortenAddress from "../../utils/shortenAddress";
-import { ensApi } from "../ens/ensApi.slice";
-
-export type DisplayAddress = {
-  hash: string;
-  name?: string;
-};
+import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import useAddressName from "../../hooks/useAddressName";
+import shortenHex from "../../utils/shortenHex";
 
 // TODO(KK): memo
 const DisplayAddressChip: FC<{
-  hash: string;
-  name?: string;
-  tryGetEns: boolean;
+  address: string;
   ChipProps?: ChipProps;
-}> = ({ hash, name: initialName, tryGetEns, ChipProps = {} }) => {
-  // TOOD(KK): getAddress for nice hash?
-
-  const ensQuery = ensApi.useLookupAddressQuery(tryGetEns ? hash : skipToken);
-  const name = ensQuery.currentData?.name || initialName;
-
+}> = ({ address, ChipProps = {} }) => {
+  const addressName = useAddressName(address);
   const { sx: ChipSx = {} } = ChipProps;
 
   return (
     <Chip
       label={
         <Stack direction="row">
-          {/* Read about the Blockies API here: https://github.com/stephensprinkle-zz/react-blockies */}
           <ListItem sx={{ p: 0 }}>
             <ListItemAvatar>
-              <Avatar variant="rounded">
-                <Blockies seed={hash} size={12} scale={3} />
-              </Avatar>
+              <AddressAvatar address={addressName.addressChecksummed} />
             </ListItemAvatar>
             <ListItemText
-              primary={name || shortenAddress(hash)}
-              secondary={name && shortenAddress(hash)}
+              primary={addressName.name || shortenHex(addressName.addressChecksummed)}
+              secondary={
+                addressName.name && shortenHex(addressName.addressChecksummed)
+              }
               primaryTypographyProps={{ variant: "body1" }}
               secondaryTypographyProps={{ variant: "body2" }}
             />

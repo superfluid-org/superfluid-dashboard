@@ -1,12 +1,8 @@
-import CloseIcon from "@mui/icons-material/Close";
 import DateRangeIcon from "@mui/icons-material/DateRange";
-import SearchIcon from "@mui/icons-material/Search";
 import {
-  Avatar,
   Box,
   Button,
   Container,
-  IconButton,
   Paper,
   Stack,
   Table,
@@ -20,7 +16,6 @@ import groupBy from "lodash/fp/groupBy";
 import orderBy from "lodash/fp/orderBy";
 import { NextPage } from "next";
 import { MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
-import Blockies from "react-blockies";
 import ActivityRow from "../features/activityHistory/ActivityRow";
 import ActivityTypeFilter, {
   ActivityType,
@@ -42,11 +37,8 @@ import NetworkSelectionFilter, {
 import { OpenIcon } from "../features/network/SelectNetwork";
 import { subgraphApi } from "../features/redux/store";
 import AddressSearch from "../features/send/AddressSearch";
-import AddressSearchDialog from "../features/send/AddressSearchDialog";
-import { DisplayAddress } from "../features/send/DisplayAddressChip";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { Activity, mapActivitiesFromEvents } from "../utils/activityUtils";
-import shortenAddress from "../utils/shortenAddress";
 
 const History: NextPage = () => {
   const dateNow = useMemo(() => new Date(), []);
@@ -78,9 +70,7 @@ const History: NextPage = () => {
 
   const [addressSearchOpen, setAddressSearchOpen] = useState(false);
 
-  const [addressSearch, setAddressSearch] = useState<DisplayAddress | null>(
-    null
-  );
+  const [searchedAddress, setAddressSearch] = useState<string | null>(null);
 
   const [eventsQueryTrigger] = subgraphApi.useLazyEventsQuery();
 
@@ -99,10 +89,10 @@ const History: NextPage = () => {
             {
               chainId: network.id,
               filter: {
-                addresses_contains: addressSearch
+                addresses_contains: searchedAddress
                   ? [
                       visibleAddress.toLowerCase(),
-                      addressSearch.hash.toLowerCase(),
+                      searchedAddress.toLowerCase(),
                     ]
                   : [visibleAddress.toLowerCase()],
                 timestamp_gte: Math.floor(
@@ -141,9 +131,9 @@ const History: NextPage = () => {
       setActivities([]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visibleAddress, activeNetworks, startDate, endDate, addressSearch]);
+  }, [visibleAddress, activeNetworks, startDate, endDate, searchedAddress]);
 
-  const onAddressSearchChange = (address: DisplayAddress) => {
+  const onAddressSearchChange = (address: string) => {
     setAddressSearch(address);
     closeAddressSearchDialog();
   };
@@ -223,10 +213,10 @@ const History: NextPage = () => {
         <Stack gap={2.5}>
           <Stack direction="row" justifyContent="space-between">
             <AddressSearch
-              address={addressSearch}
+              address={searchedAddress}
               placeholder="Filter by public address or ENS"
-              shortenAddr={12}
               onChange={setAddressSearch}
+              addressLength="medium"
               ButtonProps={{
                 variant: "outlined",
                 color: "secondary",

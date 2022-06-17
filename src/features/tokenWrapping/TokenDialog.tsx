@@ -16,7 +16,7 @@ import {
 import { skipToken } from "@reduxjs/toolkit/query";
 import { ethers } from "ethers";
 import Fuse from "fuse.js";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, memo, useCallback, useEffect, useMemo, useState } from "react";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
@@ -37,17 +37,19 @@ export type TokenSelectionProps = {
   };
 };
 
-export const TokenDialog: FC<{
+interface TokenDialogProps {
   open: boolean;
   onClose: () => void;
   onSelect: (token: TokenMinimal) => void;
   tokenSelection: TokenSelectionProps;
-}> = ({
+}
+
+export default memo(function TokenDialog({
   open,
   onClose,
   onSelect,
   tokenSelection: { tokenPairsQuery, showUpgrade = false },
-}) => {
+}: TokenDialogProps) {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
@@ -249,4 +251,4 @@ export const TokenDialog: FC<{
       </DialogContent>
     </ResponsiveDialog>
   );
-};
+});

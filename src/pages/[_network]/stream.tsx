@@ -19,7 +19,6 @@ import Error from "next/error";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { FC, useMemo } from "react";
-import Blockies from "react-blockies";
 import NetworkIcon from "../../features/network/NetworkIcon";
 import { subgraphApi } from "../../features/redux/store";
 import {
@@ -30,13 +29,15 @@ import { UnitOfTime } from "../../features/send/FlowRateInput";
 import EtherFormatted from "../../features/token/EtherFormatted";
 import FlowingBalance from "../../features/token/FlowingBalance";
 import TokenIcon from "../../features/token/TokenIcon";
-import shortenAddress from "../../utils/shortenAddress";
 import {
   calculateBuffer,
   calculateMaybeCriticalAtTimestamp,
 } from "../../utils/tokenUtils";
 import withPathNetwork, { NetworkPage } from "../../hoc/withPathNetwork";
 import { BigNumber } from "ethers";
+import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressName from "../../components/AddressName/AddressName";
+import shortenHex from "../../utils/shortenHex";
 
 interface OverviewItemProps {
   label: string;
@@ -82,7 +83,7 @@ const Stream: FC<NetworkPage> = ({ network }) => {
       calculateMaybeCriticalAtTimestamp({
         updatedAtTimestamp: snapshotUpdatedAtTimestamp,
         balanceUntilUpdatedAtWei: balanceUntilUpdatedAt,
-        totalNetFlowRateWei: totalNetFlowRate
+        totalNetFlowRateWei: totalNetFlowRate,
       }).toNumber() * 1000
     );
   }, [tokenSnapshotQuery.data]);
@@ -233,11 +234,10 @@ const Stream: FC<NetworkPage> = ({ network }) => {
               gap={2}
               sx={{ py: 2, px: 3 }}
             >
-              <Avatar variant="rounded">
-                <Blockies seed={sender} size={12} scale={3} />
-              </Avatar>
-
-              <ListItemText primary={shortenAddress(sender, 8)} />
+              <AddressAvatar address={sender} />
+              <ListItemText
+                primary={<AddressName address={sender} length="medium" />}
+              />
             </Paper>
           </Stack>
 
@@ -260,11 +260,10 @@ const Stream: FC<NetworkPage> = ({ network }) => {
               gap={2}
               sx={{ py: 2, px: 3 }}
             >
-              <Avatar variant="rounded">
-                <Blockies seed={receiver} size={12} scale={3} />
-              </Avatar>
-
-              <ListItemText primary={shortenAddress(receiver, 8)} />
+              <AddressAvatar address={receiver} />
+              <ListItemText
+                primary={<AddressName address={receiver} length="medium" />}
+              />
             </Paper>
           </Stack>
         </Stack>
@@ -344,7 +343,7 @@ const Stream: FC<NetworkPage> = ({ network }) => {
           />
           <OverviewItem
             label="Transaction ID:"
-            value={shortenAddress(streamId, 6)}
+            value={shortenHex(streamId, 6)}
           />
         </Stack>
 

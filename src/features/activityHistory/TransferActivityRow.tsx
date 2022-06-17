@@ -1,7 +1,6 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import {
-  Avatar,
   ListItem,
   ListItemAvatar,
   ListItemText,
@@ -13,9 +12,9 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { TransferEvent } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { FC, memo, useMemo } from "react";
-import Blockies from "react-blockies";
+import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressName from "../../components/AddressName/AddressName";
 import { Activity } from "../../utils/activityUtils";
-import shortenAddress from "../../utils/shortenAddress";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
@@ -98,16 +97,14 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
       <TableCell>
         <ListItem sx={{ p: 0 }}>
           <ListItemAvatar>
-            <Avatar variant="rounded">
-              <Blockies seed={isOutgoing ? to : from} size={12} scale={3} />
-            </Avatar>
+            <AddressAvatar address={isOutgoing ? to : from} />
           </ListItemAvatar>
           <ListItemText
             primary={isOutgoing ? "To" : "From"}
             secondary={
               <AddressCopyTooltip address={isOutgoing ? to : from}>
                 <Typography variant="h6" color="text.primary" component="span">
-                  {shortenAddress(isOutgoing ? to : from)}
+                  <AddressName address={isOutgoing ? to : from} />
                 </Typography>
               </AddressCopyTooltip>
             }
@@ -120,7 +117,6 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
       </TableCell>
       <TableCell sx={{ position: "relative" }}>
         <TxHashLink txHash={transactionHash} network={network} />
-
         <NetworkBadge
           network={network}
           sx={{ position: "absolute", top: "0px", right: "16px" }}

@@ -4,25 +4,26 @@ import SearchIcon from "@mui/icons-material/Search";
 import { Avatar, Button, ButtonProps, IconButton } from "@mui/material";
 import { memo, MouseEvent, useState } from "react";
 import Blockies from "react-blockies";
-import shortenAddress from "../../utils/shortenAddress";
-import AddressSearchDialog from "./AddressSearchDialog";
-import { DisplayAddress } from "./DisplayAddressChip";
+import AddressName from "../../components/AddressName/AddressName";
+import AddressSearchDialog from "../../components/AddressSearchDialog/AddressSearchDialog";
+import useAddressName from "../../hooks/useAddressName";
+import AddressSearchIndex from "./AddressSearchIndex";
 
 export default memo(function AddressSearch({
   address,
   onChange,
   placeholder = "Public Address or ENS",
-  shortenAddr,
   ButtonProps = {},
   onBlur = () => {},
 }: {
-  address: DisplayAddress | null;
-  onChange: (address: DisplayAddress | null) => void; // TODO(KK): better name
+  address: string | null;
+  onChange: (address: string | null) => void; // TODO(KK): better name
   placeholder?: string;
-  shortenAddr?: number;
   ButtonProps?: ButtonProps;
   onBlur?: () => void;
 }) {
+  const addressName = useAddressName(address || "");
+
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const onOpenDialog = (event: MouseEvent<HTMLButtonElement>) => {
@@ -36,6 +37,12 @@ export default memo(function AddressSearch({
     onChange(null);
   };
 
+  const onSelectAddress = (address: string) => {
+    setDialogOpen(false);
+    onChange(address);
+    onBlur();
+  };
+
   return (
     <>
       <Button
@@ -45,7 +52,11 @@ export default memo(function AddressSearch({
         startIcon={
           address ? (
             <Avatar variant="rounded">
-              <Blockies seed={address.hash} size={12} scale={3} />
+              <Blockies
+                seed={addressName.addressChecksummed}
+                size={12}
+                scale={3}
+              />
             </Avatar>
           ) : (
             <SearchIcon />
@@ -66,26 +77,18 @@ export default memo(function AddressSearch({
         }
         {...ButtonProps}
       >
-        <span>
-          {address
-            ? shortenAddr
-              ? shortenAddress(address.hash, shortenAddr)
-              : address.hash
-            : placeholder}
-        </span>
+        {address ? <AddressName address={address} /> : placeholder}
       </Button>
 
       <AddressSearchDialog
+        title={"Select a receiver"}
+        index={<AddressSearchIndex onSelectAddress={onSelectAddress} />}
         open={dialogOpen}
         onClose={() => {
           setDialogOpen(false);
           onBlur();
         }}
-        onSelectAddress={(address) => {
-          setDialogOpen(false);
-          onChange(address);
-          onBlur();
-        }}
+        onSelectAddress={onSelectAddress}
       />
     </>
   );

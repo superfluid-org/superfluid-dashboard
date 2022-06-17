@@ -1,5 +1,5 @@
 import {BasePage} from "../BasePage";
-import shortenAddress from "../../../src/utils/shortenAddress";
+import shortenHex from "../../../src/utils/shortenHex";
 
 const SEND_BUTTON = "[data-cy=send-transaction-button]";
 const RECEIVER_BUTTON = "[data-cy=address-button]";
@@ -85,7 +85,7 @@ export class SendPage extends BasePage {
             this.doesNotExist(ADDRESS_DIALOG_INPUT);
             this.hasText(
                 ADDRESS_BUTTON_TEXT,
-                shortenAddress(commonData.staticBalanceAccount)
+                shortenHex(commonData.staticBalanceAccount)
             );
             this.click(SELECT_TOKEN_BUTTON);
             this.clickFirstVisible(TOKEN_SEARCH_RESULTS);
@@ -148,7 +148,7 @@ export class SendPage extends BasePage {
 
     static chosenEnsReceiverWalletAddress(name: string, address: string) {
         this.hasText(ADDRESS_BUTTON_TEXT, name);
-        this.hasText(CHOSEN_ENS_ADDRESS, shortenAddress(address));
+        this.hasText(CHOSEN_ENS_ADDRESS, shortenHex(address));
     }
 
     static clearReceiverField() {
