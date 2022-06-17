@@ -55,7 +55,6 @@ const ConnectView: FC = () => {
             size="xl"
             startIcon={<PersonSearchIcon />}
             onClick={openAddressSearchDialog}
-            sx={{ justifyContent: "flex-start" }}
           >
             View the dashboard as any address
           </Button>

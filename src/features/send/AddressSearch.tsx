@@ -1,29 +1,30 @@
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import SearchIcon from "@mui/icons-material/Search";
-import { Avatar, Button, ButtonProps, IconButton } from "@mui/material";
+import { Button, ButtonProps, IconButton } from "@mui/material";
 import { memo, MouseEvent, useState } from "react";
-import Blockies from "react-blockies";
-import AddressName from "../../components/AddressName/AddressName";
+import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressName, {
+  AddressNameProps,
+} from "../../components/AddressName/AddressName";
 import AddressSearchDialog from "../../components/AddressSearchDialog/AddressSearchDialog";
-import useAddressName from "../../hooks/useAddressName";
 import AddressSearchIndex from "./AddressSearchIndex";
 
 export default memo(function AddressSearch({
   address,
   onChange,
   placeholder = "Public Address or ENS",
+  addressLength = "long",
   ButtonProps = {},
   onBlur = () => {},
 }: {
   address: string | null;
   onChange: (address: string | null) => void; // TODO(KK): better name
   placeholder?: string;
+  addressLength?: AddressNameProps["length"];
   ButtonProps?: ButtonProps;
   onBlur?: () => void;
 }) {
-  const addressName = useAddressName(address || "");
-
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const onOpenDialog = (event: MouseEvent<HTMLButtonElement>) => {
@@ -50,17 +51,7 @@ export default memo(function AddressSearch({
         variant="input"
         onClick={onOpenDialog}
         startIcon={
-          address ? (
-            <Avatar variant="rounded">
-              <Blockies
-                seed={addressName.addressChecksummed}
-                size={12}
-                scale={3}
-              />
-            </Avatar>
-          ) : (
-            <SearchIcon />
-          )
+          address ? <AddressAvatar address={address} /> : <SearchIcon />
         }
         endIcon={
           address ? (
@@ -77,7 +68,11 @@ export default memo(function AddressSearch({
         }
         {...ButtonProps}
       >
-        {address ? <AddressName address={address} /> : placeholder}
+        {address ? (
+          <AddressName address={address} length={addressLength} />
+        ) : (
+          placeholder
+        )}
       </Button>
 
       <AddressSearchDialog

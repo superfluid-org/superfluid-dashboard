@@ -2,7 +2,7 @@ import { memo } from "react";
 import useAddressName from "../../hooks/useAddressName";
 import shortenHex from "../../utils/shortenHex";
 
-interface AddressNameProps {
+export interface AddressNameProps {
   address: string;
   length?: "short" | "medium" | "long";
 }
@@ -19,7 +19,10 @@ export default memo(function AddressName({
       <>
         {length === "long"
           ? addressName.addressChecksummed
-          : shortenHex(addressName.addressChecksummed, length === "medium" ? 8 : 4)}
+          : shortenHex(
+              addressName.addressChecksummed,
+              length === "medium" ? 8 : 4
+            )}
       </>
     );
   }
