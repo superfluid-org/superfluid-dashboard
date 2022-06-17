@@ -8,7 +8,7 @@ const ImpersonationChip: FC<ChipProps> = ({ ...props }) => {
   const {
     isImpersonated,
     impersonatedAddress,
-    stopImpersonation: stopImpersonation,
+    stopImpersonation,
   } = useImpersonation();
 
   return isImpersonated ? (

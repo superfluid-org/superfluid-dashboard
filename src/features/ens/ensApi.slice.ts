@@ -11,13 +11,36 @@ export interface ResolveNameResult {
 export const ensApi = createApi({
   reducerPath: "ens",
   baseQuery: fakeBaseQuery(),
+  keepUnusedDataFor: 600, // Agressively cache the ENS queries
   endpoints: (builder) => {
-    const mainnetProvider = new ethers.providers.JsonRpcBatchProvider("https://cloudflare-eth.com", "mainnet");
+    const mainnetProvider = new ethers.providers.FallbackProvider(
+      [
+        {
+          provider: new ethers.providers.JsonRpcBatchProvider(
+            "https://eth-mainnet.public.blastapi.io",
+            "mainnet"
+          ),
+          priority: 1,
+        },
+        {
+          provider: new ethers.providers.JsonRpcBatchProvider(
+            "https://eth-rpc.gateway.pokt.network",
+            "mainnet"
+          ),
+          priority: 1,
+        },
+        {
+          provider: new ethers.providers.JsonRpcBatchProvider(
+            "https://cloudflare-eth.com",
+            "mainnet"
+          ),
+          priority: 1,
+        },
+      ],
+      1
+    );
     return {
-      resolveName: builder.query<
-        ResolveNameResult | null,
-        string
-      >({
+      resolveName: builder.query<ResolveNameResult | null, string>({
         queryFn: async (name) => {
           if (!name.includes(".")) {
             return { data: null };
@@ -54,10 +77,10 @@ export const ensApi = createApi({
         queryFn: async (address) => {
           const avatarUrl = await mainnetProvider.getAvatar(address);
           return {
-            data: avatarUrl
-          }
-        }
-      })
+            data: avatarUrl,
+          };
+        },
+      }),
     };
   },
 });

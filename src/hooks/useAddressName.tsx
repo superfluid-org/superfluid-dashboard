@@ -7,10 +7,10 @@ interface AddressNameResult {
 }
 
 const useAddressName = (address: string): AddressNameResult => {
-  const ensQuery = ensApi.useLookupAddressQuery(address);
+  const ensLookupQuery = ensApi.useLookupAddressQuery(address);
   return {
     addressChecksummed: getAddress(address),
-    name: ensQuery.data?.name ?? "",
+    name: ensLookupQuery.data?.name ?? "",
   };
 };
 

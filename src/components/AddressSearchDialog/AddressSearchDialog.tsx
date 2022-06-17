@@ -25,7 +25,7 @@ const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
 interface AddressListItemProps {
   address: string;
-  name?: string;
+  namePlaceholder?: string;
   dataCy?: string;
   onClick: () => void;
 }
@@ -34,8 +34,11 @@ export const AddressListItem: FC<AddressListItemProps> = ({
   address,
   dataCy,
   onClick,
+  namePlaceholder
 }) => {
   const { name, addressChecksummed: checksumHex } = useAddressName(address);
+
+  
   return (
     <ListItemButton onClick={onClick} sx={LIST_ITEM_STYLE}>
       <ListItemAvatar>
@@ -43,8 +46,8 @@ export const AddressListItem: FC<AddressListItemProps> = ({
       </ListItemAvatar>
       <ListItemText
         {...(dataCy ? { "data-cy": dataCy } : {})}
-        primary={name || checksumHex}
-        secondary={name && checksumHex}
+        primary={name || namePlaceholder || checksumHex}
+        secondary={(name || namePlaceholder) && checksumHex}
       />
     </ListItemButton>
   );
@@ -159,6 +162,7 @@ export default memo(function AddressSearchDialog({
                         dataCy={"ens-entry"}
                         address={ensData.address}
                         onClick={() => onSelectAddress(ensData.address)}
+                        namePlaceholder={ensData.name}
                       />
                     ) : (
                       <ListItem sx={LIST_ITEM_STYLE}>
