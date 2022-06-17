@@ -3,30 +3,25 @@ import {
   Container,
   Stack,
   Typography,
-  IconButton,
   Box,
-  InputAdornment,
-  TextField,
+  Button,
 } from "@mui/material";
 import type { NextPage } from "next";
-import { FC, useMemo, useState } from "react";
+import { FC, useState, useCallback } from "react";
 import TokenSnapshotTables from "../features/tokenSnapshotTable/TokenSnapshotTables";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ConnectWallet from "../features/wallet/ConnectWallet";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
-import { isAddress } from "ethers/lib/utils";
 import { useImpersonation } from "../features/impersonation/ImpersonationContext";
+import AddressSearchIndex from "../features/impersonation/AddressSearchIndex";
+import AddressSearchDialog from "../components/AddressSearchDialog/AddressSearchDialog";
 
 const ConnectView: FC = () => {
-  const theme = useTheme();
-
   const { impersonate } = useImpersonation();
-  const [impersonateAddress, setImpersonateAddress] = useState("");
-  const isValidImpersonateAddress = useMemo(
-    () => isAddress(impersonateAddress),
-    [impersonateAddress]
-  );
+  const [addressSearchOpen, setAddressSearchOpen] = useState(false);
+  const openAddressSearchDialog = useCallback(() => setAddressSearchOpen(true), [setAddressSearchOpen]);
+  const closeAddressSearchDialog = useCallback(() => setAddressSearchOpen(false), [setAddressSearchOpen]);
+  const onImpersonate = useCallback((address: string) => impersonate(address), [])
 
   return (
     <Stack sx={{ maxWidth: 500, m: "0 auto" }} gap={6}>
@@ -41,39 +36,24 @@ const ConnectView: FC = () => {
       </Box>
 
       <Box>
-        <Typography variant="h6" sx={{ mb: 1 }}>
-          View any account
-        </Typography>
         <Stack data-cy={"view-mode-inputs"} direction="row" gap={2.5}>
-          <TextField
-            hiddenLabel
-            placeholder="Paste any account address"
-            value={impersonateAddress}
-            onChange={(e) => setImpersonateAddress(e.target.value)}
-            sx={{
-              flex: 1,
-              padding: 0,
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <PersonSearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-          <IconButton
-            data-cy={"view-mode-search-button"}
-            disabled={!isValidImpersonateAddress}
-            title="View address"
-            sx={{
-              border: `1px solid ${theme.palette.other.outline}`,
-              borderRadius: "10px",
-            }}
-            onClick={() => impersonate(impersonateAddress)}
+          <Button
+            variant="outlined"
+            color="secondary"
+            size="xl"
+            startIcon={<PersonSearchIcon />}
+            onClick={openAddressSearchDialog}
+            sx={{ maxWidth: "400px", justifyContent: "flex-start" }}
           >
-            <ArrowForwardIcon />
-          </IconButton>
+            View the dashboard as any address
+          </Button>
+          <AddressSearchDialog
+            title="Select Address To View"
+            open={addressSearchOpen}
+            onClose={closeAddressSearchDialog}
+            onSelectAddress={onImpersonate}
+            index={<AddressSearchIndex onSelectAddress={onImpersonate} />}
+          />
         </Stack>
       </Box>
     </Stack>

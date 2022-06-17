@@ -1,21 +1,17 @@
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import {
   List,
   ListItem,
   ListItemButton,
   ListItemText,
   ListSubheader,
-  Stack,
-  styled,
 } from "@mui/material";
-import { FC, memo, MouseEvent, useState } from "react";
+import { memo } from "react";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import AddressSearchDialog, {
+import {
   AddressListItem,
   AddressSearchDialogProps,
 } from "../../components/AddressSearchDialog/AddressSearchDialog";
-import DisplayAddressChip from "./DisplayAddressChip";
 import { subgraphApi } from "../redux/store";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 

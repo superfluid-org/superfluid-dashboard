@@ -20,7 +20,7 @@ export default memo(function AddressSearchIndex({
 
   return (
     <List>
-      <ListSubheader>Recently Viewed Addresses</ListSubheader>
+      <ListSubheader>Recently Viewed</ListSubheader>
       {recentImpersonations.map((impersonation) => (
         <AddressListItem
           key={impersonation.address}
