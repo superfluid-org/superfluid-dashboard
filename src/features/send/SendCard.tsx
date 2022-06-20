@@ -22,6 +22,7 @@ import { useRouter } from "next/router";
 import { FC, memo, useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { useSigner } from "wagmi";
+import { getDefaultGasOverrides } from "../../utils/gasUtils";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import TooltipIcon from "../common/TooltipIcon";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -382,6 +383,7 @@ export default memo(function SendCard() {
                       },
                     } as SendStreamRestoration,
                   },
+                  overrides: getDefaultGasOverrides(network),
                 })
                   .unwrap()
                   .then(() => resetForm());
@@ -445,6 +447,7 @@ export default memo(function SendCard() {
                         },
                       } as ModifyStreamRestoration,
                     },
+                    overrides: getDefaultGasOverrides(network),
                   })
                     .unwrap()
                     .then(() => resetForm());
@@ -497,6 +500,7 @@ export default memo(function SendCard() {
                     chainId: network.id,
                     userDataBytes: undefined,
                     waitForConfirmation: false,
+                    overrides: getDefaultGasOverrides(network),
                   })
                     .unwrap()
                     .then(() => resetForm());

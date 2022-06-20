@@ -15,7 +15,7 @@ import {
   UnderlyingBalance,
   RealtimeBalance,
 } from "./balanceFetcher";
-import { Signer } from "ethers";
+import { Overrides, Signer } from "ethers";
 
 declare module "@superfluid-finance/sdk-redux" {
   interface TransactionTitleOverrides {
@@ -159,7 +159,8 @@ export const adHocRpcEndpoints = {
         amountWei: string;
         waitForConfirmation?: boolean;
         transactionExtraData?: Record<string, unknown>;
-        signer: Signer
+        signer: Signer,
+        overrides: Overrides
       }
     >({
       queryFn: async (arg, queryApi) => {
@@ -178,6 +179,7 @@ export const adHocRpcEndpoints = {
           .approve({
             amount: arg.amountWei,
             receiver: superToken.address,
+            overrides: arg.overrides
           })
           .exec(arg.signer);
 

@@ -25,6 +25,7 @@ import { FC, memo, MouseEvent, useState } from "react";
 import { useNetwork, useSigner } from "wagmi";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
+import { getDefaultGasOverrides } from "../../utils/gasUtils";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
@@ -132,6 +133,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
       superTokenAddress: stream.token,
       userDataBytes: undefined,
       waitForConfirmation: false,
+      overrides: getDefaultGasOverrides(network),
     }).unwrap();
     closeMenu();
     setShowCancelDialog(true);

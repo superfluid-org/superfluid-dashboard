@@ -4,6 +4,7 @@ import { parseEther } from "ethers/lib/utils";
 import { useRouter } from "next/router";
 import { FC, useEffect, useRef } from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import { getDefaultGasOverrides } from "../../utils/gasUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
@@ -239,6 +240,7 @@ export const WrapTabDowngrade: FC = () => {
             transactionExtraData: {
               restoration,
             },
+            overrides: getDefaultGasOverrides(network)
           })
             .unwrap()
             .then(() => resetForm());
