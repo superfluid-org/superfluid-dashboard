@@ -4,7 +4,6 @@ import HistoryIcon from "@mui/icons-material/History";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import {
   Box,
-  Divider,
   Drawer,
   List,
   ListItemButton,
@@ -22,6 +21,7 @@ import { FC, memo } from "react";
 import Link from "../common/Link";
 import ThemeChanger from "../theme/ThemeChanger";
 import ConnectWallet from "../wallet/ConnectWallet";
+import MoreNavigationItem from "./MoreNavigationItem";
 
 export const menuDrawerWidth = 260;
 
@@ -52,7 +52,6 @@ const NavigationItem: FC<NavigationItemProps> = ({
 
 export default memo(function NavigationDrawer() {
   const theme = useTheme();
-
   const router = useRouter();
 
   const isActiveRoute = (...routes: Array<string>) =>
@@ -135,8 +134,10 @@ export default memo(function NavigationDrawer() {
       </Stack>
 
       <Stack justifyContent="flex-end" sx={{ flex: 1 }}>
-        <Divider />
-        <Stack direction="row" justifyContent="center" sx={{ m: 1 }}>
+        {/* <Divider /> */}
+
+        <Stack sx={{ my: 2, px: 2 }} gap={1}>
+          <MoreNavigationItem />
           <ThemeChanger />
         </Stack>
       </Stack>

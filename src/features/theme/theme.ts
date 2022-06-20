@@ -826,6 +826,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       },
       MuiMenu: {
         defaultProps: {
+          elevation: 2,
           PaperProps: {
             square: true,
           },
@@ -833,6 +834,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       },
       MuiPopover: {
         defaultProps: {
+          elevation: 2,
           PaperProps: {
             square: true,
           },
@@ -937,6 +939,38 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
           arrow: {
             color: theme.palette.background.paper,
+          },
+        },
+      },
+      MuiCard: {
+        styleOverrides: {
+          root: {
+            padding: theme.spacing(3.5),
+          },
+        },
+      },
+      MuiCardHeader: {
+        defaultProps: {
+          subheaderTypographyProps: {
+            variant: "body2",
+          },
+        },
+        styleOverrides: {
+          root: {
+            padding: "0px",
+            " + .MuiCardContent-root": {
+              paddingTop: theme.spacing(3),
+            },
+          },
+        },
+      },
+      MuiCardContent: {
+        styleOverrides: {
+          root: {
+            padding: "0px",
+            "&:last-child": {
+              paddingBottom: "0px",
+            },
           },
         },
       },

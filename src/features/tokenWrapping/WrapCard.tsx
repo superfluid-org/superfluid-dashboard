@@ -74,7 +74,6 @@ export default memo(function WrapCard({
       sx={{
         maxWidth: "500px",
         borderRadius: "20px",
-        p: 4,
       }}
       elevation={1}
     >

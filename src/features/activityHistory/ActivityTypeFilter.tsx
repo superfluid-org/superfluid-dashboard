@@ -147,9 +147,8 @@ const ActivityTypeFilter: FC<ActivityTypeFilterProps> = ({
       anchorEl={anchorEl}
       onClose={onClose}
       PaperProps={{
-        square: true,
-        elevation: 2,
         sx: { mt: theme.spacing(1.5), minWidth: "280px" },
+        square: true,
       }}
       transformOrigin={{ horizontal: "left", vertical: "top" }}
       anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
