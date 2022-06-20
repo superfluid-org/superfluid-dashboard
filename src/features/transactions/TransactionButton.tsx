@@ -8,15 +8,17 @@ import {
   TransactionDialogButton,
 } from "./TransactionDialog";
 import UnknownMutationResult from "../../unknownMutationResult";
-import { useAccount, useConnect, useNetwork } from "wagmi";
+import { useConnect, useNetwork, useSigner } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
+import { Signer } from "ethers";
 
 export const TransactionButton: FC<{
   mutationResult: UnknownMutationResult;
   hidden: boolean;
   disabled: boolean;
   onClick: (
+    signer: Signer,
     setTransactionDialogContent: (arg: {
       label?: React.ReactNode;
       successActions?: ReturnType<typeof TransactionDialogActions>;
@@ -38,7 +40,7 @@ export const TransactionButton: FC<{
 }) => {
   const { isConnecting } = useConnect();
   const { activeChain, switchNetwork } = useNetwork();
-  const { data: account } = useAccount();
+  const { data: signer, isLoading: isSignerLoading } = useSigner();
   const { isImpersonated, stopImpersonation: stopImpersonation } =
     useImpersonation();
 
@@ -85,14 +87,14 @@ export const TransactionButton: FC<{
       );
     }
 
-    if (!account?.address) {
+    if (!signer) {
       return (
         <ConnectButton.Custom>
           {({ openConnectModal }) => (
             <LoadingButton
               data-cy={"connect-wallet"}
               fullWidth
-              loading={isConnecting}
+              loading={isConnecting || isSignerLoading}
               color="primary"
               variant="contained"
               size="xl"
@@ -136,6 +138,7 @@ export const TransactionButton: FC<{
         disabled={disabled}
         onClick={() => {
           onClick(
+            signer,
             (arg: {
               label?: React.ReactNode;
               successActions?: ReturnType<typeof TransactionDialogActions>;

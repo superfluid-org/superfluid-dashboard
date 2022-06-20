@@ -206,7 +206,11 @@ export const WrapTabDowngrade: FC = () => {
         hidden={false}
         mutationResult={downgradeResult}
         disabled={isDowngradeDisabled}
-        onClick={(setTransactionDialogContent, closeTransactionDialog) => {
+        onClick={(
+          signer,
+          setTransactionDialogContent,
+          closeTransactionDialog
+        ) => {
           if (!formState.isValid) {
             throw Error(
               `This should never happen. Form state: ${JSON.stringify(
@@ -227,6 +231,7 @@ export const WrapTabDowngrade: FC = () => {
           };
 
           downgradeTrigger({
+            signer,
             chainId: network.id,
             amountWei: parseEther(formData.amountEther).toString(),
             superTokenAddress: formData.tokenUpgrade.superToken.address,

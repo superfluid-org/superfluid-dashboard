@@ -250,7 +250,7 @@ export const WrapTabUpgrade: FC = () => {
           mutationResult={approveResult}
           hidden={!isApproveAllowanceVisible}
           disabled={false}
-          onClick={(setTransactionDialogContent) => {
+          onClick={(signer, setTransactionDialogContent) => {
             if (!isApproveAllowanceVisible) {
               throw Error("This should never happen.");
             }
@@ -270,6 +270,7 @@ export const WrapTabUpgrade: FC = () => {
             });
 
             approveTrigger({
+              signer,
               chainId: network.id,
               amountWei: approveAllowanceAmountWei.toString(),
               superTokenAddress: selectedTokenPair.superToken.address,
@@ -287,7 +288,7 @@ export const WrapTabUpgrade: FC = () => {
           hidden={false}
           disabled={isUpgradeDisabled}
           mutationResult={upgradeResult}
-          onClick={(setTransactionDialogContent, closeTransactionDialog) => {
+          onClick={(signer, setTransactionDialogContent, closeTransactionDialog) => {
             if (!formState.isValid) {
               throw Error(
                 `This should never happen. Form state: ${JSON.stringify(
@@ -308,6 +309,7 @@ export const WrapTabUpgrade: FC = () => {
             };
 
             upgradeTrigger({
+              signer,
               chainId: network.id,
               amountWei: parseEther(formData.amountEther).toString(),
               superTokenAddress: formData.tokenUpgrade.superToken.address,
