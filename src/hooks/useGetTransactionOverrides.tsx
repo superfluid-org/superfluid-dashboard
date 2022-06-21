@@ -17,7 +17,6 @@ const useGetTransactionOverrides = () => {
     ]);
 
     if (gasRecommendation) {
-      // Using `Math.ceil` because was getting "too many decimals" error from Ethers.js
       return {
         maxPriorityFeePerGas: parseUnits(
           gasRecommendation.maxPriorityFeeGwei.toFixed(8).toString(),
