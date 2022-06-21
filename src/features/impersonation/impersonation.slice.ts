@@ -1,6 +1,9 @@
 import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
 import { getAddress } from "../../utils/memoizedEthersUtils";
 
+/**
+ * Impersonation history entry
+ */
 export interface Impersonation {
   address: string;
   timestampMs: number;
@@ -19,6 +22,10 @@ const adapter = createEntityAdapter<Impersonation>({
   },
 });
 
+/**
+ * Use-cases:
+ * 1. impersonation history
+ */
 export const impersonationSlice = createSlice({
   name: "impersonations",
   initialState: adapter.getInitialState(),
