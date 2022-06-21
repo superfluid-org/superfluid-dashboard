@@ -25,6 +25,7 @@ import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
 import { assetApiSlice } from "../token/tokenManifestSlice";
 import { ensApi } from "../ens/ensApi.slice";
 import { impersonationSlice } from "../impersonation/impersonation.slice";
+import gasApi from "../gas/gasApi.slice";
 
 export const rpcApi = initializeRpcApiSlice(createApiWithReactHooks)
   .injectEndpoints(allRpcEndpoints)
@@ -68,6 +69,7 @@ export const reduxStore = configureStore({
     [assetApiSlice.reducerPath]: assetApiSlice.reducer,
     [ensApi.reducerPath]: ensApi.reducer,
     impersonations: impersonationPersistedReducer,
+    [gasApi.reducerPath]: gasApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -78,7 +80,8 @@ export const reduxStore = configureStore({
       .concat(rpcApi.middleware)
       .concat(subgraphApi.middleware)
       .concat(assetApiSlice.middleware)
-      .concat(ensApi.middleware),
+      .concat(ensApi.middleware)
+      .concat(gasApi.middleware),
 });
 
 export const reduxPersistor = persistStore(reduxStore);

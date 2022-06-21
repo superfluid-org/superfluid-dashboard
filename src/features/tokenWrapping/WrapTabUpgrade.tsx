@@ -5,8 +5,8 @@ import { parseEther } from "ethers/lib/utils";
 import { useRouter } from "next/router";
 import { FC, useEffect, useRef, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { getDefaultGasOverrides } from "../../utils/gasUtils";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
+import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
@@ -35,6 +35,7 @@ export const WrapTabUpgrade: FC = () => {
   const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
+  const getTransactionOverrides = useGetTransactionOverrides();
 
   const {
     watch,
@@ -251,7 +252,7 @@ export const WrapTabUpgrade: FC = () => {
           mutationResult={approveResult}
           hidden={!isApproveAllowanceVisible}
           disabled={false}
-          onClick={(signer, setTransactionDialogContent) => {
+          onClick={async (signer, setTransactionDialogContent) => {
             if (!isApproveAllowanceVisible) {
               throw Error("This should never happen.");
             }
@@ -278,7 +279,7 @@ export const WrapTabUpgrade: FC = () => {
               transactionExtraData: {
                 restoration,
               },
-              overrides: getDefaultGasOverrides(network)
+              overrides: await getTransactionOverrides(network)
             });
           }}
         >
@@ -290,7 +291,7 @@ export const WrapTabUpgrade: FC = () => {
           hidden={false}
           disabled={isUpgradeDisabled}
           mutationResult={upgradeResult}
-          onClick={(signer, setTransactionDialogContent, closeTransactionDialog) => {
+          onClick={async (signer, setTransactionDialogContent, closeTransactionDialog) => {
             if (!formState.isValid) {
               throw Error(
                 `This should never happen. Form state: ${JSON.stringify(
@@ -319,7 +320,7 @@ export const WrapTabUpgrade: FC = () => {
               transactionExtraData: {
                 restoration,
               },
-              overrides: getDefaultGasOverrides(network)
+              overrides: await getTransactionOverrides(network)
             })
               .unwrap()
               .then(() => resetForm());

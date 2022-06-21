@@ -25,7 +25,7 @@ import { FC, memo, MouseEvent, useState } from "react";
 import { useNetwork, useSigner } from "wagmi";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
-import { getDefaultGasOverrides } from "../../utils/gasUtils";
+import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
@@ -97,6 +97,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
   const { visibleAddress } = useVisibleAddress();
   const { activeChain } = useNetwork();
   const { data: signer } = useSigner();
+  const getTransactionOverrides = useGetTransactionOverrides();
 
   const [flowDeleteTrigger, flowDeleteMutation] =
     rpcApi.useFlowDeleteMutation();
@@ -120,7 +121,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
 
   const closeCancelDialog = () => setShowCancelDialog(false);
 
-  const deleteStream = () => {
+  const deleteStream = async () => {
     if (!signer) {
       throw new Error("Signer is not set.");
     }
@@ -133,7 +134,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
       superTokenAddress: stream.token,
       userDataBytes: undefined,
       waitForConfirmation: false,
-      overrides: getDefaultGasOverrides(network),
+      overrides: await getTransactionOverrides(network),
     }).unwrap();
     closeMenu();
     setShowCancelDialog(true);

@@ -21,8 +21,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, memo, useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { useSigner } from "wagmi";
-import { getDefaultGasOverrides } from "../../utils/gasUtils";
+import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import TooltipIcon from "../common/TooltipIcon";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -66,6 +65,7 @@ export default memo(function SendCard() {
   const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
   const router = useRouter();
+  const getTransactionOverrides = useGetTransactionOverrides();
 
   const {
     watch,
@@ -347,7 +347,7 @@ export default memo(function SendCard() {
               hidden={false}
               disabled={isSendDisabled}
               mutationResult={flowCreateResult}
-              onClick={(signer, setTransactionDialogContent) => {
+              onClick={async (signer, setTransactionDialogContent) => {
                 if (!formState.isValid) {
                   throw Error(
                     `This should never happen. Form state: ${JSON.stringify(
@@ -383,7 +383,7 @@ export default memo(function SendCard() {
                       },
                     } as SendStreamRestoration,
                   },
-                  overrides: getDefaultGasOverrides(network),
+                  overrides: await getTransactionOverrides(network),
                 })
                   .unwrap()
                   .then(() => resetForm());
@@ -414,7 +414,7 @@ export default memo(function SendCard() {
                 hidden={false}
                 disabled={isSendDisabled}
                 mutationResult={flowUpdateResult}
-                onClick={(signer, setTransactionDialogContent) => {
+                onClick={async (signer, setTransactionDialogContent) => {
                   if (!formState.isValid) {
                     throw Error("This should never happen.");
                   }
@@ -447,7 +447,7 @@ export default memo(function SendCard() {
                         },
                       } as ModifyStreamRestoration,
                     },
-                    overrides: getDefaultGasOverrides(network),
+                    overrides: await getTransactionOverrides(network),
                   })
                     .unwrap()
                     .then(() => resetForm());
@@ -480,7 +480,7 @@ export default memo(function SendCard() {
                 ButtonProps={{
                   variant: "outlined",
                 }}
-                onClick={(signer) => {
+                onClick={async (signer) => {
                   const receiverAddress = receiver;
                   const superTokenAddress = selectedToken?.address;
                   const senderAddress = visibleAddress;
@@ -500,7 +500,7 @@ export default memo(function SendCard() {
                     chainId: network.id,
                     userDataBytes: undefined,
                     waitForConfirmation: false,
-                    overrides: getDefaultGasOverrides(network),
+                    overrides: await getTransactionOverrides(network),
                   })
                     .unwrap()
                     .then(() => resetForm());
