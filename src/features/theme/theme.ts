@@ -699,6 +699,22 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           {
             props: {
               variant: "textContained",
+              color: "error",
+            },
+            style: {
+              color: theme.palette.error.main,
+              backgroundColor: alpha(theme.palette.error.main, 0.08),
+              "&:hover": {
+                backgroundColor: alpha(
+                  theme.palette.error.main,
+                  getModeStyle(0.12, 0.16)
+                ),
+              },
+            },
+          },
+          {
+            props: {
+              variant: "textContained",
               color: "secondary",
             },
             style: {

@@ -1,4 +1,5 @@
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
+import ImportContactsRoundedIcon from "@mui/icons-material/ImportContactsRounded";
 import AutoAwesomeMosaicIcon from "@mui/icons-material/AutoAwesomeMosaic";
 import HistoryIcon from "@mui/icons-material/History";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
@@ -123,6 +124,14 @@ export default memo(function NavigationDrawer() {
           href="/history"
           active={isActiveRoute("/history")}
           icon={HistoryIcon}
+        />
+
+        <NavigationItem
+          id="nav-address-book"
+          title="Address Book"
+          href="/address-book"
+          active={isActiveRoute("/address-book")}
+          icon={ImportContactsRoundedIcon}
         />
 
         {/* <NavigationItem

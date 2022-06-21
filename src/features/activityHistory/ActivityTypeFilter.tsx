@@ -1,28 +1,24 @@
-import SwapVertIcon from "@mui/icons-material/SwapVert";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
-
+import SwapVertIcon from "@mui/icons-material/SwapVert";
 import {
-  ListItemAvatar,
   ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
-  Popover,
   SvgIcon,
   Switch,
   useTheme,
 } from "@mui/material";
-import { FC } from "react";
 import {
   Address,
   AllEvents,
-  FlowUpdatedEvent,
   FlowUpdateType,
 } from "@superfluid-finance/sdk-core";
+import { FC } from "react";
 
 export enum ActivityType {
   SendStream = "Send Stream",
@@ -35,6 +31,7 @@ export enum ActivityType {
   Unwrap = "Unwrap",
   Liquidated = "Liquidated",
 }
+
 export const AllActivityTypes = [
   ActivityType.SendStream,
   ActivityType.ReceiveStream,
