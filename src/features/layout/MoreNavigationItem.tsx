@@ -45,7 +45,11 @@ const MoreNavigationItem: FC = ({}) => {
 
   const closeMoreMenu = () => setMoreMenuAnchor(null);
 
-  const openOnboardingModal = () => setShowOnboardingModal(true);
+  const openOnboardingModal = () => {
+    setShowOnboardingModal(true);
+    closeMoreMenu();
+  };
+
   const closeOnboardingModal = () => setShowOnboardingModal(false);
 
   return (
@@ -121,7 +125,7 @@ const MoreNavigationItem: FC = ({}) => {
             transform: "translate(-50%, -50%)",
           }}
         >
-          <OnboardingCards />
+          <OnboardingCards onClick={closeOnboardingModal} />
         </Box>
       </Modal>
     </>

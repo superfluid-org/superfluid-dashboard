@@ -5,6 +5,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  CardProps,
   IconButton,
   ListItemAvatar,
   ListItemText,
@@ -12,36 +13,45 @@ import {
   Skeleton,
   Stack,
 } from "@mui/material";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
-import { FC } from "react";
+import Link from "next/link";
+import { ElementType, FC } from "react";
+import { useAccount } from "wagmi";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import TokenIcon from "../token/TokenIcon";
 
 interface OnboardingItemProps {
   title: string;
   subheader: string;
+  href: string;
   childrenGap?: number;
+  onClick?: () => void;
 }
 
 const OnboardingItem: FC<OnboardingItemProps> = ({
   title,
   subheader,
   childrenGap = 1.5,
+  href,
+  onClick,
   children,
 }) => (
-  <Card>
-    <CardHeader title={title} subheader={subheader} />
-    <CardContent
-      component={Stack}
-      direction="row"
-      alignItems="center"
-      justifyContent="center"
-      gap={childrenGap}
-      sx={{ pointerEvents: "none" }}
-    >
-      {children}
-    </CardContent>
-  </Card>
+  <Link href={href} passHref>
+    <Card component="a" onClick={onClick} sx={{ textDecoration: "none" }}>
+      <CardHeader title={title} subheader={subheader} />
+      <CardContent
+        component={Stack}
+        direction="row"
+        alignItems="center"
+        justifyContent="center"
+        gap={childrenGap}
+        sx={{ pointerEvents: "none" }}
+      >
+        {children}
+      </CardContent>
+    </Card>
+  </Link>
 );
 
 const StreamItem = () => (
@@ -67,9 +77,11 @@ const StreamItem = () => (
   </Paper>
 );
 
-interface OnboardingCardsProps {}
+interface OnboardingCardsProps {
+  onClick?: () => void;
+}
 
-const OnboardingCards: FC<OnboardingCardsProps> = ({}) => {
+const OnboardingCards: FC<OnboardingCardsProps> = ({ onClick }) => {
   return (
     <Stack
       sx={{ display: "grid", gridTemplateColumns: "repeat(3, 290px)" }}
@@ -80,6 +92,8 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({}) => {
       <OnboardingItem
         title="Get Super Tokens"
         subheader="Wrap any token in your wallet"
+        href="/wrap?upgrade"
+        onClick={onClick}
       >
         <TokenIcon size={32} tokenSymbol="DAI" />
         <SwapVertIcon color="primary" sx={{ transform: "rotate(90deg)" }} />
@@ -89,6 +103,8 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({}) => {
       <OnboardingItem
         title="Send a Stream"
         subheader="Pick a recipient, token and network"
+        href="/send"
+        onClick={onClick}
         childrenGap={0}
       >
         <StreamItem />
@@ -104,10 +120,11 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({}) => {
 
         <StreamItem />
       </OnboardingItem>
-
       <OnboardingItem
         title="Modify and Cancel Streams"
         subheader="Don't let your balance hit zero!"
+        onClick={onClick}
+        href="/"
       >
         <IconButton color="primary">
           <EditIcon />
