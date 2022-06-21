@@ -4,6 +4,7 @@ import { parseEther } from "ethers/lib/utils";
 import { useRouter } from "next/router";
 import { FC, useEffect, useRef } from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
@@ -30,6 +31,7 @@ export const WrapTabDowngrade: FC = () => {
   const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
+  const getTransactionOverrides = useGetTransactionOverrides();
 
   const {
     watch,
@@ -206,7 +208,11 @@ export const WrapTabDowngrade: FC = () => {
         hidden={false}
         mutationResult={downgradeResult}
         disabled={isDowngradeDisabled}
-        onClick={(setTransactionDialogContent, closeTransactionDialog) => {
+        onClick={async (
+          signer,
+          setTransactionDialogContent,
+          closeTransactionDialog
+        ) => {
           if (!formState.isValid) {
             throw Error(
               `This should never happen. Form state: ${JSON.stringify(
@@ -227,6 +233,7 @@ export const WrapTabDowngrade: FC = () => {
           };
 
           downgradeTrigger({
+            signer,
             chainId: network.id,
             amountWei: parseEther(formData.amountEther).toString(),
             superTokenAddress: formData.tokenUpgrade.superToken.address,
@@ -234,6 +241,7 @@ export const WrapTabDowngrade: FC = () => {
             transactionExtraData: {
               restoration,
             },
+            overrides: await getTransactionOverrides(network)
           })
             .unwrap()
             .then(() => resetForm());

@@ -21,6 +21,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, memo, useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import TooltipIcon from "../common/TooltipIcon";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -64,6 +65,7 @@ export default memo(function SendCard() {
   const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
   const router = useRouter();
+  const getTransactionOverrides = useGetTransactionOverrides();
 
   const {
     watch,
@@ -345,7 +347,7 @@ export default memo(function SendCard() {
               hidden={false}
               disabled={isSendDisabled}
               mutationResult={flowCreateResult}
-              onClick={(setTransactionDialogContent) => {
+              onClick={async (signer, setTransactionDialogContent) => {
                 if (!formState.isValid) {
                   throw Error(
                     `This should never happen. Form state: ${JSON.stringify(
@@ -359,6 +361,7 @@ export default memo(function SendCard() {
                 const { data: formData } = getValues() as ValidStreamingForm;
 
                 flowCreateTrigger({
+                  signer,
                   chainId: network.id,
                   flowRateWei:
                     calculateTotalAmountWei(flowRateEther).toString(),
@@ -380,6 +383,7 @@ export default memo(function SendCard() {
                       },
                     } as SendStreamRestoration,
                   },
+                  overrides: await getTransactionOverrides(network),
                 })
                   .unwrap()
                   .then(() => resetForm());
@@ -410,13 +414,14 @@ export default memo(function SendCard() {
                 hidden={false}
                 disabled={isSendDisabled}
                 mutationResult={flowUpdateResult}
-                onClick={(setTransactionDialogContent) => {
+                onClick={async (signer, setTransactionDialogContent) => {
                   if (!formState.isValid) {
                     throw Error("This should never happen.");
                   }
 
                   const { data: formData } = getValues() as ValidStreamingForm;
                   flowUpdateTrigger({
+                    signer,
                     chainId: network.id,
                     flowRateWei: calculateTotalAmountWei({
                       amountWei: parseEther(
@@ -442,6 +447,7 @@ export default memo(function SendCard() {
                         },
                       } as ModifyStreamRestoration,
                     },
+                    overrides: await getTransactionOverrides(network),
                   })
                     .unwrap()
                     .then(() => resetForm());
@@ -474,7 +480,7 @@ export default memo(function SendCard() {
                 ButtonProps={{
                   variant: "outlined",
                 }}
-                onClick={() => {
+                onClick={async (signer) => {
                   const receiverAddress = receiver;
                   const superTokenAddress = selectedToken?.address;
                   const senderAddress = visibleAddress;
@@ -487,12 +493,14 @@ export default memo(function SendCard() {
                   }
 
                   flowDeleteTrigger({
+                    signer,
                     receiverAddress,
                     superTokenAddress,
                     senderAddress,
                     chainId: network.id,
                     userDataBytes: undefined,
                     waitForConfirmation: false,
+                    overrides: await getTransactionOverrides(network),
                   })
                     .unwrap()
                     .then(() => resetForm());
