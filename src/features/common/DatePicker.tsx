@@ -286,7 +286,6 @@ const DatePicker: FC<DatePickerProps> = ({
       onClose={onClose}
       PaperProps={{
         square: true,
-        elevation: 2,
         sx: { py: 2, px: 3, mt: theme.spacing(1.5) },
       }}
       transformOrigin={{ horizontal: "right", vertical: "top" }}

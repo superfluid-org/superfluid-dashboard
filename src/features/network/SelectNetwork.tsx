@@ -109,7 +109,7 @@ export default memo(function SelectNetwork() {
         onClose={handleClose}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-        PaperProps={{ sx: { minWidth: 280 }, square: true, elevation: 2 }}
+        PaperProps={{ sx: { minWidth: 280 }, square: true }}
         sx={{ marginTop: theme.spacing(1.5) }}
       >
         <Collapse in={!showTestnets} timeout="auto" unmountOnExit>
@@ -143,8 +143,12 @@ export default memo(function SelectNetwork() {
             value={showTestnets}
             onChange={handleShowTestnetsChange}
           >
-            <ToggleButton data-cy={"mainnets-button"} value={false}>Mainnets</ToggleButton>
-            <ToggleButton data-cy={"testnets-button"} value={true}>Testnets</ToggleButton>
+            <ToggleButton data-cy={"mainnets-button"} value={false}>
+              Mainnets
+            </ToggleButton>
+            <ToggleButton data-cy={"testnets-button"} value={true}>
+              Testnets
+            </ToggleButton>
           </ToggleButtonGroup>
         </Box>
       </Menu>

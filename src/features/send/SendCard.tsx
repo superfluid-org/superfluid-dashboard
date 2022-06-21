@@ -139,7 +139,6 @@ export default memo(function SendCard() {
     <Card
       sx={{
         maxWidth: "600px",
-        p: 4,
       }}
       elevation={1}
     >

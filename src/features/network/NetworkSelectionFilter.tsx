@@ -43,7 +43,11 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, active, onChange }) => {
       <ListItemText primaryTypographyProps={{ variant: "menuItem" }}>
         {network.name}
       </ListItemText>
-      <Switch data-cy={`${network.slugName}-toggle`} checked={active} onChange={onNetworkToggled} />
+      <Switch
+        data-cy={`${network.slugName}-toggle`}
+        checked={active}
+        onChange={onNetworkToggled}
+      />
     </MenuItem>
   );
 };
@@ -90,7 +94,7 @@ const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
       onClose={onClose}
       transformOrigin={{ horizontal: "right", vertical: "top" }}
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-      PaperProps={{ sx: { minWidth: 280 }, square: true, elevation: 2 }}
+      PaperProps={{ sx: { minWidth: 280 }, square: true }}
       sx={{ marginTop: theme.spacing(1.5) }}
     >
       <Collapse in={!showTestnets} timeout="auto" unmountOnExit>
@@ -126,8 +130,12 @@ const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
           value={showTestnets}
           onChange={onNetworkTypeChange}
         >
-          <ToggleButton data-cy={"mainnets-button"} value={false}>Mainnets</ToggleButton>
-          <ToggleButton data-cy={"testnets-button"} value={true}>Testnets</ToggleButton>
+          <ToggleButton data-cy={"mainnets-button"} value={false}>
+            Mainnets
+          </ToggleButton>
+          <ToggleButton data-cy={"testnets-button"} value={true}>
+            Testnets
+          </ToggleButton>
         </ToggleButtonGroup>
       </Box>
     </Menu>

@@ -1,0 +1,140 @@
+import CancelIcon from "@mui/icons-material/Cancel";
+import EditIcon from "@mui/icons-material/Edit";
+import SwapVertIcon from "@mui/icons-material/SwapVert";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardProps,
+  IconButton,
+  ListItemAvatar,
+  ListItemText,
+  Paper,
+  Skeleton,
+  Stack,
+} from "@mui/material";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import Image from "next/image";
+import Link from "next/link";
+import { ElementType, FC } from "react";
+import { useAccount } from "wagmi";
+import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import TokenIcon from "../token/TokenIcon";
+
+interface OnboardingItemProps {
+  title: string;
+  subheader: string;
+  href: string;
+  childrenGap?: number;
+  onClick?: () => void;
+}
+
+const OnboardingItem: FC<OnboardingItemProps> = ({
+  title,
+  subheader,
+  childrenGap = 1.5,
+  href,
+  onClick,
+  children,
+}) => (
+  <Link href={href} passHref>
+    <Card component="a" onClick={onClick} sx={{ textDecoration: "none" }}>
+      <CardHeader title={title} subheader={subheader} />
+      <CardContent
+        component={Stack}
+        direction="row"
+        alignItems="center"
+        justifyContent="center"
+        gap={childrenGap}
+        sx={{ pointerEvents: "none" }}
+      >
+        {children}
+      </CardContent>
+    </Card>
+  </Link>
+);
+
+const StreamItem = () => (
+  <Paper
+    component={Stack}
+    alignItems="center"
+    direction="row"
+    sx={{ px: 1, py: 0.5, borderRadius: "8px" }}
+    gap={1}
+    flex={1}
+  >
+    <AddressAvatar
+      AvatarProps={{
+        sx: { width: "20px", height: "20px", borderRadius: "4px" },
+      }}
+      BlockiesProps={{ size: 10, scale: 2 }}
+      address="0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"
+    />
+    <Stack flex={1} alignItems="flex-start">
+      <Skeleton width="100%" height={12} animation={false} />
+      <Skeleton width="50%" height={12} animation={false} />
+    </Stack>
+  </Paper>
+);
+
+interface OnboardingCardsProps {
+  onClick?: () => void;
+}
+
+const OnboardingCards: FC<OnboardingCardsProps> = ({ onClick }) => {
+  return (
+    <Stack
+      sx={{ display: "grid", gridTemplateColumns: "repeat(3, 290px)" }}
+      alignItems="center"
+      justifyContent="center"
+      gap={3.5}
+    >
+      <OnboardingItem
+        title="Get Super Tokens"
+        subheader="Wrap any token in your wallet"
+        href="/wrap?upgrade"
+        onClick={onClick}
+      >
+        <TokenIcon size={32} tokenSymbol="DAI" />
+        <SwapVertIcon color="primary" sx={{ transform: "rotate(90deg)" }} />
+        <TokenIcon size={32} tokenSymbol="DAIx" />
+      </OnboardingItem>
+
+      <OnboardingItem
+        title="Send a Stream"
+        subheader="Pick a recipient, token and network"
+        href="/send"
+        onClick={onClick}
+        childrenGap={0}
+      >
+        <StreamItem />
+
+        <Image
+          unoptimized
+          src="/gifs/stream-loop.gif"
+          width={34}
+          height={18}
+          layout="fixed"
+          alt="Superfluid stream"
+        />
+
+        <StreamItem />
+      </OnboardingItem>
+      <OnboardingItem
+        title="Modify and Cancel Streams"
+        subheader="Don't let your balance hit zero!"
+        onClick={onClick}
+        href="/"
+      >
+        <IconButton color="primary">
+          <EditIcon />
+        </IconButton>
+        <IconButton color="error">
+          <CancelIcon />
+        </IconButton>
+      </OnboardingItem>
+    </Stack>
+  );
+};
+
+export default OnboardingCards;
