@@ -90,9 +90,7 @@ const MintActivityRow: FC<MintedActivity> = ({
             primary={
               <>
                 -
-                <Ether
-                  wei={amount}
-                />
+                <Ether wei={amount} />
               </>
             }
             /**
@@ -119,10 +117,7 @@ const MintActivityRow: FC<MintedActivity> = ({
           <ListItemText
             primary={
               <>
-                +
-                <Ether
-                  wei={amount}
-                > {tokenSymbol}</Ether>
+                +<Ether wei={amount}> {tokenSymbol}</Ether>
               </>
             }
             /**

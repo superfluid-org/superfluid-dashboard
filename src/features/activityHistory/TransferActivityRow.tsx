@@ -73,9 +73,10 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
           </ListItemAvatar>
           <ListItemText
             primary={
-              <Ether
-                wei={value}
-              > {tokenQuery.data && tokenQuery.data.symbol}</Ether>
+              <Ether wei={value}>
+                {" "}
+                {tokenQuery.data && tokenQuery.data.symbol}
+              </Ether>
             }
             /**
              * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back

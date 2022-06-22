@@ -103,6 +103,7 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
             primary={
               <>
                 <Ether wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)}>
+                  {" "}
                   {tokenQuery.data ? `${tokenQuery.data.symbol}/mo` : "/mo"}
                 </Ether>
               </>

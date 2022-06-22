@@ -26,19 +26,19 @@ const getDecimalPlaces = (value: Decimal): number => {
     return 2;
   }
 
-  if (value.gte(0.009)) {
+  if (value.gt(0.009)) {
     return 4;
   }
 
-  if (value.gte(0.0009)) {
+  if (value.gt(0.0009)) {
     return 6;
   }
 
-  if (value.gte(0.00009)) {
+  if (value.gt(0.00009)) {
     return 8;
   }
 
-  if (value.gte(0.00000009)) {
+  if (value.gt(0.00000009)) {
     return 12;
   }
 

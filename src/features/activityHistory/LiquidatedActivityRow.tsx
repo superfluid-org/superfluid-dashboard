@@ -113,7 +113,6 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
       </TableCell>
       <TableCell sx={{ position: "relative" }}>
         <TxHashLink txHash={transactionHash} network={network} />
-
         <NetworkBadge
           network={network}
           sx={{ position: "absolute", top: "0px", right: "16px" }}

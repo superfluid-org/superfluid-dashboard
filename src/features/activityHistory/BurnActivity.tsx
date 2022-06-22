@@ -116,8 +116,7 @@ const BurnActivity: FC<BurnedActivity> = ({
           <ListItemText
             primary={
               <>
-                +
-                <Ether wei={amount} > {underlyingTokenSymbol}</Ether>
+                +<Ether wei={amount}> {underlyingTokenSymbol}</Ether>
               </>
             }
             /**
