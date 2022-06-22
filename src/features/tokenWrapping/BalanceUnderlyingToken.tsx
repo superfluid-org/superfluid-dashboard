@@ -32,7 +32,7 @@ export const BalanceUnderlyingToken: FC<{
       ) : isUninitialized || isLoading ? (
         ""
       ) : (
-        <Ether wei={ethers.BigNumber.from(data?.balance ?? 0).toString()} />
+        <Ether wei={ethers.BigNumber.from(data?.balance ?? 0)} disableRounding />
       )}
     </Typography>
   );

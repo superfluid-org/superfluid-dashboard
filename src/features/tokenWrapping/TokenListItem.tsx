@@ -116,7 +116,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
               flowRate={fRate}
             />
           ) : (
-            <Ether wei={checkedBalanceWei} />
+            <Ether wei={checkedBalanceWei} roundingIndicator="~" />
           ))}
         {showUpgrade && isWrappableSuperToken && (
           <Link
