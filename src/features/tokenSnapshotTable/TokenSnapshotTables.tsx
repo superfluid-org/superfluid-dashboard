@@ -2,7 +2,7 @@ import { Button, Stack, Typography } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, useEffect, useRef, useState } from "react";
 import { useActiveNetworks } from "../network/ActiveNetworksContext";
-import NetworkSelectionFilter2 from "../network/NetworkSelectionFilter";
+import NetworkSelectionFilter from "../network/NetworkSelectionFilter";
 import { OpenIcon } from "../network/SelectNetwork";
 import { subgraphApi } from "../redux/store";
 import TokenSnapshotEmptyCard from "./TokenSnapshotEmptyCard";
@@ -80,7 +80,7 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
         >
           All networks
         </Button>
-        <NetworkSelectionFilter2
+        <NetworkSelectionFilter
           open={networkSelectionOpen}
           anchorEl={networkSelectionRef.current}
           onClose={closeNetworkSelection}
