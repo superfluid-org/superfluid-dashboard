@@ -1,11 +1,12 @@
-import { FC, memo, ReactElement, useEffect, useMemo, useState } from "react";
-import { BigNumberish, ethers } from "ethers";
+import { memo, ReactElement, useEffect, useMemo, useState } from "react";
+import { BigNumberish, BigNumber, utils } from "ethers";
 import { Box } from "@mui/material";
 import EtherFormatted from "./EtherFormatted";
 import { useStateWithDep } from "../../useStateWithDep";
+import Decimal from "decimal.js";
 
-const ANIMATION_MINIMUM_STEP_TIME = 80;
-const ANIMATING_NR_COUNT = 3;
+// Keep it below a second.
+const ANIMATION_MINIMUM_STEP_TIME = 75;
 
 export interface FlowingBalanceProps {
   balance: string;
@@ -24,9 +25,11 @@ export default memo(function FlowingBalance({
   balanceTimestamp,
   flowRate,
   etherDecimalPlaces,
-  tokenSymbol
+  tokenSymbol,
 }: FlowingBalanceProps): ReactElement {
   const [weiValue, setWeiValue] = useStateWithDep<BigNumberish>(balance);
+
+  const flowRateBigNumber = useMemo(() => BigNumber.from(flowRate), [flowRate]);
 
   /*
    * TODO: When using this variable then ~ sign in EtherFormatted should be disabled
@@ -34,24 +37,39 @@ export default memo(function FlowingBalance({
    * This is configurable by ANIMATING_NR_COUNT and should shows
    * roughly how many trailing numbers will animate each second.
    */
-  const decimals = useMemo(
-    () =>
-      Math.min(18 - flowRate.replace("-", "").length + ANIMATING_NR_COUNT, 18),
-    [flowRate]
-  );
+  const etherSignificantFlowingDecimal = useMemo<number | undefined>(() => {
+    if (flowRateBigNumber.isZero()) {
+      return undefined;
+    }
+
+    const ticksPerSecond = 1000 / ANIMATION_MINIMUM_STEP_TIME;
+    const flowRatePerTick = new Decimal(flowRate)
+      .div(ticksPerSecond)
+      .toFixed(0);
+
+    const afterEtherDecimal = utils.formatEther(flowRatePerTick).split(".")[1];
+    const numberAfterDecimalWithoutLeadingZeroes = Number(afterEtherDecimal);
+    const lengthToFirstSignificatDecimal = afterEtherDecimal
+      .toString()
+      .replace(numberAfterDecimalWithoutLeadingZeroes.toString(), "").length;
+
+    if (lengthToFirstSignificatDecimal === 17) return 18; // Don't go over 18.
+
+    // This will usually have the last 3 numbers flowing smoothly.
+    return lengthToFirstSignificatDecimal + 2;
+  }, [flowRate]);
 
   const balanceTimestampMs = useMemo(
-    () => ethers.BigNumber.from(balanceTimestamp).mul(1000),
+    () => BigNumber.from(balanceTimestamp).mul(1000),
     [balanceTimestamp]
   );
 
   useEffect(() => {
-    const flowRateBigNumber = ethers.BigNumber.from(flowRate);
     if (flowRateBigNumber.isZero()) {
       return; // No need to show animation when flow rate is zero.
     }
 
-    const balanceBigNumber = ethers.BigNumber.from(balance);
+    const balanceBigNumber = BigNumber.from(balance);
 
     let lastAnimationTimestamp: DOMHighResTimeStamp = 0;
 
@@ -62,7 +80,7 @@ export default memo(function FlowingBalance({
         currentAnimationTimestamp - lastAnimationTimestamp >
         ANIMATION_MINIMUM_STEP_TIME
       ) {
-        const currentTimestampBigNumber = ethers.BigNumber.from(
+        const currentTimestampBigNumber = BigNumber.from(
           new Date().valueOf() // Milliseconds elapsed since UTC epoch, disregards timezone.
         );
 
@@ -83,7 +101,7 @@ export default memo(function FlowingBalance({
 
     return () => window.cancelAnimationFrame(animationFrameId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [balance, balanceTimestamp, flowRate]);
+  }, [balance, balanceTimestamp, flowRateBigNumber]);
 
   return (
     <Box
@@ -96,8 +114,11 @@ export default memo(function FlowingBalance({
       <EtherFormatted
         disableRoundingIndicator
         wei={weiValue}
-        etherDecimalPlaces={etherDecimalPlaces || decimals}
-      /> {tokenSymbol}
+        etherDecimalPlaces={
+          etherDecimalPlaces || etherSignificantFlowingDecimal
+        }
+      />{" "}
+      {tokenSymbol}
     </Box>
   );
 });
