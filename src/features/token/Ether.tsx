@@ -14,31 +14,37 @@ interface EtherProps {
 }
 
 const getDecimalPlaces = (value: Decimal): number => {
-  if (value.isZero() || value.gte(1000)) {
+  if (value.isZero()) {
     return 0;
   }
 
-  if (value.gte(100)) {
+  const absoluteValue = value.abs();
+
+  if (absoluteValue.gte(1000)) {
+    return 0;
+  }
+
+  if (absoluteValue.gte(100)) {
     return 1;
   }
 
-  if (value.gte(10)) {
+  if (absoluteValue.gte(10)) {
     return 2;
   }
 
-  if (value.gt(0.009)) {
+  if (absoluteValue.gt(0.009)) {
     return 4;
   }
 
-  if (value.gt(0.0009)) {
+  if (absoluteValue.gt(0.0009)) {
     return 6;
   }
 
-  if (value.gt(0.00009)) {
+  if (absoluteValue.gt(0.00009)) {
     return 8;
   }
 
-  if (value.gt(0.00000009)) {
+  if (absoluteValue.gt(0.00000009)) {
     return 12;
   }
 
@@ -56,9 +62,7 @@ export default memo<EtherProps>(function Ether({
   const ether = utils.formatEther(wei);
   const decimal = new Decimal(ether);
   const dp = etherDecimalPlaces ?? getDecimalPlaces(decimal);
-  const decimalRounded = disableRounding
-    ? decimal
-    : decimal.toDP(dp);
+  const decimalRounded = disableRounding ? decimal : decimal.toDP(dp);
   const isRounded = !decimal.equals(decimalRounded);
 
   return (
