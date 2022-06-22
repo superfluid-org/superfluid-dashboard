@@ -2,13 +2,15 @@ import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import ListRoundedIcon from "@mui/icons-material/ListRounded";
 import {
+  Button,
   ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
   useTheme,
 } from "@mui/material";
-import { FC } from "react";
+import { FC, MouseEvent, useState } from "react";
+import { OpenIcon } from "../../components/OpenIcon/OpenIcon";
 
 export enum StreamActiveType {
   All = "All Streams",
@@ -23,48 +25,66 @@ const FILTER_OPTIONS = [
 ];
 
 interface StreamActiveFilterProps {
-  anchorEl: HTMLElement | null;
+  activeType: StreamActiveType;
   onChange: (filter: StreamActiveType) => void;
-  onClose: () => void;
 }
 
 const StreamActiveFilter: FC<StreamActiveFilterProps> = ({
-  anchorEl,
+  activeType,
   onChange,
-  onClose,
 }) => {
   const theme = useTheme();
 
-  const onSelectFilter = (filter: StreamActiveType) => () => onChange(filter);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+  const onSelectFilter = (filter: StreamActiveType) => () => {
+    onChange(filter);
+    closeFilterMenu();
+  };
+
+  const openFilterMenu = (e: MouseEvent<HTMLButtonElement>) =>
+    setAnchorEl(e.currentTarget);
+
+  const closeFilterMenu = () => setAnchorEl(null);
 
   return (
-    <Menu
-      open={!!anchorEl}
-      anchorEl={anchorEl}
-      onClose={onClose}
-      PaperProps={{
-        square: true,
-        elevation: 2,
-        sx: { mt: theme.spacing(1.5), minWidth: "260px" },
-      }}
-      transformOrigin={{ horizontal: "left", vertical: "top" }}
-      anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
-    >
-      {FILTER_OPTIONS.map(({ key, icon: Icon }) => (
-        <MenuItem key={key} onClick={onSelectFilter(key)}>
-          <ListItemIcon
-            sx={{
-              color: "text.primary",
-            }}
-          >
-            <Icon sx={{ fontSize: "20px" }} />
-          </ListItemIcon>
-          <ListItemText primaryTypographyProps={{ variant: "menuItem" }}>
-            {key}
-          </ListItemText>
-        </MenuItem>
-      ))}
-    </Menu>
+    <>
+      <Button
+        variant="outlined"
+        color="secondary"
+        onClick={openFilterMenu}
+        endIcon={<OpenIcon open={!!anchorEl} />}
+      >
+        {activeType}
+      </Button>
+      <Menu
+        open={!!anchorEl}
+        anchorEl={anchorEl}
+        onClose={closeFilterMenu}
+        PaperProps={{
+          square: true,
+          elevation: 2,
+          sx: { mt: theme.spacing(1.5), minWidth: "260px" },
+        }}
+        transformOrigin={{ horizontal: "left", vertical: "top" }}
+        anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+      >
+        {FILTER_OPTIONS.map(({ key, icon: Icon }) => (
+          <MenuItem key={key} onClick={onSelectFilter(key)}>
+            <ListItemIcon
+              sx={{
+                color: "text.primary",
+              }}
+            >
+              <Icon sx={{ fontSize: "20px" }} />
+            </ListItemIcon>
+            <ListItemText primaryTypographyProps={{ variant: "menuItem" }}>
+              {key}
+            </ListItemText>
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
   );
 };
 

@@ -1,19 +1,13 @@
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Button, Stack, Typography } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { OpenIcon } from "../../components/OpenIcon/OpenIcon";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import {
-  mainNetworks,
-  Network,
-  networks,
-  testNetworks,
-} from "../network/networks";
+import { mainNetworks, networks, testNetworks } from "../network/networks";
 import NetworkSelectionFilter, {
   buildNetworkStates,
   NetworkStates,
 } from "../network/NetworkSelectionFilter";
-import { OpenIcon } from "../network/SelectNetwork";
 import { subgraphApi } from "../redux/store";
 import TokenSnapshotEmptyCard from "./TokenSnapshotEmptyCard";
 import TokenSnapshotLoadingTable from "./TokenSnapshotLoadingTable";

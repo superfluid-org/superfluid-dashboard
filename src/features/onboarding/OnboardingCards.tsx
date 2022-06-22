@@ -5,19 +5,14 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CardProps,
   IconButton,
-  ListItemAvatar,
-  ListItemText,
   Paper,
   Skeleton,
   Stack,
 } from "@mui/material";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
 import Link from "next/link";
-import { ElementType, FC } from "react";
-import { useAccount } from "wagmi";
+import { FC } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import TokenIcon from "../token/TokenIcon";
 

@@ -1,4 +1,3 @@
-import ExpandCircleDownOutlinedIcon from "@mui/icons-material/ExpandCircleDownOutlined";
 import {
   Collapse,
   IconButton,
@@ -14,9 +13,9 @@ import {
 } from "@mui/material";
 import { AccountTokenSnapshot } from "@superfluid-finance/sdk-core";
 import { BigNumber } from "ethers";
-import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { FC, memo, useState } from "react";
+import { OpenIcon } from "../../components/OpenIcon/OpenIcon";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
@@ -24,20 +23,6 @@ import StreamsTable from "../streamsTable/StreamsTable";
 import EtherFormatted from "../token/EtherFormatted";
 import FlowingBalance from "../token/FlowingBalance";
 import TokenIcon from "../token/TokenIcon";
-
-interface OpenIconProps {
-  open: boolean;
-}
-
-const OpenIcon = styled(ExpandCircleDownOutlinedIcon)<OpenIconProps>(
-  ({ theme, open }) => ({
-    transform: `rotate(${open ? 180 : 0}deg)`,
-    transition: theme.transitions.create("transform", {
-      easing: theme.transitions.easing.easeInOut,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  })
-);
 
 interface SnapshotRowProps {
   lastElement?: boolean;
@@ -118,7 +103,12 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
 
   return (
     <>
-      <SnapshotRow hover lastElement={lastElement} open={open} data-cy={`${tokenSymbol}-cell`}>
+      <SnapshotRow
+        hover
+        lastElement={lastElement}
+        open={open}
+        data-cy={`${tokenSymbol}-cell`}
+      >
         <TableCell onClick={openTokenPage}>
           <ListItem sx={{ p: 0 }}>
             <ListItemAvatar>
@@ -181,7 +171,11 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         <TableCell onClick={openTokenPage}>
           {totalNumberOfActiveStreams > 0 ? (
             <Stack>
-              <Typography data-cy={"inflow"} variant="body2mono" color="primary">
+              <Typography
+                data-cy={"inflow"}
+                variant="body2mono"
+                color="primary"
+              >
                 +
                 <EtherFormatted
                   wei={BigNumber.from(totalInflowRate).mul(UnitOfTime.Month)}
@@ -206,7 +200,11 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         </TableCell>
         <TableCell align="center" sx={{ cursor: "initial" }}>
           {hasStreams && (
-            <IconButton data-cy={"show-streams-button"} color="inherit" onClick={toggleOpen}>
+            <IconButton
+              data-cy={"show-streams-button"}
+              color="inherit"
+              onClick={toggleOpen}
+            >
               <OpenIcon open={open} />
             </IconButton>
           )}

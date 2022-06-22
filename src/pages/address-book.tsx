@@ -1,84 +1,274 @@
 import {
   Button,
   Container,
-  Menu,
+  Paper,
   Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   Typography,
 } from "@mui/material";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { Address, Stream } from "@superfluid-finance/sdk-core";
 import { NextPage } from "next";
-import { MouseEvent, useCallback, useState } from "react";
-import AddressAvatar from "../components/AddressAvatar/AddressAvatar";
-import AddressName from "../components/AddressName/AddressName";
+import { parse, unparse } from "papaparse";
+import { ChangeEvent, useCallback, useMemo, useState } from "react";
+import { useAccount, useNetwork } from "wagmi";
 import AddressSearchDialog from "../components/AddressSearchDialog/AddressSearchDialog";
+import DownloadButton from "../components/DownloadButton/DownloadButton";
+import ReadFileButton from "../components/ReadFileButton/ReadFileButton";
 import {
+  addAddressBookEntries,
   addAddressBookEntry,
   AddressBookEntry,
   addressBookSelectors,
+  removeAddressBookEntries,
 } from "../features/addressBook/addressBook.slice";
-import { useAppDispatch, useAppSelector } from "../features/redux/store";
+import AddressBookRow from "../features/addressBook/AddressBookRow";
+import AddressFilter from "../features/addressBook/AddressFilter";
+import {
+  subgraphApi,
+  useAppDispatch,
+  useAppSelector,
+} from "../features/redux/store";
 import AddressSearchIndex from "../features/send/AddressSearchIndex";
 import StreamActiveFilter, {
   StreamActiveType,
 } from "../features/streamsTable/StreamActiveFilter";
-import { arrayToCSV } from "../utils/CSVUtils";
 
-const AddressBook: NextPage = ({}) => {
+interface MappedEntry extends AddressBookEntry {
+  streams: Array<Stream>;
+}
+
+const AddressBook: NextPage = () => {
   const dispatch = useAppDispatch();
 
+  const { data: account } = useAccount();
+  const { activeChain } = useNetwork();
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedAddresses, setSelectedAddresses] = useState<string[]>([]);
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [addressesFilter, setAddressesFilter] = useState<Address[]>([]);
   const [streamActiveFilter, setStreamActiveFilter] = useState(
     StreamActiveType.All
   );
-  const [showAddDialog, setShowAddDialog] = useState(false);
-  const [streamsFilterAnchor, setStreamsFilterAnchor] =
-    useState<HTMLButtonElement | null>(null);
 
   const addressBookEntries = useAppSelector((state) =>
     addressBookSelectors.selectAll(state.addressBook)
   );
 
+  const addressBookAddresses = useMemo(() => {
+    return addressBookEntries.map(({ address }) => address.toLowerCase());
+  }, [addressBookEntries]);
+
+  const incomingStreamsQuery = subgraphApi.useStreamsQuery(
+    activeChain && account?.address
+      ? {
+          chainId: activeChain.id,
+          filter: {
+            sender: account.address.toLowerCase(),
+            receiver_in: addressBookAddresses,
+          },
+          pagination: {
+            take: Infinity,
+            skip: 0,
+          },
+          order: {
+            orderBy: "updatedAtTimestamp",
+            orderDirection: "desc",
+          },
+        }
+      : skipToken
+  );
+
+  const outgoingStreamsQuery = subgraphApi.useStreamsQuery(
+    activeChain && account?.address
+      ? {
+          chainId: activeChain.id,
+          filter: {
+            receiver: account.address.toLowerCase(),
+            sender_in: addressBookAddresses,
+          },
+          pagination: {
+            take: Infinity,
+            skip: 0,
+          },
+          order: {
+            orderBy: "updatedAtTimestamp",
+            orderDirection: "desc",
+          },
+        }
+      : skipToken
+  );
+
+  // Addresses filter
+
+  const onAddressesFilterChange = (newAddressesFilter: Address[]) =>
+    setAddressesFilter(newAddressesFilter);
+
+  // Stream active filter
+
   const onStreamActiveFilterChange = (filter: StreamActiveType) => {
     setStreamActiveFilter(filter);
-    closeStreamsFilter();
   };
+
+  // Adding new address
 
   const openAddDialog = () => setShowAddDialog(true);
   const closeAddDialog = () => setShowAddDialog(false);
 
-  const openStreamsFilter = (event: MouseEvent<HTMLButtonElement>) =>
-    setStreamsFilterAnchor(event.currentTarget);
-  const closeStreamsFilter = () => setStreamsFilterAnchor(null);
-
-  const onAddAddress = (address: any) =>
+  const onAddAddress = (address: any) => {
     dispatch(
       addAddressBookEntry({
         address: address,
       })
     );
+    closeAddDialog();
+  };
 
-  const download = useCallback(() => {
-    const content = arrayToCSV(
-      addressBookEntries.map(({ address, name }) => ({
-        ADDRESS: address,
-        NAME: name,
-      }))
+  // Deleting addresses
+
+  const setRowSelected = (address: Address) => (isSelected: boolean) => {
+    setSelectedAddresses(
+      selectedAddresses
+        .filter((a) => a !== address)
+        .concat(isSelected ? [address] : [])
     );
-    // const csvData = new Blob([output], { type: "text/csv;charset=utf-8;" });
-    // const csvURL = URL.createObjectURL(csvData);
-    // downloadRef.current.href = csvURL;
-    // downloadRef.current.setAttribute(
-    //   "download",
-    //   `address_book_${new Date().getTime()}.csv`
-    // );
-    // downloadRef.current.click();
-  }, [addressBookEntries]);
+  };
 
-  console.log(addressBookEntries);
+  const startDeleting = () => setIsDeleting(true);
+
+  const cancelDeleting = () => {
+    setIsDeleting(false);
+    setSelectedAddresses([]);
+  };
+
+  const deleteEntries = useCallback(() => {
+    dispatch(removeAddressBookEntries(selectedAddresses));
+    cancelDeleting();
+  }, [selectedAddresses, dispatch]);
+
+  // Pagination
+
+  const handleChangePage = (_e: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  // Importing address book
+
+  const onImport = async (file: File) => {
+    try {
+      const blob = new Blob([file], { type: "text/csv;charset=utf-8" });
+      const contents = await blob.text();
+
+      const { data: parsedCSV } = parse<{ NAME?: string; ADDRESS: string }>(
+        contents,
+        { header: true }
+      );
+
+      const mappedData: AddressBookEntry[] = parsedCSV.map((item) => ({
+        name: item.NAME,
+        address: item.ADDRESS,
+      }));
+
+      insertImportedAddresses(mappedData);
+    } catch (e) {
+      console.error(
+        "Someting went wrong while reading imported address book file.",
+        e
+      );
+    }
+  };
+
+  const insertImportedAddresses = useCallback(
+    (newEntries: AddressBookEntry[]) => {
+      dispatch(
+        addAddressBookEntries(
+          newEntries.filter(
+            (newEntry) =>
+              !addressBookEntries.some(
+                (existingEntry) => existingEntry.address === newEntry.address
+              )
+          )
+        )
+      );
+    },
+    [addressBookEntries, dispatch]
+  );
+
+  // Exporting address book
+
+  const exportableAddressBookContent = useMemo(
+    () =>
+      unparse(
+        addressBookEntries.map(({ address, name }) => ({
+          ADDRESS: address,
+          NAME: name,
+        }))
+      ),
+    [addressBookEntries]
+  );
+
+  // Mapping and filtering
+
+  const mappedEntries = useMemo(() => {
+    const allStreams = (incomingStreamsQuery.data?.items || []).concat(
+      outgoingStreamsQuery.data?.items || []
+    );
+
+    return addressBookEntries.map((entry) => {
+      return {
+        ...entry,
+        streams: allStreams.filter((stream) =>
+          [stream.sender.toLowerCase(), stream.receiver.toLowerCase()].includes(
+            entry.address.toLowerCase()
+          )
+        ),
+      };
+    });
+  }, [
+    incomingStreamsQuery.data,
+    outgoingStreamsQuery.data,
+    addressBookEntries,
+  ]);
+
+  const filteredEntries = useMemo(() => {
+    return mappedEntries
+      .filter(
+        (entry) =>
+          addressesFilter.length === 0 ||
+          addressesFilter.includes(entry.address)
+      )
+      .filter((entry) => {
+        switch (streamActiveFilter) {
+          case StreamActiveType.Active:
+            return entry.streams.some(
+              (stream) => stream.currentFlowRate !== "0"
+            );
+
+          case StreamActiveType.NoActive:
+            return !entry.streams.some(
+              (stream) => stream.currentFlowRate !== "0"
+            );
+
+          default:
+            return true;
+        }
+      })
+      .slice(page * rowsPerPage, (page + 1) * rowsPerPage);
+  }, [page, rowsPerPage, mappedEntries, addressesFilter, streamActiveFilter]);
 
   return (
     <Container maxWidth="lg">
@@ -95,30 +285,36 @@ const AddressBook: NextPage = ({}) => {
           <Typography variant="h3" flex={1}>
             Address Book
           </Typography>
-          <Button variant="outlined" color="secondary">
-            Import
-          </Button>
-          <Button variant="outlined" color="secondary" onClick={download}>
-            export
-          </Button>
+          <ReadFileButton onLoaded={onImport} mimeType=".csv">
+            {({ selectFile }) => (
+              <Button variant="outlined" color="secondary" onClick={selectFile}>
+                Import
+              </Button>
+            )}
+          </ReadFileButton>
+
+          <DownloadButton
+            content={exportableAddressBookContent}
+            fileName={`address_book_${new Date().getTime()}.csv`}
+            contentType="text/csv;charset=utf-8;"
+          >
+            {({ download }) => (
+              <Button variant="outlined" color="secondary" onClick={download}>
+                export
+              </Button>
+            )}
+          </DownloadButton>
         </Stack>
 
         <Stack direction="row" justifyContent="space-between">
           <Stack direction="row" gap={1.5}>
-            <Button variant="outlined" color="secondary">
-              All Addresses
-            </Button>
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={openStreamsFilter}
-            >
-              {streamActiveFilter}
-            </Button>
+            <AddressFilter
+              addressesFilter={addressesFilter}
+              onChange={onAddressesFilterChange}
+            />
             <StreamActiveFilter
-              anchorEl={streamsFilterAnchor}
+              activeType={streamActiveFilter}
               onChange={onStreamActiveFilterChange}
-              onClose={closeStreamsFilter}
             />
           </Stack>
           <Stack direction="row" gap={1.5}>
@@ -129,39 +325,83 @@ const AddressBook: NextPage = ({}) => {
             >
               Add Address
             </Button>
-            <Button variant="textContained" color="error">
-              Remove Address
+            <Button
+              variant="textContained"
+              color="error"
+              disabled={isDeleting && selectedAddresses.length === 0}
+              onClick={isDeleting ? deleteEntries : startDeleting}
+            >
+              {isDeleting
+                ? `Confirm removing (${selectedAddresses.length})`
+                : "Remove Address"}
             </Button>
+
+            {isDeleting && (
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={cancelDeleting}
+              >
+                Cancel
+              </Button>
+            )}
           </Stack>
         </Stack>
 
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Active Streams</TableCell>
-                <TableCell>Total Sent/Received</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {addressBookEntries.map(({ address }) => (
-                <TableRow key={address}>
-                  <TableCell>
-                    <Stack direction="row" alignItems="center" gap={1.5}>
-                      <AddressAvatar address={address} />
-                      <Typography variant="h6">
-                        <AddressName address={address} />
-                      </Typography>
-                    </Stack>
-                  </TableCell>
-                  <TableCell>3</TableCell>
-                  <TableCell>3</TableCell>
+        {filteredEntries.length === 0 && (
+          <Paper elevation={1} sx={{ px: 12, py: 7 }}>
+            <Typography variant="h4" textAlign="center">
+              No Addresses Available
+            </Typography>
+            <Typography color="text.secondary" textAlign="center">
+              Addresses you have transacted with or imported will appear here.
+            </Typography>
+          </Paper>
+        )}
+
+        {filteredEntries.length > 0 && (
+          <TableContainer>
+            <Table sx={{ tableLayout: "fixed" }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Address</TableCell>
+                  <TableCell width="160px">Active Streams</TableCell>
+                  {/* <TableCell width="20%">Total Sent/Received</TableCell> */}
+                  <TableCell width="88px" />
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {filteredEntries.map(({ address, name, streams }) => (
+                  <AddressBookRow
+                    key={address}
+                    address={address}
+                    name={name}
+                    selected={selectedAddresses.includes(address)}
+                    selectable={isDeleting}
+                    onSelect={setRowSelected(address)}
+                    streams={streams}
+                  />
+                ))}
+              </TableBody>
+            </Table>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={addressBookEntries.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              sx={{
+                "> *": {
+                  visibility:
+                    addressBookEntries.length <= 5 ? "hidden" : "visible",
+                },
+              }}
+            />
+          </TableContainer>
+        )}
       </Stack>
     </Container>
   );

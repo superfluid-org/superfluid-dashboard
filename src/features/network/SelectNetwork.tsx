@@ -1,4 +1,3 @@
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import {
   Box,
   Button,
@@ -8,28 +7,14 @@ import {
   MenuItem,
   ToggleButton,
   ToggleButtonGroup,
-  styled,
   useTheme,
 } from "@mui/material";
 import { FC, memo, MouseEvent, useState } from "react";
 import { useAccount, useNetwork } from "wagmi";
+import { OpenIcon } from "../../components/OpenIcon/OpenIcon";
 import { useExpectedNetwork } from "./ExpectedNetworkContext";
 import NetworkIcon from "./NetworkIcon";
 import { mainNetworks, Network, testNetworks } from "./networks";
-
-interface OpenIconProps {
-  open: boolean;
-}
-
-export const OpenIcon = styled(KeyboardArrowDownIcon)<OpenIconProps>(
-  ({ theme, open }) => ({
-    transform: `rotate(${open ? 180 : 0}deg)`,
-    transition: theme.transitions.create("transform", {
-      easing: theme.transitions.easing.easeInOut,
-      duration: theme.transitions.duration.short,
-    }),
-  })
-);
 
 interface NetworkItemProps {
   network: Network;

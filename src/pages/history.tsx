@@ -8,7 +8,7 @@ import {
   Table,
   TableBody,
   TableContainer,
-  Typography,
+  Typography
 } from "@mui/material";
 import { endOfDay, format, startOfDay, startOfMonth } from "date-fns";
 import flatten from "lodash/fp/flatten";
@@ -16,11 +16,12 @@ import groupBy from "lodash/fp/groupBy";
 import orderBy from "lodash/fp/orderBy";
 import { NextPage } from "next";
 import { MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { OpenIcon } from "../components/OpenIcon/OpenIcon";
 import ActivityRow from "../features/activityHistory/ActivityRow";
 import ActivityTypeFilter, {
   ActivityType,
   ActivityTypeFilters,
-  AllActivityTypes,
+  AllActivityTypes
 } from "../features/activityHistory/ActivityTypeFilter";
 import LoadingActivityGroup from "../features/activityHistory/LoadingActivityGroup";
 import DatePicker from "../features/common/DatePicker";
@@ -28,13 +29,12 @@ import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import {
   mainNetworks,
   networks,
-  testNetworks,
+  testNetworks
 } from "../features/network/networks";
 import NetworkSelectionFilter, {
   buildNetworkStates,
-  NetworkStates,
+  NetworkStates
 } from "../features/network/NetworkSelectionFilter";
-import { OpenIcon } from "../features/network/SelectNetwork";
 import { subgraphApi } from "../features/redux/store";
 import AddressSearch from "../features/send/AddressSearch";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";

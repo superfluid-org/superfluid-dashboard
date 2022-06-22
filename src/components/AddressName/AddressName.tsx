@@ -12,6 +12,7 @@ export default memo(function AddressName({
   length = "short",
 }: AddressNameProps) {
   const addressName = useAddressName(address);
+
   if (addressName.name) {
     return <>{addressName.name}</>;
   } else {

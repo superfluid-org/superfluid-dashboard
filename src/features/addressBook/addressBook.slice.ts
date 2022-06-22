@@ -1,6 +1,12 @@
-import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
+import {
+  createDraftSafeSelector,
+  createEntityAdapter,
+  createSlice,
+  EntityState,
+} from "@reduxjs/toolkit";
 import { Address } from "@superfluid-finance/sdk-core";
 import { getAddress } from "../../utils/memoizedEthersUtils";
+import { AppStore, RootState } from "../redux/store";
 
 export interface AddressBookEntry {
   address: Address;
@@ -9,15 +15,6 @@ export interface AddressBookEntry {
 
 const adapter = createEntityAdapter<AddressBookEntry>({
   selectId: (x) => getAddress(x.address),
-  //   sortComparer: (a, b) => {
-  //     if (a.timestampMs > b.timestampMs) {
-  //       return -1;
-  //     }
-  //     if (a.timestampMs < b.timestampMs) {
-  //       return 1;
-  //     }
-  //     return 0;
-  //   },
 });
 
 export const addressBookSlice = createSlice({
@@ -25,9 +22,42 @@ export const addressBookSlice = createSlice({
   initialState: adapter.getInitialState(),
   reducers: {
     addAddressBookEntry: adapter.upsertOne,
+    addAddressBookEntries: adapter.upsertMany,
+    removeAddressBookEntries: adapter.removeMany,
+    updateAddressBookEntry: adapter.updateOne,
   },
 });
 
-export const { addAddressBookEntry } = addressBookSlice.actions;
+export const {
+  addAddressBookEntry,
+  addAddressBookEntries,
+  updateAddressBookEntry,
+  removeAddressBookEntries,
+} = addressBookSlice.actions;
 
-export const addressBookSelectors = adapter.getSelectors();
+/**
+ * Custom selectors
+ */
+
+const selectSelf = (state: RootState) => state.addressBook;
+
+const adapterSelectors = adapter.getSelectors();
+
+const searchAddressBookEntries = (search: string, state: RootState) => {
+  return adapterSelectors
+    .selectAll(selectSelf(state))
+    .filter(
+      (addressBookEntry) =>
+        (addressBookEntry?.name || "")
+          .toLowerCase()
+          .indexOf(search.toLowerCase()) >= 0 ||
+        (addressBookEntry?.address || "")
+          .toLowerCase()
+          .indexOf(search.toLowerCase()) >= 0
+    );
+};
+
+export const addressBookSelectors = {
+  ...adapter.getSelectors(),
+  searchAddressBookEntries,
+};
