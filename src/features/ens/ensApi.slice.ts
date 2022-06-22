@@ -17,13 +17,6 @@ export const ensApi = createApi({
       [
         {
           provider: new ethers.providers.JsonRpcBatchProvider(
-            "https://eth-mainnet.public.blastapi.io",
-            "mainnet"
-          ),
-          priority: 1,
-        },
-        {
-          provider: new ethers.providers.JsonRpcBatchProvider(
             "https://eth-rpc.gateway.pokt.network",
             "mainnet"
           ),

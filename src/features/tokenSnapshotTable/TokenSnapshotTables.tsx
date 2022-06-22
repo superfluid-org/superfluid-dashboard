@@ -1,18 +1,8 @@
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Button, Stack, Typography } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import { FC, useEffect, useMemo, useRef, useState } from "react";
-import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import {
-  mainNetworks,
-  Network,
-  networks,
-  testNetworks,
-} from "../network/networks";
-import NetworkSelectionFilter, {
-  buildNetworkStates,
-  NetworkStates,
-} from "../network/NetworkSelectionFilter";
+import { FC, useEffect, useRef, useState } from "react";
+import { useActiveNetworks } from "../network/ActiveNetworksContext";
+import NetworkSelectionFilter from "../network/NetworkSelectionFilter";
 import { OpenIcon } from "../network/SelectNetwork";
 import { subgraphApi } from "../redux/store";
 import TokenSnapshotEmptyCard from "./TokenSnapshotEmptyCard";
@@ -24,46 +14,18 @@ interface TokenSnapshotTablesProps {
 }
 
 const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
-  const {
-    network: { testnet },
-  } = useExpectedNetwork();
-
-  const networkSelectionRef = useRef<HTMLButtonElement>(null);
   const [hasContent, setHasContent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [showTestnets, setShowTestnets] = useState(!!testnet);
-  const [networkStates, setNetworkStates] = useState<NetworkStates>({
-    ...buildNetworkStates(mainNetworks, !showTestnets),
-    ...buildNetworkStates(testNetworks, showTestnets),
-  });
-
   const [tokenSnapshotsQueryTrigger] =
     subgraphApi.useLazyAccountTokenSnapshotsQuery();
+  const { activeNetworks } = useActiveNetworks();
 
-  const onTestnetsChange = (testActive: boolean) => {
-    setShowTestnets(testActive);
-    setTimeout(
-      () =>
-        setNetworkStates({
-          ...buildNetworkStates(testNetworks, testActive),
-          ...buildNetworkStates(mainNetworks, !testActive),
-        }),
-      200
-    );
-  };
-
-  const onNetworkChange = (chainId: number, active: boolean) =>
-    setNetworkStates({ ...networkStates, [chainId]: active });
+  const networkSelectionRef = useRef<HTMLButtonElement>(null);
 
   const [networkSelectionOpen, setNetworkSelectionOpen] = useState(false);
 
   const openNetworkSelection = () => setNetworkSelectionOpen(true);
   const closeNetworkSelection = () => setNetworkSelectionOpen(false);
-
-  const activeNetworks = useMemo(
-    () => networks.filter((network) => networkStates[network.id]),
-    [networkStates]
-  );
 
   useEffect(() => {
     setHasContent(false);
@@ -120,11 +82,7 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
         </Button>
         <NetworkSelectionFilter
           open={networkSelectionOpen}
-          networkStates={networkStates}
           anchorEl={networkSelectionRef.current}
-          showTestnets={showTestnets}
-          onNetworkChange={onNetworkChange}
-          onTestnetsChange={onTestnetsChange}
           onClose={closeNetworkSelection}
         />
       </Stack>

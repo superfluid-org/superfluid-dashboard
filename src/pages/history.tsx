@@ -24,16 +24,8 @@ import ActivityTypeFilter, {
 } from "../features/activityHistory/ActivityTypeFilter";
 import LoadingActivityGroup from "../features/activityHistory/LoadingActivityGroup";
 import DatePicker from "../features/common/DatePicker";
-import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
-import {
-  mainNetworks,
-  networks,
-  testNetworks,
-} from "../features/network/networks";
-import NetworkSelectionFilter, {
-  buildNetworkStates,
-  NetworkStates,
-} from "../features/network/NetworkSelectionFilter";
+import { useActiveNetworks } from "../features/network/ActiveNetworksContext";
+import NetworkSelectionFilter from "../features/network/NetworkSelectionFilter";
 import { OpenIcon } from "../features/network/SelectNetwork";
 import { subgraphApi } from "../features/redux/store";
 import AddressSearch from "../features/send/AddressSearch";
@@ -44,23 +36,18 @@ const History: NextPage = () => {
   const dateNow = useMemo(() => new Date(), []);
 
   const { visibleAddress = "" } = useVisibleAddress();
-  const {
-    network: { testnet },
-  } = useExpectedNetwork();
+  const { activeNetworks } = useActiveNetworks();
 
-  const [networkSelectionAnchor, setNetworkSelectionAnchor] =
-    useState<HTMLButtonElement | null>(null);
   const [activitySelectionAnchor, setActivitySelectionAnchor] =
     useState<HTMLButtonElement | null>(null);
   const [datePickerAnchor, setDatePickerAnchor] = useState<HTMLElement | null>(
     null
   );
   const [isLoading, setIsLoading] = useState(false);
-  const [showTestnets, setShowTestnets] = useState(!!testnet);
-  const [networkStates, setNetworkStates] = useState<NetworkStates>({
-    ...buildNetworkStates(mainNetworks, !showTestnets),
-    ...buildNetworkStates(testNetworks, showTestnets),
-  });
+
+  const [networkSelectionAnchor, setNetworkSelectionAnchor] =
+    useState<HTMLButtonElement | null>(null);
+
   const [activeActivityTypes, setActiveActivityTypes] =
     useState(AllActivityTypes);
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -68,16 +55,9 @@ const History: NextPage = () => {
   const [startDate, setStartDate] = useState(startOfMonth(dateNow));
   const [endDate, setEndDate] = useState(endOfDay(dateNow));
 
-  const [addressSearchOpen, setAddressSearchOpen] = useState(false);
-
   const [searchedAddress, setAddressSearch] = useState<string | null>(null);
 
   const [eventsQueryTrigger] = subgraphApi.useLazyEventsQuery();
-
-  const activeNetworks = useMemo(
-    () => networks.filter((network) => networkStates[network.id]),
-    [networkStates]
-  );
 
   useEffect(() => {
     if (visibleAddress) {
@@ -133,31 +113,9 @@ const History: NextPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visibleAddress, activeNetworks, startDate, endDate, searchedAddress]);
 
-  const onAddressSearchChange = (address: string) => {
-    setAddressSearch(address);
-    closeAddressSearchDialog();
-  };
-
-  const openAddressSearchDialog = () => setAddressSearchOpen(true);
-  const closeAddressSearchDialog = () => setAddressSearchOpen(false);
-
-  const onTestnetsChange = (testActive: boolean) => {
-    setShowTestnets(testActive);
-    setTimeout(
-      () =>
-        setNetworkStates({
-          ...buildNetworkStates(testNetworks, testActive),
-          ...buildNetworkStates(mainNetworks, !testActive),
-        }),
-      200
-    );
-  };
-
-  const onNetworkChange = (chainId: number, active: boolean) =>
-    setNetworkStates({ ...networkStates, [chainId]: active });
-
   const openNetworkSelection = (event: MouseEvent<HTMLButtonElement>) =>
     setNetworkSelectionAnchor(event.currentTarget);
+
   const closeNetworkSelection = () => setNetworkSelectionAnchor(null);
 
   const openActivitySelection = (event: MouseEvent<HTMLButtonElement>) =>
@@ -276,11 +234,7 @@ const History: NextPage = () => {
             </Button>
             <NetworkSelectionFilter
               open={!!networkSelectionAnchor}
-              networkStates={networkStates}
               anchorEl={networkSelectionAnchor}
-              showTestnets={showTestnets}
-              onNetworkChange={onNetworkChange}
-              onTestnetsChange={onTestnetsChange}
               onClose={closeNetworkSelection}
             />
           </Stack>

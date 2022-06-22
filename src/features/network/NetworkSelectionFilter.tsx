@@ -11,20 +11,10 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/system";
 import { FC } from "react";
+import { useAppSelector } from "../redux/store";
+import { useActiveNetworks } from "./ActiveNetworksContext";
 import NetworkIcon from "./NetworkIcon";
 import { Network, networks } from "./networks";
-
-export const buildNetworkStates = (
-  networkList: Array<Network>,
-  defaultActive: boolean
-) =>
-  networkList.reduce(
-    (activeStates, network) => ({
-      ...activeStates,
-      [network.id]: defaultActive,
-    }),
-    {}
-  );
 
 interface NetworkItemProps {
   network: Network;
@@ -59,30 +49,32 @@ export interface NetworkStates {
 interface NetworkSelectionFilterProps {
   open?: boolean;
   anchorEl?: HTMLElement | null;
-  networkStates: NetworkStates;
-  showTestnets?: boolean;
-  onNetworkChange: (chainId: number, active: boolean) => void;
-  onTestnetsChange: (showTestnets: boolean) => void;
   onClose?: () => void;
 }
 
 const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
   open,
   anchorEl,
-  networkStates,
-  showTestnets,
-  onNetworkChange,
-  onTestnetsChange,
   onClose,
 }) => {
   const theme = useTheme();
+  const {
+    activeNetworks,
+    testnetMode,
+    hideNetwork,
+    unhideNetwork,
+    setTestnetMode,
+  } = useActiveNetworks();
 
-  const onNetworkTypeChange = (_e: unknown, testActive: boolean | null) => {
-    if (testActive !== null) onTestnetsChange(testActive);
-  };
+  const hiddenNetworkChainIds = useAppSelector(
+    (state) => state.networkPreferences.hidden
+  );
 
   const onNetworkToggled = (chainId: number) => (active: boolean) =>
-    onNetworkChange(chainId, active);
+    active ? void unhideNetwork(chainId) : void hideNetwork(chainId);
+
+  const onNetworkTypeChange = (_e: unknown, testActive: boolean | null) =>
+    void setTestnetMode(!!testActive);
 
   const mainnets = networks.filter((network) => !network.testnet);
   const testnets = networks.filter((network) => network.testnet);
@@ -97,25 +89,25 @@ const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
       PaperProps={{ sx: { minWidth: 280 }, square: true }}
       sx={{ marginTop: theme.spacing(1.5) }}
     >
-      <Collapse in={!showTestnets} timeout="auto" unmountOnExit>
+      <Collapse in={!testnetMode} timeout="auto" unmountOnExit>
         {mainnets.map((network) => (
           <NetworkItem
             data-cy={`${network.slugName}-button`}
             key={network.id}
             network={network}
-            active={networkStates[network.id]}
+            active={!hiddenNetworkChainIds.includes(network.id)}
             onChange={onNetworkToggled(network.id)}
           />
         ))}
       </Collapse>
 
-      <Collapse in={showTestnets} timeout="auto" unmountOnExit>
+      <Collapse in={testnetMode} timeout="auto" unmountOnExit>
         {testnets.map((network) => (
           <NetworkItem
             data-cy={`${network.slugName}-button`}
             key={network.id}
             network={network}
-            active={networkStates[network.id]}
+            active={!hiddenNetworkChainIds.includes(network.id)}
             onChange={onNetworkToggled(network.id)}
           />
         ))}
@@ -127,7 +119,7 @@ const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
           fullWidth
           size="small"
           color="primary"
-          value={showTestnets}
+          value={testnetMode}
           onChange={onNetworkTypeChange}
         >
           <ToggleButton data-cy={"mainnets-button"} value={false}>

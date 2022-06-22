@@ -11,8 +11,12 @@ import {
 } from "react";
 import { useNetwork } from "wagmi";
 import { wagmiClient } from "../wallet/WagmiManager";
+import { useActiveNetworks } from "./ActiveNetworksContext";
 import { Network, networksByChainId, networksBySlug } from "./networks";
 
+/**
+ * "Expected" points to expected wallet network.
+ */
 interface ExpectedNetworkContextValue {
   network: Network;
   setExpectedNetwork: (chainId: number) => void;
@@ -31,6 +35,7 @@ export const ExpectedNetworkProvider: FC<{
 }> = ({ children }) => {
   const [network, setNetwork] = useState<Network>(networksByChainId.get(137)!);
   const [stopAutoSwitch, setStopAutoSwitch] = useState(false);
+  const { setTestnetMode } = useActiveNetworks();
 
   const contextValue: ExpectedNetworkContextValue = useMemo(
     () => ({
@@ -83,6 +88,7 @@ export const ExpectedNetworkProvider: FC<{
         const networkFromConnect = networksByChainId.get(provider.chain.id);
         if (networkFromConnect) {
           setNetwork(networkFromConnect);
+          setTestnetMode(!!networkFromConnect.testnet);
         }
       }
     });
