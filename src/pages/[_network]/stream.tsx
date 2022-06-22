@@ -26,7 +26,7 @@ import {
   getNetworkStaticProps,
 } from "../../features/routing/networkPaths";
 import { UnitOfTime } from "../../features/send/FlowRateInput";
-import EtherFormatted from "../../features/token/EtherFormatted";
+import Ether from "../../features/token/Ether";
 import FlowingBalance from "../../features/token/FlowingBalance";
 import TokenIcon from "../../features/token/TokenIcon";
 import {
@@ -191,7 +191,6 @@ const Stream: FC<NetworkPage> = ({ network }) => {
                   balance={streamedUntilUpdatedAt}
                   flowRate={currentFlowRate}
                   balanceTimestamp={updatedAtTimestamp}
-                  etherDecimalPlaces={currentFlowRate === "0" ? 8 : undefined}
                   disableRoundingIndicator
                 />
               </Typography>
@@ -271,10 +270,8 @@ const Stream: FC<NetworkPage> = ({ network }) => {
         {currentFlowRate !== "0" && (
           <Stack direction="row" alignItems="center" gap={0.5}>
             <Typography variant="h6">
-              <EtherFormatted
+              <Ether
                 wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
-                etherDecimalPlaces={8}
-                disableRoundingIndicator
               />
             </Typography>
 
@@ -304,12 +301,7 @@ const Stream: FC<NetworkPage> = ({ network }) => {
             value={
               bufferSize ? (
                 <>
-                  <EtherFormatted
-                    wei={bufferSize}
-                    etherDecimalPlaces={10}
-                    disableRoundingIndicator
-                  />{" "}
-                  {tokenSymbol}
+                  <Ether wei={bufferSize} /> {tokenSymbol}
                 </>
               ) : (
                 "-"

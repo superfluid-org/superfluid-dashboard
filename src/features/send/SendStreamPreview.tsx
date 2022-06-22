@@ -14,6 +14,7 @@ import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { rpcApi } from "../redux/store";
+import Ether from "../token/Ether";
 import FlowingBalance from "../token/FlowingBalance";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import {
@@ -28,13 +29,13 @@ const PreviewItem: FC<{
   label: string;
   isError?: boolean;
   oldValue?: ReactNode;
-    dataCy?: string;
+  dataCy?: string;
 }> = ({ label, children, oldValue, isError, dataCy }) => {
   const theme = useTheme();
 
   const valueTypography = (
     <Typography
-        data-cy={dataCy}
+      data-cy={dataCy}
       variant="body2"
       fontWeight="500"
       sx={{
@@ -71,7 +72,11 @@ export const StreamingPreview: FC<{
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
 
-  const { data: _discard, currentData: realtimeBalance, ...realtimeBalanceQuery} = rpcApi.useRealtimeBalanceQuery(
+  const {
+    data: _discard,
+    currentData: realtimeBalance,
+    ...realtimeBalanceQuery
+  } = rpcApi.useRealtimeBalanceQuery(
     visibleAddress
       ? {
           chainId: network.id,
@@ -81,7 +86,11 @@ export const StreamingPreview: FC<{
       : skipToken
   );
 
-  const { data: _discard2, currentData: existingFlow, ...activeFlowQuery} = rpcApi.useGetActiveFlowQuery(
+  const {
+    data: _discard2,
+    currentData: existingFlow,
+    ...activeFlowQuery
+  } = rpcApi.useGetActiveFlowQuery(
     visibleAddress
       ? {
           chainId: network.id,
@@ -103,7 +112,9 @@ export const StreamingPreview: FC<{
     newDateWhenBalanceCritical,
   } = useMemo(
     () =>
-      (realtimeBalance && realtimeBalanceQuery.isSuccess && activeFlowQuery.isSuccess)
+      realtimeBalance &&
+      realtimeBalanceQuery.isSuccess &&
+      activeFlowQuery.isSuccess
         ? calculateBufferInfo(network, realtimeBalance, existingFlow ?? null, {
             amountWei: parseEtherOrZero(flowRateEther.amountEther).toString(),
             unitOfTime: flowRateEther.unitOfTime,
@@ -129,10 +140,13 @@ export const StreamingPreview: FC<{
       }}
     >
       <Stack gap={0.5}>
-        <PreviewItem dataCy="preview-receiver" label="Receiver">{receiver}</PreviewItem>
+        <PreviewItem dataCy="preview-receiver" label="Receiver">
+          {receiver}
+        </PreviewItem>
 
         <PreviewItem
-         dataCy="preview-flow-rate" label="Flow rate"
+          dataCy="preview-flow-rate"
+          label="Flow rate"
           oldValue={
             existingStream
               ? flowRateWeiToString(
@@ -148,11 +162,14 @@ export const StreamingPreview: FC<{
           {flowRateEtherToString(flowRateEther, token.symbol)}
         </PreviewItem>
 
-        <PreviewItem dataCy="preview-ends-on" label="Ends on">Never</PreviewItem>
+        <PreviewItem dataCy="preview-ends-on" label="Ends on">
+          Never
+        </PreviewItem>
 
         {visibleAddress && balanceAfterBuffer && (
           <PreviewItem
-           dataCy="preview-balance-after-buffer" label="Balance after buffer"
+            dataCy="preview-balance-after-buffer"
+            label="Balance after buffer"
             isError={balanceAfterBuffer.isNegative()}
           >
             {realtimeBalance && (
@@ -168,14 +185,15 @@ export const StreamingPreview: FC<{
 
         {newBufferAmount && (
           <PreviewItem
-           dataCy="preview-upfront-buffer" label="Upfront buffer"
+            dataCy="preview-upfront-buffer"
+            label="Upfront buffer"
             oldValue={
-              oldBufferAmount
-                ? `${ethers.utils.formatEther(oldBufferAmount)} ${token.symbol}`
-                : undefined
+              oldBufferAmount ? (
+                <Ether wei={oldBufferAmount}> {token.symbol}</Ether>
+              ) : undefined
             }
           >
-            {`${ethers.utils.formatEther(newBufferAmount)} ${token.symbol}`}
+            <Ether wei={newBufferAmount}> {token.symbol}</Ether>
           </PreviewItem>
         )}
 

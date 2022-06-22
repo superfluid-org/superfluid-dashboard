@@ -1,7 +1,7 @@
 import { memo, ReactElement, useEffect, useMemo, useState } from "react";
 import { BigNumberish, BigNumber, utils } from "ethers";
 import { Box } from "@mui/material";
-import EtherFormatted from "./EtherFormatted";
+import Ether from "./Ether";
 import { useStateWithDep } from "../../useStateWithDep";
 import Decimal from "decimal.js";
 
@@ -15,7 +15,6 @@ export interface FlowingBalanceProps {
    */
   balanceTimestamp: number;
   flowRate: string;
-  etherDecimalPlaces?: number;
   disableRoundingIndicator?: boolean;
   tokenSymbol?: string;
 }
@@ -24,7 +23,6 @@ export default memo(function FlowingBalance({
   balance,
   balanceTimestamp,
   flowRate,
-  etherDecimalPlaces,
   tokenSymbol,
 }: FlowingBalanceProps): ReactElement {
   const [weiValue, setWeiValue] = useStateWithDep<BigNumberish>(balance);
@@ -32,7 +30,7 @@ export default memo(function FlowingBalance({
   const flowRateBigNumber = useMemo(() => BigNumber.from(flowRate), [flowRate]);
 
   /*
-   * TODO: When using this variable then ~ sign in EtherFormatted should be disabled
+   * TODO: When using this variable then ~ sign in Ether should be disabled
    * Calculating decimals based on the flow rate.
    * This is configurable by ANIMATING_NR_COUNT and should shows
    * roughly how many trailing numbers will animate each second.
@@ -111,12 +109,9 @@ export default memo(function FlowingBalance({
       }}
       data-cy={"balance"}
     >
-      <EtherFormatted
-        disableRoundingIndicator
+      <Ether
         wei={weiValue}
-        etherDecimalPlaces={
-          etherDecimalPlaces || etherSignificantFlowingDecimal
-        }
+        etherDecimalPlaces={etherSignificantFlowingDecimal}
       />{" "}
       {tokenSymbol}
     </Box>

@@ -11,7 +11,7 @@ import { FC } from "react";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import EtherFormatted from "../token/EtherFormatted";
+import Ether from "../token/Ether";
 import { format } from "date-fns";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
@@ -66,11 +66,7 @@ const TransferEventRow: FC<TransferEventRowProps> = ({ transferEvent }) => {
       </TableCell>
       <TableCell>
         <Typography variant="body2mono">
-          <EtherFormatted
-            wei={value}
-            etherDecimalPlaces={8}
-            disableRoundingIndicator
-          />
+          <Ether wei={value} />
         </Typography>
       </TableCell>
       <TableCell>{format(timestamp * 1000, "d MMM. yyyy")}</TableCell>

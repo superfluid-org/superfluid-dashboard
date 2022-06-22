@@ -21,7 +21,7 @@ import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
 import StreamsTable from "../streamsTable/StreamsTable";
-import EtherFormatted from "../token/EtherFormatted";
+import Ether from "../token/Ether";
 import FlowingBalance from "../token/FlowingBalance";
 import TokenIcon from "../token/TokenIcon";
 
@@ -118,7 +118,12 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
 
   return (
     <>
-      <SnapshotRow hover lastElement={lastElement} open={open} data-cy={`${tokenSymbol}-cell`}>
+      <SnapshotRow
+        hover
+        lastElement={lastElement}
+        open={open}
+        data-cy={`${tokenSymbol}-cell`}
+      >
         <TableCell onClick={openTokenPage}>
           <ListItem sx={{ p: 0 }}>
             <ListItemAvatar>
@@ -151,7 +156,6 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 balance={balance}
                 flowRate={netFlowRate}
                 balanceTimestamp={balanceTimestamp}
-                etherDecimalPlaces={netFlowRate === "0" ? 8 : undefined}
                 disableRoundingIndicator
               />
             }
@@ -167,12 +171,9 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           {totalNumberOfActiveStreams > 0 ? (
             <Typography data-cy={"net-flow-value"} variant="body2mono">
               {netFlowRate.charAt(0) !== "-" && "+"}
-              <EtherFormatted
-                wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
-                etherDecimalPlaces={8}
-                disableRoundingIndicator
-              />
-              /mo
+              <Ether wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}>
+                /mo
+              </Ether>
             </Typography>
           ) : (
             "-"
@@ -181,21 +182,21 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         <TableCell onClick={openTokenPage}>
           {totalNumberOfActiveStreams > 0 ? (
             <Stack>
-              <Typography data-cy={"inflow"} variant="body2mono" color="primary">
+              <Typography
+                data-cy={"inflow"}
+                variant="body2mono"
+                color="primary"
+              >
                 +
-                <EtherFormatted
+                <Ether
                   wei={BigNumber.from(totalInflowRate).mul(UnitOfTime.Month)}
-                  etherDecimalPlaces={8}
-                  disableRoundingIndicator
                 />
                 /mo
               </Typography>
               <Typography data-cy={"outflow"} variant="body2mono" color="error">
                 -
-                <EtherFormatted
+                <Ether
                   wei={BigNumber.from(totalOutflowRate).mul(UnitOfTime.Month)}
-                  etherDecimalPlaces={8}
-                  disableRoundingIndicator
                 />
                 /mo
               </Typography>
@@ -206,7 +207,11 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         </TableCell>
         <TableCell align="center" sx={{ cursor: "initial" }}>
           {hasStreams && (
-            <IconButton data-cy={"show-streams-button"} color="inherit" onClick={toggleOpen}>
+            <IconButton
+              data-cy={"show-streams-button"}
+              color="inherit"
+              onClick={toggleOpen}
+            >
               <OpenIcon open={open} />
             </IconButton>
           )}

@@ -29,7 +29,7 @@ import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
-import EtherFormatted from "../token/EtherFormatted";
+import Ether from "../token/Ether";
 import FlowingBalance from "../token/FlowingBalance";
 import {
   TransactionDialog,
@@ -162,7 +162,6 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
             balance={streamedUntilUpdatedAt}
             flowRate={currentFlowRate}
             balanceTimestamp={updatedAtTimestamp}
-            etherDecimalPlaces={currentFlowRate === "0" ? 8 : undefined}
             disableRoundingIndicator
           />
         </Typography>
@@ -171,10 +170,8 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
         {isActive ? (
           <Typography data-cy={"flow-rate"} variant="body2mono">
             {isOutgoing ? "-" : "+"}
-            <EtherFormatted
+            <Ether
               wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
-              etherDecimalPlaces={8}
-              disableRoundingIndicator
             />
             /mo
           </Typography>

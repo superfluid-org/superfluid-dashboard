@@ -28,7 +28,7 @@ import {
 } from "../../features/routing/networkPaths";
 import { UnitOfTime } from "../../features/send/FlowRateInput";
 import StreamsTable from "../../features/streamsTable/StreamsTable";
-import EtherFormatted from "../../features/token/EtherFormatted";
+import Ether from "../../features/token/Ether";
 import FlowingBalance from "../../features/token/FlowingBalance";
 import TokenBalanceGraph, {
   GraphType,
@@ -55,15 +55,16 @@ const Token: FC<NetworkPage> = ({ network }) => {
 
   const tokenId = isString(router.query.token) ? router.query.token : undefined;
 
-  const { data: _discard, ...realTimeBalanceQuery } = rpcApi.useRealtimeBalanceQuery(
-    tokenId && visibleAddress
-      ? {
-          chainId: network.id,
-          tokenAddress: tokenId,
-          accountAddress: visibleAddress,
-        }
-      : skipToken
-  );
+  const { data: _discard, ...realTimeBalanceQuery } =
+    rpcApi.useRealtimeBalanceQuery(
+      tokenId && visibleAddress
+        ? {
+            chainId: network.id,
+            tokenAddress: tokenId,
+            accountAddress: visibleAddress,
+          }
+        : skipToken
+    );
 
   const tokenQuery = subgraphApi.useTokenQuery(
     tokenId
@@ -152,7 +153,6 @@ const Token: FC<NetworkPage> = ({ network }) => {
                   balance={balance}
                   flowRate={flowRate}
                   balanceTimestamp={balanceTimestamp}
-                  etherDecimalPlaces={flowRate === "0" ? 8 : undefined}
                   disableRoundingIndicator
                 />
               </Typography>
@@ -231,12 +231,10 @@ const Token: FC<NetworkPage> = ({ network }) => {
               <Stack alignItems="end">
                 <Stack direction="row" alignItems="center">
                   <Typography variant="h5mono">
-                    <EtherFormatted
+                    <Ether
                       wei={BigNumber.from(totalInflowRate).mul(
                         UnitOfTime.Month
                       )}
-                      etherDecimalPlaces={8}
-                      disableRoundingIndicator
                     />
                     {` /mo`}
                   </Typography>
@@ -245,12 +243,10 @@ const Token: FC<NetworkPage> = ({ network }) => {
 
                 <Stack direction="row" alignItems="center">
                   <Typography variant="h5mono">
-                    <EtherFormatted
+                    <Ether
                       wei={BigNumber.from(totalOutflowRate).mul(
                         UnitOfTime.Month
                       )}
-                      etherDecimalPlaces={8}
-                      disableRoundingIndicator
                     />
                     {` /mo`}
                   </Typography>
