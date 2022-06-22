@@ -3,7 +3,6 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import CloseIcon from "@mui/icons-material/Close";
 import {
-  Avatar,
   Button,
   CircularProgress,
   ListItemAvatar,
@@ -23,9 +22,10 @@ import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { useRouter } from "next/router";
 import { FC, memo, MouseEvent, useState } from "react";
-import { useNetwork } from "wagmi";
+import { useNetwork, useSigner } from "wagmi";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
+import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
@@ -96,6 +96,8 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
   const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
   const { activeChain } = useNetwork();
+  const { data: signer } = useSigner();
+  const getTransactionOverrides = useGetTransactionOverrides();
 
   const [flowDeleteTrigger, flowDeleteMutation] =
     rpcApi.useFlowDeleteMutation();
@@ -119,14 +121,20 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
 
   const closeCancelDialog = () => setShowCancelDialog(false);
 
-  const deleteStream = () => {
+  const deleteStream = async () => {
+    if (!signer) {
+      throw new Error("Signer is not set.");
+    }
+
     flowDeleteTrigger({
+      signer,
       chainId: network.id,
       receiverAddress: receiver,
       senderAddress: sender,
       superTokenAddress: stream.token,
       userDataBytes: undefined,
       waitForConfirmation: false,
+      overrides: await getTransactionOverrides(network),
     }).unwrap();
     closeMenu();
     setShowCancelDialog(true);

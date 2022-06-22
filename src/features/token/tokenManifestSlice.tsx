@@ -13,6 +13,7 @@ export interface TokenManifest {
 }
 
 export const assetApiSlice = createApi({
+  reducerPath: "superfluid_assets",
   baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
     tokenManifest: builder.query<TokenManifest | null, { tokenSymbol: string }>(

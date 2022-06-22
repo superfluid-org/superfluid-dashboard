@@ -32,13 +32,13 @@ export type Network = Chain & {
 };
 
 const superfluidRpcUrls = {
-  ropsten: "https://rpc-endpoints.superfluid.dev/ropsten",
-  rinkeby: "https://rpc-endpoints.superfluid.dev/rinkeby",
-  goerli: "https://rpc-endpoints.superfluid.dev/goerli",
-  kovan: "https://rpc-endpoints.superfluid.dev/kovan",
-  gnosis: "https://rpc-endpoints.superfluid.dev/xdai",
-  polygon: "https://rpc-endpoints.superfluid.dev/matic",
-  polygonMumbai: "https://rpc-endpoints.superfluid.dev/mumbai",
+  ropsten: "https://rpc-endpoints.superfluid.dev/eth-ropsten",
+  rinkeby: "https://rpc-endpoints.superfluid.dev/eth-rinkeby",
+  goerli: "https://rpc-endpoints.superfluid.dev/eth-goerli",
+  kovan: "https://rpc-endpoints.superfluid.dev/eth-kovan",
+  gnosis: "https://rpc-endpoints.superfluid.dev/xdai-mainnet",
+  polygon: "https://rpc-endpoints.superfluid.dev/polygon-mainnet",
+  polygonMumbai: "https://rpc-endpoints.superfluid.dev/polygon-mumbai",
   arbitrum: "https://rpc-endpoints.superfluid.dev/arbitrum-one",
   arbitrumRinkeby: "https://rpc-endpoints.superfluid.dev/arbitrum-rinkeby",
   optimism: "https://rpc-endpoints.superfluid.dev/optimism-mainnet",

@@ -1,12 +1,10 @@
 import {
   ERC20Token,
-  NativeAssetSuperToken,
   WrapperSuperToken,
 } from "@superfluid-finance/sdk-core";
 import {
   getFramework,
   TransactionInfo,
-  getSigner,
   RpcEndpointBuilder,
   registerNewTransactionAndReturnQueryFnResult,
 } from "@superfluid-finance/sdk-redux";
@@ -17,6 +15,7 @@ import {
   UnderlyingBalance,
   RealtimeBalance,
 } from "./balanceFetcher";
+import { Overrides, Signer } from "ethers";
 
 declare module "@superfluid-finance/sdk-redux" {
   interface TransactionTitleOverrides {
@@ -160,11 +159,12 @@ export const adHocRpcEndpoints = {
         amountWei: string;
         waitForConfirmation?: boolean;
         transactionExtraData?: Record<string, unknown>;
+        signer: Signer,
+        overrides: Overrides
       }
     >({
       queryFn: async (arg, queryApi) => {
         const framework = await getFramework(arg.chainId);
-        const signer = await getSigner(arg.chainId);
         const superToken = await framework.loadSuperToken(
           arg.superTokenAddress
         );
@@ -179,13 +179,14 @@ export const adHocRpcEndpoints = {
           .approve({
             amount: arg.amountWei,
             receiver: superToken.address,
+            overrides: arg.overrides
           })
-          .exec(signer);
+          .exec(arg.signer);
 
         return await registerNewTransactionAndReturnQueryFnResult({
           transactionResponse,
           chainId: arg.chainId,
-          signer: await signer.getAddress(),
+          signer: await arg.signer.getAddress(),
           waitForConfirmation: !!arg.waitForConfirmation,
           dispatch: queryApi.dispatch,
           title: "Approve Allowance",

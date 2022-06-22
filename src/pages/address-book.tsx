@@ -17,7 +17,7 @@ import { Address, Stream } from "@superfluid-finance/sdk-core";
 import { NextPage } from "next";
 import { parse, unparse } from "papaparse";
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 import AddressSearchDialog from "../components/AddressSearchDialog/AddressSearchDialog";
 import DownloadButton from "../components/DownloadButton/DownloadButton";
 import ReadFileButton from "../components/ReadFileButton/ReadFileButton";
@@ -30,6 +30,7 @@ import {
 } from "../features/addressBook/addressBook.slice";
 import AddressBookRow from "../features/addressBook/AddressBookRow";
 import AddressFilter from "../features/addressBook/AddressFilter";
+import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import {
   subgraphApi,
   useAppDispatch,
@@ -40,16 +41,11 @@ import StreamActiveFilter, {
   StreamActiveType,
 } from "../features/streamsTable/StreamActiveFilter";
 
-interface MappedEntry extends AddressBookEntry {
-  streams: Array<Stream>;
-}
-
 const AddressBook: NextPage = () => {
   const dispatch = useAppDispatch();
 
   const { data: account } = useAccount();
-  const { activeChain } = useNetwork();
-
+  const { network } = useExpectedNetwork();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -69,9 +65,9 @@ const AddressBook: NextPage = () => {
   }, [addressBookEntries]);
 
   const incomingStreamsQuery = subgraphApi.useStreamsQuery(
-    activeChain && account?.address
+    account?.address
       ? {
-          chainId: activeChain.id,
+          chainId: network.id,
           filter: {
             sender: account.address.toLowerCase(),
             receiver_in: addressBookAddresses,
@@ -89,9 +85,9 @@ const AddressBook: NextPage = () => {
   );
 
   const outgoingStreamsQuery = subgraphApi.useStreamsQuery(
-    activeChain && account?.address
+    account?.address
       ? {
-          chainId: activeChain.id,
+          chainId: network.id,
           filter: {
             receiver: account.address.toLowerCase(),
             sender_in: addressBookAddresses,
