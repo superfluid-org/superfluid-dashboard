@@ -18,6 +18,7 @@ import WagmiManager, {
 import { ImpersonationProvider } from "../features/impersonation/ImpersonationContext";
 import { VisibleAddressProvider } from "../features/wallet/VisibleAddressContext";
 import { ActiveNetworksProvider } from "../features/network/ActiveNetworksContext";
+import ConnectButtonProvider from "../features/wallet/ConnectButtonProvider";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -55,20 +56,22 @@ export default function MyApp(props: MyAppProps) {
                     <MuiProvider>
                       {(_muiTheme) => (
                         <RainbowKitManager>
-                          <VisibleAddressProvider>
-                            <TransactionRestorationContextProvider>
-                              <TransactionDrawerContextProvider>
-                                <Layout>
-                                  <ReduxPersistGate>
-                                    <Component
-                                      key={`${network.slugName}`}
-                                      {...pageProps}
-                                    />
-                                  </ReduxPersistGate>
-                                </Layout>
-                              </TransactionDrawerContextProvider>
-                            </TransactionRestorationContextProvider>
-                          </VisibleAddressProvider>
+                          <ConnectButtonProvider>
+                            <VisibleAddressProvider>
+                              <TransactionRestorationContextProvider>
+                                <TransactionDrawerContextProvider>
+                                  <Layout>
+                                    <ReduxPersistGate>
+                                      <Component
+                                        key={`${network.slugName}`}
+                                        {...pageProps}
+                                      />
+                                    </ReduxPersistGate>
+                                  </Layout>
+                                </TransactionDrawerContextProvider>
+                              </TransactionRestorationContextProvider>
+                            </VisibleAddressProvider>
+                          </ConnectButtonProvider>
                         </RainbowKitManager>
                       )}
                     </MuiProvider>

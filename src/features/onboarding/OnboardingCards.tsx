@@ -5,21 +5,18 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CardProps,
   IconButton,
-  ListItemAvatar,
-  ListItemText,
   Paper,
   Skeleton,
   Stack,
 } from "@mui/material";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
 import Link from "next/link";
-import { ElementType, FC } from "react";
+import { FC } from "react";
 import { useAccount } from "wagmi";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import TokenIcon from "../token/TokenIcon";
+import { useConnectButton } from "../wallet/ConnectButtonProvider";
 
 interface OnboardingItemProps {
   title: string;
@@ -82,6 +79,9 @@ interface OnboardingCardsProps {
 }
 
 const OnboardingCards: FC<OnboardingCardsProps> = ({ onClick }) => {
+  const { data: account } = useAccount();
+  const { openConnectModal } = useConnectButton();
+
   return (
     <Stack
       sx={{ display: "grid", gridTemplateColumns: "repeat(3, 290px)" }}
@@ -123,7 +123,10 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({ onClick }) => {
       <OnboardingItem
         title="Modify and Cancel Streams"
         subheader="Don't let your balance hit zero!"
-        onClick={onClick}
+        onClick={() => {
+          if (!account) openConnectModal();
+          onClick && onClick();
+        }}
         href="/"
       >
         <IconButton color="primary">

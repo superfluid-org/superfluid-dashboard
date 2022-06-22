@@ -12,6 +12,7 @@ import { useConnect, useNetwork, useSigner } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 import { Signer } from "ethers";
+import { useConnectButton } from "../wallet/ConnectButtonProvider";
 
 export const TransactionButton: FC<{
   mutationResult: UnknownMutationResult;
@@ -38,6 +39,7 @@ export const TransactionButton: FC<{
   dataCy,
   ButtonProps = {},
 }) => {
+  const { openConnectModal } = useConnectButton();
   const { isConnecting } = useConnect();
   const { activeChain, switchNetwork } = useNetwork();
   const { data: signer, isLoading: isSignerLoading } = useSigner();
@@ -89,21 +91,17 @@ export const TransactionButton: FC<{
 
     if (!signer) {
       return (
-        <ConnectButton.Custom>
-          {({ openConnectModal }) => (
-            <LoadingButton
-              data-cy={"connect-wallet"}
-              fullWidth
-              loading={isConnecting || isSignerLoading}
-              color="primary"
-              variant="contained"
-              size="xl"
-              onClick={openConnectModal}
-            >
-              Connect Wallet
-            </LoadingButton>
-          )}
-        </ConnectButton.Custom>
+        <LoadingButton
+          data-cy={"connect-wallet"}
+          fullWidth
+          loading={isConnecting || isSignerLoading}
+          color="primary"
+          variant="contained"
+          size="xl"
+          onClick={openConnectModal}
+        >
+          Connect Wallet
+        </LoadingButton>
       );
     }
 
