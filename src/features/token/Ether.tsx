@@ -32,20 +32,24 @@ const getDecimalPlaces = (value: Decimal): number => {
     return 2;
   }
 
-  if (absoluteValue.gt(0.009)) {
+  if (absoluteValue.gte(0.099)) {
     return 4;
   }
 
-  if (absoluteValue.gt(0.0009)) {
+  if (absoluteValue.gte(0.00099)) {
     return 6;
   }
 
-  if (absoluteValue.gt(0.00009)) {
+  if (absoluteValue.gte(0.0000099)) {
     return 8;
   }
 
-  if (absoluteValue.gt(0.00000009)) {
+  if (absoluteValue.gte(0.000000099)) {
     return 12;
+  }
+
+  if (absoluteValue.gte(0.0000000000099)) {
+    return 16;
   }
 
   return 18;
