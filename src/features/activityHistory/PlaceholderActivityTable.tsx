@@ -1,20 +1,19 @@
 import {
-  Box,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Skeleton,
+  SxProps,
   Table,
-  TableBody,
   TableCell,
   TableContainer,
   TableRow,
-  Typography,
 } from "@mui/material";
-import { FC, memo } from "react";
+import { FC } from "react";
+import { ELEVATION1_BG } from "../theme/theme";
 
-export const LoadingActivityRow = () => (
-  <TableRow>
+const PlaceholderActivityRow = () => (
+  <TableRow sx={{ td: { backgroundImage: ELEVATION1_BG } }}>
     <TableCell>
       <ListItem sx={{ p: 0 }}>
         <ListItemAvatar>
@@ -66,27 +65,18 @@ export const LoadingActivityRow = () => (
   </TableRow>
 );
 
-interface LoadingActivityGroupProps {}
+interface PlaceholderActivityTableProps {
+  sx?: SxProps;
+}
 
-const LoadingActivityGroup: FC<LoadingActivityGroupProps> = ({}) => {
-  return (
-    <Box>
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        <Skeleton width="120px" />
-      </Typography>
-      <TableContainer>
-        <Table>
-          <TableBody>
-            <LoadingActivityRow />
-            <LoadingActivityRow />
-            <LoadingActivityRow />
-            <LoadingActivityRow />
-            <LoadingActivityRow />
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
-  );
-};
+const PlaceholderActivityTable: FC<PlaceholderActivityTableProps> = ({
+  sx = {},
+}) => (
+  <TableContainer sx={sx}>
+    <Table>
+      <PlaceholderActivityRow />
+    </Table>
+  </TableContainer>
+);
 
-export default memo(LoadingActivityGroup);
+export default PlaceholderActivityTable;

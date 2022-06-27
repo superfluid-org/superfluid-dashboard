@@ -721,6 +721,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             borderRadius: "10px",
           },
           sizeSmall: {
+            borderRadius: "6px",
             ".MuiAvatar-root": {
               marginLeft: "3px",
             },
