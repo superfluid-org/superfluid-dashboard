@@ -14,7 +14,6 @@ import {
 } from "@mui/material";
 import { AccountTokenSnapshot } from "@superfluid-finance/sdk-core";
 import { BigNumber } from "ethers";
-import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { FC, memo, useState } from "react";
 import { Network } from "../network/networks";

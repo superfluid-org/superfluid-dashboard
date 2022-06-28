@@ -27,6 +27,7 @@ import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { Network } from "../network/networks";
+import { PendingOutgoingStream } from "../pendingOutgoingStreams/pendingOutgoingStream.slice";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
 import Ether from "../token/Ether";
@@ -78,7 +79,7 @@ export const StreamRowLoading = () => (
 );
 
 interface StreamRowProps {
-  stream: Stream;
+  stream: Stream | PendingOutgoingStream;
   network: Network;
 }
 
@@ -142,7 +143,8 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
 
   const isOutgoing = visibleAddress?.toLowerCase() === sender.toLowerCase();
 
-  const isActive = currentFlowRate !== "0";
+  const isPending = (stream as PendingOutgoingStream).pending;
+  const isActive = !isPending && currentFlowRate !== "0";
   const menuOpen = Boolean(menuAnchor);
 
   return (
@@ -160,14 +162,14 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
         <Typography variant="h7mono">
           <FlowingBalance
             balance={streamedUntilUpdatedAt}
-            flowRate={currentFlowRate}
+            flowRate={isPending ? "0" : currentFlowRate}
             balanceTimestamp={updatedAtTimestamp}
             disableRoundingIndicator
           />
         </Typography>
       </TableCell>
       <TableCell onClick={openStreamDetails} sx={{ cursor: "pointer" }}>
-        {isActive ? (
+        {(isActive || isPending) ? (
           <Typography data-cy={"flow-rate"} variant="body2mono">
             {isOutgoing ? "-" : "+"}
             <Ether
@@ -194,13 +196,19 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
         </Stack>
       </TableCell>
       <TableCell align="center">
+        {isPending && (
+          <Stack direction="row" alignItems="center" gap={1}>
+            <CircularProgress color="warning" size="16px" />
+            <Typography variant="caption">Loading...</Typography>
+          </Stack>
+        )}
         {isActive && flowDeleteTransaction?.status !== "Succeeded" && (
           <>
             {flowDeleteMutation.isLoading ||
             flowDeleteTransaction?.status === "Pending" ? (
               <Stack direction="row" alignItems="center" gap={1}>
                 <CircularProgress color="warning" size="16px" />
-                <Typography variant="caption">Pending</Typography>
+                <Typography variant="caption">Canceling...</Typography>
               </Stack>
             ) : (
               <>

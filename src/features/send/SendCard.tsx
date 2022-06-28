@@ -25,9 +25,10 @@ import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import TooltipIcon from "../common/TooltipIcon";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
+import { addPendingStream, createPendingOutgoingStream } from "../pendingOutgoingStreams/pendingOutgoingStream.slice";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { isWrappable } from "../redux/endpoints/tokenTypes";
-import { rpcApi, subgraphApi } from "../redux/store";
+import { rpcApi, subgraphApi, useAppDispatch } from "../redux/store";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
@@ -66,6 +67,7 @@ export default memo(function SendCard() {
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
   const router = useRouter();
   const getTransactionOverrides = useGetTransactionOverrides();
+  const dispatch = useAppDispatch();
 
   const {
     watch,
@@ -360,6 +362,18 @@ export default memo(function SendCard() {
 
                 const { data: formData } = getValues() as ValidStreamingForm;
 
+                const restoration: SendStreamRestoration = {
+                  type: RestorationType.SendStream,
+                  chainId: network.id,
+                  token: formData.token,
+                  receiver: formData.receiver,
+                  flowRate: {
+                    amountWei: parseEther(
+                      formData.flowRate.amountEther
+                    ).toString(),
+                    unitOfTime: formData.flowRate.unitOfTime,
+                  },
+                };
                 flowCreateTrigger({
                   signer,
                   chainId: network.id,
@@ -370,22 +384,12 @@ export default memo(function SendCard() {
                   userDataBytes: undefined,
                   waitForConfirmation: false,
                   transactionExtraData: {
-                    restoration: {
-                      type: RestorationType.SendStream,
-                      chainId: network.id,
-                      token: formData.token,
-                      receiver: formData.receiver,
-                      flowRate: {
-                        amountWei: parseEther(
-                          formData.flowRate.amountEther
-                        ).toString(),
-                        unitOfTime: formData.flowRate.unitOfTime,
-                      },
-                    } as SendStreamRestoration,
+                    restoration: restoration,
                   },
                   overrides: await getTransactionOverrides(network),
                 })
                   .unwrap()
+                  .then(async (transactionInfo) => dispatch(addPendingStream(createPendingOutgoingStream(transactionInfo, restoration, await signer.getAddress()))))
                   .then(() => resetForm());
 
                 setTransactionDialogContent({

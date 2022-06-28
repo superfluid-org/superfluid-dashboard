@@ -10,10 +10,12 @@ import {
   TableRow,
   useTheme,
 } from "@mui/material";
-import { Address } from "@superfluid-finance/sdk-core";
+import { Address, Stream } from "@superfluid-finance/sdk-core";
 import { FC, memo, useMemo, useState } from "react";
 import { EmptyRow } from "../common/EmptyRow";
 import { Network } from "../network/networks";
+import { PendingOutgoingStream } from "../pendingOutgoingStreams/pendingOutgoingStream.slice";
+import useAddressPendingOutgoingStreams from "../pendingOutgoingStreams/useAddressPendingOutgoingStreams";
 import { subgraphApi } from "../redux/store";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import StreamRow, { StreamRowLoading } from "./StreamRow";
@@ -83,6 +85,12 @@ const StreamsTable: FC<StreamsTableProps> = ({
     },
   });
 
+  const pendingOutgoingStreams = useAddressPendingOutgoingStreams(visibleAddress);
+  const outgoingStreams: (Stream | PendingOutgoingStream)[] = useMemo(() => {
+    const queriedOutgoingStreams = outgoingStreamsQuery.data?.items ?? [];
+    return [...queriedOutgoingStreams, ...pendingOutgoingStreams];
+  }, [outgoingStreamsQuery.data, ...pendingOutgoingStreams]);
+
   const streams = useMemo(() => {
     return [
       ...([StreamTypeFilter.All, StreamTypeFilter.Incoming].includes(
@@ -93,10 +101,10 @@ const StreamsTable: FC<StreamsTableProps> = ({
       ...([StreamTypeFilter.All, StreamTypeFilter.Outgoing].includes(
         streamsFilter.type
       )
-        ? outgoingStreamsQuery.data?.items || []
+        ? outgoingStreams || []
         : []),
     ].sort((s1, s2) => s2.updatedAtTimestamp - s1.updatedAtTimestamp);
-  }, [incomingStreamsQuery.data, outgoingStreamsQuery.data, streamsFilter]);
+  }, [incomingStreamsQuery.data, outgoingStreams, streamsFilter]);
 
   const handleChangePage = (_e: unknown, newPage: number) => setPage(newPage);
 
@@ -160,7 +168,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
                 >
                   All (
                   {(incomingStreamsQuery.data?.items.length || 0) +
-                    (outgoingStreamsQuery.data?.items.length || 0)}
+                    (outgoingStreams.length || 0)}
                   )
                 </Button>
                 <Button
@@ -179,7 +187,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
                 >
                   Outgoing{" "}
                   {outgoingStreamsQuery.isSuccess &&
-                    `(${outgoingStreamsQuery.data?.items.length})`}
+                    `(${outgoingStreams.length})`}
                 </Button>
 
                 <Stack flex={1} direction="row" justifyContent="flex-end">
