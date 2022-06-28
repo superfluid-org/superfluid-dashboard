@@ -16,7 +16,7 @@ export const createPendingOutgoingStream = (
   restoration: SendStreamRestoration,
   senderAddress: string
 ): PendingOutgoingStream => {
-  const timestampMs = Math.round(Date.now() / 1000);
+  const timestampMs = Math.floor(Date.now() / 1000);
   return {
     type: "OutgoingStream",
     id: transactionInfo.hash,

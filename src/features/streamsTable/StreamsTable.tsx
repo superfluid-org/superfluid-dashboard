@@ -85,7 +85,8 @@ const StreamsTable: FC<StreamsTableProps> = ({
     },
   });
 
-  const pendingOutgoingStreams = useAddressPendingOutgoingStreams(visibleAddress);
+  const pendingOutgoingStreams =
+    useAddressPendingOutgoingStreams(visibleAddress);
   const outgoingStreams: (Stream | PendingOutgoingStream)[] = useMemo(() => {
     const queriedOutgoingStreams = outgoingStreamsQuery.data?.items ?? [];
     return [...queriedOutgoingStreams, ...pendingOutgoingStreams];
@@ -168,7 +169,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
                 >
                   All (
                   {(incomingStreamsQuery.data?.items.length || 0) +
-                    (outgoingStreams.length || 0)}
+                    outgoingStreams.length}
                   )
                 </Button>
                 <Button
