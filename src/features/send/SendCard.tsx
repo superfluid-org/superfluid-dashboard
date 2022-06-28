@@ -25,11 +25,9 @@ import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import TooltipIcon from "../common/TooltipIcon";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { createPendingOutgoingStream } from "../pendingUpdates/PendingOutgoingStream";
-import { addPendingOutgoingStream } from "../pendingUpdates/pendingUpdate.slice";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { isWrappable } from "../redux/endpoints/tokenTypes";
-import { rpcApi, subgraphApi, useAppDispatch } from "../redux/store";
+import { rpcApi, subgraphApi } from "../redux/store";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
@@ -68,7 +66,6 @@ export default memo(function SendCard() {
   const { setTransactionDrawerOpen } = useTransactionDrawerContext();
   const router = useRouter();
   const getTransactionOverrides = useGetTransactionOverrides();
-  const dispatch = useAppDispatch();
 
   const {
     watch,
@@ -380,6 +377,7 @@ export default memo(function SendCard() {
                   chainId: network.id,
                   flowRateWei:
                     calculateTotalAmountWei(flowRateEther).toString(),
+                  senderAddress: await signer.getAddress(),
                   receiverAddress: formData.receiver,
                   superTokenAddress: formData.token.address,
                   userDataBytes: undefined,
@@ -390,17 +388,6 @@ export default memo(function SendCard() {
                   overrides: await getTransactionOverrides(network),
                 })
                   .unwrap()
-                  .then(async (transactionInfo) =>
-                    dispatch(
-                      addPendingOutgoingStream(
-                        createPendingOutgoingStream(
-                          transactionInfo,
-                          restoration,
-                          await signer.getAddress()
-                        )
-                      )
-                    )
-                  )
                   .then(() => resetForm());
 
                 setTransactionDialogContent({
@@ -444,6 +431,7 @@ export default memo(function SendCard() {
                       ).toString(),
                       unitOfTime: formData.flowRate.unitOfTime,
                     }).toString(),
+                    senderAddress: await signer.getAddress(),
                     receiverAddress: formData.receiver,
                     superTokenAddress: formData.token.address,
                     userDataBytes: undefined,
@@ -516,9 +504,7 @@ export default memo(function SendCard() {
                     userDataBytes: undefined,
                     waitForConfirmation: false,
                     overrides: await getTransactionOverrides(network),
-                  })
-                    .unwrap()
-                    .then(() => resetForm());
+                  }).unwrap();
                 }}
               >
                 Cancel Stream

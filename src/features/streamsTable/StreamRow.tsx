@@ -28,6 +28,7 @@ import AddressName from "../../components/AddressName/AddressName";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { Network } from "../network/networks";
 import { PendingOutgoingStream } from "../pendingUpdates/PendingOutgoingStream";
+import usePendingStreamCancellation from "../pendingUpdates/usePendingStreamCancellation";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
 import Ether from "../token/Ether";
@@ -86,6 +87,7 @@ interface StreamRowProps {
 const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
   const {
     id,
+    token,
     sender,
     receiver,
     currentFlowRate,
@@ -143,9 +145,14 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
 
   const isOutgoing = visibleAddress?.toLowerCase() === sender.toLowerCase();
 
-  const isPending = (stream as PendingOutgoingStream).pending;
+  const isPending = !!(stream as PendingOutgoingStream).pendingType;
   const isActive = !isPending && currentFlowRate !== "0";
   const menuOpen = Boolean(menuAnchor);
+  const isPendingCancellation = !!usePendingStreamCancellation({
+    tokenAddress: token,
+    senderAddress: sender,
+    receiverAddress: receiver,
+  });
 
   return (
     <TableRow hover>
@@ -169,7 +176,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
         </Typography>
       </TableCell>
       <TableCell onClick={openStreamDetails} sx={{ cursor: "pointer" }}>
-        {(isActive || isPending) ? (
+        {isActive || isPending ? (
           <Typography data-cy={"flow-rate"} variant="body2mono">
             {isOutgoing ? "-" : "+"}
             <Ether
@@ -204,8 +211,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
         )}
         {isActive && flowDeleteTransaction?.status !== "Succeeded" && (
           <>
-            {flowDeleteMutation.isLoading ||
-            flowDeleteTransaction?.status === "Pending" ? (
+            {flowDeleteMutation.isLoading || isPendingCancellation ? (
               <Stack direction="row" alignItems="center" gap={1}>
                 <CircularProgress color="warning" size="16px" />
                 <Typography variant="caption">Canceling...</Typography>

@@ -1,22 +1,16 @@
 import { createEntityAdapter, createSlice, isAllOf } from "@reduxjs/toolkit";
-import { transactionTracker } from "../redux/store";
+import { rpcApi, transactionTracker } from "../redux/store";
 import { PendingOutgoingStream } from "./PendingOutgoingStream";
+import { PendingStreamCancellation } from "./PendingStreamCancellation";
+import { PendingUpdate } from "./PendingUpdate";
 
-export interface PendingUpdate {
-  /**
-   * Keep it the same as the tracked transaction ID.
-   */
-  id: string;
-  type: "OutgoingStream";
-}
-
-const adapter = createEntityAdapter<PendingOutgoingStream>({
+const adapter = createEntityAdapter<PendingUpdate>({
   selectId: (x) => x.id,
   sortComparer: (a, b) => {
-    if (a.updatedAtTimestamp > b.updatedAtTimestamp) {
+    if (a.timestampMs > b.timestampMs) {
       return -1;
     }
-    if (a.updatedAtTimestamp < b.updatedAtTimestamp) {
+    if (a.timestampMs < b.timestampMs) {
       return 1;
     }
     return 0;
@@ -26,30 +20,78 @@ const adapter = createEntityAdapter<PendingOutgoingStream>({
 export const pendingUpdateSlice = createSlice({
   name: "pendingUpdates",
   initialState: adapter.getInitialState(),
-  reducers: {
-    addPendingOutgoingStream: adapter.addOne,
-  },
+  reducers: {},
   extraReducers(builder) {
     builder.addMatcher(
-      isAllOf(transactionTracker.actions.updateTransaction),
+      rpcApi.endpoints.flowDelete.matchFulfilled,
       (state, action) => {
-        const transactionStatus = action.payload.changes.status;
-        const isSubgraphInSync = action.payload.changes.isSubgraphInSync;
-
-        // Remove the pending stream when Subgraph is synced or the transaction fails.
-        if (
-          isSubgraphInSync ||
-          transactionStatus === "Failed" ||
-          transactionStatus === "Unknown"
-        ) {
-          const transactionId = action.payload.id;
-          adapter.removeOne(state, transactionId);
+        const { chainId, hash: transactionHash } = action.payload;
+        const { senderAddress, superTokenAddress, receiverAddress } =
+          action.meta.arg.originalArgs;
+        if (senderAddress) {
+          const pendingUpdate: PendingStreamCancellation = {
+            chainId,
+            transactionHash,
+            senderAddress,
+            receiverAddress,
+            tokenAddress: superTokenAddress,
+            id: transactionHash,
+            pendingType: "FlowDelete",
+            timestampMs: Math.floor(Date.now() / 1000),
+          };
+          adapter.addOne(state, pendingUpdate);
         }
       }
-    );
+    ),
+      builder.addMatcher(
+        rpcApi.endpoints.flowCreate.matchFulfilled,
+        (state, action) => {
+          const { chainId, hash: transactionHash } = action.payload;
+          const {
+            senderAddress,
+            superTokenAddress,
+            receiverAddress,
+            flowRateWei,
+          } = action.meta.arg.originalArgs;
+          console.log("foo");
+          if (senderAddress) {
+            const timestampMs = Math.floor(Date.now() / 1000);
+            const pendingUpdate: PendingOutgoingStream = {
+              pendingType: "FlowCreate",
+              chainId,
+              transactionHash,
+              id: transactionHash,
+              timestampMs,
+              createdAtTimestamp: timestampMs,
+              updatedAtTimestamp: timestampMs,
+              sender: senderAddress,
+              receiver: receiverAddress,
+              token: superTokenAddress,
+              streamedUntilUpdatedAt: "0",
+              currentFlowRate: flowRateWei,
+            };
+            adapter.addOne(state, pendingUpdate);
+          }
+        }
+      ),
+      builder.addMatcher(
+        isAllOf(transactionTracker.actions.updateTransaction),
+        (state, action) => {
+          const transactionStatus = action.payload.changes.status;
+          const isSubgraphInSync = action.payload.changes.isSubgraphInSync;
+
+          // Remove the pending stream when Subgraph is synced or the transaction fails.
+          if (
+            isSubgraphInSync ||
+            transactionStatus === "Failed" ||
+            transactionStatus === "Unknown"
+          ) {
+            const transactionId = action.payload.id;
+            adapter.removeOne(state, transactionId);
+          }
+        }
+      );
   },
 });
-
-export const { addPendingOutgoingStream } = pendingUpdateSlice.actions;
 
 export const pendingUpdateSelectors = adapter.getSelectors();
