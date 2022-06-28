@@ -147,9 +147,11 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
   const isOutgoing = visibleAddress?.toLowerCase() === sender.toLowerCase();
 
   const isPending = !!(stream as PendingOutgoingStream).pendingType;
+  const isPendingAndWaitingForSubgraph = !!(stream as PendingOutgoingStream)
+    .isRpcUpdated;
   const isActive = !isPending && currentFlowRate !== "0";
   const menuOpen = Boolean(menuAnchor);
-  const isPendingCancellation = !!usePendingStreamCancellation({
+  const pendingCancellation = usePendingStreamCancellation({
     tokenAddress: token,
     senderAddress: sender,
     receiverAddress: receiver,
@@ -208,19 +210,34 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
         </Stack>
       </TableCell>
       <TableCell align="center">
-        {isPending && (
-          <Stack direction="row" alignItems="center" gap={1}>
-            <CircularProgress color="warning" size="16px" />
-            <Typography variant="caption">Loading...</Typography>
-          </Stack>
-        )}
+        {isPending &&
+          (isPendingAndWaitingForSubgraph ? (
+            <Stack direction="row" alignItems="center" gap={1}>
+              <CircularProgress color="warning" size="16px" />
+              <Typography variant="caption">Sent. Loading...</Typography>
+            </Stack>
+          ) : (
+            <Stack direction="row" alignItems="center" gap={1}>
+              <CircularProgress color="warning" size="16px" />
+              <Typography variant="caption">Sending...</Typography>
+            </Stack>
+          ))}
         {isActive && flowDeleteTransaction?.status !== "Succeeded" && (
           <>
-            {flowDeleteMutation.isLoading || isPendingCancellation ? (
-              <Stack direction="row" alignItems="center" gap={1}>
-                <CircularProgress color="warning" size="16px" />
-                <Typography variant="caption">Canceling...</Typography>
-              </Stack>
+            {flowDeleteMutation.isLoading || !!pendingCancellation ? (
+              pendingCancellation?.isRpcUpdated ? (
+                <Stack direction="row" alignItems="center" gap={1}>
+                  <CircularProgress color="warning" size="16px" />
+                  <Typography variant="caption">
+                    Canceled. Loading...
+                  </Typography>
+                </Stack>
+              ) : (
+                <Stack direction="row" alignItems="center" gap={1}>
+                  <CircularProgress color="warning" size="16px" />
+                  <Typography variant="caption">Canceling...</Typography>
+                </Stack>
+              )
             ) : (
               <>
                 <Tooltip

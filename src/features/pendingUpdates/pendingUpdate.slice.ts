@@ -53,7 +53,6 @@ export const pendingUpdateSlice = createSlice({
             receiverAddress,
             flowRateWei,
           } = action.meta.arg.originalArgs;
-          console.log("foo");
           if (senderAddress) {
             const timestampMs = Math.floor(Date.now() / 1000);
             const pendingUpdate: PendingOutgoingStream = {
@@ -78,19 +77,34 @@ export const pendingUpdateSlice = createSlice({
         isAllOf(transactionTracker.actions.updateTransaction),
         (state, action) => {
           const transactionStatus = action.payload.changes.status;
-          const isSubgraphInSync = action.payload.changes.isSubgraphInSync;
-
-          // Remove the pending stream when Subgraph is synced or the transaction fails.
-          if (
-            isSubgraphInSync ||
-            transactionStatus === "Failed" ||
-            transactionStatus === "Unknown"
-          ) {
+          if (transactionStatus === "Succeeded") {
             const transactionId = action.payload.id;
-            adapter.removeOne(state, transactionId);
+            adapter.updateOne(state, {
+              id: transactionId,
+              changes: {
+                isRpcUpdated: true,
+              },
+            });
           }
         }
       );
+    builder.addMatcher(
+      isAllOf(transactionTracker.actions.updateTransaction),
+      (state, action) => {
+        const transactionStatus = action.payload.changes.status;
+        const isSubgraphInSync = action.payload.changes.isSubgraphInSync;
+
+        // Delete the pending update when Subgraph is synced or the transaction fails.
+        if (
+          isSubgraphInSync ||
+          transactionStatus === "Failed" ||
+          transactionStatus === "Unknown"
+        ) {
+          const transactionId = action.payload.id;
+          adapter.removeOne(state, transactionId);
+        }
+      }
+    );
   },
 });
 
