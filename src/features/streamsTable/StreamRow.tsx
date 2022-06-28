@@ -13,6 +13,7 @@ import {
   Skeleton,
   Stack,
   TableCell,
+  TableCellProps,
   TableRow,
   Tooltip,
   Typography,
@@ -154,9 +155,13 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
     receiverAddress: receiver,
   });
 
+  const tableCellProps: Partial<TableCellProps> = isPending
+    ? {}
+    : { onClick: openStreamDetails, sx: { cursor: "pointer" } };
+
   return (
     <TableRow hover>
-      <TableCell onClick={openStreamDetails} sx={{ cursor: "pointer" }}>
+      <TableCell {...tableCellProps}>
         <Stack direction="row" alignItems="center" gap={1.5}>
           {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
           <AddressAvatar address={isOutgoing ? receiver : sender} />
@@ -165,7 +170,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
           </Typography>
         </Stack>
       </TableCell>
-      <TableCell onClick={openStreamDetails} sx={{ cursor: "pointer" }}>
+      <TableCell {...tableCellProps}>
         <Typography variant="h7mono">
           <FlowingBalance
             balance={streamedUntilUpdatedAt}
@@ -175,7 +180,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
           />
         </Typography>
       </TableCell>
-      <TableCell onClick={openStreamDetails} sx={{ cursor: "pointer" }}>
+      <TableCell {...tableCellProps}>
         {isActive || isPending ? (
           <Typography data-cy={"flow-rate"} variant="body2mono">
             {isOutgoing ? "-" : "+"}
@@ -188,7 +193,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
           <Typography data-cy={"flow-rate"}>{"-"}</Typography>
         )}
       </TableCell>
-      <TableCell onClick={openStreamDetails} sx={{ cursor: "pointer" }}>
+      <TableCell {...tableCellProps}>
         <Stack
           data-cy={"start-end-date"}
           direction="row"
