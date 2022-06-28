@@ -17,11 +17,11 @@ import {
 import { FC, memo, ReactNode, useEffect, useState } from "react";
 import ResponsiveDialog from "../../features/common/ResponsiveDialog";
 import AddressAvatar from "../AddressAvatar/AddressAvatar";
-import useSearchAddress from "../../hooks/useSearchAddress";
 import { getAddress, isAddress } from "../../utils/memoizedEthersUtils";
 import useAddressName from "../../hooks/useAddressName";
 import { useAppSelector } from "../../features/redux/store";
 import { addressBookSelectors } from "../../features/addressBook/addressBook.slice";
+import { ensApi } from "../../features/ens/ensApi.slice";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
@@ -90,10 +90,6 @@ export default memo(function AddressSearchDialog({
 
   const [openCounter, setOpenCounter] = useState(0);
 
-  const addressBookResults = useAppSelector((state) =>
-    addressBookSelectors.searchAddressBookEntries(searchTermDebounced, state)
-  );
-
   useEffect(() => {
     if (open) {
       setOpenCounter(openCounter + 1);
@@ -110,7 +106,11 @@ export default memo(function AddressSearchDialog({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTermDebounced]);
 
-  const { ensQuery } = useSearchAddress(searchTermDebounced);
+  const addressBookResults = useAppSelector((state) =>
+    addressBookSelectors.searchAddressBookEntries(searchTermDebounced, state)
+  );
+
+  const ensQuery = ensApi.useResolveNameQuery(searchTermDebounced);
   const ensData = ensQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!ensQuery.data` means that the data is not undefined nor null.
   const showEns = !!searchTermDebounced && !isAddress(searchTermDebounced);
 
