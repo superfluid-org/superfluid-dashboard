@@ -25,7 +25,8 @@ import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import TooltipIcon from "../common/TooltipIcon";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { addPendingStream, createPendingOutgoingStream } from "../pendingOutgoingStreams/pendingOutgoingStream.slice";
+import { createPendingOutgoingStream } from "../pendingUpdates/PendingOutgoingStream";
+import { addPendingOutgoingStream } from "../pendingUpdates/pendingUpdate.slice";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { isWrappable } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi, useAppDispatch } from "../redux/store";
@@ -389,7 +390,17 @@ export default memo(function SendCard() {
                   overrides: await getTransactionOverrides(network),
                 })
                   .unwrap()
-                  .then(async (transactionInfo) => dispatch(addPendingStream(createPendingOutgoingStream(transactionInfo, restoration, await signer.getAddress()))))
+                  .then(async (transactionInfo) =>
+                    dispatch(
+                      addPendingOutgoingStream(
+                        createPendingOutgoingStream(
+                          transactionInfo,
+                          restoration,
+                          await signer.getAddress()
+                        )
+                      )
+                    )
+                  )
                   .then(() => resetForm());
 
                 setTransactionDialogContent({

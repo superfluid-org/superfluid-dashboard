@@ -27,7 +27,7 @@ import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { Network } from "../network/networks";
-import { PendingOutgoingStream } from "../pendingOutgoingStreams/pendingOutgoingStream.slice";
+import { PendingOutgoingStream } from "../pendingUpdates/PendingOutgoingStream";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
 import Ether from "../token/Ether";

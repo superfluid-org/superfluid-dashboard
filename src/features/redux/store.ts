@@ -27,7 +27,7 @@ import { ensApi } from "../ens/ensApi.slice";
 import { impersonationSlice } from "../impersonation/impersonation.slice";
 import { networkPreferencesSlice } from "../network/networkPreferences.slice";
 import gasApi from "../gas/gasApi.slice";
-import { pendingOutgoingStreamSlice } from "../pendingOutgoingStreams/pendingOutgoingStream.slice";
+import { pendingUpdateSlice } from "../pendingUpdates/pendingUpdate.slice";
 
 export const rpcApi = initializeRpcApiSlice(createApiWithReactHooks)
   .injectEndpoints(allRpcEndpoints)
@@ -78,7 +78,7 @@ export const reduxStore = configureStore({
     impersonations: impersonationPersistedReducer,
     networkPreferences: networkPreferencesPersistedReducer,
     [gasApi.reducerPath]: gasApi.reducer,
-    pendingStreams: pendingOutgoingStreamSlice.reducer,
+    pendingStreams: pendingUpdateSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
