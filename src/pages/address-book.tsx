@@ -107,13 +107,16 @@ const AddressBook: NextPage = () => {
 
   // Addresses filter
 
-  const onAddressesFilterChange = (newAddressesFilter: Address[]) =>
+  const onAddressesFilterChange = (newAddressesFilter: Address[]) => {
     setAddressesFilter(newAddressesFilter);
+    setPage(0);
+  };
 
   // Stream active filter
 
   const onStreamActiveFilterChange = (filter: StreamActiveType) => {
     setStreamActiveFilter(filter);
+    setPage(0);
   };
 
   // Adding new address
@@ -387,7 +390,7 @@ const AddressBook: NextPage = () => {
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               component="div"
-              count={addressBookEntries.length}
+              count={filteredEntries.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}
@@ -395,7 +398,7 @@ const AddressBook: NextPage = () => {
               sx={{
                 "> *": {
                   visibility:
-                    addressBookEntries.length <= 5 ? "hidden" : "visible",
+                    filteredEntries.length <= 5 ? "hidden" : "visible",
                 },
               }}
             />

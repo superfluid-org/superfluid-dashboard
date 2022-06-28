@@ -1,8 +1,9 @@
 import { Stack, Tooltip, Typography } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import { FC, ReactElement, useState } from "react";
+import { FC, ReactElement, useMemo, useState } from "react";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import copyToClipboard from "../../utils/copyToClipboard";
+import { getAddress } from "../../utils/memoizedEthersUtils";
 
 interface AddressCopyTooltipProps {
   address: Address;
@@ -14,10 +15,11 @@ const AddressCopyTooltip: FC<AddressCopyTooltipProps> = ({
   children,
 }) => {
   const [isCopied, setIsCopied] = useState(false);
+  const checksumAddress = getAddress(address);
 
   const copyAddress = () => {
     // Asynchronously call copyTextToClipboard
-    copyToClipboard(address)
+    copyToClipboard(checksumAddress)
       .then(() => {
         // If successful, update the isCopied state value
         setIsCopied(true);
@@ -44,7 +46,7 @@ const AddressCopyTooltip: FC<AddressCopyTooltipProps> = ({
             sx={{ cursor: "pointer" }}
             onClick={copyAddress}
           >
-            <Typography variant="body1">{address}</Typography>
+            <Typography variant="body1">{checksumAddress}</Typography>
             <ContentCopyRoundedIcon sx={{ fontSize: "16px" }} />
           </Stack>
         )
