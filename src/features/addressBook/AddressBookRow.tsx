@@ -15,7 +15,14 @@ import {
   Typography,
 } from "@mui/material";
 import { Address, Stream } from "@superfluid-finance/sdk-core";
-import { ChangeEvent, FC, useCallback, useMemo, useState } from "react";
+import {
+  ChangeEvent,
+  FC,
+  FormEvent,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import shortenHex from "../../utils/shortenHex";
@@ -74,6 +81,12 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
     onSelect(selected);
   };
 
+  const onFormSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    saveName();
+  };
+
   const activeStreams = useMemo(
     () => streams.filter((stream) => stream.currentFlowRate !== "0"),
     [streams]
@@ -87,15 +100,17 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
             <AddressAvatar address={address} />
 
             {isEditing ? (
-              <Input
-                fullWidth
-                disableUnderline
-                autoFocus
-                value={editableName}
-                onChange={onNameChange}
-                sx={{ fontWeight: 500 }}
-                inputProps={{ sx: { p: 0 }, maxLength: 24 }}
-              />
+              <Box component="form" onSubmit={onFormSubmit}>
+                <Input
+                  fullWidth
+                  disableUnderline
+                  autoFocus
+                  value={editableName}
+                  onChange={onNameChange}
+                  sx={{ fontWeight: 500 }}
+                  inputProps={{ sx: { p: 0 }, maxLength: 24 }}
+                />
+              </Box>
             ) : (
               <Typography variant="h6">
                 <AddressName address={address} />
