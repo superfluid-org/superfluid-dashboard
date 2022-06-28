@@ -19,6 +19,7 @@ import { ChangeEvent, FC, useCallback, useMemo, useState } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import shortenHex from "../../utils/shortenHex";
+import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { useAppDispatch } from "../redux/store";
 import { updateAddressBookEntry } from "./addressBook.slice";
 
@@ -139,7 +140,11 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
           </Stack>
         </Stack>
       </TableCell>
-      <TableCell>{shortenHex(address, 8)}</TableCell>
+      <TableCell>
+        <AddressCopyTooltip address={address}>
+          <span>{shortenHex(address, 8)}</span>
+        </AddressCopyTooltip>
+      </TableCell>
       <TableCell>{activeStreams.length}</TableCell>
       <TableCell>
         {selectable && (
