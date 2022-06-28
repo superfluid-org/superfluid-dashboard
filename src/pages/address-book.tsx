@@ -264,9 +264,13 @@ const AddressBook: NextPage = () => {
           default:
             return true;
         }
-      })
-      .slice(page * rowsPerPage, (page + 1) * rowsPerPage);
-  }, [page, rowsPerPage, mappedEntries, addressesFilter, streamActiveFilter]);
+      });
+  }, [mappedEntries, addressesFilter, streamActiveFilter]);
+
+  const paginatedEntries = useMemo(
+    () => filteredEntries.slice(page * rowsPerPage, (page + 1) * rowsPerPage),
+    [page, rowsPerPage, filteredEntries]
+  );
 
   const streamsLoading =
     incomingStreamsQuery.isLoading || outgoingStreamsQuery.isLoading;
@@ -373,7 +377,7 @@ const AddressBook: NextPage = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredEntries.map(({ address, name, streams }) => (
+                {paginatedEntries.map(({ address, name, streams }) => (
                   <AddressBookRow
                     key={address}
                     address={address}
@@ -398,7 +402,9 @@ const AddressBook: NextPage = () => {
               sx={{
                 "> *": {
                   visibility:
-                    filteredEntries.length <= 5 ? "hidden" : "visible",
+                    filteredEntries.length <= rowsPerPage
+                      ? "hidden"
+                      : "visible",
                 },
               }}
             />
