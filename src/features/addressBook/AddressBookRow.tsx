@@ -24,6 +24,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useAccount } from "wagmi";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import shortenHex from "../../utils/shortenHex";
@@ -51,7 +52,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   onSelect,
 }) => {
   const dispatch = useAppDispatch();
-
+  const { data: account } = useAccount();
   const [editableName, setEditableName] = useState(name);
   const [isEditing, setIsEditing] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
@@ -164,7 +165,13 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
         </AddressCopyTooltip>
       </TableCell>
       <TableCell>
-        {streamsLoading ? <Skeleton width="30px" /> : activeStreams.length}
+        {!!account ? (
+          <>
+            {streamsLoading ? <Skeleton width="30px" /> : activeStreams.length}
+          </>
+        ) : (
+          "-"
+        )}
       </TableCell>
       <TableCell>
         {selectable && (
