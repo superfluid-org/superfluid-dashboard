@@ -13,7 +13,9 @@ const useAddressName = (address: string): AddressNameResult => {
   const addressChecksummed = getAddress(address);
 
   const addressBookName = useAppSelector(
-    (state) => addressBookSelectors.selectById(state.addressBook, address)?.name
+    (state) =>
+      addressBookSelectors.selectById(state.addressBook, addressChecksummed)
+        ?.name
   );
 
   return {

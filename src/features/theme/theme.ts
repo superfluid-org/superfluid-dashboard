@@ -1,5 +1,4 @@
 import { alpha, Theme, ThemeOptions } from "@mui/material/styles";
-import { template } from "lodash";
 import React from "react";
 import { FONT_FACES } from "./fonts";
 

@@ -1,6 +1,11 @@
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import { LoadingButton } from "@mui/lab";
-import { ListItem, ListItemAvatar, ListItemText } from "@mui/material";
+import {
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Typography,
+} from "@mui/material";
 import { memo } from "react";
 import { useAccount, useNetwork } from "wagmi";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
@@ -28,7 +33,18 @@ export default memo(function ConnectWallet() {
         </ListItemAvatar>
         <ListItemText
           data-cy={"wallet-connection-status"}
-          primary={<AddressName address={account?.address} />}
+          primary={
+            <Typography
+              variant="h6"
+              sx={{
+                textOverflow: "ellipsis",
+                whiteSpace: "pre",
+                overflow: "hidden",
+              }}
+            >
+              <AddressName address={account?.address} />
+            </Typography>
+          }
           secondary={
             network.id !== activeChain.id ? "Wrong network" : "Connected"
           }

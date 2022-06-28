@@ -24,6 +24,8 @@ const ReadFileButton: FC<ReadFileButtonProps> = ({
   const onFileCanged = async () => {
     if (!inputElementRef.current?.files) return;
     onLoaded(inputElementRef.current.files[0]);
+    // Resets file input so selecting the same file will trigger onChange event again.
+    inputElementRef.current.value = "";
   };
 
   return (

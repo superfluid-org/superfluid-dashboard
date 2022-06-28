@@ -40,6 +40,7 @@ import AddressSearchIndex from "../features/send/AddressSearchIndex";
 import StreamActiveFilter, {
   StreamActiveType,
 } from "../features/streamsTable/StreamActiveFilter";
+import { getAddress } from "../utils/memoizedEthersUtils";
 
 const AddressBook: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -120,10 +121,10 @@ const AddressBook: NextPage = () => {
   const openAddDialog = () => setShowAddDialog(true);
   const closeAddDialog = () => setShowAddDialog(false);
 
-  const onAddAddress = (address: any) => {
+  const onAddAddress = (address: Address) => {
     dispatch(
       addAddressBookEntry({
-        address: address,
+        address,
       })
     );
     closeAddDialog();
@@ -176,7 +177,7 @@ const AddressBook: NextPage = () => {
 
       const mappedData: AddressBookEntry[] = parsedCSV.map((item) => ({
         name: item.NAME,
-        address: item.ADDRESS,
+        address: getAddress(item.ADDRESS),
       }));
 
       insertImportedAddresses(mappedData);
@@ -195,7 +196,9 @@ const AddressBook: NextPage = () => {
           newEntries.filter(
             (newEntry) =>
               !addressBookEntries.some(
-                (existingEntry) => existingEntry.address === newEntry.address
+                (existingEntry) =>
+                  existingEntry.address.toLowerCase() ===
+                  newEntry.address.toLowerCase()
               )
           )
         )
@@ -274,6 +277,7 @@ const AddressBook: NextPage = () => {
         open={showAddDialog}
         onClose={closeAddDialog}
         onSelectAddress={onAddAddress}
+        showAddressBook={false}
       />
 
       <Stack gap={4.5}>
@@ -296,7 +300,7 @@ const AddressBook: NextPage = () => {
           >
             {({ download }) => (
               <Button variant="outlined" color="secondary" onClick={download}>
-                export
+                Export
               </Button>
             )}
           </DownloadButton>
@@ -361,9 +365,8 @@ const AddressBook: NextPage = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>Name</TableCell>
-                  <TableCell>Address</TableCell>
+                  <TableCell width="260px">Address</TableCell>
                   <TableCell width="160px">Active Streams</TableCell>
-                  {/* <TableCell width="20%">Total Sent/Received</TableCell> */}
                   <TableCell width="88px" />
                 </TableRow>
               </TableHead>

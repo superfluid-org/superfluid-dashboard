@@ -18,6 +18,7 @@ import { Address, Stream } from "@superfluid-finance/sdk-core";
 import { ChangeEvent, FC, useCallback, useMemo, useState } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
+import shortenHex from "../../utils/shortenHex";
 import { useAppDispatch } from "../redux/store";
 import { updateAddressBookEntry } from "./addressBook.slice";
 
@@ -41,7 +42,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   const dispatch = useAppDispatch();
 
   const [editableName, setEditableName] = useState(name);
-  const [isEditing, setisEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
 
   const trimmedName = useMemo(() => editableName.trim(), [editableName]);
@@ -55,13 +56,13 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
       updateAddressBookEntry({ id: address, changes: { name: trimmedName } })
     );
 
-    setisEditing(false);
+    setIsEditing(false);
   }, [trimmedName, address, dispatch]);
 
-  const startEditing = () => setisEditing(true);
+  const startEditing = () => setIsEditing(true);
 
   const cancelEditing = useCallback(() => {
-    setisEditing(false);
+    setIsEditing(false);
     setEditableName(name);
   }, [name]);
 
@@ -81,7 +82,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
     <TableRow onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <TableCell>
         <Stack direction="row">
-          <Stack direction="row" alignItems="center" gap={1.5} flex={1}>
+          <Stack direction="row" alignItems="center" gap={1.5}>
             <AddressAvatar address={address} />
 
             {isEditing ? (
@@ -92,10 +93,10 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
                 value={editableName}
                 onChange={onNameChange}
                 sx={{ fontWeight: 500 }}
-                inputProps={{ sx: { p: 0 } }}
+                inputProps={{ sx: { p: 0 }, maxLength: 24 }}
               />
             ) : (
-              <Typography variant="h6" flex={1}>
+              <Typography variant="h6">
                 <AddressName address={address} />
               </Typography>
             )}
@@ -138,7 +139,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
           </Stack>
         </Stack>
       </TableCell>
-      <TableCell>{address}</TableCell>
+      <TableCell>{shortenHex(address, 8)}</TableCell>
       <TableCell>{activeStreams.length}</TableCell>
       <TableCell>
         {selectable && (

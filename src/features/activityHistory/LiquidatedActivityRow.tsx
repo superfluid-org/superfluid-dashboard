@@ -24,11 +24,11 @@ import ActivityIcon from "./ActivityIcon";
 
 const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
   keyEvent,
-  flowUpdatedEvent = {},
+  flowUpdatedEvent,
   network,
 }) => {
   const { token, timestamp, transactionHash } = keyEvent;
-  const { sender = "", receiver = "" } = flowUpdatedEvent;
+  const { sender = "", receiver = "" } = flowUpdatedEvent || {};
   const { visibleAddress } = useVisibleAddress();
 
   const tokenQuery = subgraphApi.useTokenQuery(

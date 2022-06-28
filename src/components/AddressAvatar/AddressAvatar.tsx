@@ -34,7 +34,7 @@ export default memo(function AddressAvatar({
     return (
       <Avatar alt="generated blockie avatar" variant="rounded" {...AvatarProps}>
         {/* Read about the Blockies API here: https://github.com/stephensprinkle-zz/react-blockies */}
-        <Blockies seed={getAddress(address)} {...BlockiesProps} />
+        <Blockies seed={address.toLowerCase()} {...BlockiesProps} />
       </Avatar>
     );
   }
