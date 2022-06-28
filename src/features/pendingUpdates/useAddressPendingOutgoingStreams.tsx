@@ -1,16 +1,16 @@
 import { useMemo } from "react";
 import { useAppSelector } from "../redux/store";
-import { pendingStreamSelectors } from "./pendingUpdate.slice";
+import { pendingUpdateSelectors } from "./pendingUpdate.slice";
 import { PendingOutgoingStream } from "./PendingOutgoingStream";
 
 const useAddressPendingOutgoingStreams = (
   address: string | undefined
 ): PendingOutgoingStream[] => {
   const allPendingUpdates = useAppSelector((state) =>
-    pendingStreamSelectors.selectAll(state.pendingStreams)
+    pendingUpdateSelectors.selectAll(state.pendingUpdates)
   );
 
-  const addressPendingStreams = useMemo(
+  return useMemo(
     () =>
       address
         ? allPendingUpdates.filter(
@@ -21,8 +21,6 @@ const useAddressPendingOutgoingStreams = (
         : [],
     [address, allPendingUpdates]
   );
-
-  return addressPendingStreams;
 };
 
 export default useAddressPendingOutgoingStreams;

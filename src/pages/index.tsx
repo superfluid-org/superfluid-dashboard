@@ -22,7 +22,7 @@ const ConnectView: FC = () => {
   );
   const onImpersonate = useCallback(
     (address: string) => impersonate(address),
-    []
+    [impersonate]
   );
 
   return (

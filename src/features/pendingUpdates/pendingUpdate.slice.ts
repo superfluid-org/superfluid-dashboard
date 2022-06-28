@@ -24,7 +24,7 @@ const adapter = createEntityAdapter<PendingOutgoingStream>({
 });
 
 export const pendingUpdateSlice = createSlice({
-  name: "pendingStreams",
+  name: "pendingUpdates",
   initialState: adapter.getInitialState(),
   reducers: {
     addPendingOutgoingStream: adapter.addOne,
@@ -52,4 +52,4 @@ export const pendingUpdateSlice = createSlice({
 
 export const { addPendingOutgoingStream } = pendingUpdateSlice.actions;
 
-export const pendingStreamSelectors = adapter.getSelectors();
+export const pendingUpdateSelectors = adapter.getSelectors();

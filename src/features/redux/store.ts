@@ -78,7 +78,7 @@ export const reduxStore = configureStore({
     impersonations: impersonationPersistedReducer,
     networkPreferences: networkPreferencesPersistedReducer,
     [gasApi.reducerPath]: gasApi.reducer,
-    pendingStreams: pendingUpdateSlice.reducer,
+    pendingUpdates: pendingUpdateSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
