@@ -8,6 +8,7 @@ import {
   Checkbox,
   IconButton,
   Input,
+  Skeleton,
   Stack,
   TableCell,
   TableRow,
@@ -36,6 +37,7 @@ interface AddressBookRowProps {
   selected?: boolean;
   selectable?: boolean;
   streams: Stream[];
+  streamsLoading?: boolean;
   onSelect: (isSelected: boolean) => void;
 }
 
@@ -45,6 +47,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   selected,
   selectable,
   streams,
+  streamsLoading,
   onSelect,
 }) => {
   const dispatch = useAppDispatch();
@@ -160,7 +163,9 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
           <span>{shortenHex(address, 8)}</span>
         </AddressCopyTooltip>
       </TableCell>
-      <TableCell>{activeStreams.length}</TableCell>
+      <TableCell>
+        {streamsLoading ? <Skeleton width="30px" /> : activeStreams.length}
+      </TableCell>
       <TableCell>
         {selectable && (
           <Checkbox

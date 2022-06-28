@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { Address, Stream } from "@superfluid-finance/sdk-core";
+import { Address } from "@superfluid-finance/sdk-core";
 import { NextPage } from "next";
 import { parse, unparse } from "papaparse";
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
@@ -61,17 +61,13 @@ const AddressBook: NextPage = () => {
     addressBookSelectors.selectAll(state.addressBook)
   );
 
-  const addressBookAddresses = useMemo(() => {
-    return addressBookEntries.map(({ address }) => address.toLowerCase());
-  }, [addressBookEntries]);
-
   const incomingStreamsQuery = subgraphApi.useStreamsQuery(
     account?.address
       ? {
           chainId: network.id,
           filter: {
             sender: account.address.toLowerCase(),
-            receiver_in: addressBookAddresses,
+            currentFlowRate_gt: "0",
           },
           pagination: {
             take: Infinity,
@@ -91,7 +87,7 @@ const AddressBook: NextPage = () => {
           chainId: network.id,
           filter: {
             receiver: account.address.toLowerCase(),
-            sender_in: addressBookAddresses,
+            currentFlowRate_gt: "0",
           },
           pagination: {
             take: Infinity,
@@ -272,6 +268,9 @@ const AddressBook: NextPage = () => {
       .slice(page * rowsPerPage, (page + 1) * rowsPerPage);
   }, [page, rowsPerPage, mappedEntries, addressesFilter, streamActiveFilter]);
 
+  const streamsLoading =
+    incomingStreamsQuery.isLoading || outgoingStreamsQuery.isLoading;
+
   return (
     <Container maxWidth="lg">
       <AddressSearchDialog
@@ -383,6 +382,7 @@ const AddressBook: NextPage = () => {
                     selectable={isDeleting}
                     onSelect={setRowSelected(address)}
                     streams={streams}
+                    streamsLoading={streamsLoading}
                   />
                 ))}
               </TableBody>
