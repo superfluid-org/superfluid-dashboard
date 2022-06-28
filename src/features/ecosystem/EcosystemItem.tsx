@@ -73,27 +73,33 @@ const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
         )}
       </Stack>
       <Typography variant="body1">{app.description}</Typography>
-      <Stack direction="row" alignItems="center" justifyContent="space-between">
-        {app.comingSoon ? (
-          <Chip
-            color="info"
-            size="small"
-            label="Coming Soon"
-            sx={{ color: "white" }}
-          />
-        ) : (
-          <Box />
-        )}
-
-        <Stack direction="row" alignItems="center" sx={{ px: 0.25 }}>
-          {networks.map((network, index) => (
-            <NetworkIcon
-              key={network.id}
-              network={network}
-              size={20}
-              sx={{ mx: -0.25, zIndex: networks.length - index }}
+      <Stack flex={1} justifyContent="flex-end">
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          {app.comingSoon ? (
+            <Chip
+              color="info"
+              size="small"
+              label="Coming Soon"
+              sx={{ color: "white" }}
             />
-          ))}
+          ) : (
+            <Box />
+          )}
+
+          <Stack direction="row" alignItems="center" sx={{ px: 0.25 }}>
+            {networks.map((network, index) => (
+              <NetworkIcon
+                key={network.id}
+                network={network}
+                size={20}
+                sx={{ mx: -0.25, zIndex: networks.length - index }}
+              />
+            ))}
+          </Stack>
         </Stack>
       </Stack>
     </Stack>
