@@ -15,6 +15,7 @@ import useCalculateBufferInfo from "./useCalculateBufferInfo";
 import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
 import { formatEther } from "ethers/lib/utils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
+import { BigNumber } from "ethers";
 
 export type ValidStreamingForm = {
   data: {
@@ -126,17 +127,13 @@ const StreamingFormProvider: FC<{
             ).unwrap(),
           ]);
 
-          const { newDateWhenBalanceCritical } = calculateBufferInfo(
-            network,
-            realtimeBalance,
-            activeFlow,
-            {
+          const { newDateWhenBalanceCritical, newFlowRate } =
+            calculateBufferInfo(network, realtimeBalance, activeFlow, {
               amountWei: parseEther(
                 validForm.data.flowRate.amountEther
               ).toString(),
               unitOfTime: validForm.data.flowRate.unitOfTime,
-            }
-          );
+            });
 
           if (newDateWhenBalanceCritical) {
             const minimumStreamTime = network.bufferTimeInMinutes * 60 * 2;
@@ -150,6 +147,15 @@ const StreamingFormProvider: FC<{
                 message: `You need to leave enough balance to stream for ${minimumStreamTime} seconds.`,
               });
             }
+          }
+
+          if (
+            activeFlow &&
+            BigNumber.from(activeFlow.flowRateWei).eq(newFlowRate)
+          ) {
+            handleHigherOrderValidationError({
+              message: `The stream already has the given flow rate.`,
+            });
           }
         }
 
