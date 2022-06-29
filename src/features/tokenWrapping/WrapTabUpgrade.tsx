@@ -191,7 +191,7 @@ export const WrapTabUpgrade: FC = () => {
           />
         </Stack>
         {selectedTokenPair && visibleAddress && (
-          <Stack direction="row" justifyContent="flex-end">
+          <Stack direction="row" justifyContent="flex-end" gap={0.5}>
             {/* <Typography variant="body2" color="text.secondary">
             ${Number(amount || 0).toFixed(2)}
           </Typography> */}
@@ -206,6 +206,8 @@ export const WrapTabUpgrade: FC = () => {
                 name="data.amountEther"
                 render={({ field: { onChange, onBlur } }) => (
                   <Button
+                    variant="textContained"
+                    size="xxs"
                     onClick={() => {
                       return onChange(
                         formatEther(underlyingBalanceQuery.currentData!.balance)
