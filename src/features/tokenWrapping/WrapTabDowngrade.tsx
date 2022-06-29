@@ -105,7 +105,6 @@ export const WrapTabDowngrade: FC = () => {
                 onChange={onChange}
                 onBlur={onBlur}
                 inputProps={{
-                  min: 0,
                   sx: {
                     ...theme.typography.largeInput,
                     p: 0,
