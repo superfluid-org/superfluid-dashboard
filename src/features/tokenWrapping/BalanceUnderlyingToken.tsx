@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { rpcApi } from "../redux/store";
 import { Typography } from "@mui/material";
-import EtherFormatted from "../token/EtherFormatted";
+import Ether from "../token/Ether";
 import { ethers } from "ethers";
 
 export const BalanceUnderlyingToken: FC<{
@@ -32,9 +32,7 @@ export const BalanceUnderlyingToken: FC<{
       ) : isUninitialized || isLoading ? (
         ""
       ) : (
-        <EtherFormatted
-          wei={ethers.BigNumber.from(data?.balance ?? 0).toString()}
-        />
+        <Ether wei={ethers.BigNumber.from(data?.balance ?? 0)} disableRounding />
       )}
     </Typography>
   );

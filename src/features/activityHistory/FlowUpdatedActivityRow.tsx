@@ -22,7 +22,7 @@ import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
-import EtherFormatted from "../token/EtherFormatted";
+import Ether from "../token/Ether";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
@@ -102,12 +102,10 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
           <ListItemText
             primary={
               <>
-                <EtherFormatted
-                  wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)}
-                  etherDecimalPlaces={8}
-                  disableRoundingIndicator
-                />
-                /mo
+                <Ether wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)}>
+                  {" "}
+                  {tokenQuery.data ? `${tokenQuery.data.symbol}/mo` : "/mo"}
+                </Ether>
               </>
             }
             /**

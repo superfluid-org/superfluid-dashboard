@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { useAccount } from "wagmi";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import TokenIcon from "../token/TokenIcon";
@@ -33,23 +33,37 @@ const OnboardingItem: FC<OnboardingItemProps> = ({
   href,
   onClick,
   children,
-}) => (
-  <Link href={href} passHref>
-    <Card component="a" onClick={onClick} sx={{ textDecoration: "none" }}>
-      <CardHeader title={title} subheader={subheader} />
-      <CardContent
-        component={Stack}
-        direction="row"
-        alignItems="center"
-        justifyContent="center"
-        gap={childrenGap}
-        sx={{ pointerEvents: "none" }}
+}) => {
+  const [isHovering, setIsHovering] = useState(false);
+
+  const onMouseEnter = () => setIsHovering(true);
+  const onMouseLeave = () => setIsHovering(false);
+
+  return (
+    <Link href={href} passHref>
+      <Card
+        elevation={isHovering ? 3 : 1}
+        component="a"
+        onClick={onClick}
+        sx={{ textDecoration: "none" }}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
       >
-        {children}
-      </CardContent>
-    </Card>
-  </Link>
-);
+        <CardHeader title={title} subheader={subheader} />
+        <CardContent
+          component={Stack}
+          direction="row"
+          alignItems="center"
+          justifyContent="center"
+          gap={childrenGap}
+          sx={{ pointerEvents: "none" }}
+        >
+          {children}
+        </CardContent>
+      </Card>
+    </Link>
+  );
+};
 
 const StreamItem = () => (
   <Paper

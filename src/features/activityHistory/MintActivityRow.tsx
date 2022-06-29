@@ -13,7 +13,7 @@ import { MintedActivity } from "../../utils/activityUtils";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
-import EtherFormatted from "../token/EtherFormatted";
+import Ether from "../token/Ether";
 import TokenIcon from "../token/TokenIcon";
 import ActivityIcon from "./ActivityIcon";
 
@@ -90,11 +90,7 @@ const MintActivityRow: FC<MintedActivity> = ({
             primary={
               <>
                 -
-                <EtherFormatted
-                  wei={amount}
-                  etherDecimalPlaces={8}
-                  disableRoundingIndicator
-                />
+                <Ether wei={amount} />
               </>
             }
             /**
@@ -121,12 +117,7 @@ const MintActivityRow: FC<MintedActivity> = ({
           <ListItemText
             primary={
               <>
-                +
-                <EtherFormatted
-                  wei={amount}
-                  etherDecimalPlaces={8}
-                  disableRoundingIndicator
-                />
+                +<Ether wei={amount}> {tokenSymbol}</Ether>
               </>
             }
             /**

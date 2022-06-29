@@ -14,7 +14,7 @@ import { FC, useMemo } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import { subscriptionWeiAmountReceived } from "../../utils/tokenUtils";
-import EtherFormatted from "../token/EtherFormatted";
+import Ether from "../token/Ether";
 
 export const SubscriptionLoadingRow = () => (
   <TableRow>
@@ -88,10 +88,8 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({ subscription }) => {
       </TableCell>
       <TableCell>
         <Typography variant="h7mono">
-          <EtherFormatted
+          <Ether
             wei={amountReceived}
-            etherDecimalPlaces={8}
-            disableRoundingIndicator
           />
         </Typography>
       </TableCell>

@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { FC } from "react";
 import TokenIcon from "../token/TokenIcon";
-import EtherFormatted from "../token/EtherFormatted";
+import Ether from "../token/Ether";
 import FlowingBalance from "../token/FlowingBalance";
 import { rpcApi } from "../redux/store";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
@@ -20,7 +20,7 @@ import {
   isSuper,
   isUnderlying,
   isWrappable,
-  TokenMinimal
+  TokenMinimal,
 } from "../redux/endpoints/tokenTypes";
 
 const etherDecimalPlaces = 8;
@@ -53,25 +53,27 @@ export const TokenListItem: FC<TokenListItemProps> = ({
   const isUnderlyingToken = isUnderlying(token);
   const isWrappableSuperToken = isSuperToken && isWrappable(token);
 
-  const { data: _discard, ...underlyingBalanceQuery } = rpcApi.useUnderlyingBalanceQuery(
-    chainId && accountAddress && isUnderlyingToken
-      ? {
-          chainId,
-          accountAddress,
-          tokenAddress: token.address,
-        }
-      : skipToken
-  );
+  const { data: _discard, ...underlyingBalanceQuery } =
+    rpcApi.useUnderlyingBalanceQuery(
+      chainId && accountAddress && isUnderlyingToken
+        ? {
+            chainId,
+            accountAddress,
+            tokenAddress: token.address,
+          }
+        : skipToken
+    );
 
-  const { data: _discard2, ...realtimeBalanceQuery } = rpcApi.useRealtimeBalanceQuery(
-    chainId && accountAddress && isSuperToken
-      ? {
-          chainId,
-          accountAddress,
-          tokenAddress: token.address,
-        }
-      : skipToken
-  );
+  const { data: _discard2, ...realtimeBalanceQuery } =
+    rpcApi.useRealtimeBalanceQuery(
+      chainId && accountAddress && isSuperToken
+        ? {
+            chainId,
+            accountAddress,
+            tokenAddress: token.address,
+          }
+        : skipToken
+    );
 
   const checkedBalanceWei = isSuper(token)
     ? realtimeBalanceQuery?.currentData?.balance || balanceWei
@@ -83,12 +85,20 @@ export const TokenListItem: FC<TokenListItemProps> = ({
   const fRate = realtimeBalanceQuery?.currentData?.flowRate || flowRate;
 
   return (
-    <ListItemButton data-cy={`${token.symbol}-list-item`} onClick={onClick} sx={{ px: 3 }}>
+    <ListItemButton
+      data-cy={`${token.symbol}-list-item`}
+      onClick={onClick}
+      sx={{ px: 3 }}
+    >
       <ListItemAvatar>
         <TokenIcon tokenSymbol={token.symbol}></TokenIcon>
       </ListItemAvatar>
 
-      <ListItemText data-cy={"token-symbol-and-name"} primary={token.symbol} secondary={token.name} />
+      <ListItemText
+        data-cy={"token-symbol-and-name"}
+        primary={token.symbol}
+        secondary={token.name}
+      />
 
       <Typography
         variant="h6mono"
@@ -104,13 +114,9 @@ export const TokenListItem: FC<TokenListItemProps> = ({
               balance={checkedBalanceWei}
               balanceTimestamp={balanceTS}
               flowRate={fRate}
-              etherDecimalPlaces={etherDecimalPlaces}
             />
           ) : (
-            <EtherFormatted
-              wei={checkedBalanceWei}
-              etherDecimalPlaces={etherDecimalPlaces}
-            />
+            <Ether wei={checkedBalanceWei} roundingIndicator="~" />
           ))}
         {showUpgrade && isWrappableSuperToken && (
           <Link

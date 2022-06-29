@@ -1,8 +1,7 @@
 import { Avatar, AvatarProps } from "@mui/material";
 import { memo } from "react";
-import { ensApi } from "../../features/ens/ensApi.slice";
 import Blockies from "react-blockies";
-import { getAddress } from "../../utils/memoizedEthersUtils";
+import { ensApi } from "../../features/ens/ensApi.slice";
 
 interface BlockiesProps {
   size?: number;

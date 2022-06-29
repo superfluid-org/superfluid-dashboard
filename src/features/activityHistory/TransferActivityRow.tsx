@@ -19,7 +19,7 @@ import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
-import EtherFormatted from "../token/EtherFormatted";
+import Ether from "../token/Ether";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
@@ -73,11 +73,10 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
           </ListItemAvatar>
           <ListItemText
             primary={
-              <EtherFormatted
-                wei={value}
-                etherDecimalPlaces={8}
-                disableRoundingIndicator
-              />
+              <Ether wei={value}>
+                {" "}
+                {tokenQuery.data && tokenQuery.data.symbol}
+              </Ether>
             }
             /**
              * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
