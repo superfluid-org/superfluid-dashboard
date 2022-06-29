@@ -209,7 +209,6 @@ const StreamsTable: FC<StreamsTableProps> = ({
             <TableCell width="300">Flow rate</TableCell>
             <TableCell width="300">Start / End Date</TableCell>
             <TableCell width="120" align="center">
-              Filter
             </TableCell>
           </TableRow>
         </TableHead>

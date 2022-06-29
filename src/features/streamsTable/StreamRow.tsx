@@ -210,34 +210,25 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
         </Stack>
       </TableCell>
       <TableCell align="center">
-        {isPending &&
-          (isPendingAndWaitingForSubgraph ? (
-            <Stack direction="row" alignItems="center" gap={1}>
-              <CircularProgress color="warning" size="16px" />
-              <Typography variant="caption">Sent. Loading...</Typography>
-            </Stack>
-          ) : (
-            <Stack direction="row" alignItems="center" gap={1}>
-              <CircularProgress color="warning" size="16px" />
-              <Typography variant="caption">Sending...</Typography>
-            </Stack>
-          ))}
+        {isPending && (
+          <Stack direction="row" alignItems="center" gap={1}>
+            <CircularProgress color="warning" size="16px" />
+            <Typography variant="caption">
+              {isPendingAndWaitingForSubgraph ? "Syncing..." : "Sending..."}
+            </Typography>
+          </Stack>
+        )}
         {isActive && flowDeleteTransaction?.status !== "Succeeded" && (
           <>
             {flowDeleteMutation.isLoading || !!pendingCancellation ? (
-              pendingCancellation?.isRpcUpdated ? (
-                <Stack direction="row" alignItems="center" gap={1}>
-                  <CircularProgress color="warning" size="16px" />
-                  <Typography variant="caption">
-                    Canceled. Loading...
-                  </Typography>
-                </Stack>
-              ) : (
-                <Stack direction="row" alignItems="center" gap={1}>
-                  <CircularProgress color="warning" size="16px" />
-                  <Typography variant="caption">Canceling...</Typography>
-                </Stack>
-              )
+              <Stack direction="row" alignItems="center" gap={1}>
+                <CircularProgress color="warning" size="16px" />
+                <Typography variant="caption">
+                  {pendingCancellation?.isRpcUpdated
+                    ? "Syncing..."
+                    : "Canceling..."}
+                </Typography>
+              </Stack>
             ) : (
               <>
                 <Tooltip
