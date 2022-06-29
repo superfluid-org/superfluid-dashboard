@@ -37,7 +37,7 @@ const AddressFilter: FC<AddressFilterProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
 
   const addressBookEntries = useAppSelector((state) =>
-    addressBookSelectors.searchAddressBookEntries(searchTerm, state)
+    addressBookSelectors.searchAddressBookEntries(state, searchTerm)
   );
 
   const onSearchChange = (e: ChangeEvent<HTMLInputElement>) => {

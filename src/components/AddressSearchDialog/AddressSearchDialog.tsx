@@ -107,7 +107,7 @@ export default memo(function AddressSearchDialog({
   }, [searchTermDebounced]);
 
   const addressBookResults = useAppSelector((state) =>
-    addressBookSelectors.searchAddressBookEntries(searchTermDebounced, state)
+    addressBookSelectors.searchAddressBookEntries(state, searchTermDebounced)
   );
 
   const ensQuery = ensApi.useResolveNameQuery(searchTermDebounced);

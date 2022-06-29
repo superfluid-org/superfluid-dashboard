@@ -1,6 +1,7 @@
 import {
   createDraftSafeSelector,
   createEntityAdapter,
+  createSelector,
   createSlice,
   EntityState,
 } from "@reduxjs/toolkit";
@@ -54,29 +55,28 @@ export const {
   removeAddressBookEntries,
 } = addressBookSlice.actions;
 
-/**
- * Custom selectors
- */
-
-const selectSelf = (state: RootState) => state.addressBook;
+const selectSelf = (state: RootState): EntityState<AddressBookEntry> =>
+  state.addressBook;
 
 const adapterSelectors = adapter.getSelectors();
 
-const searchAddressBookEntries = (search: string, state: RootState) => {
-  return adapterSelectors
-    .selectAll(selectSelf(state))
-    .filter(
-      (addressBookEntry) =>
-        (addressBookEntry?.name || "")
-          .toLowerCase()
-          .indexOf(search.toLowerCase()) >= 0 ||
-        (addressBookEntry?.address || "")
-          .toLowerCase()
-          .indexOf(search.toLowerCase()) >= 0
-    );
-};
+const searchAddressBookEntries = createSelector(
+  [selectSelf, (_items: RootState, search: string) => search],
+  (state: EntityState<AddressBookEntry>, search: string): AddressBookEntry[] =>
+    adapterSelectors
+      .selectAll(state)
+      .filter(
+        (addressBookEntry) =>
+          (addressBookEntry?.name || "")
+            .toLowerCase()
+            .indexOf(search.toLowerCase()) >= 0 ||
+          (addressBookEntry?.address || "")
+            .toLowerCase()
+            .indexOf(search.toLowerCase()) >= 0
+      )
+);
 
 export const addressBookSelectors = {
-  ...adapter.getSelectors(),
+  ...adapterSelectors,
   searchAddressBookEntries,
 };
