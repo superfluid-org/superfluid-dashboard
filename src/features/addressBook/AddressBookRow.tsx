@@ -42,6 +42,8 @@ interface AddressBookRowProps {
   onSelect: (isSelected: boolean) => void;
 }
 
+const FORBIDDEN_NAME_CHARS_REGEX = new RegExp(`[^\\w\\s]`, "gm");
+
 const AddressBookRow: FC<AddressBookRowProps> = ({
   address,
   name = "",
@@ -60,7 +62,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   const trimmedName = useMemo(() => editableName.trim(), [editableName]);
 
   const onNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setEditableName(event.target.value.replace(".eth", ""));
+    setEditableName(event.target.value.replace(FORBIDDEN_NAME_CHARS_REGEX, ""));
   };
 
   const saveName = useCallback(() => {
