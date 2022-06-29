@@ -1,10 +1,12 @@
 import { Button, Input, Stack, Typography, useTheme } from "@mui/material";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { ethers } from "ethers";
-import { parseEther } from "ethers/lib/utils";
+import { formatEther, parseEther } from "ethers/lib/utils";
 import { useRouter } from "next/router";
 import { FC, useEffect, useRef } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
+import { calculateCurrentBalance } from "../../utils/tokenUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
@@ -40,6 +42,7 @@ export const WrapTabDowngrade: FC = () => {
     getValues,
     setValue,
     reset: resetForm,
+    resetField,
   } = useFormContext<WrappingForm>();
 
   // The reason to set the type and clear errors is that a single form context is used both for wrapping and unwrapping.
@@ -69,6 +72,17 @@ export const WrapTabDowngrade: FC = () => {
   const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
     chainId: network.id,
   });
+
+  const { data: _discard, ...realtimeBalanceQuery } =
+    rpcApi.useRealtimeBalanceQuery(
+      selectedTokenPair && visibleAddress
+        ? {
+            chainId: network.id,
+            accountAddress: visibleAddress,
+            tokenAddress: selectedTokenPair.superToken.address,
+          }
+        : skipToken
+    );
 
   return (
     <Stack direction="column" alignItems="center">
@@ -114,13 +128,14 @@ export const WrapTabDowngrade: FC = () => {
                     isLoading: tokenPairsQuery.isLoading,
                   },
                 }}
-                onTokenSelect={(token) =>
-                  onChange(
+                onTokenSelect={(token) => {
+                  resetField("data.amountEther");
+                  return onChange(
                     tokenPairsQuery?.data?.find(
                       (x) => x.superToken.address === token.address
                     )
-                  )
-                }
+                  );
+                }}
                 onBlur={onBlur}
                 ButtonProps={{
                   variant:
@@ -142,6 +157,28 @@ export const WrapTabDowngrade: FC = () => {
               tokenAddress={selectedTokenPair.superToken.address}
               TypographyProps={{ color: "text.secondary" }}
             />
+            {realtimeBalanceQuery.currentData && (
+              <Controller
+                control={control}
+                name="data.amountEther"
+                render={({ field: { onChange, onBlur } }) => (
+                  <Button
+                    onClick={() => {
+                      const currentBalanceBigNumber = calculateCurrentBalance({
+                        flowRateWei: realtimeBalanceQuery.currentData!.flowRate,
+                        balanceWei: realtimeBalanceQuery.currentData!.balance,
+                        balanceTimestampMs:
+                          realtimeBalanceQuery.currentData!.balanceTimestamp,
+                      });
+                      return onChange(formatEther(currentBalanceBigNumber));
+                    }}
+                    onBlur={onBlur}
+                  >
+                    MAX
+                  </Button>
+                )}
+              />
+            )}
           </Stack>
         )}
       </WrapInputCard>
@@ -241,7 +278,7 @@ export const WrapTabDowngrade: FC = () => {
             transactionExtraData: {
               restoration,
             },
-            overrides: await getTransactionOverrides(network)
+            overrides: await getTransactionOverrides(network),
           })
             .unwrap()
             .then(() => resetForm());

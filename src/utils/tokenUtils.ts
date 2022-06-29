@@ -68,3 +68,19 @@ export function calculateBuffer(
     .div(BigNumber.from(createdAtTimestamp))
     .mul(bufferTimeInSeconds);
 }
+
+export const calculateCurrentBalance = ({
+  flowRateWei,
+  balanceWei,
+  balanceTimestampMs,
+}: {
+  flowRateWei: BigNumberish;
+  balanceWei: BigNumberish;
+  balanceTimestampMs: number;
+}): BigNumber =>
+  BigNumber.from(balanceWei).add(
+    BigNumber.from(Date.now())
+      .sub(balanceTimestampMs * 1000)
+      .mul(BigNumber.from(flowRateWei))
+      .div(1000)
+  );

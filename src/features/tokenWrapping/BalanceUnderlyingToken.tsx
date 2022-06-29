@@ -9,14 +9,11 @@ export const BalanceUnderlyingToken: FC<{
   accountAddress: string;
   tokenAddress: string;
 }> = ({ chainId, accountAddress, tokenAddress }) => {
-  const underlyingBalanceQuery = rpcApi.useUnderlyingBalanceQuery(
-    {
-      chainId,
-      accountAddress,
-      tokenAddress,
-    },
-    {}
-  );
+  const underlyingBalanceQuery = rpcApi.useUnderlyingBalanceQuery({
+    chainId,
+    accountAddress,
+    tokenAddress,
+  });
 
   const { error, isUninitialized, isLoading, data } = underlyingBalanceQuery;
 
@@ -32,7 +29,7 @@ export const BalanceUnderlyingToken: FC<{
       ) : isUninitialized || isLoading ? (
         ""
       ) : (
-        <Ether wei={ethers.BigNumber.from(data?.balance ?? 0)} disableRounding />
+        <Ether wei={ethers.BigNumber.from(data?.balance ?? 0)} />
       )}
     </Typography>
   );

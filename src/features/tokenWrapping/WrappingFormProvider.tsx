@@ -17,7 +17,10 @@ import { formatEther, parseEther } from "ethers/lib/utils";
 import { useAccount } from "wagmi";
 import { BigNumber } from "ethers";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
-import { calculateMaybeCriticalAtTimestamp } from "../../utils/tokenUtils";
+import {
+  calculateCurrentBalance,
+  calculateMaybeCriticalAtTimestamp,
+} from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 
 export type WrappingForm = {
@@ -147,13 +150,14 @@ const WrappingFormProvider: FC<{
               const flowRateBigNumber = BigNumber.from(
                 realtimeBalance.flowRate
               );
-              const currentBalanceBigNumber = BigNumber.from(
-                realtimeBalance.balance
-              ).add(
-                BigNumber.from(new Date().getTime())
-                  .sub(realtimeBalance.balanceTimestamp * 1000)
-                  .mul(flowRateBigNumber)
-                  .div(1000)
+
+              const currentBalanceBigNumber = calculateCurrentBalance({
+                flowRateWei: flowRateBigNumber,
+                balanceWei: BigNumber.from(realtimeBalance.balance),
+                balanceTimestampMs: realtimeBalance.balanceTimestamp,
+              });
+              const balanceAfterWrappingBigNumber = currentBalanceBigNumber.sub(
+                parseEther(validForm.data.amountEther)
               );
 
               const amountBigNumber = parseEther(validForm.data.amountEther);
@@ -168,7 +172,7 @@ const WrappingFormProvider: FC<{
               if (flowRateBigNumber.isNegative()) {
                 const dateWhenBalanceCritical = new Date(
                   calculateMaybeCriticalAtTimestamp({
-                    balanceUntilUpdatedAtWei: currentBalanceBigNumber,
+                    balanceUntilUpdatedAtWei: balanceAfterWrappingBigNumber,
                     updatedAtTimestamp: realtimeBalance.balanceTimestamp,
                     totalNetFlowRateWei: flowRateBigNumber,
                   })
@@ -177,7 +181,7 @@ const WrappingFormProvider: FC<{
                 );
 
                 const minimumStreamTime = network.bufferTimeInMinutes * 60 * 2;
-                const secondsToCritical = Math.round(
+                const secondsToCritical = Math.floor(
                   (dateWhenBalanceCritical.getTime() - Date.now()) / 1000
                 );
 
