@@ -32,6 +32,7 @@ import shortenHex from "../../utils/shortenHex";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { useAppDispatch } from "../redux/store";
 import { updateAddressBookEntry } from "./addressBook.slice";
+import sanitizeAddressBookName from "./sanitizeAddressBookName";
 
 interface AddressBookRowProps {
   address: Address;
@@ -42,8 +43,6 @@ interface AddressBookRowProps {
   streamsLoading?: boolean;
   onSelect: (isSelected: boolean) => void;
 }
-
-const FORBIDDEN_NAME_CHARS_REGEX = new RegExp(`[^\\w\\s]`, "gm");
 
 const AddressBookRow: FC<AddressBookRowProps> = ({
   address,
@@ -64,7 +63,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   const trimmedName = useMemo(() => editableName.trim(), [editableName]);
 
   const onNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setEditableName(event.target.value.replace(FORBIDDEN_NAME_CHARS_REGEX, ""));
+    setEditableName(sanitizeAddressBookName(event.target.value));
   };
 
   const saveName = useCallback(() => {
