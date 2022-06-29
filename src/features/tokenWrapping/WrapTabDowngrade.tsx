@@ -96,8 +96,9 @@ export const WrapTabDowngrade: FC = () => {
                 data-cy={"unwrap-input"}
                 fullWidth
                 disableUnderline
-                type="number"
+                type="text"
                 placeholder="0.0"
+                inputMode="decimal"
                 inputRef={amountInputRef}
                 disabled={!selectedTokenPair}
                 value={amount}

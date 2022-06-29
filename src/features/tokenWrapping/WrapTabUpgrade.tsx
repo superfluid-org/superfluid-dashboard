@@ -144,7 +144,8 @@ export const WrapTabUpgrade: FC = () => {
                 placeholder="0.0"
                 inputRef={amountInputRef}
                 value={amount}
-                type="number"
+                type="text"
+                inputMode="decimal"
                 onChange={onChange}
                 onBlur={onBlur}
                 inputProps={{

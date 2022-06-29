@@ -101,7 +101,7 @@ export default memo(function WrapCard({
         name="data"
         render={({ message }) =>
           !!message && (
-            <Alert severity="error" sx={{ mb: 1 }}>
+            <Alert severity="error" sx={{ mb: 2 }}>
               {message}
             </Alert>
           )

@@ -108,7 +108,7 @@ export const FlowRateInput: FC<{
         autoComplete="off"
         autoCorrect="off"
         placeholder="0.0"
-        value={flowRate.amountEther}
+        value={flowRate.amountEther}  
         onBlur={onFlowRateBlur}
         onFocus={onFlowRateFocus}
         onChange={(e) => {
