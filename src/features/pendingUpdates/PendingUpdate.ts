@@ -14,5 +14,5 @@ export interface PendingUpdate {
   /**
    * RPC is updated before Subgraph. We can show already show that the update succeeded in the UI.
    */
-  isRpcUpdated?: true;
+  hasTransactionSucceeded?: true;
 }

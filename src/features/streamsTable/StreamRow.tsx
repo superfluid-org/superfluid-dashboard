@@ -148,7 +148,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
 
   const isPending = !!(stream as PendingOutgoingStream).pendingType;
   const isPendingAndWaitingForSubgraph = !!(stream as PendingOutgoingStream)
-    .isRpcUpdated;
+    .hasTransactionSucceeded;
   const isActive = !isPending && currentFlowRate !== "0";
   const menuOpen = Boolean(menuAnchor);
   const pendingCancellation = usePendingStreamCancellation({
@@ -224,7 +224,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
               <Stack direction="row" alignItems="center" gap={1}>
                 <CircularProgress color="warning" size="16px" />
                 <Typography variant="caption">
-                  {pendingCancellation?.isRpcUpdated
+                  {pendingCancellation?.hasTransactionSucceeded
                     ? "Syncing..."
                     : "Canceling..."}
                 </Typography>

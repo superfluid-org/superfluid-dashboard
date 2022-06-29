@@ -82,7 +82,7 @@ export const pendingUpdateSlice = createSlice({
             adapter.updateOne(state, {
               id: transactionId,
               changes: {
-                isRpcUpdated: true,
+                hasTransactionSucceeded: true,
               },
             });
           }
