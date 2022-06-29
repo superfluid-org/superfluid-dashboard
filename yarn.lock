@@ -12678,6 +12678,11 @@ react-transition-group@^4.4.2:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
+react-use-intercom@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-use-intercom/-/react-use-intercom-2.0.0.tgz#d90a1c63d2fee0b3e66ba95ab27b226b1ee5efa0"
+  integrity sha512-DSm79RtGHAQyZ4WfBFuNMWtmpyLjWt6jhrhFwfMmy/eIvvCeJ+5wMdPMGXBn2+qzLDyhV0fqo3vNsqR4EvFqHw==
+
 react@^17.0.2:
   version "17.0.2"
   resolved "https://registry.yarnpkg.com/react/-/react-17.0.2.tgz#d0b5cc516d29eb3eee383f75b62864cfb6800037"
