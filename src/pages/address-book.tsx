@@ -45,7 +45,7 @@ import { getAddress } from "../utils/memoizedEthersUtils";
 const AddressBook: NextPage = () => {
   const dispatch = useAppDispatch();
 
-  const { data: account } = useAccount();
+  const { address: accountAddress } = useAccount();
   const { network } = useExpectedNetwork();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
@@ -62,11 +62,11 @@ const AddressBook: NextPage = () => {
   );
 
   const incomingStreamsQuery = subgraphApi.useStreamsQuery(
-    account?.address
+    accountAddress
       ? {
           chainId: network.id,
           filter: {
-            sender: account.address.toLowerCase(),
+            sender: accountAddress.toLowerCase(),
             currentFlowRate_gt: "0",
           },
           pagination: {
@@ -82,11 +82,11 @@ const AddressBook: NextPage = () => {
   );
 
   const outgoingStreamsQuery = subgraphApi.useStreamsQuery(
-    account?.address
+    accountAddress
       ? {
           chainId: network.id,
           filter: {
-            receiver: account.address.toLowerCase(),
+            receiver: accountAddress.toLowerCase(),
             currentFlowRate_gt: "0",
           },
           pagination: {

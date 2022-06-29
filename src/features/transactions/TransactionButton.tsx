@@ -8,7 +8,7 @@ import {
   TransactionDialogButton,
 } from "./TransactionDialog";
 import UnknownMutationResult from "../../unknownMutationResult";
-import { useConnect, useNetwork, useSigner } from "wagmi";
+import { useConnect, useNetwork, useSigner, useSwitchNetwork } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 import { Signer } from "ethers";
@@ -40,8 +40,9 @@ export const TransactionButton: FC<{
   ButtonProps = {},
 }) => {
   const { openConnectModal } = useConnectButton();
-  const { isConnecting } = useConnect();
-  const { activeChain, switchNetwork } = useNetwork();
+  const { isLoading: isConnecting } = useConnect();
+  const { chain: activeChain } = useNetwork();
+  const { switchNetwork } = useSwitchNetwork();
   const { data: signer, isLoading: isSignerLoading } = useSigner();
   const { isImpersonated, stopImpersonation: stopImpersonation } =
     useImpersonation();

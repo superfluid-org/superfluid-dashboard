@@ -46,7 +46,7 @@ export type PartialStreamingForm = {
 const StreamingFormProvider: FC<{
   restoration: SendStreamRestoration | ModifyStreamRestoration | undefined;
 }> = ({ restoration, children }) => {
-  const { data: account } = useAccount();
+  const { address: accountAddress } = useAccount();
   const { network, stopAutoSwitchToAccountNetwork } = useExpectedNetwork();
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryActiveFlow] = rpcApi.useLazyGetActiveFlowQuery();
@@ -93,7 +93,6 @@ const StreamingFormProvider: FC<{
           });
         };
 
-        const accountAddress = account?.address;
         const tokenAddress = validForm.data.token.address;
         const receiverAddress = validForm.data.receiver;
 
@@ -161,7 +160,7 @@ const StreamingFormProvider: FC<{
 
         return true;
       }),
-    [network, account]
+    [network, accountAddress]
   );
 
   const formMethods = useForm<PartialStreamingForm>({
@@ -206,7 +205,7 @@ const StreamingFormProvider: FC<{
     if (formState.isDirty) {
       trigger();
     }
-  }, [account]);
+  }, [accountAddress]);
 
   // useEffect(() => {
   //   console.log(formState);

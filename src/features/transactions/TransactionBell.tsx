@@ -9,7 +9,7 @@ import { useAccount } from "wagmi";
 import { memo } from "react";
 
 export default memo(function TransactionBell() {
-  const { data: account } = useAccount();
+  const { address: accountAddress } = useAccount();
 
   const { transactionDrawerOpen, setTransactionDrawerOpen } =
     useTransactionDrawerContext();
@@ -18,7 +18,7 @@ export default memo(function TransactionBell() {
     pendingTransactionsSelector
   );
 
-  if (!account) return null;
+  if (!accountAddress) return null;
 
   return (
     <IconButton
