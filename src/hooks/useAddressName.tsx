@@ -6,6 +6,7 @@ import { getAddress } from "../utils/memoizedEthersUtils";
 interface AddressNameResult {
   addressChecksummed: string;
   name: string | "";
+  ensName?: string;
 }
 
 const useAddressName = (address: string): AddressNameResult => {
@@ -18,9 +19,12 @@ const useAddressName = (address: string): AddressNameResult => {
         ?.name
   );
 
+  const ensName = ensLookupQuery.data?.name;
+
   return {
     addressChecksummed,
-    name: addressBookName || ensLookupQuery.data?.name || "",
+    name: addressBookName || ensName || "",
+    ensName,
   };
 };
 

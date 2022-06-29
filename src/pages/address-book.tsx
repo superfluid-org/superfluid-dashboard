@@ -370,8 +370,9 @@ const AddressBook: NextPage = () => {
             <Table sx={{ tableLayout: "fixed" }}>
               <TableHead>
                 <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell width="260px">Address</TableCell>
+                  <TableCell sx={{ pl: 10 }}>Name</TableCell>
+                  <TableCell>ENS Name</TableCell>
+                  <TableCell>Address</TableCell>
                   <TableCell width="160px">Active Streams</TableCell>
                   <TableCell width="88px" />
                 </TableRow>

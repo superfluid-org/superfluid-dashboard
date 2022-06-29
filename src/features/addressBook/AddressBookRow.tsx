@@ -27,6 +27,7 @@ import {
 import { useAccount } from "wagmi";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
+import useAddressName from "../../hooks/useAddressName";
 import shortenHex from "../../utils/shortenHex";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { useAppDispatch } from "../redux/store";
@@ -58,6 +59,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   const [editableName, setEditableName] = useState(name);
   const [isEditing, setIsEditing] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+  const { ensName } = useAddressName(address);
 
   const trimmedName = useMemo(() => editableName.trim(), [editableName]);
 
@@ -161,6 +163,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
           </Stack>
         </Stack>
       </TableCell>
+      <TableCell>{ensName || "-"}</TableCell>
       <TableCell>
         <AddressCopyTooltip address={address}>
           <span>{shortenHex(address, 8)}</span>
