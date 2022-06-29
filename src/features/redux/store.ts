@@ -24,6 +24,7 @@ import { ensApi } from "../ens/ensApi.slice";
 import gasApi from "../gas/gasApi.slice";
 import { impersonationSlice } from "../impersonation/impersonation.slice";
 import { networkPreferencesSlice } from "../network/networkPreferences.slice";
+import { pendingUpdateSlice } from "../pendingUpdates/pendingUpdate.slice";
 import { assetApiSlice } from "../token/tokenManifestSlice";
 import { adHocMulticallEndpoints } from "./endpoints/adHocMulticallEndpoints";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
@@ -84,6 +85,7 @@ export const reduxStore = configureStore({
     addressBook: addressBookPersistedReducer,
     networkPreferences: networkPreferencesPersistedReducer,
     [gasApi.reducerPath]: gasApi.reducer,
+    pendingUpdates: pendingUpdateSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

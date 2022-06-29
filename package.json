@@ -24,7 +24,7 @@
     "@reduxjs/toolkit": "^1.8.2",
     "@sentry/nextjs": "^6.19.7",
     "@superfluid-finance/sdk-core": "0.4.4-dev.4b89f01.0",
-    "@superfluid-finance/sdk-redux": "0.3.1-dev.7df8a6a.0",
+    "@superfluid-finance/sdk-redux": "0.3.1-PR921.7239472.0",
     "axios": "^0.26.1",
     "chart.js": "^3.7.1",
     "date-fns": "^2.28.0",

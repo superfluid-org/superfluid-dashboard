@@ -1,8 +1,9 @@
-import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
+import AppsRoundedIcon from "@mui/icons-material/AppsRounded";
+import ArrowRightAltRoundedIcon from "@mui/icons-material/ArrowRightAltRounded";
+import AutoAwesomeMosaicRoundedIcon from "@mui/icons-material/AutoAwesomeMosaicRounded";
+import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
 import ImportContactsRoundedIcon from "@mui/icons-material/ImportContactsRounded";
-import AutoAwesomeMosaicIcon from "@mui/icons-material/AutoAwesomeMosaic";
-import HistoryIcon from "@mui/icons-material/History";
-import SwapVertIcon from "@mui/icons-material/SwapVert";
+import SwapVertRoundedIcon from "@mui/icons-material/SwapVertRounded";
 import {
   Box,
   Drawer,
@@ -98,7 +99,7 @@ export default memo(function NavigationDrawer() {
           title="Dashboard"
           href="/"
           active={isActiveRoute("/", "/[_network]/token")}
-          icon={AutoAwesomeMosaicIcon}
+          icon={AutoAwesomeMosaicRoundedIcon}
         />
 
         <NavigationItem
@@ -106,7 +107,7 @@ export default memo(function NavigationDrawer() {
           title="Wrap / Unwrap"
           href="/wrap?upgrade"
           active={isActiveRoute("/wrap")}
-          icon={SwapVertIcon}
+          icon={SwapVertRoundedIcon}
         />
 
         <NavigationItem
@@ -114,7 +115,7 @@ export default memo(function NavigationDrawer() {
           title="Send Stream"
           href="/send"
           active={isActiveRoute("/send")}
-          icon={ArrowRightAltIcon}
+          icon={ArrowRightAltRoundedIcon}
         />
 
         <NavigationItem
@@ -122,7 +123,7 @@ export default memo(function NavigationDrawer() {
           title="Activity History"
           href="/history"
           active={isActiveRoute("/history")}
-          icon={HistoryIcon}
+          icon={HistoryRoundedIcon}
         />
 
         <NavigationItem
@@ -133,18 +134,16 @@ export default memo(function NavigationDrawer() {
           icon={ImportContactsRoundedIcon}
         />
 
-        {/* <NavigationItem
+        <NavigationItem
           id="nav-ecosystem"
           title="Ecosystem"
           href="/ecosystem"
           active={isActiveRoute("/ecosystem")}
           icon={AppsRoundedIcon}
-        /> */}
+        />
       </Stack>
 
       <Stack justifyContent="flex-end" sx={{ flex: 1 }}>
-        {/* <Divider /> */}
-
         <Stack sx={{ my: 2, px: 2 }} gap={1}>
           <MoreNavigationItem />
           <ThemeChanger />

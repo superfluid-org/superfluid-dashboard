@@ -1,12 +1,11 @@
-import { BlockExplorer } from "@wagmi/core/dist/declarations/src/constants";
 import { memoize } from "lodash";
 import { chain, Chain } from "wagmi";
 import ensureDefined from "../../utils/ensureDefined";
 import {
   NATIVE_ASSET_ADDRESS,
   SuperTokenPair,
+  TokenType,
 } from "../redux/endpoints/tokenTypes";
-import { TokenType } from "../redux/endpoints/tokenTypes";
 
 // id == chainId
 // name == displayName

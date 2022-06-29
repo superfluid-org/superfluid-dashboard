@@ -359,28 +359,30 @@ export default memo(function SendCard() {
 
                 const { data: formData } = getValues() as ValidStreamingForm;
 
+                const restoration: SendStreamRestoration = {
+                  type: RestorationType.SendStream,
+                  chainId: network.id,
+                  token: formData.token,
+                  receiver: formData.receiver,
+                  flowRate: {
+                    amountWei: parseEther(
+                      formData.flowRate.amountEther
+                    ).toString(),
+                    unitOfTime: formData.flowRate.unitOfTime,
+                  },
+                };
                 flowCreateTrigger({
                   signer,
                   chainId: network.id,
                   flowRateWei:
                     calculateTotalAmountWei(flowRateEther).toString(),
+                  senderAddress: await signer.getAddress(),
                   receiverAddress: formData.receiver,
                   superTokenAddress: formData.token.address,
                   userDataBytes: undefined,
                   waitForConfirmation: false,
                   transactionExtraData: {
-                    restoration: {
-                      type: RestorationType.SendStream,
-                      chainId: network.id,
-                      token: formData.token,
-                      receiver: formData.receiver,
-                      flowRate: {
-                        amountWei: parseEther(
-                          formData.flowRate.amountEther
-                        ).toString(),
-                        unitOfTime: formData.flowRate.unitOfTime,
-                      },
-                    } as SendStreamRestoration,
+                    restoration: restoration,
                   },
                   overrides: await getTransactionOverrides(network),
                 })
@@ -428,6 +430,7 @@ export default memo(function SendCard() {
                       ).toString(),
                       unitOfTime: formData.flowRate.unitOfTime,
                     }).toString(),
+                    senderAddress: await signer.getAddress(),
                     receiverAddress: formData.receiver,
                     superTokenAddress: formData.token.address,
                     userDataBytes: undefined,
@@ -500,9 +503,7 @@ export default memo(function SendCard() {
                     userDataBytes: undefined,
                     waitForConfirmation: false,
                     overrides: await getTransactionOverrides(network),
-                  })
-                    .unwrap()
-                    .then(() => resetForm());
+                  }).unwrap();
                 }}
               >
                 Cancel Stream
