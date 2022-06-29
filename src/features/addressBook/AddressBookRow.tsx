@@ -63,7 +63,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   const trimmedName = useMemo(() => editableName.trim(), [editableName]);
 
   const onNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setEditableName(sanitizeAddressBookName(event.target.value));
+    setEditableName(event.target.value);
   };
 
   const saveName = useCallback(() => {
@@ -115,7 +115,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
                   value={editableName}
                   onChange={onNameChange}
                   sx={{ fontWeight: 500 }}
-                  inputProps={{ sx: { p: 0 }, maxLength: 24 }}
+                  inputProps={{ sx: { p: 0 } }}
                 />
               </Box>
             ) : (

@@ -1,5 +1,4 @@
 import {
-  createDraftSafeSelector,
   createEntityAdapter,
   createSelector,
   createSlice,
@@ -7,7 +6,7 @@ import {
 } from "@reduxjs/toolkit";
 import { Address } from "@superfluid-finance/sdk-core";
 import { getAddress } from "../../utils/memoizedEthersUtils";
-import { AppStore, RootState } from "../redux/store";
+import { RootState } from "../redux/store";
 
 export interface AddressBookEntry {
   address: Address;
