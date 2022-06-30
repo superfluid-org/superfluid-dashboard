@@ -15,6 +15,7 @@
     "@emotion/react": "^11.9.0",
     "@emotion/server": "^11.4.0",
     "@emotion/styled": "^11.8.1",
+    "@gnosis.pm/safe-apps-wagmi": "^1.0.1",
     "@hookform/error-message": "^2.0.0",
     "@hookform/resolvers": "^2.8.10",
     "@mui/icons-material": "^5.8.0",
