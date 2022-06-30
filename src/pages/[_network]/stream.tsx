@@ -11,6 +11,7 @@ import {
   ListItemText,
   Paper,
   Stack,
+  Tooltip,
   Typography,
   useTheme,
 } from "@mui/material";
@@ -38,6 +39,23 @@ import { BigNumber } from "ethers";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import shortenHex from "../../utils/shortenHex";
+import Link from "next/link";
+
+const ShareButton: FC<{ imgSrc: string; alt: string }> = ({ imgSrc, alt }) => (
+  <Tooltip title="Sharing is currently disabled" placement="top">
+    <Box sx={{ display: "flex" }}>
+      <Image
+        unoptimized
+        src={imgSrc}
+        width={30}
+        height={30}
+        layout="fixed"
+        alt={alt}
+        style={{ display: "block" }}
+      />
+    </Box>
+  </Tooltip>
+);
 
 interface OverviewItemProps {
   label: string;
@@ -347,41 +365,25 @@ const Stream: FC<NetworkPage> = ({ network }) => {
             Share:
           </Typography>
 
-          <Avatar
-            sx={{
-              backgroundColor: theme.palette.primary.main,
-              color: "#fff",
-              width: 30,
-              height: 30,
-            }}
-          >
-            <LinkIcon
-              sx={{ transform: "rotate(135deg)", width: 20, height: 20 }}
-            />
-          </Avatar>
+          <Tooltip title="Sharing is currently disabled" placement="top">
+            <Avatar
+              sx={{
+                backgroundColor: theme.palette.primary.main,
+                color: "#fff",
+                width: 30,
+                height: 30,
+              }}
+            >
+              <LinkIcon
+                sx={{ transform: "rotate(135deg)", width: 20, height: 20 }}
+              />
+            </Avatar>
+          </Tooltip>
 
-          <Image
-            unoptimized
-            src="/icons/social/twitter.svg"
-            width={30}
-            height={30}
-            layout="fixed"
-            alt="Twitter logo"
-          />
-          <Image
-            unoptimized
-            src="/icons/social/discord.svg"
-            width={30}
-            height={30}
-            layout="fixed"
-            alt="Discord logo"
-          />
-          <Image
-            unoptimized
-            src="/icons/social/telegram.svg"
-            width={30}
-            height={30}
-            layout="fixed"
+          <ShareButton imgSrc="/icons/social/twitter.svg" alt="Twitter logo" />
+          <ShareButton imgSrc="/icons/social/discord.svg" alt="Discord logo" />
+          <ShareButton
+            imgSrc="/icons/social/telegram.svg"
             alt="Telegram logo"
           />
         </Stack>

@@ -885,6 +885,9 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             borderTop: `1px solid`,
             borderColor: theme.palette.divider,
           },
+          input: {
+            background: "transparent",
+          },
           toolbar: {
             "@media (min-width: 600px)": {
               paddingRight: theme.spacing(4),

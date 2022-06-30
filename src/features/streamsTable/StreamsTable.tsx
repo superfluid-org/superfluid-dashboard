@@ -1,4 +1,5 @@
 import {
+  alpha,
   Button,
   Stack,
   Table,
@@ -141,6 +142,12 @@ const StreamsTable: FC<StreamsTableProps> = ({
               borderRadius: lastElement ? "0 0 20px 20px" : 0,
               border: "none",
               boxShadow: "none",
+              ".MuiTablePagination-root": {
+                background:
+                  theme.palette.mode === "light"
+                    ? "transparent"
+                    : alpha(theme.palette.action.hover, 0.08),
+              },
             }
           : {}
       }
@@ -204,11 +211,11 @@ const StreamsTable: FC<StreamsTableProps> = ({
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell width="185">To / From</TableCell>
-            <TableCell width="290">All Time Flow</TableCell>
-            <TableCell width="300">Flow rate</TableCell>
-            <TableCell width="300">Start / End Date</TableCell>
-            <TableCell width="120" align="center"></TableCell>
+            <TableCell>To / From</TableCell>
+            <TableCell width="250">All Time Flow</TableCell>
+            <TableCell width="250">Flow rate</TableCell>
+            <TableCell width="200">Start / End Date</TableCell>
+            <TableCell width="120px" align="center"></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
