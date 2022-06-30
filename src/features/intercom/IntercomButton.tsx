@@ -46,7 +46,7 @@ const IntercomButton: FC = () => {
       id={INTERCOM_ANCHOR_ID}
       color="primary"
       sx={{
-        position: "absolute",
+        position: "fixed",
         bottom: 16,
         left: menuDrawerWidth + 24,
         color: "white",
