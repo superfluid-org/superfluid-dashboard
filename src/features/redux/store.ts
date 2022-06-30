@@ -55,7 +55,7 @@ export const subgraphApi = initializeSubgraphApiSlice((options) =>
 export const transactionTracker = initializeTransactionTrackerSlice();
 
 const transactionTrackerPersistedReducer = persistReducer(
-  { storage, key: "transactions", version: 2 },
+  { storage, key: "transactions", version: 1 },
   transactionTracker.reducer
 );
 
@@ -65,12 +65,12 @@ const impersonationPersistedReducer = persistReducer(
 );
 
 const addressBookPersistedReducer = persistReducer(
-  { storage, key: "addressBook", version: 2 },
+  { storage, key: "addressBook", version: 1 },
   addressBookSlice.reducer
 );
 
 const networkPreferencesPersistedReducer = persistReducer(
-  { storage, key: "network-preferences", version: 1 },
+  { storage, key: "networkPreferences", version: 1 },
   networkPreferencesSlice.reducer
 );
 

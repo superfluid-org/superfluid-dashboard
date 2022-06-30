@@ -33,19 +33,19 @@ export const getAppWallets = ({
         ...(needsInjectedWalletFallback
           ? [wallet.injected({ chains, shimDisconnect: true })]
           : []),
-        wallet.walletConnect({ chains }),
-        wallet.coinbase({ appName, chains }),
-        wallet.trust({ chains }),
+        // wallet.walletConnect({ chains }),
+        // wallet.coinbase({ appName, chains }),
+        // wallet.trust({ chains }),
       ],
     },
-    {
-      groupName: "Other",
-      wallets: [
-        wallet.rainbow({ chains }),
-        wallet.ledger({ chains }),
-        wallet.imToken({ chains }),
-      ],
-    },
+    // {
+    //   groupName: "Other",
+    //   wallets: [
+    //     wallet.rainbow({ chains }),
+    //     wallet.ledger({ chains }),
+    //     wallet.imToken({ chains }),
+    //   ],
+    // },
   ];
 
   return {

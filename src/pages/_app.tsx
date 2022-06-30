@@ -19,6 +19,8 @@ import { ImpersonationProvider } from "../features/impersonation/ImpersonationCo
 import { VisibleAddressProvider } from "../features/wallet/VisibleAddressContext";
 import { ActiveNetworksProvider } from "../features/network/ActiveNetworksContext";
 import ConnectButtonProvider from "../features/wallet/ConnectButtonProvider";
+import { IntercomProvider } from "react-use-intercom";
+import { INTERCOM_APP_ID } from "../features/intercom/IntercomButton";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -60,14 +62,16 @@ export default function MyApp(props: MyAppProps) {
                             <VisibleAddressProvider>
                               <TransactionRestorationContextProvider>
                                 <TransactionDrawerContextProvider>
-                                  <Layout>
-                                    <ReduxPersistGate>
-                                      <Component
-                                        key={`${network.slugName}`}
-                                        {...pageProps}
-                                      />
-                                    </ReduxPersistGate>
-                                  </Layout>
+                                  <IntercomProvider appId={INTERCOM_APP_ID} initializeDelay={500}>
+                                    <Layout>
+                                      <ReduxPersistGate>
+                                        <Component
+                                          key={`${network.slugName}`}
+                                          {...pageProps}
+                                        />
+                                      </ReduxPersistGate>
+                                    </Layout>
+                                  </IntercomProvider>
                                 </TransactionDrawerContextProvider>
                               </TransactionRestorationContextProvider>
                             </VisibleAddressProvider>
