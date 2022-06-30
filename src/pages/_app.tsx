@@ -62,7 +62,7 @@ export default function MyApp(props: MyAppProps) {
                             <VisibleAddressProvider>
                               <TransactionRestorationContextProvider>
                                 <TransactionDrawerContextProvider>
-                                  <IntercomProvider appId={INTERCOM_APP_ID}>
+                                  <IntercomProvider appId={INTERCOM_APP_ID} initializeDelay={500}>
                                     <Layout>
                                       <ReduxPersistGate>
                                         <Component
