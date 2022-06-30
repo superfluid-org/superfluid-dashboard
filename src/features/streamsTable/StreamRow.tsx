@@ -166,8 +166,14 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
       <TableCell {...tableCellProps}>
         <Stack direction="row" alignItems="center" gap={1.5}>
           {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
-          <AddressAvatar address={isOutgoing ? receiver : sender} />
-          <Typography data-cy={"sender-receiver-address"} variant="h6">
+          <AddressAvatar
+            address={isOutgoing ? receiver : sender}
+            AvatarProps={{
+              sx: { width: "24px", height: "24px", borderRadius: "5px" },
+            }}
+            BlockiesProps={{ size: 8, scale: 3 }}
+          />
+          <Typography data-cy={"sender-receiver-address"} variant="h7">
             <AddressName address={isOutgoing ? receiver : sender} />
           </Typography>
         </Stack>

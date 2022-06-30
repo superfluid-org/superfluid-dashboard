@@ -152,8 +152,8 @@ const StreamsTable: FC<StreamsTableProps> = ({
             borderTop: `1px solid ${theme.palette.divider}`,
           }),
           ...(subTable && {
-            ".MuiTableCell-root:first-of-type": {
-              pl: 9,
+            ".MuiTableHead-root .MuiTableCell-root:first-of-type": {
+              pl: 8.5,
             },
           }),
         }}
@@ -208,8 +208,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
             <TableCell width="290">All Time Flow</TableCell>
             <TableCell width="300">Flow rate</TableCell>
             <TableCell width="300">Start / End Date</TableCell>
-            <TableCell width="120" align="center">
-            </TableCell>
+            <TableCell width="120" align="center"></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
