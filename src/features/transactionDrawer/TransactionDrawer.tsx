@@ -8,9 +8,10 @@ import {
 } from "@mui/material";
 import { memo } from "react";
 import ReduxPersistGate from "../redux/ReduxPersistGate";
-import { useTransactionDrawerContext } from "./TransactionDrawerContext";
+import { useLayoutContext } from "../layout/LayoutContext";
 import TransactionList from "./TransactionList";
 import CloseIcon from "@mui/icons-material/Close";
+import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 export const transactionDrawerWidth = 340;
 
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -24,14 +25,15 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 export default memo(function TransactionDrawer() {
   const theme = useTheme();
+  const { isPhone } = useMediaBreakpoints();
   const { transactionDrawerOpen, setTransactionDrawerOpen } =
-    useTransactionDrawerContext();
+    useLayoutContext();
 
   const closeDrawer = () => setTransactionDrawerOpen(false);
 
   return (
     <Drawer
-      variant="persistent"
+      variant={isPhone ? "temporary" : "persistent"}
       anchor="right"
       open={transactionDrawerOpen}
       transitionDuration={theme.transitions.duration.standard}

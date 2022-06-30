@@ -1,5 +1,5 @@
 import { Badge, IconButton } from "@mui/material";
-import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
+import { useLayoutContext } from "../layout/LayoutContext";
 import {
   pendingTransactionsSelector,
   useAccountTransactionsSelector,
@@ -12,7 +12,7 @@ export default memo(function TransactionBell() {
   const { data: account } = useAccount();
 
   const { transactionDrawerOpen, setTransactionDrawerOpen } =
-    useTransactionDrawerContext();
+    useLayoutContext();
 
   const pendingTransactions = useAccountTransactionsSelector(
     pendingTransactionsSelector

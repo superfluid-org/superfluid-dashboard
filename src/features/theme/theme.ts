@@ -1,4 +1,6 @@
-import { alpha, Theme, ThemeOptions } from "@mui/material/styles";
+import { alpha, createTheme, Theme, ThemeOptions } from "@mui/material/styles";
+import { TypographyOptions } from "@mui/material/styles/createTypography";
+import { deepmerge } from "@mui/utils";
 import React from "react";
 import { FONT_FACES } from "./fonts";
 
@@ -45,17 +47,20 @@ declare module "@mui/material/Typography" {
 
 // COLOR PALETTE
 
-interface PaletteCustomColors {
-  other: {
-    outline: string;
-    backdrop: string;
-    snackbar: string;
-  };
+interface PaletteOtherColors {
+  outline: string;
+  backdrop: string;
+  snackbar: string;
 }
 
 declare module "@mui/material/styles/createPalette" {
-  interface Palette extends PaletteCustomColors {}
-  interface PaletteOptions extends PaletteCustomColors {}
+  interface Palette {
+    other: PaletteOtherColors;
+  }
+
+  interface PaletteOptions {
+    other?: PaletteOtherColors;
+  }
 }
 
 // BUTTONS
@@ -78,13 +83,155 @@ export const ELEVATION1_BG = `linear-gradient(180deg, rgba(255, 255, 255, 0.03) 
 
 export const FONT_FAMILY = "'Walsheim', Arial";
 
-export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
-  const getModeStyle = <T>(lightStyle: T, darkStyle: T): T =>
+const TYPOGRAPHY: TypographyOptions = {
+  h1: {
+    fontSize: "64px",
+    letterSpacing: "-1.5px",
+    fontWeight: 500,
+  },
+  h1mono: {
+    fontSize: "64px",
+    letterSpacing: "-1.5px",
+    fontWeight: 500,
+    fontVariantNumeric: "tabular-nums",
+  },
+  h2: {
+    fontSize: "48px",
+    fontWeight: 400,
+    letterSpacing: "-0.5px",
+  },
+  h3: {
+    fontSize: "36px",
+    fontWeight: 500,
+    lineHeight: "116.7%",
+  },
+  h3mono: {
+    fontSize: "36px",
+    fontWeight: 500,
+    lineHeight: "116.7%",
+    fontVariantNumeric: "tabular-nums",
+  },
+  h4: {
+    fontSize: "24px",
+    fontWeight: 500,
+    letterSpacing: "0.25px",
+  },
+  h4mono: {
+    fontSize: "24px",
+    fontWeight: 500,
+    letterSpacing: "0.25px",
+    fontVariantNumeric: "tabular-nums",
+  },
+  h5: {
+    fontSize: "18px",
+    fontWeight: 500,
+  },
+  h5mono: {
+    fontSize: "18px",
+    fontWeight: 500,
+    fontVariantNumeric: "tabular-nums",
+  },
+  h6: {
+    fontSize: "16px",
+    fontWeight: 500,
+    lineHeight: "150%",
+    letterSpacing: "0.15px",
+  },
+  h6mono: {
+    fontSize: "16px",
+    fontWeight: 500,
+    lineHeight: "150%",
+    fontVariantNumeric: "tabular-nums",
+  },
+  h7: {
+    fontSize: "14px",
+    fontWeight: 500,
+    lineHeight: "150%",
+    letterSpacing: "0.15px",
+  },
+  h7mono: {
+    fontSize: "14px",
+    fontWeight: 500,
+    lineHeight: "150%",
+    fontVariantNumeric: "tabular-nums",
+  },
+  body1: {
+    fontWeight: 400,
+    letterSpacing: 0.15,
+  },
+  body1mono: {
+    fontWeight: 400,
+    whiteSpace: "pre",
+    fontVariantNumeric: "tabular-nums",
+  },
+  body2: {
+    fontSize: "14px",
+    fontWeight: 400,
+    letterSpacing: 0.17,
+  },
+  body2mono: {
+    fontSize: "14px",
+    fontWeight: 400,
+    whiteSpace: "pre",
+    fontVariantNumeric: "tabular-nums",
+  },
+  subtitle1: {
+    letterSpacing: "0.15px",
+  },
+  subtitle2: {
+    letterSpacing: "0.1px",
+  },
+  caption: {
+    letterSpacing: "0.4px",
+  },
+  overline: {
+    letterSpacing: "1px",
+  },
+  largeInput: {
+    fontStyle: "normal",
+    fontWeight: 500,
+    fontSize: "30px",
+    lineHeight: "150%",
+    letterSpacing: "0.15px",
+  },
+  menuItem: {
+    fontSize: "16px",
+    fontWeight: 500,
+    lineHeight: "150%",
+    letterSpacing: "0.15px",
+  },
+  tooltip: {
+    fontSize: "12px",
+    fontWeight: 400,
+  },
+};
+
+export const buildTheme = (mode: "light" | "dark") => {
+  const themeCreate = createTheme({
+    palette: {
+      mode,
+    },
+  });
+
+  const themeWithDesignTokens = createTheme(getDesignTokens(themeCreate));
+
+  return deepmerge(
+    themeWithDesignTokens,
+    getThemedComponents(themeWithDesignTokens)
+  );
+};
+
+const getModeStyleCB =
+  (mode: "light" | "dark") =>
+  <T>(lightStyle: T, darkStyle: T): T =>
     mode === "dark" ? darkStyle : lightStyle;
+
+const getDesignTokens = (theme: Theme): ThemeOptions => {
+  const getModeStyle = getModeStyleCB(theme.palette.mode);
 
   return {
     palette: {
-      mode,
+      mode: theme.palette.mode,
       text: {
         primary: getModeStyle("#12141EDE", "#FFFFFFFF"),
         secondary: getModeStyle("#12141E99", "#FFFFFFC7"),
@@ -147,126 +294,35 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
     },
     typography: {
       fontFamily: FONT_FAMILY,
-      h1: {
-        fontSize: "64px",
-        letterSpacing: "-1.5px",
-        fontWeight: 500,
-      },
-      h1mono: {
-        fontSize: "64px",
-        letterSpacing: "-1.5px",
-        fontWeight: 500,
-        fontVariantNumeric: "tabular-nums",
-      },
-      h2: {
-        fontSize: "48px",
-        fontWeight: 400,
-        letterSpacing: "-0.5px",
-      },
+      h1: TYPOGRAPHY.h1,
+      h1mono: TYPOGRAPHY.h1mono,
+      h2: TYPOGRAPHY.h2,
       h3: {
-        fontSize: "36px",
-        fontWeight: 500,
-        lineHeight: "116.7%",
+        ...TYPOGRAPHY.h3,
+        [theme.breakpoints.down("md")]: {
+          ...TYPOGRAPHY.h4,
+        },
       },
-      h3mono: {
-        fontSize: "36px",
-        fontWeight: 500,
-        lineHeight: "116.7%",
-        fontVariantNumeric: "tabular-nums",
-      },
-      h4: {
-        fontSize: "24px",
-        fontWeight: 500,
-        letterSpacing: "0.25px",
-      },
-      h4mono: {
-        fontSize: "24px",
-        fontWeight: 500,
-        letterSpacing: "0.25px",
-        fontVariantNumeric: "tabular-nums",
-      },
-      h5: {
-        fontSize: "18px",
-        fontWeight: 500,
-      },
-      h5mono: {
-        fontSize: "18px",
-        fontWeight: 500,
-        fontVariantNumeric: "tabular-nums",
-      },
-      h6: {
-        fontSize: "16px",
-        fontWeight: 500,
-        lineHeight: "150%",
-        letterSpacing: "0.15px",
-      },
-      h6mono: {
-        fontSize: "16px",
-        fontWeight: 500,
-        lineHeight: "150%",
-        fontVariantNumeric: "tabular-nums",
-      },
-      h7: {
-        fontSize: "14px",
-        fontWeight: 500,
-        lineHeight: "150%",
-        letterSpacing: "0.15px",
-      },
-      h7mono: {
-        fontSize: "14px",
-        fontWeight: 500,
-        lineHeight: "150%",
-        fontVariantNumeric: "tabular-nums",
-      },
-      body1: {
-        fontWeight: 400,
-        letterSpacing: 0.15,
-      },
-      body1mono: {
-        fontWeight: 400,
-        whiteSpace: "pre",
-        fontVariantNumeric: "tabular-nums",
-      },
-      body2: {
-        fontSize: "14px",
-        fontWeight: 400,
-        letterSpacing: 0.17,
-      },
-      body2mono: {
-        fontSize: "14px",
-        fontWeight: 400,
-        whiteSpace: "pre",
-        fontVariantNumeric: "tabular-nums",
-      },
-      subtitle1: {
-        letterSpacing: "0.15px",
-      },
-      subtitle2: {
-        letterSpacing: "0.1px",
-      },
-      caption: {
-        letterSpacing: "0.4px",
-      },
-      overline: {
-        letterSpacing: "1px",
-      },
-      largeInput: {
-        fontStyle: "normal",
-        fontWeight: 500,
-        fontSize: "30px",
-        lineHeight: "150%",
-        letterSpacing: "0.15px",
-      },
-      menuItem: {
-        fontSize: "16px",
-        fontWeight: 500,
-        lineHeight: "150%",
-        letterSpacing: "0.15px",
-      },
-      tooltip: {
-        fontSize: "12px",
-        fontWeight: 400,
-      },
+      h3mono: TYPOGRAPHY.h3mono,
+      h4: TYPOGRAPHY.h4,
+      h4mono: TYPOGRAPHY.h4mono,
+      h5: TYPOGRAPHY.h5,
+      h5mono: TYPOGRAPHY.h5mono,
+      h6: TYPOGRAPHY.h6,
+      h6mono: TYPOGRAPHY.h6mono,
+      h7: TYPOGRAPHY.h7,
+      h7mono: TYPOGRAPHY.h7mono,
+      body1: TYPOGRAPHY.body1,
+      body1mono: TYPOGRAPHY.body1mono,
+      body2: TYPOGRAPHY.body2,
+      body2mono: TYPOGRAPHY.body2mono,
+      subtitle1: TYPOGRAPHY.subtitle1,
+      subtitle2: TYPOGRAPHY.subtitle2,
+      caption: TYPOGRAPHY.caption,
+      overline: TYPOGRAPHY.overline,
+      largeInput: TYPOGRAPHY.largeInput,
+      menuItem: TYPOGRAPHY.menuItem,
+      tooltip: TYPOGRAPHY.tooltip,
     },
     shadows: [
       "none", // elevation 0
@@ -385,8 +441,7 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
 };
 
 export function getThemedComponents(theme: Theme): ThemeOptions {
-  const getModeStyle = <T>(lightStyle: T, darkStyle: T): T =>
-    theme.palette.mode === "dark" ? darkStyle : lightStyle;
+  const getModeStyle = getModeStyleCB(theme.palette.mode);
 
   return {
     components: {
@@ -402,6 +457,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
           elevation1: {
             backgroundImage: getModeStyle("none", ELEVATION1_BG),
+          },
+        },
+      },
+      MuiDrawer: {
+        styleOverrides: {
+          paper: {
+            borderRadius: 0,
           },
         },
       },

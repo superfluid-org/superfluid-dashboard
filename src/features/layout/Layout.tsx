@@ -3,7 +3,7 @@ import { FC } from "react";
 import TransactionDrawer, {
   transactionDrawerWidth,
 } from "../transactionDrawer/TransactionDrawer";
-import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
+import { useLayoutContext } from "./LayoutContext";
 import NavigationDrawer, { menuDrawerWidth } from "./NavigationDrawer";
 import TopBar from "./TopBar";
 // import TransactionSnackbar from "../transactions/TransactionSnackbar";
@@ -24,19 +24,19 @@ const Main = styled("main")<{
   open: boolean;
 }>(({ theme, open }) => ({
   flexGrow: 1,
-  padding: `${theme.spacing(5)} ${theme.spacing(8)}`,
+  // padding: `${theme.spacing(5)} ${theme.spacing(8)}`,
   transition: theme.transitions.create("margin", {
     easing: theme.transitions.easing.easeInOut,
     duration: theme.transitions.duration.standard,
   }),
-  ...(open && {
-    marginRight: transactionDrawerWidth,
-  }),
+  // ...(open && {
+  //   marginRight: transactionDrawerWidth,
+  // }),
 }));
 
 const Layout: FC = ({ children }) => {
   const theme = useTheme();
-  const { transactionDrawerOpen } = useTransactionDrawerContext();
+  const { transactionDrawerOpen } = useLayoutContext();
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", scrollY: "auto" }}>

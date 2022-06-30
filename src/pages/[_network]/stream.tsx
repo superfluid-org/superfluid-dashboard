@@ -132,7 +132,7 @@ const Stream: FC<NetworkPage> = ({ network }) => {
 
   // TODO: This container max width should be configured in theme. Something between small and medium
   return (
-    <Container>
+    <Container maxWidth="lg">
       <Stack
         alignItems="center"
         gap={3}

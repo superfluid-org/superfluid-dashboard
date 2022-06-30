@@ -14,15 +14,18 @@ import {
   Stack,
   SvgIcon,
   Toolbar,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import Image from "next/image";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { FC, memo } from "react";
+import { FC, memo, useState } from "react";
+import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 import Link from "../common/Link";
 import ThemeChanger from "../theme/ThemeChanger";
 import ConnectWallet from "../wallet/ConnectWallet";
+import { useLayoutContext } from "./LayoutContext";
 import MoreNavigationItem from "./MoreNavigationItem";
 
 export const menuDrawerWidth = 260;
@@ -55,6 +58,11 @@ const NavigationItem: FC<NavigationItemProps> = ({
 export default memo(function NavigationDrawer() {
   const theme = useTheme();
   const router = useRouter();
+  const { isPhone } = useMediaBreakpoints();
+
+  const { navigationDrawerOpen, setNavigationDrawerOpen } = useLayoutContext();
+
+  const closeNavigationDrawer = () => setNavigationDrawerOpen(false);
 
   const isActiveRoute = (...routes: Array<string>) =>
     routes.includes(router.route);
@@ -62,10 +70,12 @@ export default memo(function NavigationDrawer() {
   return (
     <Drawer
       data-cy={"navigation-drawer"}
-      variant="permanent"
+      variant={isPhone ? "temporary" : "permanent"} // permanent
+      open={navigationDrawerOpen}
       anchor="left"
       PaperProps={{ sx: { width: menuDrawerWidth, borderRadius: 0 } }}
       sx={{ width: menuDrawerWidth }}
+      onClose={closeNavigationDrawer}
     >
       <Toolbar sx={{ height: 88 }}>
         <Link href="/">

@@ -30,7 +30,7 @@ import { isWrappable } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
-import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
+import { useLayoutContext } from "../layout/LayoutContext";
 import {
   ModifyStreamRestoration,
   RestorationType,
@@ -63,7 +63,7 @@ const FormLabel: FC<FormLabelProps> = ({ children }) => (
 export default memo(function SendCard() {
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
-  const { setTransactionDrawerOpen } = useTransactionDrawerContext();
+  const { setTransactionDrawerOpen } = useLayoutContext();
   const router = useRouter();
   const getTransactionOverrides = useGetTransactionOverrides();
 

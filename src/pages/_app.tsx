@@ -10,7 +10,7 @@ import ReduxProvider from "../features/redux/ReduxProvider";
 import ReduxPersistGate from "../features/redux/ReduxPersistGate";
 import NextThemesProvider from "../features/theme/NextThemesProvider";
 import { TransactionRestorationContextProvider } from "../features/transactionRestoration/TransactionRestorationContext";
-import { TransactionDrawerContextProvider } from "../features/transactionDrawer/TransactionDrawerContext";
+import { LayoutContextProvider } from "../features/layout/LayoutContext";
 import { hotjar } from "react-hotjar";
 import WagmiManager, {
   RainbowKitManager,
@@ -59,7 +59,7 @@ export default function MyApp(props: MyAppProps) {
                           <ConnectButtonProvider>
                             <VisibleAddressProvider>
                               <TransactionRestorationContextProvider>
-                                <TransactionDrawerContextProvider>
+                                <LayoutContextProvider>
                                   <Layout>
                                     <ReduxPersistGate>
                                       <Component
@@ -68,7 +68,7 @@ export default function MyApp(props: MyAppProps) {
                                       />
                                     </ReduxPersistGate>
                                   </Layout>
-                                </TransactionDrawerContextProvider>
+                                </LayoutContextProvider>
                               </TransactionRestorationContextProvider>
                             </VisibleAddressProvider>
                           </ConnectButtonProvider>

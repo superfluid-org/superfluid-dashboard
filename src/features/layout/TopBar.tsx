@@ -1,30 +1,50 @@
-import { alpha, AppBar, Button, Stack, styled, Toolbar } from "@mui/material";
+import {
+  alpha,
+  AppBar,
+  Box,
+  Button,
+  IconButton,
+  Stack,
+  styled,
+  Toolbar,
+} from "@mui/material";
 import { memo } from "react";
 import useBodyScrolled from "../../hooks/useBodyScrolled";
 import ImpersonationChip from "../impersonation/ImpersonationChip";
 import SelectNetwork from "../network/SelectNetwork";
 import { transactionDrawerWidth } from "../transactionDrawer/TransactionDrawer";
-import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
+import { useLayoutContext } from "./LayoutContext";
 import TransactionBell from "../transactions/TransactionBell";
 import { menuDrawerWidth } from "./NavigationDrawer";
-
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 interface CustomAppBarProps {
-  open: boolean;
+  transactionDrawerOpen: boolean;
+  navigationDrawerOpen: boolean;
   isScrolled?: boolean;
 }
 const CustomAppBar = styled(AppBar)<CustomAppBarProps>(
-  ({ theme, open, isScrolled }) => ({
-    width: `calc(100% - ${menuDrawerWidth}px)`,
-    marginLeft: `${menuDrawerWidth}px`,
+  ({ theme, transactionDrawerOpen, navigationDrawerOpen, isScrolled }) => ({
     borderRadius: 0,
     background: alpha(theme.palette.background.paper, isScrolled ? 1 : 0),
-    transition: theme.transitions.create("all", {
+    right: 0,
+    left: 0,
+    width: "auto",
+    transition: theme.transitions.create(["border", "background", "right"], {
       easing: theme.transitions.easing.easeInOut,
       duration: theme.transitions.duration.standard,
     }),
-    ...(open && {
-      width: `calc(100% - ${transactionDrawerWidth - menuDrawerWidth}px)`,
-      marginRight: transactionDrawerWidth,
+    ...(transactionDrawerOpen && {
+      right: transactionDrawerWidth,
+      [theme.breakpoints.down("md")]: {
+        right: 0,
+      },
+    }),
+    ...(navigationDrawerOpen && {
+      left: menuDrawerWidth,
+      [theme.breakpoints.down("md")]: {
+        left: 0,
+      },
     }),
     borderBottom: `1px solid ${alpha(
       theme.palette.divider,
@@ -35,21 +55,33 @@ const CustomAppBar = styled(AppBar)<CustomAppBarProps>(
 
 export default memo(function TopBar() {
   const isScrolled = useBodyScrolled();
-  const { transactionDrawerOpen } = useTransactionDrawerContext();
+  const {
+    transactionDrawerOpen,
+    navigationDrawerOpen,
+    setNavigationDrawerOpen,
+  } = useLayoutContext();
+
+  const { isPhone } = useMediaBreakpoints();
+
+  const openNavigationDrawer = () => setNavigationDrawerOpen(true);
 
   return (
     <CustomAppBar
-      open={transactionDrawerOpen}
+      transactionDrawerOpen={transactionDrawerOpen}
+      navigationDrawerOpen={navigationDrawerOpen}
       isScrolled={isScrolled}
       position="fixed"
       elevation={0}
     >
-      <Stack
-        component={Toolbar}
-        direction="row"
-        justifyContent="flex-end"
-        alignItems="center"
-      >
+      <Stack component={Toolbar} direction="row" alignItems="center">
+        {/* {isPhone && ( */}
+        <IconButton onClick={openNavigationDrawer} color="inherit">
+          <MenuRoundedIcon />
+        </IconButton>
+        {/* )} */}
+
+        <Box flex={1} />
+
         <Stack direction="row" spacing={2} alignItems="center">
           <ImpersonationChip />
           <SelectNetwork />
