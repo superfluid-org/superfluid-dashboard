@@ -37,6 +37,7 @@ import TokenToolbar from "../../features/token/TokenToolbar";
 import TransferEventsTable from "../../features/transfers/TransferEventsTable";
 import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
 import withPathNetwork, { NetworkPage } from "../../hoc/withPathNetwork";
+import Page404 from "../404";
 
 enum TokenDetailsTabs {
   Streams = "streams",
@@ -104,7 +105,7 @@ const Token: FC<NetworkPage> = ({ network }) => {
   }
 
   if (!tokenQuery.data || !tokenSnapshotQuery.data) {
-    return <Error statusCode={404} />;
+    return <Page404 />;
   }
 
   const onTabChange = (_e: unknown, newTab: TokenDetailsTabs) =>
