@@ -5,27 +5,14 @@ import {
 } from "@superfluid-finance/sdk-redux";
 import { FC, useEffect } from "react";
 import { Provider } from "react-redux";
-import { useAccount, useSigner } from "wagmi";
+import { useSigner } from "wagmi";
 import { networks } from "../network/networks";
 import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import { reduxStore, useAppDispatch } from "./store";
 
 const ReduxProviderCore: FC = ({ children }) => {
   const { data: signer } = useSigner();
-  const { address: accountAddress } = useAccount();
-
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    if (accountAddress) {
-      dispatch(
-        initiateOldPendingTransactionsTrackingThunk({
-          chainIds: networks.map((x) => x.id),
-          signerAddress: accountAddress,
-        }) as any
-      ); // TODO(weird version mismatch):
-    }
-  }, [accountAddress]);
 
   useEffect(() => {
     // TODO(KK): Use wagmi's providers. Wagmi might be better at creating providers and then we don't create double providers.
@@ -41,6 +28,15 @@ const ReduxProviderCore: FC = ({ children }) => {
             provider: signer,
           })
         );
+      });
+
+      signer.getAddress().then((address) => {
+        dispatch(
+          initiateOldPendingTransactionsTrackingThunk({
+            chainIds: networks.map((x) => x.id),
+            signerAddress: address,
+          }) as any
+        ); // TODO(weird version mismatch):
       });
     }
   }, [signer]);
