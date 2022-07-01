@@ -3,10 +3,9 @@ import {
   initiateOldPendingTransactionsTrackingThunk,
   setFrameworkForSdkRedux,
 } from "@superfluid-finance/sdk-redux";
-import { BigNumber } from "ethers";
 import { FC, useEffect } from "react";
 import { Provider } from "react-redux";
-import { useAccount, useNetwork, useProvider, useSigner } from "wagmi";
+import { useAccount, useSigner } from "wagmi";
 import { networks } from "../network/networks";
 import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import { reduxStore, useAppDispatch } from "./store";
