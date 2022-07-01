@@ -11,6 +11,7 @@ import { networks, networksByChainId } from "../network/networks";
 import { getAppWallets } from "./getAppWallets";
 import { configureChains } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import { useAutoConnect } from "../../hooks/useAutoConnect";
 
 const { chains, provider } = configureChains(networks, [
   jsonRpcProvider({
@@ -26,13 +27,22 @@ const { connectors } = getAppWallets({
 });
 
 export const wagmiClient = createWagmiClient({
-  autoConnect: true,
+  autoConnect: false, // Disable because of special Gnosis Safe handling in useAutoConnect.
   connectors,
   provider,
 });
 
+const AutoConnect: FC = ({ children }) => {
+  useAutoConnect();
+  return <>{children}</>;
+};
+
 const WagmiManager: FC = ({ children }) => {
-  return <WagmiConfig client={wagmiClient}>{children}</WagmiConfig>;
+  return (
+    <WagmiConfig client={wagmiClient}>
+      <AutoConnect>{children}</AutoConnect>
+    </WagmiConfig>
+  );
 };
 
 export default WagmiManager;
