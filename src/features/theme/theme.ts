@@ -885,6 +885,9 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             borderTop: `1px solid`,
             borderColor: theme.palette.divider,
           },
+          input: {
+            background: "transparent",
+          },
           toolbar: {
             "@media (min-width: 600px)": {
               paddingRight: theme.spacing(4),
@@ -908,16 +911,21 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             props: { size: "small" },
             style: {
               tr: {
-                background: "transparent",
+                background: getModeStyle(
+                  "transparent",
+                  alpha(theme.palette.action.hover, 0.08)
+                ),
                 "&.MuiTableRow-hover:hover": {
-                  background: "transparent",
+                  background: getModeStyle(
+                    "transparent",
+                    alpha(theme.palette.action.hover, 0.08)
+                  ),
                 },
               },
             },
           },
         ],
       },
-      MuiTableBody: {},
       MuiTableRow: {
         styleOverrides: {
           root: {

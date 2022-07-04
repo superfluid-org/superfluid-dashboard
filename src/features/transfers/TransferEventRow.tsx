@@ -58,8 +58,14 @@ const TransferEventRow: FC<TransferEventRowProps> = ({ transferEvent }) => {
       <TableCell>
         <Stack direction="row" alignItems="center" gap={1.5}>
           {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
-          <AddressAvatar address={isOutgoing ? to : from} />
-          <Typography variant="h6">
+          <AddressAvatar
+            address={isOutgoing ? to : from}
+            AvatarProps={{
+              sx: { width: "24px", height: "24px", borderRadius: "5px" },
+            }}
+            BlockiesProps={{ size: 8, scale: 3 }}
+          />
+          <Typography variant="h7">
             <AddressName address={isOutgoing ? to : from} />
           </Typography>
         </Stack>
