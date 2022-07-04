@@ -17,6 +17,7 @@ import { BigNumber } from "ethers";
 import { useRouter } from "next/router";
 import { FC, memo, useState } from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
+import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
@@ -69,6 +70,8 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
 }) => {
   const theme = useTheme();
   const router = useRouter();
+  const { isPhone } = useMediaBreakpoints();
+
   const [open, setOpen] = useState(false);
 
   const {
@@ -135,63 +138,123 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             />
           </ListItem>
         </TableCell>
-        <TableCell onClick={openTokenPage}>
-          <ListItemText
-            primary={
-              <FlowingBalance
-                balance={balance}
-                flowRate={netFlowRate}
-                balanceTimestamp={balanceTimestamp}
-                disableRoundingIndicator
+
+        {!isPhone ? (
+          <>
+            <TableCell onClick={openTokenPage}>
+              <ListItemText
+                primary={
+                  <FlowingBalance
+                    balance={balance}
+                    flowRate={netFlowRate}
+                    balanceTimestamp={balanceTimestamp}
+                    disableRoundingIndicator
+                  />
+                }
+                // secondary="$1.00"
+                primaryTypographyProps={{ variant: "h6mono" }}
+                secondaryTypographyProps={{
+                  variant: "body2mono",
+                  color: "text.secondary",
+                }}
               />
-            }
-            // secondary="$1.00"
-            primaryTypographyProps={{ variant: "h6mono" }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
-        </TableCell>
-        <TableCell data-cy={"net-flow"} onClick={openTokenPage}>
-          {totalNumberOfActiveStreams > 0 ? (
-            <Typography data-cy={"net-flow-value"} variant="body2mono">
-              {netFlowRate.charAt(0) !== "-" && "+"}
-              <Ether wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}>
-                /mo
-              </Ether>
-            </Typography>
-          ) : (
-            "-"
-          )}
-        </TableCell>
-        <TableCell onClick={openTokenPage}>
-          {totalNumberOfActiveStreams > 0 ? (
-            <Stack>
-              <Typography
-                data-cy={"inflow"}
-                variant="body2mono"
-                color="primary"
-              >
-                +
-                <Ether
-                  wei={BigNumber.from(totalInflowRate).mul(UnitOfTime.Month)}
+            </TableCell>
+
+            <TableCell data-cy={"net-flow"} onClick={openTokenPage}>
+              {totalNumberOfActiveStreams > 0 ? (
+                <Typography data-cy={"net-flow-value"} variant="body2mono">
+                  {netFlowRate.charAt(0) !== "-" && "+"}
+                  <Ether
+                    wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
+                  >
+                    /mo
+                  </Ether>
+                </Typography>
+              ) : (
+                "-"
+              )}
+            </TableCell>
+
+            <TableCell onClick={openTokenPage}>
+              {totalNumberOfActiveStreams > 0 ? (
+                <Stack>
+                  <Typography
+                    data-cy={"inflow"}
+                    variant="body2mono"
+                    color="primary"
+                  >
+                    +
+                    <Ether
+                      wei={BigNumber.from(totalInflowRate).mul(
+                        UnitOfTime.Month
+                      )}
+                    />
+                    /mo
+                  </Typography>
+                  <Typography
+                    data-cy={"outflow"}
+                    variant="body2mono"
+                    color="error"
+                  >
+                    -
+                    <Ether
+                      wei={BigNumber.from(totalOutflowRate).mul(
+                        UnitOfTime.Month
+                      )}
+                    />
+                    /mo
+                  </Typography>
+                </Stack>
+              ) : (
+                "-"
+              )}
+            </TableCell>
+          </>
+        ) : (
+          <TableCell
+            align="right"
+            sx={{ [theme.breakpoints.down("md")]: { pr: 0 } }}
+            onClick={openTokenPage}
+          >
+            <ListItemText
+              primary={
+                <FlowingBalance
+                  balance={balance}
+                  flowRate={netFlowRate}
+                  balanceTimestamp={balanceTimestamp}
+                  disableRoundingIndicator
                 />
-                /mo
-              </Typography>
-              <Typography data-cy={"outflow"} variant="body2mono" color="error">
-                -
-                <Ether
-                  wei={BigNumber.from(totalOutflowRate).mul(UnitOfTime.Month)}
-                />
-                /mo
-              </Typography>
-            </Stack>
-          ) : (
-            "-"
-          )}
-        </TableCell>
-        <TableCell align="center" sx={{ cursor: "initial" }}>
+              }
+              secondary={
+                totalNumberOfActiveStreams > 0 ? (
+                  <>
+                    {netFlowRate.charAt(0) !== "-" && "+"}
+                    <Ether
+                      wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
+                    >
+                      /mo
+                    </Ether>
+                  </>
+                ) : (
+                  "-"
+                )
+              }
+              primaryTypographyProps={{ variant: "h6mono" }}
+              secondaryTypographyProps={{
+                variant: "body2mono",
+                color: "text.secondary",
+              }}
+            />
+          </TableCell>
+        )}
+
+        <TableCell
+          align="center"
+          sx={{
+            cursor: "initial",
+            [theme.breakpoints.down("md")]: { p: 1.25, width: "56px" },
+          }}
+        >
           {hasStreams && (
             <IconButton
               data-cy={"show-streams-button"}

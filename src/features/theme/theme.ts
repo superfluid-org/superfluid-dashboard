@@ -1019,6 +1019,9 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           body: {
             ...theme.typography.body2,
             padding: "8px 32px",
+            [theme.breakpoints.down("md")]: {
+              padding: "8px 16px",
+            },
           },
         },
       },

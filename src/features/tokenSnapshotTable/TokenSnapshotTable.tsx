@@ -1,5 +1,6 @@
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import {
+  ListItem,
   Paper,
   Stack,
   Table,
@@ -47,7 +48,10 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
   if (tokensQuery.isLoading || tokenSnapshots.length === 0) return null;
 
   return (
-    <TableContainer data-cy={network.slugName + "-token-snapshot-table"}>
+    <TableContainer
+      data-cy={network.slugName + "-token-snapshot-table"}
+      sx={{ [theme.breakpoints.down("md")]: { mx: -2, width: "auto" } }}
+    >
       <Table>
         <TableHead>
           <TableRow>
@@ -59,7 +63,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
                 direction="row"
                 alignItems="center"
                 gap={2}
-                sx={{ py: 2.75, px: 4 }}
+                sx={{ py: 2, px: 4, [theme.breakpoints.down("md")]: { p: 2 } }}
               >
                 <NetworkIcon network={network} />
                 <Typography
