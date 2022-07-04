@@ -4,6 +4,7 @@ import {
   wallet,
   WalletList,
 } from "@rainbow-me/rainbowkit";
+import gnosisSafe from "./gnosisSafeWalletConnector/gnosisSafe";
 
 // Inspired by: https://github.com/rainbow-me/rainbowkit/blob/main/packages/rainbowkit/src/wallets/getDefaultWallets.ts
 export const getAppWallets = ({
@@ -30,11 +31,13 @@ export const getAppWallets = ({
           chains,
           shimDisconnect: true,
         }),
+        wallet.brave({ chains, shimDisconnect: true }),
+        gnosisSafe({ chains }),
         ...(needsInjectedWalletFallback
           ? [wallet.injected({ chains, shimDisconnect: true })]
           : []),
         // wallet.walletConnect({ chains }),
-        // wallet.coinbase({ appName, chains }),
+        wallet.coinbase({ appName, chains }),
         // wallet.trust({ chains }),
       ],
     },

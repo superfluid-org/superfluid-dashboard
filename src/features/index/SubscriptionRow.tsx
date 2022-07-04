@@ -80,17 +80,21 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({ subscription }) => {
     <TableRow>
       <TableCell>
         <Stack direction="row" alignItems="center" gap={1.5}>
-          <AddressAvatar address={subscription.publisher} />
-          <Typography variant="h6">
+          <AddressAvatar
+            address={subscription.publisher}
+            AvatarProps={{
+              sx: { width: "24px", height: "24px", borderRadius: "5px" },
+            }}
+            BlockiesProps={{ size: 8, scale: 3 }}
+          />
+          <Typography variant="h7">
             <AddressName address={subscription.publisher} />
           </Typography>
         </Stack>
       </TableCell>
       <TableCell>
         <Typography variant="h7mono">
-          <Ether
-            wei={amountReceived}
-          />
+          <Ether wei={amountReceived} />
         </Typography>
       </TableCell>
       <TableCell>

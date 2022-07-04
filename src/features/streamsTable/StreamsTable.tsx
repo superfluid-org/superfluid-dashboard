@@ -1,4 +1,5 @@
 import {
+  alpha,
   Button,
   Stack,
   Table,
@@ -139,8 +140,17 @@ const StreamsTable: FC<StreamsTableProps> = ({
         subTable
           ? {
               borderRadius: lastElement ? "0 0 20px 20px" : 0,
-              border: "none",
+              borderTop: "none",
+              borderLeft: "none",
+              borderRight: "none",
               boxShadow: "none",
+              ...(lastElement && { borderBottom: "none" }),
+              ".MuiTablePagination-root": {
+                background:
+                  theme.palette.mode === "light"
+                    ? "transparent"
+                    : alpha(theme.palette.action.hover, 0.08),
+              },
             }
           : {}
       }
@@ -152,8 +162,8 @@ const StreamsTable: FC<StreamsTableProps> = ({
             borderTop: `1px solid ${theme.palette.divider}`,
           }),
           ...(subTable && {
-            ".MuiTableCell-root:first-of-type": {
-              pl: 9,
+            ".MuiTableHead-root .MuiTableCell-root:first-of-type": {
+              pl: 8.5,
             },
           }),
         }}
@@ -204,12 +214,11 @@ const StreamsTable: FC<StreamsTableProps> = ({
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell width="185">To / From</TableCell>
-            <TableCell width="290">All Time Flow</TableCell>
-            <TableCell width="300">Flow rate</TableCell>
-            <TableCell width="300">Start / End Date</TableCell>
-            <TableCell width="120" align="center">
-            </TableCell>
+            <TableCell>To / From</TableCell>
+            <TableCell width="250">All Time Flow</TableCell>
+            <TableCell width="250">Flow rate</TableCell>
+            <TableCell width="200">Start / End Date</TableCell>
+            <TableCell width="120px" align="center"></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

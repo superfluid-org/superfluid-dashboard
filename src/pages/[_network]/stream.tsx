@@ -11,14 +11,17 @@ import {
   ListItemText,
   Paper,
   Stack,
+  Tooltip,
   Typography,
   useTheme,
 } from "@mui/material";
 import { format } from "date-fns";
-import Error from "next/error";
+import { BigNumber } from "ethers";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { FC, useMemo } from "react";
+import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressName from "../../components/AddressName/AddressName";
 import NetworkIcon from "../../features/network/NetworkIcon";
 import { subgraphApi } from "../../features/redux/store";
 import {
@@ -29,16 +32,29 @@ import { UnitOfTime } from "../../features/send/FlowRateInput";
 import Ether from "../../features/token/Ether";
 import FlowingBalance from "../../features/token/FlowingBalance";
 import TokenIcon from "../../features/token/TokenIcon";
+import withPathNetwork, { NetworkPage } from "../../hoc/withPathNetwork";
+import shortenHex from "../../utils/shortenHex";
 import {
   calculateBuffer,
   calculateMaybeCriticalAtTimestamp,
 } from "../../utils/tokenUtils";
-import withPathNetwork, { NetworkPage } from "../../hoc/withPathNetwork";
-import { BigNumber } from "ethers";
-import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
-import AddressName from "../../components/AddressName/AddressName";
-import shortenHex from "../../utils/shortenHex";
 import Page404 from "../404";
+
+const ShareButton: FC<{ imgSrc: string; alt: string }> = ({ imgSrc, alt }) => (
+  <Tooltip title="Sharing is currently disabled" placement="top">
+    <Box sx={{ display: "flex" }}>
+      <Image
+        unoptimized
+        src={imgSrc}
+        width={30}
+        height={30}
+        layout="fixed"
+        alt={alt}
+        style={{ display: "block" }}
+      />
+    </Box>
+  </Tooltip>
+);
 
 interface OverviewItemProps {
   label: string;
@@ -348,41 +364,25 @@ const Stream: FC<NetworkPage> = ({ network }) => {
             Share:
           </Typography>
 
-          <Avatar
-            sx={{
-              backgroundColor: theme.palette.primary.main,
-              color: "#fff",
-              width: 30,
-              height: 30,
-            }}
-          >
-            <LinkIcon
-              sx={{ transform: "rotate(135deg)", width: 20, height: 20 }}
-            />
-          </Avatar>
+          <Tooltip title="Sharing is currently disabled" placement="top">
+            <Avatar
+              sx={{
+                backgroundColor: theme.palette.primary.main,
+                color: "#fff",
+                width: 30,
+                height: 30,
+              }}
+            >
+              <LinkIcon
+                sx={{ transform: "rotate(135deg)", width: 20, height: 20 }}
+              />
+            </Avatar>
+          </Tooltip>
 
-          <Image
-            unoptimized
-            src="/icons/social/twitter.svg"
-            width={30}
-            height={30}
-            layout="fixed"
-            alt="Twitter logo"
-          />
-          <Image
-            unoptimized
-            src="/icons/social/discord.svg"
-            width={30}
-            height={30}
-            layout="fixed"
-            alt="Discord logo"
-          />
-          <Image
-            unoptimized
-            src="/icons/social/telegram.svg"
-            width={30}
-            height={30}
-            layout="fixed"
+          <ShareButton imgSrc="/icons/social/twitter.svg" alt="Twitter logo" />
+          <ShareButton imgSrc="/icons/social/discord.svg" alt="Discord logo" />
+          <ShareButton
+            imgSrc="/icons/social/telegram.svg"
             alt="Telegram logo"
           />
         </Stack>

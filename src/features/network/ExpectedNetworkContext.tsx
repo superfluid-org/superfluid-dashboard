@@ -71,28 +71,11 @@ export const ExpectedNetworkProvider: FC<{
       const networkFromWallet = networksByChainId.get(activeChain.id);
       if (networkFromWallet) {
         setNetwork(networkFromWallet);
+        setTestnetMode(!!networkFromWallet.testnet);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeChain]);
-
-  // # Set network based on the wallet on autoconnect.
-  useEffect(() => {
-    // NOTE: The autoConnect is also invoked higher up in the component hierachy.
-    wagmiClient.autoConnect().then((provider) => {
-      if (provider?.chain) {
-        if (stopAutoSwitch) {
-          return;
-        }
-
-        const networkFromConnect = networksByChainId.get(provider.chain.id);
-        if (networkFromConnect) {
-          setNetwork(networkFromConnect);
-          setTestnetMode(!!networkFromConnect.testnet);
-        }
-      }
-    });
-  }, []);
 
   // # Set network based on the URL querystring.
   const { network: networkQueryParam, _network: networkPathParam } =
