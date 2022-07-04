@@ -2953,10 +2953,10 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
   integrity sha512-9NET910DNaIPngYnLLPeg+Ogzqsi9uM4mSboU5y6p8S5DzMTVEsJZrawi+BoDNUVBa2DhJqQYUFvMDfgU062LQ==
 
-"@superfluid-finance/sdk-core@0.4.4-dev.ce099c3.0":
-  version "0.4.4-dev.ce099c3.0"
-  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-core/0.4.4-dev.ce099c3.0/d248c31fd404d03b688e13d8d0a924011551ee3d9657202399c84cfd8721c6dd#133a1556180872fc378bb80b0e92c0ec73ea1241"
-  integrity sha512-sFUOHFc1sJh2wFzUk6K0qMeqbBLmobWXiHmkK38lys4RP91/ygo53484d9IN4ES5l2/ZA3r5zs37k6LtaNf0TQ==
+"@superfluid-finance/sdk-core@0.4.4":
+  version "0.4.4"
+  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-core/0.4.4/488dab1340492888e508f8d3cc053e5687950822dec90400a34fe442c30e334e#157fcc830bfca80c9c79e0db4ab9d29f5d82c4aa"
+  integrity sha512-QFuhCdEW5W+aBYjkU8hSSXWW2+PUoweBmXXt7S8sANhf9WLtjEk/uIKqO+q+EXHYInaGpig7Q4PmJG2dDriz2Q==
   dependencies:
     ajv "^8.11.0"
     browserify "^17.0.0"
@@ -2965,10 +2965,10 @@
     lodash "^4.17.21"
     tsify "^5.0.4"
 
-"@superfluid-finance/sdk-redux@0.3.1-PR940.0e78421.0":
-  version "0.3.1-PR940.0e78421.0"
-  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-redux/0.3.1-PR940.0e78421.0/dbbd3f44efcac9d1726ba98fa7e1b5afe3772584623b14cd2b22c0e45dd3f856#fc5d737a93948b572cfa20846d400e59e751a439"
-  integrity sha512-SiKhiF4IDoJRww4hZOuNIgCTLYcqRdycblETY0UtYoP8NtpzespnQ0zRyceZemEVzDqLwlt0PFPap5xXVeZO1Q==
+"@superfluid-finance/sdk-redux@0.3.1-dev.6cf4191.0":
+  version "0.3.1-dev.6cf4191.0"
+  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-redux/0.3.1-dev.6cf4191.0/acea497ba935928045fe8fbff2568ceac601d29b57b57d19e2f1bbf60bc5e659#17c40f9fc82ea46acea23b45a5b9c043d769fbc5"
+  integrity sha512-DsZBpDO2RBgWqL/BHQ5WxIjnOfwNb/IV/Y2dXVIGKxjJf6FCUDgC0g8qCpBdQnRFSs8jbNqaUsai2ezMYjGfQw==
   dependencies:
     "@types/promise-retry" "^1.1.3"
     ethers "^5.5.4"
