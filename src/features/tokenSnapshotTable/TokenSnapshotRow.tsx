@@ -1,3 +1,4 @@
+import ExpandCircleDownOutlinedIcon from "@mui/icons-material/ExpandCircleDownOutlined";
 import {
   Collapse,
   IconButton,
@@ -15,7 +16,7 @@ import { AccountTokenSnapshot } from "@superfluid-finance/sdk-core";
 import { BigNumber } from "ethers";
 import { useRouter } from "next/router";
 import { FC, memo, useState } from "react";
-import { OpenIcon } from "../../components/OpenIcon/OpenIcon";
+import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
@@ -197,7 +198,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               color="inherit"
               onClick={toggleOpen}
             >
-              <OpenIcon open={open} />
+              <OpenIcon open={open} icon={ExpandCircleDownOutlinedIcon} />
             </IconButton>
           )}
         </TableCell>

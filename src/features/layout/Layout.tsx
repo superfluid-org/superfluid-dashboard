@@ -1,7 +1,9 @@
 import { Box, styled, Toolbar, useTheme } from "@mui/material";
 import { FC } from "react";
 import IntercomButton from "../intercom/IntercomButton";
-import TransactionDrawer from "../transactionDrawer/TransactionDrawer";
+import TransactionDrawer, {
+  transactionDrawerWidth,
+} from "../transactionDrawer/TransactionDrawer";
 import { useLayoutContext } from "./LayoutContext";
 import NavigationDrawer from "./NavigationDrawer";
 import TopBar from "./TopBar";
@@ -24,14 +26,19 @@ const Main = styled("main")<{
   open: boolean;
 }>(({ theme, open }) => ({
   flexGrow: 1,
-  // padding: `${theme.spacing(5)} ${theme.spacing(8)}`,
+  padding: `${theme.spacing(5)} 0`,
   transition: theme.transitions.create("margin", {
     easing: theme.transitions.easing.easeInOut,
     duration: theme.transitions.duration.standard,
   }),
-  // ...(open && {
-  //   marginRight: transactionDrawerWidth,
-  // }),
+  [theme.breakpoints.up("md")]: {
+    ...(open && {
+      marginRight: transactionDrawerWidth,
+    }),
+  },
+  [theme.breakpoints.down("md")]: {
+    padding: `${theme.spacing(2)} 0`,
+  },
 }));
 
 const Layout: FC = ({ children }) => {

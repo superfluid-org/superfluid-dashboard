@@ -1,7 +1,5 @@
-import { Box, Typography, Stack, useTheme } from "@mui/material";
+import { Box, Stack, Typography, useTheme } from "@mui/material";
 import { FC } from "react";
-import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
-import { useLayoutContext } from "../layout/LayoutContext";
 import EcosystemItem, { EcosystemApp } from "./EcosystemItem";
 
 interface EcosystemSectionProps {
@@ -11,7 +9,6 @@ interface EcosystemSectionProps {
 
 const EcosystemSection: FC<EcosystemSectionProps> = ({ title, apps }) => {
   const theme = useTheme();
-  const { isPhone } = useMediaBreakpoints();
 
   return (
     <Box>

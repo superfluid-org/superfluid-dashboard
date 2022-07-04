@@ -1,7 +1,7 @@
 import { Button, Stack, Typography } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, useEffect, useRef, useState } from "react";
-import { OpenIcon } from "../../components/OpenIcon/OpenIcon";
+import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { useActiveNetworks } from "../network/ActiveNetworksContext";
 import NetworkSelectionFilter from "../network/NetworkSelectionFilter";
 import { subgraphApi } from "../redux/store";

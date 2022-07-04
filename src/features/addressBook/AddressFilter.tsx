@@ -17,7 +17,7 @@ import { Address } from "@superfluid-finance/sdk-core";
 import { ChangeEvent, FC, MouseEvent, useState } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
-import { OpenIcon } from "../../components/OpenIcon/OpenIcon";
+import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { useAppSelector } from "../redux/store";
 import { addressBookSelectors } from "./addressBook.slice";
 

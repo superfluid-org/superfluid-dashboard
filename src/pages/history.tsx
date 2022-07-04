@@ -16,7 +16,7 @@ import groupBy from "lodash/fp/groupBy";
 import orderBy from "lodash/fp/orderBy";
 import { NextPage } from "next";
 import { MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { OpenIcon } from "../components/OpenIcon/OpenIcon";
+import OpenIcon from "../components/OpenIcon/OpenIcon";
 import ActivityRow from "../features/activityHistory/ActivityRow";
 import ActivityTypeFilter, {
   ActivityType,

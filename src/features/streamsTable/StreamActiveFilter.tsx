@@ -10,7 +10,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { FC, MouseEvent, useState } from "react";
-import { OpenIcon } from "../../components/OpenIcon/OpenIcon";
+import OpenIcon from "../../components/OpenIcon/OpenIcon";
 
 export enum StreamActiveType {
   All = "All Streams",

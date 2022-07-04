@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { FC, memo, MouseEvent, useState } from "react";
 import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
-import { OpenIcon } from "../../components/OpenIcon/OpenIcon";
+import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { useExpectedNetwork } from "./ExpectedNetworkContext";
 import NetworkIcon from "./NetworkIcon";
 import { mainNetworks, Network, testNetworks } from "./networks";

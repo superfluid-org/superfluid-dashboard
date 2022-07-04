@@ -15,6 +15,7 @@ import Link from "next/link";
 import { FC, useState } from "react";
 import { useAccount } from "wagmi";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 import TokenIcon from "../token/TokenIcon";
 import { useConnectButton } from "../wallet/ConnectButtonProvider";
 
@@ -95,10 +96,14 @@ interface OnboardingCardsProps {
 const OnboardingCards: FC<OnboardingCardsProps> = ({ onClick }) => {
   const { address: accountAddress } = useAccount();
   const { openConnectModal } = useConnectButton();
+  const { isPhone } = useMediaBreakpoints();
 
   return (
     <Stack
-      sx={{ display: "grid", gridTemplateColumns: "repeat(3, 290px)" }}
+      sx={{
+        display: "grid",
+        gridTemplateColumns: isPhone ? "1fr" : "repeat(3, 290px)",
+      }}
       alignItems="center"
       justifyContent="center"
       gap={3.5}

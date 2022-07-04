@@ -9,9 +9,11 @@ import {
   TableHead,
   TableRow,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, memo } from "react";
+import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
@@ -26,6 +28,9 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
   address,
   network,
 }) => {
+  const theme = useTheme();
+  const { isPhone } = useMediaBreakpoints();
+
   const tokensQuery = subgraphApi.useAccountTokenSnapshotsQuery({
     chainId: network.id,
     filter: {
@@ -47,7 +52,9 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
         <TableHead>
           <TableRow>
             <TableCell
-                colSpan={5} sx={{ border: "none", p: 0 }}>
+              colSpan={5}
+              sx={{ p: 0, [theme.breakpoints.up("md")]: { border: "none" } }}
+            >
               <Stack
                 direction="row"
                 alignItems="center"
@@ -55,21 +62,27 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
                 sx={{ py: 2.75, px: 4 }}
               >
                 <NetworkIcon network={network} />
-                <Typography data-cy="network-name" variant="h5" color="text.primary">
+                <Typography
+                  data-cy="network-name"
+                  variant="h5"
+                  color="text.primary"
+                >
                   {network.name}
                 </Typography>
               </Stack>
             </TableCell>
           </TableRow>
-          <TableRow>
-            <TableCell width="200">Asset</TableCell>
-            <TableCell width="400">Balance</TableCell>
-            <TableCell width="300">Net Flow</TableCell>
-            <TableCell width="300">Inflow/Outflow</TableCell>
-            <TableCell width="120" align="center">
-              <KeyboardDoubleArrowDownIcon />
-            </TableCell>
-          </TableRow>
+          {!isPhone && (
+            <TableRow>
+              <TableCell width="200">Asset</TableCell>
+              <TableCell width="400">Balance</TableCell>
+              <TableCell width="300">Net Flow</TableCell>
+              <TableCell width="300">Inflow/Outflow</TableCell>
+              <TableCell width="120" align="center">
+                <KeyboardDoubleArrowDownIcon />
+              </TableCell>
+            </TableRow>
+          )}
         </TableHead>
         <TableBody>
           {tokenSnapshots.map((snapshot, index) => (
