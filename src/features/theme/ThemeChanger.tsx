@@ -20,7 +20,7 @@ export default function ThemeChanger() {
 
   return (
     <ListItemButton sx={{ borderRadius: "10px" }} onClick={toggleTheme}>
-      <ListItemIcon>
+      <ListItemIcon sx={{ ml: 0.25, mr: 2.25 }}>
         {isDarkTheme ? (
           <LightModeOutlinedIcon fontSize="small" />
         ) : (
