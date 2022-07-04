@@ -1,24 +1,26 @@
-import Head from "next/head";
-import { AppProps } from "next/app";
 import { CacheProvider, EmotionCache } from "@emotion/react";
-import createEmotionCache from "../features/theme/createEmotionCache";
+import { AppProps } from "next/app";
+import Head from "next/head";
 import { useEffect } from "react";
+import { hotjar } from "react-hotjar";
+import { IntercomProvider } from "react-use-intercom";
+import { ImpersonationProvider } from "../features/impersonation/ImpersonationContext";
+import { INTERCOM_APP_ID } from "../features/intercom/IntercomButton";
 import Layout from "../features/layout/Layout";
-import MuiProvider from "../features/theme/MuiProvider";
+import { LayoutContextProvider } from "../features/layout/LayoutContext";
+import { ActiveNetworksProvider } from "../features/network/ActiveNetworksContext";
 import { ExpectedNetworkProvider } from "../features/network/ExpectedNetworkContext";
-import ReduxProvider from "../features/redux/ReduxProvider";
 import ReduxPersistGate from "../features/redux/ReduxPersistGate";
+import ReduxProvider from "../features/redux/ReduxProvider";
+import createEmotionCache from "../features/theme/createEmotionCache";
+import MuiProvider from "../features/theme/MuiProvider";
 import NextThemesProvider from "../features/theme/NextThemesProvider";
 import { TransactionRestorationContextProvider } from "../features/transactionRestoration/TransactionRestorationContext";
-import { LayoutContextProvider } from "../features/layout/LayoutContext";
-import { hotjar } from "react-hotjar";
+import ConnectButtonProvider from "../features/wallet/ConnectButtonProvider";
+import { VisibleAddressProvider } from "../features/wallet/VisibleAddressContext";
 import WagmiManager, {
   RainbowKitManager,
 } from "../features/wallet/WagmiManager";
-import { ImpersonationProvider } from "../features/impersonation/ImpersonationContext";
-import { VisibleAddressProvider } from "../features/wallet/VisibleAddressContext";
-import { ActiveNetworksProvider } from "../features/network/ActiveNetworksContext";
-import ConnectButtonProvider from "../features/wallet/ConnectButtonProvider";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -60,14 +62,19 @@ export default function MyApp(props: MyAppProps) {
                             <VisibleAddressProvider>
                               <TransactionRestorationContextProvider>
                                 <LayoutContextProvider>
-                                  <Layout>
-                                    <ReduxPersistGate>
-                                      <Component
-                                        key={`${network.slugName}`}
-                                        {...pageProps}
-                                      />
-                                    </ReduxPersistGate>
-                                  </Layout>
+                                  <IntercomProvider
+                                    appId={INTERCOM_APP_ID}
+                                    initializeDelay={500}
+                                  >
+                                    <Layout>
+                                      <ReduxPersistGate>
+                                        <Component
+                                          key={`${network.slugName}`}
+                                          {...pageProps}
+                                        />
+                                      </ReduxPersistGate>
+                                    </Layout>
+                                  </IntercomProvider>
                                 </LayoutContextProvider>
                               </TransactionRestorationContextProvider>
                             </VisibleAddressProvider>

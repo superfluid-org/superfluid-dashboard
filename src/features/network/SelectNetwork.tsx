@@ -10,7 +10,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { FC, memo, MouseEvent, useState } from "react";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import { OpenIcon } from "../../components/OpenIcon/OpenIcon";
 import { useExpectedNetwork } from "./ExpectedNetworkContext";
 import NetworkIcon from "./NetworkIcon";
@@ -40,8 +40,8 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
 export default memo(function SelectNetwork() {
   const theme = useTheme();
 
-  const { data: account } = useAccount();
-  const { switchNetwork } = useNetwork();
+  const { address: accountAddress } = useAccount();
+  const { switchNetwork } = useSwitchNetwork();
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [showTestnets, setShowTestnets] = useState(false);
@@ -60,7 +60,7 @@ export default memo(function SelectNetwork() {
     handleClose();
     setSelectedNetwork(chainId);
 
-    if (account && switchNetwork) {
+    if (accountAddress && switchNetwork) {
       switchNetwork(chainId);
     }
   };

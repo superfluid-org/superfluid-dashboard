@@ -49,7 +49,7 @@ const WrappingFormProvider: FC<{
   const { token: tokenQueryParam } = router.query;
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryUnderlyingBalance] = rpcApi.useLazyUnderlyingBalanceQuery();
-  const { data: account } = useAccount();
+  const { address: accountAddress } = useAccount();
 
   const formSchema = useMemo(
     () =>
@@ -96,8 +96,6 @@ const WrappingFormProvider: FC<{
             message: message,
           });
         };
-
-        const accountAddress = account?.address;
 
         if (accountAddress) {
           if (type === RestorationType.Upgrade) {
@@ -197,7 +195,7 @@ const WrappingFormProvider: FC<{
 
         return true;
       }),
-    [network, account]
+    [network, accountAddress]
   );
 
   const formMethods = useForm<WrappingForm>({
@@ -264,7 +262,7 @@ const WrappingFormProvider: FC<{
     if (formState.isDirty) {
       trigger();
     }
-  }, [account]);
+  }, [accountAddress]);
 
   // useEffect(() => {
   //   console.log(formState);

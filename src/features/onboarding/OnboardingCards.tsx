@@ -93,7 +93,7 @@ interface OnboardingCardsProps {
 }
 
 const OnboardingCards: FC<OnboardingCardsProps> = ({ onClick }) => {
-  const { data: account } = useAccount();
+  const { address: accountAddress } = useAccount();
   const { openConnectModal } = useConnectButton();
 
   return (
@@ -138,7 +138,7 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({ onClick }) => {
         title="Modify and Cancel Streams"
         subheader="Don't let your balance hit zero!"
         onClick={() => {
-          if (!account) openConnectModal();
+          if (!accountAddress) openConnectModal();
           onClick && onClick();
         }}
         href="/"
