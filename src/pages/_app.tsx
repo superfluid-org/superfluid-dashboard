@@ -44,12 +44,15 @@ export default function MyApp(props: MyAppProps) {
   }, []);
 
   return (
-    <NextThemesProvider>
-      <CacheProvider value={emotionCache}>
-        <Head>
-          <meta name="viewport" content="initial-scale=1, width=device-width" />
-        </Head>
-        <WagmiManager>
+    <WagmiManager>
+      <NextThemesProvider>
+        <CacheProvider value={emotionCache}>
+          <Head>
+            <meta
+              name="viewport"
+              content="initial-scale=1, width=device-width"
+            />
+          </Head>
           <ReduxProvider>
             <ImpersonationProvider>
               <ActiveNetworksProvider>
@@ -62,7 +65,10 @@ export default function MyApp(props: MyAppProps) {
                             <VisibleAddressProvider>
                               <TransactionRestorationContextProvider>
                                 <TransactionDrawerContextProvider>
-                                  <IntercomProvider appId={INTERCOM_APP_ID} initializeDelay={500}>
+                                  <IntercomProvider
+                                    appId={INTERCOM_APP_ID}
+                                    initializeDelay={500}
+                                  >
                                     <Layout>
                                       <ReduxPersistGate>
                                         <Component
@@ -84,8 +90,8 @@ export default function MyApp(props: MyAppProps) {
               </ActiveNetworksProvider>
             </ImpersonationProvider>
           </ReduxProvider>
-        </WagmiManager>
-      </CacheProvider>
-    </NextThemesProvider>
+        </CacheProvider>
+      </NextThemesProvider>
+    </WagmiManager>
   );
 }

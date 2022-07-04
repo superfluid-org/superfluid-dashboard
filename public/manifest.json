@@ -1,0 +1,7 @@
+{
+    "name": "Superfluid Dashboard",
+    "short_name": "Superfluid",
+    "start_url": "/",
+    "iconPath": "/icons/icon-96x96.png",
+    "description": "Manage your Superfluid Protocol tokens"
+}
