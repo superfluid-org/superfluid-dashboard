@@ -31,7 +31,7 @@ export type ValidStreamingForm = {
 
 const defaultFlowRate = {
   amountEther: "",
-  unitOfTime: UnitOfTime.Second,
+  unitOfTime: UnitOfTime.Month,
 };
 
 export type PartialStreamingForm = {
