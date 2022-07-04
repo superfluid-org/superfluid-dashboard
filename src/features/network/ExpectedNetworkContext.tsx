@@ -60,7 +60,7 @@ export const ExpectedNetworkProvider: FC<{
       router.events.off("beforeHistoryChange", onBeforeHistoryChange);
   }, []);
 
-  const { activeChain } = useNetwork();
+  const { chain: activeChain } = useNetwork();
 
   useEffect(() => {
     if (stopAutoSwitch) {

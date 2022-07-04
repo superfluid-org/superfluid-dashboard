@@ -16,10 +16,12 @@ import {
   useTheme,
 } from "@mui/material";
 import { format } from "date-fns";
-import Error from "next/error";
+import { BigNumber } from "ethers";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { FC, useMemo } from "react";
+import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressName from "../../components/AddressName/AddressName";
 import NetworkIcon from "../../features/network/NetworkIcon";
 import { subgraphApi } from "../../features/redux/store";
 import {
@@ -30,16 +32,13 @@ import { UnitOfTime } from "../../features/send/FlowRateInput";
 import Ether from "../../features/token/Ether";
 import FlowingBalance from "../../features/token/FlowingBalance";
 import TokenIcon from "../../features/token/TokenIcon";
+import withPathNetwork, { NetworkPage } from "../../hoc/withPathNetwork";
+import shortenHex from "../../utils/shortenHex";
 import {
   calculateBuffer,
   calculateMaybeCriticalAtTimestamp,
 } from "../../utils/tokenUtils";
-import withPathNetwork, { NetworkPage } from "../../hoc/withPathNetwork";
-import { BigNumber } from "ethers";
-import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
-import AddressName from "../../components/AddressName/AddressName";
-import shortenHex from "../../utils/shortenHex";
-import Link from "next/link";
+import Page404 from "../404";
 
 const ShareButton: FC<{ imgSrc: string; alt: string }> = ({ imgSrc, alt }) => (
   <Tooltip title="Sharing is currently disabled" placement="top">
@@ -131,7 +130,7 @@ const Stream: FC<NetworkPage> = ({ network }) => {
   }
 
   if (!streamQuery.data || !tokenSnapshotQuery.data) {
-    return <Error statusCode={404} />;
+    return <Page404 />;
   }
 
   const handleBack = () => router.back();

@@ -20,11 +20,11 @@
     "@mui/icons-material": "^5.8.0",
     "@mui/lab": "^5.0.0-alpha.74",
     "@mui/material": "^5.8.1",
-    "@rainbow-me/rainbowkit": "^0.1.1",
+    "@rainbow-me/rainbowkit": "^0.4.0",
     "@reduxjs/toolkit": "^1.8.2",
     "@sentry/nextjs": "^6.19.7",
-    "@superfluid-finance/sdk-core": "0.4.4-dev.4b89f01.0",
-    "@superfluid-finance/sdk-redux": "0.3.1-PR921.7239472.0",
+    "@superfluid-finance/sdk-core": "0.4.4-dev.ce099c3.0",
+    "@superfluid-finance/sdk-redux": "0.3.1-dev.ce099c3.0",
     "axios": "^0.26.1",
     "chart.js": "^3.7.1",
     "date-fns": "^2.28.0",
@@ -45,7 +45,7 @@
     "react-redux": "7.2.6",
     "react-use-intercom": "^2.0.0",
     "redux-persist": "^6.0.0",
-    "wagmi": "^0.4.3",
+    "wagmi": "^0.5.5",
     "yup": "^1.0.0-beta.4"
   },
   "devDependencies": {

@@ -1,7 +1,5 @@
 import { FC } from "react";
 import {
-  apiProvider,
-  configureChains,
   RainbowKitProvider,
   darkTheme,
   lightTheme,
@@ -11,12 +9,14 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { useTheme } from "@mui/material";
 import { networks, networksByChainId } from "../network/networks";
 import { getAppWallets } from "./getAppWallets";
+import { configureChains } from "wagmi";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
 const { chains, provider } = configureChains(networks, [
-  apiProvider.jsonRpc((chain) => {
-    return {
-      rpcUrl: networksByChainId.get(chain.id)!.rpcUrls.superfluid,
-    };
+  jsonRpcProvider({
+    rpc: (chain) => ({
+      http: networksByChainId.get(chain.id)!.rpcUrls.superfluid,
+    }),
   }),
 ]);
 

@@ -17,11 +17,11 @@ import { useConnectButton } from "./ConnectButtonProvider";
 export default memo(function ConnectWallet() {
   const { network } = useExpectedNetwork();
   const { openConnectModal, openAccountModal, mounted } = useConnectButton();
-  const { data: account } = useAccount();
-  const { activeChain } = useNetwork();
+  const { address: accountAddress } = useAccount();
+  const { chain: activeChain } = useNetwork();
   const { stopImpersonation: stopImpersonation } = useImpersonation();
 
-  if (account?.address && activeChain && mounted) {
+  if (accountAddress && activeChain && mounted) {
     // TODO(KK): Better solution for pointer/click
     return (
       <ListItem
@@ -29,7 +29,7 @@ export default memo(function ConnectWallet() {
         onClick={openAccountModal}
       >
         <ListItemAvatar>
-          <AddressAvatar address={account.address} />
+          <AddressAvatar address={accountAddress} />
         </ListItemAvatar>
         <ListItemText
           data-cy={"wallet-connection-status"}
@@ -42,7 +42,7 @@ export default memo(function ConnectWallet() {
                 overflow: "hidden",
               }}
             >
-              <AddressName address={account?.address} />
+              <AddressName address={accountAddress} />
             </Typography>
           }
           secondary={
