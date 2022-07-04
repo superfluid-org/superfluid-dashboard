@@ -140,8 +140,11 @@ const StreamsTable: FC<StreamsTableProps> = ({
         subTable
           ? {
               borderRadius: lastElement ? "0 0 20px 20px" : 0,
-              border: "none",
+              borderTop: "none",
+              borderLeft: "none",
+              borderRight: "none",
               boxShadow: "none",
+              ...(lastElement && { borderBottom: "none" }),
               ".MuiTablePagination-root": {
                 background:
                   theme.palette.mode === "light"

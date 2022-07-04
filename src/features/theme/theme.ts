@@ -926,7 +926,6 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         ],
       },
-      MuiTableBody: {},
       MuiTableRow: {
         styleOverrides: {
           root: {
