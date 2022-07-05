@@ -27,7 +27,7 @@ const BurnActivity: FC<BurnedActivity> = ({
 
   const nativeAsset = useMemo(
     () =>
-      network.nativeAsset.superToken.address === token
+      network.nativeAsset.superToken.address.toLowerCase() === token
         ? network.nativeAsset
         : undefined,
     [network, token]

@@ -2953,15 +2953,14 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
   integrity sha512-9NET910DNaIPngYnLLPeg+Ogzqsi9uM4mSboU5y6p8S5DzMTVEsJZrawi+BoDNUVBa2DhJqQYUFvMDfgU062LQ==
 
-"@superfluid-finance/sdk-core@0.4.4":
-  version "0.4.4"
-  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-core/0.4.4/488dab1340492888e508f8d3cc053e5687950822dec90400a34fe442c30e334e#157fcc830bfca80c9c79e0db4ab9d29f5d82c4aa"
-  integrity sha512-QFuhCdEW5W+aBYjkU8hSSXWW2+PUoweBmXXt7S8sANhf9WLtjEk/uIKqO+q+EXHYInaGpig7Q4PmJG2dDriz2Q==
+"@superfluid-finance/sdk-core@^0.4.5-dev.dd9c416.0":
+  version "0.4.5-dev.dd9c416.0"
+  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-core/0.4.5-dev.dd9c416.0/9253d99150ae15f526e991963e006e0a60c6c1f7e8569c0bbb733442b2b1cf2f#58edbeee2b15430537472b1350243b362137a561"
+  integrity sha512-zrPEs/EjlDlU9FQ18RQm/PDK+/FVEwam/2AY0qXYKFLnnmZDRaoZ/X7y1DBWGICsWXGCSF9BYu/ZZJwp563Nlw==
   dependencies:
     ajv "^8.11.0"
     browserify "^17.0.0"
-    ethers "^5.6.2"
-    graphql-request "^3.7.0"
+    graphql-request "^4.3.0"
     lodash "^4.17.21"
     tsify "^5.0.4"
 
@@ -8300,7 +8299,7 @@ ethers@^4.0.32, ethers@^4.0.45:
     uuid "2.0.1"
     xmlhttprequest "1.8.0"
 
-ethers@^5.0.13, ethers@^5.6.2, ethers@^5.6.8:
+ethers@^5.0.13, ethers@^5.6.8:
   version "5.6.8"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.6.8.tgz#d36b816b4896341a80a8bbd2a44e8cb6e9b98dd4"
   integrity sha512-YxIGaltAOdvBFPZwIkyHnXbW40f1r8mHUgapW6dxkO+6t7H6wY8POUn0Kbxrd/N7I4hHxyi7YCddMAH/wmho2w==
@@ -9330,6 +9329,15 @@ graphql-request@^3.7.0:
   integrity sha512-dw5PxHCgBneN2DDNqpWu8QkbbJ07oOziy8z+bK/TAXufsOLaETuVO4GkXrbs0WjhdKhBMN3BkpN/RIvUHkmNUQ==
   dependencies:
     cross-fetch "^3.0.6"
+    extract-files "^9.0.0"
+    form-data "^3.0.0"
+
+graphql-request@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/graphql-request/-/graphql-request-4.3.0.tgz#b934e08fcae764aa2cdc697d3c821f046cb5dbf2"
+  integrity sha512-2v6hQViJvSsifK606AliqiNiijb1uwWp6Re7o0RTyH+uRTv/u7Uqm2g4Fjq/LgZIzARB38RZEvVBFOQOVdlBow==
+  dependencies:
+    cross-fetch "^3.1.5"
     extract-files "^9.0.0"
     form-data "^3.0.0"
 

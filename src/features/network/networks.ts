@@ -476,7 +476,7 @@ export const networks: Network[] = [
     testnet: false,
     bufferTimeInMinutes: 240,
     icon: "/icons/network/bnb.svg",
-    color: "#fff",
+    color: "#F0B90B",
     rpcUrls: {
       superfluid: superfluidRpcUrls.bnbSmartChain,
       default: "https://bsc-dataseed1.binance.org",
@@ -501,7 +501,7 @@ export const networks: Network[] = [
       superToken: {
         type: TokenType.NativeAssetSuperToken,
         symbol: "BNBx",
-        address: "0x529A4116F160c833c61311569D6B33dFF41fD657",
+        address: "0x529a4116f160c833c61311569d6b33dff41fd657",
         name: "Super BNB",
       },
     },
