@@ -45,7 +45,9 @@ import { getAddress } from "../utils/memoizedEthersUtils";
 const AddressBook: NextPage = () => {
   const dispatch = useAppDispatch();
 
-  const { address: accountAddress } = useAccount();
+  const { data: account } = useAccount();
+  const accountAddress = account?.address;
+
   const { network } = useExpectedNetwork();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);

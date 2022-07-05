@@ -53,7 +53,10 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   onSelect,
 }) => {
   const dispatch = useAppDispatch();
-  const { address: currentAccountAddress } = useAccount();
+
+  const { data: account } = useAccount();
+  const currentAccountAddress = account?.address;
+
   const [editableName, setEditableName] = useState(name);
   const [isEditing, setIsEditing] = useState(false);
   const [isHovering, setIsHovering] = useState(false);

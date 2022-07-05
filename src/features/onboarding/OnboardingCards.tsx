@@ -93,7 +93,9 @@ interface OnboardingCardsProps {
 }
 
 const OnboardingCards: FC<OnboardingCardsProps> = ({ onClick }) => {
-  const { address: accountAddress } = useAccount();
+  const { data: account } = useAccount();
+  const accountAddress = account?.address;
+  
   const { openConnectModal } = useConnectButton();
 
   return (

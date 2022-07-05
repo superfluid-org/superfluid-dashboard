@@ -99,7 +99,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
 
   const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
-  const { chain: activeChain } = useNetwork();
+  const { activeChain } = useNetwork();
   const { data: signer } = useSigner();
   const getTransactionOverrides = useGetTransactionOverrides();
 

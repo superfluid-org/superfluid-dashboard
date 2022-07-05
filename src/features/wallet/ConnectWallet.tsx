@@ -17,8 +17,9 @@ import { useConnectButton } from "./ConnectButtonProvider";
 export default memo(function ConnectWallet() {
   const { network } = useExpectedNetwork();
   const { openConnectModal, openAccountModal, mounted } = useConnectButton();
-  const { address: accountAddress } = useAccount();
-  const { chain: activeChain } = useNetwork();
+  const { data: account } = useAccount();
+  const accountAddress = account?.address;
+  const { activeChain } = useNetwork();
   const { stopImpersonation: stopImpersonation } = useImpersonation();
 
   if (accountAddress && activeChain && mounted) {
