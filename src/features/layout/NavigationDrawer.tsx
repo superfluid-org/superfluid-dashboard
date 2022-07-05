@@ -20,7 +20,7 @@ import {
 import Image from "next/image";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { FC, memo, useState } from "react";
+import { FC, memo, useCallback, useState } from "react";
 import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 import Link from "../common/Link";
 import ThemeChanger from "../theme/ThemeChanger";
@@ -36,6 +36,7 @@ interface NavigationItemProps {
   href: string;
   active: boolean;
   icon: typeof SvgIcon;
+  onClick?: () => void;
 }
 
 const NavigationItem: FC<NavigationItemProps> = ({
@@ -44,9 +45,14 @@ const NavigationItem: FC<NavigationItemProps> = ({
   href,
   active,
   icon: Icon,
+  onClick,
 }) => (
   <NextLink href={href} passHref>
-    <ListItemButton sx={{ borderRadius: "10px" }} selected={active}>
+    <ListItemButton
+      sx={{ borderRadius: "10px" }}
+      selected={active}
+      onClick={onClick}
+    >
       <ListItemIcon>
         <Icon />
       </ListItemIcon>
@@ -62,7 +68,9 @@ export default memo(function NavigationDrawer() {
 
   const { navigationDrawerOpen, setNavigationDrawerOpen } = useLayoutContext();
 
-  const closeNavigationDrawer = () => setNavigationDrawerOpen(false);
+  const closeNavigationDrawer = useCallback(() => {
+    if (isPhone) setNavigationDrawerOpen(false);
+  }, [isPhone, setNavigationDrawerOpen]);
 
   const isActiveRoute = (...routes: Array<string>) =>
     routes.includes(router.route);
@@ -108,6 +116,7 @@ export default memo(function NavigationDrawer() {
           id="nav-dashboard"
           title="Dashboard"
           href="/"
+          onClick={closeNavigationDrawer}
           active={isActiveRoute("/", "/[_network]/token")}
           icon={AutoAwesomeMosaicRoundedIcon}
         />
@@ -116,6 +125,7 @@ export default memo(function NavigationDrawer() {
           id="nav-wrap-unwrap"
           title="Wrap / Unwrap"
           href="/wrap?upgrade"
+          onClick={closeNavigationDrawer}
           active={isActiveRoute("/wrap")}
           icon={SwapVertRoundedIcon}
         />
@@ -124,6 +134,7 @@ export default memo(function NavigationDrawer() {
           id="nav-send"
           title="Send Stream"
           href="/send"
+          onClick={closeNavigationDrawer}
           active={isActiveRoute("/send")}
           icon={ArrowRightAltRoundedIcon}
         />
@@ -132,6 +143,7 @@ export default memo(function NavigationDrawer() {
           id="nav-history"
           title="Activity History"
           href="/history"
+          onClick={closeNavigationDrawer}
           active={isActiveRoute("/history")}
           icon={HistoryRoundedIcon}
         />
@@ -140,6 +152,7 @@ export default memo(function NavigationDrawer() {
           id="nav-address-book"
           title="Address Book"
           href="/address-book"
+          onClick={closeNavigationDrawer}
           active={isActiveRoute("/address-book")}
           icon={ImportContactsRoundedIcon}
         />
@@ -148,6 +161,7 @@ export default memo(function NavigationDrawer() {
           id="nav-ecosystem"
           title="Ecosystem"
           href="/ecosystem"
+          onClick={closeNavigationDrawer}
           active={isActiveRoute("/ecosystem")}
           icon={AppsRoundedIcon}
         />

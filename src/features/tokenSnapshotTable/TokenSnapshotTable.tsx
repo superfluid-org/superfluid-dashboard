@@ -57,7 +57,11 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
           <TableRow>
             <TableCell
               colSpan={5}
-              sx={{ p: 0, [theme.breakpoints.up("md")]: { border: "none" } }}
+              sx={{
+                p: 0,
+                [theme.breakpoints.up("md")]: { border: "none" },
+                [theme.breakpoints.down("md")]: { p: 0 },
+              }}
             >
               <Stack
                 direction="row"

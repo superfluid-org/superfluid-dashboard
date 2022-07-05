@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Collapse,
+  IconButton,
   ListItemAvatar,
   Menu,
   MenuItem,
@@ -12,6 +13,7 @@ import {
 import { FC, memo, MouseEvent, useState } from "react";
 import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
+import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 import { useExpectedNetwork } from "./ExpectedNetworkContext";
 import NetworkIcon from "./NetworkIcon";
 import { mainNetworks, Network, testNetworks } from "./networks";
@@ -39,6 +41,7 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
 
 export default memo(function SelectNetwork() {
   const theme = useTheme();
+  const { isPhone } = useMediaBreakpoints();
 
   const { address: accountAddress } = useAccount();
   const { switchNetwork } = useSwitchNetwork();
@@ -74,20 +77,29 @@ export default memo(function SelectNetwork() {
 
   return (
     <>
-      <Button
-        data-cy={"top-bar-network-button"}
-        variant="outlined"
-        color="secondary"
-        size="large"
-        startIcon={
-          <NetworkIcon network={selectedNetwork} size={24} fontSize={16} />
-        }
-        endIcon={<OpenIcon open={open} />}
-        onClick={handleOpen}
-        sx={{ ".MuiButton-startIcon > *:nth-of-type(1)": { fontSize: "16px" } }}
-      >
-        {selectedNetwork.name}
-      </Button>
+      {!isPhone ? (
+        <Button
+          data-cy={"top-bar-network-button"}
+          variant="outlined"
+          color="secondary"
+          size="large"
+          startIcon={
+            <NetworkIcon network={selectedNetwork} size={24} fontSize={16} />
+          }
+          endIcon={<OpenIcon open={open} />}
+          onClick={handleOpen}
+          sx={{
+            ".MuiButton-startIcon > *:nth-of-type(1)": { fontSize: "16px" },
+          }}
+        >
+          {selectedNetwork.name}
+        </Button>
+      ) : (
+        <IconButton onClick={handleOpen}>
+          <NetworkIcon network={selectedNetwork} size={30} fontSize={16} />
+        </IconButton>
+      )}
+
       <Menu
         anchorEl={anchorEl}
         open={open}

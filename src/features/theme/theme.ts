@@ -1015,6 +1015,9 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             color: theme.palette.text.secondary,
             padding: "10px 32px",
             minHeight: 0,
+            [theme.breakpoints.down("md")]: {
+              padding: "8px 16px",
+            },
           },
           body: {
             ...theme.typography.body2,

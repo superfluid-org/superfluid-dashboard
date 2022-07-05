@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { Address, Stream } from "@superfluid-finance/sdk-core";
 import { FC, memo, useMemo, useState } from "react";
+import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 import { EmptyRow } from "../common/EmptyRow";
 import { Network } from "../network/networks";
 import { PendingOutgoingStream } from "../pendingUpdates/PendingOutgoingStream";
@@ -46,6 +47,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
 }) => {
   const theme = useTheme();
   const { visibleAddress } = useVisibleAddress();
+  const { isPhone } = useMediaBreakpoints();
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
@@ -88,10 +90,11 @@ const StreamsTable: FC<StreamsTableProps> = ({
 
   const pendingOutgoingStreams =
     useAddressPendingOutgoingStreams(visibleAddress);
+
   const outgoingStreams: (Stream | PendingOutgoingStream)[] = useMemo(() => {
     const queriedOutgoingStreams = outgoingStreamsQuery.data?.items ?? [];
     return [...queriedOutgoingStreams, ...pendingOutgoingStreams];
-  }, [outgoingStreamsQuery.data, ...pendingOutgoingStreams]);
+  }, [outgoingStreamsQuery.data, pendingOutgoingStreams]);
 
   const streams = useMemo(() => {
     return [
@@ -161,11 +164,12 @@ const StreamsTable: FC<StreamsTableProps> = ({
           ...(lastElement && {
             borderTop: `1px solid ${theme.palette.divider}`,
           }),
-          ...(subTable && {
-            ".MuiTableHead-root .MuiTableCell-root:first-of-type": {
-              pl: 8.5,
-            },
-          }),
+          ...(subTable &&
+            !isPhone && {
+              ".MuiTableHead-root .MuiTableCell-root:first-of-type": {
+                pl: 8.5,
+              },
+            }),
         }}
       >
         <TableHead>
@@ -174,6 +178,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
               <Stack direction="row" alignItems="center" gap={1}>
                 <Button
                   variant="textContained"
+                  size={isPhone ? "small" : "medium"}
                   color={getFilterBtnColor(StreamTypeFilter.All)}
                   onClick={setStreamTypeFilter(StreamTypeFilter.All)}
                 >
@@ -184,6 +189,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
                 </Button>
                 <Button
                   variant="textContained"
+                  size={isPhone ? "small" : "medium"}
                   color={getFilterBtnColor(StreamTypeFilter.Incoming)}
                   onClick={setStreamTypeFilter(StreamTypeFilter.Incoming)}
                 >
@@ -193,6 +199,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
                 </Button>
                 <Button
                   variant="textContained"
+                  size={isPhone ? "small" : "medium"}
                   color={getFilterBtnColor(StreamTypeFilter.Outgoing)}
                   onClick={setStreamTypeFilter(StreamTypeFilter.Outgoing)}
                 >
@@ -213,13 +220,15 @@ const StreamsTable: FC<StreamsTableProps> = ({
               </Stack>
             </TableCell>
           </TableRow>
-          <TableRow>
-            <TableCell>To / From</TableCell>
-            <TableCell width="250">All Time Flow</TableCell>
-            <TableCell width="250">Flow rate</TableCell>
-            <TableCell width="200">Start / End Date</TableCell>
-            <TableCell width="120px" align="center"></TableCell>
-          </TableRow>
+          {!isPhone && (
+            <TableRow>
+              <TableCell>To / From</TableCell>
+              <TableCell width="250">All Time Flow</TableCell>
+              <TableCell width="250">Flow rate</TableCell>
+              <TableCell width="200">Start / End Date</TableCell>
+              <TableCell width="120px" align="center"></TableCell>
+            </TableRow>
+          )}
         </TableHead>
         <TableBody>
           {isLoading ? (

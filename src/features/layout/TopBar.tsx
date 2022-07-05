@@ -74,11 +74,11 @@ export default memo(function TopBar() {
       elevation={0}
     >
       <Stack component={Toolbar} direction="row" alignItems="center">
-        {/* {isPhone && ( */}
-        <IconButton onClick={openNavigationDrawer} color="inherit">
-          <MenuRoundedIcon />
-        </IconButton>
-        {/* )} */}
+        {isPhone && (
+          <IconButton onClick={openNavigationDrawer} color="inherit">
+            <MenuRoundedIcon />
+          </IconButton>
+        )}
 
         <Box flex={1} />
 

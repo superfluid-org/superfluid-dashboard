@@ -27,6 +27,7 @@ import { useNetwork, useSigner } from "wagmi";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
+import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 import { Network } from "../network/networks";
 import { PendingOutgoingStream } from "../pendingUpdates/PendingOutgoingStream";
 import usePendingStreamCancellation from "../pendingUpdates/usePendingStreamCancellation";
@@ -99,6 +100,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
 
   const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
+  const { isPhone } = useMediaBreakpoints();
   const { chain: activeChain } = useNetwork();
   const { data: signer } = useSigner();
   const getTransactionOverrides = useGetTransactionOverrides();
@@ -178,43 +180,76 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
           </Typography>
         </Stack>
       </TableCell>
-      <TableCell {...tableCellProps}>
-        <Typography variant="h7mono">
-          <FlowingBalance
-            balance={streamedUntilUpdatedAt}
-            flowRate={isPending ? "0" : currentFlowRate}
-            balanceTimestamp={updatedAtTimestamp}
-            disableRoundingIndicator
+
+      {!isPhone ? (
+        <>
+          <TableCell {...tableCellProps}>
+            <Typography variant="h7mono">
+              <FlowingBalance
+                balance={streamedUntilUpdatedAt}
+                flowRate={isPending ? "0" : currentFlowRate}
+                balanceTimestamp={updatedAtTimestamp}
+                disableRoundingIndicator
+              />
+            </Typography>
+          </TableCell>
+          <TableCell {...tableCellProps}>
+            {isActive || isPending ? (
+              <Typography data-cy={"flow-rate"} variant="body2mono">
+                {isOutgoing ? "-" : "+"}
+                <Ether
+                  wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
+                />
+                /mo
+              </Typography>
+            ) : (
+              <Typography data-cy={"flow-rate"}>{"-"}</Typography>
+            )}
+          </TableCell>
+          <TableCell {...tableCellProps}>
+            <Stack
+              data-cy={"start-end-date"}
+              direction="row"
+              alignItems="center"
+              gap={1}
+            >
+              {format(
+                (isActive ? createdAtTimestamp : updatedAtTimestamp) * 1000,
+                "d MMM. yyyy"
+              )}
+              {isActive && <AllInclusiveIcon />}
+            </Stack>
+          </TableCell>
+        </>
+      ) : (
+        <TableCell align="right">
+          <ListItemText
+            primary={
+              <FlowingBalance
+                balance={streamedUntilUpdatedAt}
+                flowRate={isPending ? "0" : currentFlowRate}
+                balanceTimestamp={updatedAtTimestamp}
+                disableRoundingIndicator
+              />
+            }
+            secondary={
+              isActive || isPending ? (
+                <>
+                  {isOutgoing ? "-" : "+"}
+                  <Ether
+                    wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
+                  />
+                  /mo
+                </>
+              ) : (
+                "-"
+              )
+            }
+            primaryTypographyProps={{ variant: "h7mono" }}
+            secondaryTypographyProps={{ variant: "body2mono" }}
           />
-        </Typography>
-      </TableCell>
-      <TableCell {...tableCellProps}>
-        {isActive || isPending ? (
-          <Typography data-cy={"flow-rate"} variant="body2mono">
-            {isOutgoing ? "-" : "+"}
-            <Ether
-              wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
-            />
-            /mo
-          </Typography>
-        ) : (
-          <Typography data-cy={"flow-rate"}>{"-"}</Typography>
-        )}
-      </TableCell>
-      <TableCell {...tableCellProps}>
-        <Stack
-          data-cy={"start-end-date"}
-          direction="row"
-          alignItems="center"
-          gap={1}
-        >
-          {format(
-            (isActive ? createdAtTimestamp : updatedAtTimestamp) * 1000,
-            "d MMM. yyyy"
-          )}
-          {isActive && <AllInclusiveIcon />}
-        </Stack>
-      </TableCell>
+        </TableCell>
+      )}
       <TableCell align="center">
         {isPending && (
           <Stack direction="row" alignItems="center" gap={1}>
