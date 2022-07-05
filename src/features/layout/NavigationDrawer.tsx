@@ -144,7 +144,10 @@ export default memo(function NavigationDrawer() {
       </Stack>
 
       <Stack justifyContent="flex-end" sx={{ flex: 1 }}>
-        <Stack sx={{ my: 2, px: 2 }} gap={1}>
+        <Stack
+          sx={{ my: 2, px: 2, color: theme.palette.text.secondary }}
+          gap={1}
+        >
           <MoreNavigationItem />
           <ThemeChanger />
         </Stack>

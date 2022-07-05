@@ -32,7 +32,6 @@ import shortenHex from "../../utils/shortenHex";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { useAppDispatch } from "../redux/store";
 import { updateAddressBookEntry } from "./addressBook.slice";
-import sanitizeAddressBookName from "./sanitizeAddressBookName";
 
 interface AddressBookRowProps {
   address: Address;
@@ -54,7 +53,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   onSelect,
 }) => {
   const dispatch = useAppDispatch();
-  const { data: account } = useAccount();
+  const { address: currentAccountAddress } = useAccount();
   const [editableName, setEditableName] = useState(name);
   const [isEditing, setIsEditing] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
@@ -169,7 +168,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
         </AddressCopyTooltip>
       </TableCell>
       <TableCell>
-        {!!account ? (
+        {!!currentAccountAddress ? (
           <>
             {streamsLoading ? <Skeleton width="30px" /> : activeStreams.length}
           </>

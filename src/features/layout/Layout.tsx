@@ -1,11 +1,13 @@
 import { Box, styled, Toolbar, useTheme } from "@mui/material";
 import { FC } from "react";
+import IntercomButton from "../intercom/IntercomButton";
 import TransactionDrawer, {
   transactionDrawerWidth,
 } from "../transactionDrawer/TransactionDrawer";
 import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
-import NavigationDrawer, { menuDrawerWidth } from "./NavigationDrawer";
+import NavigationDrawer from "./NavigationDrawer";
 import TopBar from "./TopBar";
+
 // import TransactionSnackbar from "../transactions/TransactionSnackbar";
 
 const DarkGlow = styled("div")({
@@ -48,6 +50,7 @@ const Layout: FC = ({ children }) => {
         {/* <TransactionSnackbar /> */}
         {children}
       </Main>
+      <IntercomButton />
       <TransactionDrawer />
     </Box>
   );

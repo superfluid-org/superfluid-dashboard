@@ -1,37 +1,45 @@
+import { Framework } from "@superfluid-finance/sdk-core";
 import {
   initiateOldPendingTransactionsTrackingThunk,
-  setFrameworkForSdkRedux
+  setFrameworkForSdkRedux,
 } from "@superfluid-finance/sdk-redux";
 import { FC, useEffect } from "react";
 import { Provider } from "react-redux";
-import { useAccount, useNetwork, useSigner } from "wagmi";
+import { useSigner } from "wagmi";
 import { networks } from "../network/networks";
 import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import { reduxStore, useAppDispatch } from "./store";
 
 const ReduxProviderCore: FC = ({ children }) => {
-  const { data: wallet } = useAccount();
-  const walletAddress = wallet?.address;
-
+  const { data: signer } = useSigner();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (walletAddress) {
-      dispatch(
-        initiateOldPendingTransactionsTrackingThunk({
-          chainIds: networks.map((x) => x.id),
-          signerAddress: walletAddress,
-        }) as any
-      ); // TODO(weird version mismatch):
-    }
-  }, [walletAddress]);
-
-  // TODO(KK): Use wagmi's providers. Wagmi might be better at creating providers and then we don't create double providers.
-  useEffect(() => {
+    // TODO(KK): Use wagmi's providers. Wagmi might be better at creating providers and then we don't create double providers.
     readOnlyFrameworks.map((x) =>
       setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
     );
-  }, []);
+
+    if (signer) {
+      signer.getChainId().then((chainId) => {
+        setFrameworkForSdkRedux(chainId, () =>
+          Framework.create({
+            chainId: chainId,
+            provider: signer,
+          })
+        );
+      });
+
+      signer.getAddress().then((address) => {
+        dispatch(
+          initiateOldPendingTransactionsTrackingThunk({
+            chainIds: networks.map((x) => x.id),
+            signerAddress: address,
+          }) as any
+        ); // TODO(weird version mismatch):
+      });
+    }
+  }, [signer]);
 
   return <>{children}</>;
 };

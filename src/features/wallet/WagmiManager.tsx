@@ -1,7 +1,5 @@
 import { FC } from "react";
 import {
-  apiProvider,
-  configureChains,
   RainbowKitProvider,
   darkTheme,
   lightTheme,
@@ -11,12 +9,15 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { useTheme } from "@mui/material";
 import { networks, networksByChainId } from "../network/networks";
 import { getAppWallets } from "./getAppWallets";
+import { configureChains } from "wagmi";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import { useAutoConnect } from "../../hooks/useAutoConnect";
 
 const { chains, provider } = configureChains(networks, [
-  apiProvider.jsonRpc((chain) => {
-    return {
-      rpcUrl: networksByChainId.get(chain.id)!.rpcUrls.superfluid,
-    };
+  jsonRpcProvider({
+    rpc: (chain) => ({
+      http: networksByChainId.get(chain.id)!.rpcUrls.superfluid,
+    }),
   }),
 ]);
 
@@ -26,13 +27,22 @@ const { connectors } = getAppWallets({
 });
 
 export const wagmiClient = createWagmiClient({
-  autoConnect: true,
+  autoConnect: false, // Disable because of special Gnosis Safe handling in useAutoConnect.
   connectors,
   provider,
 });
 
+const AutoConnect: FC = ({ children }) => {
+  useAutoConnect();
+  return <>{children}</>;
+};
+
 const WagmiManager: FC = ({ children }) => {
-  return <WagmiConfig client={wagmiClient}>{children}</WagmiConfig>;
+  return (
+    <WagmiConfig client={wagmiClient}>
+      <AutoConnect>{children}</AutoConnect>
+    </WagmiConfig>
+  );
 };
 
 export default WagmiManager;

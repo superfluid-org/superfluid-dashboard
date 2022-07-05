@@ -33,13 +33,16 @@ export const useAccountTransactionsSelector = <T,>(
 };
 
 const useAccountTransactions = (): Array<TrackedTransaction> => {
-  const { data: account } = useAccount();
+  const { address: accountAddress } = useAccount();
 
   const allTransactions = useAppSelector(transactionTrackerSelectors.selectAll);
 
   const accountTransactions = useMemo(
-    () => allTransactions.filter((x) => x.signer === account?.address),
-    [allTransactions, account]
+    () =>
+      accountAddress
+        ? allTransactions.filter((x) => x.signer === accountAddress)
+        : [],
+    [allTransactions, accountAddress]
   );
 
   return accountTransactions;
