@@ -157,6 +157,10 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
     receiverAddress: receiver,
   });
 
+  console.log({
+    pendingCancellation
+  })
+
   const tableCellProps: Partial<TableCellProps> = isPending
     ? {}
     : { onClick: openStreamDetails, sx: { cursor: "pointer" } };
@@ -224,7 +228,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
             </Typography>
           </Stack>
         )}
-        {isActive && flowDeleteTransaction?.status !== "Succeeded" && (
+        {isActive && (
           <>
             {flowDeleteMutation.isLoading || !!pendingCancellation ? (
               <Stack direction="row" alignItems="center" gap={1}>
