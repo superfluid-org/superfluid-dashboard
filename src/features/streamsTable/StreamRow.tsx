@@ -157,10 +157,6 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
     receiverAddress: receiver,
   });
 
-  console.log({
-    pendingCancellation
-  })
-
   const tableCellProps: Partial<TableCellProps> = isPending
     ? {}
     : { onClick: openStreamDetails, sx: { cursor: "pointer" } };

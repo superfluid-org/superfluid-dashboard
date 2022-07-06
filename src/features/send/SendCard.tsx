@@ -63,8 +63,6 @@ const FormLabel: FC<FormLabelProps> = ({ children }) => (
 export default memo(function SendCard() {
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
-  const { setTransactionDrawerOpen } = useTransactionDrawerContext();
-  const router = useRouter();
   const getTransactionOverrides = useGetTransactionOverrides();
 
   const {
@@ -389,19 +387,18 @@ export default memo(function SendCard() {
                   .unwrap()
                   .then(() => resetForm());
 
+                // TODO(KK): "open another stream" button?
                 setTransactionDialogContent({
                   successActions: (
                     <TransactionDialogActions>
-                      <TransactionDialogButton
-                        color="primary"
-                        onClick={() =>
-                          router
-                            .push("/")
-                            .then(() => setTransactionDrawerOpen(true))
-                        }
+                      <Link
+                        href={`/${network.slugName}/token?token=${formData.token.address}`}
+                        passHref
                       >
-                        Go to tokens page ➜
-                      </TransactionDialogButton>
+                        <TransactionDialogButton color="primary">
+                          Go to token page ➜
+                        </TransactionDialogButton>
+                      </Link>
                     </TransactionDialogActions>
                   ),
                 });
@@ -452,21 +449,20 @@ export default memo(function SendCard() {
                     overrides: await getTransactionOverrides(network),
                   })
                     .unwrap()
-                    .then(() => resetForm());
+                    // .then(() => resetForm()); // TODO(KK): Reset form. Can't do it ATM because then the transaction dialog gets lost.
 
+                  // TODO(KK): Go to stream page instead?
                   setTransactionDialogContent({
                     successActions: (
                       <TransactionDialogActions>
-                        <TransactionDialogButton
-                          color="primary"
-                          onClick={() =>
-                            router
-                              .push("/")
-                              .then(() => setTransactionDrawerOpen(true))
-                          }
+                        <Link
+                          href={`/${network.slugName}/token?token=${formData.token.address}`}
+                          passHref
                         >
-                          Go to tokens page ➜
-                        </TransactionDialogButton>
+                          <TransactionDialogButton color="primary">
+                            Go to token page ➜
+                          </TransactionDialogButton>
+                        </Link>
                       </TransactionDialogActions>
                     ),
                   });
