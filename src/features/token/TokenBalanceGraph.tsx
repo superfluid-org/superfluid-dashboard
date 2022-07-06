@@ -301,7 +301,7 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
   }, [chartRef, graphData, graphStartDate, forecast, showForecast]);
 
   return (
-    <Box sx={{ height, mx: -0.5 }}>
+    <Box sx={{ height, maxWidth: "100%", mx: -0.5 }}>
       <canvas ref={canvasRef} />
     </Box>
   );

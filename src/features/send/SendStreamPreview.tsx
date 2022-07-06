@@ -4,6 +4,7 @@ import {
   Stack,
   Tooltip,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
@@ -32,6 +33,7 @@ const PreviewItem: FC<{
   dataCy?: string;
 }> = ({ label, children, oldValue, isError, dataCy }) => {
   const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
 
   const valueTypography = (
     <Typography
@@ -47,7 +49,11 @@ const PreviewItem: FC<{
   );
 
   return (
-    <Stack direction="row" alignItems="center" justifyContent="space-between">
+    <Stack
+      direction={isPhone ? "column" : "row"}
+      alignItems={isPhone ? "start" : "center"}
+      justifyContent="space-between"
+    >
       <Typography variant="body2">{label}</Typography>
       {oldValue ? (
         <Tooltip title={<>Current: {oldValue}</>} arrow placement="top">
@@ -120,7 +126,15 @@ export const StreamingPreview: FC<{
             unitOfTime: flowRateEther.unitOfTime,
           })
         : ({} as Record<string, any>),
-    [network, realtimeBalanceQuery, activeFlowQuery, flowRateEther]
+    [
+      network,
+      realtimeBalanceQuery,
+      activeFlowQuery,
+      flowRateEther,
+      calculateBufferInfo,
+      existingFlow,
+      realtimeBalance,
+    ]
   );
 
   return (
@@ -139,7 +153,19 @@ export const StreamingPreview: FC<{
         },
       }}
     >
-      <Stack gap={0.5}>
+      <Stack
+        gap={0.5}
+        sx={{
+          [theme.breakpoints.down("md")]: {
+            flexDirection: "row",
+            flexWrap: "wrap",
+            columnGap: 1,
+            "> *": {
+              minWidth: `calc(50% - ${theme.spacing(1)})`,
+            },
+          },
+        }}
+      >
         <PreviewItem dataCy="preview-receiver" label="Receiver">
           {receiver}
         </PreviewItem>

@@ -3,12 +3,15 @@ import {
   Box,
   Button,
   Container,
+  IconButton,
   Paper,
   Stack,
   Table,
   TableBody,
   TableContainer,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { endOfDay, format, startOfDay, startOfMonth } from "date-fns";
 import flatten from "lodash/fp/flatten";
@@ -33,6 +36,9 @@ import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { Activity, mapActivitiesFromEvents } from "../utils/activityUtils";
 
 const History: NextPage = () => {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+
   const dateNow = useMemo(() => new Date(), []);
 
   const { visibleAddress = "" } = useVisibleAddress();
@@ -169,10 +175,10 @@ const History: NextPage = () => {
         <Typography variant="h3">Activity History</Typography>
 
         <Stack gap={2.5}>
-          <Stack direction="row" justifyContent="space-between">
+          <Stack direction="row" justifyContent="space-between" gap={2}>
             <AddressSearch
               address={searchedAddress}
-              placeholder="Filter by public address or ENS"
+              placeholder="Filter by address or ENS"
               onChange={setAddressSearch}
               addressLength="medium"
               ButtonProps={{
@@ -180,25 +186,41 @@ const History: NextPage = () => {
                 color: "secondary",
                 size: "large",
                 sx: {
-                  width: "420px",
-                  height: "52px",
+                  maxWidth: "420px",
+                  flex: 1,
                   justifyContent: "flex-start",
                   ".MuiButton-endIcon": {
                     marginLeft: "auto",
                   },
+                  [theme.breakpoints.up("md")]: {
+                    height: "52px",
+                  },
+                  [theme.breakpoints.down("md")]: {
+                    ...theme.typography.body2,
+                  },
                 },
               }}
             />
+
             <Button
               variant="outlined"
               color="secondary"
               size="large"
               startIcon={<DateRangeIcon />}
               onClick={openDatePicker}
-            >{`${format(startDate, "d MMMM yyyy")} - ${format(
-              endDate,
-              "d MMMM yyyy"
-            )}`}</Button>
+              sx={{
+                [theme.breakpoints.down("md")]: {
+                  p: 1,
+                  ".MuiButton-startIcon": { m: 0 },
+                },
+              }}
+            >
+              {!isPhone &&
+                `${format(startDate, "d MMMM yyyy")} - ${format(
+                  endDate,
+                  "d MMMM yyyy"
+                )}`}
+            </Button>
             <DatePicker
               anchorEl={datePickerAnchor}
               maxDate={dateNow}
@@ -261,23 +283,36 @@ const History: NextPage = () => {
                 <Typography variant="h6" sx={{ mb: 2 }}>
                   {format(new Date(dateKey), "MMMM d, yyyy")}
                 </Typography>
-                <TableContainer>
+                <TableContainer
+                  sx={{
+                    [theme.breakpoints.down("md")]: {
+                      borderLeft: 0,
+                      borderRight: 0,
+                      borderRadius: 0,
+                      boxShadow: "none",
+                      mx: -2,
+                      width: "auto",
+                    },
+                  }}
+                >
                   <Table
                     sx={{
                       // TODO: Make all table layouts fixed
-                      tableLayout: "fixed",
-                      td: {
-                        "&:nth-of-type(1)": {
-                          width: "30%",
-                        },
-                        "&:nth-of-type(2)": {
-                          width: "30%",
-                        },
-                        "&:nth-of-type(3)": {
-                          width: "30%",
-                        },
-                        "&:nth-of-type(4)": {
-                          width: "140px",
+                      [theme.breakpoints.up("md")]: {
+                        tableLayout: "fixed",
+                        td: {
+                          "&:nth-of-type(1)": {
+                            width: "30%",
+                          },
+                          "&:nth-of-type(2)": {
+                            width: "30%",
+                          },
+                          "&:nth-of-type(3)": {
+                            width: "30%",
+                          },
+                          "&:nth-of-type(4)": {
+                            width: "140px",
+                          },
                         },
                       },
                     }}

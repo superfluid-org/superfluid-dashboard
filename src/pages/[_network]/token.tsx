@@ -37,6 +37,7 @@ import TokenToolbar from "../../features/token/TokenToolbar";
 import TransferEventsTable from "../../features/transfers/TransferEventsTable";
 import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
 import withPathNetwork, { NetworkPage } from "../../hoc/withPathNetwork";
+import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 import Page404 from "../404";
 
 enum TokenDetailsTabs {
@@ -49,6 +50,7 @@ const Token: FC<NetworkPage> = ({ network }) => {
   const theme = useTheme();
   const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
+  const { isPhone } = useMediaBreakpoints();
 
   const [activeTab, setActiveTab] = useState(TokenDetailsTabs.Streams);
   const [graphType, setGraphType] = useState(GraphType.All);
@@ -143,8 +145,12 @@ const Token: FC<NetworkPage> = ({ network }) => {
           onBack={handleBack}
         />
 
-        <Card sx={{ pb: 2 }}>
-          <Stack direction="row" justifyContent="space-between" sx={{ mb: 4 }}>
+        <Card sx={{ pb: 2, [theme.breakpoints.down("md")]: { p: 2 } }}>
+          <Stack
+            direction={isPhone ? "column" : "row"}
+            justifyContent="space-between"
+            sx={{ mb: 4 }}
+          >
             <Stack gap={0.5}>
               <Typography variant="body1" color="text.secondary">
                 Balance
@@ -169,7 +175,10 @@ const Token: FC<NetworkPage> = ({ network }) => {
               </Stack>
             </Stack>
 
-            <Stack alignItems="end" justifyContent="space-between">
+            <Stack
+              alignItems={isPhone ? "start" : "end"}
+              justifyContent="space-between"
+            >
               <Stack direction="row" gap={0.5}>
                 {/* <Button
                   variant="textContained"

@@ -11,6 +11,8 @@ import {
   TablePagination,
   TableRow,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Address } from "@superfluid-finance/sdk-core";
@@ -28,6 +30,7 @@ import {
   addressBookSelectors,
   removeAddressBookEntries,
 } from "../features/addressBook/addressBook.slice";
+import AddressBookMobileRow from "../features/addressBook/AddressBookMobileRow";
 import AddressBookRow from "../features/addressBook/AddressBookRow";
 import AddressFilter from "../features/addressBook/AddressFilter";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
@@ -44,6 +47,8 @@ import { getAddress } from "../utils/memoizedEthersUtils";
 
 const AddressBook: NextPage = () => {
   const dispatch = useAppDispatch();
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
 
   const { address: accountAddress } = useAccount();
   const { network } = useExpectedNetwork();
@@ -312,8 +317,27 @@ const AddressBook: NextPage = () => {
           </DownloadButton>
         </Stack>
 
-        <Stack direction="row" justifyContent="space-between">
-          <Stack direction="row" gap={1.5}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          sx={{
+            [theme.breakpoints.down("md")]: {
+              flexDirection: "column",
+              gap: 2,
+            },
+          }}
+        >
+          <Stack
+            direction="row"
+            gap={1.5}
+            sx={{
+              [theme.breakpoints.down("md")]: {
+                "> *": {
+                  flex: 1,
+                },
+              },
+            }}
+          >
             <AddressFilter
               addressesFilter={addressesFilter}
               onChange={onAddressesFilterChange}
@@ -366,30 +390,47 @@ const AddressBook: NextPage = () => {
         )}
 
         {filteredEntries.length > 0 && (
-          <TableContainer>
+          <TableContainer
+            sx={{
+              [theme.breakpoints.down("md")]: {
+                borderLeft: 0,
+                borderRight: 0,
+                borderRadius: 0,
+                boxShadow: "none",
+                mx: -2,
+                width: "auto",
+              },
+            }}
+          >
             <Table sx={{ tableLayout: "fixed" }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ pl: 10 }}>Name</TableCell>
-                  <TableCell>ENS Name</TableCell>
-                  <TableCell>Address</TableCell>
-                  <TableCell width="160px">Active Streams</TableCell>
-                  <TableCell width="88px" />
-                </TableRow>
-              </TableHead>
+              {!isPhone && (
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ pl: 10 }}>Name</TableCell>
+                    <TableCell>ENS Name</TableCell>
+                    <TableCell>Address</TableCell>
+                    <TableCell width="160px">Active Streams</TableCell>
+                    <TableCell width="88px" />
+                  </TableRow>
+                </TableHead>
+              )}
               <TableBody>
-                {paginatedEntries.map(({ address, name, streams }) => (
-                  <AddressBookRow
-                    key={address}
-                    address={address}
-                    name={name}
-                    selected={selectedAddresses.includes(address)}
-                    selectable={isDeleting}
-                    onSelect={setRowSelected(address)}
-                    streams={streams}
-                    streamsLoading={streamsLoading}
-                  />
-                ))}
+                {paginatedEntries.map(({ address, name, streams }) =>
+                  isPhone ? (
+                    <AddressBookMobileRow key={address} address={address} />
+                  ) : (
+                    <AddressBookRow
+                      key={address}
+                      address={address}
+                      name={name}
+                      selected={selectedAddresses.includes(address)}
+                      selectable={isDeleting}
+                      onSelect={setRowSelected(address)}
+                      streams={streams}
+                      streamsLoading={streamsLoading}
+                    />
+                  )
+                )}
               </TableBody>
             </Table>
             <TablePagination

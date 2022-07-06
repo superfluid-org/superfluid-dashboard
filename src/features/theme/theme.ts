@@ -83,129 +83,6 @@ export const ELEVATION1_BG = `linear-gradient(180deg, rgba(255, 255, 255, 0.03) 
 
 export const FONT_FAMILY = "'Walsheim', Arial";
 
-const TYPOGRAPHY: TypographyOptions = {
-  h1: {
-    fontSize: "64px",
-    letterSpacing: "-1.5px",
-    fontWeight: 500,
-  },
-  h1mono: {
-    fontSize: "64px",
-    letterSpacing: "-1.5px",
-    fontWeight: 500,
-    fontVariantNumeric: "tabular-nums",
-  },
-  h2: {
-    fontSize: "48px",
-    fontWeight: 400,
-    letterSpacing: "-0.5px",
-  },
-  h3: {
-    fontSize: "36px",
-    fontWeight: 500,
-    lineHeight: "116.7%",
-  },
-  h3mono: {
-    fontSize: "36px",
-    fontWeight: 500,
-    lineHeight: "116.7%",
-    fontVariantNumeric: "tabular-nums",
-  },
-  h4: {
-    fontSize: "24px",
-    fontWeight: 500,
-    letterSpacing: "0.25px",
-  },
-  h4mono: {
-    fontSize: "24px",
-    fontWeight: 500,
-    letterSpacing: "0.25px",
-    fontVariantNumeric: "tabular-nums",
-  },
-  h5: {
-    fontSize: "18px",
-    fontWeight: 500,
-  },
-  h5mono: {
-    fontSize: "18px",
-    fontWeight: 500,
-    fontVariantNumeric: "tabular-nums",
-  },
-  h6: {
-    fontSize: "16px",
-    fontWeight: 500,
-    lineHeight: "150%",
-    letterSpacing: "0.15px",
-  },
-  h6mono: {
-    fontSize: "16px",
-    fontWeight: 500,
-    lineHeight: "150%",
-    fontVariantNumeric: "tabular-nums",
-  },
-  h7: {
-    fontSize: "14px",
-    fontWeight: 500,
-    lineHeight: "150%",
-    letterSpacing: "0.15px",
-  },
-  h7mono: {
-    fontSize: "14px",
-    fontWeight: 500,
-    lineHeight: "150%",
-    fontVariantNumeric: "tabular-nums",
-  },
-  body1: {
-    fontWeight: 400,
-    letterSpacing: 0.15,
-  },
-  body1mono: {
-    fontWeight: 400,
-    whiteSpace: "pre",
-    fontVariantNumeric: "tabular-nums",
-  },
-  body2: {
-    fontSize: "14px",
-    fontWeight: 400,
-    letterSpacing: 0.17,
-  },
-  body2mono: {
-    fontSize: "14px",
-    fontWeight: 400,
-    whiteSpace: "pre",
-    fontVariantNumeric: "tabular-nums",
-  },
-  subtitle1: {
-    letterSpacing: "0.15px",
-  },
-  subtitle2: {
-    letterSpacing: "0.1px",
-  },
-  caption: {
-    letterSpacing: "0.4px",
-  },
-  overline: {
-    letterSpacing: "1px",
-  },
-  largeInput: {
-    fontStyle: "normal",
-    fontWeight: 500,
-    fontSize: "30px",
-    lineHeight: "150%",
-    letterSpacing: "0.15px",
-  },
-  menuItem: {
-    fontSize: "16px",
-    fontWeight: 500,
-    lineHeight: "150%",
-    letterSpacing: "0.15px",
-  },
-  tooltip: {
-    fontSize: "12px",
-    fontWeight: 400,
-  },
-};
-
 export const buildTheme = (mode: "light" | "dark") => {
   const themeCreate = createTheme({
     palette: {
@@ -228,6 +105,9 @@ const getModeStyleCB =
 
 const getDesignTokens = (theme: Theme): ThemeOptions => {
   const getModeStyle = getModeStyleCB(theme.palette.mode);
+  const {
+    typography: { pxToRem },
+  } = theme;
 
   return {
     palette: {
@@ -294,35 +174,132 @@ const getDesignTokens = (theme: Theme): ThemeOptions => {
     },
     typography: {
       fontFamily: FONT_FAMILY,
-      h1: TYPOGRAPHY.h1,
-      h1mono: TYPOGRAPHY.h1mono,
-      h2: TYPOGRAPHY.h2,
+      h1: {
+        fontSize: pxToRem(64),
+        letterSpacing: pxToRem(-1.5),
+        fontWeight: 500,
+      },
+      h1mono: {
+        fontSize: pxToRem(64),
+        letterSpacing: pxToRem(-1.5),
+        fontWeight: 500,
+        fontVariantNumeric: "tabular-nums",
+      },
+      h2: {
+        fontSize: pxToRem(48),
+        fontWeight: 400,
+        letterSpacing: "-0.5px",
+      },
       h3: {
-        ...TYPOGRAPHY.h3,
+        fontSize: pxToRem(36),
+        fontWeight: 500,
+        lineHeight: "116.7%",
         [theme.breakpoints.down("md")]: {
-          ...TYPOGRAPHY.h4,
+          fontSize: pxToRem(24),
         },
       },
-      h3mono: TYPOGRAPHY.h3mono,
-      h4: TYPOGRAPHY.h4,
-      h4mono: TYPOGRAPHY.h4mono,
-      h5: TYPOGRAPHY.h5,
-      h5mono: TYPOGRAPHY.h5mono,
-      h6: TYPOGRAPHY.h6,
-      h6mono: TYPOGRAPHY.h6mono,
-      h7: TYPOGRAPHY.h7,
-      h7mono: TYPOGRAPHY.h7mono,
-      body1: TYPOGRAPHY.body1,
-      body1mono: TYPOGRAPHY.body1mono,
-      body2: TYPOGRAPHY.body2,
-      body2mono: TYPOGRAPHY.body2mono,
-      subtitle1: TYPOGRAPHY.subtitle1,
-      subtitle2: TYPOGRAPHY.subtitle2,
-      caption: TYPOGRAPHY.caption,
-      overline: TYPOGRAPHY.overline,
-      largeInput: TYPOGRAPHY.largeInput,
-      menuItem: TYPOGRAPHY.menuItem,
-      tooltip: TYPOGRAPHY.tooltip,
+      h3mono: {
+        fontSize: pxToRem(36),
+        fontWeight: 500,
+        lineHeight: "116.7%",
+        fontVariantNumeric: "tabular-nums",
+        [theme.breakpoints.down("md")]: {
+          fontSize: pxToRem(24),
+        },
+      },
+      h4: {
+        fontSize: pxToRem(24),
+        fontWeight: 500,
+        letterSpacing: "0.25px",
+      },
+      h4mono: {
+        fontSize: pxToRem(24),
+        fontWeight: 500,
+        letterSpacing: "0.25px",
+        fontVariantNumeric: "tabular-nums",
+      },
+      h5: {
+        fontSize: pxToRem(18),
+        fontWeight: 500,
+      },
+      h5mono: {
+        fontSize: pxToRem(16),
+        fontWeight: 500,
+        fontVariantNumeric: "tabular-nums",
+      },
+      h6: {
+        fontSize: pxToRem(16),
+        fontWeight: 500,
+        lineHeight: "150%",
+        letterSpacing: "0.15px",
+      },
+      h6mono: {
+        fontSize: pxToRem(16),
+        fontWeight: 500,
+        lineHeight: "150%",
+        fontVariantNumeric: "tabular-nums",
+      },
+      h7: {
+        fontSize: pxToRem(14),
+        fontWeight: 500,
+        lineHeight: "150%",
+        letterSpacing: "0.15px",
+      },
+      h7mono: {
+        fontSize: pxToRem(14),
+        fontWeight: 500,
+        lineHeight: "150%",
+        fontVariantNumeric: "tabular-nums",
+      },
+      body1: {
+        fontWeight: 400,
+        letterSpacing: 0.15,
+      },
+      body1mono: {
+        fontWeight: 400,
+        whiteSpace: "pre",
+        fontVariantNumeric: "tabular-nums",
+      },
+      body2: {
+        fontSize: pxToRem(14),
+        fontWeight: 400,
+        letterSpacing: 0.17,
+      },
+      body2mono: {
+        fontSize: pxToRem(14),
+        fontWeight: 400,
+        whiteSpace: "pre",
+        fontVariantNumeric: "tabular-nums",
+      },
+      subtitle1: {
+        letterSpacing: pxToRem(0.15),
+      },
+      subtitle2: {
+        letterSpacing: pxToRem(0.1),
+      },
+      caption: {
+        letterSpacing: pxToRem(0.4),
+      },
+      overline: {
+        letterSpacing: pxToRem(1),
+      },
+      largeInput: {
+        fontStyle: "normal",
+        fontWeight: 500,
+        fontSize: pxToRem(30),
+        lineHeight: "150%",
+        letterSpacing: pxToRem(0.15),
+      },
+      menuItem: {
+        fontSize: pxToRem(16),
+        fontWeight: 500,
+        lineHeight: "150%",
+        letterSpacing: pxToRem(0.15),
+      },
+      tooltip: {
+        fontSize: pxToRem(12),
+        fontWeight: 400,
+      },
     },
     shadows: [
       "none", // elevation 0
@@ -475,6 +452,9 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
               "#181a1c" // TODO: Move to palette variable
             ),
             backgroundImage: "none",
+            [theme.breakpoints.down("sm")]: {
+              borderRadius: 0,
+            },
           },
         },
       },
@@ -657,6 +637,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           root: {
             textTransform: "inherit",
             flexShrink: 0,
+            minWidth: 0,
           },
           sizeMedium: {
             letterSpacing: "0.17px",
@@ -950,9 +931,22 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           input: {
             background: "transparent",
           },
+          selectLabel: {
+            [theme.breakpoints.down("md")]: {
+              display: "none",
+            },
+          },
+          selectRoot: {
+            [theme.breakpoints.down("md")]: {
+              display: "none",
+            },
+          },
           toolbar: {
-            "@media (min-width: 600px)": {
+            [theme.breakpoints.up("md")]: {
               paddingRight: theme.spacing(4),
+            },
+            [theme.breakpoints.down("md")]: {
+              paddingRight: theme.spacing(2),
             },
           },
         },

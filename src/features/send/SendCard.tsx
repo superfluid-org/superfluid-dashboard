@@ -14,6 +14,8 @@ import {
   TextField,
   Tooltip,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { formatEther, parseEther } from "ethers/lib/utils";
@@ -61,6 +63,8 @@ const FormLabel: FC<FormLabelProps> = ({ children }) => (
 );
 
 export default memo(function SendCard() {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useLayoutContext();
@@ -117,7 +121,7 @@ export default memo(function SendCard() {
         name: x.name,
         symbol: x.symbol,
       })),
-    [superTokensQuery.data]
+    [superTokensQuery.data, network]
   );
 
   const shouldSearchForActiveFlow =
@@ -139,10 +143,15 @@ export default memo(function SendCard() {
 
   return (
     <Card
+      elevation={1}
       sx={{
         maxWidth: "600px",
+        [theme.breakpoints.down("md")]: {
+          boxShadow: "none",
+          borderRadius: 0,
+          p: 0,
+        },
       }}
-      elevation={1}
     >
       <Stack spacing={4}>
         <Button
@@ -183,7 +192,14 @@ export default memo(function SendCard() {
           </Box>
 
           <Box
-            sx={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 2.5 }}
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "1fr 2fr",
+              gap: 2.5,
+              [theme.breakpoints.down("md")]: {
+                gridTemplateColumns: "1fr",
+              },
+            }}
           >
             <Stack justifyContent="stretch">
               <FormLabel>Super Token</FormLabel>
@@ -236,7 +252,14 @@ export default memo(function SendCard() {
           </Box>
 
           <Box
-            sx={{ display: "grid", gridTemplateColumns: "4fr 3fr", gap: 2.5 }}
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "4fr 3fr",
+              gap: 2.5,
+              [theme.breakpoints.down("md")]: {
+                gridTemplateColumns: "1fr",
+              },
+            }}
           >
             <Box>
               <Stack

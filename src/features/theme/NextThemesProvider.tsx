@@ -13,16 +13,13 @@ const NextThemesProvider: FC = ({ children }) => {
             --bg: #fff;
           }
 
-          [data-theme='dark'] {
+          [data-theme="dark"] {
             --fg: #fff;
             --bg: #000;
           }
         `}
       />
-      <ThemeProvider
-        defaultTheme="light"
-        disableTransitionOnChange
-      >
+      <ThemeProvider defaultTheme="light" disableTransitionOnChange>
         {children}
       </ThemeProvider>
     </>

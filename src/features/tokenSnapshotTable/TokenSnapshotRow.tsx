@@ -213,7 +213,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         ) : (
           <TableCell
             align="right"
-            sx={{ [theme.breakpoints.down("md")]: { pr: 0 } }}
+            sx={{ [theme.breakpoints.down("md")]: { px: 0 } }}
             onClick={openTokenPage}
           >
             <ListItemText
@@ -239,7 +239,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                   "-"
                 )
               }
-              primaryTypographyProps={{ variant: "h6mono" }}
+              primaryTypographyProps={{ variant: "h7mono" }}
               secondaryTypographyProps={{
                 variant: "body2mono",
                 color: "text.secondary",

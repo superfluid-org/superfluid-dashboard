@@ -46,40 +46,55 @@ import {
 } from "../wallet/useAccountTransactions";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
-export const StreamRowLoading = () => (
-  <TableRow>
-    <TableCell>
-      <Stack direction="row" alignItems="center" gap={1.5}>
-        <Skeleton variant="circular" width={24} height={24} />
-        <Skeleton
-          variant="circular"
-          width={36}
-          height={36}
-          sx={{ borderRadius: "10px" }}
-        />
-        <Typography variant="h6">
-          <Skeleton width={100} />
-        </Typography>
-      </Stack>
-    </TableCell>
-    <TableCell>
-      <Typography variant="body2mono">
-        <Skeleton width={150} />
-      </Typography>
-    </TableCell>
-    <TableCell>
-      <Typography variant="body2mono">
-        <Skeleton width={150} />
-      </Typography>
-    </TableCell>
-    <TableCell>
-      <Skeleton width={100} />
-    </TableCell>
-    <TableCell>
-      <Skeleton width={60} />
-    </TableCell>
-  </TableRow>
-);
+export const StreamRowLoading = () => {
+  const { isPhone } = useMediaBreakpoints();
+
+  return (
+    <TableRow>
+      <TableCell>
+        <Stack direction="row" alignItems="center" gap={1.5}>
+          <Skeleton variant="circular" width={24} height={24} />
+          <Skeleton
+            variant="circular"
+            width={24}
+            height={24}
+            sx={{ borderRadius: "10px" }}
+          />
+          <Typography variant="h6">
+            <Skeleton width={100} />
+          </Typography>
+        </Stack>
+      </TableCell>
+      {!isPhone ? (
+        <>
+          <TableCell>
+            <Typography variant="body2mono">
+              <Skeleton width={150} />
+            </Typography>
+          </TableCell>
+          <TableCell>
+            <Typography variant="body2mono">
+              <Skeleton width={150} />
+            </Typography>
+          </TableCell>
+          <TableCell>
+            <Skeleton width={100} />
+          </TableCell>
+          <TableCell>
+            <Skeleton width={60} />
+          </TableCell>
+        </>
+      ) : (
+        <TableCell>
+          <Stack alignItems="end">
+            <Skeleton width={60} />
+            <Skeleton width={30} />
+          </Stack>
+        </TableCell>
+      )}
+    </TableRow>
+  );
+};
 
 interface StreamRowProps {
   stream: Stream | PendingOutgoingStream;
@@ -250,91 +265,94 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
           />
         </TableCell>
       )}
-      <TableCell align="center">
-        {isPending && (
-          <Stack direction="row" alignItems="center" gap={1}>
-            <CircularProgress color="warning" size="16px" />
-            <Typography variant="caption">
-              {isPendingAndWaitingForSubgraph ? "Syncing..." : "Sending..."}
-            </Typography>
-          </Stack>
-        )}
-        {isActive && flowDeleteTransaction?.status !== "Succeeded" && (
-          <>
-            {flowDeleteMutation.isLoading || !!pendingCancellation ? (
-              <Stack direction="row" alignItems="center" gap={1}>
-                <CircularProgress color="warning" size="16px" />
-                <Typography variant="caption">
-                  {pendingCancellation?.hasTransactionSucceeded
-                    ? "Syncing..."
-                    : "Canceling..."}
-                </Typography>
-              </Stack>
-            ) : (
-              <>
-                <Tooltip
-                  data-cy={"switch-network-tooltip"}
-                  arrow
-                  title={`Please connect your wallet and switch provider network to ${network.name} in order to cancel the stream.`}
-                  disableHoverListener={network.id === activeChain?.id}
-                >
-                  <span>
-                    <Button
-                      data-cy={"cancel-button"}
-                      color="error"
-                      size="small"
-                      onClick={openMenu}
-                      disabled={network.id !== activeChain?.id}
-                    >
-                      Cancel
-                    </Button>
-                  </span>
-                </Tooltip>
-                <Popover
-                  open={menuOpen}
-                  anchorEl={menuAnchor}
-                  onClose={closeMenu}
-                  transformOrigin={{ horizontal: "right", vertical: "top" }}
-                  anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-                >
-                  <MenuList sx={{ py: 0.5 }}>
-                    <MenuItem
-                      data-cy={"cancel-stream-button"}
-                      onClick={deleteStream}
-                    >
-                      <ListItemAvatar
-                        sx={{ mr: 1, width: "20px", height: "20px" }}
-                      >
-                        <CloseIcon fontSize="small" color="error" />
-                      </ListItemAvatar>
-                      <ListItemText
-                        primaryTypographyProps={{ variant: "menuItem" }}
-                        sx={{ color: "error.main" }}
-                      >
-                        Cancel Stream
-                      </ListItemText>
-                    </MenuItem>
-                  </MenuList>
-                </Popover>
-              </>
-            )}
 
-            <TransactionDialog
-              mutationResult={flowDeleteMutation}
-              network={network}
-              onClose={closeCancelDialog}
-              open={showCancelDialog}
-              successActions={
-                <TransactionDialogActions>
-                  <TransactionDialogButton onClick={closeCancelDialog}>
-                    OK
-                  </TransactionDialogButton>
-                </TransactionDialogActions>
-              }
-            />
-          </>
-        )}
-      </TableCell>
+      {!isPhone && (
+        <TableCell align="center">
+          {isPending && (
+            <Stack direction="row" alignItems="center" gap={1}>
+              <CircularProgress color="warning" size="16px" />
+              <Typography variant="caption">
+                {isPendingAndWaitingForSubgraph ? "Syncing..." : "Sending..."}
+              </Typography>
+            </Stack>
+          )}
+          {isActive && flowDeleteTransaction?.status !== "Succeeded" && (
+            <>
+              {flowDeleteMutation.isLoading || !!pendingCancellation ? (
+                <Stack direction="row" alignItems="center" gap={1}>
+                  <CircularProgress color="warning" size="16px" />
+                  <Typography variant="caption">
+                    {pendingCancellation?.hasTransactionSucceeded
+                      ? "Syncing..."
+                      : "Canceling..."}
+                  </Typography>
+                </Stack>
+              ) : (
+                <>
+                  <Tooltip
+                    data-cy={"switch-network-tooltip"}
+                    arrow
+                    title={`Please connect your wallet and switch provider network to ${network.name} in order to cancel the stream.`}
+                    disableHoverListener={network.id === activeChain?.id}
+                  >
+                    <span>
+                      <Button
+                        data-cy={"cancel-button"}
+                        color="error"
+                        size="small"
+                        onClick={openMenu}
+                        disabled={network.id !== activeChain?.id}
+                      >
+                        Cancel
+                      </Button>
+                    </span>
+                  </Tooltip>
+                  <Popover
+                    open={menuOpen}
+                    anchorEl={menuAnchor}
+                    onClose={closeMenu}
+                    transformOrigin={{ horizontal: "right", vertical: "top" }}
+                    anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                  >
+                    <MenuList sx={{ py: 0.5 }}>
+                      <MenuItem
+                        data-cy={"cancel-stream-button"}
+                        onClick={deleteStream}
+                      >
+                        <ListItemAvatar
+                          sx={{ mr: 1, width: "20px", height: "20px" }}
+                        >
+                          <CloseIcon fontSize="small" color="error" />
+                        </ListItemAvatar>
+                        <ListItemText
+                          primaryTypographyProps={{ variant: "menuItem" }}
+                          sx={{ color: "error.main" }}
+                        >
+                          Cancel Stream
+                        </ListItemText>
+                      </MenuItem>
+                    </MenuList>
+                  </Popover>
+                </>
+              )}
+
+              <TransactionDialog
+                mutationResult={flowDeleteMutation}
+                network={network}
+                onClose={closeCancelDialog}
+                open={showCancelDialog}
+                successActions={
+                  <TransactionDialogActions>
+                    <TransactionDialogButton onClick={closeCancelDialog}>
+                      OK
+                    </TransactionDialogButton>
+                  </TransactionDialogActions>
+                }
+              />
+            </>
+          )}
+        </TableCell>
+      )}
     </TableRow>
   );
 };

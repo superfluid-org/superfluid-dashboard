@@ -13,6 +13,7 @@ import {
   Stack,
   Tooltip,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { format } from "date-fns";
@@ -72,10 +73,11 @@ const OverviewItem: FC<OverviewItemProps> = ({ label, value }) => (
 
 const Stream: FC<NetworkPage> = ({ network }) => {
   const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
   const router = useRouter();
 
   const streamId = (router.query.stream || "") as string;
-  const [senderAddress = "", receiverAddress = "", tokenAddress = ""] =
+  const [senderAddress = "", receiverAddress, tokenAddress = ""] =
     streamId.split("-");
 
   const streamQuery = subgraphApi.useStreamQuery({
@@ -201,9 +203,25 @@ const Stream: FC<NetworkPage> = ({ network }) => {
           <Typography variant="h5">Total Amount Streamed</Typography>
 
           <Stack direction="row" alignItems="center" gap={2}>
-            <TokenIcon tokenSymbol={tokenSymbol} size={60} />
-            <Stack direction="row" alignItems="end" gap={2}>
-              <Typography variant="h1mono" sx={{ lineHeight: "48px" }}>
+            {!isPhone && <TokenIcon tokenSymbol={tokenSymbol} size={60} />}
+            <Stack
+              direction="row"
+              alignItems="end"
+              gap={2}
+              sx={{
+                [theme.breakpoints.down("md")]: {
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 0,
+                },
+              }}
+            >
+              <Typography
+                variant={isPhone ? "h3mono" : "h1mono"}
+                sx={{
+                  lineHeight: "48px",
+                }}
+              >
                 <FlowingBalance
                   balance={streamedUntilUpdatedAt}
                   flowRate={currentFlowRate}
@@ -233,6 +251,9 @@ const Stream: FC<NetworkPage> = ({ network }) => {
             gridTemplateColumns: "1fr 88px 1fr",
             rowGap: 2,
             width: "100%",
+            [theme.breakpoints.down("md")]: {
+              gridTemplateColumns: "1fr",
+            },
           }}
         >
           <Typography variant="h6" sx={{ pl: 1 }}>
@@ -307,6 +328,9 @@ const Stream: FC<NetworkPage> = ({ network }) => {
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
             mt: 7,
+            [theme.breakpoints.down("md")]: {
+              gridTemplateColumns: "1fr",
+            },
           }}
         >
           <OverviewItem

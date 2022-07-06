@@ -1,9 +1,5 @@
 import { alpha } from "@mui/material";
-import {
-  ChartDataset,
-  ChartOptions,
-  ScriptableLineSegmentContext,
-} from "chart.js";
+import { ChartDataset, ChartOptions } from "chart.js";
 
 export const DEFAULT_LINE_CHART_OPTIONS: ChartOptions<"line"> = {
   responsive: true,

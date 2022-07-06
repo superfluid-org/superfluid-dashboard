@@ -50,7 +50,16 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
   return (
     <TableContainer
       data-cy={network.slugName + "-token-snapshot-table"}
-      sx={{ [theme.breakpoints.down("md")]: { mx: -2, width: "auto" } }}
+      sx={{
+        [theme.breakpoints.down("md")]: {
+          mx: -2,
+          width: "auto",
+          borderRadius: 0,
+          border: "none",
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          boxShadow: "none",
+        },
+      }}
     >
       <Table>
         <TableHead>

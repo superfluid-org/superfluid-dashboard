@@ -14,6 +14,8 @@ import {
   TableRow,
   Tooltip,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { Address, Stream } from "@superfluid-finance/sdk-core";
 import {
@@ -52,6 +54,8 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   streamsLoading,
   onSelect,
 }) => {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
   const dispatch = useAppDispatch();
   const { address: currentAccountAddress } = useAccount();
   const [editableName, setEditableName] = useState(name);

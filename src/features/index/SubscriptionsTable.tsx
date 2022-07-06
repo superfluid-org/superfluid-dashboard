@@ -8,6 +8,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, useMemo, useState } from "react";
@@ -26,6 +27,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
   tokenAddress,
   network,
 }) => {
+  const theme = useTheme();
   const { visibleAddress = "" } = useVisibleAddress();
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -94,7 +96,18 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
     (indexSubscriptionsQuery.isLoading || indexSubscriptionsQuery.isFetching);
 
   return (
-    <TableContainer>
+    <TableContainer
+      sx={{
+        [theme.breakpoints.down("md")]: {
+          mx: -2,
+          width: "auto",
+          borderRadius: 0,
+          border: "none",
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          boxShadow: "none",
+        },
+      }}
+    >
       <Table>
         <TableHead>
           <TableRow>

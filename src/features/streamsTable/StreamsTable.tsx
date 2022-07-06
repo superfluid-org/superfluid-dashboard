@@ -155,7 +155,16 @@ const StreamsTable: FC<StreamsTableProps> = ({
                     : alpha(theme.palette.action.hover, 0.08),
               },
             }
-          : {}
+          : {
+              [theme.breakpoints.down("md")]: {
+                mx: -2,
+                width: "auto",
+                borderRadius: 0,
+                border: "none",
+                borderBottom: `1px solid ${theme.palette.divider}`,
+                boxShadow: "none",
+              },
+            }
       }
     >
       <Table
@@ -244,21 +253,23 @@ const StreamsTable: FC<StreamsTableProps> = ({
           )}
         </TableBody>
       </Table>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={streams.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        sx={{
-          ...(subTable ? { background: "transparent" } : {}),
-          "> *": {
-            visibility: streams.length <= 5 ? "hidden" : "visible",
-          },
-        }}
-      />
+      {(streams.length > 5 || (!isPhone && streams.length <= 5)) && (
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={streams.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{
+            ...(subTable ? { background: "transparent" } : {}),
+            "> *": {
+              visibility: streams.length <= 5 ? "hidden" : "visible",
+            },
+          }}
+        />
+      )}
     </TableContainer>
   );
 };
