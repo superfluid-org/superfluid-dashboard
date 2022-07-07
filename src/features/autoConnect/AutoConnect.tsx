@@ -34,7 +34,7 @@ export const AutoConnectProvider: FC = ({ children }) => {
     };
 
     doAsync()
-      .then(() => setDidAutoConnect(true))
+      .then((x) => setDidAutoConnect(x.didAutoConnect))
       .finally(() => setIsAutoConnecting(false));
   }, [connectAsync, connectors]);
 
