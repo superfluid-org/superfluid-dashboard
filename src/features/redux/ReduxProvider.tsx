@@ -3,24 +3,34 @@ import {
   initiateOldPendingTransactionsTrackingThunk,
   setFrameworkForSdkRedux,
 } from "@superfluid-finance/sdk-redux";
-import { FC, useEffect } from "react";
+import { FC, useCallback, useEffect } from "react";
 import { Provider } from "react-redux";
-import { useSigner } from "wagmi";
+import { useConnect, useSigner } from "wagmi";
 import { networks } from "../network/networks";
 import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import { reduxStore, useAppDispatch } from "./store";
 
 const ReduxProviderCore: FC = ({ children }) => {
+  const { activeConnector } = useConnect();
   const { data: signer } = useSigner();
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    // TODO(KK): Use wagmi's providers. Wagmi might be better at creating providers and then we don't create double providers.
-    readOnlyFrameworks.map((x) =>
-      setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
-    );
+  const initializeReadonlyFrameworks = useCallback(
+    () =>
+      // TODO(KK): Use wagmi's providers. Wagmi might be better at creating providers and then we don't create double providers.
+      readOnlyFrameworks.forEach((x) =>
+        setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
+      ),
+    []
+  );
 
-    if (signer) {
+  useEffect(() => initializeReadonlyFrameworks(), []);
+
+  useEffect(() => {
+    // TODO(KK): There is a weird state in wagmi on full refreshes where signer is present but not the connector.
+    if (signer && activeConnector) {
+      initializeReadonlyFrameworks(); // Re-initialize to override the old signer framework if it was present.
+
       signer.getChainId().then((chainId) => {
         setFrameworkForSdkRedux(chainId, () =>
           Framework.create({
