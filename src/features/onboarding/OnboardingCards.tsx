@@ -2,7 +2,6 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import {
-  Box,
   Card,
   CardContent,
   CardHeader,
@@ -105,9 +104,10 @@ interface OnboardingCardsProps {
 const OnboardingCards: FC<OnboardingCardsProps> = ({ onClick }) => {
   const theme = useTheme();
 
-  const { address: accountAddress } = useAccount();
+  const { data: account } = useAccount();
+  const accountAddress = account?.address;
+
   const { openConnectModal } = useConnectButton();
-  const { isPhone } = useMediaBreakpoints();
 
   return (
     <Stack

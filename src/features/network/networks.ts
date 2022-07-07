@@ -44,6 +44,7 @@ const superfluidRpcUrls = {
   optimismKovan: "https://rpc-endpoints.superfluid.dev/optimism-kovan",
   avalancheFuji: "https://rpc-endpoints.superfluid.dev/avalanche-fuji",
   avalancheC: "https://rpc-endpoints.superfluid.dev/avalanche-c",
+  bnbSmartChain: "https://bsc-dataseed1.binance.org",
 };
 
 const blockExplorers = {
@@ -67,6 +68,12 @@ const blockExplorers = {
     avalancheC: {
       name: "Avascan",
       url: "https://avascan.info/",
+    },
+  },
+  bscscan: {
+    bnbSmartChain: {
+      name: "BSC Scan",
+      url: "https://bscscan.com/",
     },
   },
 };
@@ -458,6 +465,44 @@ export const networks: Network[] = [
         symbol: "AVAXx",
         address: "0xBE916845D8678b5d2F7aD79525A62D7c08ABba7e",
         name: "Super AVAX",
+      },
+    },
+  },
+  {
+    name: "BNB Smart Chain",
+    slugName: "bnb-smart-chain",
+    network: "bnb-smart-chain",
+    id: 56,
+    testnet: false,
+    bufferTimeInMinutes: 240,
+    icon: "/icons/network/bnb.svg",
+    color: "#F0B90B",
+    rpcUrls: {
+      superfluid: superfluidRpcUrls.bnbSmartChain,
+      default: "https://bsc-dataseed1.binance.org",
+    },
+    subgraphUrl:
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-bsc-mainnet",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://bscscan.com/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://bscscan.com/address/${address}`,
+    blockExplorers: {
+      bscscan: blockExplorers.bscscan.bnbSmartChain,
+      default: blockExplorers.bscscan.bnbSmartChain,
+    },
+    nativeCurrency: {
+      name: "Binance Chain Native Token",
+      symbol: "BNB",
+      decimals: 18,
+    },
+    nativeAsset: {
+      symbol: "BNB",
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "BNBx",
+        address: "0x529a4116f160c833c61311569d6b33dff41fd657",
+        name: "Super BNB",
       },
     },
   },

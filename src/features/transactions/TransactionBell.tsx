@@ -9,7 +9,8 @@ import { useAccount } from "wagmi";
 import { memo } from "react";
 
 export default memo(function TransactionBell() {
-  const { address: accountAddress } = useAccount();
+  const { data: account } = useAccount();
+  const accountAddress = account?.address;
 
   const { transactionDrawerOpen, setTransactionDrawerOpen } =
     useLayoutContext();

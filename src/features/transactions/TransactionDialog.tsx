@@ -30,14 +30,14 @@ const OutlineIcon = styled(Avatar)(({ theme }) => ({
   background: "transparent",
 }));
 
-export const TransactionDialogButton: FC<ButtonProps> = ({
-  children,
-  ...props
-}) => (
-  <Button fullWidth variant="contained" size="xl" {...(props ?? {})}>
-    {children}
+export const TransactionDialogButton = React.forwardRef<
+  HTMLButtonElement,
+  ButtonProps
+>((props, ref) => (
+  <Button ref={ref} fullWidth variant="contained" size="xl" {...props}>
+    {props.children}
   </Button>
-);
+));
 
 export const TransactionDialogActions: FC<DialogActionsProps> = ({
   children,

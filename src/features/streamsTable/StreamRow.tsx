@@ -116,7 +116,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
   const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
   const { isPhone } = useMediaBreakpoints();
-  const { chain: activeChain } = useNetwork();
+  const { activeChain } = useNetwork();
   const { data: signer } = useSigner();
   const getTransactionOverrides = useGetTransactionOverrides();
 
@@ -276,7 +276,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
               </Typography>
             </Stack>
           )}
-          {isActive && flowDeleteTransaction?.status !== "Succeeded" && (
+          {isActive && (
             <>
               {flowDeleteMutation.isLoading || !!pendingCancellation ? (
                 <Stack direction="row" alignItems="center" gap={1}>

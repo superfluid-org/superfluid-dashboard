@@ -14,13 +14,11 @@ import {
   TextField,
   Tooltip,
   Typography,
-  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { FC, memo, useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
@@ -32,7 +30,6 @@ import { isWrappable } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
-import { useLayoutContext } from "../layout/LayoutContext";
 import {
   ModifyStreamRestoration,
   RestorationType,
@@ -64,11 +61,8 @@ const FormLabel: FC<FormLabelProps> = ({ children }) => (
 
 export default memo(function SendCard() {
   const theme = useTheme();
-  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
-  const { setTransactionDrawerOpen } = useLayoutContext();
-  const router = useRouter();
   const getTransactionOverrides = useGetTransactionOverrides();
 
   const {
@@ -414,19 +408,18 @@ export default memo(function SendCard() {
                   .unwrap()
                   .then(() => resetForm());
 
+                // TODO(KK): "open another stream" button?
                 setTransactionDialogContent({
                   successActions: (
                     <TransactionDialogActions>
-                      <TransactionDialogButton
-                        color="primary"
-                        onClick={() =>
-                          router
-                            .push("/")
-                            .then(() => setTransactionDrawerOpen(true))
-                        }
+                      <Link
+                        href={`/${network.slugName}/token?token=${formData.token.address}`}
+                        passHref
                       >
-                        Go to tokens page ➜
-                      </TransactionDialogButton>
+                        <TransactionDialogButton color="primary">
+                          Go to token page ➜
+                        </TransactionDialogButton>
+                      </Link>
                     </TransactionDialogActions>
                   ),
                 });
@@ -475,23 +468,21 @@ export default memo(function SendCard() {
                       } as ModifyStreamRestoration,
                     },
                     overrides: await getTransactionOverrides(network),
-                  })
-                    .unwrap()
-                    .then(() => resetForm());
+                  }).unwrap();
+                  // .then(() => resetForm()); // TODO(KK): Reset form. Can't do it ATM because then the transaction dialog gets lost.
 
+                  // TODO(KK): Go to stream page instead?
                   setTransactionDialogContent({
                     successActions: (
                       <TransactionDialogActions>
-                        <TransactionDialogButton
-                          color="primary"
-                          onClick={() =>
-                            router
-                              .push("/")
-                              .then(() => setTransactionDrawerOpen(true))
-                          }
+                        <Link
+                          href={`/${network.slugName}/token?token=${formData.token.address}`}
+                          passHref
                         >
-                          Go to tokens page ➜
-                        </TransactionDialogButton>
+                          <TransactionDialogButton color="primary">
+                            Go to token page ➜
+                          </TransactionDialogButton>
+                        </Link>
                       </TransactionDialogActions>
                     ),
                   });

@@ -13,7 +13,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { endOfDay, format, startOfDay, startOfMonth } from "date-fns";
+import { add, endOfDay, format, startOfDay, startOfMonth } from "date-fns";
 import flatten from "lodash/fp/flatten";
 import groupBy from "lodash/fp/groupBy";
 import orderBy from "lodash/fp/orderBy";
@@ -58,7 +58,7 @@ const History: NextPage = () => {
     useState(AllActivityTypes);
   const [activities, setActivities] = useState<Activity[]>([]);
 
-  const [startDate, setStartDate] = useState(startOfMonth(dateNow));
+  const [startDate, setStartDate] = useState(add(dateNow, { months: -1 }));
   const [endDate, setEndDate] = useState(endOfDay(dateNow));
 
   const [searchedAddress, setAddressSearch] = useState<string | null>(null);

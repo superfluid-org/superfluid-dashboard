@@ -10,7 +10,8 @@ const VisibleAddressContext = createContext<VisibleAddressContextValue>(null!);
 
 export const VisibleAddressProvider: FC = ({ children }) => {
   const { impersonatedAddress } = useImpersonation();
-  const { address: accountAddress } = useAccount();
+  const { data: account } = useAccount();
+  const accountAddress = account?.address;
 
   const contextValue = useMemo(
     () => ({

@@ -3,7 +3,6 @@ import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import { TabContext, TabList } from "@mui/lab";
 import {
   Box,
-  Button,
   Card,
   Chip,
   Container,
@@ -20,9 +19,9 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { isString } from "lodash";
-import Error from "next/error";
 import { useRouter } from "next/router";
 import { FC, useEffect, useState } from "react";
+import { useAutoConnect } from "../../features/autoConnect/AutoConnect";
 import SubscriptionsTable from "../../features/index/SubscriptionsTable";
 import NetworkIcon from "../../features/network/NetworkIcon";
 import { rpcApi, subgraphApi } from "../../features/redux/store";
@@ -42,7 +41,6 @@ import TokenToolbar from "../../features/token/TokenToolbar";
 import TransferEventsTable from "../../features/transfers/TransferEventsTable";
 import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
 import withPathNetwork, { NetworkPage } from "../../hoc/withPathNetwork";
-import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 import Page404 from "../404";
 
 enum TokenDetailsTabs {
@@ -56,6 +54,7 @@ const Token: FC<NetworkPage> = ({ network }) => {
   const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
   const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+  const { isAutoConnecting } = useAutoConnect();
 
   const [activeTab, setActiveTab] = useState(TokenDetailsTabs.Streams);
   const [graphType, setGraphType] = useState(GraphType.All);
@@ -74,7 +73,7 @@ const Token: FC<NetworkPage> = ({ network }) => {
         : skipToken
     );
 
-  const tokenQuery = subgraphApi.useTokenQuery(
+  const { data: _discard3, ...tokenQuery } = subgraphApi.useTokenQuery(
     tokenId
       ? {
           chainId: network.id,
@@ -83,17 +82,18 @@ const Token: FC<NetworkPage> = ({ network }) => {
       : skipToken
   );
 
-  const tokenSnapshotQuery = subgraphApi.useAccountTokenSnapshotQuery(
-    tokenId && visibleAddress
-      ? {
-          chainId: network.id,
-          id: `${visibleAddress.toLowerCase()}-${tokenId.toLowerCase()}`,
-        }
-      : skipToken
-  );
+  const { data: _discard2, ...tokenSnapshotQuery } =
+    subgraphApi.useAccountTokenSnapshotQuery(
+      tokenId && visibleAddress
+        ? {
+            chainId: network.id,
+            id: `${visibleAddress.toLowerCase()}-${tokenId.toLowerCase()}`,
+          }
+        : skipToken
+    );
 
   useEffect(() => {
-    if (!tokenId || !visibleAddress) router.push("/");
+    if (!isAutoConnecting && (!tokenId || !visibleAddress)) router.push("/");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenId, visibleAddress]);
 
@@ -103,6 +103,7 @@ const Token: FC<NetworkPage> = ({ network }) => {
   const handleBack = () => router.back();
 
   if (
+    isAutoConnecting ||
     tokenQuery.isUninitialized ||
     tokenQuery.isLoading ||
     tokenSnapshotQuery.isUninitialized ||
@@ -111,7 +112,7 @@ const Token: FC<NetworkPage> = ({ network }) => {
     return <Container />;
   }
 
-  if (!tokenQuery.data || !tokenSnapshotQuery.data) {
+  if (!tokenQuery.currentData || !tokenSnapshotQuery.currentData) {
     return <Page404 />;
   }
 
@@ -131,7 +132,7 @@ const Token: FC<NetworkPage> = ({ network }) => {
     totalOutflowRate,
     updatedAtTimestamp,
     maybeCriticalAtTimestamp,
-  } = tokenSnapshotQuery.data;
+  } = tokenSnapshotQuery.currentData;
 
   const {
     balance = balanceUntilUpdatedAt,
@@ -139,13 +140,13 @@ const Token: FC<NetworkPage> = ({ network }) => {
     flowRate = totalNetFlowRate,
   } = realTimeBalanceQuery.currentData || {};
 
-  const { id: tokenAddress } = tokenQuery.data;
+  const { id: tokenAddress } = tokenQuery.currentData;
 
   return (
     <Container maxWidth="lg">
       <Stack gap={isPhone ? 3 : 4}>
         <TokenToolbar
-          token={tokenQuery.data}
+          token={tokenQuery.currentData}
           network={network}
           onBack={handleBack}
         />

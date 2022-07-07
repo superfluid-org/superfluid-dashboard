@@ -1106,7 +1106,7 @@
     "@truffle/contract" "^4.2.6"
     ethers "^4.0.45"
 
-"@coinbase/wallet-sdk@^3.3.0":
+"@coinbase/wallet-sdk@^3.2.0":
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/@coinbase/wallet-sdk/-/wallet-sdk-3.3.0.tgz#e77383bce1388e5367dc35f8309702e73be47503"
   integrity sha512-Prmxs5eYRxe5i+kDSsny97oPG4Pa5PhLmNDx8f7UQrvlPowGy5Tg0gHOqCie6ck2shVMdW8sKJ+RCLIRZ9kIjA==
@@ -1556,6 +1556,21 @@
     "@ethersproject/properties" "^5.6.0"
     "@ethersproject/strings" "^5.6.1"
 
+"@ethersproject/abi@5.6.4":
+  version "5.6.4"
+  resolved "https://registry.yarnpkg.com/@ethersproject/abi/-/abi-5.6.4.tgz#f6e01b6ed391a505932698ecc0d9e7a99ee60362"
+  integrity sha512-TTeZUlCeIHG6527/2goZA6gW5F8Emoc7MrZDC7hhP84aRGvW3TEdTnZR08Ls88YXM1m2SuK42Osw/jSi3uO8gg==
+  dependencies:
+    "@ethersproject/address" "^5.6.1"
+    "@ethersproject/bignumber" "^5.6.2"
+    "@ethersproject/bytes" "^5.6.1"
+    "@ethersproject/constants" "^5.6.1"
+    "@ethersproject/hash" "^5.6.1"
+    "@ethersproject/keccak256" "^5.6.1"
+    "@ethersproject/logger" "^5.6.0"
+    "@ethersproject/properties" "^5.6.0"
+    "@ethersproject/strings" "^5.6.1"
+
 "@ethersproject/abstract-provider@5.6.0", "@ethersproject/abstract-provider@^5.6.0":
   version "5.6.0"
   resolved "https://registry.yarnpkg.com/@ethersproject/abstract-provider/-/abstract-provider-5.6.0.tgz#0c4ac7054650dbd9c476cf5907f588bbb6ef3061"
@@ -1868,6 +1883,13 @@
   version "5.6.3"
   resolved "https://registry.yarnpkg.com/@ethersproject/networks/-/networks-5.6.3.tgz#3ee3ab08f315b433b50c99702eb32e0cf31f899f"
   integrity sha512-QZxRH7cA5Ut9TbXwZFiCyuPchdWi87ZtVNHWZd0R6YFgYtes2jQ3+bsslJ0WdyDe0i6QumqtoYqvY3rrQFRZOQ==
+  dependencies:
+    "@ethersproject/logger" "^5.6.0"
+
+"@ethersproject/networks@5.6.4":
+  version "5.6.4"
+  resolved "https://registry.yarnpkg.com/@ethersproject/networks/-/networks-5.6.4.tgz#51296d8fec59e9627554f5a8a9c7791248c8dc07"
+  integrity sha512-KShHeHPahHI2UlWdtDMn2lJETcbtaJge4k7XSjDR9h79QTd6yQJmv6Cp2ZA4JdqWnhszAOLSuJEd9C0PRw7hSQ==
   dependencies:
     "@ethersproject/logger" "^5.6.0"
 
@@ -2741,10 +2763,10 @@
     penpal "3.0.7"
     pocket-js-core "0.0.3"
 
-"@rainbow-me/rainbowkit@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbowkit/-/rainbowkit-0.4.0.tgz#e6afe915be07bbce66c7af4a85db0b75282e81bb"
-  integrity sha512-oJzC84zoq6Q1fbU9dt79coMskVTheGmAvSJx48ILKpPE53MEBVDyd6isvYqYX+UBZruwe6Vd1m4HYexTgWAgjw==
+"@rainbow-me/rainbowkit@0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbowkit/-/rainbowkit-0.3.1.tgz#37cff0b92cd66aa39dbd67cd6a51caab9b14b37a"
+  integrity sha512-bU7s9cncfI8sIExGR62h5gbk/gcKPUdIbmS2O3z2+qPfpP8IUkE9iMyjRRqQS6cjtWh0VsY/Jify9afB6lPiLw==
   dependencies:
     "@vanilla-extract/css" "1.7.0"
     "@vanilla-extract/dynamic" "2.0.2"
@@ -2953,7 +2975,7 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
   integrity sha512-9NET910DNaIPngYnLLPeg+Ogzqsi9uM4mSboU5y6p8S5DzMTVEsJZrawi+BoDNUVBa2DhJqQYUFvMDfgU062LQ==
 
-"@superfluid-finance/sdk-core@0.4.4":
+"@superfluid-finance/sdk-core@^0.4.4":
   version "0.4.4"
   resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-core/0.4.4/488dab1340492888e508f8d3cc053e5687950822dec90400a34fe442c30e334e#157fcc830bfca80c9c79e0db4ab9d29f5d82c4aa"
   integrity sha512-QFuhCdEW5W+aBYjkU8hSSXWW2+PUoweBmXXt7S8sANhf9WLtjEk/uIKqO+q+EXHYInaGpig7Q4PmJG2dDriz2Q==
@@ -3579,10 +3601,10 @@
   resolved "https://registry.yarnpkg.com/@vanilla-extract/sprinkles/-/sprinkles-1.4.1.tgz#8c8703ddedaac355c1187db909119816c0fc771c"
   integrity sha512-aW6CfMMToX4a+baLuVxwcT0FSACjX3xrNt8wdi/3LLRlLAfhyue8OK7kJxhcYNZfydBeWTP59aRy8p5FUTIeew==
 
-"@wagmi/core@^0.4.4":
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-0.4.4.tgz#6640299647f8841aab7f18d1c37b3942adfbb120"
-  integrity sha512-F5GDev6ylp3ZhvLnZriQYPrT0aHGlgcxahMozraO4snQizyMp6CTJ7gJHyL/7at+rDXDqI6Kb5Yy09GGfoaQFA==
+"@wagmi/core@^0.3.8":
+  version "0.3.8"
+  resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-0.3.8.tgz#7f2d13a25f6d86e5ddcb31ec1d1c9af7efaa4736"
+  integrity sha512-9wsd8YGW2ivjFwpkgAETn7cRbKOAddZz91vuh2VmIP2bWGiDuFA6RXy5/KLV/tGpvIIiCyGFO0JXpx+n4hFhgQ==
   dependencies:
     eventemitter3 "^4.0.7"
     zustand "^4.0.0-rc.1"
@@ -8300,7 +8322,7 @@ ethers@^4.0.32, ethers@^4.0.45:
     uuid "2.0.1"
     xmlhttprequest "1.8.0"
 
-ethers@^5.0.13, ethers@^5.6.2, ethers@^5.6.8:
+ethers@^5.0.13, ethers@^5.6.8:
   version "5.6.8"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.6.8.tgz#d36b816b4896341a80a8bbd2a44e8cb6e9b98dd4"
   integrity sha512-YxIGaltAOdvBFPZwIkyHnXbW40f1r8mHUgapW6dxkO+6t7H6wY8POUn0Kbxrd/N7I4hHxyi7YCddMAH/wmho2w==
@@ -8371,6 +8393,42 @@ ethers@^5.0.15, ethers@^5.5.4:
     "@ethersproject/wallet" "5.6.0"
     "@ethersproject/web" "5.6.0"
     "@ethersproject/wordlists" "5.6.0"
+
+ethers@^5.6.2:
+  version "5.6.9"
+  resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.6.9.tgz#4e12f8dfcb67b88ae7a78a9519b384c23c576a4d"
+  integrity sha512-lMGC2zv9HC5EC+8r429WaWu3uWJUCgUCt8xxKCFqkrFuBDZXDYIdzDUECxzjf2BMF8IVBByY1EBoGSL3RTm8RA==
+  dependencies:
+    "@ethersproject/abi" "5.6.4"
+    "@ethersproject/abstract-provider" "5.6.1"
+    "@ethersproject/abstract-signer" "5.6.2"
+    "@ethersproject/address" "5.6.1"
+    "@ethersproject/base64" "5.6.1"
+    "@ethersproject/basex" "5.6.1"
+    "@ethersproject/bignumber" "5.6.2"
+    "@ethersproject/bytes" "5.6.1"
+    "@ethersproject/constants" "5.6.1"
+    "@ethersproject/contracts" "5.6.2"
+    "@ethersproject/hash" "5.6.1"
+    "@ethersproject/hdnode" "5.6.2"
+    "@ethersproject/json-wallets" "5.6.1"
+    "@ethersproject/keccak256" "5.6.1"
+    "@ethersproject/logger" "5.6.0"
+    "@ethersproject/networks" "5.6.4"
+    "@ethersproject/pbkdf2" "5.6.1"
+    "@ethersproject/properties" "5.6.0"
+    "@ethersproject/providers" "5.6.8"
+    "@ethersproject/random" "5.6.1"
+    "@ethersproject/rlp" "5.6.1"
+    "@ethersproject/sha2" "5.6.1"
+    "@ethersproject/signing-key" "5.6.2"
+    "@ethersproject/solidity" "5.6.1"
+    "@ethersproject/strings" "5.6.1"
+    "@ethersproject/transactions" "5.6.2"
+    "@ethersproject/units" "5.6.1"
+    "@ethersproject/wallet" "5.6.2"
+    "@ethersproject/web" "5.6.1"
+    "@ethersproject/wordlists" "5.6.1"
 
 etherscan-api@10.0.5:
   version "10.0.5"
@@ -14974,13 +15032,13 @@ vm-browserify@^1.0.0:
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
 
-wagmi@^0.5.5:
-  version "0.5.5"
-  resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-0.5.5.tgz#8a91b4db74cd58fff1185a1f56954076d6aa23f1"
-  integrity sha512-nCp3o9RNrIjFBSIUvOD3M9CEWR3IW7Y21mpLtsWcbr0oNociAzWIrPg9dZcAc/FD0HtFOdP1l0eWfIMUyX3Dag==
+wagmi@^0.4.0:
+  version "0.4.12"
+  resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-0.4.12.tgz#c79be680ceb17ab071c713ddc86e61fc01145522"
+  integrity sha512-YfpRAJyGL9YvtecYDf6cUT6yaIBksHK9JZyq3WlVMUfeTleFmsqCiIaIaKhlPcE+NZxSsUHz1jbZw8KLWTcwvA==
   dependencies:
-    "@coinbase/wallet-sdk" "^3.3.0"
-    "@wagmi/core" "^0.4.4"
+    "@coinbase/wallet-sdk" "^3.2.0"
+    "@wagmi/core" "^0.3.8"
     "@walletconnect/ethereum-provider" "^1.7.8"
     react-query "^4.0.0-beta.23"
     use-sync-external-store "^1.1.0"

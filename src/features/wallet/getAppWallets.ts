@@ -36,7 +36,7 @@ export const getAppWallets = ({
         ...(needsInjectedWalletFallback
           ? [wallet.injected({ chains, shimDisconnect: true })]
           : []),
-        // wallet.walletConnect({ chains }),
+        wallet.walletConnect({ chains }),
         wallet.coinbase({ appName, chains }),
         // wallet.trust({ chains }),
       ],

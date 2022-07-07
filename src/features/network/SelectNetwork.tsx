@@ -11,7 +11,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { FC, memo, MouseEvent, useState } from "react";
-import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 import { useExpectedNetwork } from "./ExpectedNetworkContext";
@@ -43,8 +43,10 @@ export default memo(function SelectNetwork() {
   const theme = useTheme();
   const { isPhone } = useMediaBreakpoints();
 
-  const { address: accountAddress } = useAccount();
-  const { switchNetwork } = useSwitchNetwork();
+  const { data: account } = useAccount();
+  const accountAddress = account?.address;
+
+  const { switchNetwork } = useNetwork();
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [showTestnets, setShowTestnets] = useState(false);
