@@ -107,7 +107,13 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
       <TableCell>
         <Stack direction="row">
           <Stack direction="row" alignItems="center" gap={1.5}>
-            <AddressAvatar address={address} />
+            <AddressAvatar
+              address={address}
+              AvatarProps={{
+                sx: { width: "27px", height: "27px" },
+              }}
+              BlockiesProps={{ size: 9, scale: 3 }}
+            />
 
             {isEditing ? (
               <Box component="form" onSubmit={onFormSubmit}>
@@ -168,7 +174,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
       <TableCell>{ensName || "-"}</TableCell>
       <TableCell>
         <AddressCopyTooltip address={address}>
-          <span>{shortenHex(address, 8)}</span>
+          <span>{shortenHex(address, 6)}</span>
         </AddressCopyTooltip>
       </TableCell>
       <TableCell>

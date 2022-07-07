@@ -22,165 +22,10 @@ import {
   startOfMonth,
 } from "date-fns";
 import times from "lodash/times";
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, memo, useCallback, useMemo, useState } from "react";
+import DatePickerDay from "./DatePickerDay";
 
 const WEEK_LABELS = ["M", "T", "W", "T", "F", "S", "S"];
-
-interface DayWrapperProps {
-  beforeOrStartDate: boolean;
-  afterOrEndDate: boolean;
-  isHighlighted: boolean;
-  isStartDate: boolean;
-  isEndDate: boolean;
-  firstDayOfRow: boolean;
-  lastDayOfRow: boolean;
-  isHovered: boolean;
-}
-
-const DayWrapper = styled("div")<DayWrapperProps>(
-  ({
-    theme,
-    beforeOrStartDate,
-    afterOrEndDate,
-    isHighlighted,
-    isStartDate,
-    isEndDate,
-    firstDayOfRow,
-    lastDayOfRow,
-    isHovered,
-  }) => ({
-    position: "relative",
-
-    ...(((!beforeOrStartDate && !afterOrEndDate) ||
-      isStartDate ||
-      isEndDate) && {
-      "&::before": {
-        content: `""`,
-        position: "absolute",
-        zIndex: 1,
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        backgroundColor: alpha(theme.palette.primary.main, 0.08),
-
-        ...((firstDayOfRow || isStartDate) && {
-          borderTopLeftRadius: "50%",
-          borderBottomLeftRadius: "50%",
-        }),
-
-        ...((lastDayOfRow || isEndDate) && {
-          borderTopRightRadius: "50%",
-          borderBottomRightRadius: "50%",
-        }),
-      },
-    }),
-
-    ...(isHighlighted && {
-      "&::after": {
-        content: `""`,
-        position: "absolute",
-        zIndex: 2,
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        border: `2px dashed transparent`,
-
-        ...(isHighlighted && {
-          borderColor: `${theme.palette.action.disabled} transparent ${theme.palette.action.disabled} transparent`,
-        }),
-
-        ...((firstDayOfRow ||
-          isEndDate ||
-          (isHovered && beforeOrStartDate)) && {
-          borderLeftColor: theme.palette.action.disabled,
-          borderTopLeftRadius: "50%",
-          borderBottomLeftRadius: "50%",
-        }),
-
-        ...((lastDayOfRow || isStartDate || (isHovered && afterOrEndDate)) && {
-          borderRightColor: theme.palette.action.disabled,
-          borderTopRightRadius: "50%",
-          borderBottomRightRadius: "50%",
-        }),
-      },
-    }),
-  })
-);
-
-interface DayProps {
-  date: Date;
-  isDisabled: boolean;
-  isStartDate: boolean;
-  isEndDate: boolean;
-  isHovered: boolean;
-  isHighlighted: boolean;
-  beforeOrStartDate: boolean;
-  afterOrEndDate: boolean;
-  onClick: () => void;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
-}
-
-const Day: FC<DayProps> = ({
-  date,
-  isDisabled,
-  isStartDate,
-  isEndDate,
-  isHovered,
-  isHighlighted,
-  beforeOrStartDate,
-  afterOrEndDate,
-  onClick,
-  onMouseEnter,
-  onMouseLeave,
-}) => {
-  const firstDayOfRow = useMemo(
-    () => date.getDay() === 1 || date.getDate() === 1,
-    [date]
-  );
-  const lastDayOfRow = useMemo(
-    () => date.getDay() === 0 || isSameDay(date, lastDayOfMonth(date)),
-    [date]
-  );
-
-  const isActive = useMemo(
-    () => (!beforeOrStartDate && !afterOrEndDate) || isStartDate || isEndDate,
-    [beforeOrStartDate, afterOrEndDate, isStartDate, isEndDate]
-  );
-
-  return (
-    <DayWrapper
-      beforeOrStartDate={beforeOrStartDate}
-      afterOrEndDate={afterOrEndDate}
-      isHighlighted={isHighlighted}
-      firstDayOfRow={firstDayOfRow}
-      lastDayOfRow={lastDayOfRow}
-      isStartDate={isStartDate}
-      isEndDate={isEndDate}
-      isHovered={isHovered}
-    >
-      <Button
-        onClick={onClick}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
-        color={isStartDate || isEndDate || isActive ? "primary" : "inherit"}
-        variant={isStartDate || isEndDate ? "contained" : "text"}
-        disabled={isDisabled}
-        sx={{
-          minWidth: "0",
-          width: "36px",
-          height: "36px",
-          borderRadius: "50%",
-          zIndex: 3,
-        }}
-      >
-        {date.getDate()}
-      </Button>
-    </DayWrapper>
-  );
-};
 
 interface DatePickerProps {
   anchorEl: HTMLElement | null;
@@ -224,21 +69,24 @@ const DatePicker: FC<DatePickerProps> = ({
   const monthBack = () => setDate(addMonths(date, -1));
   const monthForward = () => setDate(addMonths(date, 1));
 
-  const onDateClick = (date: Date) => () => {
-    if (date > endDate) {
-      onChange(startDate, date);
-      setSettingStart(true);
-    } else if (date < startDate) {
-      onChange(date, endDate);
-      setSettingStart(false);
-    } else if (settingStart) {
-      onChange(date, endDate);
-      setSettingStart(false);
-    } else {
-      onChange(startDate, date);
-      setSettingStart(true);
-    }
-  };
+  const onDateClick = useCallback(
+    (date: Date) => () => {
+      if (date > endDate) {
+        onChange(startDate, date);
+        setSettingStart(true);
+      } else if (date < startDate) {
+        onChange(date, endDate);
+        setSettingStart(false);
+      } else if (settingStart) {
+        onChange(date, endDate);
+        setSettingStart(false);
+      } else {
+        onChange(startDate, date);
+        setSettingStart(true);
+      }
+    },
+    [startDate, endDate, settingStart, onChange]
+  );
 
   const onDateMouseEnter = (date: Date) => () => {
     setHoveredDate(date);
@@ -317,13 +165,13 @@ const DatePicker: FC<DatePickerProps> = ({
           rowGap: 0.25,
         }}
       >
-        {times(7, (index) => (
+        {WEEK_LABELS.map((value, index) => (
           <Typography
             key={`heading-${index}`}
             variant="caption"
             sx={{ mb: 1.25, lineHeight: "40px", color: "text.secondary" }}
           >
-            {WEEK_LABELS[index]}
+            {value}
           </Typography>
         ))}
 
@@ -332,7 +180,7 @@ const DatePicker: FC<DatePickerProps> = ({
         ))}
 
         {daysInMonth.map((date) => (
-          <Day
+          <DatePickerDay
             key={`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`}
             date={date}
             isDisabled={!!maxDate && date > maxDate}
@@ -352,4 +200,4 @@ const DatePicker: FC<DatePickerProps> = ({
   );
 };
 
-export default DatePicker;
+export default memo<DatePickerProps>(DatePicker);

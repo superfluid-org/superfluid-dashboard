@@ -27,7 +27,7 @@ import ActivityTypeFilter, {
   AllActivityTypes,
 } from "../features/activityHistory/ActivityTypeFilter";
 import LoadingActivityGroup from "../features/activityHistory/LoadingActivityGroup";
-import DatePicker from "../features/common/DatePicker";
+import DatePicker from "../components/DatePicker/DatePicker";
 import { useActiveNetworks } from "../features/network/ActiveNetworksContext";
 import NetworkSelectionFilter from "../features/network/NetworkSelectionFilter";
 import { subgraphApi } from "../features/redux/store";
@@ -171,7 +171,7 @@ const History: NextPage = () => {
 
   return (
     <Container maxWidth="lg">
-      <Stack gap={4.5}>
+      <Stack gap={isPhone ? 2.5 : 4.5}>
         <Typography variant="h3">Activity History</Typography>
 
         <Stack gap={2.5}>
@@ -264,8 +264,18 @@ const History: NextPage = () => {
 
         {isLoading && <LoadingActivityGroup />}
         {!isLoading && !hasContent && (
-          <Paper elevation={1} sx={{ px: 12, py: 7 }}>
-            <Typography variant="h4" textAlign="center">
+          <Paper
+            elevation={1}
+            sx={{
+              px: 4,
+              py: 7,
+              [theme.breakpoints.down("md")]: {
+                px: 2,
+                py: 3,
+              },
+            }}
+          >
+            <Typography variant={isPhone ? "h5" : "h4"} textAlign="center">
               No Activity History Available
             </Typography>
             <Typography color="text.secondary" textAlign="center">

@@ -43,6 +43,9 @@ export default memo(function TransactionDrawer() {
       PaperProps={{
         sx: {
           width: transactionDrawerWidth,
+          borderRight: 0,
+          borderTop: 0,
+          borderBottom: 0,
         },
       }}
     >

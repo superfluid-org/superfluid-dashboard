@@ -7,6 +7,8 @@ import {
   Stack,
   styled,
   Toolbar,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { memo } from "react";
 import useBodyScrolled from "../../hooks/useBodyScrolled";
@@ -18,14 +20,22 @@ import TransactionBell from "../transactions/TransactionBell";
 import { menuDrawerWidth } from "./NavigationDrawer";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
+
 interface CustomAppBarProps {
   transactionDrawerOpen: boolean;
   navigationDrawerOpen: boolean;
   isScrolled?: boolean;
 }
-const CustomAppBar = styled(AppBar)<CustomAppBarProps>(
+
+const CustomAppBar = styled(AppBar, {
+  shouldForwardProp: (prop: string) =>
+    !["transactionDrawerOpen", "navigationDrawerOpen", "isScrolled"].includes(
+      prop
+    ),
+})<CustomAppBarProps>(
   ({ theme, transactionDrawerOpen, navigationDrawerOpen, isScrolled }) => ({
     borderRadius: 0,
+    border: 0,
     background: alpha(theme.palette.background.paper, isScrolled ? 1 : 0),
     right: 0,
     left: 0,
@@ -54,14 +64,14 @@ const CustomAppBar = styled(AppBar)<CustomAppBarProps>(
 );
 
 export default memo(function TopBar() {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("lg"));
   const isScrolled = useBodyScrolled();
   const {
     transactionDrawerOpen,
     navigationDrawerOpen,
     setNavigationDrawerOpen,
   } = useLayoutContext();
-
-  const { isPhone } = useMediaBreakpoints();
 
   const openNavigationDrawer = () => setNavigationDrawerOpen(true);
 
@@ -74,7 +84,7 @@ export default memo(function TopBar() {
       elevation={0}
     >
       <Stack component={Toolbar} direction="row" alignItems="center">
-        {isPhone && (
+        {isSmallScreen && (
           <IconButton onClick={openNavigationDrawer} color="inherit">
             <MenuRoundedIcon />
           </IconButton>

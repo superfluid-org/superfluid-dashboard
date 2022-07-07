@@ -61,7 +61,7 @@ export const StreamRowLoading = () => {
             sx={{ borderRadius: "10px" }}
           />
           <Typography variant="h6">
-            <Skeleton width={100} />
+            <Skeleton width={80} />
           </Typography>
         </Stack>
       </TableCell>
@@ -69,19 +69,19 @@ export const StreamRowLoading = () => {
         <>
           <TableCell>
             <Typography variant="body2mono">
-              <Skeleton width={150} />
+              <Skeleton width={80} />
             </Typography>
           </TableCell>
           <TableCell>
             <Typography variant="body2mono">
-              <Skeleton width={150} />
+              <Skeleton width={80} />
             </Typography>
           </TableCell>
           <TableCell>
-            <Skeleton width={100} />
+            <Skeleton width={80} />
           </TableCell>
           <TableCell>
-            <Skeleton width={60} />
+            <Skeleton width={30} />
           </TableCell>
         </>
       ) : (

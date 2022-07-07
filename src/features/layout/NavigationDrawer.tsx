@@ -64,13 +64,13 @@ const NavigationItem: FC<NavigationItemProps> = ({
 export default memo(function NavigationDrawer() {
   const theme = useTheme();
   const router = useRouter();
-  const { isPhone } = useMediaBreakpoints();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("lg"));
 
   const { navigationDrawerOpen, setNavigationDrawerOpen } = useLayoutContext();
 
   const closeNavigationDrawer = useCallback(() => {
-    if (isPhone) setNavigationDrawerOpen(false);
-  }, [isPhone, setNavigationDrawerOpen]);
+    if (isSmallScreen) setNavigationDrawerOpen(false);
+  }, [isSmallScreen, setNavigationDrawerOpen]);
 
   const isActiveRoute = (...routes: Array<string>) =>
     routes.includes(router.route);
@@ -78,10 +78,18 @@ export default memo(function NavigationDrawer() {
   return (
     <Drawer
       data-cy={"navigation-drawer"}
-      variant={isPhone ? "temporary" : "permanent"} // permanent
+      variant={isSmallScreen ? "temporary" : "permanent"} // permanent
       open={navigationDrawerOpen}
       anchor="left"
-      PaperProps={{ sx: { width: menuDrawerWidth, borderRadius: 0 } }}
+      PaperProps={{
+        sx: {
+          width: menuDrawerWidth,
+          borderRadius: 0,
+          borderLeft: 0,
+          borderTop: 0,
+          borderBottom: 0,
+        },
+      }}
       sx={{ width: menuDrawerWidth }}
       onClose={closeNavigationDrawer}
     >
@@ -89,6 +97,7 @@ export default memo(function NavigationDrawer() {
         <Link href="/">
           <Image
             data-cy={"superfluid-logo"}
+            priority
             unoptimized
             src={
               theme.palette.mode === "dark"

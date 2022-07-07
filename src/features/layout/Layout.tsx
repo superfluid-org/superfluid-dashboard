@@ -1,4 +1,4 @@
-import { Box, styled, Toolbar, useTheme } from "@mui/material";
+import { Box, styled, Toolbar, useMediaQuery, useTheme } from "@mui/material";
 import { FC } from "react";
 import IntercomButton from "../intercom/IntercomButton";
 import TransactionDrawer, {
@@ -43,6 +43,7 @@ const Main = styled("main")<{
 
 const Layout: FC = ({ children }) => {
   const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
   const { transactionDrawerOpen } = useLayoutContext();
 
   return (
@@ -50,7 +51,7 @@ const Layout: FC = ({ children }) => {
       <TopBar />
       <NavigationDrawer />
       <Main open={transactionDrawerOpen}>
-        {theme.palette.mode === "dark" && <DarkGlow />}
+        {!isPhone && theme.palette.mode === "dark" && <DarkGlow />}
         <Toolbar />
         {/* <TransactionSnackbar /> */}
         {children}

@@ -51,7 +51,6 @@ const ShareButton: FC<{ imgSrc: string; alt: string }> = ({ imgSrc, alt }) => (
         height={30}
         layout="fixed"
         alt={alt}
-        style={{ display: "block" }}
       />
     </Box>
   </Tooltip>

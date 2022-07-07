@@ -31,31 +31,31 @@ interface SnapshotRowProps {
   open?: boolean;
 }
 
-const SnapshotRow = styled(TableRow)<SnapshotRowProps>(
-  ({ lastElement, open, theme }) => ({
-    cursor: "pointer",
-    ...(lastElement && {
-      td: {
-        border: "none",
-        ":first-of-type": { borderRadius: "0 0 0 20px" },
-        ":last-of-type": { borderRadius: "0 0 20px 0" },
+const SnapshotRow = styled(TableRow, {
+  shouldForwardProp: (name: string) => !["lastElement", "open"].includes(name),
+})<SnapshotRowProps>(({ lastElement, open, theme }) => ({
+  cursor: "pointer",
+  ...(lastElement && {
+    td: {
+      border: "none",
+      ":first-of-type": { borderRadius: "0 0 0 20px" },
+      ":last-of-type": { borderRadius: "0 0 20px 0" },
+      transition: theme.transitions.create("border-radius", {
+        duration: theme.transitions.duration.shortest,
+        easing: theme.transitions.easing.easeOut,
+        delay: theme.transitions.duration.shorter,
+      }),
+      ...(open && {
+        ":first-of-type": { borderRadius: "0" },
+        ":last-of-type": { borderRadius: "0" },
         transition: theme.transitions.create("border-radius", {
           duration: theme.transitions.duration.shortest,
-          easing: theme.transitions.easing.easeOut,
-          delay: theme.transitions.duration.shorter,
+          easing: theme.transitions.easing.easeInOut,
         }),
-        ...(open && {
-          ":first-of-type": { borderRadius: "0" },
-          ":last-of-type": { borderRadius: "0" },
-          transition: theme.transitions.create("border-radius", {
-            duration: theme.transitions.duration.shortest,
-            easing: theme.transitions.easing.easeInOut,
-          }),
-        }),
-      },
-    }),
-  })
-);
+      }),
+    },
+  }),
+}));
 
 interface TokenSnapshotRowProps {
   network: Network;

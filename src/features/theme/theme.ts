@@ -458,6 +458,11 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         },
       },
+      MuiDialogTitle: {
+        defaultProps: {
+          component: "div",
+        },
+      },
       MuiBackdrop: {
         styleOverrides: {
           invisible: {

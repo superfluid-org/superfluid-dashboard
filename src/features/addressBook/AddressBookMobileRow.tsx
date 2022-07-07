@@ -2,6 +2,7 @@ import { ListItemText, Stack, TableCell, TableRow } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressName from "../../components/AddressName/AddressName";
 import useAddressName from "../../hooks/useAddressName";
 import shortenHex from "../../utils/shortenHex";
 
@@ -16,10 +17,16 @@ const AddressBookMobileRow: FC<AddressBookMobileRowProps> = ({ address }) => {
     <TableRow>
       <TableCell>
         <Stack direction="row" alignItems="center" gap={1.5}>
-          <AddressAvatar address={address} />
+          <AddressAvatar
+            address={address}
+            AvatarProps={{
+              sx: { width: "27px", height: "27px" },
+            }}
+            BlockiesProps={{ size: 9, scale: 3 }}
+          />
           <ListItemText
-            primary={name || shortenHex(address, 8)}
-            secondary={!!name && shortenHex(address, 8)}
+            primary={<AddressName address={address} length="short" />}
+            secondary={!!name && shortenHex(address, 4)}
             primaryTypographyProps={{ variant: "h6" }}
           />
         </Stack>

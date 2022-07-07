@@ -55,12 +55,13 @@ export default memo(function TokenDialog({
   const { visibleAddress } = useVisibleAddress();
 
   const [openCounter, setOpenCounter] = useState(0);
+
   useEffect(() => {
     if (open) {
       setOpenCounter(openCounter + 1);
       setSearchTerm(""); // Reset the search term when the dialog opens, not when it closes (because then there would be noticable visual clearing of the field). It's smoother UI to do it on opening.
     }
-  }, [open]);
+  }, [open, openCounter]);
 
   const underlyingTokens = useMemo(
     () => tokenPairsQuery.data?.filter(isUnderlying) ?? [],

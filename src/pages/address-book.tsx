@@ -291,7 +291,7 @@ const AddressBook: NextPage = () => {
         showAddressBook={false}
       />
 
-      <Stack gap={4.5}>
+      <Stack gap={isPhone ? 2.5 : 4.5}>
         <Stack direction="row" gap={1.5} alignItems="center">
           <Typography variant="h3" flex={1}>
             Address Book
@@ -348,13 +348,16 @@ const AddressBook: NextPage = () => {
             />
           </Stack>
           <Stack direction="row" gap={1.5}>
-            <Button
-              variant="textContained"
-              color="primary"
-              onClick={openAddDialog}
-            >
-              Add Address
-            </Button>
+            {!isDeleting && (
+              <Button
+                variant="textContained"
+                color="primary"
+                onClick={openAddDialog}
+              >
+                Add Address
+              </Button>
+            )}
+
             <Button
               variant="textContained"
               color="error"
@@ -407,8 +410,8 @@ const AddressBook: NextPage = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell sx={{ pl: 10 }}>Name</TableCell>
-                    <TableCell>ENS Name</TableCell>
-                    <TableCell>Address</TableCell>
+                    <TableCell width="200px">ENS Name</TableCell>
+                    <TableCell width="200px">Address</TableCell>
                     <TableCell width="160px">Active Streams</TableCell>
                     <TableCell width="88px" />
                   </TableRow>

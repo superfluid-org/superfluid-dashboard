@@ -80,7 +80,9 @@ export default memo(function WrapCard({
         borderRadius: "20px",
         [theme.breakpoints.down("md")]: {
           boxShadow: "none",
+          backgroundImage: "none",
           borderRadius: 0,
+          border: 0,
           p: 0,
         },
       }}

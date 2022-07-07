@@ -10,14 +10,16 @@ const LayoutContext = createContext<{
 
 export const LayoutContextProvider: FC = ({ children }) => {
   const theme = useTheme();
-  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("lg"));
 
   const [transactionDrawerOpen, setTransactionDrawerOpen] = useState(false);
-  const [navigationDrawerOpen, setNavigationDrawerOpen] = useState(!isPhone);
+  const [navigationDrawerOpen, setNavigationDrawerOpen] = useState(
+    !isSmallScreen
+  );
 
   useEffect(() => {
-    setNavigationDrawerOpen(!isPhone);
-  }, [isPhone]);
+    setNavigationDrawerOpen(!isSmallScreen);
+  }, [isSmallScreen]);
 
   return (
     <LayoutContext.Provider

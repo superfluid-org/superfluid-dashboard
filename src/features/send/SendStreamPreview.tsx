@@ -11,6 +11,7 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
 import { ethers } from "ethers";
 import { FC, ReactNode, useMemo } from "react";
+import shortenHex from "../../utils/shortenHex";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
@@ -75,6 +76,8 @@ export const StreamingPreview: FC<{
   } | null;
 }> = ({ receiver, token, flowRateEther, existingStream }) => {
   const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
 
@@ -167,7 +170,7 @@ export const StreamingPreview: FC<{
         }}
       >
         <PreviewItem dataCy="preview-receiver" label="Receiver">
-          {receiver}
+          {isPhone ? shortenHex(receiver, 14) : receiver}
         </PreviewItem>
 
         <PreviewItem
