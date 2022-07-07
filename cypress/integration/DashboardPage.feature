@@ -4,6 +4,7 @@ Feature: Dashboard Page test cases
     Given "Dashboard Page" is open without connecting a wallet
     Then Dashboard page is open when wallet of the user is not connected
 
+  @ignore
   Scenario: Dashboard page showing correct wallet balances for account with no streams
     Given "Dashboard Page" is open with a mocked connection to "staticBalanceAccount" on "polygon"
     And User connects their wallet to the dashboard
@@ -36,6 +37,7 @@ Feature: Dashboard Page test cases
     And User clicks on the "ropsten" toggle
     Then "ropsten" balances are not visible
 
+  @ignore
   Scenario: Flow values ,cancel buttons and wrong network warning for an account with ongoing streams
     Given "Dashboard Page" is open with a mocked connection to "ongoingStreamAccount" on "polygon"
     And User connects their wallet to the dashboard
@@ -52,6 +54,7 @@ Feature: Dashboard Page test cases
     And User hovers on the first "gnosis" stream cancel button
     Then A tooltip asking user to switch to "gnosis" is shown
 
+  @ignore
   Scenario: Changing token stream table pages and amount of results shown
     Given "Dashboard Page" is open without connecting a wallet
     And User uses view mode to look at "accountWithLotsOfData"
@@ -62,9 +65,10 @@ Feature: Dashboard Page test cases
     Then "25" streams with "xDAIx" are shown
     And User switches to the next page for the "xDAIx" token and new results are shown
 
+  @ignore
   Scenario: View mode warnings in dashboard page
     Given "Dashboard Page" is open without connecting a wallet
-    And User uses view mode to look at "ongoingStreamsAccount"
+    And User uses view mode to look at "ongoingStreamAccount"
     And User waits for balances to load
     And User clicks on "polygon" "MATICx" row
     And Cancel button is disabled on all streams on "polygon"

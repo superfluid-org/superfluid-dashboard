@@ -4,7 +4,7 @@ import {Common} from "../../pageObjects/pages/Common";
 import {SendPage} from "../../pageObjects/pages/SendPage";
 
 Given(/^User inputs "([^"]*)" into the wrap field$/, function (amount: string) {
-    WrapPage.inputWrapAmount(amount);
+    WrapPage.clearAndInputWrapAmount(amount);
 });
 
 Then(/^User switches to unwrap tab$/, function () {
@@ -12,7 +12,7 @@ Then(/^User switches to unwrap tab$/, function () {
 });
 
 Then(/^User inputs "([^"]*)" into the unwrap field$/, function (amount: string) {
-    WrapPage.inputUnwrapAmount(amount);
+    WrapPage.clearAndInputUnwrapAmount(amount);
 });
 
 Given(/^The upgrade button is disabled$/, function () {

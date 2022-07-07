@@ -31,7 +31,8 @@ export class WrapPage extends BasePage {
         this.isVisible(UPGRADE_BUTTON);
     }
 
-    static inputWrapAmount(amount: string) {
+    static clearAndInputWrapAmount(amount: string) {
+        this.clear(WRAP_INPUT)
         this.type(WRAP_INPUT, amount);
         this.hasValue(WRAP_PREVIEW, amount);
     }
@@ -59,7 +60,8 @@ export class WrapPage extends BasePage {
         this.isDisabled(DOWNGRADE_BUTTON);
     }
 
-    static inputUnwrapAmount(amount: string) {
+    static clearAndInputUnwrapAmount(amount: string) {
+        this.clear(UNWRAP_INPUT)
         this.type(UNWRAP_INPUT, amount);
         this.hasValue(UNWRAP_PREVIEW, amount);
     }
@@ -101,7 +103,7 @@ export class WrapPage extends BasePage {
             )[0];
             this.hasText(
                 UNDERLYING_BALANCE,
-                `Balance: ${filteredToken.underlyingBalance}`
+                `Balance: ${parseFloat(filteredToken.underlyingBalance).toFixed(4)}`
             );
             this.hasText(SUPER_TOKEN_BALANCE, filteredToken.balance);
         });

@@ -6,12 +6,11 @@ Feature: Wrap page test cases
     And User inputs "1" into the wrap field
     Then Connect wallet button is visible in the wrap/unwrap page
     And User switches to unwrap tab
-    And The downgrade button is disabled
-    And User inputs "1" into the unwrap field
     Then Connect wallet button is visible in the wrap/unwrap page
     And User switches to wrap tab
-    Then Wrap/Unwrap page is open and the wrap container is visible
+    Then Connect wallet button is visible in the wrap/unwrap page
 
+  @ignore
   Scenario: Token balances shown for a user with a connected wallet
     Given "Wrap Page" is open with a mocked connection to "staticBalanceAccount" on "polygon"
     And User connects their wallet to the dashboard
@@ -34,7 +33,7 @@ Feature: Wrap page test cases
     Given "Wrap Page" is open with a mocked connection to "staticBalanceAccount" on "polygon"
     And User connects their wallet to the dashboard
     And User changes their network to "gnosis"
-    And User inputs "1" into the wrap field
+    And User inputs "0.5" into the wrap field
     And Change network button is visible with a message asking user to switch to "gnosis"
     And User switches to unwrap tab
     And User inputs "1" into the unwrap field

@@ -21,7 +21,7 @@ const cucumber = require("cypress-cucumber-preprocessor").default;
 const resolve = require("resolve");
 
 module.exports = (on, config) => {
-    require("@cypress/code-coverage/task")(on, config);
+    //require("@cypress/code-coverage/task")(on, config);
 
     const options = {
         ...browserify.defaultOptions,
@@ -32,3 +32,5 @@ module.exports = (on, config) => {
 
     return config;
 };
+
+
