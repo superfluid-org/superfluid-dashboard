@@ -13,6 +13,7 @@ import {
   ListItemText,
   Stack,
   SvgIcon,
+  SwipeableDrawer,
   Toolbar,
   useMediaQuery,
   useTheme,
@@ -20,8 +21,7 @@ import {
 import Image from "next/image";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { FC, memo, useCallback, useState } from "react";
-import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
+import { FC, memo, useCallback } from "react";
 import Link from "../common/Link";
 import ThemeChanger from "../theme/ThemeChanger";
 import ConnectWallet from "../wallet/ConnectWallet";
@@ -76,7 +76,7 @@ export default memo(function NavigationDrawer() {
     routes.includes(router.route);
 
   return (
-    <Drawer
+    <SwipeableDrawer
       data-cy={"navigation-drawer"}
       variant={isSmallScreen ? "temporary" : "permanent"} // permanent
       open={navigationDrawerOpen}
@@ -92,6 +92,7 @@ export default memo(function NavigationDrawer() {
       }}
       sx={{ width: menuDrawerWidth }}
       onClose={closeNavigationDrawer}
+      onOpen={() => setNavigationDrawerOpen(true)}
     >
       <Toolbar sx={{ height: 88 }}>
         <Link href="/">
@@ -185,6 +186,6 @@ export default memo(function NavigationDrawer() {
           <ThemeChanger />
         </Stack>
       </Stack>
-    </Drawer>
+    </SwipeableDrawer>
   );
 });
