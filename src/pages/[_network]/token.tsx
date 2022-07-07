@@ -2,8 +2,10 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import { TabContext, TabList } from "@mui/lab";
 import {
+  Box,
   Button,
   Card,
+  Chip,
   Container,
   FormControlLabel,
   FormGroup,
@@ -11,6 +13,7 @@ import {
   Switch,
   Tab,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
@@ -21,6 +24,7 @@ import Error from "next/error";
 import { useRouter } from "next/router";
 import { FC, useEffect, useState } from "react";
 import SubscriptionsTable from "../../features/index/SubscriptionsTable";
+import NetworkIcon from "../../features/network/NetworkIcon";
 import { rpcApi, subgraphApi } from "../../features/redux/store";
 import {
   getNetworkStaticPaths,
@@ -33,6 +37,7 @@ import FlowingBalance from "../../features/token/FlowingBalance";
 import TokenBalanceGraph, {
   GraphType,
 } from "../../features/token/TokenBalanceGraph";
+import TokenGraphFilter from "../../features/token/TokenGraph/TokenGraphFilter";
 import TokenToolbar from "../../features/token/TokenToolbar";
 import TransferEventsTable from "../../features/transfers/TransferEventsTable";
 import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
@@ -50,7 +55,7 @@ const Token: FC<NetworkPage> = ({ network }) => {
   const theme = useTheme();
   const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
-  const { isPhone } = useMediaBreakpoints();
+  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
 
   const [activeTab, setActiveTab] = useState(TokenDetailsTabs.Streams);
   const [graphType, setGraphType] = useState(GraphType.All);
@@ -113,11 +118,11 @@ const Token: FC<NetworkPage> = ({ network }) => {
   const onTabChange = (_e: unknown, newTab: TokenDetailsTabs) =>
     setActiveTab(newTab);
 
-  const onGraphTypeChange = (newGraphType: GraphType) => () =>
+  const onGraphTypeChange = (newGraphType: GraphType) =>
     setGraphType(newGraphType);
 
-  const getGraphFilterColor = (type: GraphType) =>
-    graphType === type ? "primary" : "secondary";
+  // const getGraphFilterColor = (type: GraphType) =>
+  //   graphType === type ? "primary" : "secondary";
 
   const {
     balanceUntilUpdatedAt,
@@ -138,21 +143,40 @@ const Token: FC<NetworkPage> = ({ network }) => {
 
   return (
     <Container maxWidth="lg">
-      <Stack gap={4}>
+      <Stack gap={isPhone ? 3 : 4}>
         <TokenToolbar
           token={tokenQuery.data}
           network={network}
           onBack={handleBack}
         />
 
-        <Card sx={{ pb: 2, [theme.breakpoints.down("md")]: { p: 2 } }}>
+        <Card
+          sx={{
+            pb: 2,
+            [theme.breakpoints.down("md")]: {
+              p: 2,
+              border: 0,
+              background: "transparent",
+              mx: -2,
+            },
+          }}
+        >
           <Stack
-            direction={isPhone ? "column" : "row"}
+            direction="row"
             justifyContent="space-between"
-            sx={{ mb: 4 }}
+            sx={{
+              mb: 4,
+              [theme.breakpoints.down("md")]: {
+                mb: 0,
+                alignItems: "end",
+              },
+            }}
           >
             <Stack gap={0.5}>
-              <Typography variant="body1" color="text.secondary">
+              <Typography
+                variant={isPhone ? "body2" : "body1"}
+                color="text.secondary"
+              >
                 Balance
               </Typography>
               <Typography variant="h3mono">
@@ -179,66 +203,24 @@ const Token: FC<NetworkPage> = ({ network }) => {
               alignItems={isPhone ? "start" : "end"}
               justifyContent="space-between"
             >
-              <Stack direction="row" gap={0.5}>
-                {/* <Button
-                  variant="textContained"
-                  color={getGraphFilterColor(GraphType.Day)}
-                  onClick={onGraphTypeChange(GraphType.Day)}
-                  size="xs"
-                >
-                  1D
-                </Button> */}
-                <Button
-                  variant="textContained"
-                  color={getGraphFilterColor(GraphType.Week)}
-                  onClick={onGraphTypeChange(GraphType.Week)}
-                  size="xs"
-                >
-                  7D
-                </Button>
-                <Button
-                  variant="textContained"
-                  color={getGraphFilterColor(GraphType.Month)}
-                  onClick={onGraphTypeChange(GraphType.Month)}
-                  size="xs"
-                >
-                  1M
-                </Button>
-                <Button
-                  variant="textContained"
-                  color={getGraphFilterColor(GraphType.Quarter)}
-                  onClick={onGraphTypeChange(GraphType.Quarter)}
-                  size="xs"
-                >
-                  3M
-                </Button>
-                <Button
-                  variant="textContained"
-                  color={getGraphFilterColor(GraphType.Year)}
-                  onClick={onGraphTypeChange(GraphType.Year)}
-                  size="xs"
-                >
-                  1Y
-                </Button>
-                <Button
-                  variant="textContained"
-                  color={getGraphFilterColor(GraphType.YTD)}
-                  onClick={onGraphTypeChange(GraphType.YTD)}
-                  size="xs"
-                >
-                  YTD
-                </Button>
-                <Button
-                  variant="textContained"
-                  color={getGraphFilterColor(GraphType.All)}
-                  onClick={onGraphTypeChange(GraphType.All)}
-                  size="xs"
-                >
-                  All
-                </Button>
-              </Stack>
+              {!isPhone && (
+                <TokenGraphFilter
+                  activeType={graphType}
+                  onChange={onGraphTypeChange}
+                />
+              )}
 
               <Stack alignItems="end">
+                {isPhone && (
+                  <Chip
+                    size="small"
+                    label={network.name}
+                    avatar={
+                      <NetworkIcon network={network} size={18} fontSize={14} />
+                    }
+                    sx={{ mb: 1 }}
+                  />
+                )}
                 <Stack direction="row" alignItems="center">
                   <Typography variant="h5mono">
                     <Ether
@@ -277,7 +259,20 @@ const Token: FC<NetworkPage> = ({ network }) => {
             />
           )}
 
-          <Stack direction="row" justifyContent="flex-end" sx={{ mt: 2 }}>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            sx={{ mt: 2 }}
+          >
+            {isPhone ? (
+              <TokenGraphFilter
+                activeType={graphType}
+                onChange={onGraphTypeChange}
+              />
+            ) : (
+              <Box />
+            )}
             <FormGroup>
               <FormControlLabel
                 control={

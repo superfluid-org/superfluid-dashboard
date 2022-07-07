@@ -92,7 +92,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
           {!isPhone && (
             <TableRow>
               <TableCell width="200">Asset</TableCell>
-              <TableCell width="400">Balance</TableCell>
+              <TableCell>Balance</TableCell>
               <TableCell width="300">Net Flow</TableCell>
               <TableCell width="300">Inflow/Outflow</TableCell>
               <TableCell width="120" align="center">
