@@ -17,7 +17,7 @@ export const ensApi = createApi({
       [
         {
           provider: new ethers.providers.JsonRpcBatchProvider(
-            "https://eth-rpc.gateway.pokt.network",
+            "https://rpc-endpoints.superfluid.dev/eth-mainnet",
             "mainnet"
           ),
           priority: 1,
@@ -27,7 +27,7 @@ export const ensApi = createApi({
             "https://cloudflare-eth.com",
             "mainnet"
           ),
-          priority: 1,
+          priority: 2,
         },
       ],
       1

@@ -1,4 +1,4 @@
-import { Avatar, AvatarProps, SxProps, Theme, useTheme } from "@mui/material";
+import { Avatar, SxProps, Theme } from "@mui/material";
 import { FC } from "react";
 import { Network } from "./networks";
 
@@ -15,12 +15,11 @@ const NetworkIcon: FC<NetworkIconProps> = ({
   size = 36,
   sx = {},
 }) => {
-  const theme = useTheme();
-
-  if (!network.testnet)
+  if (!network.testnet) {
     return (
       <Avatar src={network.icon} sx={{ width: size, height: size, ...sx }} />
     );
+  }
 
   return (
     <Avatar
