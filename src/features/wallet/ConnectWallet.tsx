@@ -18,11 +18,11 @@ import { useConnectButton } from "./ConnectButtonProvider";
 export default memo(function ConnectWallet() {
   const { network } = useExpectedNetwork();
   const { openConnectModal, openAccountModal, mounted } = useConnectButton();
-  const { data: account, error } = useAccount();
+  const { data: account } = useAccount();
   const accountAddress = account?.address;
   const { activeChain } = useNetwork();
   const { stopImpersonation: stopImpersonation } = useImpersonation();
-  const { isAutoConnecting, didAutoConnect } = useAutoConnect();
+  const { isAutoConnecting } = useAutoConnect();
 
   if (accountAddress && activeChain && mounted) {
     // TODO(KK): Better solution for pointer/click
@@ -63,7 +63,7 @@ export default memo(function ConnectWallet() {
     <LoadingButton
       data-cy={"connect-wallet-button"}
       loading={
-        !mounted || isAutoConnecting || (didAutoConnect && !account && !error)
+        !mounted || isAutoConnecting
       }
       variant="contained"
       size="xl"
