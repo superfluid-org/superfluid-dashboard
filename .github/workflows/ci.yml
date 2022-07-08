@@ -35,7 +35,7 @@ jobs:
         with:
           browser: ${{ matrix.browser }}
           headless: true
-          start: yarn dev
+          start: yarn build && yarn start
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 180
           record: true
