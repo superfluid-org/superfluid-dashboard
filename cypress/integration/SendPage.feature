@@ -1,5 +1,6 @@
 Feature: Send Page test cases
 
+  @ignore
   Scenario: Connect wallet button shown to a user who hasn't got their wallet connected
     Given "Send Page" is open without connecting a wallet
     And User fills all stream inputs

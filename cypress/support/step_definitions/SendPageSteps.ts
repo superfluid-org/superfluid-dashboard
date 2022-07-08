@@ -1,4 +1,4 @@
-import {Given, Then} from "cypress-cucumber-preprocessor/steps";
+import {Given, Then} from "@badeball/cypress-cucumber-preprocessor";
 import {SendPage} from "../../pageObjects/pages/SendPage";
 import {WrapPage} from "../../pageObjects/pages/WrapPage";
 
@@ -41,15 +41,6 @@ Then(/^Chosen ENS receiver wallet address shows ([^"]*) and ([^"]*)$/,
 Then(/^User clears the receiver field with the close button$/, function () {
     SendPage.clearReceiverField();
 });
-
-Then(/^The stop viewing as an address button is visible$/, function () {
-    WrapPage.isStopViewingButtonVisible();
-});
-
-Given(/^Change network button is visible with a message asking user to switch to "([^"]*)"$/,
-    function (network: string) {
-        WrapPage.changeNetworkButtonShowsCorrectNetwork(network);
-    });
 
 Given(/^User opens the receiver dialog$/, function () {
     SendPage.receiverDialog();

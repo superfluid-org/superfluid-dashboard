@@ -1,4 +1,4 @@
-import {Given, Then} from "cypress-cucumber-preprocessor/steps";
+import {Given, Then} from "@badeball/cypress-cucumber-preprocessor";
 import {WrapPage} from "../../pageObjects/pages/WrapPage";
 import {Common} from "../../pageObjects/pages/Common";
 import {SendPage} from "../../pageObjects/pages/SendPage";
@@ -80,8 +80,4 @@ Then(/^The super token balances in the unwrap token dialog are shown correctly o
 
 Then(/^All tokens have an animation around them$/, function () {
     SendPage.verifyAllSupertokenAnimations();
-});
-
-Then(/^The stop viewing as an address button is visible$/, function () {
-    WrapPage.isStopViewingButtonVisible();
 });

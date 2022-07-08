@@ -1,4 +1,4 @@
-import {Given, Then} from "cypress-cucumber-preprocessor/steps";
+import {Given, Then} from "@badeball/cypress-cucumber-preprocessor";
 import {Common} from "../../pageObjects/pages/Common";
 import {DashboardPage} from "../../pageObjects/pages/DashboardPage";
 import {WrapPage} from "../../pageObjects/pages/WrapPage";
@@ -57,4 +57,8 @@ Given(/^The navigation drawer shows connect wallet button$/, function () {
 
 Given(/^User uses view mode to look at "([^"]*)"$/, function (account: string) {
     Common.viewAccount(account);
+});
+
+Then(/^The stop viewing as an address button is visible$/, function () {
+    WrapPage.isStopViewingButtonVisible();
 });
