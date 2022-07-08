@@ -12,6 +12,7 @@ import { useConnect, useNetwork, useSigner } from "wagmi";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 import { Signer } from "ethers";
 import { useConnectButton } from "../wallet/ConnectButtonProvider";
+import { useAutoConnect } from "../autoConnect/AutoConnect";
 
 export const TransactionButton: FC<{
   mutationResult: UnknownMutationResult;
@@ -39,9 +40,10 @@ export const TransactionButton: FC<{
   ButtonProps = {},
 }) => {
   const { openConnectModal } = useConnectButton();
-  const { isConnecting } = useConnect();
   const { activeChain, switchNetwork } = useNetwork();
-  const { data: signer, isLoading: isSignerLoading } = useSigner();
+  const { data: signer } = useSigner();
+  const { isConnected, isConnecting } = useConnect();
+  const { isAutoConnecting } = useAutoConnect();
   const { isImpersonated, stopImpersonation: stopImpersonation } =
     useImpersonation();
 
@@ -88,12 +90,12 @@ export const TransactionButton: FC<{
       );
     }
 
-    if (!signer) {
+    if (!isConnected) {
       return (
         <LoadingButton
           data-cy={"connect-wallet"}
           fullWidth
-          loading={isConnecting || isSignerLoading}
+          loading={isAutoConnecting || isConnecting}
           color="primary"
           variant="contained"
           size="xl"
@@ -132,8 +134,13 @@ export const TransactionButton: FC<{
         color="primary"
         variant="contained"
         size="xl"
-        disabled={disabled}
-        onClick={() => {
+        disabled={disabled || !signer}
+        onClick={async () => {
+          if (!signer) {
+            throw Error(
+              "This should never happen. Button should be disabled when signer is not yet fetched."
+            );
+          }
           onClick(
             signer,
             (arg: {

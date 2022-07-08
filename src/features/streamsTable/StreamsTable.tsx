@@ -91,7 +91,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
   const outgoingStreams: (Stream | PendingOutgoingStream)[] = useMemo(() => {
     const queriedOutgoingStreams = outgoingStreamsQuery.data?.items ?? [];
     return [...queriedOutgoingStreams, ...pendingOutgoingStreams];
-  }, [outgoingStreamsQuery.data, ...pendingOutgoingStreams]);
+  }, [outgoingStreamsQuery.data, pendingOutgoingStreams]);
 
   const streams = useMemo(() => {
     return [

@@ -10,6 +10,7 @@ import { memo } from "react";
 import { useAccount, useNetwork } from "wagmi";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
+import { useAutoConnect } from "../autoConnect/AutoConnect";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { useConnectButton } from "./ConnectButtonProvider";
@@ -21,6 +22,7 @@ export default memo(function ConnectWallet() {
   const accountAddress = account?.address;
   const { activeChain } = useNetwork();
   const { stopImpersonation: stopImpersonation } = useImpersonation();
+  const { isAutoConnecting } = useAutoConnect();
 
   if (accountAddress && activeChain && mounted) {
     // TODO(KK): Better solution for pointer/click
@@ -60,7 +62,9 @@ export default memo(function ConnectWallet() {
   return (
     <LoadingButton
       data-cy={"connect-wallet-button"}
-      loading={!mounted}
+      loading={
+        !mounted || isAutoConnecting
+      }
       variant="contained"
       size="xl"
       onClick={() => {

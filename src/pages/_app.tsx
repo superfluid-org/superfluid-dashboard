@@ -21,6 +21,7 @@ import { ActiveNetworksProvider } from "../features/network/ActiveNetworksContex
 import ConnectButtonProvider from "../features/wallet/ConnectButtonProvider";
 import { IntercomProvider } from "react-use-intercom";
 import { INTERCOM_APP_ID } from "../features/intercom/IntercomButton";
+import { AutoConnectProvider } from "../features/autoConnect/AutoConnect";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -44,54 +45,53 @@ export default function MyApp(props: MyAppProps) {
   }, []);
 
   return (
-    <WagmiManager>
-      <NextThemesProvider>
-        <CacheProvider value={emotionCache}>
-          <Head>
-            <meta
-              name="viewport"
-              content="initial-scale=1, width=device-width"
-            />
-          </Head>
-          <ReduxProvider>
-            <ImpersonationProvider>
-              <ActiveNetworksProvider>
-                <ExpectedNetworkProvider>
-                  {(network) => (
-                    <MuiProvider>
-                      {(_muiTheme) => (
-                        <RainbowKitManager>
-                          <ConnectButtonProvider>
-                            <VisibleAddressProvider>
-                              <TransactionRestorationContextProvider>
-                                <TransactionDrawerContextProvider>
-                                  <IntercomProvider
-                                    appId={INTERCOM_APP_ID}
-                                    initializeDelay={500}
-                                  >
-                                    <Layout>
-                                      <ReduxPersistGate>
-                                        <Component
-                                          key={`${network.slugName}`}
-                                          {...pageProps}
-                                        />
-                                      </ReduxPersistGate>
-                                    </Layout>
-                                  </IntercomProvider>
-                                </TransactionDrawerContextProvider>
-                              </TransactionRestorationContextProvider>
-                            </VisibleAddressProvider>
-                          </ConnectButtonProvider>
-                        </RainbowKitManager>
-                      )}
-                    </MuiProvider>
-                  )}
-                </ExpectedNetworkProvider>
-              </ActiveNetworksProvider>
-            </ImpersonationProvider>
-          </ReduxProvider>
-        </CacheProvider>
-      </NextThemesProvider>
-    </WagmiManager>
+    <NextThemesProvider>
+      <CacheProvider value={emotionCache}>
+        <Head>
+          <meta name="viewport" content="initial-scale=1, width=device-width" />
+        </Head>
+        <WagmiManager>
+          <AutoConnectProvider>
+            <ReduxProvider>
+              <ImpersonationProvider>
+                <ActiveNetworksProvider>
+                  <ExpectedNetworkProvider>
+                    {(network) => (
+                      <MuiProvider>
+                        {(_muiTheme) => (
+                          <RainbowKitManager>
+                            <ConnectButtonProvider>
+                              <VisibleAddressProvider>
+                                <TransactionRestorationContextProvider>
+                                  <TransactionDrawerContextProvider>
+                                    <IntercomProvider
+                                      appId={INTERCOM_APP_ID}
+                                      initializeDelay={250}
+                                    >
+                                      <Layout>
+                                        <ReduxPersistGate>
+                                          <Component
+                                            key={`${network.slugName}`}
+                                            {...pageProps}
+                                          />
+                                        </ReduxPersistGate>
+                                      </Layout>
+                                    </IntercomProvider>
+                                  </TransactionDrawerContextProvider>
+                                </TransactionRestorationContextProvider>
+                              </VisibleAddressProvider>
+                            </ConnectButtonProvider>
+                          </RainbowKitManager>
+                        )}
+                      </MuiProvider>
+                    )}
+                  </ExpectedNetworkProvider>
+                </ActiveNetworksProvider>
+              </ImpersonationProvider>
+            </ReduxProvider>
+          </AutoConnectProvider>
+        </WagmiManager>
+      </CacheProvider>
+    </NextThemesProvider>
   );
 }

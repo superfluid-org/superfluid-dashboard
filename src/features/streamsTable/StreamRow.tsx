@@ -224,7 +224,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
             </Typography>
           </Stack>
         )}
-        {isActive && flowDeleteTransaction?.status !== "Succeeded" && (
+        {isActive && (
           <>
             {flowDeleteMutation.isLoading || !!pendingCancellation ? (
               <Stack direction="row" alignItems="center" gap={1}>
