@@ -31,7 +31,7 @@ jobs:
           node-version: 16.x
 
       - name: Cypress tests
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v4
         with:
           browser: ${{ matrix.browser }}
           headless: true
