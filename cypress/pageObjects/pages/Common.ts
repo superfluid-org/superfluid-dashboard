@@ -6,12 +6,12 @@ import shortenHex from "../../../src/utils/shortenHex";
 
 const NAVIGATION_BUTTON_PREFIX = "[data-cy=nav-";
 const TOP_BAR_NETWORK_BUTTON = "[data-cy=top-bar-network-button]";
-const CONNECTED_WALLET = "[data-cy=wallet-connection-status] span";
+const CONNECTED_WALLET = "[data-cy=wallet-connection-status] h6";
 const WALLET_CONNECTION_STATUS = "[data-cy=wallet-connection-status] p";
 const NAVIGATION_DRAWER = "[data-cy=navigation-drawer]";
 const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet-button]";
-const VIEW_MODE_INPUT = "[data-cy=view-mode-inputs] input";
-const VIEW_MODE_SEARCH = "[data-cy=view-mode-search-button]";
+const VIEW_MODE_INPUT = "[data-cy=view-mode-inputs]";
+const VIEW_MODE_SEARCH = "[data-cy=address-dialog-input] input";
 const VIEWED_ACCOUNT = "[data-cy=view-mode-chip] span";
 const VIEW_MODE_CHIP_CLOSE =
     "[data-cy=view-mode-chip] [data-testid=CancelIcon]";
@@ -99,8 +99,8 @@ export class Common extends BasePage {
 
     static viewAccount(account: string) {
         cy.fixture("commonData").then((commonData) => {
-            this.type(VIEW_MODE_INPUT, commonData[account]);
-            this.click(VIEW_MODE_SEARCH);
+            this.click(VIEW_MODE_INPUT)
+            this.type(VIEW_MODE_SEARCH, commonData[account]);
         });
     }
 

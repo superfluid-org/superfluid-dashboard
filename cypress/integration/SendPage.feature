@@ -1,5 +1,6 @@
 Feature: Send Page test cases
 
+  @ignore
   Scenario: Connect wallet button shown to a user who hasn't got their wallet connected
     Given "Send Page" is open without connecting a wallet
     And User fills all stream inputs
@@ -8,6 +9,7 @@ Feature: Send Page test cases
     And User accepts the risk warning
     Then Send button is enabled and asks user to Connect their wallet
 
+  @ignore
   Scenario: Receiver dialog recents and ENS support
     Given "Send Page" is open with a mocked connection to "staticBalanceAccount" on "polygon"
     And User connects their wallet to the dashboard
@@ -24,6 +26,7 @@ Feature: Send Page test cases
     Then Chosen ENS receiver wallet address shows vijay.eth and 0x7BDa037dFdf9CD9Ad261D27f489924aebbcE71Ac
     And User clears the receiver field with the close button
 
+  @ignore
   Scenario: Super token selection , balances and wrap buttons
     Given "Send Page" is open with a mocked connection to "staticBalanceAccount" on "polygon"
     And User connects their wallet to the dashboard
@@ -64,8 +67,9 @@ Feature: Send Page test cases
     And User accepts the risk warning
     Then The stop viewing as an address button is visible
 
+  @ignore
   Scenario: Wrong network warnings in the send page
-    Given "Send Page" is open with a mocked connection to "staticBalanceAccount" on "polygon"
+    Given "Send Page" is open with a mocked connection to "ongoingStreamAccount" on "polygon"
     And User connects their wallet to the dashboard
     And User changes their network to "gnosis"
     And User fills all stream inputs

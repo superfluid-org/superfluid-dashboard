@@ -49,7 +49,7 @@ export class DashboardPage extends BasePage {
                             `[data-cy=${network.slugName}${NETWORK_SNAPSHOT_TABLE_APPENDIX} ${TOKEN_BALANCES}`
                         )
                             .eq(index)
-                            .should("have.text", tokenValues.balance.toFixed(8));
+                            .should("have.text", parseFloat(tokenValues.balance).toFixed(0)) + " ";
                     }
                 );
             });
