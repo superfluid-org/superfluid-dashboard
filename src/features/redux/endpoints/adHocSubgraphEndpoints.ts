@@ -224,7 +224,7 @@ export const adHocSubgraphEndpoints = {
                 where: {
                   isSuperToken: true
                   isListed: true
-                  symbol_in: ["ETHx", "AVAXx", "BNBx"]
+                  symbol_in: ["ETHx", "AVAXx", "BNBx", "MATICx"]
                   underlyingAddress: "0x0000000000000000000000000000000000000000"
                 }
               ) {
