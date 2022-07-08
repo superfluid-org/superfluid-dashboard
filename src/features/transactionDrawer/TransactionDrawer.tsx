@@ -3,24 +3,26 @@ import {
   Drawer,
   IconButton,
   styled,
+  SwipeableDrawer,
   Typography,
   useTheme,
 } from "@mui/material";
-import { memo } from "react";
+import { memo, useCallback } from "react";
 import ReduxPersistGate from "../redux/ReduxPersistGate";
 import { useLayoutContext } from "../layout/LayoutContext";
 import TransactionList from "./TransactionList";
 import CloseIcon from "@mui/icons-material/Close";
 import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
+import { useAccount } from "wagmi";
 export const transactionDrawerWidth = 340;
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   padding: theme.spacing(0, 1),
+  justifyContent: "flex-start",
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-  justifyContent: "flex-start",
 }));
 
 export default memo(function TransactionDrawer() {
@@ -29,13 +31,16 @@ export default memo(function TransactionDrawer() {
   const { transactionDrawerOpen, setTransactionDrawerOpen } =
     useLayoutContext();
 
+  const openDrawer = () => setTransactionDrawerOpen(true);
   const closeDrawer = () => setTransactionDrawerOpen(false);
 
   return (
-    <Drawer
+    <SwipeableDrawer
       variant={isPhone ? "temporary" : "persistent"}
       anchor="right"
       open={transactionDrawerOpen}
+      disableDiscovery={true}
+      disableSwipeToOpen={true}
       transitionDuration={theme.transitions.duration.standard}
       SlideProps={{
         easing: theme.transitions.easing.easeInOut,
@@ -48,6 +53,8 @@ export default memo(function TransactionDrawer() {
           borderBottom: 0,
         },
       }}
+      onOpen={openDrawer}
+      onClose={closeDrawer}
     >
       <DrawerHeader>
         <IconButton color="inherit" onClick={closeDrawer}>
@@ -63,6 +70,6 @@ export default memo(function TransactionDrawer() {
       <ReduxPersistGate>
         <TransactionList />
       </ReduxPersistGate>
-    </Drawer>
+    </SwipeableDrawer>
   );
 });

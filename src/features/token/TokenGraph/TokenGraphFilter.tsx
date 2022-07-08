@@ -1,6 +1,6 @@
-import { Button, Stack } from "@mui/material";
+import { Button, Stack, useMediaQuery, useTheme } from "@mui/material";
 import { FC, useCallback } from "react";
-import { GraphType } from "../TokenBalanceGraph";
+import { GraphType } from "./TokenBalanceGraph";
 
 interface TokenGraphFilterProps {
   activeType: GraphType;
@@ -11,6 +11,9 @@ const TokenGraphFilter: FC<TokenGraphFilterProps> = ({
   activeType,
   onChange,
 }) => {
+  const theme = useTheme();
+  const isDevice = useMediaQuery(theme.breakpoints.down("md"));
+
   const onGraphTypeChange = (newGraphType: GraphType) => () =>
     onChange(newGraphType);
 
@@ -20,7 +23,7 @@ const TokenGraphFilter: FC<TokenGraphFilterProps> = ({
   );
 
   return (
-    <Stack direction="row" gap={0.5}>
+    <Stack direction="row" gap={isDevice ? 0.25 : 0.5}>
       {/* <Button
         variant="textContained"
         color={getGraphFilterColor(GraphType.Day)}

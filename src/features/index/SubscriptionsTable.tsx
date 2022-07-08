@@ -8,6 +8,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
@@ -28,6 +29,8 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
   network,
 }) => {
   const theme = useTheme();
+  const isDevice = useMediaQuery(theme.breakpoints.down("md"));
+
   const { visibleAddress = "" } = useVisibleAddress();
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -115,6 +118,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
               <Stack direction="row" alignItems="center" gap={1}>
                 <Button
                   variant="textContained"
+                  size={isDevice ? "small" : "medium"}
                   color={getFilterBtnColor(null)}
                   onClick={changeApprovedFilter(null)}
                 >
@@ -122,6 +126,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
                 </Button>
                 <Button
                   variant="textContained"
+                  size={isDevice ? "small" : "medium"}
                   color={getFilterBtnColor(true)}
                   onClick={changeApprovedFilter(true)}
                 >
@@ -129,6 +134,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
                 </Button>
                 <Button
                   variant="textContained"
+                  size={isDevice ? "small" : "medium"}
                   color={getFilterBtnColor(false)}
                   onClick={changeApprovedFilter(false)}
                 >
@@ -147,13 +153,15 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
               </Stack>
             </TableCell>
           </TableRow>
-          <TableRow>
-            <TableCell>From</TableCell>
-            <TableCell>Total Amount Received</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Updated At</TableCell>
-            {/* <TableCell width="100"></TableCell> */}
-          </TableRow>
+          {!isDevice && (
+            <TableRow>
+              <TableCell>From</TableCell>
+              <TableCell>Total Amount Received</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Updated At</TableCell>
+              {/* <TableCell width="100"></TableCell> */}
+            </TableRow>
+          )}
         </TableHead>
         <TableBody>
           {isLoading ? (

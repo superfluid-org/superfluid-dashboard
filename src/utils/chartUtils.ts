@@ -17,9 +17,6 @@ export const DEFAULT_LINE_CHART_OPTIONS: ChartOptions<"line"> = {
   },
   scales: {
     y: {
-      ticks: {
-        stepSize: 1,
-      },
       display: false,
       grace: 0,
     },

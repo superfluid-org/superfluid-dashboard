@@ -22,6 +22,7 @@ import Image from "next/image";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { FC, memo, useCallback } from "react";
+import { useAccount } from "wagmi";
 import Link from "../common/Link";
 import ThemeChanger from "../theme/ThemeChanger";
 import ConnectWallet from "../wallet/ConnectWallet";
@@ -72,6 +73,10 @@ export default memo(function NavigationDrawer() {
     if (isSmallScreen) setNavigationDrawerOpen(false);
   }, [isSmallScreen, setNavigationDrawerOpen]);
 
+  const openNavigationDrawer = useCallback(() => {
+    if (isSmallScreen) setNavigationDrawerOpen(true);
+  }, [isSmallScreen, setNavigationDrawerOpen]);
+
   const isActiveRoute = (...routes: Array<string>) =>
     routes.includes(router.route);
 
@@ -81,6 +86,8 @@ export default memo(function NavigationDrawer() {
       variant={isSmallScreen ? "temporary" : "permanent"} // permanent
       open={navigationDrawerOpen}
       anchor="left"
+      disableDiscovery={true}
+      disableSwipeToOpen={true}
       PaperProps={{
         sx: {
           width: menuDrawerWidth,
@@ -92,7 +99,7 @@ export default memo(function NavigationDrawer() {
       }}
       sx={{ width: menuDrawerWidth }}
       onClose={closeNavigationDrawer}
-      onOpen={() => setNavigationDrawerOpen(true)}
+      onOpen={openNavigationDrawer}
     >
       <Toolbar sx={{ height: 88 }}>
         <Link href="/">

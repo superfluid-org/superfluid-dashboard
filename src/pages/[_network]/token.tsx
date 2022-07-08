@@ -35,7 +35,7 @@ import Ether from "../../features/token/Ether";
 import FlowingBalance from "../../features/token/FlowingBalance";
 import TokenBalanceGraph, {
   GraphType,
-} from "../../features/token/TokenBalanceGraph";
+} from "../../features/token/TokenGraph/TokenBalanceGraph";
 import TokenGraphFilter from "../../features/token/TokenGraph/TokenGraphFilter";
 import TokenToolbar from "../../features/token/TokenToolbar";
 import TransferEventsTable from "../../features/transfers/TransferEventsTable";
@@ -156,9 +156,10 @@ const Token: FC<NetworkPage> = ({ network }) => {
             pb: 2,
             [theme.breakpoints.down("md")]: {
               p: 2,
+              mx: -2,
               border: 0,
               background: "transparent",
-              mx: -2,
+              boxShadow: "none",
             },
           }}
         >
@@ -291,10 +292,14 @@ const Token: FC<NetworkPage> = ({ network }) => {
 
         <TabContext value={activeTab}>
           <TabList
+            variant={isPhone ? "fullWidth" : "standard"}
             onChange={onTabChange}
             sx={{
               borderBottom: "1px solid",
               borderColor: theme.palette.divider,
+              [theme.breakpoints.down("md")]: {
+                mx: -2,
+              },
             }}
           >
             <Tab label="Streams" value={TokenDetailsTabs.Streams} />

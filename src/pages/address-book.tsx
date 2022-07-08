@@ -298,25 +298,74 @@ const AddressBook: NextPage = () => {
           <Typography variant="h3" flex={1}>
             Address Book
           </Typography>
-          <ReadFileButton onLoaded={onImport} mimeType=".csv">
-            {({ selectFile }) => (
-              <Button variant="outlined" color="secondary" onClick={selectFile}>
-                Import
-              </Button>
-            )}
-          </ReadFileButton>
 
-          <DownloadButton
-            content={exportableAddressBookContent}
-            fileName={`address_book_${new Date().getTime()}.csv`}
-            contentType="text/csv;charset=utf-8;"
-          >
-            {({ download }) => (
-              <Button variant="outlined" color="secondary" onClick={download}>
-                Export
+          {!isPhone ? (
+            <>
+              <ReadFileButton onLoaded={onImport} mimeType=".csv">
+                {({ selectFile }) => (
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={selectFile}
+                  >
+                    Import
+                  </Button>
+                )}
+              </ReadFileButton>
+
+              <DownloadButton
+                content={exportableAddressBookContent}
+                fileName={`address_book_${new Date().getTime()}.csv`}
+                contentType="text/csv;charset=utf-8;"
+              >
+                {({ download }) => (
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={download}
+                  >
+                    Export
+                  </Button>
+                )}
+              </DownloadButton>
+            </>
+          ) : (
+            <Stack direction="row" gap={1.5}>
+              {!isDeleting && (
+                <Button
+                  variant="textContained"
+                  color="primary"
+                  size="small"
+                  onClick={openAddDialog}
+                >
+                  Add
+                </Button>
+              )}
+
+              <Button
+                variant="textContained"
+                color="error"
+                size="small"
+                disabled={isDeleting && selectedAddresses.length === 0}
+                onClick={isDeleting ? deleteEntries : startDeleting}
+              >
+                {isDeleting
+                  ? `Confirm (${selectedAddresses.length})`
+                  : "Remove"}
               </Button>
-            )}
-          </DownloadButton>
+
+              {isDeleting && (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  size="small"
+                  onClick={cancelDeleting}
+                >
+                  Cancel
+                </Button>
+              )}
+            </Stack>
+          )}
         </Stack>
 
         <Stack
@@ -334,9 +383,7 @@ const AddressBook: NextPage = () => {
             gap={1.5}
             sx={{
               [theme.breakpoints.down("md")]: {
-                "> *": {
-                  flex: 1,
-                },
+                justifyContent: "space-between",
               },
             }}
           >
@@ -349,38 +396,40 @@ const AddressBook: NextPage = () => {
               onChange={onStreamActiveFilterChange}
             />
           </Stack>
-          <Stack direction="row" gap={1.5}>
-            {!isDeleting && (
+          {!isPhone && (
+            <Stack direction="row" gap={1.5}>
+              {!isDeleting && (
+                <Button
+                  variant="textContained"
+                  color="primary"
+                  onClick={openAddDialog}
+                >
+                  Add Address
+                </Button>
+              )}
+
               <Button
                 variant="textContained"
-                color="primary"
-                onClick={openAddDialog}
+                color="error"
+                disabled={isDeleting && selectedAddresses.length === 0}
+                onClick={isDeleting ? deleteEntries : startDeleting}
               >
-                Add Address
+                {isDeleting
+                  ? `Confirm removing (${selectedAddresses.length})`
+                  : "Remove Address"}
               </Button>
-            )}
 
-            <Button
-              variant="textContained"
-              color="error"
-              disabled={isDeleting && selectedAddresses.length === 0}
-              onClick={isDeleting ? deleteEntries : startDeleting}
-            >
-              {isDeleting
-                ? `Confirm removing (${selectedAddresses.length})`
-                : "Remove Address"}
-            </Button>
-
-            {isDeleting && (
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={cancelDeleting}
-              >
-                Cancel
-              </Button>
-            )}
-          </Stack>
+              {isDeleting && (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={cancelDeleting}
+                >
+                  Cancel
+                </Button>
+              )}
+            </Stack>
+          )}
         </Stack>
 
         {filteredEntries.length === 0 && (

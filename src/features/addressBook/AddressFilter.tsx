@@ -11,6 +11,7 @@ import {
   Popover,
   Stack,
   TextField,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
@@ -31,6 +32,7 @@ const AddressFilter: FC<AddressFilterProps> = ({
   onChange,
 }) => {
   const theme = useTheme();
+  const isDevice = useMediaQuery(theme.breakpoints.down("md"));
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -67,6 +69,7 @@ const AddressFilter: FC<AddressFilterProps> = ({
       <Button
         variant="outlined"
         color="secondary"
+        size={isDevice ? "small" : "medium"}
         endIcon={<OpenIcon open={!!anchorEl} />}
         onClick={openMenu}
       >

@@ -24,6 +24,7 @@ const TokenToolbarData: FC<TokenToolbarData> = ({ symbol, name }) => (
     </Typography>
   </Stack>
 );
+
 interface TokenToolbarProps {
   token: Token;
   network: Network;
@@ -81,6 +82,7 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
           </Link>
         </Stack>
       </Stack>
+
       {isPhone && <TokenToolbarData symbol={symbol} name={name} />}
     </Stack>
   );
