@@ -20,9 +20,14 @@ export const assetApiSlice = createApi({
       {
         keepUnusedDataFor: 360,
         queryFn: async ({ tokenSymbol }) => {
+          const assetKey =
+            tokenSymbol === "mStable USD (Polygon PoS)"
+              ? "mstable-usd-polygon-pos"
+              : tokenSymbol.toLowerCase();
+
           const manifest = await axios
             .get(
-              `https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/${tokenSymbol.toLowerCase()}/manifest.json`,
+              `https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/${assetKey}/manifest.json`,
               {
                 validateStatus: (status) => status !== 404, // Don't worry about 404-s because not all tokens have the manifest.
               }
