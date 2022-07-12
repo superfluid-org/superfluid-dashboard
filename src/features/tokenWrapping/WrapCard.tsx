@@ -67,7 +67,7 @@ export default memo(function WrapCard({
   tabValue: "upgrade" | "downgrade";
 }) {
   const theme = useTheme();
-  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const router = useRouter();
 
   const handleTabChange = (newTab: "upgrade" | "downgrade") => () =>

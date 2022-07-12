@@ -8,12 +8,12 @@ import {
   MenuItem,
   ToggleButton,
   ToggleButtonGroup,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { FC, memo, MouseEvent, useState } from "react";
 import { useAccount, useNetwork } from "wagmi";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
-import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 import { useExpectedNetwork } from "./ExpectedNetworkContext";
 import NetworkIcon from "./NetworkIcon";
 import { mainNetworks, Network, testNetworks } from "./networks";
@@ -41,7 +41,7 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
 
 export default memo(function SelectNetwork() {
   const theme = useTheme();
-  const { isPhone } = useMediaBreakpoints();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const { data: account } = useAccount();
   const accountAddress = account?.address;
@@ -79,7 +79,7 @@ export default memo(function SelectNetwork() {
 
   return (
     <>
-      {!isPhone ? (
+      {!isBelowMd ? (
         <Button
           data-cy={"top-bar-network-button"}
           variant="outlined"

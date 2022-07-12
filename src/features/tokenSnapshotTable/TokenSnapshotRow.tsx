@@ -10,6 +10,7 @@ import {
   TableCell,
   TableRow,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { AccountTokenSnapshot } from "@superfluid-finance/sdk-core";
@@ -17,7 +18,6 @@ import { BigNumber } from "ethers";
 import { useRouter } from "next/router";
 import { FC, memo, useState } from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
-import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
@@ -69,8 +69,8 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
   lastElement,
 }) => {
   const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const router = useRouter();
-  const { isPhone } = useMediaBreakpoints();
 
   const [open, setOpen] = useState(false);
 
@@ -139,7 +139,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           </ListItem>
         </TableCell>
 
-        {!isPhone ? (
+        {!isBelowMd ? (
           <>
             <TableCell onClick={openTokenPage}>
               <ListItemText

@@ -48,7 +48,7 @@ import { getAddress } from "../utils/memoizedEthersUtils";
 const AddressBook: NextPage = () => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
-  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const { data: account } = useAccount();
   const accountAddress = account?.address;
@@ -293,13 +293,13 @@ const AddressBook: NextPage = () => {
         showAddressBook={false}
       />
 
-      <Stack gap={isPhone ? 2.5 : 4.5}>
+      <Stack gap={isBelowMd ? 2.5 : 4.5}>
         <Stack direction="row" gap={1.5} alignItems="center">
           <Typography variant="h3" flex={1}>
             Address Book
           </Typography>
 
-          {!isPhone ? (
+          {!isBelowMd ? (
             <>
               <ReadFileButton onLoaded={onImport} mimeType=".csv">
                 {({ selectFile }) => (
@@ -396,7 +396,7 @@ const AddressBook: NextPage = () => {
               onChange={onStreamActiveFilterChange}
             />
           </Stack>
-          {!isPhone && (
+          {!isBelowMd && (
             <Stack direction="row" gap={1.5}>
               {!isDeleting && (
                 <Button
@@ -457,7 +457,7 @@ const AddressBook: NextPage = () => {
             }}
           >
             <Table sx={{ tableLayout: "fixed" }}>
-              {!isPhone && (
+              {!isBelowMd && (
                 <TableHead>
                   <TableRow>
                     <TableCell sx={{ pl: 10 }}>Name</TableCell>
@@ -470,7 +470,7 @@ const AddressBook: NextPage = () => {
               )}
               <TableBody>
                 {paginatedEntries.map(({ address, name, streams }) =>
-                  isPhone ? (
+                  isBelowMd ? (
                     <AddressBookMobileRow key={address} address={address} />
                   ) : (
                     <AddressBookRow

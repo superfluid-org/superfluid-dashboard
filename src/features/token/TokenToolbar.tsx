@@ -1,11 +1,18 @@
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import RemoveIcon from "@mui/icons-material/Remove";
-import { Chip, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import {
+  Chip,
+  IconButton,
+  Stack,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { Token } from "@superfluid-finance/sdk-core";
 import Link from "next/link";
 import { FC } from "react";
-import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
 import TokenIcon from "./TokenIcon";
@@ -32,7 +39,8 @@ interface TokenToolbarProps {
 }
 
 const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
-  const { isPhone } = useMediaBreakpoints();
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { symbol, name } = token;
 
   return (
@@ -42,7 +50,7 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
           <ArrowBackIcon />
         </IconButton>
 
-        {!isPhone && (
+        {!isBelowMd && (
           <>
             <TokenToolbarData symbol={symbol} name={name} />
             <Chip
@@ -83,7 +91,7 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
         </Stack>
       </Stack>
 
-      {isPhone && <TokenToolbarData symbol={symbol} name={name} />}
+      {isBelowMd && <TokenToolbarData symbol={symbol} name={name} />}
     </Stack>
   );
 };

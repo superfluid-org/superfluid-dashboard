@@ -1,19 +1,17 @@
+import CloseIcon from "@mui/icons-material/Close";
 import {
   Divider,
-  Drawer,
   IconButton,
   styled,
   SwipeableDrawer,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { memo, useCallback } from "react";
-import ReduxPersistGate from "../redux/ReduxPersistGate";
+import { memo } from "react";
 import { useLayoutContext } from "../layout/LayoutContext";
+import ReduxPersistGate from "../redux/ReduxPersistGate";
 import TransactionList from "./TransactionList";
-import CloseIcon from "@mui/icons-material/Close";
-import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
-import { useAccount } from "wagmi";
 export const transactionDrawerWidth = 340;
 
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -27,7 +25,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 export default memo(function TransactionDrawer() {
   const theme = useTheme();
-  const { isPhone } = useMediaBreakpoints();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { transactionDrawerOpen, setTransactionDrawerOpen } =
     useLayoutContext();
 
@@ -36,7 +34,7 @@ export default memo(function TransactionDrawer() {
 
   return (
     <SwipeableDrawer
-      variant={isPhone ? "temporary" : "persistent"}
+      variant={isBelowMd ? "temporary" : "persistent"}
       anchor="right"
       open={transactionDrawerOpen}
       disableDiscovery={true}

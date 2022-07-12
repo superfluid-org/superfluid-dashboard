@@ -17,6 +17,8 @@ import {
   TableRow,
   Tooltip,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { Stream } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
@@ -27,7 +29,6 @@ import { useNetwork, useSigner } from "wagmi";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
-import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 import { Network } from "../network/networks";
 import { PendingOutgoingStream } from "../pendingUpdates/PendingOutgoingStream";
 import usePendingStreamCancellation from "../pendingUpdates/usePendingStreamCancellation";
@@ -47,7 +48,8 @@ import {
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 export const StreamRowLoading = () => {
-  const { isPhone } = useMediaBreakpoints();
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
     <TableRow>
@@ -65,7 +67,7 @@ export const StreamRowLoading = () => {
           </Typography>
         </Stack>
       </TableCell>
-      {!isPhone ? (
+      {!isBelowMd ? (
         <>
           <TableCell>
             <Typography variant="body2mono">
@@ -113,9 +115,11 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
     updatedAtTimestamp,
   } = stream;
 
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
   const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
-  const { isPhone } = useMediaBreakpoints();
   const { activeChain } = useNetwork();
   const { data: signer } = useSigner();
   const getTransactionOverrides = useGetTransactionOverrides();
@@ -196,7 +200,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
         </Stack>
       </TableCell>
 
-      {!isPhone ? (
+      {!isBelowMd ? (
         <>
           <TableCell {...tableCellProps}>
             <Typography variant="h7mono">
@@ -266,7 +270,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
         </TableCell>
       )}
 
-      {!isPhone && (
+      {!isBelowMd && (
         <TableCell align="center">
           {isPending && (
             <Stack direction="row" alignItems="center" gap={1}>

@@ -53,7 +53,7 @@ const Token: FC<NetworkPage> = ({ network }) => {
   const theme = useTheme();
   const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
-  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { isAutoConnecting } = useAutoConnect();
 
   const [activeTab, setActiveTab] = useState(TokenDetailsTabs.Streams);
@@ -144,7 +144,7 @@ const Token: FC<NetworkPage> = ({ network }) => {
 
   return (
     <Container maxWidth="lg">
-      <Stack gap={isPhone ? 3 : 4}>
+      <Stack gap={isBelowMd ? 3 : 4}>
         <TokenToolbar
           token={tokenQuery.currentData}
           network={network}
@@ -176,7 +176,7 @@ const Token: FC<NetworkPage> = ({ network }) => {
           >
             <Stack gap={0.5}>
               <Typography
-                variant={isPhone ? "body2" : "body1"}
+                variant={isBelowMd ? "body2" : "body1"}
                 color="text.secondary"
               >
                 Balance
@@ -202,10 +202,10 @@ const Token: FC<NetworkPage> = ({ network }) => {
             </Stack>
 
             <Stack
-              alignItems={isPhone ? "start" : "end"}
+              alignItems={isBelowMd ? "start" : "end"}
               justifyContent="space-between"
             >
-              {!isPhone && (
+              {!isBelowMd && (
                 <TokenGraphFilter
                   activeType={graphType}
                   onChange={onGraphTypeChange}
@@ -213,7 +213,7 @@ const Token: FC<NetworkPage> = ({ network }) => {
               )}
 
               <Stack alignItems="end">
-                {isPhone && (
+                {isBelowMd && (
                   <Chip
                     size="small"
                     label={network.name}
@@ -267,7 +267,7 @@ const Token: FC<NetworkPage> = ({ network }) => {
             alignItems="center"
             sx={{ mt: 2 }}
           >
-            {isPhone ? (
+            {isBelowMd ? (
               <TokenGraphFilter
                 activeType={graphType}
                 onChange={onGraphTypeChange}
@@ -292,7 +292,7 @@ const Token: FC<NetworkPage> = ({ network }) => {
 
         <TabContext value={activeTab}>
           <TabList
-            variant={isPhone ? "fullWidth" : "standard"}
+            variant={isBelowMd ? "fullWidth" : "standard"}
             onChange={onTabChange}
             sx={{
               borderBottom: "1px solid",

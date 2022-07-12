@@ -55,7 +55,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   onSelect,
 }) => {
   const theme = useTheme();
-  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const dispatch = useAppDispatch();
 
   const { data: account } = useAccount();

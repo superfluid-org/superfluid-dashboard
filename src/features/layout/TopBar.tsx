@@ -65,7 +65,7 @@ const CustomAppBar = styled(AppBar, {
 
 export default memo(function TopBar() {
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("lg"));
+  const isBelowLg = useMediaQuery(theme.breakpoints.down("lg"));
 
   const { isImpersonated } = useImpersonation();
 
@@ -87,7 +87,7 @@ export default memo(function TopBar() {
       elevation={0}
     >
       <Stack component={Toolbar} direction="row" alignItems="center">
-        {isSmallScreen && (
+        {isBelowLg && (
           <IconButton onClick={openNavigationDrawer} color="inherit">
             <MenuRoundedIcon />
           </IconButton>
@@ -96,7 +96,7 @@ export default memo(function TopBar() {
         <Box flex={1} />
 
         <Stack direction="row" spacing={2} alignItems="center">
-          {isSmallScreen && !isImpersonated && <ConnectWallet small />}
+          {isBelowLg && !isImpersonated && <ConnectWallet small />}
           <ImpersonationChip />
           <SelectNetwork />
           <TransactionBell />

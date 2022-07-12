@@ -1,7 +1,5 @@
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import {
-  ListItem,
-  Paper,
   Stack,
   Table,
   TableBody,
@@ -10,11 +8,11 @@ import {
   TableHead,
   TableRow,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, memo } from "react";
-import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
@@ -30,7 +28,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
   network,
 }) => {
   const theme = useTheme();
-  const { isPhone } = useMediaBreakpoints();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const tokensQuery = subgraphApi.useAccountTokenSnapshotsQuery({
     chainId: network.id,
@@ -89,7 +87,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
               </Stack>
             </TableCell>
           </TableRow>
-          {!isPhone && (
+          {!isBelowMd && (
             <TableRow>
               <TableCell width="200">Asset</TableCell>
               <TableCell>Balance</TableCell>

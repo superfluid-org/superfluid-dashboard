@@ -16,7 +16,6 @@ import Link from "next/link";
 import { FC, useState } from "react";
 import { useAccount } from "wagmi";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
-import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 import TokenIcon from "../token/TokenIcon";
 import { useConnectButton } from "../wallet/ConnectButtonProvider";
 

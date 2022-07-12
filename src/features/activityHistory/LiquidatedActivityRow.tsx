@@ -34,7 +34,7 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
   const { sender = "", receiver = "" } = flowUpdatedEvent || {};
 
   const theme = useTheme();
-  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { visibleAddress } = useVisibleAddress();
 
   const tokenQuery = subgraphApi.useTokenQuery(
@@ -60,7 +60,7 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
             primary={"Liquidated"}
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
-              variant: isPhone ? "h7" : "h6",
+              variant: isBelowMd ? "h7" : "h6",
             }}
             secondaryTypographyProps={{
               variant: "body2mono",
@@ -69,7 +69,7 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
           />
         </ListItem>
       </TableCell>
-      {!isPhone ? (
+      {!isBelowMd ? (
         <>
           <TableCell>
             <ListItem sx={{ p: 0 }}>

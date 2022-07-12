@@ -43,7 +43,7 @@ const Main = styled("main")<{
 
 const Layout: FC = ({ children }) => {
   const theme = useTheme();
-  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { transactionDrawerOpen } = useLayoutContext();
 
   return (
@@ -51,7 +51,7 @@ const Layout: FC = ({ children }) => {
       <TopBar />
       <NavigationDrawer />
       <Main open={transactionDrawerOpen}>
-        {!isPhone && theme.palette.mode === "dark" && <DarkGlow />}
+        {!isBelowMd && theme.palette.mode === "dark" && <DarkGlow />}
         <Toolbar />
         {/* <TransactionSnackbar /> */}
         {children}

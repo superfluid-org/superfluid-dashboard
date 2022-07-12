@@ -1,8 +1,5 @@
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
-import ExpandCircleDownOutlinedIcon from "@mui/icons-material/ExpandCircleDownOutlined";
 import {
-  Avatar,
-  Paper,
   Skeleton,
   Stack,
   Table,
@@ -15,12 +12,10 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { Box } from "@mui/system";
-import { FC } from "react";
 
 const SnapshotRowSkeleton = () => {
   const theme = useTheme();
-  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
     <TableRow data-cy={"loading-skeletons"}>
@@ -28,12 +23,12 @@ const SnapshotRowSkeleton = () => {
         <Stack direction="row" gap={2}>
           <Skeleton variant="circular" width={36} height={36} />
           <Stack justifyContent="center">
-            {!isPhone && <Skeleton width={80} />}
+            {!isBelowMd && <Skeleton width={80} />}
             <Skeleton width={40} />
           </Stack>
         </Stack>
       </TableCell>
-      {!isPhone ? (
+      {!isBelowMd ? (
         <>
           <TableCell>
             <Skeleton width={80} />
@@ -64,7 +59,7 @@ const SnapshotRowSkeleton = () => {
 
 const TokenSnapshotLoadingTable = () => {
   const theme = useTheme();
-  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
     <TableContainer
@@ -104,7 +99,7 @@ const TokenSnapshotLoadingTable = () => {
               </Stack>
             </TableCell>
           </TableRow>
-          {!isPhone && (
+          {!isBelowMd && (
             <TableRow>
               <TableCell width="200">Asset</TableCell>
               <TableCell>Balance</TableCell>

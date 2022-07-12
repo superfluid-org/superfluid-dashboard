@@ -9,11 +9,11 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { Address, Stream } from "@superfluid-finance/sdk-core";
 import { FC, memo, useMemo, useState } from "react";
-import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 import { EmptyRow } from "../common/EmptyRow";
 import { Network } from "../network/networks";
 import { PendingOutgoingStream } from "../pendingUpdates/PendingOutgoingStream";
@@ -46,8 +46,9 @@ const StreamsTable: FC<StreamsTableProps> = ({
   lastElement,
 }) => {
   const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
   const { visibleAddress } = useVisibleAddress();
-  const { isPhone } = useMediaBreakpoints();
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
@@ -174,7 +175,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
             borderTop: `1px solid ${theme.palette.divider}`,
           }),
           ...(subTable &&
-            !isPhone && {
+            !isBelowMd && {
               ".MuiTableHead-root .MuiTableCell-root:first-of-type": {
                 pl: 8.5,
               },
@@ -187,7 +188,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
               <Stack direction="row" alignItems="center" gap={1}>
                 <Button
                   variant="textContained"
-                  size={isPhone ? "small" : "medium"}
+                  size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(StreamTypeFilter.All)}
                   onClick={setStreamTypeFilter(StreamTypeFilter.All)}
                 >
@@ -198,7 +199,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
                 </Button>
                 <Button
                   variant="textContained"
-                  size={isPhone ? "small" : "medium"}
+                  size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(StreamTypeFilter.Incoming)}
                   onClick={setStreamTypeFilter(StreamTypeFilter.Incoming)}
                 >
@@ -208,7 +209,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
                 </Button>
                 <Button
                   variant="textContained"
-                  size={isPhone ? "small" : "medium"}
+                  size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(StreamTypeFilter.Outgoing)}
                   onClick={setStreamTypeFilter(StreamTypeFilter.Outgoing)}
                 >
@@ -229,7 +230,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
               </Stack>
             </TableCell>
           </TableRow>
-          {!isPhone && (
+          {!isBelowMd && (
             <TableRow>
               <TableCell>To / From</TableCell>
               <TableCell width="250">All Time Flow</TableCell>
@@ -253,7 +254,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
           )}
         </TableBody>
       </Table>
-      {(streams.length > 5 || (!isPhone && streams.length <= 5)) && (
+      {(streams.length > 5 || (!isBelowMd && streams.length <= 5)) && (
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"

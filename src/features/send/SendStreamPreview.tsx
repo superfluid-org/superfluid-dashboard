@@ -34,7 +34,7 @@ const PreviewItem: FC<{
   dataCy?: string;
 }> = ({ label, children, oldValue, isError, dataCy }) => {
   const theme = useTheme();
-  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const valueTypography = (
     <Typography
@@ -51,8 +51,8 @@ const PreviewItem: FC<{
 
   return (
     <Stack
-      direction={isPhone ? "column" : "row"}
-      alignItems={isPhone ? "start" : "center"}
+      direction={isBelowMd ? "column" : "row"}
+      alignItems={isBelowMd ? "start" : "center"}
       justifyContent="space-between"
     >
       <Typography variant="body2">{label}</Typography>
@@ -76,7 +76,7 @@ export const StreamingPreview: FC<{
   } | null;
 }> = ({ receiver, token, flowRateEther, existingStream }) => {
   const theme = useTheme();
-  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
@@ -170,7 +170,7 @@ export const StreamingPreview: FC<{
         }}
       >
         <PreviewItem dataCy="preview-receiver" label="Receiver">
-          {isPhone ? shortenHex(receiver, 14) : receiver}
+          {isBelowMd ? shortenHex(receiver, 14) : receiver}
         </PreviewItem>
 
         <PreviewItem

@@ -18,7 +18,7 @@ import { FC, memo } from "react";
 
 export const LoadingActivityRow = () => {
   const theme = useTheme();
-  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
     <TableRow>
@@ -31,13 +31,13 @@ export const LoadingActivityRow = () => {
             />
           </ListItemAvatar>
           <ListItemText
-            primary={<Skeleton width={isPhone ? "60px" : "120px"} />}
-            secondary={<Skeleton width={isPhone ? "30px" : "60px"} />}
-            primaryTypographyProps={{ variant: isPhone ? "h7" : "h6" }}
+            primary={<Skeleton width={isBelowMd ? "60px" : "120px"} />}
+            secondary={<Skeleton width={isBelowMd ? "30px" : "60px"} />}
+            primaryTypographyProps={{ variant: isBelowMd ? "h7" : "h6" }}
           />
         </ListItem>
       </TableCell>
-      {!isPhone ? (
+      {!isBelowMd ? (
         <>
           <TableCell>
             <ListItem sx={{ p: 0 }}>
@@ -116,7 +116,7 @@ interface LoadingActivityGroupProps {}
 
 const LoadingActivityGroup: FC<LoadingActivityGroupProps> = ({}) => {
   const theme = useTheme();
-  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
     <Box>
@@ -141,7 +141,7 @@ const LoadingActivityGroup: FC<LoadingActivityGroupProps> = ({}) => {
             <LoadingActivityRow />
             <LoadingActivityRow />
             <LoadingActivityRow />
-            {!isPhone && (
+            {!isBelowMd && (
               <>
                 <LoadingActivityRow />
                 <LoadingActivityRow />

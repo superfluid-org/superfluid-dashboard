@@ -27,7 +27,7 @@ const MintActivityRow: FC<MintedActivity> = ({
   network,
 }) => {
   const theme = useTheme();
-  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const { amount, transactionHash, timestamp } = keyEvent;
   const { token } = transferEvent || {};
@@ -78,7 +78,7 @@ const MintActivityRow: FC<MintedActivity> = ({
             primary={"Wrap"}
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
-              variant: isPhone ? "h7" : "h6",
+              variant: isBelowMd ? "h7" : "h6",
             }}
             secondaryTypographyProps={{
               variant: "body2mono",
@@ -88,7 +88,7 @@ const MintActivityRow: FC<MintedActivity> = ({
         </ListItem>
       </TableCell>
 
-      {!isPhone ? (
+      {!isBelowMd ? (
         <>
           <TableCell>
             <ListItem sx={{ p: 0 }}>

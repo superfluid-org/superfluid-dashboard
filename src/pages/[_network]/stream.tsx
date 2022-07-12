@@ -146,7 +146,7 @@ const OverviewItem: FC<OverviewItemProps> = ({ label, value }) => (
 
 const Stream: FC<NetworkPage> = ({ network }) => {
   const theme = useTheme();
-  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const router = useRouter();
 
   const streamId = (router.query.stream || "") as string;
@@ -250,7 +250,7 @@ const Stream: FC<NetworkPage> = ({ network }) => {
           </Box>
 
           <Box flex={1}>
-            {!isPhone && !isActive && updatedAtTimestamp && (
+            {!isBelowMd && !isActive && updatedAtTimestamp && (
               <CancelledIndicator updatedAtTimestamp={updatedAtTimestamp} />
             )}
           </Box>
@@ -273,8 +273,8 @@ const Stream: FC<NetworkPage> = ({ network }) => {
           <Typography variant="h5">Total Amount Streamed</Typography>
 
           <Stack direction="row" alignItems="center" gap={2}>
-            {!isPhone && (
-              <TokenIcon tokenSymbol={tokenSymbol} size={isPhone ? 32 : 60} />
+            {!isBelowMd && (
+              <TokenIcon tokenSymbol={tokenSymbol} size={isBelowMd ? 32 : 60} />
             )}
             <Stack
               direction="row"
@@ -283,7 +283,7 @@ const Stream: FC<NetworkPage> = ({ network }) => {
               columnGap={2}
             >
               <Typography
-                variant={isPhone ? "h2mono" : "h1mono"}
+                variant={isBelowMd ? "h2mono" : "h1mono"}
                 sx={{
                   [theme.breakpoints.up("md")]: {
                     lineHeight: "48px",
@@ -297,7 +297,7 @@ const Stream: FC<NetworkPage> = ({ network }) => {
                   disableRoundingIndicator
                 />
               </Typography>
-              {!isPhone && (
+              {!isBelowMd && (
                 <Typography
                   variant="h3"
                   color="primary"
@@ -308,14 +308,14 @@ const Stream: FC<NetworkPage> = ({ network }) => {
               )}
             </Stack>
           </Stack>
-          {isPhone && (
+          {isBelowMd && (
             <Stack
               direction="row"
               alignItems="center"
               justifyContent="center"
               gap={1}
             >
-              <TokenIcon tokenSymbol={tokenSymbol} size={isPhone ? 32 : 60} />
+              <TokenIcon tokenSymbol={tokenSymbol} size={isBelowMd ? 32 : 60} />
               <Typography
                 variant="h3"
                 color="primary"
@@ -354,12 +354,12 @@ const Stream: FC<NetworkPage> = ({ network }) => {
 
           <StreamAccountCard address={sender} />
 
-          <Box sx={{ mx: -0.25, height: isPhone ? 24 : 48, zIndex: -1 }}>
+          <Box sx={{ mx: -0.25, height: isBelowMd ? 24 : 48, zIndex: -1 }}>
             <Image
               unoptimized
               src="/gifs/stream-loop.gif"
-              width={isPhone ? 46 : 92}
-              height={isPhone ? 24 : 48}
+              width={isBelowMd ? 46 : 92}
+              height={isBelowMd ? 24 : 48}
               layout="fixed"
               alt="Superfluid stream"
             />

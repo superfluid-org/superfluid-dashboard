@@ -1,12 +1,12 @@
-import { Chip, ChipProps } from "@mui/material";
-import { FC } from "react";
-import { useImpersonation } from "./ImpersonationContext";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
+import { Chip, ChipProps, useMediaQuery, useTheme } from "@mui/material";
+import { FC } from "react";
 import AddressName from "../../components/AddressName/AddressName";
-import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
+import { useImpersonation } from "./ImpersonationContext";
 
 const ImpersonationChip: FC<ChipProps> = ({ ...props }) => {
-  const { isPhone } = useMediaBreakpoints();
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const { isImpersonated, impersonatedAddress, stopImpersonation } =
     useImpersonation();
@@ -15,7 +15,7 @@ const ImpersonationChip: FC<ChipProps> = ({ ...props }) => {
     <Chip
       data-cy={"view-mode-chip"}
       color="warning"
-      size={isPhone ? "small" : "medium"}
+      size={isBelowMd ? "small" : "medium"}
       icon={<PersonSearchIcon />}
       label={
         <>

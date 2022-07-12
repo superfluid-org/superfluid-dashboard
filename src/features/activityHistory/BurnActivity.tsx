@@ -26,7 +26,7 @@ const BurnActivity: FC<BurnedActivity> = ({
   network,
 }) => {
   const theme = useTheme();
-  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const { amount, transactionHash, timestamp } = keyEvent;
   const { token } = transferEvent || {};
@@ -77,7 +77,7 @@ const BurnActivity: FC<BurnedActivity> = ({
             primary={"Unwrap"}
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
-              variant: isPhone ? "h7" : "h6",
+              variant: isBelowMd ? "h7" : "h6",
             }}
             secondaryTypographyProps={{
               variant: "body2mono",
@@ -87,7 +87,7 @@ const BurnActivity: FC<BurnedActivity> = ({
         </ListItem>
       </TableCell>
 
-      {!isPhone ? (
+      {!isBelowMd ? (
         <>
           <TableCell>
             <ListItem sx={{ p: 0 }}>

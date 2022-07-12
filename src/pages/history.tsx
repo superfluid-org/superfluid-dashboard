@@ -37,7 +37,7 @@ import { Activity, mapActivitiesFromEvents } from "../utils/activityUtils";
 
 const History: NextPage = () => {
   const theme = useTheme();
-  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const dateNow = useMemo(() => new Date(), []);
 
@@ -171,7 +171,7 @@ const History: NextPage = () => {
 
   return (
     <Container maxWidth="lg">
-      <Stack gap={isPhone ? 2.5 : 4.5}>
+      <Stack gap={isBelowMd ? 2.5 : 4.5}>
         <Typography variant="h3">Activity History</Typography>
 
         <Stack gap={2.5}>
@@ -215,7 +215,7 @@ const History: NextPage = () => {
                 },
               }}
             >
-              {!isPhone &&
+              {!isBelowMd &&
                 `${format(startDate, "d MMMM yyyy")} - ${format(
                   endDate,
                   "d MMMM yyyy"
@@ -275,7 +275,7 @@ const History: NextPage = () => {
               },
             }}
           >
-            <Typography variant={isPhone ? "h5" : "h4"} textAlign="center">
+            <Typography variant={isBelowMd ? "h5" : "h4"} textAlign="center">
               No Activity History Available
             </Typography>
             <Typography color="text.secondary" textAlign="center">

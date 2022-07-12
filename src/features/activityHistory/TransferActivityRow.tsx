@@ -34,7 +34,7 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
   const { from, to, token, value, timestamp, transactionHash } = keyEvent;
 
   const theme = useTheme();
-  const isPhone = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { visibleAddress } = useVisibleAddress();
 
   const tokenQuery = subgraphApi.useTokenQuery(
@@ -60,7 +60,7 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
             primary={isOutgoing ? "Send Transfer" : "Receive Transfer"}
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
-              variant: isPhone ? "h7" : "h6",
+              variant: isBelowMd ? "h7" : "h6",
             }}
             secondaryTypographyProps={{
               variant: "body2mono",
@@ -69,7 +69,7 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
           />
         </ListItem>
       </TableCell>
-      {!isPhone ? (
+      {!isBelowMd ? (
         <>
           <TableCell>
             <ListItem sx={{ p: 0 }}>
