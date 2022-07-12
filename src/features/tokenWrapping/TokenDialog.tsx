@@ -61,7 +61,8 @@ export default memo(function TokenDialog({
       setOpenCounter(openCounter + 1);
       setSearchTerm(""); // Reset the search term when the dialog opens, not when it closes (because then there would be noticable visual clearing of the field). It's smoother UI to do it on opening.
     }
-  }, [open, openCounter]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   const underlyingTokens = useMemo(
     () => tokenPairsQuery.data?.filter(isUnderlying) ?? [],
