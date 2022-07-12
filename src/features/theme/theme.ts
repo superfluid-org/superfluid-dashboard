@@ -11,6 +11,7 @@ import { FONT_FACES } from "./fonts";
 interface TypographyCustomVariants {
   h7: React.CSSProperties;
   h1mono: React.CSSProperties;
+  h2mono: React.CSSProperties;
   h3mono: React.CSSProperties;
   h4mono: React.CSSProperties;
   h5mono: React.CSSProperties;
@@ -32,6 +33,7 @@ declare module "@mui/material/Typography" {
   interface TypographyPropsVariantOverrides {
     h7: true;
     h1mono: true;
+    h2mono: true;
     h3mono: true;
     h4mono: true;
     h5mono: true;
@@ -189,6 +191,18 @@ const getDesignTokens = (theme: Theme): ThemeOptions => {
         fontSize: pxToRem(48),
         fontWeight: 400,
         letterSpacing: "-0.5px",
+        [theme.breakpoints.down("md")]: {
+          fontSize: pxToRem(36),
+        },
+      },
+      h2mono: {
+        fontSize: pxToRem(48),
+        fontWeight: 400,
+        letterSpacing: "-0.5px",
+        fontVariantNumeric: "tabular-nums",
+        [theme.breakpoints.down("md")]: {
+          fontSize: pxToRem(36),
+        },
       },
       h3: {
         fontSize: pxToRem(36),
@@ -278,6 +292,8 @@ const getDesignTokens = (theme: Theme): ThemeOptions => {
         letterSpacing: pxToRem(0.1),
       },
       caption: {
+        fontSize: pxToRem(12),
+        lineHeight: pxToRem(22),
         letterSpacing: pxToRem(0.4),
       },
       overline: {

@@ -1,12 +1,11 @@
 import AppsRoundedIcon from "@mui/icons-material/AppsRounded";
 import ArrowRightAltRoundedIcon from "@mui/icons-material/ArrowRightAltRounded";
 import AutoAwesomeMosaicRoundedIcon from "@mui/icons-material/AutoAwesomeMosaicRounded";
+import AutoStoriesOutlinedIcon from "@mui/icons-material/AutoStoriesOutlined";
+import ControlPointDuplicateOutlinedIcon from "@mui/icons-material/ControlPointDuplicateOutlined";
 import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
-import ImportContactsRoundedIcon from "@mui/icons-material/ImportContactsRounded";
-import SwapVertRoundedIcon from "@mui/icons-material/SwapVertRounded";
 import {
   Box,
-  Drawer,
   List,
   ListItemButton,
   ListItemIcon,
@@ -22,7 +21,6 @@ import Image from "next/image";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { FC, memo, useCallback } from "react";
-import { useAccount } from "wagmi";
 import Link from "../common/Link";
 import ThemeChanger from "../theme/ThemeChanger";
 import ConnectWallet from "../wallet/ConnectWallet";
@@ -65,17 +63,18 @@ const NavigationItem: FC<NavigationItemProps> = ({
 export default memo(function NavigationDrawer() {
   const theme = useTheme();
   const router = useRouter();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("lg"));
+  const isBelowLg = useMediaQuery(theme.breakpoints.down("lg"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const { navigationDrawerOpen, setNavigationDrawerOpen } = useLayoutContext();
 
   const closeNavigationDrawer = useCallback(() => {
-    if (isSmallScreen) setNavigationDrawerOpen(false);
-  }, [isSmallScreen, setNavigationDrawerOpen]);
+    if (isBelowLg) setNavigationDrawerOpen(false);
+  }, [isBelowLg, setNavigationDrawerOpen]);
 
   const openNavigationDrawer = useCallback(() => {
-    if (isSmallScreen) setNavigationDrawerOpen(true);
-  }, [isSmallScreen, setNavigationDrawerOpen]);
+    if (isBelowLg) setNavigationDrawerOpen(true);
+  }, [isBelowLg, setNavigationDrawerOpen]);
 
   const isActiveRoute = (...routes: Array<string>) =>
     routes.includes(router.route);
@@ -83,7 +82,7 @@ export default memo(function NavigationDrawer() {
   return (
     <SwipeableDrawer
       data-cy={"navigation-drawer"}
-      variant={isSmallScreen ? "temporary" : "permanent"} // permanent
+      variant={isBelowLg ? "temporary" : "permanent"} // permanent
       open={navigationDrawerOpen}
       anchor="left"
       disableDiscovery={true}
@@ -101,7 +100,15 @@ export default memo(function NavigationDrawer() {
       onClose={closeNavigationDrawer}
       onOpen={openNavigationDrawer}
     >
-      <Toolbar sx={{ height: 88 }}>
+      <Toolbar
+        sx={{
+          height: 88,
+          px: 4,
+          [theme.breakpoints.up("sm")]: {
+            px: 4,
+          },
+        }}
+      >
         <Link href="/">
           <Image
             data-cy={"superfluid-logo"}
@@ -120,9 +127,11 @@ export default memo(function NavigationDrawer() {
         </Link>
       </Toolbar>
 
-      <Box sx={{ px: 2, py: 1.5 }}>
-        <ConnectWallet />
-      </Box>
+      {!isBelowMd && (
+        <Box sx={{ px: 2, py: 1.5 }}>
+          <ConnectWallet />
+        </Box>
+      )}
 
       <Stack
         component={List}
@@ -144,7 +153,7 @@ export default memo(function NavigationDrawer() {
           href="/wrap?upgrade"
           onClick={closeNavigationDrawer}
           active={isActiveRoute("/wrap")}
-          icon={SwapVertRoundedIcon}
+          icon={ControlPointDuplicateOutlinedIcon}
         />
 
         <NavigationItem
@@ -171,7 +180,7 @@ export default memo(function NavigationDrawer() {
           href="/address-book"
           onClick={closeNavigationDrawer}
           active={isActiveRoute("/address-book")}
-          icon={ImportContactsRoundedIcon}
+          icon={AutoStoriesOutlinedIcon}
         />
 
         <NavigationItem

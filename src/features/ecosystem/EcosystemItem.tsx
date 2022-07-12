@@ -1,5 +1,14 @@
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
-import { Stack, Paper, Typography, IconButton, Chip, Box } from "@mui/material";
+import {
+  Stack,
+  Paper,
+  Typography,
+  IconButton,
+  Chip,
+  Box,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import { FC, useMemo } from "react";
@@ -24,6 +33,9 @@ interface EcosystemItemProps {
 }
 
 const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
   const networks = useMemo(
     () =>
       app.chains.reduce((allNetworks, chainId) => {
@@ -38,7 +50,7 @@ const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
     <Stack
       component={Paper}
       elevation={1}
-      gap={1.5}
+      gap={isBelowMd ? 1 : 1.5}
       sx={{
         p: 3.5,
         background: `linear-gradient(77deg, ${app.colors.primary} 0%, ${app.colors.secondary} 100%)`,
@@ -56,7 +68,7 @@ const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
           alt="Twitter logo"
         />
 
-        <Typography variant="h4" flex={1}>
+        <Typography variant={isBelowMd ? "h5" : "h4"} flex={1}>
           {app.name}
         </Typography>
         {app.href && (
@@ -72,7 +84,9 @@ const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
           </Link>
         )}
       </Stack>
-      <Typography variant="body1">{app.description}</Typography>
+      <Typography variant={isBelowMd ? "body2" : "body1"}>
+        {app.description}
+      </Typography>
       <Stack flex={1} justifyContent="flex-end">
         <Stack
           direction="row"

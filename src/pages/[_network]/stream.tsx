@@ -16,6 +16,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { Address } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import Image from "next/image";
@@ -40,6 +41,79 @@ import {
   calculateMaybeCriticalAtTimestamp,
 } from "../../utils/tokenUtils";
 import Page404 from "../404";
+
+interface StreamAccountCardProps {
+  address: Address;
+}
+
+const StreamAccountCard: FC<StreamAccountCardProps> = ({ address }) => {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
+  return (
+    <Stack flex={1} gap={2}>
+      <Paper
+        component={Stack}
+        direction="row"
+        alignItems="center"
+        gap={isBelowMd ? 1 : 2}
+        sx={{
+          py: 2,
+          px: 3,
+          [theme.breakpoints.down("md")]: {
+            py: 1.5,
+            px: 2,
+          },
+        }}
+      >
+        <AddressAvatar
+          address={address}
+          {...(isBelowMd
+            ? {
+                AvatarProps: {
+                  sx: {
+                    width: "24px",
+                    height: "24px",
+                    borderRadius: "5px",
+                  },
+                },
+                BlockiesProps: { size: 8, scale: 3 },
+              }
+            : {})}
+        />
+        <ListItemText
+          primary={
+            <AddressName
+              address={address}
+              length={isBelowMd ? "short" : "medium"}
+            />
+          }
+          primaryTypographyProps={{ variant: isBelowMd ? "h7" : "h6" }}
+        />
+      </Paper>
+    </Stack>
+  );
+};
+
+interface CancelledIndicatorProps {
+  updatedAtTimestamp: number;
+}
+
+const CancelledIndicator: FC<CancelledIndicatorProps> = ({
+  updatedAtTimestamp,
+}) => {
+  return (
+    <Stack direction="row" alignItems="center" gap={1}>
+      <CloseIcon color="error" />
+      <Typography variant="h5" color="error">
+        {`Cancelled on ${format(
+          updatedAtTimestamp * 1000,
+          "d MMMM yyyy"
+        )} at ${format(updatedAtTimestamp * 1000, "h:mm aaa")}`}
+      </Typography>
+    </Stack>
+  );
+};
 
 const ShareButton: FC<{ imgSrc: string; alt: string }> = ({ imgSrc, alt }) => (
   <Tooltip title="Sharing is currently disabled" placement="top">
@@ -164,6 +238,9 @@ const Stream: FC<NetworkPage> = ({ network }) => {
             mb: 7,
             mt: 3,
             width: "100%",
+            [theme.breakpoints.down("md")]: {
+              my: 0,
+            },
           }}
         >
           <Box>
@@ -171,19 +248,13 @@ const Stream: FC<NetworkPage> = ({ network }) => {
               <ArrowBackIcon />
             </IconButton>
           </Box>
-          <Stack direction="row" alignItems="center" gap={1}>
-            {!isActive && updatedAtTimestamp && (
-              <>
-                <CloseIcon color="error" />
-                <Typography variant="h5" color="error">
-                  {`Cancelled on ${format(
-                    updatedAtTimestamp * 1000,
-                    "d MMMM yyyy"
-                  )} at ${format(updatedAtTimestamp * 1000, "h:mm aaa")}`}
-                </Typography>
-              </>
+
+          <Box flex={1}>
+            {!isPhone && !isActive && updatedAtTimestamp && (
+              <CancelledIndicator updatedAtTimestamp={updatedAtTimestamp} />
             )}
-          </Stack>
+          </Box>
+
           <Stack direction="row" justifyContent="flex-end" gap={1}>
             {/* {isActive && (
               <>
@@ -202,23 +273,21 @@ const Stream: FC<NetworkPage> = ({ network }) => {
           <Typography variant="h5">Total Amount Streamed</Typography>
 
           <Stack direction="row" alignItems="center" gap={2}>
-            {!isPhone && <TokenIcon tokenSymbol={tokenSymbol} size={60} />}
+            {!isPhone && (
+              <TokenIcon tokenSymbol={tokenSymbol} size={isPhone ? 32 : 60} />
+            )}
             <Stack
               direction="row"
               alignItems="end"
-              gap={2}
-              sx={{
-                [theme.breakpoints.down("md")]: {
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 0,
-                },
-              }}
+              flexWrap="wrap"
+              columnGap={2}
             >
               <Typography
-                variant={isPhone ? "h3mono" : "h1mono"}
+                variant={isPhone ? "h2mono" : "h1mono"}
                 sx={{
-                  lineHeight: "48px",
+                  [theme.breakpoints.up("md")]: {
+                    lineHeight: "48px",
+                  },
                 }}
               >
                 <FlowingBalance
@@ -228,6 +297,25 @@ const Stream: FC<NetworkPage> = ({ network }) => {
                   disableRoundingIndicator
                 />
               </Typography>
+              {!isPhone && (
+                <Typography
+                  variant="h3"
+                  color="primary"
+                  sx={{ lineHeight: "28px" }}
+                >
+                  {tokenSymbol}
+                </Typography>
+              )}
+            </Stack>
+          </Stack>
+          {isPhone && (
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="center"
+              gap={1}
+            >
+              <TokenIcon tokenSymbol={tokenSymbol} size={isPhone ? 32 : 60} />
               <Typography
                 variant="h3"
                 color="primary"
@@ -236,7 +324,7 @@ const Stream: FC<NetworkPage> = ({ network }) => {
                 {tokenSymbol}
               </Typography>
             </Stack>
-          </Stack>
+          )}
 
           <Typography variant="h4" color="text.secondary">
             {/* $2241.30486 USD */}
@@ -251,7 +339,8 @@ const Stream: FC<NetworkPage> = ({ network }) => {
             rowGap: 2,
             width: "100%",
             [theme.breakpoints.down("md")]: {
-              gridTemplateColumns: "1fr",
+              gridTemplateColumns: "1fr 32px 1fr",
+              rowGap: 1,
             },
           }}
         >
@@ -262,46 +351,21 @@ const Stream: FC<NetworkPage> = ({ network }) => {
           <Typography variant="h6" sx={{ pl: 1 }}>
             Receiver
           </Typography>
-          <Stack flex={1} gap={2}>
-            <Paper
-              component={Stack}
-              direction="row"
-              alignItems="center"
-              gap={2}
-              sx={{ py: 2, px: 3 }}
-            >
-              <AddressAvatar address={sender} />
-              <ListItemText
-                primary={<AddressName address={sender} length="medium" />}
-              />
-            </Paper>
-          </Stack>
 
-          <Box sx={{ mx: -0.25, height: 48, zIndex: -1 }}>
+          <StreamAccountCard address={sender} />
+
+          <Box sx={{ mx: -0.25, height: isPhone ? 24 : 48, zIndex: -1 }}>
             <Image
               unoptimized
               src="/gifs/stream-loop.gif"
-              width={92}
-              height={48}
+              width={isPhone ? 46 : 92}
+              height={isPhone ? 24 : 48}
               layout="fixed"
               alt="Superfluid stream"
             />
           </Box>
 
-          <Stack flex={1} gap={2}>
-            <Paper
-              component={Stack}
-              direction="row"
-              alignItems="center"
-              gap={2}
-              sx={{ py: 2, px: 3 }}
-            >
-              <AddressAvatar address={receiver} />
-              <ListItemText
-                primary={<AddressName address={receiver} length="medium" />}
-              />
-            </Paper>
-          </Stack>
+          <StreamAccountCard address={receiver} />
         </Stack>
 
         {currentFlowRate !== "0" && (
@@ -329,6 +393,7 @@ const Stream: FC<NetworkPage> = ({ network }) => {
             mt: 7,
             [theme.breakpoints.down("md")]: {
               gridTemplateColumns: "1fr",
+              mt: 4,
             },
           }}
         >

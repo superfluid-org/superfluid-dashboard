@@ -1,8 +1,8 @@
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import {
   alpha,
   AppBar,
   Box,
-  Button,
   IconButton,
   Stack,
   styled,
@@ -13,13 +13,13 @@ import {
 import { memo } from "react";
 import useBodyScrolled from "../../hooks/useBodyScrolled";
 import ImpersonationChip from "../impersonation/ImpersonationChip";
+import { useImpersonation } from "../impersonation/ImpersonationContext";
 import SelectNetwork from "../network/SelectNetwork";
 import { transactionDrawerWidth } from "../transactionDrawer/TransactionDrawer";
-import { useLayoutContext } from "./LayoutContext";
 import TransactionBell from "../transactions/TransactionBell";
+import ConnectWallet from "../wallet/ConnectWallet";
+import { useLayoutContext } from "./LayoutContext";
 import { menuDrawerWidth } from "./NavigationDrawer";
-import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
-import useMediaBreakpoints from "../../hooks/useMediaBreakpoints";
 
 interface CustomAppBarProps {
   transactionDrawerOpen: boolean;
@@ -66,6 +66,9 @@ const CustomAppBar = styled(AppBar, {
 export default memo(function TopBar() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("lg"));
+
+  const { isImpersonated } = useImpersonation();
+
   const isScrolled = useBodyScrolled();
   const {
     transactionDrawerOpen,
@@ -93,6 +96,7 @@ export default memo(function TopBar() {
         <Box flex={1} />
 
         <Stack direction="row" spacing={2} alignItems="center">
+          {isSmallScreen && !isImpersonated && <ConnectWallet small />}
           <ImpersonationChip />
           <SelectNetwork />
           <TransactionBell />

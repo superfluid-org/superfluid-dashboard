@@ -1,4 +1,4 @@
-import { Box, Container } from "@mui/material";
+import { Box, Container, useTheme } from "@mui/material";
 import { NextPage } from "next";
 import SendCard from "../features/send/SendCard";
 import StreamingFormProvider from "../features/send/StreamingFormProvider";
@@ -6,13 +6,17 @@ import { useTransactionRestorationContext } from "../features/transactionRestora
 import {
   RestorationType,
   SendStreamRestoration,
-  ModifyStreamRestoration
+  ModifyStreamRestoration,
 } from "../features/transactionRestoration/transactionRestorations";
 
 const Send: NextPage = () => {
+  const theme = useTheme();
   const { restoration, onRestored } = useTransactionRestorationContext();
 
-  let streamingRestoration: SendStreamRestoration | ModifyStreamRestoration | undefined;
+  let streamingRestoration:
+    | SendStreamRestoration
+    | ModifyStreamRestoration
+    | undefined;
 
   if (restoration) {
     switch (restoration.type) {
@@ -30,11 +34,13 @@ const Send: NextPage = () => {
     <Container maxWidth="lg">
       <Box
         sx={{
-          my: 4,
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
+          [theme.breakpoints.up("md")]: {
+            my: 4,
+          },
         }}
       >
         <StreamingFormProvider restoration={streamingRestoration}>

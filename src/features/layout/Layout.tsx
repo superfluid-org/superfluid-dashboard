@@ -37,7 +37,7 @@ const Main = styled("main")<{
     }),
   },
   [theme.breakpoints.down("md")]: {
-    padding: `${theme.spacing(2)} 0`,
+    padding: `${theme.spacing(3.5)} 0`,
   },
 }));
 
