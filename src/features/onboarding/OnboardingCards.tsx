@@ -97,10 +97,14 @@ const StreamItem = () => (
 );
 
 interface OnboardingCardsProps {
+  vertical?: boolean;
   onClick?: () => void;
 }
 
-const OnboardingCards: FC<OnboardingCardsProps> = ({ onClick }) => {
+const OnboardingCards: FC<OnboardingCardsProps> = ({
+  vertical = false,
+  onClick,
+}) => {
   const theme = useTheme();
 
   const { data: account } = useAccount();
@@ -126,6 +130,7 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({ onClick }) => {
           justifyContent: "start",
           scrollSnapType: "x mandatory",
           scrollPadding: `0px ${theme.spacing(3.5)}`,
+          ...(vertical ? { gridTemplateColumns: "290px", px: 0 } : {}),
         },
       }}
     >

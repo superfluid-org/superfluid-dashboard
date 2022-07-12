@@ -169,29 +169,34 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
           ) : filteredIndexSubscriptions.length === 0 ? (
             <EmptyRow span={5} />
           ) : (
-            filteredIndexSubscriptions.map((subscription) => (
-              <SubscriptionRow
-                key={subscription.id}
-                subscription={subscription}
-              />
-            ))
+            filteredIndexSubscriptions
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((subscription) => (
+                <SubscriptionRow
+                  key={subscription.id}
+                  subscription={subscription}
+                />
+              ))
           )}
         </TableBody>
       </Table>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={indexSubscriptions.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        sx={{
-          "> *": {
-            visibility: indexSubscriptions.length <= 5 ? "hidden" : "visible",
-          },
-        }}
-      />
+      {filteredIndexSubscriptions.length > 5 && (
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={filteredIndexSubscriptions.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{
+            "> *": {
+              visibility:
+                filteredIndexSubscriptions.length <= 5 ? "hidden" : "visible",
+            },
+          }}
+        />
+      )}
     </TableContainer>
   );
 };

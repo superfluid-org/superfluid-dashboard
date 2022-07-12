@@ -26,6 +26,7 @@ const Main = styled("main")<{
   open: boolean;
 }>(({ theme, open }) => ({
   flexGrow: 1,
+  maxWidth: "100vw",
   padding: `${theme.spacing(5)} 0`,
   transition: theme.transitions.create("margin", {
     easing: theme.transitions.easing.easeInOut,

@@ -7,6 +7,7 @@ import {
   ListItemText,
   Menu,
   Modal,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import Image from "next/image";
@@ -34,6 +35,7 @@ const MenuItemImage: FC<MenuItemImageProps> = ({ src, alt }) => (
 
 const MoreNavigationItem: FC = ({}) => {
   const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [moreMenuAnchor, setMoreMenuAnchor] = useState<HTMLElement | null>(
@@ -123,9 +125,15 @@ const MoreNavigationItem: FC = ({}) => {
             top: "40%",
             left: "50%",
             transform: "translate(-50%, -50%)",
+            [theme.breakpoints.down("md")]: {
+              top: "50%",
+            },
           }}
         >
-          <OnboardingCards onClick={closeOnboardingModal} />
+          <OnboardingCards
+            vertical={isBelowMd}
+            onClick={closeOnboardingModal}
+          />
         </Box>
       </Modal>
     </>

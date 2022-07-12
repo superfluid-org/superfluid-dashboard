@@ -1,4 +1,15 @@
-import { ListItemText, Stack, TableCell, TableRow } from "@mui/material";
+import CancelIcon from "@mui/icons-material/Cancel";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
+import EditIcon from "@mui/icons-material/Edit";
+import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox";
+import {
+  Checkbox,
+  ListItemText,
+  Stack,
+  TableCell,
+  TableRow,
+} from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
@@ -8,10 +19,21 @@ import shortenHex from "../../utils/shortenHex";
 
 interface AddressBookMobileRowProps {
   address: Address;
+  selectable: boolean;
+  selected: boolean;
+  onSelect: (isSelected: boolean) => void;
 }
 
-const AddressBookMobileRow: FC<AddressBookMobileRowProps> = ({ address }) => {
+const AddressBookMobileRow: FC<AddressBookMobileRowProps> = ({
+  address,
+  selectable,
+  selected,
+  onSelect,
+}) => {
   const { name } = useAddressName(address);
+
+  const onSelectedChange = (_event: unknown, newSelected: boolean) =>
+    onSelect(newSelected);
 
   return (
     <TableRow>
@@ -31,7 +53,18 @@ const AddressBookMobileRow: FC<AddressBookMobileRowProps> = ({ address }) => {
           />
         </Stack>
       </TableCell>
-      <TableCell></TableCell>
+      <TableCell width="64px">
+        {selectable && (
+          <Checkbox
+            checked={selected}
+            color="error"
+            icon={<CheckBoxOutlineBlankIcon />}
+            checkedIcon={<IndeterminateCheckBoxIcon />}
+            onChange={onSelectedChange}
+            sx={{ p: 1, m: -1 }}
+          />
+        )}
+      </TableCell>
     </TableRow>
   );
 };

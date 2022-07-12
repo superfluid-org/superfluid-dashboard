@@ -90,18 +90,16 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
 
   const filteredTransferEvents = useMemo(
     () =>
-      transferEvents
-        .filter((transferEvent) => {
-          switch (transferEventFilter.type) {
-            case TransferTypeFilter.All:
-              return true;
-            case TransferTypeFilter.Sent:
-              return transferEvent.from === lowerVisibleAddress;
-            case TransferTypeFilter.Received:
-              return transferEvent.to === lowerVisibleAddress;
-          }
-        })
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
+      transferEvents.filter((transferEvent) => {
+        switch (transferEventFilter.type) {
+          case TransferTypeFilter.All:
+            return true;
+          case TransferTypeFilter.Sent:
+            return transferEvent.from === lowerVisibleAddress;
+          case TransferTypeFilter.Received:
+            return transferEvent.to === lowerVisibleAddress;
+        }
+      }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [transferEvents, transferEventFilter, page, rowsPerPage]
   );
@@ -153,7 +151,7 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
                   color={getFilterBtnColor(TransferTypeFilter.Sent)}
                   onClick={changeTypeFilter(TransferTypeFilter.Sent)}
                 >
-                  Sent {!isLoading && ` (${receivedCount})`}
+                  Sent {!isLoading && ` (${sentCount})`}
                 </Button>
                 <Button
                   variant="textContained"
@@ -161,7 +159,7 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
                   color={getFilterBtnColor(TransferTypeFilter.Received)}
                   onClick={changeTypeFilter(TransferTypeFilter.Received)}
                 >
-                  Received {!isLoading && ` (${sentCount})`}
+                  Received {!isLoading && ` (${receivedCount})`}
                 </Button>
               </Stack>
             </TableCell>
@@ -180,29 +178,28 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
           ) : filteredTransferEvents.length === 0 ? (
             <EmptyRow span={3} />
           ) : (
-            filteredTransferEvents.map((transferEvent) => (
-              <TransferEventRow
-                key={transferEvent.id}
-                transferEvent={transferEvent}
-              />
-            ))
+            filteredTransferEvents
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((transferEvent) => (
+                <TransferEventRow
+                  key={transferEvent.id}
+                  transferEvent={transferEvent}
+                />
+              ))
           )}
         </TableBody>
       </Table>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={transferEvents.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        sx={{
-          "> *": {
-            visibility: transferEvents.length <= 5 ? "hidden" : "visible",
-          },
-        }}
-      />
+      {filteredTransferEvents.length > 5 && (
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={filteredTransferEvents.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      )}
     </TableContainer>
   );
 };

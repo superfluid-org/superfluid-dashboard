@@ -63,7 +63,6 @@ const MobileAccountInfo: FC<AccountInfoProps> = ({ address, onClick }) => {
       onClick={onClick}
       variant="outlined"
       color="secondary"
-      endIcon={<ExpandMoreRoundedIcon />}
       startIcon={
         <AddressAvatar
           address={address}

@@ -14,6 +14,7 @@ import {
   TextField,
   Tooltip,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
@@ -61,6 +62,7 @@ const FormLabel: FC<FormLabelProps> = ({ children }) => (
 
 export default memo(function SendCard() {
   const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
   const getTransactionOverrides = useGetTransactionOverrides();
@@ -181,6 +183,7 @@ export default memo(function SendCard() {
                   address={receiver}
                   onChange={onChange}
                   onBlur={onBlur}
+                  addressLength={isBelowMd ? "medium" : "long"}
                   ButtonProps={{ fullWidth: true }}
                 />
               )}

@@ -471,7 +471,13 @@ const AddressBook: NextPage = () => {
               <TableBody>
                 {paginatedEntries.map(({ address, name, streams }) =>
                   isBelowMd ? (
-                    <AddressBookMobileRow key={address} address={address} />
+                    <AddressBookMobileRow
+                      key={address}
+                      address={address}
+                      selected={selectedAddresses.includes(address)}
+                      selectable={isDeleting}
+                      onSelect={setRowSelected(address)}
+                    />
                   ) : (
                     <AddressBookRow
                       key={address}

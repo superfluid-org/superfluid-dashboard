@@ -4,6 +4,7 @@ import {
   Stack,
   Tooltip,
   Typography,
+  TypographyProps,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -32,7 +33,8 @@ const PreviewItem: FC<{
   isError?: boolean;
   oldValue?: ReactNode;
   dataCy?: string;
-}> = ({ label, children, oldValue, isError, dataCy }) => {
+  TypographyProps?: Partial<TypographyProps>;
+}> = ({ label, children, oldValue, isError, dataCy, TypographyProps = {} }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -44,6 +46,7 @@ const PreviewItem: FC<{
       sx={{
         color: isError ? "red" : theme.palette.primary.main, // TODO(KK): handle colors better?
       }}
+      {...TypographyProps}
     >
       {children}
     </Typography>
@@ -200,6 +203,7 @@ export const StreamingPreview: FC<{
             dataCy="preview-balance-after-buffer"
             label="Balance after buffer"
             isError={balanceAfterBuffer.isNegative()}
+            TypographyProps={{ variant: "body2mono" }}
           >
             {realtimeBalance && (
               <FlowingBalance
