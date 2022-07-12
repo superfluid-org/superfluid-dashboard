@@ -12,7 +12,7 @@ const TokenGraphFilter: FC<TokenGraphFilterProps> = ({
   onChange,
 }) => {
   const theme = useTheme();
-  const isDevice = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const onGraphTypeChange = (newGraphType: GraphType) => () =>
     onChange(newGraphType);
@@ -23,7 +23,7 @@ const TokenGraphFilter: FC<TokenGraphFilterProps> = ({
   );
 
   return (
-    <Stack direction="row" gap={isDevice ? 0.25 : 0.5}>
+    <Stack direction="row" gap={isBelowMd ? 0.25 : 0.5}>
       {/* <Button
         variant="textContained"
         color={getGraphFilterColor(GraphType.Day)}

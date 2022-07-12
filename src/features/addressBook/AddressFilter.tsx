@@ -32,7 +32,7 @@ const AddressFilter: FC<AddressFilterProps> = ({
   onChange,
 }) => {
   const theme = useTheme();
-  const isDevice = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -69,7 +69,7 @@ const AddressFilter: FC<AddressFilterProps> = ({
       <Button
         variant="outlined"
         color="secondary"
-        size={isDevice ? "small" : "medium"}
+        size={isBelowMd ? "small" : "medium"}
         endIcon={<OpenIcon open={!!anchorEl} />}
         onClick={openMenu}
       >

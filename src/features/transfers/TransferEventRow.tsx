@@ -21,7 +21,7 @@ import AddressName from "../../components/AddressName/AddressName";
 
 export const TransferEventLoadingRow = () => {
   const theme = useTheme();
-  const isDevice = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
     <TableRow>
@@ -39,7 +39,7 @@ export const TransferEventLoadingRow = () => {
           </Typography>
         </Stack>
       </TableCell>
-      {!isDevice ? (
+      {!isBelowMd ? (
         <>
           <TableCell>
             <Skeleton width={80} />
@@ -66,7 +66,7 @@ interface TransferEventRowProps {
 
 const TransferEventRow: FC<TransferEventRowProps> = ({ transferEvent }) => {
   const theme = useTheme();
-  const isDevice = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const { visibleAddress = "" } = useVisibleAddress();
 
@@ -95,12 +95,12 @@ const TransferEventRow: FC<TransferEventRowProps> = ({ transferEvent }) => {
         <ListItemText
           primary={<Ether wei={value} />}
           secondary={
-            isDevice ? format(timestamp * 1000, "d MMM. yyyy") : undefined
+            isBelowMd ? format(timestamp * 1000, "d MMM. yyyy") : undefined
           }
           primaryTypographyProps={{ variant: "h7mono" }}
         />
       </TableCell>
-      {!isDevice && (
+      {!isBelowMd && (
         <TableCell>{format(timestamp * 1000, "d MMM. yyyy")}</TableCell>
       )}
     </TableRow>

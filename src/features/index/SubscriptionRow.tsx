@@ -21,11 +21,11 @@ import Ether from "../token/Ether";
 
 export const SubscriptionLoadingRow = () => {
   const theme = useTheme();
-  const isDevice = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
     <TableRow>
-      {!isDevice ? (
+      {!isBelowMd ? (
         <>
           <TableCell>
             <Stack direction="row" alignItems="center" gap={1.5}>
@@ -86,7 +86,7 @@ interface SubscriptionRowProps {
 
 const SubscriptionRow: FC<SubscriptionRowProps> = ({ subscription }) => {
   const theme = useTheme();
-  const isDevice = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const {
     indexValueCurrent,
@@ -125,7 +125,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({ subscription }) => {
           <ListItemText
             primary={<AddressName address={subscription.publisher} />}
             secondary={
-              isDevice
+              isBelowMd
                 ? format(subscription.updatedAtTimestamp * 1000, "d MMM. yyyy")
                 : undefined
             }
@@ -133,7 +133,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({ subscription }) => {
           />
         </Stack>
       </TableCell>
-      {!isDevice ? (
+      {!isBelowMd ? (
         <>
           <TableCell>
             <Typography variant="h7mono">

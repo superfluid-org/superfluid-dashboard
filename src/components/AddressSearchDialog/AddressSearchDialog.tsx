@@ -41,7 +41,7 @@ export const AddressListItem: FC<AddressListItemProps> = ({
   namePlaceholder,
 }) => {
   const theme = useTheme();
-  const isDevice = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { name, addressChecksummed: checksumHex } = useAddressName(address);
 
   return (
@@ -54,11 +54,11 @@ export const AddressListItem: FC<AddressListItemProps> = ({
         primary={
           name ||
           namePlaceholder ||
-          (isDevice ? shortenHex(checksumHex, 8) : checksumHex)
+          (isBelowMd ? shortenHex(checksumHex, 8) : checksumHex)
         }
         secondary={
           (name || namePlaceholder) &&
-          (isDevice ? shortenHex(checksumHex, 8) : checksumHex)
+          (isBelowMd ? shortenHex(checksumHex, 8) : checksumHex)
         }
       />
     </ListItemButton>

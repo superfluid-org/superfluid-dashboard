@@ -39,7 +39,7 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
   network,
 }) => {
   const theme = useTheme();
-  const isDevice = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { visibleAddress = "" } = useVisibleAddress();
   const lowerVisibleAddress = visibleAddress.toLowerCase();
 
@@ -141,7 +141,7 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
               <Stack direction="row" alignItems="center" gap={1}>
                 <Button
                   variant="textContained"
-                  size={isDevice ? "small" : "medium"}
+                  size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(TransferTypeFilter.All)}
                   onClick={changeTypeFilter(TransferTypeFilter.All)}
                 >
@@ -149,7 +149,7 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
                 </Button>
                 <Button
                   variant="textContained"
-                  size={isDevice ? "small" : "medium"}
+                  size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(TransferTypeFilter.Sent)}
                   onClick={changeTypeFilter(TransferTypeFilter.Sent)}
                 >
@@ -157,7 +157,7 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
                 </Button>
                 <Button
                   variant="textContained"
-                  size={isDevice ? "small" : "medium"}
+                  size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(TransferTypeFilter.Received)}
                   onClick={changeTypeFilter(TransferTypeFilter.Received)}
                 >
@@ -166,7 +166,7 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
               </Stack>
             </TableCell>
           </TableRow>
-          {!isDevice && (
+          {!isBelowMd && (
             <TableRow>
               <TableCell>To/From</TableCell>
               <TableCell>Amount</TableCell>

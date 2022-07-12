@@ -35,7 +35,7 @@ const StreamActiveFilter: FC<StreamActiveFilterProps> = ({
   onChange,
 }) => {
   const theme = useTheme();
-  const isDevice = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -54,7 +54,7 @@ const StreamActiveFilter: FC<StreamActiveFilterProps> = ({
       <Button
         variant="outlined"
         color="secondary"
-        size={isDevice ? "small" : "medium"}
+        size={isBelowMd ? "small" : "medium"}
         onClick={openFilterMenu}
         endIcon={<OpenIcon open={!!anchorEl} />}
       >

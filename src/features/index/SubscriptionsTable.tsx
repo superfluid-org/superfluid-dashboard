@@ -29,7 +29,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
   network,
 }) => {
   const theme = useTheme();
-  const isDevice = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const { visibleAddress = "" } = useVisibleAddress();
 
@@ -118,7 +118,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
               <Stack direction="row" alignItems="center" gap={1}>
                 <Button
                   variant="textContained"
-                  size={isDevice ? "small" : "medium"}
+                  size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(null)}
                   onClick={changeApprovedFilter(null)}
                 >
@@ -126,7 +126,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
                 </Button>
                 <Button
                   variant="textContained"
-                  size={isDevice ? "small" : "medium"}
+                  size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(true)}
                   onClick={changeApprovedFilter(true)}
                 >
@@ -134,7 +134,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
                 </Button>
                 <Button
                   variant="textContained"
-                  size={isDevice ? "small" : "medium"}
+                  size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(false)}
                   onClick={changeApprovedFilter(false)}
                 >
@@ -153,7 +153,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
               </Stack>
             </TableCell>
           </TableRow>
-          {!isDevice && (
+          {!isBelowMd && (
             <TableRow>
               <TableCell>From</TableCell>
               <TableCell>Total Amount Received</TableCell>
