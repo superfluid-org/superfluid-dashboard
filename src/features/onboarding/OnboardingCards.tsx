@@ -132,7 +132,8 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({
           px: 3.5 + 2, // Column gap + 2 spacing for the next card to peek out.
           overflowY: "auto",
           gridTemplateColumns: "repeat(3, 100%)",
-          justifyContent: "start",
+          justifyContent: "flex-start",
+          alignItems: "flex-start",
           scrollSnapType: "x mandatory",
           scrollPadding: `0px ${theme.spacing(3.5)}`,
           ...(vertical ? { gridTemplateColumns: "290px", px: 0 } : {}),
