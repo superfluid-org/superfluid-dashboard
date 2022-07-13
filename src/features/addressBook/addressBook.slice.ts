@@ -36,10 +36,12 @@ export const addressBookSlice = createSlice({
     ) =>
       adapter.upsertMany(
         state,
-        payload.map((newEntry) => ({
-          ...newEntry,
-          address: getAddress(newEntry.address),
-        }))
+        payload
+          .map((newEntry) => ({
+            ...newEntry,
+            address: getAddress(newEntry.address),
+          }))
+          .filter((newEntry) => !state.ids.includes(newEntry.address))
       ),
 
     removeAddressBookEntries: adapter.removeMany,

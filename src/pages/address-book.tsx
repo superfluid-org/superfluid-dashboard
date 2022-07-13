@@ -191,21 +191,9 @@ const AddressBook: NextPage = () => {
   };
 
   const insertImportedAddresses = useCallback(
-    (newEntries: AddressBookEntry[]) => {
-      dispatch(
-        addAddressBookEntries(
-          newEntries.filter(
-            (newEntry) =>
-              !addressBookEntries.some(
-                (existingEntry) =>
-                  existingEntry.address.toLowerCase() ===
-                  newEntry.address.toLowerCase()
-              )
-          )
-        )
-      );
-    },
-    [addressBookEntries, dispatch]
+    (newEntries: AddressBookEntry[]) =>
+      dispatch(addAddressBookEntries(newEntries)),
+    [dispatch]
   );
 
   // Exporting address book
