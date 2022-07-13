@@ -102,10 +102,13 @@ interface CancelledIndicatorProps {
 const CancelledIndicator: FC<CancelledIndicatorProps> = ({
   updatedAtTimestamp,
 }) => {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
   return (
     <Stack direction="row" alignItems="center" gap={1}>
-      <CloseIcon color="error" />
-      <Typography variant="h5" color="error">
+      {!isBelowMd && <CloseIcon color="error" />}
+      <Typography variant={isBelowMd ? "h6" : "h5"} color="error">
         {`Cancelled on ${format(
           updatedAtTimestamp * 1000,
           "d MMMM yyyy"
@@ -270,6 +273,10 @@ const Stream: FC<NetworkPage> = ({ network }) => {
         </Stack>
 
         <Stack alignItems="center" gap={1} sx={{ mb: 4 }}>
+          {isBelowMd && !isActive && updatedAtTimestamp && (
+            <CancelledIndicator updatedAtTimestamp={updatedAtTimestamp} />
+          )}
+
           <Typography variant="h5">Total Amount Streamed</Typography>
 
           <Stack direction="row" alignItems="center" gap={2}>
