@@ -11,6 +11,7 @@ import {
   Stack,
   useTheme,
 } from "@mui/material";
+import { Address } from "@superfluid-finance/sdk-core";
 import Image from "next/image";
 import Link from "next/link";
 import { FC, useState } from "react";
@@ -73,7 +74,11 @@ const OnboardingItem: FC<OnboardingItemProps> = ({
   );
 };
 
-const StreamItem = () => (
+interface StreamItemProps {
+  address: Address;
+}
+
+const StreamItem: FC<StreamItemProps> = ({ address }) => (
   <Paper
     component={Stack}
     alignItems="center"
@@ -87,7 +92,7 @@ const StreamItem = () => (
         sx: { width: "20px", height: "20px", borderRadius: "4px" },
       }}
       BlockiesProps={{ size: 10, scale: 2 }}
-      address="0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"
+      address={address}
     />
     <Stack flex={1} alignItems="flex-start">
       <Skeleton width="100%" height={12} animation={false} />
@@ -125,7 +130,7 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({
           mx: -2,
           py: 2,
           px: 3.5 + 2, // Column gap + 2 spacing for the next card to peek out.
-          overflow: "auto hidden",
+          overflowY: "auto",
           gridTemplateColumns: "repeat(3, 100%)",
           justifyContent: "start",
           scrollSnapType: "x mandatory",
@@ -152,7 +157,7 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({
         onClick={onClick}
         childrenGap={0}
       >
-        <StreamItem />
+        <StreamItem address="0xd8da6bf26964af9d7eed9e03e53415d37aa96045" />
 
         <Image
           unoptimized
@@ -163,7 +168,7 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({
           alt="Superfluid stream"
         />
 
-        <StreamItem />
+        <StreamItem address="0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" />
       </OnboardingItem>
       <OnboardingItem
         title="Modify and Cancel Streams"
