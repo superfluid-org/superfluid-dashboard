@@ -41,6 +41,7 @@ const IntercomButton: FC = () => {
     });
   }, [update, isDarkMode, primaryColor]);
 
+  // TODO: Intercom should be added somewhere into sidebar in mobile views.
   if (!INTERCOM_APP_ID || isBelowMd) return null;
 
   return (
