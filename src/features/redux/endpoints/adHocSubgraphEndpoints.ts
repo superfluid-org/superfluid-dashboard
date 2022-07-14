@@ -5,7 +5,7 @@ import {
 import { ethers } from "ethers";
 import { gql } from "graphql-request";
 import { uniq } from "lodash";
-import { Network, networksByChainId } from "../../network/networks";
+import { Network, networks, networksByChainId } from "../../network/networks";
 import {
   SuperTokenMinimal,
   SuperTokenPair,
@@ -35,6 +35,10 @@ type NativeAssetSuperTokenSubgraphResult = {
   name: string;
   symbol: string;
 };
+
+const nativeAssetSuperTokenSymbols = uniq(
+  networks.map((x) => x.nativeAsset.superToken.symbol)
+);
 
 export const adHocSubgraphEndpoints = {
   endpoints: (builder: SubgraphEndpointBuilder) => ({
@@ -224,7 +228,9 @@ export const adHocSubgraphEndpoints = {
                 where: {
                   isSuperToken: true
                   isListed: true
-                  symbol_in: ["ETHx", "AVAXx"]
+                  symbol_in: [${nativeAssetSuperTokenSymbols
+                    .map((x) => `"${x}"`)
+                    .join(",")}]
                   underlyingAddress: "0x0000000000000000000000000000000000000000"
                 }
               ) {
@@ -301,7 +307,7 @@ export const adHocSubgraphEndpoints = {
           wrapperSuperTokenPairs.filter(
             (x) =>
               x.superToken.address !==
-              "0x84b2e92e08008c0081c8c21a35fda4ddc5d21ac6"
+              "0x84b2e92e08008c0081c8c21a35fda4ddc5d21ac6" // Filter out a neglected token.
           )
         );
 

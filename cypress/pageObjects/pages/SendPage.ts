@@ -26,7 +26,7 @@ const PREVIEW_ENDS_ON = "[data-cy=preview-ends-on]";
 const PREVIEW_UPFRONT_BUFFER = "[data-cy=preview-upfront-buffer]";
 const PROTECT_YOUR_BUFFER_ERROR = "[data-cy=protect-your-buffer-error]";
 const RISK_CHECKBOX = "[data-cy=risk-checkbox]";
-const ADDRESS_BUTTON_TEXT = "[data-cy=address-button] span span";
+const ADDRESS_BUTTON_TEXT = "[data-cy=address-button]";
 const CHOSEN_ENS_ADDRESS = "[data-cy=address-button] span p";
 const TOKEN_SELECT_NAME = "[data-cy=token-symbol-and-name] p";
 const TOKEN_SELECT_SYMBOL = "[data-cy=token-symbol-and-name] span";
@@ -85,30 +85,30 @@ export class SendPage extends BasePage {
             this.doesNotExist(ADDRESS_DIALOG_INPUT);
             this.hasText(
                 ADDRESS_BUTTON_TEXT,
-                shortenHex(commonData.staticBalanceAccount)
+                commonData.staticBalanceAccount
             );
             this.click(SELECT_TOKEN_BUTTON);
-            this.clickFirstVisible(TOKEN_SEARCH_RESULTS);
             cy.get(TOKEN_SEARCH_RESULTS)
                 .eq(0)
                 .find("[data-cy=token-symbol-and-name] span")
                 .then(($tokenSearchResultName) => {
                     cy.wrap($tokenSearchResultName.text()).as("lastChosenToken");
                 });
+            this.clickFirstVisible(TOKEN_SEARCH_RESULTS);
             this.type(FLOW_RATE_INPUT, "1");
         });
     }
 
     static validateStreamEndingAndAmountPerSecond() {
         this.hasValue(STREAM_ENDS_ON, "∞");
-        this.hasValue(AMOUNT_PER_SECOND, "0.000277777777777777");
+        this.hasValue(AMOUNT_PER_SECOND, "0.000000385802469135");
     }
 
     static checkIfStreamPreviewIsCorrect() {
         cy.fixture("commonData").then((commonData) => {
             this.hasText(PREVIEW_RECEIVER, commonData.staticBalanceAccount);
             cy.get("@lastChosenToken").then((lastChosenToken) => {
-                this.hasText(PREVIEW_FLOW_RATE, `1.0 ${lastChosenToken}/hour`);
+                this.hasText(PREVIEW_FLOW_RATE, `1 ${lastChosenToken}/month`);
                 //A rounding error from the dashboard? Will probably change when we do some formatting changes
                 this.hasText(
                     PREVIEW_UPFRONT_BUFFER,
