@@ -155,6 +155,9 @@ const StreamsTable: FC<StreamsTableProps> = ({
                     ? "transparent"
                     : alpha(theme.palette.action.hover, 0.08),
               },
+              [theme.breakpoints.down("md")]: {
+                borderRadius: 0,
+              },
             }
           : {
               [theme.breakpoints.down("md")]: {

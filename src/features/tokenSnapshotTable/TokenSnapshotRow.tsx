@@ -40,6 +40,10 @@ const SnapshotRow = styled(TableRow, {
       border: "none",
       ":first-of-type": { borderRadius: "0 0 0 20px" },
       ":last-of-type": { borderRadius: "0 0 20px 0" },
+      [theme.breakpoints.down("md")]: {
+        ":first-of-type": { borderRadius: 0 },
+        ":last-of-type": { borderRadius: 0 },
+      },
       transition: theme.transitions.create("border-radius", {
         duration: theme.transitions.duration.shortest,
         easing: theme.transitions.easing.easeOut,
