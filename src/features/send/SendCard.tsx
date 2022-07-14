@@ -14,11 +14,12 @@ import {
   TextField,
   Tooltip,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { FC, memo, useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
@@ -30,7 +31,6 @@ import { isWrappable } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
-import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
 import {
   ModifyStreamRestoration,
   RestorationType,
@@ -61,6 +61,8 @@ const FormLabel: FC<FormLabelProps> = ({ children }) => (
 );
 
 export default memo(function SendCard() {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
   const getTransactionOverrides = useGetTransactionOverrides();
@@ -115,7 +117,7 @@ export default memo(function SendCard() {
         name: x.name,
         symbol: x.symbol,
       })),
-    [superTokensQuery.data]
+    [superTokensQuery.data, network]
   );
 
   const shouldSearchForActiveFlow =
@@ -137,10 +139,17 @@ export default memo(function SendCard() {
 
   return (
     <Card
+      elevation={1}
       sx={{
         maxWidth: "600px",
+        [theme.breakpoints.down("md")]: {
+          boxShadow: "none",
+          backgroundImage: "none",
+          borderRadius: 0,
+          border: 0,
+          p: 0,
+        },
       }}
-      elevation={1}
     >
       <Stack spacing={4}>
         <Button
@@ -174,6 +183,7 @@ export default memo(function SendCard() {
                   address={receiver}
                   onChange={onChange}
                   onBlur={onBlur}
+                  addressLength={isBelowMd ? "medium" : "long"}
                   ButtonProps={{ fullWidth: true }}
                 />
               )}
@@ -181,7 +191,14 @@ export default memo(function SendCard() {
           </Box>
 
           <Box
-            sx={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 2.5 }}
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "1fr 2fr",
+              gap: 2.5,
+              [theme.breakpoints.down("md")]: {
+                gridTemplateColumns: "1fr",
+              },
+            }}
           >
             <Stack justifyContent="stretch">
               <FormLabel>Super Token</FormLabel>
@@ -234,7 +251,14 @@ export default memo(function SendCard() {
           </Box>
 
           <Box
-            sx={{ display: "grid", gridTemplateColumns: "4fr 3fr", gap: 2.5 }}
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "4fr 3fr",
+              gap: 2.5,
+              [theme.breakpoints.down("md")]: {
+                gridTemplateColumns: "1fr",
+              },
+            }}
           >
             <Box>
               <Stack
@@ -447,9 +471,8 @@ export default memo(function SendCard() {
                       } as ModifyStreamRestoration,
                     },
                     overrides: await getTransactionOverrides(network),
-                  })
-                    .unwrap()
-                    // .then(() => resetForm()); // TODO(KK): Reset form. Can't do it ATM because then the transaction dialog gets lost.
+                  }).unwrap();
+                  // .then(() => resetForm()); // TODO(KK): Reset form. Can't do it ATM because then the transaction dialog gets lost.
 
                   // TODO(KK): Go to stream page instead?
                   setTransactionDialogContent({

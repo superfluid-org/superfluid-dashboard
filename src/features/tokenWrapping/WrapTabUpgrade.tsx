@@ -11,7 +11,7 @@ import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
-import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
+import { useLayoutContext } from "../layout/LayoutContext";
 import {
   ApproveAllowanceRestoration,
   RestorationType,
@@ -34,7 +34,7 @@ export const WrapTabUpgrade: FC = () => {
   const { network } = useExpectedNetwork();
   const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
-  const { setTransactionDrawerOpen } = useTransactionDrawerContext();
+  const { setTransactionDrawerOpen } = useLayoutContext();
   const getTransactionOverrides = useGetTransactionOverrides();
 
   const {

@@ -6,9 +6,12 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Stack,
   TableCell,
   TableRow,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { FlowUpdatedEvent, FlowUpdateType } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
@@ -31,11 +34,12 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
   keyEvent,
   network,
 }) => {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { visibleAddress } = useVisibleAddress();
 
   const {
     type,
-    deposit,
     flowRate,
     receiver,
     sender,
@@ -83,7 +87,7 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
             primary={title}
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
-              variant: "h6",
+              variant: isBelowMd ? "h7" : "h6",
             }}
             secondaryTypographyProps={{
               variant: "body2mono",
@@ -92,66 +96,103 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
           />
         </ListItem>
       </TableCell>
-      <TableCell>
-        <ListItem sx={{ p: 0 }}>
-          <ListItemAvatar>
+
+      {!isBelowMd ? (
+        <>
+          <TableCell>
+            <ListItem sx={{ p: 0 }}>
+              <ListItemAvatar>
+                {tokenQuery.data && (
+                  <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
+                )}
+              </ListItemAvatar>
+              <ListItemText
+                primary={
+                  <>
+                    <Ether wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)}>
+                      {" "}
+                      {tokenQuery.data ? `${tokenQuery.data.symbol}/mo` : "/mo"}
+                    </Ether>
+                  </>
+                }
+                /**
+                 * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
+                 * This is just used to make table row look better
+                 */
+                // secondary="$12.59"
+                primaryTypographyProps={{
+                  variant: "h6mono",
+                  sx: { lineHeight: "46px" },
+                }}
+                secondaryTypographyProps={{
+                  variant: "body2mono",
+                  color: "text.secondary",
+                }}
+              />
+            </ListItem>
+          </TableCell>
+          <TableCell>
+            <ListItem sx={{ p: 0 }}>
+              <ListItemAvatar>
+                <AddressAvatar address={isOutgoing ? receiver : sender} />
+              </ListItemAvatar>
+              <ListItemText
+                primary={isOutgoing ? "To" : "From"}
+                secondary={
+                  <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
+                    <Typography
+                      variant="h6"
+                      color="text.primary"
+                      component="span"
+                    >
+                      <AddressName address={isOutgoing ? receiver : sender} />
+                    </Typography>
+                  </AddressCopyTooltip>
+                }
+                primaryTypographyProps={{
+                  variant: "body2",
+                  color: "text.secondary",
+                }}
+              />
+            </ListItem>
+          </TableCell>
+          <TableCell sx={{ position: "relative" }}>
+            <TxHashLink txHash={transactionHash} network={network} />
+            <NetworkBadge
+              network={network}
+              sx={{ position: "absolute", top: "0px", right: "16px" }}
+            />
+          </TableCell>
+        </>
+      ) : (
+        <TableCell align="right">
+          <Stack direction="row" alignItems="center" gap={1}>
+            <ListItemText
+              primary={
+                <Ether wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)} />
+              }
+              secondary={
+                tokenQuery.data ? `${tokenQuery.data.symbol}/mo` : "/mo"
+              }
+              /**
+               * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
+               * This is just used to make table row look better
+               */
+              // secondary="$12.59"
+              primaryTypographyProps={{
+                variant: "h6mono",
+              }}
+              secondaryTypographyProps={{
+                variant: "body2mono",
+                color: "text.secondary",
+              }}
+            />
             {tokenQuery.data && (
               <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
             )}
-          </ListItemAvatar>
-          <ListItemText
-            primary={
-              <>
-                <Ether wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)}>
-                  {" "}
-                  {tokenQuery.data ? `${tokenQuery.data.symbol}/mo` : "/mo"}
-                </Ether>
-              </>
-            }
-            /**
-             * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-             * This is just used to make table row look better
-             */
-            // secondary="$12.59"
-            primaryTypographyProps={{
-              variant: "h6mono",
-              sx: { lineHeight: "46px" },
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
-        </ListItem>
-      </TableCell>
-      <TableCell>
-        <ListItem sx={{ p: 0 }}>
-          <ListItemAvatar>
-            <AddressAvatar address={isOutgoing ? receiver : sender} />
-          </ListItemAvatar>
-          <ListItemText
-            primary={isOutgoing ? "To" : "From"}
-            secondary={
-              <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
-                <Typography variant="h6" color="text.primary" component="span">
-                  <AddressName address={isOutgoing ? receiver : sender} />
-                </Typography>
-              </AddressCopyTooltip>
-            }
-            primaryTypographyProps={{
-              variant: "body2",
-              color: "text.secondary",
-            }}
-          />
-        </ListItem>
-      </TableCell>
-      <TableCell sx={{ position: "relative" }}>
-        <TxHashLink txHash={transactionHash} network={network} />
-        <NetworkBadge
-          network={network}
-          sx={{ position: "absolute", top: "0px", right: "16px" }}
-        />
-      </TableCell>
+          </Stack>
+        </TableCell>
+      )}
     </TableRow>
   );
 };

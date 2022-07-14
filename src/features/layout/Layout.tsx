@@ -1,10 +1,10 @@
-import { Box, styled, Toolbar, useTheme } from "@mui/material";
+import { Box, styled, Toolbar, useMediaQuery, useTheme } from "@mui/material";
 import { FC } from "react";
 import IntercomButton from "../intercom/IntercomButton";
 import TransactionDrawer, {
   transactionDrawerWidth,
 } from "../transactionDrawer/TransactionDrawer";
-import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
+import { useLayoutContext } from "./LayoutContext";
 import NavigationDrawer from "./NavigationDrawer";
 import TopBar from "./TopBar";
 
@@ -26,26 +26,33 @@ const Main = styled("main")<{
   open: boolean;
 }>(({ theme, open }) => ({
   flexGrow: 1,
-  padding: `${theme.spacing(5)} ${theme.spacing(8)}`,
+  maxWidth: "100vw",
+  padding: `${theme.spacing(5)} 0`,
   transition: theme.transitions.create("margin", {
     easing: theme.transitions.easing.easeInOut,
     duration: theme.transitions.duration.standard,
   }),
-  ...(open && {
-    marginRight: transactionDrawerWidth,
-  }),
+  [theme.breakpoints.up("md")]: {
+    ...(open && {
+      marginRight: transactionDrawerWidth,
+    }),
+  },
+  [theme.breakpoints.down("md")]: {
+    padding: `${theme.spacing(3.5)} 0`,
+  },
 }));
 
 const Layout: FC = ({ children }) => {
   const theme = useTheme();
-  const { transactionDrawerOpen } = useTransactionDrawerContext();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const { transactionDrawerOpen } = useLayoutContext();
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", scrollY: "auto" }}>
       <TopBar />
       <NavigationDrawer />
       <Main open={transactionDrawerOpen}>
-        {theme.palette.mode === "dark" && <DarkGlow />}
+        {!isBelowMd && theme.palette.mode === "dark" && <DarkGlow />}
         <Toolbar />
         {/* <TransactionSnackbar /> */}
         {children}

@@ -7,12 +7,14 @@ import {
   ListItemText,
   Menu,
   Modal,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import { FC, MouseEvent, useState } from "react";
 import OnboardingCards from "../onboarding/OnboardingCards";
+import { useLayoutContext } from "./LayoutContext";
 
 interface MenuItemImageProps {
   src: string;
@@ -34,7 +36,9 @@ const MenuItemImage: FC<MenuItemImageProps> = ({ src, alt }) => (
 
 const MoreNavigationItem: FC = ({}) => {
   const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
+  const { setNavigationDrawerOpen } = useLayoutContext();
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [moreMenuAnchor, setMoreMenuAnchor] = useState<HTMLElement | null>(
     null
@@ -50,7 +54,14 @@ const MoreNavigationItem: FC = ({}) => {
     closeMoreMenu();
   };
 
-  const closeOnboardingModal = () => setShowOnboardingModal(false);
+  const closeOnboardingModal = () => {
+    setShowOnboardingModal(false);
+  };
+
+  const onOnboardingItemClicked = () => {
+    closeOnboardingModal();
+    setNavigationDrawerOpen(false);
+  };
 
   return (
     <>
@@ -123,9 +134,15 @@ const MoreNavigationItem: FC = ({}) => {
             top: "40%",
             left: "50%",
             transform: "translate(-50%, -50%)",
+            [theme.breakpoints.down("md")]: {
+              top: "50%",
+            },
           }}
         >
-          <OnboardingCards onClick={closeOnboardingModal} />
+          <OnboardingCards
+            vertical={isBelowMd}
+            onClick={onOnboardingItemClicked}
+          />
         </Box>
       </Modal>
     </>

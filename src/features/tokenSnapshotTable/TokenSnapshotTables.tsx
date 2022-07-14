@@ -1,7 +1,13 @@
-import { Button, Stack, Typography } from "@mui/material";
+import {
+  Button,
+  Stack,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, useEffect, useRef, useState } from "react";
-import { OpenIcon } from "../../components/OpenIcon/OpenIcon";
+import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { useActiveNetworks } from "../network/ActiveNetworksContext";
 import NetworkSelectionFilter from "../network/NetworkSelectionFilter";
 import { subgraphApi } from "../redux/store";
@@ -14,6 +20,9 @@ interface TokenSnapshotTablesProps {
 }
 
 const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
   const [hasContent, setHasContent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [tokenSnapshotsQueryTrigger] =
@@ -55,9 +64,6 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, activeNetworks]);
 
-  //   if (hasContent === undefined) return <div>LOADING</div>;
-  //   if (!hasContent) return <TokenSnapshotEmptyCard />;
-
   return (
     <>
       <Stack
@@ -66,7 +72,7 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
         justifyContent="space-between"
         sx={{ mb: 2 }}
       >
-        <Typography variant="h4" component="h1">
+        <Typography variant={isBelowMd ? "h3" : "h4"} component="h1">
           Super Tokens
         </Typography>
 

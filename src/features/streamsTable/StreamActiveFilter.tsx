@@ -7,10 +7,11 @@ import {
   ListItemText,
   Menu,
   MenuItem,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { FC, MouseEvent, useState } from "react";
-import { OpenIcon } from "../../components/OpenIcon/OpenIcon";
+import OpenIcon from "../../components/OpenIcon/OpenIcon";
 
 export enum StreamActiveType {
   All = "All Streams",
@@ -34,6 +35,7 @@ const StreamActiveFilter: FC<StreamActiveFilterProps> = ({
   onChange,
 }) => {
   const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -52,6 +54,7 @@ const StreamActiveFilter: FC<StreamActiveFilterProps> = ({
       <Button
         variant="outlined"
         color="secondary"
+        size={isBelowMd ? "small" : "medium"}
         onClick={openFilterMenu}
         endIcon={<OpenIcon open={!!anchorEl} />}
       >

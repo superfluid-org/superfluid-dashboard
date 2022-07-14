@@ -8,6 +8,7 @@ import {
   Switch,
   ToggleButton,
   ToggleButtonGroup,
+  useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/system";
 import { FC } from "react";
@@ -58,6 +59,8 @@ const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
   onClose,
 }) => {
   const theme = useTheme();
+  const isBelowSm = useMediaQuery(theme.breakpoints.down("sm"));
+
   const {
     activeNetworks,
     testnetMode,
@@ -89,7 +92,11 @@ const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
       PaperProps={{ sx: { minWidth: 280 }, square: true }}
       sx={{ marginTop: theme.spacing(1.5) }}
     >
-      <Collapse in={!testnetMode} timeout="auto" unmountOnExit>
+      <Collapse
+        in={!testnetMode}
+        timeout={isBelowSm ? 0 : "auto"}
+        unmountOnExit
+      >
         {mainnets.map((network) => (
           <NetworkItem
             data-cy={`${network.slugName}-button`}
@@ -101,7 +108,7 @@ const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
         ))}
       </Collapse>
 
-      <Collapse in={testnetMode} timeout="auto" unmountOnExit>
+      <Collapse in={testnetMode} timeout={isBelowSm ? 0 : "auto"} unmountOnExit>
         {testnets.map((network) => (
           <NetworkItem
             data-cy={`${network.slugName}-button`}

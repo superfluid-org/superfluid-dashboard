@@ -7,7 +7,9 @@ import {
   Card,
   Paper,
   Stack,
+  useMediaQuery,
   useTheme,
+  useThemeProps,
 } from "@mui/material";
 import { useRouter } from "next/router";
 import { FC, memo } from "react";
@@ -64,6 +66,8 @@ export default memo(function WrapCard({
 }: {
   tabValue: "upgrade" | "downgrade";
 }) {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const router = useRouter();
 
   const handleTabChange = (newTab: "upgrade" | "downgrade") => () =>
@@ -74,6 +78,13 @@ export default memo(function WrapCard({
       sx={{
         maxWidth: "500px",
         borderRadius: "20px",
+        [theme.breakpoints.down("md")]: {
+          boxShadow: "none",
+          backgroundImage: "none",
+          borderRadius: 0,
+          border: 0,
+          p: 0,
+        },
       }}
       elevation={1}
     >

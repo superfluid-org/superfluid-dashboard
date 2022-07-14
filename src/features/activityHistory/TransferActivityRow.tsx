@@ -4,9 +4,12 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Stack,
   TableCell,
   TableRow,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { TransferEvent } from "@superfluid-finance/sdk-core";
@@ -28,9 +31,11 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
   keyEvent,
   network,
 }) => {
-  const { visibleAddress } = useVisibleAddress();
-
   const { from, to, token, value, timestamp, transactionHash } = keyEvent;
+
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const { visibleAddress } = useVisibleAddress();
 
   const tokenQuery = subgraphApi.useTokenQuery(
     token
@@ -55,7 +60,7 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
             primary={isOutgoing ? "Send Transfer" : "Receive Transfer"}
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
-              variant: "h6",
+              variant: isBelowMd ? "h7" : "h6",
             }}
             secondaryTypographyProps={{
               variant: "body2mono",
@@ -64,63 +69,90 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
           />
         </ListItem>
       </TableCell>
-      <TableCell>
-        <ListItem sx={{ p: 0 }}>
-          <ListItemAvatar>
+      {!isBelowMd ? (
+        <>
+          <TableCell>
+            <ListItem sx={{ p: 0 }}>
+              <ListItemAvatar>
+                {tokenQuery.data && (
+                  <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
+                )}
+              </ListItemAvatar>
+              <ListItemText
+                primary={
+                  <Ether wei={value}>
+                    {" "}
+                    {tokenQuery.data && tokenQuery.data.symbol}
+                  </Ether>
+                }
+                /**
+                 * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
+                 * This is just used to make table row look better
+                 */
+                primaryTypographyProps={{
+                  variant: "h6mono",
+                  sx: { lineHeight: "46px" },
+                }}
+                secondaryTypographyProps={{
+                  variant: "body2mono",
+                  color: "text.secondary",
+                }}
+              />
+            </ListItem>
+          </TableCell>
+          <TableCell>
+            <ListItem sx={{ p: 0 }}>
+              <ListItemAvatar>
+                <AddressAvatar address={isOutgoing ? to : from} />
+              </ListItemAvatar>
+              <ListItemText
+                primary={isOutgoing ? "To" : "From"}
+                secondary={
+                  <AddressCopyTooltip address={isOutgoing ? to : from}>
+                    <Typography
+                      variant="h6"
+                      color="text.primary"
+                      component="span"
+                    >
+                      <AddressName address={isOutgoing ? to : from} />
+                    </Typography>
+                  </AddressCopyTooltip>
+                }
+                primaryTypographyProps={{
+                  variant: "body2",
+                  color: "text.secondary",
+                }}
+              />
+            </ListItem>
+          </TableCell>
+          <TableCell sx={{ position: "relative" }}>
+            <TxHashLink txHash={transactionHash} network={network} />
+            <NetworkBadge
+              network={network}
+              sx={{ position: "absolute", top: "0px", right: "16px" }}
+            />
+          </TableCell>
+        </>
+      ) : (
+        <TableCell align="right">
+          <Stack direction="row" alignItems="center" gap={2}>
+            <ListItemText
+              primary={
+                <Ether wei={value}>
+                  {" "}
+                  {tokenQuery.data && tokenQuery.data.symbol}
+                </Ether>
+              }
+              primaryTypographyProps={{ variant: "h7mono" }}
+              secondaryTypographyProps={{ variant: "body2mono" }}
+            />
+
             {tokenQuery.data && (
               <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
             )}
-          </ListItemAvatar>
-          <ListItemText
-            primary={
-              <Ether wei={value}>
-                {" "}
-                {tokenQuery.data && tokenQuery.data.symbol}
-              </Ether>
-            }
-            /**
-             * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-             * This is just used to make table row look better
-             */
-            primaryTypographyProps={{
-              variant: "h6mono",
-              sx: { lineHeight: "46px" },
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
-        </ListItem>
-      </TableCell>
-      <TableCell>
-        <ListItem sx={{ p: 0 }}>
-          <ListItemAvatar>
-            <AddressAvatar address={isOutgoing ? to : from} />
-          </ListItemAvatar>
-          <ListItemText
-            primary={isOutgoing ? "To" : "From"}
-            secondary={
-              <AddressCopyTooltip address={isOutgoing ? to : from}>
-                <Typography variant="h6" color="text.primary" component="span">
-                  <AddressName address={isOutgoing ? to : from} />
-                </Typography>
-              </AddressCopyTooltip>
-            }
-            primaryTypographyProps={{
-              variant: "body2",
-              color: "text.secondary",
-            }}
-          />
-        </ListItem>
-      </TableCell>
-      <TableCell sx={{ position: "relative" }}>
-        <TxHashLink txHash={transactionHash} network={network} />
-        <NetworkBadge
-          network={network}
-          sx={{ position: "absolute", top: "0px", right: "16px" }}
-        />
-      </TableCell>
+          </Stack>
+        </TableCell>
+      )}
     </TableRow>
   );
 };

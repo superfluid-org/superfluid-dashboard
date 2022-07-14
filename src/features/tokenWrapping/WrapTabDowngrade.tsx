@@ -10,7 +10,7 @@ import { calculateCurrentBalance } from "../../utils/tokenUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
-import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
+import { useLayoutContext } from "../layout/LayoutContext";
 import {
   RestorationType,
   SuperTokenDowngradeRestoration,
@@ -32,7 +32,7 @@ export const WrapTabDowngrade: FC = () => {
   const { network } = useExpectedNetwork();
   const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
-  const { setTransactionDrawerOpen } = useTransactionDrawerContext();
+  const { setTransactionDrawerOpen } = useLayoutContext();
   const getTransactionOverrides = useGetTransactionOverrides();
 
   const {

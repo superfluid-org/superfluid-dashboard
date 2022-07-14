@@ -8,6 +8,8 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, useMemo, useState } from "react";
@@ -26,6 +28,9 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
   tokenAddress,
   network,
 }) => {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
   const { visibleAddress = "" } = useVisibleAddress();
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -94,7 +99,18 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
     (indexSubscriptionsQuery.isLoading || indexSubscriptionsQuery.isFetching);
 
   return (
-    <TableContainer>
+    <TableContainer
+      sx={{
+        [theme.breakpoints.down("md")]: {
+          mx: -2,
+          width: "auto",
+          borderRadius: 0,
+          border: "none",
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          boxShadow: "none",
+        },
+      }}
+    >
       <Table>
         <TableHead>
           <TableRow>
@@ -102,6 +118,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
               <Stack direction="row" alignItems="center" gap={1}>
                 <Button
                   variant="textContained"
+                  size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(null)}
                   onClick={changeApprovedFilter(null)}
                 >
@@ -109,6 +126,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
                 </Button>
                 <Button
                   variant="textContained"
+                  size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(true)}
                   onClick={changeApprovedFilter(true)}
                 >
@@ -116,6 +134,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
                 </Button>
                 <Button
                   variant="textContained"
+                  size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(false)}
                   onClick={changeApprovedFilter(false)}
                 >
@@ -134,13 +153,15 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
               </Stack>
             </TableCell>
           </TableRow>
-          <TableRow>
-            <TableCell>From</TableCell>
-            <TableCell>Total Amount Received</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Updated At</TableCell>
-            {/* <TableCell width="100"></TableCell> */}
-          </TableRow>
+          {!isBelowMd && (
+            <TableRow>
+              <TableCell>From</TableCell>
+              <TableCell>Total Amount Received</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Updated At</TableCell>
+              {/* <TableCell width="100"></TableCell> */}
+            </TableRow>
+          )}
         </TableHead>
         <TableBody>
           {isLoading ? (
@@ -148,29 +169,34 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
           ) : filteredIndexSubscriptions.length === 0 ? (
             <EmptyRow span={5} />
           ) : (
-            filteredIndexSubscriptions.map((subscription) => (
-              <SubscriptionRow
-                key={subscription.id}
-                subscription={subscription}
-              />
-            ))
+            filteredIndexSubscriptions
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((subscription) => (
+                <SubscriptionRow
+                  key={subscription.id}
+                  subscription={subscription}
+                />
+              ))
           )}
         </TableBody>
       </Table>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={indexSubscriptions.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        sx={{
-          "> *": {
-            visibility: indexSubscriptions.length <= 5 ? "hidden" : "visible",
-          },
-        }}
-      />
+      {filteredIndexSubscriptions.length > 5 && (
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={filteredIndexSubscriptions.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{
+            "> *": {
+              visibility:
+                filteredIndexSubscriptions.length <= 5 ? "hidden" : "visible",
+            },
+          }}
+        />
+      )}
     </TableContainer>
   );
 };

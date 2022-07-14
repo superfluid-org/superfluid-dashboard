@@ -1,4 +1,5 @@
 import {
+  Box,
   LinearProgress,
   ListItem,
   ListItemAvatar,
@@ -44,14 +45,14 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
             {transaction.status === "Pending" && (
               <LinearProgress sx={{ height: 3 }} />
             )}
-            <Stack direction="row" gap={0.5}>
-              <Typography
-                variant="body2"
+            <Stack direction="row" gap={0.5} component="span">
+              <Box
+                component="span"
                 color={getTransactionStatusColor(transaction.status)}
               >
                 {`${format(transaction.timestampMs, "d MMM")} •`}
-              </Typography>
-              <Typography variant="body2">{shortenHex(transaction.hash)}</Typography>
+              </Box>
+              <Box component="span">{shortenHex(transaction.hash)}</Box>
             </Stack>
           </>
         }

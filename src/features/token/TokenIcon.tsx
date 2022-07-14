@@ -18,7 +18,9 @@ const BorderSvg = styled("svg")(() => ({
   left: 0,
 }));
 
-const AvatarWrapper = styled("div")<{ border?: boolean }>(({ border }) => ({
+const AvatarWrapper = styled("div", {
+  shouldForwardProp: (prop) => prop !== "border",
+})<{ border?: boolean }>(({ border }) => ({
   position: "relative",
   padding: border ? 2 : 0,
 }));

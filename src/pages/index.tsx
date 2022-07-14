@@ -1,5 +1,12 @@
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
-import { Box, Button, Container, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import type { NextPage } from "next";
 import { FC, useCallback, useState } from "react";
 import AddressSearchDialog from "../components/AddressSearchDialog/AddressSearchDialog";
@@ -11,6 +18,7 @@ import ConnectWallet from "../features/wallet/ConnectWallet";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 
 const ConnectView: FC = () => {
+  const theme = useTheme();
   const { impersonate } = useImpersonation();
   const [addressSearchOpen, setAddressSearchOpen] = useState(false);
   const openAddressSearchDialog = useCallback(
@@ -27,7 +35,14 @@ const ConnectView: FC = () => {
   );
 
   return (
-    <Stack>
+    <Stack
+      sx={{
+        pt: 6,
+        [theme.breakpoints.down("md")]: {
+          pt: 8,
+        },
+      }}
+    >
       <Typography variant="h4" textAlign="center" sx={{ mb: 1 }}>
         Connect to Superfluid
       </Typography>

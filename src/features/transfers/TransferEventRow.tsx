@@ -1,10 +1,13 @@
 import {
   Avatar,
+  ListItemText,
   Skeleton,
   Stack,
   TableCell,
   TableRow,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { TransferEvent } from "@superfluid-finance/sdk-core";
 import { FC } from "react";
@@ -16,38 +19,55 @@ import { format } from "date-fns";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 
-export const TransferEventLoadingRow = () => (
-  <TableRow>
-    <TableCell>
-      <Stack direction="row" alignItems="center" gap={1.5}>
-        <Skeleton variant="circular" width={24} height={24} />
-        <Skeleton
-          variant="circular"
-          width={36}
-          height={36}
-          sx={{ borderRadius: "10px" }}
-        />
-        <Typography variant="h6">
-          <Skeleton width={100} />
-        </Typography>
-      </Stack>
-    </TableCell>
-    <TableCell>
-      <Typography variant="body2mono">
-        <Skeleton width={150} />
-      </Typography>
-    </TableCell>
-    <TableCell>
-      <Skeleton width={100} />
-    </TableCell>
-  </TableRow>
-);
+export const TransferEventLoadingRow = () => {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
+  return (
+    <TableRow>
+      <TableCell>
+        <Stack direction="row" alignItems="center" gap={1.5}>
+          <Skeleton variant="circular" width={24} height={24} />
+          <Skeleton
+            variant="circular"
+            width={24}
+            height={24}
+            sx={{ borderRadius: "10px" }}
+          />
+          <Typography variant="h6">
+            <Skeleton width={80} />
+          </Typography>
+        </Stack>
+      </TableCell>
+      {!isBelowMd ? (
+        <>
+          <TableCell>
+            <Skeleton width={80} />
+          </TableCell>
+          <TableCell>
+            <Skeleton width={60} />
+          </TableCell>
+        </>
+      ) : (
+        <TableCell>
+          <Stack alignItems="end">
+            <Skeleton width={80} />
+            <Skeleton width={60} />
+          </Stack>
+        </TableCell>
+      )}
+    </TableRow>
+  );
+};
 
 interface TransferEventRowProps {
   transferEvent: TransferEvent;
 }
 
 const TransferEventRow: FC<TransferEventRowProps> = ({ transferEvent }) => {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
   const { visibleAddress = "" } = useVisibleAddress();
 
   const { from, to, value, timestamp } = transferEvent;
@@ -65,17 +85,24 @@ const TransferEventRow: FC<TransferEventRowProps> = ({ transferEvent }) => {
             }}
             BlockiesProps={{ size: 8, scale: 3 }}
           />
-          <Typography variant="h7">
-            <AddressName address={isOutgoing ? to : from} />
-          </Typography>
+          <ListItemText
+            primary={<AddressName address={isOutgoing ? to : from} />}
+            primaryTypographyProps={{ variant: "h7" }}
+          />
         </Stack>
       </TableCell>
-      <TableCell>
-        <Typography variant="body2mono">
-          <Ether wei={value} />
-        </Typography>
+      <TableCell align="right">
+        <ListItemText
+          primary={<Ether wei={value} />}
+          secondary={
+            isBelowMd ? format(timestamp * 1000, "d MMM. yyyy") : undefined
+          }
+          primaryTypographyProps={{ variant: "h7mono" }}
+        />
       </TableCell>
-      <TableCell>{format(timestamp * 1000, "d MMM. yyyy")}</TableCell>
+      {!isBelowMd && (
+        <TableCell>{format(timestamp * 1000, "d MMM. yyyy")}</TableCell>
+      )}
     </TableRow>
   );
 };

@@ -9,6 +9,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { Address, Stream } from "@superfluid-finance/sdk-core";
@@ -45,6 +46,8 @@ const StreamsTable: FC<StreamsTableProps> = ({
   lastElement,
 }) => {
   const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
   const { visibleAddress } = useVisibleAddress();
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -88,6 +91,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
 
   const pendingOutgoingStreams =
     useAddressPendingOutgoingStreams(visibleAddress);
+
   const outgoingStreams: (Stream | PendingOutgoingStream)[] = useMemo(() => {
     const queriedOutgoingStreams = outgoingStreamsQuery.data?.items ?? [];
     return [...queriedOutgoingStreams, ...pendingOutgoingStreams];
@@ -151,8 +155,20 @@ const StreamsTable: FC<StreamsTableProps> = ({
                     ? "transparent"
                     : alpha(theme.palette.action.hover, 0.08),
               },
+              [theme.breakpoints.down("md")]: {
+                borderRadius: 0,
+              },
             }
-          : {}
+          : {
+              [theme.breakpoints.down("md")]: {
+                mx: -2,
+                width: "auto",
+                borderRadius: 0,
+                border: "none",
+                borderBottom: `1px solid ${theme.palette.divider}`,
+                boxShadow: "none",
+              },
+            }
       }
     >
       <Table
@@ -161,11 +177,12 @@ const StreamsTable: FC<StreamsTableProps> = ({
           ...(lastElement && {
             borderTop: `1px solid ${theme.palette.divider}`,
           }),
-          ...(subTable && {
-            ".MuiTableHead-root .MuiTableCell-root:first-of-type": {
-              pl: 8.5,
-            },
-          }),
+          ...(subTable &&
+            !isBelowMd && {
+              ".MuiTableHead-root .MuiTableCell-root:first-of-type": {
+                pl: 8.5,
+              },
+            }),
         }}
       >
         <TableHead>
@@ -174,6 +191,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
               <Stack direction="row" alignItems="center" gap={1}>
                 <Button
                   variant="textContained"
+                  size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(StreamTypeFilter.All)}
                   onClick={setStreamTypeFilter(StreamTypeFilter.All)}
                 >
@@ -184,6 +202,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
                 </Button>
                 <Button
                   variant="textContained"
+                  size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(StreamTypeFilter.Incoming)}
                   onClick={setStreamTypeFilter(StreamTypeFilter.Incoming)}
                 >
@@ -193,6 +212,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
                 </Button>
                 <Button
                   variant="textContained"
+                  size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(StreamTypeFilter.Outgoing)}
                   onClick={setStreamTypeFilter(StreamTypeFilter.Outgoing)}
                 >
@@ -213,13 +233,15 @@ const StreamsTable: FC<StreamsTableProps> = ({
               </Stack>
             </TableCell>
           </TableRow>
-          <TableRow>
-            <TableCell>To / From</TableCell>
-            <TableCell width="250">All Time Flow</TableCell>
-            <TableCell width="250">Flow rate</TableCell>
-            <TableCell width="200">Start / End Date</TableCell>
-            <TableCell width="120px" align="center"></TableCell>
-          </TableRow>
+          {!isBelowMd && (
+            <TableRow>
+              <TableCell>To / From</TableCell>
+              <TableCell width="250">All Time Flow</TableCell>
+              <TableCell width="250">Flow rate</TableCell>
+              <TableCell width="200">Start / End Date</TableCell>
+              <TableCell width="120px" align="center"></TableCell>
+            </TableRow>
+          )}
         </TableHead>
         <TableBody>
           {isLoading ? (
@@ -235,21 +257,23 @@ const StreamsTable: FC<StreamsTableProps> = ({
           )}
         </TableBody>
       </Table>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={streams.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        sx={{
-          ...(subTable ? { background: "transparent" } : {}),
-          "> *": {
-            visibility: streams.length <= 5 ? "hidden" : "visible",
-          },
-        }}
-      />
+      {(streams.length > 5 || (!isBelowMd && streams.length <= 5)) && (
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={streams.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{
+            ...(subTable ? { background: "transparent" } : {}),
+            "> *": {
+              visibility: streams.length <= 5 ? "hidden" : "visible",
+            },
+          }}
+        />
+      )}
     </TableContainer>
   );
 };

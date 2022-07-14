@@ -1,4 +1,6 @@
-import { alpha, Theme, ThemeOptions } from "@mui/material/styles";
+import { alpha, createTheme, Theme, ThemeOptions } from "@mui/material/styles";
+import { TypographyOptions } from "@mui/material/styles/createTypography";
+import { deepmerge } from "@mui/utils";
 import React from "react";
 import { FONT_FACES } from "./fonts";
 
@@ -9,6 +11,7 @@ import { FONT_FACES } from "./fonts";
 interface TypographyCustomVariants {
   h7: React.CSSProperties;
   h1mono: React.CSSProperties;
+  h2mono: React.CSSProperties;
   h3mono: React.CSSProperties;
   h4mono: React.CSSProperties;
   h5mono: React.CSSProperties;
@@ -30,6 +33,7 @@ declare module "@mui/material/Typography" {
   interface TypographyPropsVariantOverrides {
     h7: true;
     h1mono: true;
+    h2mono: true;
     h3mono: true;
     h4mono: true;
     h5mono: true;
@@ -45,17 +49,20 @@ declare module "@mui/material/Typography" {
 
 // COLOR PALETTE
 
-interface PaletteCustomColors {
-  other: {
-    outline: string;
-    backdrop: string;
-    snackbar: string;
-  };
+interface PaletteOtherColors {
+  outline: string;
+  backdrop: string;
+  snackbar: string;
 }
 
 declare module "@mui/material/styles/createPalette" {
-  interface Palette extends PaletteCustomColors {}
-  interface PaletteOptions extends PaletteCustomColors {}
+  interface Palette {
+    other: PaletteOtherColors;
+  }
+
+  interface PaletteOptions {
+    other?: PaletteOtherColors;
+  }
 }
 
 // BUTTONS
@@ -78,13 +85,35 @@ export const ELEVATION1_BG = `linear-gradient(180deg, rgba(255, 255, 255, 0.03) 
 
 export const FONT_FAMILY = "'Walsheim', Arial";
 
-export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
-  const getModeStyle = <T>(lightStyle: T, darkStyle: T): T =>
+export const buildTheme = (mode: "light" | "dark") => {
+  const themeCreate = createTheme({
+    palette: {
+      mode,
+    },
+  });
+
+  const themeWithDesignTokens = createTheme(getDesignTokens(themeCreate));
+
+  return deepmerge(
+    themeWithDesignTokens,
+    getThemedComponents(themeWithDesignTokens)
+  );
+};
+
+const getModeStyleCB =
+  (mode: "light" | "dark") =>
+  <T>(lightStyle: T, darkStyle: T): T =>
     mode === "dark" ? darkStyle : lightStyle;
+
+const getDesignTokens = (theme: Theme): ThemeOptions => {
+  const getModeStyle = getModeStyleCB(theme.palette.mode);
+  const {
+    typography: { pxToRem },
+  } = theme;
 
   return {
     palette: {
-      mode,
+      mode: theme.palette.mode,
       text: {
         primary: getModeStyle("#12141EDE", "#FFFFFFFF"),
         secondary: getModeStyle("#12141E99", "#FFFFFFC7"),
@@ -148,72 +177,90 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
     typography: {
       fontFamily: FONT_FAMILY,
       h1: {
-        fontSize: "64px",
-        letterSpacing: "-1.5px",
+        fontSize: pxToRem(64),
+        letterSpacing: pxToRem(-1.5),
         fontWeight: 500,
       },
       h1mono: {
-        fontSize: "64px",
-        letterSpacing: "-1.5px",
+        fontSize: pxToRem(64),
+        letterSpacing: pxToRem(-1.5),
         fontWeight: 500,
         fontVariantNumeric: "tabular-nums",
       },
       h2: {
-        fontSize: "48px",
+        fontSize: pxToRem(48),
         fontWeight: 400,
         letterSpacing: "-0.5px",
+        [theme.breakpoints.down("md")]: {
+          fontSize: pxToRem(36),
+        },
+      },
+      h2mono: {
+        fontSize: pxToRem(48),
+        fontWeight: 400,
+        letterSpacing: "-0.5px",
+        fontVariantNumeric: "tabular-nums",
+        [theme.breakpoints.down("md")]: {
+          fontSize: pxToRem(36),
+        },
       },
       h3: {
-        fontSize: "36px",
+        fontSize: pxToRem(36),
         fontWeight: 500,
         lineHeight: "116.7%",
+        [theme.breakpoints.down("md")]: {
+          fontSize: pxToRem(24),
+        },
       },
       h3mono: {
-        fontSize: "36px",
+        fontSize: pxToRem(36),
         fontWeight: 500,
         lineHeight: "116.7%",
         fontVariantNumeric: "tabular-nums",
+        [theme.breakpoints.down("md")]: {
+          fontSize: pxToRem(24),
+        },
       },
       h4: {
-        fontSize: "24px",
+        fontSize: pxToRem(24),
         fontWeight: 500,
         letterSpacing: "0.25px",
       },
       h4mono: {
-        fontSize: "24px",
+        fontSize: pxToRem(24),
         fontWeight: 500,
         letterSpacing: "0.25px",
         fontVariantNumeric: "tabular-nums",
       },
       h5: {
-        fontSize: "18px",
+        fontSize: pxToRem(18),
         fontWeight: 500,
       },
       h5mono: {
-        fontSize: "18px",
+        fontSize: pxToRem(16),
         fontWeight: 500,
         fontVariantNumeric: "tabular-nums",
       },
       h6: {
-        fontSize: "16px",
+        fontSize: pxToRem(16),
         fontWeight: 500,
         lineHeight: "150%",
         letterSpacing: "0.15px",
       },
       h6mono: {
-        fontSize: "16px",
+        fontSize: pxToRem(16),
         fontWeight: 500,
         lineHeight: "150%",
         fontVariantNumeric: "tabular-nums",
       },
       h7: {
-        fontSize: "14px",
+        fontSize: pxToRem(14),
         fontWeight: 500,
         lineHeight: "150%",
         letterSpacing: "0.15px",
       },
       h7mono: {
-        fontSize: "14px",
+        fontSize: pxToRem(14),
         fontWeight: 500,
         lineHeight: "150%",
         fontVariantNumeric: "tabular-nums",
@@ -228,43 +275,45 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
         fontVariantNumeric: "tabular-nums",
       },
       body2: {
-        fontSize: "14px",
+        fontSize: pxToRem(14),
         fontWeight: 400,
         letterSpacing: 0.17,
       },
       body2mono: {
-        fontSize: "14px",
+        fontSize: pxToRem(14),
         fontWeight: 400,
         whiteSpace: "pre",
         fontVariantNumeric: "tabular-nums",
       },
       subtitle1: {
-        letterSpacing: "0.15px",
+        letterSpacing: pxToRem(0.15),
       },
       subtitle2: {
-        letterSpacing: "0.1px",
+        letterSpacing: pxToRem(0.1),
       },
       caption: {
-        letterSpacing: "0.4px",
+        fontSize: pxToRem(12),
+        lineHeight: pxToRem(22),
+        letterSpacing: pxToRem(0.4),
       },
       overline: {
-        letterSpacing: "1px",
+        letterSpacing: pxToRem(1),
       },
       largeInput: {
         fontStyle: "normal",
         fontWeight: 500,
-        fontSize: "30px",
+        fontSize: pxToRem(30),
         lineHeight: "150%",
-        letterSpacing: "0.15px",
+        letterSpacing: pxToRem(0.15),
       },
       menuItem: {
-        fontSize: "16px",
+        fontSize: pxToRem(16),
         fontWeight: 500,
         lineHeight: "150%",
-        letterSpacing: "0.15px",
+        letterSpacing: pxToRem(0.15),
       },
       tooltip: {
-        fontSize: "12px",
+        fontSize: pxToRem(12),
         fontWeight: 400,
       },
     },
@@ -385,8 +434,7 @@ export const getDesignTokens = (mode: "light" | "dark"): ThemeOptions => {
 };
 
 export function getThemedComponents(theme: Theme): ThemeOptions {
-  const getModeStyle = <T>(lightStyle: T, darkStyle: T): T =>
-    theme.palette.mode === "dark" ? darkStyle : lightStyle;
+  const getModeStyle = getModeStyleCB(theme.palette.mode);
 
   return {
     components: {
@@ -405,6 +453,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         },
       },
+      MuiDrawer: {
+        styleOverrides: {
+          paper: {
+            borderRadius: 0,
+          },
+        },
+      },
       MuiDialog: {
         styleOverrides: {
           paper: {
@@ -413,7 +468,15 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
               "#181a1c" // TODO: Move to palette variable
             ),
             backgroundImage: "none",
+            [theme.breakpoints.down("sm")]: {
+              borderRadius: 0,
+            },
           },
+        },
+      },
+      MuiDialogTitle: {
+        defaultProps: {
+          component: "div",
         },
       },
       MuiBackdrop: {
@@ -595,6 +658,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           root: {
             textTransform: "inherit",
             flexShrink: 0,
+            minWidth: 0,
           },
           sizeMedium: {
             letterSpacing: "0.17px",
@@ -888,9 +952,22 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           input: {
             background: "transparent",
           },
+          selectLabel: {
+            [theme.breakpoints.down("md")]: {
+              display: "none",
+            },
+          },
+          selectRoot: {
+            [theme.breakpoints.down("md")]: {
+              display: "none",
+            },
+          },
           toolbar: {
-            "@media (min-width: 600px)": {
+            [theme.breakpoints.up("md")]: {
               paddingRight: theme.spacing(4),
+            },
+            [theme.breakpoints.down("md")]: {
+              paddingRight: theme.spacing(2),
             },
           },
         },
@@ -953,10 +1030,16 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             color: theme.palette.text.secondary,
             padding: "10px 32px",
             minHeight: 0,
+            [theme.breakpoints.down("md")]: {
+              padding: "8px 16px",
+            },
           },
           body: {
             ...theme.typography.body2,
             padding: "8px 32px",
+            [theme.breakpoints.down("md")]: {
+              padding: "8px 16px",
+            },
           },
         },
       },

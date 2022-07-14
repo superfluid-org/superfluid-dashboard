@@ -1,3 +1,4 @@
+import ExpandCircleDownOutlinedIcon from "@mui/icons-material/ExpandCircleDownOutlined";
 import {
   Collapse,
   IconButton,
@@ -9,13 +10,14 @@ import {
   TableCell,
   TableRow,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { AccountTokenSnapshot } from "@superfluid-finance/sdk-core";
 import { BigNumber } from "ethers";
 import { useRouter } from "next/router";
 import { FC, memo, useState } from "react";
-import { OpenIcon } from "../../components/OpenIcon/OpenIcon";
+import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
@@ -29,31 +31,35 @@ interface SnapshotRowProps {
   open?: boolean;
 }
 
-const SnapshotRow = styled(TableRow)<SnapshotRowProps>(
-  ({ lastElement, open, theme }) => ({
-    cursor: "pointer",
-    ...(lastElement && {
-      td: {
-        border: "none",
-        ":first-of-type": { borderRadius: "0 0 0 20px" },
-        ":last-of-type": { borderRadius: "0 0 20px 0" },
+const SnapshotRow = styled(TableRow, {
+  shouldForwardProp: (name: string) => !["lastElement", "open"].includes(name),
+})<SnapshotRowProps>(({ lastElement, open, theme }) => ({
+  cursor: "pointer",
+  ...(lastElement && {
+    td: {
+      border: "none",
+      ":first-of-type": { borderRadius: "0 0 0 20px" },
+      ":last-of-type": { borderRadius: "0 0 20px 0" },
+      [theme.breakpoints.down("md")]: {
+        ":first-of-type": { borderRadius: 0 },
+        ":last-of-type": { borderRadius: 0 },
+      },
+      transition: theme.transitions.create("border-radius", {
+        duration: theme.transitions.duration.shortest,
+        easing: theme.transitions.easing.easeOut,
+        delay: theme.transitions.duration.shorter,
+      }),
+      ...(open && {
+        ":first-of-type": { borderRadius: "0" },
+        ":last-of-type": { borderRadius: "0" },
         transition: theme.transitions.create("border-radius", {
           duration: theme.transitions.duration.shortest,
-          easing: theme.transitions.easing.easeOut,
-          delay: theme.transitions.duration.shorter,
+          easing: theme.transitions.easing.easeInOut,
         }),
-        ...(open && {
-          ":first-of-type": { borderRadius: "0" },
-          ":last-of-type": { borderRadius: "0" },
-          transition: theme.transitions.create("border-radius", {
-            duration: theme.transitions.duration.shortest,
-            easing: theme.transitions.easing.easeInOut,
-          }),
-        }),
-      },
-    }),
-  })
-);
+      }),
+    },
+  }),
+}));
 
 interface TokenSnapshotRowProps {
   network: Network;
@@ -67,7 +73,9 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
   lastElement,
 }) => {
   const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const router = useRouter();
+
   const [open, setOpen] = useState(false);
 
   const {
@@ -134,70 +142,130 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             />
           </ListItem>
         </TableCell>
-        <TableCell onClick={openTokenPage}>
-          <ListItemText
-            primary={
-              <FlowingBalance
-                balance={balance}
-                flowRate={netFlowRate}
-                balanceTimestamp={balanceTimestamp}
-                disableRoundingIndicator
+
+        {!isBelowMd ? (
+          <>
+            <TableCell onClick={openTokenPage}>
+              <ListItemText
+                primary={
+                  <FlowingBalance
+                    balance={balance}
+                    flowRate={netFlowRate}
+                    balanceTimestamp={balanceTimestamp}
+                    disableRoundingIndicator
+                  />
+                }
+                // secondary="$1.00"
+                primaryTypographyProps={{ variant: "h6mono" }}
+                secondaryTypographyProps={{
+                  variant: "body2mono",
+                  color: "text.secondary",
+                }}
               />
-            }
-            // secondary="$1.00"
-            primaryTypographyProps={{ variant: "h6mono" }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
-        </TableCell>
-        <TableCell data-cy={"net-flow"} onClick={openTokenPage}>
-          {totalNumberOfActiveStreams > 0 ? (
-            <Typography data-cy={"net-flow-value"} variant="body2mono">
-              {netFlowRate.charAt(0) !== "-" && "+"}
-              <Ether wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}>
-                /mo
-              </Ether>
-            </Typography>
-          ) : (
-            "-"
-          )}
-        </TableCell>
-        <TableCell onClick={openTokenPage}>
-          {totalNumberOfActiveStreams > 0 ? (
-            <Stack>
-              <Typography
-                data-cy={"inflow"}
-                variant="body2mono"
-                color="primary"
-              >
-                +
-                <Ether
-                  wei={BigNumber.from(totalInflowRate).mul(UnitOfTime.Month)}
+            </TableCell>
+
+            <TableCell data-cy={"net-flow"} onClick={openTokenPage}>
+              {totalNumberOfActiveStreams > 0 ? (
+                <Typography data-cy={"net-flow-value"} variant="body2mono">
+                  {netFlowRate.charAt(0) !== "-" && "+"}
+                  <Ether
+                    wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
+                  >
+                    /mo
+                  </Ether>
+                </Typography>
+              ) : (
+                "-"
+              )}
+            </TableCell>
+
+            <TableCell onClick={openTokenPage}>
+              {totalNumberOfActiveStreams > 0 ? (
+                <Stack>
+                  <Typography
+                    data-cy={"inflow"}
+                    variant="body2mono"
+                    color="primary"
+                  >
+                    +
+                    <Ether
+                      wei={BigNumber.from(totalInflowRate).mul(
+                        UnitOfTime.Month
+                      )}
+                    />
+                    /mo
+                  </Typography>
+                  <Typography
+                    data-cy={"outflow"}
+                    variant="body2mono"
+                    color="error"
+                  >
+                    -
+                    <Ether
+                      wei={BigNumber.from(totalOutflowRate).mul(
+                        UnitOfTime.Month
+                      )}
+                    />
+                    /mo
+                  </Typography>
+                </Stack>
+              ) : (
+                "-"
+              )}
+            </TableCell>
+          </>
+        ) : (
+          <TableCell
+            align="right"
+            sx={{ [theme.breakpoints.down("md")]: { px: 0 } }}
+            onClick={openTokenPage}
+          >
+            <ListItemText
+              primary={
+                <FlowingBalance
+                  balance={balance}
+                  flowRate={netFlowRate}
+                  balanceTimestamp={balanceTimestamp}
+                  disableRoundingIndicator
                 />
-                /mo
-              </Typography>
-              <Typography data-cy={"outflow"} variant="body2mono" color="error">
-                -
-                <Ether
-                  wei={BigNumber.from(totalOutflowRate).mul(UnitOfTime.Month)}
-                />
-                /mo
-              </Typography>
-            </Stack>
-          ) : (
-            "-"
-          )}
-        </TableCell>
-        <TableCell align="center" sx={{ cursor: "initial" }}>
+              }
+              secondary={
+                totalNumberOfActiveStreams > 0 ? (
+                  <>
+                    {netFlowRate.charAt(0) !== "-" && "+"}
+                    <Ether
+                      wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
+                    >
+                      /mo
+                    </Ether>
+                  </>
+                ) : (
+                  "-"
+                )
+              }
+              primaryTypographyProps={{ variant: "h7mono" }}
+              secondaryTypographyProps={{
+                variant: "body2mono",
+                color: "text.secondary",
+              }}
+            />
+          </TableCell>
+        )}
+
+        <TableCell
+          align="center"
+          sx={{
+            cursor: "initial",
+            [theme.breakpoints.down("md")]: { p: 1.25, width: "56px" },
+          }}
+        >
           {hasStreams && (
             <IconButton
               data-cy={"show-streams-button"}
               color="inherit"
               onClick={toggleOpen}
             >
-              <OpenIcon open={open} />
+              <OpenIcon open={open} icon={ExpandCircleDownOutlinedIcon} />
             </IconButton>
           )}
         </TableCell>

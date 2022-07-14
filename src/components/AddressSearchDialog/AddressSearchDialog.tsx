@@ -12,6 +12,7 @@ import {
   ListSubheader,
   TextField,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { FC, memo, ReactNode, useEffect, useState } from "react";
@@ -22,6 +23,7 @@ import useAddressName from "../../hooks/useAddressName";
 import { useAppSelector } from "../../features/redux/store";
 import { addressBookSelectors } from "../../features/addressBook/addressBook.slice";
 import { ensApi } from "../../features/ens/ensApi.slice";
+import shortenHex from "../../utils/shortenHex";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
@@ -38,6 +40,8 @@ export const AddressListItem: FC<AddressListItemProps> = ({
   onClick,
   namePlaceholder,
 }) => {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { name, addressChecksummed: checksumHex } = useAddressName(address);
 
   return (
@@ -47,8 +51,15 @@ export const AddressListItem: FC<AddressListItemProps> = ({
       </ListItemAvatar>
       <ListItemText
         {...(dataCy ? { "data-cy": dataCy } : {})}
-        primary={name || namePlaceholder || checksumHex}
-        secondary={(name || namePlaceholder) && checksumHex}
+        primary={
+          name ||
+          namePlaceholder ||
+          (isBelowMd ? shortenHex(checksumHex, 8) : checksumHex)
+        }
+        secondary={
+          (name || namePlaceholder) &&
+          (isBelowMd ? shortenHex(checksumHex, 8) : checksumHex)
+        }
       />
     </ListItemButton>
   );

@@ -18,11 +18,11 @@ import { FC, useCallback, useEffect, useMemo, useRef } from "react";
 import {
   buildDefaultDatasetConf,
   DEFAULT_LINE_CHART_OPTIONS,
-} from "../../utils/chartUtils";
-import { getDatesBetween } from "../../utils/dateUtils";
-import { Network } from "../network/networks";
-import { TokenBalance } from "../redux/endpoints/adHocSubgraphEndpoints";
-import { rpcApi, subgraphApi } from "../redux/store";
+} from "../../../utils/chartUtils";
+import { getDatesBetween } from "../../../utils/dateUtils";
+import { Network } from "../../network/networks";
+import { TokenBalance } from "../../redux/endpoints/adHocSubgraphEndpoints";
+import { rpcApi, subgraphApi } from "../../redux/store";
 
 export enum GraphType {
   Day,
@@ -59,8 +59,8 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
   showForecast,
   height = 180,
 }) => {
-  const currentDate = useMemo(() => new Date(), []);
   const theme = useTheme();
+  const currentDate = useMemo(() => new Date(), []);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chartRef = useRef<Chart<"line"> | null>(null);
 
@@ -301,7 +301,18 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
   }, [chartRef, graphData, graphStartDate, forecast, showForecast]);
 
   return (
-    <Box sx={{ height, mx: -0.5 }}>
+    <Box
+      sx={{
+        height,
+        maxWidth: "100%",
+        [theme.breakpoints.up("md")]: {
+          mx: -0.5,
+        },
+        [theme.breakpoints.down("md")]: {
+          maxWidth: "calc(100vw - 32px)",
+        },
+      }}
+    >
       <canvas ref={canvasRef} />
     </Box>
   );

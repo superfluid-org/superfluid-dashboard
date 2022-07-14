@@ -1,22 +1,25 @@
-
-import { Box, createTheme } from "@mui/material";
+import { Box } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import { Theme, ThemeProvider } from "@mui/material/styles";
-import { deepmerge } from "@mui/utils";
 import { useTheme as useThemeNextThemes } from "next-themes";
 import { FC, ReactNode, useEffect, useMemo, useState } from "react";
-import { getDesignTokens, getThemedComponents } from "./theme";
+import { buildTheme } from "./theme";
 
-const MuiProvider: FC<{ children: (theme: Theme) => ReactNode}> = ({ children }) => {
+const LIGHT_THEME = buildTheme("light");
+const DARK_THEME = buildTheme("dark");
+
+const MuiProvider: FC<{ children: (theme: Theme) => ReactNode }> = ({
+  children,
+}) => {
   const { theme: themeMode } = useThemeNextThemes();
   const [muiThemeMode, setMuiThemeMode] = useState<"light" | "dark">("light");
 
   const [mounted, setMounted] = useState(false);
 
-  const muiTheme = useMemo(() => {
-    const themeCreate = createTheme(getDesignTokens(muiThemeMode));
-    return deepmerge(themeCreate, getThemedComponents(themeCreate));
-  }, [muiThemeMode]);
+  const muiTheme = useMemo(
+    () => (muiThemeMode === "dark" ? DARK_THEME : LIGHT_THEME),
+    [muiThemeMode]
+  );
 
   useEffect(() => {
     setMounted(true);
@@ -26,7 +29,9 @@ const MuiProvider: FC<{ children: (theme: Theme) => ReactNode}> = ({ children })
   return (
     <ThemeProvider theme={muiTheme}>
       <CssBaseline />
-      <Box sx={{ ...(!mounted ? { display: "none" } : {}) }}>{children(muiTheme)}</Box>
+      <Box sx={{ ...(!mounted ? { display: "none" } : {}) }}>
+        {children(muiTheme)}
+      </Box>
     </ThemeProvider>
   );
 };

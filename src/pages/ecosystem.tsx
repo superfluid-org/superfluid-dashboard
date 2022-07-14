@@ -1,5 +1,12 @@
 import AddIcon from "@mui/icons-material/Add";
-import { Button, Container, Divider, Stack, Typography } from "@mui/material";
+import {
+  Button,
+  Container,
+  Divider,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { NextPage } from "next";
 import Link from "next/link";
 import { chain } from "wagmi";
@@ -307,18 +314,32 @@ export const SUPPORTS_SUPER_TOKENS: EcosystemApp[] = [
   },
 ];
 
-const Ecosystem: NextPage = () => (
-  <Container maxWidth="lg" sx={{ mb: 4 }}>
-    <Stack gap={4.5}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between">
-        <Typography variant="h3">Explore the Superfluid ecosystem</Typography>
-        <Link
-          href="http://ecosystem.superfluid.finance"
-          passHref
-          target="_blank"
+const Ecosystem: NextPage = () => {
+  const theme = useTheme();
+
+  return (
+    <Container maxWidth="lg" sx={{ mb: 4 }}>
+      <Stack gap={4.5}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{
+            [theme.breakpoints.down("md")]: {
+              flexDirection: "column",
+              alignItems: "start",
+              gap: 2,
+            },
+          }}
         >
-          <Button
-            data-cy={"add-new-app-button"}
+          <Typography variant="h3">Explore the Superfluid ecosystem</Typography>
+          <Link
+            href="http://ecosystem.superfluid.finance"
+            passHref
+            target="_blank"
+          >
+            <Button
+              data-cy={"add-new-app-button"}
             href=""
             variant="contained"
             color="primary"
@@ -330,28 +351,29 @@ const Ecosystem: NextPage = () => (
         </Link>
       </Stack>
 
-      <Divider />
+        <Divider />
 
-      <EcosystemSection
-        title="Built on Superfluid"
-        apps={BUILT_ON_SUPERFLUID}
-      />
+        <EcosystemSection
+          title="Built on Superfluid"
+          apps={BUILT_ON_SUPERFLUID}
+        />
 
-      <Divider />
+        <Divider />
 
-      <EcosystemSection
-        title="Superfluid Integrations"
-        apps={SUPERFLUID_INTEGRATIONS}
-      />
+        <EcosystemSection
+          title="Superfluid Integrations"
+          apps={SUPERFLUID_INTEGRATIONS}
+        />
 
-      <Divider />
+        <Divider />
 
-      <EcosystemSection
-        title="Supports Super Tokens"
-        apps={SUPPORTS_SUPER_TOKENS}
-      />
-    </Stack>
-  </Container>
-);
+        <EcosystemSection
+          title="Supports Super Tokens"
+          apps={SUPPORTS_SUPER_TOKENS}
+        />
+      </Stack>
+    </Container>
+  );
+};
 
 export default Ecosystem;

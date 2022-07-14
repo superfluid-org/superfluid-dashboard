@@ -4,12 +4,15 @@ import {
   Stack,
   Tooltip,
   Typography,
+  TypographyProps,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
 import { ethers } from "ethers";
 import { FC, ReactNode, useMemo } from "react";
+import shortenHex from "../../utils/shortenHex";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
@@ -30,8 +33,10 @@ const PreviewItem: FC<{
   isError?: boolean;
   oldValue?: ReactNode;
   dataCy?: string;
-}> = ({ label, children, oldValue, isError, dataCy }) => {
+  TypographyProps?: Partial<TypographyProps>;
+}> = ({ label, children, oldValue, isError, dataCy, TypographyProps = {} }) => {
   const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const valueTypography = (
     <Typography
@@ -41,13 +46,18 @@ const PreviewItem: FC<{
       sx={{
         color: isError ? "red" : theme.palette.primary.main, // TODO(KK): handle colors better?
       }}
+      {...TypographyProps}
     >
       {children}
     </Typography>
   );
 
   return (
-    <Stack direction="row" alignItems="center" justifyContent="space-between">
+    <Stack
+      direction={isBelowMd ? "column" : "row"}
+      alignItems={isBelowMd ? "start" : "center"}
+      justifyContent="space-between"
+    >
       <Typography variant="body2">{label}</Typography>
       {oldValue ? (
         <Tooltip title={<>Current: {oldValue}</>} arrow placement="top">
@@ -69,6 +79,8 @@ export const StreamingPreview: FC<{
   } | null;
 }> = ({ receiver, token, flowRateEther, existingStream }) => {
   const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
 
@@ -120,7 +132,15 @@ export const StreamingPreview: FC<{
             unitOfTime: flowRateEther.unitOfTime,
           })
         : ({} as Record<string, any>),
-    [network, realtimeBalanceQuery, activeFlowQuery, flowRateEther]
+    [
+      network,
+      realtimeBalanceQuery,
+      activeFlowQuery,
+      flowRateEther,
+      calculateBufferInfo,
+      existingFlow,
+      realtimeBalance,
+    ]
   );
 
   return (
@@ -139,9 +159,21 @@ export const StreamingPreview: FC<{
         },
       }}
     >
-      <Stack gap={0.5}>
+      <Stack
+        gap={0.5}
+        sx={{
+          [theme.breakpoints.down("md")]: {
+            flexDirection: "row",
+            flexWrap: "wrap",
+            columnGap: 1,
+            "> *": {
+              minWidth: `calc(50% - ${theme.spacing(1)})`,
+            },
+          },
+        }}
+      >
         <PreviewItem dataCy="preview-receiver" label="Receiver">
-          {receiver}
+          {isBelowMd ? shortenHex(receiver, 14) : receiver}
         </PreviewItem>
 
         <PreviewItem
@@ -171,6 +203,7 @@ export const StreamingPreview: FC<{
             dataCy="preview-balance-after-buffer"
             label="Balance after buffer"
             isError={balanceAfterBuffer.isNegative()}
+            TypographyProps={{ variant: "body2mono" }}
           >
             {realtimeBalance && (
               <FlowingBalance

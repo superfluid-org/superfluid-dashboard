@@ -4,11 +4,11 @@ import { TrackedTransaction } from "@superfluid-finance/sdk-redux";
 import _ from "lodash";
 import { useEffect, useState } from "react";
 import { useAppSelector } from "../redux/store";
-import { useTransactionDrawerContext } from "../transactionDrawer/TransactionDrawerContext";
+import { useLayoutContext } from "../layout/LayoutContext";
 import useAccountTransactions from "../wallet/useAccountTransactions";
 
 export default function TransactionSnackbar() {
-  const { transactionDrawerOpen } = useTransactionDrawerContext();
+  const { transactionDrawerOpen } = useLayoutContext();
 
   const walletTransactions = useAccountTransactions();
 

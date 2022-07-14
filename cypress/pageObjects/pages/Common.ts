@@ -63,8 +63,8 @@ export class Common extends BasePage {
     ) {
         let usedAccountPrivateKey =
             account === "staticBalanceAccount"
-                ? "0x47d567438b9ec683a9d1828c784d980ad6fe9cd3fcf4fcf6d5c357b534537468"
-                : "0xEb85888b31FADF79CB264d065EdcB4a14551c28d"
+                ? Cypress.env("STATIC_BALANCE_ACCOUNT_PRIVATE_KEY")
+                : Cypress.env("ONGOING_STREAM_ACCOUNT_PRIVATE_KEY");
         if (mocked && account && network) {
             cy.fixture("commonData").then((commonData) => {
                 cy.visit(page, {

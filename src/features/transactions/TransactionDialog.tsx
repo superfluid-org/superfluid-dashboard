@@ -33,11 +33,13 @@ const OutlineIcon = styled(Avatar)(({ theme }) => ({
 export const TransactionDialogButton = React.forwardRef<
   HTMLButtonElement,
   ButtonProps
->((props, ref) => (
-  <Button ref={ref} fullWidth variant="contained" size="xl" {...props}>
-    {props.children}
-  </Button>
-));
+>(function ForwardedTransactionDialogButton(props, ref) {
+  return (
+    <Button ref={ref} fullWidth variant="contained" size="xl" {...props}>
+      {props.children}
+    </Button>
+  );
+});
 
 export const TransactionDialogActions: FC<DialogActionsProps> = ({
   children,
@@ -70,7 +72,7 @@ export const TransactionDialog: FC<{
     <ResponsiveDialog
       open={open}
       onClose={onClose}
-      PaperProps={{ sx: { borderRadius: "20px" } }}
+      PaperProps={{ sx: { borderRadius: "20px", maxHeight: "100%" } }}
     >
       <DialogTitle sx={{ p: 4 }}>
         {mutationResult.isError ? "Error" : <>&nbsp;</>}

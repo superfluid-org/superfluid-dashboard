@@ -11,13 +11,14 @@ import {
   Popover,
   Stack,
   TextField,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { ChangeEvent, FC, MouseEvent, useState } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
-import { OpenIcon } from "../../components/OpenIcon/OpenIcon";
+import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { useAppSelector } from "../redux/store";
 import { addressBookSelectors } from "./addressBook.slice";
 
@@ -31,6 +32,7 @@ const AddressFilter: FC<AddressFilterProps> = ({
   onChange,
 }) => {
   const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -67,6 +69,7 @@ const AddressFilter: FC<AddressFilterProps> = ({
       <Button
         variant="outlined"
         color="secondary"
+        size={isBelowMd ? "small" : "medium"}
         endIcon={<OpenIcon open={!!anchorEl} />}
         onClick={openMenu}
       >

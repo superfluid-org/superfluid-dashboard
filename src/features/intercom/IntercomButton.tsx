@@ -1,5 +1,5 @@
 import ChatRoundedIcon from "@mui/icons-material/ChatRounded";
-import { Fab, useTheme } from "@mui/material";
+import { Fab, useMediaQuery, useTheme } from "@mui/material";
 import { FC, useEffect, useMemo } from "react";
 import { useIntercom } from "react-use-intercom";
 import { menuDrawerWidth } from "../layout/NavigationDrawer";
@@ -14,7 +14,9 @@ const IntercomButton: FC = () => {
       mode: themeMode,
       primary: { main: primaryColor },
     },
+    breakpoints,
   } = useTheme();
+  const isBelowMd = useMediaQuery(breakpoints.down("md"));
 
   const { boot, update } = useIntercom();
 
@@ -39,7 +41,8 @@ const IntercomButton: FC = () => {
     });
   }, [update, isDarkMode, primaryColor]);
 
-  if (!INTERCOM_APP_ID) return null;
+  // TODO: Intercom should be added somewhere into sidebar in mobile views.
+  if (!INTERCOM_APP_ID || isBelowMd) return null;
 
   return (
     <Fab

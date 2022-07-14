@@ -1,10 +1,14 @@
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import {
+  Avatar,
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Stack,
   TableCell,
   TableRow,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
@@ -22,6 +26,9 @@ const MintActivityRow: FC<MintedActivity> = ({
   transferEvent,
   network,
 }) => {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
   const { amount, transactionHash, timestamp } = keyEvent;
   const { token } = transferEvent || {};
 
@@ -71,7 +78,7 @@ const MintActivityRow: FC<MintedActivity> = ({
             primary={"Wrap"}
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
-              variant: "h6",
+              variant: isBelowMd ? "h7" : "h6",
             }}
             secondaryTypographyProps={{
               variant: "body2mono",
@@ -80,70 +87,95 @@ const MintActivityRow: FC<MintedActivity> = ({
           />
         </ListItem>
       </TableCell>
-      <TableCell>
-        <ListItem sx={{ p: 0 }}>
-          <ListItemAvatar>
-            {underlyingTokenSymbol && (
-              <TokenIcon tokenSymbol={underlyingTokenSymbol} />
-            )}
-          </ListItemAvatar>
-          <ListItemText
-            primary={
-              <>
-                -
-                <Ether wei={amount} />
-              </>
-            }
-            /**
-             * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-             * This is just used to make table row look better
-             */
-            // secondary="$12.59"
-            primaryTypographyProps={{
-              variant: "h6mono",
-              sx: { lineHeight: "46px" },
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
-        </ListItem>
-      </TableCell>
-      <TableCell>
-        <ListItem sx={{ p: 0 }}>
-          <ListItemAvatar>
+
+      {!isBelowMd ? (
+        <>
+          <TableCell>
+            <ListItem sx={{ p: 0 }}>
+              <ListItemAvatar>
+                {underlyingTokenSymbol && (
+                  <TokenIcon tokenSymbol={underlyingTokenSymbol} />
+                )}
+              </ListItemAvatar>
+              <ListItemText
+                primary={
+                  <>
+                    -
+                    <Ether wei={amount} />
+                  </>
+                }
+                /**
+                 * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
+                 * This is just used to make table row look better
+                 */
+                // secondary="$12.59"
+                primaryTypographyProps={{
+                  variant: "h6mono",
+                  sx: { lineHeight: "46px" },
+                }}
+                secondaryTypographyProps={{
+                  variant: "body2mono",
+                  color: "text.secondary",
+                }}
+              />
+            </ListItem>
+          </TableCell>
+          <TableCell>
+            <ListItem sx={{ p: 0 }}>
+              <ListItemAvatar>
+                {tokenSymbol && <TokenIcon tokenSymbol={tokenSymbol} />}
+              </ListItemAvatar>
+              <ListItemText
+                primary={
+                  <>
+                    +<Ether wei={amount}> {tokenSymbol}</Ether>
+                  </>
+                }
+                /**
+                 * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
+                 * This is just used to make table row look better
+                 */
+                // secondary="$12.59"
+                primaryTypographyProps={{
+                  variant: "h6mono",
+                  sx: { lineHeight: "46px" },
+                }}
+                secondaryTypographyProps={{
+                  variant: "body2mono",
+                  color: "text.secondary",
+                }}
+              />
+            </ListItem>
+          </TableCell>
+          <TableCell sx={{ position: "relative" }}>
+            <TxHashLink txHash={transactionHash} network={network} />
+            <NetworkBadge
+              network={network}
+              sx={{ position: "absolute", top: "0px", right: "16px" }}
+            />
+          </TableCell>
+        </>
+      ) : (
+        <TableCell align="right">
+          <Stack direction="row" alignItems="center" gap={2}>
+            <ListItemText
+              primary={
+                <>
+                  +<Ether wei={amount}> {tokenSymbol}</Ether>
+                </>
+              }
+              secondary={
+                <>
+                  -<Ether wei={amount}> {underlyingTokenSymbol}</Ether>
+                </>
+              }
+              primaryTypographyProps={{ variant: "h7mono" }}
+              secondaryTypographyProps={{ variant: "body2mono" }}
+            />
             {tokenSymbol && <TokenIcon tokenSymbol={tokenSymbol} />}
-          </ListItemAvatar>
-          <ListItemText
-            primary={
-              <>
-                +<Ether wei={amount}> {tokenSymbol}</Ether>
-              </>
-            }
-            /**
-             * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-             * This is just used to make table row look better
-             */
-            // secondary="$12.59"
-            primaryTypographyProps={{
-              variant: "h6mono",
-              sx: { lineHeight: "46px" },
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
-        </ListItem>
-      </TableCell>
-      <TableCell sx={{ position: "relative" }}>
-        <TxHashLink txHash={transactionHash} network={network} />
-        <NetworkBadge
-          network={network}
-          sx={{ position: "absolute", top: "0px", right: "16px" }}
-        />
-      </TableCell>
+          </Stack>
+        </TableCell>
+      )}
     </TableRow>
   );
 };

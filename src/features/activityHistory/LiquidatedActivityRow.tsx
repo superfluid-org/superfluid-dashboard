@@ -4,9 +4,12 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Stack,
   TableCell,
   TableRow,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
@@ -29,6 +32,9 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
 }) => {
   const { token, timestamp, transactionHash } = keyEvent;
   const { sender = "", receiver = "" } = flowUpdatedEvent || {};
+
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { visibleAddress } = useVisibleAddress();
 
   const tokenQuery = subgraphApi.useTokenQuery(
@@ -54,7 +60,7 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
             primary={"Liquidated"}
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
-              variant: "h6",
+              variant: isBelowMd ? "h7" : "h6",
             }}
             secondaryTypographyProps={{
               variant: "body2mono",
@@ -63,61 +69,77 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
           />
         </ListItem>
       </TableCell>
-      <TableCell>
-        <ListItem sx={{ p: 0 }}>
-          <ListItemAvatar>
+      {!isBelowMd ? (
+        <>
+          <TableCell>
+            <ListItem sx={{ p: 0 }}>
+              <ListItemAvatar>
+                {tokenQuery.data && (
+                  <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
+                )}
+              </ListItemAvatar>
+              <ListItemText
+                primary={"-"}
+                /**
+                 * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
+                 * This is just used to make table row look better
+                 */
+                // secondary="$12.59"
+                primaryTypographyProps={{
+                  variant: "h6",
+                  sx: { lineHeight: "46px" },
+                }}
+                secondaryTypographyProps={{
+                  variant: "body2mono",
+                  color: "text.secondary",
+                }}
+              />
+            </ListItem>
+          </TableCell>
+          <TableCell>
+            <ListItem sx={{ p: 0 }}>
+              <ListItemAvatar>
+                <Avatar variant="rounded">
+                  <AddressAvatar address={isOutgoing ? receiver : sender} />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                primary={isOutgoing ? "To" : "From"}
+                secondary={
+                  <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
+                    <Typography
+                      variant="h6"
+                      color="text.primary"
+                      component="span"
+                    >
+                      <AddressName address={isOutgoing ? receiver : sender} />
+                    </Typography>
+                  </AddressCopyTooltip>
+                }
+                primaryTypographyProps={{
+                  variant: "body2mono",
+                  color: "text.secondary",
+                }}
+              />
+            </ListItem>
+          </TableCell>
+          <TableCell sx={{ position: "relative" }}>
+            <TxHashLink txHash={transactionHash} network={network} />
+            <NetworkBadge
+              network={network}
+              sx={{ position: "absolute", top: "0px", right: "16px" }}
+            />
+          </TableCell>
+        </>
+      ) : (
+        <TableCell align="right">
+          <Stack direction="row" alignItems="center" justifyContent="end">
             {tokenQuery.data && (
               <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
             )}
-          </ListItemAvatar>
-          <ListItemText
-            primary={"-"}
-            /**
-             * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-             * This is just used to make table row look better
-             */
-            // secondary="$12.59"
-            primaryTypographyProps={{
-              variant: "h6",
-              sx: { lineHeight: "46px" },
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
-        </ListItem>
-      </TableCell>
-      <TableCell>
-        <ListItem sx={{ p: 0 }}>
-          <ListItemAvatar>
-            <Avatar variant="rounded">
-              <AddressAvatar address={isOutgoing ? receiver : sender} />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText
-            primary={isOutgoing ? "To" : "From"}
-            secondary={
-              <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
-                <Typography variant="h6" color="text.primary" component="span">
-                  <AddressName address={isOutgoing ? receiver : sender} />
-                </Typography>
-              </AddressCopyTooltip>
-            }
-            primaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
-        </ListItem>
-      </TableCell>
-      <TableCell sx={{ position: "relative" }}>
-        <TxHashLink txHash={transactionHash} network={network} />
-        <NetworkBadge
-          network={network}
-          sx={{ position: "absolute", top: "0px", right: "16px" }}
-        />
-      </TableCell>
+          </Stack>
+        </TableCell>
+      )}
     </TableRow>
   );
 };

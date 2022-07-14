@@ -11,6 +11,8 @@ import {
   TablePagination,
   TableRow,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Address } from "@superfluid-finance/sdk-core";
@@ -28,6 +30,7 @@ import {
   addressBookSelectors,
   removeAddressBookEntries,
 } from "../features/addressBook/addressBook.slice";
+import AddressBookMobileRow from "../features/addressBook/AddressBookMobileRow";
 import AddressBookRow from "../features/addressBook/AddressBookRow";
 import AddressFilter from "../features/addressBook/AddressFilter";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
@@ -44,6 +47,8 @@ import { getAddress } from "../utils/memoizedEthersUtils";
 
 const AddressBook: NextPage = () => {
   const dispatch = useAppDispatch();
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const { data: account } = useAccount();
   const accountAddress = account?.address;
@@ -288,34 +293,100 @@ const AddressBook: NextPage = () => {
         showAddressBook={false}
       />
 
-      <Stack gap={4.5}>
+      <Stack gap={isBelowMd ? 2.5 : 4.5}>
         <Stack direction="row" gap={1.5} alignItems="center">
           <Typography variant="h3" flex={1}>
             Address Book
           </Typography>
-          <ReadFileButton onLoaded={onImport} mimeType=".csv">
-            {({ selectFile }) => (
-              <Button variant="outlined" color="secondary" onClick={selectFile}>
-                Import
-              </Button>
-            )}
-          </ReadFileButton>
 
-          <DownloadButton
-            content={exportableAddressBookContent}
-            fileName={`address_book_${new Date().getTime()}.csv`}
-            contentType="text/csv;charset=utf-8;"
-          >
-            {({ download }) => (
-              <Button variant="outlined" color="secondary" onClick={download}>
-                Export
+          {!isBelowMd ? (
+            <>
+              <ReadFileButton onLoaded={onImport} mimeType=".csv">
+                {({ selectFile }) => (
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={selectFile}
+                  >
+                    Import
+                  </Button>
+                )}
+              </ReadFileButton>
+
+              <DownloadButton
+                content={exportableAddressBookContent}
+                fileName={`address_book_${new Date().getTime()}.csv`}
+                contentType="text/csv;charset=utf-8;"
+              >
+                {({ download }) => (
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={download}
+                  >
+                    Export
+                  </Button>
+                )}
+              </DownloadButton>
+            </>
+          ) : (
+            <Stack direction="row" gap={1.5}>
+              {!isDeleting && (
+                <Button
+                  variant="textContained"
+                  color="primary"
+                  size="small"
+                  onClick={openAddDialog}
+                >
+                  Add
+                </Button>
+              )}
+
+              <Button
+                variant="textContained"
+                color="error"
+                size="small"
+                disabled={isDeleting && selectedAddresses.length === 0}
+                onClick={isDeleting ? deleteEntries : startDeleting}
+              >
+                {isDeleting
+                  ? `Confirm (${selectedAddresses.length})`
+                  : "Remove"}
               </Button>
-            )}
-          </DownloadButton>
+
+              {isDeleting && (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  size="small"
+                  onClick={cancelDeleting}
+                >
+                  Cancel
+                </Button>
+              )}
+            </Stack>
+          )}
         </Stack>
 
-        <Stack direction="row" justifyContent="space-between">
-          <Stack direction="row" gap={1.5}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          sx={{
+            [theme.breakpoints.down("md")]: {
+              flexDirection: "column",
+              gap: 2,
+            },
+          }}
+        >
+          <Stack
+            direction="row"
+            gap={1.5}
+            sx={{
+              [theme.breakpoints.down("md")]: {
+                justifyContent: "space-between",
+              },
+            }}
+          >
             <AddressFilter
               addressesFilter={addressesFilter}
               onChange={onAddressesFilterChange}
@@ -325,30 +396,32 @@ const AddressBook: NextPage = () => {
               onChange={onStreamActiveFilterChange}
             />
           </Stack>
-          <Stack direction="row" gap={1.5}>
-            <Button
-              data-cy={"add-address-btn"}
+          {!isBelowMd && (
+            <Stack direction="row" gap={1.5}>
+              {!isDeleting && (
+                <Button
+                  data-cy={"add-address-btn"}
               variant="textContained"
               color="primary"
               onClick={openAddDialog}
             >
               Add Address
-            </Button>
+            </Button>)}
             <Button
                 data-cy={"remove-button"}
-              variant="textContained"
-              color="error"
-              disabled={isDeleting && selectedAddresses.length === 0}
-              onClick={isDeleting ? deleteEntries : startDeleting}
-            >
-              {isDeleting
-                ? `Confirm removing (${selectedAddresses.length})`
-                : "Remove Address"}
-            </Button>
+                variant="textContained"
+                color="error"
+                disabled={isDeleting && selectedAddresses.length === 0}
+                onClick={isDeleting ? deleteEntries : startDeleting}
+              >
+                {isDeleting
+                  ? `Confirm removing (${selectedAddresses.length})`
+                  : "Remove Address"}
+              </Button>
 
-            {isDeleting && (
-              <Button
-                data-cy={"cancel-button"}
+              {isDeleting && (
+                <Button
+                  data-cy={"cancel-button"}
                 variant="outlined"
                 color="secondary"
                 onClick={cancelDeleting}
@@ -356,7 +429,7 @@ const AddressBook: NextPage = () => {
                 Cancel
               </Button>
             )}
-          </Stack>
+          </Stack>)}
         </Stack>
 
         {filteredEntries.length === 0 && (
@@ -371,30 +444,53 @@ const AddressBook: NextPage = () => {
         )}
 
         {filteredEntries.length > 0 && (
-          <TableContainer>
+          <TableContainer
+            sx={{
+              [theme.breakpoints.down("md")]: {
+                borderLeft: 0,
+                borderRight: 0,
+                borderRadius: 0,
+                boxShadow: "none",
+                mx: -2,
+                width: "auto",
+              },
+            }}
+          >
             <Table sx={{ tableLayout: "fixed" }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ pl: 10 }}>Name</TableCell>
-                  <TableCell>ENS Name</TableCell>
-                  <TableCell>Address</TableCell>
-                  <TableCell width="160px">Active Streams</TableCell>
-                  <TableCell width="88px" />
-                </TableRow>
-              </TableHead>
+              {!isBelowMd && (
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ pl: 10 }}>Name</TableCell>
+                    <TableCell width="200px">ENS Name</TableCell>
+                    <TableCell width="200px">Address</TableCell>
+                    <TableCell width="160px">Active Streams</TableCell>
+                    <TableCell width="88px" />
+                  </TableRow>
+                </TableHead>
+              )}
               <TableBody>
-                {paginatedEntries.map(({ address, name, streams }) => (
-                  <AddressBookRow
-                    key={address}
-                    address={address}
-                    name={name}
-                    selected={selectedAddresses.includes(address)}
-                    selectable={isDeleting}
-                    onSelect={setRowSelected(address)}
-                    streams={streams}
-                    streamsLoading={streamsLoading}
-                  />
-                ))}
+                {paginatedEntries.map(({ address, name, streams }) =>
+                  isBelowMd ? (
+                    <AddressBookMobileRow
+                      key={address}
+                      address={address}
+                      selected={selectedAddresses.includes(address)}
+                      selectable={isDeleting}
+                      onSelect={setRowSelected(address)}
+                    />
+                  ) : (
+                    <AddressBookRow
+                      key={address}
+                      address={address}
+                      name={name}
+                      selected={selectedAddresses.includes(address)}
+                      selectable={isDeleting}
+                      onSelect={setRowSelected(address)}
+                      streams={streams}
+                      streamsLoading={streamsLoading}
+                    />
+                  )
+                )}
               </TableBody>
             </Table>
             <TablePagination

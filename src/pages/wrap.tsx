@@ -1,4 +1,4 @@
-import { Box, Container } from "@mui/material";
+import { Box, Container, useTheme } from "@mui/material";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -12,6 +12,7 @@ import {
 } from "../features/transactionRestoration/transactionRestorations";
 
 const Wrap: NextPage = () => {
+  const theme = useTheme();
   const router = useRouter();
   const { upgrade, downgrade } = router.query;
   const [tabValue, setTabValue] = useState<
@@ -44,19 +45,19 @@ const Wrap: NextPage = () => {
     <Container maxWidth="lg">
       <Box
         sx={{
-          my: 4,
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
+          [theme.breakpoints.up("md")]: {
+            my: 4,
+          },
         }}
       >
-        <WrappingFormProvider restoration={upgradeRestoration || downgradeRestoration} >
-          {tabValue && (
-            <WrapCard
-              tabValue={tabValue}
-            />
-          )}
+        <WrappingFormProvider
+          restoration={upgradeRestoration || downgradeRestoration}
+        >
+          {tabValue && <WrapCard tabValue={tabValue} />}
         </WrappingFormProvider>
       </Box>
     </Container>

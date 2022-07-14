@@ -1,16 +1,29 @@
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
-import { styled } from "@mui/material";
+import { SvgIcon, useTheme } from "@mui/material";
+import { FC } from "react";
 
 interface OpenIconProps {
   open: boolean;
+  icon?: typeof SvgIcon;
 }
 
-export const OpenIcon = styled(ExpandMoreRoundedIcon)<OpenIconProps>(
-  ({ theme, open }) => ({
-    transform: `rotate(${open ? 180 : 0}deg)`,
-    transition: theme.transitions.create("transform", {
-      easing: theme.transitions.easing.easeInOut,
-      duration: theme.transitions.duration.short,
-    }),
-  })
-);
+const OpenIcon: FC<OpenIconProps> = ({
+  open,
+  icon: Icon = ExpandMoreRoundedIcon,
+}) => {
+  const theme = useTheme();
+
+  return (
+    <Icon
+      sx={{
+        transform: `rotate(${open ? 180 : 0}deg)`,
+        transition: theme.transitions.create("transform", {
+          easing: theme.transitions.easing.easeInOut,
+          duration: theme.transitions.duration.short,
+        }),
+      }}
+    />
+  );
+};
+
+export default OpenIcon;

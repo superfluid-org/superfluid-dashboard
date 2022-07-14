@@ -8,6 +8,8 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, useMemo, useState } from "react";
@@ -36,6 +38,8 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
   tokenAddress,
   network,
 }) => {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { visibleAddress = "" } = useVisibleAddress();
   const lowerVisibleAddress = visibleAddress.toLowerCase();
 
@@ -97,7 +101,7 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
         }
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [transferEvents, transferEventFilter]
+    [transferEvents, transferEventFilter, page, rowsPerPage]
   );
 
   const { sentCount, receivedCount } = useMemo(
@@ -116,7 +120,18 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
     transferEvents.length === 0 && transferEventsQuery.isFetching;
 
   return (
-    <TableContainer>
+    <TableContainer
+      sx={{
+        [theme.breakpoints.down("md")]: {
+          mx: -2,
+          width: "auto",
+          borderRadius: 0,
+          border: "none",
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          boxShadow: "none",
+        },
+      }}
+    >
       <Table>
         <TableHead>
           <TableRow>
@@ -124,6 +139,7 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
               <Stack direction="row" alignItems="center" gap={1}>
                 <Button
                   variant="textContained"
+                  size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(TransferTypeFilter.All)}
                   onClick={changeTypeFilter(TransferTypeFilter.All)}
                 >
@@ -131,27 +147,30 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
                 </Button>
                 <Button
                   variant="textContained"
+                  size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(TransferTypeFilter.Sent)}
                   onClick={changeTypeFilter(TransferTypeFilter.Sent)}
                 >
-                  Sent {!isLoading && ` (${receivedCount})`}
+                  Sent {!isLoading && ` (${sentCount})`}
                 </Button>
                 <Button
                   variant="textContained"
+                  size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(TransferTypeFilter.Received)}
                   onClick={changeTypeFilter(TransferTypeFilter.Received)}
                 >
-                  Received {!isLoading && ` (${sentCount})`}
+                  Received {!isLoading && ` (${receivedCount})`}
                 </Button>
               </Stack>
             </TableCell>
           </TableRow>
-
-          <TableRow>
-            <TableCell>To/From</TableCell>
-            <TableCell>Amount</TableCell>
-            <TableCell>Date Sent</TableCell>
-          </TableRow>
+          {!isBelowMd && (
+            <TableRow>
+              <TableCell>To/From</TableCell>
+              <TableCell>Amount</TableCell>
+              <TableCell>Date Sent</TableCell>
+            </TableRow>
+          )}
         </TableHead>
         <TableBody>
           {isLoading ? (
@@ -170,20 +189,17 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
           )}
         </TableBody>
       </Table>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={transferEvents.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        sx={{
-          "> *": {
-            visibility: transferEvents.length <= 5 ? "hidden" : "visible",
-          },
-        }}
-      />
+      {filteredTransferEvents.length > 5 && (
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={filteredTransferEvents.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      )}
     </TableContainer>
   );
 };
