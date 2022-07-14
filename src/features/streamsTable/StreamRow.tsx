@@ -162,7 +162,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
     : { onClick: openStreamDetails, sx: { cursor: "pointer" } };
 
   return (
-    <TableRow hover>
+    <TableRow hover data-cy={`${token}-streams`}>
       <TableCell {...tableCellProps}>
         <Stack direction="row" alignItems="center" gap={1.5}>
           {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}

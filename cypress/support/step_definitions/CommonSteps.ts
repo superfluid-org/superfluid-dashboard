@@ -59,6 +59,24 @@ Given(/^User uses view mode to look at "([^"]*)"$/,  (account: string) => {
     Common.viewAccount(account);
 });
 
+Given(/^User types "([^"]*)" into the address input$/,  (address: string) => {
+    Common.typeIntoAddressInput(address);
+});
+
 Then(/^The stop viewing as an address button is visible$/,  () => {
     WrapPage.isStopViewingButtonVisible();
+});
+
+Then(/^User clicks on the view mode button$/,  () => {
+    Common.clickOnViewModeButton()
+});
+
+Then(/^"([^"]*)" address book entry for "([^"]*)" is visible in the search results$/,  (name:string,address:string) => {
+    Common.validateAddressBookSearchResult(name,address)
+});
+Then(/^User chooses the first address book result$/,  () => {
+    Common.chooseFirstAddressBookResult()
+});
+Then(/^View mode chip shows "([^"]*)"$/,  (message:string) => {
+    Common.validateViewModeChipMessage(message)
 });

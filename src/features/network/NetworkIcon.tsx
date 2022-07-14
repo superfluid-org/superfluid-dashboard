@@ -17,7 +17,7 @@ const NetworkIcon: FC<NetworkIconProps> = ({
 }) => {
   if (!network.testnet) {
     return (
-      <Avatar src={network.icon} sx={{ width: size, height: size, ...sx }} />
+      <Avatar data-cy={`${network.id}-icon`} src={network.icon} sx={{ width: size, height: size, ...sx }} />
     );
   }
 

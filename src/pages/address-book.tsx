@@ -327,6 +327,7 @@ const AddressBook: NextPage = () => {
           </Stack>
           <Stack direction="row" gap={1.5}>
             <Button
+              data-cy={"add-address-btn"}
               variant="textContained"
               color="primary"
               onClick={openAddDialog}
@@ -334,6 +335,7 @@ const AddressBook: NextPage = () => {
               Add Address
             </Button>
             <Button
+                data-cy={"remove-button"}
               variant="textContained"
               color="error"
               disabled={isDeleting && selectedAddresses.length === 0}
@@ -346,6 +348,7 @@ const AddressBook: NextPage = () => {
 
             {isDeleting && (
               <Button
+                data-cy={"cancel-button"}
                 variant="outlined"
                 color="secondary"
                 onClick={cancelDeleting}
@@ -358,10 +361,10 @@ const AddressBook: NextPage = () => {
 
         {filteredEntries.length === 0 && (
           <Paper elevation={1} sx={{ px: 12, py: 7 }}>
-            <Typography variant="h4" textAlign="center">
+            <Typography data-cy={"no-address-title"} variant="h4" textAlign="center">
               No Addresses Available
             </Typography>
-            <Typography color="text.secondary" textAlign="center">
+            <Typography data-cy={"no-address-message"} color="text.secondary" textAlign="center">
               Addresses you have transacted with or imported will appear here.
             </Typography>
           </Paper>

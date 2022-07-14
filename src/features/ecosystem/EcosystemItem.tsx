@@ -36,6 +36,7 @@ const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
 
   return (
     <Stack
+      data-cy={`${app.name}-section`}
       component={Paper}
       elevation={1}
       gap={1.5}
@@ -56,12 +57,13 @@ const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
           alt="Twitter logo"
         />
 
-        <Typography variant="h4" flex={1}>
+        <Typography variant="h4" flex={1} data-cy={"app-name"}>
           {app.name}
         </Typography>
         {app.href && (
           <Link passHref href={app.href} target="_blank">
             <IconButton
+              data-cy={"app-link-button"}
               href=""
               color="inherit"
               target="_blank"
@@ -72,7 +74,7 @@ const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
           </Link>
         )}
       </Stack>
-      <Typography variant="body1">{app.description}</Typography>
+      <Typography variant="body1" data-cy={"app-description"}>{app.description}</Typography>
       <Stack flex={1} justifyContent="flex-end">
         <Stack
           direction="row"
@@ -81,6 +83,7 @@ const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
         >
           {app.comingSoon ? (
             <Chip
+              data-cy={"app-comming-soon"}
               color="info"
               size="small"
               label="Coming Soon"
@@ -93,6 +96,7 @@ const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
           <Stack direction="row" alignItems="center" sx={{ px: 0.25 }}>
             {networks.map((network, index) => (
               <NetworkIcon
+                  data-cy={`test`}
                 key={network.id}
                 network={network}
                 size={20}

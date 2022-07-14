@@ -7,21 +7,21 @@
           "token": "fUSDCx",
           "id": "usdc",
           "balance": "349.99696180",
-          "underlyingBalance": "1800.00000000"
+          "underlyingBalance": "1800"
         },
         {
           "tokenAddress": "0x95697ec24439E3Eb7ba588c7B279b9B369236941",
           "token": "fTUSDx",
           "id": "true-usd",
-          "balance": "500.00000000",
-          "underlyingBalance": "1500.00000000"
+          "balance": "500",
+          "underlyingBalance": "1500"
         },
         {
           "tokenAddress": "0xF2d68898557cCb2Cf4C10c3Ef2B034b2a69DAD00",
           "token": "fDAIx",
           "id": "dai",
-          "balance": "400.00000000",
-          "underlyingBalance": "1700.00000000",
+          "balance": "400",
+          "underlyingBalance": "1700",
           "incoming": 4,
           "outgoing": 5
         }
@@ -30,18 +30,18 @@
     "ongoingStreamsAccount": {
       "tokenValues": {
         "token": "fDAIx",
-        "netFlowRate": "-1.00000000/mo",
-        "inFlow": "+3.99999999/mo",
-        "outFlow": "-4.99999999/mo",
+        "netFlowRate": "-1/mo",
+        "inFlow": "+4/mo",
+        "outFlow": "-5/mo",
         "streams": [
           {
-            "fromTo": "0xcb86...42d8",
-            "flowRate": "+3.99999999/mo",
+            "fromTo": "0xcb86...42D8",
+            "flowRate": "+4/mo",
             "endDate": "2 Jul. 2021"
           },
           {
-            "fromTo": "0x618a...de40",
-            "flowRate": "-4.99999999/mo",
+            "fromTo": "0x618a...DE40",
+            "flowRate": "-5/mo",
             "endDate": "2 Jul. 2021"
           }
         ]
@@ -55,40 +55,40 @@
           "tokenAddress": "0x2dC36872a445adF0bFf63cc0eeee52A2b801625f",
           "token": "fUSDCx",
           "id": "usdc",
-          "balance": "349.99877507",
-          "underlyingBalance": "700.00000000"
+          "balance": "349",
+          "underlyingBalance": "700"
         },
         {
           "tokenAddress": "0xBF6201a6c48B56d8577eDD079b84716BB4918E8A",
           "token": "fDAIx",
           "id": "dai",
-          "balance": "400.00000000",
-          "underlyingBalance": "600.00000000"
+          "balance": "400",
+          "underlyingBalance": "600"
         },
         {
           "tokenAddress": "0xC5191A51982983B8105eC4Fbbbf35b9466EE0179",
           "token": "fTUSDx",
           "id": "true-usd",
-          "balance": "500.00000000",
-          "underlyingBalance": "500.00000000"
+          "balance": "500",
+          "underlyingBalance": "500"
         }
       ]
     },
     "ongoingStreamsAccount": {
       "tokenValues": {
         "token": "fDAIx",
-        "netFlowRate": "-1.00000000/mo",
-        "inFlow": "+3.99999999/mo",
-        "outFlow": "-4.99999999/mo",
+        "netFlowRate": "-1/mo",
+        "inFlow": "+4/mo",
+        "outFlow": "-5/mo",
         "streams": [
           {
-            "fromTo": "0xcb86...42d8",
-            "flowRate": "+3.99999999/mo",
+            "fromTo": "0xcb86...42D8",
+            "flowRate": "+4/mo",
             "endDate": "2 Jul. 2021"
           },
           {
-            "fromTo": "0x618a...de40",
-            "flowRate": "-4.99999999/mo",
+            "fromTo": "0x618a...DE40",
+            "flowRate": "-5/mo",
             "endDate": "2 Jul. 2021"
           }
         ]
@@ -103,39 +103,39 @@
           "token": "fUSDCx",
           "id": "usdc",
           "balance": "349.99696180",
-          "underlyingBalance": "700.00000000"
+          "underlyingBalance": "700"
         },
         {
           "tokenAddress": "0x745861AeD1EEe363b4AaA5F1994Be40b1e05Ff90",
           "token": "fDAIx",
           "id": "dai",
-          "balance": "400.00000000",
-          "underlyingBalance": "600.00000000"
+          "balance": "400",
+          "underlyingBalance": "600"
         },
         {
           "tokenAddress": "0xdF7B8461a1d9f57f12F88d97FC6131E36d302d81",
           "token": "fTUSDx",
           "id": "true-usd",
-          "balance": "500.00000000",
-          "underlyingBalance": "500.00000000"
+          "balance": "500",
+          "underlyingBalance": "500"
         }
       ]
     },
     "ongoingStreamsAccount": {
       "tokenValues": {
         "token": "fDAIx",
-        "netFlowRate": "-1.00000000/mo",
-        "inFlow": "+3.99999999/mo",
-        "outFlow": "-4.99999999/mo",
+        "netFlowRate": "-1/mo",
+        "inFlow": "+4/mo",
+        "outFlow": "-5/mo",
         "streams": [
           {
-            "fromTo": "0xcb86...42d8",
-            "flowRate": "+3.99999999/mo",
+            "fromTo": "0xcb86...42D8",
+            "flowRate": "+4/mo",
             "endDate": "21 Jul. 2021"
           },
           {
-            "fromTo": "0x618a...de40",
-            "flowRate": "-4.99999999/mo",
+            "fromTo": "0x618a...DE40",
+            "flowRate": "-5/mo",
             "endDate": "2 Jul. 2021"
           }
         ]
@@ -150,39 +150,39 @@
           "token": "fUSDCx",
           "id": "usdc",
           "balance": "349.99776234",
-          "underlyingBalance": "1200.00000000"
+          "underlyingBalance": "1200"
         },
         {
           "tokenAddress": "0xB20200908d60f1d7bc68594f677bC15070a87504",
           "token": "fTUSDx",
           "id": "true-usd",
-          "balance": "500.00000000",
-          "underlyingBalance": "1100.00000000"
+          "balance": "500",
+          "underlyingBalance": "1100"
         },
         {
           "tokenAddress": "0xe3CB950Cb164a31C66e32c320A800D477019DCFF",
           "token": "fDAIx",
           "id": "dai",
-          "balance": "400.00000000",
-          "underlyingBalance": "1100.00000000"
+          "balance": "400",
+          "underlyingBalance": "1100"
         }
       ]
     },
     "ongoingStreamsAccount": {
       "tokenValues": {
         "token": "fDAIx",
-        "netFlowRate": "-1.00000000/mo",
-        "inFlow": "+3.99999999/mo",
-        "outFlow": "-4.99999999/mo",
+        "netFlowRate": "-1/mo",
+        "inFlow": "+4/mo",
+        "outFlow": "-5/mo",
         "streams": [
           {
-            "fromTo": "0xcb86...42d8",
-            "flowRate": "+3.99999999/mo",
+            "fromTo": "0xcb86...42D8",
+            "flowRate": "+4/mo",
             "endDate": "2 Jul. 2021"
           },
           {
-            "fromTo": "0x618a...de40",
-            "flowRate": "-4.99999999/mo",
+            "fromTo": "0x618a...DE40",
+            "flowRate": "-5/mo",
             "endDate": "2 Jul. 2021"
           }
         ]
@@ -196,7 +196,7 @@
           "tokenAddress": "0x59988e47A3503AaFaA0368b9deF095c818Fdca01",
           "token": "xDAIx",
           "id": "xdai",
-          "balance": "5.00000000",
+          "balance": "5",
           "underlyingBalance": "0.9885635"
         },
         {
@@ -212,19 +212,19 @@
     "ongoingStreamsAccount": {
       "tokenValues": {
         "token": "xDAIx",
-        "netFlowRate": "-0.00999999/mo",
-        "inFlow": "+0.00999999/mo",
-        "outFlow": "-0.01999999/mo",
+        "netFlowRate": "-0.01/mo",
+        "inFlow": "+0.01/mo",
+        "outFlow": "-0.02/mo",
         "tokenAddress": "0x59988e47a3503aafaa0368b9def095c818fdca01",
         "streams": [
           {
-            "fromTo": "0xcb86...42d8",
-            "flowRate": "+0.00999999/mo",
+            "fromTo": "0xcb86...42D8",
+            "flowRate": "+0.01/mo",
             "endDate": "2 Jul. 2021"
           },
           {
-            "fromTo": "0x618a...de40",
-            "flowRate": "-0.01999999/mo",
+            "fromTo": "0x618a...DE40",
+            "flowRate": "-0.02/mo",
             "endDate": "2 Jul. 2021"
           }
         ]
@@ -244,7 +244,7 @@
           "token": "MATICx",
           "tokenName": "Super MATIC",
           "id": "matic-network",
-          "balance": "4.000000000000000000",
+          "balance": "4",
           "underlyingBalance": "0.998914208450974000",
           "underlyingTokenName": "Polygon Native Asset",
           "underlyingTokenSymbol": "MATIC"
@@ -264,19 +264,19 @@
     "ongoingStreamsAccount": {
       "tokenValues": {
         "token": "MATICx",
-        "netFlowRate": "-0.00500000/mo",
-        "inFlow": "+0.00499999/mo",
-        "outFlow": "-0.00999999/mo",
+        "netFlowRate": "-0.005/mo",
+        "inFlow": "+0.005/mo",
+        "outFlow": "-0.01/mo",
         "tokenAddress": "0x3aD736904E9e65189c3000c7DD2c8AC8bB7cD4e3",
         "streams": [
           {
-            "fromTo": "0xcb86...42d8",
-            "flowRate": "+0.00499999/mo",
+            "fromTo": "0xcb86...42D8",
+            "flowRate": "+0.005/mo",
             "endDate": "2 Jul. 2021"
           },
           {
-            "fromTo": "0x618a...de40",
-            "flowRate": "-0.00999999/mo",
+            "fromTo": "0x618a...DE40",
+            "flowRate": "-0.01/mo",
             "endDate": "2 Jul. 2021"
           }
         ]
@@ -291,39 +291,39 @@
           "token": "fUSDCx",
           "id": "usdc",
           "balance": "351.99782021",
-          "underlyingBalance": "700.00000000"
+          "underlyingBalance": "700"
         },
         {
           "tokenAddress": "0x5D8B4C2554aeB7e86F387B4d6c00Ac33499Ed01f",
           "token": "fDAIx",
           "id": "dai",
-          "balance": "400.00000000",
-          "underlyingBalance": "600.00000000"
+          "balance": "400",
+          "underlyingBalance": "600"
         },
         {
           "tokenAddress": "0x918E0d5C96cAC79674E2D38066651212be3C9C48",
           "token": "fTUSDx",
           "id": "true-usd",
-          "balance": "500.00000000",
-          "underlyingBalance": "500.00000000"
+          "balance": "500",
+          "underlyingBalance": "500"
         }
       ]
     },
     "ongoingStreamsAccount": {
       "tokenValues": {
         "token": "fDAIx",
-        "netFlowRate": "-1.00000000/mo",
-        "inFlow": "+3.99999999/mo",
-        "outFlow": "-4.99999999/mo",
+        "netFlowRate": "-1/mo",
+        "inFlow": "+4/mo",
+        "outFlow": "-5/mo",
         "streams": [
           {
-            "fromTo": "0xcb86...42d8",
-            "flowRate": "+3.99999999/mo",
+            "fromTo": "0xcb86...42D8",
+            "flowRate": "+4/mo",
             "endDate": "2 Jul. 2021"
           },
           {
-            "fromTo": "0x618a...de40",
-            "flowRate": "-4.99999999/mo",
+            "fromTo": "0x618a...DE40",
+            "flowRate": "-5/mo",
             "endDate": "2 Jul. 2021"
           }
         ]
@@ -337,38 +337,38 @@
           "tokenAddress": "0x4B746F88fb25516731D54cEfB1c2d00eadEFf366",
           "token": "fDAIx",
           "id": "dai",
-          "balance": "200.00000000",
-          "underlyingBalance": "800.00000000"
+          "balance": "200",
+          "underlyingBalance": "800"
         },
         {
           "tokenAddress": "0xb9Fef3d4054f1B40f8Dcf4ae975F3486aDF6327C",
           "token": "fUSDCx",
           "id": "usdc",
-          "balance": "350.00000000",
-          "underlyingBalance": "700.00000000"
+          "balance": "350",
+          "underlyingBalance": "700"
         }
       ]
     },
     "ongoingStreamsAccount": {
       "tokenValues": {
         "token": "fDAIx",
-        "netFlowRate": "-1.00000000/mo",
-        "inFlow": "+3.99999999/mo",
-        "outFlow": "-4.99999999/mo",
+        "netFlowRate": "-1/mo",
+        "inFlow": "+4/mo",
+        "outFlow": "-5/mo",
         "streams": [
           {
             "fromTo": "0xad97...8a19",
-            "flowRate": "-4.99999999/mo",
+            "flowRate": "-5/mo",
             "endDate": "30 Dec. 2021"
           },
           {
-            "fromTo": "0x618a...de40",
+            "fromTo": "0x618a...DE40",
             "flowRate": "-",
             "endDate": "30 Dec. 2021"
           },
           {
-            "fromTo": "0x618a...de40",
-            "flowRate": "+3.99999999/mo",
+            "fromTo": "0x618a...DE40",
+            "flowRate": "+4/mo",
             "endDate": "21 Dec. 2021"
           }
         ]
@@ -382,45 +382,45 @@
           "tokenAddress": "0x296E9c01f80D408741f6e15d62013DDbe1041f1D",
           "token": "fDAIx",
           "id": "dai",
-          "balance": "400.00000000",
-          "underlyingBalance": "600.00000000"
+          "balance": "400",
+          "underlyingBalance": "600"
         },
         {
           "tokenAddress": "0x36BBF94e66f0c953CB451b302e345D6E50c2A215",
           "token": "fTUSDx",
           "id": "true-usd",
-          "balance": "150.00000000",
-          "underlyingBalance": "850.00000000"
+          "balance": "150",
+          "underlyingBalance": "850"
         },
         {
           "tokenAddress": "0x896C3e90446237be3e27eB4D67e0D3c97FB3b03F",
           "token": "fUSDCx",
           "id": "usdc",
           "balance": "399.99397183",
-          "underlyingBalance": "700.00000000"
+          "underlyingBalance": "700"
         }
       ]
     },
     "ongoingStreamsAccount": {
       "tokenValues": {
         "token": "fDAIx",
-        "netFlowRate": "-1.00000000/mo",
-        "inFlow": "+3.99999999/mo",
-        "outFlow": "-4.99999999/mo",
+        "netFlowRate": "-1/mo",
+        "inFlow": "+4/mo",
+        "outFlow": "-5/mo",
         "streams": [
           {
-            "fromTo": "0x618a...de40",
+            "fromTo": "0x618a...DE40",
             "flowRate": "-",
             "endDate": "30 Dec. 2021"
           },
           {
             "fromTo": "0xad97...8a19",
-            "flowRate": "+3.99999999/mo",
+            "flowRate": "+4/mo",
             "endDate": "30 Dec. 2021"
           },
           {
-            "fromTo": "0x618a...de40",
-            "flowRate": "-4.99999999/mo",
+            "fromTo": "0x618a...DE40",
+            "flowRate": "-5/mo",
             "endDate": "21 Dec. 2021"
           }
         ]
@@ -434,31 +434,31 @@
           "tokenAddress": "0x04d4f73e9DE52a8fEC544087a66BBbA660A35957",
           "token": "fDAIx",
           "id": "dai",
-          "balance": "200.00000000",
-          "underlyingBalance": "800.00000000"
+          "balance": "200",
+          "underlyingBalance": "800"
         },
         {
           "tokenAddress": "0xaA1EA30cEe569fA70B8561c0F52F10Da249Aecb5",
           "token": "fUSDCx",
           "id": "usdc",
           "balance": "349.99637345",
-          "underlyingBalance": "700.00000000"
+          "underlyingBalance": "700"
         },
         {
           "tokenAddress": "0xeacC35377202982EFCB01B4a56fcA9F5eFF8A5f1",
           "token": "fTUSDx",
           "id": "true-usd",
-          "balance": "350.00000000",
-          "underlyingBalance": "650.00000000"
+          "balance": "350",
+          "underlyingBalance": "650"
         }
       ]
     },
     "ongoingStreamsAccount": {
       "tokenValues": {
         "token": "fDAIx",
-        "netFlowRate": "-1.00000000/mo",
-        "inFlow": "+3.99999999/mo",
-        "outFlow": "-4.99999999/mo",
+        "netFlowRate": "-1/mo",
+        "inFlow": "+4/mo",
+        "outFlow": "-5/mo",
         "streams": [
           {
             "fromTo": "0xf9ce...3ff2",
@@ -467,12 +467,12 @@
           },
           {
             "fromTo": "0xad97...8a19",
-            "flowRate": "-4.99999999/mo",
+            "flowRate": "-5/mo",
             "endDate": "30 Dec. 2021"
           },
           {
             "fromTo": "0xf9ce...3ff2",
-            "flowRate": "+3.99999999/mo",
+            "flowRate": "+4/mo",
             "endDate": "21 Dec. 2021"
           }
         ]
@@ -494,7 +494,7 @@
           "token": "DAIx",
           "id": "dai",
           "balance": "2.00151797",
-          "underlyingBalance": "3.00000000"
+          "underlyingBalance": "3"
         }
       ]
     },
@@ -502,17 +502,18 @@
       "tokenValues": {
         "token": "DAIx",
         "netFlowRate": "-0.01000000/mo",
-        "inFlow": "+0.02999999/mo",
-        "outFlow": "-0.01999999/mo",
+        "inFlow": "+0.03/mo",
+        "outFlow": "-0.02/mo",
+        "tokenAddress": "0x7d342726B69C28D942ad8BfE6Ac81b972349d524",
         "streams": [
           {
             "fromTo": "0xf9ce...3ff2",
-            "flowRate": "-0.01999999/mo",
+            "flowRate": "-0.02/mo",
             "endDate": "5 Apr. 2022"
           },
           {
             "fromTo": "0x275c...739f",
-            "flowRate": "+0.02999999/mo",
+            "flowRate": "+0.03/mo",
             "endDate": "4 Apr. 2022"
           },
           {

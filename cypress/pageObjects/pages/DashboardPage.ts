@@ -49,7 +49,7 @@ export class DashboardPage extends BasePage {
                             `[data-cy=${network.slugName}${NETWORK_SNAPSHOT_TABLE_APPENDIX} ${TOKEN_BALANCES}`
                         )
                             .eq(index)
-                            .should("have.text", parseFloat(tokenValues.balance).toFixed(0)) + " ";
+                            .should("have.text", `${parseFloat(tokenValues.balance).toFixed(0)} `);
                     }
                 );
             });
@@ -96,7 +96,7 @@ export class DashboardPage extends BasePage {
 
     static clickTokenStreamRow(network: string, token: string) {
         this.click(
-            `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell]`
+            `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] [data-testid="ExpandMoreRoundedIcon"]`
         );
     }
 
@@ -125,6 +125,14 @@ export class DashboardPage extends BasePage {
                 `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${networkSpecificData[
                     network
                     ].ongoingStreamsAccount.tokenValues.tokenAddress.toLowerCase()}-streams] `;
+            // The data in tables doesn't show up all at the same time , and skeletons dissapear with the first entry
+            // waiting and need to re-check to make sure all streams are loaded
+            cy.wait(5000)
+            cy.get(specificSelector).then(el => {
+                cy.wrap(el.length).should("eq",networkSpecificData[
+                    network
+                    ].ongoingStreamsAccount.tokenValues.streams.length)
+            })
             networkSpecificData[
                 network
                 ].ongoingStreamsAccount.tokenValues.streams.forEach(
@@ -181,7 +189,7 @@ export class DashboardPage extends BasePage {
 
     static validateChangeNetworkTooltip(network: string) {
         let expectedMessage =
-            `Please switch provider network to ${networksBySlug.get(network)?.name} in order to cancel the stream.`;
+            `Please connect your wallet and switch provider network to ${networksBySlug.get(network)?.name} in order to cancel the stream.`;
         this.isVisible(TOOLTIPS);
         this.hasText(TOOLTIPS, expectedMessage);
     }
@@ -197,9 +205,9 @@ export class DashboardPage extends BasePage {
                 networkSpecificData.gnosis.staticBalanceAccount.tokenValues
                     .filter((values: any) => values.token === token)[0]
                     .tokenAddress.toLowerCase();
-            let expectedAmount = parseInt(amount) + 1;
+            let expectedAmount = parseInt(amount);
             let lastRowData: string[] = [];
-            cy.get(`[data-cy="${tokenAddress}-streams"] tr`)
+            cy.get(`[data-cy="${tokenAddress}-streams"]`)
                 .should("have.length", expectedAmount)
                 .and(($el) => {
                     lastRowData.push($el.text());
@@ -222,16 +230,16 @@ export class DashboardPage extends BasePage {
                     el.text().split(" ")[0].replaceAll("1–", "")
                 );
                 let amountOfExpectedPagesInNewPage =
-                    totalRows - currentPagesVisible + 1;
+                    totalRows - currentPagesVisible;
 
                 this.click(NEXT_PAGE_BUTTON);
                 this.hasLength(
-                    `[data-cy="${tokenAddress}-streams"] tr`,
+                    `[data-cy="${tokenAddress}-streams"]`,
                     amountOfExpectedPagesInNewPage
                 );
                 let newRows: string[] = [];
                 cy.get("@lastStreamRows").then((rows) => {
-                    cy.get(`[data-cy="${tokenAddress}-streams"] tr`).then(($el) => {
+                    cy.get(`[data-cy="${tokenAddress}-streams"]`).then(($el) => {
                         newRows.push($el.text());
                         cy.wrap(newRows).should("not.equal", rows);
                     });

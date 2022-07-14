@@ -1,5 +1,4 @@
 import {Given, Then} from "@badeball/cypress-cucumber-preprocessor";
-import {Common} from "../../pageObjects/pages/Common";
 import {DashboardPage} from "../../pageObjects/pages/DashboardPage";
 
 Given(/^Correct "([^"]*)" wallet balances are shown for the "([^"]*)"$/,
