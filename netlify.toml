@@ -19,5 +19,5 @@ for = "/*"
 [[redirects]]
   from = "/*"
   to = "/index.html"
-  status = 302
+  status = 301
   force = false
