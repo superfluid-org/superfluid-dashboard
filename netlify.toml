@@ -39,3 +39,15 @@ for = "/*"
   to = "/"
   status = 302
   force = true
+
+[[redirects]]
+  from = "/test5/*"
+  to = "/"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/test6/*"
+  to = "/"
+  status = 200
+  force = true
