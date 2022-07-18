@@ -18,6 +18,6 @@ for = "/*"
 
 [[redirects]]
   from = "/streams/*"
-  to = "/streams/[_v1Network]/[_transactionHash]/[[...path]].html"
+  to = "/streams/[_v1Network]/[_transactionHash]/[_logIndex]/[[...restOfPath]].html"
   status = 200
   force = false
