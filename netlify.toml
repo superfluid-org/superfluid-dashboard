@@ -53,13 +53,13 @@ for = "/*"
   force = true
 
 [[redirects]]
-  from = "/test5/*"
+  from = "/test7/*"
   to = "/index.html"
   status = 200
   force = false
 
 [[redirects]]
-  from = "/test6/*"
+  from = "/test8/*"
   to = "/index.html"
   status = 200
   force = true
