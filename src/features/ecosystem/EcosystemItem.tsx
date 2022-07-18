@@ -8,6 +8,7 @@ import {
   Box,
   useTheme,
   useMediaQuery,
+  Link as MuiLink,
 } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
@@ -47,76 +48,80 @@ const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
   );
 
   return (
-    <Stack
-      component={Paper}
-      elevation={1}
-      gap={isBelowMd ? 1 : 1.5}
-      sx={{
-        p: 3.5,
-        background: `linear-gradient(77deg, ${app.colors.primary} 0%, ${app.colors.secondary} 100%)`,
-        color: "white",
-        border: "none",
-      }}
-    >
-      <Stack direction="row" alignItems="center" gap={2}>
-        <Image
-          unoptimized
-          src={app.icon}
-          width={26}
-          height={26}
-          layout="fixed"
-          alt="Twitter logo"
-        />
+    <Link passHref href={app.href}>
+      <Paper
+        elevation={1}
+        component={MuiLink}
+        target="_blank"
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: isBelowMd ? 1 : 1.5,
+          p: 3.5,
+          background: `linear-gradient(77deg, ${app.colors.primary} 0%, ${app.colors.secondary} 100%)`,
+          color: "white",
+          border: "none",
+          transform: "scale(1)",
+          transition: theme.transitions.create("transform", {
+            duration: theme.transitions.duration.short,
+            easing: theme.transitions.easing.easeInOut,
+          }),
+          [theme.breakpoints.up("md")]: {
+            "&:hover": {
+              transform: "scale(1.07)",
+            },
+          },
+        }}
+      >
+        <Stack direction="row" alignItems="center" gap={2}>
+          <Image
+            unoptimized
+            src={app.icon}
+            width={26}
+            height={26}
+            layout="fixed"
+            alt="Twitter logo"
+          />
 
-        <Typography variant={isBelowMd ? "h5" : "h4"} flex={1}>
-          {app.name}
+          <Typography variant={isBelowMd ? "h5" : "h4"} flex={1}>
+            {app.name}
+          </Typography>
+          <LaunchRoundedIcon sx={{ fontSize: "20px" }} />
+        </Stack>
+        <Typography variant={isBelowMd ? "body2" : "body1"}>
+          {app.description}
         </Typography>
-        {app.href && (
-          <Link passHref href={app.href} target="_blank">
-            <IconButton
-              href=""
-              color="inherit"
-              target="_blank"
-              sx={{ color: "white", mr: -0.75 }}
-            >
-              <LaunchRoundedIcon sx={{ fontSize: "20px" }} />
-            </IconButton>
-          </Link>
-        )}
-      </Stack>
-      <Typography variant={isBelowMd ? "body2" : "body1"}>
-        {app.description}
-      </Typography>
-      <Stack flex={1} justifyContent="flex-end">
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          {app.comingSoon ? (
-            <Chip
-              color="info"
-              size="small"
-              label="Coming Soon"
-              sx={{ color: "white" }}
-            />
-          ) : (
-            <Box />
-          )}
-
-          <Stack direction="row" alignItems="center" sx={{ px: 0.25 }}>
-            {networks.map((network, index) => (
-              <NetworkIcon
-                key={network.id}
-                network={network}
-                size={20}
-                sx={{ mx: -0.25, zIndex: networks.length - index }}
+        <Stack flex={1} justifyContent="flex-end">
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            {app.comingSoon ? (
+              <Chip
+                color="info"
+                size="small"
+                label="Coming Soon"
+                sx={{ color: "white" }}
               />
-            ))}
+            ) : (
+              <Box />
+            )}
+
+            <Stack direction="row" alignItems="center" sx={{ px: 0.25 }}>
+              {networks.map((network, index) => (
+                <NetworkIcon
+                  key={network.id}
+                  network={network}
+                  size={20}
+                  sx={{ mx: -0.25, zIndex: networks.length - index }}
+                />
+              ))}
+            </Stack>
           </Stack>
         </Stack>
-      </Stack>
-    </Stack>
+      </Paper>
+    </Link>
   );
 };
 
