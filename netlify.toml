@@ -17,7 +17,7 @@ for = "/*"
   Access-Control-Allow-Origin = "https://gnosis-safe.io"
 
 [[redirects]]
-  from = "/*"
-  to = "/client-side-routing"
+  from = "/streams/*"
+  to = "/streams/[_v1Network]/[_transactionHash]/[[...path]].html"
   status = 200
   force = false
