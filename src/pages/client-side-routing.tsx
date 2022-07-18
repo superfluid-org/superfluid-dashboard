@@ -7,7 +7,11 @@ const ClientSideRouting: NextPage = () => {
 
   useEffect(() => {
     if (router.isReady) {
-      router.replace(router.asPath, undefined, {
+      console.log({
+        asPath: router.asPath
+      })
+
+      router.push(router.asPath, undefined, {
         shallow: true,
       });
     }
