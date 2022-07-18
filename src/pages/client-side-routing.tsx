@@ -7,7 +7,9 @@ const ClientSideRouting: NextPage = () => {
 
   useEffect(() => {
     if (router.isReady) {
-      router.replace(router.asPath);
+      router.replace(router.asPath, undefined, {
+        shallow: true,
+      });
     }
   }, [router.isReady]);
 
