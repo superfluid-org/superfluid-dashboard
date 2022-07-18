@@ -17,49 +17,7 @@ for = "/*"
   Access-Control-Allow-Origin = "https://gnosis-safe.io"
 
 [[redirects]]
-  from = "/test1/*"
-  to = "/"
-  status = 301
-  force = false
-
-[[redirects]]
-  from = "/test2/*"
-  to = "/"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/test3/*"
-  to = "/"
-  status = 302
-  force = false
-
-[[redirects]]
-  from = "/test4/*"
-  to = "/"
-  status = 302
-  force = true
-
-[[redirects]]
-  from = "/test5/*"
-  to = "/"
+  from = "/*"
+  to = "/client-side-routing"
   status = 200
   force = false
-
-[[redirects]]
-  from = "/test6/*"
-  to = "/"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/test7/*"
-  to = "/index.html"
-  status = 200
-  force = false
-
-[[redirects]]
-  from = "/test8/*"
-  to = "/index.html"
-  status = 200
-  force = true
