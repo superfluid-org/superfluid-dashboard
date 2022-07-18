@@ -6,7 +6,6 @@ import { useConnect } from "wagmi";
 
 const useGetTransactionOverrides = () => {
   const [queryRecommendedGas] = gasApi.useLazyRecommendedGasQuery();
-  const { activeConnector } = useConnect();
 
   return async (network: Network): Promise<Overrides> => {
     const gasQueryTimeout = new Promise<null>((response) =>
@@ -20,15 +19,6 @@ const useGetTransactionOverrides = () => {
 
     const overrides: Overrides = {};
 
-    const isGnosisSafe = activeConnector?.id === "safe";
-    if (isGnosisSafe) {
-      overrides.gasLimit = 500_000;
-    }
-
-    console.log({
-      isGnosisSafe
-    })
-
     if (gasRecommendation) {
       overrides.maxPriorityFeePerGas = parseUnits(
         gasRecommendation.maxPriorityFeeGwei.toFixed(8).toString(),
@@ -39,10 +29,6 @@ const useGetTransactionOverrides = () => {
         "gwei"
       );
     }
-
-    console.log({
-      overrides
-    })
 
     return overrides;
   };
