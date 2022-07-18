@@ -2,9 +2,11 @@ import { Overrides } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 import { Network } from "../features/network/networks";
 import gasApi, { GasRecommendation } from "../features/gas/gasApi.slice";
+import { useConnect } from "wagmi";
 
 const useGetTransactionOverrides = () => {
   const [queryRecommendedGas] = gasApi.useLazyRecommendedGasQuery();
+  const { activeConnector } = useConnect();
 
   return async (network: Network): Promise<Overrides> => {
     const gasQueryTimeout = new Promise<null>((response) =>
@@ -16,20 +18,33 @@ const useGetTransactionOverrides = () => {
       gasQueryTimeout,
     ]);
 
-    if (gasRecommendation) {
-      return {
-        maxPriorityFeePerGas: parseUnits(
-          gasRecommendation.maxPriorityFeeGwei.toFixed(8).toString(),
-          "gwei"
-        ),
-        maxFeePerGas: parseUnits(
-          gasRecommendation.maxFeeGwei.toFixed(8).toString(),
-          "gwei"
-        ),
-      };
-    } else {
-      return {};
+    const overrides: Overrides = {};
+
+    const isGnosisSafe = activeConnector?.id === "safe";
+    if (isGnosisSafe) {
+      overrides.gasLimit = 500_000;
     }
+
+    console.log({
+      isGnosisSafe
+    })
+
+    if (gasRecommendation) {
+      overrides.maxPriorityFeePerGas = parseUnits(
+        gasRecommendation.maxPriorityFeeGwei.toFixed(8).toString(),
+        "gwei"
+      );
+      overrides.maxFeePerGas = parseUnits(
+        gasRecommendation.maxFeeGwei.toFixed(8).toString(),
+        "gwei"
+      );
+    }
+
+    console.log({
+      overrides
+    })
+
+    return overrides;
   };
 };
 
