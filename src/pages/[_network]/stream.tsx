@@ -15,15 +15,18 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Link as MuiLink,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
+import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { FC, useMemo } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
+import CopyTooltip from "../../components/CopyTooltip/CopyTooltip";
 import NetworkIcon from "../../features/network/NetworkIcon";
 import { subgraphApi } from "../../features/redux/store";
 import {
@@ -42,6 +45,7 @@ import {
 } from "../../utils/tokenUtils";
 import Page404 from "../404";
 
+const TEXT_TO_SHARE = encodeURIComponent("Hello World");
 interface StreamAccountCardProps {
   address: Address;
 }
@@ -118,18 +122,27 @@ const CancelledIndicator: FC<CancelledIndicatorProps> = ({
   );
 };
 
-const ShareButton: FC<{ imgSrc: string; alt: string }> = ({ imgSrc, alt }) => (
-  <Tooltip title="Sharing is currently disabled" placement="top">
-    <Box sx={{ display: "flex" }}>
-      <Image
-        unoptimized
-        src={imgSrc}
-        width={30}
-        height={30}
-        layout="fixed"
-        alt={alt}
-      />
-    </Box>
+interface ShareButtonProps {
+  imgSrc: string;
+  alt: string;
+  tooltip: string;
+  href?: string;
+}
+
+const ShareButton: FC<ShareButtonProps> = ({ imgSrc, alt, tooltip, href }) => (
+  <Tooltip title={tooltip} placement="top">
+    <MuiLink href={href} target="_blank">
+      <Box sx={{ display: "flex" }}>
+        <Image
+          unoptimized
+          src={imgSrc}
+          width={30}
+          height={30}
+          layout="fixed"
+          alt={alt}
+        />
+      </Box>
+    </MuiLink>
   </Tooltip>
 );
 
@@ -183,6 +196,10 @@ const Stream: FC<NetworkPage> = ({ network }) => {
     );
   }, [tokenSnapshotQuery.data]);
 
+  const urlToShare = useMemo(() => {
+    return `${window.location.origin}${window.location.pathname}?stream=${streamId}`;
+  }, [streamId]);
+
   const bufferSize = useMemo(() => {
     if (!streamQuery.data || streamQuery.data.currentFlowRate === "0")
       return null;
@@ -224,10 +241,14 @@ const Stream: FC<NetworkPage> = ({ network }) => {
   } = streamQuery.data;
 
   const isActive = currentFlowRate !== "0";
+  const encodedUrlToShare = encodeURIComponent(urlToShare);
 
   // TODO: This container max width should be configured in theme. Something between small and medium
   return (
     <Container maxWidth="lg">
+      <Head>
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
+      </Head>
       <Stack
         alignItems="center"
         gap={3}
@@ -459,26 +480,44 @@ const Stream: FC<NetworkPage> = ({ network }) => {
             Share:
           </Typography>
 
-          <Tooltip title="Sharing is currently disabled" placement="top">
-            <Avatar
-              sx={{
-                backgroundColor: theme.palette.primary.main,
-                color: "#fff",
-                width: 30,
-                height: 30,
-              }}
-            >
-              <LinkIcon
-                sx={{ transform: "rotate(135deg)", width: 20, height: 20 }}
-              />
-            </Avatar>
-          </Tooltip>
+          <CopyTooltip
+            content={urlToShare}
+            copyText="Copy link"
+            TooltipProps={{ placement: "top" }}
+          >
+            {({ copy }) => (
+              <IconButton
+                onClick={copy}
+                sx={{
+                  color: "#fff",
+                  width: 30,
+                  height: 30,
+                  borderRadius: "50%",
+                  backgroundColor: theme.palette.primary.main,
+                  "&:hover": {
+                    backgroundColor: theme.palette.primary.main,
+                  },
+                }}
+              >
+                <LinkIcon
+                  sx={{ transform: "rotate(135deg)", width: 20, height: 20 }}
+                />
+              </IconButton>
+            )}
+          </CopyTooltip>
 
-          <ShareButton imgSrc="/icons/social/twitter.svg" alt="Twitter logo" />
-          <ShareButton imgSrc="/icons/social/discord.svg" alt="Discord logo" />
+          <ShareButton
+            imgSrc="/icons/social/twitter.svg"
+            alt="Twitter logo"
+            tooltip="Share on Twitter"
+            href={`https://twitter.com/intent/tweet?text=${TEXT_TO_SHARE}&url=${encodedUrlToShare}`}
+          />
+          {/* <ShareButton imgSrc="/icons/social/discord.svg" alt="Discord logo" /> */}
           <ShareButton
             imgSrc="/icons/social/telegram.svg"
             alt="Telegram logo"
+            tooltip="Share on Telegram"
+            href={`https://t.me/share/url?text=${TEXT_TO_SHARE}&url=${encodedUrlToShare}`}
           />
         </Stack>
       </Stack>
