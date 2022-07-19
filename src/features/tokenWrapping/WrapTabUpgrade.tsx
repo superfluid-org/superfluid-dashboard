@@ -28,6 +28,7 @@ import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { TokenDialogButton } from "./TokenDialogButton";
 import { ArrowDownIcon, WrapInputCard } from "./WrapCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
+import { useConnect } from "wagmi";
 
 export const WrapTabUpgrade: FC = () => {
   const theme = useTheme();
