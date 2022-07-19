@@ -28,6 +28,7 @@ import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { TokenDialogButton } from "./TokenDialogButton";
 import { ArrowDownIcon, WrapInputCard } from "./WrapCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
+import { useConnect } from "wagmi";
 
 export const WrapTabUpgrade: FC = () => {
   const theme = useTheme();
@@ -36,6 +37,7 @@ export const WrapTabUpgrade: FC = () => {
   const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useLayoutContext();
   const getTransactionOverrides = useGetTransactionOverrides();
+  const { activeConnector } = useConnect();
 
   const {
     watch,
@@ -349,6 +351,16 @@ export const WrapTabUpgrade: FC = () => {
               amountWei: parseEther(formData.amountEther).toString(),
             };
 
+            const overrides = await getTransactionOverrides(network);
+
+            // In Gnosis Safe, Ether's estimateGas is flaky for native assets.
+            const isGnosisSafe = activeConnector?.id === "safe";
+            const isNativeAssetSuperToken =
+              formData.tokenUpgrade.underlyingToken.address === NATIVE_ASSET_ADDRESS;
+            if (isGnosisSafe && isNativeAssetSuperToken) {
+              overrides.gasLimit = 500_000;
+            }
+
             upgradeTrigger({
               signer,
               chainId: network.id,
@@ -358,7 +370,7 @@ export const WrapTabUpgrade: FC = () => {
               transactionExtraData: {
                 restoration,
               },
-              overrides: await getTransactionOverrides(network),
+              overrides,
             })
               .unwrap()
               .then(() => resetForm());
