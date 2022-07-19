@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { networks } from "../../../../../features/network/networks";
 import { subgraphApi } from "../../../../../features/redux/store";
 import Error from "next/error";
+import { getStreamPagePath } from "../../../../stream/[_network]/[_stream]";
 
 const V1StreamPage: NextPage = () => {
   const router = useRouter();
@@ -15,33 +16,39 @@ const V1StreamPage: NextPage = () => {
   useEffect(() => {
     if (router.isReady) {
       const { _v1Network, _tx, _log } = router.query;
-      if (isString(_v1Network) && isString(_tx) && isString(_log)) {
-        const network = networks.find((x) => x.v1ShortName === _v1Network);
-        if (network) {
-          queryStreams({
-            chainId: network.id,
-            filter: {
-              flowUpdatedEvents_: {
-                transactionHash: _tx.toLowerCase(),
-                logIndex: _log.toLowerCase(),
-              },
+      const network = networks.find(
+        (x) => x.v1ShortName === (isString(_v1Network) ? _v1Network : "")
+      );
+
+      if (network && isString(_tx) && isString(_log)) {
+        queryStreams({
+          chainId: network.id,
+          filter: {
+            flowUpdatedEvents_: {
+              transactionHash: _tx.toLowerCase(),
+              logIndex: _log.toLowerCase(),
             },
-            pagination: {
-              take: 1,
-            },
-          })
-            .then((result) => {
-              const stream = result.data?.items?.[0];
-              if (stream) {
-                router.replace(`/stream/${network.slugName}/${stream.id}`);
-              } else {
-                setNotFound(true);
-              }
-            })
-            .catch(() => {
+          },
+          pagination: {
+            take: 1,
+          },
+        })
+          .then((result) => {
+            const stream = result.data?.items?.[0];
+            if (stream) {
+              router.replace(
+                getStreamPagePath({
+                  network: network.slugName,
+                  stream: stream.id,
+                })
+              );
+            } else {
               setNotFound(true);
-            });
-        }
+            }
+          })
+          .catch(() => {
+            setNotFound(true);
+          });
       } else {
         setNotFound(true);
       }
