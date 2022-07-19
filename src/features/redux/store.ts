@@ -20,6 +20,7 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { addressBookSlice } from "../addressBook/addressBook.slice";
+import { customTokensSlice } from "../customTokens/customTokens.slice";
 import { ensApi } from "../ens/ensApi.slice";
 import gasApi from "../gas/gasApi.slice";
 import { impersonationSlice } from "../impersonation/impersonation.slice";
@@ -69,6 +70,11 @@ const addressBookPersistedReducer = persistReducer(
   addressBookSlice.reducer
 );
 
+const customTokensPersistedReducer = persistReducer(
+  { storage, key: "customTokens", version: 1 },
+  customTokensSlice.reducer
+);
+
 const networkPreferencesPersistedReducer = persistReducer(
   { storage, key: "networkPreferences", version: 1 },
   networkPreferencesSlice.reducer
@@ -83,6 +89,7 @@ export const reduxStore = configureStore({
     [ensApi.reducerPath]: ensApi.reducer,
     impersonations: impersonationPersistedReducer,
     addressBook: addressBookPersistedReducer,
+    customTokens: customTokensPersistedReducer,
     networkPreferences: networkPreferencesPersistedReducer,
     [gasApi.reducerPath]: gasApi.reducer,
     pendingUpdates: pendingUpdateSlice.reducer,
