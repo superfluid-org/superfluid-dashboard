@@ -65,15 +65,12 @@ export const ImpersonationProvider: FC = ({ children }) => {
     [router]
   );
 
-  const removeImpersonatedAddressQueryParam = useCallback(() => {
+  const removeImpersonatedAddressQueryParam = () => {
     const { view: viewAddressQueryParam, ...queryWithoutParam } = router.query;
-    // TODO: Investigate why query params are missing here.
-    if (!!viewAddressQueryParam) {
-      router.replace({
-        query: queryWithoutParam,
-      });
-    }
-  }, [router]);
+    router.replace({
+      query: queryWithoutParam,
+    });
+  };
 
   // Get impersonated address from query string
   useEffect(() => {
