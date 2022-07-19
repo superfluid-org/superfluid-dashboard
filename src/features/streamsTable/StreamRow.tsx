@@ -20,6 +20,7 @@ import { useRouter } from "next/router";
 import { FC, memo } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
+import { getStreamPagePath } from "../../pages/stream/[_network]/[_stream]";
 import { Network } from "../network/networks";
 import { PendingOutgoingStream } from "../pendingUpdates/PendingOutgoingStream";
 import { UnitOfTime } from "../send/FlowRateInput";
@@ -102,7 +103,12 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
   const { visibleAddress } = useVisibleAddress();
 
   const openStreamDetails = () => {
-    router.push(`/${network.slugName}/stream?stream=${id}`);
+    router.push(
+      getStreamPagePath({
+        network: network.slugName,
+        stream: id,
+      })
+    );
   };
 
   const isOutgoing = visibleAddress?.toLowerCase() === sender.toLowerCase();

@@ -23,6 +23,7 @@ import Link from "next/link";
 import { FC, memo, useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
+import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import TooltipIcon from "../common/TooltipIcon";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -416,7 +417,10 @@ export default memo(function SendCard() {
                   successActions: (
                     <TransactionDialogActions>
                       <Link
-                        href={`/${network.slugName}/token?token=${formData.token.address}`}
+                        href={getTokenPagePath({
+                          network: network.slugName,
+                          token: formData.token.address,
+                        })}
                         passHref
                       >
                         <TransactionDialogButton color="primary">
@@ -479,7 +483,10 @@ export default memo(function SendCard() {
                     successActions: (
                       <TransactionDialogActions>
                         <Link
-                          href={`/${network.slugName}/token?token=${formData.token.address}`}
+                          href={getTokenPagePath({
+                            network: network.slugName,
+                            token: formData.token.address,
+                          })}
                           passHref
                         >
                           <TransactionDialogButton color="primary">

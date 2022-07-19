@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { networks } from "../../../../../features/network/networks";
 import { subgraphApi } from "../../../../../features/redux/store";
-import Page404 from "../../../../404";
+import Error from "next/error";
 
 const V1StreamPage: NextPage = () => {
   const router = useRouter();
@@ -14,20 +14,16 @@ const V1StreamPage: NextPage = () => {
 
   useEffect(() => {
     if (router.isReady) {
-      const { _v1Network, _transactionHash, _logIndex } = router.query;
-      if (
-        isString(_v1Network) &&
-        isString(_transactionHash) &&
-        isString(_logIndex)
-      ) {
+      const { _v1Network, _tx, _log } = router.query;
+      if (isString(_v1Network) && isString(_tx) && isString(_log)) {
         const network = networks.find((x) => x.v1ShortName === _v1Network);
         if (network) {
           queryStreams({
             chainId: network.id,
             filter: {
               flowUpdatedEvents_: {
-                transactionHash: _transactionHash.toLowerCase(),
-                logIndex: _logIndex.toLowerCase(),
+                transactionHash: _tx.toLowerCase(),
+                logIndex: _log.toLowerCase(),
               },
             },
             pagination: {
@@ -37,9 +33,7 @@ const V1StreamPage: NextPage = () => {
             .then((result) => {
               const stream = result.data?.items?.[0];
               if (stream) {
-                router.replace(
-                  `/${network.slugName}/stream?stream=${stream.id}`
-                );
+                router.replace(`/stream/${network.slugName}/${stream.id}`);
               } else {
                 setNotFound(true);
               }
@@ -52,10 +46,10 @@ const V1StreamPage: NextPage = () => {
         setNotFound(true);
       }
     }
-  }, [router.isReady]);
+  }, [router.isReady, queryStreams, router]);
 
   if (notFound) {
-    return <Page404 />;
+    return <Error statusCode={404} />;
   }
 
   return <></>; // TODO(KK): Show a spinner or message here?

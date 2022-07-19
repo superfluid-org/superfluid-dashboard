@@ -21,28 +21,26 @@ import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FC, useMemo } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
-import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
-import AddressName from "../../components/AddressName/AddressName";
-import NetworkIcon from "../../features/network/NetworkIcon";
-import { subgraphApi } from "../../features/redux/store";
-import {
-  getNetworkStaticPaths,
-  getNetworkStaticProps,
-} from "../../features/routing/networkPaths";
-import { UnitOfTime } from "../../features/send/FlowRateInput";
-import CancelStreamButton from "../../features/streamsTable/CancelStreamButton/CancelStreamButton";
-import Ether from "../../features/token/Ether";
-import FlowingBalance from "../../features/token/FlowingBalance";
-import TokenIcon from "../../features/token/TokenIcon";
-import withPathNetwork, { NetworkPage } from "../../hoc/withPathNetwork";
-import shortenHex from "../../utils/shortenHex";
+import AddressAvatar from "../../../components/AddressAvatar/AddressAvatar";
+import AddressName from "../../../components/AddressName/AddressName";
+import NetworkIcon from "../../../features/network/NetworkIcon";
+import { subgraphApi } from "../../../features/redux/store";
+import { UnitOfTime } from "../../../features/send/FlowRateInput";
+import CancelStreamButton from "../../../features/streamsTable/CancelStreamButton/CancelStreamButton";
+import Ether from "../../../features/token/Ether";
+import FlowingBalance from "../../../features/token/FlowingBalance";
+import TokenIcon from "../../../features/token/TokenIcon";
+import shortenHex from "../../../utils/shortenHex";
 import {
   calculateBuffer,
   calculateMaybeCriticalAtTimestamp,
-} from "../../utils/tokenUtils";
-import Page404 from "../404";
+} from "../../../utils/tokenUtils";
+import Error from "next/error";
+import { Network, networksBySlug } from "../../../features/network/networks";
+import { isString } from "lodash";
+import { NextPage } from "next";
 
 interface StreamAccountCardProps {
   address: Address;
@@ -149,13 +147,52 @@ const OverviewItem: FC<OverviewItemProps> = ({ label, value }) => (
   </Stack>
 );
 
-const Stream: FC<NetworkPage> = ({ network }) => {
+export const getStreamPagePath = ({
+  network,
+  stream,
+}: {
+  network: string;
+  stream: string;
+}) => `/stream/${network}/${stream}`;
+
+const StreamPage: NextPage = () => {
+  const router = useRouter();
+
+  const [network, setNetwork] = useState<Network | undefined>();
+  const [streamId, setStreamId] = useState<string | undefined>();
+
+  useEffect(() => {
+    if (router.isReady) {
+      setNetwork(
+        networksBySlug.get(
+          isString(router.query._network) ? router.query._network : ""
+        )
+      );
+      setStreamId(
+        isString(router.query._stream) ? router.query._stream : undefined
+      );
+    }
+  }, [router.isReady, router.query._stream]);
+
+  const isPageReady = router.isReady;
+  if (!isPageReady) return <Container />;
+
+  if (network && streamId) {
+    return <StreamPageContent network={network} streamId={streamId} />;
+  } else {
+    return <Error statusCode={404} />;
+  }
+};
+
+const StreamPageContent: FC<{
+  network: Network;
+  streamId: string;
+}> = ({ network, streamId }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const router = useRouter();
   const { data: account } = useAccount();
 
-  const streamId = (router.query.stream || "") as string;
   const [senderAddress = "", receiverAddress, tokenAddress = ""] =
     streamId.split("-");
 
@@ -211,7 +248,7 @@ const Stream: FC<NetworkPage> = ({ network }) => {
   }
 
   if (!streamQuery.data || !tokenSnapshotQuery.data) {
-    return <Page404 />;
+    return <Error statusCode={404} />;
   }
 
   const handleBack = () => router.back();
@@ -446,10 +483,10 @@ const Stream: FC<NetworkPage> = ({ network }) => {
                 : "-"
             }
           />
-          <OverviewItem
+          {/* <OverviewItem
             label="Transaction ID:"
             value={shortenHex(streamId, 6)}
-          />
+          /> */}
         </Stack>
 
         <Divider sx={{ maxWidth: "375px", width: "100%", my: 1 }} />
@@ -487,7 +524,4 @@ const Stream: FC<NetworkPage> = ({ network }) => {
   );
 };
 
-export default withPathNetwork(Stream);
-
-export const getStaticPaths = getNetworkStaticPaths;
-export const getStaticProps = getNetworkStaticProps;
+export default StreamPage;
