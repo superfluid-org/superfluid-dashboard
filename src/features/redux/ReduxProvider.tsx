@@ -6,6 +6,8 @@ import {
 import { FC, useCallback, useEffect } from "react";
 import { Provider } from "react-redux";
 import { useConnect, useSigner } from "wagmi";
+import { parseV1AddressBookEntries } from "../../utils/addressBookUtils";
+import { addAddressBookEntries } from "../addressBook/addressBook.slice";
 import { networks } from "../network/networks";
 import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import { reduxStore, useAppDispatch } from "./store";
@@ -24,7 +26,29 @@ const ReduxProviderCore: FC = ({ children }) => {
     []
   );
 
-  useEffect(() => initializeReadonlyFrameworks(), []);
+  /**
+   * TODO: We might want to remove this in the future.
+   * This function reads dashboard v1 address book from local storage, imports it into the new address book and deletes old data.
+   */
+  const importV1AddressBook = useCallback(() => {
+    try {
+      const v1AddressBook = localStorage.getItem("addressBook");
+
+      if (v1AddressBook) {
+        const v1Entries = parseV1AddressBookEntries(v1AddressBook);
+        dispatch(addAddressBookEntries(v1Entries));
+        localStorage.setItem("addressBook_v1", v1AddressBook);
+        localStorage.removeItem("addressBook");
+      }
+    } catch (e) {
+      console.error("Failed to parse v1 address book.", e);
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    initializeReadonlyFrameworks();
+    importV1AddressBook();
+  }, [initializeReadonlyFrameworks, importV1AddressBook]);
 
   useEffect(() => {
     // TODO(KK): There is a weird state in wagmi on full refreshes where signer is present but not the connector.

@@ -120,7 +120,7 @@ const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
     },
   },
   {
-    name: "Request",
+    name: "Request Finance",
     href: "https://www.request.finance/",
     icon: "/icons/ecosystem/request.svg",
     description: `Manage and track crypto invoices, salaries, and expenses in one place`,
@@ -137,6 +137,7 @@ const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
     icon: "/icons/ecosystem/coinshift.svg",
     description: `A treasury management platform with efficient multi-sig tooling`,
     chains: [chain.polygon.id],
+    comingSoon: true,
     colors: {
       primary: "#1452F5",
       secondary: "#5893ED",
@@ -334,7 +335,7 @@ const Ecosystem: NextPage = () => {
         >
           <Typography variant="h3">Explore the Superfluid ecosystem</Typography>
           <Link
-            href="http://ecosystem.superfluid.finance"
+            href="https://github.com/superfluid-finance/ecosystem/"
             passHref
             target="_blank"
           >

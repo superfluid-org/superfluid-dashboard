@@ -22,6 +22,7 @@ import { BigNumber } from "ethers";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { FC, useMemo } from "react";
+import { useAccount } from "wagmi";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import NetworkIcon from "../../features/network/NetworkIcon";
@@ -31,6 +32,7 @@ import {
   getNetworkStaticProps,
 } from "../../features/routing/networkPaths";
 import { UnitOfTime } from "../../features/send/FlowRateInput";
+import CancelStreamButton from "../../features/streamsTable/CancelStreamButton/CancelStreamButton";
 import Ether from "../../features/token/Ether";
 import FlowingBalance from "../../features/token/FlowingBalance";
 import TokenIcon from "../../features/token/TokenIcon";
@@ -151,6 +153,7 @@ const Stream: FC<NetworkPage> = ({ network }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const router = useRouter();
+  const { data: account } = useAccount();
 
   const streamId = (router.query.stream || "") as string;
   const [senderAddress = "", receiverAddress, tokenAddress = ""] =
@@ -224,6 +227,7 @@ const Stream: FC<NetworkPage> = ({ network }) => {
   } = streamQuery.data;
 
   const isActive = currentFlowRate !== "0";
+  const isOutgoing = account?.address?.toLowerCase() === sender.toLowerCase();
 
   // TODO: This container max width should be configured in theme. Something between small and medium
   return (
@@ -259,16 +263,13 @@ const Stream: FC<NetworkPage> = ({ network }) => {
           </Box>
 
           <Stack direction="row" justifyContent="flex-end" gap={1}>
-            {/* {isActive && (
-              <>
-                <IconButton color="primary">
-                  <EditIcon />
-                </IconButton>
-                <IconButton color="error">
-                  <CancelIcon />
-                </IconButton>
-              </>
-            )} */}
+            {isActive && isOutgoing && (
+              <CancelStreamButton
+                stream={streamQuery.data}
+                network={network}
+                IconButtonProps={{ size: "medium" }}
+              />
+            )}
           </Stack>
         </Stack>
 
