@@ -6,12 +6,8 @@ import {
 import { FC, useCallback, useEffect } from "react";
 import { Provider } from "react-redux";
 import { useConnect, useSigner } from "wagmi";
-import { parseOldAddressBookEntries } from "../../utils/addressBookUtils";
-import { getAddress } from "../../utils/memoizedEthersUtils";
-import {
-  addAddressBookEntries,
-  AddressBookEntry,
-} from "../addressBook/addressBook.slice";
+import { parseV1AddressBookEntries } from "../../utils/addressBookUtils";
+import { addAddressBookEntries } from "../addressBook/addressBook.slice";
 import { networks } from "../network/networks";
 import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import { reduxStore, useAppDispatch } from "./store";
@@ -36,15 +32,16 @@ const ReduxProviderCore: FC = ({ children }) => {
    */
   const importV1AddressBook = useCallback(() => {
     try {
-      const oldAddressBook = localStorage.getItem("addressBook");
+      const v1AddressBook = localStorage.getItem("addressBook");
 
-      if (oldAddressBook) {
-        const oldEntries = parseOldAddressBookEntries(oldAddressBook);
-        dispatch(addAddressBookEntries(oldEntries));
+      if (v1AddressBook) {
+        const v1Entries = parseV1AddressBookEntries(v1AddressBook);
+        dispatch(addAddressBookEntries(v1Entries));
+        localStorage.setItem("addressBook_v1", v1AddressBook);
         localStorage.removeItem("addressBook");
       }
     } catch (e) {
-      console.error("Failed to parse old address book.", e);
+      console.error("Failed to parse v1 address book.", e);
     }
   }, [dispatch]);
 
