@@ -25,7 +25,7 @@ export const addressBookSlice = createSlice({
       state: EntityState<AddressBookEntry>,
       { payload }: { payload: AddressBookEntry }
     ) =>
-      adapter.upsertOne(state, {
+      adapter.addOne(state, {
         ...payload,
         address: getAddress(payload.address),
       }),
@@ -34,7 +34,7 @@ export const addressBookSlice = createSlice({
       state: EntityState<AddressBookEntry>,
       { payload }: { payload: Array<AddressBookEntry> }
     ) =>
-      adapter.upsertMany(
+      adapter.addMany(
         state,
         payload.map((newEntry) => ({
           ...newEntry,
