@@ -36,6 +36,7 @@ export const WrapTabUpgrade: FC = () => {
   const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useLayoutContext();
   const getTransactionOverrides = useGetTransactionOverrides();
+  const { activeConnector } = useConnect();
 
   const {
     watch,
@@ -349,6 +350,16 @@ export const WrapTabUpgrade: FC = () => {
               amountWei: parseEther(formData.amountEther).toString(),
             };
 
+            const overrides = await getTransactionOverrides(network);
+
+            // Fix for Gnosis Safe "cannot estimate gas" issue when downgrading native asset super tokens: https://github.com/superfluid-finance/superfluid-dashboard/issues/101
+            const isGnosisSafe = activeConnector?.id === "safe";
+            const isNativeAssetSuperToken =
+              formData.tokenUpgrade.underlyingToken.address === NATIVE_ASSET_ADDRESS;
+            if (isGnosisSafe && isNativeAssetSuperToken) {
+              overrides.gasLimit = 500_000;
+            }
+
             upgradeTrigger({
               signer,
               chainId: network.id,
@@ -358,7 +369,7 @@ export const WrapTabUpgrade: FC = () => {
               transactionExtraData: {
                 restoration,
               },
-              overrides: await getTransactionOverrides(network),
+              overrides,
             })
               .unwrap()
               .then(() => resetForm());
