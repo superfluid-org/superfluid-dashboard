@@ -352,7 +352,7 @@ export const WrapTabUpgrade: FC = () => {
 
             const overrides = await getTransactionOverrides(network);
 
-            // Fix for Gnosis Safe "cannot estimate gas" issue when downgrading native asset super tokens: https://github.com/superfluid-finance/superfluid-dashboard/issues/101
+            // In Gnosis Safe, Ether's estimateGas is flaky for native assets.
             const isGnosisSafe = activeConnector?.id === "safe";
             const isNativeAssetSuperToken =
               formData.tokenUpgrade.underlyingToken.address === NATIVE_ASSET_ADDRESS;
