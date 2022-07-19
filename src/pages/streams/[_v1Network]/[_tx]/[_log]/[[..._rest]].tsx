@@ -7,6 +7,7 @@ import { subgraphApi } from "../../../../../features/redux/store";
 import Error from "next/error";
 import { getStreamPagePath } from "../../../../stream/[_network]/[_stream]";
 
+// For not breaking old V1 link structure.
 const V1StreamPage: NextPage = () => {
   const router = useRouter();
 
