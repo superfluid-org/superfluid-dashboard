@@ -28,6 +28,7 @@ import { ArrowDownIcon, WrapInputCard } from "./WrapCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 import { useConnect } from "wagmi";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
+import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 
 export const WrapTabDowngrade: FC = () => {
   const theme = useTheme();
@@ -72,8 +73,11 @@ export const WrapTabDowngrade: FC = () => {
     amountInputRef.current.focus();
   }, [amountInputRef, selectedTokenPair]);
 
+  const networkCustomTokens = useNetworkCustomTokens(network.id);
+
   const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
     chainId: network.id,
+    unlistedTokenIDs: networkCustomTokens,
   });
 
   const { data: _discard, ...realtimeBalanceQuery } =

@@ -1,27 +1,28 @@
 import { yupResolver } from "@hookform/resolvers/yup";
+import { BigNumber } from "ethers";
+import { formatEther, parseEther } from "ethers/lib/utils";
+import { isString } from "lodash";
 import { useRouter } from "next/router";
 import { FC, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { useAccount, useConnect } from "wagmi";
 import { number, object, ObjectSchema, string } from "yup";
+import {
+  calculateCurrentBalance,
+  calculateMaybeCriticalAtTimestamp,
+} from "../../utils/tokenUtils";
+import { testAddress, testEtherAmount } from "../../utils/yupUtils";
+import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
+import { getNetworkDefaultTokenPair } from "../network/networks";
+import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
+import { rpcApi, subgraphApi } from "../redux/store";
 import {
   formRestorationOptions,
   RestorationType,
   SuperTokenDowngradeRestoration,
   SuperTokenUpgradeRestoration,
 } from "../transactionRestoration/transactionRestorations";
-import { getNetworkDefaultTokenPair } from "../network/networks";
-import { isString } from "lodash";
-import { rpcApi, subgraphApi } from "../redux/store";
-import { formatEther, parseEther } from "ethers/lib/utils";
-import { useAccount, useConnect } from "wagmi";
-import { BigNumber } from "ethers";
-import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
-import {
-  calculateCurrentBalance,
-  calculateMaybeCriticalAtTimestamp,
-} from "../../utils/tokenUtils";
-import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 
 export type WrappingForm = {
   type: RestorationType.Downgrade | RestorationType.Upgrade;
@@ -240,8 +241,11 @@ const WrappingFormProvider: FC<{
     }
   }, [restoration]);
 
+  const networkCustomTokens = useNetworkCustomTokens(network.id);
+
   const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
     chainId: network.id,
+    unlistedTokenIDs: networkCustomTokens,
   });
 
   useEffect(() => {

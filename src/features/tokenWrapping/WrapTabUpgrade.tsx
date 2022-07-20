@@ -29,6 +29,7 @@ import { TokenDialogButton } from "./TokenDialogButton";
 import { ArrowDownIcon, WrapInputCard } from "./WrapCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 import { useConnect } from "wagmi";
+import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 
 export const WrapTabUpgrade: FC = () => {
   const theme = useTheme();
@@ -115,8 +116,11 @@ export const WrapTabUpgrade: FC = () => {
     amountInputRef.current.focus();
   }, [amountInputRef, selectedTokenPair]);
 
+  const networkCustomTokens = useNetworkCustomTokens(network.id);
+
   const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
     chainId: network.id,
+    unlistedTokenIDs: networkCustomTokens,
   });
 
   const { data: _discard2, ...underlyingBalanceQuery } =
@@ -356,7 +360,8 @@ export const WrapTabUpgrade: FC = () => {
             // In Gnosis Safe, Ether's estimateGas is flaky for native assets.
             const isGnosisSafe = activeConnector?.id === "safe";
             const isNativeAssetSuperToken =
-              formData.tokenUpgrade.underlyingToken.address === NATIVE_ASSET_ADDRESS;
+              formData.tokenUpgrade.underlyingToken.address ===
+              NATIVE_ASSET_ADDRESS;
             if (isGnosisSafe && isNativeAssetSuperToken) {
               overrides.gasLimit = 500_000;
             }

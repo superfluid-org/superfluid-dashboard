@@ -1,3 +1,4 @@
+import { Address } from "@superfluid-finance/sdk-core";
 import {
   getSubgraphClient,
   SubgraphEndpointBuilder,
@@ -194,23 +195,42 @@ export const adHocSubgraphEndpoints = {
     }),
     tokenUpgradeDowngradePairs: builder.query<
       SuperTokenPair[],
-      { chainId: number }
+      { chainId: number; unlistedTokenIDs?: Address[] }
     >({
       keepUnusedDataFor: 360,
       queryFn: async (arg) => {
         const subgraphClient = await getSubgraphClient(arg.chainId);
 
         const subgraphResult = await subgraphClient.request<{
-          wrapperSuperTokens: WrapperSuperTokenSubgraphResult[];
+          listedWrapperSuperTokens: WrapperSuperTokenSubgraphResult[];
+          unlistedWrapperSuperTokens: WrapperSuperTokenSubgraphResult[];
           nativeAssetSuperTokens: NativeAssetSuperTokenSubgraphResult[];
         }>(
           gql`
-            query {
-              wrapperSuperTokens: tokens(
+            query UpgradeDowngradePairs($unlistedTokenIDs:[ID!]) {
+              listedWrapperSuperTokens: tokens(
                 first: 1000
                 where: {
                   isSuperToken: true
                   isListed: true
+                  underlyingAddress_not: "0x0000000000000000000000000000000000000000"
+                }
+              ) {
+                id
+                name
+                symbol
+                underlyingToken {
+                  id
+                  name
+                  symbol
+                }
+              }
+              unlistedWrapperSuperTokens: tokens(
+                first: 1000
+                where: {
+                  isSuperToken: true
+                  isListed: false
+                  id_in: $unlistedTokenIDs
                   underlyingAddress_not: "0x0000000000000000000000000000000000000000"
                 }
               ) {
@@ -229,7 +249,7 @@ export const adHocSubgraphEndpoints = {
                   isSuperToken: true
                   isListed: true
                   symbol_in: [${nativeAssetSuperTokenSymbols
-                    .map((x) => `"${x}"`)
+                    .map((address) => `"${address}"`)
                     .join(",")}]
                   underlyingAddress: "0x0000000000000000000000000000000000000000"
                 }
@@ -241,10 +261,18 @@ export const adHocSubgraphEndpoints = {
               }
             }
           `,
-          {}
+          {
+            unlistedTokenIDs: (arg.unlistedTokenIDs || []).map((address) =>
+              address.toLowerCase()
+            ),
+          }
         );
 
-        const { wrapperSuperTokens, nativeAssetSuperTokens } = subgraphResult;
+        const {
+          listedWrapperSuperTokens,
+          unlistedWrapperSuperTokens,
+          nativeAssetSuperTokens,
+        } = subgraphResult;
 
         const network = networksByChainId.get(arg.chainId)!;
         const nativeAssetSuperTokenPairs: SuperTokenPair[] =
@@ -266,10 +294,28 @@ export const adHocSubgraphEndpoints = {
         const nativeAssetSuperTokenAddress =
           network.nativeAsset.superToken.address.toLowerCase();
 
-        const wrapperSuperTokenPairs: SuperTokenPair[] = wrapperSuperTokens.map(
-          (x) => {
-            // Handle exceptional legacy native asset coins first:
-            if (x.id === nativeAssetSuperTokenAddress) {
+        const wrapperSuperTokenPairs: SuperTokenPair[] =
+          listedWrapperSuperTokens
+            .concat(unlistedWrapperSuperTokens)
+            .map((x) => {
+              // Handle exceptional legacy native asset coins first:
+              if (x.id === nativeAssetSuperTokenAddress) {
+                return {
+                  superToken: {
+                    type: TokenType.WrapperSuperToken,
+                    address: x.id,
+                    symbol: x.symbol,
+                    name: x.name,
+                  },
+                  underlyingToken: {
+                    type: TokenType.NativeAssetUnderlyingToken,
+                    address: NATIVE_ASSET_ADDRESS,
+                    symbol: network.nativeAsset.symbol,
+                    name: `${network.name} Native Asset`,
+                  },
+                };
+              }
+
               return {
                 superToken: {
                   type: TokenType.WrapperSuperToken,
@@ -278,30 +324,13 @@ export const adHocSubgraphEndpoints = {
                   name: x.name,
                 },
                 underlyingToken: {
-                  type: TokenType.NativeAssetUnderlyingToken,
-                  address: NATIVE_ASSET_ADDRESS,
-                  symbol: network.nativeAsset.symbol,
-                  name: `${network.name} Native Asset`,
+                  type: TokenType.ERC20UnderlyingToken,
+                  address: x.underlyingToken.id,
+                  symbol: x.underlyingToken.symbol,
+                  name: x.underlyingToken.name,
                 },
               };
-            }
-
-            return {
-              superToken: {
-                type: TokenType.WrapperSuperToken,
-                address: x.id,
-                symbol: x.symbol,
-                name: x.name,
-              },
-              underlyingToken: {
-                type: TokenType.ERC20UnderlyingToken,
-                address: x.underlyingToken.id,
-                symbol: x.underlyingToken.symbol,
-                name: x.underlyingToken.name,
-              },
-            };
-          }
-        );
+            });
 
         const result: SuperTokenPair[] = nativeAssetSuperTokenPairs.concat(
           wrapperSuperTokenPairs.filter(

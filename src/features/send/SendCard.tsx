@@ -25,6 +25,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import TooltipIcon from "../common/TooltipIcon";
+import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { isWrappable } from "../redux/endpoints/tokenTypes";
@@ -101,7 +102,9 @@ export default memo(function SendCard() {
   const [flowUpdateTrigger, flowUpdateResult] = rpcApi.useFlowUpdateMutation();
   const [flowDeleteTrigger, flowDeleteResult] = rpcApi.useFlowDeleteMutation();
 
-  const superTokensQuery = subgraphApi.useTokensQuery({
+  const networkCustomTokens = useNetworkCustomTokens(network.id);
+
+  const listedSuperTokensQuery = subgraphApi.useTokensQuery({
     chainId: network.id,
     filter: {
       isSuperToken: true,
@@ -109,15 +112,26 @@ export default memo(function SendCard() {
     },
   });
 
+  const customSuperTokensQuery = subgraphApi.useTokensQuery({
+    chainId: network.id,
+    filter: {
+      isSuperToken: true,
+      isListed: false,
+      id_in: networkCustomTokens,
+    },
+  });
+
   const superTokens = useMemo(
     () =>
-      superTokensQuery.data?.items?.map((x) => ({
-        type: getSuperTokenType({ ...x, network, address: x.id }),
-        address: x.id,
-        name: x.name,
-        symbol: x.symbol,
-      })),
-    [superTokensQuery.data, network]
+      (listedSuperTokensQuery.data?.items || [])
+        .concat(customSuperTokensQuery.data?.items || [])
+        .map((x) => ({
+          type: getSuperTokenType({ ...x, network, address: x.id }),
+          address: x.id,
+          name: x.name,
+          symbol: x.symbol,
+        })),
+    [listedSuperTokensQuery.data, customSuperTokensQuery.data, network]
   );
 
   const shouldSearchForActiveFlow =
@@ -213,8 +227,12 @@ export default memo(function SendCard() {
                       showUpgrade: true,
                       tokenPairsQuery: {
                         data: superTokens,
-                        isLoading: superTokensQuery.isLoading,
-                        isUninitialized: superTokensQuery.isUninitialized,
+                        isLoading:
+                          listedSuperTokensQuery.isLoading ||
+                          customSuperTokensQuery.isLoading,
+                        isUninitialized:
+                          listedSuperTokensQuery.isUninitialized ||
+                          customSuperTokensQuery.isUninitialized,
                       },
                     }}
                     onTokenSelect={onChange}

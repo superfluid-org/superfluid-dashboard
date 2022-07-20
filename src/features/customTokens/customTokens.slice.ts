@@ -5,8 +5,9 @@ import {
   EntityState,
 } from "@reduxjs/toolkit";
 import { Address } from "@superfluid-finance/sdk-core";
+import { useMemo } from "react";
 import { getAddress } from "../../utils/memoizedEthersUtils";
-import { RootState } from "../redux/store";
+import { RootState, useAppSelector } from "../redux/store";
 
 export interface CustomTokenSearch {
   chainId: number;
@@ -31,7 +32,7 @@ export const customTokensSlice = createSlice({
   name: "customTokens",
   initialState: adapter.getInitialState(),
   reducers: {
-    addNetworkCustomToken: (
+    addCustomToken: (
       state: EntityState<NetworkCustomTokens>,
       { payload: { chainId, customToken } }: { payload: NetworkCustomToken }
     ) => {
@@ -72,33 +73,21 @@ export const customTokensSlice = createSlice({
   },
 });
 
-export const { addNetworkCustomToken, addCustomTokens } =
-  customTokensSlice.actions;
+export const { addCustomToken, addCustomTokens } = customTokensSlice.actions;
 
 const selectSelf = (state: RootState): EntityState<NetworkCustomTokens> =>
   state.customTokens;
 
-const adapterSelectors = adapter.getSelectors();
-
-const searchNetworkCustomToken = createSelector(
-  [
-    selectSelf,
-    (_items: RootState, search: string, chainId: number) => ({
-      search,
-      chainId,
-    }),
-  ],
-  (
-    state: EntityState<NetworkCustomTokens>,
-    { chainId, search }: CustomTokenSearch
-  ): Address[] =>
-    (adapterSelectors.selectById(state, chainId)?.customTokens || []).filter(
-      (tokenAddress) =>
-        tokenAddress.toLowerCase().indexOf(search.toLowerCase()) >= 0
-    )
-);
+const adapterSelectors = adapter.getSelectors<RootState>(selectSelf);
 
 export const customTokensSelectors = {
   ...adapterSelectors,
-  searchNetworkCustomToken,
+};
+
+export const useNetworkCustomTokens = (chainId: number) => {
+  const networkCustomTokens = useAppSelector((state) =>
+    adapterSelectors.selectById(state, chainId)
+  );
+
+  return networkCustomTokens?.customTokens || [];
 };

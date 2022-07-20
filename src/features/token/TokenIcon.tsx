@@ -1,6 +1,9 @@
 import { Avatar, styled, useTheme } from "@mui/material";
+import HelpOutlineRoundedIcon from "@mui/icons-material/HelpOutlineRounded";
 import { FC } from "react";
 import { assetApiSlice } from "./tokenManifestSlice";
+import { Address } from "@superfluid-finance/sdk-core";
+import { subgraphApi } from "../redux/store";
 
 const BorderSvg = styled("svg")(() => ({
   "@keyframes rotating": {
@@ -71,6 +74,16 @@ const TokenIcon: FC<TokenIconProps> = ({ tokenSymbol, size = 36 }) => {
           />
         </BorderSvg>
       )}
+      {/* {unlisted ? (
+        <Avatar
+          sx={{
+            width: size - (tokenManifest?.isSuperToken ? 4 : 0),
+            height: size - (tokenManifest?.isSuperToken ? 4 : 0),
+          }}
+        >
+          <HelpOutlineRoundedIcon />
+        </Avatar>
+      ) : ( */}
       <Avatar
         data-cy={"token-icon"}
         alt={`${tokenSymbol} token icon`}
@@ -85,6 +98,7 @@ const TokenIcon: FC<TokenIconProps> = ({ tokenSymbol, size = 36 }) => {
             : "/icons/token-default.webp"
         }
       />
+      {/* )} */}
     </AvatarWrapper>
   );
 };
