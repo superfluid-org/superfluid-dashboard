@@ -12,7 +12,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { FC, memo, MouseEvent, useState } from "react";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { useExpectedNetwork } from "./ExpectedNetworkContext";
 import NetworkIcon from "./NetworkIcon";
@@ -43,10 +43,8 @@ export default memo(function SelectNetwork() {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { data: account } = useAccount();
-  const accountAddress = account?.address;
-
-  const { switchNetwork } = useNetwork();
+  const { address: accountAddress } = useAccount();
+  const { switchNetwork } = useSwitchNetwork();
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [showTestnets, setShowTestnets] = useState(false);

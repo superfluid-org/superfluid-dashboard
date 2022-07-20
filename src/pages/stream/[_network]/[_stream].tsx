@@ -191,7 +191,7 @@ const StreamPageContent: FC<{
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const router = useRouter();
-  const { data: account } = useAccount();
+  const { address: accountAddress } = useAccount();
 
   const [senderAddress = "", receiverAddress, tokenAddress = ""] =
     streamId.split("-");
@@ -264,7 +264,7 @@ const StreamPageContent: FC<{
   } = streamQuery.data;
 
   const isActive = currentFlowRate !== "0";
-  const isOutgoing = account?.address?.toLowerCase() === sender.toLowerCase();
+  const isOutgoing = accountAddress?.toLowerCase() === sender.toLowerCase();
 
   // TODO: This container max width should be configured in theme. Something between small and medium
   return (

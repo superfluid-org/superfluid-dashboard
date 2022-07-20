@@ -49,10 +49,7 @@ const WrappingFormProvider: FC<{
   const { token: tokenQueryParam } = router.query;
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryUnderlyingBalance] = rpcApi.useLazyUnderlyingBalanceQuery();
-  const { activeConnector } = useConnect();
-
-  const { data: account } = useAccount();
-  const accountAddress = account?.address;
+  const { address: accountAddress, connector: activeConnector } = useAccount();
 
   const formSchema = useMemo(
     () =>

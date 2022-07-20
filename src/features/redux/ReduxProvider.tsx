@@ -5,7 +5,7 @@ import {
 } from "@superfluid-finance/sdk-redux";
 import { FC, useCallback, useEffect } from "react";
 import { Provider } from "react-redux";
-import { useConnect, useSigner } from "wagmi";
+import { useAccount, useSigner } from "wagmi";
 import { parseV1AddressBookEntries } from "../../utils/addressBookUtils";
 import { addAddressBookEntries } from "../addressBook/addressBook.slice";
 import { networks } from "../network/networks";
@@ -13,7 +13,7 @@ import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import { reduxStore, useAppDispatch } from "./store";
 
 const ReduxProviderCore: FC = ({ children }) => {
-  const { activeConnector } = useConnect();
+  const { connector: activeConnector } = useAccount();
   const { data: signer } = useSigner();
   const dispatch = useAppDispatch();
 
