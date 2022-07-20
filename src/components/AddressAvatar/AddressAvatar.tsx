@@ -17,7 +17,7 @@ interface AddressAvatarProps {
 interface RainbowKitAvatarComponentProps {
   address: string;
   ensImage?: string | null;
-  size: number;
+  size?: number;
 }
 
 export default memo(function AddressAvatar({
