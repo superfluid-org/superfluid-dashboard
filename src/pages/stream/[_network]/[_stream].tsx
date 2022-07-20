@@ -248,7 +248,7 @@ const StreamPageContent: FC<{
   }
 
   if (!streamQuery.data || !tokenSnapshotQuery.data) {
-    return <Error statusCode={404} />;
+    return <Page404 />;
   }
 
   const handleBack = () => router.back();
