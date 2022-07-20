@@ -36,8 +36,8 @@ import TokenGraphFilter from "../../../features/token/TokenGraph/TokenGraphFilte
 import TokenToolbar from "../../../features/token/TokenToolbar";
 import TransferEventsTable from "../../../features/transfers/TransferEventsTable";
 import { useVisibleAddress } from "../../../features/wallet/VisibleAddressContext";
-import Error from "next/error";
 import { NextPage } from "next";
+import Page404 from "../../404";
 
 export const getTokenPagePath = ({
   network,
@@ -80,7 +80,7 @@ const TokenPage: NextPage = () => {
       />
     );
   } else {
-    return <Error statusCode={404} />;
+    return <Page404 />;
   }
 };
 
@@ -131,7 +131,7 @@ const TokenPageContent: FC<{
   }
 
   if (!tokenQuery.currentData || !tokenSnapshotQuery.currentData) {
-    return <Error statusCode={404} />;
+    return <Page404 />;
   }
 
   const onTabChange = (_e: unknown, newTab: TokenDetailsTabs) =>

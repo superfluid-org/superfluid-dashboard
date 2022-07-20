@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { networks } from "../../../../../features/network/networks";
 import { subgraphApi } from "../../../../../features/redux/store";
-import Error from "next/error";
+import Page404 from "../../../../404";
 import { getStreamPagePath } from "../../../../stream/[_network]/[_stream]";
 
 // For not breaking old V1 link structure.
@@ -57,7 +57,7 @@ const V1StreamPage: NextPage = () => {
   }, [router.isReady, queryStreams, router]);
 
   if (notFound) {
-    return <Error statusCode={404} />;
+    return <Page404 />;
   }
 
   return <></>; // TODO(KK): Show a spinner or message here?

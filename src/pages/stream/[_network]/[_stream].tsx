@@ -37,10 +37,10 @@ import {
   calculateBuffer,
   calculateMaybeCriticalAtTimestamp,
 } from "../../../utils/tokenUtils";
-import Error from "next/error";
 import { Network, networksBySlug } from "../../../features/network/networks";
 import { isString } from "lodash";
 import { NextPage } from "next";
+import Page404 from "../../404";
 
 interface StreamAccountCardProps {
   address: Address;
@@ -180,7 +180,7 @@ const StreamPage: NextPage = () => {
   if (network && streamId) {
     return <StreamPageContent network={network} streamId={streamId} />;
   } else {
-    return <Error statusCode={404} />;
+    return <Page404 />;
   }
 };
 
