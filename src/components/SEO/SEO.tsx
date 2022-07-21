@@ -24,7 +24,8 @@ const SEO: FC<SEOProps> = ({
       <title>{title}</title>
       <meta property="description" content={description} />
 
-      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:card" content="summary_large_image" />
+
       <meta name="twitter:site" content="@Superfluid_HQ" />
 
       <meta property="og:title" content={OGTitle || title} />

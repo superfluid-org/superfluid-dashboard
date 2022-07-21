@@ -29,8 +29,8 @@ const CopyTooltip: FC<CopyTooltipProps> = ({
           setIsCopied(false);
         }, 1500);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((e) => {
+        console.error(e);
       });
   }, [content]);
 
