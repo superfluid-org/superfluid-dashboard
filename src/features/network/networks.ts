@@ -11,6 +11,7 @@ import {
 // name == displayName
 export type Network = Chain & {
   slugName: string;
+  v1ShortName: string | undefined;
   subgraphUrl: string;
   getLinkForTransaction(txHash: string): string;
   getLinkForAddress(adderss: string): string;
@@ -84,6 +85,7 @@ export const networks: Network[] = [
     blockExplorers: ensureDefined(chain.ropsten.blockExplorers),
     nativeCurrency: ensureDefined(chain.ropsten.nativeCurrency),
     slugName: "ropsten",
+    v1ShortName: "ropsten",
     bufferTimeInMinutes: 60,
     color: "#29b6af",
     rpcUrls: {
@@ -111,6 +113,7 @@ export const networks: Network[] = [
     blockExplorers: ensureDefined(chain.rinkeby.blockExplorers),
     nativeCurrency: ensureDefined(chain.rinkeby.nativeCurrency),
     slugName: "rinkeby",
+    v1ShortName: "rinkeby",
     color: "#ff4a8d",
     bufferTimeInMinutes: 60,
     rpcUrls: {
@@ -138,6 +141,7 @@ export const networks: Network[] = [
     blockExplorers: ensureDefined(chain.goerli.blockExplorers),
     nativeCurrency: ensureDefined(chain.goerli.nativeCurrency),
     slugName: "goerli",
+    v1ShortName: "goerli",
     bufferTimeInMinutes: 60,
     color: "#9064ff",
     rpcUrls: {
@@ -165,6 +169,7 @@ export const networks: Network[] = [
     blockExplorers: ensureDefined(chain.kovan.blockExplorers),
     nativeCurrency: ensureDefined(chain.kovan.nativeCurrency),
     slugName: "kovan",
+    v1ShortName: "kovan",
     bufferTimeInMinutes: 60,
     color: "#f6c343",
     rpcUrls: {
@@ -194,6 +199,7 @@ export const networks: Network[] = [
       default: blockExplorers.blockscout.gnosis,
     },
     slugName: "gnosis",
+    v1ShortName: "xdai",
     network: "xdai",
     id: 100,
     testnet: false,
@@ -230,6 +236,7 @@ export const networks: Network[] = [
     blockExplorers: ensureDefined(chain.polygon.blockExplorers),
     nativeCurrency: ensureDefined(chain.polygon.nativeCurrency),
     slugName: "polygon",
+    v1ShortName: "matic",
     bufferTimeInMinutes: 240,
     icon: "/icons/network/polygon.svg",
     color: "#7c3fe4",
@@ -258,6 +265,7 @@ export const networks: Network[] = [
     blockExplorers: ensureDefined(chain.polygonMumbai.blockExplorers),
     nativeCurrency: ensureDefined(chain.polygonMumbai.nativeCurrency),
     slugName: "mumbai",
+    v1ShortName: "mumbai",
     bufferTimeInMinutes: 60,
     color: "#3099f2",
     rpcUrls: {
@@ -285,6 +293,7 @@ export const networks: Network[] = [
     blockExplorers: ensureDefined(chain.arbitrumRinkeby.blockExplorers),
     nativeCurrency: ensureDefined(chain.arbitrumRinkeby.nativeCurrency),
     slugName: "arbitrum-rinkeby",
+    v1ShortName: "arbitrum-rinkeby",
     bufferTimeInMinutes: 60,
     color: "#29b6af",
     rpcUrls: {
@@ -312,6 +321,7 @@ export const networks: Network[] = [
     blockExplorers: ensureDefined(chain.optimismKovan.blockExplorers),
     nativeCurrency: ensureDefined(chain.optimismKovan.nativeCurrency),
     slugName: "optimism-kovan",
+    v1ShortName: "optimism-kovan",
     bufferTimeInMinutes: 60,
     color: "#8b45b6",
     rpcUrls: {
@@ -337,6 +347,7 @@ export const networks: Network[] = [
   {
     name: "Fuji (C-Chain)",
     slugName: "avalanche-fuji",
+    v1ShortName: "avalanche-fuji",
     network: "avalanche-fuji",
     id: 43113,
     testnet: true,
@@ -377,6 +388,7 @@ export const networks: Network[] = [
     blockExplorers: ensureDefined(chain.optimism.blockExplorers),
     nativeCurrency: ensureDefined(chain.optimism.nativeCurrency),
     slugName: "optimism-mainnet",
+    v1ShortName: "optimism-mainnet",
     bufferTimeInMinutes: 240,
     icon: "/icons/network/optimism.svg",
     color: "#ff0320",
@@ -405,6 +417,7 @@ export const networks: Network[] = [
     blockExplorers: ensureDefined(chain.arbitrum.blockExplorers),
     nativeCurrency: ensureDefined(chain.arbitrum.nativeCurrency),
     slugName: "arbitrum-one",
+    v1ShortName: "arbitrum-one",
     bufferTimeInMinutes: 240,
     icon: "/icons/network/arbitrum.svg",
     color: "#2b374b",
@@ -431,6 +444,7 @@ export const networks: Network[] = [
   {
     name: "Avalanche C",
     slugName: "avalanche-c",
+    v1ShortName: "avalanche-c",
     network: "avalanche-c",
     id: 43114,
     testnet: false,
@@ -471,6 +485,7 @@ export const networks: Network[] = [
   {
     name: "BNB Smart Chain",
     slugName: "bnb-smart-chain",
+    v1ShortName: "bsc-mainnet",
     network: "bnb-smart-chain",
     id: 56,
     testnet: false,

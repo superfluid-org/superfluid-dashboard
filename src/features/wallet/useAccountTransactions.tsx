@@ -33,8 +33,7 @@ export const useAccountTransactionsSelector = <T,>(
 };
 
 const useAccountTransactions = (): Array<TrackedTransaction> => {
-  const { data: account } = useAccount();
-  const accountAddress = account?.address;
+  const { address: accountAddress } = useAccount();
 
   const allTransactions = useAppSelector(transactionTrackerSelectors.selectAll);
 

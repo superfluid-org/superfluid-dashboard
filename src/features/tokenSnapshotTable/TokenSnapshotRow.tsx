@@ -18,6 +18,7 @@ import { BigNumber } from "ethers";
 import { useRouter } from "next/router";
 import { FC, memo, useState } from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
+import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
@@ -107,7 +108,12 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
   const toggleOpen = () => hasStreams && setOpen(!open);
 
   const openTokenPage = () =>
-    router.push(`/${network.slugName}/token?token=${token}`);
+    router.push(
+      getTokenPagePath({
+        network: network.slugName,
+        token: token,
+      })
+    );
 
   return (
     <>

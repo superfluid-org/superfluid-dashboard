@@ -15,33 +15,74 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { isString } from "lodash";
 import { useRouter } from "next/router";
 import { FC, useEffect, useState } from "react";
-import { useAutoConnect } from "../../features/autoConnect/AutoConnect";
-import SubscriptionsTable from "../../features/index/SubscriptionsTable";
-import NetworkIcon from "../../features/network/NetworkIcon";
-import { rpcApi, subgraphApi } from "../../features/redux/store";
-import {
-  getNetworkStaticPaths,
-  getNetworkStaticProps,
-} from "../../features/routing/networkPaths";
-import { UnitOfTime } from "../../features/send/FlowRateInput";
-import StreamsTable from "../../features/streamsTable/StreamsTable";
-import Ether from "../../features/token/Ether";
-import FlowingBalance from "../../features/token/FlowingBalance";
+import { useAutoConnect } from "../../../features/autoConnect/AutoConnect";
+import SubscriptionsTable from "../../../features/index/SubscriptionsTable";
+import NetworkIcon from "../../../features/network/NetworkIcon";
+import { Network, networksBySlug } from "../../../features/network/networks";
+import { rpcApi, subgraphApi } from "../../../features/redux/store";
+import { UnitOfTime } from "../../../features/send/FlowRateInput";
+import StreamsTable from "../../../features/streamsTable/StreamsTable";
+import Ether from "../../../features/token/Ether";
+import FlowingBalance from "../../../features/token/FlowingBalance";
 import TokenBalanceGraph, {
   GraphType,
-} from "../../features/token/TokenGraph/TokenBalanceGraph";
-import TokenGraphFilter from "../../features/token/TokenGraph/TokenGraphFilter";
-import TokenToolbar from "../../features/token/TokenToolbar";
-import TransferEventsTable from "../../features/transfers/TransferEventsTable";
-import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
-import withPathNetwork, { NetworkPage } from "../../hoc/withPathNetwork";
-import Page404 from "../404";
+} from "../../../features/token/TokenGraph/TokenBalanceGraph";
+import TokenGraphFilter from "../../../features/token/TokenGraph/TokenGraphFilter";
+import TokenToolbar from "../../../features/token/TokenToolbar";
+import TransferEventsTable from "../../../features/transfers/TransferEventsTable";
+import { useVisibleAddress } from "../../../features/wallet/VisibleAddressContext";
+import { NextPage } from "next";
+import Page404 from "../../404";
+
+export const getTokenPagePath = ({
+  network,
+  token,
+}: {
+  network: string;
+  token: string;
+}) => `/token/${network}/${token}`;
+
+const TokenPage: NextPage = () => {
+  const router = useRouter();
+  const [network, setNetwork] = useState<Network | undefined>();
+  const [tokenAddress, setTokenAddress] = useState<string | undefined>();
+  const { visibleAddress } = useVisibleAddress();
+  const { isAutoConnecting } = useAutoConnect();
+
+  useEffect(() => {
+    if (router.isReady) {
+      setNetwork(
+        networksBySlug.get(
+          isString(router.query._network) ? router.query._network : ""
+        )
+      );
+      setTokenAddress(
+        isString(router.query._token) ? router.query._token : undefined
+      );
+    }
+  }, [router.isReady, router.query._token]);
+
+  const isPageReady = router.isReady && !isAutoConnecting;
+  if (!isPageReady) return <Container />;
+
+  if (network && tokenAddress && visibleAddress) {
+    return (
+      <TokenPageContent
+        key={`${tokenAddress}-${visibleAddress}`.toLowerCase()}
+        network={network}
+        tokenAddress={tokenAddress}
+        accountAddress={visibleAddress}
+      />
+    );
+  } else {
+    return <Page404 />;
+  }
+};
 
 enum TokenDetailsTabs {
   Streams = "streams",
@@ -49,66 +90,43 @@ enum TokenDetailsTabs {
   Transfers = "transfers",
 }
 
-const Token: FC<NetworkPage> = ({ network }) => {
+const TokenPageContent: FC<{
+  network: Network;
+  tokenAddress: string;
+  accountAddress: string;
+}> = ({ network, tokenAddress, accountAddress }) => {
   const theme = useTheme();
   const router = useRouter();
-  const { visibleAddress } = useVisibleAddress();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-  const { isAutoConnecting } = useAutoConnect();
 
   const [activeTab, setActiveTab] = useState(TokenDetailsTabs.Streams);
   const [graphType, setGraphType] = useState(GraphType.All);
   const [showForecast, setShowForecast] = useState(true);
 
-  const tokenId = isString(router.query.token) ? router.query.token : undefined;
-
   const { data: _discard, ...realTimeBalanceQuery } =
-    rpcApi.useRealtimeBalanceQuery(
-      tokenId && visibleAddress
-        ? {
-            chainId: network.id,
-            tokenAddress: tokenId,
-            accountAddress: visibleAddress,
-          }
-        : skipToken
-    );
+    rpcApi.useRealtimeBalanceQuery({
+      chainId: network.id,
+      tokenAddress: tokenAddress,
+      accountAddress: accountAddress,
+    });
 
-  const { data: _discard3, ...tokenQuery } = subgraphApi.useTokenQuery(
-    tokenId
-      ? {
-          chainId: network.id,
-          id: tokenId.toLowerCase(),
-        }
-      : skipToken
-  );
+  const { data: _discard3, ...tokenQuery } = subgraphApi.useTokenQuery({
+    chainId: network.id,
+    id: tokenAddress.toLowerCase(),
+  });
 
   const { data: _discard2, ...tokenSnapshotQuery } =
-    subgraphApi.useAccountTokenSnapshotQuery(
-      tokenId && visibleAddress
-        ? {
-            chainId: network.id,
-            id: `${visibleAddress.toLowerCase()}-${tokenId.toLowerCase()}`,
-          }
-        : skipToken
-    );
-
-  useEffect(() => {
-    if (!isAutoConnecting && (!tokenId || !visibleAddress)) router.push("/");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tokenId, visibleAddress]);
+    subgraphApi.useAccountTokenSnapshotQuery({
+      chainId: network.id,
+      id: `${accountAddress.toLowerCase()}-${tokenAddress.toLowerCase()}`,
+    });
 
   const onShowForecastChange = (_e: unknown, checked: boolean) =>
     setShowForecast(checked);
 
   const handleBack = () => router.back();
 
-  if (
-    isAutoConnecting ||
-    tokenQuery.isUninitialized ||
-    tokenQuery.isLoading ||
-    tokenSnapshotQuery.isUninitialized ||
-    tokenSnapshotQuery.isLoading
-  ) {
+  if (tokenQuery.isLoading || tokenSnapshotQuery.isLoading) {
     return <Container />;
   }
 
@@ -121,9 +139,6 @@ const Token: FC<NetworkPage> = ({ network }) => {
 
   const onGraphTypeChange = (newGraphType: GraphType) =>
     setGraphType(newGraphType);
-
-  // const getGraphFilterColor = (type: GraphType) =>
-  //   graphType === type ? "primary" : "secondary";
 
   const {
     balanceUntilUpdatedAt,
@@ -139,8 +154,6 @@ const Token: FC<NetworkPage> = ({ network }) => {
     balanceTimestamp = updatedAtTimestamp,
     flowRate = totalNetFlowRate,
   } = realTimeBalanceQuery.currentData || {};
-
-  const { id: tokenAddress } = tokenQuery.currentData;
 
   return (
     <Container maxWidth="lg">
@@ -250,12 +263,12 @@ const Token: FC<NetworkPage> = ({ network }) => {
             </Stack>
           </Stack>
 
-          {visibleAddress && tokenId && (
+          {accountAddress && tokenAddress && (
             <TokenBalanceGraph
               graphType={graphType}
               network={network}
-              account={visibleAddress}
-              token={tokenId}
+              account={accountAddress}
+              token={tokenAddress}
               showForecast={showForecast}
               height={180}
             />
@@ -327,7 +340,4 @@ const Token: FC<NetworkPage> = ({ network }) => {
   );
 };
 
-export default withPathNetwork(Token);
-
-export const getStaticPaths = getNetworkStaticPaths;
-export const getStaticProps = getNetworkStaticProps;
+export default TokenPage;

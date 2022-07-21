@@ -1,0 +1,35 @@
+[build]
+  publish = "out/"
+
+[build.environment]
+  # Use only for build cache.
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"
+
+[[plugins]]
+  package = "@sentry/netlify-build-plugin"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[[headers]]
+for = "/*"
+  [headers.values]
+  Access-Control-Allow-Origin = "https://gnosis-safe.io"
+
+[[redirects]]
+  from = "/streams/*"
+  to = "/streams/[_v1Network]/[_tx]/[_log]/[[..._rest]].html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/stream/*"
+  to = "/stream/[_network]/[_stream].html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/token/*"
+  to = "/token/[_network]/[_token].html"
+  status = 200
+  force = false

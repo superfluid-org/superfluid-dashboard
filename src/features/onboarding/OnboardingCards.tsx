@@ -111,10 +111,7 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({
   onClick,
 }) => {
   const theme = useTheme();
-
-  const { data: account } = useAccount();
-  const accountAddress = account?.address;
-
+  const { address: accountAddress } = useAccount();
   const { openConnectModal } = useConnectButton();
 
   return (
