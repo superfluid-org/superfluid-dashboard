@@ -21,6 +21,7 @@ import UnknownMutationResult from "../../unknownMutationResult";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { Network } from "../network/networks";
+import TransactionDialogErrorAlert from "./TransactionDialogErrorAlert";
 
 const OutlineIcon = styled(Avatar)(({ theme }) => ({
   borderRadius: "50%",
@@ -91,9 +92,7 @@ export const TransactionDialog: FC<{
       <DialogContent sx={{ p: 4 }}>
         <Stack spacing={1} alignItems="center" textAlign="center">
           {mutationResult.isError ? (
-            <Alert severity="error" sx={{ wordBreak: "break-word" }}>
-              {mutationResult.error?.message}
-            </Alert>
+            <TransactionDialogErrorAlert mutationError={mutationResult.error} />
           ) : (
             <>
               <Box sx={{ mb: 4 }}>
@@ -126,7 +125,15 @@ export const TransactionDialog: FC<{
           )}
         </Stack>
       </DialogContent>
+      {/* TODO(KK): Get rid of blinking of old error when doing another transaction. */}
       {mutationResult.isSuccess && !!successActions && successActions}
+      {mutationResult.isError && (
+        <TransactionDialogActions>
+          <TransactionDialogButton onClick={onClose}>
+            Dismiss
+          </TransactionDialogButton>
+        </TransactionDialogActions>
+      )}
     </ResponsiveDialog>
   );
 };
