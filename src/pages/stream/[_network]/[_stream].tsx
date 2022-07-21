@@ -1,3 +1,4 @@
+import { NetworkCheckRounded } from "@mui/icons-material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
 import LinkIcon from "@mui/icons-material/Link";
@@ -21,7 +22,6 @@ import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { isString } from "lodash";
 import { NextPage } from "next";
-import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { FC, useEffect, useMemo, useState } from "react";
@@ -38,6 +38,7 @@ import CancelStreamButton from "../../../features/streamsTable/CancelStreamButto
 import Ether from "../../../features/token/Ether";
 import FlowingBalance from "../../../features/token/FlowingBalance";
 import TokenIcon from "../../../features/token/TokenIcon";
+import shortenHex from "../../../utils/shortenHex";
 import {
   calculateBuffer,
   calculateMaybeCriticalAtTimestamp,
@@ -293,7 +294,13 @@ const StreamPageContent: FC<{
     );
   }, [tokenSnapshotQuery.data]);
 
-  const urlToShare = `${window.location.origin}${window.location.pathname}`;
+  const txIdOrSubgraphId = streamCreationEvent
+    ? `${streamCreationEvent.transactionHash}-${streamCreationEvent.logIndex}`
+    : streamId;
+  const urlToShare = `${window.location.origin}${getStreamPagePath({
+    network: network.slugName,
+    stream: txIdOrSubgraphId,
+  })}`;
 
   const bufferSize = useMemo(() => {
     if (!streamQuery.data || streamQuery.data.currentFlowRate === "0")
