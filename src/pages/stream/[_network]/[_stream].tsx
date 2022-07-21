@@ -197,6 +197,7 @@ const StreamPage: NextPage = () => {
         const isTxId = _streamSplit.length === 2;
         if (isTxId) {
           const [transactionHash, logIndex] = _streamSplit;
+          // NOTE: Check V1StreamPage before changing this query.
           queryStreams({
             chainId: network.id,
             filter: {
@@ -208,7 +209,7 @@ const StreamPage: NextPage = () => {
             pagination: {
               take: 1,
             },
-          });
+          }, true);
         } else {
           setStreamId(router.query._stream.toLowerCase());
         }
@@ -319,7 +320,7 @@ const StreamPageContent: FC<{
   }, [streamQuery.data, network]);
 
   if (
-    streamQuery.isLoading ||
+    streamQuery.isUninitialized ||
     streamQuery.isFetching ||
     tokenSnapshotQuery.isLoading ||
     tokenSnapshotQuery.isFetching
