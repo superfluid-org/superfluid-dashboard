@@ -11,6 +11,8 @@ import { networks, networksByChainId } from "../network/networks";
 import { getAppWallets } from "./getAppWallets";
 import { configureChains } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
+import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 
 const { chains, provider } = configureChains(networks, [
   jsonRpcProvider({
@@ -39,9 +41,12 @@ export default WagmiManager;
 
 export const RainbowKitManager: FC = ({ children }) => {
   const muiTheme = useTheme();
+  const { network } = useExpectedNetwork();
   return (
     <RainbowKitProvider
       chains={chains}
+      initialChain={network.id}
+      avatar={AddressAvatar}
       theme={
         muiTheme.palette.mode === "dark"
           ? darkTheme({

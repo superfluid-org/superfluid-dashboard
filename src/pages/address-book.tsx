@@ -50,9 +50,7 @@ const AddressBook: NextPage = () => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { data: account } = useAccount();
-  const accountAddress = account?.address;
-
+  const { address: accountAddress } = useAccount();
   const { network } = useExpectedNetwork();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
