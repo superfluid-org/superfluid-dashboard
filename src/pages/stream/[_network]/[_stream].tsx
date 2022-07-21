@@ -44,10 +44,10 @@ import {
 } from "../../../utils/tokenUtils";
 import Page404 from "../../404";
 
-const TEXT_TO_SHARE =
+const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
 
-Check out my stream here 👇`);
+Check out my stream here ${up ? "☝️" : "👇"}`);
 
 const HASHTAGS_TO_SHARE = encodeURIComponent(
   ["superfluid", "moneystreaming", "realtimefinance"].join(",")
@@ -205,7 +205,7 @@ const StreamPage: NextPage = () => {
 };
 
 const StreamPageWrapper: FC<{
-  urlToShare: string;
+  urlToShare?: string;
   children?: ReactElement<any, any>;
 }> = ({ urlToShare, children }) => {
   return (
@@ -567,14 +567,16 @@ const StreamPageContent: FC<{
             imgSrc="/icons/social/twitter.svg"
             alt="Twitter logo"
             tooltip="Share on Twitter"
-            href={`https://twitter.com/intent/tweet?text=${TEXT_TO_SHARE}&url=${encodedUrlToShare}&hashtags=${HASHTAGS_TO_SHARE}`}
+            href={`https://twitter.com/intent/tweet?text=${TEXT_TO_SHARE()}&url=${encodedUrlToShare}&hashtags=${HASHTAGS_TO_SHARE}`}
           />
           {/* <ShareButton imgSrc="/icons/social/discord.svg" alt="Discord logo" /> */}
           <ShareButton
             imgSrc="/icons/social/telegram.svg"
             alt="Telegram logo"
             tooltip="Share on Telegram"
-            href={`https://t.me/share/url?text=${TEXT_TO_SHARE}&url=${encodedUrlToShare}`}
+            href={`https://t.me/share/url?text=${TEXT_TO_SHARE(
+              true
+            )}&url=${encodedUrlToShare}`}
           />
         </Stack>
       </Stack>
