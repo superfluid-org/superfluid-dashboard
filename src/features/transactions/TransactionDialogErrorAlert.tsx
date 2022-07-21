@@ -17,26 +17,27 @@ export default memo(function TransactionDialogErrorAlert({
       );
       return (
         <>
-          <AlertTitle>Unknown error.</AlertTitle>
+          <AlertTitle>Unknown error</AlertTitle>
           Please refresh the app and try again.
         </>
       );
     } else {
+      // NOTE: Sometimes errors are nested in each other. Check for the most specific one first.
+
       const didUserRejectTransaction =
         mutationError.message?.includes('"code": 4001');
       if (didUserRejectTransaction) {
-        return <AlertTitle>Transaction Rejected</AlertTitle>;
+        return "Transaction Rejected";
       }
 
-      const unpredictableGasLimit = mutationError.message?.includes(
-        '"code": "UNPREDICTABLE_GAS_LIMIT"'
+      const burnAmountExceedsBalance = mutationError.message?.includes(
+        '"execution reverted": "SuperfluidToken: burn amount exceeds balance"'
       );
-      if (unpredictableGasLimit) {
+      if (burnAmountExceedsBalance) {
         return (
           <>
-            <AlertTitle>Unpredictable Gas Limit</AlertTitle>
-            Could not predict gas for the transaction. Do you have enough{" "}
-            {network.nativeAsset.symbol} for covering the transaction?
+            <AlertTitle>Burn Amount Exceeds Balance</AlertTitle>
+            The transaction would put your super token balance into negative.
           </>
         );
       }
@@ -54,14 +55,15 @@ export default memo(function TransactionDialogErrorAlert({
         );
       }
 
-      const burnAmountExceedsBalance = mutationError.message?.includes(
-        '"execution reverted": "SuperfluidToken: burn amount exceeds balance"'
+      const unpredictableGasLimit = mutationError.message?.includes(
+        '"code": "UNPREDICTABLE_GAS_LIMIT"'
       );
-      if (burnAmountExceedsBalance) {
+      if (unpredictableGasLimit) {
         return (
           <>
-            <AlertTitle>Burn Amount Exceeds Balance</AlertTitle>
-            The transaction would put your super token balance into negative.
+            <AlertTitle>Unpredictable Gas Limit</AlertTitle>
+            Could not predict gas for the transaction. Do you have enough{" "}
+            {network.nativeAsset.symbol} for covering the transaction?
           </>
         );
       }
