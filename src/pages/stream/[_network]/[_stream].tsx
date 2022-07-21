@@ -29,6 +29,7 @@ import { useAccount } from "wagmi";
 import AddressAvatar from "../../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../../components/AddressName/AddressName";
 import CopyTooltip from "../../../components/CopyTooltip/CopyTooltip";
+import SEO from "../../../components/SEO/SEO";
 import NetworkIcon from "../../../features/network/NetworkIcon";
 import { Network, networksBySlug } from "../../../features/network/networks";
 import { subgraphApi } from "../../../features/redux/store";
@@ -43,7 +44,15 @@ import {
 } from "../../../utils/tokenUtils";
 import Page404 from "../../404";
 
-const TEXT_TO_SHARE = encodeURIComponent("Hello World");
+const TEXT_TO_SHARE =
+  encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
+
+Check out my stream here 👇`);
+
+const HASHTAGS_TO_SHARE = encodeURIComponent(
+  ["superfluid", "moneystreaming", "realtimefinance"].join(",")
+);
+
 interface StreamAccountCardProps {
   address: Address;
 }
@@ -234,9 +243,7 @@ const StreamPageContent: FC<{
     );
   }, [tokenSnapshotQuery.data]);
 
-  const urlToShare = useMemo(() => {
-    return `${window.location.origin}${window.location.pathname}?stream=${streamId}`;
-  }, [streamId]);
+  const urlToShare = `${window.location.origin}${window.location.pathname}`;
 
   const bufferSize = useMemo(() => {
     if (!streamQuery.data || streamQuery.data.currentFlowRate === "0")
@@ -285,9 +292,13 @@ const StreamPageContent: FC<{
   // TODO: This container max width should be configured in theme. Something between small and medium
   return (
     <Container maxWidth="lg">
-      <Head>
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
-      </Head>
+      <SEO
+        title="Stream | Superfluid"
+        description="I’m streaming money every second with @Superfluid_HQ! Check out my stream here!"
+        OGUrl={urlToShare}
+        OGImage={`${window.location.origin}/images/stream.jpg`}
+      />
+
       <Stack
         alignItems="center"
         gap={3}
@@ -546,7 +557,7 @@ const StreamPageContent: FC<{
             imgSrc="/icons/social/twitter.svg"
             alt="Twitter logo"
             tooltip="Share on Twitter"
-            href={`https://twitter.com/intent/tweet?text=${TEXT_TO_SHARE}&url=${encodedUrlToShare}`}
+            href={`https://twitter.com/intent/tweet?text=${TEXT_TO_SHARE}&url=${encodedUrlToShare}&hashtags=${HASHTAGS_TO_SHARE}`}
           />
           {/* <ShareButton imgSrc="/icons/social/discord.svg" alt="Discord logo" /> */}
           <ShareButton
