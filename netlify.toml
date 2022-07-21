@@ -37,35 +37,35 @@ for = "/*"
 [[redirects]]
   from = "/dashboard"
   to = "/"
-  status = 200
+  status = 301
   force = false
 
 [[redirects]]
   from = "/currencies"
   to = "/"
-  status = 200
+  status = 301
   force = false
 
 [[redirects]]
   from = "/transactions"
   to = "/"
-  status = 200
+  status = 301
   force = false
 
 [[redirects]]
   from = "/distribution"
   to = "/"
-  status = 200
+  status = 301
   force = false
 
 [[redirects]]
   from = "/activities"
   to = "/"
-  status = 200
+  status = 301
   force = false
 
 [[redirects]]
   from = "/settings"
   to = "/"
-  status = 200
+  status = 301
   force = false
