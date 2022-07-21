@@ -75,7 +75,10 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
             <ListItem sx={{ p: 0 }}>
               <ListItemAvatar>
                 {tokenQuery.data && (
-                  <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
+                  <TokenIcon
+                    tokenSymbol={tokenQuery.data.symbol}
+                    isListed={tokenQuery.data.isListed}
+                  />
                 )}
               </ListItemAvatar>
               <ListItemText
@@ -135,7 +138,10 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
         <TableCell align="right">
           <Stack direction="row" alignItems="center" justifyContent="end">
             {tokenQuery.data && (
-              <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
+              <TokenIcon
+                tokenSymbol={tokenQuery.data.symbol}
+                isListed={tokenQuery.data.isListed}
+              />
             )}
           </Stack>
         </TableCell>

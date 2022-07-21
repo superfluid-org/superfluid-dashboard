@@ -25,6 +25,7 @@ import StreamsTable from "../streamsTable/StreamsTable";
 import Ether from "../token/Ether";
 import FlowingBalance from "../token/FlowingBalance";
 import TokenIcon from "../token/TokenIcon";
+import { useTokenIsListed } from "../token/useTokenIsListed";
 
 interface SnapshotRowProps {
   lastElement?: boolean;
@@ -88,6 +89,8 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
     totalNumberOfClosedStreams,
   } = snapshot;
 
+  const isListed = useTokenIsListed(network.id, token);
+
   const realtimeBalance = rpcApi.useRealtimeBalanceQuery({
     chainId: network.id,
     accountAddress: account,
@@ -120,7 +123,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         <TableCell onClick={openTokenPage}>
           <ListItem sx={{ p: 0 }}>
             <ListItemAvatar>
-              <TokenIcon tokenSymbol={tokenSymbol} />
+              <TokenIcon tokenSymbol={tokenSymbol} isListed={!!isListed} />
             </ListItemAvatar>
             <ListItemText
               data-cy={"token-symbol"}

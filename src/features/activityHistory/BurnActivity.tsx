@@ -68,6 +68,16 @@ const BurnActivity: FC<BurnedActivity> = ({
     [nativeAsset, underlyingTokenQuery.data]
   );
 
+  const isTokenListed = useMemo(
+    () => (!!nativeAsset ? true : tokenQuery.data?.isListed),
+    [nativeAsset, tokenQuery.data]
+  );
+
+  const isUnderlyingTokenListed = useMemo(
+    () => (!!nativeAsset ? true : underlyingTokenQuery.data?.isListed),
+    [nativeAsset, underlyingTokenQuery.data]
+  );
+
   return (
     <TableRow>
       <TableCell>
@@ -92,7 +102,12 @@ const BurnActivity: FC<BurnedActivity> = ({
           <TableCell>
             <ListItem sx={{ p: 0 }}>
               <ListItemAvatar>
-                {tokenSymbol && <TokenIcon tokenSymbol={tokenSymbol} />}
+                {tokenSymbol && (
+                  <TokenIcon
+                    tokenSymbol={tokenSymbol}
+                    isListed={isTokenListed}
+                  />
+                )}
               </ListItemAvatar>
               <ListItemText
                 primary={
@@ -120,7 +135,10 @@ const BurnActivity: FC<BurnedActivity> = ({
             <ListItem sx={{ p: 0 }}>
               <ListItemAvatar>
                 {underlyingTokenSymbol && (
-                  <TokenIcon tokenSymbol={underlyingTokenSymbol} />
+                  <TokenIcon
+                    tokenSymbol={underlyingTokenSymbol}
+                    isListed={isUnderlyingTokenListed}
+                  />
                 )}
               </ListItemAvatar>
               <ListItemText
@@ -171,7 +189,10 @@ const BurnActivity: FC<BurnedActivity> = ({
               secondaryTypographyProps={{ variant: "body2mono" }}
             />
             {underlyingTokenSymbol && (
-              <TokenIcon tokenSymbol={underlyingTokenSymbol} />
+              <TokenIcon
+                tokenSymbol={underlyingTokenSymbol}
+                isListed={isUnderlyingTokenListed}
+              />
             )}
           </Stack>
         </TableCell>

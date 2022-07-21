@@ -22,6 +22,7 @@ import {
   isWrappable,
   TokenMinimal,
 } from "../redux/endpoints/tokenTypes";
+import { useTokenIsListed } from "../token/useTokenIsListed";
 
 const etherDecimalPlaces = 8;
 
@@ -52,6 +53,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
   const isSuperToken = isSuper(token);
   const isUnderlyingToken = isUnderlying(token);
   const isWrappableSuperToken = isSuperToken && isWrappable(token);
+  const isListed = useTokenIsListed(network.id, token.address);
 
   const { data: _discard, ...underlyingBalanceQuery } =
     rpcApi.useUnderlyingBalanceQuery(
@@ -91,7 +93,10 @@ export const TokenListItem: FC<TokenListItemProps> = ({
       sx={{ px: 3 }}
     >
       <ListItemAvatar>
-        <TokenIcon tokenSymbol={token.symbol}></TokenIcon>
+        <TokenIcon
+          tokenSymbol={token.symbol}
+          isListed={isUnderlyingToken || isListed}
+        />
       </ListItemAvatar>
 
       <ListItemText

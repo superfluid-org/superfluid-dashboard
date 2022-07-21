@@ -75,7 +75,10 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
             <ListItem sx={{ p: 0 }}>
               <ListItemAvatar>
                 {tokenQuery.data && (
-                  <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
+                  <TokenIcon
+                    tokenSymbol={tokenQuery.data.symbol}
+                    isListed={tokenQuery.data.isListed}
+                  />
                 )}
               </ListItemAvatar>
               <ListItemText
@@ -148,7 +151,10 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
             />
 
             {tokenQuery.data && (
-              <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
+              <TokenIcon
+                tokenSymbol={tokenQuery.data.symbol}
+                isListed={tokenQuery.data.isListed}
+              />
             )}
           </Stack>
         </TableCell>

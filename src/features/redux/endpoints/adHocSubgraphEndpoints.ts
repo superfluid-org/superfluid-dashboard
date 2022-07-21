@@ -24,10 +24,12 @@ type WrapperSuperTokenSubgraphResult = {
   id: string;
   name: string;
   symbol: string;
+  isListed: boolean;
   underlyingToken: {
     id: string;
     name: string;
     symbol: string;
+    isListed: boolean;
   };
 };
 
@@ -35,6 +37,7 @@ type NativeAssetSuperTokenSubgraphResult = {
   id: string;
   name: string;
   symbol: string;
+  isListed: boolean;
 };
 
 const nativeAssetSuperTokenSymbols = uniq(
@@ -219,10 +222,12 @@ export const adHocSubgraphEndpoints = {
                 id
                 name
                 symbol
+                isListed
                 underlyingToken {
                   id
                   name
                   symbol
+                  isListed
                 }
               }
               unlistedWrapperSuperTokens: tokens(
@@ -237,10 +242,12 @@ export const adHocSubgraphEndpoints = {
                 id
                 name
                 symbol
+                isListed
                 underlyingToken {
                   id
                   name
                   symbol
+                  isListed
                 }
               }
               nativeAssetSuperTokens: tokens(
@@ -258,6 +265,7 @@ export const adHocSubgraphEndpoints = {
                 name
                 symbol
                 underlyingAddress
+                isListed
               }
             }
           `,
@@ -282,6 +290,7 @@ export const adHocSubgraphEndpoints = {
               address: x.id,
               symbol: x.symbol,
               name: x.name,
+              isListed: x.isListed,
             },
             underlyingToken: {
               type: TokenType.NativeAssetUnderlyingToken,
@@ -306,12 +315,14 @@ export const adHocSubgraphEndpoints = {
                     address: x.id,
                     symbol: x.symbol,
                     name: x.name,
+                    isListed: x.isListed,
                   },
                   underlyingToken: {
                     type: TokenType.NativeAssetUnderlyingToken,
                     address: NATIVE_ASSET_ADDRESS,
                     symbol: network.nativeAsset.symbol,
                     name: `${network.name} Native Asset`,
+                    isListed: true,
                   },
                 };
               }
@@ -322,12 +333,14 @@ export const adHocSubgraphEndpoints = {
                   address: x.id,
                   symbol: x.symbol,
                   name: x.name,
+                  isListed: x.isListed,
                 },
                 underlyingToken: {
                   type: TokenType.ERC20UnderlyingToken,
                   address: x.underlyingToken.id,
                   symbol: x.underlyingToken.symbol,
                   name: x.underlyingToken.name,
+                  isListed: true,
                 },
               };
             });

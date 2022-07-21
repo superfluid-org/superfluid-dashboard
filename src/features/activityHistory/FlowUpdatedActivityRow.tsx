@@ -103,7 +103,10 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
             <ListItem sx={{ p: 0 }}>
               <ListItemAvatar>
                 {tokenQuery.data && (
-                  <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
+                  <TokenIcon
+                    tokenSymbol={tokenQuery.data.symbol}
+                    isListed={tokenQuery.data.isListed}
+                  />
                 )}
               </ListItemAvatar>
               <ListItemText
@@ -188,7 +191,10 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
               }}
             />
             {tokenQuery.data && (
-              <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
+              <TokenIcon
+                tokenSymbol={tokenQuery.data.symbol}
+                isListed={tokenQuery.data.isListed}
+              />
             )}
           </Stack>
         </TableCell>

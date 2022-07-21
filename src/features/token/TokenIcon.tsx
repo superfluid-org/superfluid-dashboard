@@ -30,10 +30,15 @@ const AvatarWrapper = styled("div", {
 
 interface TokenIconProps {
   tokenSymbol: string;
+  isListed?: boolean;
   size?: number;
 }
 
-const TokenIcon: FC<TokenIconProps> = ({ tokenSymbol, size = 36 }) => {
+const TokenIcon: FC<TokenIconProps> = ({
+  tokenSymbol,
+  isListed = false,
+  size = 36,
+}) => {
   const theme = useTheme();
 
   const { data: tokenManifest } = assetApiSlice.useTokenManifestQuery({
@@ -74,7 +79,22 @@ const TokenIcon: FC<TokenIconProps> = ({ tokenSymbol, size = 36 }) => {
           />
         </BorderSvg>
       )}
-      {/* {unlisted ? (
+      {isListed ? (
+        <Avatar
+          data-cy={"token-icon"}
+          alt={`${tokenSymbol} token icon`}
+          sx={{
+            width: size - (tokenManifest?.isSuperToken ? 4 : 0),
+            height: size - (tokenManifest?.isSuperToken ? 4 : 0),
+          }}
+          imgProps={{ sx: { objectFit: "contain", borderRadius: "50%" } }}
+          src={
+            tokenManifest?.svgIconPath
+              ? `https://raw.githubusercontent.com/superfluid-finance/assets/master/public/${tokenManifest.svgIconPath}`
+              : "/icons/token-default.webp"
+          }
+        />
+      ) : (
         <Avatar
           sx={{
             width: size - (tokenManifest?.isSuperToken ? 4 : 0),
@@ -83,22 +103,7 @@ const TokenIcon: FC<TokenIconProps> = ({ tokenSymbol, size = 36 }) => {
         >
           <HelpOutlineRoundedIcon />
         </Avatar>
-      ) : ( */}
-      <Avatar
-        data-cy={"token-icon"}
-        alt={`${tokenSymbol} token icon`}
-        sx={{
-          width: size - (tokenManifest?.isSuperToken ? 4 : 0),
-          height: size - (tokenManifest?.isSuperToken ? 4 : 0),
-        }}
-        imgProps={{ sx: { objectFit: "contain", borderRadius: "50%" } }}
-        src={
-          tokenManifest?.svgIconPath
-            ? `https://raw.githubusercontent.com/superfluid-finance/assets/master/public/${tokenManifest.svgIconPath}`
-            : "/icons/token-default.webp"
-        }
-      />
-      {/* )} */}
+      )}
     </AvatarWrapper>
   );
 };

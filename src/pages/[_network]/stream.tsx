@@ -36,6 +36,7 @@ import CancelStreamButton from "../../features/streamsTable/CancelStreamButton/C
 import Ether from "../../features/token/Ether";
 import FlowingBalance from "../../features/token/FlowingBalance";
 import TokenIcon from "../../features/token/TokenIcon";
+import { useTokenIsListed } from "../../features/token/useTokenIsListed";
 import withPathNetwork, { NetworkPage } from "../../hoc/withPathNetwork";
 import shortenHex from "../../utils/shortenHex";
 import {
@@ -159,6 +160,8 @@ const Stream: FC<NetworkPage> = ({ network }) => {
   const [senderAddress = "", receiverAddress, tokenAddress = ""] =
     streamId.split("-");
 
+  const isTokenListed = useTokenIsListed(network.id, tokenAddress);
+
   const streamQuery = subgraphApi.useStreamQuery({
     chainId: network.id,
     id: streamId,
@@ -177,13 +180,13 @@ const Stream: FC<NetworkPage> = ({ network }) => {
       updatedAtTimestamp: snapshotUpdatedAtTimestamp,
     } = tokenSnapshotQuery.data;
 
-    return new Date(
-      calculateMaybeCriticalAtTimestamp({
-        updatedAtTimestamp: snapshotUpdatedAtTimestamp,
-        balanceUntilUpdatedAtWei: balanceUntilUpdatedAt,
-        totalNetFlowRateWei: totalNetFlowRate,
-      }).toNumber() * 1000
-    );
+    const criticalAtTimestamp = calculateMaybeCriticalAtTimestamp({
+      updatedAtTimestamp: snapshotUpdatedAtTimestamp,
+      balanceUntilUpdatedAtWei: balanceUntilUpdatedAt,
+      totalNetFlowRateWei: totalNetFlowRate,
+    }).toNumber();
+
+    return criticalAtTimestamp ? new Date(criticalAtTimestamp * 1000) : null;
   }, [tokenSnapshotQuery.data]);
 
   const bufferSize = useMemo(() => {
@@ -282,7 +285,11 @@ const Stream: FC<NetworkPage> = ({ network }) => {
 
           <Stack direction="row" alignItems="center" gap={2}>
             {!isBelowMd && (
-              <TokenIcon tokenSymbol={tokenSymbol} size={isBelowMd ? 32 : 60} />
+              <TokenIcon
+                tokenSymbol={tokenSymbol}
+                isListed={isTokenListed}
+                size={isBelowMd ? 32 : 60}
+              />
             )}
             <Stack
               direction="row"
@@ -323,7 +330,11 @@ const Stream: FC<NetworkPage> = ({ network }) => {
               justifyContent="center"
               gap={1}
             >
-              <TokenIcon tokenSymbol={tokenSymbol} size={isBelowMd ? 32 : 60} />
+              <TokenIcon
+                tokenSymbol={tokenSymbol}
+                isListed={isTokenListed}
+                size={isBelowMd ? 32 : 60}
+              />
               <Typography
                 variant="h3"
                 color="primary"

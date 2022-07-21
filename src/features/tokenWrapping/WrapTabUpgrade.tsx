@@ -3,12 +3,15 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { BigNumber, ethers } from "ethers";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import { useRouter } from "next/router";
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
+import {
+  NATIVE_ASSET_ADDRESS,
+  SuperTokenPair,
+} from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
 import { useLayoutContext } from "../layout/LayoutContext";
@@ -30,6 +33,7 @@ import { ArrowDownIcon, WrapInputCard } from "./WrapCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 import { useConnect } from "wagmi";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
+import { useTokenIsListed } from "../token/useTokenIsListed";
 
 export const WrapTabUpgrade: FC = () => {
   const theme = useTheme();
@@ -123,6 +127,27 @@ export const WrapTabUpgrade: FC = () => {
     unlistedTokenIDs: networkCustomTokens,
   });
 
+  const tokenSelection = useMemo(() => {
+    const tokenPairs = tokenPairsQuery.data || [];
+
+    return tokenPairs
+      .reduce((allowedTokenPairs, tokenPair) => {
+        const existingPairIndex = allowedTokenPairs.findIndex(
+          (tp) =>
+            tp.underlyingToken.address === tokenPair.underlyingToken.address
+        );
+
+        if (existingPairIndex >= 0) {
+          if (tokenPair.superToken.isListed) {
+            allowedTokenPairs.splice(existingPairIndex, 1, tokenPair);
+          }
+          return allowedTokenPairs;
+        }
+        return allowedTokenPairs.concat([tokenPair]);
+      }, [] as SuperTokenPair[])
+      .map((x) => x.underlyingToken);
+  }, [tokenPairsQuery.data]);
+
   const { data: _discard2, ...underlyingBalanceQuery } =
     rpcApi.useUnderlyingBalanceQuery(
       selectedTokenPair && visibleAddress
@@ -133,6 +158,11 @@ export const WrapTabUpgrade: FC = () => {
           }
         : skipToken
     );
+
+  const isListed = useTokenIsListed(
+    network.id,
+    selectedTokenPair.superToken.address
+  );
 
   return (
     <Stack direction="column" alignItems="center">
@@ -173,7 +203,7 @@ export const WrapTabUpgrade: FC = () => {
                 token={selectedTokenPair?.underlyingToken}
                 tokenSelection={{
                   tokenPairsQuery: {
-                    data: tokenPairsQuery.data?.map((x) => x.underlyingToken),
+                    data: tokenSelection,
                     isUninitialized: tokenPairsQuery.isUninitialized,
                     isLoading: tokenPairsQuery.isLoading,
                   },
@@ -255,6 +285,7 @@ export const WrapTabUpgrade: FC = () => {
               startIcon={
                 <TokenIcon
                   tokenSymbol={selectedTokenPair.superToken.symbol}
+                  isListed={isListed}
                   size={24}
                 />
               }

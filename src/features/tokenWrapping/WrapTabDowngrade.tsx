@@ -29,6 +29,7 @@ import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 import { useConnect } from "wagmi";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
+import { useTokenIsListed } from "../token/useTokenIsListed";
 
 export const WrapTabDowngrade: FC = () => {
   const theme = useTheme();
@@ -219,6 +220,7 @@ export const WrapTabDowngrade: FC = () => {
               startIcon={
                 <TokenIcon
                   tokenSymbol={selectedTokenPair.underlyingToken.symbol}
+                  isListed={true}
                   size={24}
                 />
               }

@@ -20,11 +20,12 @@ import TokenIcon from "./TokenIcon";
 interface TokenToolbarData {
   symbol: string;
   name: string;
+  isListed: boolean;
 }
 
-const TokenToolbarData: FC<TokenToolbarData> = ({ symbol, name }) => (
+const TokenToolbarData: FC<TokenToolbarData> = ({ symbol, name, isListed }) => (
   <Stack direction="row" alignItems="center" gap={2}>
-    <TokenIcon tokenSymbol={symbol} />
+    <TokenIcon tokenSymbol={symbol} isListed={isListed} />
     <Typography variant="h3">{name}</Typography>
     <Typography variant="h4" color="text.secondary">
       {symbol}
@@ -41,7 +42,7 @@ interface TokenToolbarProps {
 const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-  const { symbol, name } = token;
+  const { symbol, name, isListed } = token;
 
   return (
     <Stack gap={3}>
@@ -52,7 +53,7 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
 
         {!isBelowMd && (
           <>
-            <TokenToolbarData symbol={symbol} name={name} />
+            <TokenToolbarData symbol={symbol} name={name} isListed={isListed} />
             <Chip
               size="small"
               label={network.name}
@@ -91,7 +92,9 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
         </Stack>
       </Stack>
 
-      {isBelowMd && <TokenToolbarData symbol={symbol} name={name} />}
+      {isBelowMd && (
+        <TokenToolbarData symbol={symbol} name={name} isListed={isListed} />
+      )}
     </Stack>
   );
 };

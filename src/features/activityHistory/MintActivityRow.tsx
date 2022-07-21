@@ -69,6 +69,16 @@ const MintActivityRow: FC<MintedActivity> = ({
     [nativeAsset, underlyingTokenQuery.data]
   );
 
+  const isTokenListed = useMemo(
+    () => (!!nativeAsset ? true : tokenQuery.data?.isListed),
+    [nativeAsset, tokenQuery.data]
+  );
+
+  const isUnderlyingTokenListed = useMemo(
+    () => (!!nativeAsset ? true : underlyingTokenQuery.data?.isListed),
+    [nativeAsset, underlyingTokenQuery.data]
+  );
+
   return (
     <TableRow>
       <TableCell>
@@ -94,7 +104,10 @@ const MintActivityRow: FC<MintedActivity> = ({
             <ListItem sx={{ p: 0 }}>
               <ListItemAvatar>
                 {underlyingTokenSymbol && (
-                  <TokenIcon tokenSymbol={underlyingTokenSymbol} />
+                  <TokenIcon
+                    tokenSymbol={underlyingTokenSymbol}
+                    isListed={isUnderlyingTokenListed}
+                  />
                 )}
               </ListItemAvatar>
               <ListItemText
@@ -123,7 +136,12 @@ const MintActivityRow: FC<MintedActivity> = ({
           <TableCell>
             <ListItem sx={{ p: 0 }}>
               <ListItemAvatar>
-                {tokenSymbol && <TokenIcon tokenSymbol={tokenSymbol} />}
+                {tokenSymbol && (
+                  <TokenIcon
+                    tokenSymbol={tokenSymbol}
+                    isListed={isTokenListed}
+                  />
+                )}
               </ListItemAvatar>
               <ListItemText
                 primary={
@@ -172,7 +190,9 @@ const MintActivityRow: FC<MintedActivity> = ({
               primaryTypographyProps={{ variant: "h7mono" }}
               secondaryTypographyProps={{ variant: "body2mono" }}
             />
-            {tokenSymbol && <TokenIcon tokenSymbol={tokenSymbol} />}
+            {tokenSymbol && (
+              <TokenIcon tokenSymbol={tokenSymbol} isListed={isTokenListed} />
+            )}
           </Stack>
         </TableCell>
       )}
