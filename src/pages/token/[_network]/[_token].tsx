@@ -69,7 +69,13 @@ const TokenPage: NextPage = () => {
     }
   }, [setRouteHandled, router.isReady, router.query._token]);
 
-  const isPageReady = routeHandled && !isAutoConnecting;
+  useEffect(() => {
+    if (!isAutoConnecting && !visibleAddress) {
+      router.push("/");
+    }
+  }, [isAutoConnecting, visibleAddress]);
+
+  const isPageReady = routeHandled && visibleAddress;
   if (!isPageReady) return <Container />;
 
   if (network && tokenAddress && visibleAddress) {
