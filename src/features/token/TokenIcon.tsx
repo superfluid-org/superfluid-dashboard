@@ -36,7 +36,7 @@ interface TokenIconProps {
 
 const TokenIcon: FC<TokenIconProps> = ({
   tokenSymbol,
-  isListed = false,
+  isListed,
   size = 36,
 }) => {
   const theme = useTheme();
@@ -79,7 +79,7 @@ const TokenIcon: FC<TokenIconProps> = ({
           />
         </BorderSvg>
       )}
-      {isListed ? (
+      {isListed !== false ? (
         <Avatar
           data-cy={"token-icon"}
           alt={`${tokenSymbol} token icon`}
