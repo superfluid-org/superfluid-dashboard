@@ -1,0 +1,1 @@
+Feature: Activity History Page tests
