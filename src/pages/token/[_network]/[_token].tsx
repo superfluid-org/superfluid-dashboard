@@ -53,6 +53,7 @@ const TokenPage: NextPage = () => {
   const [tokenAddress, setTokenAddress] = useState<string | undefined>();
   const { visibleAddress } = useVisibleAddress();
   const { isAutoConnecting } = useAutoConnect();
+  const [routeHandled, setRouteHandled] = useState(false);
 
   useEffect(() => {
     if (router.isReady) {
@@ -64,10 +65,11 @@ const TokenPage: NextPage = () => {
       setTokenAddress(
         isString(router.query._token) ? router.query._token : undefined
       );
+      setRouteHandled(true);
     }
-  }, [router.isReady, router.query._token]);
+  }, [setRouteHandled, router.isReady, router.query._token]);
 
-  const isPageReady = router.isReady && !isAutoConnecting;
+  const isPageReady = routeHandled && !isAutoConnecting;
   if (!isPageReady) return <Container />;
 
   if (network && tokenAddress && visibleAddress) {

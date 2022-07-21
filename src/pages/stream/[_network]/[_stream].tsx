@@ -41,6 +41,7 @@ import { Network, networksBySlug } from "../../../features/network/networks";
 import { isString } from "lodash";
 import { NextPage } from "next";
 import Page404 from "../../404";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 interface StreamAccountCardProps {
   address: Address;
@@ -157,28 +158,57 @@ export const getStreamPagePath = ({
 
 const StreamPage: NextPage = () => {
   const router = useRouter();
+  const [routeHandled, setRouteHandled] = useState(false);
 
   const [network, setNetwork] = useState<Network | undefined>();
   const [streamId, setStreamId] = useState<string | undefined>();
+  const [queryStreams, streamTxQuery] = subgraphApi.useLazyStreamsQuery();
 
   useEffect(() => {
     if (router.isReady) {
-      setNetwork(
-        networksBySlug.get(
-          isString(router.query._network) ? router.query._network : ""
-        )
+      const network = networksBySlug.get(
+        isString(router.query._network) ? router.query._network : ""
       );
-      setStreamId(
-        isString(router.query._stream) ? router.query._stream : undefined
-      );
-    }
-  }, [router.isReady, router.query._stream]);
+      setNetwork(network);
 
-  const isPageReady = router.isReady;
+      if (network && isString(router.query._stream)) {
+        // The "_stream" in the path can either be Subgraph ID or "{tx-log}" (txId). If it's a transaction ID then we will find the Subgraph ID.
+        const _streamSplit = router.query._stream.split("-");
+        const isTxId = _streamSplit.length === 2;
+        if (isTxId) {
+          const [transactionHash, logIndex] = _streamSplit;
+          queryStreams({
+            chainId: network.id,
+            filter: {
+              flowUpdatedEvents_: {
+                transactionHash,
+                logIndex,
+              },
+            },
+            pagination: {
+              take: 1,
+            },
+          });
+        } else {
+          setStreamId(router.query._stream.toLowerCase());
+        }
+      }
+
+      setRouteHandled(true);
+    }
+  }, [setRouteHandled, router.isReady, router.query._stream]);
+
+  if (!streamId && streamTxQuery?.data?.items?.[0]?.id) {
+    setStreamId(streamTxQuery.data.items[0].id);
+  }
+
+  const isPageReady = routeHandled && !streamTxQuery.isLoading;
   if (!isPageReady) return <Container />;
 
   if (network && streamId) {
-    return <StreamPageContent network={network} streamId={streamId} />;
+    return (
+      <StreamPageContent key={streamId} network={network} streamId={streamId} />
+    );
   } else {
     return <Page404 />;
   }
@@ -205,6 +235,27 @@ const StreamPageContent: FC<{
     chainId: network.id,
     id: `${senderAddress.toLowerCase()}-${tokenAddress.toLowerCase()}`,
   });
+
+  const { streamCreationEvent } = subgraphApi.useFlowUpdatedEventsQuery(
+    {
+      chainId: network.id,
+      order: {
+        orderDirection: "asc",
+        orderBy: "order",
+      },
+      filter: {
+        stream: streamId,
+      },
+      pagination: {
+        take: 1,
+      },
+    },
+    {
+      selectFromResult: ({ data }) => ({
+        streamCreationEvent: data?.items?.[0],
+      }),
+    }
+  );
 
   const liquidationDate = useMemo(() => {
     if (!tokenSnapshotQuery.data) return null;
@@ -483,10 +534,13 @@ const StreamPageContent: FC<{
                 : "-"
             }
           />
-          {/* <OverviewItem
-            label="Transaction ID:"
-            value={shortenHex(streamId, 6)}
-          /> */}
+          <OverviewItem
+            label="Transaction:"
+            value={
+              streamCreationEvent &&
+              shortenHex(streamCreationEvent.transactionHash, 6)
+            }
+          />
         </Stack>
 
         <Divider sx={{ maxWidth: "375px", width: "100%", my: 1 }} />
