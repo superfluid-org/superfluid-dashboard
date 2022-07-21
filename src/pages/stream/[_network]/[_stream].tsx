@@ -1,3 +1,4 @@
+import { NetworkCheckRounded } from "@mui/icons-material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
 import LinkIcon from "@mui/icons-material/Link";
@@ -21,7 +22,6 @@ import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { isString } from "lodash";
 import { NextPage } from "next";
-import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { FC, ReactElement, useEffect, useMemo, useState } from "react";
@@ -38,6 +38,7 @@ import CancelStreamButton from "../../../features/streamsTable/CancelStreamButto
 import Ether from "../../../features/token/Ether";
 import FlowingBalance from "../../../features/token/FlowingBalance";
 import TokenIcon from "../../../features/token/TokenIcon";
+import shortenHex from "../../../utils/shortenHex";
 import {
   calculateBuffer,
   calculateMaybeCriticalAtTimestamp,
@@ -177,28 +178,59 @@ export const getStreamPagePath = ({
 
 const StreamPage: NextPage = () => {
   const router = useRouter();
+  const [routeHandled, setRouteHandled] = useState(false);
 
   const [network, setNetwork] = useState<Network | undefined>();
   const [streamId, setStreamId] = useState<string | undefined>();
+  const [queryStreams, streamTxQuery] = subgraphApi.useLazyStreamsQuery();
 
   useEffect(() => {
     if (router.isReady) {
-      setNetwork(
-        networksBySlug.get(
-          isString(router.query._network) ? router.query._network : ""
-        )
+      const network = networksBySlug.get(
+        isString(router.query._network) ? router.query._network : ""
       );
-      setStreamId(
-        isString(router.query._stream) ? router.query._stream : undefined
-      );
-    }
-  }, [router.isReady, router.query._stream]);
+      setNetwork(network);
 
-  const isPageReady = router.isReady;
+      if (network && isString(router.query._stream)) {
+        // The "_stream" in the path can either be Subgraph ID or "{tx-log}" (txId). If it's a transaction ID then we will find the Subgraph ID.
+        const _streamSplit = router.query._stream.split("-");
+        const isTxId = _streamSplit.length === 2;
+        if (isTxId) {
+          const [transactionHash, logIndex] = _streamSplit;
+          // NOTE: Check V1StreamPage before changing this query.
+          queryStreams({
+            chainId: network.id,
+            filter: {
+              flowUpdatedEvents_: {
+                transactionHash,
+                logIndex,
+              },
+            },
+            pagination: {
+              take: 1,
+            },
+          }, true);
+        } else {
+          setStreamId(router.query._stream.toLowerCase());
+        }
+      }
+
+      setRouteHandled(true);
+    }
+  }, [setRouteHandled, router.isReady, router.query._stream]);
+
+  // `streamTxQuery` will have a value when it's successfully loaded. If it's unsuccessful then the logic will go to 404.
+  if (!streamId && streamTxQuery?.data?.items?.[0]?.id) {
+    setStreamId(streamTxQuery.data.items[0].id);
+  }
+
+  const isPageReady = routeHandled && !streamTxQuery.isLoading;
   if (!isPageReady) return <Container />;
 
   if (network && streamId) {
-    return <StreamPageContent network={network} streamId={streamId} />;
+    return (
+      <StreamPageContent key={streamId} network={network} streamId={streamId} />
+    );
   } else {
     return <Page404 />;
   }
@@ -243,6 +275,27 @@ const StreamPageContent: FC<{
     id: `${senderAddress.toLowerCase()}-${tokenAddress.toLowerCase()}`,
   });
 
+  const { streamCreationEvent } = subgraphApi.useFlowUpdatedEventsQuery(
+    {
+      chainId: network.id,
+      order: {
+        orderDirection: "asc",
+        orderBy: "order",
+      },
+      filter: {
+        stream: streamId,
+      },
+      pagination: {
+        take: 1,
+      },
+    },
+    {
+      selectFromResult: ({ data }) => ({
+        streamCreationEvent: data?.items?.[0],
+      }),
+    }
+  );
+
   const liquidationDate = useMemo(() => {
     if (!tokenSnapshotQuery.data) return null;
     const {
@@ -260,7 +313,13 @@ const StreamPageContent: FC<{
     );
   }, [tokenSnapshotQuery.data]);
 
-  const urlToShare = `${window.location.origin}${window.location.pathname}`;
+  const txIdOrSubgraphId = streamCreationEvent
+    ? `${streamCreationEvent.transactionHash}-${streamCreationEvent.logIndex}`
+    : streamId;
+  const urlToShare = `${window.location.origin}${getStreamPagePath({
+    network: network.slugName,
+    stream: txIdOrSubgraphId,
+  })}`;
 
   const bufferSize = useMemo(() => {
     if (!streamQuery.data || streamQuery.data.currentFlowRate === "0")
@@ -278,7 +337,7 @@ const StreamPageContent: FC<{
   }, [streamQuery.data, network]);
 
   if (
-    streamQuery.isLoading ||
+    streamQuery.isUninitialized ||
     streamQuery.isFetching ||
     tokenSnapshotQuery.isLoading ||
     tokenSnapshotQuery.isFetching
@@ -523,10 +582,13 @@ const StreamPageContent: FC<{
                 : "-"
             }
           />
-          {/* <OverviewItem
-            label="Transaction ID:"
-            value={shortenHex(streamId, 6)}
-          /> */}
+          <OverviewItem
+            label="Transaction:"
+            value={
+              streamCreationEvent &&
+              shortenHex(streamCreationEvent.transactionHash, 6)
+            }
+          />
         </Stack>
 
         <Divider sx={{ maxWidth: "375px", width: "100%", my: 1 }} />

@@ -24,7 +24,7 @@
     "@rainbow-me/rainbowkit": "^0.4.3",
     "@reduxjs/toolkit": "^1.8.2",
     "@sentry/nextjs": "^6.19.7",
-    "@superfluid-finance/sdk-core": "^0.4.4",
+    "@superfluid-finance/sdk-core": "0.5.0",
     "@superfluid-finance/sdk-redux": "0.3.1-dev.6cf4191.0",
     "axios": "^0.26.1",
     "chart.js": "^3.7.1",
@@ -50,6 +50,7 @@
     "yup": "^1.0.0-beta.4"
   },
   "devDependencies": {
+    "@badeball/cypress-cucumber-preprocessor": "latest",
     "@rsksmart/mock-web3-provider": "1.0.0",
     "@synthetixio/synpress": "latest",
     "@truffle/hdwallet-provider": "latest",
@@ -58,7 +59,6 @@
     "@types/papaparse": "^5.3.2",
     "@types/react": "^17.0.45",
     "cypress": "10.3.0",
-    "@badeball/cypress-cucumber-preprocessor": "latest",
     "eslint": "^8.16.0",
     "eslint-config-next": "^12.1.6",
     "typescript": "^4.7.2"

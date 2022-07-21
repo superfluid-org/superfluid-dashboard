@@ -3,6 +3,7 @@ import {
   RainbowKitProvider,
   darkTheme,
   lightTheme,
+  DisclaimerComponent,
 } from "@rainbow-me/rainbowkit";
 import { createClient as createWagmiClient, WagmiConfig } from "wagmi";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -39,6 +40,17 @@ const WagmiManager: FC = ({ children }) => {
 
 export default WagmiManager;
 
+const Disclaimer: DisclaimerComponent = ({ Text, Link }) => (
+  <Text>
+    By connecting your wallet, you accept our{" "}
+    <Link href="https://www.superfluid.finance/termsofuse/">Terms of Use</Link>
+    {" and "}
+    <Link href="https://www.iubenda.com/privacy-policy/34415583/legal">
+      Privacy Policy
+    </Link>
+  </Text>
+);
+
 export const RainbowKitManager: FC = ({ children }) => {
   const muiTheme = useTheme();
   const { network } = useExpectedNetwork();
@@ -47,6 +59,7 @@ export const RainbowKitManager: FC = ({ children }) => {
       chains={chains}
       initialChain={network.id}
       avatar={AddressAvatar}
+      appInfo={{ disclaimer: Disclaimer }}
       theme={
         muiTheme.palette.mode === "dark"
           ? darkTheme({

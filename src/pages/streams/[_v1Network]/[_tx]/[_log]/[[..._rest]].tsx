@@ -22,25 +22,30 @@ const V1StreamPage: NextPage = () => {
       );
 
       if (network && isString(_tx) && isString(_log)) {
-        queryStreams({
-          chainId: network.id,
-          filter: {
-            flowUpdatedEvents_: {
-              transactionHash: _tx.toLowerCase(),
-              logIndex: _log.toLowerCase(),
+        // NOTE: Check StreamPage before changing this query.
+        queryStreams(
+          {
+            chainId: network.id,
+            filter: {
+              flowUpdatedEvents_: {
+                transactionHash: _tx.toLowerCase(),
+                logIndex: _log.toLowerCase(),
+              },
+            },
+            pagination: {
+              take: 1,
             },
           },
-          pagination: {
-            take: 1,
-          },
-        })
+          true
+        )
           .then((result) => {
             const stream = result.data?.items?.[0];
             if (stream) {
+              const txId = `${_tx}-${_log}`;
               router.replace(
                 getStreamPagePath({
                   network: network.slugName,
-                  stream: stream.id,
+                  stream: txId,
                 })
               );
             } else {

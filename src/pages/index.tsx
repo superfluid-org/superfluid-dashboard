@@ -3,6 +3,8 @@ import {
   Box,
   Button,
   Container,
+  Divider,
+  Link,
   Stack,
   Typography,
   useTheme,
@@ -39,7 +41,7 @@ const ConnectView: FC = () => {
       sx={{
         pt: 6,
         [theme.breakpoints.down("md")]: {
-          pt: 8,
+          pt: 2,
         },
       }}
     >
@@ -84,7 +86,23 @@ const ConnectView: FC = () => {
             />
           </Stack>
         </Box>
+
+        <Divider sx={{ mt: 6, mb: 4.5 }} />
       </Box>
+
+      <Typography variant="h7" color="secondary" textAlign="center">
+        By connecting your wallet, you accept our{" "}
+        <Link href="https://www.superfluid.finance/termsofuse/" target="_blank">
+          Terms of Use
+        </Link>
+        {" and "}
+        <Link
+          href="https://www.iubenda.com/privacy-policy/34415583/legal"
+          target="_blank"
+        >
+          Privacy Policy
+        </Link>
+      </Typography>
     </Stack>
   );
 };

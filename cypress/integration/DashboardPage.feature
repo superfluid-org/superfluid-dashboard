@@ -21,8 +21,8 @@ Feature: Dashboard Page test cases
     Then "gnosis" balances are not visible
     And User clicks on the "polygon" toggle
     Then "polygon" balances are not visible
-    And User clicks on the "optimism-mainnet" toggle
-    Then "optimism-mainnet" balances are not visible
+    And User clicks on the "optimism" toggle
+    Then "optimism" balances are not visible
     And User clicks on the "arbitrum-one" toggle
     Then "arbitrum-one" balances are not visible
     #This should be updated to show "no networks selected message" instead of no balances
