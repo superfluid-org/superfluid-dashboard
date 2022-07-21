@@ -33,3 +33,39 @@ for = "/*"
   to = "/token/[_network]/[_token].html"
   status = 200
   force = false
+
+[[redirects]]
+  from = "/dashboard"
+  to = "/"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/currencies"
+  to = "/"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/transactions"
+  to = "/"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/distribution"
+  to = "/"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/activities"
+  to = "/"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/settings"
+  to = "/"
+  status = 200
+  force = false
