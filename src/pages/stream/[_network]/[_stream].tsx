@@ -218,6 +218,7 @@ const StreamPage: NextPage = () => {
     }
   }, [setRouteHandled, router.isReady, router.query._stream]);
 
+  // `streamTxQuery` will have a value when it's successfully loaded. If it's unsuccessful then the logic will go to 404.
   if (!streamId && streamTxQuery?.data?.items?.[0]?.id) {
     setStreamId(streamTxQuery.data.items[0].id);
   }
