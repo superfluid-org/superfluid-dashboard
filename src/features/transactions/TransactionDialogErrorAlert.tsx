@@ -25,7 +25,8 @@ export default memo(function TransactionDialogErrorAlert({
       // NOTE: Sometimes errors are nested in each other. Check for the most specific one first.
 
       const didUserRejectTransaction =
-        mutationError.message?.includes('"code": 4001');
+        mutationError.message?.includes('"code": 4001') || // MetaMask error version
+        mutationError.message?.includes("User rejected the transaction"); // WalletConnect error version
       if (didUserRejectTransaction) {
         return "Transaction Rejected";
       }
