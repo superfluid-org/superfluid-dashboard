@@ -38,6 +38,7 @@ import TransferEventsTable from "../../../features/transfers/TransferEventsTable
 import { useVisibleAddress } from "../../../features/wallet/VisibleAddressContext";
 import { NextPage } from "next";
 import Page404 from "../../404";
+import useNavigateBack from "../../../hooks/useNavigateBack";
 
 export const getTokenPagePath = ({
   network,
@@ -110,6 +111,7 @@ const TokenPageContent: FC<{
   const [activeTab, setActiveTab] = useState(TokenDetailsTabs.Streams);
   const [graphType, setGraphType] = useState(GraphType.All);
   const [showForecast, setShowForecast] = useState(true);
+  const navigateBack = useNavigateBack();
 
   const { data: _discard, ...realTimeBalanceQuery } =
     rpcApi.useRealtimeBalanceQuery({
@@ -131,8 +133,6 @@ const TokenPageContent: FC<{
 
   const onShowForecastChange = (_e: unknown, checked: boolean) =>
     setShowForecast(checked);
-
-  const handleBack = () => router.back();
 
   if (tokenQuery.isLoading || tokenSnapshotQuery.isLoading) {
     return <Container />;
@@ -169,7 +169,7 @@ const TokenPageContent: FC<{
         <TokenToolbar
           token={tokenQuery.currentData}
           network={network}
-          onBack={handleBack}
+          onBack={navigateBack}
         />
 
         <Card

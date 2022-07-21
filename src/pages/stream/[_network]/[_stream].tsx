@@ -1,4 +1,3 @@
-import { NetworkCheckRounded } from "@mui/icons-material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
 import LinkIcon from "@mui/icons-material/Link";
@@ -38,6 +37,7 @@ import CancelStreamButton from "../../../features/streamsTable/CancelStreamButto
 import Ether from "../../../features/token/Ether";
 import FlowingBalance from "../../../features/token/FlowingBalance";
 import TokenIcon from "../../../features/token/TokenIcon";
+import useNavigateBack from "../../../hooks/useNavigateBack";
 import shortenHex from "../../../utils/shortenHex";
 import {
   calculateBuffer,
@@ -198,18 +198,21 @@ const StreamPage: NextPage = () => {
         if (isTxId) {
           const [transactionHash, logIndex] = _streamSplit;
           // NOTE: Check V1StreamPage before changing this query.
-          queryStreams({
-            chainId: network.id,
-            filter: {
-              flowUpdatedEvents_: {
-                transactionHash,
-                logIndex,
+          queryStreams(
+            {
+              chainId: network.id,
+              filter: {
+                flowUpdatedEvents_: {
+                  transactionHash,
+                  logIndex,
+                },
+              },
+              pagination: {
+                take: 1,
               },
             },
-            pagination: {
-              take: 1,
-            },
-          }, true);
+            true
+          );
         } else {
           setStreamId(router.query._stream.toLowerCase());
         }
@@ -242,8 +245,8 @@ const StreamPageContent: FC<{
 }> = ({ network, streamId }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-  const router = useRouter();
   const { address: accountAddress } = useAccount();
+  const navigateBack = useNavigateBack();
 
   const [senderAddress = "", receiverAddress, tokenAddress = ""] =
     streamId.split("-");
@@ -332,8 +335,6 @@ const StreamPageContent: FC<{
     return <Page404 />;
   }
 
-  const handleBack = () => router.back();
-
   const {
     streamedUntilUpdatedAt,
     currentFlowRate,
@@ -377,7 +378,7 @@ const StreamPageContent: FC<{
           }}
         >
           <Box>
-            <IconButton color="inherit" onClick={handleBack}>
+            <IconButton color="inherit" onClick={navigateBack}>
               <ArrowBackIcon />
             </IconButton>
           </Box>
