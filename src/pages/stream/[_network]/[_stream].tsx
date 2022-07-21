@@ -24,7 +24,7 @@ import { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, ReactElement, useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import AddressAvatar from "../../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../../components/AddressName/AddressName";
@@ -204,6 +204,23 @@ const StreamPage: NextPage = () => {
   }
 };
 
+const StreamPageWrapper: FC<{
+  urlToShare: string;
+  children?: ReactElement<any, any>;
+}> = ({ urlToShare, children }) => {
+  return (
+    <Container maxWidth="lg">
+      <SEO
+        title="Stream | Superfluid"
+        description="I’m streaming money every second with @Superfluid_HQ! Check out my stream here!"
+        OGUrl={urlToShare}
+        OGImage={`${window.location.origin}/images/stream.jpg`}
+      />
+      {children}
+    </Container>
+  );
+};
+
 const StreamPageContent: FC<{
   network: Network;
   streamId: string;
@@ -266,7 +283,7 @@ const StreamPageContent: FC<{
     tokenSnapshotQuery.isLoading ||
     tokenSnapshotQuery.isFetching
   ) {
-    return <Container />;
+    return <StreamPageWrapper urlToShare={urlToShare} />;
   }
 
   if (!streamQuery.data || !tokenSnapshotQuery.data) {
@@ -291,14 +308,7 @@ const StreamPageContent: FC<{
 
   // TODO: This container max width should be configured in theme. Something between small and medium
   return (
-    <Container maxWidth="lg">
-      <SEO
-        title="Stream | Superfluid"
-        description="I’m streaming money every second with @Superfluid_HQ! Check out my stream here!"
-        OGUrl={urlToShare}
-        OGImage={`${window.location.origin}/images/stream.jpg`}
-      />
-
+    <StreamPageWrapper urlToShare={urlToShare}>
       <Stack
         alignItems="center"
         gap={3}
@@ -568,7 +578,7 @@ const StreamPageContent: FC<{
           />
         </Stack>
       </Stack>
-    </Container>
+    </StreamPageWrapper>
   );
 };
 
