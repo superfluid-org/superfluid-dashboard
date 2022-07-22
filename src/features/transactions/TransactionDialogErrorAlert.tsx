@@ -26,7 +26,8 @@ export default memo(function TransactionDialogErrorAlert({
 
       const didUserRejectTransaction =
         mutationError.message?.includes('"code": 4001') || // MetaMask error version
-        mutationError.message?.includes("User rejected the transaction"); // WalletConnect error version
+        mutationError.message?.includes("User rejected the transaction") || // WalletConnect error version
+        mutationError.message?.includes("Transaction was rejected"); // Gnosis Safe error version
       if (didUserRejectTransaction) {
         return "Transaction Rejected";
       }
