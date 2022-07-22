@@ -24,7 +24,7 @@ export const BalanceSuperToken: FC<{
       ) : superBalanceQuery.isUninitialized || superBalanceQuery.isLoading ? (
         ""
       ) : !superBalanceQuery.data ? (
-        <Ether wei="0" />
+        <Ether wei="0" decimals={18} />
       ) : (
         <FlowingBalance
           balance={superBalanceQuery.data.balance}

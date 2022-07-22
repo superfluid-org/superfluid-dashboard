@@ -518,6 +518,7 @@ const StreamPageContent: FC<{
             <Typography variant="h6">
               <Ether
                 wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
+                decimals={18}
               />
             </Typography>
 
@@ -551,7 +552,7 @@ const StreamPageContent: FC<{
             value={
               bufferSize ? (
                 <>
-                  <Ether wei={bufferSize} /> {tokenSymbol}
+                  <Ether wei={bufferSize} decimals={18} /> {tokenSymbol}
                 </>
               ) : (
                 "-"

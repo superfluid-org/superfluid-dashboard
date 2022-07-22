@@ -43,9 +43,9 @@ export const TokenListItem: FC<TokenListItemProps> = ({
   token,
   showUpgrade,
   balanceWei,
-  balanceTimestamp,
   flowRate,
   onClick,
+  ...props
 }) => {
   const { network } = useExpectedNetwork();
 
@@ -79,8 +79,9 @@ export const TokenListItem: FC<TokenListItemProps> = ({
     ? realtimeBalanceQuery?.currentData?.balance || balanceWei
     : underlyingBalanceQuery?.currentData?.balance || balanceWei;
 
-  const balanceTS =
-    realtimeBalanceQuery?.currentData?.balanceTimestamp || balanceTimestamp;
+  const balanceTimestamp =
+    realtimeBalanceQuery?.currentData?.balanceTimestamp ||
+    props.balanceTimestamp;
 
   const fRate = realtimeBalanceQuery?.currentData?.flowRate || flowRate;
 
@@ -109,14 +110,18 @@ export const TokenListItem: FC<TokenListItemProps> = ({
       >
         {!!accountAddress &&
           checkedBalanceWei &&
-          (balanceTS && fRate ? (
+          (balanceTimestamp && fRate ? (
             <FlowingBalance
               balance={checkedBalanceWei}
-              balanceTimestamp={balanceTS}
+              balanceTimestamp={balanceTimestamp}
               flowRate={fRate}
             />
           ) : (
-            <Ether wei={checkedBalanceWei} roundingIndicator="~" />
+            <Ether
+              wei={checkedBalanceWei}
+              decimals={token.decimals}
+              roundingIndicator="~"
+            />
           ))}
         {showUpgrade && isWrappableSuperToken && (
           <Link

@@ -250,6 +250,7 @@ const TokenPageContent: FC<{
                       wei={BigNumber.from(totalInflowRate).mul(
                         UnitOfTime.Month
                       )}
+                      decimals={18}
                     />
                     {` /mo`}
                   </Typography>
@@ -262,6 +263,7 @@ const TokenPageContent: FC<{
                       wei={BigNumber.from(totalOutflowRate).mul(
                         UnitOfTime.Month
                       )}
+                      decimals={18}
                     />
                     {` /mo`}
                   </Typography>

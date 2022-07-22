@@ -100,7 +100,7 @@ const BurnActivity: FC<BurnedActivity> = ({
                   primary={
                     <>
                       -
-                      <Ether wei={amount} decimals={superToken.decimals}>
+                      <Ether wei={amount} decimals={18}>
                         {" "}
                         {superToken.symbol}
                       </Ether>
@@ -181,7 +181,7 @@ const BurnActivity: FC<BurnedActivity> = ({
                 secondary={
                   <>
                     -
-                    <Ether wei={amount} decimals={superToken.decimals}>
+                    <Ether wei={amount} decimals={18}>
                       {" "}
                       {superToken.symbol}
                     </Ether>

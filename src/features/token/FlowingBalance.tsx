@@ -111,6 +111,7 @@ export default memo(function FlowingBalance({
     >
       <Ether
         wei={weiValue}
+        decimals={18}
         etherDecimalPlaces={etherSignificantFlowingDecimal}
       />{" "}
       {tokenSymbol}

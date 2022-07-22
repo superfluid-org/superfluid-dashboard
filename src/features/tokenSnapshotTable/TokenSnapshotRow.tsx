@@ -176,6 +176,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                   {netFlowRate.charAt(0) !== "-" && "+"}
                   <Ether
                     wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
+                    decimals={18}
                   >
                     /mo
                   </Ether>
@@ -198,6 +199,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                       wei={BigNumber.from(totalInflowRate).mul(
                         UnitOfTime.Month
                       )}
+                      decimals={18}
                     />
                     /mo
                   </Typography>
@@ -211,6 +213,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                       wei={BigNumber.from(totalOutflowRate).mul(
                         UnitOfTime.Month
                       )}
+                      decimals={18}
                     />
                     /mo
                   </Typography>
@@ -241,6 +244,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                     {netFlowRate.charAt(0) !== "-" && "+"}
                     <Ether
                       wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
+                      decimals={18}
                     >
                       /mo
                     </Ether>

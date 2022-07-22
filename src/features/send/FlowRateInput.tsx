@@ -48,12 +48,12 @@ export const flowRateWeiToString = (
   tokenSymbol?: string
 ) =>
   tokenSymbol ? (
-    <Ether wei={flowRateWei.amountWei}>
+    <Ether wei={flowRateWei.amountWei} decimals={18}>
       {" "}
       {tokenSymbol}/{timeUnitWordMap[flowRateWei.unitOfTime]}
     </Ether>
   ) : (
-    <Ether wei={flowRateWei.amountWei}>
+    <Ether wei={flowRateWei.amountWei} decimals={18}>
       /{timeUnitWordMap[flowRateWei.unitOfTime]}
     </Ether>
   );
@@ -108,7 +108,7 @@ export const FlowRateInput: FC<{
         autoComplete="off"
         autoCorrect="off"
         placeholder="0.0"
-        value={flowRate.amountEther}  
+        value={flowRate.amountEther}
         onBlur={onFlowRateBlur}
         onFocus={onFlowRateFocus}
         onChange={(e) => {

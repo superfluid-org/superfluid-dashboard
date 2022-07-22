@@ -27,6 +27,7 @@ type WrapperSuperTokenSubgraphResult = {
     id: string;
     name: string;
     symbol: string;
+    decimals: number;
   };
 };
 
@@ -179,7 +180,7 @@ export const adHocSubgraphEndpoints = {
         return {
           data: response.result.map((x) => {
             if (x.token.address === networkNativeAssetSuperTokenAddress) {
-              return network.nativeCurrency.superToken;
+              return { ...network.nativeCurrency.superToken, decimals: 18 };
             }
 
             return {
@@ -187,6 +188,7 @@ export const adHocSubgraphEndpoints = {
               address: x.token.address,
               name: x.token.name,
               symbol: x.token.symbol,
+              decimals: 18,
             };
           }),
         };
@@ -221,6 +223,7 @@ export const adHocSubgraphEndpoints = {
                   id
                   name
                   symbol
+                  decimals
                 }
               }
               nativeAssetSuperTokens: tokens(
@@ -254,12 +257,14 @@ export const adHocSubgraphEndpoints = {
               address: x.id,
               symbol: x.symbol,
               name: x.name,
+              decimals: 18,
             },
             underlyingToken: {
               type: TokenType.NativeAssetUnderlyingToken,
               address: NATIVE_ASSET_ADDRESS,
               symbol: network.nativeCurrency.symbol,
               name: `${network.name} Native Asset`,
+              decimals: network.nativeCurrency.decimals,
             },
           }));
 
@@ -276,12 +281,14 @@ export const adHocSubgraphEndpoints = {
                   address: x.id,
                   symbol: x.symbol,
                   name: x.name,
+                  decimals: 18,
                 },
                 underlyingToken: {
                   type: TokenType.NativeAssetUnderlyingToken,
                   address: NATIVE_ASSET_ADDRESS,
                   symbol: network.nativeCurrency.symbol,
                   name: `${network.name} Native Asset`,
+                  decimals: network.nativeCurrency.decimals,
                 },
               };
             }
@@ -292,12 +299,14 @@ export const adHocSubgraphEndpoints = {
                 address: x.id,
                 symbol: x.symbol,
                 name: x.name,
+                decimals: 18,
               },
               underlyingToken: {
                 type: TokenType.ERC20UnderlyingToken,
                 address: x.underlyingToken.id,
                 symbol: x.underlyingToken.symbol,
                 name: x.underlyingToken.name,
+                decimals: x.underlyingToken.decimals,
               },
             };
           }

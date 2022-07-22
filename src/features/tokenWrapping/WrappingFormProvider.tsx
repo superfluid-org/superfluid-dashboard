@@ -64,12 +64,14 @@ const WrappingFormProvider: FC<{
                 address: string().required().test(testAddress()),
                 name: string().required(),
                 symbol: string().required(),
+                decimals: number().required(),
               }).required(),
               underlyingToken: object({
                 type: number().required(),
                 address: string().required().test(testAddress()),
                 name: string().required(),
                 symbol: string().required(),
+                decimals: number().required(),
               }).required(),
             }).required(),
             amountEther: string()

@@ -233,6 +233,7 @@ export const WrapTabDowngrade: FC = () => {
                 chainId={network.id}
                 accountAddress={visibleAddress}
                 tokenAddress={selectedTokenPair.underlyingToken.address}
+                decimals={selectedTokenPair.underlyingToken.decimals}
               />
             </Stack>
           )}

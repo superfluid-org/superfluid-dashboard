@@ -117,6 +117,7 @@ export default memo(function SendCard() {
         address: x.id,
         name: x.name,
         symbol: x.symbol,
+        decimals: 18,
       })),
     [superTokensQuery.data, network]
   );

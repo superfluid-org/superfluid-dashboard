@@ -200,6 +200,7 @@ export const WrapTabUpgrade: FC = () => {
               chainId={network.id}
               accountAddress={visibleAddress}
               tokenAddress={selectedTokenPair.underlyingToken.address}
+              decimals={selectedTokenPair.underlyingToken.decimals}
             />
             {underlyingBalanceQuery.currentData && (
               <Controller
@@ -356,7 +357,8 @@ export const WrapTabUpgrade: FC = () => {
             // In Gnosis Safe, Ether's estimateGas is flaky for native assets.
             const isGnosisSafe = activeConnector?.id === "safe";
             const isNativeAssetSuperToken =
-              formData.tokenUpgrade.underlyingToken.address === NATIVE_ASSET_ADDRESS;
+              formData.tokenUpgrade.underlyingToken.address ===
+              NATIVE_ASSET_ADDRESS;
             if (isGnosisSafe && isNativeAssetSuperToken) {
               overrides.gasLimit = 500_000;
             }

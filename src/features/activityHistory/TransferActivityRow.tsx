@@ -72,33 +72,33 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
       {!isBelowMd ? (
         <>
           <TableCell>
-            <ListItem sx={{ p: 0 }}>
-              <ListItemAvatar>
-                {tokenQuery.data && (
+            {tokenQuery.data && (
+              <ListItem sx={{ p: 0 }}>
+                <ListItemAvatar>
                   <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
-                )}
-              </ListItemAvatar>
-              <ListItemText
-                primary={
-                  <Ether wei={value}>
-                    {" "}
-                    {tokenQuery.data && tokenQuery.data.symbol}
-                  </Ether>
-                }
-                /**
-                 * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-                 * This is just used to make table row look better
-                 */
-                primaryTypographyProps={{
-                  variant: "h6mono",
-                  sx: { lineHeight: "46px" },
-                }}
-                secondaryTypographyProps={{
-                  variant: "body2mono",
-                  color: "text.secondary",
-                }}
-              />
-            </ListItem>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={
+                    <Ether wei={value} decimals={tokenQuery.data.decimals}>
+                      {" "}
+                      {tokenQuery.data.symbol}
+                    </Ether>
+                  }
+                  /**
+                   * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
+                   * This is just used to make table row look better
+                   */
+                  primaryTypographyProps={{
+                    variant: "h6mono",
+                    sx: { lineHeight: "46px" },
+                  }}
+                  secondaryTypographyProps={{
+                    variant: "body2mono",
+                    color: "text.secondary",
+                  }}
+                />
+              </ListItem>
+            )}
           </TableCell>
           <TableCell>
             <ListItem sx={{ p: 0 }}>
@@ -135,22 +135,21 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
         </>
       ) : (
         <TableCell align="right">
-          <Stack direction="row" alignItems="center" gap={2}>
-            <ListItemText
-              primary={
-                <Ether wei={value}>
-                  {" "}
-                  {tokenQuery.data && tokenQuery.data.symbol}
-                </Ether>
-              }
-              primaryTypographyProps={{ variant: "h7mono" }}
-              secondaryTypographyProps={{ variant: "body2mono" }}
-            />
-
-            {tokenQuery.data && (
+          {tokenQuery.data && (
+            <Stack direction="row" alignItems="center" gap={2}>
+              <ListItemText
+                primary={
+                  <Ether wei={value} decimals={tokenQuery.data.decimals}>
+                    {" "}
+                    {tokenQuery.data.symbol}
+                  </Ether>
+                }
+                primaryTypographyProps={{ variant: "h7mono" }}
+                secondaryTypographyProps={{ variant: "body2mono" }}
+              />
               <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
-            )}
-          </Stack>
+            </Stack>
+          )}
         </TableCell>
       )}
     </TableRow>

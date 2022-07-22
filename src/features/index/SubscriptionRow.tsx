@@ -137,7 +137,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({ subscription }) => {
         <>
           <TableCell>
             <Typography variant="h7mono">
-              <Ether wei={amountReceived} />
+              <Ether wei={amountReceived} decimals={18} />
             </Typography>
           </TableCell>
           <TableCell>
@@ -155,7 +155,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({ subscription }) => {
       ) : (
         <TableCell align="right">
           <ListItemText
-            primary={<Ether wei={amountReceived} />}
+            primary={<Ether wei={amountReceived} decimals={18} />}
             secondary={subscription.approved ? "Approved" : "Awaiting Approval"}
             primaryTypographyProps={{ variant: "h7mono" }}
             secondaryTypographyProps={{

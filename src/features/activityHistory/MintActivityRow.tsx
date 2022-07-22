@@ -131,7 +131,7 @@ const MintActivityRow: FC<MintedActivity> = ({
                   primary={
                     <>
                       +
-                      <Ether wei={amount} decimals={superToken.decimals}>
+                      <Ether wei={amount} decimals={18}>
                         {" "}
                         {superToken.symbol}
                       </Ether>
@@ -170,7 +170,7 @@ const MintActivityRow: FC<MintedActivity> = ({
                 primary={
                   <>
                     +
-                    <Ether wei={amount} decimals={superToken.decimals}>
+                    <Ether wei={amount} decimals={18}>
                       {" "}
                       {superToken.symbol}
                     </Ether>
