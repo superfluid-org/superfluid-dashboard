@@ -37,7 +37,7 @@ type NativeAssetSuperTokenSubgraphResult = {
 };
 
 const nativeAssetSuperTokenSymbols = uniq(
-  networks.map((x) => x.nativeAsset.superToken.symbol)
+  networks.map((x) => x.nativeCurrency.superToken.symbol)
 );
 
 export const adHocSubgraphEndpoints = {
@@ -174,12 +174,12 @@ export const adHocSubgraphEndpoints = {
 
         const network = networksByChainId.get(arg.chainId)!;
         const networkNativeAssetSuperTokenAddress =
-          network.nativeAsset.superToken.address.toLowerCase();
+          network.nativeCurrency.superToken.address.toLowerCase();
 
         return {
           data: response.result.map((x) => {
             if (x.token.address === networkNativeAssetSuperTokenAddress) {
-              return network.nativeAsset.superToken;
+              return network.nativeCurrency.superToken;
             }
 
             return {
@@ -258,13 +258,13 @@ export const adHocSubgraphEndpoints = {
             underlyingToken: {
               type: TokenType.NativeAssetUnderlyingToken,
               address: NATIVE_ASSET_ADDRESS,
-              symbol: network.nativeAsset.symbol,
+              symbol: network.nativeCurrency.symbol,
               name: `${network.name} Native Asset`,
             },
           }));
 
         const nativeAssetSuperTokenAddress =
-          network.nativeAsset.superToken.address.toLowerCase();
+          network.nativeCurrency.superToken.address.toLowerCase();
 
         const wrapperSuperTokenPairs: SuperTokenPair[] = wrapperSuperTokens.map(
           (x) => {
@@ -280,7 +280,7 @@ export const adHocSubgraphEndpoints = {
                 underlyingToken: {
                   type: TokenType.NativeAssetUnderlyingToken,
                   address: NATIVE_ASSET_ADDRESS,
-                  symbol: network.nativeAsset.symbol,
+                  symbol: network.nativeCurrency.symbol,
                   name: `${network.name} Native Asset`,
                 },
               };
@@ -329,7 +329,7 @@ export const getSuperTokenType = (arg: {
 }) => {
   if (
     arg.address.toLowerCase() ===
-    arg.network.nativeAsset.superToken.address.toLowerCase()
+    arg.network.nativeCurrency.superToken.address.toLowerCase()
   ) {
     return TokenType.NativeAssetSuperToken;
   } else if (

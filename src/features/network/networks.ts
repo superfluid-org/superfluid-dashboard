@@ -18,8 +18,8 @@ export type Network = Chain & {
   icon?: string;
   color: string;
   bufferTimeInMinutes: number; // Hard-code'ing this per network is actually incorrect approach. It's token-based and can be governed.
-  nativeAsset: {
-    symbol: string;
+  rpcUrls: Chain["rpcUrls"] & { superfluid: string };
+  nativeCurrency: Chain["nativeCurrency"] & {
     superToken: {
       type: TokenType.NativeAssetSuperToken;
       symbol: string;
@@ -27,8 +27,6 @@ export type Network = Chain & {
       address: string;
     };
   };
-  rpcUrls: Chain["rpcUrls"] & { superfluid: string };
-  nativeCurrency: Chain["nativeCurrency"];
 };
 
 const superfluidRpcUrls = {
@@ -83,7 +81,6 @@ export const networks: Network[] = [
   {
     ...chain.ropsten,
     blockExplorers: ensureDefined(chain.ropsten.blockExplorers),
-    nativeCurrency: ensureDefined(chain.ropsten.nativeCurrency),
     slugName: "ropsten",
     v1ShortName: "ropsten",
     bufferTimeInMinutes: 60,
@@ -98,8 +95,8 @@ export const networks: Network[] = [
       `https://ropsten.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://ropsten.etherscan.io/address/${address}`,
-    nativeAsset: {
-      symbol: "ETH",
+    nativeCurrency: {
+      ...ensureDefined(chain.ropsten.nativeCurrency),
       superToken: {
         type: TokenType.NativeAssetSuperToken,
         symbol: "ETHx",
@@ -111,7 +108,6 @@ export const networks: Network[] = [
   {
     ...chain.rinkeby,
     blockExplorers: ensureDefined(chain.rinkeby.blockExplorers),
-    nativeCurrency: ensureDefined(chain.rinkeby.nativeCurrency),
     slugName: "rinkeby",
     v1ShortName: "rinkeby",
     color: "#ff4a8d",
@@ -126,8 +122,8 @@ export const networks: Network[] = [
       `https://rinkeby.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://rinkeby.etherscan.io/address/${address}`,
-    nativeAsset: {
-      symbol: "ETH",
+    nativeCurrency: {
+      ...ensureDefined(chain.rinkeby.nativeCurrency),
       superToken: {
         type: TokenType.NativeAssetSuperToken,
         symbol: "ETHx",
@@ -139,7 +135,6 @@ export const networks: Network[] = [
   {
     ...chain.goerli,
     blockExplorers: ensureDefined(chain.goerli.blockExplorers),
-    nativeCurrency: ensureDefined(chain.goerli.nativeCurrency),
     slugName: "goerli",
     v1ShortName: "goerli",
     bufferTimeInMinutes: 60,
@@ -154,8 +149,8 @@ export const networks: Network[] = [
       `https://goerli.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://goerli.etherscan.io/address/${address}`,
-    nativeAsset: {
-      symbol: "ETH",
+    nativeCurrency: {
+      ...ensureDefined(chain.goerli.nativeCurrency),
       superToken: {
         type: TokenType.NativeAssetSuperToken,
         symbol: "ETHx",
@@ -167,7 +162,6 @@ export const networks: Network[] = [
   {
     ...chain.kovan,
     blockExplorers: ensureDefined(chain.kovan.blockExplorers),
-    nativeCurrency: ensureDefined(chain.kovan.nativeCurrency),
     slugName: "kovan",
     v1ShortName: "kovan",
     bufferTimeInMinutes: 60,
@@ -182,8 +176,8 @@ export const networks: Network[] = [
       `https://kovan.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://kovan.etherscan.io/address/${address}`,
-    nativeAsset: {
-      symbol: "ETH",
+    nativeCurrency: {
+      ...ensureDefined(chain.kovan.nativeCurrency),
       superToken: {
         type: TokenType.NativeAssetSuperToken,
         symbol: "ETHx",
@@ -220,9 +214,6 @@ export const networks: Network[] = [
       name: "xDai",
       symbol: "XDAI",
       decimals: 18,
-    },
-    nativeAsset: {
-      symbol: "xDai",
       superToken: {
         type: TokenType.NativeAssetSuperToken,
         symbol: "xDAIx",
@@ -234,7 +225,6 @@ export const networks: Network[] = [
   {
     ...chain.polygon,
     blockExplorers: ensureDefined(chain.polygon.blockExplorers),
-    nativeCurrency: ensureDefined(chain.polygon.nativeCurrency),
     slugName: "polygon",
     v1ShortName: "matic",
     bufferTimeInMinutes: 240,
@@ -250,8 +240,8 @@ export const networks: Network[] = [
       `https://polygonscan.com/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://polygonscan.com/address/${address}`,
-    nativeAsset: {
-      symbol: "MATIC",
+    nativeCurrency: {
+      ...ensureDefined(chain.polygon.nativeCurrency),
       superToken: {
         type: TokenType.NativeAssetSuperToken,
         symbol: "MATICx",
@@ -263,7 +253,6 @@ export const networks: Network[] = [
   {
     ...chain.polygonMumbai,
     blockExplorers: ensureDefined(chain.polygonMumbai.blockExplorers),
-    nativeCurrency: ensureDefined(chain.polygonMumbai.nativeCurrency),
     slugName: "polygon-mumbai",
     v1ShortName: "mumbai",
     bufferTimeInMinutes: 60,
@@ -278,8 +267,8 @@ export const networks: Network[] = [
       `https://mumbai.polygonscan.com/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://mumbai.polygonscan.com/address/${address}`,
-    nativeAsset: {
-      symbol: "MATIC",
+    nativeCurrency: {
+      ...ensureDefined(chain.polygonMumbai.nativeCurrency),
       superToken: {
         type: TokenType.NativeAssetSuperToken,
         symbol: "MATICx",
@@ -291,7 +280,6 @@ export const networks: Network[] = [
   {
     ...chain.arbitrumRinkeby,
     blockExplorers: ensureDefined(chain.arbitrumRinkeby.blockExplorers),
-    nativeCurrency: ensureDefined(chain.arbitrumRinkeby.nativeCurrency),
     slugName: "arbitrum-rinkeby",
     v1ShortName: "arbitrum-rinkeby",
     bufferTimeInMinutes: 60,
@@ -306,8 +294,8 @@ export const networks: Network[] = [
       `https://rinkeby-explorer.arbitrum.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://rinkeby-explorer.arbitrum.io/address/${address}`,
-    nativeAsset: {
-      symbol: "ETH",
+    nativeCurrency: {
+      ...ensureDefined(chain.arbitrumRinkeby.nativeCurrency),
       superToken: {
         type: TokenType.NativeAssetSuperToken,
         symbol: "ETHx",
@@ -319,7 +307,6 @@ export const networks: Network[] = [
   {
     ...chain.optimismKovan,
     blockExplorers: ensureDefined(chain.optimismKovan.blockExplorers),
-    nativeCurrency: ensureDefined(chain.optimismKovan.nativeCurrency),
     slugName: "optimism-kovan",
     v1ShortName: "optimism-kovan",
     bufferTimeInMinutes: 60,
@@ -334,8 +321,8 @@ export const networks: Network[] = [
       `https://kovan-optimistic.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://kovan-optimistic.etherscan.io/address/${address}`,
-    nativeAsset: {
-      symbol: "ETH",
+    nativeCurrency: {
+      ...ensureDefined(chain.optimismKovan.nativeCurrency),
       superToken: {
         type: TokenType.NativeAssetSuperToken,
         symbol: "ETHx",
@@ -372,9 +359,6 @@ export const networks: Network[] = [
       name: "AVAX",
       symbol: "AVAX",
       decimals: 18,
-    },
-    nativeAsset: {
-      symbol: "AVAX",
       superToken: {
         type: TokenType.NativeAssetSuperToken,
         symbol: "AVAXx",
@@ -386,7 +370,6 @@ export const networks: Network[] = [
   {
     ...chain.optimism,
     blockExplorers: ensureDefined(chain.optimism.blockExplorers),
-    nativeCurrency: ensureDefined(chain.optimism.nativeCurrency),
     slugName: "optimism",
     v1ShortName: "optimism-mainnet",
     bufferTimeInMinutes: 240,
@@ -402,8 +385,8 @@ export const networks: Network[] = [
       `https://optimistic.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://optimistic.etherscan.io/address/${address}`,
-    nativeAsset: {
-      symbol: "ETH",
+    nativeCurrency: {
+      ...ensureDefined(chain.optimism.nativeCurrency),
       superToken: {
         type: TokenType.NativeAssetSuperToken,
         symbol: "ETHx",
@@ -415,7 +398,6 @@ export const networks: Network[] = [
   {
     ...chain.arbitrum,
     blockExplorers: ensureDefined(chain.arbitrum.blockExplorers),
-    nativeCurrency: ensureDefined(chain.arbitrum.nativeCurrency),
     slugName: "arbitrum-one",
     v1ShortName: "arbitrum-one",
     bufferTimeInMinutes: 240,
@@ -431,8 +413,8 @@ export const networks: Network[] = [
       `https://arbiscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://arbiscan.io/address/${address}`,
-    nativeAsset: {
-      symbol: "ETH",
+    nativeCurrency: {
+      ...ensureDefined(chain.arbitrum.nativeCurrency),
       superToken: {
         type: TokenType.NativeAssetSuperToken,
         symbol: "ETHx",
@@ -471,9 +453,6 @@ export const networks: Network[] = [
       name: "AVAX",
       symbol: "AVAX",
       decimals: 18,
-    },
-    nativeAsset: {
-      symbol: "AVAX",
       superToken: {
         type: TokenType.NativeAssetSuperToken,
         symbol: "AVAXx",
@@ -510,9 +489,6 @@ export const networks: Network[] = [
       name: "Binance Chain Native Token",
       symbol: "BNB",
       decimals: 18,
-    },
-    nativeAsset: {
-      symbol: "BNB",
       superToken: {
         type: TokenType.NativeAssetSuperToken,
         symbol: "BNBx",
@@ -525,12 +501,12 @@ export const networks: Network[] = [
 
 export const getNetworkDefaultTokenPair = memoize(
   (network: Network): SuperTokenPair => ({
-    superToken: network.nativeAsset.superToken,
+    superToken: network.nativeCurrency.superToken,
     underlyingToken: {
       type: TokenType.NativeAssetUnderlyingToken,
       address: NATIVE_ASSET_ADDRESS,
       name: `${network.name} Native Asset`,
-      symbol: network.nativeAsset.symbol,
+      symbol: network.nativeCurrency.symbol,
     },
   })
 );
