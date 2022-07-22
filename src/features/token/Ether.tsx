@@ -4,6 +4,7 @@ import { memo, ReactNode } from "react";
 
 interface EtherProps {
   wei: BigNumberish;
+  decimals: number;
   disableRounding?: boolean;
   /**
    * a.k.a "fixed" decimal places
@@ -58,12 +59,13 @@ const getDecimalPlaces = (value: Decimal): number => {
 // NOTE: Previously known as "EtherFormatted"
 export default memo<EtherProps>(function Ether({
   wei,
+  decimals,
   disableRounding,
   etherDecimalPlaces,
   roundingIndicator,
   children,
 }) {
-  const ether = utils.formatEther(wei);
+  const ether = utils.formatUnits(wei, decimals);
   const decimal = new Decimal(ether);
   const dp = etherDecimalPlaces ?? getDecimalPlaces(decimal);
   const decimalRounded = disableRounding ? decimal : decimal.toDP(dp);
