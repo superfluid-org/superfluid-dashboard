@@ -50,7 +50,7 @@ export default memo(function TransactionDialogErrorAlert({
         return (
           <>
             <AlertTitle>Insufficient Funds</AlertTitle>
-            Do you have enough {network.nativeAsset.symbol} for covering the
+            Do you have enough {network.nativeCurrency.symbol} for covering the
             transaction?
           </>
         );
@@ -64,7 +64,7 @@ export default memo(function TransactionDialogErrorAlert({
           <>
             <AlertTitle>Unpredictable Gas Limit</AlertTitle>
             Could not predict gas for the transaction. Do you have enough{" "}
-            {network.nativeAsset.symbol} for covering the transaction?
+            {network.nativeCurrency.symbol} for covering the transaction?
           </>
         );
       }

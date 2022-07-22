@@ -4,7 +4,7 @@ import { memo, ReactNode } from "react";
 
 interface EtherProps {
   wei: BigNumberish;
-  decimals: number;
+  decimals?: number;
   disableRounding?: boolean;
   /**
    * a.k.a "fixed" decimal places
