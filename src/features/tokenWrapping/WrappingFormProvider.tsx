@@ -268,10 +268,6 @@ const WrappingFormProvider: FC<{
     }
   }, [accountAddress]);
 
-  // useEffect(() => {
-  //   console.log(formState);
-  // }, [formState]);
-
   return hasRestored ? (
     <FormProvider {...formMethods}>{children}</FormProvider>
   ) : null;

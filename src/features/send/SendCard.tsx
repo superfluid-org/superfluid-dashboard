@@ -164,6 +164,7 @@ export default memo(function SendCard() {
 
         <ErrorMessage
           name="data"
+          errors={formState.errors}
           render={({ message }) =>
             !!message && (
               <Alert severity="error" sx={{ mb: 1 }}>

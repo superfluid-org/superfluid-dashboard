@@ -19,7 +19,7 @@ import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { isString } from "lodash";
 import { useRouter } from "next/router";
-import { FC, useEffect, useState } from "react";
+import { FC, ReactChild, useEffect, useState } from "react";
 import { useAutoConnect } from "../../../features/autoConnect/AutoConnect";
 import SubscriptionsTable from "../../../features/index/SubscriptionsTable";
 import NetworkIcon from "../../../features/network/NetworkIcon";
@@ -39,6 +39,7 @@ import { useVisibleAddress } from "../../../features/wallet/VisibleAddressContex
 import { NextPage } from "next";
 import Page404 from "../../404";
 import useNavigateBack from "../../../hooks/useNavigateBack";
+import SEO from "../../../components/SEO/SEO";
 
 export const getTokenPagePath = ({
   network,
@@ -47,6 +48,15 @@ export const getTokenPagePath = ({
   network: string;
   token: string;
 }) => `/token/${network}/${token}`;
+
+const TokenPageContainer: FC<{
+  tokenSymbol?: string;
+  children?: ReactChild;
+}> = ({ tokenSymbol = "Token", children }) => (
+  <SEO title={`${tokenSymbol} | Superfluid`}>
+    <Container maxWidth="lg">{children}</Container>
+  </SEO>
+);
 
 const TokenPage: NextPage = () => {
   const router = useRouter();
@@ -77,7 +87,7 @@ const TokenPage: NextPage = () => {
   }, [isAutoConnecting, visibleAddress]);
 
   const isPageReady = routeHandled && visibleAddress;
-  if (!isPageReady) return <Container />;
+  if (!isPageReady) return <TokenPageContainer />;
 
   if (network && tokenAddress && visibleAddress) {
     return (
@@ -135,7 +145,7 @@ const TokenPageContent: FC<{
     setShowForecast(checked);
 
   if (tokenQuery.isLoading || tokenSnapshotQuery.isLoading) {
-    return <Container />;
+    return <TokenPageContainer />;
   }
 
   if (!tokenQuery.currentData || !tokenSnapshotQuery.currentData) {
@@ -149,6 +159,7 @@ const TokenPageContent: FC<{
     setGraphType(newGraphType);
 
   const {
+    tokenSymbol,
     balanceUntilUpdatedAt,
     totalNetFlowRate,
     totalInflowRate,
@@ -164,7 +175,7 @@ const TokenPageContent: FC<{
   } = realTimeBalanceQuery.currentData || {};
 
   return (
-    <Container maxWidth="lg">
+    <TokenPageContainer tokenSymbol={tokenSymbol}>
       <Stack gap={isBelowMd ? 3 : 4}>
         <TokenToolbar
           token={tokenQuery.currentData}
@@ -344,7 +355,7 @@ const TokenPageContent: FC<{
           )}
         </TabContext>
       </Stack>
-    </Container>
+    </TokenPageContainer>
   );
 };
 

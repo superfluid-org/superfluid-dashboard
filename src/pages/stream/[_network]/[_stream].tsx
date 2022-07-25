@@ -23,7 +23,7 @@ import { isString } from "lodash";
 import { NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FC, ReactElement, useEffect, useMemo, useState } from "react";
+import { FC, ReactChild, useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import AddressAvatar from "../../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../../components/AddressName/AddressName";
@@ -38,6 +38,7 @@ import Ether from "../../../features/token/Ether";
 import FlowingBalance from "../../../features/token/FlowingBalance";
 import TokenIcon from "../../../features/token/TokenIcon";
 import useNavigateBack from "../../../hooks/useNavigateBack";
+import config from "../../../utils/config";
 import shortenHex from "../../../utils/shortenHex";
 import {
   calculateBuffer,
@@ -228,7 +229,7 @@ const StreamPage: NextPage = () => {
   }
 
   const isPageReady = routeHandled && !streamTxQuery.isLoading;
-  if (!isPageReady) return <Container />;
+  if (!isPageReady) return <StreamPageContainer />;
 
   if (network && streamId) {
     return (
@@ -239,22 +240,19 @@ const StreamPage: NextPage = () => {
   }
 };
 
-const StreamPageWrapper: FC<{
+const StreamPageContainer: FC<{
   urlToShare?: string;
-  children?: ReactElement<any, any>;
-}> = ({ urlToShare, children }) => {
-  return (
-    <Container maxWidth="lg">
-      <SEO
-        title="Stream | Superfluid"
-        description="I’m streaming money every second with @Superfluid_HQ! Check out my stream here!"
-        OGUrl={urlToShare}
-        OGImage={`${window.location.origin}/images/stream.jpg`}
-      />
-      {children}
-    </Container>
-  );
-};
+  children?: ReactChild;
+}> = ({ urlToShare, children }) => (
+  <SEO
+    title="Stream | Superfluid"
+    description="I’m streaming money every second with @Superfluid_HQ! Check out my stream here!"
+    ogUrl={urlToShare}
+    ogImage={`${config.appUrl}/images/stream.jpg`}
+  >
+    <Container maxWidth="lg">{children}</Container>
+  </SEO>
+);
 
 const StreamPageContent: FC<{
   network: Network;
@@ -319,7 +317,7 @@ const StreamPageContent: FC<{
   const txIdOrSubgraphId = streamCreationEvent
     ? `${streamCreationEvent.transactionHash}-${streamCreationEvent.logIndex}`
     : streamId;
-  const urlToShare = `${window.location.origin}${getStreamPagePath({
+  const urlToShare = `${config.appUrl}${getStreamPagePath({
     network: network.slugName,
     stream: txIdOrSubgraphId,
   })}`;
@@ -345,7 +343,7 @@ const StreamPageContent: FC<{
     tokenSnapshotQuery.isLoading ||
     tokenSnapshotQuery.isFetching
   ) {
-    return <StreamPageWrapper urlToShare={urlToShare} />;
+    return <StreamPageContainer urlToShare={urlToShare} />;
   }
 
   if (!streamQuery.data || !tokenSnapshotQuery.data) {
@@ -368,7 +366,7 @@ const StreamPageContent: FC<{
 
   // TODO: This container max width should be configured in theme. Something between small and medium
   return (
-    <StreamPageWrapper urlToShare={urlToShare}>
+    <StreamPageContainer urlToShare={urlToShare}>
       <Stack
         alignItems="center"
         gap={3}
@@ -643,7 +641,7 @@ const StreamPageContent: FC<{
           />
         </Stack>
       </Stack>
-    </StreamPageWrapper>
+    </StreamPageContainer>
   );
 };
 

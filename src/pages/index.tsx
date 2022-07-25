@@ -12,6 +12,7 @@ import {
 import type { NextPage } from "next";
 import { FC, useCallback, useState } from "react";
 import AddressSearchDialog from "../components/AddressSearchDialog/AddressSearchDialog";
+import SEO from "../components/SEO/SEO";
 import AddressSearchIndex from "../features/impersonation/AddressSearchIndex";
 import { useImpersonation } from "../features/impersonation/ImpersonationContext";
 import OnboardingCards from "../features/onboarding/OnboardingCards";
@@ -111,13 +112,15 @@ const Home: NextPage = () => {
   const { visibleAddress } = useVisibleAddress();
 
   return (
-    <Container maxWidth="lg">
-      {visibleAddress ? (
-        <TokenSnapshotTables address={visibleAddress} />
-      ) : (
-        <ConnectView />
-      )}
-    </Container>
+    <SEO title="Dashboard | Superfluid">
+      <Container maxWidth="lg">
+        {visibleAddress ? (
+          <TokenSnapshotTables address={visibleAddress} />
+        ) : (
+          <ConnectView />
+        )}
+      </Container>
+    </SEO>
   );
 };
 

@@ -12,10 +12,6 @@ export default function TransactionSnackbar() {
 
   const walletTransactions = useAccountTransactions();
 
-  console.log({
-    walletTransactions,
-  });
-
   // const [newTransactions, setNewTransactions] = useState<TrackedTransaction[]>(
   //   []
   // );

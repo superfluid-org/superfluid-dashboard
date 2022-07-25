@@ -1,10 +1,9 @@
 import ChatRoundedIcon from "@mui/icons-material/ChatRounded";
 import { Fab, useMediaQuery, useTheme } from "@mui/material";
-import { FC, useEffect, useMemo } from "react";
+import { FC, useEffect } from "react";
 import { useIntercom } from "react-use-intercom";
+import config from "../../utils/config";
 import { menuDrawerWidth } from "../layout/NavigationDrawer";
-
-export const INTERCOM_APP_ID = process.env.NEXT_PUBLIC_INTERCOM_APP_ID || "";
 
 const INTERCOM_ANCHOR_ID = "intercom-fab";
 
@@ -23,7 +22,7 @@ const IntercomButton: FC = () => {
   const isDarkMode = themeMode === "dark";
 
   useEffect(() => {
-    if (!INTERCOM_APP_ID) console.warn("Intercom not initialized.");
+    if (!config.intercom.appId) console.warn("Intercom not initialized.");
 
     boot({
       customLauncherSelector: `#${INTERCOM_ANCHOR_ID}`,
@@ -42,7 +41,7 @@ const IntercomButton: FC = () => {
   }, [update, isDarkMode, primaryColor]);
 
   // TODO: Intercom should be added somewhere into sidebar in mobile views.
-  if (!INTERCOM_APP_ID || isBelowMd) return null;
+  if (!config.intercom.appId || isBelowMd) return null;
 
   return (
     <Fab
