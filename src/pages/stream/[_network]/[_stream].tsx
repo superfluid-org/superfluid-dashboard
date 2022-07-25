@@ -3,11 +3,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import LinkIcon from "@mui/icons-material/Link";
 import ShareIcon from "@mui/icons-material/Share";
 import {
-  Avatar,
   Box,
   Container,
   Divider,
   IconButton,
+  Link as MuiLink,
   ListItemText,
   Paper,
   Stack,
@@ -19,28 +19,40 @@ import {
 import { Address } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
+import { isString } from "lodash";
+import { NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FC, useMemo } from "react";
-import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
-import AddressName from "../../components/AddressName/AddressName";
-import NetworkIcon from "../../features/network/NetworkIcon";
-import { subgraphApi } from "../../features/redux/store";
-import {
-  getNetworkStaticPaths,
-  getNetworkStaticProps,
-} from "../../features/routing/networkPaths";
-import { UnitOfTime } from "../../features/send/FlowRateInput";
-import Ether from "../../features/token/Ether";
-import FlowingBalance from "../../features/token/FlowingBalance";
-import TokenIcon from "../../features/token/TokenIcon";
-import withPathNetwork, { NetworkPage } from "../../hoc/withPathNetwork";
-import shortenHex from "../../utils/shortenHex";
+import { FC, ReactElement, useEffect, useMemo, useState } from "react";
+import { useAccount } from "wagmi";
+import AddressAvatar from "../../../components/AddressAvatar/AddressAvatar";
+import AddressName from "../../../components/AddressName/AddressName";
+import CopyTooltip from "../../../components/CopyTooltip/CopyTooltip";
+import SEO from "../../../components/SEO/SEO";
+import NetworkIcon from "../../../features/network/NetworkIcon";
+import { Network, networksBySlug } from "../../../features/network/networks";
+import { subgraphApi } from "../../../features/redux/store";
+import { UnitOfTime } from "../../../features/send/FlowRateInput";
+import CancelStreamButton from "../../../features/streamsTable/CancelStreamButton/CancelStreamButton";
+import Ether from "../../../features/token/Ether";
+import FlowingBalance from "../../../features/token/FlowingBalance";
+import TokenIcon from "../../../features/token/TokenIcon";
+import useNavigateBack from "../../../hooks/useNavigateBack";
+import shortenHex from "../../../utils/shortenHex";
 import {
   calculateBuffer,
   calculateMaybeCriticalAtTimestamp,
-} from "../../utils/tokenUtils";
-import Page404 from "../404";
+} from "../../../utils/tokenUtils";
+import Page404 from "../../404";
+
+const TEXT_TO_SHARE = (up?: boolean) =>
+  encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
+
+Check out my stream here ${up ? "☝️" : "👇"}`);
+
+const HASHTAGS_TO_SHARE = encodeURIComponent(
+  ["superfluid", "moneystreaming", "realtimefinance"].join(",")
+);
 
 interface StreamAccountCardProps {
   address: Address;
@@ -118,18 +130,27 @@ const CancelledIndicator: FC<CancelledIndicatorProps> = ({
   );
 };
 
-const ShareButton: FC<{ imgSrc: string; alt: string }> = ({ imgSrc, alt }) => (
-  <Tooltip title="Sharing is currently disabled" placement="top">
-    <Box sx={{ display: "flex" }}>
-      <Image
-        unoptimized
-        src={imgSrc}
-        width={30}
-        height={30}
-        layout="fixed"
-        alt={alt}
-      />
-    </Box>
+interface ShareButtonProps {
+  imgSrc: string;
+  alt: string;
+  tooltip: string;
+  href?: string;
+}
+
+const ShareButton: FC<ShareButtonProps> = ({ imgSrc, alt, tooltip, href }) => (
+  <Tooltip title={tooltip} placement="top">
+    <MuiLink href={href} target="_blank">
+      <Box sx={{ display: "flex" }}>
+        <Image
+          unoptimized
+          src={imgSrc}
+          width={30}
+          height={30}
+          layout="fixed"
+          alt={alt}
+        />
+      </Box>
+    </MuiLink>
   </Tooltip>
 );
 
@@ -147,12 +168,103 @@ const OverviewItem: FC<OverviewItemProps> = ({ label, value }) => (
   </Stack>
 );
 
-const Stream: FC<NetworkPage> = ({ network }) => {
+export const getStreamPagePath = ({
+  network,
+  stream,
+}: {
+  network: string;
+  stream: string;
+}) => `/stream/${network}/${stream}`;
+
+const StreamPage: NextPage = () => {
+  const router = useRouter();
+  const [routeHandled, setRouteHandled] = useState(false);
+
+  const [network, setNetwork] = useState<Network | undefined>();
+  const [streamId, setStreamId] = useState<string | undefined>();
+  const [queryStreams, streamTxQuery] = subgraphApi.useLazyStreamsQuery();
+
+  useEffect(() => {
+    if (router.isReady) {
+      const network = networksBySlug.get(
+        isString(router.query._network) ? router.query._network : ""
+      );
+      setNetwork(network);
+
+      if (network && isString(router.query._stream)) {
+        // The "_stream" in the path can either be Subgraph ID or "{tx-log}" (txId). If it's a transaction ID then we will find the Subgraph ID.
+        const _streamSplit = router.query._stream.split("-");
+        const isTxId = _streamSplit.length === 2;
+        if (isTxId) {
+          const [transactionHash, logIndex] = _streamSplit;
+          // NOTE: Check V1StreamPage before changing this query.
+          queryStreams(
+            {
+              chainId: network.id,
+              filter: {
+                flowUpdatedEvents_: {
+                  transactionHash,
+                  logIndex,
+                },
+              },
+              pagination: {
+                take: 1,
+              },
+            },
+            true
+          );
+        } else {
+          setStreamId(router.query._stream.toLowerCase());
+        }
+      }
+
+      setRouteHandled(true);
+    }
+  }, [setRouteHandled, router.isReady, router.query._stream]);
+
+  // `streamTxQuery` will have a value when it's successfully loaded. If it's unsuccessful then the logic will go to 404.
+  if (!streamId && streamTxQuery?.data?.items?.[0]?.id) {
+    setStreamId(streamTxQuery.data.items[0].id);
+  }
+
+  const isPageReady = routeHandled && !streamTxQuery.isLoading;
+  if (!isPageReady) return <Container />;
+
+  if (network && streamId) {
+    return (
+      <StreamPageContent key={streamId} network={network} streamId={streamId} />
+    );
+  } else {
+    return <Page404 />;
+  }
+};
+
+const StreamPageWrapper: FC<{
+  urlToShare?: string;
+  children?: ReactElement<any, any>;
+}> = ({ urlToShare, children }) => {
+  return (
+    <Container maxWidth="lg">
+      <SEO
+        title="Stream | Superfluid"
+        description="I’m streaming money every second with @Superfluid_HQ! Check out my stream here!"
+        OGUrl={urlToShare}
+        OGImage={`${window.location.origin}/images/stream.jpg`}
+      />
+      {children}
+    </Container>
+  );
+};
+
+const StreamPageContent: FC<{
+  network: Network;
+  streamId: string;
+}> = ({ network, streamId }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-  const router = useRouter();
+  const { address: accountAddress } = useAccount();
+  const navigateBack = useNavigateBack();
 
-  const streamId = (router.query.stream || "") as string;
   const [senderAddress = "", receiverAddress, tokenAddress = ""] =
     streamId.split("-");
 
@@ -165,6 +277,27 @@ const Stream: FC<NetworkPage> = ({ network }) => {
     chainId: network.id,
     id: `${senderAddress.toLowerCase()}-${tokenAddress.toLowerCase()}`,
   });
+
+  const { streamCreationEvent } = subgraphApi.useFlowUpdatedEventsQuery(
+    {
+      chainId: network.id,
+      order: {
+        orderDirection: "asc",
+        orderBy: "order",
+      },
+      filter: {
+        stream: streamId,
+      },
+      pagination: {
+        take: 1,
+      },
+    },
+    {
+      selectFromResult: ({ data }) => ({
+        streamCreationEvent: data?.items?.[0],
+      }),
+    }
+  );
 
   const liquidationDate = useMemo(() => {
     if (!tokenSnapshotQuery.data) return null;
@@ -183,6 +316,14 @@ const Stream: FC<NetworkPage> = ({ network }) => {
     );
   }, [tokenSnapshotQuery.data]);
 
+  const txIdOrSubgraphId = streamCreationEvent
+    ? `${streamCreationEvent.transactionHash}-${streamCreationEvent.logIndex}`
+    : streamId;
+  const urlToShare = `${window.location.origin}${getStreamPagePath({
+    network: network.slugName,
+    stream: txIdOrSubgraphId,
+  })}`;
+
   const bufferSize = useMemo(() => {
     if (!streamQuery.data || streamQuery.data.currentFlowRate === "0")
       return null;
@@ -199,19 +340,17 @@ const Stream: FC<NetworkPage> = ({ network }) => {
   }, [streamQuery.data, network]);
 
   if (
-    streamQuery.isLoading ||
+    streamQuery.isUninitialized ||
     streamQuery.isFetching ||
     tokenSnapshotQuery.isLoading ||
     tokenSnapshotQuery.isFetching
   ) {
-    return <Container />;
+    return <StreamPageWrapper urlToShare={urlToShare} />;
   }
 
   if (!streamQuery.data || !tokenSnapshotQuery.data) {
     return <Page404 />;
   }
-
-  const handleBack = () => router.back();
 
   const {
     streamedUntilUpdatedAt,
@@ -224,10 +363,12 @@ const Stream: FC<NetworkPage> = ({ network }) => {
   } = streamQuery.data;
 
   const isActive = currentFlowRate !== "0";
+  const encodedUrlToShare = encodeURIComponent(urlToShare);
+  const isOutgoing = accountAddress?.toLowerCase() === sender.toLowerCase();
 
   // TODO: This container max width should be configured in theme. Something between small and medium
   return (
-    <Container maxWidth="lg">
+    <StreamPageWrapper urlToShare={urlToShare}>
       <Stack
         alignItems="center"
         gap={3}
@@ -247,7 +388,7 @@ const Stream: FC<NetworkPage> = ({ network }) => {
           }}
         >
           <Box>
-            <IconButton color="inherit" onClick={handleBack}>
+            <IconButton color="inherit" onClick={navigateBack}>
               <ArrowBackIcon />
             </IconButton>
           </Box>
@@ -259,16 +400,13 @@ const Stream: FC<NetworkPage> = ({ network }) => {
           </Box>
 
           <Stack direction="row" justifyContent="flex-end" gap={1}>
-            {/* {isActive && (
-              <>
-                <IconButton color="primary">
-                  <EditIcon />
-                </IconButton>
-                <IconButton color="error">
-                  <CancelIcon />
-                </IconButton>
-              </>
-            )} */}
+            {isActive && isOutgoing && (
+              <CancelStreamButton
+                stream={streamQuery.data}
+                network={network}
+                IconButtonProps={{ size: "medium" }}
+              />
+            )}
           </Stack>
         </Stack>
 
@@ -446,8 +584,11 @@ const Stream: FC<NetworkPage> = ({ network }) => {
             }
           />
           <OverviewItem
-            label="Transaction ID:"
-            value={shortenHex(streamId, 6)}
+            label="Transaction:"
+            value={
+              streamCreationEvent &&
+              shortenHex(streamCreationEvent.transactionHash, 6)
+            }
           />
         </Stack>
 
@@ -459,34 +600,51 @@ const Stream: FC<NetworkPage> = ({ network }) => {
             Share:
           </Typography>
 
-          <Tooltip title="Sharing is currently disabled" placement="top">
-            <Avatar
-              sx={{
-                backgroundColor: theme.palette.primary.main,
-                color: "#fff",
-                width: 30,
-                height: 30,
-              }}
-            >
-              <LinkIcon
-                sx={{ transform: "rotate(135deg)", width: 20, height: 20 }}
-              />
-            </Avatar>
-          </Tooltip>
+          <CopyTooltip
+            content={urlToShare}
+            copyText="Copy link"
+            TooltipProps={{ placement: "top" }}
+          >
+            {({ copy }) => (
+              <IconButton
+                onClick={copy}
+                sx={{
+                  color: "#fff",
+                  width: 30,
+                  height: 30,
+                  borderRadius: "50%",
+                  backgroundColor: theme.palette.primary.main,
+                  "&:hover": {
+                    backgroundColor: theme.palette.primary.main,
+                  },
+                }}
+              >
+                <LinkIcon
+                  sx={{ transform: "rotate(135deg)", width: 20, height: 20 }}
+                />
+              </IconButton>
+            )}
+          </CopyTooltip>
 
-          <ShareButton imgSrc="/icons/social/twitter.svg" alt="Twitter logo" />
-          <ShareButton imgSrc="/icons/social/discord.svg" alt="Discord logo" />
+          <ShareButton
+            imgSrc="/icons/social/twitter.svg"
+            alt="Twitter logo"
+            tooltip="Share on Twitter"
+            href={`https://twitter.com/intent/tweet?text=${TEXT_TO_SHARE()}&url=${encodedUrlToShare}&hashtags=${HASHTAGS_TO_SHARE}`}
+          />
+          {/* <ShareButton imgSrc="/icons/social/discord.svg" alt="Discord logo" /> */}
           <ShareButton
             imgSrc="/icons/social/telegram.svg"
             alt="Telegram logo"
+            tooltip="Share on Telegram"
+            href={`https://t.me/share/url?text=${TEXT_TO_SHARE(
+              true
+            )}&url=${encodedUrlToShare}`}
           />
         </Stack>
       </Stack>
-    </Container>
+    </StreamPageWrapper>
   );
 };
 
-export default withPathNetwork(Stream);
-
-export const getStaticPaths = getNetworkStaticPaths;
-export const getStaticProps = getNetworkStaticProps;
+export default StreamPage;

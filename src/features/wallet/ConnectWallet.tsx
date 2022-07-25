@@ -88,9 +88,8 @@ const ConnectWallet: FC<ConnectWalletProps> = ({ small = false }) => {
 
   const { network } = useExpectedNetwork();
   const { openConnectModal, openAccountModal, mounted } = useConnectButton();
-  const { data: account } = useAccount();
-  const accountAddress = account?.address;
-  const { activeChain } = useNetwork();
+  const { address: accountAddress } = useAccount();
+  const { chain: activeChain } = useNetwork();
   const { stopImpersonation: stopImpersonation } = useImpersonation();
   const { isAutoConnecting } = useAutoConnect();
 

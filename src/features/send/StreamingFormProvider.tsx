@@ -46,9 +46,7 @@ export type PartialStreamingForm = {
 const StreamingFormProvider: FC<{
   restoration: SendStreamRestoration | ModifyStreamRestoration | undefined;
 }> = ({ restoration, children }) => {
-  const { data: account } = useAccount();
-  const accountAddress = account?.address;
-
+  const { address: accountAddress } = useAccount();
   const { network, stopAutoSwitchToAccountNetwork } = useExpectedNetwork();
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryActiveFlow] = rpcApi.useLazyGetActiveFlowQuery();

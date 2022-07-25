@@ -50,9 +50,7 @@ const AddressBook: NextPage = () => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { data: account } = useAccount();
-  const accountAddress = account?.address;
-
+  const { address: accountAddress } = useAccount();
   const { network } = useExpectedNetwork();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
@@ -196,21 +194,9 @@ const AddressBook: NextPage = () => {
   };
 
   const insertImportedAddresses = useCallback(
-    (newEntries: AddressBookEntry[]) => {
-      dispatch(
-        addAddressBookEntries(
-          newEntries.filter(
-            (newEntry) =>
-              !addressBookEntries.some(
-                (existingEntry) =>
-                  existingEntry.address.toLowerCase() ===
-                  newEntry.address.toLowerCase()
-              )
-          )
-        )
-      );
-    },
-    [addressBookEntries, dispatch]
+    (newEntries: AddressBookEntry[]) =>
+      dispatch(addAddressBookEntries(newEntries)),
+    [dispatch]
   );
 
   // Exporting address book

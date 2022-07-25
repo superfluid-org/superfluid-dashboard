@@ -283,7 +283,7 @@
       }
     }
   },
-  "mumbai": {
+  "polygon-mumbai": {
     "staticBalanceAccount": {
       "tokenValues": [
         {
@@ -479,7 +479,7 @@
       }
     }
   },
-  "optimism-mainnet": {
+  "optimism": {
     "staticBalanceAccount": {
       "tokenValues": [
         {

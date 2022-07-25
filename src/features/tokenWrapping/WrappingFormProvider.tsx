@@ -14,7 +14,7 @@ import { getNetworkDefaultTokenPair } from "../network/networks";
 import { isString } from "lodash";
 import { rpcApi, subgraphApi } from "../redux/store";
 import { formatEther, parseEther } from "ethers/lib/utils";
-import { useAccount } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 import { BigNumber } from "ethers";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import {
@@ -49,9 +49,7 @@ const WrappingFormProvider: FC<{
   const { token: tokenQueryParam } = router.query;
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryUnderlyingBalance] = rpcApi.useLazyUnderlyingBalanceQuery();
-  
-  const { data: account } = useAccount();
-  const accountAddress = account?.address;
+  const { address: accountAddress, connector: activeConnector } = useAccount();
 
   const formSchema = useMemo(
     () =>
@@ -128,10 +126,14 @@ const WrappingFormProvider: FC<{
                 underlyingBalanceBigNumber
               ).eq(wrapAmountBigNumber);
               if (isWrappingIntoZero) {
-                handleHigherOrderValidationError({
-                  message:
-                    "You are wrapping out of native asset used for gas. You need to leave some gas tokens for the transaction to succeed.",
-                });
+                const isGnosisSafe = activeConnector?.id === "safe";
+                if (!isGnosisSafe) {
+                  // Not an issue on Gnosis Safe because gas is taken from another wallet.
+                  handleHigherOrderValidationError({
+                    message:
+                      "You are wrapping out of native asset used for gas. You need to leave some gas tokens for the transaction to succeed.",
+                  });
+                }
               }
             }
           }

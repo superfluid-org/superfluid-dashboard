@@ -24,6 +24,7 @@ const ImpersonationContext = createContext<ImpersonationContextValue>(null!);
 
 export const ImpersonationProvider: FC = ({ children }) => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
 
   const [impersonatedAddress, setImpersonatedAddress] = useState<
     string | undefined
@@ -52,7 +53,6 @@ export const ImpersonationProvider: FC = ({ children }) => {
     [impersonatedAddress]
   );
 
-  const router = useRouter();
   const setImpersonatedAddressQueryParam = useCallback(
     (address) => {
       router.replace({
@@ -64,12 +64,13 @@ export const ImpersonationProvider: FC = ({ children }) => {
     },
     [router]
   );
-  const removeImpersonatedAddressQueryParam = useCallback(() => {
+
+  const removeImpersonatedAddressQueryParam = () => {
     const { view: viewAddressQueryParam, ...queryWithoutParam } = router.query;
     router.replace({
       query: queryWithoutParam,
     });
-  }, [router]);
+  };
 
   // Get impersonated address from query string
   useEffect(() => {

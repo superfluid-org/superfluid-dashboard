@@ -797,6 +797,11 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         ],
       },
+      MuiLink: {
+        defaultProps: {
+          underline: "none",
+        },
+      },
       MuiTab: {
         styleOverrides: {
           root: {

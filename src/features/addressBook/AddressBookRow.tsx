@@ -58,8 +58,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const dispatch = useAppDispatch();
 
-  const { data: account } = useAccount();
-  const currentAccountAddress = account?.address;
+  const { address: currentAccountAddress } = useAccount();
 
   const [editableName, setEditableName] = useState(name);
   const [isEditing, setIsEditing] = useState(false);
