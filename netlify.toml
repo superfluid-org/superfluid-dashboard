@@ -4,6 +4,7 @@
 [build.environment]
   # Use only for build cache.
   NETLIFY_NEXT_PLUGIN_SKIP = "true"
+  NEXT_PUBLIC_APP_URL = "$URL"
 
 [[plugins]]
   package = "@sentry/netlify-build-plugin"
