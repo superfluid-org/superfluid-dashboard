@@ -13,7 +13,7 @@ import {
 import { getNetworkDefaultTokenPair } from "../network/networks";
 import { isString } from "lodash";
 import { rpcApi, subgraphApi } from "../redux/store";
-import { formatEther, parseUnits } from "ethers/lib/utils";
+import { formatEther, formatUnits, parseUnits } from "ethers/lib/utils";
 import { useAccount } from "wagmi";
 import { BigNumber } from "ethers";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
@@ -254,16 +254,39 @@ The chain ID was: ${network.id}`);
   const [hasRestored, setHasRestored] = useState(!restoration);
   useEffect(() => {
     if (restoration && tokenPairsQuery.isSuccess) {
+      if (restoration.type === RestorationType.Downgrade) {
+        const { superTokenAddress, underlyingTokenAddress } =
+          restoration.tokenPair;
+        const { underlyingToken } =
+          tokenPairsQuery.data.find(
+            (x) =>
+              x.superToken.address.toLowerCase() ===
+                superTokenAddress.toLowerCase() &&
+              x.underlyingToken.address.toLowerCase() ===
+                underlyingTokenAddress.toLowerCase()
+          ) ?? {};
+        if (underlyingToken) {
+          setValue(
+            "data.amountDecimal",
+            formatUnits(restoration.amountWei, underlyingToken.decimals),
+            formRestorationOptions
+          );
+        } else {
+          console.error(`Couldn't restore transaction. This shouldn't happen!`);
+          return;
+        }
+      } else {
+        setValue(
+          "data.amountDecimal",
+          formatUnits(restoration.amountWei, 18),
+          formRestorationOptions
+        );
+      }
       setValue("type", restoration.type, {
         shouldDirty: false,
         shouldTouch: false,
         shouldValidate: false,
       });
-      setValue(
-        "data.amountDecimal",
-        formatEther(restoration.amountWei),
-        formRestorationOptions
-      );
       setValue("data.tokenPair", restoration.tokenPair, formRestorationOptions);
       setHasRestored(true);
     }
