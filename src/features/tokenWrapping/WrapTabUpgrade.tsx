@@ -1,7 +1,7 @@
 import { Button, Input, Stack, Typography, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { BigNumber, BigNumberish, ethers } from "ethers";
-import { formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
 import { useRouter } from "next/router";
 import { FC, useEffect, useRef, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
@@ -10,7 +10,6 @@ import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   NATIVE_ASSET_ADDRESS,
-  TokenMinimal,
 } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
@@ -32,10 +31,6 @@ import { TokenDialogButton } from "./TokenDialogButton";
 import { ArrowDownIcon, WrapInputCard } from "./WrapCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 import { useAccount } from "wagmi";
-import {
-  getSuperTokenType,
-  getUnderlyingTokenType,
-} from "../redux/endpoints/adHocSubgraphEndpoints";
 import { useTokenPairQuery } from "./useTokenPairQuery";
 
 export const WrapTabUpgrade: FC = () => {
@@ -375,12 +370,16 @@ export const WrapTabUpgrade: FC = () => {
 
             const { data: formData } = getValues() as ValidWrappingForm;
 
+            const amountWei = parseUnits(
+              formData.amountDecimal,
+              underlyingToken.decimals
+            );
             const restoration: SuperTokenUpgradeRestoration = {
               type: RestorationType.Upgrade,
               version: 2,
               chainId: network.id,
               tokenPair: tokenPair,
-              amountWei: parseEther(formData.amountDecimal).toString(),
+              amountWei: amountWei.toString(),
             };
 
             const overrides = await getTransactionOverrides(network);
@@ -394,14 +393,10 @@ export const WrapTabUpgrade: FC = () => {
               overrides.gasLimit = 500_000;
             }
 
-            const amountWei = parseUnits(
-              formData.amountDecimal,
-              underlyingToken.decimals
-            );
             upgradeTrigger({
               signer,
               chainId: network.id,
-              amountWei: parseEther(formData.amountDecimal).toString(),
+              amountWei: amountWei.toString(),
               superTokenAddress: formData.tokenPair.superTokenAddress,
               waitForConfirmation: true,
               transactionExtraData: {

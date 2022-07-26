@@ -1,6 +1,6 @@
 import { Button, Input, Stack, Typography, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { formatEther, parseEther } from "ethers/lib/utils";
+import { formatEther, parseEther, parseUnits } from "ethers/lib/utils";
 import { useRouter } from "next/router";
 import { FC, useEffect, useRef } from "react";
 import { Controller, useFormContext } from "react-hook-form";
@@ -274,7 +274,7 @@ export const WrapTabDowngrade: FC = () => {
             version: 2,
             chainId: network.id,
             tokenPair: formData.tokenPair,
-            amountWei: parseEther(formData.amountDecimal).toString(),
+            amountWei: parseUnits(formData.amountDecimal, 18).toString(),
           };
 
           const overrides = await getTransactionOverrides(network);
@@ -290,7 +290,7 @@ export const WrapTabDowngrade: FC = () => {
           downgradeTrigger({
             signer,
             chainId: network.id,
-            amountWei: parseEther(formData.amountDecimal).toString(),
+            amountWei: parseUnits(formData.amountDecimal, 18).toString(),
             superTokenAddress: formData.tokenPair.superTokenAddress,
             waitForConfirmation: true,
             transactionExtraData: {
@@ -305,7 +305,7 @@ export const WrapTabDowngrade: FC = () => {
             label: (
               <DowngradePreview
                 {...{
-                  amountWei: parseEther(formData.amountDecimal).toString(),
+                  amountWei: parseUnits(formData.amountDecimal, 18).toString(),
                   superTokenSymbol: superToken.symbol,
                   underlyingTokenSymbol: underlyingToken.symbol,
                 }}

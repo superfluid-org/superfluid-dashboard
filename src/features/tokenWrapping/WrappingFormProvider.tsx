@@ -13,7 +13,7 @@ import {
 import { getNetworkDefaultTokenPair } from "../network/networks";
 import { isString } from "lodash";
 import { rpcApi, subgraphApi } from "../redux/store";
-import { formatEther, parseEther } from "ethers/lib/utils";
+import { formatEther, parseUnits } from "ethers/lib/utils";
 import { useAccount } from "wagmi";
 import { BigNumber } from "ethers";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
@@ -96,18 +96,37 @@ const WrappingFormProvider: FC<{
 
         if (accountAddress) {
           if (type === RestorationType.Upgrade) {
-            const tokenAddress =
+            const underlyingTokenAddress =
               validForm.data.tokenPair.underlyingTokenAddress;
-            const underlyingBalance = await queryUnderlyingBalance({
-              accountAddress,
-              tokenAddress,
-              chainId: network.id,
-            }).unwrap();
+
+            const [underlyingToken, underlyingBalance] = await Promise.all([
+              await queryToken(
+                {
+                  chainId: network.id,
+                  id: underlyingTokenAddress,
+                },
+                true
+              ).unwrap(),
+              await queryUnderlyingBalance({
+                accountAddress,
+                tokenAddress: underlyingTokenAddress,
+                chainId: network.id,
+              }).unwrap(),
+            ]);
+
+            if (!underlyingToken) {
+              handleHigherOrderValidationError({
+                message: "Underlying token not found. This should never happen. Please refresh the page or contact support!",
+              });
+              return false;
+            }
 
             const underlyingBalanceBigNumber = BigNumber.from(
               underlyingBalance.balance
             );
-            const wrapAmountBigNumber = parseEther(validForm.data.amountDecimal);
+            const wrapAmountBigNumber = parseUnits(
+              validForm.data.amountDecimal, underlyingToken.decimals
+            );
 
             const isWrappingIntoNegative =
               underlyingBalanceBigNumber.lt(wrapAmountBigNumber);
@@ -117,7 +136,7 @@ const WrappingFormProvider: FC<{
               });
             }
 
-            const isNativeAsset = tokenAddress === NATIVE_ASSET_ADDRESS;
+            const isNativeAsset = underlyingTokenAddress === NATIVE_ASSET_ADDRESS;
             if (isNativeAsset) {
               const isWrappingIntoZero = BigNumber.from(
                 underlyingBalanceBigNumber
@@ -156,10 +175,10 @@ const WrappingFormProvider: FC<{
                 balanceTimestampMs: realtimeBalance.balanceTimestamp,
               });
               const balanceAfterWrappingBigNumber = currentBalanceBigNumber.sub(
-                parseEther(validForm.data.amountDecimal)
+                parseUnits(validForm.data.amountDecimal, 18)
               );
 
-              const amountBigNumber = parseEther(validForm.data.amountDecimal);
+              const amountBigNumber = parseUnits(validForm.data.amountDecimal, 18);
               const isWrappingIntoNegative =
                 currentBalanceBigNumber.lt(amountBigNumber);
               if (isWrappingIntoNegative) {

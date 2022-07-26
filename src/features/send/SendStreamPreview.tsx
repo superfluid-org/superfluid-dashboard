@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
-import { ethers } from "ethers";
 import { FC, ReactNode, useMemo } from "react";
 import shortenHex from "../../utils/shortenHex";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
