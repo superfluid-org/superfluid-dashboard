@@ -10,6 +10,7 @@ import {
   SuperTokenMinimal,
   SuperTokenPair,
   NATIVE_ASSET_ADDRESS,
+  UnderlyingTokenType,
 } from "./tokenTypes";
 import { TokenType } from "./tokenTypes";
 
@@ -330,10 +331,7 @@ export const adHocSubgraphEndpoints = {
 
 export const getSuperTokenType = (arg: {
   network: Network;
-  isListed: boolean;
   address: string;
-  symbol: string;
-  name: string;
   underlyingAddress: string;
 }) => {
   if (
@@ -347,5 +345,20 @@ export const getSuperTokenType = (arg: {
     return TokenType.PureSuperToken;
   } else {
     return TokenType.WrapperSuperToken;
+  }
+};
+
+export const getUnderlyingTokenType = ({
+  address,
+}: {
+  address: string;
+}): UnderlyingTokenType => {
+  if (
+    address === NATIVE_ASSET_ADDRESS ||
+    address === "0x0000000000000000000000000000000000000000"
+  ) {
+    return TokenType.NativeAssetUnderlyingToken;
+  } else {
+    return TokenType.ERC20UnderlyingToken;
   }
 };

@@ -26,15 +26,21 @@ import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 export type WrappingForm = {
   type: RestorationType.Downgrade | RestorationType.Upgrade;
   data: {
-    tokenUpgrade: SuperTokenUpgradeRestoration["tokenUpgrade"];
-    amountEther: string;
+    tokenPair?: {
+      superTokenAddress: string;
+      underlyingTokenAddress: string;
+    };
+    amountEther?: string;
   };
 };
 
 export type ValidWrappingForm = {
   data: {
-    tokenUpgrade: WrappingForm["data"]["tokenUpgrade"];
-    amountEther: WrappingForm["data"]["amountEther"];
+    tokenPair: {
+      superTokenAddress: string;
+      underlyingTokenAddress: string;
+    };
+    amountEther: string;
   };
 };
 
@@ -58,21 +64,9 @@ const WrappingFormProvider: FC<{
 
         const primarySchema: ObjectSchema<ValidWrappingForm> = object({
           data: object({
-            tokenUpgrade: object({
-              superToken: object({
-                type: number().required(),
-                address: string().required().test(testAddress()),
-                name: string().required(),
-                symbol: string().required(),
-                decimals: number().required(),
-              }).required(),
-              underlyingToken: object({
-                type: number().required(),
-                address: string().required().test(testAddress()),
-                name: string().required(),
-                symbol: string().required(),
-                decimals: number().required(),
-              }).required(),
+            tokenPair: object({
+              superTokenAddress: string().required().test(testAddress()),
+              underlyingTokenAddress: string().required().test(testAddress()),
             }).required(),
             amountEther: string()
               .required()
@@ -102,7 +96,7 @@ const WrappingFormProvider: FC<{
         if (accountAddress) {
           if (type === RestorationType.Upgrade) {
             const tokenAddress =
-              validForm.data.tokenUpgrade.underlyingToken.address;
+              validForm.data.tokenPair.underlyingTokenAddress;
             const underlyingBalance = await queryUnderlyingBalance({
               accountAddress,
               tokenAddress,
@@ -146,7 +140,7 @@ const WrappingFormProvider: FC<{
                 {
                   accountAddress,
                   chainId: network.id,
-                  tokenAddress: validForm.data.tokenUpgrade.superToken.address,
+                  tokenAddress: validForm.data.tokenPair.superTokenAddress,
                 },
                 true
               ).unwrap();
@@ -204,10 +198,15 @@ const WrappingFormProvider: FC<{
     [network, accountAddress]
   );
 
+  const networkDefaultTokenPair = getNetworkDefaultTokenPair(network);
   const formMethods = useForm<WrappingForm>({
     defaultValues: {
       data: {
-        tokenUpgrade: getNetworkDefaultTokenPair(network),
+        tokenPair: {
+          superTokenAddress: networkDefaultTokenPair.superToken.address,
+          underlyingTokenAddress:
+            networkDefaultTokenPair.underlyingToken.address,
+        },
         amountEther: "",
       },
     },
@@ -230,11 +229,7 @@ const WrappingFormProvider: FC<{
         formatEther(restoration.amountWei),
         formRestorationOptions
       );
-      setValue(
-        "data.tokenUpgrade",
-        restoration.tokenUpgrade,
-        formRestorationOptions
-      );
+      setValue("data.tokenPair", restoration.tokenPair, formRestorationOptions);
       setHasRestored(true);
     }
   }, [restoration]);
@@ -249,8 +244,16 @@ const WrappingFormProvider: FC<{
         (x) =>
           x.superToken.address.toLowerCase() === tokenQueryParam.toLowerCase()
       );
+
       if (tokenPair) {
-        setValue("data.tokenUpgrade", tokenPair, formRestorationOptions);
+        setValue(
+          "data.tokenPair",
+          {
+            superTokenAddress: tokenPair.superToken.address,
+            underlyingTokenAddress: tokenPair.underlyingToken.address,
+          },
+          formRestorationOptions
+        );
       }
 
       const { token, ...tokenQueryParamRemoved } = router.query;

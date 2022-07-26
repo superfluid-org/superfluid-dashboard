@@ -1,14 +1,17 @@
 import { Button, Input, Stack, Typography, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { BigNumber, ethers } from "ethers";
-import { formatEther, parseEther } from "ethers/lib/utils";
+import { BigNumber, BigNumberish, ethers } from "ethers";
+import { formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
 import { useRouter } from "next/router";
 import { FC, useEffect, useRef, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { parseEtherOrZero } from "../../utils/tokenUtils";
+import { parseAmountOrZero } from "../../utils/tokenUtils";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
+import {
+  NATIVE_ASSET_ADDRESS,
+  TokenMinimal,
+} from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
 import { useLayoutContext } from "../layout/LayoutContext";
@@ -29,6 +32,11 @@ import { TokenDialogButton } from "./TokenDialogButton";
 import { ArrowDownIcon, WrapInputCard } from "./WrapCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 import { useAccount } from "wagmi";
+import {
+  getSuperTokenType,
+  getUnderlyingTokenType,
+} from "../redux/endpoints/adHocSubgraphEndpoints";
+import { useTokenPairQuery } from "./useTokenPairQuery";
 
 export const WrapTabUpgrade: FC = () => {
   const theme = useTheme();
@@ -58,29 +66,37 @@ export const WrapTabUpgrade: FC = () => {
     });
   }, []);
 
-  const [selectedTokenPair, amount] = watch([
-    "data.tokenUpgrade",
-    "data.amountEther",
-  ]);
+  const [tokenPair, amount] = watch(["data.tokenPair", "data.amountEther"]);
 
   const [amountWei, setAmountWei] = useState<BigNumber>(
     ethers.BigNumber.from(0)
   );
 
+  const { superToken, underlyingToken } = useTokenPairQuery(network, tokenPair);
+
   useEffect(() => {
-    setAmountWei(parseEtherOrZero(amount));
-  }, [amount]);
+    if (underlyingToken && amount) {
+      setAmountWei(
+        parseAmountOrZero({
+          value: amount,
+          decimals: underlyingToken.decimals,
+        })
+      );
+    } else {
+      setAmountWei(BigNumber.from("0"));
+    }
+  }, [amount, underlyingToken]);
 
   const isUnderlyingBlockchainNativeAsset =
-    selectedTokenPair?.underlyingToken.address === NATIVE_ASSET_ADDRESS;
+    tokenPair?.underlyingTokenAddress === NATIVE_ASSET_ADDRESS;
 
   const { data: _discard, ...allowanceQuery } =
     rpcApi.useSuperTokenUpgradeAllowanceQuery(
-      selectedTokenPair && !isUnderlyingBlockchainNativeAsset && visibleAddress
+      tokenPair && !isUnderlyingBlockchainNativeAsset && visibleAddress
         ? {
             chainId: network.id,
             accountAddress: visibleAddress,
-            superTokenAddress: selectedTokenPair.superToken.address,
+            superTokenAddress: tokenPair.superTokenAddress,
           }
         : skipToken
     );
@@ -99,7 +115,8 @@ export const WrapTabUpgrade: FC = () => {
   const [upgradeTrigger, upgradeResult] = rpcApi.useSuperTokenUpgradeMutation();
 
   const isApproveAllowanceVisible = !!(
-    selectedTokenPair &&
+    underlyingToken &&
+    tokenPair &&
     !amountWei.isZero() &&
     currentAllowance &&
     missingAllowance &&
@@ -107,28 +124,37 @@ export const WrapTabUpgrade: FC = () => {
   );
 
   const isUpgradeDisabled =
-    formState.isValidating || !formState.isValid || !!isApproveAllowanceVisible;
+    !tokenPair ||
+    !underlyingToken ||
+    !superToken ||
+    formState.isValidating ||
+    !formState.isValid ||
+    !!isApproveAllowanceVisible;
 
   const amountInputRef = useRef<HTMLInputElement>(undefined!);
 
   useEffect(() => {
     amountInputRef.current.focus();
-  }, [amountInputRef, selectedTokenPair]);
+  }, [amountInputRef, tokenPair]);
 
   const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
     chainId: network.id,
   });
 
-  const { data: _discard2, ...underlyingBalanceQuery } =
-    rpcApi.useUnderlyingBalanceQuery(
-      selectedTokenPair && visibleAddress
-        ? {
-            chainId: network.id,
-            accountAddress: visibleAddress,
-            tokenAddress: selectedTokenPair.underlyingToken.address,
-          }
-        : skipToken
-    );
+  const { underlyingBalance } = rpcApi.useUnderlyingBalanceQuery(
+    tokenPair && visibleAddress
+      ? {
+          chainId: network.id,
+          accountAddress: visibleAddress,
+          tokenAddress: tokenPair.underlyingTokenAddress,
+        }
+      : skipToken,
+    {
+      selectFromResult: (result) => ({
+        underlyingBalance: result.currentData?.balance,
+      }),
+    }
+  );
 
   return (
     <Stack direction="column" alignItems="center">
@@ -142,7 +168,6 @@ export const WrapTabUpgrade: FC = () => {
                 data-cy={"wrap-input"}
                 fullWidth
                 disableUnderline
-                disabled={!selectedTokenPair}
                 placeholder="0.0"
                 inputRef={amountInputRef}
                 value={amount}
@@ -163,10 +188,10 @@ export const WrapTabUpgrade: FC = () => {
 
           <Controller
             control={control}
-            name="data.tokenUpgrade"
+            name="data.tokenPair"
             render={({ field: { onChange, onBlur } }) => (
               <TokenDialogButton
-                token={selectedTokenPair?.underlyingToken}
+                token={underlyingToken}
                 tokenSelection={{
                   tokenPairsQuery: {
                     data: tokenPairsQuery.data?.map((x) => x.underlyingToken),
@@ -191,7 +216,7 @@ export const WrapTabUpgrade: FC = () => {
             )}
           />
         </Stack>
-        {selectedTokenPair && visibleAddress && (
+        {underlyingToken && visibleAddress && (
           <Stack direction="row" justifyContent="flex-end" gap={0.5}>
             {/* <Typography variant="body2" color="text.secondary">
             ${Number(amount || 0).toFixed(2)}
@@ -199,10 +224,10 @@ export const WrapTabUpgrade: FC = () => {
             <BalanceUnderlyingToken
               chainId={network.id}
               accountAddress={visibleAddress}
-              tokenAddress={selectedTokenPair.underlyingToken.address}
-              decimals={selectedTokenPair.underlyingToken.decimals}
+              tokenAddress={underlyingToken.address}
+              decimals={underlyingToken.decimals}
             />
-            {underlyingBalanceQuery.currentData && (
+            {underlyingBalance && (
               <Controller
                 control={control}
                 name="data.amountEther"
@@ -212,7 +237,7 @@ export const WrapTabUpgrade: FC = () => {
                     size="xxs"
                     onClick={() => {
                       return onChange(
-                        formatEther(underlyingBalanceQuery.currentData!.balance)
+                        formatUnits(underlyingBalance, underlyingToken.decimals)
                       );
                     }}
                     onBlur={onBlur}
@@ -228,7 +253,7 @@ export const WrapTabUpgrade: FC = () => {
 
       <ArrowDownIcon />
 
-      {selectedTokenPair && (
+      {superToken && (
         <WrapInputCard>
           <Stack direction="row" spacing={2}>
             <Input
@@ -250,18 +275,15 @@ export const WrapTabUpgrade: FC = () => {
               variant={theme.palette.mode === "light" ? "outlined" : "token"}
               color="secondary"
               startIcon={
-                <TokenIcon
-                  tokenSymbol={selectedTokenPair.superToken.symbol}
-                  size={24}
-                />
+                <TokenIcon tokenSymbol={superToken.symbol} size={24} />
               }
               sx={{ pointerEvents: "none" }}
             >
-              {selectedTokenPair.superToken.symbol ?? ""}
+              {superToken.symbol ?? ""}
             </Button>
           </Stack>
 
-          {selectedTokenPair && visibleAddress && (
+          {!!(superToken && visibleAddress) && (
             <Stack direction="row" justifyContent="flex-end">
               {/* <Typography variant="body2" color="text.secondary">
               ${Number(amount || 0).toFixed(2)}
@@ -269,7 +291,7 @@ export const WrapTabUpgrade: FC = () => {
               <BalanceSuperToken
                 chainId={network.id}
                 accountAddress={visibleAddress}
-                tokenAddress={selectedTokenPair.superToken.address}
+                tokenAddress={superToken.address}
                 TypographyProps={{ color: "text.secondary" }}
               />
             </Stack>
@@ -277,9 +299,9 @@ export const WrapTabUpgrade: FC = () => {
         </WrapInputCard>
       )}
 
-      {selectedTokenPair && (
+      {!!(superToken && underlyingToken) && (
         <Typography data-cy="token-pair" align="center" sx={{ my: 3 }}>
-          {`1 ${selectedTokenPair.underlyingToken.symbol} = 1 ${selectedTokenPair.superToken.symbol}`}
+          {`1 ${underlyingToken.symbol} = 1 ${superToken.symbol}`}
         </Typography>
       )}
 
@@ -297,22 +319,30 @@ export const WrapTabUpgrade: FC = () => {
             const approveAllowanceAmountWei =
               currentAllowance.add(missingAllowance);
 
+            setTransactionDialogContent({
+              label: (
+                <AllowancePreview
+                  {...{
+                    amountWei: approveAllowanceAmountWei.toString(),
+                    amountDecimals: underlyingToken.decimals,
+                    tokenSymbol: underlyingToken.symbol,
+                  }}
+                />
+              ),
+            });
+
             const restoration: ApproveAllowanceRestoration = {
               type: RestorationType.Approve,
               chainId: network.id,
               amountWei: approveAllowanceAmountWei.toString(),
-              token: selectedTokenPair.underlyingToken,
+              tokenAddress: tokenPair.underlyingTokenAddress,
             };
-
-            setTransactionDialogContent({
-              label: <AllowancePreview restoration={restoration} />,
-            });
 
             approveTrigger({
               signer,
               chainId: network.id,
               amountWei: approveAllowanceAmountWei.toString(),
-              superTokenAddress: selectedTokenPair.superToken.address,
+              superTokenAddress: tokenPair.superTokenAddress,
               transactionExtraData: {
                 restoration,
               },
@@ -333,7 +363,7 @@ export const WrapTabUpgrade: FC = () => {
             setTransactionDialogContent,
             closeTransactionDialog
           ) => {
-            if (!formState.isValid) {
+            if (isUpgradeDisabled) {
               throw Error(
                 `This should never happen. Form state: ${JSON.stringify(
                   formState,
@@ -347,8 +377,9 @@ export const WrapTabUpgrade: FC = () => {
 
             const restoration: SuperTokenUpgradeRestoration = {
               type: RestorationType.Upgrade,
+              version: 2,
               chainId: network.id,
-              tokenUpgrade: selectedTokenPair,
+              tokenPair: tokenPair,
               amountWei: parseEther(formData.amountEther).toString(),
             };
 
@@ -357,17 +388,21 @@ export const WrapTabUpgrade: FC = () => {
             // In Gnosis Safe, Ether's estimateGas is flaky for native assets.
             const isGnosisSafe = activeConnector?.id === "safe";
             const isNativeAssetSuperToken =
-              formData.tokenUpgrade.underlyingToken.address ===
+              formData.tokenPair.underlyingTokenAddress ===
               NATIVE_ASSET_ADDRESS;
             if (isGnosisSafe && isNativeAssetSuperToken) {
               overrides.gasLimit = 500_000;
             }
 
+            const amountWei = parseUnits(
+              formData.amountEther,
+              underlyingToken.decimals
+            );
             upgradeTrigger({
               signer,
               chainId: network.id,
               amountWei: parseEther(formData.amountEther).toString(),
-              superTokenAddress: formData.tokenUpgrade.superToken.address,
+              superTokenAddress: formData.tokenPair.superTokenAddress,
               waitForConfirmation: true,
               transactionExtraData: {
                 restoration,
@@ -378,7 +413,16 @@ export const WrapTabUpgrade: FC = () => {
               .then(() => resetForm());
 
             setTransactionDialogContent({
-              label: <UpgradePreview restoration={restoration} />,
+              label: (
+                <UpgradePreview
+                  {...{
+                    amountWei: amountWei,
+                    amountDecimals: underlyingToken.decimals,
+                    superTokenSymbol: superToken.symbol,
+                    underlyingTokenSymbol: underlyingToken.symbol,
+                  }}
+                />
+              ),
               successActions: (
                 <TransactionDialogActions>
                   <Stack gap={1} sx={{ width: "100%" }}>
@@ -412,24 +456,34 @@ export const WrapTabUpgrade: FC = () => {
 };
 
 const UpgradePreview: FC<{
-  restoration: SuperTokenUpgradeRestoration;
-}> = ({ restoration: { amountWei, tokenUpgrade } }) => {
+  amountWei: BigNumberish;
+  amountDecimals: number;
+  underlyingTokenSymbol: string;
+  superTokenSymbol: string;
+}> = ({
+  underlyingTokenSymbol,
+  superTokenSymbol,
+  amountWei,
+  amountDecimals,
+}) => {
   return (
     <Typography variant="h5" color="text.secondary">
-      You are upgrading from {ethers.utils.formatEther(amountWei)}{" "}
-      {tokenUpgrade.underlyingToken.symbol} to the super token{" "}
-      {tokenUpgrade.superToken.symbol}.
+      You are upgrading from {formatUnits(amountWei, amountDecimals)}{" "}
+      {underlyingTokenSymbol} to the super token {superTokenSymbol}.
     </Typography>
   );
 };
 
 const AllowancePreview: FC<{
-  restoration: ApproveAllowanceRestoration;
-}> = ({ restoration: { amountWei, token } }) => {
+  amountWei: BigNumberish;
+  amountDecimals: number;
+  tokenSymbol: string;
+}> = ({ amountWei, amountDecimals, tokenSymbol }) => {
   return (
     <Typography variant="h5" color="text.secondary">
-      You are approving extra allowance of {ethers.utils.formatEther(amountWei)}{" "}
-      {token.symbol} for Superfluid Protocol to use.
+      You are approving extra allowance of{" "}
+      {formatUnits(amountWei, amountDecimals)} {tokenSymbol} for Superfluid
+      Protocol to use.
     </Typography>
   );
 };
