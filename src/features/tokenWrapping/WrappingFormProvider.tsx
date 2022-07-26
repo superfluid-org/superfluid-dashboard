@@ -22,6 +22,7 @@ import {
   calculateMaybeCriticalAtTimestamp,
 } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
+import { useTokenPairsQuery } from "./useTokenPairsQuery";
 
 export type WrappingForm = {
   type: RestorationType.Downgrade | RestorationType.Upgrade;
@@ -56,6 +57,7 @@ const WrappingFormProvider: FC<{
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryUnderlyingBalance] = rpcApi.useLazyUnderlyingBalanceQuery();
   const { address: accountAddress, connector: activeConnector } = useAccount();
+  const tokenPairsQuery = useTokenPairsQuery({ network });
 
   const formSchema = useMemo(
     () =>
@@ -98,7 +100,7 @@ const WrappingFormProvider: FC<{
 
         if (accountAddress) {
           if (type === RestorationType.Upgrade) {
-            const { underlyingToken } = tokenPairsQuery.data?.find(
+            const { underlyingToken } = tokenPairsQuery.data.find(
               (x) =>
                 x.superToken.address.toLowerCase() ===
                   superTokenAddress.toLowerCase() &&
@@ -107,6 +109,9 @@ const WrappingFormProvider: FC<{
             ) ?? {};
 
             if (!underlyingToken) {
+              console.error(`Couldn't find underlying token for: ${JSON.stringify(validForm.data.tokenPair, null, 2)}
+The list of tokens searched from had length of: ${tokenPairsQuery.data.length}
+The chain ID was: ${network.id}` )
               handleHigherOrderValidationError({
                 message:
                   "Underlying token not found. This should never happen. Please refresh the page or contact support!",
@@ -120,7 +125,7 @@ const WrappingFormProvider: FC<{
               chainId: network.id,
             }).unwrap();
 
-            const underlyingBalanceBigNumber = BigNumber.from(
+            const underlyingBalanceBigNumber = BigNumber.from(s
               underlyingBalance.balance
             );
             const wrapAmountBigNumber = parseUnits(
@@ -219,7 +224,7 @@ const WrappingFormProvider: FC<{
 
         return true;
       }),
-    [network, accountAddress]
+    [network, accountAddress, tokenPairsQuery.data]
   );
 
   const networkDefaultTokenPair = getNetworkDefaultTokenPair(network);
@@ -241,10 +246,6 @@ const WrappingFormProvider: FC<{
   const { formState, setValue, trigger, clearErrors, setError, watch } =
     formMethods;
 
-  const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
-    chainId: network.id,
-  });
-
   const [hasRestored, setHasRestored] = useState(!restoration);
   useEffect(() => {
     if (restoration && tokenPairsQuery.isSuccess) {
@@ -264,7 +265,7 @@ const WrappingFormProvider: FC<{
   }, [restoration, tokenPairsQuery.isSuccess]);
 
   useEffect(() => {
-    if (isString(tokenQueryParam) && tokenPairsQuery.data) {
+    if (isString(tokenQueryParam) && tokenPairsQuery.isSuccess) {
       const tokenPair = tokenPairsQuery.data.find(
         (x) =>
           x.superToken.address.toLowerCase() === tokenQueryParam.toLowerCase()

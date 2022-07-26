@@ -1,6 +1,6 @@
-import { getNetworkDefaultTokenPair, Network } from "../network/networks";
+import { Network } from "../network/networks";
 import { SuperTokenPair } from "../redux/endpoints/tokenTypes";
-import { subgraphApi } from "../redux/store";
+import { useTokenPairsQuery } from "./useTokenPairsQuery";
 
 export const useTokenPairQuery = ({
   network,
@@ -12,16 +12,7 @@ export const useTokenPairQuery = ({
     underlyingTokenAddress: string;
   };
 }) => {
-  const { tokenPairs } = subgraphApi.useTokenUpgradeDowngradePairsQuery(
-    {
-      chainId: network.id,
-    },
-    {
-      selectFromResult: (result) => ({
-        tokenPairs: result.data ?? [getNetworkDefaultTokenPair(network)],
-      }),
-    }
-  );
+  const { data: tokenPairs } = useTokenPairsQuery({ network });
 
   const tokenPairObjects: SuperTokenPair | undefined = tokenPair
     ? tokenPairs.find(
