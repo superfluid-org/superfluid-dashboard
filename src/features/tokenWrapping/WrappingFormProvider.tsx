@@ -100,18 +100,23 @@ const WrappingFormProvider: FC<{
 
         if (accountAddress) {
           if (type === RestorationType.Upgrade) {
-            const { underlyingToken } = tokenPairsQuery.data.find(
-              (x) =>
-                x.superToken.address.toLowerCase() ===
-                  superTokenAddress.toLowerCase() &&
-                x.underlyingToken.address.toLowerCase() ===
-                  underlyingTokenAddress.toLowerCase()
-            ) ?? {};
+            const { underlyingToken } =
+              tokenPairsQuery.data.find(
+                (x) =>
+                  x.superToken.address.toLowerCase() ===
+                    superTokenAddress.toLowerCase() &&
+                  x.underlyingToken.address.toLowerCase() ===
+                    underlyingTokenAddress.toLowerCase()
+              ) ?? {};
 
             if (!underlyingToken) {
-              console.error(`Couldn't find underlying token for: ${JSON.stringify(validForm.data.tokenPair, null, 2)}
+              console.error(`Couldn't find underlying token for: ${JSON.stringify(
+                validForm.data.tokenPair,
+                null,
+                2
+              )}
 The list of tokens searched from had length of: ${tokenPairsQuery.data.length}
-The chain ID was: ${network.id}` )
+The chain ID was: ${network.id}`);
               handleHigherOrderValidationError({
                 message:
                   "Underlying token not found. This should never happen. Please refresh the page or contact support!",
@@ -125,7 +130,7 @@ The chain ID was: ${network.id}` )
               chainId: network.id,
             }).unwrap();
 
-            const underlyingBalanceBigNumber = BigNumber.from(s
+            const underlyingBalanceBigNumber = BigNumber.from(
               underlyingBalance.balance
             );
             const wrapAmountBigNumber = parseUnits(
