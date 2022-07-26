@@ -247,6 +247,7 @@ const StreamPageContainer: FC<{
   <SEO
     title="Stream | Superfluid"
     description="I’m streaming money every second with @Superfluid_HQ! Check out my stream here!"
+    ogTitle="Superfluid Stream"
     ogUrl={urlToShare}
     ogImage={`${config.appUrl}/images/stream.jpg`}
   >

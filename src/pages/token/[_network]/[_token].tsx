@@ -52,8 +52,8 @@ export const getTokenPagePath = ({
 const TokenPageContainer: FC<{
   tokenSymbol?: string;
   children?: ReactChild;
-}> = ({ tokenSymbol = "Token", children }) => (
-  <SEO title={`${tokenSymbol} | Superfluid`}>
+}> = ({ tokenSymbol = "Super Token", children }) => (
+  <SEO title={`${tokenSymbol} | Superfluid`} ogTitle="Super Token">
     <Container maxWidth="lg">{children}</Container>
   </SEO>
 );
