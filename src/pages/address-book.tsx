@@ -283,7 +283,7 @@ const AddressBook: NextPage = () => {
 
         <Stack gap={isBelowMd ? 2.5 : 4.5}>
           <Stack direction="row" gap={1.5} alignItems="center">
-            <Typography variant="h3" flex={1}>
+            <Typography variant="h3" component="h1" flex={1}>
               Address Book
             </Typography>
 

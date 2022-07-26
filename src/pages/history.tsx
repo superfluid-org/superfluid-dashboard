@@ -174,7 +174,9 @@ const History: NextPage = () => {
     <SEO title="Activity History | Superfluid">
       <Container maxWidth="lg">
         <Stack gap={isBelowMd ? 2.5 : 4.5}>
-          <Typography variant="h3">Activity History</Typography>
+          <Typography variant="h3" component="h1">
+            Activity History
+          </Typography>
 
           <Stack gap={2.5}>
             <Stack direction="row" justifyContent="space-between" gap={2}>
