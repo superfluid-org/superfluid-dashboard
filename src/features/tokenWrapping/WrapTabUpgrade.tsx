@@ -114,6 +114,7 @@ export const WrapTabUpgrade: FC = () => {
     : ethers.BigNumber.from(0);
 
   const [approveTrigger, approveResult] = rpcApi.useApproveMutation();
+
   const [upgradeTrigger, upgradeResult] = rpcApi.useSuperTokenUpgradeMutation();
 
   const isApproveAllowanceVisible = !!(
@@ -358,7 +359,9 @@ export const WrapTabUpgrade: FC = () => {
                 restoration,
               },
               overrides: await getTransactionOverrides(network),
-            });
+            })
+              .unwrap()
+              .then(() => setTransactionDrawerOpen(true));
           }}
         >
           Approve Allowance
@@ -386,18 +389,8 @@ export const WrapTabUpgrade: FC = () => {
 
             const { data: formData } = getValues() as ValidWrappingForm;
 
-            const amountWei = parseUnits(
-              formData.amountDecimal,
-              underlyingToken.decimals
-            );
-
-            console.log({
-              formDataAmountDecimal: formData.amountDecimal,
-              underlyingTokenDecimals: underlyingToken.decimals,
-              amountWei: amountWei.toString(),
-              superToken,
-              underlyingToken,
-            });
+            // When upgrading, always use super token's decimals.
+            const amountWei = parseUnits(formData.amountDecimal, 18);
 
             const restoration: SuperTokenUpgradeRestoration = {
               type: RestorationType.Upgrade,
@@ -437,7 +430,6 @@ export const WrapTabUpgrade: FC = () => {
                 <UpgradePreview
                   {...{
                     amountWei: amountWei,
-                    decimals: underlyingToken.decimals,
                     superTokenSymbol: superToken.symbol,
                     underlyingTokenSymbol: underlyingToken.symbol,
                   }}
@@ -477,13 +469,12 @@ export const WrapTabUpgrade: FC = () => {
 
 const UpgradePreview: FC<{
   amountWei: BigNumberish;
-  decimals: number;
   underlyingTokenSymbol: string;
   superTokenSymbol: string;
-}> = ({ underlyingTokenSymbol, superTokenSymbol, amountWei, decimals }) => {
+}> = ({ underlyingTokenSymbol, superTokenSymbol, amountWei }) => {
   return (
     <Typography variant="h5" color="text.secondary">
-      You are upgrading from {formatUnits(amountWei, decimals)}{" "}
+      You are upgrading from {formatUnits(amountWei, 18)}{" "}
       {underlyingTokenSymbol} to the super token {superTokenSymbol}.
     </Typography>
   );
