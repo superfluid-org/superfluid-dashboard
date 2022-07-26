@@ -8,9 +8,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { parseAmountOrZero } from "../../utils/tokenUtils";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import {
-  NATIVE_ASSET_ADDRESS,
-} from "../redux/endpoints/tokenTypes";
+import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
 import { useLayoutContext } from "../layout/LayoutContext";
@@ -61,13 +59,22 @@ export const WrapTabUpgrade: FC = () => {
     });
   }, []);
 
-  const [tokenPair, amountDecimal] = watch(["data.tokenPair", "data.amountDecimal"]);
+  const [tokenPair, amountDecimal] = watch([
+    "data.tokenPair",
+    "data.amountDecimal",
+  ]);
 
   const [amountWei, setAmountWei] = useState<BigNumber>(
     ethers.BigNumber.from(0)
   );
 
-  const { superToken, underlyingToken } = useTokenPairQuery(network, tokenPair);
+  const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
+    chainId: network.id,
+  });
+  const { superToken, underlyingToken } = useTokenPairQuery({
+    network,
+    tokenPair,
+  });
 
   useEffect(() => {
     if (underlyingToken && amountDecimal) {
@@ -132,10 +139,6 @@ export const WrapTabUpgrade: FC = () => {
     amountInputRef.current.focus();
   }, [amountInputRef, tokenPair]);
 
-  const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
-    chainId: network.id,
-  });
-
   const { underlyingBalance } = rpcApi.useUnderlyingBalanceQuery(
     tokenPair && visibleAddress
       ? {
@@ -196,11 +199,21 @@ export const WrapTabUpgrade: FC = () => {
                 }}
                 onTokenSelect={(token) => {
                   resetField("data.amountDecimal");
-                  return onChange(
-                    tokenPairsQuery?.data?.find(
-                      (x) => x.underlyingToken.address === token.address
-                    )
+                  const tokenPair = tokenPairsQuery?.data?.find(
+                    (x) =>
+                      x.underlyingToken.address.toLowerCase() ===
+                      token.address.toLowerCase()
                   );
+                  if (tokenPair) {
+                    onChange({
+                      superTokenAddress: tokenPair.superToken.address,
+                      underlyingTokenAddress: tokenPair.underlyingToken.address,
+                    } as WrappingForm["data"]["tokenPair"]);
+                  } else {
+                    console.error(
+                      "Token not selected for upgrade. This should never happen!"
+                    );
+                  }
                 }}
                 onBlur={onBlur}
                 ButtonProps={{
@@ -232,7 +245,10 @@ export const WrapTabUpgrade: FC = () => {
                     size="xxs"
                     onClick={() => {
                       return onChange(
-                        formatUnits(underlyingBalance, underlyingToken.decimals)
+                        formatUnits(
+                          underlyingBalance,
+                          underlyingToken.decimals
+                        ) as WrappingForm["data"]["amountDecimal"]
                       );
                     }}
                     onBlur={onBlur}
@@ -455,12 +471,7 @@ const UpgradePreview: FC<{
   decimals: number;
   underlyingTokenSymbol: string;
   superTokenSymbol: string;
-}> = ({
-  underlyingTokenSymbol,
-  superTokenSymbol,
-  amountWei,
-  decimals,
-}) => {
+}> = ({ underlyingTokenSymbol, superTokenSymbol, amountWei, decimals }) => {
   return (
     <Typography variant="h5" color="text.secondary">
       You are upgrading from {formatUnits(amountWei, decimals)}{" "}
@@ -476,9 +487,8 @@ const AllowancePreview: FC<{
 }> = ({ amountWei, decimals, tokenSymbol }) => {
   return (
     <Typography variant="h5" color="text.secondary">
-      You are approving extra allowance of{" "}
-      {formatUnits(amountWei, decimals)} {tokenSymbol} for Superfluid
-      Protocol to use.
+      You are approving extra allowance of {formatUnits(amountWei, decimals)}{" "}
+      {tokenSymbol} for Superfluid Protocol to use.
     </Typography>
   );
 };

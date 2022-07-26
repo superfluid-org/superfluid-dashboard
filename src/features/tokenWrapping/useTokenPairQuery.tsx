@@ -1,82 +1,38 @@
-import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { Network } from "../network/networks";
-import {
-  getSuperTokenType,
-  getUnderlyingTokenType,
-} from "../redux/endpoints/adHocSubgraphEndpoints";
-import {
-  NATIVE_ASSET_ADDRESS,
-  TokenMinimal,
-} from "../redux/endpoints/tokenTypes";
+import { getNetworkDefaultTokenPair, Network } from "../network/networks";
+import { SuperTokenPair } from "../redux/endpoints/tokenTypes";
 import { subgraphApi } from "../redux/store";
 
-export const useTokenPairQuery = (
-  network: Network,
+export const useTokenPairQuery = ({
+  network,
+  tokenPair,
+}: {
+  network: Network;
   tokenPair?: {
     superTokenAddress: string;
     underlyingTokenAddress: string;
-  }
-) => {
-  const { superToken } = subgraphApi.useTokenQuery(
-    tokenPair
-      ? {
-          chainId: network.id,
-          id: tokenPair.superTokenAddress,
-        }
-      : skipToken,
+  };
+}) => {
+  const { tokenPairs } = subgraphApi.useTokenUpgradeDowngradePairsQuery(
     {
-      selectFromResult: (result) => {
-        const isNativeAssetSuperToken =
-          result.originalArgs?.id?.toLowerCase() ===
-          network.nativeCurrency.superToken.address.toLowerCase();
-
-        return {
-          superToken: isNativeAssetSuperToken
-            ? network.nativeCurrency.superToken
-            : result.currentData
-            ? ({
-                ...result.currentData,
-                type: getSuperTokenType({
-                  network,
-                  address: result.currentData.id,
-                  underlyingAddress: result.currentData.underlyingAddress,
-                }),
-                address: result.currentData.id,
-              } as TokenMinimal)
-            : null,
-        };
-      },
+      chainId: network.id,
+    },
+    {
+      selectFromResult: (result) => ({
+        tokenPairs: result.data ?? [getNetworkDefaultTokenPair(network)],
+      }),
     }
   );
 
-  const { underlyingToken } = subgraphApi.useTokenQuery(
-    tokenPair
-      ? {
-          chainId: network.id,
-          id: tokenPair.underlyingTokenAddress,
-        }
-      : skipToken,
-    {
-      selectFromResult: (result) => {
-        const isNativeAssetUnderlyingToken =
-          result.originalArgs?.id === NATIVE_ASSET_ADDRESS;
+  const tokenPairObjects: SuperTokenPair | undefined = tokenPair
+    ? tokenPairs.find(
+        (x) =>
+          x.superToken.address.toLowerCase() ===
+            tokenPair.superTokenAddress.toLowerCase() &&
+          x.underlyingToken.address.toLowerCase() ===
+            tokenPair.underlyingTokenAddress.toLowerCase()
+      )
+    : undefined;
 
-        return {
-          underlyingToken: isNativeAssetUnderlyingToken
-            ? network.nativeCurrency
-            : result.currentData
-            ? ({
-                ...result.currentData,
-                address: result.currentData.id,
-                type: getUnderlyingTokenType({
-                  address: result.currentData.id,
-                }),
-              } as TokenMinimal)
-            : null,
-        };
-      },
-    }
-  );
-
+  const { superToken, underlyingToken } = tokenPairObjects ?? {};
   return { superToken, underlyingToken };
 };

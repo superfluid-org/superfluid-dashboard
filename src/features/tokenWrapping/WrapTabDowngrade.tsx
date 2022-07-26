@@ -26,9 +26,7 @@ import { TokenDialogButton } from "./TokenDialogButton";
 import { ArrowDownIcon, WrapInputCard } from "./WrapCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 import { useAccount } from "wagmi";
-import {
-  NATIVE_ASSET_ADDRESS,
-} from "../redux/endpoints/tokenTypes";
+import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import { useTokenPairQuery } from "./useTokenPairQuery";
 import { getNetworkDefaultTokenPair } from "../network/networks";
 
@@ -62,7 +60,13 @@ export const WrapTabDowngrade: FC = () => {
 
   const [tokenPair, amount] = watch(["data.tokenPair", "data.amountDecimal"]);
 
-  const { superToken, underlyingToken } = useTokenPairQuery(network, tokenPair);
+  const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
+    chainId: network.id,
+  });
+  const { superToken, underlyingToken } = useTokenPairQuery({
+    network,
+    tokenPair,
+  });
 
   const [downgradeTrigger, downgradeResult] =
     rpcApi.useSuperTokenDowngradeMutation();
@@ -77,10 +81,6 @@ export const WrapTabDowngrade: FC = () => {
   useEffect(() => {
     amountInputRef.current.focus();
   }, [amountInputRef, tokenPair]);
-
-  const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
-    chainId: network.id,
-  });
 
   const { data: _discard, ...realtimeBalanceQuery } =
     rpcApi.useRealtimeBalanceQuery(
@@ -139,9 +139,20 @@ export const WrapTabDowngrade: FC = () => {
                 onTokenSelect={(token) => {
                   resetField("data.amountDecimal");
                   const tokenPair = tokenPairsQuery?.data?.find(
-                    (x) => x.superToken.address === token.address
-                  ) ?? getNetworkDefaultTokenPair(network);
-                  return onChange(tokenPair);
+                    (x) =>
+                      x.superToken.address.toLowerCase() ===
+                      token.address.toLowerCase()
+                  );
+                  if (tokenPair) {
+                    onChange({
+                      superTokenAddress: tokenPair.superToken.address,
+                      underlyingTokenAddress: tokenPair.underlyingToken.address,
+                    } as WrappingForm["data"]["tokenPair"]);
+                  } else {
+                    console.error(
+                      "Token not selected for downgrade. This should never happen!"
+                    );
+                  }
                 }}
                 onBlur={onBlur}
                 ButtonProps={{

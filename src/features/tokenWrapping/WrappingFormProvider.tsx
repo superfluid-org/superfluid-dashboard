@@ -55,7 +55,6 @@ const WrappingFormProvider: FC<{
   const { token: tokenQueryParam } = router.query;
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryUnderlyingBalance] = rpcApi.useLazyUnderlyingBalanceQuery();
-  const [queryToken] = subgraphApi.useLazyTokenQuery();
   const { address: accountAddress, connector: activeConnector } = useAccount();
 
   const formSchema = useMemo(
@@ -94,38 +93,39 @@ const WrappingFormProvider: FC<{
           });
         };
 
+        const { superTokenAddress, underlyingTokenAddress } =
+          validForm.data.tokenPair;
+
         if (accountAddress) {
           if (type === RestorationType.Upgrade) {
-            const underlyingTokenAddress =
-              validForm.data.tokenPair.underlyingTokenAddress;
-
-            const [underlyingToken, underlyingBalance] = await Promise.all([
-              await queryToken(
-                {
-                  chainId: network.id,
-                  id: underlyingTokenAddress,
-                },
-                true
-              ).unwrap(),
-              await queryUnderlyingBalance({
-                accountAddress,
-                tokenAddress: underlyingTokenAddress,
-                chainId: network.id,
-              }).unwrap(),
-            ]);
+            const { underlyingToken } = tokenPairsQuery.data?.find(
+              (x) =>
+                x.superToken.address.toLowerCase() ===
+                  superTokenAddress.toLowerCase() &&
+                x.underlyingToken.address.toLowerCase() ===
+                  underlyingTokenAddress.toLowerCase()
+            ) ?? {};
 
             if (!underlyingToken) {
               handleHigherOrderValidationError({
-                message: "Underlying token not found. This should never happen. Please refresh the page or contact support!",
+                message:
+                  "Underlying token not found. This should never happen. Please refresh the page or contact support!",
               });
               return false;
             }
+
+            const underlyingBalance = await queryUnderlyingBalance({
+              accountAddress,
+              tokenAddress: underlyingTokenAddress,
+              chainId: network.id,
+            }).unwrap();
 
             const underlyingBalanceBigNumber = BigNumber.from(
               underlyingBalance.balance
             );
             const wrapAmountBigNumber = parseUnits(
-              validForm.data.amountDecimal, underlyingToken.decimals
+              validForm.data.amountDecimal,
+              underlyingToken.decimals
             );
 
             const isWrappingIntoNegative =
@@ -136,7 +136,8 @@ const WrappingFormProvider: FC<{
               });
             }
 
-            const isNativeAsset = underlyingTokenAddress === NATIVE_ASSET_ADDRESS;
+            const isNativeAsset =
+              underlyingTokenAddress === NATIVE_ASSET_ADDRESS;
             if (isNativeAsset) {
               const isWrappingIntoZero = BigNumber.from(
                 underlyingBalanceBigNumber
@@ -178,7 +179,10 @@ const WrappingFormProvider: FC<{
                 parseUnits(validForm.data.amountDecimal, 18)
               );
 
-              const amountBigNumber = parseUnits(validForm.data.amountDecimal, 18);
+              const amountBigNumber = parseUnits(
+                validForm.data.amountDecimal,
+                18
+              );
               const isWrappingIntoNegative =
                 currentBalanceBigNumber.lt(amountBigNumber);
               if (isWrappingIntoNegative) {
@@ -237,9 +241,13 @@ const WrappingFormProvider: FC<{
   const { formState, setValue, trigger, clearErrors, setError, watch } =
     formMethods;
 
+  const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
+    chainId: network.id,
+  });
+
   const [hasRestored, setHasRestored] = useState(!restoration);
   useEffect(() => {
-    if (restoration) {
+    if (restoration && tokenPairsQuery.isSuccess) {
       setValue("type", restoration.type, {
         shouldDirty: false,
         shouldTouch: false,
@@ -253,11 +261,7 @@ const WrappingFormProvider: FC<{
       setValue("data.tokenPair", restoration.tokenPair, formRestorationOptions);
       setHasRestored(true);
     }
-  }, [restoration]);
-
-  const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
-    chainId: network.id,
-  });
+  }, [restoration, tokenPairsQuery.isSuccess]);
 
   useEffect(() => {
     if (isString(tokenQueryParam) && tokenPairsQuery.data) {
