@@ -245,9 +245,8 @@ const StreamPageContainer: FC<{
   children?: ReactChild;
 }> = ({ urlToShare, children }) => (
   <SEO
-    title="Stream | Superfluid"
-    description="I’m streaming money every second with @Superfluid_HQ! Check out my stream here!"
-    ogTitle="Superfluid Stream"
+    title="Stream Details | Superfluid"
+    ogTitle="Stream Details | Superfluid"
     ogUrl={urlToShare}
     ogImage={`${config.appUrl}/images/stream.jpg`}
   >

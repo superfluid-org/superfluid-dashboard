@@ -27,7 +27,7 @@ const SEO: FC<SEOProps> = ({
   children,
   // General meta tags
   title = `Superfluid`,
-  description = `Handle subscriptions, salaries, rewards and any composable stream of value, with continuous settlement and per-second netting for extreme capital efficiency.`,
+  description = `Superfluid is an asset streaming protocol that brings subscriptions, salaries and rewards to DAOs and crypto-native businesses.`,
   // Open Graph metadata
   ogTitle = `Superfluid Dashboard`,
   ogDescription = description,
@@ -36,8 +36,8 @@ const SEO: FC<SEOProps> = ({
   // Twitter card metadata
   twitterCard = "summary_large_image",
   twitterTitle = `Superfluid - Rails for Real-Time Finance`,
-  twitterDescription = `Superfluid is a new Ethereum Protocol that extends Ethereum tokens to include novel functionalities. Superfluid enables functionalities like money streaming and reward distribution.`,
-  twitterSite = `Superfluid_HQ`,
+  twitterDescription = `Superfluid is an asset streaming protocol that brings subscriptions, salaries and rewards to DAOs and crypto-native businesses.`,
+  twitterSite = `@Superfluid_HQ`,
   twitterCreator = `@Superfluid_HQ`,
 }) => {
   const router = useRouter();
