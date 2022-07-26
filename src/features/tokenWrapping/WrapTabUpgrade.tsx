@@ -66,7 +66,7 @@ export const WrapTabUpgrade: FC = () => {
     });
   }, []);
 
-  const [tokenPair, amount] = watch(["data.tokenPair", "data.amountEther"]);
+  const [tokenPair, amountDecimal] = watch(["data.tokenPair", "data.amountDecimal"]);
 
   const [amountWei, setAmountWei] = useState<BigNumber>(
     ethers.BigNumber.from(0)
@@ -75,17 +75,17 @@ export const WrapTabUpgrade: FC = () => {
   const { superToken, underlyingToken } = useTokenPairQuery(network, tokenPair);
 
   useEffect(() => {
-    if (underlyingToken && amount) {
+    if (underlyingToken && amountDecimal) {
       setAmountWei(
         parseAmountOrZero({
-          value: amount,
+          value: amountDecimal,
           decimals: underlyingToken.decimals,
         })
       );
     } else {
       setAmountWei(BigNumber.from("0"));
     }
-  }, [amount, underlyingToken]);
+  }, [amountDecimal, underlyingToken]);
 
   const isUnderlyingBlockchainNativeAsset =
     tokenPair?.underlyingTokenAddress === NATIVE_ASSET_ADDRESS;
@@ -162,7 +162,7 @@ export const WrapTabUpgrade: FC = () => {
         <Stack direction="row" spacing={2}>
           <Controller
             control={control}
-            name="data.amountEther"
+            name="data.amountDecimal"
             render={({ field: { onChange, onBlur } }) => (
               <Input
                 data-cy={"wrap-input"}
@@ -170,7 +170,7 @@ export const WrapTabUpgrade: FC = () => {
                 disableUnderline
                 placeholder="0.0"
                 inputRef={amountInputRef}
-                value={amount}
+                value={amountDecimal}
                 type="text"
                 inputMode="decimal"
                 onChange={onChange}
@@ -200,7 +200,7 @@ export const WrapTabUpgrade: FC = () => {
                   },
                 }}
                 onTokenSelect={(token) => {
-                  resetField("data.amountEther");
+                  resetField("data.amountDecimal");
                   return onChange(
                     tokenPairsQuery?.data?.find(
                       (x) => x.underlyingToken.address === token.address
@@ -230,7 +230,7 @@ export const WrapTabUpgrade: FC = () => {
             {underlyingBalance && (
               <Controller
                 control={control}
-                name="data.amountEther"
+                name="data.amountDecimal"
                 render={({ field: { onChange, onBlur } }) => (
                   <Button
                     variant="textContained"
@@ -262,7 +262,7 @@ export const WrapTabUpgrade: FC = () => {
               fullWidth
               disableUnderline
               placeholder="0.0"
-              value={amount}
+              value={amountDecimal}
               inputProps={{
                 sx: {
                   ...theme.typography.largeInput,
@@ -324,7 +324,7 @@ export const WrapTabUpgrade: FC = () => {
                 <AllowancePreview
                   {...{
                     amountWei: approveAllowanceAmountWei.toString(),
-                    amountDecimals: underlyingToken.decimals,
+                    decimals: underlyingToken.decimals,
                     tokenSymbol: underlyingToken.symbol,
                   }}
                 />
@@ -380,7 +380,7 @@ export const WrapTabUpgrade: FC = () => {
               version: 2,
               chainId: network.id,
               tokenPair: tokenPair,
-              amountWei: parseEther(formData.amountEther).toString(),
+              amountWei: parseEther(formData.amountDecimal).toString(),
             };
 
             const overrides = await getTransactionOverrides(network);
@@ -395,13 +395,13 @@ export const WrapTabUpgrade: FC = () => {
             }
 
             const amountWei = parseUnits(
-              formData.amountEther,
+              formData.amountDecimal,
               underlyingToken.decimals
             );
             upgradeTrigger({
               signer,
               chainId: network.id,
-              amountWei: parseEther(formData.amountEther).toString(),
+              amountWei: parseEther(formData.amountDecimal).toString(),
               superTokenAddress: formData.tokenPair.superTokenAddress,
               waitForConfirmation: true,
               transactionExtraData: {
@@ -417,7 +417,7 @@ export const WrapTabUpgrade: FC = () => {
                 <UpgradePreview
                   {...{
                     amountWei: amountWei,
-                    amountDecimals: underlyingToken.decimals,
+                    decimals: underlyingToken.decimals,
                     superTokenSymbol: superToken.symbol,
                     underlyingTokenSymbol: underlyingToken.symbol,
                   }}
@@ -457,18 +457,18 @@ export const WrapTabUpgrade: FC = () => {
 
 const UpgradePreview: FC<{
   amountWei: BigNumberish;
-  amountDecimals: number;
+  decimals: number;
   underlyingTokenSymbol: string;
   superTokenSymbol: string;
 }> = ({
   underlyingTokenSymbol,
   superTokenSymbol,
   amountWei,
-  amountDecimals,
+  decimals,
 }) => {
   return (
     <Typography variant="h5" color="text.secondary">
-      You are upgrading from {formatUnits(amountWei, amountDecimals)}{" "}
+      You are upgrading from {formatUnits(amountWei, decimals)}{" "}
       {underlyingTokenSymbol} to the super token {superTokenSymbol}.
     </Typography>
   );
@@ -476,13 +476,13 @@ const UpgradePreview: FC<{
 
 const AllowancePreview: FC<{
   amountWei: BigNumberish;
-  amountDecimals: number;
+  decimals: number;
   tokenSymbol: string;
-}> = ({ amountWei, amountDecimals, tokenSymbol }) => {
+}> = ({ amountWei, decimals, tokenSymbol }) => {
   return (
     <Typography variant="h5" color="text.secondary">
       You are approving extra allowance of{" "}
-      {formatUnits(amountWei, amountDecimals)} {tokenSymbol} for Superfluid
+      {formatUnits(amountWei, decimals)} {tokenSymbol} for Superfluid
       Protocol to use.
     </Typography>
   );

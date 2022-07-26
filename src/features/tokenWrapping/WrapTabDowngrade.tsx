@@ -1,6 +1,5 @@
 import { Button, Input, Stack, Typography, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { ethers } from "ethers";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import { useRouter } from "next/router";
 import { FC, useEffect, useRef } from "react";
@@ -29,13 +28,9 @@ import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 import { useAccount } from "wagmi";
 import {
   NATIVE_ASSET_ADDRESS,
-  TokenMinimal,
 } from "../redux/endpoints/tokenTypes";
-import {
-  getSuperTokenType,
-  getUnderlyingTokenType,
-} from "../redux/endpoints/adHocSubgraphEndpoints";
 import { useTokenPairQuery } from "./useTokenPairQuery";
+import { getNetworkDefaultTokenPair } from "../network/networks";
 
 export const WrapTabDowngrade: FC = () => {
   const theme = useTheme();
@@ -65,7 +60,7 @@ export const WrapTabDowngrade: FC = () => {
     });
   }, []);
 
-  const [tokenPair, amount] = watch(["data.tokenPair", "data.amountEther"]);
+  const [tokenPair, amount] = watch(["data.tokenPair", "data.amountDecimal"]);
 
   const { superToken, underlyingToken } = useTokenPairQuery(network, tokenPair);
 
@@ -104,7 +99,7 @@ export const WrapTabDowngrade: FC = () => {
         <Stack direction="row" spacing={2}>
           <Controller
             control={control}
-            name="data.amountEther"
+            name="data.amountDecimal"
             render={({ field: { onChange, onBlur } }) => (
               <Input
                 data-cy={"unwrap-input"}
@@ -142,12 +137,11 @@ export const WrapTabDowngrade: FC = () => {
                   },
                 }}
                 onTokenSelect={(token) => {
-                  resetField("data.amountEther");
-                  return onChange(
-                    tokenPairsQuery?.data?.find(
-                      (x) => x.superToken.address === token.address
-                    )
-                  );
+                  resetField("data.amountDecimal");
+                  const tokenPair = tokenPairsQuery?.data?.find(
+                    (x) => x.superToken.address === token.address
+                  ) ?? getNetworkDefaultTokenPair(network);
+                  return onChange(tokenPair);
                 }}
                 onBlur={onBlur}
                 ButtonProps={{
@@ -173,7 +167,7 @@ export const WrapTabDowngrade: FC = () => {
             {realtimeBalanceQuery.currentData && (
               <Controller
                 control={control}
-                name="data.amountEther"
+                name="data.amountDecimal"
                 render={({ field: { onChange, onBlur } }) => (
                   <Button
                     variant="textContained"
@@ -280,7 +274,7 @@ export const WrapTabDowngrade: FC = () => {
             version: 2,
             chainId: network.id,
             tokenPair: formData.tokenPair,
-            amountWei: parseEther(formData.amountEther).toString(),
+            amountWei: parseEther(formData.amountDecimal).toString(),
           };
 
           const overrides = await getTransactionOverrides(network);
@@ -296,7 +290,7 @@ export const WrapTabDowngrade: FC = () => {
           downgradeTrigger({
             signer,
             chainId: network.id,
-            amountWei: parseEther(formData.amountEther).toString(),
+            amountWei: parseEther(formData.amountDecimal).toString(),
             superTokenAddress: formData.tokenPair.superTokenAddress,
             waitForConfirmation: true,
             transactionExtraData: {
@@ -311,7 +305,7 @@ export const WrapTabDowngrade: FC = () => {
             label: (
               <DowngradePreview
                 {...{
-                  amountWei: parseEther(formData.amountEther).toString(),
+                  amountWei: parseEther(formData.amountDecimal).toString(),
                   superTokenSymbol: superToken.symbol,
                   underlyingTokenSymbol: underlyingToken.symbol,
                 }}

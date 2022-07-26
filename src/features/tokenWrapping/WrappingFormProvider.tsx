@@ -2,7 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
 import { FC, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { number, object, ObjectSchema, string } from "yup";
+import { object, ObjectSchema, string } from "yup";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   formRestorationOptions,
@@ -14,7 +14,7 @@ import { getNetworkDefaultTokenPair } from "../network/networks";
 import { isString } from "lodash";
 import { rpcApi, subgraphApi } from "../redux/store";
 import { formatEther, parseEther } from "ethers/lib/utils";
-import { useAccount, useConnect } from "wagmi";
+import { useAccount } from "wagmi";
 import { BigNumber } from "ethers";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import {
@@ -30,7 +30,7 @@ export type WrappingForm = {
       superTokenAddress: string;
       underlyingTokenAddress: string;
     };
-    amountEther?: string;
+    amountDecimal?: string;
   };
 };
 
@@ -40,7 +40,7 @@ export type ValidWrappingForm = {
       superTokenAddress: string;
       underlyingTokenAddress: string;
     };
-    amountEther: string;
+    amountDecimal: string;
   };
 };
 
@@ -55,6 +55,7 @@ const WrappingFormProvider: FC<{
   const { token: tokenQueryParam } = router.query;
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryUnderlyingBalance] = rpcApi.useLazyUnderlyingBalanceQuery();
+  const [queryToken] = subgraphApi.useLazyTokenQuery();
   const { address: accountAddress, connector: activeConnector } = useAccount();
 
   const formSchema = useMemo(
@@ -68,7 +69,7 @@ const WrappingFormProvider: FC<{
               superTokenAddress: string().required().test(testAddress()),
               underlyingTokenAddress: string().required().test(testAddress()),
             }).required(),
-            amountEther: string()
+            amountDecimal: string()
               .required()
               .test(testEtherAmount({ notNegative: true, notZero: true })),
           }),
@@ -106,7 +107,7 @@ const WrappingFormProvider: FC<{
             const underlyingBalanceBigNumber = BigNumber.from(
               underlyingBalance.balance
             );
-            const wrapAmountBigNumber = parseEther(validForm.data.amountEther);
+            const wrapAmountBigNumber = parseEther(validForm.data.amountDecimal);
 
             const isWrappingIntoNegative =
               underlyingBalanceBigNumber.lt(wrapAmountBigNumber);
@@ -155,10 +156,10 @@ const WrappingFormProvider: FC<{
                 balanceTimestampMs: realtimeBalance.balanceTimestamp,
               });
               const balanceAfterWrappingBigNumber = currentBalanceBigNumber.sub(
-                parseEther(validForm.data.amountEther)
+                parseEther(validForm.data.amountDecimal)
               );
 
-              const amountBigNumber = parseEther(validForm.data.amountEther);
+              const amountBigNumber = parseEther(validForm.data.amountDecimal);
               const isWrappingIntoNegative =
                 currentBalanceBigNumber.lt(amountBigNumber);
               if (isWrappingIntoNegative) {
@@ -207,14 +208,15 @@ const WrappingFormProvider: FC<{
           underlyingTokenAddress:
             networkDefaultTokenPair.underlyingToken.address,
         },
-        amountEther: "",
+        amountDecimal: "",
       },
     },
     mode: "onChange",
     resolver: yupResolver(formSchema),
   });
 
-  const { formState, setValue, trigger, clearErrors, setError } = formMethods;
+  const { formState, setValue, trigger, clearErrors, setError, watch } =
+    formMethods;
 
   const [hasRestored, setHasRestored] = useState(!restoration);
   useEffect(() => {
@@ -225,7 +227,7 @@ const WrappingFormProvider: FC<{
         shouldValidate: false,
       });
       setValue(
-        "data.amountEther",
+        "data.amountDecimal",
         formatEther(restoration.amountWei),
         formRestorationOptions
       );
