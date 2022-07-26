@@ -26,17 +26,17 @@ interface SEOProps {
 const SEO: FC<SEOProps> = ({
   children,
   // General meta tags
-  title = `Superfluid`,
+  title = `Superfluid Dashboard`,
   description = `Superfluid is an asset streaming protocol that brings subscriptions, salaries and rewards to DAOs and crypto-native businesses.`,
   // Open Graph metadata
-  ogTitle = `Superfluid Dashboard`,
+  ogTitle = title,
   ogDescription = description,
   ogUrl,
   ogImage = `${config.appUrl}/images/superfluid-thumbnail.png`,
   // Twitter card metadata
   twitterCard = "summary_large_image",
-  twitterTitle = `Superfluid - Rails for Real-Time Finance`,
-  twitterDescription = `Superfluid is an asset streaming protocol that brings subscriptions, salaries and rewards to DAOs and crypto-native businesses.`,
+  twitterTitle = ogTitle,
+  twitterDescription = ogDescription,
   twitterSite = `@Superfluid_HQ`,
   twitterCreator = `@Superfluid_HQ`,
 }) => {
