@@ -254,27 +254,36 @@ The chain ID was: ${network.id}`);
   const [hasRestored, setHasRestored] = useState(!restoration);
   useEffect(() => {
     if (restoration && tokenPairsQuery.isSuccess) {
+      const { superTokenAddress, underlyingTokenAddress } =
+        restoration.tokenPair;
+      const tokenPair = tokenPairsQuery.data.find(
+        (x) =>
+          x.superToken.address.toLowerCase() ===
+            superTokenAddress.toLowerCase() &&
+          x.underlyingToken.address.toLowerCase() ===
+            underlyingTokenAddress.toLowerCase()
+      );
+
+      if (!tokenPair) {
+        console.error(`Couldn't restore transaction. This shouldn't happen!`);
+        return;
+      }
+
+      setValue("type", restoration.type, {
+        shouldDirty: false,
+        shouldTouch: false,
+        shouldValidate: false,
+      });
+      setValue("data.tokenPair", restoration.tokenPair, formRestorationOptions);
       if (restoration.type === RestorationType.Downgrade) {
-        const { superTokenAddress, underlyingTokenAddress } =
-          restoration.tokenPair;
-        const { underlyingToken } =
-          tokenPairsQuery.data.find(
-            (x) =>
-              x.superToken.address.toLowerCase() ===
-                superTokenAddress.toLowerCase() &&
-              x.underlyingToken.address.toLowerCase() ===
-                underlyingTokenAddress.toLowerCase()
-          ) ?? {};
-        if (underlyingToken) {
-          setValue(
-            "data.amountDecimal",
-            formatUnits(restoration.amountWei, underlyingToken.decimals),
-            formRestorationOptions
-          );
-        } else {
-          console.error(`Couldn't restore transaction. This shouldn't happen!`);
-          return;
-        }
+        setValue(
+          "data.amountDecimal",
+          formatUnits(
+            restoration.amountWei,
+            tokenPair.underlyingToken.decimals
+          ),
+          formRestorationOptions
+        );
       } else {
         setValue(
           "data.amountDecimal",
@@ -282,12 +291,7 @@ The chain ID was: ${network.id}`);
           formRestorationOptions
         );
       }
-      setValue("type", restoration.type, {
-        shouldDirty: false,
-        shouldTouch: false,
-        shouldValidate: false,
-      });
-      setValue("data.tokenPair", restoration.tokenPair, formRestorationOptions);
+
       setHasRestored(true);
     }
   }, [restoration, tokenPairsQuery.isSuccess]);
