@@ -390,6 +390,15 @@ export const WrapTabUpgrade: FC = () => {
               formData.amountDecimal,
               underlyingToken.decimals
             );
+
+            console.log({
+              formDataAmountDecimal: formData.amountDecimal,
+              underlyingTokenDecimals: underlyingToken.decimals,
+              amountWei: amountWei.toString(),
+              superToken,
+              underlyingToken,
+            });
+
             const restoration: SuperTokenUpgradeRestoration = {
               type: RestorationType.Upgrade,
               version: 2,
