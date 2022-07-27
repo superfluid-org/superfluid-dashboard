@@ -13,7 +13,7 @@ import {
 import { getNetworkDefaultTokenPair } from "../network/networks";
 import { isString } from "lodash";
 import { rpcApi, subgraphApi } from "../redux/store";
-import { formatEther, formatUnits, parseUnits } from "ethers/lib/utils";
+import { formatEther, formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
 import { useAccount } from "wagmi";
 import { BigNumber } from "ethers";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
@@ -186,7 +186,7 @@ The chain ID was: ${network.id}`);
                 balanceTimestampMs: realtimeBalance.balanceTimestamp,
               });
               const balanceAfterWrappingBigNumber = currentBalanceBigNumber.sub(
-                parseUnits(validForm.data.amountDecimal, 18)
+                parseEther(validForm.data.amountDecimal) // Always "ether" when downgrading. No need to worry about decimals for super tokens.
               );
 
               const amountBigNumber = parseUnits(

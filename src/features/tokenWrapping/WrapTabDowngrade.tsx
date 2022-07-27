@@ -285,7 +285,7 @@ export const WrapTabDowngrade: FC = () => {
             version: 2,
             chainId: network.id,
             tokenPair: formData.tokenPair,
-            amountWei: parseUnits(formData.amountDecimal, 18).toString(),
+            amountWei: parseEther(formData.amountDecimal).toString(),
           };
 
           const overrides = await getTransactionOverrides(network);
@@ -301,7 +301,7 @@ export const WrapTabDowngrade: FC = () => {
           downgradeTrigger({
             signer,
             chainId: network.id,
-            amountWei: parseUnits(formData.amountDecimal, 18).toString(),
+            amountWei: parseEther(formData.amountDecimal).toString(),
             superTokenAddress: formData.tokenPair.superTokenAddress,
             waitForConfirmation: true,
             transactionExtraData: {
@@ -316,7 +316,7 @@ export const WrapTabDowngrade: FC = () => {
             label: (
               <DowngradePreview
                 {...{
-                  amountWei: parseUnits(formData.amountDecimal, 18).toString(),
+                  amountWei: parseEther(formData.amountDecimal).toString(),
                   superTokenSymbol: superToken.symbol,
                   underlyingTokenSymbol: underlyingToken.symbol,
                 }}

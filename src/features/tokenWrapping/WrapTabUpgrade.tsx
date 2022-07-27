@@ -1,7 +1,7 @@
 import { Button, Input, Stack, Typography, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { BigNumber, BigNumberish, ethers } from "ethers";
-import { formatUnits, parseUnits } from "ethers/lib/utils";
+import { formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
 import { useRouter } from "next/router";
 import { FC, useEffect, useRef, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
@@ -389,8 +389,8 @@ export const WrapTabUpgrade: FC = () => {
 
             const { data: formData } = getValues() as ValidWrappingForm;
 
-            // When upgrading, always use super token's decimals.
-            const amountWei = parseUnits(formData.amountDecimal, 18);
+            // Use super token's decimals for upgrading, not the underlying's.
+            const amountWei = parseEther(formData.amountDecimal);
 
             const restoration: SuperTokenUpgradeRestoration = {
               type: RestorationType.Upgrade,
@@ -474,7 +474,7 @@ const UpgradePreview: FC<{
 }> = ({ underlyingTokenSymbol, superTokenSymbol, amountWei }) => {
   return (
     <Typography variant="h5" color="text.secondary">
-      You are upgrading from {formatUnits(amountWei, 18)}{" "}
+      You are upgrading from {formatEther(amountWei)}{" "}
       {underlyingTokenSymbol} to the super token {superTokenSymbol}.
     </Typography>
   );
