@@ -221,11 +221,11 @@ export const StreamingPreview: FC<{
             label="Upfront buffer"
             oldValue={
               oldBufferAmount ? (
-                <Amount wei={oldBufferAmount} decimals={18}> {token.symbol}</Amount>
+                <Amount wei={oldBufferAmount}> {token.symbol}</Amount>
               ) : undefined
             }
           >
-            <Amount wei={newBufferAmount} decimals={18}> {token.symbol}</Amount>
+            <Amount wei={newBufferAmount}> {token.symbol}</Amount>
           </PreviewItem>
         )}
 

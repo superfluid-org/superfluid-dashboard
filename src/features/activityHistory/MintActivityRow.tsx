@@ -101,7 +101,7 @@ const MintActivityRow: FC<MintedActivity> = ({
                   primary={
                     <>
                       -
-                      <Amount wei={amount} decimals={18} />{" "}
+                      <Amount wei={amount} />{" "}
                       {underlyingToken.symbol}
                     </>
                   }
@@ -132,7 +132,7 @@ const MintActivityRow: FC<MintedActivity> = ({
                   primary={
                     <>
                       +
-                      <Amount wei={amount} decimals={18}>
+                      <Amount wei={amount}>
                         {" "}
                         {superToken.symbol}
                       </Amount>
@@ -171,7 +171,7 @@ const MintActivityRow: FC<MintedActivity> = ({
                 primary={
                   <>
                     +
-                    <Amount wei={amount} decimals={18}>
+                    <Amount wei={amount}>
                       {" "}
                       {superToken.symbol}
                     </Amount>
@@ -180,7 +180,7 @@ const MintActivityRow: FC<MintedActivity> = ({
                 secondary={
                   <>
                     -
-                    <Amount wei={amount} decimals={18}>
+                    <Amount wei={amount}>
                       {" "}
                       {underlyingToken.symbol}
                     </Amount>

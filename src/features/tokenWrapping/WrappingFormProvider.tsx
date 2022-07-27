@@ -189,9 +189,8 @@ The chain ID was: ${network.id}`);
                 parseEther(validForm.data.amountDecimal) // Always "ether" when downgrading. No need to worry about decimals for super tokens.
               );
 
-              const amountBigNumber = parseUnits(
-                validForm.data.amountDecimal,
-                18
+              const amountBigNumber = parseEther(
+                validForm.data.amountDecimal
               );
               const isWrappingIntoNegative =
                 currentBalanceBigNumber.lt(amountBigNumber);
@@ -275,22 +274,11 @@ The chain ID was: ${network.id}`);
         shouldValidate: false,
       });
       setValue("data.tokenPair", restoration.tokenPair, formRestorationOptions);
-      if (restoration.type === RestorationType.Downgrade) {
-        setValue(
-          "data.amountDecimal",
-          formatUnits(
-            restoration.amountWei,
-            tokenPair.underlyingToken.decimals
-          ),
-          formRestorationOptions
-        );
-      } else {
-        setValue(
-          "data.amountDecimal",
-          formatUnits(restoration.amountWei, 18),
-          formRestorationOptions
-        );
-      }
+      setValue(
+        "data.amountDecimal",
+        formatUnits(restoration.amountWei, 18),
+        formRestorationOptions
+      );
 
       setHasRestored(true);
     }

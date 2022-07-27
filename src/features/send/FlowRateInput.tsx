@@ -48,12 +48,12 @@ export const flowRateWeiToString = (
   tokenSymbol?: string
 ) =>
   tokenSymbol ? (
-    <Amount wei={flowRateWei.amountWei} decimals={18}>
+    <Amount wei={flowRateWei.amountWei}>
       {" "}
       {tokenSymbol}/{timeUnitWordMap[flowRateWei.unitOfTime]}
     </Amount>
   ) : (
-    <Amount wei={flowRateWei.amountWei} decimals={18}>
+    <Amount wei={flowRateWei.amountWei}>
       /{timeUnitWordMap[flowRateWei.unitOfTime]}
     </Amount>
   );

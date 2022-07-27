@@ -158,7 +158,6 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
                 {isOutgoing ? "-" : "+"}
                 <Amount
                   wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
-                  decimals={18}
                 />
                 /mo
               </Typography>
@@ -198,7 +197,6 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
                   {isOutgoing ? "-" : "+"}
                   <Amount
                     wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
-                    decimals={18}
                   />
                   /mo
                 </>

@@ -518,7 +518,6 @@ const StreamPageContent: FC<{
             <Typography variant="h6">
               <Amount
                 wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
-                decimals={18}
               />
             </Typography>
 
@@ -552,7 +551,7 @@ const StreamPageContent: FC<{
             value={
               bufferSize ? (
                 <>
-                  <Amount wei={bufferSize} decimals={18} /> {tokenSymbol}
+                  <Amount wei={bufferSize} /> {tokenSymbol}
                 </>
               ) : (
                 "-"

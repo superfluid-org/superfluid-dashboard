@@ -109,7 +109,7 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
               <ListItemText
                 primary={
                   <>
-                    <Amount wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)} decimals={18}>
+                    <Amount wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)}>
                       {" "}
                       {tokenQuery.data ? `${tokenQuery.data.symbol}/mo` : "/mo"}
                     </Amount>
@@ -169,7 +169,7 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
           <Stack direction="row" alignItems="center" gap={1}>
             <ListItemText
               primary={
-                <Amount wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)} decimals={18} />
+                <Amount wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)} />
               }
               secondary={
                 tokenQuery.data ? `${tokenQuery.data.symbol}/mo` : "/mo"

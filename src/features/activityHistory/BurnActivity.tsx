@@ -100,7 +100,7 @@ const BurnActivity: FC<BurnedActivity> = ({
                   primary={
                     <>
                       -
-                      <Amount wei={amount} decimals={18}>
+                      <Amount wei={amount}>
                         {" "}
                         {superToken.symbol}
                       </Amount>
@@ -133,7 +133,7 @@ const BurnActivity: FC<BurnedActivity> = ({
                   primary={
                     <>
                       +
-                      <Amount wei={amount} decimals={18}>
+                      <Amount wei={amount}>
                         {" "}
                         {underlyingToken.symbol}
                       </Amount>
@@ -172,7 +172,7 @@ const BurnActivity: FC<BurnedActivity> = ({
                 primary={
                   <>
                     +
-                    <Amount wei={amount} decimals={18}>
+                    <Amount wei={amount}>
                       {" "}
                       {underlyingToken.symbol}
                     </Amount>
@@ -181,7 +181,7 @@ const BurnActivity: FC<BurnedActivity> = ({
                 secondary={
                   <>
                     -
-                    <Amount wei={amount} decimals={18}>
+                    <Amount wei={amount}>
                       {" "}
                       {superToken.symbol}
                     </Amount>
