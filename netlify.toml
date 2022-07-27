@@ -84,6 +84,6 @@ for = "/*"
 
 [[redirects]]
   from = "/static/*"
-  to = "https://v1.superfluid.finance/static/"
+  to = "https://v1.superfluid.finance/static/:splat"
   status = 301
   force = false
