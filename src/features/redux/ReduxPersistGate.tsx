@@ -11,8 +11,8 @@ import { reduxPersistor } from "./store";
  */
 const ReduxPersistGate: FC = ({ children }) => {
   return (
-    <PersistGate loading={null} persistor={reduxPersistor}>
-      {SSR ? () => children : children}
+    <PersistGate persistor={reduxPersistor}>
+      {(bootstrapped) => (!!(bootstrapped || SSR) ? children : null)}
     </PersistGate>
   );
 };
