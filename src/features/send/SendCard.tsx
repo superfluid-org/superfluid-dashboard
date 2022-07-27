@@ -164,6 +164,8 @@ export default memo(function SendCard() {
 
         <ErrorMessage
           name="data"
+          // ErrorMessage has a bug and current solution is to pass in errors via props.
+          // TODO: keep eye on this issue: https://github.com/react-hook-form/error-message/issues/91
           errors={formState.errors}
           render={({ message }) =>
             !!message && (
