@@ -4,7 +4,7 @@ import { FC, MouseEvent, useCallback, useEffect, useState } from "react";
 import { Box, MenuItem, Select, TextField } from "@mui/material";
 import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
-import Ether from "../token/Ether";
+import Amount from "../token/Amount";
 
 /**
  * Enum numerical value is expressed in seconds.
@@ -48,14 +48,14 @@ export const flowRateWeiToString = (
   tokenSymbol?: string
 ) =>
   tokenSymbol ? (
-    <Ether wei={flowRateWei.amountWei} decimals={18}>
+    <Amount wei={flowRateWei.amountWei} decimals={18}>
       {" "}
       {tokenSymbol}/{timeUnitWordMap[flowRateWei.unitOfTime]}
-    </Ether>
+    </Amount>
   ) : (
-    <Ether wei={flowRateWei.amountWei} decimals={18}>
+    <Amount wei={flowRateWei.amountWei} decimals={18}>
       /{timeUnitWordMap[flowRateWei.unitOfTime]}
-    </Ether>
+    </Amount>
   );
 
 export const flowRateEtherToString = (

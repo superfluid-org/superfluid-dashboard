@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { FC } from "react";
 import TokenIcon from "../token/TokenIcon";
-import Ether from "../token/Ether";
+import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
 import { rpcApi } from "../redux/store";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
@@ -117,7 +117,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
               flowRate={fRate}
             />
           ) : (
-            <Ether
+            <Amount
               wei={checkedBalanceWei}
               decimals={token.decimals}
               roundingIndicator="~"

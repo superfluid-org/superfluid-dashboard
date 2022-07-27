@@ -16,7 +16,7 @@ import { BurnedActivity } from "../../utils/activityUtils";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
-import Ether from "../token/Ether";
+import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import ActivityIcon from "./ActivityIcon";
 
@@ -100,10 +100,10 @@ const BurnActivity: FC<BurnedActivity> = ({
                   primary={
                     <>
                       -
-                      <Ether wei={amount} decimals={18}>
+                      <Amount wei={amount} decimals={18}>
                         {" "}
                         {superToken.symbol}
-                      </Ether>
+                      </Amount>
                     </>
                   }
                   /**
@@ -133,10 +133,10 @@ const BurnActivity: FC<BurnedActivity> = ({
                   primary={
                     <>
                       +
-                      <Ether wei={amount} decimals={underlyingToken.decimals}>
+                      <Amount wei={amount} decimals={underlyingToken.decimals}>
                         {" "}
                         {underlyingToken.symbol}
-                      </Ether>
+                      </Amount>
                     </>
                   }
                   /**
@@ -172,19 +172,19 @@ const BurnActivity: FC<BurnedActivity> = ({
                 primary={
                   <>
                     +
-                    <Ether wei={amount} decimals={underlyingToken.decimals}>
+                    <Amount wei={amount} decimals={underlyingToken.decimals}>
                       {" "}
                       {underlyingToken.symbol}
-                    </Ether>
+                    </Amount>
                   </>
                 }
                 secondary={
                   <>
                     -
-                    <Ether wei={amount} decimals={18}>
+                    <Amount wei={amount} decimals={18}>
                       {" "}
                       {superToken.symbol}
-                    </Ether>
+                    </Amount>
                   </>
                 }
                 primaryTypographyProps={{ variant: "h7mono" }}

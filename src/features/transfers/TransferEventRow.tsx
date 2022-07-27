@@ -14,7 +14,7 @@ import { FC } from "react";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import Ether from "../token/Ether";
+import Amount from "../token/Amount";
 import { format } from "date-fns";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
@@ -105,7 +105,7 @@ const TransferEventRow: FC<TransferEventRowProps> = ({
       <TableCell align="right">
         {tokenQuery.data && (
           <ListItemText
-            primary={<Ether wei={value} decimals={tokenQuery.data.decimals} />}
+            primary={<Amount wei={value} decimals={tokenQuery.data.decimals} />}
             secondary={
               isBelowMd ? format(timestamp * 1000, "d MMM. yyyy") : undefined
             }

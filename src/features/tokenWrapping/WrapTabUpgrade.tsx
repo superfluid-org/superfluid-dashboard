@@ -1,7 +1,7 @@
 import { Button, Input, Stack, Typography, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { BigNumber, BigNumberish, ethers } from "ethers";
-import { formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
+import { formatEther, formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
 import { useRouter } from "next/router";
 import { FC, useEffect, useRef, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";

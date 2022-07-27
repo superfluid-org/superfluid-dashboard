@@ -16,7 +16,7 @@ import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { rpcApi } from "../redux/store";
-import Ether from "../token/Ether";
+import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import {
@@ -221,11 +221,11 @@ export const StreamingPreview: FC<{
             label="Upfront buffer"
             oldValue={
               oldBufferAmount ? (
-                <Ether wei={oldBufferAmount} decimals={18}> {token.symbol}</Ether>
+                <Amount wei={oldBufferAmount} decimals={18}> {token.symbol}</Amount>
               ) : undefined
             }
           >
-            <Ether wei={newBufferAmount} decimals={18}> {token.symbol}</Ether>
+            <Amount wei={newBufferAmount} decimals={18}> {token.symbol}</Amount>
           </PreviewItem>
         )}
 

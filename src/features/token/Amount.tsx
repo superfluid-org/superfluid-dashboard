@@ -2,19 +2,22 @@ import Decimal from "decimal.js";
 import { BigNumberish, utils } from "ethers";
 import { memo, ReactNode } from "react";
 
-interface EtherProps {
+interface AmountProps {
   wei: BigNumberish;
-  decimals: number;
-  disableRounding?: boolean;
   /**
-   * a.k.a "fixed" decimal places
+   * a.k.a "token decimals", "unit"
    */
-  etherDecimalPlaces?: number;
+  decimals: number;
+  /**
+   * a.k.a "fixed" _visible_ decimal places
+   */
+  decimalPlaces?: number;
+  disableRounding?: boolean;
   roundingIndicator?: "..." | "~";
   children?: ReactNode;
 }
 
-const getDecimalPlaces = (value: Decimal): number => {
+const getDecimalPlacesToRoundTo = (value: Decimal): number => {
   if (value.isZero()) {
     return 0;
   }
@@ -56,25 +59,25 @@ const getDecimalPlaces = (value: Decimal): number => {
   return 18;
 };
 
-// NOTE: Previously known as "EtherFormatted"
-export default memo<EtherProps>(function Ether({
+// NOTE: Previously known as "EtherFormatted" & "Ether"
+export default memo<AmountProps>(function Amount({
   wei,
   decimals,
   disableRounding,
-  etherDecimalPlaces,
   roundingIndicator,
   children,
+  ...props
 }) {
-  const ether = utils.formatUnits(wei, decimals ?? 18);
-  const decimal = new Decimal(ether);
-  const dp = etherDecimalPlaces ?? getDecimalPlaces(decimal);
-  const decimalRounded = disableRounding ? decimal : decimal.toDP(dp);
+  const decimal = new Decimal(utils.formatUnits(wei, decimals ?? 18));
+  const decimalPlacesToRoundTo = props.decimalPlaces ?? getDecimalPlacesToRoundTo(decimal);
+  const decimalPlacesToDisplay = props.decimalPlaces ?? undefined; // "undefined" means that trailing zeroes will be removed by `toFixed`
+  const decimalRounded = disableRounding ? decimal : decimal.toDP(decimalPlacesToRoundTo);
   const isRounded = !decimal.equals(decimalRounded);
 
   return (
     <>
       {isRounded && roundingIndicator === "~" && "~"}
-      {decimalRounded.toFixed(etherDecimalPlaces)}
+      {decimalRounded.toFixed(decimalPlacesToDisplay)}
       {isRounded && roundingIndicator === "..." && "..."}
       {children}
     </>

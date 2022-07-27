@@ -27,7 +27,7 @@ import { Network, networksBySlug } from "../../../features/network/networks";
 import { rpcApi, subgraphApi } from "../../../features/redux/store";
 import { UnitOfTime } from "../../../features/send/FlowRateInput";
 import StreamsTable from "../../../features/streamsTable/StreamsTable";
-import Ether from "../../../features/token/Ether";
+import Amount from "../../../features/token/Amount";
 import FlowingBalance from "../../../features/token/FlowingBalance";
 import TokenBalanceGraph, {
   GraphType,
@@ -246,7 +246,7 @@ const TokenPageContent: FC<{
                 )}
                 <Stack direction="row" alignItems="center">
                   <Typography variant="h5mono">
-                    <Ether
+                    <Amount
                       wei={BigNumber.from(totalInflowRate).mul(
                         UnitOfTime.Month
                       )}
@@ -259,7 +259,7 @@ const TokenPageContent: FC<{
 
                 <Stack direction="row" alignItems="center">
                   <Typography variant="h5mono">
-                    <Ether
+                    <Amount
                       wei={BigNumber.from(totalOutflowRate).mul(
                         UnitOfTime.Month
                       )}

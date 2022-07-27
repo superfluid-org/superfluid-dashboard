@@ -22,7 +22,7 @@ import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
-import Ether from "../token/Ether";
+import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
@@ -79,10 +79,10 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
                 </ListItemAvatar>
                 <ListItemText
                   primary={
-                    <Ether wei={value} decimals={tokenQuery.data.decimals}>
+                    <Amount wei={value} decimals={tokenQuery.data.decimals}>
                       {" "}
                       {tokenQuery.data.symbol}
-                    </Ether>
+                    </Amount>
                   }
                   /**
                    * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
@@ -139,10 +139,10 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
             <Stack direction="row" alignItems="center" gap={2}>
               <ListItemText
                 primary={
-                  <Ether wei={value} decimals={tokenQuery.data.decimals}>
+                  <Amount wei={value} decimals={tokenQuery.data.decimals}>
                     {" "}
                     {tokenQuery.data.symbol}
-                  </Ether>
+                  </Amount>
                 }
                 primaryTypographyProps={{ variant: "h7mono" }}
                 secondaryTypographyProps={{ variant: "body2mono" }}

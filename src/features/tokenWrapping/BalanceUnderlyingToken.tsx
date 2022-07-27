@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { rpcApi } from "../redux/store";
 import { Typography } from "@mui/material";
-import Ether from "../token/Ether";
+import Amount from "../token/Amount";
 import { BigNumber } from "ethers";
 
 export const BalanceUnderlyingToken: FC<{
@@ -30,7 +30,7 @@ export const BalanceUnderlyingToken: FC<{
       ) : isUninitialized || isLoading ? (
         ""
       ) : (
-        <Ether wei={BigNumber.from(data?.balance ?? 0)} decimals={decimals} />
+        <Amount wei={BigNumber.from(data?.balance ?? 0)} decimals={decimals} />
       )}
     </Typography>
   );
