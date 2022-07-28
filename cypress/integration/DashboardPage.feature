@@ -26,7 +26,7 @@ Feature: Dashboard Page test cases
     And User clicks on the "arbitrum-one" toggle
     Then "arbitrum-one" balances are not visible
     #This should be updated to show "no networks selected message" instead of no balances
-    And User closes the network selection dropdown
+    And User closes the dropdown
     Then No Super Token balance screen is shown
     And User clicks on the no balance wrap button
     Then Wrap/Unwrap page is open and the wrap container is visible

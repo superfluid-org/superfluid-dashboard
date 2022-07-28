@@ -69,11 +69,12 @@ const BurnActivity: FC<BurnedActivity> = ({
   );
 
   return (
-    <TableRow>
+    <TableRow data-cy={`${network.slugName}-row`}>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
           <ActivityIcon icon={SwapVertIcon} />
           <ListItemText
+            data-cy={"activity"}
             primary={"Unwrap"}
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
@@ -95,6 +96,7 @@ const BurnActivity: FC<BurnedActivity> = ({
                 {tokenSymbol && <TokenIcon tokenSymbol={tokenSymbol} />}
               </ListItemAvatar>
               <ListItemText
+                data-cy={"amount"}
                 primary={
                   <>
                     -<Ether wei={amount}> {tokenSymbol}</Ether>
@@ -124,6 +126,7 @@ const BurnActivity: FC<BurnedActivity> = ({
                 )}
               </ListItemAvatar>
               <ListItemText
+                data-cy={"amountToFrom"}
                 primary={
                   <>
                     +<Ether wei={amount}> {underlyingTokenSymbol}</Ether>
@@ -157,6 +160,7 @@ const BurnActivity: FC<BurnedActivity> = ({
         <TableCell align="right">
           <Stack direction="row" alignItems="center" gap={2}>
             <ListItemText
+              data-cy={"mobile-amount"}
               primary={
                 <>
                   +<Ether wei={amount}> {underlyingTokenSymbol}</Ether>

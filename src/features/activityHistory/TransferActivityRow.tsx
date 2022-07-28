@@ -52,11 +52,12 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
   );
 
   return (
-    <TableRow>
+    <TableRow data-cy={`${network.slugName}-row`}>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
           <ActivityIcon icon={isOutgoing ? ArrowForwardIcon : ArrowBackIcon} />
           <ListItemText
+            data-cy={"activity"}
             primary={isOutgoing ? "Send Transfer" : "Receive Transfer"}
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
@@ -79,6 +80,7 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
                 )}
               </ListItemAvatar>
               <ListItemText
+                data-cy={"amount"}
                 primary={
                   <Ether wei={value}>
                     {" "}
@@ -106,6 +108,7 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
                 <AddressAvatar address={isOutgoing ? to : from} />
               </ListItemAvatar>
               <ListItemText
+                data-cy={"amountToFrom"}
                 primary={isOutgoing ? "To" : "From"}
                 secondary={
                   <AddressCopyTooltip address={isOutgoing ? to : from}>
@@ -137,6 +140,7 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
         <TableCell align="right">
           <Stack direction="row" alignItems="center" gap={2}>
             <ListItemText
+                data-cy={"mobile-amount"}
               primary={
                 <Ether wei={value}>
                   {" "}

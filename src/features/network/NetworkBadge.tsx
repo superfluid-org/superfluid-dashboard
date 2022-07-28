@@ -15,7 +15,7 @@ const NetworkBadge: FC<NetworkBadgeProps> = ({
   TooltipProps = {},
 }) => (
   <Tooltip arrow title={network.name} placement="top" {...TooltipProps}>
-    <Box sx={sx}>
+    <Box data-cy={"network-badge"} sx={sx}>
       <NetworkIcon
         network={network}
         size={24}

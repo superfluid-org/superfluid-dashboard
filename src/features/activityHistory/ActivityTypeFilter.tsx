@@ -151,7 +151,7 @@ const ActivityTypeFilter: FC<ActivityTypeFilterProps> = ({
       anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
     >
       {ActivityTypeFilters.map(({ key, icon: Icon }) => (
-        <MenuItem key={key}>
+        <MenuItem data-cy={`${key}-row`} key={key}>
           <ListItemIcon
             sx={{
               // mr: 0,
@@ -164,6 +164,7 @@ const ActivityTypeFilter: FC<ActivityTypeFilterProps> = ({
             {key}
           </ListItemText>
           <Switch
+            data-cy={`${key}-toggle`}
             checked={enabledActivities.includes(key)}
             onChange={toggleActivity(key)}
           />

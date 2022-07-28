@@ -19,6 +19,10 @@ const WAGMI_CONNECT_WALLET_TITLE = "#rk_connect_title";
 const ADDRESS_BOOK_ENTRIES = "[data-cy=address-book-entry]"
 const ADDRESS_BOOK_RESULT_NAMES = "[data-cy=address-book-entry] span"
 const ADDRESS_BOOK_RESULT_ADDRESS = "[data-cy=address-book-entry] p"
+const TESTNETS_BUTTON = "[data-cy=testnets-button]";
+const MAINNETS_BUTTON = "[data-cy=mainnets-button]";
+const NETWORK_SELECTION_BUTTON = "[data-cy=network-selection-button]";
+const DROPDOWN_BACKDROP = "[role=presentation]";
 
 export class Common extends BasePage {
     static clickNavBarButton(button: string) {
@@ -142,4 +146,22 @@ export class Common extends BasePage {
     static validateViewModeChipMessage(message: string) {
         this.hasText(VIEWED_ACCOUNT,`Viewing ${message}`)
     }
+
+    static changeVisibleNetworksTo(type: string) {
+        let clickableButton =
+            type === "testnet" ? TESTNETS_BUTTON : MAINNETS_BUTTON;
+        this.click(NETWORK_SELECTION_BUTTON);
+        this.click(clickableButton);
+        this.click(DROPDOWN_BACKDROP);
+    }
+
+    static openNetworkSelectionDropdown() {
+        this.click(NETWORK_SELECTION_BUTTON);
+    }
+
+    static closeDropdown() {
+        this.click(DROPDOWN_BACKDROP);
+    }
+
+
 }

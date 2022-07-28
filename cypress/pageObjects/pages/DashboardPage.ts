@@ -5,10 +5,6 @@ const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet-button]";
 const NETWORK_SNAPSHOT_TABLE_APPENDIX = "-token-snapshot-table]";
 const TOKEN_SYMBOLS = "[data-cy=token-symbol]";
 const TOKEN_BALANCES = "[data-cy=balance]";
-const NETWORK_SELECTION_BUTTON = "[data-cy=network-selection-button]";
-const TESTNETS_BUTTON = "[data-cy=testnets-button]";
-const MAINNETS_BUTTON = "[data-cy=mainnets-button]";
-const NETWORK_SELECTION_BACKDROP = "[role=presentation]";
 const CANCEL_BUTTON_BACKDROP = "[class*=backdrop]";
 const NETWORK_SELECTION_TOGGLE_APPENDIX = "-toggle]";
 const NO_BALANCE_WRAP_BUTTON = "[data-cy=no-balance-wrap-button]";
@@ -56,14 +52,6 @@ export class DashboardPage extends BasePage {
         });
     }
 
-    static changeVisibleNetworksTo(type: string) {
-        let clickableButton =
-            type === "testnet" ? TESTNETS_BUTTON : MAINNETS_BUTTON;
-        this.click(NETWORK_SELECTION_BUTTON);
-        this.click(clickableButton);
-        this.click(NETWORK_SELECTION_BACKDROP);
-    }
-
     static clickNetworkSelectionToogle(network: string) {
         this.click(`[data-cy=${network}${NETWORK_SELECTION_TOGGLE_APPENDIX}`);
     }
@@ -81,17 +69,9 @@ export class DashboardPage extends BasePage {
         this.click(NO_BALANCE_WRAP_BUTTON);
     }
 
-    static openNetworkSelectionDropdown() {
-        this.click(NETWORK_SELECTION_BUTTON);
-    }
-
     static waitForBalancesToLoad() {
         this.isVisible(LOADING_SKELETONS);
         this.doesNotExist(LOADING_SKELETONS);
-    }
-
-    static closeNetworkSelectionDropdown() {
-        this.click(NETWORK_SELECTION_BACKDROP);
     }
 
     static clickTokenStreamRow(network: string, token: string) {
@@ -253,4 +233,5 @@ export class DashboardPage extends BasePage {
             });
         });
     }
+
 }

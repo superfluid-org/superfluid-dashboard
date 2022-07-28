@@ -6,10 +6,6 @@ Given(/^Correct "([^"]*)" wallet balances are shown for the "([^"]*)"$/,
         DashboardPage.verifyBalancesForAccount(networkType, account);
 });
 
-Given(/^User changes the visible networks to "([^"]*)"$/, (type: string) => {
-        DashboardPage.changeVisibleNetworksTo(type);
-});
-
 Given(/^User clicks on the "([^"]*)" toggle$/, (network: string) => {
     DashboardPage.clickNetworkSelectionToogle(network);
 });
@@ -34,16 +30,8 @@ Then(/^The cancel stream button is not visible$/, () => {
     DashboardPage.cancelStreamButtonDoesNotExist();
 });
 
-Given(/^User opens the network selection dropdown$/, () => {
-    DashboardPage.openNetworkSelectionDropdown();
-});
-
 Given(/^User waits for balances to load$/, () => {
     DashboardPage.waitForBalancesToLoad();
-});
-
-Given(/^User closes the network selection dropdown$/, () => {
-    DashboardPage.closeNetworkSelectionDropdown();
 });
 
 Given(/^User clicks on "([^"]*)" "([^"]*)" row$/, (network: string, token: string) => {

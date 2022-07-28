@@ -145,13 +145,13 @@ const DatePicker: FC<DatePickerProps> = ({
         justifyContent="space-between"
         sx={{ mb: 1 }}
       >
-        <Typography variant="h6">{format(date, "MMMM yyyy")}</Typography>
+        <Typography variant="h6" data-cy={"selected-month"}>{format(date, "MMMM yyyy")}</Typography>
 
         <Stack direction="row" alignItems="center" gap={1}>
-          <IconButton onClick={monthBack}>
+          <IconButton data-cy={"month-back-button"} onClick={monthBack}>
             <ChevronLeftIcon />
           </IconButton>
-          <IconButton onClick={monthForward} disabled={showingCurrentMonth}>
+          <IconButton data-cy={"month-forward-button"} onClick={monthForward} disabled={showingCurrentMonth}>
             <ChevronRightIcon />
           </IconButton>
         </Stack>
