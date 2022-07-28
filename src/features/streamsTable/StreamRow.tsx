@@ -20,10 +20,11 @@ import { useRouter } from "next/router";
 import { FC, memo } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
+import { getStreamPagePath } from "../../pages/stream/[_network]/[_stream]";
 import { Network } from "../network/networks";
 import { PendingOutgoingStream } from "../pendingUpdates/PendingOutgoingStream";
 import { UnitOfTime } from "../send/FlowRateInput";
-import Ether from "../token/Ether";
+import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import CancelStreamButton from "./CancelStreamButton/CancelStreamButton";
@@ -102,7 +103,12 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
   const { visibleAddress } = useVisibleAddress();
 
   const openStreamDetails = () => {
-    router.push(`/${network.slugName}/stream?stream=${id}`);
+    router.push(
+      getStreamPagePath({
+        network: network.slugName,
+        stream: id,
+      })
+    );
   };
 
   const isOutgoing = visibleAddress?.toLowerCase() === sender.toLowerCase();
@@ -150,7 +156,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
             {isActive || isPending ? (
               <Typography data-cy={"flow-rate"} variant="body2mono">
                 {isOutgoing ? "-" : "+"}
-                <Ether
+                <Amount
                   wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
                 />
                 /mo
@@ -189,7 +195,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
               isActive || isPending ? (
                 <>
                   {isOutgoing ? "-" : "+"}
-                  <Ether
+                  <Amount
                     wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
                   />
                   /mo

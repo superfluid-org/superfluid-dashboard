@@ -1,14 +1,15 @@
 import { FC } from "react";
 import { rpcApi } from "../redux/store";
 import { Typography } from "@mui/material";
-import Ether from "../token/Ether";
-import { ethers } from "ethers";
+import Amount from "../token/Amount";
+import { BigNumber } from "ethers";
 
 export const BalanceUnderlyingToken: FC<{
   chainId: number;
   accountAddress: string;
   tokenAddress: string;
-}> = ({ chainId, accountAddress, tokenAddress }) => {
+  decimals: number;
+}> = ({ chainId, accountAddress, tokenAddress, decimals }) => {
   const underlyingBalanceQuery = rpcApi.useUnderlyingBalanceQuery({
     chainId,
     accountAddress,
@@ -29,7 +30,7 @@ export const BalanceUnderlyingToken: FC<{
       ) : isUninitialized || isLoading ? (
         ""
       ) : (
-        <Ether wei={ethers.BigNumber.from(data?.balance ?? 0)} />
+        <Amount wei={BigNumber.from(data?.balance ?? 0)} decimals={decimals} />
       )}
     </Typography>
   );

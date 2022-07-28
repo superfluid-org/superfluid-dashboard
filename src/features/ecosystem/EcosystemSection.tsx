@@ -12,7 +12,7 @@ const EcosystemSection: FC<EcosystemSectionProps> = ({ title, apps }) => {
 
   return (
     <Box>
-      <Typography variant="h4" sx={{ mb: 3 }}>
+      <Typography variant="h4" component="h2" sx={{ mb: 3 }}>
         {title}
       </Typography>
 

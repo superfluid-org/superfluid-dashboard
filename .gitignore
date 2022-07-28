@@ -168,3 +168,6 @@ cypress/videos
 
 # Ignoring synpress for now
 tests
+
+# Netlify
+.netlify

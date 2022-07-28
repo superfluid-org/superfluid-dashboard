@@ -16,7 +16,7 @@ import { BurnedActivity } from "../../utils/activityUtils";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
-import Ether from "../token/Ether";
+import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import ActivityIcon from "./ActivityIcon";
 
@@ -29,53 +29,54 @@ const BurnActivity: FC<BurnedActivity> = ({
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const { amount, transactionHash, timestamp } = keyEvent;
-  const { token } = transferEvent || {};
+  const { token: superTokenAddress } = transferEvent || {};
 
-  const nativeAsset = useMemo(
-    () =>
-      network.nativeAsset.superToken.address.toLowerCase() ===
-      token?.toLowerCase()
-        ? network.nativeAsset
-        : undefined,
-    [network, token]
-  );
+  const isNativeAssetSuperToken =
+    network.nativeCurrency.superToken.address.toLowerCase() ===
+    superTokenAddress?.toLowerCase();
 
-  const tokenQuery = subgraphApi.useTokenQuery(
-    !nativeAsset && token
+  const superTokenQuery = subgraphApi.useTokenQuery(
+    !isNativeAssetSuperToken && superTokenAddress
       ? {
           chainId: network.id,
-          id: token,
+          id: superTokenAddress,
         }
       : skipToken
+  );
+
+  const superToken = useMemo(
+    () =>
+      isNativeAssetSuperToken
+        ? network.nativeCurrency.superToken
+        : superTokenQuery.data,
+    [isNativeAssetSuperToken, superTokenQuery.data]
   );
 
   const underlyingTokenQuery = subgraphApi.useTokenQuery(
-    !nativeAsset && tokenQuery.data
+    !isNativeAssetSuperToken && superTokenQuery.data
       ? {
           chainId: network.id,
-          id: tokenQuery.data.underlyingAddress,
+          id: superTokenQuery.data.underlyingAddress,
         }
       : skipToken
   );
 
-  const tokenSymbol = useMemo(
-    () => nativeAsset?.superToken.symbol || tokenQuery.data?.symbol,
-    [nativeAsset, tokenQuery.data]
+  const underlyingToken = useMemo(
+    () =>
+      isNativeAssetSuperToken
+        ? network.nativeCurrency
+        : underlyingTokenQuery.data,
+    [isNativeAssetSuperToken, underlyingTokenQuery.data]
   );
 
-  const underlyingTokenSymbol = useMemo(
-    () => nativeAsset?.symbol || underlyingTokenQuery.data?.symbol,
-    [nativeAsset, underlyingTokenQuery.data]
-  );
-
-  const isTokenListed = useMemo(
-    () => (!!nativeAsset ? true : tokenQuery.data?.isListed),
-    [nativeAsset, tokenQuery.data]
+  const isSuperTokenListed = useMemo(
+    () => isNativeAssetSuperToken || superTokenQuery.data?.isListed,
+    [isNativeAssetSuperToken, superTokenQuery.data]
   );
 
   const isUnderlyingTokenListed = useMemo(
-    () => (!!nativeAsset ? true : underlyingTokenQuery.data?.isListed),
-    [nativeAsset, underlyingTokenQuery.data]
+    () => isNativeAssetSuperToken || underlyingTokenQuery.data?.isListed,
+    [isNativeAssetSuperToken, underlyingTokenQuery.data]
   );
 
   return (
@@ -100,68 +101,70 @@ const BurnActivity: FC<BurnedActivity> = ({
       {!isBelowMd ? (
         <>
           <TableCell>
-            <ListItem sx={{ p: 0 }}>
-              <ListItemAvatar>
-                {tokenSymbol && (
-                  <TokenIcon
-                    tokenSymbol={tokenSymbol}
-                    isListed={isTokenListed}
-                  />
-                )}
-              </ListItemAvatar>
-              <ListItemText
-                primary={
-                  <>
-                    -<Ether wei={amount}> {tokenSymbol}</Ether>
-                  </>
-                }
-                /**
-                 * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-                 * This is just used to make table row look better
-                 */
-                // secondary="$12.59"
-                primaryTypographyProps={{
-                  variant: "h6mono",
-                  sx: { lineHeight: "46px" },
-                }}
-                secondaryTypographyProps={{
-                  variant: "body2mono",
-                  color: "text.secondary",
-                }}
-              />
-            </ListItem>
+            {superToken && (
+              <ListItem sx={{ p: 0 }}>
+                <ListItemAvatar>
+                  {
+                    <TokenIcon
+                      tokenSymbol={superToken.symbol}
+                      isListed={isSuperTokenListed}
+                    />
+                  }
+                </ListItemAvatar>
+                <ListItemText
+                  primary={
+                    <>
+                      -<Amount wei={amount}> {superToken.symbol}</Amount>
+                    </>
+                  }
+                  /**
+                   * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
+                   * This is just used to make table row look better
+                   */
+                  // secondary="$12.59"
+                  primaryTypographyProps={{
+                    variant: "h6mono",
+                    sx: { lineHeight: "46px" },
+                  }}
+                  secondaryTypographyProps={{
+                    variant: "body2mono",
+                    color: "text.secondary",
+                  }}
+                />
+              </ListItem>
+            )}
           </TableCell>
           <TableCell>
-            <ListItem sx={{ p: 0 }}>
-              <ListItemAvatar>
-                {underlyingTokenSymbol && (
+            {underlyingToken && (
+              <ListItem sx={{ p: 0 }}>
+                <ListItemAvatar>
                   <TokenIcon
-                    tokenSymbol={underlyingTokenSymbol}
+                    tokenSymbol={underlyingToken.symbol}
                     isListed={isUnderlyingTokenListed}
                   />
-                )}
-              </ListItemAvatar>
-              <ListItemText
-                primary={
-                  <>
-                    +<Ether wei={amount}> {underlyingTokenSymbol}</Ether>
-                  </>
-                }
-                /**
-                 * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-                 * This is just used to make table row look better
-                 */
-                // secondary="$12.59"
-                primaryTypographyProps={{
-                  variant: "h6mono",
-                  sx: { lineHeight: "46px" },
-                }}
-                secondaryTypographyProps={{
-                  variant: "body2mono",
-                  color: "text.secondary",
-                }}
-              />
-            </ListItem>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={
+                    <>
+                      +<Amount wei={amount}> {underlyingToken.symbol}</Amount>
+                    </>
+                  }
+                  /**
+                   * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
+                   * This is just used to make table row look better
+                   */
+                  // secondary="$12.59"
+                  primaryTypographyProps={{
+                    variant: "h6mono",
+                    sx: { lineHeight: "46px" },
+                  }}
+                  secondaryTypographyProps={{
+                    variant: "body2mono",
+                    color: "text.secondary",
+                  }}
+                />
+              </ListItem>
+            )}
           </TableCell>
           <TableCell sx={{ position: "relative" }}>
             <TxHashLink txHash={transactionHash} network={network} />
@@ -173,28 +176,28 @@ const BurnActivity: FC<BurnedActivity> = ({
         </>
       ) : (
         <TableCell align="right">
-          <Stack direction="row" alignItems="center" gap={2}>
-            <ListItemText
-              primary={
-                <>
-                  +<Ether wei={amount}> {underlyingTokenSymbol}</Ether>
-                </>
-              }
-              secondary={
-                <>
-                  -<Ether wei={amount}> {tokenSymbol}</Ether>
-                </>
-              }
-              primaryTypographyProps={{ variant: "h7mono" }}
-              secondaryTypographyProps={{ variant: "body2mono" }}
-            />
-            {underlyingTokenSymbol && (
+          {!!(superToken && underlyingToken) && (
+            <Stack direction="row" alignItems="center" gap={2}>
+              <ListItemText
+                primary={
+                  <>
+                    +<Amount wei={amount}> {underlyingToken.symbol}</Amount>
+                  </>
+                }
+                secondary={
+                  <>
+                    -<Amount wei={amount}> {superToken.symbol}</Amount>
+                  </>
+                }
+                primaryTypographyProps={{ variant: "h7mono" }}
+                secondaryTypographyProps={{ variant: "body2mono" }}
+              />
               <TokenIcon
-                tokenSymbol={underlyingTokenSymbol}
+                tokenSymbol={underlyingToken.symbol}
                 isListed={isUnderlyingTokenListed}
               />
-            )}
-          </Stack>
+            </Stack>
+          )}
         </TableCell>
       )}
     </TableRow>

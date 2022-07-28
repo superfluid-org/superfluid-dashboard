@@ -1,5 +1,7 @@
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import SupportRoundedIcon from "@mui/icons-material/SupportRounded";
+import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
+import ElderlyRoundedIcon from "@mui/icons-material/ElderlyRounded";
 import {
   Box,
   ListItemButton,
@@ -98,6 +100,15 @@ const MoreNavigationItem: FC = ({}) => {
               alt="Superfluid logo"
             />
             <ListItemText>Website</ListItemText>
+          </ListItemButton>
+        </Link>
+
+        <Link href="https://v1.superfluid.finance" target="_blank" passHref>
+          <ListItemButton href="" target="_blank">
+            <ListItemIcon>
+              <GridViewRoundedIcon sx={{ color: theme.palette.text.primary }} />
+            </ListItemIcon>
+            <ListItemText>Dashboard V1</ListItemText>
           </ListItemButton>
         </Link>
 

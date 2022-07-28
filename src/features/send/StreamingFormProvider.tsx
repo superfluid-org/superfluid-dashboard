@@ -46,9 +46,7 @@ export type PartialStreamingForm = {
 const StreamingFormProvider: FC<{
   restoration: SendStreamRestoration | ModifyStreamRestoration | undefined;
 }> = ({ restoration, children }) => {
-  const { data: account } = useAccount();
-  const accountAddress = account?.address;
-
+  const { address: accountAddress } = useAccount();
   const { network, stopAutoSwitchToAccountNetwork } = useExpectedNetwork();
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryActiveFlow] = rpcApi.useLazyGetActiveFlowQuery();
@@ -64,6 +62,7 @@ const StreamingFormProvider: FC<{
               address: string().required().test(testAddress()),
               name: string().required(),
               symbol: string().required(),
+              decimals: number().required()
             }).required(),
             receiver: string().required().test(testAddress()).required(),
             flowRate: object({
@@ -208,10 +207,6 @@ const StreamingFormProvider: FC<{
       trigger();
     }
   }, [accountAddress]);
-
-  // useEffect(() => {
-  //   console.log(formState);
-  // }, [formState]);
 
   return hasRestored ? (
     <FormProvider {...formMethods}>{children}</FormProvider>

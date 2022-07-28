@@ -23,6 +23,7 @@ import Link from "next/link";
 import { FC, memo, useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
+import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import TooltipIcon from "../common/TooltipIcon";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
@@ -130,6 +131,7 @@ export default memo(function SendCard() {
           address: x.id,
           name: x.name,
           symbol: x.symbol,
+          decimals: 18,
         })),
     [listedSuperTokensQuery.data, customSuperTokensQuery.data, network]
   );
@@ -177,6 +179,9 @@ export default memo(function SendCard() {
 
         <ErrorMessage
           name="data"
+          // ErrorMessage has a bug and current solution is to pass in errors via props.
+          // TODO: keep eye on this issue: https://github.com/react-hook-form/error-message/issues/91
+          errors={formState.errors}
           render={({ message }) =>
             !!message && (
               <Alert severity="error" sx={{ mb: 1 }}>
@@ -434,7 +439,10 @@ export default memo(function SendCard() {
                   successActions: (
                     <TransactionDialogActions>
                       <Link
-                        href={`/${network.slugName}/token?token=${formData.token.address}`}
+                        href={getTokenPagePath({
+                          network: network.slugName,
+                          token: formData.token.address,
+                        })}
                         passHref
                       >
                         <TransactionDialogButton color="primary">
@@ -497,7 +505,10 @@ export default memo(function SendCard() {
                     successActions: (
                       <TransactionDialogActions>
                         <Link
-                          href={`/${network.slugName}/token?token=${formData.token.address}`}
+                          href={getTokenPagePath({
+                            network: network.slugName,
+                            token: formData.token.address,
+                          })}
                           passHref
                         >
                           <TransactionDialogButton color="primary">

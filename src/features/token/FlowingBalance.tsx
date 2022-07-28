@@ -1,7 +1,7 @@
 import { memo, ReactElement, useEffect, useMemo, useState } from "react";
 import { BigNumberish, BigNumber, utils } from "ethers";
 import { Box } from "@mui/material";
-import Ether from "./Ether";
+import Amount from "./Amount";
 import { useStateWithDep } from "../../useStateWithDep";
 import Decimal from "decimal.js";
 
@@ -109,9 +109,9 @@ export default memo(function FlowingBalance({
       }}
       data-cy={"balance"}
     >
-      <Ether
+      <Amount
         wei={weiValue}
-        etherDecimalPlaces={etherSignificantFlowingDecimal}
+        decimalPlaces={etherSignificantFlowingDecimal}
       />{" "}
       {tokenSymbol}
     </Box>

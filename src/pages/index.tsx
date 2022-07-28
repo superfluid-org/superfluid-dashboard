@@ -3,6 +3,8 @@ import {
   Box,
   Button,
   Container,
+  Divider,
+  Link,
   Stack,
   Typography,
   useTheme,
@@ -10,6 +12,7 @@ import {
 import type { NextPage } from "next";
 import { FC, useCallback, useState } from "react";
 import AddressSearchDialog from "../components/AddressSearchDialog/AddressSearchDialog";
+import SEO from "../components/SEO/SEO";
 import AddressSearchIndex from "../features/impersonation/AddressSearchIndex";
 import { useImpersonation } from "../features/impersonation/ImpersonationContext";
 import OnboardingCards from "../features/onboarding/OnboardingCards";
@@ -39,15 +42,16 @@ const ConnectView: FC = () => {
       sx={{
         pt: 6,
         [theme.breakpoints.down("md")]: {
-          pt: 8,
+          pt: 2,
         },
       }}
     >
-      <Typography variant="h4" textAlign="center" sx={{ mb: 1 }}>
+      <Typography variant="h4" component="h1" textAlign="center" sx={{ mb: 1 }}>
         Connect to Superfluid
       </Typography>
       <Typography
         variant="h6"
+        component="p"
         color="text.secondary"
         textAlign="center"
         sx={{ mb: 4 }}
@@ -60,7 +64,12 @@ const ConnectView: FC = () => {
       <Box sx={{ maxWidth: 400, width: "100%", mx: "auto", mt: 4 }}>
         <ConnectWallet />
 
-        <Typography variant="h6" textAlign="center" sx={{ my: 2 }}>
+        <Typography
+          variant="h6"
+          component="p"
+          textAlign="center"
+          sx={{ my: 2 }}
+        >
           -or-
         </Typography>
 
@@ -84,7 +93,28 @@ const ConnectView: FC = () => {
             />
           </Stack>
         </Box>
+
+        <Divider sx={{ mt: 6, mb: 4.5 }} />
       </Box>
+
+      <Typography
+        variant="h7"
+        component="p"
+        color="secondary"
+        textAlign="center"
+      >
+        By connecting your wallet, you accept our{" "}
+        <Link href="https://www.superfluid.finance/termsofuse/" target="_blank">
+          Terms of Use
+        </Link>
+        {" and "}
+        <Link
+          href="https://www.iubenda.com/privacy-policy/34415583/legal"
+          target="_blank"
+        >
+          Privacy Policy
+        </Link>
+      </Typography>
     </Stack>
   );
 };
@@ -93,13 +123,15 @@ const Home: NextPage = () => {
   const { visibleAddress } = useVisibleAddress();
 
   return (
-    <Container maxWidth="lg">
-      {visibleAddress ? (
-        <TokenSnapshotTables address={visibleAddress} />
-      ) : (
-        <ConnectView />
-      )}
-    </Container>
+    <SEO title="Dashboard | Superfluid">
+      <Container maxWidth="lg">
+        {visibleAddress ? (
+          <TokenSnapshotTables address={visibleAddress} />
+        ) : (
+          <ConnectView />
+        )}
+      </Container>
+    </SEO>
   );
 };
 

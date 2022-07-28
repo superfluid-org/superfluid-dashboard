@@ -12,6 +12,9 @@ const moduleExports = {
     loader: "custom",
     domains: ["raw.githubusercontent.com"],
   },
+  env: {
+    NEXT_PUBLIC_APP_URL: process.env.DEPLOY_PRIME_URL,
+  },
 };
 
 const SENTRY_AUTH_TOKEN = process.env.SENTRY_AUTH_TOKEN;

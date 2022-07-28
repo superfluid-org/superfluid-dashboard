@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
+import { SSR } from "../utils/SSRUtils";
 
 const useBodyScrolled = () => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
+    if (SSR) return;
+
     function scrollHandler() {
       const scrollPosition =
         document.body.scrollTop || document.documentElement.scrollTop;

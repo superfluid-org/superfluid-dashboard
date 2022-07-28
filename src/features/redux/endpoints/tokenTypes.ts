@@ -20,6 +20,7 @@ export type TokenMinimal = {
   address: string;
   name: string;
   symbol: string;
+  decimals: number;
 };
 
 export const isUnderlying = (
@@ -28,7 +29,7 @@ export const isUnderlying = (
   x.type === TokenType.NativeAssetUnderlyingToken ||
   x.type === TokenType.ERC20UnderlyingToken;
 
-export const isWrappable = (x: TokenMinimal): boolean =>
+export const isWrappable = (x: { type: TokenType }): boolean =>
   x.type === TokenType.NativeAssetSuperToken ||
   x.type === TokenType.WrapperSuperToken;
 
@@ -41,6 +42,7 @@ export type SuperTokenMinimal = {
   name: string;
   symbol: string;
   isListed?: boolean;
+  decimals: number;
 };
 
 export type ERC20TokenMinimal = {
@@ -49,6 +51,7 @@ export type ERC20TokenMinimal = {
   name: string;
   symbol: string;
   isListed?: boolean;
+  decimals: number;
 };
 /**
  * A dummy address to signal that the token is the blockchain's coin (native asset).
@@ -61,6 +64,7 @@ export type NativeAsset = {
   address: typeof NATIVE_ASSET_ADDRESS;
   name: string;
   symbol: string;
+  decimals: number;
 };
 
 export type PureSuperToken = {

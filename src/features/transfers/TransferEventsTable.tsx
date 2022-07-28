@@ -184,6 +184,7 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
                 <TransferEventRow
                   key={transferEvent.id}
                   transferEvent={transferEvent}
+                  network={network}
                 />
               ))
           )}

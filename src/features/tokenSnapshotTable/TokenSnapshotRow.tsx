@@ -18,11 +18,12 @@ import { BigNumber } from "ethers";
 import { useRouter } from "next/router";
 import { FC, memo, useState } from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
+import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
 import StreamsTable from "../streamsTable/StreamsTable";
-import Ether from "../token/Ether";
+import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
 import TokenIcon from "../token/TokenIcon";
 import { useTokenIsListed } from "../token/useTokenIsListed";
@@ -110,7 +111,12 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
   const toggleOpen = () => hasStreams && setOpen(!open);
 
   const openTokenPage = () =>
-    router.push(`/${network.slugName}/token?token=${token}`);
+    router.push(
+      getTokenPagePath({
+        network: network.slugName,
+        token: token,
+      })
+    );
 
   return (
     <>
@@ -171,11 +177,11 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               {totalNumberOfActiveStreams > 0 ? (
                 <Typography data-cy={"net-flow-value"} variant="body2mono">
                   {netFlowRate.charAt(0) !== "-" && "+"}
-                  <Ether
+                  <Amount
                     wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
                   >
                     /mo
-                  </Ether>
+                  </Amount>
                 </Typography>
               ) : (
                 "-"
@@ -191,7 +197,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                     color="primary"
                   >
                     +
-                    <Ether
+                    <Amount
                       wei={BigNumber.from(totalInflowRate).mul(
                         UnitOfTime.Month
                       )}
@@ -204,7 +210,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                     color="error"
                   >
                     -
-                    <Ether
+                    <Amount
                       wei={BigNumber.from(totalOutflowRate).mul(
                         UnitOfTime.Month
                       )}
@@ -236,11 +242,11 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 totalNumberOfActiveStreams > 0 ? (
                   <>
                     {netFlowRate.charAt(0) !== "-" && "+"}
-                    <Ether
+                    <Amount
                       wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
                     >
                       /mo
-                    </Ether>
+                    </Amount>
                   </>
                 ) : (
                   "-"

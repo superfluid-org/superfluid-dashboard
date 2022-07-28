@@ -14,5 +14,5 @@ Feature: Common element test cases
     And The navigation drawer shows connect wallet button
     And User connects their wallet to the dashboard
     And The navigation drawer shows that "ongoingStreamAccount" is "Connected"
-    And User changes their network to "optimism-mainnet"
+    And User changes their network to "optimism"
     And The navigation drawer shows that "ongoingStreamAccount" is "Wrong network"
