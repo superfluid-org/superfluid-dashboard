@@ -129,7 +129,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         <TableCell onClick={openTokenPage}>
           <ListItem sx={{ p: 0 }}>
             <ListItemAvatar>
-              <TokenIcon tokenSymbol={tokenSymbol} isListed={!!isListed} />
+              <TokenIcon tokenSymbol={tokenSymbol} isListed={isListed} />
             </ListItemAvatar>
             <ListItemText
               data-cy={"token-symbol"}

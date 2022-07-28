@@ -1,10 +1,7 @@
-import { Avatar, styled, Tooltip, useTheme } from "@mui/material";
-import HelpOutlineRoundedIcon from "@mui/icons-material/HelpOutlineRounded";
+import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
+import { Avatar, Skeleton, styled, Tooltip, useTheme } from "@mui/material";
 import { FC } from "react";
 import { assetApiSlice } from "./tokenManifestSlice";
-import { Address } from "@superfluid-finance/sdk-core";
-import { subgraphApi } from "../redux/store";
-import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 
 const BorderSvg = styled("svg")(() => ({
   "@keyframes rotating": {
@@ -23,11 +20,19 @@ const BorderSvg = styled("svg")(() => ({
 }));
 
 const AvatarWrapper = styled("div", {
-  shouldForwardProp: (prop) => prop !== "border",
-})<{ border?: boolean }>(({ border }) => ({
-  position: "relative",
-  padding: border ? 2 : 0,
-}));
+  shouldForwardProp: (prop: string) =>
+    !["isSuperToken", "isUnlisted"].includes(prop),
+})<{ isSuperToken?: boolean; isUnlisted: boolean }>(
+  ({ isSuperToken, isUnlisted, theme }) => ({
+    position: "relative",
+    padding: isSuperToken ? 2 : 0,
+    ...(isUnlisted &&
+      !isSuperToken && {
+        border: `1px solid ${theme.palette.warning.main}`,
+        borderRadius: "50%",
+      }),
+  })
+);
 
 interface TokenIconProps {
   tokenSymbol: string;
@@ -46,15 +51,20 @@ const TokenIcon: FC<TokenIconProps> = ({
     tokenSymbol,
   });
 
+  const diameter = size - (tokenManifest?.isSuperToken ? 4 : 0);
+
   return (
     <Tooltip
       arrow
       disableInteractive
       placement="top"
-      title={!isListed ? "Unlisted token, use with caution" : ""}
+      title={isListed === false ? "Unlisted token, use with caution" : ""}
     >
-      <AvatarWrapper border={tokenManifest?.isSuperToken}>
-        {tokenManifest?.isSuperToken && (
+      <AvatarWrapper
+        isSuperToken={tokenManifest?.isSuperToken}
+        isUnlisted={isListed === false}
+      >
+        {tokenManifest?.isSuperToken && isListed !== undefined && (
           <BorderSvg data-cy={"animation"} viewBox="0 0 36 36">
             <clipPath id="clip">
               <polygon points="18,18, 30.5,0 36,10.2" />
@@ -94,13 +104,13 @@ const TokenIcon: FC<TokenIconProps> = ({
             />
           </BorderSvg>
         )}
-        {isListed !== false ? (
+        {isListed ? (
           <Avatar
             data-cy={"token-icon"}
             alt={`${tokenSymbol} token icon`}
             sx={{
-              width: size - (tokenManifest?.isSuperToken ? 4 : 0),
-              height: size - (tokenManifest?.isSuperToken ? 4 : 0),
+              width: diameter,
+              height: diameter,
             }}
             imgProps={{ sx: { objectFit: "contain", borderRadius: "50%" } }}
             src={
@@ -112,13 +122,23 @@ const TokenIcon: FC<TokenIconProps> = ({
         ) : (
           <Avatar
             sx={{
-              width: size - (tokenManifest?.isSuperToken ? 4 : 0),
-              height: size - (tokenManifest?.isSuperToken ? 4 : 0),
+              width: diameter,
+              height: diameter,
               background: "transparent",
               color: theme.palette.warning.main,
             }}
           >
-            <QuestionMarkIcon />
+            {isListed === false ? (
+              <QuestionMarkIcon />
+            ) : (
+              <Skeleton
+                variant="circular"
+                sx={{
+                  width: diameter,
+                  height: diameter,
+                }}
+              />
+            )}
           </Avatar>
         )}
       </AvatarWrapper>
