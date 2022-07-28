@@ -14,10 +14,12 @@ import { FC } from "react";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import Ether from "../token/Ether";
+import Amount from "../token/Amount";
 import { format } from "date-fns";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
+import { subgraphApi } from "../redux/store";
+import { Network } from "../network/networks";
 
 export const TransferEventLoadingRow = () => {
   const theme = useTheme();
@@ -62,16 +64,25 @@ export const TransferEventLoadingRow = () => {
 
 interface TransferEventRowProps {
   transferEvent: TransferEvent;
+  network: Network;
 }
 
-const TransferEventRow: FC<TransferEventRowProps> = ({ transferEvent }) => {
+const TransferEventRow: FC<TransferEventRowProps> = ({
+  transferEvent,
+  network,
+}) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const { visibleAddress = "" } = useVisibleAddress();
 
-  const { from, to, value, timestamp } = transferEvent;
+  const { from, to, value, timestamp, token: tokenAddress } = transferEvent;
   const isOutgoing = from === visibleAddress.toLowerCase();
+
+  const tokenQuery = subgraphApi.useTokenQuery({
+    chainId: network.id,
+    id: tokenAddress,
+  });
 
   return (
     <TableRow>
@@ -92,13 +103,15 @@ const TransferEventRow: FC<TransferEventRowProps> = ({ transferEvent }) => {
         </Stack>
       </TableCell>
       <TableCell align="right">
-        <ListItemText
-          primary={<Ether wei={value} />}
-          secondary={
-            isBelowMd ? format(timestamp * 1000, "d MMM. yyyy") : undefined
-          }
-          primaryTypographyProps={{ variant: "h7mono" }}
-        />
+        {tokenQuery.data && (
+          <ListItemText
+            primary={<Amount wei={value} decimals={tokenQuery.data.decimals} />}
+            secondary={
+              isBelowMd ? format(timestamp * 1000, "d MMM. yyyy") : undefined
+            }
+            primaryTypographyProps={{ variant: "h7mono" }}
+          />
+        )}
       </TableCell>
       {!isBelowMd && (
         <TableCell>{format(timestamp * 1000, "d MMM. yyyy")}</TableCell>

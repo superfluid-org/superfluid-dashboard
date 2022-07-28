@@ -10,6 +10,7 @@ import {
   SuperTokenMinimal,
   SuperTokenPair,
   NATIVE_ASSET_ADDRESS,
+  UnderlyingTokenType,
 } from "./tokenTypes";
 import { TokenType } from "./tokenTypes";
 
@@ -27,6 +28,7 @@ type WrapperSuperTokenSubgraphResult = {
     id: string;
     name: string;
     symbol: string;
+    decimals: number;
   };
 };
 
@@ -37,7 +39,7 @@ type NativeAssetSuperTokenSubgraphResult = {
 };
 
 const nativeAssetSuperTokenSymbols = uniq(
-  networks.map((x) => x.nativeAsset.superToken.symbol)
+  networks.map((x) => x.nativeCurrency.superToken.symbol)
 );
 
 export const adHocSubgraphEndpoints = {
@@ -174,12 +176,12 @@ export const adHocSubgraphEndpoints = {
 
         const network = networksByChainId.get(arg.chainId)!;
         const networkNativeAssetSuperTokenAddress =
-          network.nativeAsset.superToken.address.toLowerCase();
+          network.nativeCurrency.superToken.address.toLowerCase();
 
         return {
           data: response.result.map((x) => {
             if (x.token.address === networkNativeAssetSuperTokenAddress) {
-              return network.nativeAsset.superToken;
+              return { ...network.nativeCurrency.superToken, decimals: 18 };
             }
 
             return {
@@ -187,6 +189,7 @@ export const adHocSubgraphEndpoints = {
               address: x.token.address,
               name: x.token.name,
               symbol: x.token.symbol,
+              decimals: 18,
             };
           }),
         };
@@ -221,6 +224,7 @@ export const adHocSubgraphEndpoints = {
                   id
                   name
                   symbol
+                  decimals
                 }
               }
               nativeAssetSuperTokens: tokens(
@@ -254,17 +258,19 @@ export const adHocSubgraphEndpoints = {
               address: x.id,
               symbol: x.symbol,
               name: x.name,
+              decimals: 18,
             },
             underlyingToken: {
               type: TokenType.NativeAssetUnderlyingToken,
               address: NATIVE_ASSET_ADDRESS,
-              symbol: network.nativeAsset.symbol,
+              symbol: network.nativeCurrency.symbol,
               name: `${network.name} Native Asset`,
+              decimals: network.nativeCurrency.decimals,
             },
           }));
 
         const nativeAssetSuperTokenAddress =
-          network.nativeAsset.superToken.address.toLowerCase();
+          network.nativeCurrency.superToken.address.toLowerCase();
 
         const wrapperSuperTokenPairs: SuperTokenPair[] = wrapperSuperTokens.map(
           (x) => {
@@ -276,12 +282,14 @@ export const adHocSubgraphEndpoints = {
                   address: x.id,
                   symbol: x.symbol,
                   name: x.name,
+                  decimals: 18,
                 },
                 underlyingToken: {
                   type: TokenType.NativeAssetUnderlyingToken,
                   address: NATIVE_ASSET_ADDRESS,
-                  symbol: network.nativeAsset.symbol,
+                  symbol: network.nativeCurrency.symbol,
                   name: `${network.name} Native Asset`,
+                  decimals: network.nativeCurrency.decimals,
                 },
               };
             }
@@ -292,12 +300,14 @@ export const adHocSubgraphEndpoints = {
                 address: x.id,
                 symbol: x.symbol,
                 name: x.name,
+                decimals: 18,
               },
               underlyingToken: {
                 type: TokenType.ERC20UnderlyingToken,
                 address: x.underlyingToken.id,
                 symbol: x.underlyingToken.symbol,
                 name: x.underlyingToken.name,
+                decimals: x.underlyingToken.decimals,
               },
             };
           }
@@ -321,15 +331,12 @@ export const adHocSubgraphEndpoints = {
 
 export const getSuperTokenType = (arg: {
   network: Network;
-  isListed: boolean;
   address: string;
-  symbol: string;
-  name: string;
   underlyingAddress: string;
 }) => {
   if (
     arg.address.toLowerCase() ===
-    arg.network.nativeAsset.superToken.address.toLowerCase()
+    arg.network.nativeCurrency.superToken.address.toLowerCase()
   ) {
     return TokenType.NativeAssetSuperToken;
   } else if (
@@ -338,5 +345,20 @@ export const getSuperTokenType = (arg: {
     return TokenType.PureSuperToken;
   } else {
     return TokenType.WrapperSuperToken;
+  }
+};
+
+export const getUnderlyingTokenType = ({
+  address,
+}: {
+  address: string;
+}): UnderlyingTokenType => {
+  if (
+    address === NATIVE_ASSET_ADDRESS ||
+    address === "0x0000000000000000000000000000000000000000"
+  ) {
+    return TokenType.NativeAssetUnderlyingToken;
+  } else {
+    return TokenType.ERC20UnderlyingToken;
   }
 };

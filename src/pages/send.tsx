@@ -1,5 +1,6 @@
 import { Box, Container, useTheme } from "@mui/material";
 import { NextPage } from "next";
+import SEO from "../components/SEO/SEO";
 import SendCard from "../features/send/SendCard";
 import StreamingFormProvider from "../features/send/StreamingFormProvider";
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
@@ -31,23 +32,25 @@ const Send: NextPage = () => {
   }
 
   return (
-    <Container maxWidth="lg">
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          [theme.breakpoints.up("md")]: {
-            my: 4,
-          },
-        }}
-      >
-        <StreamingFormProvider restoration={streamingRestoration}>
-          <SendCard />
-        </StreamingFormProvider>
-      </Box>
-    </Container>
+    <SEO title="Send Stream | Superfluid">
+      <Container maxWidth="lg">
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            [theme.breakpoints.up("md")]: {
+              my: 4,
+            },
+          }}
+        >
+          <StreamingFormProvider restoration={streamingRestoration}>
+            <SendCard />
+          </StreamingFormProvider>
+        </Box>
+      </Container>
+    </SEO>
   );
 };
 

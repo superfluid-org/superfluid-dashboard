@@ -22,7 +22,7 @@ import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
-import Ether from "../token/Ether";
+import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
@@ -73,34 +73,34 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
       {!isBelowMd ? (
         <>
           <TableCell>
-            <ListItem sx={{ p: 0 }}>
-              <ListItemAvatar>
-                {tokenQuery.data && (
+            {tokenQuery.data && (
+              <ListItem sx={{ p: 0 }}>
+                <ListItemAvatar>
                   <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
-                )}
-              </ListItemAvatar>
-              <ListItemText
-                data-cy={"amount"}
+                </ListItemAvatar>
+                <ListItemText
+                  data-cy={"amount"}
                 primary={
-                  <Ether wei={value}>
-                    {" "}
-                    {tokenQuery.data && tokenQuery.data.symbol}
-                  </Ether>
-                }
-                /**
-                 * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-                 * This is just used to make table row look better
-                 */
-                primaryTypographyProps={{
-                  variant: "h6mono",
-                  sx: { lineHeight: "46px" },
-                }}
-                secondaryTypographyProps={{
-                  variant: "body2mono",
-                  color: "text.secondary",
-                }}
-              />
-            </ListItem>
+                  <Amount wei={value} decimals={tokenQuery.data.decimals}>
+                      {" "}
+                      {tokenQuery.data.symbol}
+                    </Amount>
+                  }
+                  /**
+                   * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
+                   * This is just used to make table row look better
+                   */
+                  primaryTypographyProps={{
+                    variant: "h6mono",
+                    sx: { lineHeight: "46px" },
+                  }}
+                  secondaryTypographyProps={{
+                    variant: "body2mono",
+                    color: "text.secondary",
+                  }}
+                />
+              </ListItem>
+            )}
           </TableCell>
           <TableCell>
             <ListItem sx={{ p: 0 }}>
@@ -138,23 +138,21 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
         </>
       ) : (
         <TableCell align="right">
-          <Stack direction="row" alignItems="center" gap={2}>
+          {tokenQuery.data && (<Stack direction="row" alignItems="center" gap={2}>
             <ListItemText
                 data-cy={"mobile-amount"}
               primary={
-                <Ether wei={value}>
-                  {" "}
-                  {tokenQuery.data && tokenQuery.data.symbol}
-                </Ether>
-              }
-              primaryTypographyProps={{ variant: "h7mono" }}
-              secondaryTypographyProps={{ variant: "body2mono" }}
-            />
-
-            {tokenQuery.data && (
+                <Amount wei={value} decimals={tokenQuery.data.decimals}>
+                    {" "}
+                    {tokenQuery.data.symbol}
+                  </Amount>
+                }
+                primaryTypographyProps={{ variant: "h7mono" }}
+                secondaryTypographyProps={{ variant: "body2mono" }}
+              />
               <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
-            )}
-          </Stack>
+            </Stack>
+          )}
         </TableCell>
       )}
     </TableRow>

@@ -101,9 +101,10 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
           <TableCell>
             <ListItem sx={{ p: 0 }}>
               <ListItemAvatar>
-                <Avatar variant="rounded">
-                  <AddressAvatar address={isOutgoing ? receiver : sender} />
-                </Avatar>
+                <AddressAvatar
+                  address={isOutgoing ? receiver : sender}
+                  AvatarProps={{ variant: "rounded" }}
+                />
               </ListItemAvatar>
               <ListItemText
                 data-cy={"amountToFrom"}

@@ -2,7 +2,7 @@ import { FC } from "react";
 import { rpcApi } from "../redux/store";
 import { Typography, TypographyProps } from "@mui/material";
 import FlowingBalance from "../token/FlowingBalance";
-import Ether from "../token/Ether";
+import Amount from "../token/Amount";
 
 export const BalanceSuperToken: FC<{
   chainId: number;
@@ -24,7 +24,7 @@ export const BalanceSuperToken: FC<{
       ) : superBalanceQuery.isUninitialized || superBalanceQuery.isLoading ? (
         ""
       ) : !superBalanceQuery.data ? (
-        <Ether wei="0" />
+        <Amount wei="0" />
       ) : (
         <FlowingBalance
           balance={superBalanceQuery.data.balance}

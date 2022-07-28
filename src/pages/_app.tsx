@@ -3,10 +3,9 @@ import { AppProps } from "next/app";
 import Head from "next/head";
 import { useEffect } from "react";
 import { hotjar } from "react-hotjar";
-import { IntercomProvider } from "react-use-intercom";
 import { AutoConnectProvider } from "../features/autoConnect/AutoConnect";
 import { ImpersonationProvider } from "../features/impersonation/ImpersonationContext";
-import { INTERCOM_APP_ID } from "../features/intercom/IntercomButton";
+import IntercomProvider from "../features/intercom/IntercomProvider";
 import Layout from "../features/layout/Layout";
 import { LayoutContextProvider } from "../features/layout/LayoutContext";
 import { ActiveNetworksProvider } from "../features/network/ActiveNetworksContext";
@@ -22,6 +21,7 @@ import { VisibleAddressProvider } from "../features/wallet/VisibleAddressContext
 import WagmiManager, {
   RainbowKitManager,
 } from "../features/wallet/WagmiManager";
+import config from "../utils/config";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -34,11 +34,9 @@ export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_HJID && process.env.NEXT_PUBLIC_HJSV) {
-      hotjar.initialize(
-        Number(process.env.NEXT_PUBLIC_HJID),
-        Number(process.env.NEXT_PUBLIC_HJSV)
-      );
+    const { id, sv } = config.hotjar;
+    if (id && sv) {
+      hotjar.initialize(Number(id), Number(sv));
     } else {
       console.warn("Hotjar not initialized.");
     }
@@ -64,10 +62,7 @@ export default function MyApp(props: MyAppProps) {
                               <VisibleAddressProvider>
                                 <TransactionRestorationContextProvider>
                                   <LayoutContextProvider>
-                                    <IntercomProvider
-                                      appId={INTERCOM_APP_ID}
-                                      initializeDelay={250}
-                                    >
+                                    <IntercomProvider>
                                       <Layout>
                                         <ReduxPersistGate>
                                           <Component

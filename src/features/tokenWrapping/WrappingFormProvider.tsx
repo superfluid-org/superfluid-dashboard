@@ -2,7 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/router";
 import { FC, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { number, object, ObjectSchema, string } from "yup";
+import { object, ObjectSchema, string } from "yup";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   formRestorationOptions,
@@ -13,8 +13,8 @@ import {
 import { getNetworkDefaultTokenPair } from "../network/networks";
 import { isString } from "lodash";
 import { rpcApi, subgraphApi } from "../redux/store";
-import { formatEther, parseEther } from "ethers/lib/utils";
-import { useAccount, useConnect } from "wagmi";
+import { formatEther, formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
+import { useAccount } from "wagmi";
 import { BigNumber } from "ethers";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import {
@@ -22,19 +22,26 @@ import {
   calculateMaybeCriticalAtTimestamp,
 } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
+import { useTokenPairsQuery } from "./useTokenPairsQuery";
 
 export type WrappingForm = {
   type: RestorationType.Downgrade | RestorationType.Upgrade;
   data: {
-    tokenUpgrade: SuperTokenUpgradeRestoration["tokenUpgrade"];
-    amountEther: string;
+    tokenPair?: {
+      superTokenAddress: string;
+      underlyingTokenAddress: string;
+    };
+    amountDecimal?: string;
   };
 };
 
 export type ValidWrappingForm = {
   data: {
-    tokenUpgrade: WrappingForm["data"]["tokenUpgrade"];
-    amountEther: WrappingForm["data"]["amountEther"];
+    tokenPair: {
+      superTokenAddress: string;
+      underlyingTokenAddress: string;
+    };
+    amountDecimal: string;
   };
 };
 
@@ -50,6 +57,7 @@ const WrappingFormProvider: FC<{
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryUnderlyingBalance] = rpcApi.useLazyUnderlyingBalanceQuery();
   const { address: accountAddress, connector: activeConnector } = useAccount();
+  const tokenPairsQuery = useTokenPairsQuery({ network });
 
   const formSchema = useMemo(
     () =>
@@ -58,21 +66,11 @@ const WrappingFormProvider: FC<{
 
         const primarySchema: ObjectSchema<ValidWrappingForm> = object({
           data: object({
-            tokenUpgrade: object({
-              superToken: object({
-                type: number().required(),
-                address: string().required().test(testAddress()),
-                name: string().required(),
-                symbol: string().required(),
-              }).required(),
-              underlyingToken: object({
-                type: number().required(),
-                address: string().required().test(testAddress()),
-                name: string().required(),
-                symbol: string().required(),
-              }).required(),
+            tokenPair: object({
+              superTokenAddress: string().required().test(testAddress()),
+              underlyingTokenAddress: string().required().test(testAddress()),
             }).required(),
-            amountEther: string()
+            amountDecimal: string()
               .required()
               .test(testEtherAmount({ notNegative: true, notZero: true })),
           }),
@@ -97,20 +95,48 @@ const WrappingFormProvider: FC<{
           });
         };
 
+        const { superTokenAddress, underlyingTokenAddress } =
+          validForm.data.tokenPair;
+
         if (accountAddress) {
           if (type === RestorationType.Upgrade) {
-            const tokenAddress =
-              validForm.data.tokenUpgrade.underlyingToken.address;
+            const { underlyingToken } =
+              tokenPairsQuery.data.find(
+                (x) =>
+                  x.superToken.address.toLowerCase() ===
+                    superTokenAddress.toLowerCase() &&
+                  x.underlyingToken.address.toLowerCase() ===
+                    underlyingTokenAddress.toLowerCase()
+              ) ?? {};
+
+            if (!underlyingToken) {
+              console.error(`Couldn't find underlying token for: ${JSON.stringify(
+                validForm.data.tokenPair,
+                null,
+                2
+              )}
+The list of tokens searched from had length of: ${tokenPairsQuery.data.length}
+The chain ID was: ${network.id}`);
+              handleHigherOrderValidationError({
+                message:
+                  "Underlying token not found. This should never happen. Please refresh the page or contact support!",
+              });
+              return false;
+            }
+
             const underlyingBalance = await queryUnderlyingBalance({
               accountAddress,
-              tokenAddress,
+              tokenAddress: underlyingTokenAddress,
               chainId: network.id,
             }).unwrap();
 
             const underlyingBalanceBigNumber = BigNumber.from(
               underlyingBalance.balance
             );
-            const wrapAmountBigNumber = parseEther(validForm.data.amountEther);
+            const wrapAmountBigNumber = parseUnits(
+              validForm.data.amountDecimal,
+              underlyingToken.decimals
+            );
 
             const isWrappingIntoNegative =
               underlyingBalanceBigNumber.lt(wrapAmountBigNumber);
@@ -120,7 +146,8 @@ const WrappingFormProvider: FC<{
               });
             }
 
-            const isNativeAsset = tokenAddress === NATIVE_ASSET_ADDRESS;
+            const isNativeAsset =
+              underlyingTokenAddress === NATIVE_ASSET_ADDRESS;
             if (isNativeAsset) {
               const isWrappingIntoZero = BigNumber.from(
                 underlyingBalanceBigNumber
@@ -144,7 +171,7 @@ const WrappingFormProvider: FC<{
                 {
                   accountAddress,
                   chainId: network.id,
-                  tokenAddress: validForm.data.tokenUpgrade.superToken.address,
+                  tokenAddress: validForm.data.tokenPair.superTokenAddress,
                 },
                 true
               ).unwrap();
@@ -159,10 +186,12 @@ const WrappingFormProvider: FC<{
                 balanceTimestampMs: realtimeBalance.balanceTimestamp,
               });
               const balanceAfterWrappingBigNumber = currentBalanceBigNumber.sub(
-                parseEther(validForm.data.amountEther)
+                parseEther(validForm.data.amountDecimal) // Always "ether" when downgrading. No need to worry about decimals for super tokens.
               );
 
-              const amountBigNumber = parseEther(validForm.data.amountEther);
+              const amountBigNumber = parseEther(
+                validForm.data.amountDecimal
+              );
               const isWrappingIntoNegative =
                 currentBalanceBigNumber.lt(amountBigNumber);
               if (isWrappingIntoNegative) {
@@ -199,56 +228,78 @@ const WrappingFormProvider: FC<{
 
         return true;
       }),
-    [network, accountAddress]
+    [network, accountAddress, tokenPairsQuery.data]
   );
 
+  const networkDefaultTokenPair = getNetworkDefaultTokenPair(network);
   const formMethods = useForm<WrappingForm>({
     defaultValues: {
       data: {
-        tokenUpgrade: getNetworkDefaultTokenPair(network),
-        amountEther: "",
+        tokenPair: {
+          superTokenAddress: networkDefaultTokenPair.superToken.address,
+          underlyingTokenAddress:
+            networkDefaultTokenPair.underlyingToken.address,
+        },
+        amountDecimal: "",
       },
     },
     mode: "onChange",
     resolver: yupResolver(formSchema),
   });
 
-  const { formState, setValue, trigger, clearErrors, setError } = formMethods;
+  const { formState, setValue, trigger, clearErrors, setError, watch } =
+    formMethods;
 
   const [hasRestored, setHasRestored] = useState(!restoration);
   useEffect(() => {
-    if (restoration) {
+    if (restoration && tokenPairsQuery.isSuccess) {
+      const { superTokenAddress, underlyingTokenAddress } =
+        restoration.tokenPair;
+      const tokenPair = tokenPairsQuery.data.find(
+        (x) =>
+          x.superToken.address.toLowerCase() ===
+            superTokenAddress.toLowerCase() &&
+          x.underlyingToken.address.toLowerCase() ===
+            underlyingTokenAddress.toLowerCase()
+      );
+
+      if (!tokenPair) {
+        console.error(`Couldn't restore transaction. This shouldn't happen!`);
+        return;
+      }
+
       setValue("type", restoration.type, {
         shouldDirty: false,
         shouldTouch: false,
         shouldValidate: false,
       });
+      setValue("data.tokenPair", restoration.tokenPair, formRestorationOptions);
       setValue(
-        "data.amountEther",
-        formatEther(restoration.amountWei),
+        "data.amountDecimal",
+        formatUnits(restoration.amountWei, 18),
         formRestorationOptions
       );
-      setValue(
-        "data.tokenUpgrade",
-        restoration.tokenUpgrade,
-        formRestorationOptions
-      );
+
       setHasRestored(true);
     }
-  }, [restoration]);
-
-  const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
-    chainId: network.id,
-  });
+  }, [restoration, tokenPairsQuery.isSuccess]);
 
   useEffect(() => {
-    if (isString(tokenQueryParam) && tokenPairsQuery.data) {
+    if (isString(tokenQueryParam) && tokenPairsQuery.isSuccess) {
       const tokenPair = tokenPairsQuery.data.find(
         (x) =>
           x.superToken.address.toLowerCase() === tokenQueryParam.toLowerCase()
       );
+
       if (tokenPair) {
-        setValue("data.tokenUpgrade", tokenPair, formRestorationOptions);
+        setValue(
+          "data.tokenPair",
+          {
+            superTokenAddress: tokenPair.superToken.address,
+            underlyingTokenAddress: tokenPair.underlyingToken.address,
+          },
+          formRestorationOptions
+        );
       }
 
       const { token, ...tokenQueryParamRemoved } = router.query;
@@ -267,10 +318,6 @@ const WrappingFormProvider: FC<{
       trigger();
     }
   }, [accountAddress]);
-
-  // useEffect(() => {
-  //   console.log(formState);
-  // }, [formState]);
 
   return hasRestored ? (
     <FormProvider {...formMethods}>{children}</FormProvider>

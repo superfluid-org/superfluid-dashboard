@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { FC } from "react";
 import TokenIcon from "../token/TokenIcon";
-import Ether from "../token/Ether";
+import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
 import { rpcApi } from "../redux/store";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
@@ -43,9 +43,9 @@ export const TokenListItem: FC<TokenListItemProps> = ({
   token,
   showUpgrade,
   balanceWei,
-  balanceTimestamp,
   flowRate,
   onClick,
+  ...props
 }) => {
   const { network } = useExpectedNetwork();
 
@@ -79,8 +79,9 @@ export const TokenListItem: FC<TokenListItemProps> = ({
     ? realtimeBalanceQuery?.currentData?.balance || balanceWei
     : underlyingBalanceQuery?.currentData?.balance || balanceWei;
 
-  const balanceTS =
-    realtimeBalanceQuery?.currentData?.balanceTimestamp || balanceTimestamp;
+  const balanceTimestamp =
+    realtimeBalanceQuery?.currentData?.balanceTimestamp ||
+    props.balanceTimestamp;
 
   const fRate = realtimeBalanceQuery?.currentData?.flowRate || flowRate;
 
@@ -109,14 +110,18 @@ export const TokenListItem: FC<TokenListItemProps> = ({
       >
         {!!accountAddress &&
           checkedBalanceWei &&
-          (balanceTS && fRate ? (
+          (balanceTimestamp && fRate ? (
             <FlowingBalance
               balance={checkedBalanceWei}
-              balanceTimestamp={balanceTS}
+              balanceTimestamp={balanceTimestamp}
               flowRate={fRate}
             />
           ) : (
-            <Ether wei={checkedBalanceWei} roundingIndicator="~" />
+            <Amount
+              wei={checkedBalanceWei}
+              decimals={token.decimals}
+              roundingIndicator="~"
+            />
           ))}
         {showUpgrade && isWrappableSuperToken && (
           <Link

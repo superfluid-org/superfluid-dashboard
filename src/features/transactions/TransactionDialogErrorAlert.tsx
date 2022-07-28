@@ -26,7 +26,8 @@ export default memo(function TransactionDialogErrorAlert({
 
       const didUserRejectTransaction =
         mutationError.message?.includes('"code": 4001') || // MetaMask error version
-        mutationError.message?.includes("User rejected the transaction"); // WalletConnect error version
+        mutationError.message?.includes("User rejected the transaction") || // WalletConnect error version
+        mutationError.message?.includes("Transaction was rejected"); // Gnosis Safe error version
       if (didUserRejectTransaction) {
         return "Transaction Rejected";
       }
@@ -50,7 +51,7 @@ export default memo(function TransactionDialogErrorAlert({
         return (
           <>
             <AlertTitle>Insufficient Funds</AlertTitle>
-            Do you have enough {network.nativeAsset.symbol} for covering the
+            Do you have enough {network.nativeCurrency.symbol} for covering the
             transaction?
           </>
         );
@@ -64,7 +65,7 @@ export default memo(function TransactionDialogErrorAlert({
           <>
             <AlertTitle>Unpredictable Gas Limit</AlertTitle>
             Could not predict gas for the transaction. Do you have enough{" "}
-            {network.nativeAsset.symbol} for covering the transaction?
+            {network.nativeCurrency.symbol} for covering the transaction?
           </>
         );
       }

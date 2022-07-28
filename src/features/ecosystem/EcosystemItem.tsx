@@ -89,7 +89,7 @@ const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
           </Typography>
           <LaunchRoundedIcon sx={{ fontSize: "20px" }} />
         </Stack>
-        <Typography data-cy={"app-description"} variant={isBelowMd ? "body2" : "body1"}>
+        <Typography data-cy={"app-description"} variant={isBelowMd ? "body2" : "body1"} component="p">
           {app.description}
         </Typography>
         <Stack flex={1} justifyContent="flex-end">

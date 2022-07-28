@@ -17,7 +17,7 @@ import { FC, useMemo } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import { subscriptionWeiAmountReceived } from "../../utils/tokenUtils";
-import Ether from "../token/Ether";
+import Amount from "../token/Amount";
 
 export const SubscriptionLoadingRow = () => {
   const theme = useTheme();
@@ -137,7 +137,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({ subscription }) => {
         <>
           <TableCell>
             <Typography variant="h7mono">
-              <Ether wei={amountReceived} />
+              <Amount wei={amountReceived} />
             </Typography>
           </TableCell>
           <TableCell>
@@ -155,7 +155,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({ subscription }) => {
       ) : (
         <TableCell align="right">
           <ListItemText
-            primary={<Ether wei={amountReceived} />}
+            primary={<Amount wei={amountReceived} />}
             secondary={subscription.approved ? "Approved" : "Awaiting Approval"}
             primaryTypographyProps={{ variant: "h7mono" }}
             secondaryTypographyProps={{

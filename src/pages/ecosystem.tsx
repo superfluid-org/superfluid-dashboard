@@ -10,6 +10,7 @@ import {
 import { NextPage } from "next";
 import Link from "next/link";
 import { chain } from "wagmi";
+import SEO from "../components/SEO/SEO";
 import { EcosystemApp } from "../features/ecosystem/EcosystemItem";
 import EcosystemSection from "../features/ecosystem/EcosystemSection";
 
@@ -319,28 +320,31 @@ const Ecosystem: NextPage = () => {
   const theme = useTheme();
 
   return (
-    <Container maxWidth="lg" sx={{ mb: 4 }}>
-      <Stack gap={4.5}>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={{
-            [theme.breakpoints.down("md")]: {
-              flexDirection: "column",
-              alignItems: "start",
-              gap: 2,
-            },
-          }}
-        >
-          <Typography variant="h3">Explore the Superfluid ecosystem</Typography>
-          <Link
-            href="https://github.com/superfluid-finance/ecosystem/"
-            passHref
-            target="_blank"
+    <SEO title="Ecosystem | Superfluid">
+      <Container maxWidth="lg" sx={{ mb: 4 }}>
+        <Stack gap={4.5}>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{
+              [theme.breakpoints.down("md")]: {
+                flexDirection: "column",
+                alignItems: "start",
+                gap: 2,
+              },
+            }}
           >
-            <Button
-              data-cy={"add-new-app-button"}
+            <Typography variant="h3" component="h1">
+              Explore the Superfluid ecosystem
+            </Typography>
+            <Link
+              href="https://github.com/superfluid-finance/ecosystem/"
+              passHref
+              target="_blank"
+            >
+              <Button
+                data-cy={"add-new-app-button"}
             href=""
             variant="contained"
             color="primary"
@@ -352,28 +356,29 @@ const Ecosystem: NextPage = () => {
         </Link>
       </Stack>
 
-        <Divider />
+          <Divider />
 
-        <EcosystemSection
-          title="Built on Superfluid"
-          apps={BUILT_ON_SUPERFLUID}
-        />
+          <EcosystemSection
+            title="Built on Superfluid"
+            apps={BUILT_ON_SUPERFLUID}
+          />
 
-        <Divider />
+          <Divider />
 
-        <EcosystemSection
-          title="Superfluid Integrations"
-          apps={SUPERFLUID_INTEGRATIONS}
-        />
+          <EcosystemSection
+            title="Superfluid Integrations"
+            apps={SUPERFLUID_INTEGRATIONS}
+          />
 
-        <Divider />
+          <Divider />
 
-        <EcosystemSection
-          title="Supports Super Tokens"
-          apps={SUPPORTS_SUPER_TOKENS}
-        />
-      </Stack>
-    </Container>
+          <EcosystemSection
+            title="Supports Super Tokens"
+            apps={SUPPORTS_SUPER_TOKENS}
+          />
+        </Stack>
+      </Container>
+    </SEO>
   );
 };
 

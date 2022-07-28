@@ -10,14 +10,13 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
-import { ethers } from "ethers";
 import { FC, ReactNode, useMemo } from "react";
 import shortenHex from "../../utils/shortenHex";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { rpcApi } from "../redux/store";
-import Ether from "../token/Ether";
+import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import {
@@ -222,11 +221,11 @@ export const StreamingPreview: FC<{
             label="Upfront buffer"
             oldValue={
               oldBufferAmount ? (
-                <Ether wei={oldBufferAmount}> {token.symbol}</Ether>
+                <Amount wei={oldBufferAmount}> {token.symbol}</Amount>
               ) : undefined
             }
           >
-            <Ether wei={newBufferAmount}> {token.symbol}</Ether>
+            <Amount wei={newBufferAmount}> {token.symbol}</Amount>
           </PreviewItem>
         )}
 
