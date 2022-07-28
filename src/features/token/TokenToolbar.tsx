@@ -25,7 +25,9 @@ interface TokenToolbarData {
 const TokenToolbarData: FC<TokenToolbarData> = ({ symbol, name }) => (
   <Stack direction="row" alignItems="center" gap={2}>
     <TokenIcon tokenSymbol={symbol} />
-    <Typography variant="h3">{name}</Typography>
+    <Typography variant="h3" component="h1">
+      {name}
+    </Typography>
     <Typography variant="h4" color="text.secondary">
       {symbol}
     </Typography>

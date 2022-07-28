@@ -1,27 +1,34 @@
-import { SuperTokenPair, UnderlyingToken, SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
-import {FlowRateWei} from "../send/FlowRateInput";
+import {
+  SuperTokenMinimal,
+} from "../redux/endpoints/tokenTypes";
+import { FlowRateWei } from "../send/FlowRateInput";
 
 export enum RestorationType {
   Downgrade = 1,
   Upgrade = 2,
   Approve = 3,
   SendStream = 4,
-  ModifyStream = 5
+  ModifyStream = 5,
 }
 
 export const formRestorationOptions = {
   shouldValidate: false,
   shouldDirty: true,
   shouldTouch: true,
-}
+};
 
 export interface TransactionRestoration {
   type: RestorationType;
+  version?: number;
 }
 
-interface WrappingRestoration extends TransactionRestoration{
+interface WrappingRestoration extends TransactionRestoration {
+  version: 2;
   chainId: number;
-  tokenUpgrade: SuperTokenPair;
+  tokenPair: {
+    superTokenAddress: string;
+    underlyingTokenAddress: string;
+  };
   amountWei: string;
 }
 
@@ -36,7 +43,7 @@ export interface SuperTokenUpgradeRestoration extends WrappingRestoration {
 export interface ApproveAllowanceRestoration extends TransactionRestoration {
   type: RestorationType.Approve;
   chainId: number;
-  token: UnderlyingToken;
+  tokenAddress: string;
   amountWei: string;
 }
 

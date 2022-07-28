@@ -1,5 +1,6 @@
 import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
 import { BigNumber, BigNumberish } from "ethers";
+import { parseUnits } from "ethers/lib/utils";
 
 export const MAX_SAFE_SECONDS = BigNumber.from(8640000000000); //In seconds, https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#the_ecmascript_epoch_and_timestamps
 const BIG_NUMBER_ZERO = BigNumber.from(0);
@@ -8,6 +9,21 @@ export const parseEtherOrZero = (etherString: string): BigNumber => {
   try {
     return parseEther(etherString);
   } catch (error) {
+    return BigNumber.from("0");
+  }
+};
+
+export const parseAmountOrZero = (amount?: {
+  value: string;
+  decimals: number;
+}): BigNumber => {
+  if (amount) {
+    try {
+      return parseUnits(amount.value, amount.decimals);
+    } catch (error) {
+      return BigNumber.from("0");
+    }
+  } else {
     return BigNumber.from("0");
   }
 };

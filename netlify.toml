@@ -69,3 +69,21 @@ for = "/*"
   to = "/"
   status = 301
   force = false
+
+[[redirects]]
+  from = "/GT-Walsheim-Pro-Medium.otf"
+  to = "/fonts/GT-Walsheim-Pro-Medium.otf"
+  status = 301
+  force = false
+
+[[redirects]]
+  from = "/GT-Walsheim-Pro-Regular.otf"
+  to = "/fonts/GT-Walsheim-Pro-Regular.otf"
+  status = 301
+  force = false
+
+[[redirects]]
+  from = "/static/*"
+  to = "https://v1.superfluid.finance/static/:splat"
+  status = 301
+  force = false

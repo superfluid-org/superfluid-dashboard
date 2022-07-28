@@ -1,9 +1,9 @@
 import { GlobalStyles, useMediaQuery, useTheme } from "@mui/material";
 import { FC, ReactElement, useEffect } from "react";
 import { useIntercom } from "react-use-intercom";
+import config from "../../utils/config";
 import { useLayoutContext } from "../layout/LayoutContext";
 import { transactionDrawerWidth } from "../transactionDrawer/TransactionDrawer";
-import { INTERCOM_APP_ID } from "./IntercomProvider";
 
 interface IntercomHandlerProps {
   children: ReactElement<any, any>;
@@ -16,7 +16,7 @@ const IntercomHandler: FC<IntercomHandlerProps> = ({ children }) => {
   const { boot, update, shutdown } = useIntercom();
 
   useEffect(() => {
-    if (!INTERCOM_APP_ID) console.warn("Intercom not initialized.");
+    if (!config.intercom.appId) console.warn("Intercom not initialized.");
 
     if (isBelowMd) {
       return shutdown();

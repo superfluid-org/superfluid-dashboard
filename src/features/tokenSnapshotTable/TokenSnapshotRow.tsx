@@ -23,7 +23,7 @@ import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
 import StreamsTable from "../streamsTable/StreamsTable";
-import Ether from "../token/Ether";
+import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
 import TokenIcon from "../token/TokenIcon";
 
@@ -174,11 +174,11 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               {totalNumberOfActiveStreams > 0 ? (
                 <Typography data-cy={"net-flow-value"} variant="body2mono">
                   {netFlowRate.charAt(0) !== "-" && "+"}
-                  <Ether
+                  <Amount
                     wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
                   >
                     /mo
-                  </Ether>
+                  </Amount>
                 </Typography>
               ) : (
                 "-"
@@ -194,7 +194,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                     color="primary"
                   >
                     +
-                    <Ether
+                    <Amount
                       wei={BigNumber.from(totalInflowRate).mul(
                         UnitOfTime.Month
                       )}
@@ -207,7 +207,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                     color="error"
                   >
                     -
-                    <Ether
+                    <Amount
                       wei={BigNumber.from(totalOutflowRate).mul(
                         UnitOfTime.Month
                       )}
@@ -239,11 +239,11 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 totalNumberOfActiveStreams > 0 ? (
                   <>
                     {netFlowRate.charAt(0) !== "-" && "+"}
-                    <Ether
+                    <Amount
                       wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
                     >
                       /mo
-                    </Ether>
+                    </Amount>
                   </>
                 ) : (
                   "-"

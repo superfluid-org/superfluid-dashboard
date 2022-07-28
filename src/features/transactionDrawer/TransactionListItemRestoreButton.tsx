@@ -4,6 +4,10 @@ import { useRouter } from "next/router";
 import { FC } from "react";
 import ReplayIcon from "@mui/icons-material/Replay";
 import { useLayoutContext } from "../layout/LayoutContext";
+import {
+  RestorationType,
+  TransactionRestoration,
+} from "../transactionRestoration/transactionRestorations";
 
 export const TransactionListItemRestoreButton: FC<{
   transaction: TrackedTransaction;
@@ -15,6 +19,15 @@ export const TransactionListItemRestoreButton: FC<{
 
   if (!transaction.extraData.restoration) {
     return null;
+  }
+
+  const transactionRestoration = transaction?.extraData
+    ?.restoration as TransactionRestoration;
+
+  switch (transactionRestoration.type) {
+    case RestorationType.Downgrade:
+    case RestorationType.Upgrade:
+      if (transactionRestoration.version !== 2) return null;
   }
 
   const restoreTransaction = async () => {

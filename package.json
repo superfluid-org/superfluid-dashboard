@@ -23,7 +23,7 @@
     "@mui/material": "^5.8.1",
     "@rainbow-me/rainbowkit": "^0.4.3",
     "@reduxjs/toolkit": "^1.8.2",
-    "@sentry/nextjs": "^6.19.7",
+    "@sentry/nextjs": "^7.8.0",
     "@superfluid-finance/sdk-core": "0.5.2",
     "@superfluid-finance/sdk-redux": "0.3.1-dev.6cf4191.0",
     "axios": "^0.26.1",

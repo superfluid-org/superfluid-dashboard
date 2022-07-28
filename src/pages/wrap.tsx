@@ -2,6 +2,7 @@ import { Box, Container, useTheme } from "@mui/material";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import SEO from "../components/SEO/SEO";
 import WrapCard from "../features/tokenWrapping/WrapCard";
 import WrappingFormProvider from "../features/tokenWrapping/WrappingFormProvider";
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
@@ -42,25 +43,27 @@ const Wrap: NextPage = () => {
   }
 
   return (
-    <Container maxWidth="lg">
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          [theme.breakpoints.up("md")]: {
-            my: 4,
-          },
-        }}
-      >
-        <WrappingFormProvider
-          restoration={upgradeRestoration || downgradeRestoration}
+    <SEO title="Wrap / Unwrap | Superfluid">
+      <Container maxWidth="lg">
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            [theme.breakpoints.up("md")]: {
+              my: 4,
+            },
+          }}
         >
-          {tabValue && <WrapCard tabValue={tabValue} />}
-        </WrappingFormProvider>
-      </Box>
-    </Container>
+          <WrappingFormProvider
+            restoration={upgradeRestoration || downgradeRestoration}
+          >
+            {tabValue && <WrapCard tabValue={tabValue} />}
+          </WrappingFormProvider>
+        </Box>
+      </Container>
+    </SEO>
   );
 };
 

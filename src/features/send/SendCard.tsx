@@ -117,6 +117,7 @@ export default memo(function SendCard() {
         address: x.id,
         name: x.name,
         symbol: x.symbol,
+        decimals: 18,
       })),
     [superTokensQuery.data, network]
   );
@@ -164,6 +165,9 @@ export default memo(function SendCard() {
 
         <ErrorMessage
           name="data"
+          // ErrorMessage has a bug and current solution is to pass in errors via props.
+          // TODO: keep eye on this issue: https://github.com/react-hook-form/error-message/issues/91
+          errors={formState.errors}
           render={({ message }) =>
             !!message && (
               <Alert severity="error" sx={{ mb: 1 }}>

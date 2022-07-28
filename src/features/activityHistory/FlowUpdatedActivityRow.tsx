@@ -25,7 +25,7 @@ import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
-import Ether from "../token/Ether";
+import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
@@ -109,10 +109,10 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
               <ListItemText
                 primary={
                   <>
-                    <Ether wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)}>
+                    <Amount wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)}>
                       {" "}
                       {tokenQuery.data ? `${tokenQuery.data.symbol}/mo` : "/mo"}
-                    </Ether>
+                    </Amount>
                   </>
                 }
                 /**
@@ -169,7 +169,7 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
           <Stack direction="row" alignItems="center" gap={1}>
             <ListItemText
               primary={
-                <Ether wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)} />
+                <Amount wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)} />
               }
               secondary={
                 tokenQuery.data ? `${tokenQuery.data.symbol}/mo` : "/mo"
