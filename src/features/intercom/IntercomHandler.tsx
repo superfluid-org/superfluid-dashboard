@@ -13,26 +13,24 @@ const IntercomHandler: FC<IntercomHandlerProps> = ({ children }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { transactionDrawerOpen } = useLayoutContext();
-  const { boot, update, shutdown } = useIntercom();
+  const { boot, update, hide } = useIntercom();
 
   useEffect(() => {
     if (!config.intercom.appId) console.warn("Intercom not initialized.");
-
-    if (isBelowMd) {
-      return shutdown();
-    }
 
     boot({
       horizontalPadding: 24,
       verticalPadding: 24,
       alignment: "right",
     });
-  }, [boot, shutdown, isBelowMd]);
+  }, [boot]);
 
   useEffect(() => {
     const isDarkMode = theme.palette.mode === "dark";
+    if (isBelowMd) hide();
 
     update({
+      hideDefaultLauncher: isBelowMd,
       actionColor: isDarkMode ? " #1c1d20" : theme.palette.primary.main,
       backgroundColor: isDarkMode ? " #1c1d20" : theme.palette.primary.main,
       horizontalPadding:
