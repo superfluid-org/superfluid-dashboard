@@ -100,10 +100,10 @@ const MintActivityRow: FC<MintedActivity> = ({
                 </ListItemAvatar>
                 <ListItemText
                   data-cy={"amount"}
-                primary={
-                  <>
-                    -
-                      <Amount wei={amount}> {underlyingTokenSymbol} </Ether>{" "}
+                  primary={
+                    <>
+                      -
+                      <Amount wei={amount} />{" "}
                       {underlyingToken.symbol}
                     </>
                   }
@@ -132,9 +132,10 @@ const MintActivityRow: FC<MintedActivity> = ({
                 </ListItemAvatar>
                 <ListItemText
                   data-cy={"amountToFrom"}
-                primary={
-                  <>
-                    +<Amount wei={amount}>
+                  primary={
+                    <>
+                      +
+                      <Amount wei={amount}>
                         {" "}
                         {superToken.symbol}
                       </Amount>
@@ -171,9 +172,10 @@ const MintActivityRow: FC<MintedActivity> = ({
             <Stack direction="row" alignItems="center" gap={2}>
               <ListItemText
                 data-cy={"mobile-amount"}
-              primary={
-                <>
-                  +<Amount wei={amount}>
+                primary={
+                  <>
+                    +
+                    <Amount wei={amount}>
                       {" "}
                       {superToken.symbol}
                     </Amount>
