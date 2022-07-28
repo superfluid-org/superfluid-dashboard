@@ -31,8 +31,12 @@ const IntercomHandler: FC<IntercomHandlerProps> = ({ children }) => {
 
     update({
       hideDefaultLauncher: isBelowMd,
-      actionColor: isDarkMode ? " #1c1d20" : theme.palette.primary.main,
-      backgroundColor: isDarkMode ? " #1c1d20" : theme.palette.primary.main,
+      actionColor: isDarkMode
+        ? theme.palette.other.intercom
+        : theme.palette.primary.main,
+      backgroundColor: isDarkMode
+        ? theme.palette.other.intercom
+        : theme.palette.primary.main,
       horizontalPadding:
         24 + (transactionDrawerOpen ? transactionDrawerWidth : 0),
     });
