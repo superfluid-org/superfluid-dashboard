@@ -38,15 +38,15 @@ import { useTokenPairQuery } from "./useTokenPairQuery";
 
 const underlyingIbAlluoTokenOverrides = [
   // StIbAlluoEth
-  "0xc677B0918a96ad258A68785C2a3955428DeA7e50",
+  "0xc677b0918a96ad258a68785c2a3955428dea7e50",
   // StIbAlluoBTC
-  "0xf272Ff86c86529504f0d074b210e95fc4cFCDce2",
+  "0xf272ff86c86529504f0d074b210e95fc4cfcdce2",
 
   // StIbAlluoEUR
-  "0xc9d8556645853C465D1D5e7d2c81A0031F0B8a92",
+  "0xc9d8556645853c465d1d5e7d2c81a0031f0b8a92",
 
   // StIbAlluoUSD
-  "0xC2DbaAEA2EfA47EBda3E572aa0e55B742E408BF6",
+  "0xc2dbaaea2efa47ebda3e572aa0e55b742e408bf6",
 ];
 
 export const WrapTabUpgrade: FC = () => {
@@ -375,7 +375,7 @@ export const WrapTabUpgrade: FC = () => {
             if (
               network.id === 137 &&
               underlyingIbAlluoTokenOverrides.includes(
-                tokenPair.underlyingTokenAddress
+                tokenPair.underlyingTokenAddress.toLowerCase()
               )
             ) {
               overrides.gasLimit = 200_000;
