@@ -378,8 +378,11 @@ export const WrapTabUpgrade: FC = () => {
                 tokenPair.underlyingTokenAddress.toLowerCase()
               )
             ) {
+              console.log("OVERRIDING GAS LIMIT!");
               overrides.gasLimit = 200_000;
             }
+
+            console.log({ network: network.id, tokenPair, overrides });
 
             approveTrigger({
               signer,
