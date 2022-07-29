@@ -368,22 +368,6 @@ export const WrapTabUpgrade: FC = () => {
               tokenAddress: tokenPair.underlyingTokenAddress,
             };
 
-            const overrides = await getTransactionOverrides(network);
-
-            // Temp custom override for "IbAlluo" tokens on polygon
-            // TODO: Find a better solution
-            if (
-              network.id === 137 &&
-              underlyingIbAlluoTokenOverrides.includes(
-                tokenPair.underlyingTokenAddress.toLowerCase()
-              )
-            ) {
-              console.log("OVERRIDING GAS LIMIT!");
-              overrides.gasLimit = 200_000;
-            }
-
-            console.log({ network: network.id, tokenPair, overrides });
-
             approveTrigger({
               signer,
               chainId: network.id,
@@ -392,7 +376,7 @@ export const WrapTabUpgrade: FC = () => {
               transactionExtraData: {
                 restoration,
               },
-              overrides,
+              overrides: await getTransactionOverrides(network),
             })
               .unwrap()
               .then(() => setTransactionDrawerOpen(true));
@@ -441,6 +425,18 @@ export const WrapTabUpgrade: FC = () => {
             const isNativeAssetSuperToken =
               formData.tokenPair.underlyingTokenAddress ===
               NATIVE_ASSET_ADDRESS;
+
+            // Temp custom override for "IbAlluo" tokens on polygon
+            // TODO: Find a better solution
+            if (
+              network.id === 137 &&
+              underlyingIbAlluoTokenOverrides.includes(
+                tokenPair.underlyingTokenAddress.toLowerCase()
+              )
+            ) {
+              overrides.gasLimit = 200_000;
+            }
+
             if (isGnosisSafe && isNativeAssetSuperToken) {
               overrides.gasLimit = 500_000;
             }
