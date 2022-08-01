@@ -43,8 +43,6 @@ jobs:
         with:
           browser: ${{ matrix.browser }}
           headless: true
-          build: yarn build
-          start: yarn start
           wait-on: ${{ steps.waitForDeployment.outputs.url }}
           wait-on-timeout: 180
           record: true
