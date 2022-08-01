@@ -27,7 +27,12 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 16.x
+      
+      - uses: c-hive/gha-yarn-cache@v2
 
+      - name: Install JS dependencies
+        run: yarn install
+      
       - name: Wait for Netlify
         uses: probablyup/wait-for-netlify-action@3.2.0 # Check the source code before updating version because it uses personal Netlify access token which does not have granular access control.
         id: waitForDeployment
@@ -39,6 +44,7 @@ jobs:
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
+          install: false
           browser: ${{ matrix.browser }}
           wait-on: ${{ steps.waitForDeployment.outputs.url }}
           wait-on-timeout: 180
