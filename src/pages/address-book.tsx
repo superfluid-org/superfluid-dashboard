@@ -389,14 +389,14 @@ const AddressBook: NextPage = () => {
                 {!isDeleting && (
                   <Button
                     data-cy={"add-address-btn"}
-              variant="textContained"
-              color="primary"
-              onClick={openAddDialog}
-            >
-              Add Address
-            </Button>)}
-            <Button
-                data-cy={"remove-button"}
+                    variant="textContained"
+                    color="primary"
+                    onClick={openAddDialog}
+                  >
+                    Add Address
+                  </Button>)}
+                <Button
+                  data-cy={"remove-button"}
                   variant="textContained"
                   color="error"
                   disabled={isDeleting && selectedAddresses.length === 0}
@@ -410,13 +410,13 @@ const AddressBook: NextPage = () => {
                 {isDeleting && (
                   <Button
                     data-cy={"cancel-button"}
-                variant="outlined"
-                color="secondary"
-                onClick={cancelDeleting}
-              >
-                Cancel
-              </Button>
-            )}
+                    variant="outlined"
+                    color="secondary"
+                    onClick={cancelDeleting}
+                  >
+                    Cancel
+                 </Button>
+                )}
           </Stack>)}
         </Stack>
 

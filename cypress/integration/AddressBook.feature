@@ -24,16 +24,16 @@ Feature: Address Book test cases
     Then "testing" address book entry for "0x8ac9C6D444D12d20BC96786243Abaae8960D27e2" is visible in the search results
     And User chooses the first address book result
     Then View mode chip shows "testing"
-      And User clicks on the "send" navigation button
-      And User clicks on the address button in the send page
-      And User types "testing" into the address input
-      Then "testing" address book entry for "0x8ac9C6D444D12d20BC96786243Abaae8960D27e2" is visible in the search results
-      And User chooses the first address book result
-      Then Chosen wallet address shows up as testing
-      And User clicks on the "history" navigation button
-      And User waits for the activity history to load
-      And User opens the receiver dialog
-      And User types "testing" into the address input
-      Then "testing" address book entry for "0x8ac9C6D444D12d20BC96786243Abaae8960D27e2" is visible in the search results
-      And User chooses the first address book result
-      Then Chosen wallet address shows up as testing
+    And User clicks on the "send" navigation button
+    And User clicks on the address button in the send page
+    And User types "testing" into the address input
+    Then "testing" address book entry for "0x8ac9C6D444D12d20BC96786243Abaae8960D27e2" is visible in the search results
+    And User chooses the first address book result
+    Then Chosen wallet address shows up as testing
+    And User clicks on the "history" navigation button
+    And User waits for the activity history to load
+    And User opens the receiver dialog
+    And User types "testing" into the address input
+    Then "testing" address book entry for "0x8ac9C6D444D12d20BC96786243Abaae8960D27e2" is visible in the search results
+    And User chooses the first address book result
+    Then Chosen wallet address shows up as testing

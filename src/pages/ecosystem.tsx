@@ -345,12 +345,12 @@ const Ecosystem: NextPage = () => {
             >
               <Button
                 data-cy={"add-new-app-button"}
-            href=""
-            variant="contained"
-            color="primary"
-            endIcon={<AddIcon />}
-            target="_blank"
-          >
+                href=""
+                variant="contained"
+                color="primary"
+                endIcon={<AddIcon />}
+                target="_blank"
+              >
             Add New App
           </Button>
         </Link>

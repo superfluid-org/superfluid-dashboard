@@ -59,7 +59,7 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
           <ListItemText
             data-cy={"activity"}
             primary={isOutgoing ? "Send Transfer" : "Receive Transfer"}
-            secondary={timestamp}
+            secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
             }}
@@ -141,7 +141,7 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
           {tokenQuery.data && (<Stack direction="row" alignItems="center" gap={2}>
             <ListItemText
                 data-cy={"mobile-amount"}
-              primary={
+                primary={
                 <Amount wei={value} decimals={tokenQuery.data.decimals}>
                     {" "}
                     {tokenQuery.data.symbol}

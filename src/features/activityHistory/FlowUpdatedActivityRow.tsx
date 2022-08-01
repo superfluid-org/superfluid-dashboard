@@ -86,7 +86,7 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
           <ListItemText
             data-cy={"activity"}
             primary={title}
-            secondary={timestamp}
+            secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
             }}

@@ -207,7 +207,7 @@ const History: NextPage = () => {
               />
 
               <Button
-                data-cy={"date-picker-button"}
+              data-cy={"date-picker-button"}
               variant="outlined"
               color="secondary"
               size="large"
@@ -237,7 +237,7 @@ const History: NextPage = () => {
           </Stack>
           <Stack direction="row" justifyContent="space-between">
             <Button
-              data-cy={"activity-filter-button"}
+                data-cy={"activity-filter-button"}
                 variant="outlined"
                 color="secondary"
                 endIcon={<OpenIcon open={!!activitySelectionAnchor} />}

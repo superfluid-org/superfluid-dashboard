@@ -59,7 +59,7 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
           <ListItemText
             data-cy={"activity"}
             primary={"Liquidated"}
-            secondary={timestamp}
+            secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
             }}
