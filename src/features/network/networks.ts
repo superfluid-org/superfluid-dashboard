@@ -563,3 +563,7 @@ export const networksBySlug = new Map(networks.map((x) => [x.slugName, x]));
 
 export const mainNetworks = networks.filter((network) => !network.testnet);
 export const testNetworks = networks.filter((network) => network.testnet);
+
+export const findNetworkByChainId = memoize((chainId: number) =>
+  networks.find((network) => network.id === chainId)
+);

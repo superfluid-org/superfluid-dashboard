@@ -6,6 +6,7 @@ import {
   ListItemText,
   Stack,
   Typography,
+  useTheme,
 } from "@mui/material";
 import {
   TrackedTransaction,
@@ -14,6 +15,8 @@ import {
 import { format } from "date-fns";
 import { FC } from "react";
 import shortenHex from "../../utils/shortenHex";
+import NetworkBadge from "../network/NetworkBadge";
+import { findNetworkByChainId } from "../network/networks";
 import { TransactionListItemAvatar } from "./TransactionListItemAvatar";
 import { TransactionListItemRestoreButton } from "./TransactionListItemRestoreButton";
 
@@ -33,6 +36,9 @@ export const getTransactionStatusColor = (status: TransactionStatus) => {
 const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
   transaction,
 }) => {
+  const theme = useTheme();
+  const network = findNetworkByChainId(transaction.chainId);
+
   return (
     <ListItem button sx={{ cursor: "default" }}>
       <ListItemAvatar>
@@ -58,6 +64,16 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
         }
       />
       <TransactionListItemRestoreButton transaction={transaction} />
+      {network && (
+        <NetworkBadge
+          network={network}
+          sx={{ position: "absolute", top: 0, right: theme.spacing(1) }}
+          NetworkIconProps={{ size: 18, fontSize: 12 }}
+          TooltipProps={{
+            placement: "top-start",
+          }}
+        />
+      )}
     </ListItem>
   );
 };
