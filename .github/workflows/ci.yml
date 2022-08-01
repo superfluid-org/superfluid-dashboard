@@ -5,6 +5,7 @@ on:
     types: [opened, reopened, ready_for_review, synchronize]
 
 jobs:
+
   prepare: # https://github.com/cypress-io/github-action#robust-custom-build-id
     runs-on: ubuntu-latest
     outputs:
@@ -13,6 +14,7 @@ jobs:
       - name: Generate unique ID 💎
         id: uuid
         run: echo "::set-output name=value::sha-$GITHUB_SHA-time-$(date +"%s")"
+
   test-suites:
     if: ${{ !github.event.pull_request.draft }}
     needs: ["prepare"]
@@ -60,7 +62,6 @@ jobs:
           wait-on: ${{ steps.waitForDeployment.outputs.url }}
           wait-on-timeout: 180
           record: true
-          parallel: true
           ci-build-id: ${{ needs.prepare.outputs.uuid }}
           env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
         env:
