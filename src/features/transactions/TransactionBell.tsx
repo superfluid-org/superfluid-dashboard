@@ -1,4 +1,4 @@
-import { Badge, IconButton } from "@mui/material";
+import { Badge, IconButton, styled } from "@mui/material";
 import { useLayoutContext } from "../layout/LayoutContext";
 import {
   pendingTransactionsSelector,
@@ -7,6 +7,19 @@ import {
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { useAccount } from "wagmi";
 import { memo } from "react";
+import MenuOpenRoundedIcon from "@mui/icons-material/MenuOpenRounded";
+
+const TransactionIconButton = styled(IconButton)<{ open: boolean }>(
+  ({ theme, open }) => ({
+    ...(open && {
+      marginRight: `${theme.spacing(-4.5 - 2)} !important`,
+    }),
+    transition: theme.transitions.create("margin-right", {
+      easing: theme.transitions.easing.easeInOut,
+      duration: theme.transitions.duration.standard,
+    }),
+  })
+);
 
 export default memo(function TransactionBell() {
   const { address: accountAddress } = useAccount();
@@ -21,10 +34,11 @@ export default memo(function TransactionBell() {
   if (!accountAddress) return null;
 
   return (
-    <IconButton
+    <TransactionIconButton
       color="inherit"
       edge="end"
       onClick={() => setTransactionDrawerOpen(!transactionDrawerOpen)}
+      open={transactionDrawerOpen}
     >
       <Badge
         invisible={!pendingTransactions.length || transactionDrawerOpen}
@@ -32,8 +46,8 @@ export default memo(function TransactionBell() {
         color="warning"
         variant="dot"
       >
-        <NotificationsIcon />
+        <MenuOpenRoundedIcon />
       </Badge>
-    </IconButton>
+    </TransactionIconButton>
   );
 });

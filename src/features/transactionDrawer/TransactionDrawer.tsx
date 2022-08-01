@@ -59,7 +59,7 @@ export default memo(function TransactionDrawer() {
           <CloseIcon />
         </IconButton>
         <Typography variant="h5" sx={{ m: 1 }}>
-          Activity
+          Transactions
         </Typography>
       </DrawerHeader>
 

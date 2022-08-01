@@ -5,7 +5,6 @@ on:
     types: [opened, reopened, ready_for_review, synchronize]
 
 jobs:
-
   test-suites:
     timeout-minutes: 60
     if: ${{ !github.event.pull_request.draft }}
@@ -16,8 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browser: [ chrome , firefox ]
-
+        browser: [chrome, firefox]
     steps:
       - uses: actions/checkout@v2
 
@@ -30,17 +28,32 @@ jobs:
         with:
           node-version: 16.x
 
+      - uses: c-hive/gha-yarn-cache@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
+
+      - name: Install JS dependencies
+        run: yarn install
+        env:
+          GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
+
+      - name: Wait for Netlify
+        uses: probablyup/wait-for-netlify-action@3.2.0 # Check the source code before updating version because it uses personal Netlify access token which does not have granular access control.
+        id: waitForDeployment
+        with:
+          site_id: "aa82cf1e-ce5d-432f-99bf-77a0b8c13277"
+        env:
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
+          install: false
           browser: ${{ matrix.browser }}
-          headless: true
-          build: yarn build
-          start: yarn start
-          wait-on: 'http://localhost:3000'
+          wait-on: ${{ steps.waitForDeployment.outputs.url }}
           wait-on-timeout: 180
           record: true
           env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
         env:
-          GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
           CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
+          CYPRESS_baseUrl: ${{ steps.waitForDeployment.outputs.url }}

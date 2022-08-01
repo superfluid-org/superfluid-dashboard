@@ -2,7 +2,7 @@ import { Avatar, SxProps, Theme } from "@mui/material";
 import { FC } from "react";
 import { Network } from "./networks";
 
-interface NetworkIconProps {
+export interface NetworkIconProps {
   network: Network;
   fontSize?: number;
   size?: number;
