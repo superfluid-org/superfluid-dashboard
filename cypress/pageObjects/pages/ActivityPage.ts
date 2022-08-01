@@ -115,6 +115,7 @@ export class ActivityPage extends BasePage {
     }
 
     static validateActivityVisibleByAddress(address: string) {
+        cy.get(AMOUNT_TO_FROM).should("have.length",2)
         cy.get(AMOUNT_TO_FROM).each(el => {
             cy.wrap(el).should("have.text",`From${shortenHex(address)}`)
         })
