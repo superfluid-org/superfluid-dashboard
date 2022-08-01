@@ -6,6 +6,7 @@ on:
 
 jobs:
   prepare: # https://github.com/cypress-io/github-action#robust-custom-build-id
+    runs-on: ubuntu-latest
     outputs:
       uuid: ${{ steps.uuid.outputs.value }}
     steps:
@@ -13,10 +14,10 @@ jobs:
         id: uuid
         run: echo "::set-output name=value::sha-$GITHUB_SHA-time-$(date +"%s")"
   test-suites:
-    needs: ["prepare"]
-    timeout-minutes: 60
     if: ${{ !github.event.pull_request.draft }}
+    needs: ["prepare"]
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     container:
       image: cypress/browsers:node16.5.0-chrome97-ff96
       options: --user 1001
