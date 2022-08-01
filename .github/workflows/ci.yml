@@ -5,7 +5,6 @@ on:
     types: [opened, reopened, ready_for_review, synchronize]
 
 jobs:
-
   test-suites:
     timeout-minutes: 60
     if: ${{ !github.event.pull_request.draft }}
@@ -16,8 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browser: [ chrome , firefox ]
-
+        browser: [chrome, firefox]
     steps:
       - uses: actions/checkout@v2
 
@@ -34,7 +32,7 @@ jobs:
         uses: probablyup/wait-for-netlify-action@3.2.0 # Check the source code before updating version because it uses personal Netlify access token which does not have granular access control.
         id: waitForDeployment
         with:
-          site_id: 'aa82cf1e-ce5d-432f-99bf-77a0b8c13277'
+          site_id: "aa82cf1e-ce5d-432f-99bf-77a0b8c13277"
         env:
           NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
