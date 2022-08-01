@@ -8,9 +8,9 @@ Feature: Send Page test cases
     And User accepts the risk warning
     Then Send button is enabled and asks user to Connect their wallet
 
+  @broken @skip
   Scenario: Receiver dialog recents and ENS support
     Given "Send Page" is open with a mocked connection to "staticBalanceAccount" on "gnosis"
-    #A workaround until a better way to connect a wallet during tests is found
     And User connects their wallet to the dashboard
     And User changes their network to "polygon"
     And User opens the receiver dialog
@@ -67,6 +67,7 @@ Feature: Send Page test cases
     And User accepts the risk warning
     Then The stop viewing as an address button is visible
 
+  @broken @skip
   Scenario: Wrong network warnings in the send page
     Given "Send Page" is open with a mocked connection to "ongoingStreamAccount" on "gnosis"
     And User connects their wallet to the dashboard
