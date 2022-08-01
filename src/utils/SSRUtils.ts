@@ -1,1 +1,2 @@
 export const SSR = typeof window === "undefined";
+export const IsCypress = !SSR && !!(window as any).Cypress; // https://docs.cypress.io/faq/questions/using-cypress-faq#Is-there-any-way-to-detect-if-my-app-is-running-under-Cypress

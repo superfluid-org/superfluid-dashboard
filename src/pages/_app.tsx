@@ -22,6 +22,7 @@ import WagmiManager, {
   RainbowKitManager,
 } from "../features/wallet/WagmiManager";
 import config from "../utils/config";
+import { IsCypress } from "../utils/SSRUtils";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -35,7 +36,7 @@ export default function MyApp(props: MyAppProps) {
 
   useEffect(() => {
     const { id, sv } = config.hotjar;
-    if (id && sv) {
+    if (!IsCypress && id && sv) {
       hotjar.initialize(Number(id), Number(sv));
     } else {
       console.warn("Hotjar not initialized.");
