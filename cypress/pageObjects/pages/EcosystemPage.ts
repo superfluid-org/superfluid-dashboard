@@ -8,7 +8,7 @@ const APP_DESCRIPTIONS = "[data-cy=app-description]"
 const APP_LINKS = "[data-cy=app-link-button]"
 const COMMING_SOON_CHIPS = "[data-cy=app-comming-soon]"
 const ADD_AN_APP_BUTTON = "[data-cy=add-new-app-button]"
-const ADD_APP_LINK = "http://ecosystem.superfluid.finance"
+const ADD_APP_LINK = "https://github.com/superfluid-finance/ecosystem/"
 
 export class EcosystemPage extends BasePage {
 
@@ -23,12 +23,12 @@ export class EcosystemPage extends BasePage {
         if(apps === "supporting super tokens"){
             testableApps = SUPPORTS_SUPER_TOKENS
         }
-        testableApps.forEach(app => {
+        testableApps?.forEach(app => {
             let appSection = `[data-cy="${app.name}-section"] `
             this.isVisible(appSection)
             this.hasText(appSection + APP_NAMES,app.name)
             this.hasText(appSection + APP_DESCRIPTIONS , app.description)
-            this.hasAttributeWithValue(appSection + APP_LINKS,"href",app.href)
+            this.hasAttributeWithValue(appSection,"href",app.href)
             if(app.comingSoon) {
                 this.isVisible(appSection + COMMING_SOON_CHIPS)
                 this.hasText(appSection + COMMING_SOON_CHIPS,"Coming Soon")

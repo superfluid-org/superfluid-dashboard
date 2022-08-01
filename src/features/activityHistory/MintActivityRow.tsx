@@ -78,7 +78,7 @@ const MintActivityRow: FC<MintedActivity> = ({
           <ListItemText
             data-cy={"activity"}
             primary={"Wrap"}
-            secondary={format(timestamp * 1000, "HH:mm")}
+            secondary={timestamp}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
             }}

@@ -77,7 +77,7 @@ const BurnActivity: FC<BurnedActivity> = ({
           <ListItemText
             data-cy={"activity"}
             primary={"Unwrap"}
-            secondary={format(timestamp * 1000, "HH:mm")}
+            secondary={timestamp}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
             }}

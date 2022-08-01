@@ -50,10 +50,10 @@ Feature: Dashboard Page test cases
 #    Then The cancel stream popup button is visible
 #    And User clicks away from the cancel stream button
 #    Then The cancel stream button is not visible
-    And User clicks on "optimism-mainnet" "DAIx" row
-    And Cancel button is disabled on all streams on "optimism-mainnet"
-    And User hovers on the first "optimism-mainnet" stream cancel button
-    Then A tooltip asking user to switch to "optimism-mainnet" is shown
+    And User clicks on "optimism" "DAIx" row
+    And Cancel button is disabled on all streams on "optimism"
+    And User hovers on the first "optimism" stream cancel button
+    Then A tooltip asking user to switch to "optimism" is shown
 
   Scenario: Changing token stream table pages and amount of results shown
     Given "Dashboard Page" is open without connecting a wallet

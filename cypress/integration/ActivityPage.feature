@@ -1,5 +1,6 @@
 Feature: Activity History Page tests
 
+  @only
   Scenario: Activity history page entries shown for all networks in the correct order
     Given "Dashboard Page" is open without connecting a wallet
     And User uses view mode to look at "staticBalanceAccount"

@@ -22,6 +22,7 @@ const TOOLTIPS = "[role=tooltip]";
 const ROWS_PER_PAGE_ARROW = "[data-testid=ArrowDropDownIcon]";
 const DISPLAYED_ROWS = "[class*=displayedRows]";
 const NEXT_PAGE_BUTTON = "[data-testid=KeyboardArrowRightIcon]";
+const STREAM_ROWS = "[data-cy=stream-row]"
 
 export class DashboardPage extends BasePage {
     static checkIfDashboardConnectIsVisible() {
@@ -71,12 +72,12 @@ export class DashboardPage extends BasePage {
 
     static waitForBalancesToLoad() {
         this.isVisible(LOADING_SKELETONS);
-        this.doesNotExist(LOADING_SKELETONS);
+        cy.get(LOADING_SKELETONS,{ timeout: 45000 }).should("not.exist")
     }
 
     static clickTokenStreamRow(network: string, token: string) {
         this.click(
-            `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] [data-testid="ExpandMoreRoundedIcon"]`
+            `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] [data-cy=show-streams-button]`
         );
     }
 
@@ -104,7 +105,7 @@ export class DashboardPage extends BasePage {
             let specificSelector =
                 `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${networkSpecificData[
                     network
-                    ].ongoingStreamsAccount.tokenValues.tokenAddress.toLowerCase()}-streams] `;
+                    ].ongoingStreamsAccount.tokenValues.tokenAddress.toLowerCase()}-streams-table] ${STREAM_ROWS} `;
             // The data in tables doesn't show up all at the same time , and skeletons dissapear with the first entry
             // waiting and need to re-check to make sure all streams are loaded
             cy.wait(5000)
@@ -152,7 +153,7 @@ export class DashboardPage extends BasePage {
             cy.get(
                 `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${networkSpecificData[
                     network
-                    ].ongoingStreamsAccount.tokenValues.tokenAddress.toLowerCase()}-streams] [data-cy=cancel-button]`
+                    ].ongoingStreamsAccount.tokenValues.tokenAddress.toLowerCase()}-streams-table] ${STREAM_ROWS} ${CANCEL_BUTTONS}`
             ).each((button: any) => {
                 cy.wrap(button).should("have.attr", "disabled");
             });
@@ -187,7 +188,7 @@ export class DashboardPage extends BasePage {
                     .tokenAddress.toLowerCase();
             let expectedAmount = parseInt(amount);
             let lastRowData: string[] = [];
-            cy.get(`[data-cy="${tokenAddress}-streams"]`)
+            cy.get(`[data-cy="${tokenAddress}-streams-table"] ${STREAM_ROWS}`)
                 .should("have.length", expectedAmount)
                 .and(($el) => {
                     lastRowData.push($el.text());
@@ -214,12 +215,12 @@ export class DashboardPage extends BasePage {
 
                 this.click(NEXT_PAGE_BUTTON);
                 this.hasLength(
-                    `[data-cy="${tokenAddress}-streams"]`,
+                    `[data-cy="${tokenAddress}-streams-table"] ${STREAM_ROWS}`,
                     amountOfExpectedPagesInNewPage
                 );
                 let newRows: string[] = [];
                 cy.get("@lastStreamRows").then((rows) => {
-                    cy.get(`[data-cy="${tokenAddress}-streams"]`).then(($el) => {
+                    cy.get(`[data-cy="${tokenAddress}-streams-table"] ${STREAM_ROWS}`).then(($el) => {
                         newRows.push($el.text());
                         cy.wrap(newRows).should("not.equal", rows);
                     });
