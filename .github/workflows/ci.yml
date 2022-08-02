@@ -23,10 +23,6 @@ jobs:
     container:
       image: cypress/browsers:node16.5.0-chrome97-ff96
       options: --user 1001
-    strategy:
-      fail-fast: false
-      matrix:
-        browser: [chrome, firefox]
     steps:
       - uses: actions/checkout@v2
 
@@ -54,11 +50,29 @@ jobs:
         env:
           NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
-      - name: Cypress tests
+      - name: Cypress Chrome tests
         uses: cypress-io/github-action@v4
         with:
           install: false
-          browser: ${{ matrix.browser }}
+          browser: chrome
+          parallel: true
+          parallelism: 4
+          wait-on: ${{ steps.waitForDeployment.outputs.url }}
+          wait-on-timeout: 180
+          record: true
+          ci-build-id: ${{ needs.prepare.outputs.uuid }}
+          env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
+          CYPRESS_baseUrl: ${{ steps.waitForDeployment.outputs.url }}
+
+      - name: Cypress Firefox tests
+        uses: cypress-io/github-action@v4
+        with:
+          install: false
+          browser: firefox
+          parallel: true
+          parallelism: 4
           wait-on: ${{ steps.waitForDeployment.outputs.url }}
           wait-on-timeout: 180
           record: true
