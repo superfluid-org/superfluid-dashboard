@@ -1,7 +1,6 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
-import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import CloseIcon from "@mui/icons-material/Close";
+import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 import LinkIcon from "@mui/icons-material/Link";
 import ShareIcon from "@mui/icons-material/Share";
 import {
@@ -24,11 +23,11 @@ import { BigNumber } from "ethers";
 import { isString } from "lodash";
 import { NextPage } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, ReactChild, useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import AddressAvatar from "../../../components/AddressAvatar/AddressAvatar";
-import AddressName from "../../../components/AddressName/AddressName";
 import CopyTooltip from "../../../components/CopyTooltip/CopyTooltip";
 import SEO from "../../../components/SEO/SEO";
 import NetworkIcon from "../../../features/network/NetworkIcon";
@@ -48,7 +47,6 @@ import {
   calculateMaybeCriticalAtTimestamp,
 } from "../../../utils/tokenUtils";
 import Page404 from "../../404";
-import Link from "next/link";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -72,6 +70,11 @@ const StreamAccountCard: FC<StreamAccountCardProps> = ({
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { ensName, addressChecksummed } = useAddressName(address);
 
+  const [isHovering, setIsHovering] = useState(false);
+
+  const onMouseOver = () => setIsHovering(true);
+  const onMouseLeave = () => setIsHovering(false);
+
   return (
     <Stack flex={1} gap={2}>
       <Paper
@@ -88,6 +91,8 @@ const StreamAccountCard: FC<StreamAccountCardProps> = ({
             borderRadius: "8px",
           },
         }}
+        onMouseOver={onMouseOver}
+        onMouseLeave={onMouseLeave}
       >
         <AddressAvatar
           address={address}
@@ -114,7 +119,15 @@ const StreamAccountCard: FC<StreamAccountCardProps> = ({
           <Stack
             direction="row"
             alignItems="center"
-            sx={{ color: theme.palette.text.secondary }}
+            sx={{
+              color: theme.palette.text.secondary,
+              opacity: isHovering ? 1 : 0,
+              pointerEvents: isHovering ? "all" : "none",
+              transition: theme.transitions.create("opacity", {
+                easing: theme.transitions.easing.easeInOut,
+                duration: theme.transitions.duration.short,
+              }),
+            }}
           >
             <CopyTooltip content={addressChecksummed} copyText="Copy address" />
 
