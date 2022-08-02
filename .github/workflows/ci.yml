@@ -70,12 +70,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Download the build folders
-        uses: actions/download-artifact@v2
-        with:
-          name: build
-          path: build
-
       - name: Cypress Chrome tests
         uses: cypress-io/github-action@v4
         with:
@@ -119,7 +113,7 @@ jobs:
       - name: Cypress Firefox tests
         uses: cypress-io/github-action@v4
         with:
-          install: false
+          install: true
           browser: firefox
           group: firefox
           parallel: true
