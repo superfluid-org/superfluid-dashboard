@@ -30,7 +30,6 @@ type WrapperSuperTokenSubgraphResult = {
     id: string;
     name: string;
     symbol: string;
-    isListed: boolean;
     decimals: number;
   };
 };
@@ -230,7 +229,6 @@ export const adHocSubgraphEndpoints = {
                   id
                   name
                   symbol
-                  isListed
                   decimals
                 }
               }
@@ -251,7 +249,6 @@ export const adHocSubgraphEndpoints = {
                   id
                   name
                   symbol
-                  isListed
                   decimals
                 }
               }
@@ -299,10 +296,10 @@ export const adHocSubgraphEndpoints = {
               decimals: 18,
             },
             underlyingToken: {
-              type: TokenType.NativeAssetUnderlyingToken,
-              address: NATIVE_ASSET_ADDRESS,
+              type: network.nativeCurrency.type,
+              address: network.nativeCurrency.address,
               symbol: network.nativeCurrency.symbol,
-              name: `${network.name} Native Asset`,
+              name: network.nativeCurrency.name,
               decimals: network.nativeCurrency.decimals,
             },
           }));
@@ -326,11 +323,10 @@ export const adHocSubgraphEndpoints = {
                     decimals: 18,
                   },
                   underlyingToken: {
-                    type: TokenType.NativeAssetUnderlyingToken,
-                    address: NATIVE_ASSET_ADDRESS,
+                    type: network.nativeCurrency.type,
+                    address: network.nativeCurrency.address,
                     symbol: network.nativeCurrency.symbol,
-                    name: `${network.name} Native Asset`,
-                    isListed: true,
+                    name: network.nativeCurrency.name,
                     decimals: network.nativeCurrency.decimals,
                   },
                 };
@@ -350,7 +346,6 @@ export const adHocSubgraphEndpoints = {
                   address: x.underlyingToken.id,
                   symbol: x.underlyingToken.symbol,
                   name: x.underlyingToken.name,
-                  isListed: true,
                   decimals: x.underlyingToken.decimals,
                 },
               };
