@@ -203,6 +203,7 @@ export default memo(function AddressSearchDialog({
                 )}
                 {addressBookResults.map((addressBookEntry) => (
                   <AddressListItem
+                    dataCy={"address-book-entry"}
                     key={addressBookEntry.address}
                     address={addressBookEntry.address}
                     onClick={() => onSelectAddress(addressBookEntry.address)}

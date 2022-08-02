@@ -1,18 +1,18 @@
 Feature: Send Page test cases
 
-  @ignore
   Scenario: Connect wallet button shown to a user who hasn't got their wallet connected
     Given "Send Page" is open without connecting a wallet
-    And User fills all stream inputs
+    And User fills all stream inputs "without" a wallet connected
     And Stream ending on and amount per second is shown correctly
-    And Stream preview is shown correctly
+    And Stream preview is shown correctly when user is not connected
     And User accepts the risk warning
     Then Send button is enabled and asks user to Connect their wallet
 
-  @ignore
+  @broken @skip
   Scenario: Receiver dialog recents and ENS support
-    Given "Send Page" is open with a mocked connection to "staticBalanceAccount" on "polygon"
+    Given "Send Page" is open with a mocked connection to "staticBalanceAccount" on "gnosis"
     And User connects their wallet to the dashboard
+    And User changes their network to "polygon"
     And User opens the receiver dialog
     Then The recent receivers are shown on "polygon"
     And User closes the dialog
@@ -23,12 +23,12 @@ Feature: Send Page test cases
     And User searches for "vijay.eth" as a receiver
     Then "0x7BDa037dFdf9CD9Ad261D27f489924aebbcE71Ac" is visible in the ENS recipient results
     And User selects the first ENS recipient result
-    Then Chosen ENS receiver wallet address shows vijay.eth and 0x7BDa037dFdf9CD9Ad261D27f489924aebbcE71Ac
+    Then Chosen wallet address shows up as vijay.eth
     And User clears the receiver field with the close button
 
-  @ignore
+  @broken @skip
   Scenario: Super token selection , balances and wrap buttons
-    Given "Send Page" is open with a mocked connection to "staticBalanceAccount" on "polygon"
+    Given "Send Page" is open with a mocked connection to "staticBalanceAccount" on "gnosis"
     And User connects their wallet to the dashboard
     And User opens the token selection screen
     Then Super token balances are shown correctly for "staticBalanceAccount" on "polygon"
@@ -63,29 +63,29 @@ Feature: Send Page test cases
     Given "Dashboard Page" is open without connecting a wallet
     And User uses view mode to look at "ongoingStreamAccount"
     And User clicks on the "send" navigation button
-    And User fills all stream inputs
+    And User fills all stream inputs "without" a wallet connected
     And User accepts the risk warning
     Then The stop viewing as an address button is visible
 
-  @ignore
+  @broken @skip
   Scenario: Wrong network warnings in the send page
-    Given "Send Page" is open with a mocked connection to "ongoingStreamAccount" on "polygon"
+    Given "Send Page" is open with a mocked connection to "ongoingStreamAccount" on "gnosis"
     And User connects their wallet to the dashboard
-    And User changes their network to "gnosis"
-    And User fills all stream inputs
+    And User changes their network to "polygon"
+    And User fills all stream inputs "with" a wallet connected
     And User accepts the risk warning
-    And Change network button is visible with a message asking user to switch to "gnosis"
+    And Change network button is visible with a message asking user to switch to "polygon"
 
-#  Broken on chrome and brave but fully made to run when it gets fixed
-#  Scenario: Tokens getting sorted by amount in the token selection screen
-#    Given "Dashboard Page" is open without connecting a wallet
-#    And User uses view mode to look at "accountWithLotsOfData"
-#    And User clicks on the "send" navigation button
-#    And User opens the token selection screen
-#    And User waits for token balances to load
-#    And User closes the dialog
-#    And User opens the token selection screen
-#    Then The tokens are sorted by amount in the token selection screen
+  @broken @skip
+  Scenario: Tokens getting sorted by amount in the token selection screen
+    Given "Dashboard Page" is open without connecting a wallet
+    And User uses view mode to look at "accountWithLotsOfData"
+    And User clicks on the "send" navigation button
+    And User opens the token selection screen
+    And User waits for token balances to load
+    And User closes the dialog
+    And User opens the token selection screen
+    Then The tokens are sorted by amount in the token selection screen
 
   #TODO: Test cases that are broken/will get changed
    #Scenario: Searching for a recent receiver

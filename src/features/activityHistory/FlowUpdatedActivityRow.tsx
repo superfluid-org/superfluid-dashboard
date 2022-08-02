@@ -79,11 +79,12 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
   }, [isOutgoing, type]);
 
   return (
-    <TableRow>
+    <TableRow data-cy={`${network.slugName}-row`}>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
           <ActivityIcon icon={icon} />
           <ListItemText
+            data-cy={"activity"}
             primary={title}
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
@@ -107,6 +108,7 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
                 )}
               </ListItemAvatar>
               <ListItemText
+                data-cy={"amount"}
                 primary={
                   <>
                     <Amount wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)}>
@@ -137,6 +139,7 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
                 <AddressAvatar address={isOutgoing ? receiver : sender} />
               </ListItemAvatar>
               <ListItemText
+                data-cy={"amountToFrom"}
                 primary={isOutgoing ? "To" : "From"}
                 secondary={
                   <AddressCopyTooltip address={isOutgoing ? receiver : sender}>

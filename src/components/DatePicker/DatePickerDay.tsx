@@ -150,6 +150,7 @@ const DatePickerDay: FC<DatePickerDayProps> = ({
       isHovered={isHovered}
     >
       <Button
+        data-cy={"available-days"}
         onClick={onClick}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}

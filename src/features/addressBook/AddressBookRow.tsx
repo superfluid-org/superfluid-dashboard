@@ -120,6 +120,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
             {isEditing ? (
               <Box component="form" onSubmit={onFormSubmit}>
                 <Input
+                  data-cy={"edit-input"}
                   fullWidth
                   disableUnderline
                   autoFocus
@@ -130,7 +131,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
                 />
               </Box>
             ) : (
-              <Typography variant="h6">
+              <Typography data-cy={"address-name"} variant="h6">
                 <AddressName address={address} />
               </Typography>
             )}
@@ -144,6 +145,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
                 >
                   <Box sx={{ ...(!isEditing && { mr: "38px" }) }}>
                     <IconButton
+                      data-cy={"edit-button"}
                       size="small"
                       color="primary"
                       onClick={isEditing ? saveName : startEditing}
@@ -160,6 +162,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
                     title={"Cancel editing"}
                   >
                     <IconButton
+                      data-cy={"cancel-editing-button"}
                       size="small"
                       color="error"
                       onClick={cancelEditing}
@@ -173,13 +176,13 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
           </Stack>
         </Stack>
       </TableCell>
-      <TableCell>{ensName || "-"}</TableCell>
-      <TableCell>
+      <TableCell data-cy={"ens-name"}>{ensName || "-"}</TableCell>
+      <TableCell data-cy={"actual-address"}>
         <AddressCopyTooltip address={address}>
           <span>{shortenHex(address, 6)}</span>
         </AddressCopyTooltip>
       </TableCell>
-      <TableCell>
+      <TableCell data-cy={"active-streams"}>
         {!!currentAccountAddress ? (
           <>
             {streamsLoading ? <Skeleton width="30px" /> : activeStreams.length}
@@ -191,6 +194,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
       <TableCell>
         {selectable && (
           <Checkbox
+            data-cy={"delete-name-checkbox"}
             checked={selected}
             color="error"
             icon={<CheckBoxOutlineBlankIcon />}

@@ -11,7 +11,7 @@ interface TxHashLinkProps {
 
 const TxHashLink: FC<TxHashLinkProps> = ({ txHash, network }) => (
   <Tooltip title="View on blockchain explorer" arrow placement="top">
-    <Box component="span">
+    <Box data-cy={"tx-hash-link"} component="span">
       <Link
         passHref
         href={network.getLinkForTransaction(txHash)}

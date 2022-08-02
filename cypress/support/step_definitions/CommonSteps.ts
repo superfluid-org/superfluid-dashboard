@@ -62,3 +62,34 @@ Given(/^User uses view mode to look at "([^"]*)"$/,  (account: string) => {
 Then(/^The stop viewing as an address button is visible$/,  () => {
     WrapPage.isStopViewingButtonVisible();
 });
+
+Given(/^User changes the visible networks to "([^"]*)"$/, (type: string) => {
+    Common.changeVisibleNetworksTo(type);
+});
+
+Given(/^User opens the network selection dropdown$/, () => {
+    Common.openNetworkSelectionDropdown();
+});
+
+Given(/^User closes the dropdown$/, () => {
+    Common.closeDropdown();
+});
+
+Then(/^User clicks on the view mode button$/,  () => {
+    Common.clickOnViewModeButton()
+});
+
+Then(/^User types "([^"]*)" into the address input$/,  (input:string) => {
+    Common.typeIntoAddressInput(input)
+});
+
+Then(/^"([^"]*)" address book entry for "([^"]*)" is visible in the search results$/,  (name:string,address:string) => {
+    Common.validateAddressBookSearchResult(name,address)
+});
+
+Then(/^User chooses the first address book result$/,  () => {
+    Common.chooseFirstAddressBookResult()
+});
+Then(/^View mode chip shows "([^"]*)"$/,  (message:string) => {
+    Common.validateViewModeChipMessage(message)
+});
