@@ -46,11 +46,10 @@ jobs:
         env:
           NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
-      - name: Save build folder
+      - name: Archive build
         uses: actions/upload-artifact@v2
         with:
           name: build
-          if-no-files-found: error
           path: build
 
   chrome-tests:
