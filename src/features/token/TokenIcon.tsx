@@ -72,7 +72,7 @@ const TokenIcon: FC<TokenIconProps> = ({
     >
       <AvatarWrapper
         isSuperToken={tokenManifest?.isSuperToken}
-        isUnlisted={isUnlisted}
+        isUnlisted={!loading && isUnlisted}
       >
         {tokenManifest?.isSuperToken && !isLoading && (
           <BorderSvg data-cy={"animation"} viewBox="0 0 36 36">
