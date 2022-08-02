@@ -14,7 +14,7 @@ import SEO from "../components/SEO/SEO";
 import { EcosystemApp } from "../features/ecosystem/EcosystemItem";
 import EcosystemSection from "../features/ecosystem/EcosystemSection";
 
-const BUILT_ON_SUPERFLUID = [
+export const BUILT_ON_SUPERFLUID = [
   {
     name: "Ricochet",
     href: "https://ricochet.exchange/",
@@ -108,7 +108,7 @@ const BUILT_ON_SUPERFLUID = [
   },
 ];
 
-const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
+export const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
   {
     name: "Gnosis Safe",
     href: "https://gnosis-safe.io/",
@@ -232,7 +232,7 @@ const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
   },
 ];
 
-const SUPPORTS_SUPER_TOKENS: EcosystemApp[] = [
+export const SUPPORTS_SUPER_TOKENS: EcosystemApp[] = [
   {
     name: "Minerva",
     href: "https://minerva.digital/",
@@ -344,16 +344,17 @@ const Ecosystem: NextPage = () => {
               target="_blank"
             >
               <Button
+                data-cy={"add-new-app-button"}
                 href=""
                 variant="contained"
                 color="primary"
                 endIcon={<AddIcon />}
                 target="_blank"
               >
-                Add New App
-              </Button>
-            </Link>
-          </Stack>
+            Add New App
+          </Button>
+        </Link>
+      </Stack>
 
           <Divider />
 

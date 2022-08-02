@@ -71,11 +71,12 @@ const MintActivityRow: FC<MintedActivity> = ({
   );
 
   return (
-    <TableRow>
+    <TableRow data-cy={`${network.slugName}-row`}>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
           <ActivityIcon icon={SwapVertIcon} />
           <ListItemText
+            data-cy={"activity"}
             primary={"Wrap"}
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
@@ -98,6 +99,7 @@ const MintActivityRow: FC<MintedActivity> = ({
                   <TokenIcon tokenSymbol={underlyingToken.symbol} />
                 </ListItemAvatar>
                 <ListItemText
+                  data-cy={"amount"}
                   primary={
                     <>
                       -
@@ -129,6 +131,7 @@ const MintActivityRow: FC<MintedActivity> = ({
                   <TokenIcon tokenSymbol={superToken.symbol} />
                 </ListItemAvatar>
                 <ListItemText
+                  data-cy={"amountToFrom"}
                   primary={
                     <>
                       +
@@ -168,6 +171,7 @@ const MintActivityRow: FC<MintedActivity> = ({
           {!!(superToken && underlyingToken) && (
             <Stack direction="row" alignItems="center" gap={2}>
               <ListItemText
+                data-cy={"mobile-amount"}
                 primary={
                   <>
                     +

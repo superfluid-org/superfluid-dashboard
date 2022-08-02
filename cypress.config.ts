@@ -33,10 +33,11 @@ export default defineConfig({
         excludeSpecPattern: "*.js",
         viewportHeight: 1080,
         viewportWidth: 1920,
-        defaultCommandTimeout: 15000,
+        defaultCommandTimeout: 10000,
+        slowTestThreshold: 30000,
         video: true,
         retries: {
-            "runMode": 2,
+            "runMode": 1,
             "openMode": 0
         },
         watchForFileChanges: false,

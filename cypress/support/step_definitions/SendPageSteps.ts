@@ -2,12 +2,12 @@ import {Given, Then} from "@badeball/cypress-cucumber-preprocessor";
 import {SendPage} from "../../pageObjects/pages/SendPage";
 import {WrapPage} from "../../pageObjects/pages/WrapPage";
 
-Given(/^User fills all stream inputs$/, () => {
-    SendPage.inputStreamTestData();
+Given(/^User fills all stream inputs "([^"]*)" a wallet connected$/, (isConnected:string) => {
+    SendPage.inputStreamTestData(isConnected);
 });
 
-Given(/^Stream preview is shown correctly$/, () => {
-    SendPage.checkIfStreamPreviewIsCorrect();
+Given(/^Stream preview is shown correctly when user is not connected$/, () => {
+    SendPage.checkIfStreamPreviewIsCorrectWhenUserNotConnected();
 });
 Given(/^User accepts the risk warning$/, () => {
     SendPage.acceptRiskWarning();
@@ -33,9 +33,9 @@ Then(/^User selects the first ENS recipient result$/, () => {
     SendPage.selectFirstENSResult();
 });
 
-Then(/^Chosen ENS receiver wallet address shows ([^"]*) and ([^"]*)$/,
-    (name: string, address: string) => {
-        SendPage.chosenEnsReceiverWalletAddress(name, address);
+Then(/^Chosen wallet address shows up as ([^"]*)$/,
+    (chosenAddress: string) => {
+        SendPage.chosenReceiverAddress(chosenAddress);
     });
 
 Then(/^User clears the receiver field with the close button$/, () => {
@@ -142,4 +142,7 @@ Then(/^The tokens are sorted by amount in the token selection screen$/, () => {
 });
 Given(/^User waits for token balances to load$/, () => {
     SendPage.waitForTokenBalancesToLoad();
+});
+Then(/^User clicks on the address button in the send page$/,  () => {
+    SendPage.clickAddressButton()
 });

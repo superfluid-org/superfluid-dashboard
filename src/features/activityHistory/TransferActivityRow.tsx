@@ -52,11 +52,12 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
   );
 
   return (
-    <TableRow>
+    <TableRow data-cy={`${network.slugName}-row`}>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
           <ActivityIcon icon={isOutgoing ? ArrowForwardIcon : ArrowBackIcon} />
           <ListItemText
+            data-cy={"activity"}
             primary={isOutgoing ? "Send Transfer" : "Receive Transfer"}
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
@@ -78,8 +79,9 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
                   <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
                 </ListItemAvatar>
                 <ListItemText
-                  primary={
-                    <Amount wei={value} decimals={tokenQuery.data.decimals}>
+                  data-cy={"amount"}
+                primary={
+                  <Amount wei={value} decimals={tokenQuery.data.decimals}>
                       {" "}
                       {tokenQuery.data.symbol}
                     </Amount>
@@ -106,6 +108,7 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
                 <AddressAvatar address={isOutgoing ? to : from} />
               </ListItemAvatar>
               <ListItemText
+                data-cy={"amountToFrom"}
                 primary={isOutgoing ? "To" : "From"}
                 secondary={
                   <AddressCopyTooltip address={isOutgoing ? to : from}>
@@ -135,11 +138,11 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
         </>
       ) : (
         <TableCell align="right">
-          {tokenQuery.data && (
-            <Stack direction="row" alignItems="center" gap={2}>
-              <ListItemText
+          {tokenQuery.data && (<Stack direction="row" alignItems="center" gap={2}>
+            <ListItemText
+                data-cy={"mobile-amount"}
                 primary={
-                  <Amount wei={value} decimals={tokenQuery.data.decimals}>
+                <Amount wei={value} decimals={tokenQuery.data.decimals}>
                     {" "}
                     {tokenQuery.data.symbol}
                   </Amount>
