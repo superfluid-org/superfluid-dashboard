@@ -1,16 +1,44 @@
 import { Box, Container, useTheme } from "@mui/material";
+import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils";
 import { isString } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import SEO from "../components/SEO/SEO";
+import { UnitOfTime, wordTimeUnitMap } from "../features/send/FlowRateInput";
 import SendCard from "../features/send/SendCard";
 import StreamingFormProvider, {
   StreamingFormProviderProps,
 } from "../features/send/StreamingFormProvider";
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
 import { RestorationType } from "../features/transactionRestoration/transactionRestorations";
+import { tryParseUnits } from "../utils/tokenUtils";
+
+const tryParseFlowRate = (
+  value: string
+):
+  | {
+      amountEther: string;
+      unitOfTime: UnitOfTime;
+    }
+  | undefined => {
+  const [amountEther, unitOfTime] = value.split("/");
+
+  const isUnitOfTime = Object.keys(wordTimeUnitMap).includes(
+    unitOfTime.toLowerCase()
+  );
+  const isEtherAmount = !!tryParseUnits(amountEther);
+
+  if (isUnitOfTime && isEtherAmount) {
+    return {
+      amountEther,
+      unitOfTime: wordTimeUnitMap[unitOfTime],
+    };
+  } else {
+    return undefined;
+  }
+};
 
 const Send: NextPage = () => {
   const theme = useTheme();
@@ -40,9 +68,19 @@ const Send: NextPage = () => {
         }
         onRestored();
       } else {
-        const { token: maybeTokenAddress, receiver: maybeReceiverAddress } =
-          router.query;
+        const {
+          token: maybeTokenAddress,
+          receiver: maybeReceiverAddress,
+          "flow-rate": maybeFlowRate,
+          ...remainingQuery
+        } = router.query;
+
+        const flowRate = !!(maybeFlowRate && isString(maybeFlowRate))
+          ? tryParseFlowRate(maybeFlowRate)
+          : undefined;
+
         setInitialFormValues({
+          flowRate,
           tokenAddress:
             maybeTokenAddress && isString(maybeTokenAddress)
               ? maybeTokenAddress
@@ -51,6 +89,10 @@ const Send: NextPage = () => {
             maybeReceiverAddress && isString(maybeReceiverAddress)
               ? maybeReceiverAddress
               : undefined,
+        });
+
+        router.replace({
+          query: remainingQuery,
         });
       }
     }

@@ -1,22 +1,16 @@
 import { FC, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
-import { bool, mixed, number, object, ObjectSchema, string } from "yup";
+import { bool, mixed, object, ObjectSchema, string } from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { rpcApi } from "../redux/store";
-import {
-  formRestorationOptions,
-  ModifyStreamRestoration,
-  SendStreamRestoration,
-} from "../transactionRestoration/transactionRestorations";
+import { formRestorationOptions } from "../transactionRestoration/transactionRestorations";
 import { UnitOfTime } from "./FlowRateInput";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import useCalculateBufferInfo from "./useCalculateBufferInfo";
 import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
-import { formatEther } from "ethers/lib/utils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 import { BigNumber } from "ethers";
-import { isNumber, xor } from "lodash";
 
 export type ValidStreamingForm = {
   data: {
@@ -54,10 +48,13 @@ export type PartialStreamingForm = {
 };
 
 export interface StreamingFormProviderProps {
-  initialFormValues: Partial<ValidStreamingForm["data"]>
+  initialFormValues: Partial<ValidStreamingForm["data"]>;
 }
 
-const StreamingFormProvider: FC<StreamingFormProviderProps> = ({ children, initialFormValues }) => {
+const StreamingFormProvider: FC<StreamingFormProviderProps> = ({
+  children,
+  initialFormValues,
+}) => {
   const { address: accountAddress } = useAccount();
   const { network, stopAutoSwitchToAccountNetwork } = useExpectedNetwork();
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
@@ -187,8 +184,17 @@ const StreamingFormProvider: FC<StreamingFormProviderProps> = ({ children, initi
       setValue(
         "data",
         {
-          ...defaultFormValues.data,
-          ...initialFormValues,
+          flowRate:
+            initialFormValues.flowRate ?? defaultFormValues.data.flowRate,
+          receiverAddress:
+            initialFormValues.receiverAddress ??
+            defaultFormValues.data.receiverAddress,
+          tokenAddress:
+            initialFormValues.tokenAddress ??
+            defaultFormValues.data.tokenAddress,
+          understandLiquidationRisk:
+            initialFormValues.understandLiquidationRisk ??
+            defaultFormValues.data.understandLiquidationRisk,
         },
         formRestorationOptions
       );

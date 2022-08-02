@@ -5,6 +5,17 @@ import { parseUnits } from "ethers/lib/utils";
 export const MAX_SAFE_SECONDS = BigNumber.from(8640000000000); //In seconds, https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#the_ecmascript_epoch_and_timestamps
 const BIG_NUMBER_ZERO = BigNumber.from(0);
 
+export const tryParseUnits = (
+  value: string,
+  unitName?: BigNumberish | undefined
+): BigNumber | undefined => {
+  try {
+    return parseUnits(value, unitName);
+  } catch (e) {
+    return undefined;
+  }
+};
+
 export const parseEtherOrZero = (etherString: string): BigNumber => {
   try {
     return parseEther(etherString);
