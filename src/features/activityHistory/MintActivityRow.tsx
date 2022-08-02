@@ -75,11 +75,6 @@ const MintActivityRow: FC<MintedActivity> = ({
     [isNativeAssetSuperToken, superTokenQuery.data]
   );
 
-  const isUnderlyingTokenListed = useMemo(
-    () => isNativeAssetSuperToken || underlyingTokenQuery.data?.isListed,
-    [isNativeAssetSuperToken, underlyingTokenQuery.data]
-  );
-
   return (
     <TableRow>
       <TableCell>
@@ -102,14 +97,14 @@ const MintActivityRow: FC<MintedActivity> = ({
       {!isBelowMd ? (
         <>
           <TableCell>
-            {underlyingToken && (
-              <ListItem sx={{ p: 0 }}>
-                <ListItemAvatar>
-                  <TokenIcon
-                    tokenSymbol={underlyingToken.symbol}
-                    isListed={isUnderlyingTokenListed}
-                  />
-                </ListItemAvatar>
+            <ListItem sx={{ p: 0 }}>
+              <ListItemAvatar>
+                <TokenIcon
+                  tokenSymbol={underlyingToken?.symbol}
+                  isLoading={underlyingTokenQuery.isLoading}
+                />
+              </ListItemAvatar>
+              {underlyingToken && (
                 <ListItemText
                   primary={
                     <>
@@ -131,18 +126,19 @@ const MintActivityRow: FC<MintedActivity> = ({
                     color: "text.secondary",
                   }}
                 />
-              </ListItem>
-            )}
+              )}
+            </ListItem>
           </TableCell>
           <TableCell>
-            {superToken && (
-              <ListItem sx={{ p: 0 }}>
-                <ListItemAvatar>
-                  <TokenIcon
-                    tokenSymbol={superToken.symbol}
-                    isListed={isSuperTokenListed}
-                  />
-                </ListItemAvatar>
+            <ListItem sx={{ p: 0 }}>
+              <ListItemAvatar>
+                <TokenIcon
+                  tokenSymbol={superToken?.symbol}
+                  isUnlisted={!isSuperTokenListed}
+                  isLoading={superTokenQuery.isLoading}
+                />
+              </ListItemAvatar>
+              {superToken && (
                 <ListItemText
                   primary={
                     <>
@@ -163,8 +159,8 @@ const MintActivityRow: FC<MintedActivity> = ({
                     color: "text.secondary",
                   }}
                 />
-              </ListItem>
-            )}
+              )}
+            </ListItem>
           </TableCell>
           <TableCell sx={{ position: "relative" }}>
             <TxHashLink txHash={transactionHash} network={network} />
@@ -176,8 +172,8 @@ const MintActivityRow: FC<MintedActivity> = ({
         </>
       ) : (
         <TableCell align="right">
-          {!!(superToken && underlyingToken) && (
-            <Stack direction="row" alignItems="center" gap={2}>
+          <Stack direction="row" alignItems="center" gap={2}>
+            {!!(superToken && underlyingToken) && (
               <ListItemText
                 primary={
                   <>
@@ -192,12 +188,13 @@ const MintActivityRow: FC<MintedActivity> = ({
                 primaryTypographyProps={{ variant: "h7mono" }}
                 secondaryTypographyProps={{ variant: "body2mono" }}
               />
-              <TokenIcon
-                tokenSymbol={superToken.symbol}
-                isListed={isSuperTokenListed}
-              />
-            </Stack>
-          )}
+            )}
+            <TokenIcon
+              tokenSymbol={superToken?.symbol}
+              isUnlisted={!isSuperTokenListed}
+              isLoading={superTokenQuery.isLoading}
+            />
+          </Stack>
         </TableCell>
       )}
     </TableRow>

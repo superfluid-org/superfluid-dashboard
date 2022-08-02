@@ -102,17 +102,18 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
           <TableCell>
             <ListItem sx={{ p: 0 }}>
               <ListItemAvatar>
-                {tokenQuery.data && (
-                  <TokenIcon
-                    tokenSymbol={tokenQuery.data.symbol}
-                    isListed={tokenQuery.data.isListed}
-                  />
-                )}
+                <TokenIcon
+                  tokenSymbol={tokenQuery.data?.symbol}
+                  isUnlisted={!tokenQuery.data?.isListed}
+                  isLoading={tokenQuery.isLoading}
+                />
               </ListItemAvatar>
               <ListItemText
                 primary={
                   <>
-                    <Amount wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)}>
+                    <Amount
+                      wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)}
+                    >
                       {" "}
                       {tokenQuery.data ? `${tokenQuery.data.symbol}/mo` : "/mo"}
                     </Amount>
@@ -190,12 +191,11 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
                 color: "text.secondary",
               }}
             />
-            {tokenQuery.data && (
-              <TokenIcon
-                tokenSymbol={tokenQuery.data.symbol}
-                isListed={tokenQuery.data.isListed}
-              />
-            )}
+            <TokenIcon
+              tokenSymbol={tokenQuery.data?.symbol}
+              isUnlisted={!tokenQuery.data?.isListed}
+              isLoading={tokenQuery.isLoading}
+            />
           </Stack>
         </TableCell>
       )}

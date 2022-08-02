@@ -1,6 +1,5 @@
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Address } from "@superfluid-finance/sdk-core";
-import { useEffect, useState } from "react";
 import { subgraphApi } from "../redux/store";
 
 export const useTokenIsListed = (chainId: number, address?: Address) => {
@@ -13,6 +12,5 @@ export const useTokenIsListed = (chainId: number, address?: Address) => {
       : skipToken
   );
 
-  if (tokenQuery.isLoading) return undefined;
-  return tokenQuery.data?.isListed || false;
+  return [tokenQuery.data?.isListed || false, tokenQuery.isLoading];
 };

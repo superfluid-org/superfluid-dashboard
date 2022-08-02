@@ -232,11 +232,7 @@ export const WrapTabDowngrade: FC = () => {
               variant={theme.palette.mode === "light" ? "outlined" : "token"}
               color="secondary"
               startIcon={
-                <TokenIcon
-                  tokenSymbol={underlyingToken.symbol}
-                  isListed={true}
-                  size={24}
-                />
+                <TokenIcon tokenSymbol={underlyingToken.symbol} size={24} />
               }
               sx={{ pointerEvents: "none" }}
             >

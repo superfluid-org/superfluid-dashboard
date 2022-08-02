@@ -53,7 +53,10 @@ export const TokenListItem: FC<TokenListItemProps> = ({
   const isSuperToken = isSuper(token);
   const isUnderlyingToken = isUnderlying(token);
   const isWrappableSuperToken = isSuperToken && isWrappable(token);
-  const isListed = useTokenIsListed(network.id, token.address);
+  const [isListed, isListedLoading] = useTokenIsListed(
+    network.id,
+    token.address
+  );
 
   const { data: _discard, ...underlyingBalanceQuery } =
     rpcApi.useUnderlyingBalanceQuery(
@@ -86,7 +89,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
     props.balanceTimestamp;
 
   const fRate = realtimeBalanceQuery?.currentData?.flowRate || flowRate;
-
+  console.log(isUnderlyingToken, isListed);
   return (
     <ListItemButton
       data-cy={`${token.symbol}-list-item`}
@@ -96,7 +99,8 @@ export const TokenListItem: FC<TokenListItemProps> = ({
       <ListItemAvatar>
         <TokenIcon
           tokenSymbol={token.symbol}
-          isListed={isUnderlyingToken || isListed}
+          isUnlisted={!isUnderlyingToken && !isListed}
+          isLoading={isListedLoading}
         />
       </ListItemAvatar>
 

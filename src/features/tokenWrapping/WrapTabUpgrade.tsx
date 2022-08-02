@@ -1,17 +1,15 @@
 import { Button, Input, Stack, Typography, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { BigNumber, BigNumberish, ethers } from "ethers";
-import {
-  formatEther,
-  formatUnits,
-  parseEther,
-  parseUnits,
-} from "ethers/lib/utils";
+import { formatEther, formatUnits, parseEther } from "ethers/lib/utils";
 import { useRouter } from "next/router";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { parseAmountOrZero } from "../../utils/tokenUtils";
+import { useAccount } from "wagmi";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
+import { parseAmountOrZero } from "../../utils/tokenUtils";
+import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
+import { useLayoutContext } from "../layout/LayoutContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   NATIVE_ASSET_ADDRESS,
@@ -19,7 +17,7 @@ import {
 } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
-import { useLayoutContext } from "../layout/LayoutContext";
+import { useTokenIsListed } from "../token/useTokenIsListed";
 import {
   ApproveAllowanceRestoration,
   RestorationType,
@@ -34,13 +32,9 @@ import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { BalanceSuperToken } from "./BalanceSuperToken";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { TokenDialogButton } from "./TokenDialogButton";
+import { useTokenPairQuery } from "./useTokenPairQuery";
 import { ArrowDownIcon, WrapInputCard } from "./WrapCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
-import { useConnect } from "wagmi";
-import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
-import { useTokenIsListed } from "../token/useTokenIsListed";
-import { useAccount } from "wagmi";
-import { useTokenPairQuery } from "./useTokenPairQuery";
 
 export const WrapTabUpgrade: FC = () => {
   const theme = useTheme();
@@ -190,7 +184,10 @@ export const WrapTabUpgrade: FC = () => {
     }
   );
 
-  const isListed = useTokenIsListed(network.id, tokenPair?.superTokenAddress);
+  const [isListed, isListedLoading] = useTokenIsListed(
+    network.id,
+    tokenPair?.superTokenAddress
+  );
 
   return (
     <Stack direction="column" alignItems="center">
@@ -326,7 +323,8 @@ export const WrapTabUpgrade: FC = () => {
               startIcon={
                 <TokenIcon
                   tokenSymbol={superToken.symbol}
-                  isListed={isListed}
+                  isUnlisted={!isListed}
+                  isLoading={isListedLoading}
                   size={24}
                 />
               }

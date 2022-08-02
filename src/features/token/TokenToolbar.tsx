@@ -20,12 +20,16 @@ import TokenIcon from "./TokenIcon";
 interface TokenToolbarData {
   symbol: string;
   name: string;
-  isListed: boolean;
+  isUnlisted: boolean;
 }
 
-const TokenToolbarData: FC<TokenToolbarData> = ({ symbol, name, isListed }) => (
+const TokenToolbarData: FC<TokenToolbarData> = ({
+  symbol,
+  name,
+  isUnlisted,
+}) => (
   <Stack direction="row" alignItems="center" gap={2}>
-    <TokenIcon tokenSymbol={symbol} isListed={isListed} />
+    <TokenIcon tokenSymbol={symbol} isUnlisted={isUnlisted} />
     <Typography variant="h3" component="h1">
       {name}
     </Typography>
@@ -55,7 +59,11 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
 
         {!isBelowMd && (
           <>
-            <TokenToolbarData symbol={symbol} name={name} isListed={isListed} />
+            <TokenToolbarData
+              symbol={symbol}
+              name={name}
+              isUnlisted={!isListed}
+            />
             <Chip
               size="small"
               label={network.name}
@@ -95,7 +103,7 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
       </Stack>
 
       {isBelowMd && (
-        <TokenToolbarData symbol={symbol} name={name} isListed={isListed} />
+        <TokenToolbarData symbol={symbol} name={name} isUnlisted={!isListed} />
       )}
     </Stack>
   );

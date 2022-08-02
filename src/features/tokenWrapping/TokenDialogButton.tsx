@@ -23,7 +23,10 @@ export const TokenDialogButton: FC<{
   const [open, setOpen] = useState(false);
   const { network } = useExpectedNetwork();
   const isUnderlyingToken = token && isUnderlying(token);
-  const isListed = useTokenIsListed(network.id, token?.address);
+  const [isListed, isListedLoading] = useTokenIsListed(
+    network.id,
+    token?.address
+  );
 
   return (
     <>
@@ -32,14 +35,13 @@ export const TokenDialogButton: FC<{
         variant="outlined"
         color="secondary"
         startIcon={
-          !!token ? (
+          !!token && (
             <TokenIcon
               size={24}
               tokenSymbol={token.symbol}
-              isListed={isUnderlyingToken || isListed}
+              isUnlisted={!isUnderlyingToken && !isListed}
+              isLoading={isListedLoading}
             />
-          ) : (
-            <></>
           )
         }
         endIcon={<ExpandMoreIcon sx={{ ml: 1 }} />}

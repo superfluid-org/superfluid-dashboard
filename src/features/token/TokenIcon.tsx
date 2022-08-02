@@ -1,5 +1,6 @@
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import { Avatar, Skeleton, styled, Tooltip, useTheme } from "@mui/material";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
 import { assetApiSlice } from "./tokenManifestSlice";
 
@@ -35,36 +36,45 @@ const AvatarWrapper = styled("div", {
 );
 
 interface TokenIconProps {
-  tokenSymbol: string;
-  isListed?: boolean;
+  tokenSymbol?: string;
+  isUnlisted?: boolean;
+  isLoading?: boolean;
   size?: number;
 }
 
 const TokenIcon: FC<TokenIconProps> = ({
   tokenSymbol,
-  isListed,
+  isUnlisted = false,
+  isLoading = false,
   size = 36,
 }) => {
   const theme = useTheme();
 
-  const { data: tokenManifest } = assetApiSlice.useTokenManifestQuery({
-    tokenSymbol,
-  });
+  const { isLoading: isQueryLoading, data: tokenManifest } =
+    assetApiSlice.useTokenManifestQuery(
+      !!tokenSymbol
+        ? {
+            tokenSymbol,
+          }
+        : skipToken
+    );
 
   const diameter = size - (tokenManifest?.isSuperToken ? 4 : 0);
+
+  const loading = isLoading || isQueryLoading;
 
   return (
     <Tooltip
       arrow
       disableInteractive
       placement="top"
-      title={isListed === false ? "Unlisted token, use with caution" : ""}
+      title={isUnlisted ? "Unlisted token, use with caution" : ""}
     >
       <AvatarWrapper
         isSuperToken={tokenManifest?.isSuperToken}
-        isUnlisted={isListed === false}
+        isUnlisted={isUnlisted}
       >
-        {tokenManifest?.isSuperToken && isListed !== undefined && (
+        {tokenManifest?.isSuperToken && !isLoading && (
           <BorderSvg data-cy={"animation"} viewBox="0 0 36 36">
             <clipPath id="clip">
               <polygon points="18,18, 30.5,0 36,10.2" />
@@ -81,9 +91,9 @@ const TokenIcon: FC<TokenIconProps> = ({
               cx="18"
               cy="18"
               stroke={
-                isListed
-                  ? theme.palette.primary.main
-                  : theme.palette.warning.main
+                isUnlisted
+                  ? theme.palette.warning.main
+                  : theme.palette.primary.main
               }
               strokeWidth="1"
               fill="transparent"
@@ -95,16 +105,49 @@ const TokenIcon: FC<TokenIconProps> = ({
               cy="18"
               strokeDasharray="2"
               stroke={
-                isListed
-                  ? theme.palette.primary.main
-                  : theme.palette.warning.main
+                isUnlisted
+                  ? theme.palette.warning.main
+                  : theme.palette.primary.main
               }
               strokeWidth="2"
               fill="transparent"
             />
           </BorderSvg>
         )}
-        {isListed ? (
+
+        {loading && (
+          <Avatar
+            sx={{
+              width: diameter,
+              height: diameter,
+              background: "transparent",
+              color: theme.palette.warning.main,
+            }}
+          >
+            <Skeleton
+              variant="circular"
+              sx={{
+                width: diameter,
+                height: diameter,
+              }}
+            />
+          </Avatar>
+        )}
+
+        {!loading && isUnlisted && (
+          <Avatar
+            sx={{
+              width: diameter,
+              height: diameter,
+              background: "transparent",
+              color: theme.palette.warning.main,
+            }}
+          >
+            <QuestionMarkIcon />
+          </Avatar>
+        )}
+
+        {!loading && !isUnlisted && (
           <Avatar
             data-cy={"token-icon"}
             alt={`${tokenSymbol} token icon`}
@@ -119,27 +162,6 @@ const TokenIcon: FC<TokenIconProps> = ({
                 : "/icons/token-default.webp"
             }
           />
-        ) : (
-          <Avatar
-            sx={{
-              width: diameter,
-              height: diameter,
-              background: "transparent",
-              color: theme.palette.warning.main,
-            }}
-          >
-            {isListed === false ? (
-              <QuestionMarkIcon />
-            ) : (
-              <Skeleton
-                variant="circular"
-                sx={{
-                  width: diameter,
-                  height: diameter,
-                }}
-              />
-            )}
-          </Avatar>
         )}
       </AvatarWrapper>
     </Tooltip>

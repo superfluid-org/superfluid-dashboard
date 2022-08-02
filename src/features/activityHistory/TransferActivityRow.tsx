@@ -72,14 +72,15 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
       {!isBelowMd ? (
         <>
           <TableCell>
-            {tokenQuery.data && (
-              <ListItem sx={{ p: 0 }}>
-                <ListItemAvatar>
-                  <TokenIcon
-                    tokenSymbol={tokenQuery.data.symbol}
-                    isListed={tokenQuery.data.isListed}
-                  />
-                </ListItemAvatar>
+            <ListItem sx={{ p: 0 }}>
+              <ListItemAvatar>
+                <TokenIcon
+                  tokenSymbol={tokenQuery.data?.symbol}
+                  isUnlisted={!tokenQuery.data?.isListed}
+                  isLoading={tokenQuery.isLoading}
+                />
+              </ListItemAvatar>
+              {tokenQuery.data && (
                 <ListItemText
                   primary={
                     <Amount wei={value} decimals={tokenQuery.data.decimals}>
@@ -100,8 +101,8 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
                     color: "text.secondary",
                   }}
                 />
-              </ListItem>
-            )}
+              )}
+            </ListItem>
           </TableCell>
           <TableCell>
             <ListItem sx={{ p: 0 }}>
@@ -138,8 +139,8 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
         </>
       ) : (
         <TableCell align="right">
-          {tokenQuery.data && (
-            <Stack direction="row" alignItems="center" gap={2}>
+          <Stack direction="row" alignItems="center" gap={2}>
+            {tokenQuery.data && (
               <ListItemText
                 primary={
                   <Amount wei={value} decimals={tokenQuery.data.decimals}>
@@ -150,12 +151,13 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
                 primaryTypographyProps={{ variant: "h7mono" }}
                 secondaryTypographyProps={{ variant: "body2mono" }}
               />
-              <TokenIcon
-                tokenSymbol={tokenQuery.data.symbol}
-                isListed={tokenQuery.data.isListed}
-              />
-            </Stack>
-          )}
+            )}
+            <TokenIcon
+              tokenSymbol={tokenQuery.data?.symbol}
+              isUnlisted={!tokenQuery.data?.isListed}
+              isLoading={tokenQuery.isLoading}
+            />
+          </Stack>
         </TableCell>
       )}
     </TableRow>

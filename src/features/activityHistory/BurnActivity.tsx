@@ -74,11 +74,6 @@ const BurnActivity: FC<BurnedActivity> = ({
     [isNativeAssetSuperToken, superTokenQuery.data]
   );
 
-  const isUnderlyingTokenListed = useMemo(
-    () => isNativeAssetSuperToken || underlyingTokenQuery.data?.isListed,
-    [isNativeAssetSuperToken, underlyingTokenQuery.data]
-  );
-
   return (
     <TableRow>
       <TableCell>
@@ -107,7 +102,7 @@ const BurnActivity: FC<BurnedActivity> = ({
                   {
                     <TokenIcon
                       tokenSymbol={superToken.symbol}
-                      isListed={isSuperTokenListed}
+                      isUnlisted={!isSuperTokenListed}
                     />
                   }
                 </ListItemAvatar>
@@ -138,10 +133,7 @@ const BurnActivity: FC<BurnedActivity> = ({
             {underlyingToken && (
               <ListItem sx={{ p: 0 }}>
                 <ListItemAvatar>
-                  <TokenIcon
-                    tokenSymbol={underlyingToken.symbol}
-                    isListed={isUnderlyingTokenListed}
-                  />
+                  <TokenIcon tokenSymbol={underlyingToken.symbol} />
                 </ListItemAvatar>
                 <ListItemText
                   primary={
@@ -192,10 +184,7 @@ const BurnActivity: FC<BurnedActivity> = ({
                 primaryTypographyProps={{ variant: "h7mono" }}
                 secondaryTypographyProps={{ variant: "body2mono" }}
               />
-              <TokenIcon
-                tokenSymbol={underlyingToken.symbol}
-                isListed={isUnderlyingTokenListed}
-              />
+              <TokenIcon tokenSymbol={underlyingToken.symbol} />
             </Stack>
           )}
         </TableCell>

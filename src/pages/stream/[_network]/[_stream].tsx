@@ -266,7 +266,10 @@ const StreamPageContent: FC<{
   const [senderAddress = "", receiverAddress, tokenAddress = ""] =
     streamId.split("-");
 
-  const isTokenListed = useTokenIsListed(network.id, tokenAddress);
+  const [isTokenListed, isTokenListedLoading] = useTokenIsListed(
+    network.id,
+    tokenAddress
+  );
 
   const streamQuery = subgraphApi.useStreamQuery({
     chainId: network.id,
@@ -421,7 +424,8 @@ const StreamPageContent: FC<{
             {!isBelowMd && (
               <TokenIcon
                 tokenSymbol={tokenSymbol}
-                isListed={isTokenListed}
+                isUnlisted={!isTokenListed}
+                isLoading={isTokenListedLoading}
                 size={isBelowMd ? 32 : 60}
               />
             )}
@@ -466,7 +470,8 @@ const StreamPageContent: FC<{
             >
               <TokenIcon
                 tokenSymbol={tokenSymbol}
-                isListed={isTokenListed}
+                isUnlisted={!isTokenListed}
+                isLoading={isTokenListedLoading}
                 size={isBelowMd ? 32 : 60}
               />
               <Typography
