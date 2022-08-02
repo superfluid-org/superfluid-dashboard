@@ -116,17 +116,14 @@ const StreamAccountCard: FC<StreamAccountCardProps> = ({
             alignItems="center"
             sx={{ color: theme.palette.text.secondary }}
           >
-            <CopyTooltip content={addressChecksummed} copyText="Copy address">
-              {({ copy }) => (
-                <IconButton size="small" onClick={copy}>
-                  <ContentCopyRoundedIcon />
-                </IconButton>
-              )}
-            </CopyTooltip>
+            <CopyTooltip content={addressChecksummed} copyText="Copy address" />
 
             <Tooltip title="View on blockchain explorer" arrow placement="top">
               <span>
-                <Link href={network.getLinkForAddress(addressChecksummed)} passHref>
+                <Link
+                  href={network.getLinkForAddress(addressChecksummed)}
+                  passHref
+                >
                   <IconButton component="a" size="small" target="_blank">
                     <LaunchRoundedIcon />
                   </IconButton>
@@ -626,13 +623,7 @@ const StreamPageContent: FC<{
                     <CopyTooltip
                       content={streamCreationEvent.transactionHash}
                       copyText="Copy address"
-                    >
-                      {({ copy }) => (
-                        <IconButton size="small" onClick={copy}>
-                          <ContentCopyRoundedIcon />
-                        </IconButton>
-                      )}
-                    </CopyTooltip>
+                    />
 
                     <Tooltip
                       title="View on blockchain explorer"
