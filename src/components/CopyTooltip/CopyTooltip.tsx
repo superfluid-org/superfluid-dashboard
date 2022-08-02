@@ -1,21 +1,28 @@
-import { Tooltip, TooltipProps } from "@mui/material";
+import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
+import { IconButton, Tooltip, TooltipProps } from "@mui/material";
 import { FC, useCallback, useState } from "react";
 import copyToClipboard from "../../utils/copyToClipboard";
 
 interface CopyTooltipProps {
   content: string;
   copyText: string;
+  children?: ({ copy }: { copy: () => void }) => JSX.Element;
   copiedText?: string;
-  TooltipProps: Partial<TooltipProps>;
-  children: ({ copy }: { copy: () => void }) => JSX.Element;
+  TooltipProps?: Partial<TooltipProps>;
 }
+
+const defaultChildren = ({ copy }) => (
+  <IconButton size="small" onClick={copy}>
+    <ContentCopyRoundedIcon />
+  </IconButton>
+);
 
 const CopyTooltip: FC<CopyTooltipProps> = ({
   content,
   copyText,
-  copiedText = "Copied!",
-  TooltipProps,
   children,
+  copiedText = "Copied!",
+  TooltipProps = {},
 }) => {
   const [isCopied, setIsCopied] = useState(false);
 
@@ -35,7 +42,12 @@ const CopyTooltip: FC<CopyTooltipProps> = ({
   }, [content]);
 
   return (
-    <Tooltip title={isCopied ? copiedText : copyText} {...TooltipProps}>
+    <Tooltip
+      title={isCopied ? copiedText : copyText}
+      arrow
+      placement="top"
+      {...TooltipProps}
+    >
       {children({ copy: handleCopyClick })}
     </Tooltip>
   );

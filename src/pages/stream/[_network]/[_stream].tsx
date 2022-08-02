@@ -1,4 +1,6 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
+import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import CloseIcon from "@mui/icons-material/Close";
 import LinkIcon from "@mui/icons-material/Link";
 import ShareIcon from "@mui/icons-material/Share";
@@ -37,6 +39,7 @@ import CancelStreamButton from "../../../features/streamsTable/CancelStreamButto
 import Amount from "../../../features/token/Amount";
 import FlowingBalance from "../../../features/token/FlowingBalance";
 import TokenIcon from "../../../features/token/TokenIcon";
+import useAddressName from "../../../hooks/useAddressName";
 import useNavigateBack from "../../../hooks/useNavigateBack";
 import config from "../../../utils/config";
 import shortenHex from "../../../utils/shortenHex";
@@ -45,6 +48,7 @@ import {
   calculateMaybeCriticalAtTimestamp,
 } from "../../../utils/tokenUtils";
 import Page404 from "../../404";
+import Link from "next/link";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -57,11 +61,16 @@ const HASHTAGS_TO_SHARE = encodeURIComponent(
 
 interface StreamAccountCardProps {
   address: Address;
+  network: Network;
 }
 
-const StreamAccountCard: FC<StreamAccountCardProps> = ({ address }) => {
+const StreamAccountCard: FC<StreamAccountCardProps> = ({
+  address,
+  network,
+}) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const { ensName, addressChecksummed } = useAddressName(address);
 
   return (
     <Stack flex={1} gap={2}>
@@ -71,11 +80,12 @@ const StreamAccountCard: FC<StreamAccountCardProps> = ({ address }) => {
         alignItems="center"
         gap={isBelowMd ? 1 : 2}
         sx={{
-          py: 2,
+          height: "70px",
           px: 3,
           [theme.breakpoints.down("md")]: {
-            py: 1.5,
+            height: "52px",
             px: 2,
+            borderRadius: "8px",
           },
         }}
       >
@@ -95,14 +105,36 @@ const StreamAccountCard: FC<StreamAccountCardProps> = ({ address }) => {
             : {})}
         />
         <ListItemText
-          primary={
-            <AddressName
-              address={address}
-              length={isBelowMd ? "short" : "medium"}
-            />
-          }
+          primary={ensName || shortenHex(addressChecksummed, 4)}
+          secondary={!!ensName && shortenHex(addressChecksummed, 4)}
           primaryTypographyProps={{ variant: isBelowMd ? "h7" : "h6" }}
         />
+
+        {!isBelowMd && (
+          <Stack
+            direction="row"
+            alignItems="center"
+            sx={{ color: theme.palette.text.secondary }}
+          >
+            <CopyTooltip content={addressChecksummed} copyText="Copy address">
+              {({ copy }) => (
+                <IconButton size="small" onClick={copy}>
+                  <ContentCopyRoundedIcon />
+                </IconButton>
+              )}
+            </CopyTooltip>
+
+            <Tooltip title="View on blockchain explorer" arrow placement="top">
+              <span>
+                <Link href={network.getLinkForAddress(addressChecksummed)} passHref>
+                  <IconButton component="a" size="small" target="_blank">
+                    <LaunchRoundedIcon />
+                  </IconButton>
+                </Link>
+              </span>
+            </Tooltip>
+          </Stack>
+        )}
       </Paper>
     </Stack>
   );
@@ -139,7 +171,7 @@ interface ShareButtonProps {
 }
 
 const ShareButton: FC<ShareButtonProps> = ({ imgSrc, alt, tooltip, href }) => (
-  <Tooltip title={tooltip} placement="top">
+  <Tooltip title={tooltip} arrow placement="top">
     <MuiLink href={href} target="_blank">
       <Box sx={{ display: "flex" }}>
         <Image
@@ -494,7 +526,7 @@ const StreamPageContent: FC<{
             Receiver
           </Typography>
 
-          <StreamAccountCard address={sender} />
+          <StreamAccountCard address={sender} network={network} />
 
           <Box sx={{ mx: -0.25, height: isBelowMd ? 24 : 48, zIndex: -1 }}>
             <Image
@@ -507,7 +539,7 @@ const StreamPageContent: FC<{
             />
           </Box>
 
-          <StreamAccountCard address={receiver} />
+          <StreamAccountCard address={receiver} network={network} />
         </Stack>
 
         {currentFlowRate !== "0" && (
@@ -581,10 +613,52 @@ const StreamPageContent: FC<{
             }
           />
           <OverviewItem
-            label="Transaction:"
+            label="Transaction ID:"
             value={
-              streamCreationEvent &&
-              shortenHex(streamCreationEvent.transactionHash, 6)
+              streamCreationEvent && (
+                <Stack direction="row" alignItems="center" gap={0.5}>
+                  {shortenHex(streamCreationEvent.transactionHash)}
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    sx={{ color: theme.palette.text.secondary }}
+                  >
+                    <CopyTooltip
+                      content={streamCreationEvent.transactionHash}
+                      copyText="Copy address"
+                    >
+                      {({ copy }) => (
+                        <IconButton size="small" onClick={copy}>
+                          <ContentCopyRoundedIcon />
+                        </IconButton>
+                      )}
+                    </CopyTooltip>
+
+                    <Tooltip
+                      title="View on blockchain explorer"
+                      arrow
+                      placement="top"
+                    >
+                      <span>
+                        <Link
+                          href={network.getLinkForTransaction(
+                            streamCreationEvent.transactionHash
+                          )}
+                          passHref
+                        >
+                          <IconButton
+                            component="a"
+                            size="small"
+                            target="_blank"
+                          >
+                            <LaunchRoundedIcon />
+                          </IconButton>
+                        </Link>
+                      </span>
+                    </Tooltip>
+                  </Stack>
+                </Stack>
+              )
             }
           />
         </Stack>
@@ -597,11 +671,7 @@ const StreamPageContent: FC<{
             Share:
           </Typography>
 
-          <CopyTooltip
-            content={urlToShare}
-            copyText="Copy link"
-            TooltipProps={{ placement: "top" }}
-          >
+          <CopyTooltip content={urlToShare} copyText="Copy link">
             {({ copy }) => (
               <IconButton
                 onClick={copy}

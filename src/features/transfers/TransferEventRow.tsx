@@ -20,6 +20,7 @@ import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import { subgraphApi } from "../redux/store";
 import { Network } from "../network/networks";
+import AddressCopyTooltip from "../common/AddressCopyTooltip";
 
 export const TransferEventLoadingRow = () => {
   const theme = useTheme();
@@ -96,10 +97,11 @@ const TransferEventRow: FC<TransferEventRowProps> = ({
             }}
             BlockiesProps={{ size: 8, scale: 3 }}
           />
-          <ListItemText
-            primary={<AddressName address={isOutgoing ? to : from} />}
-            primaryTypographyProps={{ variant: "h7" }}
-          />
+          <AddressCopyTooltip address={isOutgoing ? to : from}>
+            <Typography variant="h7">
+              <AddressName address={isOutgoing ? to : from} />
+            </Typography>
+          </AddressCopyTooltip>
         </Stack>
       </TableCell>
       <TableCell align="right">

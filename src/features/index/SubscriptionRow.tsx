@@ -17,6 +17,7 @@ import { FC, useMemo } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import { subscriptionWeiAmountReceived } from "../../utils/tokenUtils";
+import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import Amount from "../token/Amount";
 
 export const SubscriptionLoadingRow = () => {
@@ -123,7 +124,13 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({ subscription }) => {
             BlockiesProps={{ size: 8, scale: 3 }}
           />
           <ListItemText
-            primary={<AddressName address={subscription.publisher} />}
+            primary={
+              <AddressCopyTooltip address={subscription.publisher}>
+                <span>
+                  <AddressName address={subscription.publisher} />
+                </span>
+              </AddressCopyTooltip>
+            }
             secondary={
               isBelowMd
                 ? format(subscription.updatedAtTimestamp * 1000, "d MMM. yyyy")

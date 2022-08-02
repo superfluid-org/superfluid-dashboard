@@ -578,11 +578,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           root: {
             borderRadius: "8px",
             padding: theme.spacing(0.75),
+            color: theme.palette.text.secondary,
           },
           colorInherit: {
             color: theme.palette.text.primary,
           },
           colorPrimary: {
+            color: theme.palette.primary.main,
             backgroundColor: alpha(theme.palette.primary.main, 0.08),
             "&:hover": {
               backgroundColor: alpha(
@@ -602,6 +604,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           {
             props: { color: "error" },
             style: {
+              color: theme.palette.error.main,
               backgroundColor: alpha(theme.palette.error.main, 0.08),
               "&:hover": {
                 backgroundColor: alpha(
