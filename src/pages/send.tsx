@@ -1,6 +1,9 @@
 import { Box, Container, useTheme } from "@mui/material";
 import { formatEther } from "ethers/lib/utils";
+import { isString } from "lodash";
 import { NextPage } from "next";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import SEO from "../components/SEO/SEO";
 import SendCard from "../features/send/SendCard";
 import StreamingFormProvider, {
@@ -11,25 +14,47 @@ import { RestorationType } from "../features/transactionRestoration/transactionR
 
 const Send: NextPage = () => {
   const theme = useTheme();
+  const router = useRouter();
   const { restoration, onRestored } = useTransactionRestorationContext();
+  const [initialFormValues, setInitialFormValues] = useState<
+    StreamingFormProviderProps["initialFormValues"] | undefined
+  >();
 
-  let initialFormValues: StreamingFormProviderProps["initialFormValues"] = {};
-  if (restoration) {
-    switch (restoration.type) {
-      case RestorationType.SendStream:
-      case RestorationType.ModifyStream:
-        initialFormValues = {
-          flowRate: {
-            amountEther: formatEther(restoration.flowRate.amountWei),
-            unitOfTime: restoration.flowRate.unitOfTime,
-          },
-          receiverAddress: restoration.receiverAddress,
-          tokenAddress: restoration.tokenAddress,
-        };
-        break;
+  useEffect(() => {
+    if (router.isReady) {
+      if (restoration) {
+        switch (restoration.type) {
+          case RestorationType.SendStream:
+          case RestorationType.ModifyStream:
+            setInitialFormValues({
+              flowRate: {
+                amountEther: formatEther(restoration.flowRate.amountWei),
+                unitOfTime: restoration.flowRate.unitOfTime,
+              },
+              receiverAddress: restoration.receiverAddress,
+              tokenAddress: restoration.tokenAddress,
+            });
+            break;
+          default:
+            setInitialFormValues({});
+        }
+        onRestored();
+      } else {
+        const { token: maybeTokenAddress, receiver: maybeReceiverAddress } =
+          router.query;
+        setInitialFormValues({
+          tokenAddress:
+            maybeTokenAddress && isString(maybeTokenAddress)
+              ? maybeTokenAddress
+              : undefined,
+          receiverAddress:
+            maybeReceiverAddress && isString(maybeReceiverAddress)
+              ? maybeReceiverAddress
+              : undefined,
+        });
+      }
     }
-    onRestored();
-  }
+  }, [router.isReady]);
 
   return (
     <SEO title="Send Stream | Superfluid">
@@ -45,9 +70,11 @@ const Send: NextPage = () => {
             },
           }}
         >
-          <StreamingFormProvider initialFormValues={initialFormValues}>
-            <SendCard />
-          </StreamingFormProvider>
+          {initialFormValues && (
+            <StreamingFormProvider initialFormValues={initialFormValues}>
+              <SendCard />
+            </StreamingFormProvider>
+          )}
         </Box>
       </Container>
     </SEO>
