@@ -81,6 +81,7 @@ jobs:
         with:
           install: true
           browser: chrome
+          group: chrome
           parallel: true
           wait-on: ${{ steps.waitForDeployment.outputs.url }}
           wait-on-timeout: 180
@@ -106,11 +107,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Download the build folders
-        uses: actions/download-artifact@v2
-        with:
-          name: build
-          path: build
+#      - name: Download the build folders
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: build
+#          path: build
 
       - name: Setup firefox
         uses: browser-actions/setup-firefox@latest
@@ -120,6 +121,7 @@ jobs:
         with:
           install: false
           browser: firefox
+          group: firefox
           parallel: true
           wait-on: ${{ steps.waitForDeployment.outputs.url }}
           wait-on-timeout: 180
