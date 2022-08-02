@@ -35,6 +35,7 @@ jobs:
         uses: cypress-io/github-action@v4
         with:
           runTests: false
+          build: yarn build #https://docs.cypress.io/guides/continuous-integration/github-actions#Install-Job
         env:
           GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
 
@@ -46,10 +47,11 @@ jobs:
         env:
           NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
-      - name: Archive build
+      - name: Save build folder
         uses: actions/upload-artifact@v2
         with:
           name: build
+          if-no-files-found: error
           path: build
 
   chrome-tests:
