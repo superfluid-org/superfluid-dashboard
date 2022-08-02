@@ -402,7 +402,7 @@ export const networks: Network[] = [
     blockExplorers: ensureDefined(chain.optimism.blockExplorers),
     slugName: "optimism",
     v1ShortName: "optimism-mainnet",
-    bufferTimeInMinutes: 240,
+    bufferTimeInMinutes: 1440,
     icon: "/icons/network/optimism.svg",
     color: "#ff0320",
     rpcUrls: {
@@ -433,7 +433,7 @@ export const networks: Network[] = [
     blockExplorers: ensureDefined(chain.arbitrum.blockExplorers),
     slugName: "arbitrum-one",
     v1ShortName: "arbitrum-one",
-    bufferTimeInMinutes: 240,
+    bufferTimeInMinutes: 1440,
     icon: "/icons/network/arbitrum.svg",
     color: "#2b374b",
     rpcUrls: {
@@ -466,7 +466,7 @@ export const networks: Network[] = [
     network: "avalanche-c",
     id: 43114,
     testnet: false,
-    bufferTimeInMinutes: 240,
+    bufferTimeInMinutes: 1440,
     icon: "/icons/network/avalanche.svg",
     color: "#e84142",
     rpcUrls: {
@@ -507,7 +507,7 @@ export const networks: Network[] = [
     network: "bnb-smart-chain",
     id: 56,
     testnet: false,
-    bufferTimeInMinutes: 240,
+    bufferTimeInMinutes: 1440,
     icon: "/icons/network/bnb.svg",
     color: "#F0B90B",
     rpcUrls: {

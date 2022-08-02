@@ -100,3 +100,6 @@ export const calculateCurrentBalance = ({
       .mul(BigNumber.from(flowRateWei))
       .div(1000)
   );
+
+export const getMinimumStreamTimeInMinutes = (bufferTimeInMinutes: number) =>
+  bufferTimeInMinutes * 5;

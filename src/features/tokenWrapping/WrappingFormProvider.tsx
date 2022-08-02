@@ -20,6 +20,7 @@ import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import {
   calculateCurrentBalance,
   calculateMaybeCriticalAtTimestamp,
+  getMinimumStreamTimeInMinutes,
 } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 import { useTokenPairsQuery } from "./useTokenPairsQuery";
@@ -211,14 +212,14 @@ The chain ID was: ${network.id}`);
                     .toNumber()
                 );
 
-                const minimumStreamTime = network.bufferTimeInMinutes * 60 * 2;
+                const minimumStreamTimeInSeconds = getMinimumStreamTimeInMinutes(network.bufferTimeInMinutes) * 60;
                 const secondsToCritical = Math.floor(
                   (dateWhenBalanceCritical.getTime() - Date.now()) / 1000
                 );
-
-                if (secondsToCritical < minimumStreamTime) {
+                
+                if (secondsToCritical < minimumStreamTimeInSeconds) {
                   handleHigherOrderValidationError({
-                    message: `You need to leave enough balance to stream for ${minimumStreamTime} seconds.`,
+                    message: `You need to leave enough balance to stream for ${minimumStreamTimeInSeconds / 3600} hours.`,
                   });
                 }
               }

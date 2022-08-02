@@ -16,6 +16,7 @@ import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@etherspr
 import { formatEther } from "ethers/lib/utils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 import { BigNumber } from "ethers";
+import { getMinimumStreamTimeInMinutes } from "../../utils/tokenUtils";
 
 export type ValidStreamingForm = {
   data: {
@@ -136,15 +137,14 @@ const StreamingFormProvider: FC<{
             });
 
           if (newDateWhenBalanceCritical) {
-            const minimumStreamTime = network.bufferTimeInMinutes * 60 * 2;
-
+            const minimumStreamTimeInSeconds = getMinimumStreamTimeInMinutes(network.bufferTimeInMinutes) * 60;
             const secondsToCritical = Math.round(
               (newDateWhenBalanceCritical.getTime() - Date.now()) / 1000
             );
-
-            if (secondsToCritical < minimumStreamTime) {
+            
+            if (secondsToCritical < minimumStreamTimeInSeconds) {
               handleHigherOrderValidationError({
-                message: `You need to leave enough balance to stream for ${minimumStreamTime} seconds.`,
+                message: `You need to leave enough balance to stream for ${minimumStreamTimeInSeconds / 3600} hours.`,
               });
             }
           }
