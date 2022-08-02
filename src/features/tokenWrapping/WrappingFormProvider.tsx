@@ -218,6 +218,7 @@ The chain ID was: ${network.id}`);
                   dateWhenBalanceCritical.getTime() / 1000 - dateNowSeconds();
 
                 if (secondsToCritical < minimumStreamTimeInSeconds) {
+                  // NOTE: "secondsToCritical" might be off about 1 minute because of RTK-query cache for the balance query
                   handleHigherOrderValidationError({
                     message: `You need to leave enough balance to stream for ${
                       minimumStreamTimeInSeconds / 3600

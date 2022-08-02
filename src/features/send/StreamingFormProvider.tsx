@@ -143,6 +143,7 @@ const StreamingFormProvider: FC<{
             const secondsToCritical = newDateWhenBalanceCritical.getTime() / 1000 - dateNowSeconds();
 
             if (secondsToCritical < minimumStreamTimeInSeconds) {
+              // NOTE: "secondsToCritical" might be off about 1 minute because of RTK-query cache for the balance query
               handleHigherOrderValidationError({
                 message: `You need to leave enough balance to stream for ${
                   minimumStreamTimeInSeconds / 3600
@@ -163,7 +164,7 @@ const StreamingFormProvider: FC<{
 
         return true;
       }),
-    [network, accountAddress]
+    [network, accountAddress, calculateBufferInfo]
   );
 
   const formMethods = useForm<PartialStreamingForm>({

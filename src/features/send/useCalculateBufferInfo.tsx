@@ -1,6 +1,5 @@
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
-import { dateNowSeconds } from "../../utils/dateUtils";
 import { calculateMaybeCriticalAtTimestamp } from "../../utils/tokenUtils";
 import { Network } from "../network/networks";
 import { Web3FlowInfo } from "../redux/endpoints/adHocRpcEndpoints";
