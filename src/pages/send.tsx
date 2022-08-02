@@ -26,7 +26,7 @@ const tryParseFlowRate = (
   const [amountEther, unitOfTime] = value.split("/");
 
   const isUnitOfTime = Object.keys(wordTimeUnitMap).includes(
-    unitOfTime.toLowerCase()
+    (unitOfTime ?? "").toLowerCase()
   );
   const isEtherAmount = !!tryParseUnits(amountEther);
 
