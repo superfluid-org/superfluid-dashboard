@@ -102,4 +102,4 @@ export const calculateCurrentBalance = ({
   );
 
 export const getMinimumStreamTimeInMinutes = (bufferTimeInMinutes: number) =>
-  bufferTimeInMinutes * 5;
+  bufferTimeInMinutes * 6;
