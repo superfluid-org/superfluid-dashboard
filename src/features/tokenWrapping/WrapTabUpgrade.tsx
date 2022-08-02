@@ -36,6 +36,19 @@ import { useTokenPairQuery } from "./useTokenPairQuery";
 import { ArrowDownIcon, WrapInputCard } from "./WrapCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 
+const underlyingIbAlluoTokenOverrides = [
+  // StIbAlluoEth
+  "0xc677b0918a96ad258a68785c2a3955428dea7e50",
+  // StIbAlluoBTC
+  "0xf272ff86c86529504f0d074b210e95fc4cfcdce2",
+
+  // StIbAlluoEUR
+  "0xc9d8556645853c465d1d5e7d2c81a0031f0b8a92",
+
+  // StIbAlluoUSD
+  "0xc2dbaaea2efa47ebda3e572aa0e55b742e408bf6",
+];
+
 export const WrapTabUpgrade: FC = () => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
@@ -446,6 +459,18 @@ export const WrapTabUpgrade: FC = () => {
             const isNativeAssetSuperToken =
               formData.tokenPair.underlyingTokenAddress ===
               NATIVE_ASSET_ADDRESS;
+
+            // Temp custom override for "IbAlluo" tokens on polygon
+            // TODO: Find a better solution
+            if (
+              network.id === 137 &&
+              underlyingIbAlluoTokenOverrides.includes(
+                tokenPair.underlyingTokenAddress.toLowerCase()
+              )
+            ) {
+              overrides.gasLimit = 200_000;
+            }
+
             if (isGnosisSafe && isNativeAssetSuperToken) {
               overrides.gasLimit = 500_000;
             }

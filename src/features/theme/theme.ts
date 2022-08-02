@@ -53,6 +53,7 @@ interface PaletteOtherColors {
   outline: string;
   backdrop: string;
   snackbar: string;
+  intercom: string;
 }
 
 declare module "@mui/material/styles/createPalette" {
@@ -171,6 +172,7 @@ const getDesignTokens = (theme: Theme): ThemeOptions => {
         outline: getModeStyle("#E0E0E0", "#2D2D2D"),
         backdrop: "rgba(0, 0, 0, 0.5)",
         snackbar: "#323232",
+        intercom: "#1c1d20",
       },
       divider: getModeStyle("#0000001F", "#FFFFFF1F"),
     },

@@ -14,7 +14,7 @@ const ENS_ENTRY_NAMES = "[data-cy=ens-entry] span";
 const ENS_ENTRY_ADDRESS = "[data-cy=ens-entry] p";
 const RECENT_ENTRIES = "[data-cy=recents-entry]";
 const RECENT_ENTRIES_ADDRESS = "[data-cy=recents-entry] span";
-const RECEIVER_CLEAR_BUTTON = "[data-testid=CancelIcon]";
+const RECEIVER_CLEAR_BUTTON = "[data-testid=CloseIcon]";
 const TOKEN_SEARCH_INPUT = "[data-cy=token-search-input]";
 const TOKEN_SEARCH_RESULTS = "[data-cy$=list-item]";
 const RESULTS_WRAP_BUTTONS = "[data-cy=wrap-button]";
@@ -35,6 +35,7 @@ const BALANCE_WRAP_BUTTON = "[data-cy=balance-wrap-button]";
 const PREVIEW_BALANCE = "[data-cy=balance]";
 const TOKEN_NO_SEARCH_RESULTS = "[data-cy=token-search-no-results]";
 const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet]";
+const DIALOG = "[role=dialog]"
 
 export class SendPage extends BasePage {
     static searchForTokenInTokenList(token: string) {
@@ -78,7 +79,8 @@ export class SendPage extends BasePage {
         this.isVisible(AMOUNT_PER_SECOND);
     }
 
-    static inputStreamTestData() {
+    static inputStreamTestData(isConnected:string) {
+        const connected = isConnected === "with"
         this.click(RECEIVER_BUTTON);
         cy.fixture("commonData").then((commonData) => {
             this.type(ADDRESS_DIALOG_INPUT, commonData.staticBalanceAccount);
@@ -88,6 +90,17 @@ export class SendPage extends BasePage {
                 commonData.staticBalanceAccount
             );
             this.click(SELECT_TOKEN_BUTTON);
+
+            if(connected){
+            //Wait for all balances to load, then open and close the menu to sort them
+            cy.get(TOKEN_SEARCH_RESULTS).then( el => {
+                this.hasLength(PREVIEW_BALANCE,el.length)
+            })
+            this.click(`${DIALOG} ${CLOSE_DIALOG_BUTTON}`)
+            this.click(SELECT_TOKEN_BUTTON)
+            } else {
+                this.doesNotExist(PREVIEW_BALANCE)
+            }
             cy.get(TOKEN_SEARCH_RESULTS)
                 .eq(0)
                 .find("[data-cy=token-symbol-and-name] span")
@@ -104,16 +117,11 @@ export class SendPage extends BasePage {
         this.hasValue(AMOUNT_PER_SECOND, "0.000000385802469135");
     }
 
-    static checkIfStreamPreviewIsCorrect() {
+    static checkIfStreamPreviewIsCorrectWhenUserNotConnected() {
         cy.fixture("commonData").then((commonData) => {
             this.hasText(PREVIEW_RECEIVER, commonData.staticBalanceAccount);
             cy.get("@lastChosenToken").then((lastChosenToken) => {
                 this.hasText(PREVIEW_FLOW_RATE, `1 ${lastChosenToken}/month`);
-                //A rounding error from the dashboard? Will probably change when we do some formatting changes
-                this.hasText(
-                    PREVIEW_UPFRONT_BUFFER,
-                    `3.9999999999999888 ${lastChosenToken}`
-                );
             });
         });
         this.hasText(PREVIEW_ENDS_ON, "Never");
@@ -146,9 +154,8 @@ export class SendPage extends BasePage {
         this.clickFirstVisible(ENS_ENTRIES);
     }
 
-    static chosenEnsReceiverWalletAddress(name: string, address: string) {
-        this.hasText(ADDRESS_BUTTON_TEXT, name);
-        this.hasText(CHOSEN_ENS_ADDRESS, shortenHex(address));
+    static chosenReceiverAddress(chosenAddress: string) {
+        this.hasText(ADDRESS_BUTTON_TEXT, chosenAddress);
     }
 
     static clearReceiverField() {
@@ -183,7 +190,7 @@ export class SendPage extends BasePage {
         cy.get("@lastChosenReceiver").then((lastChosenReceiver) => {
             this.hasText(
                 ADDRESS_BUTTON_TEXT,
-                this.getShortenedAddress(lastChosenReceiver)
+                lastChosenReceiver
             );
         });
     }
@@ -272,16 +279,20 @@ export class SendPage extends BasePage {
     static validateSortedTokensByAmount() {
         let balances: any[] = [];
         cy.get("[data-cy=token-balance]").each((balance) => {
-            balances.push(balance.text().replace("$", ""));
+            balances.push(parseFloat(balance.text().replace("$", "")));
         });
         cy.wrap(balances).then((array) => {
-            let expectedArray = [...array].sort((a, b) => a - b);
+            let expectedArray = [...array].sort(function(a, b) {return b-a} );
             expect(expectedArray).to.deep.eq(array);
         });
     }
 
     static waitForTokenBalancesToLoad() {
         this.exists("[data-cy=animation]");
-        cy.get("[data-cy=token-balance]").eq(0).should("have.text", "0");
+        cy.get("[data-cy=token-balance]").eq(0).should("have.text", "0 ");
+    }
+
+    static clickAddressButton() {
+        this.click(RECEIVER_BUTTON)
     }
 }

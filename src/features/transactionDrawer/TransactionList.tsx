@@ -1,4 +1,4 @@
-import { List } from "@mui/material";
+import { Divider, List } from "@mui/material";
 import { memo } from "react";
 import TransactionListItem from "./TransactionListItem";
 import {
@@ -12,9 +12,15 @@ export default memo(function TransactionList() {
   );
 
   return (
-    <List>
+    <List disablePadding>
       {transactions.map((transaction) => (
-        <TransactionListItem key={transaction.hash} transaction={transaction} />
+        <>
+          <TransactionListItem
+            key={transaction.hash}
+            transaction={transaction}
+          />
+          <Divider component="li" />
+        </>
       ))}
     </List>
   );

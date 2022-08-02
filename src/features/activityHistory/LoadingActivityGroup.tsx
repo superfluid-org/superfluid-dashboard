@@ -21,7 +21,7 @@ export const LoadingActivityRow = () => {
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
-    <TableRow>
+    <TableRow data-cy={"skeleton-row"}>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
           <ListItemAvatar>

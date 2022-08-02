@@ -28,6 +28,7 @@ import { parseEtherOrZero } from "../../utils/tokenUtils";
 import TooltipIcon from "../common/TooltipIcon";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
+import NetworkBadge from "../network/NetworkBadge";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { isWrappable } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
@@ -158,6 +159,7 @@ export default memo(function SendCard() {
       elevation={1}
       sx={{
         maxWidth: "600px",
+        position: "relative",
         [theme.breakpoints.down("md")]: {
           boxShadow: "none",
           backgroundImage: "none",
@@ -167,6 +169,15 @@ export default memo(function SendCard() {
         },
       }}
     >
+      <NetworkBadge
+        network={network}
+        sx={{ position: "absolute", top: 0, right: theme.spacing(3.5) }}
+        NetworkIconProps={{
+          size: 32,
+          fontSize: 18,
+          sx: { [theme.breakpoints.down("md")]: { borderRadius: 1 } },
+        }}
+      />
       <Stack spacing={4}>
         <Button
           color="primary"

@@ -294,7 +294,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           }}
         >
           <Collapse
-            data-cy={"streams-table"}
+            data-cy={`${token}-streams-table`}
             in={open}
             timeout={theme.transitions.duration.standard}
             unmountOnExit

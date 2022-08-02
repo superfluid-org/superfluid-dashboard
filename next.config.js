@@ -13,7 +13,7 @@ const moduleExports = {
     domains: ["raw.githubusercontent.com"],
   },
   env: {
-    NEXT_PUBLIC_APP_URL: process.env.DEPLOY_PRIME_URL,
+    NEXT_PUBLIC_APP_URL: process.env.URL,
   },
 };
 

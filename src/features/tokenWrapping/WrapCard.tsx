@@ -10,7 +10,10 @@ import {
   useTheme,
 } from "@mui/material";
 import { useRouter } from "next/router";
+import { relative } from "path";
 import { FC, memo } from "react";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
+import NetworkBadge from "../network/NetworkBadge";
 import { WrapTabDowngrade } from "./WrapTabDowngrade";
 import { WrapTabUpgrade } from "./WrapTabUpgrade";
 
@@ -66,6 +69,7 @@ export default memo(function WrapCard({
 }) {
   const theme = useTheme();
   const router = useRouter();
+  const { network } = useExpectedNetwork();
 
   const handleTabChange = (newTab: "upgrade" | "downgrade") => () =>
     router.replace("/wrap?" + newTab);
@@ -75,6 +79,7 @@ export default memo(function WrapCard({
       sx={{
         maxWidth: "500px",
         borderRadius: "20px",
+        position: "relative",
         [theme.breakpoints.down("md")]: {
           boxShadow: "none",
           backgroundImage: "none",
@@ -85,6 +90,19 @@ export default memo(function WrapCard({
       }}
       elevation={1}
     >
+      <NetworkBadge
+        network={network}
+        sx={{
+          position: "absolute",
+          top: 0,
+          right: theme.spacing(3.5),
+        }}
+        NetworkIconProps={{
+          size: 32,
+          fontSize: 18,
+          sx: { [theme.breakpoints.down("md")]: { borderRadius: 1 } },
+        }}
+      />
       <Stack direction="row" gap={1} sx={{ mb: 4 }}>
         <Button
           data-cy="wrap-toggle"

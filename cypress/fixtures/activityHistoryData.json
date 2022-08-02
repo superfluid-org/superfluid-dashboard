@@ -1,0 +1,737 @@
+{
+  "staticBalanceAccount": {
+    "gnosis": [
+      {
+        "timestamp": 1621840945,
+        "activity": "Receive Transfer",
+        "amount": "1 xDAIx",
+        "amountToFrom": "From0xB0d6...2cb4",
+        "txHash": "0x205c10e799bad48b2dff79513fc9d4b13390bee4c8a155fc9190b40608c7e7d3"
+      },
+      {
+        "timestamp": 1621599855,
+        "activity": "Stream Cancelled",
+        "amount": "0 MIVA/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0x296d56479b5e3677cfdf6e18ee7b794f30209c0b854fb925281007ca22e1d3c9"
+      },
+      {
+        "timestamp": 1621599815,
+        "activity": "Stream Updated",
+        "amount": "25 MIVA/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0xd386d0e8480833a0b3be763bf95e1941497dac1779c0ed1e4c56f57f82a0d15f"
+      },
+      {
+        "timestamp": 1621599790,
+        "activity": "Send Stream",
+        "amount": "50 MIVA/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0xf02825ec962bed36704933634169740683aef8a28ca043394a4732b4491448cd"
+      },
+      {
+        "timestamp": 1621599730,
+        "activity": "Receive Transfer",
+        "amount": "20 MIVA",
+        "amountToFrom": "From0xB0d6...2cb4",
+        "txHash": "0x35b68f1137c566a528b3c4f78d962634d672bb9d5234800d12278692c7eda7c1"
+      },
+      {
+        "timestamp": 1621599690,
+        "activity": "Send Transfer",
+        "amount": "20 MIVA",
+        "amountToFrom": "To0xB0d6...2cb4",
+        "txHash": "0xd2190c979a7862a4687cd853b3a2eb88220198afa3358a414dc015559f0b9fb0"
+      },
+      {
+        "timestamp": 1621595390,
+        "activity": "Wrap",
+        "amount": "-4 XDAI",
+        "amountToFrom": "+4 xDAIx",
+        "txHash": "0xc106a26f7d4ff845b550f562819d4b8b79414273422572a985edc64b99677597"
+      },
+      {
+        "timestamp": 1621594395,
+        "activity": "Receive Transfer",
+        "amount": "50.31 MIVA",
+        "amountToFrom": "From0x658e...9Ce4",
+        "txHash": "0x54e1c86ca95d6322fe32ef287ddbe3db968e8d7be28a2f56bd05d18d37cbe0be"
+      }
+    ],
+    "polygon": [
+      {
+        "timestamp": 1628852826,
+        "activity": "Stream Cancelled",
+        "amount": "0 USDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0x62d190d13c0d619b1e8019c356e1afcc13b5c66a72a9992557b636eca4bef5d0"
+      },
+      {
+        "timestamp": 1628852734,
+        "activity": "Stream Updated",
+        "amount": "1 USDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0x67cf1464f2621178fcd2bfc0c33ad9fa0c9f4906b1de0986454b5afbfbd96a40"
+      },
+      {
+        "timestamp": 1628852654,
+        "activity": "Send Stream",
+        "amount": "2 USDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0x384bec1faf849929dcce6b293f7bee432f2a299cc9afc6750179dc96dd81b8ff"
+      },
+      {
+        "timestamp": 1628850103,
+        "activity": "Receive Transfer",
+        "amount": "5 USDCx",
+        "amountToFrom": "From0xB0d6...2cb4",
+        "txHash": "0xfdfa7846780ed5d9da5f0140e00414a8bd17d43a0c4019640d88a963d8c89718"
+      },
+      {
+        "timestamp": 1628849995,
+        "activity": "Send Transfer",
+        "amount": "5 USDCx",
+        "amountToFrom": "To0xB0d6...2cb4",
+        "txHash": "0x5124a5f0cdeb66065e8e5a2beae89d08352eea7522b6f0e2ba7574ef58747608"
+      },
+      {
+        "timestamp": 1628849953,
+        "activity": "Wrap",
+        "amount": "-5 USDC",
+        "amountToFrom": "+5 USDCx",
+        "txHash": "0x781cb7eb413577aee984a4ba43c980dbf392bc0edf2575ec21c648b3cc4f0363"
+      },
+      {
+        "timestamp": 1628849863,
+        "activity": "Wrap",
+        "amount": "-4 MATIC",
+        "amountToFrom": "+4 MATICx",
+        "txHash": "0xe72323984253906860351abd4ee22ec2b19456f9ca7cb42a4c5ddae73cc97b9f"
+      },
+      {
+        "timestamp": 1622189300,
+        "activity": "Receive Transfer",
+        "amount": "0.000000000005 USDCx",
+        "amountToFrom": "From0xF9Ce...3Ff2",
+        "txHash": "0x3c787f384a6fbc45ca0559c727f8df9b7fced52d70a5a5a829c8c3f351be4032"
+      },
+      {
+        "timestamp": 1621839474,
+        "activity": "Receive Transfer",
+        "amount": "0.000000000005 USDCx",
+        "amountToFrom": "From0xF9Ce...3Ff2",
+        "txHash": "0x764436391ca32f61598d119c9f7c7493f2664f07dd805ef0041e7f28e9a73a26"
+      },
+      {
+        "timestamp": 1621839302,
+        "activity": "Receive Transfer",
+        "amount": "0.000000000005 USDCx",
+        "amountToFrom": "From0xF9Ce...3Ff2",
+        "txHash": "0x4ab68ee5fa1dfe080725ecaad33fe3d1a22badde161c0419d69e2b2ace96fcd3"
+      }
+    ],
+    "optimism": [
+      {
+        "timestamp": 1648119483,
+        "activity": "Wrap",
+        "amount": "-0.0008 ETH",
+        "amountToFrom": "+0.0008 ETHx",
+        "txHash": "0x88b6e0a9f2c7a70f83bd2a15d2fbd2ad7c7ea0ae709a21c7c08b59b0f83a60bf"
+      },
+      {
+        "timestamp": 1648109346,
+        "activity": "Stream Cancelled",
+        "amount": "0 DAIx/mo",
+        "amountToFrom": "From0x275C...739f",
+        "txHash": "0x6adfa491ee83dca8996637955deced03ff0fd99e93d23d3c9c8066f96e9b10c7"
+      },
+      {
+        "timestamp": 1648069854,
+        "activity": "Stream Cancelled",
+        "amount": "0 DAIx/mo",
+        "amountToFrom": "To0x275C...739f",
+        "txHash": "0x2a0006f4b9cc48ca2cdf8dfcf5f202a2cef05e14e799b1d60530acb997572e78"
+      },
+      {
+        "timestamp": 1648069824,
+        "activity": "Stream Updated",
+        "amount": "0.3 DAIx/mo",
+        "amountToFrom": "To0x275C...739f",
+        "txHash": "0xc62be73ed58bfebd7f647df253e390f0793c30cac454fea3e5fa30dd9c1988b1"
+      },
+      {
+        "timestamp": 1648069789,
+        "activity": "Receive Stream",
+        "amount": "0.1 DAIx/mo",
+        "amountToFrom": "From0x275C...739f",
+        "txHash": "0xacd42bcc7ef4a82b353c7a6b3e75308ea62992014bf83c2960c56e51c2b4390d"
+      },
+      {
+        "timestamp": 1648069754,
+        "activity": "Receive Transfer",
+        "amount": "1 DAIx",
+        "amountToFrom": "From0x275C...739f",
+        "txHash": "0xb90fac2ce05d9ebd5f212ebdedd3ace9532e5b52e44520a1b0244a7defc513fa"
+      },
+      {
+        "timestamp": 1648069738,
+        "activity": "Send Transfer",
+        "amount": "1 DAIx",
+        "amountToFrom": "To0x275C...739f",
+        "txHash": "0x3c155a125c12ce87bdd23a2ef8164661587ee1521fe79267c8f10702462b53fb"
+      },
+      {
+        "timestamp": 1648069703,
+        "activity": "Send Stream",
+        "amount": "0.1 DAIx/mo",
+        "amountToFrom": "To0x275C...739f",
+        "txHash": "0x9d60a1546c80b18e36d9c51798a8eba748fdf3c8664e384694f743cc4720a025"
+      },
+      {
+        "timestamp": 1648069666,
+        "activity": "Wrap",
+        "amount": "-2 DAI",
+        "amountToFrom": "+2 DAIx",
+        "txHash": "0xa5fa68d2e941bbfcea6d1da95a6342f0c0a9612c748ee8cb6ac44ab26e4341c0"
+      }
+    ],
+    "arbitrum-one": [
+      {
+        "timestamp": 1649164771,
+        "activity": "Receive Transfer",
+        "amount": "0.00005674 ETHx",
+        "amountToFrom": "From0xF9Ce...3Ff2",
+        "txHash": "0x092f7d5c8c9a7eb22547f05c3660513449610fa3827324dac3d05ceadfedb6f2"
+      },
+      {
+        "timestamp": 1649164526,
+        "activity": "Wrap",
+        "amount": "-0.00009079 ETH",
+        "amountToFrom": "+0.00009079 ETHx",
+        "txHash": "0x78359e1ef5e0367a7e2fa1b43b4fcc3bd50299603cb1d583fe0a745f4eb6c887"
+      },
+      {
+        "timestamp": 1649164404,
+        "activity": "Receive Transfer",
+        "amount": "0.000009208341 ETHx",
+        "amountToFrom": "From0xF9Ce...3Ff2",
+        "txHash": "0x0f798a1d82a663e681b272a30e77f0ebdbcd0338d80c1e977c050b4fcbf2aff5"
+      },
+      {
+        "timestamp": 1648070722,
+        "activity": "Receive Transfer",
+        "amount": "0.0001 ETHx",
+        "amountToFrom": "From0x275C...739f",
+        "txHash": "0xf137e66e2d4f954428be58b873778f4064590490bc9b707ea56147080fa4ac99"
+      },
+      {
+        "timestamp": 1648070722,
+        "activity": "Stream Cancelled",
+        "amount": "0 ETHx/mo",
+        "amountToFrom": "To0xEb85...c28d",
+        "txHash": "0xee9d65f6a31adbe438cc2114b1ec6aa1cb7dafa5a64f03212701725331187b9f"
+      },
+      {
+        "timestamp": 1648070658,
+        "activity": "Stream Updated",
+        "amount": "0.0002 ETHx/mo",
+        "amountToFrom": "To0xEb85...c28d",
+        "txHash": "0x0bb65170938e54a9b30ea690429bd0e6921c6e1fd379de5d331d961998d1293f"
+      },
+      {
+        "timestamp": 1648070658,
+        "activity": "Send Stream",
+        "amount": "0.0001 ETHx/mo",
+        "amountToFrom": "To0xEb85...c28d",
+        "txHash": "0x51f8a69635dedb729e01558aa1c5446a6a42879ae81fdd76cb5d9b1806f86983"
+      },
+      {
+        "timestamp": 1648070658,
+        "activity": "Send Transfer",
+        "amount": "0.0001 ETHx",
+        "amountToFrom": "To0xEb85...c28d",
+        "txHash": "0x44bb7cf4b4ec5007cd92f144f96c70f0cc07b7396e96b4c7adda24eb2a393118"
+      },
+      {
+        "timestamp": 1648070578,
+        "activity": "Wrap",
+        "amount": "-0.001 ETH",
+        "amountToFrom": "+0.001 ETHx",
+        "txHash": "0xef89ea15e79a66cd0b06d61b6f9458a27316b762a6a7077059c9dbdcd3103f4b"
+      }
+    ],
+    "avalanche": [],
+    "bsc": [],
+    "ropsten": [
+      {
+        "timestamp": 1621586955,
+        "activity": "Stream Cancelled",
+        "amount": "0 fUSDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0xa8f10f11faef256cb9856002f47641ab97e389552ecdce824557083ad6193687"
+      },
+      {
+        "timestamp": 1621586912,
+        "activity": "Stream Updated",
+        "amount": "25 fUSDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0x4453d707d4732aaef03a7198d5dec629b73e9dbcf17968987f30894f7851be59"
+      },
+      {
+        "timestamp": 1621586891,
+        "activity": "Send Stream",
+        "amount": "100 fUSDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0xc5d806e58909b1e7bd588e3eafa67836c829fe479f18da4ad95beafcf4682e9c"
+      },
+      {
+        "timestamp": 1621586822,
+        "activity": "Receive Transfer",
+        "amount": "100 fUSDCx",
+        "amountToFrom": "From0xB0d6...2cb4",
+        "txHash": "0x008f0d0d2698a9b63c3c99365b55ec657c9eef67c2b7b52d7f0847edfef20950"
+      },
+      {
+        "timestamp": 1621586747,
+        "activity": "Send Transfer",
+        "amount": "50 fUSDCx",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0xeb101fa234156a94aa8fa6957b3e5043bb8819341bc1cb362d6686ee9e390f35"
+      },
+      {
+        "timestamp": 1621586634,
+        "activity": "Wrap",
+        "amount": "-300 fUSDC",
+        "amountToFrom": "+300 fUSDCx",
+        "txHash": "0x17c1685979d89fc39e0088c332c80bff6d44758c98c8ca641bdae1ba37269030"
+      },
+      {
+        "timestamp": 1621586427,
+        "activity": "Wrap",
+        "amount": "-400 fDAI",
+        "amountToFrom": "+400 fDAIx",
+        "txHash": "0x9143fbd9600d0ff08e21c7da023cc5c38c06e17a9428a37aa56f670660f4977a"
+      },
+      {
+        "timestamp": 1621586264,
+        "activity": "Wrap",
+        "amount": "-500 fTUSD",
+        "amountToFrom": "+500 fTUSDx",
+        "txHash": "0x1408a21bd67cfa180e0ee41da97909abc09491510d15e544757a6a115583bf88"
+      }
+    ],
+    "rinkeby": [
+      {
+        "timestamp": 1621585637,
+        "activity": "Stream Cancelled",
+        "amount": "0 fUSDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0x05a58783e9ff4b8012969a54f62aea724085c1b0d5fbc02acb8f3811fe913d68"
+      },
+      {
+        "timestamp": 1621585622,
+        "activity": "Stream Updated",
+        "amount": "25 fUSDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0xfc48bbf12323077a77d83dbae149a2611634563e4d13b620278784c460407850"
+      },
+      {
+        "timestamp": 1621585547,
+        "activity": "Send Stream",
+        "amount": "100 fUSDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0xe264b56bd080bbd870a7e24dd3de03cd6186a165ac6024ba7fb742185aacc97f"
+      },
+      {
+        "timestamp": 1621585472,
+        "activity": "Receive Transfer",
+        "amount": "100 fUSDCx",
+        "amountToFrom": "From0xB0d6...2cb4",
+        "txHash": "0xa7c7ff0c559d9ed33b059946fe808102b64eebe8d3a31e772d229f6fca081779"
+      },
+      {
+        "timestamp": 1621585441,
+        "activity": "Send Transfer",
+        "amount": "50 fUSDCx",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0x6b5657d5ab6d41a3b39ecb3fe5228f95e3d70b7a3b6b33673387e74140b6f355"
+      },
+      {
+        "timestamp": 1621585366,
+        "activity": "Wrap",
+        "amount": "-300 fUSDC",
+        "amountToFrom": "+300 fUSDCx",
+        "txHash": "0xbb8ce65687abdea36a9969d6035bd675cfb19da7ed67bd5c09354e065190258c"
+      },
+      {
+        "timestamp": 1621585306,
+        "activity": "Wrap",
+        "amount": "-400 fDAI",
+        "amountToFrom": "+400 fDAIx",
+        "txHash": "0x268c468e1e10d80bb4013c3eef36b758252f48e02da87e78fc71ee5c430b6cc6"
+      },
+      {
+        "timestamp": 1621585246,
+        "activity": "Wrap",
+        "amount": "-500 fTUSD",
+        "amountToFrom": "+500 fTUSDx",
+        "txHash": "0x65171abc3c2083479e7de660f360fa7a72dcbb46dd769fa2c12c1d9c3a8688f4"
+      }
+    ],
+    "goerli": [
+      {
+        "timestamp": 1621588523,
+        "activity": "Stream Cancelled",
+        "amount": "0 fUSDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0x148a12ab681695e86f165796eabe6c1295b5416457842be2fe9a9d0387930b3c"
+      },
+      {
+        "timestamp": 1621588448,
+        "activity": "Stream Updated",
+        "amount": "25 fUSDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0x039a1ebadf9ae0619d32af3d5cddb36678cf7fec80a3c3491852f5ed0f71b9ba"
+      },
+      {
+        "timestamp": 1621588388,
+        "activity": "Send Stream",
+        "amount": "100 fUSDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0x04c054715203c4c74d0a222c647106728971bbc357de456305fb4ee60a60c72d"
+      },
+      {
+        "timestamp": 1621588343,
+        "activity": "Receive Transfer",
+        "amount": "100 fUSDCx",
+        "amountToFrom": "From0xB0d6...2cb4",
+        "txHash": "0x1a506a6f5077fb1cbd6834155ff92aa05c671687551b23b5f117adb79cadb1fd"
+      },
+      {
+        "timestamp": 1621587833,
+        "activity": "Send Transfer",
+        "amount": "50 fUSDCx",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0x4d562ff9ddab9e726e0b80579e6303d2c8c75f85ed57001c620877d800a7c41d"
+      },
+      {
+        "timestamp": 1621587713,
+        "activity": "Wrap",
+        "amount": "-300 fUSDC",
+        "amountToFrom": "+300 fUSDCx",
+        "txHash": "0x26da36704b4cd1af83bad70dbb307a3ae904797e7fca402d1cef72c81ba0b357"
+      },
+      {
+        "timestamp": 1621587443,
+        "activity": "Wrap",
+        "amount": "-400 fDAI",
+        "amountToFrom": "+400 fDAIx",
+        "txHash": "0xdc917935f68de09be44a36890b2c5ba316770df977289b3cfeb98fcea0266665"
+      },
+      {
+        "timestamp": 1621584784,
+        "activity": "Wrap",
+        "amount": "-500 fTUSD",
+        "amountToFrom": "+500 fTUSDx",
+        "txHash": "0x4d890b24e13fb677d7ee2a49e9b36c930bd813516e2774a2e79cb0fa326dc263"
+      }
+    ],
+    "kovan": [
+      {
+        "timestamp": 1621590616,
+        "activity": "Stream Cancelled",
+        "amount": "0 fUSDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0x93ee544e4bd142637ea4e9973b5c93edb00c15d98fc11609ce56133543ba2dde"
+      },
+      {
+        "timestamp": 1621590592,
+        "activity": "Stream Updated",
+        "amount": "25 fUSDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0x1fa1c03832b9e1ed08105b8e5f219b2eb2da328869a3bd4063fe41ab7ce72661"
+      },
+      {
+        "timestamp": 1621590540,
+        "activity": "Send Stream",
+        "amount": "100 fUSDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0x0ee9c2dd5ffe4fef4a69262bdde9d0b7a19dc5cb7fb0b11bb39ae71b5c3776cd"
+      },
+      {
+        "timestamp": 1621590500,
+        "activity": "Receive Transfer",
+        "amount": "100 fUSDCx",
+        "amountToFrom": "From0x081d...30F1",
+        "txHash": "0xb88ac8b4ee099bb4ef7c5e80735fc56106bf0ec396a639405329982e7bdfd641"
+      },
+      {
+        "timestamp": 1621590396,
+        "activity": "Send Transfer",
+        "amount": "50 fUSDCx",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0x1d3f5b38c904855b2fdf8b3b098be27c074a4f2cf65bf8f6624a84701d97aa63"
+      },
+      {
+        "timestamp": 1621590356,
+        "activity": "Wrap",
+        "amount": "-300 fUSDC",
+        "amountToFrom": "+300 fUSDCx",
+        "txHash": "0xe2008ef6c0c08466544960841893df826355b92f7415c10a7702aee6ea229fba"
+      },
+      {
+        "timestamp": 1621590288,
+        "activity": "Wrap",
+        "amount": "-400 fDAI",
+        "amountToFrom": "+400 fDAIx",
+        "txHash": "0xd53860aa508b4e59186765c2117767476e3330bcd4011a0934839d81e7e0b5fd"
+      },
+      {
+        "timestamp": 1621590232,
+        "activity": "Wrap",
+        "amount": "-500 fTUSD",
+        "amountToFrom": "+500 fTUSDx",
+        "txHash": "0xad3da4b089e062081a9e784fe555380ee7eb7c23abc5967bec9403cd8f78e061"
+      }
+    ],
+    "polygon-mumbai": [
+      {
+        "timestamp": 1621840680,
+        "activity": "Receive Transfer",
+        "amount": "2 fUSDCx",
+        "amountToFrom": "From0xB0d6...2cb4",
+        "txHash": "0xcc75867e915c801bb243317f7eea0eee5d64c601112c81100212a12690c43eb4"
+      },
+      {
+        "timestamp": 1621589412,
+        "activity": "Stream Cancelled",
+        "amount": "0 fUSDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0x4151c8335fb7263b9d36c84007618dad503e3c2ec37f6cb55eca8d4ab15991bf"
+      },
+      {
+        "timestamp": 1621589354,
+        "activity": "Stream Updated",
+        "amount": "25 fUSDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0x446006fcc6392752a841ce83107ba04b90ac0c33d0e5a864533d757378fe07f7"
+      },
+      {
+        "timestamp": 1621589312,
+        "activity": "Send Stream",
+        "amount": "100 fUSDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0xd551e29731501f3cc91532e4a51566110f3e682ed4892aade54b651f1262e7cc"
+      },
+      {
+        "timestamp": 1621589286,
+        "activity": "Receive Transfer",
+        "amount": "100 fUSDCx",
+        "amountToFrom": "From0xB0d6...2cb4",
+        "txHash": "0xb1926c4c4c1808d664c86ec69aeb9b94fce2763c20b690b2bc4e98977d1beaa6"
+      },
+      {
+        "timestamp": 1621589146,
+        "activity": "Send Transfer",
+        "amount": "50 fUSDCx",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0xc806c2656fbe0d93f3ce41994a367fbda1e545f872a56f94a678c8e0dd1af7c4"
+      },
+      {
+        "timestamp": 1621588938,
+        "activity": "Wrap",
+        "amount": "-300 fUSDC",
+        "amountToFrom": "+300 fUSDCx",
+        "txHash": "0xcae71e7133e38a58fc2826cace6e612dff380459d728e047466bf2df58920f0d"
+      },
+      {
+        "timestamp": 1621588894,
+        "activity": "Wrap",
+        "amount": "-400 fDAI",
+        "amountToFrom": "+400 fDAIx",
+        "txHash": "0xdcba0515a80ce6eb8cd203787a35c79b09bb515963c11f66e4a39c6ea1e8ea16"
+      },
+      {
+        "timestamp": 1621588840,
+        "activity": "Wrap",
+        "amount": "-500 fTUSD",
+        "amountToFrom": "+500 fTUSDx",
+        "txHash": "0x647c9453a9fd1694734e13918bcd8bd59725bf4e7cb6eecd970f2f24a0e2b37a"
+      }
+    ],
+    "arbitrum-rinkeby": [
+      {
+        "timestamp": 1640000984,
+        "activity": "Wrap",
+        "amount": "-200 fDAI",
+        "amountToFrom": "+200 fDAIx",
+        "txHash": "0xa6b363e61ec88206520f299ee456520872dd0a4892dea19489bf2ed134179d2a"
+      },
+      {
+        "timestamp": 1640000864,
+        "activity": "Stream Cancelled",
+        "amount": "0 fUSDCx/mo",
+        "amountToFrom": "To0x618a...DE40",
+        "txHash": "0x455d3fffdbf4a1d4e0f8c218bcd8057b18e09dda70f9abd260820af19587766a"
+      },
+      {
+        "timestamp": 1640000864,
+        "activity": "Stream Updated",
+        "amount": "25 fUSDCx/mo",
+        "amountToFrom": "To0x618a...DE40",
+        "txHash": "0x7931f940fd7a9dddc98ca701ba1a5baa7c47ae49255cedfa1fec18a07ccb67c2"
+      },
+      {
+        "timestamp": 1640000864,
+        "activity": "Send Stream",
+        "amount": "100 fUSDCx/mo",
+        "amountToFrom": "To0x618a...DE40",
+        "txHash": "0xca9ac9d91158c1c7cc09041671f51d6c2ca8b925b649fd9091f67d73a76d87ca"
+      },
+      {
+        "timestamp": 1640000744,
+        "activity": "Receive Transfer",
+        "amount": "100 fUSDCx",
+        "amountToFrom": "From0x618a...DE40",
+        "txHash": "0x112410f2fd15c42167a96f4f8db828f83d625660c23d73a2fc4e39ccd6f29ada"
+      },
+      {
+        "timestamp": 1640000609,
+        "activity": "Send Transfer",
+        "amount": "50 fUSDCx",
+        "amountToFrom": "To0x618a...DE40",
+        "txHash": "0xe7bfa4a37d3ec4f18296983d2d970ee0ca3a86f9a629434199703621c520e453"
+      },
+      {
+        "timestamp": 1640000609,
+        "activity": "Wrap",
+        "amount": "-300 fUSDC",
+        "amountToFrom": "+300 fUSDCx",
+        "txHash": "0x09a1aaefaafe33898e233cf033501cdd6014ae24f6b47127158cbb0dfe8191c0"
+      }
+    ],
+    "optimism-kovan": [
+      {
+        "timestamp": 1640054496,
+        "activity": "Wrap",
+        "amount": "-200 fTUSD",
+        "amountToFrom": "+200 fTUSDx",
+        "txHash": "0x0763d88a296c43f89933979a48bf05bc3a64e033185feba3b189314e1439a785"
+      },
+      {
+        "timestamp": 1640054496,
+        "activity": "Stream Cancelled",
+        "amount": "0 fUSDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0xa7b91ed1a817a794cfc21364e0cf0a4af1c914e763c25baeefa714db2199f4bc"
+      },
+      {
+        "timestamp": 1640054120,
+        "activity": "Stream Updated",
+        "amount": "25 fUSDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0x9e021b9d2ada26c89da28bd972ce7f09f44370283138b6c267d7a4662d903123"
+      },
+      {
+        "timestamp": 1640054120,
+        "activity": "Send Stream",
+        "amount": "100 fUSDCx/mo",
+        "amountToFrom": "To0xF9Ce...3Ff2",
+        "txHash": "0x60bf6267effa0429a3ee20ec47ca9e2aebe2da3c20536053284e725c03b5d5b8"
+      },
+      {
+        "timestamp": 1640054120,
+        "activity": "Receive Transfer",
+        "amount": "100 fUSDCx",
+        "amountToFrom": "From0xF9Ce...3Ff2",
+        "txHash": "0xb803a9e394ef41176157793c72c1a0290616ef42187a566b01cb5c75c35ca7b8"
+      },
+      {
+        "timestamp": 1640054000,
+        "activity": "Send Transfer",
+        "amount": "50 fUSDCx",
+        "amountToFrom": "To0x618a...DE40",
+        "txHash": "0x2cef69f412476b9b0b1ae618cad72b93ef16d50168a1a44639116a6aa901b868"
+      },
+      {
+        "timestamp": 1640053832,
+        "activity": "Wrap",
+        "amount": "-200 fDAI",
+        "amountToFrom": "+200 fDAIx",
+        "txHash": "0x9c87362c4200760db443ffa43b67d0f73032389d58040b223106f7ef07097a6a"
+      },
+      {
+        "timestamp": 1640053832,
+        "activity": "Wrap",
+        "amount": "-300 fUSDC",
+        "amountToFrom": "+300 fUSDCx",
+        "txHash": "0x442443ea526900648e0a84ab9c710388cff7b0fa8ae8abc25c2fe28f9ecb33d9"
+      },
+      {
+        "timestamp": 1640053832,
+        "activity": "Wrap",
+        "amount": "-150 fTUSD",
+        "amountToFrom": "+150 fTUSDx",
+        "txHash": "0x68aadcdc36c46e35a089401769213dfe6a4eb05200de2e7feb64990468a47248"
+      }
+    ],
+    "avalanche-fuji": [
+      {
+        "timestamp": 1640048899,
+        "activity": "Wrap",
+        "amount": "-200 fDAI",
+        "amountToFrom": "+200 fDAIx",
+        "txHash": "0xdb9e093b9fa3eb3ad1b07cf329dd30c6db19fc8eb3b3abcd09b41dacf953f3f2"
+      },
+      {
+        "timestamp": 1640048856,
+        "activity": "Stream Cancelled",
+        "amount": "0 fUSDCx/mo",
+        "amountToFrom": "To0x618a...DE40",
+        "txHash": "0x57a63721c02bf91e8de44b1a287094fce7dda68caf341e68d4d4efd925b936a4"
+      },
+      {
+        "timestamp": 1640048331,
+        "activity": "Stream Updated",
+        "amount": "25 fUSDCx/mo",
+        "amountToFrom": "To0x618a...DE40",
+        "txHash": "0x97ef74ef52bb4d1baa2a063f2a069c0be0dc825d6a76160c894e37c724915880"
+      },
+      {
+        "timestamp": 1640048306,
+        "activity": "Send Stream",
+        "amount": "100 fUSDCx/mo",
+        "amountToFrom": "To0x618a...DE40",
+        "txHash": "0xce75d2ff818e2b6a0c4677fe287ee1707529580c0212a839737220ba07c1c261"
+      },
+      {
+        "timestamp": 1640048245,
+        "activity": "Receive Transfer",
+        "amount": "100 fUSDCx",
+        "amountToFrom": "From0x618a...DE40",
+        "txHash": "0x22379234b104761c01686f70b7bedee71994ae2e950b10631358332c99e35035"
+      },
+      {
+        "timestamp": 1640044894,
+        "activity": "Wrap",
+        "amount": "-150 fTUSD",
+        "amountToFrom": "+150 fTUSDx",
+        "txHash": "0xb8a4ee3b87f5d9d9593118a116ce86563c6b83e78455cedc0b13f612bf1f355b"
+      },
+      {
+        "timestamp": 1640044885,
+        "activity": "Wrap",
+        "amount": "-200 fDAI",
+        "amountToFrom": "+200 fDAIx",
+        "txHash": "0xcc55c0d6d9a5a172e9d939085302b0391d8462095f34dffb81488909078cb52a"
+      },
+      {
+        "timestamp": 1640044578,
+        "activity": "Wrap",
+        "amount": "-300 fUSDC",
+        "amountToFrom": "+300 fUSDCx",
+        "txHash": "0x62026470c923e4089b1c5ed57f25133ad1296df803afa2b4e70480b8078f460c"
+      }
+    ]
+  }
+}

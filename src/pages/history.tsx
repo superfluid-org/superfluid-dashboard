@@ -207,35 +207,37 @@ const History: NextPage = () => {
               />
 
               <Button
-                variant="outlined"
-                color="secondary"
-                size="large"
-                startIcon={<DateRangeIcon />}
-                onClick={openDatePicker}
-                sx={{
-                  [theme.breakpoints.down("md")]: {
-                    p: 1,
-                    ".MuiButton-startIcon": { m: 0 },
-                  },
-                }}
-              >
-                {!isBelowMd &&
-                  `${format(startDate, "d MMMM yyyy")} - ${format(
-                    endDate,
-                    "d MMMM yyyy"
-                  )}`}
-              </Button>
-              <DatePicker
-                anchorEl={datePickerAnchor}
-                maxDate={dateNow}
-                startDate={startDate}
-                endDate={endDate}
-                onChange={onDateRangeChange}
-                onClose={closeDatePicker}
-              />
-            </Stack>
-            <Stack direction="row" justifyContent="space-between">
-              <Button
+              data-cy={"date-picker-button"}
+              variant="outlined"
+              color="secondary"
+              size="large"
+              startIcon={<DateRangeIcon />}
+              onClick={openDatePicker}
+              sx={{
+                [theme.breakpoints.down("md")]: {
+                  p: 1,
+                  ".MuiButton-startIcon": { m: 0 },
+                },
+              }}
+            >
+              {!isBelowMd &&
+                `${format(startDate, "d MMMM yyyy")} - ${format(
+                  endDate,
+                  "d MMMM yyyy"
+                )}`}
+            </Button>
+            <DatePicker
+              anchorEl={datePickerAnchor}
+              maxDate={dateNow}
+              startDate={startDate}
+              endDate={endDate}
+              onChange={onDateRangeChange}
+              onClose={closeDatePicker}
+            />
+          </Stack>
+          <Stack direction="row" justifyContent="space-between">
+            <Button
+                data-cy={"activity-filter-button"}
                 variant="outlined"
                 color="secondary"
                 endIcon={<OpenIcon open={!!activitySelectionAnchor} />}
@@ -251,20 +253,21 @@ const History: NextPage = () => {
               />
 
               <Button
-                variant="outlined"
-                color="secondary"
-                endIcon={<OpenIcon open={!!networkSelectionAnchor} />}
-                onClick={openNetworkSelection}
-              >
-                All Networks
-              </Button>
-              <NetworkSelectionFilter
-                open={!!networkSelectionAnchor}
-                anchorEl={networkSelectionAnchor}
-                onClose={closeNetworkSelection}
-              />
-            </Stack>
+                data-cy={"network-selection-button"}
+              variant="outlined"
+              color="secondary"
+              endIcon={<OpenIcon open={!!networkSelectionAnchor} />}
+              onClick={openNetworkSelection}
+            >
+              All Networks
+            </Button>
+            <NetworkSelectionFilter
+              open={!!networkSelectionAnchor}
+              anchorEl={networkSelectionAnchor}
+              onClose={closeNetworkSelection}
+            />
           </Stack>
+        </Stack>
 
           {isLoading && <LoadingActivityGroup />}
           {!isLoading && !hasContent && (
@@ -279,10 +282,10 @@ const History: NextPage = () => {
                 },
               }}
             >
-              <Typography variant={isBelowMd ? "h5" : "h4"} textAlign="center">
+              <Typography data-cy={"no-history-title"} variant={isBelowMd ? "h5" : "h4"} textAlign="center">
                 No Activity History Available
               </Typography>
-              <Typography color="text.secondary" textAlign="center">
+              <Typography data-cy={"no-history-text"} color="text.secondary" textAlign="center">
                 Transactions including wrapping tokens and sending streams will
                 appear here.
               </Typography>

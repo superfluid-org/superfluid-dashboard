@@ -1,6 +1,5 @@
 import { Box, styled, Toolbar, useMediaQuery, useTheme } from "@mui/material";
 import { FC } from "react";
-import IntercomButton from "../intercom/IntercomButton";
 import TransactionDrawer, {
   transactionDrawerWidth,
 } from "../transactionDrawer/TransactionDrawer";
@@ -57,7 +56,6 @@ const Layout: FC = ({ children }) => {
         {/* <TransactionSnackbar /> */}
         {children}
       </Main>
-      <IntercomButton />
       <TransactionDrawer />
     </Box>
   );

@@ -3,9 +3,9 @@ import { AppProps } from "next/app";
 import Head from "next/head";
 import { useEffect } from "react";
 import { hotjar } from "react-hotjar";
-import { IntercomProvider } from "react-use-intercom";
 import { AutoConnectProvider } from "../features/autoConnect/AutoConnect";
 import { ImpersonationProvider } from "../features/impersonation/ImpersonationContext";
+import IntercomProvider from "../features/intercom/IntercomProvider";
 import Layout from "../features/layout/Layout";
 import { LayoutContextProvider } from "../features/layout/LayoutContext";
 import { ActiveNetworksProvider } from "../features/network/ActiveNetworksContext";
@@ -22,6 +22,7 @@ import WagmiManager, {
   RainbowKitManager,
 } from "../features/wallet/WagmiManager";
 import config from "../utils/config";
+import { IsCypress } from "../utils/SSRUtils";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -35,7 +36,7 @@ export default function MyApp(props: MyAppProps) {
 
   useEffect(() => {
     const { id, sv } = config.hotjar;
-    if (id && sv) {
+    if (!IsCypress && id && sv) {
       hotjar.initialize(Number(id), Number(sv));
     } else {
       console.warn("Hotjar not initialized.");
@@ -62,10 +63,7 @@ export default function MyApp(props: MyAppProps) {
                               <VisibleAddressProvider>
                                 <TransactionRestorationContextProvider>
                                   <LayoutContextProvider>
-                                    <IntercomProvider
-                                      appId={config.intercom.appId}
-                                      initializeDelay={250}
-                                    >
+                                    <IntercomProvider>
                                       <Layout>
                                         <ReduxPersistGate>
                                           <Component

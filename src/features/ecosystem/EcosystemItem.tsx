@@ -50,6 +50,7 @@ const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
   return (
     <Link passHref href={app.href}>
       <Paper
+        data-cy={`${app.name}-section`}
         elevation={1}
         component={MuiLink}
         target="_blank"
@@ -83,12 +84,12 @@ const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
             alt="Twitter logo"
           />
 
-          <Typography variant={isBelowMd ? "h5" : "h4"} flex={1}>
+          <Typography variant={isBelowMd ? "h5" : "h4"} flex={1} data-cy={"app-name"}>
             {app.name}
           </Typography>
           <LaunchRoundedIcon sx={{ fontSize: "20px" }} />
         </Stack>
-        <Typography variant={isBelowMd ? "body2" : "body1"} component="p">
+        <Typography data-cy={"app-description"} variant={isBelowMd ? "body2" : "body1"} component="p">
           {app.description}
         </Typography>
         <Stack flex={1} justifyContent="flex-end">
@@ -99,6 +100,7 @@ const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
           >
             {app.comingSoon ? (
               <Chip
+                data-cy={"app-comming-soon"}
                 color="info"
                 size="small"
                 label="Coming Soon"

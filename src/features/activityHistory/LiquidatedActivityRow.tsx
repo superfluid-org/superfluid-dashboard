@@ -52,11 +52,12 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
   );
 
   return (
-    <TableRow>
+    <TableRow data-cy={`${network.slugName}-row`}>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
           <ActivityIcon icon={PriorityHighIcon} />
           <ListItemText
+            data-cy={"activity"}
             primary={"Liquidated"}
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
@@ -81,6 +82,7 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
                 />
               </ListItemAvatar>
               <ListItemText
+                data-cy={"amount"}
                 primary={"-"}
                 /**
                  * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
@@ -107,6 +109,7 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
                 />
               </ListItemAvatar>
               <ListItemText
+                data-cy={"amountToFrom"}
                 primary={isOutgoing ? "To" : "From"}
                 secondary={
                   <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
