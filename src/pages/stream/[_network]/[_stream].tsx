@@ -622,7 +622,7 @@ const StreamPageContent: FC<{
                   >
                     <CopyTooltip
                       content={streamCreationEvent.transactionHash}
-                      copyText="Copy address"
+                      copyText="Copy transaction hash"
                     />
 
                     <Tooltip

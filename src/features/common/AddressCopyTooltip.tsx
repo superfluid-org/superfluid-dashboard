@@ -69,10 +69,10 @@ const AddressCopyTooltip: FC<AddressCopyTooltipProps> = ({
           onClick={!isCopied ? copyAddress : undefined}
         >
           {isCopied ? (
-            <Typography variant="caption">Copied to clipboard!</Typography>
+            <Typography variant="tooltip">Copied to clipboard!</Typography>
           ) : (
             <>
-              <Typography variant="caption">{checksumAddress}</Typography>
+              <Typography variant="tooltip">{checksumAddress}</Typography>
               <ContentCopyRoundedIcon sx={{ fontSize: "16px" }} />
             </>
           )}
