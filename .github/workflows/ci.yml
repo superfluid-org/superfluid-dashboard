@@ -20,9 +20,6 @@ jobs:
     needs: ["prepare"]
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    container:
-      image: cypress/browsers:node16.5.0-chrome97-ff96
-      options: --user 1001
     steps:
       - uses: actions/checkout@v2
 
