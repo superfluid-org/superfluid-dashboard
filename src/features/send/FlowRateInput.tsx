@@ -17,6 +17,8 @@ export enum UnitOfTime {
   Month = 2592000,
 }
 
+const foo = Object.values(UnitOfTime).map(x => Number(x) as UnitOfTime);
+
 const unitOfTimeList = [
   UnitOfTime.Second,
   UnitOfTime.Minute,

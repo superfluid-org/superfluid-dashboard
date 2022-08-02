@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
-import { bool, number, object, ObjectSchema, string } from "yup";
+import { bool, mixed, number, object, ObjectSchema, string } from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { rpcApi } from "../redux/store";
 import {
@@ -16,11 +16,12 @@ import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@etherspr
 import { formatEther } from "ethers/lib/utils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 import { BigNumber } from "ethers";
+import { isNumber, xor } from "lodash";
 
 export type ValidStreamingForm = {
   data: {
-    token: SendStreamRestoration["token"];
-    receiver: string;
+    tokenAddress: string;
+    receiverAddress: string;
     flowRate: {
       amountEther: string;
       unitOfTime: UnitOfTime;
@@ -36,8 +37,8 @@ const defaultFlowRate = {
 
 export type PartialStreamingForm = {
   data: {
-    token: ValidStreamingForm["data"]["token"] | null;
-    receiver: ValidStreamingForm["data"]["receiver"] | null;
+    tokenAddress: ValidStreamingForm["data"]["tokenAddress"] | null;
+    receiverAddress: ValidStreamingForm["data"]["receiverAddress"] | null;
     flowRate: ValidStreamingForm["data"]["flowRate"] | typeof defaultFlowRate;
     understandLiquidationRisk: boolean;
   };
@@ -57,21 +58,19 @@ const StreamingFormProvider: FC<{
       object().test(async (values, context) => {
         const primaryValidation: ObjectSchema<ValidStreamingForm> = object({
           data: object({
-            token: object({
-              type: number().required(),
-              address: string().required().test(testAddress()),
-              name: string().required(),
-              symbol: string().required(),
-              decimals: number().required()
-            }).required(),
-            receiver: string().required().test(testAddress()).required(),
+            tokenAddress: string().required().test(testAddress()),
+            receiverAddress: string().required().test(testAddress()),
             flowRate: object({
               amountEther: string()
                 .required()
                 .test(testEtherAmount({ notNegative: true, notZero: true })),
-              unitOfTime: number().required(),
+              unitOfTime: mixed<UnitOfTime>()
+                .required()
+                .test(
+                  (x) => Object.values(UnitOfTime).includes(x as UnitOfTime) // To check whether value is from an enum: https://github.com/microsoft/TypeScript/issues/33200#issuecomment-527670779
+                ),
             }),
-            understandLiquidationRisk: bool().isTrue().required(),
+            understandLiquidationRisk: bool().required().isTrue(),
           }),
         });
 
@@ -94,8 +93,7 @@ const StreamingFormProvider: FC<{
           });
         };
 
-        const tokenAddress = validForm.data.token.address;
-        const receiverAddress = validForm.data.receiver;
+        const { tokenAddress, receiverAddress } = validForm.data;
 
         if (
           accountAddress &&
@@ -168,8 +166,8 @@ const StreamingFormProvider: FC<{
     defaultValues: {
       data: {
         flowRate: defaultFlowRate,
-        receiver: null,
-        token: null,
+        receiverAddress: null,
+        tokenAddress: null,
         understandLiquidationRisk: false,
       },
     },
@@ -190,8 +188,16 @@ const StreamingFormProvider: FC<{
         },
         formRestorationOptions
       );
-      setValue("data.receiver", restoration.receiver, formRestorationOptions);
-      setValue("data.token", restoration.token, formRestorationOptions);
+      setValue(
+        "data.receiverAddress",
+        restoration.receiverAddress,
+        formRestorationOptions
+      );
+      setValue(
+        "data.tokenAddress",
+        restoration.tokenAddress,
+        formRestorationOptions
+      );
       setHasRestored(true);
     }
   }, [restoration]);

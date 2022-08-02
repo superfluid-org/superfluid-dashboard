@@ -26,6 +26,8 @@ export const TransactionListItemRestoreButton: FC<{
 
   switch (transactionRestoration.type) {
     case RestorationType.Downgrade:
+    case RestorationType.ModifyStream:
+    case RestorationType.SendStream:
     case RestorationType.Upgrade:
       if (transactionRestoration.version !== 2) return null;
   }
