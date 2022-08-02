@@ -489,6 +489,20 @@ export default memo(function SendCard() {
                   }
 
                   const { data: formData } = getValues() as ValidStreamingForm;
+
+                  const restoration: ModifyStreamRestoration = {
+                    version: 2,
+                    type: RestorationType.ModifyStream,
+                    chainId: network.id,
+                    tokenAddress: formData.tokenAddress,
+                    receiverAddress: formData.receiverAddress,
+                    flowRate: {
+                      amountWei: parseEther(
+                        formData.flowRate.amountEther
+                      ).toString(),
+                      unitOfTime: formData.flowRate.unitOfTime,
+                    },
+                  };
                   flowUpdateTrigger({
                     signer,
                     chainId: network.id,
@@ -504,18 +518,7 @@ export default memo(function SendCard() {
                     userDataBytes: undefined,
                     waitForConfirmation: false,
                     transactionExtraData: {
-                      restoration: {
-                        type: RestorationType.ModifyStream,
-                        chainId: network.id,
-                        tokenAddress: formData.tokenAddress,
-                        receiverAddress: formData.receiverAddress,
-                        flowRate: {
-                          amountWei: parseEther(
-                            formData.flowRate.amountEther
-                          ).toString(),
-                          unitOfTime: formData.flowRate.unitOfTime,
-                        },
-                      } as ModifyStreamRestoration,
+                      restoration: restoration,
                     },
                     overrides: await getTransactionOverrides(network),
                   }).unwrap();

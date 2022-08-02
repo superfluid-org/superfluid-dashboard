@@ -6,7 +6,7 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import { useLayoutContext } from "../layout/LayoutContext";
 import {
   RestorationType,
-  TransactionRestoration,
+  TransactionRestorations,
 } from "../transactionRestoration/transactionRestorations";
 
 export const TransactionListItemRestoreButton: FC<{
@@ -22,7 +22,7 @@ export const TransactionListItemRestoreButton: FC<{
   }
 
   const transactionRestoration = transaction?.extraData
-    ?.restoration as TransactionRestoration;
+    ?.restoration as TransactionRestorations;
 
   switch (transactionRestoration.type) {
     case RestorationType.Downgrade:

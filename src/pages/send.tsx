@@ -1,31 +1,31 @@
 import { Box, Container, useTheme } from "@mui/material";
+import { formatEther } from "ethers/lib/utils";
 import { NextPage } from "next";
 import SEO from "../components/SEO/SEO";
 import SendCard from "../features/send/SendCard";
-import StreamingFormProvider from "../features/send/StreamingFormProvider";
+import StreamingFormProvider, {
+  StreamingFormProviderProps,
+} from "../features/send/StreamingFormProvider";
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
-import {
-  RestorationType,
-  SendStreamRestoration,
-  ModifyStreamRestoration,
-} from "../features/transactionRestoration/transactionRestorations";
+import { RestorationType } from "../features/transactionRestoration/transactionRestorations";
 
 const Send: NextPage = () => {
   const theme = useTheme();
   const { restoration, onRestored } = useTransactionRestorationContext();
 
-  let streamingRestoration:
-    | SendStreamRestoration
-    | ModifyStreamRestoration
-    | undefined;
-
+  let initialFormValues: StreamingFormProviderProps["initialFormValues"] = {};
   if (restoration) {
     switch (restoration.type) {
       case RestorationType.SendStream:
-        streamingRestoration = restoration as SendStreamRestoration;
-        break;
       case RestorationType.ModifyStream:
-        streamingRestoration = restoration as ModifyStreamRestoration;
+        initialFormValues = {
+          flowRate: {
+            amountEther: formatEther(restoration.flowRate.amountWei),
+            unitOfTime: restoration.flowRate.unitOfTime,
+          },
+          receiverAddress: restoration.receiverAddress,
+          tokenAddress: restoration.tokenAddress,
+        };
         break;
     }
     onRestored();
@@ -45,7 +45,7 @@ const Send: NextPage = () => {
             },
           }}
         >
-          <StreamingFormProvider restoration={streamingRestoration}>
+          <StreamingFormProvider initialFormValues={initialFormValues}>
             <SendCard />
           </StreamingFormProvider>
         </Box>
