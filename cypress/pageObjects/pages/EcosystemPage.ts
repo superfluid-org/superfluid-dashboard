@@ -29,6 +29,7 @@ export class EcosystemPage extends BasePage {
             this.hasText(appSection + APP_NAMES,app.name)
             this.hasText(appSection + APP_DESCRIPTIONS , app.description)
             this.hasAttributeWithValue(appSection,"href",app.href)
+            this.hasAttributeWithValue(appSection,"target","_blank")
             if(app.comingSoon) {
                 this.isVisible(appSection + COMMING_SOON_CHIPS)
                 this.hasText(appSection + COMMING_SOON_CHIPS,"Coming Soon")
@@ -42,5 +43,6 @@ export class EcosystemPage extends BasePage {
     static validateAddAnAppButton() {
         this.isVisible(ADD_AN_APP_BUTTON)
         this.hasAttributeWithValue(ADD_AN_APP_BUTTON,"href", ADD_APP_LINK)
+        this.hasAttributeWithValue(ADD_AN_APP_BUTTON,"target","_blank")
     }
 }
