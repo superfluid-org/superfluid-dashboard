@@ -12,8 +12,8 @@ import {
 } from "../transactionRestoration/transactionRestorations";
 import { getNetworkDefaultTokenPair } from "../network/networks";
 import { isString } from "lodash";
-import { rpcApi, subgraphApi } from "../redux/store";
-import { formatEther, formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
+import { rpcApi } from "../redux/store";
+import { formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
 import { useAccount } from "wagmi";
 import { BigNumber } from "ethers";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
@@ -24,6 +24,7 @@ import {
 } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 import { useTokenPairsQuery } from "./useTokenPairsQuery";
+import { dateNowSeconds } from "../../utils/dateUtils";
 
 export type WrappingForm = {
   type: RestorationType.Downgrade | RestorationType.Upgrade;
@@ -184,15 +185,13 @@ The chain ID was: ${network.id}`);
               const currentBalanceBigNumber = calculateCurrentBalance({
                 flowRateWei: flowRateBigNumber,
                 balanceWei: BigNumber.from(realtimeBalance.balance),
-                balanceTimestampMs: realtimeBalance.balanceTimestamp,
+                balanceTimestamp: realtimeBalance.balanceTimestamp,
               });
               const balanceAfterWrappingBigNumber = currentBalanceBigNumber.sub(
                 parseEther(validForm.data.amountDecimal) // Always "ether" when downgrading. No need to worry about decimals for super tokens.
               );
 
-              const amountBigNumber = parseEther(
-                validForm.data.amountDecimal
-              );
+              const amountBigNumber = parseEther(validForm.data.amountDecimal);
               const isWrappingIntoNegative =
                 currentBalanceBigNumber.lt(amountBigNumber);
               if (isWrappingIntoNegative) {
@@ -212,14 +211,17 @@ The chain ID was: ${network.id}`);
                     .toNumber()
                 );
 
-                const minimumStreamTimeInSeconds = getMinimumStreamTimeInMinutes(network.bufferTimeInMinutes) * 60;
-                const secondsToCritical = Math.floor(
-                  (dateWhenBalanceCritical.getTime() - Date.now()) / 1000
-                );
-                
+                const minimumStreamTimeInSeconds =
+                  getMinimumStreamTimeInMinutes(network.bufferTimeInMinutes) *
+                  60;
+                const secondsToCritical =
+                  dateWhenBalanceCritical.getTime() / 1000 - dateNowSeconds();
+
                 if (secondsToCritical < minimumStreamTimeInSeconds) {
                   handleHigherOrderValidationError({
-                    message: `You need to leave enough balance to stream for ${minimumStreamTimeInSeconds / 3600} hours.`,
+                    message: `You need to leave enough balance to stream for ${
+                      minimumStreamTimeInSeconds / 3600
+                    } hours.`,
                   });
                 }
               }

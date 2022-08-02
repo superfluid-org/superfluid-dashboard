@@ -170,7 +170,7 @@ const TokenPageContent: FC<{
 
   const {
     balance = balanceUntilUpdatedAt,
-    balanceTimestamp = updatedAtTimestamp,
+    balanceTimestamp: balanceTimestamp = updatedAtTimestamp,
     flowRate = totalNetFlowRate,
   } = realTimeBalanceQuery.currentData || {};
 

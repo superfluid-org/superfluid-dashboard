@@ -17,6 +17,7 @@ import { formatEther } from "ethers/lib/utils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 import { BigNumber } from "ethers";
 import { getMinimumStreamTimeInMinutes } from "../../utils/tokenUtils";
+import { dateNowSeconds } from "../../utils/dateUtils";
 
 export type ValidStreamingForm = {
   data: {
@@ -63,7 +64,7 @@ const StreamingFormProvider: FC<{
               address: string().required().test(testAddress()),
               name: string().required(),
               symbol: string().required(),
-              decimals: number().required()
+              decimals: number().required(),
             }).required(),
             receiver: string().required().test(testAddress()).required(),
             flowRate: object({
@@ -137,14 +138,15 @@ const StreamingFormProvider: FC<{
             });
 
           if (newDateWhenBalanceCritical) {
-            const minimumStreamTimeInSeconds = getMinimumStreamTimeInMinutes(network.bufferTimeInMinutes) * 60;
-            const secondsToCritical = Math.round(
-              (newDateWhenBalanceCritical.getTime() - Date.now()) / 1000
-            );
-            
+            const minimumStreamTimeInSeconds =
+              getMinimumStreamTimeInMinutes(network.bufferTimeInMinutes) * 60;
+            const secondsToCritical = newDateWhenBalanceCritical.getTime() / 1000 - dateNowSeconds();
+
             if (secondsToCritical < minimumStreamTimeInSeconds) {
               handleHigherOrderValidationError({
-                message: `You need to leave enough balance to stream for ${minimumStreamTimeInSeconds / 3600} hours.`,
+                message: `You need to leave enough balance to stream for ${
+                  minimumStreamTimeInSeconds / 3600
+                } hours.`,
               });
             }
           }

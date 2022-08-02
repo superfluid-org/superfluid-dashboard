@@ -187,7 +187,7 @@ export const WrapTabDowngrade: FC = () => {
                       const currentBalanceBigNumber = calculateCurrentBalance({
                         flowRateWei: realtimeBalanceQuery.currentData!.flowRate,
                         balanceWei: realtimeBalanceQuery.currentData!.balance,
-                        balanceTimestampMs:
+                        balanceTimestamp:
                           realtimeBalanceQuery.currentData!.balanceTimestamp,
                       });
                       return onChange(formatEther(currentBalanceBigNumber));

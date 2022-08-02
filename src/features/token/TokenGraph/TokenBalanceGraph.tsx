@@ -19,7 +19,7 @@ import {
   buildDefaultDatasetConf,
   DEFAULT_LINE_CHART_OPTIONS,
 } from "../../../utils/chartUtils";
-import { getDatesBetween } from "../../../utils/dateUtils";
+import { dateNowSeconds, getDatesBetween } from "../../../utils/dateUtils";
 import { Network } from "../../network/networks";
 import { TokenBalance } from "../../redux/endpoints/adHocSubgraphEndpoints";
 import { rpcApi, subgraphApi } from "../../redux/store";
@@ -126,7 +126,7 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
           lastTokenBalance: {
             balance: "0",
             totalNetFlowRate: "0",
-            timestamp: Math.floor(Date.now() / 1000),
+            timestamp: dateNowSeconds(),
           } as TokenBalance,
         }
       ).data,
@@ -173,7 +173,7 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
 
       const smallestDate =
         minBy("timestamp", tokenBalances)?.timestamp ||
-        Math.floor(Date.now() / 1000);
+        dateNowSeconds();
 
       return mapDatesWithData(
         tokenBalances,
@@ -191,7 +191,7 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
     () => {
       if (!realTimeBalanceQuery.data) return [];
 
-      const { balance, balanceTimestamp, flowRate } = realTimeBalanceQuery.data;
+      const { balance, balanceTimestamp: balanceTimestamp, flowRate } = realTimeBalanceQuery.data;
       const balanceBigNumber = BigNumber.from(balance);
 
       return getDatesBetween(

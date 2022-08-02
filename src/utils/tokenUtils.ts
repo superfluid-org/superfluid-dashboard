@@ -1,8 +1,9 @@
 import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
 import { BigNumber, BigNumberish } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
+import { dateNowSeconds } from "./dateUtils";
 
-export const MAX_SAFE_SECONDS = BigNumber.from(8640000000000); //In seconds, https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#the_ecmascript_epoch_and_timestamps
+export const MAX_SAFE_SECONDS = BigNumber.from(8_640_000_000_000); // In seconds, https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#the_ecmascript_epoch_and_timestamps
 const BIG_NUMBER_ZERO = BigNumber.from(0);
 
 export const parseEtherOrZero = (etherString: string): BigNumber => {
@@ -88,18 +89,21 @@ export function calculateBuffer(
 export const calculateCurrentBalance = ({
   flowRateWei,
   balanceWei,
-  balanceTimestampMs,
+  balanceTimestamp,
 }: {
   flowRateWei: BigNumberish;
   balanceWei: BigNumberish;
-  balanceTimestampMs: number;
+  balanceTimestamp: number;
 }): BigNumber =>
-  BigNumber.from(balanceWei).add(
-    BigNumber.from(Date.now())
-      .sub(balanceTimestampMs * 1000)
-      .mul(BigNumber.from(flowRateWei))
-      .div(1000)
-  );
+  {
+    const amountStreamedSinceUpdate = BigNumber.from(dateNowSeconds()).sub(balanceTimestamp).mul(flowRateWei)
+
+    console.log({
+      dateNowSeconds: dateNowSeconds(),
+      balanceTimestamp: balanceTimestamp
+    })
+    return BigNumber.from(balanceWei).add(amountStreamedSinceUpdate);
+  };
 
 export const getMinimumStreamTimeInMinutes = (bufferTimeInMinutes: number) =>
   bufferTimeInMinutes * 6;

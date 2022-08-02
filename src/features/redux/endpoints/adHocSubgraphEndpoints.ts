@@ -5,6 +5,7 @@ import {
 import { ethers } from "ethers";
 import { gql } from "graphql-request";
 import { uniq } from "lodash";
+import { dateNowSeconds } from "../../../utils/dateUtils";
 import { Network, networks, networksByChainId } from "../../network/networks";
 import {
   SuperTokenMinimal,
@@ -59,7 +60,7 @@ export const adHocSubgraphEndpoints = {
         accountAddress,
         tokenAddress,
         timestamp_gte = 0,
-        timestamp_lte = Math.floor(Date.now() / 1000),
+        timestamp_lte = dateNowSeconds(),
       }) => {
         const client = await getSubgraphClient(chainId);
         const query = gql`
