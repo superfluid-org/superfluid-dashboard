@@ -10,7 +10,10 @@ import {
   UnitOfTime,
 } from "./FlowRateInput";
 
-const calculateBufferAmount = (network: Network, flowRateWei: FlowRateWei): BigNumber => {
+const calculateBufferAmount = (
+  network: Network,
+  flowRateWei: FlowRateWei
+): BigNumber => {
   const bufferAmount = calculateTotalAmountWei(flowRateWei)
     .mul(network.bufferTimeInMinutes)
     .mul(60);
@@ -27,19 +30,13 @@ export default function useCalculateBufferInfo() {
       activeFlow: Web3FlowInfo | null,
       flowRate: FlowRateWei
     ) => {
-      const newBufferAmount = calculateBufferAmount(
-        network,
-        flowRate
-      );
+      const newBufferAmount = calculateBufferAmount(network, flowRate);
 
       const oldBufferAmount = activeFlow
-        ? calculateBufferAmount(
-            network,
-            {
-              amountWei: activeFlow.flowRateWei,
-              unitOfTime: UnitOfTime.Second,
-            },
-          )
+        ? calculateBufferAmount(network, {
+            amountWei: activeFlow.flowRateWei,
+            unitOfTime: UnitOfTime.Second,
+          })
         : BigNumber.from(0);
 
       const bufferDelta = newBufferAmount.sub(oldBufferAmount);
@@ -67,9 +64,9 @@ export default function useCalculateBufferInfo() {
           ? newTotalFlowRate.isNegative()
             ? new Date(
                 calculateMaybeCriticalAtTimestamp({
-                  balanceUntilUpdatedAtWei: realtimeBalance.balance.toString(),
+                  balanceUntilUpdatedAtWei: realtimeBalance.balance,
                   updatedAtTimestamp: realtimeBalance.balanceTimestamp,
-                  totalNetFlowRateWei: newTotalFlowRate.toString(),
+                  totalNetFlowRateWei: newTotalFlowRate,
                 })
                   .mul(1000)
                   .toNumber()
@@ -82,11 +79,11 @@ export default function useCalculateBufferInfo() {
           ? newTotalFlowRate.isNegative()
             ? new Date(
                 calculateMaybeCriticalAtTimestamp({
-                  balanceUntilUpdatedAtWei: realtimeBalance.balance.toString(),
+                  balanceUntilUpdatedAtWei: realtimeBalance.balance,
                   updatedAtTimestamp: realtimeBalance.balanceTimestamp,
-                  totalNetFlowRateWei: BigNumber.from(realtimeBalance.flowRate)
-                    .sub(flowRateDelta)
-                    .toString(),
+                  totalNetFlowRateWei: BigNumber.from(
+                    realtimeBalance.flowRate
+                  ).sub(flowRateDelta),
                 })
                   .mul(1000)
                   .toNumber()
@@ -103,7 +100,7 @@ export default function useCalculateBufferInfo() {
         flowRateDelta,
         newTotalFlowRate,
         oldDateWhenBalanceCritical,
-        newDateWhenBalanceCritical,
+        newDateWhenBalanceCritical
       };
     },
     []

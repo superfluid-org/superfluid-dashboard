@@ -7,7 +7,7 @@ import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import { useAppSelector } from "../features/redux/store";
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
 import {
-  TransactionRestoration,
+  TransactionRestorations,
   RestorationType,
 } from "../features/transactionRestoration/transactionRestorations";
 
@@ -29,7 +29,7 @@ const RestoreTransaction: NextPage = () => {
     }
 
     const transactionRestoration = transaction?.extraData
-      ?.restoration as TransactionRestoration;
+      ?.restoration as TransactionRestorations;
 
     if (transactionRestoration) {
       switch (transactionRestoration.type) {

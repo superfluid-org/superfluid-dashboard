@@ -7,9 +7,11 @@ import { FC, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
 import { object, ObjectSchema, string } from "yup";
+import { dateNowSeconds } from "../../utils/dateUtils";
 import {
   calculateCurrentBalance,
   calculateMaybeCriticalAtTimestamp,
+  getMinimumStreamTimeInMinutes,
 } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -186,7 +188,7 @@ The chain ID was: ${network.id}`);
               const currentBalanceBigNumber = calculateCurrentBalance({
                 flowRateWei: flowRateBigNumber,
                 balanceWei: BigNumber.from(realtimeBalance.balance),
-                balanceTimestampMs: realtimeBalance.balanceTimestamp,
+                balanceTimestamp: realtimeBalance.balanceTimestamp,
               });
               const balanceAfterWrappingBigNumber = currentBalanceBigNumber.sub(
                 parseEther(validForm.data.amountDecimal) // Always "ether" when downgrading. No need to worry about decimals for super tokens.
@@ -212,14 +214,18 @@ The chain ID was: ${network.id}`);
                     .toNumber()
                 );
 
-                const minimumStreamTime = network.bufferTimeInMinutes * 60 * 2;
-                const secondsToCritical = Math.floor(
-                  (dateWhenBalanceCritical.getTime() - Date.now()) / 1000
-                );
+                const minimumStreamTimeInSeconds =
+                  getMinimumStreamTimeInMinutes(network.bufferTimeInMinutes) *
+                  60;
+                const secondsToCritical =
+                  dateWhenBalanceCritical.getTime() / 1000 - dateNowSeconds();
 
-                if (secondsToCritical < minimumStreamTime) {
+                if (secondsToCritical < minimumStreamTimeInSeconds) {
+                  // NOTE: "secondsToCritical" might be off about 1 minute because of RTK-query cache for the balance query
                   handleHigherOrderValidationError({
-                    message: `You need to leave enough balance to stream for ${minimumStreamTime} seconds.`,
+                    message: `You need to leave enough balance to stream for ${
+                      minimumStreamTimeInSeconds / 3600
+                    } hours.`,
                   });
                 }
               }

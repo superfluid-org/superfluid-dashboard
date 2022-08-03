@@ -1,4 +1,5 @@
 import { createEntityAdapter, createSlice, isAllOf } from "@reduxjs/toolkit";
+import { dateNowSeconds } from "../../utils/dateUtils";
 import { rpcApi, transactionTracker } from "../redux/store";
 import { PendingOutgoingStream } from "./PendingOutgoingStream";
 import { PendingStreamCancellation } from "./PendingStreamCancellation";
@@ -37,7 +38,7 @@ export const pendingUpdateSlice = createSlice({
             tokenAddress: superTokenAddress,
             id: transactionHash,
             pendingType: "FlowDelete",
-            timestampMs: Math.floor(Date.now() / 1000),
+            timestampMs: dateNowSeconds(),
           };
           adapter.addOne(state, pendingUpdate);
         }
@@ -54,7 +55,7 @@ export const pendingUpdateSlice = createSlice({
             flowRateWei,
           } = action.meta.arg.originalArgs;
           if (senderAddress) {
-            const timestampMs = Math.floor(Date.now() / 1000);
+            const timestampMs = dateNowSeconds();
             const pendingUpdate: PendingOutgoingStream = {
               pendingType: "FlowCreate",
               chainId,

@@ -1,7 +1,14 @@
+import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import { Stack, Tooltip, Typography } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import { FC, ReactElement, useMemo, useState } from "react";
-import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
+import {
+  FC,
+  MouseEvent,
+  ReactElement,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import copyToClipboard from "../../utils/copyToClipboard";
 import { getAddress } from "../../utils/memoizedEthersUtils";
 
@@ -14,10 +21,14 @@ const AddressCopyTooltip: FC<AddressCopyTooltipProps> = ({
   address,
   children,
 }) => {
+  const addressWrapperRef = useRef<HTMLDivElement>(null);
   const [isCopied, setIsCopied] = useState(false);
+  const [tooltipWidth, setTooltipWidth] = useState(0);
   const checksumAddress = getAddress(address);
 
-  const copyAddress = () => {
+  const copyAddress = (e: MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
     // Asynchronously call copyTextToClipboard
     copyToClipboard(checksumAddress)
       .then(() => {
@@ -32,27 +43,45 @@ const AddressCopyTooltip: FC<AddressCopyTooltipProps> = ({
       });
   };
 
+  const onOpen = () =>
+    setTooltipWidth(addressWrapperRef.current?.clientWidth || 0);
+
+  const onClose = () => {
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 300);
+  };
+
   return (
     <Tooltip
       arrow
       title={
-        isCopied ? (
-          <Typography variant="body1">Copied to clipboard!</Typography>
-        ) : (
-          <Stack
-            direction="row"
-            alignItems="center"
-            gap={1}
-            sx={{ cursor: "pointer" }}
-            onClick={copyAddress}
-          >
-            <Typography variant="body1">{checksumAddress}</Typography>
-            <ContentCopyRoundedIcon sx={{ fontSize: "16px" }} />
-          </Stack>
-        )
+        <Stack
+          ref={addressWrapperRef}
+          direction="row"
+          alignItems="center"
+          justifyContent="center"
+          gap={1}
+          sx={{
+            ...(tooltipWidth && { width: tooltipWidth }),
+            ...(!isCopied && { cursor: "pointer" }),
+          }}
+          onClick={!isCopied ? copyAddress : undefined}
+        >
+          {isCopied ? (
+            <Typography variant="tooltip">Copied to clipboard!</Typography>
+          ) : (
+            <>
+              <Typography variant="tooltip">{checksumAddress}</Typography>
+              <ContentCopyRoundedIcon sx={{ fontSize: "16px" }} />
+            </>
+          )}
+        </Stack>
       }
       placement="top"
       componentsProps={{ tooltip: { sx: { maxWidth: "none" } } }}
+      onOpen={onOpen}
+      onClose={onClose}
     >
       {children}
     </Tooltip>

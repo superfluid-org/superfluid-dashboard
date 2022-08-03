@@ -21,6 +21,7 @@ import { FC, memo } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import { getStreamPagePath } from "../../pages/stream/[_network]/[_stream]";
+import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { Network } from "../network/networks";
 import { PendingOutgoingStream } from "../pendingUpdates/PendingOutgoingStream";
 import { UnitOfTime } from "../send/FlowRateInput";
@@ -134,9 +135,11 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
             }}
             BlockiesProps={{ size: 8, scale: 3 }}
           />
-          <Typography data-cy={"sender-receiver-address"} variant="h7">
-            <AddressName address={isOutgoing ? receiver : sender} />
-          </Typography>
+          <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
+            <Typography data-cy={"sender-receiver-address"} variant="h7">
+              <AddressName address={isOutgoing ? receiver : sender} />
+            </Typography>
+          </AddressCopyTooltip>
         </Stack>
       </TableCell>
 
