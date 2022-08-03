@@ -65,7 +65,7 @@ jobs:
           env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
-          CYPRESS_baseUrl: ${{ steps.waitForDeployment.outputs.url }}
+          CYPRESS_baseUrl: "https://deploy-preview-179--superfluid-dashboard.netlify.app"
           GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
 
 
@@ -101,6 +101,6 @@ jobs:
           env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
-          CYPRESS_baseUrl: ${{ steps.waitForDeployment.outputs.url }}
+          CYPRESS_baseUrl: "https://deploy-preview-179--superfluid-dashboard.netlify.app"
           GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
 
