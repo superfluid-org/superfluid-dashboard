@@ -54,7 +54,7 @@ jobs:
       - name: Cypress Chrome tests
         uses: cypress-io/github-action@v3
         with:
-          install: false
+          install: true
           browser: chrome
           group: chrome
           parallel: false
@@ -90,7 +90,7 @@ jobs:
       - name: Cypress Firefox tests
         uses: cypress-io/github-action@v3
         with:
-          install: false
+          install: true
           browser: firefox
           group: firefox
           parallel: false
