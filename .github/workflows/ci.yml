@@ -5,28 +5,14 @@ on:
     types: [opened, reopened, ready_for_review, synchronize]
 
 jobs:
-
-  prepare: # https://github.com/cypress-io/github-action#robust-custom-build-id
+  test_setup:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     outputs:
-      uuid: ${{ steps.uuid.outputs.value }}
+      netlify_url: ${{ steps.waitForDeployment.outputs.url }}
     steps:
-      - name: Generate unique ID 💎
-        id: uuid
-        run: echo "::set-output name=value::sha-$GITHUB_SHA-time-$(date +"%s")"
-
-  test-suites-setup:
-    if: ${{ !github.event.pull_request.draft }}
-    needs: ["prepare"]
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Use Node.js 16.x
-        uses: actions/setup-node@v1
-        with:
-          node-version: 16.x
+      - name: Checkout
+        uses: actions/checkout@v2
 
       - name: Wait for Netlify
         uses: probablyup/wait-for-netlify-action@3.2.0 # Check the source code before updating version because it uses personal Netlify access token which does not have granular access control.
@@ -36,20 +22,16 @@ jobs:
         env:
           NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
-
-  chrome-tests:
+  test_chrome:
     runs-on: ubuntu-latest
-    needs: ["test-suites-setup"]
-    timeout-minutes: 60
-    container:
-      image: cypress/included:10.4.0
-      options: --user root
+    needs: ["test_setup"]
+    timeout-minutes: 30
+    container: cypress/browsers:node16.14.0-chrome99-ff97
     strategy:
-          fail-fast: false
-          matrix:
-            containers: [ 1, 2, 3, 4, 5 ]
+      fail-fast: false
+      matrix:
+        containers: [1, 2, 3, 4, 5]
     steps:
-
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -58,29 +40,24 @@ jobs:
         with:
           install: true
           browser: chrome
-          parallel: false
-          wait-on: ${{ steps.waitForDeployment.outputs.url }}
-          wait-on-timeout: 180
+          parallel: true
+          wait-on: ${{ test_setup.outputs.netlify_url }}
           record: true
-          ci-build-id: ${{ needs.prepare.outputs.uuid }}
           env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
-          CYPRESS_baseUrl: ${{ steps.waitForDeployment.outputs.url }}
+          CYPRESS_baseUrl: ${{ test_setup.outputs.netlify_url }}
           GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
 
-
-  firefox-tests:
+  test_firefox:
     runs-on: ubuntu-latest
-    needs: ["test-suites-setup"]
-    timeout-minutes: 60
-    container:
-      image: cypress/included:10.4.0
-      options: --user root
+    needs: ["test-setup"]
+    timeout-minutes: 30
+    container: cypress/browsers:node16.14.0-chrome99-ff97
     strategy:
       fail-fast: false
       matrix:
-        containers: [ 1, 2, 3, 4, 5 ]
+        containers: [1, 2, 3, 4, 5]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -91,13 +68,10 @@ jobs:
           install: true
           browser: firefox
           parallel: true
-          wait-on: ${{ steps.waitForDeployment.outputs.url }}
-          wait-on-timeout: 180
+          wait-on: ${{ test_setup.outputs.netlify_url }}
           record: true
-          ci-build-id: ${{ needs.prepare.outputs.uuid }}
           env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
-          CYPRESS_baseUrl: ${{ steps.waitForDeployment.outputs.url }}
+          CYPRESS_baseUrl: ${{ test_setup.outputs.netlify_url }}
           GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
-
