@@ -41,7 +41,7 @@ jobs:
     needs: ["test-suites-setup"]
     timeout-minutes: 60
     container:
-      image: cypress/browsers:node16.5.0-chrome97-ff96
+      image: cypress/included:10.4.0
       options: --user 1001
     strategy:
       fail-fast: false
@@ -55,7 +55,7 @@ jobs:
       - name: Cypress Chrome tests
         uses: cypress-io/github-action@v4
         with:
-          install: true
+          install: false
           browser: chrome
           group: chrome
           parallel: true
@@ -75,7 +75,7 @@ jobs:
     needs: ["test-suites-setup"]
     timeout-minutes: 60
     container:
-      image: cypress/browsers:node16.5.0-chrome97-ff96
+      image: cypress/browsers:latest
       options: --user 1001
     strategy:
       fail-fast: false
@@ -91,7 +91,7 @@ jobs:
       - name: Cypress Firefox tests
         uses: cypress-io/github-action@v4
         with:
-          install: true
+          install: false
           browser: firefox
           group: firefox
           parallel: true
