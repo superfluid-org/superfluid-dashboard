@@ -43,6 +43,7 @@ jobs:
     timeout-minutes: 60
     container:
       image: cypress/included:10.4.0
+      options: --user 1001
     strategy:
           fail-fast: false
           matrix:
@@ -74,7 +75,7 @@ jobs:
     needs: ["test-suites-setup"]
     timeout-minutes: 60
     container:
-      image: cypress/browsers:latest
+      image: cypress/included:10.4.0
       options: --user 1001
     strategy:
       fail-fast: false
