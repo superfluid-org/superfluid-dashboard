@@ -53,7 +53,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Cypress Chrome tests
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v3
         with:
           install: false
           browser: chrome
@@ -89,7 +89,7 @@ jobs:
         uses: browser-actions/setup-firefox@latest
 
       - name: Cypress Firefox tests
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v3
         with:
           install: false
           browser: firefox
