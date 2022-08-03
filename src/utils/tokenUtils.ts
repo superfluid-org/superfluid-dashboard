@@ -94,16 +94,12 @@ export const calculateCurrentBalance = ({
   flowRateWei: BigNumberish;
   balanceWei: BigNumberish;
   balanceTimestamp: number;
-}): BigNumber =>
-  {
-    const amountStreamedSinceUpdate = BigNumber.from(dateNowSeconds()).sub(balanceTimestamp).mul(flowRateWei)
-
-    console.log({
-      dateNowSeconds: dateNowSeconds(),
-      balanceTimestamp: balanceTimestamp
-    })
-    return BigNumber.from(balanceWei).add(amountStreamedSinceUpdate);
-  };
+}): BigNumber => {
+  const amountStreamedSinceUpdate = BigNumber.from(dateNowSeconds())
+    .sub(balanceTimestamp)
+    .mul(flowRateWei);
+  return BigNumber.from(balanceWei).add(amountStreamedSinceUpdate);
+};
 
 export const getMinimumStreamTimeInMinutes = (bufferTimeInMinutes: number) =>
   bufferTimeInMinutes * 6;
