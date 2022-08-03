@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["test_setup"]
     timeout-minutes: 30
-    container: cypress/browsers:node16.14.0-chrome99-ff97
+    container: cypress/browsers:latest
     strategy:
       fail-fast: false
       matrix:
@@ -54,7 +54,7 @@ jobs:
     needs: ["test_setup"]
     timeout-minutes: 30
     container:
-      image: cypress/browsers:node16.14.0-chrome99-ff97
+      image: cypress/browsers:latest
       options: --user 1001
     strategy:
       fail-fast: false
