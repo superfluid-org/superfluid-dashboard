@@ -25,12 +25,20 @@ const unitOfTimeList = [
   UnitOfTime.Month,
 ];
 
-export const timeUnitWordMap = {
+export const timeUnitWordMap: Record<UnitOfTime, string> = {
   [UnitOfTime.Second]: "second",
   [UnitOfTime.Minute]: "minute",
   [UnitOfTime.Hour]: "hour",
   [UnitOfTime.Day]: "day",
   [UnitOfTime.Month]: "month",
+};
+
+export const wordTimeUnitMap: Record<string, UnitOfTime> = {
+  second: UnitOfTime.Second,
+  minute: UnitOfTime.Minute,
+  hour: UnitOfTime.Hour,
+  day: UnitOfTime.Day,
+  month: UnitOfTime.Month,
 };
 
 export type FlowRateWei = {

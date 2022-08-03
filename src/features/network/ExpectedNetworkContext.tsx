@@ -88,7 +88,9 @@ export const ExpectedNetworkProvider: FC<{
         setNetwork(networkFromQuery);
       }
       const { network, ...networkQueryParamRemoved } = router.query;
-      router.replace({ query: networkQueryParamRemoved });
+      router
+        .replace({ query: networkQueryParamRemoved })
+        .then(() => void setStopAutoSwitch(true));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [networkQueryParam]);

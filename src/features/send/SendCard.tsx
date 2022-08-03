@@ -18,6 +18,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { Token } from "@superfluid-finance/sdk-core";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import Link from "next/link";
 import { FC, memo, useMemo } from "react";
@@ -29,7 +30,7 @@ import TooltipIcon from "../common/TooltipIcon";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import NetworkBadge from "../network/NetworkBadge";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
-import { isWrappable } from "../redux/endpoints/tokenTypes";
+import { isWrappable, SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
@@ -77,17 +78,43 @@ export default memo(function SendCard() {
     reset: resetForm,
   } = useFormContext<PartialStreamingForm>();
 
-  const [receiver, selectedToken, flowRateEther, understandLiquidationRisk] =
-    watch([
-      "data.receiver",
-      "data.token",
-      "data.flowRate",
-      "data.understandLiquidationRisk",
-    ]);
+  const [
+    receiverAddress,
+    tokenAddress,
+    flowRateEther,
+    understandLiquidationRisk,
+  ] = watch([
+    "data.receiverAddress",
+    "data.tokenAddress",
+    "data.flowRate",
+    "data.understandLiquidationRisk",
+  ]);
 
-  const isWrappableSuperToken = selectedToken
-    ? isWrappable(selectedToken)
-    : false;
+  const { token } = subgraphApi.useTokenQuery(
+    tokenAddress
+      ? {
+          chainId: network.id,
+          id: tokenAddress,
+        }
+      : skipToken,
+    {
+      selectFromResult: (result) => ({
+        token: result.currentData
+          ? ({
+              ...result.currentData,
+              address: result.currentData.id,
+              type: getSuperTokenType({
+                network,
+                address: result.currentData.id,
+                underlyingAddress: result.currentData.underlyingAddress,
+              }),
+            } as Token & SuperTokenMinimal)
+          : undefined,
+      }),
+    }
+  );
+
+  const isWrappableSuperToken = token ? isWrappable(token) : false;
 
   const amountPerSecond = useMemo(
     () =>
@@ -124,16 +151,16 @@ export default memo(function SendCard() {
   );
 
   const shouldSearchForActiveFlow =
-    !!visibleAddress && !!receiver && !!selectedToken;
+    !!visibleAddress && !!receiverAddress && !!tokenAddress;
 
   const { currentData: activeFlow, data: _discard } =
     rpcApi.useGetActiveFlowQuery(
       shouldSearchForActiveFlow
         ? {
             chainId: network.id,
-            tokenAddress: selectedToken.address,
+            tokenAddress: tokenAddress,
             senderAddress: visibleAddress,
-            receiverAddress: receiver,
+            receiverAddress: receiverAddress,
           }
         : skipToken
     );
@@ -193,10 +220,10 @@ export default memo(function SendCard() {
             <FormLabel>Receiver Wallet Address</FormLabel>
             <Controller
               control={control}
-              name="data.receiver"
+              name="data.receiverAddress"
               render={({ field: { onChange, onBlur } }) => (
                 <AddressSearch
-                  address={receiver}
+                  address={receiverAddress}
                   onChange={onChange}
                   onBlur={onBlur}
                   addressLength={isBelowMd ? "medium" : "long"}
@@ -221,10 +248,10 @@ export default memo(function SendCard() {
 
               <Controller
                 control={control}
-                name="data.token"
+                name="data.tokenAddress"
                 render={({ field: { onChange, onBlur } }) => (
                   <TokenDialogButton
-                    token={selectedToken}
+                    token={token}
                     tokenSelection={{
                       showUpgrade: true,
                       tokenPairsQuery: {
@@ -233,7 +260,7 @@ export default memo(function SendCard() {
                         isUninitialized: superTokensQuery.isUninitialized,
                       },
                     }}
-                    onTokenSelect={onChange}
+                    onTokenSelect={(x) => onChange(x.address)}
                     onBlur={onBlur}
                     ButtonProps={{ variant: "input" }}
                   />
@@ -330,7 +357,7 @@ export default memo(function SendCard() {
             </FormGroup>
           </Alert>
 
-          {selectedToken && visibleAddress && (
+          {tokenAddress && visibleAddress && (
             <Stack
               direction="row"
               alignItems="center"
@@ -341,13 +368,13 @@ export default memo(function SendCard() {
                 data-cy={"balance"}
                 chainId={network.id}
                 accountAddress={visibleAddress}
-                tokenAddress={selectedToken.address}
+                tokenAddress={tokenAddress}
                 TypographyProps={{ variant: "h7mono" }}
               />
 
               {isWrappableSuperToken && (
                 <Link
-                  href={`/wrap?upgrade&token=${selectedToken.address}&network=${network.slugName}`}
+                  href={`/wrap?upgrade&token=${tokenAddress}&network=${network.slugName}`}
                   passHref
                 >
                   <Tooltip title="Wrap more">
@@ -366,12 +393,12 @@ export default memo(function SendCard() {
         </Stack>
 
         <Stack gap={2.5}>
-          {receiver && selectedToken && (
+          {!!(receiverAddress && token) && (
             <>
               <Divider />
               <StreamingPreview
-                receiver={receiver}
-                token={selectedToken}
+                receiver={receiverAddress}
+                token={token}
                 flowRateEther={flowRateEther}
                 existingStream={activeFlow ?? null}
               />
@@ -398,10 +425,11 @@ export default memo(function SendCard() {
                 const { data: formData } = getValues() as ValidStreamingForm;
 
                 const restoration: SendStreamRestoration = {
+                  version: 2,
                   type: RestorationType.SendStream,
                   chainId: network.id,
-                  token: formData.token,
-                  receiver: formData.receiver,
+                  tokenAddress: formData.tokenAddress,
+                  receiverAddress: formData.receiverAddress,
                   flowRate: {
                     amountWei: parseEther(
                       formData.flowRate.amountEther
@@ -415,8 +443,8 @@ export default memo(function SendCard() {
                   flowRateWei:
                     calculateTotalAmountWei(flowRateEther).toString(),
                   senderAddress: await signer.getAddress(),
-                  receiverAddress: formData.receiver,
-                  superTokenAddress: formData.token.address,
+                  receiverAddress: formData.receiverAddress,
+                  superTokenAddress: formData.tokenAddress,
                   userDataBytes: undefined,
                   waitForConfirmation: false,
                   transactionExtraData: {
@@ -434,7 +462,7 @@ export default memo(function SendCard() {
                       <Link
                         href={getTokenPagePath({
                           network: network.slugName,
-                          token: formData.token.address,
+                          token: formData.tokenAddress,
                         })}
                         passHref
                       >
@@ -461,6 +489,20 @@ export default memo(function SendCard() {
                   }
 
                   const { data: formData } = getValues() as ValidStreamingForm;
+
+                  const restoration: ModifyStreamRestoration = {
+                    version: 2,
+                    type: RestorationType.ModifyStream,
+                    chainId: network.id,
+                    tokenAddress: formData.tokenAddress,
+                    receiverAddress: formData.receiverAddress,
+                    flowRate: {
+                      amountWei: parseEther(
+                        formData.flowRate.amountEther
+                      ).toString(),
+                      unitOfTime: formData.flowRate.unitOfTime,
+                    },
+                  };
                   flowUpdateTrigger({
                     signer,
                     chainId: network.id,
@@ -471,23 +513,12 @@ export default memo(function SendCard() {
                       unitOfTime: formData.flowRate.unitOfTime,
                     }).toString(),
                     senderAddress: await signer.getAddress(),
-                    receiverAddress: formData.receiver,
-                    superTokenAddress: formData.token.address,
+                    receiverAddress: formData.receiverAddress,
+                    superTokenAddress: formData.tokenAddress,
                     userDataBytes: undefined,
                     waitForConfirmation: false,
                     transactionExtraData: {
-                      restoration: {
-                        type: RestorationType.ModifyStream,
-                        chainId: network.id,
-                        token: formData.token,
-                        receiver: formData.receiver,
-                        flowRate: {
-                          amountWei: parseEther(
-                            formData.flowRate.amountEther
-                          ).toString(),
-                          unitOfTime: formData.flowRate.unitOfTime,
-                        },
-                      } as ModifyStreamRestoration,
+                      restoration: restoration,
                     },
                     overrides: await getTransactionOverrides(network),
                   }).unwrap();
@@ -500,7 +531,7 @@ export default memo(function SendCard() {
                         <Link
                           href={getTokenPagePath({
                             network: network.slugName,
-                            token: formData.token.address,
+                            token: formData.tokenAddress,
                           })}
                           passHref
                         >
@@ -524,8 +555,7 @@ export default memo(function SendCard() {
                   variant: "outlined",
                 }}
                 onClick={async (signer) => {
-                  const receiverAddress = receiver;
-                  const superTokenAddress = selectedToken?.address;
+                  const superTokenAddress = tokenAddress;
                   const senderAddress = visibleAddress;
                   if (
                     !receiverAddress ||

@@ -1,10 +1,10 @@
-import { ethers } from "ethers";
+import { utils } from "ethers";
 import { memoize } from "lodash";
 
 export const isAddress = memoize((address: string) =>
-  ethers.utils.isAddress(address)
+  utils.isAddress(address.toLowerCase())
 );
 
 export const getAddress = memoize((address: string) =>
-  ethers.utils.getAddress(address)
+  utils.getAddress(address.toLowerCase())
 );
