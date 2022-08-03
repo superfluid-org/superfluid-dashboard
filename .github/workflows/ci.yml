@@ -26,7 +26,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["test_setup"]
     timeout-minutes: 30
-    container: cypress/browsers:node14.19.0-chrome100-ff99-edge
     strategy:
       fail-fast: false
       matrix:
@@ -48,30 +47,30 @@ jobs:
           CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
           GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
 
-  test_firefox:
-    runs-on: ubuntu-latest
-    needs: ["test_setup"]
-    timeout-minutes: 30
-    container:
-      image: cypress/browsers:node14.19.0-chrome100-ff99-edge
-      options: --user 1001
-    strategy:
-      fail-fast: false
-      matrix:
-        containers: [1, 2]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+  # test_firefox:
+  #   runs-on: ubuntu-latest
+  #   needs: ["test_setup"]
+  #   timeout-minutes: 30
+  #   container:
+  #     image: cypress/browsers:node14.19.0-chrome100-ff99-edge
+  #     options: --user 1001
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       containers: [1, 2]
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
 
-      - name: Cypress Firefox tests
-        uses: cypress-io/github-action@v4
-        with:
-          browser: firefox
-          record: true
-          parallel: true
-          ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
-          env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
-        env:
-          CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
-          CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
-          GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
+  #     - name: Cypress Firefox tests
+  #       uses: cypress-io/github-action@v4
+  #       with:
+  #         browser: firefox
+  #         record: true
+  #         parallel: true
+  #         ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
+  #         env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
+  #       env:
+  #         CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
+  #         CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
+  #         GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
