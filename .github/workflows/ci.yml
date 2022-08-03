@@ -40,8 +40,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["test-suites-setup"]
     timeout-minutes: 60
-    container:
-      image: cypress/included:10.4.0
+#    container:
+#      image: cypress/included:10.4.0
     #strategy:
     #      fail-fast: false
     #      matrix:
@@ -73,9 +73,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["test-suites-setup"]
     timeout-minutes: 60
-    container:
-      image: cypress/browsers:latest
-      options: --user 1001
+#    container:
+#      image: cypress/browsers:latest
+#      options: --user 1001
 #    strategy:
 #      fail-fast: false
 #      matrix:
