@@ -41,12 +41,12 @@ jobs:
           install: true
           browser: chrome
           parallel: true
-          wait-on: ${{ test_setup.outputs.netlify_url }}
+          wait-on: ${{ jobs.test_setup.outputs.netlify_url }}
           record: true
           env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
-          CYPRESS_baseUrl: ${{ test_setup.outputs.netlify_url }}
+          CYPRESS_baseUrl: ${{ jobs.test_setup.outputs.netlify_url }}
           GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
 
   test_firefox:
@@ -68,10 +68,10 @@ jobs:
           install: true
           browser: firefox
           parallel: true
-          wait-on: ${{ test_setup.outputs.netlify_url }}
+          wait-on: ${{ jobs.test_setup.outputs.netlify_url }}
           record: true
           env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
-          CYPRESS_baseUrl: ${{ test_setup.outputs.netlify_url }}
+          CYPRESS_baseUrl: ${{ jobs.test_setup.outputs.netlify_url }}
           GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
