@@ -21,6 +21,7 @@ export type TokenMinimal = {
   name: string;
   symbol: string;
   decimals: number;
+  isListed?: boolean;
 };
 
 export const isUnderlying = (

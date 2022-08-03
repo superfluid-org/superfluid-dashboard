@@ -141,14 +141,18 @@ export default memo(function SendCard() {
     },
   });
 
-  const customSuperTokensQuery = subgraphApi.useTokensQuery({
-    chainId: network.id,
-    filter: {
-      isSuperToken: true,
-      isListed: false,
-      id_in: networkCustomTokens,
-    },
-  });
+  const customSuperTokensQuery = subgraphApi.useTokensQuery(
+    networkCustomTokens.length > 0
+      ? {
+          chainId: network.id,
+          filter: {
+            isSuperToken: true,
+            isListed: false,
+            id_in: networkCustomTokens,
+          },
+        }
+      : skipToken
+  );
 
   const superTokens = useMemo(
     () =>

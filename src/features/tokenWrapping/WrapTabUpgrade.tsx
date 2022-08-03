@@ -164,6 +164,12 @@ export const WrapTabUpgrade: FC = () => {
   const tokenSelection = useMemo(() => {
     const tokenPairs = tokenPairsQuery.data || [];
 
+    /**
+     * Filtering out duplicate pairs with the same underlying tokens due to UI limitations.
+     * If pair with same underlying token already exists then...
+     * a) If super token is listed then we will overwrite the existing pair.
+     * b) If super token is not listed then we will skip it.
+     */
     return tokenPairs
       .reduce((allowedTokenPairs, tokenPair) => {
         const existingPairIndex = allowedTokenPairs.findIndex(

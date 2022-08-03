@@ -24,8 +24,6 @@ import {
 } from "../redux/endpoints/tokenTypes";
 import { useTokenIsListed } from "../token/useTokenIsListed";
 
-const etherDecimalPlaces = 8;
-
 interface TokenListItemProps {
   chainId?: number;
   accountAddress?: string;
@@ -53,10 +51,8 @@ export const TokenListItem: FC<TokenListItemProps> = ({
   const isSuperToken = isSuper(token);
   const isUnderlyingToken = isUnderlying(token);
   const isWrappableSuperToken = isSuperToken && isWrappable(token);
-  const [isListed, isListedLoading] = useTokenIsListed(
-    network.id,
-    token.address
-  );
+
+  const isListed = isUnderlying(token) || !!token.isListed;
 
   const { data: _discard, ...underlyingBalanceQuery } =
     rpcApi.useUnderlyingBalanceQuery(
@@ -89,7 +85,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
     props.balanceTimestamp;
 
   const fRate = realtimeBalanceQuery?.currentData?.flowRate || flowRate;
-  console.log(isUnderlyingToken, isListed);
+
   return (
     <ListItemButton
       data-cy={`${token.symbol}-list-item`}
@@ -97,11 +93,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
       sx={{ px: 3 }}
     >
       <ListItemAvatar>
-        <TokenIcon
-          tokenSymbol={token.symbol}
-          isUnlisted={!isUnderlyingToken && !isListed}
-          isLoading={isListedLoading}
-        />
+        <TokenIcon tokenSymbol={token.symbol} isUnlisted={!isListed} />
       </ListItemAvatar>
 
       <ListItemText
