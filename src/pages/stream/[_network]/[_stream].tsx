@@ -623,7 +623,7 @@ const StreamPageContent: FC<{
             }
           />
           <OverviewItem
-            label="Transaction ID:"
+            label="Transaction Hash:"
             value={
               streamCreationEvent && (
                 <Stack direction="row" alignItems="center" gap={0.5}>
