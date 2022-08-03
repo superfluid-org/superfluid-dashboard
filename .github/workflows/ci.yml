@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        containers: [1, 2, 3, 4, 5]
+        containers: [1, 2]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -38,11 +38,11 @@ jobs:
       - name: Cypress Chrome tests
         uses: cypress-io/github-action@v4
         with:
-          install: true
           browser: chrome
+          record: true
           parallel: true
           wait-on: ${{ needs.test_setup.outputs.netlify_url }}
-          record: true
+          ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
           env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
@@ -53,11 +53,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: ["test_setup"]
     timeout-minutes: 30
-    container: cypress/browsers:node16.14.0-chrome99-ff97
+    container:
+      image: cypress/browsers:node16.14.0-chrome99-ff97
+      options: --user 1001
     strategy:
       fail-fast: false
       matrix:
-        containers: [1, 2, 3, 4, 5]
+        containers: [1, 2]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -65,11 +67,11 @@ jobs:
       - name: Cypress Firefox tests
         uses: cypress-io/github-action@v4
         with:
-          install: true
           browser: firefox
+          record: true
           parallel: true
           wait-on: ${{ needs.test_setup.outputs.netlify_url }}
-          record: true
+          ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
           env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
