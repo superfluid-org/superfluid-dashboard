@@ -58,8 +58,8 @@ jobs:
           browser: chrome
           group: chrome
           parallel: false
-          wait-on: ${{ steps.waitForDeployment.outputs.url }}
-          wait-on-timeout: 180
+#          wait-on: ${{ steps.waitForDeployment.outputs.url }}
+#          wait-on-timeout: 180
           record: true
           #ci-build-id: ${{ needs.prepare.outputs.uuid }}
           env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
@@ -94,8 +94,8 @@ jobs:
           browser: firefox
           group: firefox
           parallel: false
-          wait-on: ${{ steps.waitForDeployment.outputs.url }}
-          wait-on-timeout: 180
+#          wait-on: ${{ steps.waitForDeployment.outputs.url }}
+#          wait-on-timeout: 180
           record: true
           #ci-build-id: ${{ needs.prepare.outputs.uuid }}
           env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
