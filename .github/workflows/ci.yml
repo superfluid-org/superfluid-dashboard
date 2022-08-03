@@ -41,7 +41,7 @@ jobs:
         with:
           install: true
           browser: chrome
-          group: chrome
+          #group: chrome
           parallel: false
           #          wait-on: ${{ steps.waitForDeployment.outputs.url }}
           #          wait-on-timeout: 180
