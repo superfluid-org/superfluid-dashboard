@@ -42,11 +42,10 @@ jobs:
     timeout-minutes: 60
     container:
       image: cypress/included:10.4.0
-      options: --user 1001
-    strategy:
-      fail-fast: false
-      matrix:
-        containers: [ 1, 2, 3, 4, 5 ]
+    #strategy:
+    #      fail-fast: false
+    #      matrix:
+    #        containers: [ 1, 2, 3, 4, 5 ]
     steps:
 
       - name: Checkout
@@ -58,7 +57,7 @@ jobs:
           install: false
           browser: chrome
           group: chrome
-          parallel: true
+          parallel: false
           wait-on: ${{ steps.waitForDeployment.outputs.url }}
           wait-on-timeout: 180
           record: true
@@ -77,10 +76,10 @@ jobs:
     container:
       image: cypress/browsers:latest
       options: --user 1001
-    strategy:
-      fail-fast: false
-      matrix:
-        containers: [ 1, 2, 3, 4, 5 ]
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        containers: [ 1, 2, 3, 4, 5 ]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -94,7 +93,7 @@ jobs:
           install: false
           browser: firefox
           group: firefox
-          parallel: true
+          parallel: false
           wait-on: ${{ steps.waitForDeployment.outputs.url }}
           wait-on-timeout: 180
           record: true
