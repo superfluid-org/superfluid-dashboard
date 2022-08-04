@@ -106,13 +106,12 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
         unlistedTokensSnapshotsQuery.isLoading,
       hasContent: tokenSnapshots.length > 0,
     });
-    // Can't add fetchingCallback to useEffect dependencies or else it starts looping.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     network.id,
     listedTokensSnapshotsQuery.isLoading,
     unlistedTokensSnapshotsQuery.isLoading,
     tokenSnapshots.length,
+    fetchingCallback,
   ]);
 
   if (
