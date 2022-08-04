@@ -1,10 +1,13 @@
+import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 import {
   Box,
+  IconButton,
   LinearProgress,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Stack,
+  Tooltip,
   Typography,
   useTheme,
 } from "@mui/material";
@@ -13,6 +16,7 @@ import {
   TransactionStatus,
 } from "@superfluid-finance/sdk-redux";
 import { format } from "date-fns";
+import Link from "next/link";
 import { FC } from "react";
 import shortenHex from "../../utils/shortenHex";
 import NetworkBadge from "../network/NetworkBadge";
@@ -51,7 +55,12 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
             {transaction.status === "Pending" && (
               <LinearProgress sx={{ height: 3 }} />
             )}
-            <Stack direction="row" gap={0.5} component="span">
+            <Stack
+              direction="row"
+              gap={0.5}
+              component="span"
+              alignItems="center"
+            >
               <Box
                 component="span"
                 color={getTransactionStatusColor(transaction.status)}
@@ -59,6 +68,24 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
                 {`${format(transaction.timestampMs, "d MMM")} •`}
               </Box>
               <Box component="span">{shortenHex(transaction.hash)}</Box>
+              {network && (
+                <Tooltip
+                  title="View on blockchain explorer"
+                  arrow
+                  placement="top"
+                >
+                  <span>
+                    <Link
+                      href={network.getLinkForTransaction(transaction.hash)}
+                      passHref
+                    >
+                      <IconButton component="a" size="small" target="_blank">
+                        <LaunchRoundedIcon />
+                      </IconButton>
+                    </Link>
+                  </span>
+                </Tooltip>
+              )}
             </Stack>
           </>
         }

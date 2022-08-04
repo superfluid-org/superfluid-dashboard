@@ -4,6 +4,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   IconButton,
   List,
   ListItem,
@@ -195,7 +196,8 @@ export default memo(function TokenDialog({
           onChange={(e) => setSearchTerm(e.currentTarget.value)}
         />
       </DialogTitle>
-      <DialogContent dividers sx={{ p: 0 }}>
+      <Divider />
+      <DialogContent sx={{ p: 0 }}>
         <List>
           {tokenPairsQuery.isFetching && (
             <Stack

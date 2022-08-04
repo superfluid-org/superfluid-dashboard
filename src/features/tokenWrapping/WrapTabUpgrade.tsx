@@ -31,9 +31,10 @@ import {
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { BalanceSuperToken } from "./BalanceSuperToken";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
+import { SwitchWrapModeBtn } from "./SwitchWrapModeBtn";
 import { TokenDialogButton } from "./TokenDialogButton";
 import { useTokenPairQuery } from "./useTokenPairQuery";
-import { ArrowDownIcon, WrapInputCard } from "./WrapCard";
+import { WrapInputCard } from "./WrapCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 
 const underlyingIbAlluoTokenOverrides = [
@@ -49,7 +50,11 @@ const underlyingIbAlluoTokenOverrides = [
   "0xc2dbaaea2efa47ebda3e572aa0e55b742e408bf6",
 ];
 
-export const WrapTabUpgrade: FC = () => {
+interface WrapTabUpgradeProps {
+  onSwitchMode: () => void;
+}
+
+export const WrapTabUpgrade: FC<WrapTabUpgradeProps> = ({ onSwitchMode }) => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
   const router = useRouter();
@@ -315,7 +320,7 @@ export const WrapTabUpgrade: FC = () => {
         )}
       </WrapInputCard>
 
-      <ArrowDownIcon />
+      <SwitchWrapModeBtn onClick={onSwitchMode} />
 
       {superToken && (
         <WrapInputCard>
