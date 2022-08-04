@@ -17,6 +17,8 @@ jobs:
         uses: actions/checkout@v2
 
       - run: yarn install
+        env:
+          GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
 
       - name: Cypress Chrome tests
         uses: cypress-io/github-action@v4
