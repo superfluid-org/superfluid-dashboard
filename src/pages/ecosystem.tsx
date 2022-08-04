@@ -121,18 +121,6 @@ export const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
     },
   },
   {
-    name: "Request Finance",
-    href: "https://www.request.finance/",
-    icon: "/icons/ecosystem/request.svg",
-    description: `Manage and track crypto invoices, salaries, and expenses in one place`,
-    chains: [chain.arbitrum.id, 43114, 100, chain.polygon.id],
-    comingSoon: true,
-    colors: {
-      primary: "#1B52D0",
-      secondary: "#5184F7",
-    },
-  },
-  {
     name: "Coinshift",
     href: "https://coinshift.xyz/",
     icon: "/icons/ecosystem/coinshift.svg",
@@ -142,6 +130,18 @@ export const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
     colors: {
       primary: "#1452F5",
       secondary: "#5893ED",
+    },
+  },
+  {
+    name: "Request Finance",
+    href: "https://www.request.finance/",
+    icon: "/icons/ecosystem/request.svg",
+    description: `Manage and track crypto invoices, salaries, and expenses in one place`,
+    chains: [chain.arbitrum.id, 43114, 100, chain.polygon.id],
+    comingSoon: true,
+    colors: {
+      primary: "#1B52D0",
+      secondary: "#5184F7",
     },
   },
   {
@@ -161,7 +161,6 @@ export const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
     icon: "/icons/ecosystem/unlock.svg",
     description: `Connecting creative communities with NFT-based memberships`,
     chains: [100, chain.optimism.id, chain.polygon.id],
-    comingSoon: true,
     colors: {
       primary: "#E76E73",
       secondary: "#FBA58F",
@@ -179,7 +178,6 @@ export const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
       chain.optimism.id,
       chain.polygon.id,
     ],
-    comingSoon: true,
     colors: {
       primary: "#E88F27",
       secondary: "#FDB867",
@@ -351,10 +349,10 @@ const Ecosystem: NextPage = () => {
                 endIcon={<AddIcon />}
                 target="_blank"
               >
-            Add New App
-          </Button>
-        </Link>
-      </Stack>
+                Add New App
+              </Button>
+            </Link>
+          </Stack>
 
           <Divider />
 
