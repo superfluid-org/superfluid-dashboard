@@ -70,6 +70,11 @@ const MintActivityRow: FC<MintedActivity> = ({
     [isNativeAssetSuperToken, underlyingTokenQuery.data]
   );
 
+  const isSuperTokenListed = useMemo(
+    () => isNativeAssetSuperToken || superTokenQuery.data?.isListed,
+    [isNativeAssetSuperToken, superTokenQuery.data]
+  );
+
   return (
     <TableRow data-cy={`${network.slugName}-row`}>
       <TableCell>
@@ -93,18 +98,20 @@ const MintActivityRow: FC<MintedActivity> = ({
       {!isBelowMd ? (
         <>
           <TableCell>
-            {underlyingToken && (
-              <ListItem sx={{ p: 0 }}>
-                <ListItemAvatar>
-                  <TokenIcon tokenSymbol={underlyingToken.symbol} />
-                </ListItemAvatar>
+            <ListItem sx={{ p: 0 }}>
+              <ListItemAvatar>
+                <TokenIcon
+                  tokenSymbol={underlyingToken?.symbol}
+                  isLoading={underlyingTokenQuery.isLoading}
+                />
+              </ListItemAvatar>
+              {underlyingToken && (
                 <ListItemText
                   data-cy={"amount"}
                   primary={
                     <>
                       -
-                      <Amount wei={amount} />{" "}
-                      {underlyingToken.symbol}
+                      <Amount wei={amount} /> {underlyingToken.symbol}
                     </>
                   }
                   /**
@@ -121,24 +128,24 @@ const MintActivityRow: FC<MintedActivity> = ({
                     color: "text.secondary",
                   }}
                 />
-              </ListItem>
-            )}
+              )}
+            </ListItem>
           </TableCell>
           <TableCell>
-            {superToken && (
-              <ListItem sx={{ p: 0 }}>
-                <ListItemAvatar>
-                  <TokenIcon tokenSymbol={superToken.symbol} />
-                </ListItemAvatar>
+            <ListItem sx={{ p: 0 }}>
+              <ListItemAvatar>
+                <TokenIcon
+                  tokenSymbol={superToken?.symbol}
+                  isUnlisted={!isSuperTokenListed}
+                  isLoading={superTokenQuery.isLoading}
+                />
+              </ListItemAvatar>
+              {superToken && (
                 <ListItemText
                   data-cy={"amountToFrom"}
                   primary={
                     <>
-                      +
-                      <Amount wei={amount}>
-                        {" "}
-                        {superToken.symbol}
-                      </Amount>
+                      +<Amount wei={amount}> {superToken.symbol}</Amount>
                     </>
                   }
                   /**
@@ -155,8 +162,8 @@ const MintActivityRow: FC<MintedActivity> = ({
                     color: "text.secondary",
                   }}
                 />
-              </ListItem>
-            )}
+              )}
+            </ListItem>
           </TableCell>
           <TableCell sx={{ position: "relative" }}>
             <TxHashLink txHash={transactionHash} network={network} />
@@ -168,34 +175,30 @@ const MintActivityRow: FC<MintedActivity> = ({
         </>
       ) : (
         <TableCell align="right">
-          {!!(superToken && underlyingToken) && (
-            <Stack direction="row" alignItems="center" gap={2}>
+          <Stack direction="row" alignItems="center" gap={2}>
+            {!!(superToken && underlyingToken) && (
               <ListItemText
                 data-cy={"mobile-amount"}
                 primary={
                   <>
-                    +
-                    <Amount wei={amount}>
-                      {" "}
-                      {superToken.symbol}
-                    </Amount>
+                    +<Amount wei={amount}> {superToken.symbol}</Amount>
                   </>
                 }
                 secondary={
                   <>
-                    -
-                    <Amount wei={amount}>
-                      {" "}
-                      {underlyingToken.symbol}
-                    </Amount>
+                    -<Amount wei={amount}> {underlyingToken.symbol}</Amount>
                   </>
                 }
                 primaryTypographyProps={{ variant: "h7mono" }}
                 secondaryTypographyProps={{ variant: "body2mono" }}
               />
-              <TokenIcon tokenSymbol={superToken.symbol} />
-            </Stack>
-          )}
+            )}
+            <TokenIcon
+              tokenSymbol={superToken?.symbol}
+              isUnlisted={!isSuperTokenListed}
+              isLoading={superTokenQuery.isLoading}
+            />
+          </Stack>
         </TableCell>
       )}
     </TableRow>

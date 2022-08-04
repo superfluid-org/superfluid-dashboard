@@ -73,15 +73,19 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
       {!isBelowMd ? (
         <>
           <TableCell>
-            {tokenQuery.data && (
-              <ListItem sx={{ p: 0 }}>
-                <ListItemAvatar>
-                  <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
-                </ListItemAvatar>
+            <ListItem sx={{ p: 0 }}>
+              <ListItemAvatar>
+                <TokenIcon
+                  tokenSymbol={tokenQuery.data?.symbol}
+                  isUnlisted={!tokenQuery.data?.isListed}
+                  isLoading={tokenQuery.isLoading}
+                />
+              </ListItemAvatar>
+              {tokenQuery.data && (
                 <ListItemText
                   data-cy={"amount"}
-                primary={
-                  <Amount wei={value} decimals={tokenQuery.data.decimals}>
+                  primary={
+                    <Amount wei={value} decimals={tokenQuery.data.decimals}>
                       {" "}
                       {tokenQuery.data.symbol}
                     </Amount>
@@ -99,8 +103,8 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
                     color: "text.secondary",
                   }}
                 />
-              </ListItem>
-            )}
+              )}
+            </ListItem>
           </TableCell>
           <TableCell>
             <ListItem sx={{ p: 0 }}>
@@ -138,11 +142,12 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
         </>
       ) : (
         <TableCell align="right">
-          {tokenQuery.data && (<Stack direction="row" alignItems="center" gap={2}>
-            <ListItemText
+          <Stack direction="row" alignItems="center" gap={2}>
+            {tokenQuery.data && (
+              <ListItemText
                 data-cy={"mobile-amount"}
                 primary={
-                <Amount wei={value} decimals={tokenQuery.data.decimals}>
+                  <Amount wei={value} decimals={tokenQuery.data.decimals}>
                     {" "}
                     {tokenQuery.data.symbol}
                   </Amount>
@@ -150,9 +155,13 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
                 primaryTypographyProps={{ variant: "h7mono" }}
                 secondaryTypographyProps={{ variant: "body2mono" }}
               />
-              <TokenIcon tokenSymbol={tokenQuery.data.symbol} />
-            </Stack>
-          )}
+            )}
+            <TokenIcon
+              tokenSymbol={tokenQuery.data?.symbol}
+              isUnlisted={!tokenQuery.data?.isListed}
+              isLoading={tokenQuery.isLoading}
+            />
+          </Stack>
         </TableCell>
       )}
     </TableRow>

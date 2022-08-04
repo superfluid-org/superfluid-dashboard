@@ -1,4 +1,6 @@
-import { Avatar, styled, useTheme } from "@mui/material";
+import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
+import { Avatar, Skeleton, styled, Tooltip, useTheme } from "@mui/material";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
 import { assetApiSlice } from "./tokenManifestSlice";
 
@@ -19,73 +21,150 @@ const BorderSvg = styled("svg")(() => ({
 }));
 
 const AvatarWrapper = styled("div", {
-  shouldForwardProp: (prop) => prop !== "border",
-})<{ border?: boolean }>(({ border }) => ({
-  position: "relative",
-  padding: border ? 2 : 0,
-}));
+  shouldForwardProp: (prop: string) =>
+    !["isSuperToken", "isUnlisted"].includes(prop),
+})<{ isSuperToken?: boolean; isUnlisted: boolean }>(
+  ({ isSuperToken, isUnlisted, theme }) => ({
+    position: "relative",
+    padding: isSuperToken ? 2 : 0,
+    ...(isUnlisted &&
+      !isSuperToken && {
+        border: `1px solid ${theme.palette.warning.main}`,
+        borderRadius: "50%",
+      }),
+  })
+);
 
 interface TokenIconProps {
-  tokenSymbol: string;
+  tokenSymbol?: string;
+  isUnlisted?: boolean;
+  isLoading?: boolean;
   size?: number;
 }
 
-const TokenIcon: FC<TokenIconProps> = ({ tokenSymbol, size = 36 }) => {
+const TokenIcon: FC<TokenIconProps> = ({
+  tokenSymbol,
+  isUnlisted = false,
+  isLoading = false,
+  size = 36,
+}) => {
   const theme = useTheme();
 
-  const { data: tokenManifest } = assetApiSlice.useTokenManifestQuery({
-    tokenSymbol,
-  });
+  const { isLoading: isQueryLoading, data: tokenManifest } =
+    assetApiSlice.useTokenManifestQuery(
+      !!tokenSymbol
+        ? {
+            tokenSymbol,
+          }
+        : skipToken
+    );
+
+  const diameter = size - (tokenManifest?.isSuperToken ? 4 : 0);
+
+  const loading = isLoading || isQueryLoading;
 
   return (
-    <AvatarWrapper border={tokenManifest?.isSuperToken}>
-      {tokenManifest?.isSuperToken && (
-        <BorderSvg data-cy={"animation"} viewBox="0 0 36 36">
-          <clipPath id="clip">
-            <polygon points="18,18, 30.5,0 36,10.2" />
-          </clipPath>
+    <Tooltip
+      arrow
+      disableInteractive
+      placement="top"
+      title={isUnlisted ? "Unlisted token, use with caution" : ""}
+    >
+      <AvatarWrapper
+        isSuperToken={tokenManifest?.isSuperToken}
+        isUnlisted={!loading && isUnlisted}
+      >
+        {tokenManifest?.isSuperToken && !isLoading && (
+          <BorderSvg data-cy={"animation"} viewBox="0 0 36 36">
+            <clipPath id="clip">
+              <polygon points="18,18, 30.5,0 36,10.2" />
+            </clipPath>
 
-          <mask id="mask">
-            <rect x="-3" y="-3" width="42" height="42" fill="white" />
-            <polygon points="18,18, 30.5,0 36,10.2" fill="black" />
-          </mask>
+            <mask id="mask">
+              <rect x="-3" y="-3" width="42" height="42" fill="white" />
+              <polygon points="18,18, 30.5,0 36,10.2" fill="black" />
+            </mask>
 
-          <circle
-            mask="url(#mask)"
-            r="17.5px"
-            cx="18"
-            cy="18"
-            stroke={theme.palette.primary.main}
-            strokeWidth="1"
-            fill="transparent"
+            <circle
+              mask="url(#mask)"
+              r="17.5px"
+              cx="18"
+              cy="18"
+              stroke={
+                isUnlisted
+                  ? theme.palette.warning.main
+                  : theme.palette.primary.main
+              }
+              strokeWidth="1"
+              fill="transparent"
+            />
+            <circle
+              clipPath="url(#clip)"
+              r="17px"
+              cx="18"
+              cy="18"
+              strokeDasharray="2"
+              stroke={
+                isUnlisted
+                  ? theme.palette.warning.main
+                  : theme.palette.primary.main
+              }
+              strokeWidth="2"
+              fill="transparent"
+            />
+          </BorderSvg>
+        )}
+
+        {loading && (
+          <Avatar
+            sx={{
+              width: diameter,
+              height: diameter,
+              background: "transparent",
+              color: theme.palette.warning.main,
+            }}
+          >
+            <Skeleton
+              variant="circular"
+              sx={{
+                width: diameter,
+                height: diameter,
+              }}
+            />
+          </Avatar>
+        )}
+
+        {!loading && isUnlisted && (
+          <Avatar
+            sx={{
+              width: diameter,
+              height: diameter,
+              background: "transparent",
+              color: theme.palette.warning.main,
+            }}
+          >
+            <QuestionMarkIcon />
+          </Avatar>
+        )}
+
+        {!loading && !isUnlisted && (
+          <Avatar
+            data-cy={"token-icon"}
+            alt={`${tokenSymbol} token icon`}
+            sx={{
+              width: diameter,
+              height: diameter,
+            }}
+            imgProps={{ sx: { objectFit: "contain", borderRadius: "50%" } }}
+            src={
+              tokenManifest?.svgIconPath
+                ? `https://raw.githubusercontent.com/superfluid-finance/assets/master/public/${tokenManifest.svgIconPath}`
+                : "/icons/token-default.webp"
+            }
           />
-          <circle
-            clipPath="url(#clip)"
-            r="17px"
-            cx="18"
-            cy="18"
-            strokeDasharray="2"
-            stroke={theme.palette.primary.main}
-            strokeWidth="2"
-            fill="transparent"
-          />
-        </BorderSvg>
-      )}
-      <Avatar
-        data-cy={"token-icon"}
-        alt={`${tokenSymbol} token icon`}
-        sx={{
-          width: size - (tokenManifest?.isSuperToken ? 4 : 0),
-          height: size - (tokenManifest?.isSuperToken ? 4 : 0),
-        }}
-        imgProps={{ sx: { objectFit: "contain", borderRadius: "50%" } }}
-        src={
-          tokenManifest?.svgIconPath
-            ? `https://raw.githubusercontent.com/superfluid-finance/assets/master/public/${tokenManifest.svgIconPath}`
-            : "/icons/token-default.webp"
-        }
-      />
-    </AvatarWrapper>
+        )}
+      </AvatarWrapper>
+    </Tooltip>
   );
 };
 

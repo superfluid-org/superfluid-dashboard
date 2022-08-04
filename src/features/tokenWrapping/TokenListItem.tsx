@@ -1,3 +1,4 @@
+import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import {
   IconButton,
   ListItemAvatar,
@@ -7,14 +8,9 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { FC } from "react";
-import TokenIcon from "../token/TokenIcon";
-import Amount from "../token/Amount";
-import FlowingBalance from "../token/FlowingBalance";
-import { rpcApi } from "../redux/store";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import Link from "next/link";
+import { FC } from "react";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   isSuper,
@@ -22,8 +18,10 @@ import {
   isWrappable,
   TokenMinimal,
 } from "../redux/endpoints/tokenTypes";
-
-const etherDecimalPlaces = 8;
+import { rpcApi } from "../redux/store";
+import Amount from "../token/Amount";
+import FlowingBalance from "../token/FlowingBalance";
+import TokenIcon from "../token/TokenIcon";
 
 interface TokenListItemProps {
   chainId?: number;
@@ -52,6 +50,8 @@ export const TokenListItem: FC<TokenListItemProps> = ({
   const isSuperToken = isSuper(token);
   const isUnderlyingToken = isUnderlying(token);
   const isWrappableSuperToken = isSuperToken && isWrappable(token);
+
+  const isListed = isUnderlying(token) || !!token.isListed;
 
   const { data: _discard, ...underlyingBalanceQuery } =
     rpcApi.useUnderlyingBalanceQuery(
@@ -92,7 +92,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
       sx={{ px: 3 }}
     >
       <ListItemAvatar>
-        <TokenIcon tokenSymbol={token.symbol}></TokenIcon>
+        <TokenIcon tokenSymbol={token.symbol} isUnlisted={!isListed} />
       </ListItemAvatar>
 
       <ListItemText

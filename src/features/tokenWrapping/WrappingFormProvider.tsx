@@ -1,30 +1,30 @@
 import { yupResolver } from "@hookform/resolvers/yup";
+import { BigNumber } from "ethers";
+import { formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
+import { isString } from "lodash";
 import { useRouter } from "next/router";
 import { FC, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { object, ObjectSchema, string } from "yup";
-import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import {
-  formRestorationOptions,
-  RestorationType,
-  SuperTokenDowngradeRestoration,
-  SuperTokenUpgradeRestoration,
-} from "../transactionRestoration/transactionRestorations";
-import { getNetworkDefaultTokenPair } from "../network/networks";
-import { isString } from "lodash";
-import { rpcApi } from "../redux/store";
-import { formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
 import { useAccount } from "wagmi";
-import { BigNumber } from "ethers";
-import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
+import { object, ObjectSchema, string } from "yup";
+import { dateNowSeconds } from "../../utils/dateUtils";
 import {
   calculateCurrentBalance,
   calculateMaybeCriticalAtTimestamp,
   getMinimumStreamTimeInMinutes,
 } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
+import { getNetworkDefaultTokenPair } from "../network/networks";
+import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
+import { rpcApi } from "../redux/store";
+import {
+  formRestorationOptions,
+  RestorationType,
+  SuperTokenDowngradeRestoration,
+  SuperTokenUpgradeRestoration,
+} from "../transactionRestoration/transactionRestorations";
 import { useTokenPairsQuery } from "./useTokenPairsQuery";
-import { dateNowSeconds } from "../../utils/dateUtils";
 
 export type WrappingForm = {
   type: RestorationType.Downgrade | RestorationType.Upgrade;
@@ -59,7 +59,10 @@ const WrappingFormProvider: FC<{
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryUnderlyingBalance] = rpcApi.useLazyUnderlyingBalanceQuery();
   const { address: accountAddress, connector: activeConnector } = useAccount();
-  const tokenPairsQuery = useTokenPairsQuery({ network });
+
+  const tokenPairsQuery = useTokenPairsQuery({
+    network,
+  });
 
   const formSchema = useMemo(
     () =>

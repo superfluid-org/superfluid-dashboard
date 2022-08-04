@@ -7,7 +7,9 @@ import { FC, useCallback, useEffect } from "react";
 import { Provider } from "react-redux";
 import { useAccount, useSigner } from "wagmi";
 import { parseV1AddressBookEntries } from "../../utils/addressBookUtils";
+import { parseV1CustomTokens } from "../../utils/customTokenUtils";
 import { addAddressBookEntries } from "../addressBook/addressBook.slice";
+import { addCustomTokens } from "../customTokens/customTokens.slice";
 import { networks } from "../network/networks";
 import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import { reduxStore, useAppDispatch } from "./store";
@@ -27,8 +29,9 @@ const ReduxProviderCore: FC = ({ children }) => {
   );
 
   /**
-   * TODO: We might want to remove this in the future.
-   * This function reads dashboard v1 address book from local storage, imports it into the new address book and deletes old data.
+   * TODO: We might want to remove importV1AddressBook and importV1CustomTokens in the future.
+   * These functions read dashboard v1 address book and custom tokens from local storage,
+   * import data into new persistent stores and delete the old data.
    */
   const importV1AddressBook = useCallback(() => {
     try {
@@ -45,10 +48,26 @@ const ReduxProviderCore: FC = ({ children }) => {
     }
   }, [dispatch]);
 
+  const importV1CustomTokens = useCallback(() => {
+    try {
+      const v1CustomTokens = localStorage.getItem("customTokens");
+
+      if (v1CustomTokens) {
+        const parsedV1Tokens = parseV1CustomTokens(v1CustomTokens);
+        dispatch(addCustomTokens(parsedV1Tokens));
+        localStorage.setItem("customTokens_v1", v1CustomTokens);
+        localStorage.removeItem("customTokens");
+      }
+    } catch (e) {
+      console.error("Failed to parse v1 custom tokens.", e);
+    }
+  }, [dispatch]);
+
   useEffect(() => {
     initializeReadonlyFrameworks();
     importV1AddressBook();
-  }, [initializeReadonlyFrameworks, importV1AddressBook]);
+    importV1CustomTokens();
+  }, [initializeReadonlyFrameworks, importV1AddressBook, importV1CustomTokens]);
 
   useEffect(() => {
     // TODO(KK): There is a weird state in wagmi on full refreshes where signer is present but not the connector.

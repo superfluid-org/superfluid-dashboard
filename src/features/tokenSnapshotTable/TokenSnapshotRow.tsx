@@ -26,6 +26,7 @@ import StreamsTable from "../streamsTable/StreamsTable";
 import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
 import TokenIcon from "../token/TokenIcon";
+import { useTokenIsListed } from "../token/useTokenIsListed";
 
 interface SnapshotRowProps {
   lastElement?: boolean;
@@ -62,9 +63,13 @@ const SnapshotRow = styled(TableRow, {
   }),
 }));
 
+export interface ExtendedAccountTokenSnapshot extends AccountTokenSnapshot {
+  isListed: boolean;
+}
+
 interface TokenSnapshotRowProps {
   network: Network;
-  snapshot: AccountTokenSnapshot;
+  snapshot: ExtendedAccountTokenSnapshot;
   lastElement: boolean;
 }
 
@@ -126,7 +131,10 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         <TableCell onClick={openTokenPage}>
           <ListItem sx={{ p: 0 }}>
             <ListItemAvatar>
-              <TokenIcon tokenSymbol={tokenSymbol} />
+              <TokenIcon
+                tokenSymbol={tokenSymbol}
+                isUnlisted={!snapshot.isListed}
+              />
             </ListItemAvatar>
             <ListItemText
               data-cy={"token-symbol"}

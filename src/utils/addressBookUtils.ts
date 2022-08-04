@@ -1,9 +1,9 @@
 import { AddressBookEntry } from "../features/addressBook/addressBook.slice";
 import { getAddress } from "./memoizedEthersUtils";
 
-export function parseV1AddressBookEntries(oldAddressBook: string) {
+export function parseV1AddressBookEntries(v1AddressBook: string) {
   const parsedAddressBook: { [chain: string]: AddressBookEntry[] } =
-    JSON.parse(oldAddressBook);
+    JSON.parse(v1AddressBook);
 
   const uniqueAddressMap = Object.values(parsedAddressBook).reduce(
     (allEntries, chainEntries) => ({

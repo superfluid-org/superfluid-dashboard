@@ -1,22 +1,23 @@
 import { Button, Input, Stack, Typography, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { BigNumber, BigNumberish, ethers } from "ethers";
-import {
-  formatEther,
-  formatUnits,
-  parseEther,
-  parseUnits,
-} from "ethers/lib/utils";
+import { formatEther, formatUnits, parseEther } from "ethers/lib/utils";
 import { useRouter } from "next/router";
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { parseAmountOrZero } from "../../utils/tokenUtils";
+import { useAccount } from "wagmi";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
+import { parseAmountOrZero } from "../../utils/tokenUtils";
+import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
+import { useLayoutContext } from "../layout/LayoutContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
+import {
+  NATIVE_ASSET_ADDRESS,
+  SuperTokenPair,
+} from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
-import { useLayoutContext } from "../layout/LayoutContext";
+import { useTokenIsListed } from "../token/useTokenIsListed";
 import {
   ApproveAllowanceRestoration,
   RestorationType,
@@ -31,10 +32,9 @@ import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { BalanceSuperToken } from "./BalanceSuperToken";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { TokenDialogButton } from "./TokenDialogButton";
+import { useTokenPairQuery } from "./useTokenPairQuery";
 import { ArrowDownIcon, WrapInputCard } from "./WrapCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
-import { useAccount } from "wagmi";
-import { useTokenPairQuery } from "./useTokenPairQuery";
 
 const underlyingIbAlluoTokenOverrides = [
   // StIbAlluoEth
@@ -86,9 +86,12 @@ export const WrapTabUpgrade: FC = () => {
     ethers.BigNumber.from(0)
   );
 
+  const networkCustomTokens = useNetworkCustomTokens(network.id);
   const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
     chainId: network.id,
+    unlistedTokenIDs: networkCustomTokens,
   });
+
   const { superToken, underlyingToken } = useTokenPairQuery({
     network,
     tokenPair,
@@ -158,6 +161,33 @@ export const WrapTabUpgrade: FC = () => {
     amountInputRef.current.focus();
   }, [amountInputRef, tokenPair]);
 
+  const tokenSelection = useMemo(() => {
+    const tokenPairs = tokenPairsQuery.data || [];
+
+    /**
+     * Filtering out duplicate pairs with the same underlying tokens due to UI limitations.
+     * If pair with same underlying token already exists then...
+     * a) If super token is listed then we will overwrite the existing pair.
+     * b) If super token is not listed then we will skip it.
+     */
+    return tokenPairs
+      .reduce((allowedTokenPairs, tokenPair) => {
+        const existingPairIndex = allowedTokenPairs.findIndex(
+          (tp) =>
+            tp.underlyingToken.address === tokenPair.underlyingToken.address
+        );
+
+        if (existingPairIndex >= 0) {
+          if (tokenPair.superToken.isListed) {
+            allowedTokenPairs.splice(existingPairIndex, 1, tokenPair);
+          }
+          return allowedTokenPairs;
+        }
+        return allowedTokenPairs.concat([tokenPair]);
+      }, [] as SuperTokenPair[])
+      .map((x) => x.underlyingToken);
+  }, [tokenPairsQuery.data]);
+
   const { underlyingBalance } = rpcApi.useUnderlyingBalanceQuery(
     tokenPair && visibleAddress
       ? {
@@ -171,6 +201,11 @@ export const WrapTabUpgrade: FC = () => {
         underlyingBalance: result.currentData?.balance,
       }),
     }
+  );
+
+  const [isListed, isListedLoading] = useTokenIsListed(
+    network.id,
+    tokenPair?.superTokenAddress
   );
 
   return (
@@ -211,9 +246,8 @@ export const WrapTabUpgrade: FC = () => {
                 token={underlyingToken}
                 tokenSelection={{
                   tokenPairsQuery: {
-                    data: tokenPairsQuery.data?.map((x) => x.underlyingToken),
-                    isUninitialized: tokenPairsQuery.isUninitialized,
-                    isLoading: tokenPairsQuery.isLoading,
+                    data: tokenSelection,
+                    isFetching: tokenPairsQuery.isFetching,
                   },
                 }}
                 onTokenSelect={(token) => {
@@ -305,7 +339,12 @@ export const WrapTabUpgrade: FC = () => {
               variant={theme.palette.mode === "light" ? "outlined" : "token"}
               color="secondary"
               startIcon={
-                <TokenIcon tokenSymbol={superToken.symbol} size={24} />
+                <TokenIcon
+                  tokenSymbol={superToken.symbol}
+                  isUnlisted={!isListed}
+                  isLoading={isListedLoading}
+                  size={24}
+                />
               }
               sx={{ pointerEvents: "none" }}
             >

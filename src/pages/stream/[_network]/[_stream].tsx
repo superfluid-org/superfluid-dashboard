@@ -38,6 +38,7 @@ import CancelStreamButton from "../../../features/streamsTable/CancelStreamButto
 import Amount from "../../../features/token/Amount";
 import FlowingBalance from "../../../features/token/FlowingBalance";
 import TokenIcon from "../../../features/token/TokenIcon";
+import { useTokenIsListed } from "../../../features/token/useTokenIsListed";
 import useAddressName from "../../../hooks/useAddressName";
 import useNavigateBack from "../../../hooks/useNavigateBack";
 import config from "../../../utils/config";
@@ -307,6 +308,11 @@ const StreamPageContent: FC<{
   const [senderAddress = "", receiverAddress, tokenAddress = ""] =
     streamId.split("-");
 
+  const [isTokenListed, isTokenListedLoading] = useTokenIsListed(
+    network.id,
+    tokenAddress
+  );
+
   const streamQuery = subgraphApi.useStreamQuery({
     chainId: network.id,
     id: streamId,
@@ -346,13 +352,13 @@ const StreamPageContent: FC<{
       updatedAtTimestamp: snapshotUpdatedAtTimestamp,
     } = tokenSnapshotQuery.data;
 
-    return new Date(
-      calculateMaybeCriticalAtTimestamp({
-        updatedAtTimestamp: snapshotUpdatedAtTimestamp,
-        balanceUntilUpdatedAtWei: balanceUntilUpdatedAt,
-        totalNetFlowRateWei: totalNetFlowRate,
-      }).toNumber() * 1000
-    );
+    const criticalAtTimestamp = calculateMaybeCriticalAtTimestamp({
+      updatedAtTimestamp: snapshotUpdatedAtTimestamp,
+      balanceUntilUpdatedAtWei: balanceUntilUpdatedAt,
+      totalNetFlowRateWei: totalNetFlowRate,
+    }).toNumber();
+
+    return criticalAtTimestamp ? new Date(criticalAtTimestamp * 1000) : null;
   }, [tokenSnapshotQuery.data]);
 
   const txIdOrSubgraphId = streamCreationEvent
@@ -458,7 +464,12 @@ const StreamPageContent: FC<{
 
           <Stack direction="row" alignItems="center" gap={2}>
             {!isBelowMd && (
-              <TokenIcon tokenSymbol={tokenSymbol} size={isBelowMd ? 32 : 60} />
+              <TokenIcon
+                tokenSymbol={tokenSymbol}
+                isUnlisted={!isTokenListed}
+                isLoading={isTokenListedLoading}
+                size={isBelowMd ? 32 : 60}
+              />
             )}
             <Stack
               direction="row"
@@ -499,7 +510,12 @@ const StreamPageContent: FC<{
               justifyContent="center"
               gap={1}
             >
-              <TokenIcon tokenSymbol={tokenSymbol} size={isBelowMd ? 32 : 60} />
+              <TokenIcon
+                tokenSymbol={tokenSymbol}
+                isUnlisted={!isTokenListed}
+                isLoading={isTokenListedLoading}
+                size={isBelowMd ? 32 : 60}
+              />
               <Typography
                 variant="h3"
                 color="primary"

@@ -39,7 +39,7 @@ const DefaultActivityRow: FC<Activity> = ({ keyEvent, network }) => {
       <TableCell>
         <ListItem sx={{ p: 0 }}>
           <ListItemAvatar>
-            <TokenIcon tokenSymbol={"fDAIx"} />
+            <TokenIcon isUnlisted tokenSymbol={"fDAIx"} />
           </ListItemAvatar>
           <ListItemText
             primary={"-12.59 ETH"}
