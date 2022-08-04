@@ -44,9 +44,9 @@ jobs:
           group: "test"
           ci-build-id: "test2"
           env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
+          config: baseUrl=https://deploy-preview-179--superfluid-dashboard.netlify.app/
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
-          CYPRESS_baseUrl: https://deploy-preview-179--superfluid-dashboard.netlify.app/
           GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
 
   # test_firefox:
