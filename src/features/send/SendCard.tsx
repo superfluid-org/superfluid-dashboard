@@ -275,9 +275,6 @@ export default memo(function SendCard() {
                       showUpgrade: true,
                       tokenPairsQuery: {
                         data: superTokens,
-                        isLoading:
-                          listedSuperTokensQuery.isLoading ||
-                          customSuperTokensQuery.isLoading,
                         isFetching:
                           listedSuperTokensQuery.isFetching ||
                           customSuperTokensQuery.isFetching,

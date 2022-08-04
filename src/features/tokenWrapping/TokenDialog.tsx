@@ -33,7 +33,6 @@ export type TokenSelectionProps = {
   tokenPairsQuery: {
     data: TokenMinimal[] | undefined;
     isFetching: boolean;
-    isLoading: boolean;
   };
 };
 
@@ -198,7 +197,7 @@ export default memo(function TokenDialog({
       </DialogTitle>
       <DialogContent dividers sx={{ p: 0 }}>
         <List>
-          {tokenPairsQuery.isLoading && (
+          {tokenPairsQuery.isFetching && (
             <Stack
               data-cy="test"
               direction="row"
@@ -210,20 +209,18 @@ export default memo(function TokenDialog({
             </Stack>
           )}
 
-          {!tokenPairsQuery.isFetching &&
-            !tokenPairsQuery.isLoading &&
-            !searchedTokens.length && (
-              <Stack
-                data-cy={"token-search-no-results"}
-                component={ListItem}
-                direction="row"
-                justifyContent="center"
-                alignItems="center"
-                spacing={2}
-              >
-                Could not find any tokens. :(
-              </Stack>
-            )}
+          {!tokenPairsQuery.isFetching && !searchedTokens.length && (
+            <Stack
+              data-cy={"token-search-no-results"}
+              component={ListItem}
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              spacing={2}
+            >
+              Could not find any tokens. :(
+            </Stack>
+          )}
 
           {!!tokens.length &&
             searchedTokens.map((token) => (

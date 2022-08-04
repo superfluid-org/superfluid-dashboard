@@ -137,7 +137,6 @@ export const WrapTabDowngrade: FC = () => {
                   tokenPairsQuery: {
                     data: tokenPairsQuery.data?.map((x) => x.superToken),
                     isFetching: tokenPairsQuery.isFetching,
-                    isLoading: tokenPairsQuery.isLoading,
                   },
                 }}
                 onTokenSelect={(token) => {
