@@ -1,8 +1,15 @@
-import { createContext, FC, useContext, useMemo, useState } from "react";
+import {
+  createContext,
+  FC,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useNetwork } from "wagmi";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { hideNetwork, unhideNetwork } from "./networkPreferences.slice";
-import { Network, networks } from "./networks";
+import { Network, networks, networksByChainId } from "./networks";
 
 interface ActiveNetworksContextValue {
   testnetMode: boolean;
@@ -48,6 +55,12 @@ export const ActiveNetworksProvider: FC = ({ children }) => {
     }),
     [testnetMode, setTestnetMode, activeNetworks, dispatch]
   );
+
+  useEffect(() => {
+    if (activeChain) {
+      setTestnetMode(!!activeChain.testnet);
+    }
+  }, [activeChain]);
 
   return (
     <ActiveNetworksContext.Provider value={contextValue}>
