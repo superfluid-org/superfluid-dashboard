@@ -17,6 +17,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
       - run: yarn install
         env:
           GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
