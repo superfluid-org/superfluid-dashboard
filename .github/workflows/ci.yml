@@ -8,6 +8,7 @@ jobs:
 
   test_chrome:
     runs-on: ubuntu-latest
+    container: cypress/included:10.4.0
     strategy:
       fail-fast: false
       matrix:
