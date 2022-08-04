@@ -23,9 +23,6 @@ jobs:
         with:
           node-version: 16
 
-      - run: chown -R 1001:1001 /github/home/.cache && echo "pwn dat cache"
-
-
       - run: yarn install
         env:
           GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
