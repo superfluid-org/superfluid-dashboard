@@ -63,9 +63,13 @@ const SnapshotRow = styled(TableRow, {
   }),
 }));
 
+export interface ExtendedAccountTokenSnapshot extends AccountTokenSnapshot {
+  isListed: boolean;
+}
+
 interface TokenSnapshotRowProps {
   network: Network;
-  snapshot: AccountTokenSnapshot;
+  snapshot: ExtendedAccountTokenSnapshot;
   lastElement: boolean;
 }
 

@@ -6,7 +6,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { useActiveNetworks } from "../network/ActiveNetworksContext";
 import NetworkSelectionFilter from "../network/NetworkSelectionFilter";
@@ -14,6 +14,15 @@ import { subgraphApi } from "../redux/store";
 import TokenSnapshotEmptyCard from "./TokenSnapshotEmptyCard";
 import TokenSnapshotLoadingTable from "./TokenSnapshotLoadingTable";
 import TokenSnapshotTable from "./TokenSnapshotTable";
+
+export interface FetchingStatus {
+  isLoading: boolean;
+  hasContent: boolean;
+}
+
+interface NetworkFetchingStatuses {
+  [networkId: number]: FetchingStatus;
+}
 
 interface TokenSnapshotTablesProps {
   address: Address;
@@ -23,10 +32,9 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const [hasContent, setHasContent] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [tokenSnapshotsQueryTrigger] =
-    subgraphApi.useLazyAccountTokenSnapshotsQuery();
+  const [fetchingStatuses, setFetchingStatuses] =
+    useState<NetworkFetchingStatuses>({});
+
   const { activeNetworks } = useActiveNetworks();
 
   const networkSelectionRef = useRef<HTMLButtonElement>(null);
@@ -36,33 +44,31 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
   const openNetworkSelection = () => setNetworkSelectionOpen(true);
   const closeNetworkSelection = () => setNetworkSelectionOpen(false);
 
-  useEffect(() => {
-    setHasContent(false);
-    setIsLoading(true);
+  const fetchingCallback = useCallback(
+    (networkId: number, fetchingStatus: FetchingStatus) =>
+      setFetchingStatuses((currentStatuses) => ({
+        ...currentStatuses,
+        [networkId]: fetchingStatus,
+      })),
+    []
+  );
 
-    Promise.all(
-      activeNetworks.map(async (n) => {
-        const result = await tokenSnapshotsQueryTrigger(
-          {
-            chainId: n.id,
-            filter: {
-              account: address,
-            },
-            pagination: {
-              take: Infinity,
-              skip: 0,
-            },
-          },
-          true
-        );
+  const hasContent = useMemo(
+    () =>
+      !!activeNetworks.some(
+        (activeNetwork) => fetchingStatuses[activeNetwork.id]?.hasContent
+      ),
+    [activeNetworks, fetchingStatuses]
+  );
 
-        if ((result.data?.items || []).length > 0) setHasContent(true);
-      })
-    ).then(() => {
-      setIsLoading(false);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, activeNetworks]);
+  const isLoading = useMemo(
+    () =>
+      !!activeNetworks.some(
+        (activeNetwork) =>
+          fetchingStatuses[activeNetwork.id]?.isLoading !== false
+      ),
+    [activeNetworks, fetchingStatuses]
+  );
 
   return (
     <>
@@ -100,17 +106,16 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
           <TokenSnapshotEmptyCard />
         ))}
 
-      {hasContent && (
-        <Stack gap={4}>
-          {activeNetworks.map((network) => (
-            <TokenSnapshotTable
-              key={network.id}
-              address={address}
-              network={network}
-            />
-          ))}
-        </Stack>
-      )}
+      <Stack gap={4}>
+        {activeNetworks.map((network) => (
+          <TokenSnapshotTable
+            key={network.id}
+            address={address}
+            network={network}
+            fetchingCallback={fetchingCallback}
+          />
+        ))}
+      </Stack>
     </>
   );
 };

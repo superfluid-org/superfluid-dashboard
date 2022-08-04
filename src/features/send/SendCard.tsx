@@ -164,6 +164,7 @@ export default memo(function SendCard() {
           name: x.name,
           symbol: x.symbol,
           decimals: 18,
+          isListed: x.isListed,
         })),
     [listedSuperTokensQuery.data, customSuperTokensQuery.data, network]
   );
