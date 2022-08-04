@@ -94,8 +94,6 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
     totalNumberOfClosedStreams,
   } = snapshot;
 
-  const [isListed, isListedLoading] = useTokenIsListed(network.id, token);
-
   const realtimeBalance = rpcApi.useRealtimeBalanceQuery({
     chainId: network.id,
     accountAddress: account,
@@ -135,8 +133,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             <ListItemAvatar>
               <TokenIcon
                 tokenSymbol={tokenSymbol}
-                isUnlisted={!isListed}
-                isLoading={isListedLoading}
+                isUnlisted={!snapshot.isListed}
               />
             </ListItemAvatar>
             <ListItemText

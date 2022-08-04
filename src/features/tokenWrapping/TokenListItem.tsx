@@ -1,3 +1,4 @@
+import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import {
   IconButton,
   ListItemAvatar,
@@ -7,14 +8,9 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { FC } from "react";
-import TokenIcon from "../token/TokenIcon";
-import Amount from "../token/Amount";
-import FlowingBalance from "../token/FlowingBalance";
-import { rpcApi } from "../redux/store";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import Link from "next/link";
+import { FC } from "react";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   isSuper,
@@ -22,7 +18,10 @@ import {
   isWrappable,
   TokenMinimal,
 } from "../redux/endpoints/tokenTypes";
-import { useTokenIsListed } from "../token/useTokenIsListed";
+import { rpcApi } from "../redux/store";
+import Amount from "../token/Amount";
+import FlowingBalance from "../token/FlowingBalance";
+import TokenIcon from "../token/TokenIcon";
 
 interface TokenListItemProps {
   chainId?: number;
