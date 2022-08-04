@@ -32,7 +32,7 @@ export type TokenSelectionProps = {
   showUpgrade?: boolean;
   tokenPairsQuery: {
     data: TokenMinimal[] | undefined;
-    isUninitialized: boolean;
+    isFetching: boolean;
     isLoading: boolean;
   };
 };
@@ -210,7 +210,7 @@ export default memo(function TokenDialog({
             </Stack>
           )}
 
-          {!tokenPairsQuery.isUninitialized &&
+          {!tokenPairsQuery.isFetching &&
             !tokenPairsQuery.isLoading &&
             !searchedTokens.length && (
               <Stack

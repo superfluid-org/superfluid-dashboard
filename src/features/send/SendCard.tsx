@@ -278,9 +278,9 @@ export default memo(function SendCard() {
                         isLoading:
                           listedSuperTokensQuery.isLoading ||
                           customSuperTokensQuery.isLoading,
-                        isUninitialized:
-                          listedSuperTokensQuery.isUninitialized ||
-                          customSuperTokensQuery.isUninitialized,
+                        isFetching:
+                          listedSuperTokensQuery.isFetching ||
+                          customSuperTokensQuery.isFetching,
                       },
                     }}
                     onTokenSelect={(x) => onChange(x.address)}

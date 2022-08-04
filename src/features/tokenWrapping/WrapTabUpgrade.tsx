@@ -247,7 +247,7 @@ export const WrapTabUpgrade: FC = () => {
                 tokenSelection={{
                   tokenPairsQuery: {
                     data: tokenSelection,
-                    isUninitialized: tokenPairsQuery.isUninitialized,
+                    isFetching: tokenPairsQuery.isFetching,
                     isLoading: tokenPairsQuery.isLoading,
                   },
                 }}
