@@ -39,15 +39,11 @@ jobs:
         uses: cypress-io/github-action@v4
         with:
           # browser: chrome
-          build: yarn build
-          start: yarn start
-          wait-on: 'http://localhost:3000'
-          wait-on-timeout: 180
           record: true
           parallel: true
-          group: "test"
-          ci-build-id: "test2"
-          env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
+          # group: "test"
+          # ci-build-id: "test2"
+          # env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
           # config: baseUrl=https://deploy-preview-179--superfluid-dashboard.netlify.app/
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
