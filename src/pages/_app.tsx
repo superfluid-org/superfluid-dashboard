@@ -53,9 +53,9 @@ export default function MyApp(props: MyAppProps) {
           <AutoConnectProvider>
             <ReduxProvider>
               <ImpersonationProvider>
-                <ActiveNetworksProvider>
-                  <ExpectedNetworkProvider>
-                    {(network) => (
+                <ExpectedNetworkProvider>
+                  {(network) => (
+                    <ActiveNetworksProvider>
                       <MuiProvider>
                         {(_muiTheme) => (
                           <RainbowKitManager>
@@ -80,9 +80,9 @@ export default function MyApp(props: MyAppProps) {
                           </RainbowKitManager>
                         )}
                       </MuiProvider>
-                    )}
-                  </ExpectedNetworkProvider>
-                </ActiveNetworksProvider>
+                    </ActiveNetworksProvider>
+                  )}
+                </ExpectedNetworkProvider>
               </ImpersonationProvider>
             </ReduxProvider>
           </AutoConnectProvider>

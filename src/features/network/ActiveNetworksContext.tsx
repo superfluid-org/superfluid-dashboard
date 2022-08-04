@@ -8,6 +8,7 @@ import {
 } from "react";
 import { useNetwork } from "wagmi";
 import { useAppDispatch, useAppSelector } from "../redux/store";
+import { useExpectedNetwork } from "./ExpectedNetworkContext";
 import { hideNetwork, unhideNetwork } from "./networkPreferences.slice";
 import { Network, networks, networksByChainId } from "./networks";
 
@@ -22,7 +23,7 @@ interface ActiveNetworksContextValue {
 const ActiveNetworksContext = createContext<ActiveNetworksContextValue>(null!);
 
 export const ActiveNetworksProvider: FC = ({ children }) => {
-  const { chain: activeChain } = useNetwork();
+  const { network } = useExpectedNetwork();
   const [testnetMode, setTestnetMode] = useState(false);
 
   const hiddenNetworkChainIds = useAppSelector(
@@ -33,16 +34,13 @@ export const ActiveNetworksProvider: FC = ({ children }) => {
 
   const activeNetworks = useMemo(
     () =>
-      (activeChain
-        ? [
-            ...networks.filter((x) => x.id === activeChain.id),
-            ...networks.filter((x) => x.id !== activeChain.id),
-          ] // Sort active chain to be the first in the list. Solution inspired by: https://stackoverflow.com/a/62071369/6099842
-        : networks
-      )
+      [
+        ...networks.filter((x) => x === network),
+        ...networks.filter((x) => x !== network),
+      ] // Sort active chain to be the first in the list. Solution inspired by: https://stackoverflow.com/a/62071369/6099842
         .filter((x) => !!x.testnet === testnetMode)
         .filter((x) => !hiddenNetworkChainIds.includes(x.id)),
-    [activeChain, testnetMode, hiddenNetworkChainIds]
+    [network, testnetMode, hiddenNetworkChainIds]
   );
 
   const contextValue = useMemo<ActiveNetworksContextValue>(
@@ -57,10 +55,10 @@ export const ActiveNetworksProvider: FC = ({ children }) => {
   );
 
   useEffect(() => {
-    if (activeChain) {
-      setTestnetMode(!!activeChain.testnet);
+    if (network) {
+      setTestnetMode(!!network.testnet);
     }
-  }, [activeChain]);
+  }, [network]);
 
   return (
     <ActiveNetworksContext.Provider value={contextValue}>
