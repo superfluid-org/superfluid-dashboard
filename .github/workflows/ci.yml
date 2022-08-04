@@ -16,10 +16,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - run: yarn install
+
       - name: Cypress Chrome tests
         uses: cypress-io/github-action@v4
         with:
-          install: true
           browser: chrome
           record: true
           parallel: true
