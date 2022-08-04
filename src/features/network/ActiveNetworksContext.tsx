@@ -1,4 +1,5 @@
 import { createContext, FC, useContext, useMemo, useState } from "react";
+import { useNetwork } from "wagmi";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { hideNetwork, unhideNetwork } from "./networkPreferences.slice";
 import { Network, networks } from "./networks";
@@ -14,6 +15,7 @@ interface ActiveNetworksContextValue {
 const ActiveNetworksContext = createContext<ActiveNetworksContextValue>(null!);
 
 export const ActiveNetworksProvider: FC = ({ children }) => {
+  const { chain: activeChain } = useNetwork();
   const [testnetMode, setTestnetMode] = useState(false);
 
   const hiddenNetworkChainIds = useAppSelector(
@@ -24,10 +26,16 @@ export const ActiveNetworksProvider: FC = ({ children }) => {
 
   const activeNetworks = useMemo(
     () =>
-      networks
+      (activeChain
+        ? [
+            ...networks.filter((x) => x.id === activeChain.id),
+            ...networks.filter((x) => x.id !== activeChain.id),
+          ] // Sort active chain to be the first in the list. Solution inspired by: https://stackoverflow.com/a/62071369/6099842
+        : networks
+      )
         .filter((x) => !!x.testnet === testnetMode)
         .filter((x) => !hiddenNetworkChainIds.includes(x.id)),
-    [testnetMode, hiddenNetworkChainIds]
+    [activeChain, testnetMode, hiddenNetworkChainIds]
   );
 
   const contextValue = useMemo<ActiveNetworksContextValue>(
