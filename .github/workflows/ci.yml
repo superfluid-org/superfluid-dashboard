@@ -8,7 +8,9 @@ jobs:
 
   test_chrome:
     runs-on: ubuntu-latest
-    container: cypress/included:10.4.0
+    container:
+          image: cypress/included:10.4.0
+          options: --user 1001
     strategy:
       fail-fast: false
       matrix:
@@ -20,6 +22,9 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16
+
+      - run: chown -R 1001:1001 /github/home/.cache && echo "pwn dat cache"
+
 
       - run: yarn install
         env:
