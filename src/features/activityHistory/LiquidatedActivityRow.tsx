@@ -76,6 +76,7 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
             <ListItem sx={{ p: 0 }}>
               <ListItemAvatar>
                 <TokenIcon
+                  isSuper
                   tokenSymbol={tokenQuery.data?.symbol}
                   isUnlisted={!tokenQuery.data?.isListed}
                   isLoading={tokenQuery.isLoading}
@@ -141,6 +142,7 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
         <TableCell align="right">
           <Stack direction="row" alignItems="center" justifyContent="end">
             <TokenIcon
+              isSuper
               tokenSymbol={tokenQuery.data?.symbol}
               isUnlisted={!tokenQuery.data?.isListed}
               isLoading={tokenQuery.isLoading}

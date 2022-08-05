@@ -29,7 +29,7 @@ const TokenToolbarData: FC<TokenToolbarData> = ({
   isUnlisted,
 }) => (
   <Stack direction="row" alignItems="center" gap={2}>
-    <TokenIcon tokenSymbol={symbol} isUnlisted={isUnlisted} />
+    <TokenIcon isSuper tokenSymbol={symbol} isUnlisted={isUnlisted} />
     <Typography variant="h3" component="h1">
       {name}
     </Typography>

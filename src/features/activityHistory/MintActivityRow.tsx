@@ -135,6 +135,7 @@ const MintActivityRow: FC<MintedActivity> = ({
             <ListItem sx={{ p: 0 }}>
               <ListItemAvatar>
                 <TokenIcon
+                  isSuper
                   tokenSymbol={superToken?.symbol}
                   isUnlisted={!isSuperTokenListed}
                   isLoading={superTokenQuery.isLoading}
@@ -194,6 +195,7 @@ const MintActivityRow: FC<MintedActivity> = ({
               />
             )}
             <TokenIcon
+              isSuper
               tokenSymbol={superToken?.symbol}
               isUnlisted={!isSuperTokenListed}
               isLoading={superTokenQuery.isLoading}

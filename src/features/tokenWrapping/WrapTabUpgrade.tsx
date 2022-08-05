@@ -345,6 +345,7 @@ export const WrapTabUpgrade: FC<WrapTabUpgradeProps> = ({ onSwitchMode }) => {
               color="secondary"
               startIcon={
                 <TokenIcon
+                  isSuper
                   tokenSymbol={superToken.symbol}
                   isUnlisted={!isListed}
                   isLoading={isListedLoading}

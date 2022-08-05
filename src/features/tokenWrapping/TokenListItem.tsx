@@ -92,7 +92,11 @@ export const TokenListItem: FC<TokenListItemProps> = ({
       sx={{ px: 3 }}
     >
       <ListItemAvatar>
-        <TokenIcon tokenSymbol={token.symbol} isUnlisted={!isListed} />
+        <TokenIcon
+          isSuper={isSuperToken}
+          tokenSymbol={token.symbol}
+          isUnlisted={!isListed}
+        />
       </ListItemAvatar>
 
       <ListItemText

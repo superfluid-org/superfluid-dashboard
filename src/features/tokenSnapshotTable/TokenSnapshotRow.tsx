@@ -132,6 +132,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           <ListItem sx={{ p: 0 }}>
             <ListItemAvatar>
               <TokenIcon
+                isSuper
                 tokenSymbol={tokenSymbol}
                 isUnlisted={!snapshot.isListed}
               />

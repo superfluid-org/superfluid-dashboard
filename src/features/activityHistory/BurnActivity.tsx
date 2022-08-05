@@ -100,12 +100,11 @@ const BurnActivity: FC<BurnedActivity> = ({
             {superToken && (
               <ListItem sx={{ p: 0 }}>
                 <ListItemAvatar>
-                  {
-                    <TokenIcon
-                      tokenSymbol={superToken.symbol}
-                      isUnlisted={!isSuperTokenListed}
-                    />
-                  }
+                  <TokenIcon
+                    isSuper
+                    tokenSymbol={superToken.symbol}
+                    isUnlisted={!isSuperTokenListed}
+                  />
                 </ListItemAvatar>
                 <ListItemText
                   data-cy={"amount"}

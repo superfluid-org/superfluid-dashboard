@@ -76,6 +76,7 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
             <ListItem sx={{ p: 0 }}>
               <ListItemAvatar>
                 <TokenIcon
+                  isSuper
                   tokenSymbol={tokenQuery.data?.symbol}
                   isUnlisted={!tokenQuery.data?.isListed}
                   isLoading={tokenQuery.isLoading}
@@ -157,6 +158,7 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
               />
             )}
             <TokenIcon
+              isSuper
               tokenSymbol={tokenQuery.data?.symbol}
               isUnlisted={!tokenQuery.data?.isListed}
               isLoading={tokenQuery.isLoading}
