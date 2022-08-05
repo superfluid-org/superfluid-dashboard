@@ -1,5 +1,4 @@
-import { Stack, Paper } from "@mui/material";
-import { useTheme } from "next-themes";
+import { Stack, Paper, useTheme } from "@mui/material";
 import { FC } from "react";
 
 export const WrapInputCard: FC = ({ children }) => {
