@@ -573,7 +573,9 @@ const StreamPageContent: FC<{
             <Typography variant="h6">
               <Amount
                 wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
-              />
+              >
+                {` ${tokenSymbol}`}
+              </Amount>
             </Typography>
 
             <Typography variant="h6" color="text.secondary">

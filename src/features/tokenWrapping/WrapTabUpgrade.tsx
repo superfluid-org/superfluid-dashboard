@@ -34,7 +34,7 @@ import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { SwitchWrapModeBtn } from "./SwitchWrapModeBtn";
 import { TokenDialogButton } from "./TokenDialogButton";
 import { useTokenPairQuery } from "./useTokenPairQuery";
-import { WrapInputCard } from "./WrapCard";
+import { WrapInputCard } from "./WrapInputCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 
 const underlyingIbAlluoTokenOverrides = [

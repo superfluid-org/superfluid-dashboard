@@ -1,33 +1,12 @@
 import { ErrorMessage } from "@hookform/error-message";
 
-import { Alert, Button, Card, Paper, Stack, useTheme } from "@mui/material";
+import { Alert, Button, Card, Stack, useTheme } from "@mui/material";
 import { useRouter } from "next/router";
-import { FC, memo } from "react";
+import { memo } from "react";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import NetworkBadge from "../network/NetworkBadge";
 import { WrapTabDowngrade } from "./WrapTabDowngrade";
 import { WrapTabUpgrade } from "./WrapTabUpgrade";
-
-export const WrapInputCard: FC = ({ children }) => {
-  const theme = useTheme();
-
-  return (
-    <Stack
-      component={Paper}
-      elevation={theme.palette.mode === "dark" ? 4 : 1}
-      spacing={1}
-      sx={{
-        px: 2.5,
-        py: 1.5,
-        border: "1px solid",
-        borderColor: theme.palette.other.outline,
-        borderRadius: "15px",
-      }}
-    >
-      {children}
-    </Stack>
-  );
-};
 
 type WrapTab = "upgrade" | "downgrade";
 
