@@ -26,16 +26,16 @@ const calculateBufferAmount = (
 
 const calculateDateWhenBalanceCritical = (
   realtimeBalance?: RealtimeBalance,
-  newTotalFlowRate?: BigNumber
+  totalFlowRate?: BigNumber
 ) => {
-  if (!realtimeBalance || !newTotalFlowRate || !newTotalFlowRate.isNegative()) {
+  if (!realtimeBalance || !totalFlowRate || !totalFlowRate.isNegative()) {
     return undefined;
   }
 
   const criticalAtTimestamp = calculateMaybeCriticalAtTimestamp({
     balanceUntilUpdatedAtWei: realtimeBalance.balance,
     updatedAtTimestamp: realtimeBalance.balanceTimestamp,
-    totalNetFlowRateWei: newTotalFlowRate,
+    totalNetFlowRateWei: totalFlowRate,
   });
 
   if (criticalAtTimestamp.lte(BIG_NUMBER_ZERO)) return undefined;
