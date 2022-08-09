@@ -45,6 +45,8 @@ const CopyTooltip: FC<CopyTooltipProps> = ({
 
   return (
     <Tooltip
+      data-cy={"copy-button"}
+      test-data={content}
       title={isCopied ? copiedText : copyText}
       arrow
       placement="top"

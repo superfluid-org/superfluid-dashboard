@@ -110,6 +110,7 @@ const StreamAccountCard: FC<StreamAccountCardProps> = ({
             : {})}
         />
         <ListItemText
+          data-cy={"sender-and-receiver"}
           primary={ensName || shortenHex(addressChecksummed, 4)}
           secondary={!!ensName && shortenHex(addressChecksummed, 4)}
           primaryTypographyProps={{ variant: isBelowMd ? "h7" : "h6" }}
@@ -134,6 +135,7 @@ const StreamAccountCard: FC<StreamAccountCardProps> = ({
             <Tooltip title="View on blockchain explorer" arrow placement="top">
               <span>
                 <Link
+                  data-cy="sender-and-receiver-explorer-links"
                   href={network.getLinkForAddress(addressChecksummed)}
                   passHref
                 >
@@ -163,7 +165,7 @@ const CancelledIndicator: FC<CancelledIndicatorProps> = ({
   return (
     <Stack direction="row" alignItems="center" gap={1}>
       {!isBelowMd && <CloseIcon color="error" />}
-      <Typography variant={isBelowMd ? "h6" : "h5"} color="error">
+      <Typography data-cy={"ended-stream-message"} variant={isBelowMd ? "h6" : "h5"} color="error">
         {`Cancelled on ${format(
           updatedAtTimestamp * 1000,
           "d MMMM yyyy"
@@ -178,11 +180,12 @@ interface ShareButtonProps {
   alt: string;
   tooltip: string;
   href?: string;
+  dataCy?: string;
 }
 
-const ShareButton: FC<ShareButtonProps> = ({ imgSrc, alt, tooltip, href }) => (
+const ShareButton: FC<ShareButtonProps> = ({ imgSrc, alt, tooltip, href, dataCy }) => (
   <Tooltip title={tooltip} arrow placement="top">
-    <MuiLink href={href} target="_blank">
+    <MuiLink data-cy={dataCy} href={href} target="_blank">
       <Box sx={{ display: "flex" }}>
         <Image
           unoptimized
@@ -200,14 +203,15 @@ const ShareButton: FC<ShareButtonProps> = ({ imgSrc, alt, tooltip, href }) => (
 interface OverviewItemProps {
   label: string;
   value: any;
+  dataCy?: string;
 }
 
-const OverviewItem: FC<OverviewItemProps> = ({ label, value }) => (
+const OverviewItem: FC<OverviewItemProps> = ({ label, value, dataCy }) => (
   <Stack direction="row" alignItems="center" justifyContent="space-between">
     <Typography variant="body1" color="text.secondary">
       {label}
     </Typography>
-    <Typography variant="h6">{value}</Typography>
+    <Typography data-cy={dataCy} variant="h6">{value}</Typography>
   </Stack>
 );
 
@@ -427,7 +431,7 @@ const StreamPageContent: FC<{
           }}
         >
           <Box>
-            <IconButton color="inherit" onClick={navigateBack}>
+            <IconButton data-cy={"back-button"} color="inherit" onClick={navigateBack}>
               <ArrowBackIcon />
             </IconButton>
           </Box>
@@ -441,6 +445,7 @@ const StreamPageContent: FC<{
           <Stack direction="row" justifyContent="flex-end" gap={1}>
             {isActive && isOutgoing && (
               <CancelStreamButton
+                data-cy={"cancel-button"}
                 stream={streamQuery.data}
                 network={network}
                 IconButtonProps={{ size: "medium" }}
@@ -475,6 +480,7 @@ const StreamPageContent: FC<{
                 }}
               >
                 <FlowingBalance
+                  data-cy={"streamed-so-far"}
                   balance={streamedUntilUpdatedAt}
                   flowRate={currentFlowRate}
                   balanceTimestamp={updatedAtTimestamp}
@@ -483,6 +489,7 @@ const StreamPageContent: FC<{
               </Typography>
               {!isBelowMd && (
                 <Typography
+                  data-cy={"streamed-token"}
                   variant="h3"
                   color="primary"
                   sx={{ lineHeight: "28px" }}
@@ -501,6 +508,7 @@ const StreamPageContent: FC<{
             >
               <TokenIcon tokenSymbol={tokenSymbol} size={isBelowMd ? 32 : 60} />
               <Typography
+                data-cy={"token-symbol"}
                 variant="h3"
                 color="primary"
                 sx={{ lineHeight: "28px" }}
@@ -554,7 +562,7 @@ const StreamPageContent: FC<{
 
         {currentFlowRate !== "0" && (
           <Stack direction="row" alignItems="center" gap={0.5}>
-            <Typography variant="h6">
+            <Typography data-cy={"amount-per-month"} variant="h6">
               <Amount
                 wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
               />
@@ -582,10 +590,12 @@ const StreamPageContent: FC<{
           }}
         >
           <OverviewItem
+            dataCy={"start-date"}
             label="Start Date:"
             value={format(createdAtTimestamp * 1000, "d MMM. yyyy H:mm")}
           />
           <OverviewItem
+            dataCy={"buffer"}
             label="Buffer:"
             value={
               bufferSize ? (
@@ -598,6 +608,7 @@ const StreamPageContent: FC<{
             }
           />
           <OverviewItem
+            dataCy={"updated-end-date"}
             label={`${isActive ? "Updated" : "End"} Date:`}
             value={
               updatedAtTimestamp
@@ -606,6 +617,7 @@ const StreamPageContent: FC<{
             }
           />
           <OverviewItem
+            dataCy={"network-name"}
             label="Network Name:"
             value={
               <Stack direction="row" alignItems="center" gap={0.5}>
@@ -615,6 +627,7 @@ const StreamPageContent: FC<{
             }
           />
           <OverviewItem
+            dataCy={"projected-liquidation"}
             label="Projected Liquidation:"
             value={
               isActive && liquidationDate
@@ -623,6 +636,7 @@ const StreamPageContent: FC<{
             }
           />
           <OverviewItem
+            dataCy={"tx-hash"}
             label="Transaction Hash:"
             value={
               streamCreationEvent && (
@@ -645,6 +659,7 @@ const StreamPageContent: FC<{
                     >
                       <span>
                         <Link
+                          data-cy={"tx-hash-link"}
                           href={network.getLinkForTransaction(
                             streamCreationEvent.transactionHash
                           )}
@@ -678,6 +693,8 @@ const StreamPageContent: FC<{
           <CopyTooltip content={urlToShare} copyText="Copy link">
             {({ copy }) => (
               <IconButton
+                data-cy={"copy-button"}
+                //test-data={urlToShare}
                 onClick={copy}
                 sx={{
                   color: "#fff",
@@ -698,6 +715,7 @@ const StreamPageContent: FC<{
           </CopyTooltip>
 
           <ShareButton
+            dataCy={"twitter-button"}
             imgSrc="/icons/social/twitter.svg"
             alt="Twitter logo"
             tooltip="Share on Twitter"
@@ -705,6 +723,7 @@ const StreamPageContent: FC<{
           />
           {/* <ShareButton imgSrc="/icons/social/discord.svg" alt="Discord logo" /> */}
           <ShareButton
+            dataCy={"telegram-button"}
             imgSrc="/icons/social/telegram.svg"
             alt="Telegram logo"
             tooltip="Share on Telegram"
