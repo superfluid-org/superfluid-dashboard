@@ -225,8 +225,12 @@ export const StreamingPreview: FC<{
             dataCy="preview-upfront-buffer"
             label={
               <Typography variant="body2">
-                Upfront buffer
-                <TooltipIcon title="If the end date is not specified, stream will run indefinitely or until you run out of tokens." />
+                Upfront buffer{` `}
+                <TooltipIcon
+                  title={`A ${
+                    network.bufferTimeInMinutes / 60
+                  } hour buffer of the flow rate is taken when starting a stream and returned when you manually cancel it.`}
+                />
               </Typography>
             }
             oldValue={

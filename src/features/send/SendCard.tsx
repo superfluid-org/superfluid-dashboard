@@ -80,7 +80,6 @@ export default memo(function SendCard() {
     control,
     formState,
     getValues,
-    getFieldState,
     reset: resetForm,
   } = useFormContext<PartialStreamingForm>();
 
@@ -96,33 +95,24 @@ export default memo(function SendCard() {
     "data.understandLiquidationRisk",
   ]);
 
-  const { isDirty: receiverDirty, isTouched: receiverTouched } = getFieldState(
-    "data.receiverAddress",
-    formState
-  );
-  const { isDirty: tokenDirty, isTouched: tokenTouched } = getFieldState(
-    "data.tokenAddress",
-    formState
-  );
-  const { isDirty: flowRateDirty, isTouched: flowRateTouched } = getFieldState(
-    "data.flowRate",
-    formState
-  );
+  const showBufferAlert = useMemo(() => {
+    const {
+      receiverAddress: receiverDirty,
+      tokenAddress: tokenDirty,
+      flowRate: flowRateDirty,
+    } = formState.dirtyFields.data || {};
+    const {
+      receiverAddress: receiverTouched,
+      tokenAddress: tokenTouched,
+      flowRate: flowRateTouched,
+    } = formState.touchedFields.data || {};
 
-  const showBufferAlert = useMemo(
-    () =>
+    return (
       (receiverDirty || receiverTouched) &&
       (tokenDirty || tokenTouched) &&
-      (flowRateDirty || flowRateTouched),
-    [
-      receiverDirty,
-      receiverTouched,
-      tokenDirty,
-      tokenTouched,
-      flowRateDirty,
-      flowRateTouched,
-    ]
-  );
+      (flowRateDirty || flowRateTouched)
+    );
+  }, [formState]);
 
   const { token } = subgraphApi.useTokenQuery(
     tokenAddress
@@ -449,7 +439,7 @@ export default memo(function SendCard() {
           <Alert severity="error">
             If you do not cancel this stream before your balance reaches zero,{" "}
             <b>
-              you will lose{" "}
+              you will lose your{" "}
               {bufferAmount && token ? (
                 <Amount wei={bufferAmount.toString()}> {token.symbol}</Amount>
               ) : (

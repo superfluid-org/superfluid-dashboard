@@ -183,27 +183,14 @@ const StreamingFormProvider: FC<StreamingFormProviderProps> = ({
   const { formState, setValue, trigger, clearErrors, setError, watch } =
     formMethods;
 
-  const [
-    receiverAddress,
-    tokenAddress,
-    flowRateEther,
-    understandLiquidationRisk,
-  ] = watch([
+  const [receiverAddress, tokenAddress, flowRateEther] = watch([
     "data.receiverAddress",
     "data.tokenAddress",
     "data.flowRate",
-    "data.understandLiquidationRisk",
   ]);
 
-  /**
-   * We don't want to trigger useEffect on "understandLiquidationRisk" change.
-   * Else we would have to check previous state as well
-   */
   useEffect(() => {
-    if (understandLiquidationRisk) {
-      setValue("data.understandLiquidationRisk", false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setValue("data.understandLiquidationRisk", false);
   }, [receiverAddress, tokenAddress, flowRateEther, setValue]);
 
   const [isInitialized, setIsInitialized] = useState(!initialFormValues);
