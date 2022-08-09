@@ -18,16 +18,17 @@ import {
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
 import { useTokenIsListed } from "../token/useTokenIsListed";
+import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
+import { TransactionButton } from "../transactionBoundary/TransactionButton";
+import {
+  TransactionDialogActions,
+  TransactionDialogButton,
+} from "../transactionBoundary/TransactionDialog";
 import {
   ApproveAllowanceRestoration,
   RestorationType,
   SuperTokenUpgradeRestoration,
 } from "../transactionRestoration/transactionRestorations";
-import { TransactionButton } from "../transactions/TransactionButton";
-import {
-  TransactionDialogActions,
-  TransactionDialogButton,
-} from "../transactions/TransactionDialog";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { BalanceSuperToken } from "./BalanceSuperToken";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
@@ -375,162 +376,156 @@ export const WrapTabUpgrade: FC = () => {
       )}
 
       <Stack gap={2} direction="column" sx={{ width: "100%" }}>
-        <TransactionButton
-          dataCy={"approve-allowance-button"}
-          mutationResult={approveResult}
-          hidden={!isApproveAllowanceVisible}
-          disabled={false}
-          onClick={async (signer, setTransactionDialogContent) => {
-            if (!isApproveAllowanceVisible) {
-              throw Error("This should never happen.");
-            }
+        <TransactionBoundary mutationResult={approveResult}>
+          {({ setDialogLoadingInfo }) =>
+            isApproveAllowanceVisible && (
+              <TransactionButton
+                dataCy={"approve-allowance-button"}
+                onClick={async (signer) => {
+                  const approveAllowanceAmountWei =
+                    currentAllowance.add(missingAllowance);
 
-            const approveAllowanceAmountWei =
-              currentAllowance.add(missingAllowance);
+                  setDialogLoadingInfo(
+                    <AllowancePreview
+                      {...{
+                        amountWei: approveAllowanceAmountWei.toString(),
+                        decimals: underlyingToken.decimals,
+                        tokenSymbol: underlyingToken.symbol,
+                      }}
+                    />
+                  );
 
-            setTransactionDialogContent({
-              label: (
-                <AllowancePreview
-                  {...{
+                  const restoration: ApproveAllowanceRestoration = {
+                    type: RestorationType.Approve,
+                    chainId: network.id,
                     amountWei: approveAllowanceAmountWei.toString(),
-                    decimals: underlyingToken.decimals,
-                    tokenSymbol: underlyingToken.symbol,
-                  }}
-                />
-              ),
-            });
+                    tokenAddress: tokenPair.underlyingTokenAddress,
+                  };
 
-            const restoration: ApproveAllowanceRestoration = {
-              type: RestorationType.Approve,
-              chainId: network.id,
-              amountWei: approveAllowanceAmountWei.toString(),
-              tokenAddress: tokenPair.underlyingTokenAddress,
-            };
+                  approveTrigger({
+                    signer,
+                    chainId: network.id,
+                    amountWei: approveAllowanceAmountWei.toString(),
+                    superTokenAddress: tokenPair.superTokenAddress,
+                    transactionExtraData: {
+                      restoration,
+                    },
+                    overrides: await getTransactionOverrides(network),
+                  })
+                    .unwrap()
+                    .then(() => setTransactionDrawerOpen(true));
+                }}
+              >
+                Approve Allowance
+              </TransactionButton>
+            )
+          }
+        </TransactionBoundary>
 
-            approveTrigger({
-              signer,
-              chainId: network.id,
-              amountWei: approveAllowanceAmountWei.toString(),
-              superTokenAddress: tokenPair.superTokenAddress,
-              transactionExtraData: {
-                restoration,
-              },
-              overrides: await getTransactionOverrides(network),
-            })
-              .unwrap()
-              .then(() => setTransactionDrawerOpen(true));
-          }}
-        >
-          Approve Allowance
-        </TransactionButton>
+        <TransactionBoundary mutationResult={upgradeResult}>
+          {({ closeDialog, setDialogLoadingInfo, setDialogSuccessActions }) => (
+            <TransactionButton
+              dataCy={"upgrade-button"}
+              disabled={isUpgradeDisabled}
+              onClick={async (signer) => {
+                if (isUpgradeDisabled) {
+                  throw Error(
+                    `This should never happen. Form state: ${JSON.stringify(
+                      formState,
+                      null,
+                      2
+                    )}`
+                  );
+                }
 
-        <TransactionButton
-          dataCy={"upgrade-button"}
-          hidden={false}
-          disabled={isUpgradeDisabled}
-          mutationResult={upgradeResult}
-          onClick={async (
-            signer,
-            setTransactionDialogContent,
-            closeTransactionDialog
-          ) => {
-            if (isUpgradeDisabled) {
-              throw Error(
-                `This should never happen. Form state: ${JSON.stringify(
-                  formState,
-                  null,
-                  2
-                )}`
-              );
-            }
+                const { data: formData } = getValues() as ValidWrappingForm;
 
-            const { data: formData } = getValues() as ValidWrappingForm;
+                // Use super token's decimals for upgrading, not the underlying's.
+                const amountWei = parseEther(formData.amountDecimal);
 
-            // Use super token's decimals for upgrading, not the underlying's.
-            const amountWei = parseEther(formData.amountDecimal);
+                const restoration: SuperTokenUpgradeRestoration = {
+                  type: RestorationType.Upgrade,
+                  version: 2,
+                  chainId: network.id,
+                  tokenPair: tokenPair,
+                  amountWei: amountWei.toString(),
+                };
 
-            const restoration: SuperTokenUpgradeRestoration = {
-              type: RestorationType.Upgrade,
-              version: 2,
-              chainId: network.id,
-              tokenPair: tokenPair,
-              amountWei: amountWei.toString(),
-            };
+                const overrides = await getTransactionOverrides(network);
 
-            const overrides = await getTransactionOverrides(network);
+                // In Gnosis Safe, Ether's estimateGas is flaky for native assets.
+                const isGnosisSafe = activeConnector?.id === "safe";
+                const isNativeAssetSuperToken =
+                  formData.tokenPair.underlyingTokenAddress ===
+                  NATIVE_ASSET_ADDRESS;
 
-            // In Gnosis Safe, Ether's estimateGas is flaky for native assets.
-            const isGnosisSafe = activeConnector?.id === "safe";
-            const isNativeAssetSuperToken =
-              formData.tokenPair.underlyingTokenAddress ===
-              NATIVE_ASSET_ADDRESS;
+                // Temp custom override for "IbAlluo" tokens on polygon
+                // TODO: Find a better solution
+                if (
+                  network.id === 137 &&
+                  underlyingIbAlluoTokenOverrides.includes(
+                    tokenPair.underlyingTokenAddress.toLowerCase()
+                  )
+                ) {
+                  overrides.gasLimit = 200_000;
+                }
 
-            // Temp custom override for "IbAlluo" tokens on polygon
-            // TODO: Find a better solution
-            if (
-              network.id === 137 &&
-              underlyingIbAlluoTokenOverrides.includes(
-                tokenPair.underlyingTokenAddress.toLowerCase()
-              )
-            ) {
-              overrides.gasLimit = 200_000;
-            }
+                if (isGnosisSafe && isNativeAssetSuperToken) {
+                  overrides.gasLimit = 500_000;
+                }
 
-            if (isGnosisSafe && isNativeAssetSuperToken) {
-              overrides.gasLimit = 500_000;
-            }
+                setDialogLoadingInfo(
+                  <UpgradePreview
+                    {...{
+                      amountWei: amountWei,
+                      superTokenSymbol: superToken.symbol,
+                      underlyingTokenSymbol: underlyingToken.symbol,
+                    }}
+                  />
+                );
 
-            upgradeTrigger({
-              signer,
-              chainId: network.id,
-              amountWei: amountWei.toString(),
-              superTokenAddress: formData.tokenPair.superTokenAddress,
-              waitForConfirmation: true,
-              transactionExtraData: {
-                restoration,
-              },
-              overrides,
-            })
-              .unwrap()
-              .then(() => resetForm());
+                upgradeTrigger({
+                  signer,
+                  chainId: network.id,
+                  amountWei: amountWei.toString(),
+                  superTokenAddress: formData.tokenPair.superTokenAddress,
+                  waitForConfirmation: true,
+                  transactionExtraData: {
+                    restoration,
+                  },
+                  overrides,
+                })
+                  .unwrap()
+                  .then(() => resetForm());
 
-            setTransactionDialogContent({
-              label: (
-                <UpgradePreview
-                  {...{
-                    amountWei: amountWei,
-                    superTokenSymbol: superToken.symbol,
-                    underlyingTokenSymbol: underlyingToken.symbol,
-                  }}
-                />
-              ),
-              successActions: (
-                <TransactionDialogActions>
-                  <Stack gap={1} sx={{ width: "100%" }}>
-                    <TransactionDialogButton
-                      color="secondary"
-                      onClick={closeTransactionDialog}
-                    >
-                      Wrap more tokens
-                    </TransactionDialogButton>
-                    <TransactionDialogButton
-                      color="primary"
-                      onClick={() =>
-                        router
-                          .push("/")
-                          .then(() => setTransactionDrawerOpen(true))
-                      }
-                    >
-                      Go to tokens page ➜
-                    </TransactionDialogButton>
-                  </Stack>
-                </TransactionDialogActions>
-              ),
-            });
-          }}
-        >
-          Upgrade to Super Token
-        </TransactionButton>
+                setDialogSuccessActions(
+                  <TransactionDialogActions>
+                    <Stack gap={1} sx={{ width: "100%" }}>
+                      <TransactionDialogButton
+                        color="secondary"
+                        onClick={closeDialog}
+                      >
+                        Wrap more tokens
+                      </TransactionDialogButton>
+                      <TransactionDialogButton
+                        color="primary"
+                        onClick={() =>
+                          router
+                            .push("/")
+                            .then(() => setTransactionDrawerOpen(true))
+                        }
+                      >
+                        Go to tokens page ➜
+                      </TransactionDialogButton>
+                    </Stack>
+                  </TransactionDialogActions>
+                );
+              }}
+            >
+              Upgrade to Super Token
+            </TransactionButton>
+          )}
+        </TransactionBoundary>
       </Stack>
     </Stack>
   );

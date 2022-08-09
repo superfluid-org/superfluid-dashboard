@@ -11,17 +11,13 @@ import {
   Tooltip,
 } from "@mui/material";
 import { Stream } from "@superfluid-finance/sdk-core";
+import { Signer } from "ethers";
 import { FC, MouseEvent, useState } from "react";
-import { useNetwork, useSigner } from "wagmi";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { Network } from "../../network/networks";
 import usePendingStreamCancellation from "../../pendingUpdates/usePendingStreamCancellation";
 import { rpcApi } from "../../redux/store";
-import {
-  TransactionDialog,
-  TransactionDialogActions,
-  TransactionDialogButton,
-} from "../../transactions/TransactionDialog";
+import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import CancelStreamProgress from "./CancelStreamProgress";
 
 interface CancelStreamButtonProps {
@@ -37,8 +33,6 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
 }) => {
   const { token, sender, receiver } = stream;
 
-  const { chain: activeChain } = useNetwork();
-  const { data: signer } = useSigner();
   const [flowDeleteTrigger, flowDeleteMutation] =
     rpcApi.useFlowDeleteMutation();
   const getTransactionOverrides = useGetTransactionOverrides();
@@ -50,18 +44,12 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
   });
 
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
-  const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   const openMenu = (event: MouseEvent<HTMLButtonElement>) =>
     setMenuAnchor(event.currentTarget);
   const closeMenu = () => setMenuAnchor(null);
-  const closeCancelDialog = () => setShowCancelDialog(false);
 
-  const deleteStream = async () => {
-    if (!signer) {
-      throw new Error("Signer is not set.");
-    }
-
+  const deleteStream = async (signer: Signer) => {
     flowDeleteTrigger({
       signer,
       chainId: network.id,
@@ -73,76 +61,73 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
       overrides: await getTransactionOverrides(network),
     }).unwrap();
     closeMenu();
-    setShowCancelDialog(true);
   };
 
   const menuOpen = Boolean(menuAnchor);
 
   return (
-    <>
-      {flowDeleteMutation.isLoading || !!pendingCancellation ? (
-        <CancelStreamProgress pendingCancellation={pendingCancellation} />
-      ) : (
-        <>
-          <Tooltip
-            data-cy={"switch-network-tooltip"}
-            arrow
-            disableInteractive
-            title={`Please connect your wallet and switch provider network to ${network.name} in order to cancel the stream.`}
-            disableHoverListener={network.id === activeChain?.id}
-          >
-            <span>
-              <IconButton
-                data-cy={"cancel-button"}
-                color="error"
-                size="small"
-                onClick={openMenu}
-                disabled={network.id !== activeChain?.id}
-                {...IconButtonProps}
-              >
-                <CancelRoundedIcon />
-              </IconButton>
-            </span>
-          </Tooltip>
-
-          <Popover
-            open={menuOpen}
-            anchorEl={menuAnchor}
-            onClose={closeMenu}
-            transformOrigin={{ horizontal: "right", vertical: "top" }}
-            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-          >
-            <MenuList sx={{ py: 0.5 }}>
-              <MenuItem data-cy={"cancel-stream-button"} onClick={deleteStream}>
-                <ListItemAvatar sx={{ mr: 1, width: "20px", height: "20px" }}>
-                  <CloseRoundedIcon fontSize="small" color="error" />
-                </ListItemAvatar>
-                <ListItemText
-                  primaryTypographyProps={{ variant: "menuItem" }}
-                  sx={{ color: "error.main" }}
+    <TransactionBoundary
+      mutationResult={flowDeleteMutation}
+      expectedNetwork={network}
+    >
+      {({ mutationResult, isCorrectNetwork, signer }) =>
+        mutationResult.isLoading || !!pendingCancellation ? (
+          <CancelStreamProgress pendingCancellation={pendingCancellation} />
+        ) : (
+          <>
+            <Tooltip
+              data-cy={"switch-network-tooltip"}
+              arrow
+              disableInteractive
+              title={`Please connect your wallet and switch provider network to ${network.name} in order to cancel the stream.`}
+              disableHoverListener={isCorrectNetwork}
+            >
+              <span>
+                <IconButton
+                  data-cy={"cancel-button"}
+                  color="error"
+                  size="small"
+                  onClick={openMenu}
+                  disabled={!isCorrectNetwork}
+                  {...IconButtonProps}
                 >
-                  Cancel Stream
-                </ListItemText>
-              </MenuItem>
-            </MenuList>
-          </Popover>
-        </>
-      )}
-
-      <TransactionDialog
-        mutationResult={flowDeleteMutation}
-        network={network}
-        onClose={closeCancelDialog}
-        open={showCancelDialog}
-        successActions={
-          <TransactionDialogActions>
-            <TransactionDialogButton onClick={closeCancelDialog}>
-              OK
-            </TransactionDialogButton>
-          </TransactionDialogActions>
-        }
-      />
-    </>
+                  <CancelRoundedIcon />
+                </IconButton>
+              </span>
+            </Tooltip>
+            <Popover
+              open={menuOpen}
+              anchorEl={menuAnchor}
+              onClose={closeMenu}
+              transformOrigin={{ horizontal: "right", vertical: "top" }}
+              anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            >
+              <MenuList sx={{ py: 0.5 }}>
+                <MenuItem
+                  data-cy={"cancel-stream-button"}
+                  onClick={() => {
+                    if (!signer) {
+                      throw new Error("Signer is not set.");
+                    }
+                    deleteStream(signer);
+                  }}
+                >
+                  <ListItemAvatar sx={{ mr: 1, width: "20px", height: "20px" }}>
+                    <CloseRoundedIcon fontSize="small" color="error" />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primaryTypographyProps={{ variant: "menuItem" }}
+                    sx={{ color: "error.main" }}
+                  >
+                    Cancel Stream
+                  </ListItemText>
+                </MenuItem>
+              </MenuList>
+            </Popover>
+          </>
+        )
+      }
+    </TransactionBoundary>
   );
 };
 

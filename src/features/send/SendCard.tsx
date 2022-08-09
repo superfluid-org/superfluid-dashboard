@@ -35,16 +35,17 @@ import { isWrappable, SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
+import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
+import { TransactionButton } from "../transactionBoundary/TransactionButton";
+import {
+  TransactionDialogActions,
+  TransactionDialogButton,
+} from "../transactionBoundary/TransactionDialog";
 import {
   ModifyStreamRestoration,
   RestorationType,
   SendStreamRestoration,
 } from "../transactionRestoration/transactionRestorations";
-import { TransactionButton } from "../transactions/TransactionButton";
-import {
-  TransactionDialogActions,
-  TransactionDialogButton,
-} from "../transactions/TransactionDialog";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import AddressSearch from "./AddressSearch";
 import { calculateTotalAmountWei, FlowRateInput } from "./FlowRateInput";
@@ -425,182 +426,202 @@ export default memo(function SendCard() {
             </>
           )}
 
-          {!activeFlow ? (
-            <TransactionButton
-              dataCy={"send-transaction-button"}
-              hidden={false}
-              disabled={isSendDisabled}
-              mutationResult={flowCreateResult}
-              onClick={async (signer, setTransactionDialogContent) => {
-                if (!formState.isValid) {
-                  throw Error(
-                    `This should never happen. Form state: ${JSON.stringify(
-                      formState,
-                      null,
-                      2
-                    )}`
-                  );
-                }
+          <TransactionBoundary mutationResult={flowCreateResult}>
+            {({ closeDialog, setDialogSuccessActions }) =>
+              !activeFlow && (
+                <TransactionButton
+                  dataCy={"send-transaction-button"}
+                  disabled={isSendDisabled}
+                  onClick={async (signer) => {
+                    if (!formState.isValid) {
+                      throw Error(
+                        `This should never happen. Form state: ${JSON.stringify(
+                          formState,
+                          null,
+                          2
+                        )}`
+                      );
+                    }
 
-                const { data: formData } = getValues() as ValidStreamingForm;
+                    const { data: formData } =
+                      getValues() as ValidStreamingForm;
 
-                const restoration: SendStreamRestoration = {
-                  version: 2,
-                  type: RestorationType.SendStream,
-                  chainId: network.id,
-                  tokenAddress: formData.tokenAddress,
-                  receiverAddress: formData.receiverAddress,
-                  flowRate: {
-                    amountWei: parseEther(
-                      formData.flowRate.amountEther
-                    ).toString(),
-                    unitOfTime: formData.flowRate.unitOfTime,
-                  },
-                };
-                flowCreateTrigger({
-                  signer,
-                  chainId: network.id,
-                  flowRateWei:
-                    calculateTotalAmountWei(flowRateEther).toString(),
-                  senderAddress: await signer.getAddress(),
-                  receiverAddress: formData.receiverAddress,
-                  superTokenAddress: formData.tokenAddress,
-                  userDataBytes: undefined,
-                  waitForConfirmation: false,
-                  transactionExtraData: {
-                    restoration: restoration,
-                  },
-                  overrides: await getTransactionOverrides(network),
-                })
-                  .unwrap()
-                  .then(() => resetForm());
+                    const restoration: SendStreamRestoration = {
+                      version: 2,
+                      type: RestorationType.SendStream,
+                      chainId: network.id,
+                      tokenAddress: formData.tokenAddress,
+                      receiverAddress: formData.receiverAddress,
+                      flowRate: {
+                        amountWei: parseEther(
+                          formData.flowRate.amountEther
+                        ).toString(),
+                        unitOfTime: formData.flowRate.unitOfTime,
+                      },
+                    };
+                    flowCreateTrigger({
+                      signer,
+                      chainId: network.id,
+                      flowRateWei:
+                        calculateTotalAmountWei(flowRateEther).toString(),
+                      senderAddress: await signer.getAddress(),
+                      receiverAddress: formData.receiverAddress,
+                      superTokenAddress: formData.tokenAddress,
+                      userDataBytes: undefined,
+                      waitForConfirmation: false,
+                      transactionExtraData: {
+                        restoration: restoration,
+                      },
+                      overrides: await getTransactionOverrides(network),
+                    })
+                      .unwrap()
+                      .then(() => resetForm());
 
-                // TODO(KK): "open another stream" button?
-                setTransactionDialogContent({
-                  successActions: (
-                    <TransactionDialogActions>
-                      <Link
-                        href={getTokenPagePath({
-                          network: network.slugName,
-                          token: formData.tokenAddress,
-                        })}
-                        passHref
-                      >
-                        <TransactionDialogButton color="primary">
-                          Go to token page ➜
-                        </TransactionDialogButton>
-                      </Link>
-                    </TransactionDialogActions>
-                  ),
-                });
-              }}
-            >
-              Send
-            </TransactionButton>
-          ) : (
-            <Stack direction="column" gap={1}>
-              <TransactionButton
-                hidden={false}
-                disabled={isSendDisabled}
-                mutationResult={flowUpdateResult}
-                onClick={async (signer, setTransactionDialogContent) => {
-                  if (!formState.isValid) {
-                    throw Error("This should never happen.");
-                  }
-
-                  const { data: formData } = getValues() as ValidStreamingForm;
-
-                  const restoration: ModifyStreamRestoration = {
-                    version: 2,
-                    type: RestorationType.ModifyStream,
-                    chainId: network.id,
-                    tokenAddress: formData.tokenAddress,
-                    receiverAddress: formData.receiverAddress,
-                    flowRate: {
-                      amountWei: parseEther(
-                        formData.flowRate.amountEther
-                      ).toString(),
-                      unitOfTime: formData.flowRate.unitOfTime,
-                    },
-                  };
-                  flowUpdateTrigger({
-                    signer,
-                    chainId: network.id,
-                    flowRateWei: calculateTotalAmountWei({
-                      amountWei: parseEther(
-                        formData.flowRate.amountEther
-                      ).toString(),
-                      unitOfTime: formData.flowRate.unitOfTime,
-                    }).toString(),
-                    senderAddress: await signer.getAddress(),
-                    receiverAddress: formData.receiverAddress,
-                    superTokenAddress: formData.tokenAddress,
-                    userDataBytes: undefined,
-                    waitForConfirmation: false,
-                    transactionExtraData: {
-                      restoration: restoration,
-                    },
-                    overrides: await getTransactionOverrides(network),
-                  }).unwrap();
-                  // .then(() => resetForm()); // TODO(KK): Reset form. Can't do it ATM because then the transaction dialog gets lost.
-
-                  // TODO(KK): Go to stream page instead?
-                  setTransactionDialogContent({
-                    successActions: (
+                    setDialogSuccessActions(
                       <TransactionDialogActions>
-                        <Link
-                          href={getTokenPagePath({
-                            network: network.slugName,
-                            token: formData.tokenAddress,
-                          })}
-                          passHref
-                        >
-                          <TransactionDialogButton color="primary">
-                            Go to token page ➜
+                        <Stack gap={1} sx={{ width: "100%" }}>
+                          <TransactionDialogButton
+                            color="secondary"
+                            onClick={closeDialog}
+                          >
+                            Send more streams
                           </TransactionDialogButton>
-                        </Link>
+                          <Link
+                            href={getTokenPagePath({
+                              network: network.slugName,
+                              token: formData.tokenAddress,
+                            })}
+                            passHref
+                          >
+                            <TransactionDialogButton color="primary">
+                              Go to token page ➜
+                            </TransactionDialogButton>
+                          </Link>
+                        </Stack>
                       </TransactionDialogActions>
-                    ),
-                  });
-                }}
-              >
-                Modify
-              </TransactionButton>
-              <TransactionButton
-                dataCy={"cancel-stream-button"}
-                hidden={false}
-                disabled={false}
-                mutationResult={flowDeleteResult}
-                ButtonProps={{
-                  variant: "outlined",
-                }}
-                onClick={async (signer) => {
-                  const superTokenAddress = tokenAddress;
-                  const senderAddress = visibleAddress;
-                  if (
-                    !receiverAddress ||
-                    !superTokenAddress ||
-                    !senderAddress
-                  ) {
-                    throw Error("This should never happen.");
-                  }
+                    );
+                  }}
+                >
+                  Send
+                </TransactionButton>
+              )
+            }
+          </TransactionBoundary>
 
-                  flowDeleteTrigger({
-                    signer,
-                    receiverAddress,
-                    superTokenAddress,
-                    senderAddress,
-                    chainId: network.id,
-                    userDataBytes: undefined,
-                    waitForConfirmation: false,
-                    overrides: await getTransactionOverrides(network),
-                  }).unwrap();
-                }}
-              >
-                Cancel Stream
-              </TransactionButton>
-            </Stack>
-          )}
+          <Stack
+            direction="column"
+            gap={1}
+            sx={{ ...(!activeFlow ? { display: "none" } : {}) }}
+          >
+            <TransactionBoundary mutationResult={flowUpdateResult}>
+              {({ setDialogLoadingInfo }) =>
+                activeFlow && (
+                  <TransactionButton
+                    disabled={isSendDisabled}
+                    onClick={async (signer) => {
+                      if (!formState.isValid) {
+                        throw Error("This should never happen.");
+                      }
+
+                      const { data: formData } =
+                        getValues() as ValidStreamingForm;
+
+                      const restoration: ModifyStreamRestoration = {
+                        version: 2,
+                        type: RestorationType.ModifyStream,
+                        chainId: network.id,
+                        tokenAddress: formData.tokenAddress,
+                        receiverAddress: formData.receiverAddress,
+                        flowRate: {
+                          amountWei: parseEther(
+                            formData.flowRate.amountEther
+                          ).toString(),
+                          unitOfTime: formData.flowRate.unitOfTime,
+                        },
+                      };
+                      flowUpdateTrigger({
+                        signer,
+                        chainId: network.id,
+                        flowRateWei: calculateTotalAmountWei({
+                          amountWei: parseEther(
+                            formData.flowRate.amountEther
+                          ).toString(),
+                          unitOfTime: formData.flowRate.unitOfTime,
+                        }).toString(),
+                        senderAddress: await signer.getAddress(),
+                        receiverAddress: formData.receiverAddress,
+                        superTokenAddress: formData.tokenAddress,
+                        userDataBytes: undefined,
+                        waitForConfirmation: false,
+                        transactionExtraData: {
+                          restoration: restoration,
+                        },
+                        overrides: await getTransactionOverrides(network),
+                      })
+                        .unwrap()
+                        .then(() => resetForm());
+
+                      setDialogLoadingInfo(
+                        <TransactionDialogActions>
+                          <Link
+                            href={getTokenPagePath({
+                              network: network.slugName,
+                              token: formData.tokenAddress,
+                            })}
+                            passHref
+                          >
+                            <TransactionDialogButton color="primary">
+                              Go to token page ➜
+                            </TransactionDialogButton>
+                          </Link>
+                        </TransactionDialogActions>
+                      );
+                    }}
+                  >
+                    Modify
+                  </TransactionButton>
+                )
+              }
+            </TransactionBoundary>
+            <TransactionBoundary mutationResult={flowDeleteResult}>
+              {() =>
+                activeFlow && (
+                  <TransactionButton
+                    dataCy={"cancel-stream-button"}
+                    ButtonProps={{
+                      variant: "outlined",
+                    }}
+                    onClick={async (signer) => {
+                      const superTokenAddress = tokenAddress;
+                      const senderAddress = visibleAddress;
+                      if (
+                        !receiverAddress ||
+                        !superTokenAddress ||
+                        !senderAddress
+                      ) {
+                        throw Error("This should never happen.");
+                      }
+
+                      flowDeleteTrigger({
+                        signer,
+                        receiverAddress,
+                        superTokenAddress,
+                        senderAddress,
+                        chainId: network.id,
+                        userDataBytes: undefined,
+                        waitForConfirmation: false,
+                        overrides: await getTransactionOverrides(network),
+                      })
+                        .unwrap()
+                        .then(() => resetForm());
+                    }}
+                  >
+                    Cancel Stream
+                  </TransactionButton>
+                )
+              }
+            </TransactionBoundary>
+          </Stack>
         </Stack>
       </Stack>
     </Card>
