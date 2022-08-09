@@ -82,7 +82,7 @@ export const RainbowKitManager: FC = ({ children }) => {
       Sentry.setTag(SENTRY_WALLET_TAG, null);
       Sentry.setContext(SENTRY_WALLET_CONTEXT, null);
     }
-  }, [activeConnector]);
+  }, [isConnected, activeConnector]);
 
   return (
     <RainbowKitProvider
