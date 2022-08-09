@@ -133,10 +133,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
 
   const isLoading =
     streams.length === 0 &&
-    (incomingStreamsQuery.isLoading ||
-      incomingStreamsQuery.isFetching ||
-      outgoingStreamsQuery.isLoading ||
-      outgoingStreamsQuery.isFetching);
+    (incomingStreamsQuery.isLoading || outgoingStreamsQuery.isLoading);
 
   return (
     <TableContainer

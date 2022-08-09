@@ -115,7 +115,6 @@ const TokenPageContent: FC<{
   accountAddress: string;
 }> = ({ network, tokenAddress, accountAddress }) => {
   const theme = useTheme();
-  const router = useRouter();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const [activeTab, setActiveTab] = useState(TokenDetailsTabs.Streams);
@@ -123,23 +122,21 @@ const TokenPageContent: FC<{
   const [showForecast, setShowForecast] = useState(true);
   const navigateBack = useNavigateBack();
 
-  const { data: _discard, ...realTimeBalanceQuery } =
-    rpcApi.useRealtimeBalanceQuery({
-      chainId: network.id,
-      tokenAddress: tokenAddress,
-      accountAddress: accountAddress,
-    });
+  const realTimeBalanceQuery = rpcApi.useRealtimeBalanceQuery({
+    chainId: network.id,
+    tokenAddress: tokenAddress,
+    accountAddress: accountAddress,
+  });
 
-  const { data: _discard3, ...tokenQuery } = subgraphApi.useTokenQuery({
+  const tokenQuery = subgraphApi.useTokenQuery({
     chainId: network.id,
     id: tokenAddress.toLowerCase(),
   });
 
-  const { data: _discard2, ...tokenSnapshotQuery } =
-    subgraphApi.useAccountTokenSnapshotQuery({
-      chainId: network.id,
-      id: `${accountAddress.toLowerCase()}-${tokenAddress.toLowerCase()}`,
-    });
+  const tokenSnapshotQuery = subgraphApi.useAccountTokenSnapshotQuery({
+    chainId: network.id,
+    id: `${accountAddress.toLowerCase()}-${tokenAddress.toLowerCase()}`,
+  });
 
   const onShowForecastChange = (_e: unknown, checked: boolean) =>
     setShowForecast(checked);
@@ -148,7 +145,7 @@ const TokenPageContent: FC<{
     return <TokenPageContainer />;
   }
 
-  if (!tokenQuery.currentData || !tokenSnapshotQuery.currentData) {
+  if (!tokenQuery.data || !tokenSnapshotQuery.data) {
     return <Page404 />;
   }
 
@@ -166,19 +163,19 @@ const TokenPageContent: FC<{
     totalOutflowRate,
     updatedAtTimestamp,
     maybeCriticalAtTimestamp,
-  } = tokenSnapshotQuery.currentData;
+  } = tokenSnapshotQuery.data;
 
   const {
     balance = balanceUntilUpdatedAt,
     balanceTimestamp: balanceTimestamp = updatedAtTimestamp,
     flowRate = totalNetFlowRate,
-  } = realTimeBalanceQuery.currentData || {};
+  } = realTimeBalanceQuery.data || {};
 
   return (
     <TokenPageContainer tokenSymbol={tokenSymbol}>
       <Stack gap={isBelowMd ? 3 : 4}>
         <TokenToolbar
-          token={tokenQuery.currentData}
+          token={tokenQuery.data}
           network={network}
           onBack={navigateBack}
         />

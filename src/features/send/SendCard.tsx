@@ -27,6 +27,7 @@ import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import TooltipIcon from "../common/TooltipIcon";
+import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import NetworkBadge from "../network/NetworkBadge";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
@@ -130,7 +131,9 @@ export default memo(function SendCard() {
   const [flowUpdateTrigger, flowUpdateResult] = rpcApi.useFlowUpdateMutation();
   const [flowDeleteTrigger, flowDeleteResult] = rpcApi.useFlowDeleteMutation();
 
-  const superTokensQuery = subgraphApi.useTokensQuery({
+  const networkCustomTokens = useNetworkCustomTokens(network.id);
+
+  const listedSuperTokensQuery = subgraphApi.useTokensQuery({
     chainId: network.id,
     filter: {
       isSuperToken: true,
@@ -138,16 +141,32 @@ export default memo(function SendCard() {
     },
   });
 
+  const customSuperTokensQuery = subgraphApi.useTokensQuery(
+    networkCustomTokens.length > 0
+      ? {
+          chainId: network.id,
+          filter: {
+            isSuperToken: true,
+            isListed: false,
+            id_in: networkCustomTokens,
+          },
+        }
+      : skipToken
+  );
+
   const superTokens = useMemo(
     () =>
-      superTokensQuery.data?.items?.map((x) => ({
-        type: getSuperTokenType({ ...x, network, address: x.id }),
-        address: x.id,
-        name: x.name,
-        symbol: x.symbol,
-        decimals: 18,
-      })),
-    [superTokensQuery.data, network]
+      (listedSuperTokensQuery.data?.items || [])
+        .concat(customSuperTokensQuery.data?.items || [])
+        .map((x) => ({
+          type: getSuperTokenType({ ...x, network, address: x.id }),
+          address: x.id,
+          name: x.name,
+          symbol: x.symbol,
+          decimals: 18,
+          isListed: x.isListed,
+        })),
+    [listedSuperTokensQuery.data, customSuperTokensQuery.data, network]
   );
 
   const shouldSearchForActiveFlow =
@@ -256,8 +275,9 @@ export default memo(function SendCard() {
                       showUpgrade: true,
                       tokenPairsQuery: {
                         data: superTokens,
-                        isLoading: superTokensQuery.isLoading,
-                        isUninitialized: superTokensQuery.isUninitialized,
+                        isFetching:
+                          listedSuperTokensQuery.isFetching ||
+                          customSuperTokensQuery.isFetching,
                       },
                     }}
                     onTokenSelect={(x) => onChange(x.address)}

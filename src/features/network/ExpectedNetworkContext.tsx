@@ -10,8 +10,6 @@ import {
   useState,
 } from "react";
 import { useNetwork } from "wagmi";
-import { wagmiClient } from "../wallet/WagmiManager";
-import { useActiveNetworks } from "./ActiveNetworksContext";
 import { Network, networksByChainId, networksBySlug } from "./networks";
 
 /**
@@ -35,7 +33,6 @@ export const ExpectedNetworkProvider: FC<{
 }> = ({ children }) => {
   const [network, setNetwork] = useState<Network>(networksByChainId.get(137)!);
   const [stopAutoSwitch, setStopAutoSwitch] = useState(false);
-  const { setTestnetMode } = useActiveNetworks();
 
   const contextValue: ExpectedNetworkContextValue = useMemo(
     () => ({
@@ -70,8 +67,8 @@ export const ExpectedNetworkProvider: FC<{
     if (activeChain && activeChain.id !== network.id) {
       const networkFromWallet = networksByChainId.get(activeChain.id);
       if (networkFromWallet) {
+        // setTestnetMode(!!activeChain.testnet);
         setNetwork(networkFromWallet);
-        setTestnetMode(!!networkFromWallet.testnet);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -4,6 +4,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   IconButton,
   List,
   ListItem,
@@ -32,8 +33,7 @@ export type TokenSelectionProps = {
   showUpgrade?: boolean;
   tokenPairsQuery: {
     data: TokenMinimal[] | undefined;
-    isUninitialized: boolean;
-    isLoading: boolean;
+    isFetching: boolean;
   };
 };
 
@@ -196,9 +196,10 @@ export default memo(function TokenDialog({
           onChange={(e) => setSearchTerm(e.currentTarget.value)}
         />
       </DialogTitle>
-      <DialogContent dividers sx={{ p: 0 }}>
+      <Divider />
+      <DialogContent sx={{ p: 0 }}>
         <List>
-          {tokenPairsQuery.isLoading && (
+          {tokenPairsQuery.isFetching && (
             <Stack
               data-cy="test"
               direction="row"
@@ -210,20 +211,18 @@ export default memo(function TokenDialog({
             </Stack>
           )}
 
-          {!tokenPairsQuery.isUninitialized &&
-            !tokenPairsQuery.isLoading &&
-            !searchedTokens.length && (
-              <Stack
-                data-cy={"token-search-no-results"}
-                component={ListItem}
-                direction="row"
-                justifyContent="center"
-                alignItems="center"
-                spacing={2}
-              >
-                Could not find any tokens. :(
-              </Stack>
-            )}
+          {!tokenPairsQuery.isFetching && !searchedTokens.length && (
+            <Stack
+              data-cy={"token-search-no-results"}
+              component={ListItem}
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              spacing={2}
+            >
+              Could not find any tokens. :(
+            </Stack>
+          )}
 
           {!!tokens.length &&
             searchedTokens.map((token) => (

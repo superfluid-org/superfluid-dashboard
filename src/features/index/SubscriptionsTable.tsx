@@ -95,8 +95,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
     approvedFilter === approved ? "primary" : "secondary";
 
   const isLoading =
-    indexSubscriptions.length === 0 &&
-    (indexSubscriptionsQuery.isLoading || indexSubscriptionsQuery.isFetching);
+    indexSubscriptions.length === 0 && indexSubscriptionsQuery.isLoading;
 
   return (
     <TableContainer

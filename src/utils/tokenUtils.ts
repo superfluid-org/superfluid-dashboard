@@ -1,10 +1,11 @@
+import { AccountTokenSnapshot } from "@superfluid-finance/sdk-core";
 import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
 import { BigNumber, BigNumberish } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 import { dateNowSeconds } from "./dateUtils";
 
 export const MAX_SAFE_SECONDS = BigNumber.from(8_640_000_000_000); // In seconds, https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#the_ecmascript_epoch_and_timestamps
-const BIG_NUMBER_ZERO = BigNumber.from(0);
+export const BIG_NUMBER_ZERO = BigNumber.from(0);
 
 export const tryParseUnits = (
   value: string,
@@ -114,3 +115,25 @@ export const calculateCurrentBalance = ({
 
 export const getMinimumStreamTimeInMinutes = (bufferTimeInMinutes: number) =>
   bufferTimeInMinutes * 6;
+
+export const tokenSnapshotsDefaultSort = (
+  token1: AccountTokenSnapshot,
+  token2: AccountTokenSnapshot
+) => {
+  const token1Balance = calculateCurrentBalance({
+    flowRateWei: token1.totalNetFlowRate,
+    balanceWei: token1.balanceUntilUpdatedAt,
+    balanceTimestamp: token1.updatedAtTimestamp,
+  });
+  const token2Balance = calculateCurrentBalance({
+    flowRateWei: token2.totalNetFlowRate,
+    balanceWei: token2.balanceUntilUpdatedAt,
+    balanceTimestamp: token2.updatedAtTimestamp,
+  });
+
+  if (token1Balance.eq(token2Balance)) {
+    return token1.updatedAtTimestamp < token2.updatedAtTimestamp ? 1 : -1;
+  }
+
+  return token1Balance.lt(token2Balance) ? 1 : -1;
+};

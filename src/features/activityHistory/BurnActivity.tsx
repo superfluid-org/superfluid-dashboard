@@ -69,6 +69,11 @@ const BurnActivity: FC<BurnedActivity> = ({
     [isNativeAssetSuperToken, underlyingTokenQuery.data]
   );
 
+  const isSuperTokenListed = useMemo(
+    () => isNativeAssetSuperToken || superTokenQuery.data?.isListed,
+    [isNativeAssetSuperToken, superTokenQuery.data]
+  );
+
   return (
     <TableRow data-cy={`${network.slugName}-row`}>
       <TableCell>
@@ -95,16 +100,17 @@ const BurnActivity: FC<BurnedActivity> = ({
             {superToken && (
               <ListItem sx={{ p: 0 }}>
                 <ListItemAvatar>
-                  {<TokenIcon tokenSymbol={superToken.symbol} />}
+                  <TokenIcon
+                    isSuper
+                    tokenSymbol={superToken.symbol}
+                    isUnlisted={!isSuperTokenListed}
+                  />
                 </ListItemAvatar>
                 <ListItemText
                   data-cy={"amount"}
                   primary={
-                  <>
-                    -<Amount wei={amount}>
-                        {" "}
-                        {superToken.symbol}
-                      </Amount>
+                    <>
+                      -<Amount wei={amount}> {superToken.symbol}</Amount>
                     </>
                   }
                   /**
@@ -132,12 +138,9 @@ const BurnActivity: FC<BurnedActivity> = ({
                 </ListItemAvatar>
                 <ListItemText
                   data-cy={"amountToFrom"}
-                primary={
-                  <>
-                    +<Amount wei={amount}>
-                        {" "}
-                        {underlyingToken.symbol}
-                      </Amount>
+                  primary={
+                    <>
+                      +<Amount wei={amount}> {underlyingToken.symbol}</Amount>
                     </>
                   }
                   /**
@@ -172,20 +175,13 @@ const BurnActivity: FC<BurnedActivity> = ({
               <ListItemText
                 data-cy={"mobile-amount"}
                 primary={
-                <>
-                  +<Amount wei={amount}>
-                      {" "}
-                      {underlyingToken.symbol}
-                    </Amount>
+                  <>
+                    +<Amount wei={amount}> {underlyingToken.symbol}</Amount>
                   </>
                 }
                 secondary={
                   <>
-                    -
-                    <Amount wei={amount}>
-                      {" "}
-                      {superToken.symbol}
-                    </Amount>
+                    -<Amount wei={amount}> {superToken.symbol}</Amount>
                   </>
                 }
                 primaryTypographyProps={{ variant: "h7mono" }}
