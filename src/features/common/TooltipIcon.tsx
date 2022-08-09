@@ -12,13 +12,19 @@ const TooltipIcon: FC<TooltipIconProps> = ({ title }) => {
 
   return (
     <Tooltip
+      arrow
       title={title}
       enterTouchDelay={isBelowMd ? 0 : 700}
       placement="top"
     >
       <InfoIcon
         fontSize="small"
-        sx={{ color: alpha(theme.palette.action.active, 0.3) }}
+        sx={{
+          color: "inherit",
+          opacity: 0.3,
+          verticalAlign: "bottom",
+          cursor: "help",
+        }}
       />
     </Tooltip>
   );
