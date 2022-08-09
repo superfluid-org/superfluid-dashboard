@@ -95,8 +95,8 @@ export const ExpectedNetworkProvider: FC<{
 
   useEffect(() => {
     Sentry.setContext("expected-network", {
-      "network-id": network.id,
-      "network-slug": network.slugName,
+      "expected-network-id": network.id,
+      "expected-network-name": network.name,
     });
   }, [network]);
 

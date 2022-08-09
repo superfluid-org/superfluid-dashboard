@@ -1,11 +1,16 @@
-import { createContext, FC } from "react";
+import { createContext, FC, useEffect } from "react";
 import {
   RainbowKitProvider,
   darkTheme,
   lightTheme,
   DisclaimerComponent,
 } from "@rainbow-me/rainbowkit";
-import { createClient as createWagmiClient, WagmiConfig } from "wagmi";
+import {
+  createClient as createWagmiClient,
+  useAccount,
+  useNetwork,
+  WagmiConfig,
+} from "wagmi";
 import "@rainbow-me/rainbowkit/styles.css";
 import { useTheme } from "@mui/material";
 import { networks, networksByChainId } from "../network/networks";
@@ -14,6 +19,7 @@ import { configureChains } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import * as Sentry from "@sentry/browser";
 
 const { chains, provider } = configureChains(networks, [
   jsonRpcProvider({
@@ -54,6 +60,25 @@ const Disclaimer: DisclaimerComponent = ({ Text, Link }) => (
 export const RainbowKitManager: FC = ({ children }) => {
   const muiTheme = useTheme();
   const { network } = useExpectedNetwork();
+  const { connector: activeConnector, isConnected } = useAccount();
+  const { chain: activeChain } = useNetwork();
+
+  useEffect(() => {
+    if (isConnected && activeConnector) {
+      Sentry.setContext("connected-wallet", {
+        "wallet-id": activeConnector.id,
+        ...(activeChain
+          ? {
+              "wallet-network-id": activeChain.id,
+              "wallet-network-name": activeChain.name,
+            }
+          : {}),
+      });
+    } else {
+      Sentry.setContext("connected-wallet", null);
+    }
+  }, [activeConnector]);
+
   return (
     <RainbowKitProvider
       chains={chains}
