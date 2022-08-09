@@ -72,7 +72,8 @@ export const TransactionButton: FC<{
         data-cy={"change-network-button"}
         {...buttonProps}
         color="primary"
-        onClick={() => switchNetwork()}
+        disabled={!switchNetwork}
+        onClick={() => switchNetwork?.()}
       >
         Change Network to {expectedNetwork.name}
       </Button>

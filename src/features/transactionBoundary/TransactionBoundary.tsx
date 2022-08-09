@@ -25,7 +25,7 @@ interface TransactionBoundaryContextValue {
   isConnected: boolean;
   connectWallet: () => void;
   isCorrectNetwork: boolean;
-  switchNetwork: () => void;
+  switchNetwork: (() => void) | undefined;
   expectedNetwork: Network;
   dialogOpen: boolean;
   openDialog: () => void;
@@ -71,20 +71,22 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
 
   const contextValue = useMemo<TransactionBoundaryContextValue>(
     () => ({
-      signer, // TODO(KK): Consider `undefined`
+      signer,
       isImpersonated,
       stopImpersonation,
       isConnected,
       isConnecting: isConnecting || isAutoConnecting,
       connectWallet: () => openConnectModal(),
       isCorrectNetwork: expectedNetwork.id === activeChain?.id,
-      switchNetwork: () => void switchNetwork?.(expectedNetwork.id), // TODO(KK): Consider `undefined`
+      switchNetwork: switchNetwork
+        ? () => void switchNetwork(expectedNetwork.id)
+        : undefined,
       expectedNetwork,
       dialogOpen,
       openDialog: () => setDialogOpen(true),
       closeDialog: () => {
         setDialogOpen(false);
-        mutationResult.reset(); // TODO(KK): Does this cause flicker?
+        mutationResult.reset();
       },
       setDialogLoadingInfo,
       setDialogSuccessActions,
