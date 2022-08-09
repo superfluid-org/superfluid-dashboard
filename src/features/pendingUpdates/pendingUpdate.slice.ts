@@ -1,6 +1,13 @@
-import { createEntityAdapter, createSlice, isAllOf } from "@reduxjs/toolkit";
+import {
+  createEntityAdapter,
+  createSlice,
+  isAllOf,
+  isAnyOf,
+} from "@reduxjs/toolkit";
+import { Matcher } from "@reduxjs/toolkit/dist/tsHelpers";
 import { dateNowSeconds } from "../../utils/dateUtils";
-import { rpcApi, transactionTracker } from "../redux/store";
+import { rpcApi, subgraphApi, transactionTracker } from "../redux/store";
+import { PendingIndexSubscriptionApproval } from "./PendingIndexSubscriptionApproval";
 import { PendingOutgoingStream } from "./PendingOutgoingStream";
 import { PendingStreamCancellation } from "./PendingStreamCancellation";
 import { PendingUpdate } from "./PendingUpdate";
@@ -8,10 +15,10 @@ import { PendingUpdate } from "./PendingUpdate";
 const adapter = createEntityAdapter<PendingUpdate>({
   selectId: (x) => x.id,
   sortComparer: (a, b) => {
-    if (a.timestampMs > b.timestampMs) {
+    if (a.timestamp > b.timestamp) {
       return -1;
     }
-    if (a.timestampMs < b.timestampMs) {
+    if (a.timestamp < b.timestamp) {
       return 1;
     }
     return 0;
@@ -35,10 +42,10 @@ export const pendingUpdateSlice = createSlice({
             transactionHash,
             senderAddress,
             receiverAddress,
-            tokenAddress: superTokenAddress,
             id: transactionHash,
+            tokenAddress: superTokenAddress,
             pendingType: "FlowDelete",
-            timestampMs: dateNowSeconds(),
+            timestamp: dateNowSeconds(),
           };
           adapter.addOne(state, pendingUpdate);
         }
@@ -55,15 +62,15 @@ export const pendingUpdateSlice = createSlice({
             flowRateWei,
           } = action.meta.arg.originalArgs;
           if (senderAddress) {
-            const timestampMs = dateNowSeconds();
+            const timestamp = dateNowSeconds();
             const pendingUpdate: PendingOutgoingStream = {
               pendingType: "FlowCreate",
               chainId,
               transactionHash,
               id: transactionHash,
-              timestampMs,
-              createdAtTimestamp: timestampMs,
-              updatedAtTimestamp: timestampMs,
+              timestamp: timestamp,
+              createdAtTimestamp: timestamp,
+              updatedAtTimestamp: timestamp,
               sender: senderAddress,
               receiver: receiverAddress,
               token: superTokenAddress,
@@ -72,6 +79,25 @@ export const pendingUpdateSlice = createSlice({
             };
             adapter.addOne(state, pendingUpdate);
           }
+        }
+      ),
+      builder.addMatcher(
+        rpcApi.endpoints.indexSubscriptionApprove.matchFulfilled,
+        (state, action) => {
+          const { chainId, hash: transactionHash } = action.payload;
+          const { indexId, publisherAddress, superTokenAddress } =
+            action.meta.arg.originalArgs;
+          const pendingUpdate: PendingIndexSubscriptionApproval = {
+            pendingType: "IndexSubscriptionApprove",
+            chainId,
+            transactionHash,
+            id: transactionHash,
+            indexId,
+            publisherAddress,
+            superTokenAddress,
+            timestamp: dateNowSeconds(),
+          };
+          adapter.addOne(state, pendingUpdate);
         }
       ),
       builder.addMatcher(
@@ -90,7 +116,7 @@ export const pendingUpdateSlice = createSlice({
         }
       );
     builder.addMatcher(
-      isAllOf(transactionTracker.actions.updateTransaction),
+      isAllOf(transactionTracker.actions.updateTransaction, subgraphApi.endpoints.),
       (state, action) => {
         const transactionStatus = action.payload.changes.status;
         const isSubgraphInSync = action.payload.changes.isSubgraphInSync;

@@ -40,7 +40,7 @@ const SentryContext: FC = () => {
       Sentry.setTag(SENTRY_WALLET_TAG, null);
       Sentry.setContext(SENTRY_WALLET_CONTEXT, null);
     }
-  }, [isConnected, activeConnector]);
+  }, [isConnected, activeConnector, activeChain]);
 
   return null;
 };
