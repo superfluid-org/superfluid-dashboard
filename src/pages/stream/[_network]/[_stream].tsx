@@ -384,12 +384,7 @@ const StreamPageContent: FC<{
     );
   }, [streamQuery.data, network]);
 
-  if (
-    streamQuery.isUninitialized ||
-    streamQuery.isFetching ||
-    tokenSnapshotQuery.isLoading ||
-    tokenSnapshotQuery.isFetching
-  ) {
+  if (streamQuery.isLoading || tokenSnapshotQuery.isLoading) {
     return <StreamPageContainer urlToShare={urlToShare} />;
   }
 
