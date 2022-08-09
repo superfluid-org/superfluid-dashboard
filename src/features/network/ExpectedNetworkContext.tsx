@@ -13,6 +13,9 @@ import { useNetwork } from "wagmi";
 import { Network, networksByChainId, networksBySlug } from "./networks";
 import * as Sentry from "@sentry/browser";
 
+const SENTRY_EXPECTED_NETWORK_CONTEXT = "Expected Network";
+const SENTRY_EXPECTED_NETWORK_TAG = "network";
+
 /**
  * "Expected" points to expected wallet network.
  */
@@ -94,9 +97,10 @@ export const ExpectedNetworkProvider: FC<{
   }, [networkQueryParam]);
 
   useEffect(() => {
-    Sentry.setContext("expected-network", {
-      "expected-network-id": network.id,
-      "expected-network-name": network.name,
+    Sentry.setTag(SENTRY_EXPECTED_NETWORK_TAG, network.slugName);
+    Sentry.setContext(SENTRY_EXPECTED_NETWORK_CONTEXT, {
+      id: network.id,
+      name: network.name,
     });
   }, [network]);
 

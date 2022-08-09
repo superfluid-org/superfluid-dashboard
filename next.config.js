@@ -26,7 +26,7 @@ if (SENTRY_AUTH_TOKEN) {
     // recommended:
     //   release, url, org, project, authToken, configFile, stripPrefix,
     //   urlPrefix, include, ignore
-
+    env: process.env.CONTEXT, // https://docs.netlify.com/configure-builds/environment-variables/#build-metadata
     silent: true, // Suppresses all logs
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options.

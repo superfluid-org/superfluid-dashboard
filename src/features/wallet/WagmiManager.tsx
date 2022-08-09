@@ -1,4 +1,4 @@
-import { createContext, FC, useEffect } from "react";
+import { FC, useEffect } from "react";
 import {
   RainbowKitProvider,
   darkTheme,
@@ -20,6 +20,9 @@ import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import * as Sentry from "@sentry/browser";
+
+const SENTRY_WALLET_CONTEXT = "Connected Wallet";
+const SENTRY_WALLET_TAG = "wallet";
 
 const { chains, provider } = configureChains(networks, [
   jsonRpcProvider({
@@ -65,17 +68,19 @@ export const RainbowKitManager: FC = ({ children }) => {
 
   useEffect(() => {
     if (isConnected && activeConnector) {
-      Sentry.setContext("connected-wallet", {
-        "wallet-id": activeConnector.id,
+      Sentry.setTag(SENTRY_WALLET_TAG, activeConnector.id);
+      Sentry.setContext(SENTRY_WALLET_CONTEXT, {
+        id: activeConnector.id,
         ...(activeChain
           ? {
-              "wallet-network-id": activeChain.id,
-              "wallet-network-name": activeChain.name,
+              "network-id": activeChain.id,
+              "network-name": activeChain.name,
             }
           : {}),
       });
     } else {
-      Sentry.setContext("connected-wallet", null);
+      Sentry.setTag(SENTRY_WALLET_TAG, null);
+      Sentry.setContext(SENTRY_WALLET_CONTEXT, null);
     }
   }, [activeConnector]);
 
