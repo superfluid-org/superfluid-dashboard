@@ -117,7 +117,7 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
   );
 
   const isLoading =
-    transferEvents.length === 0 && transferEventsQuery.isFetching;
+    transferEvents.length === 0 && transferEventsQuery.isLoading;
 
   return (
     <TableContainer
