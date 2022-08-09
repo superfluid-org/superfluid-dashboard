@@ -11,10 +11,6 @@ import {
 } from "react";
 import { useNetwork } from "wagmi";
 import { Network, networksByChainId, networksBySlug } from "./networks";
-import * as Sentry from "@sentry/browser";
-
-const SENTRY_EXPECTED_NETWORK_CONTEXT = "Expected Network";
-const SENTRY_EXPECTED_NETWORK_TAG = "network";
 
 /**
  * "Expected" points to expected wallet network.
@@ -95,15 +91,6 @@ export const ExpectedNetworkProvider: FC<{
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [networkQueryParam]);
-
-  useEffect(() => {
-    Sentry.setTag(SENTRY_EXPECTED_NETWORK_TAG, network.slugName);
-    Sentry.setContext(SENTRY_EXPECTED_NETWORK_CONTEXT, {
-      id: network.id,
-      name: network.name,
-      slug: network.slugName,
-    });
-  }, [network]);
 
   return (
     <ExpectedNetworkContext.Provider value={contextValue}>
