@@ -465,6 +465,7 @@ const StreamPageContent: FC<{
           <Stack direction="row" alignItems="center" gap={2}>
             {!isBelowMd && (
               <TokenIcon
+                isSuper
                 tokenSymbol={tokenSymbol}
                 isUnlisted={!isTokenListed}
                 isLoading={isTokenListedLoading}
@@ -511,6 +512,7 @@ const StreamPageContent: FC<{
               gap={1}
             >
               <TokenIcon
+                isSuper
                 tokenSymbol={tokenSymbol}
                 isUnlisted={!isTokenListed}
                 isLoading={isTokenListedLoading}
@@ -573,7 +575,9 @@ const StreamPageContent: FC<{
             <Typography variant="h6">
               <Amount
                 wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
-              />
+              >
+                {` ${tokenSymbol}`}
+              </Amount>
             </Typography>
 
             <Typography variant="h6" color="text.secondary">

@@ -99,12 +99,7 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
         />
       </Stack>
 
-      {!hasContent &&
-        (isLoading ? (
-          <TokenSnapshotLoadingTable />
-        ) : (
-          <TokenSnapshotEmptyCard />
-        ))}
+      {!hasContent && !isLoading && <TokenSnapshotEmptyCard />}
 
       <Stack gap={4}>
         {activeNetworks.map((network) => (
@@ -115,6 +110,8 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
             fetchingCallback={fetchingCallback}
           />
         ))}
+
+        {isLoading && <TokenSnapshotLoadingTable />}
       </Stack>
     </>
   );

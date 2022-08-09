@@ -37,6 +37,7 @@ const AvatarWrapper = styled("div", {
 
 interface TokenIconProps {
   tokenSymbol?: string;
+  isSuper?: boolean;
   isUnlisted?: boolean;
   isLoading?: boolean;
   size?: number;
@@ -44,6 +45,7 @@ interface TokenIconProps {
 
 const TokenIcon: FC<TokenIconProps> = ({
   tokenSymbol,
+  isSuper = false,
   isUnlisted = false,
   isLoading = false,
   size = 36,
@@ -60,8 +62,8 @@ const TokenIcon: FC<TokenIconProps> = ({
     );
 
   const diameter = size - (tokenManifest?.isSuperToken ? 4 : 0);
-
   const loading = isLoading || isQueryLoading;
+  const isSuperToken = isSuper || tokenManifest?.isSuperToken;
 
   return (
     <Tooltip
@@ -71,10 +73,10 @@ const TokenIcon: FC<TokenIconProps> = ({
       title={isUnlisted ? "Unlisted token, use with caution" : ""}
     >
       <AvatarWrapper
-        isSuperToken={tokenManifest?.isSuperToken}
+        isSuperToken={isSuperToken}
         isUnlisted={!loading && isUnlisted}
       >
-        {tokenManifest?.isSuperToken && !isLoading && (
+        {isSuperToken && !isLoading && (
           <BorderSvg data-cy={"animation"} viewBox="0 0 36 36">
             <clipPath id="clip">
               <polygon points="18,18, 30.5,0 36,10.2" />

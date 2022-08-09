@@ -104,6 +104,7 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
             <ListItem sx={{ p: 0 }}>
               <ListItemAvatar>
                 <TokenIcon
+                  isSuper
                   tokenSymbol={tokenQuery.data?.symbol}
                   isUnlisted={!tokenQuery.data?.isListed}
                   isLoading={tokenQuery.isLoading}
@@ -195,6 +196,7 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
               }}
             />
             <TokenIcon
+              isSuper
               tokenSymbol={tokenQuery.data?.symbol}
               isUnlisted={!tokenQuery.data?.isListed}
               isLoading={tokenQuery.isLoading}

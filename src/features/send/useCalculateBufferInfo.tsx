@@ -1,6 +1,9 @@
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
-import { calculateMaybeCriticalAtTimestamp } from "../../utils/tokenUtils";
+import {
+  BIG_NUMBER_ZERO,
+  calculateMaybeCriticalAtTimestamp,
+} from "../../utils/tokenUtils";
 import { Network } from "../network/networks";
 import { Web3FlowInfo } from "../redux/endpoints/adHocRpcEndpoints";
 import { RealtimeBalance } from "../redux/endpoints/balanceFetcher";
@@ -19,6 +22,25 @@ const calculateBufferAmount = (
     .mul(60);
 
   return bufferAmount;
+};
+
+const calculateDateWhenBalanceCritical = (
+  realtimeBalance?: RealtimeBalance,
+  totalFlowRate?: BigNumber
+) => {
+  if (!realtimeBalance || !totalFlowRate || !totalFlowRate.isNegative()) {
+    return undefined;
+  }
+
+  const criticalAtTimestamp = calculateMaybeCriticalAtTimestamp({
+    balanceUntilUpdatedAtWei: realtimeBalance.balance,
+    updatedAtTimestamp: realtimeBalance.balanceTimestamp,
+    totalNetFlowRateWei: totalFlowRate,
+  });
+
+  if (criticalAtTimestamp.lte(BIG_NUMBER_ZERO)) return undefined;
+
+  return new Date(criticalAtTimestamp.mul(1000).toNumber());
 };
 
 // TODO(KK): Memoize in a way that multiple components could invoke it and not calc twice?
@@ -59,37 +81,17 @@ export default function useCalculateBufferInfo() {
           ? BigNumber.from(realtimeBalance.flowRate).sub(flowRateDelta)
           : undefined;
 
-      const oldDateWhenBalanceCritical =
-        realtimeBalance && newTotalFlowRate
-          ? newTotalFlowRate.isNegative()
-            ? new Date(
-                calculateMaybeCriticalAtTimestamp({
-                  balanceUntilUpdatedAtWei: realtimeBalance.balance,
-                  updatedAtTimestamp: realtimeBalance.balanceTimestamp,
-                  totalNetFlowRateWei: newTotalFlowRate,
-                })
-                  .mul(1000)
-                  .toNumber()
-              )
-            : undefined
-          : undefined;
+      const oldDateWhenBalanceCritical = calculateDateWhenBalanceCritical(
+        realtimeBalance,
+        newTotalFlowRate
+      );
 
-      const newDateWhenBalanceCritical =
-        realtimeBalance && newTotalFlowRate && flowRateDelta
-          ? newTotalFlowRate.isNegative()
-            ? new Date(
-                calculateMaybeCriticalAtTimestamp({
-                  balanceUntilUpdatedAtWei: realtimeBalance.balance,
-                  updatedAtTimestamp: realtimeBalance.balanceTimestamp,
-                  totalNetFlowRateWei: BigNumber.from(
-                    realtimeBalance.flowRate
-                  ).sub(flowRateDelta),
-                })
-                  .mul(1000)
-                  .toNumber()
-              )
-            : undefined
-          : undefined;
+      const newDateWhenBalanceCritical = calculateDateWhenBalanceCritical(
+        realtimeBalance,
+        realtimeBalance && flowRateDelta
+          ? BigNumber.from(realtimeBalance.flowRate).sub(flowRateDelta)
+          : undefined
+      );
 
       return {
         newBufferAmount,
@@ -100,7 +102,7 @@ export default function useCalculateBufferInfo() {
         flowRateDelta,
         newTotalFlowRate,
         oldDateWhenBalanceCritical,
-        newDateWhenBalanceCritical
+        newDateWhenBalanceCritical,
       };
     },
     []

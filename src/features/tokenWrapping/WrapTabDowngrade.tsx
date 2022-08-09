@@ -22,12 +22,19 @@ import {
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { BalanceSuperToken } from "./BalanceSuperToken";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
+import { SwitchWrapModeBtn } from "./SwitchWrapModeBtn";
 import { TokenDialogButton } from "./TokenDialogButton";
 import { useTokenPairQuery } from "./useTokenPairQuery";
-import { ArrowDownIcon, WrapInputCard } from "./WrapCard";
+import { WrapInputCard } from "./WrapInputCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 
-export const WrapTabDowngrade: FC = () => {
+interface WrapTabDowngradeProps {
+  onSwitchMode: () => void;
+}
+
+export const WrapTabDowngrade: FC<WrapTabDowngradeProps> = ({
+  onSwitchMode,
+}) => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
@@ -202,7 +209,7 @@ export const WrapTabDowngrade: FC = () => {
         )}
       </WrapInputCard>
 
-      <ArrowDownIcon />
+      <SwitchWrapModeBtn onClick={onSwitchMode} />
 
       {underlyingToken && (
         <WrapInputCard>
@@ -294,6 +301,16 @@ export const WrapTabDowngrade: FC = () => {
                 overrides.gasLimit = 500_000;
               }
 
+              setDialogLoadingInfo(
+                <DowngradePreview
+                  {...{
+                    amountWei: parseEther(formData.amountDecimal).toString(),
+                    superTokenSymbol: superToken.symbol,
+                    underlyingTokenSymbol: underlyingToken.symbol,
+                  }}
+                />
+              );
+
               downgradeTrigger({
                 signer,
                 chainId: network.id,
@@ -307,16 +324,6 @@ export const WrapTabDowngrade: FC = () => {
               })
                 .unwrap()
                 .then(() => resetForm());
-
-              setDialogLoadingInfo(
-                <DowngradePreview
-                  {...{
-                    amountWei: parseEther(formData.amountDecimal).toString(),
-                    superTokenSymbol: superToken.symbol,
-                    underlyingTokenSymbol: underlyingToken.symbol,
-                  }}
-                />
-              );
             }}
           >
             Downgrade
@@ -333,7 +340,7 @@ const DowngradePreview: FC<{
   underlyingTokenSymbol: string;
 }> = ({ amountWei, superTokenSymbol, underlyingTokenSymbol }) => {
   return (
-    <Typography variant="body2">
+    <Typography variant="h5" color="text.secondary">
       You are downgrading from {formatEther(amountWei)} {superTokenSymbol} to
       the underlying token {underlyingTokenSymbol}.
     </Typography>
