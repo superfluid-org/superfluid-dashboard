@@ -101,6 +101,7 @@ export const ExpectedNetworkProvider: FC<{
     Sentry.setContext(SENTRY_EXPECTED_NETWORK_CONTEXT, {
       id: network.id,
       name: network.name,
+      slug: network.slugName,
     });
   }, [network]);
 
