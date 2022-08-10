@@ -709,7 +709,6 @@ const StreamPageContent: FC<{
             {({ copy }) => (
               <IconButton
                 data-cy={"copy-button"}
-                //test-data={urlToShare}
                 onClick={copy}
                 sx={{
                   color: "#fff",
