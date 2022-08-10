@@ -1,5 +1,6 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
+
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 import LinkIcon from "@mui/icons-material/Link";
 import ShareIcon from "@mui/icons-material/Share";
@@ -26,7 +27,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, ReactChild, useEffect, useMemo, useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import AddressAvatar from "../../../components/AddressAvatar/AddressAvatar";
 import CopyTooltip from "../../../components/CopyTooltip/CopyTooltip";
 import SEO from "../../../components/SEO/SEO";
@@ -35,6 +36,7 @@ import { Network, networksBySlug } from "../../../features/network/networks";
 import { subgraphApi } from "../../../features/redux/store";
 import { UnitOfTime } from "../../../features/send/FlowRateInput";
 import CancelStreamButton from "../../../features/streamsTable/CancelStreamButton/CancelStreamButton";
+import ModifyStreamButton from "../../../features/streamsTable/ModifyStreamButton";
 import Amount from "../../../features/token/Amount";
 import FlowingBalance from "../../../features/token/FlowingBalance";
 import TokenIcon from "../../../features/token/TokenIcon";
@@ -300,9 +302,11 @@ const StreamPageContent: FC<{
   network: Network;
   streamId: string;
 }> = ({ network, streamId }) => {
+  const router = useRouter();
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { address: accountAddress } = useAccount();
+  const { chain: activeChain } = useNetwork();
   const navigateBack = useNavigateBack();
 
   const [senderAddress = "", receiverAddress, tokenAddress = ""] =
@@ -364,6 +368,7 @@ const StreamPageContent: FC<{
   const txIdOrSubgraphId = streamCreationEvent
     ? `${streamCreationEvent.transactionHash}-${streamCreationEvent.logIndex}`
     : streamId;
+
   const urlToShare = `${config.appUrl}${getStreamPagePath({
     network: network.slugName,
     stream: txIdOrSubgraphId,
@@ -440,12 +445,21 @@ const StreamPageContent: FC<{
           </Box>
 
           <Stack direction="row" justifyContent="flex-end" gap={1}>
-            {isActive && isOutgoing && (
-              <CancelStreamButton
-                stream={streamQuery.data}
-                network={network}
-                IconButtonProps={{ size: "medium" }}
-              />
+            {!!accountAddress && (
+              <>
+                {isOutgoing && (
+                  <ModifyStreamButton
+                    stream={streamQuery.data}
+                    network={network}
+                  />
+                )}
+                {isActive && (
+                  <CancelStreamButton
+                    stream={streamQuery.data}
+                    network={network}
+                  />
+                )}
+              </>
             )}
           </Stack>
         </Stack>

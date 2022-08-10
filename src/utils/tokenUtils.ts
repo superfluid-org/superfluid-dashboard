@@ -1,11 +1,35 @@
 import { AccountTokenSnapshot } from "@superfluid-finance/sdk-core";
 import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
 import { BigNumber, BigNumberish } from "ethers";
-import { parseUnits } from "ethers/lib/utils";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
+import { UnitOfTime, unitOfTimeList } from "../features/send/FlowRateInput";
 import { dateNowSeconds } from "./dateUtils";
+import minBy from "lodash/fp/minBy";
+import Decimal from "decimal.js";
+import { getDecimalPlacesToRoundTo } from "./DecimalUtils";
 
 export const MAX_SAFE_SECONDS = BigNumber.from(8_640_000_000_000); // In seconds, https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#the_ecmascript_epoch_and_timestamps
 export const BIG_NUMBER_ZERO = BigNumber.from(0);
+
+export const getPrettyEtherValue = (weiValue: string) => {
+  const etherValue = new Decimal(formatUnits(weiValue, "ether"));
+  const decimalsToRoundTo = getDecimalPlacesToRoundTo(etherValue);
+  return etherValue.toDP(decimalsToRoundTo).toString();
+};
+
+export const estimateUnitOfTime = (flowRateWei: string) => {
+  const flowRateBigNumber = BigNumber.from(flowRateWei);
+
+  return (
+    minBy(
+      (timeUnit) =>
+        Math.abs(
+          18 - flowRateBigNumber.mul(BigNumber.from(timeUnit)).toString().length
+        ),
+      unitOfTimeList
+    ) || UnitOfTime.Month
+  );
+};
 
 export const tryParseUnits = (
   value: string,

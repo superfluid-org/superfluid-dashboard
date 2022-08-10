@@ -1,17 +1,12 @@
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import {
   IconButton,
   IconButtonProps,
-  ListItemAvatar,
-  ListItemText,
-  MenuItem,
-  MenuList,
-  Popover,
   Tooltip,
+  TooltipProps,
 } from "@mui/material";
 import { Stream } from "@superfluid-finance/sdk-core";
-import { FC, MouseEvent, useState } from "react";
+import { FC, useState } from "react";
 import { useNetwork, useSigner } from "wagmi";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { Network } from "../../network/networks";
@@ -28,12 +23,14 @@ interface CancelStreamButtonProps {
   stream: Stream;
   network: Network;
   IconButtonProps?: Partial<IconButtonProps>;
+  TooltipProps?: Partial<TooltipProps>;
 }
 
 const CancelStreamButton: FC<CancelStreamButtonProps> = ({
   stream,
   network,
   IconButtonProps = {},
+  TooltipProps = {},
 }) => {
   const { token, sender, receiver } = stream;
 
@@ -42,19 +39,14 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
   const [flowDeleteTrigger, flowDeleteMutation] =
     rpcApi.useFlowDeleteMutation();
   const getTransactionOverrides = useGetTransactionOverrides();
-
   const pendingCancellation = usePendingStreamCancellation({
     tokenAddress: token,
     senderAddress: sender,
     receiverAddress: receiver,
   });
 
-  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
-  const openMenu = (event: MouseEvent<HTMLButtonElement>) =>
-    setMenuAnchor(event.currentTarget);
-  const closeMenu = () => setMenuAnchor(null);
   const closeCancelDialog = () => setShowCancelDialog(false);
 
   const deleteStream = async () => {
@@ -72,11 +64,9 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
       waitForConfirmation: false,
       overrides: await getTransactionOverrides(network),
     }).unwrap();
-    closeMenu();
+
     setShowCancelDialog(true);
   };
-
-  const menuOpen = Boolean(menuAnchor);
 
   return (
     <>
@@ -86,17 +76,22 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
         <>
           <Tooltip
             data-cy={"switch-network-tooltip"}
+            placement="top"
             arrow
             disableInteractive
-            title={`Please connect your wallet and switch provider network to ${network.name} in order to cancel the stream.`}
-            disableHoverListener={network.id === activeChain?.id}
+            title={
+              network.id === activeChain?.id
+                ? "Cancel Stream"
+                : `Please connect your wallet and switch provider network to ${network.name} in order to cancel the stream.`
+            }
+            // disableHoverListener={network.id === activeChain?.id}
+            {...TooltipProps}
           >
             <span>
               <IconButton
                 data-cy={"cancel-button"}
                 color="error"
-                size="small"
-                onClick={openMenu}
+                onClick={deleteStream}
                 disabled={network.id !== activeChain?.id}
                 {...IconButtonProps}
               >
@@ -104,28 +99,6 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
               </IconButton>
             </span>
           </Tooltip>
-
-          <Popover
-            open={menuOpen}
-            anchorEl={menuAnchor}
-            onClose={closeMenu}
-            transformOrigin={{ horizontal: "right", vertical: "top" }}
-            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-          >
-            <MenuList sx={{ py: 0.5 }}>
-              <MenuItem data-cy={"cancel-stream-button"} onClick={deleteStream}>
-                <ListItemAvatar sx={{ mr: 1, width: "20px", height: "20px" }}>
-                  <CloseRoundedIcon fontSize="small" color="error" />
-                </ListItemAvatar>
-                <ListItemText
-                  primaryTypographyProps={{ variant: "menuItem" }}
-                  sx={{ color: "error.main" }}
-                >
-                  Cancel Stream
-                </ListItemText>
-              </MenuItem>
-            </MenuList>
-          </Popover>
         </>
       )}
 
