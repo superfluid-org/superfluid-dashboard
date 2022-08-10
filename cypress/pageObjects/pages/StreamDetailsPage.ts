@@ -220,14 +220,14 @@ export class StreamDetailsPage extends BasePage {
         this.hasText(VISIBLE_TOOLTIP, "Share on Telegram")
         cy.get(TELEGRAM_BUTTON).trigger("mouseout")
         this.doesNotExist(VISIBLE_TOOLTIP)
-        this.hasAttributeWithValue(TELEGRAM_BUTTON, "href", "https://t.me/share/url?text=I%E2%80%99m%20streaming%20money%20every%20second%20with%20%40Superfluid_HQ!%20%F0%9F%8C%8A%0A%0ACheck%20out%20my%20stream%20here%20%E2%98%9D%EF%B8%8F&url=%2Fstream%2Fpolygon%2F0x384bec1faf849929dcce6b293f7bee432f2a299cc9afc6750179dc96dd81b8ff-211")
+        this.hasAttributeWithValue(TELEGRAM_BUTTON, "href", "https://t.me/share/url?text=I%E2%80%99m%20streaming%20money%20every%20second%20with%20%40Superfluid_HQ!%20%F0%9F%8C%8A%0A%0ACheck%20out%20my%20stream%20here%20%E2%98%9D%EF%B8%8F&url=https%3A%2F%2Fapp.superfluid.finance%2Fstream%2Fpolygon%2F0x384bec1faf849929dcce6b293f7bee432f2a299cc9afc6750179dc96dd81b8ff-211")
         this.hasAttributeWithValue(TELEGRAM_BUTTON, "target", "_blank")
         cy.get(TWITTER_BUTTON).trigger("mouseover")
         this.isVisible(VISIBLE_TOOLTIP)
         this.hasText(VISIBLE_TOOLTIP, "Share on Twitter")
         cy.get(TWITTER_BUTTON).trigger("mouseout")
         this.doesNotExist(VISIBLE_TOOLTIP)
-        this.hasAttributeWithValue(TWITTER_BUTTON, "href", "https://twitter.com/intent/tweet?text=I%E2%80%99m%20streaming%20money%20every%20second%20with%20%40Superfluid_HQ!%20%F0%9F%8C%8A%0A%0ACheck%20out%20my%20stream%20here%20%F0%9F%91%87&url=%2Fstream%2Fpolygon%2F0x384bec1faf849929dcce6b293f7bee432f2a299cc9afc6750179dc96dd81b8ff-211&hashtags=superfluid%2Cmoneystreaming%2Crealtimefinance")
+        this.hasAttributeWithValue(TWITTER_BUTTON, "href", "https://twitter.com/intent/tweet?text=I%E2%80%99m%20streaming%20money%20every%20second%20with%20%40Superfluid_HQ!%20%F0%9F%8C%8A%0A%0ACheck%20out%20my%20stream%20here%20%F0%9F%91%87&url=https%3A%2F%2Fapp.superfluid.finance%2Fstream%2Fpolygon%2F0x384bec1faf849929dcce6b293f7bee432f2a299cc9afc6750179dc96dd81b8ff-211&hashtags=superfluid%2Cmoneystreaming%2Crealtimefinance")
         this.hasAttributeWithValue(TWITTER_BUTTON, "target", "_blank")
     }
 
