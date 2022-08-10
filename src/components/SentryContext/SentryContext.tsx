@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/browser";
+import promiseRetry from "promise-retry";
 import { FC, useEffect } from "react";
 import { useIntercom } from "react-use-intercom";
 import { useAccount, useNetwork } from "wagmi";
@@ -43,15 +44,28 @@ const SentryContext: FC = () => {
     }
   }, [isConnected, activeConnector, activeChain]);
 
-  const { getVisitorId,  } = useIntercom();
+  const { getVisitorId } = useIntercom();
 
   useEffect(() => {
-    console.log({
-      getVisitorId,
-      id: getVisitorId?.()
-    })
-    if (!!getVisitorId) {
-      Sentry.setUser({ id: getVisitorId() });
+    if (getVisitorId) {
+      // This weird retrying is because we can't be exactly sure when Intercom is initialized (booted) because it's not exposed by useIntercom()-
+      promiseRetry(
+        () =>
+          new Promise<void>((resolve, reject) => {
+            const visitorId = getVisitorId();
+            if (visitorId) {
+              Sentry.setUser({ id: getVisitorId() });
+              resolve();
+            } else {
+              reject();
+            }
+          }),
+        {
+          minTimeout: 500,
+          maxTimeout: 2000,
+          retries: 5,
+        }
+      );
     }
   }, [getVisitorId]);
 
