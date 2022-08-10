@@ -1,12 +1,21 @@
 import { useMemo } from "react";
 import { useAppSelector } from "../redux/store";
-import {
-  isPendingIndexSubscriptionApproval,
-  PendingIndexSubscriptionApproval,
-} from "./PendingIndexSubscriptionApproval";
+import { PendingUpdate } from "./PendingUpdate";
 import { pendingUpdateSelectors } from "./pendingUpdate.slice";
 
-const usePendingIndexSubscriptionApproval = ({
+export interface PendingIndexSubscriptionCancellation extends PendingUpdate {
+  pendingType: "IndexSubscriptionRevoke";
+  indexId: string;
+  publisherAddress: string;
+  superTokenAddress: string;
+}
+
+export const isPendingIndexSubscriptionApproval = (
+  x: PendingUpdate
+): x is PendingIndexSubscriptionCancellation =>
+  x.pendingType === "IndexSubscriptionRevoke";
+
+export const usePendingIndexSubscriptionCancellation = ({
   chainId,
   indexId,
   publisherAddress,
@@ -16,7 +25,7 @@ const usePendingIndexSubscriptionApproval = ({
   indexId: string;
   publisherAddress: string;
   tokenAddress: string;
-}): PendingIndexSubscriptionApproval | undefined => {
+}): PendingIndexSubscriptionCancellation | undefined => {
   const allPendingUpdates = useAppSelector((state) =>
     pendingUpdateSelectors.selectAll(state.pendingUpdates)
   );
@@ -37,5 +46,3 @@ const usePendingIndexSubscriptionApproval = ({
     [allPendingUpdates]
   );
 };
-
-export default usePendingIndexSubscriptionApproval;

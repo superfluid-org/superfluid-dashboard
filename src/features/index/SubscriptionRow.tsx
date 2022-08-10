@@ -20,8 +20,9 @@ import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { subscriptionWeiAmountReceived } from "../../utils/tokenUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { Network } from "../network/networks";
-import { PendingIndexSubscriptionApproval } from "../pendingUpdates/PendingIndexSubscriptionApproval";
-import usePendingIndexSubscriptionApproval from "../pendingUpdates/usePendingIndexSubscriptionApproval";
+import { PendingIndexSubscriptionApproval, usePendingIndexSubscriptionApproval } from "../pendingUpdates/PendingIndexSubscriptionApproval";
+import { usePendingIndexSubscriptionCancellation } from "../pendingUpdates/PendingIndexSubscriptionCancellation";
+import { PendingUpdate } from "../pendingUpdates/PendingUpdate";
 import { rpcApi } from "../redux/store";
 import Amount from "../token/Amount";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
@@ -126,8 +127,17 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
 
   const [approveSubscription, approveSubscriptionResult] =
     rpcApi.useIndexSubscriptionApproveMutation();
+  const [cancelSubscription, cancelSubscriptionResult] =
+    rpcApi.useIndexSubscriptionRevokeMutation();
 
   const pendingApproval = usePendingIndexSubscriptionApproval({
+    chainId: network.id,
+    indexId: subscription.indexId,
+    tokenAddress: subscription.token,
+    publisherAddress: subscription.publisher,
+  });
+
+  const pendingCancellation = usePendingIndexSubscriptionCancellation({
     chainId: network.id,
     indexId: subscription.indexId,
     tokenAddress: subscription.token,
@@ -212,7 +222,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
             !subscription.approved && (
               <>
                 {mutationResult.isLoading || pendingApproval ? (
-                  <ApprovalProgress pendingUpdate={pendingApproval} />
+                  <OperationProgress transactingText={"Approving..."} pendingUpdate={pendingApproval} />
                 ) : (
                   <Button
                     disabled={!signer || !isConnected || !isCorrectNetwork}
@@ -245,18 +255,68 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
             )
           }
         </TransactionBoundary>
+        <TransactionBoundary
+          expectedNetwork={network}
+          mutationResult={cancelSubscriptionResult}
+        >
+          {({
+            mutationResult,
+            signer,
+            isConnected,
+            isCorrectNetwork,
+            expectedNetwork,
+          }) =>
+            subscription.approved && (
+              <>
+                {mutationResult.isLoading || pendingCancellation ? (
+                  <OperationProgress transactingText={"Canceling..."} pendingUpdate={pendingCancellation} />
+                ) : (
+                  <Button
+                    disabled={!signer || !isConnected || !isCorrectNetwork}
+                    variant="textContained"
+                    color="primary"
+                    size="small"
+                    onClick={async () => {
+                      if (!signer)
+                        throw new Error(
+                          "Signer should always bet available here."
+                        );
+
+                      // TODO(KK): Make the operation take subscriber as input. Don't just rely on the wallet's signer -- better to have explicit data flowing
+                      cancelSubscription({
+                        signer,
+                        chainId: expectedNetwork.id,
+                        indexId: subscription.indexId,
+                        publisherAddress: subscription.publisher,
+                        superTokenAddress: subscription.token,
+                        userDataBytes: undefined,
+                        waitForConfirmation: false,
+                        overrides: await getTransactionOverrides(network),
+                      });
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                )}
+              </>
+            )
+          }
+        </TransactionBoundary>
+
       </TableCell>
     </TableRow>
   );
 };
 
-const ApprovalProgress: FC<{
-  pendingUpdate: PendingIndexSubscriptionApproval | undefined;
-}> = ({ pendingUpdate }) => (
+// TODO(KK): Consider making this re-used with stream cancellation?
+const OperationProgress: FC<{
+  pendingUpdate: PendingUpdate | undefined;
+  transactingText: string;
+}> = ({ pendingUpdate, transactingText }) => (
   <Stack direction="row" alignItems="center" gap={1}>
     <CircularProgress color="warning" size="16px" />
     <Typography variant="caption">
-      {pendingUpdate?.hasTransactionSucceeded ? "Syncing..." : "Approving..."}
+      {pendingUpdate?.hasTransactionSucceeded ? "Syncing..." : transactingText}
     </Typography>
   </Stack>
 );

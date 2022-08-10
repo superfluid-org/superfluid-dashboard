@@ -15,7 +15,7 @@ import { Signer } from "ethers";
 import { FC, MouseEvent, useState } from "react";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { Network } from "../../network/networks";
-import usePendingStreamCancellation from "../../pendingUpdates/usePendingStreamCancellation";
+import { usePendingStreamCancellation } from "../../pendingUpdates/PendingStreamCancellation";
 import { rpcApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import CancelStreamProgress from "./CancelStreamProgress";
