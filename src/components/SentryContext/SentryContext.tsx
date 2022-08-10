@@ -54,7 +54,7 @@ const SentryContext: FC = () => {
           new Promise<void>((resolve, reject) => {
             const visitorId = getVisitorId();
             if (visitorId) {
-              Sentry.setUser({ id: getVisitorId() });
+              Sentry.setUser({ id: visitorId });
               resolve();
             } else {
               reject();
@@ -63,7 +63,7 @@ const SentryContext: FC = () => {
         {
           minTimeout: 500,
           maxTimeout: 2000,
-          retries: 5,
+          retries: 10,
         }
       );
     }
