@@ -397,14 +397,16 @@ export default memo(function SendCard() {
               justifyContent="center"
               gap={1}
             >
-              <BalanceSuperToken
-                data-cy={"balance"}
-                chainId={network.id}
-                accountAddress={visibleAddress}
-                tokenAddress={tokenAddress}
-                TypographyProps={{ variant: "h7mono" }}
-              />
-
+              <Stack direction="row" alignItems="center" gap={0.5}>
+                <BalanceSuperToken
+                  data-cy={"balance"}
+                  chainId={network.id}
+                  accountAddress={visibleAddress}
+                  tokenAddress={tokenAddress}
+                  TypographyProps={{ variant: "h7mono" }}
+                />
+                <Typography variant="h7">{token?.symbol}</Typography>
+              </Stack>
               {isWrappableSuperToken && (
                 <Link
                   href={`/wrap?upgrade&token=${tokenAddress}&network=${network.slugName}`}
