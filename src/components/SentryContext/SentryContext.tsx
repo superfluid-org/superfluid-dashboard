@@ -4,6 +4,7 @@ import { FC, useEffect } from "react";
 import { useIntercom } from "react-use-intercom";
 import { useAccount, useNetwork } from "wagmi";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
+import { IsCypress, SSR } from "../../utils/SSRUtils";
 
 const SENTRY_WALLET_CONTEXT = "Connected Wallet";
 const SENTRY_WALLET_TAG = "wallet";
@@ -47,19 +48,19 @@ const SentryContext: FC = () => {
   const { getVisitorId } = useIntercom();
 
   useEffect(() => {
-    if (getVisitorId) {
+    if (!SSR && !IsCypress && getVisitorId) {
       // This weird retrying is because we can't be exactly sure when Intercom is initialized (booted) because it's not exposed by useIntercom()-
       promiseRetry(
-        () =>
+        (retry) =>
           new Promise<void>((resolve, reject) => {
             const visitorId = getVisitorId();
             if (visitorId) {
               Sentry.setUser({ id: visitorId });
               resolve();
             } else {
-              reject();
+              reject("Couldn't set visitor ID.");
             }
-          }),
+          }).catch(retry),
         {
           minTimeout: 500,
           maxTimeout: 2000,
