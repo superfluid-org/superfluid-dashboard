@@ -10,9 +10,10 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
-import { FC, ReactNode, useMemo } from "react";
+import { FC, isValidElement, ReactNode, useMemo } from "react";
 import shortenHex from "../../utils/shortenHex";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
+import TooltipIcon from "../common/TooltipIcon";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { rpcApi } from "../redux/store";
@@ -28,7 +29,7 @@ import {
 import useCalculateBufferInfo from "./useCalculateBufferInfo";
 
 const PreviewItem: FC<{
-  label: string;
+  label: string | ReactNode;
   isError?: boolean;
   oldValue?: ReactNode;
   dataCy?: string;
@@ -57,7 +58,11 @@ const PreviewItem: FC<{
       alignItems={isBelowMd ? "start" : "center"}
       justifyContent="space-between"
     >
-      <Typography variant="body2">{label}</Typography>
+      {isValidElement(label) ? (
+        label
+      ) : (
+        <Typography variant="body2">{label}</Typography>
+      )}
       {oldValue ? (
         <Tooltip title={<>Current: {oldValue}</>} arrow placement="top">
           {valueTypography}
@@ -218,7 +223,16 @@ export const StreamingPreview: FC<{
         {newBufferAmount && (
           <PreviewItem
             dataCy="preview-upfront-buffer"
-            label="Upfront buffer"
+            label={
+              <Typography variant="body2">
+                Upfront buffer{` `}
+                <TooltipIcon
+                  title={`A ${
+                    network.bufferTimeInMinutes / 60
+                  } hour buffer of the flow rate is taken when starting a stream and returned when you manually cancel it.`}
+                />
+              </Typography>
+            }
             oldValue={
               oldBufferAmount ? (
                 <Amount wei={oldBufferAmount}> {token.symbol}</Amount>

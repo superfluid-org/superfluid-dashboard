@@ -852,7 +852,20 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           root: {
             borderRadius: "12px",
           },
+          message: {
+            overflow: "visible",
+          },
         },
+        variants: [
+          {
+            props: { severity: "error" },
+            style: {
+              ".MuiAlert-icon": {
+                color: theme.palette.error.main,
+              },
+            },
+          },
+        ],
       },
       MuiListSubheader: {
         styleOverrides: {

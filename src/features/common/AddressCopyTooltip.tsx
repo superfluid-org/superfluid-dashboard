@@ -38,8 +38,8 @@ const AddressCopyTooltip: FC<AddressCopyTooltipProps> = ({
           setIsCopied(false);
         }, 1500);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch((e) => {
+        console.error(e);
       });
   };
 

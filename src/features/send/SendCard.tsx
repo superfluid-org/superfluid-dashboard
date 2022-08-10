@@ -25,7 +25,10 @@ import { FC, memo, useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
-import { parseEtherOrZero } from "../../utils/tokenUtils";
+import {
+  calculateBufferAmount,
+  parseEtherOrZero,
+} from "../../utils/tokenUtils";
 import TooltipIcon from "../common/TooltipIcon";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -33,6 +36,7 @@ import NetworkBadge from "../network/NetworkBadge";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { isWrappable, SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
+import Amount from "../token/Amount";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
@@ -91,6 +95,25 @@ export default memo(function SendCard() {
     "data.flowRate",
     "data.understandLiquidationRisk",
   ]);
+
+  const showBufferAlert = useMemo(() => {
+    const {
+      receiverAddress: receiverDirty,
+      tokenAddress: tokenDirty,
+      flowRate: flowRateDirty,
+    } = formState.dirtyFields.data || {};
+    const {
+      receiverAddress: receiverTouched,
+      tokenAddress: tokenTouched,
+      flowRate: flowRateTouched,
+    } = formState.touchedFields.data || {};
+
+    return (
+      (receiverDirty || receiverTouched) &&
+      (tokenDirty || tokenTouched) &&
+      (flowRateDirty || flowRateTouched)
+    );
+  }, [formState]);
 
   const { token } = subgraphApi.useTokenQuery(
     tokenAddress
@@ -185,6 +208,17 @@ export default memo(function SendCard() {
         : skipToken
     );
 
+  const bufferAmount = useMemo(() => {
+    if (!flowRateEther.amountEther || !flowRateEther.unitOfTime) {
+      return undefined;
+    }
+
+    return calculateBufferAmount(network, {
+      amountWei: parseEtherOrZero(flowRateEther.amountEther).toString(),
+      unitOfTime: flowRateEther.unitOfTime,
+    });
+  }, [network, flowRateEther]);
+
   const isSendDisabled = formState.isValidating || !formState.isValid;
 
   return (
@@ -202,6 +236,15 @@ export default memo(function SendCard() {
         },
       }}
     >
+      <Button
+        color="primary"
+        variant="textContained"
+        size="large"
+        sx={{ alignSelf: "flex-start", pointerEvents: "none", mb: 4 }}
+      >
+        {activeFlow ? "Modify Stream" : "Send Stream"}
+      </Button>
+
       <NetworkBadge
         network={network}
         sx={{ position: "absolute", top: 0, right: theme.spacing(3.5) }}
@@ -211,16 +254,8 @@ export default memo(function SendCard() {
           sx: { [theme.breakpoints.down("md")]: { borderRadius: 1 } },
         }}
       />
-      <Stack spacing={4}>
-        <Button
-          color="primary"
-          variant="textContained"
-          size="large"
-          sx={{ alignSelf: "flex-start", pointerEvents: "none" }}
-        >
-          {activeFlow ? "Modify Stream" : "Send Stream"}
-        </Button>
 
+      <Stack spacing={2.5}>
         <ErrorMessage
           name="data"
           // ErrorMessage has a bug and current solution is to pass in errors via props.
@@ -235,164 +270,144 @@ export default memo(function SendCard() {
           }
         />
 
-        <Stack spacing={2.5}>
-          <Box>
+        <Box>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{ mr: 0.75 }}
+          >
             <FormLabel>Receiver Wallet Address</FormLabel>
+            <TooltipIcon title="Must not be an exchange address" />
+          </Stack>
+
+          <Controller
+            control={control}
+            name="data.receiverAddress"
+            render={({ field: { onChange, onBlur } }) => (
+              <AddressSearch
+                address={receiverAddress}
+                onChange={onChange}
+                onBlur={onBlur}
+                addressLength={isBelowMd ? "medium" : "long"}
+                ButtonProps={{ fullWidth: true }}
+              />
+            )}
+          />
+        </Box>
+
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "1fr 2fr",
+            gap: 2.5,
+            [theme.breakpoints.down("md")]: {
+              gridTemplateColumns: "1fr",
+            },
+          }}
+        >
+          <Stack justifyContent="stretch">
+            <FormLabel>Super Token</FormLabel>
+
             <Controller
               control={control}
-              name="data.receiverAddress"
+              name="data.tokenAddress"
               render={({ field: { onChange, onBlur } }) => (
-                <AddressSearch
-                  address={receiverAddress}
+                <TokenDialogButton
+                  token={token}
+                  tokenSelection={{
+                    showUpgrade: true,
+                    tokenPairsQuery: {
+                      data: superTokens,
+                      isFetching:
+                        listedSuperTokensQuery.isFetching ||
+                        customSuperTokensQuery.isFetching,
+                    },
+                  }}
+                  onTokenSelect={(x) => onChange(x.address)}
+                  onBlur={onBlur}
+                  ButtonProps={{ variant: "input" }}
+                />
+              )}
+            />
+          </Stack>
+
+          <Box>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              sx={{ mr: 0.75 }}
+            >
+              <FormLabel>Flow Rate</FormLabel>
+              <TooltipIcon title="Flow rate is the velocity of tokens being streamed." />
+            </Stack>
+
+            <Controller
+              control={control}
+              name="data.flowRate"
+              render={({ field: { onChange, onBlur } }) => (
+                <FlowRateInput
+                  flowRateEther={flowRateEther}
                   onChange={onChange}
                   onBlur={onBlur}
-                  addressLength={isBelowMd ? "medium" : "long"}
-                  ButtonProps={{ fullWidth: true }}
                 />
               )}
             />
           </Box>
+        </Box>
 
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: "1fr 2fr",
-              gap: 2.5,
-              [theme.breakpoints.down("md")]: {
-                gridTemplateColumns: "1fr",
-              },
-            }}
-          >
-            <Stack justifyContent="stretch">
-              <FormLabel>Super Token</FormLabel>
-
-              <Controller
-                control={control}
-                name="data.tokenAddress"
-                render={({ field: { onChange, onBlur } }) => (
-                  <TokenDialogButton
-                    token={token}
-                    tokenSelection={{
-                      showUpgrade: true,
-                      tokenPairsQuery: {
-                        data: superTokens,
-                        isFetching:
-                          listedSuperTokensQuery.isFetching ||
-                          customSuperTokensQuery.isFetching,
-                      },
-                    }}
-                    onTokenSelect={(x) => onChange(x.address)}
-                    onBlur={onBlur}
-                    ButtonProps={{ variant: "input" }}
-                  />
-                )}
-              />
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "4fr 3fr",
+            gap: 2.5,
+            [theme.breakpoints.down("md")]: {
+              gridTemplateColumns: "1fr",
+            },
+          }}
+        >
+          <Box>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              sx={{ mr: 0.75 }}
+            >
+              <FormLabel>Ends on</FormLabel>
+              <TooltipIcon title="If the end date is not specified, stream will run indefinitely or until you run out of tokens." />
             </Stack>
-
-            <Box>
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-                sx={{ mr: 0.75 }}
-              >
-                <FormLabel>Flow Rate</FormLabel>
-                <TooltipIcon title="Flow rate is the velocity of tokens being streamed." />
-              </Stack>
-
-              <Controller
-                control={control}
-                name="data.flowRate"
-                render={({ field: { onChange, onBlur } }) => (
-                  <FlowRateInput
-                    flowRateEther={flowRateEther}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                  />
-                )}
-              />
-            </Box>
+            <TextField data-cy={"ends-on"} value="∞" disabled fullWidth />
           </Box>
-
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: "4fr 3fr",
-              gap: 2.5,
-              [theme.breakpoints.down("md")]: {
-                gridTemplateColumns: "1fr",
-              },
-            }}
-          >
-            <Box>
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-                sx={{ mr: 0.75 }}
-              >
-                <FormLabel>Ends on</FormLabel>
-                <TooltipIcon title="If the end date is not specified, stream will run indefinitely or until you run out of tokens." />
-              </Stack>
-              <TextField data-cy={"ends-on"} value="∞" disabled fullWidth />
-            </Box>
-            <Box>
-              <FormLabel>Amount per second</FormLabel>
-              <TextField
-                data-cy={"amount-per-second"}
-                disabled
-                value={amountPerSecond.toString()}
-                fullWidth
-              />
-            </Box>
+          <Box>
+            <FormLabel>Amount per second</FormLabel>
+            <TextField
+              data-cy={"amount-per-second"}
+              disabled
+              value={amountPerSecond.toString()}
+              fullWidth
+            />
           </Box>
+        </Box>
 
-          <Alert severity="warning" icon={false}>
-            <FormGroup>
-              <Controller
-                control={control}
-                name="data.understandLiquidationRisk"
-                render={({ field: { onChange, onBlur } }) => (
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        data-cy={"risk-checkbox"}
-                        checked={understandLiquidationRisk}
-                        onChange={onChange}
-                        onBlur={onBlur}
-                      />
-                    }
-                    label={
-                      <Typography variant="body2">
-                        I understand that I have to{" "}
-                        <strong>
-                          cancel the stream before my balance reaches zero
-                        </strong>{" "}
-                        or else I will be liquidated and{" "}
-                        <strong>lose my buffer</strong>.
-                      </Typography>
-                    }
-                  />
-                )}
-              />
-            </FormGroup>
-          </Alert>
-
-          {tokenAddress && visibleAddress && (
+        {tokenAddress && visibleAddress && (
+          <>
             <Stack
               direction="row"
               alignItems="center"
               justifyContent="center"
               gap={1}
             >
-              <BalanceSuperToken
-                data-cy={"balance"}
-                chainId={network.id}
-                accountAddress={visibleAddress}
-                tokenAddress={tokenAddress}
-                TypographyProps={{ variant: "h7mono" }}
-              />
-
+              <Stack direction="row" alignItems="center" gap={0.5}>
+                <BalanceSuperToken
+                  data-cy={"balance"}
+                  chainId={network.id}
+                  accountAddress={visibleAddress}
+                  tokenAddress={tokenAddress}
+                  TypographyProps={{ variant: "h7mono" }}
+                />
+                <Typography variant="h7">{token?.symbol}</Typography>
+              </Stack>
               {isWrappableSuperToken && (
                 <Link
                   href={`/wrap?upgrade&token=${tokenAddress}&network=${network.slugName}`}
@@ -410,45 +425,160 @@ export default memo(function SendCard() {
                 </Link>
               )}
             </Stack>
-          )}
-        </Stack>
+            <Divider />
+          </>
+        )}
 
-        <Stack gap={2.5}>
-          {!!(receiverAddress && token) && (
-            <>
-              <Divider />
-              <StreamingPreview
-                receiver={receiverAddress}
-                token={token}
-                flowRateEther={flowRateEther}
-                existingStream={activeFlow ?? null}
+        {!!(receiverAddress && token) && (
+          <StreamingPreview
+            receiver={receiverAddress}
+            token={token}
+            flowRateEther={flowRateEther}
+            existingStream={activeFlow ?? null}
+          />
+        )}
+
+        {showBufferAlert && (
+          <Alert severity="error">
+            If you do not cancel this stream before your balance reaches zero,{" "}
+            <b>
+              you will lose your{" "}
+              {bufferAmount && token ? (
+                <Amount wei={bufferAmount.toString()}> {token.symbol}</Amount>
+              ) : (
+                `your`
+              )}{" "}
+              buffer.
+            </b>
+            <FormGroup>
+              <Controller
+                control={control}
+                name="data.understandLiquidationRisk"
+                render={({ field: { onChange, onBlur } }) => (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        data-cy={"risk-checkbox"}
+                        checked={understandLiquidationRisk}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                        sx={{ color: "inherit" }}
+                      />
+                    }
+                    label={
+                      <Typography variant="body2">
+                        Yes, I understand the risk.
+                      </Typography>
+                    }
+                  />
+                )}
               />
-            </>
-          )}
+            </FormGroup>
+          </Alert>
+        )}
 
-          <TransactionBoundary mutationResult={flowCreateResult}>
-            {({ closeDialog, setDialogSuccessActions }) =>
-              !activeFlow && (
+        <TransactionBoundary mutationResult={flowCreateResult}>
+          {({ closeDialog, setDialogSuccessActions }) =>
+            !activeFlow && (
+              <TransactionButton
+                dataCy={"send-transaction-button"}
+                disabled={isSendDisabled}
+                onClick={async (signer) => {
+                  if (!formState.isValid) {
+                    throw Error(
+                      `This should never happen. Form state: ${JSON.stringify(
+                        formState,
+                        null,
+                        2
+                      )}`
+                    );
+                  }
+
+                  const { data: formData } = getValues() as ValidStreamingForm;
+
+                  const restoration: SendStreamRestoration = {
+                    version: 2,
+                    type: RestorationType.SendStream,
+                    chainId: network.id,
+                    tokenAddress: formData.tokenAddress,
+                    receiverAddress: formData.receiverAddress,
+                    flowRate: {
+                      amountWei: parseEther(
+                        formData.flowRate.amountEther
+                      ).toString(),
+                      unitOfTime: formData.flowRate.unitOfTime,
+                    },
+                  };
+                  flowCreateTrigger({
+                    signer,
+                    chainId: network.id,
+                    flowRateWei:
+                      calculateTotalAmountWei(flowRateEther).toString(),
+                    senderAddress: await signer.getAddress(),
+                    receiverAddress: formData.receiverAddress,
+                    superTokenAddress: formData.tokenAddress,
+                    userDataBytes: undefined,
+                    waitForConfirmation: false,
+                    transactionExtraData: {
+                      restoration: restoration,
+                    },
+                    overrides: await getTransactionOverrides(network),
+                  })
+                    .unwrap()
+                    .then(() => resetForm());
+
+                  setDialogSuccessActions(
+                    <TransactionDialogActions>
+                      <Stack gap={1} sx={{ width: "100%" }}>
+                        <TransactionDialogButton
+                          color="secondary"
+                          onClick={closeDialog}
+                        >
+                          Send more streams
+                        </TransactionDialogButton>
+                        <Link
+                          href={getTokenPagePath({
+                            network: network.slugName,
+                            token: formData.tokenAddress,
+                          })}
+                          passHref
+                        >
+                          <TransactionDialogButton color="primary">
+                            Go to token page ➜
+                          </TransactionDialogButton>
+                        </Link>
+                      </Stack>
+                    </TransactionDialogActions>
+                  );
+                }}
+              >
+                Send
+              </TransactionButton>
+            )
+          }
+        </TransactionBoundary>
+
+        <Stack
+          direction="column"
+          gap={1}
+          sx={{ ...(!activeFlow ? { display: "none" } : {}) }}
+        >
+          <TransactionBoundary mutationResult={flowUpdateResult}>
+            {({ setDialogLoadingInfo }) =>
+              activeFlow && (
                 <TransactionButton
-                  dataCy={"send-transaction-button"}
                   disabled={isSendDisabled}
                   onClick={async (signer) => {
                     if (!formState.isValid) {
-                      throw Error(
-                        `This should never happen. Form state: ${JSON.stringify(
-                          formState,
-                          null,
-                          2
-                        )}`
-                      );
+                      throw Error("This should never happen.");
                     }
 
                     const { data: formData } =
                       getValues() as ValidStreamingForm;
 
-                    const restoration: SendStreamRestoration = {
+                    const restoration: ModifyStreamRestoration = {
                       version: 2,
-                      type: RestorationType.SendStream,
+                      type: RestorationType.ModifyStream,
                       chainId: network.id,
                       tokenAddress: formData.tokenAddress,
                       receiverAddress: formData.receiverAddress,
@@ -459,11 +589,15 @@ export default memo(function SendCard() {
                         unitOfTime: formData.flowRate.unitOfTime,
                       },
                     };
-                    flowCreateTrigger({
+                    flowUpdateTrigger({
                       signer,
                       chainId: network.id,
-                      flowRateWei:
-                        calculateTotalAmountWei(flowRateEther).toString(),
+                      flowRateWei: calculateTotalAmountWei({
+                        amountWei: parseEther(
+                          formData.flowRate.amountEther
+                        ).toString(),
+                        unitOfTime: formData.flowRate.unitOfTime,
+                      }).toString(),
                       senderAddress: await signer.getAddress(),
                       receiverAddress: formData.receiverAddress,
                       superTokenAddress: formData.tokenAddress,
@@ -477,151 +611,66 @@ export default memo(function SendCard() {
                       .unwrap()
                       .then(() => resetForm());
 
-                    setDialogSuccessActions(
+                    setDialogLoadingInfo(
                       <TransactionDialogActions>
-                        <Stack gap={1} sx={{ width: "100%" }}>
-                          <TransactionDialogButton
-                            color="secondary"
-                            onClick={closeDialog}
-                          >
-                            Send more streams
+                        <Link
+                          href={getTokenPagePath({
+                            network: network.slugName,
+                            token: formData.tokenAddress,
+                          })}
+                          passHref
+                        >
+                          <TransactionDialogButton color="primary">
+                            Go to token page ➜
                           </TransactionDialogButton>
-                          <Link
-                            href={getTokenPagePath({
-                              network: network.slugName,
-                              token: formData.tokenAddress,
-                            })}
-                            passHref
-                          >
-                            <TransactionDialogButton color="primary">
-                              Go to token page ➜
-                            </TransactionDialogButton>
-                          </Link>
-                        </Stack>
+                        </Link>
                       </TransactionDialogActions>
                     );
                   }}
                 >
-                  Send
+                  ModifyStream
                 </TransactionButton>
               )
             }
           </TransactionBoundary>
+          <TransactionBoundary mutationResult={flowDeleteResult}>
+            {() =>
+              activeFlow && (
+                <TransactionButton
+                  dataCy={"cancel-stream-button"}
+                  ButtonProps={{
+                    variant: "outlined",
+                  }}
+                  onClick={async (signer) => {
+                    const superTokenAddress = tokenAddress;
+                    const senderAddress = visibleAddress;
+                    if (
+                      !receiverAddress ||
+                      !superTokenAddress ||
+                      !senderAddress
+                    ) {
+                      throw Error("This should never happen.");
+                    }
 
-          <Stack
-            direction="column"
-            gap={1}
-            sx={{ ...(!activeFlow ? { display: "none" } : {}) }}
-          >
-            <TransactionBoundary mutationResult={flowUpdateResult}>
-              {({ setDialogLoadingInfo }) =>
-                activeFlow && (
-                  <TransactionButton
-                    disabled={isSendDisabled}
-                    onClick={async (signer) => {
-                      if (!formState.isValid) {
-                        throw Error("This should never happen.");
-                      }
-
-                      const { data: formData } =
-                        getValues() as ValidStreamingForm;
-
-                      const restoration: ModifyStreamRestoration = {
-                        version: 2,
-                        type: RestorationType.ModifyStream,
-                        chainId: network.id,
-                        tokenAddress: formData.tokenAddress,
-                        receiverAddress: formData.receiverAddress,
-                        flowRate: {
-                          amountWei: parseEther(
-                            formData.flowRate.amountEther
-                          ).toString(),
-                          unitOfTime: formData.flowRate.unitOfTime,
-                        },
-                      };
-                      flowUpdateTrigger({
-                        signer,
-                        chainId: network.id,
-                        flowRateWei: calculateTotalAmountWei({
-                          amountWei: parseEther(
-                            formData.flowRate.amountEther
-                          ).toString(),
-                          unitOfTime: formData.flowRate.unitOfTime,
-                        }).toString(),
-                        senderAddress: await signer.getAddress(),
-                        receiverAddress: formData.receiverAddress,
-                        superTokenAddress: formData.tokenAddress,
-                        userDataBytes: undefined,
-                        waitForConfirmation: false,
-                        transactionExtraData: {
-                          restoration: restoration,
-                        },
-                        overrides: await getTransactionOverrides(network),
-                      })
-                        .unwrap()
-                        .then(() => resetForm());
-
-                      setDialogLoadingInfo(
-                        <TransactionDialogActions>
-                          <Link
-                            href={getTokenPagePath({
-                              network: network.slugName,
-                              token: formData.tokenAddress,
-                            })}
-                            passHref
-                          >
-                            <TransactionDialogButton color="primary">
-                              Go to token page ➜
-                            </TransactionDialogButton>
-                          </Link>
-                        </TransactionDialogActions>
-                      );
-                    }}
-                  >
-                    Modify
-                  </TransactionButton>
-                )
-              }
-            </TransactionBoundary>
-            <TransactionBoundary mutationResult={flowDeleteResult}>
-              {() =>
-                activeFlow && (
-                  <TransactionButton
-                    dataCy={"cancel-stream-button"}
-                    ButtonProps={{
-                      variant: "outlined",
-                    }}
-                    onClick={async (signer) => {
-                      const superTokenAddress = tokenAddress;
-                      const senderAddress = visibleAddress;
-                      if (
-                        !receiverAddress ||
-                        !superTokenAddress ||
-                        !senderAddress
-                      ) {
-                        throw Error("This should never happen.");
-                      }
-
-                      flowDeleteTrigger({
-                        signer,
-                        receiverAddress,
-                        superTokenAddress,
-                        senderAddress,
-                        chainId: network.id,
-                        userDataBytes: undefined,
-                        waitForConfirmation: false,
-                        overrides: await getTransactionOverrides(network),
-                      })
-                        .unwrap()
-                        .then(() => resetForm());
-                    }}
-                  >
-                    Cancel Stream
-                  </TransactionButton>
-                )
-              }
-            </TransactionBoundary>
-          </Stack>
+                    flowDeleteTrigger({
+                      signer,
+                      receiverAddress,
+                      superTokenAddress,
+                      senderAddress,
+                      chainId: network.id,
+                      userDataBytes: undefined,
+                      waitForConfirmation: false,
+                      overrides: await getTransactionOverrides(network),
+                    })
+                      .unwrap()
+                      .then(() => resetForm());
+                  }}
+                >
+                  Cancel Stream
+                </TransactionButton>
+              )
+            }
+          </TransactionBoundary>
         </Stack>
       </Stack>
     </Card>

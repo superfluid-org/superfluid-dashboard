@@ -210,7 +210,7 @@ const TokenPageContent: FC<{
               >
                 Balance
               </Typography>
-              <Typography variant="h3mono">
+              <Typography data-cy={"token-balance"} variant="h3mono">
                 <FlowingBalance
                   balance={balance}
                   flowRate={flowRate}
@@ -222,7 +222,7 @@ const TokenPageContent: FC<{
                 <Typography variant="body2" color="text.secondary">
                   Liquidation Date:
                 </Typography>
-                <Typography variant="h7" color="text.secondary">
+                <Typography data-cy={"liquidation-date"} variant="h7" color="text.secondary">
                   {!!maybeCriticalAtTimestamp
                     ? format(maybeCriticalAtTimestamp * 1000, "MMMM do, yyyy")
                     : "-"}
