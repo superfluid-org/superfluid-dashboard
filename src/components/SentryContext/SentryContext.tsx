@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/browser";
 import { FC, useEffect } from "react";
+import { useIntercom } from "react-use-intercom";
 import { useAccount, useNetwork } from "wagmi";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 
@@ -40,7 +41,12 @@ const SentryContext: FC = () => {
       Sentry.setTag(SENTRY_WALLET_TAG, null);
       Sentry.setContext(SENTRY_WALLET_CONTEXT, null);
     }
-  }, [isConnected, activeConnector]);
+  }, [isConnected, activeConnector, activeChain]);
+
+  const { getVisitorId } = useIntercom();
+  useEffect(() => {
+    Sentry.setUser({ id: getVisitorId() });
+  }, [getVisitorId]);
 
   return null;
 };
