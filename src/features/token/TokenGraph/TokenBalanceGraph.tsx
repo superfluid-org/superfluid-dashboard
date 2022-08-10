@@ -302,7 +302,8 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
 
   return (
     <Box
-      sx={{
+        data-cy={"token-graph"}
+        sx={{
         height,
         maxWidth: "100%",
         [theme.breakpoints.up("md")]: {

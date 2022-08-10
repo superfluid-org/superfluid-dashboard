@@ -23,6 +23,7 @@ const ROWS_PER_PAGE_ARROW = "[data-testid=ArrowDropDownIcon]";
 const DISPLAYED_ROWS = "[class*=displayedRows]";
 const NEXT_PAGE_BUTTON = "[data-testid=KeyboardArrowRightIcon]";
 const STREAM_ROWS = "[data-cy=stream-row]"
+const ALL_BALANCE_ROWS = "[data-cy*=-cell]"
 
 export class DashboardPage extends BasePage {
     static checkIfDashboardConnectIsVisible() {
@@ -108,12 +109,9 @@ export class DashboardPage extends BasePage {
                     ].ongoingStreamsAccount.tokenValues.tokenAddress.toLowerCase()}-streams-table] ${STREAM_ROWS} `;
             // The data in tables doesn't show up all at the same time , and skeletons dissapear with the first entry
             // waiting and need to re-check to make sure all streams are loaded
-            cy.wait(5000)
-            cy.get(specificSelector).then(el => {
-                cy.wrap(el.length).should("eq",networkSpecificData[
-                    network
-                    ].ongoingStreamsAccount.tokenValues.streams.length)
-            })
+            this.hasLength(specificSelector,networkSpecificData[
+                network
+                ].ongoingStreamsAccount.tokenValues.streams.length)
             networkSpecificData[
                 network
                 ].ongoingStreamsAccount.tokenValues.streams.forEach(
@@ -235,4 +233,21 @@ export class DashboardPage extends BasePage {
         });
     }
 
+    static openFirstVisibleStreamDetailsPage() {
+        this.clickFirstVisible(STREAM_ROWS)
+    }
+
+    static checkIfAnyTokenBalancesAreShown() {
+        this.isVisible(ALL_BALANCE_ROWS)
+    }
+
+    static openIndividualTokenPage(network: string, token: string) {
+        this.click(
+            `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell]`
+        );
+    }
+
+    static waitForXAmountOfEntries(amount: number) {
+        this.hasLength(STREAM_ROWS,amount)
+    }
 }

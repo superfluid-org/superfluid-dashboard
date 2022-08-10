@@ -16,7 +16,7 @@ const Page404: NextPage = () => {
         <Typography variant="h1" sx={{ mb: 2 }}>
           Something went wrong.
         </Typography>
-        <Typography variant="h4">
+        <Typography data-cy={"404-message"} variant="h4">
           Error{" "}
           <Typography variant="h4" color="primary" component="span">
             404
@@ -26,6 +26,7 @@ const Page404: NextPage = () => {
 
         <Link href="/" passHref>
           <Button
+            data-cy={"return-to-dashboard-button"}
             variant="contained"
             color="primary"
             size="large"
@@ -42,6 +43,7 @@ const Page404: NextPage = () => {
           Need support? Visit our{" "}
           <Link href={HELP_CENTER_URL} passHref target="_blank">
             <Typography
+              data-cy={"help-center-link"}
               color="primary"
               variant="h5"
               component="a"

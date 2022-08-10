@@ -68,6 +68,7 @@ export class ActivityPage extends BasePage {
             this.click(MONTH_BACK_BUTTON)
         }
         this.clickFirstVisible(AVAILABLE_DAYS)
+        this.waitForSkeletonsToDisappear()
     }
 
     static validateActivityHistoryForAccount(account:string,networkType:string) {
