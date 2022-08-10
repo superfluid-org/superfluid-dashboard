@@ -10,15 +10,6 @@ const SENTRY_WALLET_TAG = "wallet";
 const SENTRY_EXPECTED_NETWORK_CONTEXT = "Expected Network";
 const SENTRY_EXPECTED_NETWORK_TAG = "network";
 
-declare global {
-  interface Window {
-    Intercom?: {
-      booted?: boolean;
-    };
-    intercomSettings: any;
-  }
-}
-
 const SentryContext: FC = () => {
   const { network } = useExpectedNetwork();
 
@@ -52,13 +43,17 @@ const SentryContext: FC = () => {
     }
   }, [isConnected, activeConnector, activeChain]);
 
-  const { getVisitorId } = useIntercom();
+  const { getVisitorId,  } = useIntercom();
+
   useEffect(() => {
-    console.log(!!window.Intercom?.booted)
-    if (!!window.Intercom?.booted) {
+    console.log({
+      getVisitorId,
+      id: getVisitorId?.()
+    })
+    if (!!getVisitorId) {
       Sentry.setUser({ id: getVisitorId() });
     }
-  }, [window.Intercom?.booted]);
+  }, [getVisitorId]);
 
   return null;
 };
