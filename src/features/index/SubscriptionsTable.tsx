@@ -158,7 +158,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
               <TableCell>Total Amount Received</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Updated At</TableCell>
-              {/* <TableCell width="100"></TableCell> */}
+              <TableCell width="100"></TableCell>
             </TableRow>
           )}
         </TableHead>
@@ -174,6 +174,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
                 <SubscriptionRow
                   key={subscription.id}
                   subscription={subscription}
+                  network={network}
                 />
               ))
           )}

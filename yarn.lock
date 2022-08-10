@@ -2965,10 +2965,10 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
   integrity sha512-9NET910DNaIPngYnLLPeg+Ogzqsi9uM4mSboU5y6p8S5DzMTVEsJZrawi+BoDNUVBa2DhJqQYUFvMDfgU062LQ==
 
-"@superfluid-finance/sdk-core@0.5.2":
-  version "0.5.2"
-  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-core/0.5.2/cc4957f4c555c046325afc2492b8f6c8ebdfb63ad6e81ddf3407d181bd8d1cf3#c138c233eb289e85a60ac86298a7743164cd7989"
-  integrity sha512-lRf8J43ESHXcq1ZvINF7hS2FuzlnNYEvYgJ0yWZth3d6qZ+Wbem10lsC2r4yFrSaww/QqkGaBL1WNbndrWplPw==
+"@superfluid-finance/sdk-core@0.5.3-dev.9e9228f.0":
+  version "0.5.3-dev.9e9228f.0"
+  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-core/0.5.3-dev.9e9228f.0/568a548fdea5ee266ff5126fe76b713ba77b510d307717af1919f9fb4f74251f#2a85ad11e109fe92d1d8fcfcb52b02fe285cb01a"
+  integrity sha512-IaRZjwlkF46BcjwJwbhwzPL+yGfYpUjy9Vn9qQIpqiRliGHu+reYZh46aoCizVELs0TS546KPDsmq5nXb4IzhQ==
   dependencies:
     browserify "^17.0.0"
     graphql-request "^4.3.0"

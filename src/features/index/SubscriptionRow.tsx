@@ -1,6 +1,6 @@
 import {
-  Avatar,
   Button,
+  CircularProgress,
   ListItemText,
   Skeleton,
   Stack,
@@ -16,9 +16,15 @@ import { BigNumber } from "ethers";
 import { FC, useMemo } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
+import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { subscriptionWeiAmountReceived } from "../../utils/tokenUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
+import { Network } from "../network/networks";
+import { PendingIndexSubscriptionApproval } from "../pendingUpdates/PendingIndexSubscriptionApproval";
+import usePendingIndexSubscriptionApproval from "../pendingUpdates/usePendingIndexSubscriptionApproval";
+import { rpcApi } from "../redux/store";
 import Amount from "../token/Amount";
+import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 
 export const SubscriptionLoadingRow = () => {
   const theme = useTheme();
@@ -83,9 +89,13 @@ export const SubscriptionLoadingRow = () => {
 
 interface SubscriptionRowProps {
   subscription: IndexSubscription;
+  network: Network;
 }
 
-const SubscriptionRow: FC<SubscriptionRowProps> = ({ subscription }) => {
+const SubscriptionRow: FC<SubscriptionRowProps> = ({
+  subscription,
+  network,
+}) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -111,6 +121,18 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({ subscription }) => {
       units,
     ]
   );
+
+  const getTransactionOverrides = useGetTransactionOverrides();
+
+  const [approveSubscription, approveSubscriptionResult] =
+    rpcApi.useIndexSubscriptionApproveMutation();
+
+  const pendingApproval = usePendingIndexSubscriptionApproval({
+    chainId: network.id,
+    indexId: subscription.indexId,
+    tokenAddress: subscription.token,
+    publisherAddress: subscription.publisher,
+  });
 
   return (
     <TableRow>
@@ -140,6 +162,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({ subscription }) => {
           />
         </Stack>
       </TableCell>
+      
       {!isBelowMd ? (
         <>
           <TableCell>
@@ -174,15 +197,68 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({ subscription }) => {
         </TableCell>
       )}
 
-      {/* <TableCell>
-        {!subscription.approved && (
-          <Button variant="textContained" color="primary" size="small">
-            Approve
-          </Button>
-        )}
-      </TableCell> */}
+      <TableCell>
+        <TransactionBoundary
+          expectedNetwork={network}
+          mutationResult={approveSubscriptionResult}
+        >
+          {({
+            mutationResult,
+            signer,
+            isConnected,
+            isCorrectNetwork,
+            expectedNetwork,
+          }) =>
+            !subscription.approved && (
+              <>
+                {mutationResult.isLoading || pendingApproval ? (
+                  <ApprovalProgress pendingUpdate={pendingApproval} />
+                ) : (
+                  <Button
+                    disabled={!signer || !isConnected || !isCorrectNetwork}
+                    variant="textContained"
+                    color="primary"
+                    size="small"
+                    onClick={async () => {
+                      if (!signer)
+                        throw new Error(
+                          "Signer should always bet available here."
+                        );
+
+                      // TODO(KK): Make the operation take subscriber as input. Don't just rely on the wallet's signer -- better to have explicit data flowing
+                      approveSubscription({
+                        signer,
+                        chainId: expectedNetwork.id,
+                        indexId: subscription.indexId,
+                        publisherAddress: subscription.publisher,
+                        superTokenAddress: subscription.token,
+                        userDataBytes: undefined,
+                        waitForConfirmation: false,
+                        overrides: await getTransactionOverrides(network),
+                      });
+                    }}
+                  >
+                    Approve
+                  </Button>
+                )}
+              </>
+            )
+          }
+        </TransactionBoundary>
+      </TableCell>
     </TableRow>
   );
 };
+
+const ApprovalProgress: FC<{
+  pendingUpdate: PendingIndexSubscriptionApproval | undefined;
+}> = ({ pendingUpdate }) => (
+  <Stack direction="row" alignItems="center" gap={1}>
+    <CircularProgress color="warning" size="16px" />
+    <Typography variant="caption">
+      {pendingUpdate?.hasTransactionSucceeded ? "Syncing..." : "Approving..."}
+    </Typography>
+  </Stack>
+);
 
 export default SubscriptionRow;

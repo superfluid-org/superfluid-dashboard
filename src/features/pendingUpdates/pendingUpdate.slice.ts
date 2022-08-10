@@ -116,7 +116,7 @@ export const pendingUpdateSlice = createSlice({
         }
       );
     builder.addMatcher(
-      isAllOf(transactionTracker.actions.updateTransaction, subgraphApi.endpoints.),
+      isAllOf(transactionTracker.actions.updateTransaction),
       (state, action) => {
         const transactionStatus = action.payload.changes.status;
         const isSubgraphInSync = action.payload.changes.isSubgraphInSync;

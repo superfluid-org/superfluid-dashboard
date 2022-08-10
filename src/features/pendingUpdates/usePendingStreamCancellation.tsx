@@ -19,6 +19,7 @@ const usePendingStreamCancellation = ({
     pendingUpdateSelectors.selectAll(state.pendingUpdates)
   );
 
+  // TODO(KK): Chain ID should be checked here too.
   return useMemo(
     () =>
       allPendingUpdates
