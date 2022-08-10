@@ -86,19 +86,21 @@ export class StreamDetailsPage extends BasePage {
             this.hasText(NETWORK_NAME, ongoingStream.networkName)
             this.hasText(TX_HASH, shortenHex(ongoingStream.txHash))
             this.containsText(PROJECTED_LIQUIDATION, ongoingStream.projectedLiquidation.slice(0,-1))
-            this.hasText(AMOUNT_PER_MONTH, ongoingStream.amountPerMonth)
+            this.hasText(AMOUNT_PER_MONTH, `${ongoingStream.amountPerMonth} ${ongoingStream.token}`)
             //Asserting without last 4 decimals
             //because the calculation can be a little off from the animation and test would fail
             this.containsText(
                 SENT_SO_FAR,
                 (((Date.now() - ongoingStream.startedAtUnix) * ongoingStream.flowRate) /
                     1e21
-                ).toString().substring(0, 11)
+                ).toString().substring(0, 9)
             );
         })
     }
 
     static validateReceiverAndSenderTooltips() {
+        //Tooltips don't show up in firefox headless mode
+        if(Cypress.browser.name !== "firefox" && Cypress.browser.isHeadless){
         cy.get(SENDER_AND_RECEIVER).first().trigger("mouseover")
         cy.get(SENDER_RECEIVER_COPY_BUTTONS).first().trigger("mouseover")
         this.isVisible(VISIBLE_TOOLTIP)
@@ -111,7 +113,6 @@ export class StreamDetailsPage extends BasePage {
         this.hasText(VISIBLE_TOOLTIP, "View on blockchain explorer")
         cy.get(SENDER_RECEIVER_EXPLORER_BUTTONS).first().trigger("mouseout")
         this.doesNotExist(VISIBLE_TOOLTIP)
-
         cy.get(SENDER_AND_RECEIVER).last().trigger("mouseover")
         cy.get(SENDER_RECEIVER_COPY_BUTTONS).last().trigger("mouseover")
         this.isVisible(VISIBLE_TOOLTIP)
@@ -124,6 +125,7 @@ export class StreamDetailsPage extends BasePage {
         this.hasText(VISIBLE_TOOLTIP, "View on blockchain explorer")
         cy.get(SENDER_RECEIVER_EXPLORER_BUTTONS).last().trigger("mouseout")
         this.doesNotExist(VISIBLE_TOOLTIP)
+        }
     }
 
     static validateReceiverSenderExplorerLinks() {
@@ -139,24 +141,28 @@ export class StreamDetailsPage extends BasePage {
     static clickReceiverSenderCopyButtonsAndValidateTooltip() {
         cy.fixture("streamData").then(streamData => {
             const endedStream = streamData["staticBalanceAccount"]["polygon"][0]
+            //In headless mode clicking on the button , does not show "Copied" , fine on headed
+            if(!Cypress.browser.isHeadless) {
             cy.get(SENDER_AND_RECEIVER).first().trigger("mouseover")
             cy.get(SENDER_RECEIVER_COPY_BUTTONS).first().click()
             this.isVisible(VISIBLE_TOOLTIP)
             this.hasText(VISIBLE_TOOLTIP, "Copied!")
-            cy.get(SENDER_RECEIVER_COPY_BUTTONS).first().should("have.attr", "test-data", endedStream.sender)
             cy.get(SENDER_RECEIVER_COPY_BUTTONS).first().trigger("mouseout")
             this.doesNotExist(VISIBLE_TOOLTIP)
             cy.get(SENDER_AND_RECEIVER).last().trigger("mouseover")
             cy.get(SENDER_RECEIVER_COPY_BUTTONS).last().click()
             this.isVisible(VISIBLE_TOOLTIP)
             this.hasText(VISIBLE_TOOLTIP, "Copied!")
-            cy.get(SENDER_RECEIVER_COPY_BUTTONS).last().should("have.attr", "test-data", endedStream.receiver)
             cy.get(SENDER_RECEIVER_COPY_BUTTONS).last().trigger("mouseout")
             this.doesNotExist(VISIBLE_TOOLTIP)
+            }
+            cy.get(SENDER_RECEIVER_COPY_BUTTONS).first().should("have.attr", "test-data", endedStream.sender)
+            cy.get(SENDER_RECEIVER_COPY_BUTTONS).last().should("have.attr", "test-data", endedStream.receiver)
         })
     }
 
     static validateTxHashTooltips() {
+        if(Cypress.browser.name !== "firefox" && Cypress.browser.isHeadless) {
         cy.get(TX_HASH_COPY_BUTTON).trigger("mouseover")
         this.isVisible(VISIBLE_TOOLTIP)
         this.hasText(VISIBLE_TOOLTIP, "Copy transaction hash")
@@ -167,17 +173,20 @@ export class StreamDetailsPage extends BasePage {
         this.hasText(VISIBLE_TOOLTIP, "View on blockchain explorer")
         cy.get(TX_HASH_EXPLORER_BUTTON).trigger("mouseout")
         this.doesNotExist(VISIBLE_TOOLTIP)
+        }
     }
 
     static validateTxHashTooltipsAfterClick() {
         cy.fixture("streamData").then(streamData => {
             const endedStream = streamData["staticBalanceAccount"]["polygon"][0]
-            cy.get(TX_HASH_COPY_BUTTON).click()
-            this.isVisible(VISIBLE_TOOLTIP)
-            this.hasText(VISIBLE_TOOLTIP, "Copied!")
+            if(!Cypress.browser.isHeadless) {
+                cy.get(TX_HASH_COPY_BUTTON).click()
+                this.isVisible(VISIBLE_TOOLTIP)
+                this.hasText(VISIBLE_TOOLTIP, "Copied!")
+                cy.get(TX_HASH_COPY_BUTTON).trigger("mouseout")
+                this.doesNotExist(VISIBLE_TOOLTIP)
+            }
             this.hasAttributeWithValue(TX_HASH_COPY_BUTTON, "test-data", endedStream.txHash)
-            cy.get(TX_HASH_COPY_BUTTON).trigger("mouseout")
-            this.doesNotExist(VISIBLE_TOOLTIP)
         })
     }
 
@@ -195,12 +204,13 @@ export class StreamDetailsPage extends BasePage {
             cy.get(ALL_COPY_BUTTONS).last().trigger("mouseover")
             this.isVisible(VISIBLE_TOOLTIP)
             this.hasText(VISIBLE_TOOLTIP, "Copy link")
+            if(!Cypress.browser.isHeadless) {
             cy.get(ALL_COPY_BUTTONS).last().click()
             this.hasText(VISIBLE_TOOLTIP, "Copied!")
+            }
             cy.get(ALL_COPY_BUTTONS).last().trigger("mouseout")
             this.doesNotExist(VISIBLE_TOOLTIP)
             cy.get(ALL_COPY_BUTTONS).last().should("have.attr","test-data",`https://app.superfluid.finance${endedStream.v2Link}`)
-
         })
     }
 

@@ -92,3 +92,6 @@ Given(/^Dashboard page is open when wallet of the user is connected or in view m
 Given(/^User opens "([^"]*)" "([^"]*)" individual token page$/, (network: string, token: string) =>  {
     DashboardPage.openIndividualTokenPage(network, token);
 });
+Given(/^User waits for (\d+) stream entries to be shown$/,  (amount:number) => {
+    DashboardPage.waitForXAmountOfEntries(amount)
+});

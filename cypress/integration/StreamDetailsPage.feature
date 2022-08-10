@@ -24,6 +24,7 @@ Feature: Stream details page test cases
     And User uses view mode to look at "ongoingStreamAccount"
     And User waits for balances to load
     And User clicks on "polygon" "MATICx" row
+    And User waits for 2 stream entries to be shown
     And User opens the first visible stream details page from the table
     And Ongoing stream data is shown correctly
     And View mode chip shows "0xEb85...c28d"

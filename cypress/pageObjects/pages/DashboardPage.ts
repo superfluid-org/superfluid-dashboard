@@ -246,4 +246,8 @@ export class DashboardPage extends BasePage {
             `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell]`
         );
     }
+
+    static waitForXAmountOfEntries(amount: number) {
+        this.hasLength(STREAM_ROWS,amount)
+    }
 }
