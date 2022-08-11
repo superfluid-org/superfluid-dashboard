@@ -10,12 +10,12 @@ export interface PendingIndexSubscriptionApproval extends PendingUpdate {
   superTokenAddress: string;
 }
 
-export const isPendingIndexSubscriptionApproval = (
+export const isPendingIndexSubscriptionApprove = (
   x: PendingUpdate
 ): x is PendingIndexSubscriptionApproval =>
   x.pendingType === "IndexSubscriptionApprove";
 
-export const usePendingIndexSubscriptionApproval = ({
+export const usePendingIndexSubscriptionApprove = ({
   chainId,
   indexId,
   publisherAddress,
@@ -34,7 +34,7 @@ export const usePendingIndexSubscriptionApproval = ({
   return useMemo(
     () =>
       allPendingUpdates
-        .filter(isPendingIndexSubscriptionApproval)
+        .filter(isPendingIndexSubscriptionApprove)
         .filter(
           (x) =>
             x.chainId === chainId &&

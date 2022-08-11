@@ -24,9 +24,9 @@ import { subscriptionWeiAmountReceived } from "../../utils/tokenUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { Network } from "../network/networks";
 import {
-  usePendingIndexSubscriptionApproval,
-} from "../pendingUpdates/PendingIndexSubscriptionApproval";
-import { usePendingIndexSubscriptionCancellation } from "../pendingUpdates/PendingIndexSubscriptionCancellation";
+  usePendingIndexSubscriptionApprove,
+} from "../pendingUpdates/PendingIndexSubscriptionApprove";
+import { usePendingIndexSubscriptionRevoke } from "../pendingUpdates/PendingIndexSubscriptionRevoke";
 import { PendingUpdate } from "../pendingUpdates/PendingUpdate";
 import { rpcApi } from "../redux/store";
 import Amount from "../token/Amount";
@@ -132,17 +132,17 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
 
   const [approveSubscription, approveSubscriptionResult] =
     rpcApi.useIndexSubscriptionApproveMutation();
-  const [cancelSubscription, cancelSubscriptionResult] =
+  const [revokeSubscription, revokeSubscriptionResult] =
     rpcApi.useIndexSubscriptionRevokeMutation();
 
-  const pendingApproval = usePendingIndexSubscriptionApproval({
+  const pendingApproval = usePendingIndexSubscriptionApprove({
     chainId: network.id,
     indexId: subscription.indexId,
     tokenAddress: subscription.token,
     publisherAddress: subscription.publisher,
   });
 
-  const pendingCancellation = usePendingIndexSubscriptionCancellation({
+  const pendingRevoke = usePendingIndexSubscriptionRevoke({
     chainId: network.id,
     indexId: subscription.indexId,
     tokenAddress: subscription.token,
@@ -252,7 +252,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                         onClick={async () => {
                           if (!signer)
                             throw new Error(
-                              "Signer should always bet available here."
+                              "Signer should always be available here."
                             );
 
                           // TODO(KK): Make the operation take subscriber as input. Don't just rely on the wallet's signer -- better to have explicit data flowing
@@ -279,7 +279,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
         </TransactionBoundary>
         <TransactionBoundary
           expectedNetwork={network}
-          mutationResult={cancelSubscriptionResult}
+          mutationResult={revokeSubscriptionResult}
         >
           {({
             mutationResult,
@@ -290,10 +290,10 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
           }) =>
             subscription.approved && (
               <>
-                {mutationResult.isLoading || pendingCancellation ? (
+                {mutationResult.isLoading || pendingRevoke ? (
                   <OperationProgress
                     transactingText={"Canceling..."}
-                    pendingUpdate={pendingCancellation}
+                    pendingUpdate={pendingRevoke}
                   />
                 ) : (
                   <Tooltip
@@ -301,10 +301,10 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                     disableInteractive
                     title={
                       !isConnected
-                        ? "Connect wallet to cancel subscription"
+                        ? "Connect wallet to revoke subscription"
                         : !isCorrectNetwork
-                        ? `Switch network to ${network.name} to cancel subscription`
-                        : "Cancel subscription"
+                        ? `Switch network to ${network.name} to revoke subscription`
+                        : "Revoke subscription"
                     }
                   >
                     <span>
@@ -320,7 +320,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                             );
 
                           // TODO(KK): Make the operation take subscriber as input. Don't just rely on the wallet's signer -- better to have explicit data flowing
-                          cancelSubscription({
+                          revokeSubscription({
                             signer,
                             chainId: expectedNetwork.id,
                             indexId: subscription.indexId,

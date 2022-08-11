@@ -5,8 +5,8 @@ import {
 } from "@reduxjs/toolkit";
 import { dateNowSeconds } from "../../utils/dateUtils";
 import { rpcApi, transactionTracker } from "../redux/store";
-import { PendingIndexSubscriptionApproval } from "./PendingIndexSubscriptionApproval";
-import { PendingIndexSubscriptionCancellation } from "./PendingIndexSubscriptionCancellation";
+import { PendingIndexSubscriptionApproval } from "./PendingIndexSubscriptionApprove";
+import { PendingIndexSubscriptionRevoke } from "./PendingIndexSubscriptionRevoke";
 import { PendingOutgoingStream } from "./PendingOutgoingStream";
 import { PendingStreamCancellation } from "./PendingStreamCancellation";
 import { PendingUpdate } from "./PendingUpdate";
@@ -105,7 +105,7 @@ export const pendingUpdateSlice = createSlice({
         const { chainId, hash: transactionHash } = action.payload;
         const { indexId, publisherAddress, superTokenAddress } =
           action.meta.arg.originalArgs;
-        const pendingUpdate: PendingIndexSubscriptionCancellation = {
+        const pendingUpdate: PendingIndexSubscriptionRevoke = {
           pendingType: "IndexSubscriptionRevoke",
           chainId,
           transactionHash,

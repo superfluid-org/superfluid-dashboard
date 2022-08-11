@@ -3,19 +3,19 @@ import { useAppSelector } from "../redux/store";
 import { PendingUpdate } from "./PendingUpdate";
 import { pendingUpdateSelectors } from "./pendingUpdate.slice";
 
-export interface PendingIndexSubscriptionCancellation extends PendingUpdate {
+export interface PendingIndexSubscriptionRevoke extends PendingUpdate {
   pendingType: "IndexSubscriptionRevoke";
   indexId: string;
   publisherAddress: string;
   superTokenAddress: string;
 }
 
-export const isPendingIndexSubscriptionApproval = (
+export const isPendingIndexSubscriptionRevoke = (
   x: PendingUpdate
-): x is PendingIndexSubscriptionCancellation =>
+): x is PendingIndexSubscriptionRevoke =>
   x.pendingType === "IndexSubscriptionRevoke";
 
-export const usePendingIndexSubscriptionCancellation = ({
+export const usePendingIndexSubscriptionRevoke = ({
   chainId,
   indexId,
   publisherAddress,
@@ -25,7 +25,7 @@ export const usePendingIndexSubscriptionCancellation = ({
   indexId: string;
   publisherAddress: string;
   tokenAddress: string;
-}): PendingIndexSubscriptionCancellation | undefined => {
+}): PendingIndexSubscriptionRevoke | undefined => {
   const allPendingUpdates = useAppSelector((state) =>
     pendingUpdateSelectors.selectAll(state.pendingUpdates)
   );
@@ -34,7 +34,7 @@ export const usePendingIndexSubscriptionCancellation = ({
   return useMemo(
     () =>
       allPendingUpdates
-        .filter(isPendingIndexSubscriptionApproval)
+        .filter(isPendingIndexSubscriptionRevoke)
         .filter(
           (x) =>
             x.chainId === chainId &&
