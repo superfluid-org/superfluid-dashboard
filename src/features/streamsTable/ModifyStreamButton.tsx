@@ -6,8 +6,8 @@ import {
   TooltipProps,
 } from "@mui/material";
 import { Stream } from "@superfluid-finance/sdk-core";
-import { useRouter } from "next/router";
-import { FC, useCallback } from "react";
+import Link from "next/link";
+import { FC, useMemo } from "react";
 import { useNetwork } from "wagmi";
 import { getSendPagePath } from "../../pages/send";
 import { getPrettyEtherFlowRate } from "../../utils/tokenUtils";
@@ -26,18 +26,17 @@ const ModifyStreamButton: FC<ModifyStreamButtonProps> = ({
   IconButtonProps = {},
   TooltipProps = {},
 }) => {
-  const router = useRouter();
   const { chain: activeChain } = useNetwork();
 
-  const modifyStream = useCallback(() => {
-    router.push(
+  const modifyStreamUrl = useMemo(
+    () =>
       getSendPagePath({
         token: stream.token,
         receiver: stream.receiver,
         flowRate: getPrettyEtherFlowRate(stream.currentFlowRate),
-      })
-    );
-  }, [stream, router]);
+      }),
+    [stream]
+  );
 
   return (
     <Tooltip
@@ -52,14 +51,15 @@ const ModifyStreamButton: FC<ModifyStreamButtonProps> = ({
       {...TooltipProps}
     >
       <span>
-        <IconButton
-          color="primary"
-          onClick={modifyStream}
-          disabled={network.id !== activeChain?.id}
-          {...IconButtonProps}
-        >
-          <EditRoundedIcon />
-        </IconButton>
+        <Link href={modifyStreamUrl} passHref>
+          <IconButton
+            color="primary"
+            disabled={network.id !== activeChain?.id}
+            {...IconButtonProps}
+          >
+            <EditRoundedIcon />
+          </IconButton>
+        </Link>
       </span>
     </Tooltip>
   );

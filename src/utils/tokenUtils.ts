@@ -2,7 +2,7 @@ import { AccountTokenSnapshot } from "@superfluid-finance/sdk-core";
 import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
 import Decimal from "decimal.js";
 import { BigNumber, BigNumberish } from "ethers";
-import { formatEther, formatUnits, parseUnits } from "ethers/lib/utils";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
 import minBy from "lodash/fp/minBy";
 import { Network } from "../features/network/networks";
 import {
@@ -24,6 +24,11 @@ export const getPrettyEtherValue = (weiValue: string) => {
   return etherValue.toDP(decimalsToRoundTo).toString();
 };
 
+/**
+ * This function is used to predict the unit of time selected when stream was started.
+ * Time unit with the shortest (most simple) ether representation is returned.
+ * TODO: Filter out time units that would produce repeating decimal points.
+ */
 export const getPrettyEtherFlowRate = (flowRateWei: string): FlowRateEther =>
   minBy(
     (flowRateEther) => flowRateEther.amountEther.length,
