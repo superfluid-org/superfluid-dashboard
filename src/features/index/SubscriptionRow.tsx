@@ -1,15 +1,18 @@
 import {
-  Button,
   CircularProgress,
+  IconButton,
   ListItemText,
   Skeleton,
   Stack,
   TableCell,
   TableRow,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import { IndexSubscription } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
@@ -20,7 +23,9 @@ import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { subscriptionWeiAmountReceived } from "../../utils/tokenUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { Network } from "../network/networks";
-import { PendingIndexSubscriptionApproval, usePendingIndexSubscriptionApproval } from "../pendingUpdates/PendingIndexSubscriptionApproval";
+import {
+  usePendingIndexSubscriptionApproval,
+} from "../pendingUpdates/PendingIndexSubscriptionApproval";
 import { usePendingIndexSubscriptionCancellation } from "../pendingUpdates/PendingIndexSubscriptionCancellation";
 import { PendingUpdate } from "../pendingUpdates/PendingUpdate";
 import { rpcApi } from "../redux/store";
@@ -172,7 +177,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
           />
         </Stack>
       </TableCell>
-      
+
       {!isBelowMd ? (
         <>
           <TableCell>
@@ -222,34 +227,51 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
             !subscription.approved && (
               <>
                 {mutationResult.isLoading || pendingApproval ? (
-                  <OperationProgress transactingText={"Approving..."} pendingUpdate={pendingApproval} />
+                  <OperationProgress
+                    transactingText={"Approving..."}
+                    pendingUpdate={pendingApproval}
+                  />
                 ) : (
-                  <Button
-                    disabled={!signer || !isConnected || !isCorrectNetwork}
-                    variant="textContained"
-                    color="primary"
-                    size="small"
-                    onClick={async () => {
-                      if (!signer)
-                        throw new Error(
-                          "Signer should always bet available here."
-                        );
-
-                      // TODO(KK): Make the operation take subscriber as input. Don't just rely on the wallet's signer -- better to have explicit data flowing
-                      approveSubscription({
-                        signer,
-                        chainId: expectedNetwork.id,
-                        indexId: subscription.indexId,
-                        publisherAddress: subscription.publisher,
-                        superTokenAddress: subscription.token,
-                        userDataBytes: undefined,
-                        waitForConfirmation: false,
-                        overrides: await getTransactionOverrides(network),
-                      });
-                    }}
+                  <Tooltip
+                    arrow
+                    disableInteractive
+                    title={
+                      !isConnected
+                        ? "Connect wallet to approve subscription"
+                        : !isCorrectNetwork
+                        ? `Switch network to ${network.name} to approve subscription`
+                        : "Approve subscription"
+                    }
                   >
-                    Approve
-                  </Button>
+                    <span>
+                      <IconButton
+                        data-cy={"approve-button"}
+                        color="primary"
+                        size="small"
+                        disabled={!signer || !isConnected || !isCorrectNetwork}
+                        onClick={async () => {
+                          if (!signer)
+                            throw new Error(
+                              "Signer should always bet available here."
+                            );
+
+                          // TODO(KK): Make the operation take subscriber as input. Don't just rely on the wallet's signer -- better to have explicit data flowing
+                          approveSubscription({
+                            signer,
+                            chainId: expectedNetwork.id,
+                            indexId: subscription.indexId,
+                            publisherAddress: subscription.publisher,
+                            superTokenAddress: subscription.token,
+                            userDataBytes: undefined,
+                            waitForConfirmation: false,
+                            overrides: await getTransactionOverrides(network),
+                          });
+                        }}
+                      >
+                        <CheckCircleRoundedIcon />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
                 )}
               </>
             )
@@ -269,40 +291,56 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
             subscription.approved && (
               <>
                 {mutationResult.isLoading || pendingCancellation ? (
-                  <OperationProgress transactingText={"Canceling..."} pendingUpdate={pendingCancellation} />
+                  <OperationProgress
+                    transactingText={"Canceling..."}
+                    pendingUpdate={pendingCancellation}
+                  />
                 ) : (
-                  <Button
-                    disabled={!signer || !isConnected || !isCorrectNetwork}
-                    variant="textContained"
-                    color="primary"
-                    size="small"
-                    onClick={async () => {
-                      if (!signer)
-                        throw new Error(
-                          "Signer should always bet available here."
-                        );
-
-                      // TODO(KK): Make the operation take subscriber as input. Don't just rely on the wallet's signer -- better to have explicit data flowing
-                      cancelSubscription({
-                        signer,
-                        chainId: expectedNetwork.id,
-                        indexId: subscription.indexId,
-                        publisherAddress: subscription.publisher,
-                        superTokenAddress: subscription.token,
-                        userDataBytes: undefined,
-                        waitForConfirmation: false,
-                        overrides: await getTransactionOverrides(network),
-                      });
-                    }}
+                  <Tooltip
+                    arrow
+                    disableInteractive
+                    title={
+                      !isConnected
+                        ? "Connect wallet to cancel subscription"
+                        : !isCorrectNetwork
+                        ? `Switch network to ${network.name} to cancel subscription`
+                        : "Cancel subscription"
+                    }
                   >
-                    Cancel
-                  </Button>
+                    <span>
+                      <IconButton
+                        data-cy={"revoke-button"}
+                        color="error"
+                        size="small"
+                        disabled={!signer || !isConnected || !isCorrectNetwork}
+                        onClick={async () => {
+                          if (!signer)
+                            throw new Error(
+                              "Signer should always bet available here."
+                            );
+
+                          // TODO(KK): Make the operation take subscriber as input. Don't just rely on the wallet's signer -- better to have explicit data flowing
+                          cancelSubscription({
+                            signer,
+                            chainId: expectedNetwork.id,
+                            indexId: subscription.indexId,
+                            publisherAddress: subscription.publisher,
+                            superTokenAddress: subscription.token,
+                            userDataBytes: undefined,
+                            waitForConfirmation: false,
+                            overrides: await getTransactionOverrides(network),
+                          });
+                        }}
+                      >
+                        <CancelRoundedIcon />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
                 )}
               </>
             )
           }
         </TransactionBoundary>
-
       </TableCell>
     </TableRow>
   );

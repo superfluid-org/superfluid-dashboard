@@ -75,6 +75,7 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
           <CancelStreamProgress pendingCancellation={pendingCancellation} />
         ) : (
           <>
+
             <Tooltip
               data-cy={"switch-network-tooltip"}
               arrow
@@ -95,6 +96,7 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
                 </IconButton>
               </span>
             </Tooltip>
+
             <Popover
               open={menuOpen}
               anchorEl={menuAnchor}
@@ -124,6 +126,7 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
                 </MenuItem>
               </MenuList>
             </Popover>
+            
           </>
         )
       }
