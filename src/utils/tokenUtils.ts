@@ -1,11 +1,17 @@
 import { AccountTokenSnapshot } from "@superfluid-finance/sdk-core";
 import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
+import Decimal from "decimal.js";
 import { BigNumber, BigNumberish } from "ethers";
 import { formatUnits, parseUnits } from "ethers/lib/utils";
-import { UnitOfTime, unitOfTimeList } from "../features/send/FlowRateInput";
-import { dateNowSeconds } from "./dateUtils";
 import minBy from "lodash/fp/minBy";
-import Decimal from "decimal.js";
+import { Network } from "../features/network/networks";
+import {
+  calculateTotalAmountWei,
+  FlowRateWei,
+  UnitOfTime,
+  unitOfTimeList,
+} from "../features/send/FlowRateInput";
+import { dateNowSeconds } from "./dateUtils";
 import { getDecimalPlacesToRoundTo } from "./DecimalUtils";
 
 export const MAX_SAFE_SECONDS = BigNumber.from(8_640_000_000_000); // In seconds, https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#the_ecmascript_epoch_and_timestamps
@@ -121,6 +127,12 @@ export function calculateBuffer(
     .div(BigNumber.from(createdAtTimestamp))
     .mul(bufferTimeInSeconds);
 }
+
+export const calculateBufferAmount = (
+  network: Network,
+  flowRateWei: FlowRateWei
+): BigNumber =>
+  calculateTotalAmountWei(flowRateWei).mul(network.bufferTimeInMinutes).mul(60);
 
 export const calculateCurrentBalance = ({
   flowRateWei,

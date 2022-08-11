@@ -93,3 +93,6 @@ Then(/^User chooses the first address book result$/,  () => {
 Then(/^View mode chip shows "([^"]*)"$/,  (message:string) => {
     Common.validateViewModeChipMessage(message)
 });
+Then(/^404 page is shown$/,  () => {
+    Common.errorPageIsVisible()
+});

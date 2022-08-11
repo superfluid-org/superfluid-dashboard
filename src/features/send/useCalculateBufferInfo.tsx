@@ -2,6 +2,7 @@ import { BigNumber } from "ethers";
 import { useCallback } from "react";
 import {
   BIG_NUMBER_ZERO,
+  calculateBufferAmount,
   calculateMaybeCriticalAtTimestamp,
 } from "../../utils/tokenUtils";
 import { Network } from "../network/networks";
@@ -12,17 +13,6 @@ import {
   FlowRateWei,
   UnitOfTime,
 } from "./FlowRateInput";
-
-const calculateBufferAmount = (
-  network: Network,
-  flowRateWei: FlowRateWei
-): BigNumber => {
-  const bufferAmount = calculateTotalAmountWei(flowRateWei)
-    .mul(network.bufferTimeInMinutes)
-    .mul(60);
-
-  return bufferAmount;
-};
 
 const calculateDateWhenBalanceCritical = (
   realtimeBalance?: RealtimeBalance,

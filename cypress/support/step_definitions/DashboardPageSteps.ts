@@ -83,3 +83,15 @@ Then(/^User switches to the next page for the "([^"]*)" token and new results ar
 Then(/^No Super Token balance screen is shown$/, () => {
     DashboardPage.noBalancesScreenIsVisible();
 });
+Given(/^User opens the first visible stream details page from the table$/,  () => {
+    DashboardPage.openFirstVisibleStreamDetailsPage()
+});
+Given(/^Dashboard page is open when wallet of the user is connected or in view mode$/,  () => {
+    DashboardPage.checkIfAnyTokenBalancesAreShown()
+});
+Given(/^User opens "([^"]*)" "([^"]*)" individual token page$/, (network: string, token: string) =>  {
+    DashboardPage.openIndividualTokenPage(network, token);
+});
+Given(/^User waits for (\d+) stream entries to be shown$/,  (amount:number) => {
+    DashboardPage.waitForXAmountOfEntries(amount)
+});

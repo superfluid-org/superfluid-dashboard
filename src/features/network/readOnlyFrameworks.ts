@@ -7,16 +7,17 @@ const readOnlyFrameworks = networks.map((network) => ({
   chainId: network.id,
   frameworkGetter: () =>
     promiseRetry<Framework>(
-      () =>
+      (retry) =>
         Framework.create({
           chainId: network.id,
           provider: new ethers.providers.JsonRpcProvider(
             network.rpcUrls.superfluid
           ),
-        }),
+        }).catch(retry),
       {
         minTimeout: 1000,
-        retries: 5,
+        maxTimeout: 3000,
+        retries: 10,
       }
     ),
 }));

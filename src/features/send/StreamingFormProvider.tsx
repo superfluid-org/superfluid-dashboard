@@ -1,18 +1,18 @@
+import { yupResolver } from "@hookform/resolvers/yup";
+import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
+import { BigNumber } from "ethers";
 import { FC, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
 import { bool, mixed, object, ObjectSchema, string } from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { dateNowSeconds } from "../../utils/dateUtils";
+import { getMinimumStreamTimeInMinutes } from "../../utils/tokenUtils";
+import { testAddress, testEtherAmount } from "../../utils/yupUtils";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi } from "../redux/store";
 import { formRestorationOptions } from "../transactionRestoration/transactionRestorations";
 import { UnitOfTime } from "./FlowRateInput";
-import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import useCalculateBufferInfo from "./useCalculateBufferInfo";
-import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
-import { testAddress, testEtherAmount } from "../../utils/yupUtils";
-import { BigNumber } from "ethers";
-import { getMinimumStreamTimeInMinutes } from "../../utils/tokenUtils";
-import { dateNowSeconds } from "../../utils/dateUtils";
 
 export type ValidStreamingForm = {
   data: {
@@ -146,7 +146,8 @@ const StreamingFormProvider: FC<StreamingFormProviderProps> = ({
           if (newDateWhenBalanceCritical) {
             const minimumStreamTimeInSeconds =
               getMinimumStreamTimeInMinutes(network.bufferTimeInMinutes) * 60;
-            const secondsToCritical = newDateWhenBalanceCritical.getTime() / 1000 - dateNowSeconds();
+            const secondsToCritical =
+              newDateWhenBalanceCritical.getTime() / 1000 - dateNowSeconds();
 
             if (secondsToCritical < minimumStreamTimeInSeconds) {
               // NOTE: "secondsToCritical" might be off about 1 minute because of RTK-query cache for the balance query
@@ -179,9 +180,21 @@ const StreamingFormProvider: FC<StreamingFormProviderProps> = ({
     mode: "onChange",
   });
 
-  const { formState, setValue, trigger, clearErrors, setError } = formMethods;
+  const { formState, setValue, trigger, clearErrors, setError, watch } =
+    formMethods;
+
+  const [receiverAddress, tokenAddress, flowRateEther] = watch([
+    "data.receiverAddress",
+    "data.tokenAddress",
+    "data.flowRate",
+  ]);
+
+  useEffect(() => {
+    setValue("data.understandLiquidationRisk", false);
+  }, [receiverAddress, tokenAddress, flowRateEther, setValue]);
 
   const [isInitialized, setIsInitialized] = useState(!initialFormValues);
+
   useEffect(() => {
     if (initialFormValues) {
       setValue(
