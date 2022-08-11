@@ -21,7 +21,7 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Token } from "@superfluid-finance/sdk-core";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import Link from "next/link";
-import { FC, memo, useMemo } from "react";
+import { FC, memo, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
@@ -75,6 +75,8 @@ export default memo(function SendCard() {
   const { visibleAddress } = useVisibleAddress();
   const getTransactionOverrides = useGetTransactionOverrides();
 
+  const [showBufferAlert, setShowBufferAlert] = useState(false);
+
   const {
     watch,
     control,
@@ -95,24 +97,11 @@ export default memo(function SendCard() {
     "data.understandLiquidationRisk",
   ]);
 
-  const showBufferAlert = useMemo(() => {
-    const {
-      receiverAddress: receiverDirty,
-      tokenAddress: tokenDirty,
-      flowRate: flowRateDirty,
-    } = formState.dirtyFields.data || {};
-    const {
-      receiverAddress: receiverTouched,
-      tokenAddress: tokenTouched,
-      flowRate: flowRateTouched,
-    } = formState.touchedFields.data || {};
-
-    return (
-      (receiverDirty || receiverTouched) &&
-      (tokenDirty || tokenTouched) &&
-      (flowRateDirty || flowRateTouched)
-    );
-  }, [formState]);
+  useEffect(() => {
+    if (!!receiverAddress && !!tokenAddress && !!flowRateEther.amountEther) {
+      setShowBufferAlert(true);
+    }
+  }, [setShowBufferAlert, receiverAddress, tokenAddress, flowRateEther.amountEther]);
 
   const { token } = subgraphApi.useTokenQuery(
     tokenAddress

@@ -22,7 +22,7 @@ export type ValidStreamingForm = {
       amountEther: string;
       unitOfTime: UnitOfTime;
     };
-    understandLiquidationRisk: true;
+    understandLiquidationRisk: boolean;
   };
 };
 
@@ -80,7 +80,7 @@ const StreamingFormProvider: FC<StreamingFormProviderProps> = ({
                   (x) => Object.values(UnitOfTime).includes(x as UnitOfTime) // To check whether value is from an enum: https://github.com/microsoft/TypeScript/issues/33200#issuecomment-527670779
                 ),
             }),
-            understandLiquidationRisk: bool().required().isTrue(),
+            understandLiquidationRisk: bool().required(),
           }),
         });
 
@@ -103,7 +103,8 @@ const StreamingFormProvider: FC<StreamingFormProviderProps> = ({
           });
         };
 
-        const { tokenAddress, receiverAddress } = validForm.data;
+        const { tokenAddress, receiverAddress, understandLiquidationRisk } =
+          validForm.data;
 
         if (
           accountAddress &&
@@ -167,6 +168,10 @@ const StreamingFormProvider: FC<StreamingFormProviderProps> = ({
               message: `The stream already has the given flow rate.`,
             });
           }
+        }
+
+        if (!understandLiquidationRisk) {
+          return false;
         }
 
         return true;

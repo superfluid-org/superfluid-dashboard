@@ -2,11 +2,12 @@ import { AccountTokenSnapshot } from "@superfluid-finance/sdk-core";
 import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
 import Decimal from "decimal.js";
 import { BigNumber, BigNumberish } from "ethers";
-import { formatUnits, parseUnits } from "ethers/lib/utils";
+import { formatEther, formatUnits, parseUnits } from "ethers/lib/utils";
 import minBy from "lodash/fp/minBy";
 import { Network } from "../features/network/networks";
 import {
   calculateTotalAmountWei,
+  FlowRateEther,
   FlowRateWei,
   UnitOfTime,
   unitOfTimeList,
@@ -23,19 +24,21 @@ export const getPrettyEtherValue = (weiValue: string) => {
   return etherValue.toDP(decimalsToRoundTo).toString();
 };
 
-export const estimateUnitOfTime = (flowRateWei: string) => {
-  const flowRateBigNumber = BigNumber.from(flowRateWei);
-
-  return (
-    minBy(
-      (timeUnit) =>
-        Math.abs(
-          18 - flowRateBigNumber.mul(BigNumber.from(timeUnit)).toString().length
-        ),
-      unitOfTimeList
-    ) || UnitOfTime.Month
-  );
-};
+export const getPrettyEtherFlowRate = (flowRateWei: string): FlowRateEther =>
+  minBy(
+    (flowRateEther) => flowRateEther.amountEther.length,
+    unitOfTimeList.map((timeUnit) => ({
+      unitOfTime: timeUnit,
+      amountEther: getPrettyEtherValue(
+        BigNumber.from(flowRateWei).mul(BigNumber.from(timeUnit)).toString()
+      ),
+    }))
+  ) || {
+    unitOfTime: UnitOfTime.Month,
+    amountEther: getPrettyEtherValue(
+      BigNumber.from(flowRateWei).mul(UnitOfTime.Month).toString()
+    ),
+  };
 
 export const tryParseUnits = (
   value: string,

@@ -6,15 +6,11 @@ import {
   TooltipProps,
 } from "@mui/material";
 import { Stream } from "@superfluid-finance/sdk-core";
-import { BigNumber } from "ethers";
 import { useRouter } from "next/router";
 import { FC, useCallback } from "react";
 import { useNetwork } from "wagmi";
 import { getSendPagePath } from "../../pages/send";
-import {
-  estimateUnitOfTime,
-  getPrettyEtherValue,
-} from "../../utils/tokenUtils";
+import { getPrettyEtherFlowRate } from "../../utils/tokenUtils";
 import { Network } from "../network/networks";
 
 interface ModifyStreamButtonProps {
@@ -34,22 +30,11 @@ const ModifyStreamButton: FC<ModifyStreamButtonProps> = ({
   const { chain: activeChain } = useNetwork();
 
   const modifyStream = useCallback(() => {
-    const unitOfTime = estimateUnitOfTime(stream.currentFlowRate);
-
-    const amountEther = getPrettyEtherValue(
-      BigNumber.from(stream.currentFlowRate)
-        .mul(BigNumber.from(unitOfTime))
-        .toString()
-    );
-
     router.push(
       getSendPagePath({
         token: stream.token,
         receiver: stream.receiver,
-        flowRate: {
-          amountEther,
-          unitOfTime,
-        },
+        flowRate: getPrettyEtherFlowRate(stream.currentFlowRate),
       })
     );
   }, [stream, router]);
