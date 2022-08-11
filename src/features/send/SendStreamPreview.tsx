@@ -126,26 +126,42 @@ export const StreamingPreview: FC<{
     newTotalFlowRate,
     oldDateWhenBalanceCritical,
     newDateWhenBalanceCritical,
-  } = useMemo(
-    () =>
-      realtimeBalance &&
-      realtimeBalanceQuery.isSuccess &&
-      activeFlowQuery.isSuccess
-        ? calculateBufferInfo(network, realtimeBalance, existingFlow ?? null, {
-            amountWei: parseEtherOrZero(flowRateEther.amountEther).toString(),
-            unitOfTime: flowRateEther.unitOfTime,
-          })
-        : ({} as Record<string, any>),
-    [
+  } = useMemo(() => {
+    if (
+      !realtimeBalance ||
+      !realtimeBalanceQuery.isSuccess ||
+      !activeFlowQuery.isSuccess
+    ) {
+      return {} as Record<string, any>;
+    }
+    const { newDateWhenBalanceCritical, ...bufferInfo } = calculateBufferInfo(
       network,
-      realtimeBalanceQuery,
-      activeFlowQuery,
-      flowRateEther,
-      calculateBufferInfo,
-      existingFlow,
       realtimeBalance,
-    ]
-  );
+      existingFlow ?? null,
+      {
+        amountWei: parseEtherOrZero(flowRateEther.amountEther).toString(),
+        unitOfTime: flowRateEther.unitOfTime,
+      }
+    );
+
+    const currentDate = new Date();
+
+    return {
+      ...bufferInfo,
+      newDateWhenBalanceCritical:
+        newDateWhenBalanceCritical && newDateWhenBalanceCritical < currentDate
+          ? currentDate
+          : newDateWhenBalanceCritical,
+    };
+  }, [
+    network,
+    realtimeBalanceQuery,
+    activeFlowQuery,
+    flowRateEther,
+    calculateBufferInfo,
+    existingFlow,
+    realtimeBalance,
+  ]);
 
   const isBufferLossCritical = useMemo(
     () =>
@@ -256,12 +272,18 @@ export const StreamingPreview: FC<{
             isError={isBufferLossCritical}
             oldValue={
               oldDateWhenBalanceCritical
-                ? format(oldDateWhenBalanceCritical, "d MMM. yyyy")
+                ? `${format(oldDateWhenBalanceCritical, "P")} at ${format(
+                    oldDateWhenBalanceCritical,
+                    "p"
+                  )}`
                 : undefined
             }
           >
             {newDateWhenBalanceCritical &&
-              format(newDateWhenBalanceCritical, "d MMM. yyyy")}
+              `${format(newDateWhenBalanceCritical, "P")} at ${format(
+                newDateWhenBalanceCritical,
+                "p"
+              )}`}
           </PreviewItem>
         )}
       </Stack>
