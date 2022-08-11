@@ -9,7 +9,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { format } from "date-fns";
+import { differenceInDays, format } from "date-fns";
 import { FC, isValidElement, ReactNode, useMemo } from "react";
 import shortenHex from "../../utils/shortenHex";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
@@ -147,6 +147,13 @@ export const StreamingPreview: FC<{
     ]
   );
 
+  const isBufferLossCritical = useMemo(
+    () =>
+      newDateWhenBalanceCritical &&
+      differenceInDays(newDateWhenBalanceCritical, new Date()) < 7,
+    [newDateWhenBalanceCritical]
+  );
+
   return (
     <Alert
       icon={false}
@@ -245,7 +252,8 @@ export const StreamingPreview: FC<{
 
         {newTotalFlowRate?.isNegative() && (
           <PreviewItem
-            label="Date when balance critical"
+            label="Predicted buffer loss date"
+            isError={isBufferLossCritical}
             oldValue={
               oldDateWhenBalanceCritical
                 ? format(oldDateWhenBalanceCritical, "d MMM. yyyy")
