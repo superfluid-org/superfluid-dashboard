@@ -230,7 +230,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
                 </Typography>
               </>
             )}
-            {!isPending && (
+            {!isPending && isActive && (
               <>
                 {isOutgoing && (
                   <ModifyStreamButton
@@ -239,13 +239,11 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
                     IconButtonProps={{ size: "small" }}
                   />
                 )}
-                {isActive && (
-                  <CancelStreamButton
-                    stream={stream as Stream}
-                    network={network}
-                    IconButtonProps={{ size: "small" }}
-                  />
-                )}
+                <CancelStreamButton
+                  stream={stream as Stream}
+                  network={network}
+                  IconButtonProps={{ size: "small" }}
+                />
               </>
             )}
           </Stack>
