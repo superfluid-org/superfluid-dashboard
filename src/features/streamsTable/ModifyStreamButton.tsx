@@ -8,7 +8,7 @@ import {
 import { Stream } from "@superfluid-finance/sdk-core";
 import Link from "next/link";
 import { FC, useMemo } from "react";
-import { useNetwork } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import { getSendPagePath } from "../../pages/send";
 import { getPrettyEtherFlowRate } from "../../utils/tokenUtils";
 import { Network } from "../network/networks";
@@ -26,7 +26,7 @@ const ModifyStreamButton: FC<ModifyStreamButtonProps> = ({
   IconButtonProps = {},
   TooltipProps = {},
 }) => {
-  const { chain: activeChain } = useNetwork();
+  const { isConnected } = useAccount();
 
   const modifyStreamUrl = useMemo(
     () =>
@@ -34,8 +34,9 @@ const ModifyStreamButton: FC<ModifyStreamButtonProps> = ({
         token: stream.token,
         receiver: stream.receiver,
         flowRate: getPrettyEtherFlowRate(stream.currentFlowRate),
+        network: network.slugName,
       }),
-    [stream]
+    [stream, network]
   );
 
   return (
@@ -43,18 +44,14 @@ const ModifyStreamButton: FC<ModifyStreamButtonProps> = ({
       arrow
       disableInteractive
       placement="top"
-      title={
-        network.id === activeChain?.id
-          ? "Modify Stream"
-          : `Please connect your wallet and switch provider network to ${network.name} in order to modify the stream.`
-      }
+      title={"Modify Stream"}
       {...TooltipProps}
     >
       <span>
         <Link href={modifyStreamUrl} passHref>
           <IconButton
             color="primary"
-            disabled={network.id !== activeChain?.id}
+            disabled={!isConnected}
             {...IconButtonProps}
           >
             <EditRoundedIcon />

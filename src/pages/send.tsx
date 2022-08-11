@@ -26,7 +26,9 @@ interface SendPageQuery {
   token?: string;
   receiver?: string;
   flowRate?: { amountEther: string; unitOfTime: UnitOfTime };
+  network?:string
 }
+
 export const getSendPagePath = (query: SendPageQuery) => {
   const { flowRate, ...rest } = query;
 
