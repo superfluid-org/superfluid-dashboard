@@ -29,6 +29,7 @@ import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import CancelStreamButton from "./CancelStreamButton/CancelStreamButton";
+import ModifyStreamButton from "./ModifyStreamButton";
 
 export const StreamRowLoading = () => {
   const theme = useTheme();
@@ -215,17 +216,37 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
 
       {!isBelowMd && (
         <TableCell align="center">
-          {isPending && (
-            <Stack direction="row" alignItems="center" gap={1}>
-              <CircularProgress color="warning" size="16px" />
-              <Typography variant="caption">
-                {isPendingAndWaitingForSubgraph ? "Syncing..." : "Sending..."}
-              </Typography>
-            </Stack>
-          )}
-          {isActive && !isPending && (
-            <CancelStreamButton stream={stream as Stream} network={network} />
-          )}
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="center"
+            gap={1}
+          >
+            {isPending && (
+              <>
+                <CircularProgress color="warning" size="16px" />
+                <Typography variant="caption">
+                  {isPendingAndWaitingForSubgraph ? "Syncing..." : "Sending..."}
+                </Typography>
+              </>
+            )}
+            {!isPending && isActive && (
+              <>
+                {isOutgoing && (
+                  <ModifyStreamButton
+                    stream={stream as Stream}
+                    network={network}
+                    IconButtonProps={{ size: "small" }}
+                  />
+                )}
+                <CancelStreamButton
+                  stream={stream as Stream}
+                  network={network}
+                  IconButtonProps={{ size: "small" }}
+                />
+              </>
+            )}
+          </Stack>
         </TableCell>
       )}
     </TableRow>

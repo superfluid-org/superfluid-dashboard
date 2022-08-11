@@ -1,12 +1,18 @@
 import { Box, Container, useTheme } from "@mui/material";
+import { Address } from "@superfluid-finance/sdk-core";
 import { BigNumber } from "ethers";
-import { formatEther } from "ethers/lib/utils";
+import { formatEther, formatUnits } from "ethers/lib/utils";
 import { isString } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import SEO from "../components/SEO/SEO";
-import { UnitOfTime, wordTimeUnitMap } from "../features/send/FlowRateInput";
+import {
+  FlowRateWei,
+  timeUnitWordMap,
+  UnitOfTime,
+  wordTimeUnitMap,
+} from "../features/send/FlowRateInput";
 import SendCard from "../features/send/SendCard";
 import StreamingFormProvider, {
   StreamingFormProviderProps,
@@ -14,6 +20,29 @@ import StreamingFormProvider, {
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
 import { RestorationType } from "../features/transactionRestoration/transactionRestorations";
 import { tryParseUnits } from "../utils/tokenUtils";
+import { buildQueryString } from "../utils/URLUtils";
+
+interface SendPageQuery {
+  token?: string;
+  receiver?: string;
+  flowRate?: { amountEther: string; unitOfTime: UnitOfTime };
+  network?:string
+}
+
+export const getSendPagePath = (query: SendPageQuery) => {
+  const { flowRate, ...rest } = query;
+
+  const serializedFlowRate = flowRate
+    ? `${flowRate.amountEther}/${timeUnitWordMap[flowRate.unitOfTime]}`
+    : undefined;
+
+  const queryString = buildQueryString({
+    ...rest,
+    "flow-rate": serializedFlowRate,
+  });
+
+  return `/send${queryString ? `?${queryString}` : ""}`;
+};
 
 const tryParseFlowRate = (
   value: string

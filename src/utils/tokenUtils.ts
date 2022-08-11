@@ -1,16 +1,49 @@
 import { AccountTokenSnapshot } from "@superfluid-finance/sdk-core";
 import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
+import Decimal from "decimal.js";
 import { BigNumber, BigNumberish } from "ethers";
-import { parseUnits } from "ethers/lib/utils";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
+import minBy from "lodash/fp/minBy";
 import { Network } from "../features/network/networks";
 import {
   calculateTotalAmountWei,
+  FlowRateEther,
   FlowRateWei,
+  UnitOfTime,
+  unitOfTimeList,
 } from "../features/send/FlowRateInput";
 import { dateNowSeconds } from "./dateUtils";
+import { getDecimalPlacesToRoundTo } from "./DecimalUtils";
 
 export const MAX_SAFE_SECONDS = BigNumber.from(8_640_000_000_000); // In seconds, https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#the_ecmascript_epoch_and_timestamps
 export const BIG_NUMBER_ZERO = BigNumber.from(0);
+
+export const getPrettyEtherValue = (weiValue: string) => {
+  const etherValue = new Decimal(formatUnits(weiValue, "ether"));
+  const decimalsToRoundTo = getDecimalPlacesToRoundTo(etherValue);
+  return etherValue.toDP(decimalsToRoundTo).toString();
+};
+
+/**
+ * This function is used to predict the unit of time selected when stream was started.
+ * Time unit with the shortest (most simple) ether representation is returned.
+ * TODO: Filter out time units that would produce repeating decimal points.
+ */
+export const getPrettyEtherFlowRate = (flowRateWei: string): FlowRateEther =>
+  minBy(
+    (flowRateEther) => flowRateEther.amountEther.length,
+    unitOfTimeList.map((timeUnit) => ({
+      unitOfTime: timeUnit,
+      amountEther: getPrettyEtherValue(
+        BigNumber.from(flowRateWei).mul(BigNumber.from(timeUnit)).toString()
+      ),
+    }))
+  ) || {
+    unitOfTime: UnitOfTime.Month,
+    amountEther: getPrettyEtherValue(
+      BigNumber.from(flowRateWei).mul(UnitOfTime.Month).toString()
+    ),
+  };
 
 export const tryParseUnits = (
   value: string,

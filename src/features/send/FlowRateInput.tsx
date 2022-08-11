@@ -17,7 +17,7 @@ export enum UnitOfTime {
   Month = 2592000,
 }
 
-const unitOfTimeList = [
+export const unitOfTimeList = [
   UnitOfTime.Second,
   UnitOfTime.Minute,
   UnitOfTime.Hour,

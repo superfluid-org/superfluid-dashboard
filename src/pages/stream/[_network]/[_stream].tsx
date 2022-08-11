@@ -1,5 +1,6 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
+
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 import LinkIcon from "@mui/icons-material/Link";
 import ShareIcon from "@mui/icons-material/Share";
@@ -26,7 +27,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, ReactChild, useEffect, useMemo, useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import AddressAvatar from "../../../components/AddressAvatar/AddressAvatar";
 import CopyTooltip from "../../../components/CopyTooltip/CopyTooltip";
 import SEO from "../../../components/SEO/SEO";
@@ -35,6 +36,7 @@ import { Network, networksBySlug } from "../../../features/network/networks";
 import { subgraphApi } from "../../../features/redux/store";
 import { UnitOfTime } from "../../../features/send/FlowRateInput";
 import CancelStreamButton from "../../../features/streamsTable/CancelStreamButton/CancelStreamButton";
+import ModifyStreamButton from "../../../features/streamsTable/ModifyStreamButton";
 import Amount from "../../../features/token/Amount";
 import FlowingBalance from "../../../features/token/FlowingBalance";
 import TokenIcon from "../../../features/token/TokenIcon";
@@ -166,7 +168,11 @@ const CancelledIndicator: FC<CancelledIndicatorProps> = ({
   return (
     <Stack direction="row" alignItems="center" gap={1}>
       {!isBelowMd && <CloseIcon color="error" />}
-      <Typography data-cy={"ended-stream-message"} variant={isBelowMd ? "h6" : "h5"} color="error">
+      <Typography
+        data-cy={"ended-stream-message"}
+        variant={isBelowMd ? "h6" : "h5"}
+        color="error"
+      >
         {`Cancelled on ${format(
           updatedAtTimestamp * 1000,
           "d MMMM yyyy"
@@ -184,7 +190,13 @@ interface ShareButtonProps {
   dataCy?: string;
 }
 
-const ShareButton: FC<ShareButtonProps> = ({ imgSrc, alt, tooltip, href, dataCy }) => (
+const ShareButton: FC<ShareButtonProps> = ({
+  imgSrc,
+  alt,
+  tooltip,
+  href,
+  dataCy,
+}) => (
   <Tooltip title={tooltip} arrow placement="top">
     <MuiLink data-cy={dataCy} href={href} target="_blank">
       <Box sx={{ display: "flex" }}>
@@ -212,7 +224,9 @@ const OverviewItem: FC<OverviewItemProps> = ({ label, value, dataCy }) => (
     <Typography variant="body1" color="text.secondary">
       {label}
     </Typography>
-    <Typography data-cy={dataCy} variant="h6">{value}</Typography>
+    <Typography data-cy={dataCy} variant="h6">
+      {value}
+    </Typography>
   </Stack>
 );
 
@@ -304,9 +318,11 @@ const StreamPageContent: FC<{
   network: Network;
   streamId: string;
 }> = ({ network, streamId }) => {
+  const router = useRouter();
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { address: accountAddress } = useAccount();
+  const { chain: activeChain } = useNetwork();
   const navigateBack = useNavigateBack();
 
   const [senderAddress = "", receiverAddress, tokenAddress = ""] =
@@ -368,6 +384,7 @@ const StreamPageContent: FC<{
   const txIdOrSubgraphId = streamCreationEvent
     ? `${streamCreationEvent.transactionHash}-${streamCreationEvent.logIndex}`
     : streamId;
+
   const urlToShare = `${config.appUrl}${getStreamPagePath({
     network: network.slugName,
     stream: txIdOrSubgraphId,
@@ -432,7 +449,11 @@ const StreamPageContent: FC<{
           }}
         >
           <Box>
-            <IconButton data-cy={"back-button"} color="inherit" onClick={navigateBack}>
+            <IconButton
+              data-cy={"back-button"}
+              color="inherit"
+              onClick={navigateBack}
+            >
               <ArrowBackIcon />
             </IconButton>
           </Box>
@@ -444,13 +465,22 @@ const StreamPageContent: FC<{
           </Box>
 
           <Stack direction="row" justifyContent="flex-end" gap={1}>
-            {isActive && isOutgoing && (
-              <CancelStreamButton
-                data-cy={"cancel-button"}
-                stream={streamQuery.data}
-                network={network}
-                IconButtonProps={{ size: "medium" }}
-              />
+            {!!accountAddress && (
+              <>
+                {isOutgoing && (
+                  <ModifyStreamButton
+                    stream={streamQuery.data}
+                    network={network}
+                  />
+                )}
+                {isActive && (
+                  <CancelStreamButton
+                    data-cy={"cancel-button"}
+                    stream={streamQuery.data}
+                    network={network}
+                  />
+                )}
+              </>
             )}
           </Stack>
         </Stack>
