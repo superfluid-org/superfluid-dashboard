@@ -73,7 +73,7 @@ export default function useCalculateBufferInfo() {
 
       const oldDateWhenBalanceCritical = calculateDateWhenBalanceCritical(
         realtimeBalance,
-        newTotalFlowRate
+        BigNumber.from(realtimeBalance.flowRate)
       );
 
       const newDateWhenBalanceCritical = calculateDateWhenBalanceCritical(
