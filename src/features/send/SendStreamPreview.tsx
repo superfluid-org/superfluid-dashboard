@@ -9,7 +9,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { format } from "date-fns";
+import { differenceInDays, format } from "date-fns";
 import { FC, isValidElement, ReactNode, useMemo } from "react";
 import shortenHex from "../../utils/shortenHex";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
@@ -126,25 +126,48 @@ export const StreamingPreview: FC<{
     newTotalFlowRate,
     oldDateWhenBalanceCritical,
     newDateWhenBalanceCritical,
-  } = useMemo(
-    () =>
-      realtimeBalance &&
-      realtimeBalanceQuery.isSuccess &&
-      activeFlowQuery.isSuccess
-        ? calculateBufferInfo(network, realtimeBalance, existingFlow ?? null, {
-            amountWei: parseEtherOrZero(flowRateEther.amountEther).toString(),
-            unitOfTime: flowRateEther.unitOfTime,
-          })
-        : ({} as Record<string, any>),
-    [
+  } = useMemo(() => {
+    if (
+      !realtimeBalance ||
+      !realtimeBalanceQuery.isSuccess ||
+      !activeFlowQuery.isSuccess
+    ) {
+      return {} as Record<string, any>;
+    }
+    const { newDateWhenBalanceCritical, ...bufferInfo } = calculateBufferInfo(
       network,
-      realtimeBalanceQuery,
-      activeFlowQuery,
-      flowRateEther,
-      calculateBufferInfo,
-      existingFlow,
       realtimeBalance,
-    ]
+      existingFlow ?? null,
+      {
+        amountWei: parseEtherOrZero(flowRateEther.amountEther).toString(),
+        unitOfTime: flowRateEther.unitOfTime,
+      }
+    );
+
+    const currentDate = new Date();
+
+    return {
+      ...bufferInfo,
+      newDateWhenBalanceCritical:
+        newDateWhenBalanceCritical && newDateWhenBalanceCritical < currentDate
+          ? currentDate
+          : newDateWhenBalanceCritical,
+    };
+  }, [
+    network,
+    realtimeBalanceQuery,
+    activeFlowQuery,
+    flowRateEther,
+    calculateBufferInfo,
+    existingFlow,
+    realtimeBalance,
+  ]);
+
+  const isBufferLossCritical = useMemo(
+    () =>
+      newDateWhenBalanceCritical &&
+      differenceInDays(newDateWhenBalanceCritical, new Date()) < 7,
+    [newDateWhenBalanceCritical]
   );
 
   return (
@@ -245,15 +268,22 @@ export const StreamingPreview: FC<{
 
         {newTotalFlowRate?.isNegative() && (
           <PreviewItem
-            label="Date when balance critical"
+            label="Predicted buffer loss date"
+            isError={isBufferLossCritical}
             oldValue={
               oldDateWhenBalanceCritical
-                ? format(oldDateWhenBalanceCritical, "d MMM. yyyy")
+                ? `${format(oldDateWhenBalanceCritical, "P")} at ${format(
+                    oldDateWhenBalanceCritical,
+                    "p"
+                  )}`
                 : undefined
             }
           >
             {newDateWhenBalanceCritical &&
-              format(newDateWhenBalanceCritical, "d MMM. yyyy")}
+              `${format(newDateWhenBalanceCritical, "P")} at ${format(
+                newDateWhenBalanceCritical,
+                "p"
+              )}`}
           </PreviewItem>
         )}
       </Stack>
