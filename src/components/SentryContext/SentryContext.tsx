@@ -63,8 +63,8 @@ const SentryContext: FC = () => {
           }).catch(retry),
         {
           minTimeout: 500,
-          maxTimeout: 2000,
-          retries: 10,
+          maxTimeout: 3000,
+          retries: 20,
         }
       );
     }

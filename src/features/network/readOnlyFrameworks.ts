@@ -15,7 +15,7 @@ const readOnlyFrameworks = networks.map((network) => ({
           ),
         }).catch(retry),
       {
-        minTimeout: 1000,
+        minTimeout: 500,
         maxTimeout: 3000,
         retries: 10,
       }
