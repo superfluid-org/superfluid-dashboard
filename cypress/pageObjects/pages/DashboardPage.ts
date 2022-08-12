@@ -168,7 +168,7 @@ export class DashboardPage extends BasePage {
 
     static validateChangeNetworkTooltip(network: string) {
         let expectedMessage =
-            `Please connect your wallet and switch provider network to ${networksBySlug.get(network)?.name} in order to cancel the stream.`;
+            `Switch network to ${networksBySlug.get(network)?.name} to cancel stream`;
         this.isVisible(TOOLTIPS);
         this.hasText(TOOLTIPS, expectedMessage);
     }
