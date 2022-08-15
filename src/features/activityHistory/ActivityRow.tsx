@@ -1,13 +1,18 @@
 import { FC, memo } from "react";
 import {
   Activities,
-  MintedActivity,
-  BurnedActivity,
   AgreementLiquidatedActivity,
+  BurnedActivity,
+  IndexSubscribedActivity,
+  IndexUnitsUpdatedActivity,
+  MintedActivity,
 } from "../../utils/activityUtils";
 import BurnActivity from "./BurnActivity";
 import DefaultActivityRow from "./DefaultActivityRow";
 import FlowUpdatedActivityRow from "./FlowUpdatedActivityRow";
+import IndexCreatedActivityRow from "./IndexCreatedActivityRow";
+import IndexSubscribedActivityRow from "./IndexSubscribedActivityRow";
+import IndexUnitsUpdatedActivityRow from "./IndexUnitsUpdatedActivityRow";
 import LiquidatedActivityRow from "./LiquidatedActivityRow";
 import MintActivityRow from "./MintActivityRow";
 import TransferActivityRow from "./TransferActivityRow";
@@ -58,6 +63,34 @@ const ActivityRow: FC<ActivityRowProps> = ({ activity }) => {
         <LiquidatedActivityRow
           keyEvent={keyEvent}
           flowUpdatedEvent={flowUpdatedEvent}
+          network={network}
+        />
+      );
+    }
+
+    case "IndexCreated":
+      return <IndexCreatedActivityRow keyEvent={keyEvent} network={network} />;
+
+    case "IndexSubscribed": {
+      const { subscriptionApprovedEvent } = activity as IndexSubscribedActivity;
+
+      return (
+        <IndexSubscribedActivityRow
+          keyEvent={keyEvent}
+          subscriptionApprovedEvent={subscriptionApprovedEvent}
+          network={network}
+        />
+      );
+    }
+
+    case "IndexUnitsUpdated": {
+      const { subscriptionUnitsUpdatedEvent } =
+        activity as IndexUnitsUpdatedActivity;
+
+      return (
+        <IndexUnitsUpdatedActivityRow
+          keyEvent={keyEvent}
+          subscriptionUnitsUpdatedEvent={subscriptionUnitsUpdatedEvent}
           network={network}
         />
       );

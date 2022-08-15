@@ -30,6 +30,9 @@ export enum ActivityType {
   Wrap = "Wrap",
   Unwrap = "Unwrap",
   Liquidated = "Liquidated",
+  IndexCreated = "Index Created",
+  IndexSubscribed = "Subscribed to index",
+  SubscriptionUpdated = "Subscription Updated", // Index units updated activity
 }
 
 export const AllActivityTypes = [
@@ -42,6 +45,9 @@ export const AllActivityTypes = [
   ActivityType.Wrap,
   ActivityType.Unwrap,
   ActivityType.Liquidated,
+  ActivityType.IndexCreated,
+  ActivityType.IndexSubscribed,
+  ActivityType.SubscriptionUpdated,
 ];
 
 interface ActivityFilter {
@@ -112,6 +118,21 @@ export const ActivityTypeFilters: ActivityFilter[] = [
       ["AgreementLiquidatedBy", "AgreementLiquidatedV2"].includes(
         keyEvent.name
       ),
+  },
+  {
+    key: ActivityType.IndexCreated,
+    icon: EditIcon,
+    filter: (keyEvent: AllEvents) => keyEvent.name === "IndexCreated",
+  },
+  {
+    key: ActivityType.IndexSubscribed,
+    icon: EditIcon,
+    filter: (keyEvent: AllEvents) => keyEvent.name === "IndexSubscribed",
+  },
+  {
+    key: ActivityType.SubscriptionUpdated,
+    icon: EditIcon,
+    filter: (keyEvent: AllEvents) => keyEvent.name === "IndexUnitsUpdated",
   },
 ];
 

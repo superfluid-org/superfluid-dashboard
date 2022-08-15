@@ -4,7 +4,12 @@ import {
   AllEvents,
   BurnedEvent,
   FlowUpdatedEvent,
+  IndexCreatedEvent,
+  IndexSubscribedEvent,
+  IndexUnitsUpdatedEvent,
   MintedEvent,
+  SubscriptionApprovedEvent,
+  SubscriptionUnitsUpdatedEvent,
   TokenDowngradedEvent,
   TokenUpgradedEvent,
   TransferEvent,
@@ -25,6 +30,16 @@ export interface BurnedActivity extends Activity<BurnedEvent> {
 export interface AgreementLiquidatedActivity
   extends Activity<AgreementLiquidatedByEvent | AgreementLiquidatedV2Event> {
   flowUpdatedEvent?: FlowUpdatedEvent;
+}
+
+export interface IndexUnitsUpdatedActivity
+  extends Activity<IndexUnitsUpdatedEvent> {
+  subscriptionUnitsUpdatedEvent?: SubscriptionUnitsUpdatedEvent;
+}
+
+export interface IndexSubscribedActivity
+  extends Activity<IndexSubscribedEvent> {
+  subscriptionApprovedEvent?: SubscriptionApprovedEvent;
 }
 
 export interface Activity<T = AllEvents> {
@@ -155,17 +170,69 @@ const mapTransactionActivityRecursive = (
       );
     }
 
-    /**
-     * Removing Sent from activities and rendering only Transfer.
-     */
-    case "Sent":
-      return mapTransactionActivityRecursive(
-        transactionEvents,
-        network,
-        activities
+    case "IndexUnitsUpdated": {
+      const {
+        eventsFound: [subscriptionApprovedEvent],
+        eventsRemaining,
+      } = findEventsByNameRecursive(
+        ["SubscriptionUnitsUpdated"],
+        transactionEvents
       );
 
-    default:
+      return mapTransactionActivityRecursive(
+        eventsRemaining,
+        network,
+        activities.concat([
+          {
+            keyEvent,
+            network,
+            subscriptionApprovedEvent,
+          } as IndexUnitsUpdatedActivity,
+        ])
+      );
+    }
+
+    case "IndexSubscribed": {
+      const {
+        eventsFound: [subscriptionApprovedEvent],
+        eventsRemaining,
+      } = findEventsByNameRecursive(
+        ["SubscriptionApproved"],
+        transactionEvents
+      );
+
+      return mapTransactionActivityRecursive(
+        eventsRemaining,
+        network,
+        activities.concat([
+          {
+            keyEvent,
+            network,
+            subscriptionApprovedEvent,
+          } as IndexSubscribedActivity,
+        ])
+      );
+    }
+
+    // case "IndexUpdated":
+    // case "IndexSubscribed":
+    // case "IndexUnitsUpdated":
+    // case "SubscriptionUnitsUpdated":
+    // case "SubscriptionApproved":
+    //   return mapTransactionActivityRecursive(
+    //     transactionEvents,
+    //     network,
+    //     activities.concat([
+    //       {
+    //         keyEvent,
+    //         network,
+    //       } as Activity,
+    //     ])
+    //   );
+
+    case "Transfer":
+    case "FlowUpdated":
+    case "IndexCreated":
       return mapTransactionActivityRecursive(
         transactionEvents,
         network,
@@ -176,5 +243,25 @@ const mapTransactionActivityRecursive = (
           } as Activity,
         ])
       );
+
+    /**
+     * Removing Sent from activities and rendering only Transfer.
+     */
+    case "Sent":
+      return mapTransactionActivityRecursive(
+        transactionEvents,
+        network,
+        activities
+      );
+
+    // All unhandled events will be skipped as well
+    default: {
+      console.log(keyEvent.name, keyEvent);
+      return mapTransactionActivityRecursive(
+        transactionEvents,
+        network,
+        activities
+      );
+    }
   }
 };
