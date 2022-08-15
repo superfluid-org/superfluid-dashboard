@@ -258,11 +258,17 @@ export const StreamingPreview: FC<{
             }
             oldValue={
               oldBufferAmount ? (
-                <Amount wei={oldBufferAmount}> {token.symbol}</Amount>
+                <Amount wei={oldBufferAmount}>
+                  {" "}
+                  <span translate="no">{token.symbol}</span>
+                </Amount>
               ) : undefined
             }
           >
-            <Amount wei={newBufferAmount}> {token.symbol}</Amount>
+            <Amount wei={newBufferAmount}>
+              {" "}
+              <span translate="no">{token.symbol}</span>
+            </Amount>
           </PreviewItem>
         )}
 
@@ -279,11 +285,13 @@ export const StreamingPreview: FC<{
                 : undefined
             }
           >
-            {newDateWhenBalanceCritical &&
-              `${format(newDateWhenBalanceCritical, "P")} at ${format(
-                newDateWhenBalanceCritical,
-                "p"
-              )}`}
+            <span translate="no">
+              {newDateWhenBalanceCritical &&
+                `${format(newDateWhenBalanceCritical, "P")} at ${format(
+                  newDateWhenBalanceCritical,
+                  "p"
+                )}`}
+            </span>
           </PreviewItem>
         )}
       </Stack>

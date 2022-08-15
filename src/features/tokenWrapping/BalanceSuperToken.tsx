@@ -18,19 +18,23 @@ export const BalanceSuperToken: FC<{
 
   return (
     <Typography variant="body2mono" {...TypographyProps}>
-      Balance:{" "}
+      <span>Balance: </span>
       {superBalanceQuery.error ? (
-        "error"
+        <span>error</span>
       ) : superBalanceQuery.isUninitialized || superBalanceQuery.isLoading ? (
         ""
       ) : !superBalanceQuery.data ? (
-        <Amount wei="0" />
+        <span translate="no">
+          <Amount wei="0" />
+        </span>
       ) : (
-        <FlowingBalance
-          balance={superBalanceQuery.data.balance}
-          balanceTimestamp={superBalanceQuery.data.balanceTimestamp}
-          flowRate={superBalanceQuery.data.flowRate}
-        />
+        <span translate="no">
+          <FlowingBalance
+            balance={superBalanceQuery.data.balance}
+            balanceTimestamp={superBalanceQuery.data.balanceTimestamp}
+            flowRate={superBalanceQuery.data.flowRate}
+          />
+        </span>
       )}
     </Typography>
   );

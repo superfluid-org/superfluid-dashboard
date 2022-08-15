@@ -395,7 +395,9 @@ export default memo(function SendCard() {
                   tokenAddress={tokenAddress}
                   TypographyProps={{ variant: "h7mono" }}
                 />
-                <Typography variant="h7">{token?.symbol}</Typography>
+                <Typography variant="h7" translate="no">
+                  {token?.symbol}
+                </Typography>
               </Stack>
               {isWrappableSuperToken && (
                 <Link
@@ -433,9 +435,11 @@ export default memo(function SendCard() {
             <b>
               you will lose your{" "}
               {bufferAmount && token ? (
-                <Amount wei={bufferAmount.toString()}> {token.symbol}</Amount>
+                <span translate="no">
+                  <Amount wei={bufferAmount.toString()}> {token.symbol}</Amount>
+                </span>
               ) : (
-                `your`
+                <span>your</span>
               )}{" "}
               buffer.
             </b>

@@ -104,15 +104,13 @@ export default memo(function FlowingBalance({
   return (
     <Box
       component="span"
+      translate="no"
       sx={{
         textOverflow: "ellipsis",
       }}
       data-cy={"balance"}
     >
-      <Amount
-        wei={weiValue}
-        decimalPlaces={etherSignificantFlowingDecimal}
-      />{" "}
+      <Amount wei={weiValue} decimalPlaces={etherSignificantFlowingDecimal} />{" "}
       {tokenSymbol}
     </Box>
   );
