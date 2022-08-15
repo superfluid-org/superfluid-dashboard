@@ -148,6 +148,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               // secondary="$1.00"
               primaryTypographyProps={{
                 variant: "h6",
+                translate: "no",
                 sx: { lineHeight: "46px" },
               }}
               secondaryTypographyProps={{
@@ -182,15 +183,16 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             <TableCell data-cy={"net-flow"} onClick={openTokenPage}>
               {totalNumberOfActiveStreams > 0 ? (
                 <Typography data-cy={"net-flow-value"} variant="body2mono">
-                  {netFlowRate.charAt(0) !== "-" && "+"}
-                  <Amount
-                    wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
-                  >
-                    /mo
-                  </Amount>
+                  <span>{netFlowRate.charAt(0) !== "-" && "+"}</span>
+                  <span translate="no">
+                    <Amount
+                      wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
+                    />
+                  </span>
+                  <span>/mo</span>
                 </Typography>
               ) : (
-                "-"
+                <span>-</span>
               )}
             </TableCell>
 
@@ -202,30 +204,35 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                     variant="body2mono"
                     color="primary"
                   >
-                    +
-                    <Amount
-                      wei={BigNumber.from(totalInflowRate).mul(
-                        UnitOfTime.Month
-                      )}
-                    />
-                    /mo
+                    <span>+</span>
+                    <span translate="no">
+                      <Amount
+                        wei={BigNumber.from(totalInflowRate).mul(
+                          UnitOfTime.Month
+                        )}
+                      />
+                    </span>
+
+                    <span>/mo</span>
                   </Typography>
                   <Typography
                     data-cy={"outflow"}
                     variant="body2mono"
                     color="error"
                   >
-                    -
-                    <Amount
-                      wei={BigNumber.from(totalOutflowRate).mul(
-                        UnitOfTime.Month
-                      )}
-                    />
-                    /mo
+                    <span>-</span>
+                    <span translate="no">
+                      <Amount
+                        wei={BigNumber.from(totalOutflowRate).mul(
+                          UnitOfTime.Month
+                        )}
+                      />
+                    </span>
+                    <span>/mo</span>
                   </Typography>
                 </Stack>
               ) : (
-                "-"
+                <span>-</span>
               )}
             </TableCell>
           </>
@@ -247,15 +254,16 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               secondary={
                 totalNumberOfActiveStreams > 0 ? (
                   <>
-                    {netFlowRate.charAt(0) !== "-" && "+"}
-                    <Amount
-                      wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
-                    >
-                      /mo
-                    </Amount>
+                    <span>{netFlowRate.charAt(0) !== "-" && "+"}</span>
+                    <span translate="no">
+                      <Amount
+                        wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
+                      />
+                    </span>
+                    <span>/mo</span>
                   </>
                 ) : (
-                  "-"
+                  <span>-</span>
                 )
               }
               primaryTypographyProps={{ variant: "h7mono" }}

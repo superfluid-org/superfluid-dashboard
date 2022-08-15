@@ -544,8 +544,9 @@ const UpgradePreview: FC<{
 }> = ({ underlyingTokenSymbol, superTokenSymbol, amountWei }) => {
   return (
     <Typography variant="h5" color="text.secondary">
-      You are upgrading from {formatEther(amountWei)} {underlyingTokenSymbol} to
-      the super token {superTokenSymbol}.
+      You are upgrading from <span>{formatEther(amountWei)}</span>{" "}
+      <span translate="no">{underlyingTokenSymbol}</span> to the super token{" "}
+      <span translate="no">{superTokenSymbol}</span>.
     </Typography>
   );
 };
@@ -557,8 +558,9 @@ const AllowancePreview: FC<{
 }> = ({ amountWei, decimals, tokenSymbol }) => {
   return (
     <Typography variant="h5" color="text.secondary">
-      You are approving extra allowance of {formatUnits(amountWei, decimals)}{" "}
-      {tokenSymbol} for Superfluid Protocol to use.
+      You are approving extra allowance of{" "}
+      <span>{formatUnits(amountWei, decimals)}</span> <span>{tokenSymbol}</span>{" "}
+      for Superfluid Protocol to use.
     </Typography>
   );
 };

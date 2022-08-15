@@ -159,11 +159,14 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
           <TableCell {...tableCellProps}>
             {isActive || isPending ? (
               <Typography data-cy={"flow-rate"} variant="body2mono">
-                {isOutgoing ? "-" : "+"}
-                <Amount
-                  wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
-                />
-                /mo
+                <span>{isOutgoing ? "-" : "+"}</span>
+                <span>
+                  <Amount
+                    wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
+                  />
+                </span>
+
+                <span>/mo</span>
               </Typography>
             ) : (
               <Typography data-cy={"flow-rate"}>{"-"}</Typography>

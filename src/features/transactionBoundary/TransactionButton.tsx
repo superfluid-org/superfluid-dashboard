@@ -61,7 +61,7 @@ export const TransactionButton: FC<{
         color="primary"
         onClick={connectWallet}
       >
-        Connect Wallet
+        <span>Connect Wallet</span>
       </LoadingButton>
     );
   }
@@ -75,7 +75,7 @@ export const TransactionButton: FC<{
         disabled={!switchNetwork}
         onClick={() => switchNetwork?.()}
       >
-        Change Network to {expectedNetwork.name}
+        Change Network to <span translate="no">{expectedNetwork.name}</span>
       </Button>
     );
   }
@@ -92,7 +92,7 @@ export const TransactionButton: FC<{
         onClick(signer);
       }}
     >
-      {children}
+      <span>{children}</span>
     </LoadingButton>
   );
 };

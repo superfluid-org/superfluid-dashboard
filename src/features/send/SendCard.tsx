@@ -621,7 +621,7 @@ export default memo(function SendCard() {
                     );
                   }}
                 >
-                  ModifyStream
+                  <span>Modify Stream</span>
                 </TransactionButton>
               )
             }
@@ -659,7 +659,7 @@ export default memo(function SendCard() {
                       .then(() => resetForm());
                   }}
                 >
-                  Cancel Stream
+                  <span>Cancel Stream</span>
                 </TransactionButton>
               )
             }

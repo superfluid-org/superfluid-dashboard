@@ -341,8 +341,9 @@ const DowngradePreview: FC<{
 }> = ({ amountWei, superTokenSymbol, underlyingTokenSymbol }) => {
   return (
     <Typography variant="h5" color="text.secondary">
-      You are downgrading from {formatEther(amountWei)} {superTokenSymbol} to
-      the underlying token {underlyingTokenSymbol}.
+      You are downgrading from <span>{formatEther(amountWei)}</span>{" "}
+      <span translate="no">{superTokenSymbol}</span> to the underlying token{" "}
+      <span translate="no">{underlyingTokenSymbol}</span>.
     </Typography>
   );
 };
