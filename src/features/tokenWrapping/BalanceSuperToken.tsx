@@ -18,7 +18,7 @@ export const BalanceSuperToken: FC<{
 
   return (
     <Typography variant="body2mono" {...TypographyProps}>
-      <span>Balance: </span>
+      <span>Balance:</span>{" "}
       {superBalanceQuery.error ? (
         <span>error</span>
       ) : superBalanceQuery.isUninitialized || superBalanceQuery.isLoading ? (

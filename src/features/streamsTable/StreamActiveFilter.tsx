@@ -58,7 +58,7 @@ const StreamActiveFilter: FC<StreamActiveFilterProps> = ({
         onClick={openFilterMenu}
         endIcon={<OpenIcon open={!!anchorEl} />}
       >
-        {activeType}
+        <span>{activeType}</span>
       </Button>
       <Menu
         open={!!anchorEl}
