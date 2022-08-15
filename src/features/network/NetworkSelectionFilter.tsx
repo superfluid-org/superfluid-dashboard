@@ -31,7 +31,10 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, active, onChange }) => {
       <ListItemAvatar sx={{ mr: 1 }}>
         <NetworkIcon size={24} fontSize={16} network={network} />
       </ListItemAvatar>
-      <ListItemText primaryTypographyProps={{ variant: "menuItem" }}>
+      <ListItemText
+        primaryTypographyProps={{ variant: "menuItem" }}
+        translate="no"
+      >
         {network.name}
       </ListItemText>
       <Switch

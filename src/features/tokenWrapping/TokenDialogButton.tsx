@@ -60,7 +60,11 @@ export const TokenDialogButton: FC<{
         }}
         {...ButtonProps}
       >
-        {!!token ? token.symbol : "Select a token"}
+        {!!token ? (
+          <span translate="no">{token.symbol}</span>
+        ) : (
+          <span>Select a token</span>
+        )}
       </Button>
 
       <TokenDialog

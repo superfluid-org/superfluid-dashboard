@@ -101,6 +101,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
 
       <ListItemText
         data-cy={"token-symbol-and-name"}
+        translate="no"
         primary={token.symbol}
         secondary={token.name}
       />

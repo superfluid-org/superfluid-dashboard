@@ -83,6 +83,7 @@ export default memo(function SelectNetwork() {
           variant="outlined"
           color="secondary"
           size="large"
+          translate="no"
           startIcon={
             <NetworkIcon network={selectedNetwork} size={24} fontSize={16} />
           }
