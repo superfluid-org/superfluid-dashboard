@@ -5,28 +5,9 @@ on:
     types: [opened, reopened, ready_for_review, synchronize]
 
 jobs:
-  # test_setup:
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 15
-  #   outputs:
-  #     netlify_url: ${{ steps.waitForDeployment.outputs.url }}
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
-
-  #     - name: Wait for Netlify
-  #       uses: probablyup/wait-for-netlify-action@3.2.0 # Check the source code before updating version because it uses personal Netlify access token which does not have granular access control.
-  #       id: waitForDeployment
-  #       with:
-  #         site_id: "aa82cf1e-ce5d-432f-99bf-77a0b8c13277"
-  #       env:
-  #         NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
-
   test_chrome:
     name: Cypress run
     runs-on: ubuntu-latest
-    # needs: ["test_setup"]
-    # timeout-minutes: 30
     container: cypress/browsers:node16.5.0-chrome97-ff96
     strategy:
       fail-fast: false
@@ -39,41 +20,10 @@ jobs:
       - name: Cypress Chrome tests
         uses: cypress-io/github-action@v4
         with:
-          # browser: chrome
+          install: true
           record: true
           parallel: true
-          # group: "test"
-          # ci-build-id: "test2"
-          # env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
-          # config: baseUrl=https://deploy-preview-179--superfluid-dashboard.netlify.app/
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
-
-  # test_firefox:
-  #   runs-on: ubuntu-latest
-  #   needs: ["test_setup"]
-  #   timeout-minutes: 30
-  #   container:
-  #     image: cypress/browsers:node14.19.0-chrome100-ff99-edge
-  #     options: --user 1001
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       containers: [1, 2]
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
-
-  #     - name: Cypress Firefox tests
-  #       uses: cypress-io/github-action@v4
-  #       with:
-  #         browser: firefox
-  #         record: true
-  #         parallel: true
-  #         ci-build-id: "${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}"
-  #         env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
-  #       env:
-  #         CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
-  #         CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
-  #         GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
+          CYPRESS_BASE_URL: https://deploy-preview-179--superfluid-dashboard.netlify.app/
