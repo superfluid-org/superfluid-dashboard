@@ -1,6 +1,6 @@
 {
-  "name": "nextjs-with-typescript",
-  "version": "5.0.0",
+  "name": "superfluid-dashboard",
+  "version": "2022.08",
   "private": true,
   "scripts": {
     "dev": "next dev",

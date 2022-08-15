@@ -23,6 +23,7 @@ import { useRouter } from "next/router";
 import { FC, memo, useCallback } from "react";
 import Link from "../common/Link";
 import ThemeChanger from "../theme/ThemeChanger";
+import { Version } from "../versioning/version";
 import ConnectWallet from "../wallet/ConnectWallet";
 import { useLayoutContext } from "./LayoutContext";
 import MoreNavigationItem from "./MoreNavigationItem";
@@ -200,6 +201,7 @@ export default memo(function NavigationDrawer() {
         >
           <MoreNavigationItem />
           <ThemeChanger />
+          <Version />
         </Stack>
       </Stack>
     </SwipeableDrawer>

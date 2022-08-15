@@ -15,6 +15,8 @@ const moduleExports = {
     domains: ["raw.githubusercontent.com"],
   },
   env: {
+    NEXT_PUBLIC_BUILD_TIMESTAMP: Date.now().toString(),
+    NEXT_PUBLIC_BUILD_VERSION: `${process.env.npm_package_version}.${process.env.COMMIT_REF}`,
     NEXT_PUBLIC_APP_URL: process.env.URL,
     NEXT_PUBLIC_SENTRY_ENVIRONMENT: SENTRY_ENVIRONMENT,
   },
