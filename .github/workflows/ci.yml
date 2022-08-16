@@ -36,6 +36,11 @@ jobs:
         env:
           NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
+      - name: Install Cypress
+        uses: cypress-io/github-action@v4
+        with:
+          runTests: false
+
   chrome-tests:
     needs: ["test-setup"]
     timeout-minutes: 60
@@ -48,6 +53,8 @@ jobs:
       matrix:
         container: [ 1,2,3,4,5,6 ]
     steps:
+      - uses: actions/checkout@v2
+
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
