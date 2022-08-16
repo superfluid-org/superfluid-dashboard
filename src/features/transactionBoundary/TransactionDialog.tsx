@@ -109,7 +109,7 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
       <>
         <TransactionDialogTitle>Error</TransactionDialogTitle>
         <TransactionDialogContent>
-          <Stack gap={3}>
+          <Stack gap={3} alignItems="center">
             <TransactionDialogErrorAlert mutationError={mutationResult.error} />
             <Typography variant="body2">
               Support ID: {supportId}
