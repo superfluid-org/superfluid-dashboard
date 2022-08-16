@@ -606,11 +606,12 @@ const StreamPageContent: FC<{
         {currentFlowRate !== "0" && (
           <Stack direction="row" alignItems="center" gap={0.5}>
             <Typography data-cy={"amount-per-month"} variant="h6">
-              <Amount
-                wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
-              >
-                {` ${tokenSymbol}`}
-              </Amount>
+              <span translate="no">
+                <Amount
+                  wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
+                />{" "}
+                {tokenSymbol}
+              </span>
             </Typography>
 
             <Typography variant="h6" color="text.secondary">
@@ -644,11 +645,11 @@ const StreamPageContent: FC<{
             label="Buffer:"
             value={
               bufferSize ? (
-                <>
+                <span translate="no">
                   <Amount wei={bufferSize} /> {tokenSymbol}
-                </>
+                </span>
               ) : (
-                "-"
+                <span>-</span>
               )
             }
           />
@@ -656,9 +657,13 @@ const StreamPageContent: FC<{
             dataCy={"updated-end-date"}
             label={`${isActive ? "Updated" : "End"} Date:`}
             value={
-              updatedAtTimestamp
-                ? format(updatedAtTimestamp * 1000, "d MMM. yyyy H:mm")
-                : "-"
+              updatedAtTimestamp ? (
+                <span translate="no">
+                  {format(updatedAtTimestamp * 1000, "d MMM. yyyy H:mm")}
+                </span>
+              ) : (
+                <span>-</span>
+              )
             }
           />
           <OverviewItem
@@ -667,7 +672,9 @@ const StreamPageContent: FC<{
             value={
               <Stack direction="row" alignItems="center" gap={0.5}>
                 <NetworkIcon network={network} size={16} fontSize={12} />
-                <Typography variant="h6">{network.name}</Typography>
+                <Typography variant="h6" translate="no">
+                  {network.name}
+                </Typography>
               </Stack>
             }
           />
@@ -675,9 +682,11 @@ const StreamPageContent: FC<{
             dataCy={"projected-liquidation"}
             label="Projected Liquidation:"
             value={
-              isActive && liquidationDate
-                ? format(liquidationDate, "d MMM. yyyy H:mm")
-                : "-"
+              isActive && liquidationDate ? (
+                format(liquidationDate, "d MMM. yyyy H:mm")
+              ) : (
+                <span>-</span>
+              )
             }
           />
           <OverviewItem
