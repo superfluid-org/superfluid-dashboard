@@ -13,10 +13,13 @@ const SENTRY_WALLET_TAG = "wallet";
 
 const SENTRY_EXPECTED_NETWORK_CONTEXT = "Expected Network";
 const SENTRY_EXPECTED_NETWORK_TAG = "network";
+const SENTRY_EXPECTED_NETWORK_TESTNET_TAG = "testnet";
 
 const SENTRY_SUPPORT_ID_TAG = "support-id";
 
-export const supportId = customAlphabet("6789BCDFGHJKLMNPQRTWbcdfghjkmnpqrtwz")(8) // Alphabet: "nolookalikesSafe"
+export const supportId = customAlphabet("6789BCDFGHJKLMNPQRTWbcdfghjkmnpqrtwz")(
+  8
+); // Alphabet: "nolookalikesSafe"
 Sentry.setTag(SENTRY_SUPPORT_ID_TAG, supportId);
 
 const MonitorContext: FC = () => {
@@ -24,10 +27,12 @@ const MonitorContext: FC = () => {
 
   useEffect(() => {
     Sentry.setTag(SENTRY_EXPECTED_NETWORK_TAG, network.slugName);
+    Sentry.setTag(SENTRY_EXPECTED_NETWORK_TESTNET_TAG, !!network.testnet);
     Sentry.setContext(SENTRY_EXPECTED_NETWORK_CONTEXT, {
       id: network.id,
       name: network.name,
       slug: network.slugName,
+      testnet: !!network.testnet,
     });
   }, [network]);
 
@@ -64,7 +69,7 @@ const MonitorContext: FC = () => {
             if (visitorId) {
               Sentry.setUser({ id: visitorId });
               hotjar.identify(visitorId, {
-                support_id: supportId
+                support_id: supportId,
               });
               resolve();
             } else {
