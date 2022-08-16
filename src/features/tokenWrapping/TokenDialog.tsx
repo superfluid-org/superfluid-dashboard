@@ -219,6 +219,7 @@ export default memo(function TokenDialog({
               justifyContent="center"
               alignItems="center"
               spacing={2}
+              translate="yes"
             >
               Could not find any tokens. :(
             </Stack>

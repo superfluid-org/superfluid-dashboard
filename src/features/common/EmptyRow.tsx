@@ -9,7 +9,9 @@ interface EmptyRowProps {
 export const EmptyRow: FC<EmptyRowProps> = ({ span, height = 58 }) => (
   <TableRow>
     <TableCell colSpan={span} align="center" sx={{ height }}>
-      <Typography variant="h6">No data</Typography>
+      <Typography variant="h6" translate="yes">
+        No data
+      </Typography>
     </TableCell>
   </TableRow>
 );
