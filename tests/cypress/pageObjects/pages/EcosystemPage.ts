@@ -1,7 +1,7 @@
 import {BasePage} from "../BasePage";
-import {BUILT_ON_SUPERFLUID} from "../../../src/pages/ecosystem";
-import {SUPERFLUID_INTEGRATIONS} from "../../../src/pages/ecosystem";
-import {SUPPORTS_SUPER_TOKENS} from "../../../src/pages/ecosystem";
+import {BUILT_ON_SUPERFLUID} from "../../../../src/pages/ecosystem";
+import {SUPERFLUID_INTEGRATIONS} from "../../../../src/pages/ecosystem";
+import {SUPPORTS_SUPER_TOKENS} from "../../../../src/pages/ecosystem";
 
 const APP_NAMES = "[data-cy=app-name]"
 const APP_DESCRIPTIONS = "[data-cy=app-description]"

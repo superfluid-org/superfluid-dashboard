@@ -1,5 +1,5 @@
 import {BasePage} from "../BasePage";
-import {networksBySlug} from "../../../src/features/network/networks";
+import {networksBySlug} from "../../../../src/features/network/networks";
 
 const WRAP_TAB = "[data-cy=wrap-toggle]";
 const UNWRAP_TAB = "[data-cy=unwrap-toggle]";

@@ -1,8 +1,8 @@
 import {BasePage} from "../BasePage";
-import {networksBySlug} from "../../../src/features/network/networks";
+import {networksBySlug} from "../../../../src/features/network/networks";
 // @ts-ignore
 import {MockProvider} from "@rsksmart/mock-web3-provider";
-import shortenHex from "../../../src/utils/shortenHex";
+import shortenHex from "../../../../src/utils/shortenHex";
 
 const NAVIGATION_BUTTON_PREFIX = "[data-cy=nav-";
 const TOP_BAR_NETWORK_BUTTON = "[data-cy=top-bar-network-button]";

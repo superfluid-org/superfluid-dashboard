@@ -1,5 +1,5 @@
 import {BasePage} from "../BasePage";
-import shortenHex from "../../../src/utils/shortenHex";
+import shortenHex from "../../../../src/utils/shortenHex";
 
 const SEND_BUTTON = "[data-cy=send-transaction-button]";
 const RECEIVER_BUTTON = "[data-cy=address-button]";

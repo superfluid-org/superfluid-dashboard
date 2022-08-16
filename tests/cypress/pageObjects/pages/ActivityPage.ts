@@ -1,8 +1,8 @@
 import {BasePage} from "../BasePage";
-import {mainNetworks, networksBySlug, testNetworks} from "../../../src/features/network/networks";
+import {mainNetworks, networksBySlug, testNetworks} from "../../../../src/features/network/networks";
 import {Common} from "./Common";
 import { format } from "date-fns";
-import shortenHex from "../../../src/utils/shortenHex";
+import shortenHex from "../../../../src/utils/shortenHex";
 
 const ACTIVITY_TYPE = "[data-cy=activity]"
 const ACTIVITY_AMOUNT = "[data-cy=amount]"

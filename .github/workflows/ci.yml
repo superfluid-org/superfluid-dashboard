@@ -1,27 +1,28 @@
 name: Dev CI/CD
 
 on:
-  pull_request:
-    types: [opened, reopened, ready_for_review, synchronize]
+  push:
+    branches-ignore:
+      - master
 
 jobs:
-  test-suites:
+
+  test-setup:
     timeout-minutes: 60
     if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     container:
-      image: cypress/browsers:node16.5.0-chrome97-ff96
+      image: cypress/browsers:latest
       options: --user 1001
-    strategy:
-      fail-fast: false
-      matrix:
-        browser: [chrome, firefox]
-    steps:
-      - uses: actions/checkout@v2
+    outputs:
+      uuid: ${{ steps.uuid.outputs.value }}
 
-      - name: Setup firefox
-        uses: browser-actions/setup-firefox@latest
-        if: ${{ matrix.browser == 'firefox' }}
+    steps:
+      - name: Generate unique ID 💎
+        id: uuid
+        run: echo "::set-output name=value::sha-$GITHUB_SHA-time-$(date +"%s")"
+
+      - uses: actions/checkout@v2
 
       - name: Use Node.js 16.x
         uses: actions/setup-node@v1
@@ -45,15 +46,30 @@ jobs:
         env:
           NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
+  chrome-tests:
+    needs: ["test-setup"]
+    timeout-minutes: 60
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:latest
+    strategy:
+      fail-fast: false
+      matrix:
+        container: [ 1,2,3,4,5,6 ]
+    steps:
       - name: Cypress tests
-        uses: cypress-io/github-action@v4
-        with:
-          install: false
-          browser: ${{ matrix.browser }}
-          wait-on: ${{ steps.waitForDeployment.outputs.url }}
-          wait-on-timeout: 180
-          record: true
-          env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
-        env:
-          CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
-          CYPRESS_baseUrl: ${{ steps.waitForDeployment.outputs.url }}
+      uses: cypress-io/github-action@v4
+      with:
+        install: false
+        browser: chrome
+        wait-on: ${{ steps.waitForDeployment.outputs.url }}
+        wait-on-timeout: 180
+        record: true
+        parallel: true
+        working-directory: tests
+        ci-build-id: ${{ needs.test-setup.outputs.uuid }}
+        env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
+      env:
+        CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
+        CYPRESS_baseUrl: ${{ steps.waitForDeployment.outputs.url }}

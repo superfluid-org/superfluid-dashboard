@@ -1,5 +1,5 @@
 import {BasePage} from "../BasePage";
-import shortenHex from "../../../src/utils/shortenHex";
+import shortenHex from "../../../../src/utils/shortenHex";
 
 const ANIMATION = "[data-cy=animation]"
 const SENT_SO_FAR = "[data-cy=balance]"

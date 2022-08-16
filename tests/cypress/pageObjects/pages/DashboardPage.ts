@@ -1,5 +1,5 @@
 import {BasePage} from "../BasePage";
-import {mainNetworks, networksBySlug, testNetworks,} from "../../../src/features/network/networks";
+import {mainNetworks, networksBySlug, testNetworks,} from "../../../../src/features/network/networks";
 
 const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet-button]";
 const NETWORK_SNAPSHOT_TABLE_APPENDIX = "-token-snapshot-table]";
