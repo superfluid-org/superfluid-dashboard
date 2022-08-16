@@ -9,6 +9,7 @@ import {
   Divider,
   FormControlLabel,
   FormGroup,
+  FormLabel,
   IconButton,
   Stack,
   TextField,
@@ -21,7 +22,7 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Token } from "@superfluid-finance/sdk-core";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import Link from "next/link";
-import { FC, memo, useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
@@ -58,16 +59,6 @@ import {
   PartialStreamingForm,
   ValidStreamingForm,
 } from "./StreamingFormProvider";
-
-interface FormLabelProps {
-  children?: React.ReactNode;
-}
-
-const FormLabel: FC<FormLabelProps> = ({ children }) => (
-  <Typography variant="h6" sx={{ ml: 1.25, mb: 0.75 }}>
-    {children}
-  </Typography>
-);
 
 export default memo(function SendCard() {
   const theme = useTheme();
@@ -433,9 +424,11 @@ export default memo(function SendCard() {
             <b>
               you will lose your{" "}
               {bufferAmount && token ? (
-                <Amount wei={bufferAmount.toString()}> {token.symbol}</Amount>
+                <span translate="no">
+                  <Amount wei={bufferAmount.toString()}> {token.symbol}</Amount>
+                </span>
               ) : (
-                `your`
+                <span>your</span>
               )}{" "}
               buffer.
             </b>

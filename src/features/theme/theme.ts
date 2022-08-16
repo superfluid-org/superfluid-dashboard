@@ -479,6 +479,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       MuiDialogTitle: {
         defaultProps: {
           component: "div",
+          translate: "yes",
         },
       },
       MuiBackdrop: {
@@ -491,7 +492,24 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         },
       },
+      MuiFormLabel: {
+        defaultProps: {
+          translate: "yes",
+        },
+        styleOverrides: {
+          root: {
+            ...theme.typography.h6,
+            color: "inherit",
+            display: "inline-block",
+            marginLeft: theme.spacing(1.25),
+            marginBottom: theme.spacing(0.75),
+          },
+        },
+      },
       MuiInputBase: {
+        defaultProps: {
+          translate: "yes",
+        },
         styleOverrides: {
           root: {
             background: theme.palette.background.paper,
@@ -516,6 +534,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       },
       MuiSelect: {
         defaultProps: {
+          translate: "yes",
           MenuProps: {
             PaperProps: {
               square: true,
@@ -571,6 +590,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       MuiButtonGroup: {
         defaultProps: {
           disableElevation: true,
+          translate: "yes",
         },
       },
       MuiIconButton: {
@@ -617,6 +637,9 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         ],
       },
       MuiToggleButtonGroup: {
+        defaultProps: {
+          translate: "yes",
+        },
         styleOverrides: {
           root: {
             padding: theme.spacing(0.5),
@@ -658,6 +681,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       MuiButton: {
         defaultProps: {
           disableElevation: true,
+          translate: "yes",
         },
         styleOverrides: {
           root: {
@@ -808,6 +832,9 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         },
       },
       MuiTab: {
+        defaultProps: {
+          translate: "yes",
+        },
         styleOverrides: {
           root: {
             textTransform: "inherit",
@@ -816,6 +843,9 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         },
       },
       MuiChip: {
+        defaultProps: {
+          translate: "yes",
+        },
         styleOverrides: {
           root: {
             borderRadius: "10px",
@@ -848,6 +878,9 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         },
       },
       MuiAlert: {
+        defaultProps: {
+          translate: "yes",
+        },
         styleOverrides: {
           root: {
             borderRadius: "12px",
@@ -868,6 +901,9 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         ],
       },
       MuiListSubheader: {
+        defaultProps: {
+          translate: "yes",
+        },
         styleOverrides: {
           root: {
             color: theme.palette.text.primary,
@@ -886,6 +922,9 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       },
       // TODO: Figure out why styleOverrides.selected does not work and replace hardcoded classes
       MuiListItemButton: {
+        defaultProps: {
+          translate: "yes",
+        },
         styleOverrides: {
           root: {
             "&.Mui-selected": {
@@ -965,6 +1004,9 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         },
       },
       MuiTablePagination: {
+        defaultProps: {
+          translate: "yes",
+        },
         styleOverrides: {
           root: {
             background: theme.palette.background.paper,
@@ -1026,6 +1068,11 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         ],
       },
+      MuiTableHead: {
+        defaultProps: {
+          translate: "yes",
+        },
+      },
       MuiTableRow: {
         styleOverrides: {
           root: {
@@ -1067,6 +1114,11 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         },
       },
       MuiTooltip: {
+        defaultProps: {
+          PopperProps: {
+            translate: "yes",
+          },
+        },
         styleOverrides: {
           tooltip: {
             backgroundColor: theme.palette.background.paper,

@@ -64,6 +64,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
               <Box
                 component="span"
                 color={getTransactionStatusColor(transaction.status)}
+                translate="no"
               >
                 {`${format(transaction.timestampMs, "d MMM")} •`}
               </Box>

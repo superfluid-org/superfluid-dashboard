@@ -237,6 +237,7 @@ export const WrapTabDowngrade: FC<WrapTabDowngradeProps> = ({
                 <TokenIcon tokenSymbol={underlyingToken.symbol} size={24} />
               }
               sx={{ pointerEvents: "none" }}
+              translate="no"
             >
               {underlyingToken.symbol ?? ""}
             </Button>
@@ -340,9 +341,13 @@ const DowngradePreview: FC<{
   underlyingTokenSymbol: string;
 }> = ({ amountWei, superTokenSymbol, underlyingTokenSymbol }) => {
   return (
-    <Typography variant="h5" color="text.secondary">
-      You are downgrading from {formatEther(amountWei)} {superTokenSymbol} to
-      the underlying token {underlyingTokenSymbol}.
+    <Typography variant="h5" color="text.secondary" translate="yes">
+      You are downgrading from{" "}
+      <span translate="no">
+        {formatEther(amountWei)} {superTokenSymbol}
+      </span>{" "}
+      to the underlying token{" "}
+      <span translate="no">{underlyingTokenSymbol}</span>.
     </Typography>
   );
 };

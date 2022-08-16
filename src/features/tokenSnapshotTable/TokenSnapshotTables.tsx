@@ -77,6 +77,7 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
         alignItems="center"
         justifyContent="space-between"
         sx={{ mb: 2 }}
+        translate="yes"
       >
         <Typography variant={isBelowMd ? "h3" : "h4"} component="h1">
           Super Tokens

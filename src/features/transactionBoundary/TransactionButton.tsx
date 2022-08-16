@@ -61,7 +61,7 @@ export const TransactionButton: FC<{
         color="primary"
         onClick={connectWallet}
       >
-        Connect Wallet
+        <span>Connect Wallet</span>
       </LoadingButton>
     );
   }
@@ -92,7 +92,7 @@ export const TransactionButton: FC<{
         onClick(signer);
       }}
     >
-      {children}
+      <span>{children}</span>
     </LoadingButton>
   );
 };

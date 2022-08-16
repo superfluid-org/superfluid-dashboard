@@ -106,6 +106,7 @@ const AddressFilter: FC<AddressFilterProps> = ({
                   color="primary"
                   label={<AddressName address={address} length="short" />}
                   size="small"
+                  translate="no"
                   onDelete={removeAddress(address)}
                 />
               ))}
@@ -122,7 +123,7 @@ const AddressFilter: FC<AddressFilterProps> = ({
               <ListItemAvatar>
                 <AddressAvatar address={address} />
               </ListItemAvatar>
-              <ListItemText>
+              <ListItemText translate="no">
                 <AddressName address={address} length="medium" />
               </ListItemText>
 

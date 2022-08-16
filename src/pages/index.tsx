@@ -45,6 +45,7 @@ const ConnectView: FC = () => {
           pt: 2,
         },
       }}
+      translate="yes"
     >
       <Typography variant="h4" component="h1" textAlign="center" sx={{ mb: 1 }}>
         Connect to Superfluid

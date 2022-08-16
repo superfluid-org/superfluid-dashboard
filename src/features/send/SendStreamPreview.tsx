@@ -61,10 +61,20 @@ const PreviewItem: FC<{
       {isValidElement(label) ? (
         label
       ) : (
-        <Typography variant="body2">{label}</Typography>
+        <Typography variant="body2" translate="yes">
+          {label}
+        </Typography>
       )}
       {oldValue ? (
-        <Tooltip title={<>Current: {oldValue}</>} arrow placement="top">
+        <Tooltip
+          title={
+            <>
+              <span translate="yes">Current:</span> {oldValue}
+            </>
+          }
+          arrow
+          placement="top"
+        >
           {valueTypography}
         </Tooltip>
       ) : (
@@ -185,6 +195,7 @@ export const StreamingPreview: FC<{
           flex: 1,
         },
       }}
+      translate="no"
     >
       <Stack
         gap={0.5}
@@ -222,7 +233,7 @@ export const StreamingPreview: FC<{
         </PreviewItem>
 
         <PreviewItem dataCy="preview-ends-on" label="Ends on">
-          Never
+          <span translate="yes">Never</span>
         </PreviewItem>
 
         {visibleAddress && balanceAfterBuffer && (
@@ -247,7 +258,7 @@ export const StreamingPreview: FC<{
           <PreviewItem
             dataCy="preview-upfront-buffer"
             label={
-              <Typography variant="body2">
+              <Typography variant="body2" translate="yes">
                 Upfront buffer{` `}
                 <TooltipIcon
                   title={`A ${

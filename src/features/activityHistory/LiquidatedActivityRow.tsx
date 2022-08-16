@@ -61,6 +61,7 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
             primary={"Liquidated"}
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
+              translate: "yes",
               variant: isBelowMd ? "h7" : "h6",
             }}
             secondaryTypographyProps={{
@@ -124,6 +125,7 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
                   </AddressCopyTooltip>
                 }
                 primaryTypographyProps={{
+                  translate: "yes",
                   variant: "body2mono",
                   color: "text.secondary",
                 }}

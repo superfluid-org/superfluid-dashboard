@@ -173,7 +173,7 @@ export default memo(function TokenDialog({
       PaperProps={{ sx: { borderRadius: "20px", maxWidth: 500 } }}
     >
       <DialogTitle sx={{ p: 3 }}>
-        <Typography variant="h4" sx={{ mb: 3 }}>
+        <Typography variant="h4" sx={{ mb: 3 }} translate="yes">
           Select a token
         </Typography>
         <IconButton

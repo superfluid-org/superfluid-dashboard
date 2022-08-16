@@ -91,6 +91,7 @@ export default memo(function SelectNetwork() {
           sx={{
             ".MuiButton-startIcon > *:nth-of-type(1)": { fontSize: "16px" },
           }}
+          translate="no"
         >
           {selectedNetwork.name}
         </Button>
