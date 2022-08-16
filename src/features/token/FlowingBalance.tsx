@@ -11,7 +11,7 @@ const ANIMATION_MINIMUM_STEP_TIME = 75;
 export interface FlowingBalanceProps {
   balance: string;
   /**
-   * Timestamp in Subgraph's UTC.
+   * Timestamp in seconds.
    */
   balanceTimestamp: number;
   flowRate: string;

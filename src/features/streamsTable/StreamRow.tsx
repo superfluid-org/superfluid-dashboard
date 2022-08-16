@@ -21,6 +21,7 @@ import { FC, memo } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import { getStreamPagePath } from "../../pages/stream/[_network]/[_stream]";
+import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { Network } from "../network/networks";
 import { PendingOutgoingStream } from "../pendingUpdates/PendingOutgoingStream";
 import { UnitOfTime } from "../send/FlowRateInput";
@@ -28,6 +29,7 @@ import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import CancelStreamButton from "./CancelStreamButton/CancelStreamButton";
+import ModifyStreamButton from "./ModifyStreamButton";
 
 export const StreamRowLoading = () => {
   const theme = useTheme();
@@ -134,9 +136,11 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
             }}
             BlockiesProps={{ size: 8, scale: 3 }}
           />
-          <Typography data-cy={"sender-receiver-address"} variant="h7">
-            <AddressName address={isOutgoing ? receiver : sender} />
-          </Typography>
+          <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
+            <Typography data-cy={"sender-receiver-address"} variant="h7">
+              <AddressName address={isOutgoing ? receiver : sender} />
+            </Typography>
+          </AddressCopyTooltip>
         </Stack>
       </TableCell>
 
@@ -212,17 +216,37 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
 
       {!isBelowMd && (
         <TableCell align="center">
-          {isPending && (
-            <Stack direction="row" alignItems="center" gap={1}>
-              <CircularProgress color="warning" size="16px" />
-              <Typography variant="caption">
-                {isPendingAndWaitingForSubgraph ? "Syncing..." : "Sending..."}
-              </Typography>
-            </Stack>
-          )}
-          {isActive && !isPending && (
-            <CancelStreamButton stream={stream as Stream} network={network} />
-          )}
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="center"
+            gap={1}
+          >
+            {isPending && (
+              <>
+                <CircularProgress color="warning" size="16px" />
+                <Typography variant="caption">
+                  {isPendingAndWaitingForSubgraph ? "Syncing..." : "Sending..."}
+                </Typography>
+              </>
+            )}
+            {!isPending && isActive && (
+              <>
+                {isOutgoing && (
+                  <ModifyStreamButton
+                    stream={stream as Stream}
+                    network={network}
+                    IconButtonProps={{ size: "small" }}
+                  />
+                )}
+                <CancelStreamButton
+                  stream={stream as Stream}
+                  network={network}
+                  IconButtonProps={{ size: "small" }}
+                />
+              </>
+            )}
+          </Stack>
         </TableCell>
       )}
     </TableRow>

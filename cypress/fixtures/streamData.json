@@ -1,0 +1,42 @@
+{
+  "ongoingStreamAccount": {
+    "polygon": [
+      {
+        "flowRate": 1929012345,
+        "startedAtUnix":1625213281000,
+        "sender": "0xcb867BB066B29f86e7fc54C48D9eB45ecb8E42D8",
+        "receiver": "0xEb85888b31FADF79CB264d065EdcB4a14551c28d",
+        "amountPerMonth": "0.005",
+        "startDate": "2 Jul. 2021 8:08",
+        "updatedDate": "2 Jul. 2021 8:08",
+        "projectedLiquidation": "22 Feb. 2023 4:07",
+        "buffer": "0.00002778",
+        "token": "MATICx",
+        "networkName": "Polygon",
+        "txHash": "0x6def5e5cb8a9a4554f9e028ba203b6576d1f53c9d3f996fd252bde63b314f3f7",
+        "v1Link": "/streams/matic/0x6def5e5cb8a9a4554f9e028ba203b6576d1f53c9d3f996fd252bde63b314f3f7/42/v1",
+        "v2Link": "/stream/polygon/0xcb867bb066b29f86e7fc54c48d9eb45ecb8e42d8-0xeb85888b31fadf79cb264d065edcb4a14551c28d-0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3-0.0"
+      }
+    ]
+  },
+  "staticBalanceAccount": {
+    "polygon": [
+      {
+        "startedAtUnix":1625213281000,
+        "sender": "0x8ac9C6D444D12d20BC96786243Abaae8960D27e2",
+        "receiver": "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2",
+        "totalAmountStreamed": "0.00009722 ",
+        "startDate": "13 Aug. 2021 11:04",
+        "endDate": "13 Aug. 2021 11:07",
+        "cancelledMessage": "Cancelled on 13 August 2021 at 11:07 am",
+        "projectedLiquidation": "-",
+        "buffer": "-",
+        "v2Link": "/stream/polygon/0x384bec1faf849929dcce6b293f7bee432f2a299cc9afc6750179dc96dd81b8ff-211",
+        "v1Link": "/streams/matic/0x384bec1faf849929dcce6b293f7bee432f2a299cc9afc6750179dc96dd81b8ff/211/v1",
+        "token": "USDCx",
+        "networkName": "Polygon",
+        "txHash": "0x384bec1faf849929dcce6b293f7bee432f2a299cc9afc6750179dc96dd81b8ff"
+      }
+    ]
+  }
+}

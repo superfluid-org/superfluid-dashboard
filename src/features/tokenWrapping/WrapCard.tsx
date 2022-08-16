@@ -1,77 +1,21 @@
 import { ErrorMessage } from "@hookform/error-message";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import {
-  Alert,
-  Avatar,
-  Button,
-  Card,
-  Paper,
-  Stack,
-  useTheme,
-} from "@mui/material";
+
+import { Alert, Button, Card, Stack, useTheme } from "@mui/material";
 import { useRouter } from "next/router";
-import { relative } from "path";
-import { FC, memo } from "react";
+import { memo } from "react";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import NetworkBadge from "../network/NetworkBadge";
 import { WrapTabDowngrade } from "./WrapTabDowngrade";
 import { WrapTabUpgrade } from "./WrapTabUpgrade";
 
-export const WrapInputCard: FC = ({ children }) => {
-  const theme = useTheme();
+type WrapTab = "upgrade" | "downgrade";
 
-  return (
-    <Stack
-      component={Paper}
-      elevation={theme.palette.mode === "dark" ? 4 : 1}
-      spacing={1}
-      sx={{
-        px: 2.5,
-        py: 1.5,
-        border: "1px solid",
-        borderColor: theme.palette.other.outline,
-        borderRadius: "15px",
-      }}
-    >
-      {children}
-    </Stack>
-  );
-};
-
-export const ArrowDownIcon: FC = () => {
-  const theme = useTheme();
-
-  return (
-    <Paper
-      component={Avatar}
-      elevation={theme.palette.mode === "light" ? 1 : 16}
-      sx={{
-        width: 30,
-        height: 30,
-        my: -1,
-        ...(theme.palette.mode === "dark" && {
-          boxShadow: "none",
-        }),
-      }}
-    >
-      <ArrowDownwardIcon
-        color={theme.palette.mode === "light" ? "primary" : "inherit"}
-        fontSize="small"
-      />
-    </Paper>
-  );
-};
-
-export default memo(function WrapCard({
-  tabValue,
-}: {
-  tabValue: "upgrade" | "downgrade";
-}) {
+export default memo(function WrapCard({ tabValue }: { tabValue: WrapTab }) {
   const theme = useTheme();
   const router = useRouter();
   const { network } = useExpectedNetwork();
 
-  const handleTabChange = (newTab: "upgrade" | "downgrade") => () =>
+  const handleTabChange = (newTab: WrapTab) => () =>
     router.replace("/wrap?" + newTab);
 
   return (
@@ -133,8 +77,12 @@ export default memo(function WrapCard({
           )
         }
       />
-      {tabValue === "upgrade" && <WrapTabUpgrade />}
-      {tabValue === "downgrade" && <WrapTabDowngrade />}
+      {tabValue === "upgrade" && (
+        <WrapTabUpgrade onSwitchMode={handleTabChange("downgrade")} />
+      )}
+      {tabValue === "downgrade" && (
+        <WrapTabDowngrade onSwitchMode={handleTabChange("upgrade")} />
+      )}
     </Card>
   );
 });

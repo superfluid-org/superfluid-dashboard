@@ -1,39 +1,42 @@
 import { Button, Input, Stack, Typography, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { formatEther, parseEther, parseUnits } from "ethers/lib/utils";
+import { formatEther, parseEther } from "ethers/lib/utils";
 import { useRouter } from "next/router";
 import { FC, useEffect, useRef } from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import { useAccount } from "wagmi";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { calculateCurrentBalance } from "../../utils/tokenUtils";
+import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
+import { useLayoutContext } from "../layout/LayoutContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
+import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
-import { useLayoutContext } from "../layout/LayoutContext";
+import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
+import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import {
   RestorationType,
   SuperTokenDowngradeRestoration,
 } from "../transactionRestoration/transactionRestorations";
-import { TransactionButton } from "../transactions/TransactionButton";
-import {
-  TransactionDialogActions,
-  TransactionDialogButton,
-} from "../transactions/TransactionDialog";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { BalanceSuperToken } from "./BalanceSuperToken";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
+import { SwitchWrapModeBtn } from "./SwitchWrapModeBtn";
 import { TokenDialogButton } from "./TokenDialogButton";
-import { ArrowDownIcon, WrapInputCard } from "./WrapCard";
-import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
-import { useAccount } from "wagmi";
-import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import { useTokenPairQuery } from "./useTokenPairQuery";
-import { getNetworkDefaultTokenPair } from "../network/networks";
+import { WrapInputCard } from "./WrapInputCard";
+import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 
-export const WrapTabDowngrade: FC = () => {
+interface WrapTabDowngradeProps {
+  onSwitchMode: () => void;
+}
+
+export const WrapTabDowngrade: FC<WrapTabDowngradeProps> = ({
+  onSwitchMode,
+}) => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
-  const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useLayoutContext();
   const getTransactionOverrides = useGetTransactionOverrides();
@@ -60,9 +63,13 @@ export const WrapTabDowngrade: FC = () => {
 
   const [tokenPair, amount] = watch(["data.tokenPair", "data.amountDecimal"]);
 
+  const networkCustomTokens = useNetworkCustomTokens(network.id);
+
   const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
     chainId: network.id,
+    unlistedTokenIDs: networkCustomTokens,
   });
+
   const { superToken, underlyingToken } = useTokenPairQuery({
     network,
     tokenPair,
@@ -132,8 +139,7 @@ export const WrapTabDowngrade: FC = () => {
                 tokenSelection={{
                   tokenPairsQuery: {
                     data: tokenPairsQuery.data?.map((x) => x.superToken),
-                    isUninitialized: tokenPairsQuery.isUninitialized,
-                    isLoading: tokenPairsQuery.isLoading,
+                    isFetching: tokenPairsQuery.isFetching,
                   },
                 }}
                 onTokenSelect={(token) => {
@@ -187,7 +193,7 @@ export const WrapTabDowngrade: FC = () => {
                       const currentBalanceBigNumber = calculateCurrentBalance({
                         flowRateWei: realtimeBalanceQuery.currentData!.flowRate,
                         balanceWei: realtimeBalanceQuery.currentData!.balance,
-                        balanceTimestampMs:
+                        balanceTimestamp:
                           realtimeBalanceQuery.currentData!.balanceTimestamp,
                       });
                       return onChange(formatEther(currentBalanceBigNumber));
@@ -203,7 +209,7 @@ export const WrapTabDowngrade: FC = () => {
         )}
       </WrapInputCard>
 
-      <ArrowDownIcon />
+      <SwitchWrapModeBtn onClick={onSwitchMode} />
 
       {underlyingToken && (
         <WrapInputCard>
@@ -258,93 +264,72 @@ export const WrapTabDowngrade: FC = () => {
         </Typography>
       )}
 
-      <TransactionButton
-        dataCy={"downgrade-button"}
-        hidden={false}
-        mutationResult={downgradeResult}
-        disabled={isDowngradeDisabled}
-        onClick={async (
-          signer,
-          setTransactionDialogContent,
-          closeTransactionDialog
-        ) => {
-          if (isDowngradeDisabled) {
-            throw Error(
-              `This should never happen. Form state: ${JSON.stringify(
-                formState,
-                null,
-                2
-              )}`
-            );
-          }
+      <TransactionBoundary mutationResult={downgradeResult}>
+        {({ setDialogLoadingInfo }) => (
+          <TransactionButton
+            dataCy={"downgrade-button"}
+            disabled={isDowngradeDisabled}
+            onClick={async (signer) => {
+              if (isDowngradeDisabled) {
+                throw Error(
+                  `This should never happen. Form state: ${JSON.stringify(
+                    formState,
+                    null,
+                    2
+                  )}`
+                );
+              }
 
-          const { data: formData } = getValues() as ValidWrappingForm;
+              const { data: formData } = getValues() as ValidWrappingForm;
 
-          const restoration: SuperTokenDowngradeRestoration = {
-            type: RestorationType.Downgrade,
-            version: 2,
-            chainId: network.id,
-            tokenPair: formData.tokenPair,
-            amountWei: parseEther(formData.amountDecimal).toString(),
-          };
+              const restoration: SuperTokenDowngradeRestoration = {
+                type: RestorationType.Downgrade,
+                version: 2,
+                chainId: network.id,
+                tokenPair: formData.tokenPair,
+                amountWei: parseEther(formData.amountDecimal).toString(),
+              };
 
-          const overrides = await getTransactionOverrides(network);
+              const overrides = await getTransactionOverrides(network);
 
-          // Fix for Gnosis Safe "cannot estimate gas" issue when downgrading native asset super tokens: https://github.com/superfluid-finance/superfluid-dashboard/issues/101
-          const isGnosisSafe = activeConnector?.id === "safe";
-          const isNativeAssetSuperToken =
-            formData.tokenPair.underlyingTokenAddress === NATIVE_ASSET_ADDRESS;
-          if (isGnosisSafe && isNativeAssetSuperToken) {
-            overrides.gasLimit = 500_000;
-          }
+              // Fix for Gnosis Safe "cannot estimate gas" issue when downgrading native asset super tokens: https://github.com/superfluid-finance/superfluid-dashboard/issues/101
+              const isGnosisSafe = activeConnector?.id === "safe";
+              const isNativeAssetSuperToken =
+                formData.tokenPair.underlyingTokenAddress ===
+                NATIVE_ASSET_ADDRESS;
+              if (isGnosisSafe && isNativeAssetSuperToken) {
+                overrides.gasLimit = 500_000;
+              }
 
-          downgradeTrigger({
-            signer,
-            chainId: network.id,
-            amountWei: parseEther(formData.amountDecimal).toString(),
-            superTokenAddress: formData.tokenPair.superTokenAddress,
-            waitForConfirmation: true,
-            transactionExtraData: {
-              restoration,
-            },
-            overrides,
-          })
-            .unwrap()
-            .then(() => resetForm());
+              setDialogLoadingInfo(
+                <DowngradePreview
+                  {...{
+                    amountWei: parseEther(formData.amountDecimal).toString(),
+                    superTokenSymbol: superToken.symbol,
+                    underlyingTokenSymbol: underlyingToken.symbol,
+                  }}
+                />
+              );
 
-          setTransactionDialogContent({
-            label: (
-              <DowngradePreview
-                {...{
-                  amountWei: parseEther(formData.amountDecimal).toString(),
-                  superTokenSymbol: superToken.symbol,
-                  underlyingTokenSymbol: underlyingToken.symbol,
-                }}
-              />
-            ),
-            successActions: (
-              <TransactionDialogActions>
-                <TransactionDialogButton
-                  color="secondary"
-                  onClick={closeTransactionDialog}
-                >
-                  Unwrap more tokens
-                </TransactionDialogButton>
-                <TransactionDialogButton
-                  color="primary"
-                  onClick={() =>
-                    router.push("/").then(() => setTransactionDrawerOpen(true))
-                  }
-                >
-                  Go to tokens page ➜
-                </TransactionDialogButton>
-              </TransactionDialogActions>
-            ),
-          });
-        }}
-      >
-        Downgrade
-      </TransactionButton>
+              downgradeTrigger({
+                signer,
+                chainId: network.id,
+                amountWei: parseEther(formData.amountDecimal).toString(),
+                superTokenAddress: formData.tokenPair.superTokenAddress,
+                waitForConfirmation: true,
+                transactionExtraData: {
+                  restoration,
+                },
+                overrides,
+              })
+                .unwrap()
+                .then(() => resetForm());
+            }}
+          >
+            Downgrade
+          </TransactionButton>
+        )}
+      </TransactionBoundary>
     </Stack>
   );
 };
@@ -355,7 +340,7 @@ const DowngradePreview: FC<{
   underlyingTokenSymbol: string;
 }> = ({ amountWei, superTokenSymbol, underlyingTokenSymbol }) => {
   return (
-    <Typography variant="body2">
+    <Typography variant="h5" color="text.secondary">
       You are downgrading from {formatEther(amountWei)} {superTokenSymbol} to
       the underlying token {underlyingTokenSymbol}.
     </Typography>

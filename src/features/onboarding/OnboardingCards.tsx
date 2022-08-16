@@ -145,7 +145,7 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({
       >
         <TokenIcon size={32} tokenSymbol="DAI" />
         <SwapVertIcon color="primary" sx={{ transform: "rotate(90deg)" }} />
-        <TokenIcon size={32} tokenSymbol="DAIx" />
+        <TokenIcon isSuper size={32} tokenSymbol="DAIx" />
       </OnboardingItem>
 
       <OnboardingItem

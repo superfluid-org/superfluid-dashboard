@@ -13,3 +13,5 @@ export function getDatesBetween(startDate: Date, endDate: Date) {
 
   return datesBetween;
 }
+
+export const dateNowSeconds = () => Math.floor(Date.now() / 1000);

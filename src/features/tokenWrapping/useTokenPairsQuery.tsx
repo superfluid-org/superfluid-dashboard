@@ -1,11 +1,15 @@
+import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { getNetworkDefaultTokenPair, Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
 
 export const useTokenPairsQuery = ({ network }: { network: Network }) => {
+  const networkCustomTokens = useNetworkCustomTokens(network.id);
   const defaultTokenPair = getNetworkDefaultTokenPair(network);
+
   return subgraphApi.useTokenUpgradeDowngradePairsQuery(
     {
       chainId: network.id,
+      unlistedTokenIDs: networkCustomTokens,
     },
     {
       selectFromResult: (result) => ({

@@ -1,5 +1,7 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
+
+import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 import LinkIcon from "@mui/icons-material/Link";
 import ShareIcon from "@mui/icons-material/Share";
 import {
@@ -22,11 +24,11 @@ import { BigNumber } from "ethers";
 import { isString } from "lodash";
 import { NextPage } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, ReactChild, useEffect, useMemo, useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import AddressAvatar from "../../../components/AddressAvatar/AddressAvatar";
-import AddressName from "../../../components/AddressName/AddressName";
 import CopyTooltip from "../../../components/CopyTooltip/CopyTooltip";
 import SEO from "../../../components/SEO/SEO";
 import NetworkIcon from "../../../features/network/NetworkIcon";
@@ -34,9 +36,12 @@ import { Network, networksBySlug } from "../../../features/network/networks";
 import { subgraphApi } from "../../../features/redux/store";
 import { UnitOfTime } from "../../../features/send/FlowRateInput";
 import CancelStreamButton from "../../../features/streamsTable/CancelStreamButton/CancelStreamButton";
+import ModifyStreamButton from "../../../features/streamsTable/ModifyStreamButton";
 import Amount from "../../../features/token/Amount";
 import FlowingBalance from "../../../features/token/FlowingBalance";
 import TokenIcon from "../../../features/token/TokenIcon";
+import { useTokenIsListed } from "../../../features/token/useTokenIsListed";
+import useAddressName from "../../../hooks/useAddressName";
 import useNavigateBack from "../../../hooks/useNavigateBack";
 import config from "../../../utils/config";
 import shortenHex from "../../../utils/shortenHex";
@@ -57,11 +62,21 @@ const HASHTAGS_TO_SHARE = encodeURIComponent(
 
 interface StreamAccountCardProps {
   address: Address;
+  network: Network;
 }
 
-const StreamAccountCard: FC<StreamAccountCardProps> = ({ address }) => {
+const StreamAccountCard: FC<StreamAccountCardProps> = ({
+  address,
+  network,
+}) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const { ensName, addressChecksummed } = useAddressName(address);
+
+  const [isHovering, setIsHovering] = useState(false);
+
+  const onMouseOver = () => setIsHovering(true);
+  const onMouseLeave = () => setIsHovering(false);
 
   return (
     <Stack flex={1} gap={2}>
@@ -71,13 +86,16 @@ const StreamAccountCard: FC<StreamAccountCardProps> = ({ address }) => {
         alignItems="center"
         gap={isBelowMd ? 1 : 2}
         sx={{
-          py: 2,
+          height: "70px",
           px: 3,
           [theme.breakpoints.down("md")]: {
-            py: 1.5,
+            height: "52px",
             px: 2,
+            borderRadius: "8px",
           },
         }}
+        onMouseOver={onMouseOver}
+        onMouseLeave={onMouseLeave}
       >
         <AddressAvatar
           address={address}
@@ -95,14 +113,43 @@ const StreamAccountCard: FC<StreamAccountCardProps> = ({ address }) => {
             : {})}
         />
         <ListItemText
-          primary={
-            <AddressName
-              address={address}
-              length={isBelowMd ? "short" : "medium"}
-            />
-          }
+          data-cy={"sender-and-receiver"}
+          primary={ensName || shortenHex(addressChecksummed, 4)}
+          secondary={!!ensName && shortenHex(addressChecksummed, 4)}
           primaryTypographyProps={{ variant: isBelowMd ? "h7" : "h6" }}
         />
+
+        {!isBelowMd && (
+          <Stack
+            direction="row"
+            alignItems="center"
+            sx={{
+              color: theme.palette.text.secondary,
+              opacity: isHovering ? 1 : 0,
+              pointerEvents: isHovering ? "all" : "none",
+              transition: theme.transitions.create("opacity", {
+                easing: theme.transitions.easing.easeInOut,
+                duration: theme.transitions.duration.short,
+              }),
+            }}
+          >
+            <CopyTooltip content={addressChecksummed} copyText="Copy address" />
+
+            <Tooltip title="View on blockchain explorer" arrow placement="top">
+              <span>
+                <Link
+                  data-cy="sender-and-receiver-explorer-links"
+                  href={network.getLinkForAddress(addressChecksummed)}
+                  passHref
+                >
+                  <IconButton component="a" size="small" target="_blank">
+                    <LaunchRoundedIcon />
+                  </IconButton>
+                </Link>
+              </span>
+            </Tooltip>
+          </Stack>
+        )}
       </Paper>
     </Stack>
   );
@@ -121,7 +168,11 @@ const CancelledIndicator: FC<CancelledIndicatorProps> = ({
   return (
     <Stack direction="row" alignItems="center" gap={1}>
       {!isBelowMd && <CloseIcon color="error" />}
-      <Typography variant={isBelowMd ? "h6" : "h5"} color="error">
+      <Typography
+        data-cy={"ended-stream-message"}
+        variant={isBelowMd ? "h6" : "h5"}
+        color="error"
+      >
         {`Cancelled on ${format(
           updatedAtTimestamp * 1000,
           "d MMMM yyyy"
@@ -136,11 +187,18 @@ interface ShareButtonProps {
   alt: string;
   tooltip: string;
   href?: string;
+  dataCy?: string;
 }
 
-const ShareButton: FC<ShareButtonProps> = ({ imgSrc, alt, tooltip, href }) => (
-  <Tooltip title={tooltip} placement="top">
-    <MuiLink href={href} target="_blank">
+const ShareButton: FC<ShareButtonProps> = ({
+  imgSrc,
+  alt,
+  tooltip,
+  href,
+  dataCy,
+}) => (
+  <Tooltip title={tooltip} arrow placement="top">
+    <MuiLink data-cy={dataCy} href={href} target="_blank">
       <Box sx={{ display: "flex" }}>
         <Image
           unoptimized
@@ -158,14 +216,17 @@ const ShareButton: FC<ShareButtonProps> = ({ imgSrc, alt, tooltip, href }) => (
 interface OverviewItemProps {
   label: string;
   value: any;
+  dataCy?: string;
 }
 
-const OverviewItem: FC<OverviewItemProps> = ({ label, value }) => (
+const OverviewItem: FC<OverviewItemProps> = ({ label, value, dataCy }) => (
   <Stack direction="row" alignItems="center" justifyContent="space-between">
     <Typography variant="body1" color="text.secondary">
       {label}
     </Typography>
-    <Typography variant="h6">{value}</Typography>
+    <Typography data-cy={dataCy} variant="h6">
+      {value}
+    </Typography>
   </Stack>
 );
 
@@ -257,13 +318,20 @@ const StreamPageContent: FC<{
   network: Network;
   streamId: string;
 }> = ({ network, streamId }) => {
+  const router = useRouter();
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { address: accountAddress } = useAccount();
+  const { chain: activeChain } = useNetwork();
   const navigateBack = useNavigateBack();
 
   const [senderAddress = "", receiverAddress, tokenAddress = ""] =
     streamId.split("-");
+
+  const [isTokenListed, isTokenListedLoading] = useTokenIsListed(
+    network.id,
+    tokenAddress
+  );
 
   const streamQuery = subgraphApi.useStreamQuery({
     chainId: network.id,
@@ -304,18 +372,19 @@ const StreamPageContent: FC<{
       updatedAtTimestamp: snapshotUpdatedAtTimestamp,
     } = tokenSnapshotQuery.data;
 
-    return new Date(
-      calculateMaybeCriticalAtTimestamp({
-        updatedAtTimestamp: snapshotUpdatedAtTimestamp,
-        balanceUntilUpdatedAtWei: balanceUntilUpdatedAt,
-        totalNetFlowRateWei: totalNetFlowRate,
-      }).toNumber() * 1000
-    );
+    const criticalAtTimestamp = calculateMaybeCriticalAtTimestamp({
+      updatedAtTimestamp: snapshotUpdatedAtTimestamp,
+      balanceUntilUpdatedAtWei: balanceUntilUpdatedAt,
+      totalNetFlowRateWei: totalNetFlowRate,
+    }).toNumber();
+
+    return criticalAtTimestamp ? new Date(criticalAtTimestamp * 1000) : null;
   }, [tokenSnapshotQuery.data]);
 
   const txIdOrSubgraphId = streamCreationEvent
     ? `${streamCreationEvent.transactionHash}-${streamCreationEvent.logIndex}`
     : streamId;
+
   const urlToShare = `${config.appUrl}${getStreamPagePath({
     network: network.slugName,
     stream: txIdOrSubgraphId,
@@ -336,12 +405,7 @@ const StreamPageContent: FC<{
     );
   }, [streamQuery.data, network]);
 
-  if (
-    streamQuery.isUninitialized ||
-    streamQuery.isFetching ||
-    tokenSnapshotQuery.isLoading ||
-    tokenSnapshotQuery.isFetching
-  ) {
+  if (streamQuery.isLoading || tokenSnapshotQuery.isLoading) {
     return <StreamPageContainer urlToShare={urlToShare} />;
   }
 
@@ -385,7 +449,11 @@ const StreamPageContent: FC<{
           }}
         >
           <Box>
-            <IconButton color="inherit" onClick={navigateBack}>
+            <IconButton
+              data-cy={"back-button"}
+              color="inherit"
+              onClick={navigateBack}
+            >
               <ArrowBackIcon />
             </IconButton>
           </Box>
@@ -397,12 +465,22 @@ const StreamPageContent: FC<{
           </Box>
 
           <Stack direction="row" justifyContent="flex-end" gap={1}>
-            {isActive && isOutgoing && (
-              <CancelStreamButton
-                stream={streamQuery.data}
-                network={network}
-                IconButtonProps={{ size: "medium" }}
-              />
+            {!!accountAddress && (
+              <>
+                {isOutgoing && (
+                  <ModifyStreamButton
+                    stream={streamQuery.data}
+                    network={network}
+                  />
+                )}
+                {isActive && (
+                  <CancelStreamButton
+                    data-cy={"cancel-button"}
+                    stream={streamQuery.data}
+                    network={network}
+                  />
+                )}
+              </>
             )}
           </Stack>
         </Stack>
@@ -416,7 +494,13 @@ const StreamPageContent: FC<{
 
           <Stack direction="row" alignItems="center" gap={2}>
             {!isBelowMd && (
-              <TokenIcon tokenSymbol={tokenSymbol} size={isBelowMd ? 32 : 60} />
+              <TokenIcon
+                isSuper
+                tokenSymbol={tokenSymbol}
+                isUnlisted={!isTokenListed}
+                isLoading={isTokenListedLoading}
+                size={isBelowMd ? 32 : 60}
+              />
             )}
             <Stack
               direction="row"
@@ -433,6 +517,7 @@ const StreamPageContent: FC<{
                 }}
               >
                 <FlowingBalance
+                  data-cy={"streamed-so-far"}
                   balance={streamedUntilUpdatedAt}
                   flowRate={currentFlowRate}
                   balanceTimestamp={updatedAtTimestamp}
@@ -441,6 +526,7 @@ const StreamPageContent: FC<{
               </Typography>
               {!isBelowMd && (
                 <Typography
+                  data-cy={"streamed-token"}
                   variant="h3"
                   color="primary"
                   sx={{ lineHeight: "28px" }}
@@ -457,8 +543,15 @@ const StreamPageContent: FC<{
               justifyContent="center"
               gap={1}
             >
-              <TokenIcon tokenSymbol={tokenSymbol} size={isBelowMd ? 32 : 60} />
+              <TokenIcon
+                isSuper
+                tokenSymbol={tokenSymbol}
+                isUnlisted={!isTokenListed}
+                isLoading={isTokenListedLoading}
+                size={isBelowMd ? 32 : 60}
+              />
               <Typography
+                data-cy={"token-symbol"}
                 variant="h3"
                 color="primary"
                 sx={{ lineHeight: "28px" }}
@@ -494,7 +587,7 @@ const StreamPageContent: FC<{
             Receiver
           </Typography>
 
-          <StreamAccountCard address={sender} />
+          <StreamAccountCard address={sender} network={network} />
 
           <Box sx={{ mx: -0.25, height: isBelowMd ? 24 : 48, zIndex: -1 }}>
             <Image
@@ -507,15 +600,17 @@ const StreamPageContent: FC<{
             />
           </Box>
 
-          <StreamAccountCard address={receiver} />
+          <StreamAccountCard address={receiver} network={network} />
         </Stack>
 
         {currentFlowRate !== "0" && (
           <Stack direction="row" alignItems="center" gap={0.5}>
-            <Typography variant="h6">
+            <Typography data-cy={"amount-per-month"} variant="h6">
               <Amount
                 wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
-              />
+              >
+                {` ${tokenSymbol}`}
+              </Amount>
             </Typography>
 
             <Typography variant="h6" color="text.secondary">
@@ -540,10 +635,12 @@ const StreamPageContent: FC<{
           }}
         >
           <OverviewItem
+            dataCy={"start-date"}
             label="Start Date:"
             value={format(createdAtTimestamp * 1000, "d MMM. yyyy H:mm")}
           />
           <OverviewItem
+            dataCy={"buffer"}
             label="Buffer:"
             value={
               bufferSize ? (
@@ -556,6 +653,7 @@ const StreamPageContent: FC<{
             }
           />
           <OverviewItem
+            dataCy={"updated-end-date"}
             label={`${isActive ? "Updated" : "End"} Date:`}
             value={
               updatedAtTimestamp
@@ -564,6 +662,7 @@ const StreamPageContent: FC<{
             }
           />
           <OverviewItem
+            dataCy={"network-name"}
             label="Network Name:"
             value={
               <Stack direction="row" alignItems="center" gap={0.5}>
@@ -573,6 +672,7 @@ const StreamPageContent: FC<{
             }
           />
           <OverviewItem
+            dataCy={"projected-liquidation"}
             label="Projected Liquidation:"
             value={
               isActive && liquidationDate
@@ -581,10 +681,48 @@ const StreamPageContent: FC<{
             }
           />
           <OverviewItem
-            label="Transaction:"
+            dataCy={"tx-hash"}
+            label="Transaction Hash:"
             value={
-              streamCreationEvent &&
-              shortenHex(streamCreationEvent.transactionHash, 6)
+              streamCreationEvent && (
+                <Stack direction="row" alignItems="center" gap={0.5}>
+                  {shortenHex(streamCreationEvent.transactionHash)}
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    sx={{ color: theme.palette.text.secondary }}
+                  >
+                    <CopyTooltip
+                      content={streamCreationEvent.transactionHash}
+                      copyText="Copy transaction hash"
+                    />
+
+                    <Tooltip
+                      title="View on blockchain explorer"
+                      arrow
+                      placement="top"
+                    >
+                      <span>
+                        <Link
+                          data-cy={"tx-hash-link"}
+                          href={network.getLinkForTransaction(
+                            streamCreationEvent.transactionHash
+                          )}
+                          passHref
+                        >
+                          <IconButton
+                            component="a"
+                            size="small"
+                            target="_blank"
+                          >
+                            <LaunchRoundedIcon />
+                          </IconButton>
+                        </Link>
+                      </span>
+                    </Tooltip>
+                  </Stack>
+                </Stack>
+              )
             }
           />
         </Stack>
@@ -597,13 +735,10 @@ const StreamPageContent: FC<{
             Share:
           </Typography>
 
-          <CopyTooltip
-            content={urlToShare}
-            copyText="Copy link"
-            TooltipProps={{ placement: "top" }}
-          >
+          <CopyTooltip content={urlToShare} copyText="Copy link">
             {({ copy }) => (
               <IconButton
+                data-cy={"copy-button"}
                 onClick={copy}
                 sx={{
                   color: "#fff",
@@ -624,6 +759,7 @@ const StreamPageContent: FC<{
           </CopyTooltip>
 
           <ShareButton
+            dataCy={"twitter-button"}
             imgSrc="/icons/social/twitter.svg"
             alt="Twitter logo"
             tooltip="Share on Twitter"
@@ -631,6 +767,7 @@ const StreamPageContent: FC<{
           />
           {/* <ShareButton imgSrc="/icons/social/discord.svg" alt="Discord logo" /> */}
           <ShareButton
+            dataCy={"telegram-button"}
             imgSrc="/icons/social/telegram.svg"
             alt="Telegram logo"
             tooltip="Share on Telegram"

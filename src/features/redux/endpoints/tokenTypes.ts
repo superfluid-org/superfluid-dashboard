@@ -21,6 +21,7 @@ export type TokenMinimal = {
   name: string;
   symbol: string;
   decimals: number;
+  isListed?: boolean;
 };
 
 export const isUnderlying = (
@@ -41,6 +42,7 @@ export type SuperTokenMinimal = {
   address: string;
   name: string;
   symbol: string;
+  isListed?: boolean;
   decimals: number;
 };
 
@@ -49,6 +51,7 @@ export type ERC20TokenMinimal = {
   address: string;
   name: string;
   symbol: string;
+  isListed?: boolean;
   decimals: number;
 };
 /**

@@ -10,6 +10,11 @@ export default class MyDocument extends Document {
           {/* PWA primary color */}
           <meta name="theme-color" content="#10BB35" />
           <link rel="shortcut icon" href="/favicon.ico" />
+
+          {/* iOS app icon and title */}
+          <link rel="apple-touch-icon" href="/icon-120.png" />
+          <meta name="apple-mobile-web-app-title" content="Superfluid" />
+
           {/* Inject MUI styles first to match with the prepend: true configuration. */}
           {(this.props as any).emotionStyleTags}
         </Head>

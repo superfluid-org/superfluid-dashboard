@@ -1,40 +1,42 @@
 import { Button, Input, Stack, Typography, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { BigNumber, BigNumberish, ethers } from "ethers";
-import {
-  formatEther,
-  formatUnits,
-  parseEther,
-  parseUnits,
-} from "ethers/lib/utils";
+import { formatEther, formatUnits, parseEther } from "ethers/lib/utils";
 import { useRouter } from "next/router";
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { parseAmountOrZero } from "../../utils/tokenUtils";
+import { useAccount } from "wagmi";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
+import { parseAmountOrZero } from "../../utils/tokenUtils";
+import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
+import { useLayoutContext } from "../layout/LayoutContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
+import {
+  NATIVE_ASSET_ADDRESS,
+  SuperTokenPair,
+} from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
-import { useLayoutContext } from "../layout/LayoutContext";
+import { useTokenIsListed } from "../token/useTokenIsListed";
+import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
+import { TransactionButton } from "../transactionBoundary/TransactionButton";
+import {
+  TransactionDialogActions,
+  TransactionDialogButton,
+} from "../transactionBoundary/TransactionDialog";
 import {
   ApproveAllowanceRestoration,
   RestorationType,
   SuperTokenUpgradeRestoration,
 } from "../transactionRestoration/transactionRestorations";
-import { TransactionButton } from "../transactions/TransactionButton";
-import {
-  TransactionDialogActions,
-  TransactionDialogButton,
-} from "../transactions/TransactionDialog";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { BalanceSuperToken } from "./BalanceSuperToken";
 import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
+import { SwitchWrapModeBtn } from "./SwitchWrapModeBtn";
 import { TokenDialogButton } from "./TokenDialogButton";
-import { ArrowDownIcon, WrapInputCard } from "./WrapCard";
-import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
-import { useAccount } from "wagmi";
 import { useTokenPairQuery } from "./useTokenPairQuery";
+import { WrapInputCard } from "./WrapInputCard";
+import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 
 const underlyingIbAlluoTokenOverrides = [
   // StIbAlluoEth
@@ -49,7 +51,11 @@ const underlyingIbAlluoTokenOverrides = [
   "0xc2dbaaea2efa47ebda3e572aa0e55b742e408bf6",
 ];
 
-export const WrapTabUpgrade: FC = () => {
+interface WrapTabUpgradeProps {
+  onSwitchMode: () => void;
+}
+
+export const WrapTabUpgrade: FC<WrapTabUpgradeProps> = ({ onSwitchMode }) => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
   const router = useRouter();
@@ -86,9 +92,12 @@ export const WrapTabUpgrade: FC = () => {
     ethers.BigNumber.from(0)
   );
 
+  const networkCustomTokens = useNetworkCustomTokens(network.id);
   const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
     chainId: network.id,
+    unlistedTokenIDs: networkCustomTokens,
   });
+
   const { superToken, underlyingToken } = useTokenPairQuery({
     network,
     tokenPair,
@@ -158,6 +167,33 @@ export const WrapTabUpgrade: FC = () => {
     amountInputRef.current.focus();
   }, [amountInputRef, tokenPair]);
 
+  const tokenSelection = useMemo(() => {
+    const tokenPairs = tokenPairsQuery.data || [];
+
+    /**
+     * Filtering out duplicate pairs with the same underlying tokens due to UI limitations.
+     * If pair with same underlying token already exists then...
+     * a) If super token is listed then we will overwrite the existing pair.
+     * b) If super token is not listed then we will skip it.
+     */
+    return tokenPairs
+      .reduce((allowedTokenPairs, tokenPair) => {
+        const existingPairIndex = allowedTokenPairs.findIndex(
+          (tp) =>
+            tp.underlyingToken.address === tokenPair.underlyingToken.address
+        );
+
+        if (existingPairIndex >= 0) {
+          if (tokenPair.superToken.isListed) {
+            allowedTokenPairs.splice(existingPairIndex, 1, tokenPair);
+          }
+          return allowedTokenPairs;
+        }
+        return allowedTokenPairs.concat([tokenPair]);
+      }, [] as SuperTokenPair[])
+      .map((x) => x.underlyingToken);
+  }, [tokenPairsQuery.data]);
+
   const { underlyingBalance } = rpcApi.useUnderlyingBalanceQuery(
     tokenPair && visibleAddress
       ? {
@@ -171,6 +207,11 @@ export const WrapTabUpgrade: FC = () => {
         underlyingBalance: result.currentData?.balance,
       }),
     }
+  );
+
+  const [isListed, isListedLoading] = useTokenIsListed(
+    network.id,
+    tokenPair?.superTokenAddress
   );
 
   return (
@@ -211,9 +252,8 @@ export const WrapTabUpgrade: FC = () => {
                 token={underlyingToken}
                 tokenSelection={{
                   tokenPairsQuery: {
-                    data: tokenPairsQuery.data?.map((x) => x.underlyingToken),
-                    isUninitialized: tokenPairsQuery.isUninitialized,
-                    isLoading: tokenPairsQuery.isLoading,
+                    data: tokenSelection,
+                    isFetching: tokenPairsQuery.isFetching,
                   },
                 }}
                 onTokenSelect={(token) => {
@@ -281,7 +321,7 @@ export const WrapTabUpgrade: FC = () => {
         )}
       </WrapInputCard>
 
-      <ArrowDownIcon />
+      <SwitchWrapModeBtn onClick={onSwitchMode} />
 
       {superToken && (
         <WrapInputCard>
@@ -305,7 +345,13 @@ export const WrapTabUpgrade: FC = () => {
               variant={theme.palette.mode === "light" ? "outlined" : "token"}
               color="secondary"
               startIcon={
-                <TokenIcon tokenSymbol={superToken.symbol} size={24} />
+                <TokenIcon
+                  isSuper
+                  tokenSymbol={superToken.symbol}
+                  isUnlisted={!isListed}
+                  isLoading={isListedLoading}
+                  size={24}
+                />
               }
               sx={{ pointerEvents: "none" }}
             >
@@ -336,162 +382,156 @@ export const WrapTabUpgrade: FC = () => {
       )}
 
       <Stack gap={2} direction="column" sx={{ width: "100%" }}>
-        <TransactionButton
-          dataCy={"approve-allowance-button"}
-          mutationResult={approveResult}
-          hidden={!isApproveAllowanceVisible}
-          disabled={false}
-          onClick={async (signer, setTransactionDialogContent) => {
-            if (!isApproveAllowanceVisible) {
-              throw Error("This should never happen.");
-            }
+        <TransactionBoundary mutationResult={approveResult}>
+          {({ setDialogLoadingInfo }) =>
+            isApproveAllowanceVisible && (
+              <TransactionButton
+                dataCy={"approve-allowance-button"}
+                onClick={async (signer) => {
+                  const approveAllowanceAmountWei =
+                    currentAllowance.add(missingAllowance);
 
-            const approveAllowanceAmountWei =
-              currentAllowance.add(missingAllowance);
+                  setDialogLoadingInfo(
+                    <AllowancePreview
+                      {...{
+                        amountWei: approveAllowanceAmountWei.toString(),
+                        decimals: underlyingToken.decimals,
+                        tokenSymbol: underlyingToken.symbol,
+                      }}
+                    />
+                  );
 
-            setTransactionDialogContent({
-              label: (
-                <AllowancePreview
-                  {...{
+                  const restoration: ApproveAllowanceRestoration = {
+                    type: RestorationType.Approve,
+                    chainId: network.id,
                     amountWei: approveAllowanceAmountWei.toString(),
-                    decimals: underlyingToken.decimals,
-                    tokenSymbol: underlyingToken.symbol,
-                  }}
-                />
-              ),
-            });
+                    tokenAddress: tokenPair.underlyingTokenAddress,
+                  };
 
-            const restoration: ApproveAllowanceRestoration = {
-              type: RestorationType.Approve,
-              chainId: network.id,
-              amountWei: approveAllowanceAmountWei.toString(),
-              tokenAddress: tokenPair.underlyingTokenAddress,
-            };
+                  approveTrigger({
+                    signer,
+                    chainId: network.id,
+                    amountWei: approveAllowanceAmountWei.toString(),
+                    superTokenAddress: tokenPair.superTokenAddress,
+                    transactionExtraData: {
+                      restoration,
+                    },
+                    overrides: await getTransactionOverrides(network),
+                  })
+                    .unwrap()
+                    .then(() => setTransactionDrawerOpen(true));
+                }}
+              >
+                Approve Allowance
+              </TransactionButton>
+            )
+          }
+        </TransactionBoundary>
 
-            approveTrigger({
-              signer,
-              chainId: network.id,
-              amountWei: approveAllowanceAmountWei.toString(),
-              superTokenAddress: tokenPair.superTokenAddress,
-              transactionExtraData: {
-                restoration,
-              },
-              overrides: await getTransactionOverrides(network),
-            })
-              .unwrap()
-              .then(() => setTransactionDrawerOpen(true));
-          }}
-        >
-          Approve Allowance
-        </TransactionButton>
+        <TransactionBoundary mutationResult={upgradeResult}>
+          {({ closeDialog, setDialogLoadingInfo, setDialogSuccessActions }) => (
+            <TransactionButton
+              dataCy={"upgrade-button"}
+              disabled={isUpgradeDisabled}
+              onClick={async (signer) => {
+                if (isUpgradeDisabled) {
+                  throw Error(
+                    `This should never happen. Form state: ${JSON.stringify(
+                      formState,
+                      null,
+                      2
+                    )}`
+                  );
+                }
 
-        <TransactionButton
-          dataCy={"upgrade-button"}
-          hidden={false}
-          disabled={isUpgradeDisabled}
-          mutationResult={upgradeResult}
-          onClick={async (
-            signer,
-            setTransactionDialogContent,
-            closeTransactionDialog
-          ) => {
-            if (isUpgradeDisabled) {
-              throw Error(
-                `This should never happen. Form state: ${JSON.stringify(
-                  formState,
-                  null,
-                  2
-                )}`
-              );
-            }
+                const { data: formData } = getValues() as ValidWrappingForm;
 
-            const { data: formData } = getValues() as ValidWrappingForm;
+                // Use super token's decimals for upgrading, not the underlying's.
+                const amountWei = parseEther(formData.amountDecimal);
 
-            // Use super token's decimals for upgrading, not the underlying's.
-            const amountWei = parseEther(formData.amountDecimal);
+                const restoration: SuperTokenUpgradeRestoration = {
+                  type: RestorationType.Upgrade,
+                  version: 2,
+                  chainId: network.id,
+                  tokenPair: tokenPair,
+                  amountWei: amountWei.toString(),
+                };
 
-            const restoration: SuperTokenUpgradeRestoration = {
-              type: RestorationType.Upgrade,
-              version: 2,
-              chainId: network.id,
-              tokenPair: tokenPair,
-              amountWei: amountWei.toString(),
-            };
+                const overrides = await getTransactionOverrides(network);
 
-            const overrides = await getTransactionOverrides(network);
+                // In Gnosis Safe, Ether's estimateGas is flaky for native assets.
+                const isGnosisSafe = activeConnector?.id === "safe";
+                const isNativeAssetSuperToken =
+                  formData.tokenPair.underlyingTokenAddress ===
+                  NATIVE_ASSET_ADDRESS;
 
-            // In Gnosis Safe, Ether's estimateGas is flaky for native assets.
-            const isGnosisSafe = activeConnector?.id === "safe";
-            const isNativeAssetSuperToken =
-              formData.tokenPair.underlyingTokenAddress ===
-              NATIVE_ASSET_ADDRESS;
+                // Temp custom override for "IbAlluo" tokens on polygon
+                // TODO: Find a better solution
+                if (
+                  network.id === 137 &&
+                  underlyingIbAlluoTokenOverrides.includes(
+                    tokenPair.underlyingTokenAddress.toLowerCase()
+                  )
+                ) {
+                  overrides.gasLimit = 200_000;
+                }
 
-            // Temp custom override for "IbAlluo" tokens on polygon
-            // TODO: Find a better solution
-            if (
-              network.id === 137 &&
-              underlyingIbAlluoTokenOverrides.includes(
-                tokenPair.underlyingTokenAddress.toLowerCase()
-              )
-            ) {
-              overrides.gasLimit = 200_000;
-            }
+                if (isGnosisSafe && isNativeAssetSuperToken) {
+                  overrides.gasLimit = 500_000;
+                }
 
-            if (isGnosisSafe && isNativeAssetSuperToken) {
-              overrides.gasLimit = 500_000;
-            }
+                setDialogLoadingInfo(
+                  <UpgradePreview
+                    {...{
+                      amountWei: amountWei,
+                      superTokenSymbol: superToken.symbol,
+                      underlyingTokenSymbol: underlyingToken.symbol,
+                    }}
+                  />
+                );
 
-            upgradeTrigger({
-              signer,
-              chainId: network.id,
-              amountWei: amountWei.toString(),
-              superTokenAddress: formData.tokenPair.superTokenAddress,
-              waitForConfirmation: true,
-              transactionExtraData: {
-                restoration,
-              },
-              overrides,
-            })
-              .unwrap()
-              .then(() => resetForm());
+                upgradeTrigger({
+                  signer,
+                  chainId: network.id,
+                  amountWei: amountWei.toString(),
+                  superTokenAddress: formData.tokenPair.superTokenAddress,
+                  waitForConfirmation: true,
+                  transactionExtraData: {
+                    restoration,
+                  },
+                  overrides,
+                })
+                  .unwrap()
+                  .then(() => resetForm());
 
-            setTransactionDialogContent({
-              label: (
-                <UpgradePreview
-                  {...{
-                    amountWei: amountWei,
-                    superTokenSymbol: superToken.symbol,
-                    underlyingTokenSymbol: underlyingToken.symbol,
-                  }}
-                />
-              ),
-              successActions: (
-                <TransactionDialogActions>
-                  <Stack gap={1} sx={{ width: "100%" }}>
-                    <TransactionDialogButton
-                      color="secondary"
-                      onClick={closeTransactionDialog}
-                    >
-                      Wrap more tokens
-                    </TransactionDialogButton>
-                    <TransactionDialogButton
-                      color="primary"
-                      onClick={() =>
-                        router
-                          .push("/")
-                          .then(() => setTransactionDrawerOpen(true))
-                      }
-                    >
-                      Go to tokens page ➜
-                    </TransactionDialogButton>
-                  </Stack>
-                </TransactionDialogActions>
-              ),
-            });
-          }}
-        >
-          Upgrade to Super Token
-        </TransactionButton>
+                setDialogSuccessActions(
+                  <TransactionDialogActions>
+                    <Stack gap={1} sx={{ width: "100%" }}>
+                      <TransactionDialogButton
+                        color="secondary"
+                        onClick={closeDialog}
+                      >
+                        Wrap more tokens
+                      </TransactionDialogButton>
+                      <TransactionDialogButton
+                        color="primary"
+                        onClick={() =>
+                          router
+                            .push("/")
+                            .then(() => setTransactionDrawerOpen(true))
+                        }
+                      >
+                        Go to tokens page ➜
+                      </TransactionDialogButton>
+                    </Stack>
+                  </TransactionDialogActions>
+                );
+              }}
+            >
+              Upgrade to Super Token
+            </TransactionButton>
+          )}
+        </TransactionBoundary>
       </Stack>
     </Stack>
   );
