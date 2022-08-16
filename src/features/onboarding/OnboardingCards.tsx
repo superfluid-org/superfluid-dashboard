@@ -136,6 +136,7 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({
           ...(vertical ? { gridTemplateColumns: "290px", px: 0 } : {}),
         },
       }}
+      translate="yes"
     >
       <OnboardingItem
         title="Get Super Tokens"
