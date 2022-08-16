@@ -28,13 +28,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
 
-      - name: Wait for Netlify
-        uses: probablyup/wait-for-netlify-action@3.2.0 # Check the source code before updating version because it uses personal Netlify access token which does not have granular access control.
-        id: waitForDeployment
-        with:
-          site_id: "aa82cf1e-ce5d-432f-99bf-77a0b8c13277"
-        env:
-          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+#      - name: Wait for Netlify
+#        uses: probablyup/wait-for-netlify-action@3.2.0 # Check the source code before updating version because it uses personal Netlify access token which does not have granular access control.
+#        id: waitForDeployment
+#        with:
+#          site_id: "aa82cf1e-ce5d-432f-99bf-77a0b8c13277"
+#        env:
+#          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
       - name: Install Cypress
         uses: cypress-io/github-action@v4
