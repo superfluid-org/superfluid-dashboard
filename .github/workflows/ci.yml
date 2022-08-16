@@ -1,8 +1,9 @@
 name: Dev CI/CD
 
 on:
-  pull_request:
-    types: [opened, reopened, ready_for_review, synchronize]
+  push:
+    branches-ignore:
+      - master
 
 jobs:
   test-suites:
