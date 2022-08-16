@@ -21,7 +21,7 @@ jobs:
         with:
           install: true
           record: true
-          parallel: false
+          parallel: true
           working-directory: tests
           cache-key: "testing2"
         env:
