@@ -25,7 +25,7 @@ const IndexCreatedActivityRow: FC<Activity<IndexCreatedEvent>> = ({
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { timestamp, token, transactionHash } = keyEvent;
+  const { indexId, timestamp, token, transactionHash } = keyEvent;
 
   const tokenQuery = subgraphApi.useTokenQuery({
     chainId: network.id,
@@ -62,7 +62,23 @@ const IndexCreatedActivityRow: FC<Activity<IndexCreatedEvent>> = ({
           </ListItemAvatar>
         </ListItem>
       </TableCell>
-      <TableCell></TableCell>
+      <TableCell>
+        <ListItem sx={{ p: 0 }}>
+          <ListItemText
+            primary={"ID"}
+            secondary={indexId}
+            primaryTypographyProps={{
+              variant: "body2",
+              color: "text.secondary",
+            }}
+            secondaryTypographyProps={{
+              variant: "h6",
+              color: "text.primary",
+            }}
+            sx={{ ml: 6.5 }}
+          />
+        </ListItem>
+      </TableCell>
       <TableCell sx={{ position: "relative" }}>
         <TxHashLink txHash={transactionHash} network={network} />
         <NetworkBadge

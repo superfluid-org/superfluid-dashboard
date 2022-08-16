@@ -35,8 +35,15 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivity> = ({
 
   const { visibleAddress } = useVisibleAddress();
 
-  const { timestamp, publisher, token, units, oldUnits, transactionHash } =
-    keyEvent;
+  const {
+    timestamp,
+    publisher,
+    subscriber,
+    token,
+    units,
+    oldUnits,
+    transactionHash,
+  } = keyEvent;
 
   const tokenQuery = subgraphApi.useTokenQuery({
     chainId: network.id,
@@ -101,11 +108,13 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivity> = ({
             <AddressAvatar address={publisher} />
           </ListItemAvatar>
           <ListItemText
-            primary={"Publisher"}
+            primary={isPublisher ? "Subscriber" : "Publisher"}
             secondary={
-              <AddressCopyTooltip address={publisher}>
+              <AddressCopyTooltip
+                address={isPublisher ? subscriber : publisher}
+              >
                 <Typography variant="h6" color="text.primary" component="span">
-                  <AddressName address={publisher} />
+                  <AddressName address={isPublisher ? subscriber : publisher} />
                 </Typography>
               </AddressCopyTooltip>
             }
