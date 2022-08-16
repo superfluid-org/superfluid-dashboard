@@ -223,6 +223,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
             isConnected,
             isCorrectNetwork,
             expectedNetwork,
+            setDialogLoadingInfo
           }) =>
             !subscription.approved && (
               <>
@@ -254,6 +255,8 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                             throw new Error(
                               "Signer should always be available here."
                             );
+
+                          setDialogLoadingInfo(<Typography variant="h5" color="text.secondary">You are approving an index subscription.</Typography>);
 
                           // TODO(KK): Make the operation take subscriber as input. Don't just rely on the wallet's signer -- better to have explicit data flowing
                           approveSubscription({
@@ -287,12 +290,13 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
             isConnected,
             isCorrectNetwork,
             expectedNetwork,
+            setDialogLoadingInfo
           }) =>
             subscription.approved && (
               <>
                 {mutationResult.isLoading || pendingRevoke ? (
                   <OperationProgress
-                    transactingText={"Canceling..."}
+                    transactingText={"Revoking..."}
                     pendingUpdate={pendingRevoke}
                   />
                 ) : (
@@ -318,6 +322,8 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                             throw new Error(
                               "Signer should always bet available here."
                             );
+
+                          setDialogLoadingInfo(<Typography variant="h5" color="text.secondary">You are revoking approval of an index subscription.</Typography>);
 
                           // TODO(KK): Make the operation take subscriber as input. Don't just rely on the wallet's signer -- better to have explicit data flowing
                           revokeSubscription({

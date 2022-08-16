@@ -3,7 +3,7 @@ import { AppProps } from "next/app";
 import Head from "next/head";
 import { useEffect } from "react";
 import { hotjar } from "react-hotjar";
-import SentryContext from "../components/SentryContext/SentryContext";
+import MonitorContext from "../components/MonitorContext/MonitorContext";
 import { AutoConnectProvider } from "../features/autoConnect/AutoConnect";
 import { ImpersonationProvider } from "../features/impersonation/ImpersonationContext";
 import IntercomProvider from "../features/intercom/IntercomProvider";
@@ -67,7 +67,7 @@ export default function MyApp(props: MyAppProps) {
                                     <IntercomProvider>
                                       <Layout>
                                         <ReduxPersistGate>
-                                          <SentryContext />
+                                          <MonitorContext />
                                           <Component
                                             key={`${network.slugName}`}
                                             {...pageProps}

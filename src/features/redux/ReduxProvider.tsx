@@ -3,6 +3,7 @@ import {
   initiateOldPendingTransactionsTrackingThunk,
   setFrameworkForSdkRedux,
 } from "@superfluid-finance/sdk-redux";
+import promiseRetry from "promise-retry";
 import { FC, useCallback, useEffect } from "react";
 import { Provider } from "react-redux";
 import { useAccount, useSigner } from "wagmi";
@@ -76,10 +77,18 @@ const ReduxProviderCore: FC = ({ children }) => {
 
       signer.getChainId().then((chainId) => {
         setFrameworkForSdkRedux(chainId, () =>
-          Framework.create({
-            chainId: chainId,
-            provider: signer,
-          })
+          promiseRetry<Framework>(
+            (retry) =>
+              Framework.create({
+                chainId: chainId,
+                provider: signer,
+              }).catch(retry),
+            {
+              minTimeout: 500,
+              maxTimeout: 2000,
+              retries: 10,
+            }
+          )
         );
       });
 

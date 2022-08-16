@@ -617,7 +617,7 @@ export default memo(function SendCard() {
                     );
                   }}
                 >
-                  ModifyStream
+                  Modify Stream
                 </TransactionButton>
               )
             }
