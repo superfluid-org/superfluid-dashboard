@@ -1,3 +1,4 @@
+import NotInterestedRoundedIcon from "@mui/icons-material/NotInterestedRounded";
 import {
   ListItem,
   ListItemAvatar,
@@ -8,19 +9,18 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { FC } from "react";
-import {
-  IndexSubscribedActivity,
-  IndexUnsubscribedActivity,
-} from "../../utils/activityUtils";
-import EditIcon from "@mui/icons-material/Edit";
-import ActivityIcon from "./ActivityIcon";
 import { format } from "date-fns";
-import TxHashLink from "../common/TxHashLink";
-import NetworkBadge from "../network/NetworkBadge";
+import { FC } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
+import { IndexUnsubscribedActivity } from "../../utils/activityUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
+import TxHashLink from "../common/TxHashLink";
+import NetworkBadge from "../network/NetworkBadge";
+import { subgraphApi } from "../redux/store";
+import TokenIcon from "../token/TokenIcon";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import ActivityIcon from "./ActivityIcon";
 
 const IndexUnsubscribedActivityRow: FC<IndexUnsubscribedActivity> = ({
   keyEvent,
@@ -29,16 +29,24 @@ const IndexUnsubscribedActivityRow: FC<IndexUnsubscribedActivity> = ({
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const { visibleAddress } = useVisibleAddress();
 
   const { timestamp, token, publisher, subscriber, transactionHash } = keyEvent;
+
+  const tokenQuery = subgraphApi.useTokenQuery({
+    chainId: network.id,
+    id: token,
+  });
+
+  const isPublisher = visibleAddress?.toLowerCase() === publisher.toLowerCase();
 
   return (
     <TableRow>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ActivityIcon icon={EditIcon} />
+          <ActivityIcon icon={NotInterestedRoundedIcon} />
           <ListItemText
-            primary="Subscription Revoked"
+            primary="Unsubscribe Distribution"
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
@@ -50,18 +58,31 @@ const IndexUnsubscribedActivityRow: FC<IndexUnsubscribedActivity> = ({
           />
         </ListItem>
       </TableCell>
-      <TableCell></TableCell>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
           <ListItemAvatar>
-            <AddressAvatar address={publisher} />
+            <TokenIcon
+              isSuper
+              tokenSymbol={tokenQuery.data?.symbol}
+              isUnlisted={!tokenQuery.data?.isListed}
+              isLoading={tokenQuery.isLoading}
+            />
+          </ListItemAvatar>
+        </ListItem>
+      </TableCell>
+      <TableCell>
+        <ListItem sx={{ p: 0 }}>
+          <ListItemAvatar>
+            <AddressAvatar address={isPublisher ? subscriber : publisher} />
           </ListItemAvatar>
           <ListItemText
-            primary={"Publisher"}
+            primary={isPublisher ? "Subscriber" : "Publisher"}
             secondary={
-              <AddressCopyTooltip address={publisher}>
+              <AddressCopyTooltip
+                address={isPublisher ? subscriber : publisher}
+              >
                 <Typography variant="h6" color="text.primary" component="span">
-                  <AddressName address={publisher} />
+                  <AddressName address={isPublisher ? subscriber : publisher} />
                 </Typography>
               </AddressCopyTooltip>
             }

@@ -1,22 +1,18 @@
-import EditIcon from "@mui/icons-material/Edit";
+import AltRouteRoundedIcon from "@mui/icons-material/AltRouteRounded";
 import {
   ListItem,
   ListItemAvatar,
   ListItemText,
   TableCell,
   TableRow,
-  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { IndexUpdatedEvent } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
-import { FC, useCallback, useMemo } from "react";
-import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
-import AddressName from "../../components/AddressName/AddressName";
-import { IndexUnitsUpdatedActivity } from "../../utils/activityUtils";
-import { BIG_NUMBER_ZERO } from "../../utils/tokenUtils";
-import AddressCopyTooltip from "../common/AddressCopyTooltip";
+import { FC, useMemo } from "react";
+import { Activity } from "../../utils/activityUtils";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
@@ -25,23 +21,23 @@ import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
 
-const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivity> = ({
+const IndexUpdatedActivityRow: FC<Activity<IndexUpdatedEvent>> = ({
   keyEvent,
-  subscriptionUnitsUpdatedEvent,
   network,
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-
   const { visibleAddress } = useVisibleAddress();
 
   const {
+    indexId,
     timestamp,
-    publisher,
-    subscriber,
     token,
-    units,
-    oldUnits,
+    publisher,
+    oldIndexValue,
+    newIndexValue,
+    totalUnitsApproved,
+    totalUnitsPending,
     transactionHash,
   } = keyEvent;
 
@@ -50,24 +46,40 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivity> = ({
     id: token,
   });
 
-  const getUnitsLabel = (units: string) =>
-    BigNumber.from(units).eq(BigNumber.from(1)) ? "unit" : "units";
-
-  const unitsDiffString = useMemo(() => {
-    const diff = BigNumber.from(units).sub(BigNumber.from(oldUnits));
-    const sign = diff.gte(BIG_NUMBER_ZERO) ? "+" : "-";
-    return `${sign}${diff} ${getUnitsLabel(diff.toString())}`;
-  }, [units, oldUnits]);
-
   const isPublisher = visibleAddress?.toLowerCase() === publisher.toLowerCase();
+
+  const { totalDistributed, distributedApproved, distributedPending } =
+    useMemo(() => {
+      const distributedAmount = BigNumber.from(newIndexValue).sub(
+        BigNumber.from(oldIndexValue)
+      );
+
+      const distributedApproved = BigNumber.from(totalUnitsApproved)
+        .mul(distributedAmount)
+        .toString();
+      const distributedPending = BigNumber.from(totalUnitsPending)
+        .mul(distributedAmount)
+        .toString();
+
+      return {
+        totalDistributed: distributedAmount.toString(),
+        distributedApproved,
+        distributedPending,
+      };
+    }, [oldIndexValue, newIndexValue, totalUnitsApproved, totalUnitsPending]);
 
   return (
     <TableRow>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ActivityIcon icon={EditIcon} />
+          <ActivityIcon
+            icon={AltRouteRoundedIcon}
+            IconProps={{
+              sx: { transform: `rotate(${isPublisher ? "" : "-"}90deg)` },
+            }}
+          />
           <ListItemText
-            primary="Subscription updated"
+            primary="Send Distribution"
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
@@ -90,8 +102,11 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivity> = ({
             />
           </ListItemAvatar>
           <ListItemText
-            primary={`${units} ${getUnitsLabel(units)}`}
-            secondary={unitsDiffString}
+            primary={
+              <Amount
+                wei={totalDistributed}
+              >{` ${tokenQuery.data?.symbol}`}</Amount>
+            }
             primaryTypographyProps={{
               variant: "h6mono",
             }}
@@ -104,24 +119,32 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivity> = ({
       </TableCell>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ListItemAvatar>
-            <AddressAvatar address={isPublisher ? subscriber : publisher} />
-          </ListItemAvatar>
           <ListItemText
-            primary={isPublisher ? "Subscriber" : "Publisher"}
+            primary={
+              <>
+                <span>Approved: </span>
+                <Amount wei={distributedApproved}>
+                  {` ${tokenQuery.data?.symbol}`}
+                </Amount>
+              </>
+            }
             secondary={
-              <AddressCopyTooltip
-                address={isPublisher ? subscriber : publisher}
-              >
-                <Typography variant="h6" color="text.primary" component="span">
-                  <AddressName address={isPublisher ? subscriber : publisher} />
-                </Typography>
-              </AddressCopyTooltip>
+              <>
+                <span>Pending: </span>
+                <Amount wei={distributedPending}>
+                  {` ${tokenQuery.data?.symbol}`}
+                </Amount>
+              </>
             }
             primaryTypographyProps={{
+              variant: "h6",
+              color: "text.primary",
+            }}
+            secondaryTypographyProps={{
               variant: "body2",
               color: "text.secondary",
             }}
+            sx={{ ml: 6.5 }}
           />
         </ListItem>
       </TableCell>
@@ -136,4 +159,4 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivity> = ({
   );
 };
 
-export default IndexUnitsUpdatedActivityRow;
+export default IndexUpdatedActivityRow;

@@ -8,6 +8,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import { FC } from "react";
 import { IndexSubscribedActivity } from "../../utils/activityUtils";
 import EditIcon from "@mui/icons-material/Edit";
@@ -18,6 +19,9 @@ import NetworkBadge from "../network/NetworkBadge";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
+import TokenIcon from "../token/TokenIcon";
+import { subgraphApi } from "../redux/store";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 const IndexSubscribedActivityRow: FC<IndexSubscribedActivity> = ({
   keyEvent,
@@ -26,16 +30,24 @@ const IndexSubscribedActivityRow: FC<IndexSubscribedActivity> = ({
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const { visibleAddress } = useVisibleAddress();
 
-  const { timestamp, token, publisher, transactionHash } = keyEvent;
+  const { timestamp, token, publisher, subscriber, transactionHash } = keyEvent;
+
+  const tokenQuery = subgraphApi.useTokenQuery({
+    chainId: network.id,
+    id: token,
+  });
+
+  const isPublisher = visibleAddress?.toLowerCase() === publisher.toLowerCase();
 
   return (
     <TableRow>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ActivityIcon icon={EditIcon} />
+          <ActivityIcon icon={CheckRoundedIcon} />
           <ListItemText
-            primary="Subscription Approved"
+            primary="Subscribe Distribution"
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
@@ -47,18 +59,31 @@ const IndexSubscribedActivityRow: FC<IndexSubscribedActivity> = ({
           />
         </ListItem>
       </TableCell>
-      <TableCell></TableCell>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
           <ListItemAvatar>
-            <AddressAvatar address={publisher} />
+            <TokenIcon
+              isSuper
+              tokenSymbol={tokenQuery.data?.symbol}
+              isUnlisted={!tokenQuery.data?.isListed}
+              isLoading={tokenQuery.isLoading}
+            />
+          </ListItemAvatar>
+        </ListItem>
+      </TableCell>
+      <TableCell>
+        <ListItem sx={{ p: 0 }}>
+          <ListItemAvatar>
+            <AddressAvatar address={isPublisher ? subscriber : publisher} />
           </ListItemAvatar>
           <ListItemText
-            primary={"Publisher"}
+            primary={isPublisher ? "Subscriber" : "Publisher"}
             secondary={
-              <AddressCopyTooltip address={publisher}>
+              <AddressCopyTooltip
+                address={isPublisher ? subscriber : publisher}
+              >
                 <Typography variant="h6" color="text.primary" component="span">
-                  <AddressName address={publisher} />
+                  <AddressName address={isPublisher ? subscriber : publisher} />
                 </Typography>
               </AddressCopyTooltip>
             }

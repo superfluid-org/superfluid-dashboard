@@ -226,7 +226,7 @@ const mapTransactionActivityRecursive = (
         eventsFound: [subscriptionRevokedEvent],
         eventsRemaining,
       } = findEventsByNameRecursive(["SubscriptionRevoked"], transactionEvents);
-      console.log("IndexUnsubscribed", { subscriptionRevokedEvent });
+
       return mapTransactionActivityRecursive(
         eventsRemaining,
         network,
@@ -240,21 +240,17 @@ const mapTransactionActivityRecursive = (
       );
     }
 
-    // case "IndexUpdated":
-    // case "IndexSubscribed":
-    // case "IndexUnitsUpdated":
-    // case "SubscriptionUnitsUpdated":
-    // case "SubscriptionApproved":
-    //   return mapTransactionActivityRecursive(
-    //     transactionEvents,
-    //     network,
-    //     activities.concat([
-    //       {
-    //         keyEvent,
-    //         network,
-    //       } as Activity,
-    //     ])
-    //   );
+    case "IndexUpdated":
+      return mapTransactionActivityRecursive(
+        transactionEvents,
+        network,
+        activities.concat([
+          {
+            keyEvent,
+            network,
+          } as Activity,
+        ])
+      );
 
     case "Transfer":
     case "FlowUpdated":

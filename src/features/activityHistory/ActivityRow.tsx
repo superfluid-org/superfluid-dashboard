@@ -15,6 +15,7 @@ import IndexCreatedActivityRow from "./IndexCreatedActivityRow";
 import IndexSubscribedActivityRow from "./IndexSubscribedActivityRow";
 import IndexUnitsUpdatedActivityRow from "./IndexUnitsUpdatedActivityRow";
 import IndexUnsubscribedActivityRow from "./IndexUnsubscribedActivityRow";
+import IndexUpdatedActivityRow from "./IndexUpdatedActivityRow";
 import LiquidatedActivityRow from "./LiquidatedActivityRow";
 import MintActivityRow from "./MintActivityRow";
 import TransferActivityRow from "./TransferActivityRow";
@@ -72,6 +73,9 @@ const ActivityRow: FC<ActivityRowProps> = ({ activity }) => {
 
     case "IndexCreated":
       return <IndexCreatedActivityRow keyEvent={keyEvent} network={network} />;
+
+    case "IndexUpdated":
+      return <IndexUpdatedActivityRow keyEvent={keyEvent} network={network} />;
 
     case "IndexSubscribed": {
       const { subscriptionApprovedEvent } = activity as IndexSubscribedActivity;

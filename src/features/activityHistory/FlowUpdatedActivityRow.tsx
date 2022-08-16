@@ -1,7 +1,7 @@
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import CloseIcon from "@mui/icons-material/Close";
-import EditIcon from "@mui/icons-material/Edit";
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
+import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import {
   ListItem,
   ListItemAvatar,
@@ -63,17 +63,17 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
       case FlowUpdateType.Create:
         return {
           title: isOutgoing ? "Send Stream" : "Receive Stream",
-          icon: isOutgoing ? ArrowForwardIcon : ArrowBackIcon,
+          icon: isOutgoing ? ArrowForwardRoundedIcon : ArrowBackRoundedIcon,
         };
       case FlowUpdateType.Update:
         return {
           title: "Stream Updated",
-          icon: EditIcon,
+          icon: EditRoundedIcon,
         };
       case FlowUpdateType.Terminate:
         return {
           title: "Stream Cancelled",
-          icon: CloseIcon,
+          icon: CloseRoundedIcon,
         };
     }
   }, [isOutgoing, type]);

@@ -1,4 +1,4 @@
-import EditIcon from "@mui/icons-material/Edit";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import {
   ListItem,
   ListItemAvatar,
@@ -36,7 +36,7 @@ const IndexCreatedActivityRow: FC<Activity<IndexCreatedEvent>> = ({
     <TableRow>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ActivityIcon icon={EditIcon} />
+          <ActivityIcon icon={AddRoundedIcon} />
           <ListItemText
             primary="Index Created"
             secondary={format(timestamp * 1000, "HH:mm")}

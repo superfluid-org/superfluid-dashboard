@@ -31,6 +31,7 @@ export enum ActivityType {
   Unwrap = "Unwrap",
   Liquidated = "Liquidated",
   IndexCreated = "Index Created",
+  IndexUpdated = "Index Updated",
   IndexSubscribed = "Subscribed to index",
   IndexUnsubscribed = "Unsubscribed from index",
   SubscriptionUpdated = "Subscription Updated", // Index units updated activity
@@ -47,6 +48,7 @@ export const AllActivityTypes = [
   ActivityType.Unwrap,
   ActivityType.Liquidated,
   ActivityType.IndexCreated,
+  ActivityType.IndexUpdated,
   ActivityType.IndexSubscribed,
   ActivityType.IndexUnsubscribed,
   ActivityType.SubscriptionUpdated,
@@ -127,9 +129,19 @@ export const ActivityTypeFilters: ActivityFilter[] = [
     filter: (keyEvent: AllEvents) => keyEvent.name === "IndexCreated",
   },
   {
+    key: ActivityType.IndexUpdated,
+    icon: EditIcon,
+    filter: (keyEvent: AllEvents) => keyEvent.name === "IndexUpdated",
+  },
+  {
     key: ActivityType.IndexSubscribed,
     icon: EditIcon,
     filter: (keyEvent: AllEvents) => keyEvent.name === "IndexSubscribed",
+  },
+  {
+    key: ActivityType.IndexUnsubscribed,
+    icon: EditIcon,
+    filter: (keyEvent: AllEvents) => keyEvent.name === "IndexUnsubscribed",
   },
   {
     key: ActivityType.SubscriptionUpdated,
