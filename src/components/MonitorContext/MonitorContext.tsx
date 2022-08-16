@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/browser";
+import { customAlphabet, nanoid } from "nanoid";
 import promiseRetry from "promise-retry";
-import { FC, useEffect } from "react";
+import { FC, useEffect, useMemo } from "react";
 import { hotjar } from "react-hotjar";
 import { useIntercom } from "react-use-intercom";
 import { useAccount, useNetwork } from "wagmi";
@@ -12,6 +13,11 @@ const SENTRY_WALLET_TAG = "wallet";
 
 const SENTRY_EXPECTED_NETWORK_CONTEXT = "Expected Network";
 const SENTRY_EXPECTED_NETWORK_TAG = "network";
+
+const SENTRY_SUPPORT_ID_TAG = "support-id";
+
+export const supportId = customAlphabet("6789BCDFGHJKLMNPQRTWbcdfghjkmnpqrtwz")(8) // Alphabet: "nolookalikesSafe"
+Sentry.setTag(SENTRY_SUPPORT_ID_TAG, supportId);
 
 const MonitorContext: FC = () => {
   const { network } = useExpectedNetwork();
@@ -57,7 +63,9 @@ const MonitorContext: FC = () => {
             const visitorId = getVisitorId();
             if (visitorId) {
               Sentry.setUser({ id: visitorId });
-              hotjar.identify(visitorId, {});
+              hotjar.identify(visitorId, {
+                support_id: supportId
+              });
               resolve();
             } else {
               reject("Couldn't set visitor ID.");
