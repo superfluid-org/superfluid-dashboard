@@ -8,7 +8,8 @@
     "export": "next export",
     "start": "next start",
     "lint": "next lint",
-    "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest"
+    "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest",
+    "generate-types": "eth-sdk -p ./src/eth-sdk"
   },
   "dependencies": {
     "@emotion/cache": "^11.7.1",
@@ -53,6 +54,8 @@
   },
   "devDependencies": {
     "@badeball/cypress-cucumber-preprocessor": "^11.4.0",
+    "@dethcrypto/eth-sdk": "^0.3.3",
+    "@dethcrypto/eth-sdk-client": "^0.1.6",
     "@rsksmart/mock-web3-provider": "1.0.0",
     "@synthetixio/synpress": "^1.2.0",
     "@truffle/hdwallet-provider": "^2.0.9",
@@ -63,6 +66,7 @@
     "cypress": "^10.3.1",
     "eslint": "^8.17.0",
     "eslint-config-next": "^12.1.6",
+    "ts-node": "^10.9.1",
     "typescript": "^4.7.3"
   },
   "cypress-cucumber-preprocessor": {
