@@ -3,7 +3,8 @@
     "cypress": "^10.5.0",
     "@badeball/cypress-cucumber-preprocessor": "^11.4.0",
     "@rsksmart/mock-web3-provider": "1.0.0",
-    "@cypress/browserify-preprocessor": "^3.0.2"
+    "@cypress/browserify-preprocessor": "^3.0.2",
+    "typescript": "^4.7.3"
   },
   "cypress-cucumber-preprocessor": {
     "nonGlobalStepDefinitions": false,
