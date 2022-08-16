@@ -9,7 +9,10 @@ import {
   useTheme,
 } from "@mui/material";
 import { FC } from "react";
-import { IndexSubscribedActivity } from "../../utils/activityUtils";
+import {
+  IndexSubscribedActivity,
+  IndexUnsubscribedActivity,
+} from "../../utils/activityUtils";
 import EditIcon from "@mui/icons-material/Edit";
 import ActivityIcon from "./ActivityIcon";
 import { format } from "date-fns";
@@ -19,15 +22,15 @@ import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 
-const IndexSubscribedActivityRow: FC<IndexSubscribedActivity> = ({
+const IndexUnsubscribedActivityRow: FC<IndexUnsubscribedActivity> = ({
   keyEvent,
-  subscriptionApprovedEvent,
+  subscriptionRevokedEvent,
   network,
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { timestamp, token, publisher, transactionHash } = keyEvent;
+  const { timestamp, token, publisher, subscriber, transactionHash } = keyEvent;
 
   return (
     <TableRow>
@@ -35,7 +38,7 @@ const IndexSubscribedActivityRow: FC<IndexSubscribedActivity> = ({
         <ListItem sx={{ p: 0 }}>
           <ActivityIcon icon={EditIcon} />
           <ListItemText
-            primary="Subscription Approved"
+            primary="Subscription Revoked"
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
@@ -80,4 +83,4 @@ const IndexSubscribedActivityRow: FC<IndexSubscribedActivity> = ({
   );
 };
 
-export default IndexSubscribedActivityRow;
+export default IndexUnsubscribedActivityRow;

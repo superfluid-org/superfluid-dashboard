@@ -32,6 +32,7 @@ export enum ActivityType {
   Liquidated = "Liquidated",
   IndexCreated = "Index Created",
   IndexSubscribed = "Subscribed to index",
+  IndexUnsubscribed = "Unsubscribed from index",
   SubscriptionUpdated = "Subscription Updated", // Index units updated activity
 }
 
@@ -47,6 +48,7 @@ export const AllActivityTypes = [
   ActivityType.Liquidated,
   ActivityType.IndexCreated,
   ActivityType.IndexSubscribed,
+  ActivityType.IndexUnsubscribed,
   ActivityType.SubscriptionUpdated,
 ];
 

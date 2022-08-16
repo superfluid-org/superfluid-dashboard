@@ -7,8 +7,10 @@ import {
   IndexCreatedEvent,
   IndexSubscribedEvent,
   IndexUnitsUpdatedEvent,
+  IndexUnsubscribedEvent,
   MintedEvent,
   SubscriptionApprovedEvent,
+  SubscriptionRevokedEvent,
   SubscriptionUnitsUpdatedEvent,
   TokenDowngradedEvent,
   TokenUpgradedEvent,
@@ -40,6 +42,11 @@ export interface IndexUnitsUpdatedActivity
 export interface IndexSubscribedActivity
   extends Activity<IndexSubscribedEvent> {
   subscriptionApprovedEvent?: SubscriptionApprovedEvent;
+}
+
+export interface IndexUnsubscribedActivity
+  extends Activity<IndexUnsubscribedEvent> {
+  subscriptionRevokedEvent?: SubscriptionRevokedEvent;
 }
 
 export interface Activity<T = AllEvents> {
@@ -210,6 +217,25 @@ const mapTransactionActivityRecursive = (
             network,
             subscriptionApprovedEvent,
           } as IndexSubscribedActivity,
+        ])
+      );
+    }
+
+    case "IndexUnsubscribed": {
+      const {
+        eventsFound: [subscriptionRevokedEvent],
+        eventsRemaining,
+      } = findEventsByNameRecursive(["SubscriptionRevoked"], transactionEvents);
+      console.log("IndexUnsubscribed", { subscriptionRevokedEvent });
+      return mapTransactionActivityRecursive(
+        eventsRemaining,
+        network,
+        activities.concat([
+          {
+            keyEvent,
+            network,
+            subscriptionRevokedEvent,
+          } as IndexUnsubscribedActivity,
         ])
       );
     }
