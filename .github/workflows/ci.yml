@@ -41,6 +41,7 @@ jobs:
         with:
           runTests: false
           install-command: yarn --frozen-lockfile
+          working-directory: tests
 
   chrome-tests:
     needs: ["test-setup"]
