@@ -13,24 +13,9 @@ export const ensApi = createApi({
   baseQuery: fakeBaseQuery(),
   keepUnusedDataFor: 600, // Agressively cache the ENS queries
   endpoints: (builder) => {
-    const mainnetProvider = new ethers.providers.FallbackProvider(
-      [
-        {
-          provider: new ethers.providers.JsonRpcBatchProvider(
-            "https://rpc-endpoints.superfluid.dev/eth-mainnet",
-            "mainnet"
-          ),
-          priority: 1,
-        },
-        {
-          provider: new ethers.providers.JsonRpcBatchProvider(
-            "https://cloudflare-eth.com",
-            "mainnet"
-          ),
-          priority: 2,
-        },
-      ],
-      1
+    const mainnetProvider = new ethers.providers.JsonRpcBatchProvider(
+      "https://rpc-endpoints.superfluid.dev/eth-mainnet",
+      "mainnet"
     );
     return {
       resolveName: builder.query<ResolveNameResult | null, string>({

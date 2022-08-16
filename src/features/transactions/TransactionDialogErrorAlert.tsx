@@ -25,7 +25,7 @@ export default memo(function TransactionDialogErrorAlert({
       // NOTE: Sometimes errors are nested in each other. Check for the most specific one first.
 
       const didUserRejectTransaction =
-        mutationError.message?.includes('"code": 4001') || // MetaMask error version
+        mutationError.message?.includes('4001') || // MetaMask error version
         mutationError.message?.includes("User rejected the transaction") || // WalletConnect error version
         mutationError.message?.includes("Transaction was rejected"); // Gnosis Safe error version
       if (didUserRejectTransaction) {
@@ -33,7 +33,7 @@ export default memo(function TransactionDialogErrorAlert({
       }
 
       const burnAmountExceedsBalance = mutationError.message?.includes(
-        '"execution reverted": "SuperfluidToken: burn amount exceeds balance"'
+        'burn amount exceeds balance'
       );
       if (burnAmountExceedsBalance) {
         return (
@@ -45,7 +45,7 @@ export default memo(function TransactionDialogErrorAlert({
       }
 
       const insufficientFunds = mutationError.message?.includes(
-        '"code": "INSUFFICIENT_FUNDS"'
+        'INSUFFICIENT_FUNDS'
       );
       if (insufficientFunds) {
         return (
@@ -58,7 +58,7 @@ export default memo(function TransactionDialogErrorAlert({
       }
 
       const unpredictableGasLimit = mutationError.message?.includes(
-        '"code": "UNPREDICTABLE_GAS_LIMIT"'
+        'UNPREDICTABLE_GAS_LIMIT'
       );
       if (unpredictableGasLimit) {
         return (

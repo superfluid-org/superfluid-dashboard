@@ -37,7 +37,7 @@ export default defineConfig({
         slowTestThreshold: 30000,
         video: true,
         retries: {
-            "runMode": 1,
+            "runMode": 2,
             "openMode": 0
         },
         watchForFileChanges: false,

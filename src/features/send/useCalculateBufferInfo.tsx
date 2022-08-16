@@ -1,6 +1,10 @@
 import { BigNumber } from "ethers";
 import { useCallback } from "react";
-import { calculateMaybeCriticalAtTimestamp } from "../../utils/tokenUtils";
+import {
+  BIG_NUMBER_ZERO,
+  calculateBufferAmount,
+  calculateMaybeCriticalAtTimestamp,
+} from "../../utils/tokenUtils";
 import { Network } from "../network/networks";
 import { Web3FlowInfo } from "../redux/endpoints/adHocRpcEndpoints";
 import { RealtimeBalance } from "../redux/endpoints/balanceFetcher";
@@ -10,12 +14,23 @@ import {
   UnitOfTime,
 } from "./FlowRateInput";
 
-const calculateBufferAmount = (network: Network, flowRateWei: FlowRateWei): BigNumber => {
-  const bufferAmount = calculateTotalAmountWei(flowRateWei)
-    .mul(network.bufferTimeInMinutes)
-    .mul(60);
+const calculateDateWhenBalanceCritical = (
+  realtimeBalance?: RealtimeBalance,
+  totalFlowRate?: BigNumber
+) => {
+  if (!realtimeBalance || !totalFlowRate || !totalFlowRate.isNegative()) {
+    return undefined;
+  }
 
-  return bufferAmount;
+  const criticalAtTimestamp = calculateMaybeCriticalAtTimestamp({
+    balanceUntilUpdatedAtWei: realtimeBalance.balance,
+    updatedAtTimestamp: realtimeBalance.balanceTimestamp,
+    totalNetFlowRateWei: totalFlowRate,
+  });
+
+  if (criticalAtTimestamp.lte(BIG_NUMBER_ZERO)) return undefined;
+
+  return new Date(criticalAtTimestamp.mul(1000).toNumber());
 };
 
 // TODO(KK): Memoize in a way that multiple components could invoke it and not calc twice?
@@ -27,19 +42,13 @@ export default function useCalculateBufferInfo() {
       activeFlow: Web3FlowInfo | null,
       flowRate: FlowRateWei
     ) => {
-      const newBufferAmount = calculateBufferAmount(
-        network,
-        flowRate
-      );
+      const newBufferAmount = calculateBufferAmount(network, flowRate);
 
       const oldBufferAmount = activeFlow
-        ? calculateBufferAmount(
-            network,
-            {
-              amountWei: activeFlow.flowRateWei,
-              unitOfTime: UnitOfTime.Second,
-            },
-          )
+        ? calculateBufferAmount(network, {
+            amountWei: activeFlow.flowRateWei,
+            unitOfTime: UnitOfTime.Second,
+          })
         : BigNumber.from(0);
 
       const bufferDelta = newBufferAmount.sub(oldBufferAmount);
@@ -62,37 +71,17 @@ export default function useCalculateBufferInfo() {
           ? BigNumber.from(realtimeBalance.flowRate).sub(flowRateDelta)
           : undefined;
 
-      const oldDateWhenBalanceCritical =
-        realtimeBalance && newTotalFlowRate
-          ? newTotalFlowRate.isNegative()
-            ? new Date(
-                calculateMaybeCriticalAtTimestamp({
-                  balanceUntilUpdatedAtWei: realtimeBalance.balance.toString(),
-                  updatedAtTimestamp: realtimeBalance.balanceTimestamp,
-                  totalNetFlowRateWei: newTotalFlowRate.toString(),
-                })
-                  .mul(1000)
-                  .toNumber()
-              )
-            : undefined
-          : undefined;
+      const oldDateWhenBalanceCritical = calculateDateWhenBalanceCritical(
+        realtimeBalance,
+        BigNumber.from(realtimeBalance.flowRate)
+      );
 
-      const newDateWhenBalanceCritical =
-        realtimeBalance && newTotalFlowRate && flowRateDelta
-          ? newTotalFlowRate.isNegative()
-            ? new Date(
-                calculateMaybeCriticalAtTimestamp({
-                  balanceUntilUpdatedAtWei: realtimeBalance.balance.toString(),
-                  updatedAtTimestamp: realtimeBalance.balanceTimestamp,
-                  totalNetFlowRateWei: BigNumber.from(realtimeBalance.flowRate)
-                    .sub(flowRateDelta)
-                    .toString(),
-                })
-                  .mul(1000)
-                  .toNumber()
-              )
-            : undefined
-          : undefined;
+      const newDateWhenBalanceCritical = calculateDateWhenBalanceCritical(
+        realtimeBalance,
+        realtimeBalance && flowRateDelta
+          ? BigNumber.from(realtimeBalance.flowRate).sub(flowRateDelta)
+          : undefined
+      );
 
       return {
         newBufferAmount,

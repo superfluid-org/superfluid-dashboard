@@ -2,7 +2,6 @@ import { Overrides } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 import { Network } from "../features/network/networks";
 import gasApi, { GasRecommendation } from "../features/gas/gasApi.slice";
-import { useConnect } from "wagmi";
 
 const useGetTransactionOverrides = () => {
   const [queryRecommendedGas] = gasApi.useLazyRecommendedGasQuery();

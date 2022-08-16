@@ -12,38 +12,114 @@ import {
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import { FC, memo } from "react";
+import { FC, memo, useEffect, useMemo } from "react";
+import { tokenSnapshotsDefaultSort } from "../../utils/tokenUtils";
 import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
 import TokenSnapshotRow from "./TokenSnapshotRow";
+import { FetchingStatus } from "./TokenSnapshotTables";
 
 interface TokenSnapshotTableProps {
   address: Address;
   network: Network;
+  fetchingCallback: (networkId: number, fetchingStatus: FetchingStatus) => void;
 }
 
 const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
   address,
   network,
+  fetchingCallback,
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const tokensQuery = subgraphApi.useAccountTokenSnapshotsQuery({
-    chainId: network.id,
-    filter: {
-      account: address,
+  const listedTokensSnapshotsQuery = subgraphApi.useAccountTokenSnapshotsQuery(
+    {
+      chainId: network.id,
+      filter: {
+        account: address,
+        token_: {
+          isListed: true,
+        },
+      },
+      pagination: {
+        take: Infinity,
+        skip: 0,
+      },
     },
-    pagination: {
-      take: Infinity,
-      skip: 0,
-    },
-  });
+    {
+      selectFromResult: (result) => ({
+        ...result,
+        listedTokenSnapshots:
+          result.data?.data
+            .map((snapshot) => ({
+              ...snapshot,
+              isListed: true,
+            }))
+            .sort(tokenSnapshotsDefaultSort) || [],
+      }),
+    }
+  );
 
-  const tokenSnapshots = tokensQuery.data?.items || [];
+  const unlistedTokensSnapshotsQuery =
+    subgraphApi.useAccountTokenSnapshotsQuery(
+      {
+        chainId: network.id,
+        filter: {
+          account: address,
+          token_: {
+            isListed: false,
+          },
+        },
+        pagination: {
+          take: Infinity,
+          skip: 0,
+        },
+      },
+      {
+        selectFromResult: (result) => ({
+          ...result,
+          unlistedTokenSnapshots:
+            result.data?.data
+              .map((snapshot) => ({
+                ...snapshot,
+                isListed: false,
+              }))
+              .sort(tokenSnapshotsDefaultSort) || [],
+        }),
+      }
+    );
 
-  if (tokensQuery.isLoading || tokenSnapshots.length === 0) return null;
+  const tokenSnapshots = useMemo(
+    () =>
+      listedTokensSnapshotsQuery.listedTokenSnapshots.concat(
+        unlistedTokensSnapshotsQuery.unlistedTokenSnapshots
+      ),
+    [listedTokensSnapshotsQuery, unlistedTokensSnapshotsQuery]
+  );
+
+  useEffect(() => {
+    fetchingCallback(network.id, {
+      isLoading:
+        listedTokensSnapshotsQuery.isLoading ||
+        unlistedTokensSnapshotsQuery.isLoading,
+      hasContent: tokenSnapshots.length > 0,
+    });
+  }, [
+    network.id,
+    listedTokensSnapshotsQuery.isLoading,
+    unlistedTokensSnapshotsQuery.isLoading,
+    tokenSnapshots.length,
+    fetchingCallback,
+  ]);
+
+  if (
+    listedTokensSnapshotsQuery.isLoading ||
+    unlistedTokensSnapshotsQuery.isLoading ||
+    tokenSnapshots.length === 0
+  )
+    return null;
 
   return (
     <TableContainer

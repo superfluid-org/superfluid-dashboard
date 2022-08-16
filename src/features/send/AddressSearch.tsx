@@ -56,6 +56,8 @@ export default memo(function AddressSearch({
         endIcon={
           address ? (
             <IconButton
+              // Using span here because button can not be inside another button
+              component="span"
               onClick={clearSearch}
               color="inherit"
               sx={{ marginLeft: "auto", marginRight: "-6px" }}

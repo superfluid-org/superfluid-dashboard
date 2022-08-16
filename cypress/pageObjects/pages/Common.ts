@@ -23,6 +23,9 @@ const TESTNETS_BUTTON = "[data-cy=testnets-button]";
 const MAINNETS_BUTTON = "[data-cy=mainnets-button]";
 const NETWORK_SELECTION_BUTTON = "[data-cy=network-selection-button]";
 const DROPDOWN_BACKDROP = "[role=presentation]";
+const ERROR_PAGE_MESSAGE = "[data-cy=404-message]"
+const RETURN_TO_DASHBOARD_BUTTON = "[data-cy=return-to-dashboard-button]"
+const HELP_CENTER_LINK = "[data-cy=help-center-link]"
 
 export class Common extends BasePage {
     static clickNavBarButton(button: string) {
@@ -35,6 +38,8 @@ export class Common extends BasePage {
         account?: string,
         network?: string
     ) {
+        cy.fixture("streamData").then(streamData => {
+
         switch (page.toLowerCase()) {
             case "dashboard page":
                 this.visitPage("/", mocked, account, network);
@@ -54,9 +59,22 @@ export class Common extends BasePage {
             case "activity history page":
                 this.visitPage("/history", mocked, account, network);
                 break;
+            case "ended stream details page":
+                this.visitPage(streamData["staticBalanceAccount"]["polygon"][0].v2Link, mocked, account, network);
+                break;
+            case "ongoing stream details page":
+                this.visitPage(streamData["ongoingStreamAccount"]["polygon"][0].v2Link, mocked, account, network);
+                break;
+            case "invalid stream details page":
+                this.visitPage("/stream/polygon/testing-testing-testing", mocked, account, network);
+                break;
+            case "v1 ended stream details page":
+                this.visitPage(streamData["staticBalanceAccount"]["polygon"][0].v1Link, mocked, account, network);
+                break;
             default:
                 throw new Error(`Hmm, you haven't set up the link for : ${page}`);
         }
+        })
     }
 
     static visitPage(
@@ -163,5 +181,9 @@ export class Common extends BasePage {
         this.click(DROPDOWN_BACKDROP);
     }
 
-
+    static errorPageIsVisible() {
+        this.isVisible(ERROR_PAGE_MESSAGE)
+        this.isVisible(RETURN_TO_DASHBOARD_BUTTON)
+        this.isVisible(HELP_CENTER_LINK)
+    }
 }

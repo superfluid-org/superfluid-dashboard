@@ -5,6 +5,8 @@
 
 const { withSentryConfig } = require("@sentry/nextjs");
 
+const SENTRY_ENVIRONMENT = process.env.SENTRY_ENVIRONMENT || process.env.CONTEXT; // https://docs.netlify.com/configure-builds/environment-variables/#build-metadata
+
 /** @type {import('next').NextConfig} */
 const moduleExports = {
   reactStrictMode: true,
@@ -14,6 +16,7 @@ const moduleExports = {
   },
   env: {
     NEXT_PUBLIC_APP_URL: process.env.URL,
+    NEXT_PUBLIC_SENTRY_ENVIRONMENT: SENTRY_ENVIRONMENT,
   },
 };
 
@@ -26,7 +29,7 @@ if (SENTRY_AUTH_TOKEN) {
     // recommended:
     //   release, url, org, project, authToken, configFile, stripPrefix,
     //   urlPrefix, include, ignore
-
+    env: SENTRY_ENVIRONMENT,
     silent: true, // Suppresses all logs
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options.

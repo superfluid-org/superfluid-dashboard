@@ -1,4 +1,4 @@
-import { createContext, FC } from "react";
+import { FC } from "react";
 import {
   RainbowKitProvider,
   darkTheme,
@@ -54,6 +54,7 @@ const Disclaimer: DisclaimerComponent = ({ Text, Link }) => (
 export const RainbowKitManager: FC = ({ children }) => {
   const muiTheme = useTheme();
   const { network } = useExpectedNetwork();
+
   return (
     <RainbowKitProvider
       chains={chains}

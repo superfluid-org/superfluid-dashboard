@@ -20,6 +20,7 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { addressBookSlice } from "../addressBook/addressBook.slice";
+import { customTokensSlice } from "../customTokens/customTokens.slice";
 import { ensApi } from "../ens/ensApi.slice";
 import gasApi from "../gas/gasApi.slice";
 import { impersonationSlice } from "../impersonation/impersonation.slice";
@@ -29,8 +30,15 @@ import { assetApiSlice } from "../token/tokenManifestSlice";
 import { adHocMulticallEndpoints } from "./endpoints/adHocMulticallEndpoints";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
+import { setupListeners } from "@reduxjs/toolkit/query";
 
-export const rpcApi = initializeRpcApiSlice(createApiWithReactHooks)
+export const rpcApi = initializeRpcApiSlice((options) =>
+  createApiWithReactHooks({
+    ...options,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+  })
+)
   .injectEndpoints(allRpcEndpoints)
   .injectEndpoints(adHocMulticallEndpoints)
   .injectEndpoints(adHocRpcEndpoints);
@@ -47,6 +55,8 @@ export const subgraphApi = initializeSubgraphApiSlice((options) =>
         return action.payload[reducerPath];
       }
     },
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
   })
 )
   .injectEndpoints(allSubgraphEndpoints)
@@ -69,6 +79,11 @@ const addressBookPersistedReducer = persistReducer(
   addressBookSlice.reducer
 );
 
+const customTokensPersistedReducer = persistReducer(
+  { storage, key: "customTokens", version: 1 },
+  customTokensSlice.reducer
+);
+
 const networkPreferencesPersistedReducer = persistReducer(
   { storage, key: "networkPreferences", version: 1 },
   networkPreferencesSlice.reducer
@@ -83,6 +98,7 @@ export const reduxStore = configureStore({
     [ensApi.reducerPath]: ensApi.reducer,
     impersonations: impersonationPersistedReducer,
     addressBook: addressBookPersistedReducer,
+    customTokens: customTokensPersistedReducer,
     networkPreferences: networkPreferencesPersistedReducer,
     [gasApi.reducerPath]: gasApi.reducer,
     pendingUpdates: pendingUpdateSlice.reducer,
@@ -101,6 +117,9 @@ export const reduxStore = configureStore({
 });
 
 export const reduxPersistor = persistStore(reduxStore);
+
+// optional, but required for refetchOnFocus/refetchOnReconnect behaviors of RTK-Query
+setupListeners(reduxStore.dispatch);
 
 export type AppStore = typeof reduxStore;
 export type RootState = ReturnType<AppStore["getState"]>;

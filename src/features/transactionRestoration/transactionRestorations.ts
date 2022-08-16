@@ -1,6 +1,3 @@
-import {
-  SuperTokenMinimal,
-} from "../redux/endpoints/tokenTypes";
 import { FlowRateWei } from "../send/FlowRateInput";
 
 export enum RestorationType {
@@ -17,12 +14,12 @@ export const formRestorationOptions = {
   shouldTouch: true,
 };
 
-export interface TransactionRestoration {
+export interface TransactionRestorationBase {
   type: RestorationType;
   version?: number;
 }
 
-interface WrappingRestoration extends TransactionRestoration {
+interface WrappingRestoration extends TransactionRestorationBase {
   version: 2;
   chainId: number;
   tokenPair: {
@@ -32,25 +29,27 @@ interface WrappingRestoration extends TransactionRestoration {
   amountWei: string;
 }
 
-export interface SuperTokenDowngradeRestoration extends WrappingRestoration {
-  type: RestorationType.Downgrade;
-}
-
-export interface SuperTokenUpgradeRestoration extends WrappingRestoration {
-  type: RestorationType.Upgrade;
-}
-
-export interface ApproveAllowanceRestoration extends TransactionRestoration {
+export interface ApproveAllowanceRestoration
+  extends TransactionRestorationBase {
   type: RestorationType.Approve;
   chainId: number;
   tokenAddress: string;
   amountWei: string;
 }
 
-interface UpsertStreamRestoration extends TransactionRestoration {
+export interface SuperTokenUpgradeRestoration extends WrappingRestoration {
+  type: RestorationType.Upgrade;
+}
+
+export interface SuperTokenDowngradeRestoration extends WrappingRestoration {
+  type: RestorationType.Downgrade;
+}
+
+interface UpsertStreamRestoration extends TransactionRestorationBase {
+  version: 2;
   chainId: number;
-  token: SuperTokenMinimal;
-  receiver: string;
+  tokenAddress: string;
+  receiverAddress: string;
   flowRate: FlowRateWei;
 }
 
@@ -61,3 +60,10 @@ export interface SendStreamRestoration extends UpsertStreamRestoration {
 export interface ModifyStreamRestoration extends UpsertStreamRestoration {
   type: RestorationType.ModifyStream;
 }
+
+export type TransactionRestorations =
+  | ApproveAllowanceRestoration
+  | SuperTokenDowngradeRestoration
+  | SuperTokenUpgradeRestoration
+  | SendStreamRestoration
+  | ModifyStreamRestoration;
