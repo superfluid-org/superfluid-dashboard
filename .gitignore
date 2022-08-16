@@ -161,13 +161,10 @@ fabric.properties
 .sentryclirc
 
 # Code coverage and Cypress tests
-.nyc_output
-coverage
-cypress/screenshots
-cypress/videos
-
-# Ignoring synpress for now
-tests
+tests/.nyc_output
+tests/coverage
+tests/cypress/screenshots
+tests/cypress/videos
 
 # Netlify
 .netlify

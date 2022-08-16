@@ -21,7 +21,7 @@ jobs:
         with:
           install: true
           record: true
-          parallel: true
+          parallel: false
+          working-directory: tests
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}
