@@ -1,5 +1,4 @@
 {
-  "type": "commonjs",
   "devDependencies": {
     "cypress": "^10.5.0",
     "@badeball/cypress-cucumber-preprocessor": "^11.4.0",
