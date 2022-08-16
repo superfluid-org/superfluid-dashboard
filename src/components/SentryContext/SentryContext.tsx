@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/browser";
 import promiseRetry from "promise-retry";
 import { FC, useEffect } from "react";
+import { hotjar } from "react-hotjar";
 import { useIntercom } from "react-use-intercom";
 import { useAccount, useNetwork } from "wagmi";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
@@ -56,6 +57,7 @@ const SentryContext: FC = () => {
             const visitorId = getVisitorId();
             if (visitorId) {
               Sentry.setUser({ id: visitorId });
+              hotjar.identify(visitorId, {});
               resolve();
             } else {
               reject("Couldn't set visitor ID.");
