@@ -20,6 +20,7 @@ import { FC, ReactNode } from "react";
 import { useTransactionBoundary } from "./TransactionBoundary";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import React from "react";
+import { supportId } from "../../components/MonitorContext/MonitorContext";
 
 interface TransactionDialogProps {
   children: ReactNode;
@@ -108,7 +109,12 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
       <>
         <TransactionDialogTitle>Error</TransactionDialogTitle>
         <TransactionDialogContent>
-          <TransactionDialogErrorAlert mutationError={mutationResult.error} />
+          <Stack gap={3} alignItems="center">
+            <TransactionDialogErrorAlert mutationError={mutationResult.error} />
+            <Typography variant="body2">
+              Support ID: {supportId}
+            </Typography>
+          </Stack>
         </TransactionDialogContent>
         <TransactionDialogActions>
           <TransactionDialogButton onClick={closeDialog}>

@@ -1,6 +1,8 @@
 import * as Sentry from "@sentry/browser";
+import { customAlphabet, nanoid } from "nanoid";
 import promiseRetry from "promise-retry";
-import { FC, useEffect } from "react";
+import { FC, useEffect, useMemo } from "react";
+import { hotjar } from "react-hotjar";
 import { useIntercom } from "react-use-intercom";
 import { useAccount, useNetwork } from "wagmi";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
@@ -11,16 +13,27 @@ const SENTRY_WALLET_TAG = "wallet";
 
 const SENTRY_EXPECTED_NETWORK_CONTEXT = "Expected Network";
 const SENTRY_EXPECTED_NETWORK_TAG = "network";
+const SENTRY_EXPECTED_NETWORK_TESTNET_TAG = "network.testnet";
 
-const SentryContext: FC = () => {
+const SENTRY_SUPPORT_ID_TAG = "support-id";
+
+export const supportId = customAlphabet("6789BCDFGHJKLMNPQRTWbcdfghjkmnpqrtwz")(
+  8
+); // Alphabet: "nolookalikesSafe"
+Sentry.setTag(SENTRY_SUPPORT_ID_TAG, supportId);
+
+const MonitorContext: FC = () => {
   const { network } = useExpectedNetwork();
 
   useEffect(() => {
+    const testnet = (!!network.testnet).toString();
     Sentry.setTag(SENTRY_EXPECTED_NETWORK_TAG, network.slugName);
+    Sentry.setTag(SENTRY_EXPECTED_NETWORK_TESTNET_TAG, testnet);
     Sentry.setContext(SENTRY_EXPECTED_NETWORK_CONTEXT, {
       id: network.id,
       name: network.name,
       slug: network.slugName,
+      testnet: testnet,
     });
   }, [network]);
 
@@ -56,6 +69,9 @@ const SentryContext: FC = () => {
             const visitorId = getVisitorId();
             if (visitorId) {
               Sentry.setUser({ id: visitorId });
+              hotjar.identify(visitorId, {
+                support_id: supportId,
+              });
               resolve();
             } else {
               reject("Couldn't set visitor ID.");
@@ -73,4 +89,4 @@ const SentryContext: FC = () => {
   return null;
 };
 
-export default SentryContext;
+export default MonitorContext;
