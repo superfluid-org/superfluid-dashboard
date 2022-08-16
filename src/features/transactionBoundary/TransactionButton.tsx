@@ -34,7 +34,7 @@ export const TransactionButton: FC<{
   if (disabled) {
     return (
       <Button data-cy={dataCy} {...buttonProps} disabled>
-        {children}
+        <span>{children}</span>
       </Button>
     );
   }
@@ -75,7 +75,8 @@ export const TransactionButton: FC<{
         disabled={!switchNetwork}
         onClick={() => switchNetwork?.()}
       >
-        Change Network to {expectedNetwork.name}
+        <span>Change Network to</span>{" "}
+        <span translate="no">{expectedNetwork.name}</span>
       </Button>
     );
   }

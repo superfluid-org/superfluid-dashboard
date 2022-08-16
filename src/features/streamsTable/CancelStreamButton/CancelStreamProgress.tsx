@@ -11,10 +11,12 @@ const CancelStreamProgress: FC<CancelStreamProgressProps> = ({
 }) => (
   <Stack direction="row" alignItems="center" gap={1}>
     <CircularProgress color="warning" size="16px" />
-    <Typography variant="caption">
-      {pendingCancellation?.hasTransactionSucceeded
-        ? "Syncing..."
-        : "Canceling..."}
+    <Typography variant="caption" translate="yes">
+      {pendingCancellation?.hasTransactionSucceeded ? (
+        <span>Syncing...</span>
+      ) : (
+        <span>Canceling...</span>
+      )}
     </Typography>
   </Stack>
 );
