@@ -23,5 +23,6 @@ jobs:
           record: true
           parallel: false
           working-directory: tests
+          cache-key: "testing"
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
