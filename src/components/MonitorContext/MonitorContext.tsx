@@ -13,7 +13,7 @@ const SENTRY_WALLET_TAG = "wallet";
 const SENTRY_EXPECTED_NETWORK_CONTEXT = "Expected Network";
 const SENTRY_EXPECTED_NETWORK_TAG = "network";
 
-const SentryContext: FC = () => {
+const MonitorContext: FC = () => {
   const { network } = useExpectedNetwork();
 
   useEffect(() => {
@@ -75,4 +75,4 @@ const SentryContext: FC = () => {
   return null;
 };
 
-export default SentryContext;
+export default MonitorContext;
