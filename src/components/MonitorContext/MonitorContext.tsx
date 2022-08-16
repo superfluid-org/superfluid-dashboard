@@ -13,7 +13,7 @@ const SENTRY_WALLET_TAG = "wallet";
 
 const SENTRY_EXPECTED_NETWORK_CONTEXT = "Expected Network";
 const SENTRY_EXPECTED_NETWORK_TAG = "network";
-const SENTRY_EXPECTED_NETWORK_TESTNET_TAG = "testnet";
+const SENTRY_EXPECTED_NETWORK_TESTNET_TAG = "network.testnet";
 
 const SENTRY_SUPPORT_ID_TAG = "support-id";
 
@@ -26,13 +26,14 @@ const MonitorContext: FC = () => {
   const { network } = useExpectedNetwork();
 
   useEffect(() => {
+    const testnet = (!!network.testnet).toString();
     Sentry.setTag(SENTRY_EXPECTED_NETWORK_TAG, network.slugName);
-    Sentry.setTag(SENTRY_EXPECTED_NETWORK_TESTNET_TAG, !!network.testnet);
+    Sentry.setTag(SENTRY_EXPECTED_NETWORK_TESTNET_TAG, testnet);
     Sentry.setContext(SENTRY_EXPECTED_NETWORK_CONTEXT, {
       id: network.id,
       name: network.name,
       slug: network.slugName,
-      testnet: !!network.testnet,
+      testnet: testnet,
     });
   }, [network]);
 
