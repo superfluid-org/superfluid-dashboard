@@ -29,7 +29,7 @@ export default defineConfig({
             }
         },
         projectId: "2aaadn",
-        baseUrl: "http://localhost:3000",
+        baseUrl: "https://deploy-preview-179--superfluid-dashboard.netlify.app",
         excludeSpecPattern: "*.js",
         viewportHeight: 1080,
         viewportWidth: 1920,
