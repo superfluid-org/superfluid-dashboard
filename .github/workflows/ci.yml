@@ -60,7 +60,7 @@ jobs:
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
-          install: true
+          install: false
           browser: chrome
           wait-on: ${{ steps.waitForDeployment.outputs.url }}
           wait-on-timeout: 180
@@ -98,7 +98,7 @@ jobs:
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
-          install: true
+          install: false
           browser: firefox
           wait-on: ${{ steps.waitForDeployment.outputs.url }}
           wait-on-timeout: 180
