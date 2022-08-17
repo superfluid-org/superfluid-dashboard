@@ -35,6 +35,14 @@ jobs:
           install-command: yarn --frozen-lockfile
           working-directory: tests
 
+      - name: Save built folders 🆙
+        uses: actions/upload-artifact@v2
+        with:
+          name: cypress-and-modules
+          path: |
+            ~/.cache/Cypress
+            node_modules   
+
   chrome-tests:
     needs: ["test-setup"]
     timeout-minutes: 60
@@ -49,6 +57,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Download cypress and node modules
+        uses: actions/download-artifact@v2
+        with:
+          name: cypress-and-modules
+
       - name: Wait for Netlify
         uses: probablyup/wait-for-netlify-action@3.2.0 # Check the source code before updating version because it uses personal Netlify access token which does not have granular access control.
         id: waitForDeployment
@@ -60,7 +73,7 @@ jobs:
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
-          install: true
+          install: false
           browser: chrome
           wait-on: ${{ steps.waitForDeployment.outputs.url }}
           wait-on-timeout: 180
@@ -98,7 +111,7 @@ jobs:
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
-          install: true
+          install: false
           browser: firefox
           wait-on: ${{ steps.waitForDeployment.outputs.url }}
           wait-on-timeout: 180
