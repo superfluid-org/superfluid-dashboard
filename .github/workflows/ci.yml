@@ -72,3 +72,41 @@ jobs:
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
           CYPRESS_baseUrl: ${{ steps.waitForDeployment.outputs.url }}
+
+  firefox-tests:
+    needs: ["test-setup"]
+    timeout-minutes: 60
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:latest
+    strategy:
+      fail-fast: false
+      matrix:
+        container: [ 1,2,3,4,5,6 ]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Wait for Netlify
+        uses: probablyup/wait-for-netlify-action@3.2.0 # Check the source code before updating version because it uses personal Netlify access token which does not have granular access control.
+        id: waitForDeployment
+        with:
+          site_id: "aa82cf1e-ce5d-432f-99bf-77a0b8c13277"
+        env:
+          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+
+      - name: Cypress tests
+        uses: cypress-io/github-action@v4
+        with:
+          install: true
+          browser: firefox
+          wait-on: ${{ steps.waitForDeployment.outputs.url }}
+          wait-on-timeout: 180
+          record: true
+          parallel: true
+          working-directory: tests
+          ci-build-id: ${{ needs.test-setup.outputs.uuid }}
+          env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
+          CYPRESS_baseUrl: ${{ steps.waitForDeployment.outputs.url }}
