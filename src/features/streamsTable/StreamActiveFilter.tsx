@@ -58,7 +58,7 @@ const StreamActiveFilter: FC<StreamActiveFilterProps> = ({
         onClick={openFilterMenu}
         endIcon={<OpenIcon open={!!anchorEl} />}
       >
-        {activeType}
+        <span>{activeType}</span>
       </Button>
       <Menu
         open={!!anchorEl}
@@ -81,7 +81,10 @@ const StreamActiveFilter: FC<StreamActiveFilterProps> = ({
             >
               <Icon sx={{ fontSize: "20px" }} />
             </ListItemIcon>
-            <ListItemText primaryTypographyProps={{ variant: "menuItem" }}>
+            <ListItemText
+              primaryTypographyProps={{ variant: "menuItem" }}
+              translate="yes"
+            >
               {key}
             </ListItemText>
           </MenuItem>

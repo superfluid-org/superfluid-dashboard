@@ -99,6 +99,7 @@ export default memo(function NavigationDrawer() {
       sx={{ width: menuDrawerWidth }}
       onClose={closeNavigationDrawer}
       onOpen={openNavigationDrawer}
+      translate="yes"
     >
       <Toolbar
         sx={{

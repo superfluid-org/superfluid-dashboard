@@ -160,7 +160,10 @@ const ActivityTypeFilter: FC<ActivityTypeFilterProps> = ({
           >
             <Icon sx={{ fontSize: "20px" }} />
           </ListItemIcon>
-          <ListItemText primaryTypographyProps={{ variant: "menuItem" }}>
+          <ListItemText
+            primaryTypographyProps={{ variant: "menuItem" }}
+            translate="yes"
+          >
             {key}
           </ListItemText>
           <Switch

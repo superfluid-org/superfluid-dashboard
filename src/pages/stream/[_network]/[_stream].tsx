@@ -172,11 +172,16 @@ const CancelledIndicator: FC<CancelledIndicatorProps> = ({
         data-cy={"ended-stream-message"}
         variant={isBelowMd ? "h6" : "h5"}
         color="error"
+        translate="yes"
       >
-        {`Cancelled on ${format(
-          updatedAtTimestamp * 1000,
-          "d MMMM yyyy"
-        )} at ${format(updatedAtTimestamp * 1000, "h:mm aaa")}`}
+        <span>Cancelled on</span>{" "}
+        <span translate="no">
+          {format(updatedAtTimestamp * 1000, "d MMMM yyyy")}
+        </span>{" "}
+        <span>at</span>{" "}
+        <span translate="no">
+          {format(updatedAtTimestamp * 1000, "h:mm aaa")}
+        </span>
       </Typography>
     </Stack>
   );
@@ -221,7 +226,7 @@ interface OverviewItemProps {
 
 const OverviewItem: FC<OverviewItemProps> = ({ label, value, dataCy }) => (
   <Stack direction="row" alignItems="center" justifyContent="space-between">
-    <Typography variant="body1" color="text.secondary">
+    <Typography variant="body1" color="text.secondary" translate="yes">
       {label}
     </Typography>
     <Typography data-cy={dataCy} variant="h6">
@@ -490,7 +495,9 @@ const StreamPageContent: FC<{
             <CancelledIndicator updatedAtTimestamp={updatedAtTimestamp} />
           )}
 
-          <Typography variant="h5">Total Amount Streamed</Typography>
+          <Typography variant="h5" translate="yes">
+            Total Amount Streamed
+          </Typography>
 
           <Stack direction="row" alignItems="center" gap={2}>
             {!isBelowMd && (
@@ -579,11 +586,11 @@ const StreamPageContent: FC<{
             },
           }}
         >
-          <Typography variant="h6" sx={{ pl: 1 }}>
+          <Typography variant="h6" sx={{ pl: 1 }} translate="yes">
             Sender
           </Typography>
           <Box />
-          <Typography variant="h6" sx={{ pl: 1 }}>
+          <Typography variant="h6" sx={{ pl: 1 }} translate="yes">
             Receiver
           </Typography>
 
@@ -613,7 +620,7 @@ const StreamPageContent: FC<{
               </Amount>
             </Typography>
 
-            <Typography variant="h6" color="text.secondary">
+            <Typography variant="h6" color="text.secondary" translate="yes">
               per month
             </Typography>
           </Stack>
@@ -731,7 +738,7 @@ const StreamPageContent: FC<{
 
         <Stack direction="row" alignItems="center" gap={1}>
           <ShareIcon sx={{ width: 18, height: 18 }} />
-          <Typography variant="h5" sx={{ mr: 1 }}>
+          <Typography variant="h5" translate="yes" sx={{ mr: 1 }}>
             Share:
           </Typography>
 

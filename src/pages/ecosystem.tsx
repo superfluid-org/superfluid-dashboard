@@ -277,6 +277,23 @@ export const SUPPORTS_SUPER_TOKENS: EcosystemApp[] = [
     },
   },
   {
+    name: "DeBank",
+    href: "https://debank.com/",
+    icon: "/icons/ecosystem/debank.svg",
+    description: `Multi-chain portfolio tracker that supports the largest number of DeFi protocols.`,
+    chains: [
+      chain.arbitrum.id,
+      43114,
+      100,
+      chain.optimism.id,
+      chain.polygon.id,
+    ],
+    colors: {
+      primary: "#FF6238",
+      secondary: "#FE815F",
+    },
+  }, 
+  {
     name: "Li.Fi",
     href: "https://li.fi/",
     icon: "/icons/ecosystem/li-fi.svg",
@@ -333,7 +350,7 @@ const Ecosystem: NextPage = () => {
               },
             }}
           >
-            <Typography variant="h3" component="h1">
+            <Typography variant="h3" component="h1" translate="yes">
               Explore the Superfluid ecosystem
             </Typography>
             <Link

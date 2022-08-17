@@ -40,6 +40,7 @@ export const TransactionDialog: FC<TransactionDialogProps> = ({
       open={dialogOpen}
       onClose={closeDialog}
       PaperProps={{ sx: { borderRadius: "20px", maxHeight: "100%" } }}
+      translate="yes"
     >
       <TransactionDialogCore
         loadingInfo={loadingInfo}
@@ -69,7 +70,8 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
               <CircularProgress size={80} />
             </Box>
             <Typography variant="h4">
-              Waiting for transaction approval... ({expectedNetwork.name})
+              <span translate="yes">Waiting for transaction approval...</span>{" "}
+              <span translate="no">({expectedNetwork.name})</span>
             </Typography>
             {/* // TODO(KK): wrong font! */}
             <Stack sx={{ my: 2 }}>{loadingInfo}</Stack>

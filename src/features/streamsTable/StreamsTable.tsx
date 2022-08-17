@@ -16,7 +16,10 @@ import { Address, Stream } from "@superfluid-finance/sdk-core";
 import { FC, memo, useMemo, useState } from "react";
 import { EmptyRow } from "../common/EmptyRow";
 import { Network } from "../network/networks";
-import { PendingOutgoingStream, useAddressPendingOutgoingStreams } from "../pendingUpdates/PendingOutgoingStream";
+import {
+  PendingOutgoingStream,
+  useAddressPendingOutgoingStreams,
+} from "../pendingUpdates/PendingOutgoingStream";
 import { subgraphApi } from "../redux/store";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import StreamRow, { StreamRowLoading } from "./StreamRow";
@@ -181,7 +184,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
             }),
         }}
       >
-        <TableHead>
+        <TableHead translate="yes">
           <TableRow>
             <TableCell colSpan={5}>
               <Stack direction="row" alignItems="center" gap={1}>

@@ -24,9 +24,9 @@ export const BalanceUnderlyingToken: FC<{
       variant="body2mono"
       color="text.secondary"
     >
-      Balance:{" "}
+      <span translate="yes">Balance:</span>{" "}
       {error ? (
-        "error"
+        <span translate="yes">error</span>
       ) : isUninitialized || isLoading ? (
         ""
       ) : (

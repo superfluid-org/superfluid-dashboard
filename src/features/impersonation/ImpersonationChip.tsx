@@ -17,9 +17,11 @@ const ImpersonationChip: FC<ChipProps> = ({ ...props }) => {
       color="warning"
       size={isBelowMd ? "small" : "medium"}
       icon={<PersonSearchIcon />}
+      translate="no"
       label={
         <>
-          Viewing <AddressName address={impersonatedAddress!} />
+          <span translate="yes">Viewing</span>{" "}
+          <AddressName address={impersonatedAddress!} />
         </>
       }
       onDelete={stopImpersonation}

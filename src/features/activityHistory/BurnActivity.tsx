@@ -84,6 +84,7 @@ const BurnActivity: FC<BurnedActivity> = ({
             primary={"Unwrap"}
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
+              translate: "yes",
               variant: isBelowMd ? "h7" : "h6",
             }}
             secondaryTypographyProps={{

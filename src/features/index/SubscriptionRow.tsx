@@ -12,7 +12,7 @@ import {
   useTheme,
 } from "@mui/material";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
-import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import { IndexSubscription } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
@@ -23,9 +23,7 @@ import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { subscriptionWeiAmountReceived } from "../../utils/tokenUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { Network } from "../network/networks";
-import {
-  usePendingIndexSubscriptionApprove,
-} from "../pendingUpdates/PendingIndexSubscriptionApprove";
+import { usePendingIndexSubscriptionApprove } from "../pendingUpdates/PendingIndexSubscriptionApprove";
 import { usePendingIndexSubscriptionRevoke } from "../pendingUpdates/PendingIndexSubscriptionRevoke";
 import { PendingUpdate } from "../pendingUpdates/PendingUpdate";
 import { rpcApi } from "../redux/store";
@@ -189,8 +187,13 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
             <Typography
               variant="body2"
               color={subscription.approved ? "primary" : "warning.main"}
+              translate="yes"
             >
-              {subscription.approved ? "Approved" : "Awaiting Approval"}
+              {subscription.approved ? (
+                <span>Approved</span>
+              ) : (
+                <span>Awaiting Approval</span>
+              )}
             </Typography>
           </TableCell>
           <TableCell>
@@ -201,10 +204,17 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
         <TableCell align="right">
           <ListItemText
             primary={<Amount wei={amountReceived} />}
-            secondary={subscription.approved ? "Approved" : "Awaiting Approval"}
+            secondary={
+              subscription.approved ? (
+                <span>Approved</span>
+              ) : (
+                <span>Awaiting Approval</span>
+              )
+            }
             primaryTypographyProps={{ variant: "h7mono" }}
             secondaryTypographyProps={{
               variant: "body2",
+              translate: "yes",
               color: subscription.approved ? "primary" : "warning.main",
               sx: { whiteSpace: "pre" },
             }}
@@ -223,7 +233,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
             isConnected,
             isCorrectNetwork,
             expectedNetwork,
-            setDialogLoadingInfo
+            setDialogLoadingInfo,
           }) =>
             !subscription.approved && (
               <>
@@ -237,11 +247,17 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                     arrow
                     disableInteractive
                     title={
-                      !isConnected
-                        ? "Connect wallet to approve subscription"
-                        : !isCorrectNetwork
-                        ? `Switch network to ${network.name} to approve subscription`
-                        : "Approve subscription"
+                      !isConnected ? (
+                        <span>Connect wallet to approve subscription</span>
+                      ) : !isCorrectNetwork ? (
+                        <span>
+                          Switch network to{" "}
+                          <span translate="no">{network.name}</span> to approve
+                          subscription
+                        </span>
+                      ) : (
+                        <span>Approve subscription</span>
+                      )
                     }
                   >
                     <span>
@@ -256,7 +272,15 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                               "Signer should always be available here."
                             );
 
-                          setDialogLoadingInfo(<Typography variant="h5" color="text.secondary">You are approving an index subscription.</Typography>);
+                          setDialogLoadingInfo(
+                            <Typography
+                              variant="h5"
+                              color="text.secondary"
+                              translate="yes"
+                            >
+                              You are approving an index subscription.
+                            </Typography>
+                          );
 
                           // TODO(KK): Make the operation take subscriber as input. Don't just rely on the wallet's signer -- better to have explicit data flowing
                           approveSubscription({
@@ -290,7 +314,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
             isConnected,
             isCorrectNetwork,
             expectedNetwork,
-            setDialogLoadingInfo
+            setDialogLoadingInfo,
           }) =>
             subscription.approved && (
               <>
@@ -304,11 +328,17 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                     arrow
                     disableInteractive
                     title={
-                      !isConnected
-                        ? "Connect wallet to revoke subscription"
-                        : !isCorrectNetwork
-                        ? `Switch network to ${network.name} to revoke subscription`
-                        : "Revoke subscription"
+                      !isConnected ? (
+                        <span>Connect wallet to revoke subscription</span>
+                      ) : !isCorrectNetwork ? (
+                        <span>
+                          Switch network to{" "}
+                          <span translate="no">{network.name}</span> to revoke
+                          subscription
+                        </span>
+                      ) : (
+                        <span>Revoke subscription</span>
+                      )
                     }
                   >
                     <span>
@@ -323,7 +353,16 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                               "Signer should always bet available here."
                             );
 
-                          setDialogLoadingInfo(<Typography variant="h5" color="text.secondary">You are revoking approval of an index subscription.</Typography>);
+                          setDialogLoadingInfo(
+                            <Typography
+                              variant="h5"
+                              color="text.secondary"
+                              translate="yes"
+                            >
+                              You are revoking approval of an index
+                              subscription.
+                            </Typography>
+                          );
 
                           // TODO(KK): Make the operation take subscriber as input. Don't just rely on the wallet's signer -- better to have explicit data flowing
                           revokeSubscription({
@@ -359,8 +398,12 @@ const OperationProgress: FC<{
 }> = ({ pendingUpdate, transactingText }) => (
   <Stack direction="row" alignItems="center" gap={1}>
     <CircularProgress color="warning" size="16px" />
-    <Typography variant="caption">
-      {pendingUpdate?.hasTransactionSucceeded ? "Syncing..." : transactingText}
+    <Typography variant="caption" translate="yes">
+      {pendingUpdate?.hasTransactionSucceeded ? (
+        <span>Syncing...</span>
+      ) : (
+        <span>{transactingText}</span>
+      )}
     </Typography>
   </Stack>
 );

@@ -354,6 +354,7 @@ export const WrapTabUpgrade: FC<WrapTabUpgradeProps> = ({ onSwitchMode }) => {
                 />
               }
               sx={{ pointerEvents: "none" }}
+              translate="no"
             >
               {superToken.symbol ?? ""}
             </Button>
@@ -543,9 +544,12 @@ const UpgradePreview: FC<{
   superTokenSymbol: string;
 }> = ({ underlyingTokenSymbol, superTokenSymbol, amountWei }) => {
   return (
-    <Typography variant="h5" color="text.secondary">
-      You are upgrading from {formatEther(amountWei)} {underlyingTokenSymbol} to
-      the super token {superTokenSymbol}.
+    <Typography variant="h5" color="text.secondary" translate="yes">
+      You are upgrading from{" "}
+      <span translate="no">
+        {formatEther(amountWei)} {underlyingTokenSymbol}
+      </span>{" "}
+      to the super token <span translate="no">{superTokenSymbol}</span>.
     </Typography>
   );
 };
@@ -556,9 +560,12 @@ const AllowancePreview: FC<{
   tokenSymbol: string;
 }> = ({ amountWei, decimals, tokenSymbol }) => {
   return (
-    <Typography variant="h5" color="text.secondary">
-      You are approving extra allowance of {formatUnits(amountWei, decimals)}{" "}
-      {tokenSymbol} for Superfluid Protocol to use.
+    <Typography variant="h5" color="text.secondary" translate="yes">
+      You are approving extra allowance of{" "}
+      <span translate="no">
+        {formatUnits(amountWei, decimals)} {tokenSymbol}
+      </span>{" "}
+      for Superfluid Protocol to use.
     </Typography>
   );
 };

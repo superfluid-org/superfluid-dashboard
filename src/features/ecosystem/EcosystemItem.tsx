@@ -84,12 +84,21 @@ const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
             alt="Twitter logo"
           />
 
-          <Typography variant={isBelowMd ? "h5" : "h4"} flex={1} data-cy={"app-name"}>
+          <Typography
+            variant={isBelowMd ? "h5" : "h4"}
+            flex={1}
+            data-cy={"app-name"}
+          >
             {app.name}
           </Typography>
           <LaunchRoundedIcon sx={{ fontSize: "20px" }} />
         </Stack>
-        <Typography data-cy={"app-description"} variant={isBelowMd ? "body2" : "body1"} component="p">
+        <Typography
+          data-cy={"app-description"}
+          variant={isBelowMd ? "body2" : "body1"}
+          component="p"
+          translate="yes"
+        >
           {app.description}
         </Typography>
         <Stack flex={1} justifyContent="flex-end">

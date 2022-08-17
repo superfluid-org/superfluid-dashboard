@@ -207,6 +207,7 @@ const TokenPageContent: FC<{
               <Typography
                 variant={isBelowMd ? "body2" : "body1"}
                 color="text.secondary"
+                translate="yes"
               >
                 Balance
               </Typography>
@@ -219,10 +220,18 @@ const TokenPageContent: FC<{
                 />
               </Typography>
               <Stack direction="row" alignItems="center" gap={1}>
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  translate="yes"
+                >
                   Liquidation Date:
                 </Typography>
-                <Typography data-cy={"liquidation-date"} variant="h7" color="text.secondary">
+                <Typography
+                  data-cy={"liquidation-date"}
+                  variant="h7"
+                  color="text.secondary"
+                >
                   {!!maybeCriticalAtTimestamp
                     ? format(maybeCriticalAtTimestamp * 1000, "MMMM do, yyyy")
                     : "-"}
@@ -306,6 +315,7 @@ const TokenPageContent: FC<{
             )}
             <FormGroup>
               <FormControlLabel
+                translate="yes"
                 control={
                   <Switch
                     checked={showForecast}
