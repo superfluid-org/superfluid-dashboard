@@ -10,18 +10,14 @@ jobs:
     if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     container:
-      image: cypress/browsers:node16.5.0-chrome97-ff96
+      image: cypress/browsers:latest
       options: --user 1001
     strategy:
       fail-fast: false
       matrix:
-        browser: [chrome, firefox]
+        container: [1,2,3,4,5,6]
     steps:
       - uses: actions/checkout@v2
-
-      - name: Setup firefox
-        uses: browser-actions/setup-firefox@latest
-        if: ${{ matrix.browser == 'firefox' }}
 
       - name: Use Node.js 16.x
         uses: actions/setup-node@v1
@@ -48,8 +44,8 @@ jobs:
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
+          parallel: true
           install: false
-          browser: ${{ matrix.browser }}
           wait-on: ${{ steps.waitForDeployment.outputs.url }}
           wait-on-timeout: 180
           record: true
