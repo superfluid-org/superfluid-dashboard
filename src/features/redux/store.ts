@@ -31,6 +31,7 @@ import { adHocMulticallEndpoints } from "./endpoints/adHocMulticallEndpoints";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
 import { setupListeners } from "@reduxjs/toolkit/query";
+import { streamSchedulerEndpoints } from "./endpoints/streamSchedulerEndpoints";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({
@@ -41,7 +42,8 @@ export const rpcApi = initializeRpcApiSlice((options) =>
 )
   .injectEndpoints(allRpcEndpoints)
   .injectEndpoints(adHocMulticallEndpoints)
-  .injectEndpoints(adHocRpcEndpoints);
+  .injectEndpoints(adHocRpcEndpoints)
+  .injectEndpoints(streamSchedulerEndpoints);
 
 export const subgraphApi = initializeSubgraphApiSlice((options) =>
   createApiWithReactHooks({
