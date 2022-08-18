@@ -33,11 +33,11 @@ const RestoreTransaction: NextPage = () => {
 
     if (transactionRestoration) {
       switch (transactionRestoration.type) {
-        case RestorationType.Upgrade:
+        case RestorationType.Wrap:
           router.replace("/wrap?upgrade");
           restore(transactionRestoration);
           break;
-        case RestorationType.Downgrade:
+        case RestorationType.Unwrap:
           restore(transactionRestoration);
           router.replace("/wrap?downgrade");
           break;

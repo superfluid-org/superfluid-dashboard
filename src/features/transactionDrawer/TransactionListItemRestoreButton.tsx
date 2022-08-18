@@ -25,10 +25,10 @@ export const TransactionListItemRestoreButton: FC<{
     ?.restoration as TransactionRestorations;
 
   switch (transactionRestoration.type) {
-    case RestorationType.Downgrade:
+    case RestorationType.Unwrap:
     case RestorationType.ModifyStream:
     case RestorationType.SendStream:
-    case RestorationType.Upgrade:
+    case RestorationType.Wrap:
       if (transactionRestoration.version !== 2) return null;
   }
 

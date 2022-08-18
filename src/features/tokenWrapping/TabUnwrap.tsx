@@ -51,7 +51,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({
 
   // The reason to set the type and clear errors is that a single form context is used both for wrapping and unwrapping.
   useEffect(() => {
-    setValue("type", RestorationType.Downgrade, {
+    setValue("type", RestorationType.Unwrap, {
       shouldDirty: false,
       shouldTouch: false,
       shouldValidate: true,
@@ -281,7 +281,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({
               const { data: formData } = getValues() as ValidWrappingForm;
 
               const restoration: SuperTokenDowngradeRestoration = {
-                type: RestorationType.Downgrade,
+                type: RestorationType.Unwrap,
                 version: 2,
                 chainId: network.id,
                 tokenPair: formData.tokenPair,

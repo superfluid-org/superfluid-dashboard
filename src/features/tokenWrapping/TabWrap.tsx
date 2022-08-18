@@ -76,7 +76,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
 
   // The reason to set the type and clear errors is that a single form context is used both for wrapping and unwrapping.
   useEffect(() => {
-    setValue("type", RestorationType.Upgrade, {
+    setValue("type", RestorationType.Wrap, {
       shouldDirty: false,
       shouldTouch: false,
       shouldValidate: true,
@@ -450,7 +450,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                 const amountWei = parseEther(formData.amountDecimal);
 
                 const restoration: SuperTokenUpgradeRestoration = {
-                  type: RestorationType.Upgrade,
+                  type: RestorationType.Wrap,
                   version: 2,
                   chainId: network.id,
                   tokenPair: tokenPair,
