@@ -544,7 +544,7 @@ const WrapPreview: FC<{
 }> = ({ underlyingTokenSymbol, superTokenSymbol, amountWei }) => {
   return (
     <Typography variant="h5" color="text.secondary" translate="yes">
-      You are wrapping from{" "}
+      You are wrapping{" "}
       <span translate="no">
         {formatEther(amountWei)} {underlyingTokenSymbol}
       </span>{" "}

@@ -339,7 +339,7 @@ const UnwrapPreview: FC<{
 }> = ({ amountWei, superTokenSymbol, underlyingTokenSymbol }) => {
   return (
     <Typography variant="h5" color="text.secondary" translate="yes">
-      You are unwrapping from{" "}
+      You are unwrapping {" "}
       <span translate="no">
         {formatEther(amountWei)} {superTokenSymbol}
       </span>{" "}
