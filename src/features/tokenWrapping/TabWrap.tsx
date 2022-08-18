@@ -422,7 +422,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                     .then(() => setTransactionDrawerOpen(true));
                 }}
               >
-                Approve Allowance
+                Allow Superfluid Protocol to wrap your {underlyingToken.symbol}
               </TransactionButton>
             )
           }
@@ -560,7 +560,7 @@ const AllowancePreview: FC<{
 }> = ({ amountWei, decimals, tokenSymbol }) => {
   return (
     <Typography variant="h5" color="text.secondary" translate="yes">
-      You are approving extra allowance of{" "}
+      You are approving additional allowance of{" "}
       <span translate="no">
         {formatUnits(amountWei, decimals)} {tokenSymbol}
       </span>{" "}
