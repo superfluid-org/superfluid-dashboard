@@ -1,4 +1,5 @@
 import CallSplitRoundedIcon from "@mui/icons-material/CallSplitRounded";
+import PercentRoundedIcon from "@mui/icons-material/PercentRounded";
 import {
   ListItem,
   ListItemAvatar,
@@ -9,11 +10,17 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { IndexUpdatedEvent } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
-import { FC, useMemo } from "react";
-import { Activity } from "../../utils/activityUtils";
+import { FC, useCallback, useMemo } from "react";
+import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressName from "../../components/AddressName/AddressName";
+import {
+  IndexDistributionClaimedActivity,
+  IndexUnitsUpdatedActivity,
+} from "../../utils/activityUtils";
+import { BIG_NUMBER_ZERO } from "../../utils/tokenUtils";
+import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
@@ -22,24 +29,18 @@ import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
 
-const IndexUpdatedActivityRow: FC<Activity<IndexUpdatedEvent>> = ({
+const IndexDistributionClaimedRow: FC<IndexDistributionClaimedActivity> = ({
   keyEvent,
+  subscriptionDistributionClaimed,
   network,
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
   const { visibleAddress } = useVisibleAddress();
 
-  const {
-    timestamp,
-    token,
-    publisher,
-    oldIndexValue,
-    newIndexValue,
-    totalUnitsApproved,
-    totalUnitsPending,
-    transactionHash,
-  } = keyEvent;
+  const { timestamp, amount, token, transactionHash, publisher, subscriber } =
+    keyEvent;
 
   const tokenQuery = subgraphApi.useTokenQuery({
     chainId: network.id,
@@ -47,26 +48,6 @@ const IndexUpdatedActivityRow: FC<Activity<IndexUpdatedEvent>> = ({
   });
 
   const isPublisher = visibleAddress?.toLowerCase() === publisher.toLowerCase();
-
-  const { totalDistributed, distributedApproved, distributedPending } =
-    useMemo(() => {
-      const distributedAmount = BigNumber.from(newIndexValue).sub(
-        BigNumber.from(oldIndexValue)
-      );
-
-      const distributedApproved =
-        BigNumber.from(totalUnitsApproved).mul(distributedAmount);
-      const distributedPending =
-        BigNumber.from(totalUnitsPending).mul(distributedAmount);
-
-      return {
-        totalDistributed: distributedApproved
-          .add(distributedPending)
-          .toString(),
-        distributedApproved: distributedApproved.toString(),
-        distributedPending: distributedPending.toString(),
-      };
-    }, [oldIndexValue, newIndexValue, totalUnitsApproved, totalUnitsPending]);
 
   return (
     <TableRow>
@@ -79,7 +60,7 @@ const IndexUpdatedActivityRow: FC<Activity<IndexUpdatedEvent>> = ({
             }}
           />
           <ListItemText
-            primary="Send Distribution"
+            primary="Distribution Claimed"
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
@@ -104,51 +85,38 @@ const IndexUpdatedActivityRow: FC<Activity<IndexUpdatedEvent>> = ({
           <ListItemText
             primary={
               <>
-                -
-                <Amount wei={totalDistributed} />
+                +<Amount wei={amount} />
                 {` `}
                 {tokenQuery.data?.symbol}
               </>
             }
             primaryTypographyProps={{
               variant: "h6mono",
-              color: "error",
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
+              color: "primary",
             }}
           />
         </ListItem>
       </TableCell>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
+          <ListItemAvatar>
+            <AddressAvatar address={isPublisher ? subscriber : publisher} />
+          </ListItemAvatar>
           <ListItemText
-            primary={
-              <>
-                <span>Approved: </span>
-                <Amount wei={distributedApproved}>
-                  {` ${tokenQuery.data?.symbol}`}
-                </Amount>
-              </>
-            }
+            primary={isPublisher ? "Subscriber" : "Publisher"}
             secondary={
-              <>
-                <span>Pending: </span>
-                <Amount wei={distributedPending}>
-                  {` ${tokenQuery.data?.symbol}`}
-                </Amount>
-              </>
+              <AddressCopyTooltip
+                address={isPublisher ? subscriber : publisher}
+              >
+                <Typography variant="h6" color="text.primary" component="span">
+                  <AddressName address={isPublisher ? subscriber : publisher} />
+                </Typography>
+              </AddressCopyTooltip>
             }
             primaryTypographyProps={{
-              variant: "h6",
-              color: "text.primary",
-            }}
-            secondaryTypographyProps={{
               variant: "body2",
               color: "text.secondary",
             }}
-            sx={{ ml: 6.5 }}
           />
         </ListItem>
       </TableCell>
@@ -163,4 +131,4 @@ const IndexUpdatedActivityRow: FC<Activity<IndexUpdatedEvent>> = ({
   );
 };
 
-export default IndexUpdatedActivityRow;
+export default IndexDistributionClaimedRow;

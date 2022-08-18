@@ -5,11 +5,13 @@ import {
   BurnedEvent,
   FlowUpdatedEvent,
   IndexCreatedEvent,
+  IndexDistributionClaimedEvent,
   IndexSubscribedEvent,
   IndexUnitsUpdatedEvent,
   IndexUnsubscribedEvent,
   MintedEvent,
   SubscriptionApprovedEvent,
+  SubscriptionDistributionClaimedEvent,
   SubscriptionRevokedEvent,
   SubscriptionUnitsUpdatedEvent,
   TokenDowngradedEvent,
@@ -47,6 +49,11 @@ export interface IndexSubscribedActivity
 export interface IndexUnsubscribedActivity
   extends Activity<IndexUnsubscribedEvent> {
   subscriptionRevokedEvent?: SubscriptionRevokedEvent;
+}
+
+export interface IndexDistributionClaimedActivity
+  extends Activity<IndexDistributionClaimedEvent> {
+  subscriptionDistributionClaimed?: SubscriptionDistributionClaimedEvent;
 }
 
 export interface Activity<T = AllEvents> {
@@ -236,6 +243,28 @@ const mapTransactionActivityRecursive = (
             network,
             subscriptionRevokedEvent,
           } as IndexUnsubscribedActivity,
+        ])
+      );
+    }
+
+    case "IndexDistributionClaimed": {
+      const {
+        eventsFound: [subscriptionDistributionClaimed],
+        eventsRemaining,
+      } = findEventsByNameRecursive(
+        ["SubscriptionDistributionClaimed"],
+        transactionEvents
+      );
+
+      return mapTransactionActivityRecursive(
+        eventsRemaining,
+        network,
+        activities.concat([
+          {
+            keyEvent,
+            network,
+            subscriptionDistributionClaimed,
+          } as IndexDistributionClaimedActivity,
         ])
       );
     }

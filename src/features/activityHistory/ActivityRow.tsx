@@ -3,6 +3,7 @@ import {
   Activities,
   AgreementLiquidatedActivity,
   BurnedActivity,
+  IndexDistributionClaimedActivity,
   IndexSubscribedActivity,
   IndexUnitsUpdatedActivity,
   IndexUnsubscribedActivity,
@@ -12,6 +13,7 @@ import BurnActivity from "./BurnActivity";
 import DefaultActivityRow from "./DefaultActivityRow";
 import FlowUpdatedActivityRow from "./FlowUpdatedActivityRow";
 import IndexCreatedActivityRow from "./IndexCreatedActivityRow";
+import IndexDistributionClaimedRow from "./IndexDistributionClaimedRow";
 import IndexSubscribedActivityRow from "./IndexSubscribedActivityRow";
 import IndexUnitsUpdatedActivityRow from "./IndexUnitsUpdatedActivityRow";
 import IndexUnsubscribedActivityRow from "./IndexUnsubscribedActivityRow";
@@ -97,6 +99,19 @@ const ActivityRow: FC<ActivityRowProps> = ({ activity }) => {
         <IndexUnsubscribedActivityRow
           keyEvent={keyEvent}
           subscriptionRevokedEvent={subscriptionRevokedEvent}
+          network={network}
+        />
+      );
+    }
+
+    case "IndexDistributionClaimed": {
+      const { subscriptionDistributionClaimed } =
+        activity as IndexDistributionClaimedActivity;
+
+      return (
+        <IndexDistributionClaimedRow
+          keyEvent={keyEvent}
+          subscriptionDistributionClaimed={subscriptionDistributionClaimed}
           network={network}
         />
       );

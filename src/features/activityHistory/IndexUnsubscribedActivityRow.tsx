@@ -68,6 +68,7 @@ const IndexUnsubscribedActivityRow: FC<IndexUnsubscribedActivity> = ({
               isLoading={tokenQuery.isLoading}
             />
           </ListItemAvatar>
+          <ListItemText primary={tokenQuery.data?.symbol} />
         </ListItem>
       </TableCell>
       <TableCell>

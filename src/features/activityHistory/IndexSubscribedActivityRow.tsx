@@ -69,6 +69,7 @@ const IndexSubscribedActivityRow: FC<IndexSubscribedActivity> = ({
               isLoading={tokenQuery.isLoading}
             />
           </ListItemAvatar>
+          <ListItemText primary={tokenQuery.data?.symbol} />
         </ListItem>
       </TableCell>
       <TableCell>

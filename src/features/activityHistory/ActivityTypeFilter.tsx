@@ -34,6 +34,7 @@ export enum ActivityType {
   IndexUpdated = "Index Updated",
   IndexSubscribed = "Subscribed to index",
   IndexUnsubscribed = "Unsubscribed from index",
+  DistributionClaimed = "Distribution Claimed",
   SubscriptionUpdated = "Subscription Updated", // Index units updated activity
 }
 
@@ -51,7 +52,9 @@ export const AllActivityTypes = [
   ActivityType.IndexUpdated,
   ActivityType.IndexSubscribed,
   ActivityType.IndexUnsubscribed,
+  ActivityType.DistributionClaimed,
   ActivityType.SubscriptionUpdated,
+  // Revoke Delete
 ];
 
 interface ActivityFilter {
@@ -143,6 +146,13 @@ export const ActivityTypeFilters: ActivityFilter[] = [
     icon: EditIcon,
     filter: (keyEvent: AllEvents) => keyEvent.name === "IndexUnsubscribed",
   },
+  {
+    key: ActivityType.DistributionClaimed,
+    icon: EditIcon,
+    filter: (keyEvent: AllEvents) =>
+      keyEvent.name === "IndexDistributionClaimed",
+  },
+
   {
     key: ActivityType.SubscriptionUpdated,
     icon: EditIcon,

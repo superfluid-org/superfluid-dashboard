@@ -1,4 +1,5 @@
 import EditIcon from "@mui/icons-material/Edit";
+import PercentRoundedIcon from "@mui/icons-material/PercentRounded";
 import {
   ListItem,
   ListItemAvatar,
@@ -65,7 +66,7 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivity> = ({
     <TableRow>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ActivityIcon icon={EditIcon} />
+          <ActivityIcon icon={PercentRoundedIcon} />
           <ListItemText
             primary="Subscription updated"
             secondary={format(timestamp * 1000, "HH:mm")}
@@ -90,8 +91,8 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivity> = ({
             />
           </ListItemAvatar>
           <ListItemText
-            primary={`${units} ${getUnitsLabel(units)}`}
-            secondary={unitsDiffString}
+            primary={unitsDiffString}
+            secondary={`${units} ${getUnitsLabel(units)} total`}
             primaryTypographyProps={{
               variant: "h6mono",
             }}
