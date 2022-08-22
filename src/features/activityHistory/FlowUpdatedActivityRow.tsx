@@ -88,6 +88,7 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
             primary={title}
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
+              translate: "yes",
               variant: isBelowMd ? "h7" : "h6",
             }}
             secondaryTypographyProps={{
@@ -158,6 +159,7 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
                   </AddressCopyTooltip>
                 }
                 primaryTypographyProps={{
+                  translate: "yes",
                   variant: "body2",
                   color: "text.secondary",
                 }}

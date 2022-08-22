@@ -3052,7 +3052,7 @@
 
 "@superfluid-finance/sdk-core@0.5.3-dev.9e9228f.0":
   version "0.5.3-dev.9e9228f.0"
-  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-core/0.5.3-dev.9e9228f.0/568a548fdea5ee266ff5126fe76b713ba77b510d307717af1919f9fb4f74251f#2a85ad11e109fe92d1d8fcfcb52b02fe285cb01a"
+  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-core/-/sdk-core-0.5.3-dev.9e9228f.0.tgz#2a85ad11e109fe92d1d8fcfcb52b02fe285cb01a"
   integrity sha512-IaRZjwlkF46BcjwJwbhwzPL+yGfYpUjy9Vn9qQIpqiRliGHu+reYZh46aoCizVELs0TS546KPDsmq5nXb4IzhQ==
   dependencies:
     browserify "^17.0.0"
@@ -3063,7 +3063,7 @@
 
 "@superfluid-finance/sdk-redux@0.3.1-dev.6cf4191.0":
   version "0.3.1-dev.6cf4191.0"
-  resolved "https://npm.pkg.github.com/download/@superfluid-finance/sdk-redux/0.3.1-dev.6cf4191.0/acea497ba935928045fe8fbff2568ceac601d29b57b57d19e2f1bbf60bc5e659#17c40f9fc82ea46acea23b45a5b9c043d769fbc5"
+  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-redux/-/sdk-redux-0.3.1-dev.6cf4191.0.tgz#17c40f9fc82ea46acea23b45a5b9c043d769fbc5"
   integrity sha512-DsZBpDO2RBgWqL/BHQ5WxIjnOfwNb/IV/Y2dXVIGKxjJf6FCUDgC0g8qCpBdQnRFSs8jbNqaUsai2ezMYjGfQw==
   dependencies:
     "@types/promise-retry" "^1.1.3"

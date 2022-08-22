@@ -184,7 +184,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
             }),
         }}
       >
-        <TableHead>
+        <TableHead translate="yes">
           <TableRow>
             <TableCell colSpan={5}>
               <Stack direction="row" alignItems="center" gap={1}>

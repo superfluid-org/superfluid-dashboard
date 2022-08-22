@@ -53,6 +53,7 @@ export default memo(function TransactionDrawer() {
       }}
       onOpen={openDrawer}
       onClose={closeDrawer}
+      translate="yes"
     >
       <DrawerHeader>
         <IconButton color="inherit" onClick={closeDrawer}>

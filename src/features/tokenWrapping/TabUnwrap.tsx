@@ -1,14 +1,12 @@
 import { Button, Input, Stack, Typography, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { formatEther, parseEther } from "ethers/lib/utils";
-import { useRouter } from "next/router";
 import { FC, useEffect, useRef } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { useAccount } from "wagmi";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { calculateCurrentBalance } from "../../utils/tokenUtils";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
-import { useLayoutContext } from "../layout/LayoutContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
@@ -28,17 +26,16 @@ import { useTokenPairQuery } from "./useTokenPairQuery";
 import { WrapInputCard } from "./WrapInputCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 
-interface WrapTabDowngradeProps {
+interface TabUnwrapProps {
   onSwitchMode: () => void;
 }
 
-export const WrapTabDowngrade: FC<WrapTabDowngradeProps> = ({
+export const TabUnwrap: FC<TabUnwrapProps> = ({
   onSwitchMode,
 }) => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
-  const { setTransactionDrawerOpen } = useLayoutContext();
   const getTransactionOverrides = useGetTransactionOverrides();
   const { connector: activeConnector } = useAccount();
 
@@ -54,7 +51,7 @@ export const WrapTabDowngrade: FC<WrapTabDowngradeProps> = ({
 
   // The reason to set the type and clear errors is that a single form context is used both for wrapping and unwrapping.
   useEffect(() => {
-    setValue("type", RestorationType.Downgrade, {
+    setValue("type", RestorationType.Unwrap, {
       shouldDirty: false,
       shouldTouch: false,
       shouldValidate: true,
@@ -75,7 +72,7 @@ export const WrapTabDowngrade: FC<WrapTabDowngradeProps> = ({
     tokenPair,
   });
 
-  const [downgradeTrigger, downgradeResult] =
+  const [unwrapTrigger, unwrapResult] =
     rpcApi.useSuperTokenDowngradeMutation();
   const isDowngradeDisabled =
     !superToken ||
@@ -237,6 +234,7 @@ export const WrapTabDowngrade: FC<WrapTabDowngradeProps> = ({
                 <TokenIcon tokenSymbol={underlyingToken.symbol} size={24} />
               }
               sx={{ pointerEvents: "none" }}
+              translate="no"
             >
               {underlyingToken.symbol ?? ""}
             </Button>
@@ -264,7 +262,7 @@ export const WrapTabDowngrade: FC<WrapTabDowngradeProps> = ({
         </Typography>
       )}
 
-      <TransactionBoundary mutationResult={downgradeResult}>
+      <TransactionBoundary mutationResult={unwrapResult}>
         {({ setDialogLoadingInfo }) => (
           <TransactionButton
             dataCy={"downgrade-button"}
@@ -283,7 +281,7 @@ export const WrapTabDowngrade: FC<WrapTabDowngradeProps> = ({
               const { data: formData } = getValues() as ValidWrappingForm;
 
               const restoration: SuperTokenDowngradeRestoration = {
-                type: RestorationType.Downgrade,
+                type: RestorationType.Unwrap,
                 version: 2,
                 chainId: network.id,
                 tokenPair: formData.tokenPair,
@@ -302,7 +300,7 @@ export const WrapTabDowngrade: FC<WrapTabDowngradeProps> = ({
               }
 
               setDialogLoadingInfo(
-                <DowngradePreview
+                <UnwrapPreview
                   {...{
                     amountWei: parseEther(formData.amountDecimal).toString(),
                     superTokenSymbol: superToken.symbol,
@@ -311,7 +309,7 @@ export const WrapTabDowngrade: FC<WrapTabDowngradeProps> = ({
                 />
               );
 
-              downgradeTrigger({
+              unwrapTrigger({
                 signer,
                 chainId: network.id,
                 amountWei: parseEther(formData.amountDecimal).toString(),
@@ -326,7 +324,7 @@ export const WrapTabDowngrade: FC<WrapTabDowngradeProps> = ({
                 .then(() => resetForm());
             }}
           >
-            Downgrade
+            Unwrap
           </TransactionButton>
         )}
       </TransactionBoundary>
@@ -334,15 +332,19 @@ export const WrapTabDowngrade: FC<WrapTabDowngradeProps> = ({
   );
 };
 
-const DowngradePreview: FC<{
+const UnwrapPreview: FC<{
   amountWei: string;
   superTokenSymbol: string;
   underlyingTokenSymbol: string;
 }> = ({ amountWei, superTokenSymbol, underlyingTokenSymbol }) => {
   return (
-    <Typography variant="h5" color="text.secondary">
-      You are downgrading from {formatEther(amountWei)} {superTokenSymbol} to
-      the underlying token {underlyingTokenSymbol}.
+    <Typography variant="h5" color="text.secondary" translate="yes">
+      You are unwrapping {" "}
+      <span translate="no">
+        {formatEther(amountWei)} {superTokenSymbol}
+      </span>{" "}
+      to the underlying token{" "}
+      <span translate="no">{underlyingTokenSymbol}</span>.
     </Typography>
   );
 };

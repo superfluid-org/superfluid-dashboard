@@ -58,11 +58,12 @@ export const flowRateWeiToString = (
   tokenSymbol ? (
     <Amount wei={flowRateWei.amountWei}>
       {" "}
-      {tokenSymbol}/{timeUnitWordMap[flowRateWei.unitOfTime]}
+      {tokenSymbol}/
+      <span translate="yes">{timeUnitWordMap[flowRateWei.unitOfTime]}</span>
     </Amount>
   ) : (
     <Amount wei={flowRateWei.amountWei}>
-      /{timeUnitWordMap[flowRateWei.unitOfTime]}
+      /<span translate="yes">{timeUnitWordMap[flowRateWei.unitOfTime]}</span>
     </Amount>
   );
 
@@ -170,7 +171,11 @@ export const FlowRateInput: FC<{
         }}
       >
         {unitOfTimeList.map((unitOfTime) => (
-          <MenuItem key={`${unitOfTime}-second(s)`} value={unitOfTime}>
+          <MenuItem
+            key={`${unitOfTime}-second(s)`}
+            value={unitOfTime}
+            translate="yes"
+          >
             {`/ ${timeUnitWordMap[unitOfTime]}`}
           </MenuItem>
         ))}

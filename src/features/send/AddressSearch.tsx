@@ -71,9 +71,11 @@ export default memo(function AddressSearch({
         {...ButtonProps}
       >
         {address ? (
-          <AddressName address={address} length={addressLength} />
+          <span translate="no">
+            <AddressName address={address} length={addressLength} />
+          </span>
         ) : (
-          placeholder
+          <span translate="yes">{placeholder}</span>
         )}
       </Button>
 

@@ -103,6 +103,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
         data-cy={"token-symbol-and-name"}
         primary={token.symbol}
         secondary={token.name}
+        translate="no"
       />
 
       <Typography

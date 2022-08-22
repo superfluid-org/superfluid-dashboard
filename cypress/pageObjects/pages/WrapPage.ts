@@ -38,7 +38,7 @@ export class WrapPage extends BasePage {
     }
 
     static upgradeButtonIsDisabled() {
-        this.hasText(UPGRADE_BUTTON, "Upgrade to Super Token");
+        this.hasText(UPGRADE_BUTTON, "Wrap");
         this.isDisabled(UPGRADE_BUTTON);
     }
 
@@ -56,7 +56,7 @@ export class WrapPage extends BasePage {
     }
 
     static downgradeButtonIsDisabled() {
-        this.hasText(DOWNGRADE_BUTTON, "Downgrade");
+        this.hasText(DOWNGRADE_BUTTON, "Unwrap");
         this.isDisabled(DOWNGRADE_BUTTON);
     }
 

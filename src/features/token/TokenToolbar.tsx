@@ -67,6 +67,7 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
             <Chip
               size="small"
               label={network.name}
+              translate="no"
               avatar={<NetworkIcon network={network} size={18} fontSize={14} />}
             />
           </>

@@ -45,7 +45,7 @@ export const AddressListItem: FC<AddressListItemProps> = ({
   const { name, addressChecksummed: checksumHex } = useAddressName(address);
 
   return (
-    <ListItemButton onClick={onClick} sx={LIST_ITEM_STYLE}>
+    <ListItemButton onClick={onClick} sx={LIST_ITEM_STYLE} translate="no">
       <ListItemAvatar>
         <AddressAvatar address={checksumHex} />
       </ListItemAvatar>
@@ -166,12 +166,12 @@ export default memo(function AddressSearchDialog({
                 <ListSubheader sx={{ px: 3 }}>ENS</ListSubheader>
                 {(ensQuery.isFetching || !searchSynced) && (
                   <ListItem sx={LIST_ITEM_STYLE}>
-                    <ListItemText primary="Loading..." />
+                    <ListItemText translate="yes" primary="Loading..." />
                   </ListItem>
                 )}
                 {ensQuery.isError && (
                   <ListItem sx={LIST_ITEM_STYLE}>
-                    <ListItemText primary="Error" />
+                    <ListItemText translate="yes" primary="Error" />
                   </ListItem>
                 )}
                 {!ensQuery.isLoading && !ensQuery.isFetching && searchSynced && (
@@ -185,7 +185,7 @@ export default memo(function AddressSearchDialog({
                       />
                     ) : (
                       <ListItem sx={LIST_ITEM_STYLE}>
-                        <ListItemText primary="No results" />
+                        <ListItemText translate="yes" primary="No results" />
                       </ListItem>
                     )}
                   </>
@@ -198,7 +198,7 @@ export default memo(function AddressSearchDialog({
                 <ListSubheader sx={{ px: 3 }}>Address Book</ListSubheader>
                 {addressBookResults.length === 0 && (
                   <ListItem sx={LIST_ITEM_STYLE}>
-                    <ListItemText primary="No results" />
+                    <ListItemText translate="yes" primary="No results" />
                   </ListItem>
                 )}
                 {addressBookResults.map((addressBookEntry) => (

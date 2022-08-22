@@ -7,8 +7,8 @@ import WrapCard from "../features/tokenWrapping/WrapCard";
 import WrappingFormProvider from "../features/tokenWrapping/WrappingFormProvider";
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
 import {
-  SuperTokenDowngradeRestoration,
-  SuperTokenUpgradeRestoration,
+  SuperTokenDowngradeRestoration as SuperTokenUnwrapRestoration,
+  SuperTokenUpgradeRestoration as SuperTokenWrapRestoration,
   RestorationType,
 } from "../features/transactionRestoration/transactionRestorations";
 
@@ -27,16 +27,16 @@ const Wrap: NextPage = () => {
 
   const { restoration, onRestored } = useTransactionRestorationContext();
 
-  let upgradeRestoration: SuperTokenUpgradeRestoration | undefined;
-  let downgradeRestoration: SuperTokenDowngradeRestoration | undefined;
+  let wrapRestoration: SuperTokenWrapRestoration | undefined;
+  let unwrapRestoration: SuperTokenUnwrapRestoration | undefined;
 
   if (restoration) {
     switch (restoration.type) {
-      case RestorationType.Upgrade:
-        upgradeRestoration = restoration as SuperTokenUpgradeRestoration;
+      case RestorationType.Wrap:
+        wrapRestoration = restoration as SuperTokenWrapRestoration;
         break;
-      case RestorationType.Downgrade:
-        downgradeRestoration = restoration as SuperTokenDowngradeRestoration;
+      case RestorationType.Unwrap:
+        unwrapRestoration = restoration as SuperTokenUnwrapRestoration;
         break;
     }
     onRestored();
@@ -57,7 +57,7 @@ const Wrap: NextPage = () => {
           }}
         >
           <WrappingFormProvider
-            restoration={upgradeRestoration || downgradeRestoration}
+            restoration={wrapRestoration || unwrapRestoration}
           >
             {tabValue && <WrapCard tabValue={tabValue} />}
           </WrappingFormProvider>

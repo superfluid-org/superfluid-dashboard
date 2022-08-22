@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Container,
-  IconButton,
   Paper,
   Stack,
   Table,
@@ -13,13 +12,15 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { add, endOfDay, format, startOfDay, startOfMonth } from "date-fns";
+import { add, endOfDay, format, startOfDay } from "date-fns";
 import flatten from "lodash/fp/flatten";
 import groupBy from "lodash/fp/groupBy";
 import orderBy from "lodash/fp/orderBy";
 import { NextPage } from "next";
 import { MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
+import DatePicker from "../components/DatePicker/DatePicker";
 import OpenIcon from "../components/OpenIcon/OpenIcon";
+import SEO from "../components/SEO/SEO";
 import ActivityRow from "../features/activityHistory/ActivityRow";
 import ActivityTypeFilter, {
   ActivityType,
@@ -27,14 +28,12 @@ import ActivityTypeFilter, {
   AllActivityTypes,
 } from "../features/activityHistory/ActivityTypeFilter";
 import LoadingActivityGroup from "../features/activityHistory/LoadingActivityGroup";
-import DatePicker from "../components/DatePicker/DatePicker";
 import { useActiveNetworks } from "../features/network/ActiveNetworksContext";
 import NetworkSelectionFilter from "../features/network/NetworkSelectionFilter";
 import { subgraphApi } from "../features/redux/store";
 import AddressSearch from "../features/send/AddressSearch";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { Activity, mapActivitiesFromEvents } from "../utils/activityUtils";
-import SEO from "../components/SEO/SEO";
 
 const History: NextPage = () => {
   const theme = useTheme();
@@ -175,7 +174,7 @@ const History: NextPage = () => {
     <SEO title="Activity History | Superfluid">
       <Container maxWidth="lg">
         <Stack gap={isBelowMd ? 2.5 : 4.5}>
-          <Typography variant="h3" component="h1">
+          <Typography variant="h3" component="h1" translate="yes">
             Activity History
           </Typography>
 
@@ -214,6 +213,7 @@ const History: NextPage = () => {
                 size="large"
                 startIcon={<DateRangeIcon />}
                 onClick={openDatePicker}
+                translate="no"
                 sx={{
                   [theme.breakpoints.down("md")]: {
                     p: 1,

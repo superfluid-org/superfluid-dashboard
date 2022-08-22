@@ -37,6 +37,7 @@ const TokenGraphFilter: FC<TokenGraphFilterProps> = ({
         color={getGraphFilterColor(GraphType.Week)}
         onClick={onGraphTypeChange(GraphType.Week)}
         size="xs"
+        translate="no"
       >
         7D
       </Button>
@@ -45,6 +46,7 @@ const TokenGraphFilter: FC<TokenGraphFilterProps> = ({
         color={getGraphFilterColor(GraphType.Month)}
         onClick={onGraphTypeChange(GraphType.Month)}
         size="xs"
+        translate="no"
       >
         1M
       </Button>
@@ -53,6 +55,7 @@ const TokenGraphFilter: FC<TokenGraphFilterProps> = ({
         color={getGraphFilterColor(GraphType.Quarter)}
         onClick={onGraphTypeChange(GraphType.Quarter)}
         size="xs"
+        translate="no"
       >
         3M
       </Button>
@@ -61,6 +64,7 @@ const TokenGraphFilter: FC<TokenGraphFilterProps> = ({
         color={getGraphFilterColor(GraphType.Year)}
         onClick={onGraphTypeChange(GraphType.Year)}
         size="xs"
+        translate="no"
       >
         1Y
       </Button>
@@ -69,6 +73,7 @@ const TokenGraphFilter: FC<TokenGraphFilterProps> = ({
         color={getGraphFilterColor(GraphType.YTD)}
         onClick={onGraphTypeChange(GraphType.YTD)}
         size="xs"
+        translate="no"
       >
         YTD
       </Button>

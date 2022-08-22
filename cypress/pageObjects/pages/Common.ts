@@ -12,7 +12,7 @@ const NAVIGATION_DRAWER = "[data-cy=navigation-drawer]";
 const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet-button]";
 const VIEW_MODE_INPUT = "[data-cy=view-mode-inputs]";
 const ADDRESS_DIALOG_INPUT = "[data-cy=address-dialog-input] input";
-const VIEWED_ACCOUNT = "[data-cy=view-mode-chip] span";
+const VIEWED_ACCOUNT = "[data-cy=view-mode-chip] > span";
 const VIEW_MODE_CHIP_CLOSE =
     "[data-cy=view-mode-chip] [data-testid=CancelIcon]";
 const WAGMI_CONNECT_WALLET_TITLE = "#rk_connect_title";

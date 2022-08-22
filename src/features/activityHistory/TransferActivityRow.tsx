@@ -61,6 +61,7 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
             primary={isOutgoing ? "Send Transfer" : "Receive Transfer"}
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
+              translate: "yes",
               variant: isBelowMd ? "h7" : "h6",
             }}
             secondaryTypographyProps={{
@@ -127,6 +128,7 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
                   </AddressCopyTooltip>
                 }
                 primaryTypographyProps={{
+                  translate: "yes",
                   variant: "body2",
                   color: "text.secondary",
                 }}

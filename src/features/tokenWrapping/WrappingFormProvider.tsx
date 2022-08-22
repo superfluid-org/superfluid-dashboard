@@ -27,7 +27,7 @@ import {
 import { useTokenPairsQuery } from "./useTokenPairsQuery";
 
 export type WrappingForm = {
-  type: RestorationType.Downgrade | RestorationType.Upgrade;
+  type: RestorationType.Wrap | RestorationType.Unwrap;
   data: {
     tokenPair?: {
       superTokenAddress: string;
@@ -104,7 +104,7 @@ const WrappingFormProvider: FC<{
           validForm.data.tokenPair;
 
         if (accountAddress) {
-          if (type === RestorationType.Upgrade) {
+          if (type === RestorationType.Wrap) {
             const { underlyingToken } =
               tokenPairsQuery.data.find(
                 (x) =>
@@ -170,7 +170,7 @@ The chain ID was: ${network.id}`);
             }
           }
 
-          if (type === RestorationType.Downgrade) {
+          if (type === RestorationType.Unwrap) {
             if (accountAddress) {
               const realtimeBalance = await queryRealtimeBalance(
                 {

@@ -157,6 +157,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
                   data-cy="network-name"
                   variant="h5"
                   color="text.primary"
+                  translate="no"
                 >
                   {network.name}
                 </Typography>
