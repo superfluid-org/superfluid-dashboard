@@ -1,4 +1,3 @@
-import EditIcon from "@mui/icons-material/Edit";
 import PercentRoundedIcon from "@mui/icons-material/PercentRounded";
 import {
   ListItem,
@@ -12,7 +11,7 @@ import {
 } from "@mui/material";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
-import { FC, useCallback, useMemo } from "react";
+import { FC, useMemo } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import { IndexUnitsUpdatedActivity } from "../../utils/activityUtils";
@@ -21,7 +20,6 @@ import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
-import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
@@ -37,6 +35,7 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivity> = ({
   const { visibleAddress } = useVisibleAddress();
 
   const {
+    indexId,
     timestamp,
     publisher,
     subscriber,
@@ -44,6 +43,7 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivity> = ({
     units,
     oldUnits,
     transactionHash,
+    blockNumber,
   } = keyEvent;
 
   const tokenQuery = subgraphApi.useTokenQuery({
@@ -51,14 +51,37 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivity> = ({
     id: token,
   });
 
+  const indexQuery = subgraphApi.useIndexQuery({
+    chainId: network.id,
+    id: `${publisher}-${token}-${indexId}`,
+    block: {
+      number: blockNumber,
+    },
+  });
+
   const getUnitsLabel = (units: string) =>
     BigNumber.from(units).eq(BigNumber.from(1)) ? "unit" : "units";
 
+  const unitsDiff = useMemo(
+    () => BigNumber.from(units).sub(BigNumber.from(oldUnits)),
+    [units, oldUnits]
+  );
+
   const unitsDiffString = useMemo(() => {
-    const diff = BigNumber.from(units).sub(BigNumber.from(oldUnits));
-    const sign = diff.gte(BIG_NUMBER_ZERO) ? "+" : "-";
-    return `${sign}${diff} ${getUnitsLabel(diff.toString())}`;
-  }, [units, oldUnits]);
+    const sign = unitsDiff.gte(BIG_NUMBER_ZERO) ? "+" : "-";
+    return `${sign}${unitsDiff} ${getUnitsLabel(unitsDiff.toString())}`;
+  }, [unitsDiff]);
+
+  const unitsPercentage = useMemo(() => {
+    if (!indexQuery.data) return undefined;
+    const percentage = BigNumber.from(units)
+      .mul(100)
+      .div(BigNumber.from(indexQuery.data.totalUnits))
+      .toNumber()
+      .toFixed(2);
+
+    return `${percentage}%`;
+  }, [indexQuery.data, units]);
 
   const isPublisher = visibleAddress?.toLowerCase() === publisher.toLowerCase();
 
@@ -91,8 +114,8 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivity> = ({
             />
           </ListItemAvatar>
           <ListItemText
-            primary={unitsDiffString}
-            secondary={`${units} ${getUnitsLabel(units)} total`}
+            primary={unitsPercentage}
+            secondary={unitsDiffString}
             primaryTypographyProps={{
               variant: "h6mono",
             }}

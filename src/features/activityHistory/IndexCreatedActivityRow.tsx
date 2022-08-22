@@ -60,25 +60,10 @@ const IndexCreatedActivityRow: FC<Activity<IndexCreatedEvent>> = ({
               isLoading={tokenQuery.isLoading}
             />
           </ListItemAvatar>
+          <ListItemText primary={tokenQuery.data?.symbol} />
         </ListItem>
       </TableCell>
-      <TableCell>
-        <ListItem sx={{ p: 0 }}>
-          <ListItemText
-            primary={"ID"}
-            secondary={indexId}
-            primaryTypographyProps={{
-              variant: "body2",
-              color: "text.secondary",
-            }}
-            secondaryTypographyProps={{
-              variant: "h6",
-              color: "text.primary",
-            }}
-            sx={{ ml: 6.5 }}
-          />
-        </ListItem>
-      </TableCell>
+      <TableCell></TableCell>
       <TableCell sx={{ position: "relative" }}>
         <TxHashLink txHash={transactionHash} network={network} />
         <NetworkBadge

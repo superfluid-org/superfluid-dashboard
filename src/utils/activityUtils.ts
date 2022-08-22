@@ -4,7 +4,6 @@ import {
   AllEvents,
   BurnedEvent,
   FlowUpdatedEvent,
-  IndexCreatedEvent,
   IndexDistributionClaimedEvent,
   IndexSubscribedEvent,
   IndexUnitsUpdatedEvent,

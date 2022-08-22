@@ -46,7 +46,7 @@ const IndexUnsubscribedActivityRow: FC<IndexUnsubscribedActivity> = ({
         <ListItem sx={{ p: 0 }}>
           <ActivityIcon icon={NotInterestedRoundedIcon} />
           <ListItemText
-            primary="Unsubscribe Distribution"
+            primary="Subscription Rejected"
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
