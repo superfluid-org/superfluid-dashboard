@@ -190,4 +190,8 @@ export class WrapPage extends BasePage {
             );
         });
     }
+
+    static test() {
+        cy.visitWithProvider("/")
+    }
 }

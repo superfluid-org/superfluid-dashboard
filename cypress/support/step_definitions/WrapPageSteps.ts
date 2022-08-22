@@ -81,3 +81,6 @@ Then(/^The super token balances in the unwrap token dialog are shown correctly o
 Then(/^All tokens have an animation around them$/, () => {
     SendPage.verifyAllSupertokenAnimations();
 });
+Given(/^test$/, function () {
+    WrapPage.test()
+});
