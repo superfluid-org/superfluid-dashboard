@@ -45,7 +45,7 @@ export const getAppWallets = ({
           : []),
         wallet.walletConnect({ chains }),
         wallet.coinbase({ appName, chains }),
-        wallet.ledger({ chains, infuraID }),
+        wallet.ledger({ chains, infuraId }),
         ...(needsMock
           ? [mockConnector({ chains })]
           : [])
