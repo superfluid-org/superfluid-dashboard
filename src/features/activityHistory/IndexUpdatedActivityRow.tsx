@@ -3,6 +3,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Stack,
   TableCell,
   TableRow,
   useMediaQuery,
@@ -91,74 +92,108 @@ const IndexUpdatedActivityRow: FC<Activity<IndexUpdatedEvent>> = ({
           />
         </ListItem>
       </TableCell>
-      <TableCell>
-        <ListItem sx={{ p: 0 }}>
-          <ListItemAvatar>
-            <TokenIcon
-              isSuper
-              tokenSymbol={tokenQuery.data?.symbol}
-              isUnlisted={!tokenQuery.data?.isListed}
-              isLoading={tokenQuery.isLoading}
+      {!isBelowMd ? (
+        <>
+          <TableCell>
+            <ListItem sx={{ p: 0 }}>
+              <ListItemAvatar>
+                <TokenIcon
+                  isSuper
+                  tokenSymbol={tokenQuery.data?.symbol}
+                  isUnlisted={!tokenQuery.data?.isListed}
+                  isLoading={tokenQuery.isLoading}
+                />
+              </ListItemAvatar>
+              <ListItemText
+                primary={
+                  <>
+                    -
+                    <Amount wei={totalDistributed} />
+                    {` `}
+                    {tokenQuery.data?.symbol}
+                  </>
+                }
+                primaryTypographyProps={{
+                  variant: "h6mono",
+                  color: "error",
+                }}
+                secondaryTypographyProps={{
+                  variant: "body2mono",
+                  color: "text.secondary",
+                }}
+              />
+            </ListItem>
+          </TableCell>
+          <TableCell>
+            <ListItem sx={{ p: 0 }}>
+              <ListItemText
+                primary={
+                  <>
+                    <span translate="yes">Approved: </span>
+                    <Amount wei={distributedApproved} />
+                    {` `}
+                    {tokenQuery.data?.symbol}
+                  </>
+                }
+                secondary={
+                  <>
+                    <span translate="yes">Pending: </span>
+                    <Amount wei={distributedPending} />
+                    {` `}
+                    {tokenQuery.data?.symbol}
+                  </>
+                }
+                primaryTypographyProps={{
+                  variant: "h6",
+                  color: "text.primary",
+                }}
+                secondaryTypographyProps={{
+                  variant: "body2",
+                  color: "text.secondary",
+                }}
+                sx={{ ml: 6.5 }}
+              />
+            </ListItem>
+          </TableCell>
+          <TableCell sx={{ position: "relative" }}>
+            <TxHashLink txHash={transactionHash} network={network} />
+            <NetworkBadge
+              network={network}
+              sx={{ position: "absolute", top: "0px", right: "16px" }}
             />
-          </ListItemAvatar>
-          <ListItemText
-            primary={
-              <>
-                -
-                <Amount wei={totalDistributed} />
-                {` `}
-                {tokenQuery.data?.symbol}
-              </>
-            }
-            primaryTypographyProps={{
-              variant: "h6mono",
-              color: "error",
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
-        </ListItem>
-      </TableCell>
-      <TableCell>
-        <ListItem sx={{ p: 0 }}>
-          <ListItemText
-            primary={
-              <>
-                <span translate="yes">Approved: </span>
-                <Amount wei={distributedApproved} />
-                {` `}
-                {tokenQuery.data?.symbol}
-              </>
-            }
-            secondary={
-              <>
-                <span translate="yes">Pending: </span>
-                <Amount wei={distributedPending} />
-                {` `}
-                {tokenQuery.data?.symbol}
-              </>
-            }
-            primaryTypographyProps={{
-              variant: "h6",
-              color: "text.primary",
-            }}
-            secondaryTypographyProps={{
-              variant: "body2",
-              color: "text.secondary",
-            }}
-            sx={{ ml: 6.5 }}
-          />
-        </ListItem>
-      </TableCell>
-      <TableCell sx={{ position: "relative" }}>
-        <TxHashLink txHash={transactionHash} network={network} />
-        <NetworkBadge
-          network={network}
-          sx={{ position: "absolute", top: "0px", right: "16px" }}
-        />
-      </TableCell>
+          </TableCell>
+        </>
+      ) : (
+        <TableCell align="right">
+          <Stack direction="row" alignItems="center" gap={1}>
+            <ListItemText
+              primary={
+                <>
+                  -
+                  <Amount wei={totalDistributed} />
+                </>
+              }
+              secondary={tokenQuery.data?.symbol || ""}
+              primaryTypographyProps={{
+                variant: "h6mono",
+                color: "error",
+              }}
+              secondaryTypographyProps={{
+                variant: "body2mono",
+                color: "text.secondary",
+              }}
+            />
+            <ListItemAvatar>
+              <TokenIcon
+                isSuper
+                tokenSymbol={tokenQuery.data?.symbol}
+                isUnlisted={!tokenQuery.data?.isListed}
+                isLoading={tokenQuery.isLoading}
+              />
+            </ListItemAvatar>
+          </Stack>
+        </TableCell>
+      )}
     </TableRow>
   );
 };

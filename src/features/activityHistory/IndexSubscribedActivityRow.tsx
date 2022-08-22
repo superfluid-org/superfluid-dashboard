@@ -3,6 +3,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Stack,
   TableCell,
   TableRow,
   Typography,
@@ -95,68 +96,108 @@ const IndexSubscribedActivityRow: FC<IndexSubscribedActivity> = ({
           />
         </ListItem>
       </TableCell>
-      <TableCell>
-        <ListItem sx={{ p: 0 }}>
-          <ListItemAvatar>
-            <TokenIcon
-              isSuper
-              tokenSymbol={tokenQuery.data?.symbol}
-              isUnlisted={!tokenQuery.data?.isListed}
-              isLoading={tokenQuery.isLoading}
+      {!isBelowMd ? (
+        <>
+          <TableCell>
+            <ListItem sx={{ p: 0 }}>
+              <ListItemAvatar>
+                <TokenIcon
+                  isSuper
+                  tokenSymbol={tokenQuery.data?.symbol}
+                  isUnlisted={!tokenQuery.data?.isListed}
+                  isLoading={tokenQuery.isLoading}
+                />
+              </ListItemAvatar>
+              <ListItemText
+                primary={
+                  <>
+                    {amountReceived && (
+                      <>
+                        +<Amount wei={amountReceived} />
+                      </>
+                    )}{" "}
+                    {tokenQuery.data?.symbol}
+                  </>
+                }
+                primaryTypographyProps={{
+                  variant: "h6mono",
+                  color:
+                    amountReceived && amountReceived !== "0"
+                      ? "primary"
+                      : "inherit",
+                }}
+              />
+            </ListItem>
+          </TableCell>
+          <TableCell>
+            <ListItem sx={{ p: 0 }}>
+              <ListItemAvatar>
+                <AddressAvatar address={isPublisher ? subscriber : publisher} />
+              </ListItemAvatar>
+              <ListItemText
+                primary={isPublisher ? "Subscriber" : "Publisher"}
+                secondary={
+                  <AddressCopyTooltip
+                    address={isPublisher ? subscriber : publisher}
+                  >
+                    <Typography
+                      variant="h6"
+                      color="text.primary"
+                      component="span"
+                    >
+                      <AddressName
+                        address={isPublisher ? subscriber : publisher}
+                      />
+                    </Typography>
+                  </AddressCopyTooltip>
+                }
+                primaryTypographyProps={{
+                  variant: "body2",
+                  color: "text.secondary",
+                  translate: "yes",
+                }}
+              />
+            </ListItem>
+          </TableCell>
+          <TableCell sx={{ position: "relative" }}>
+            <TxHashLink txHash={transactionHash} network={network} />
+            <NetworkBadge
+              network={network}
+              sx={{ position: "absolute", top: "0px", right: "16px" }}
             />
-          </ListItemAvatar>
-          <ListItemText
-            primary={
-              <>
-                {amountReceived && (
+          </TableCell>
+        </>
+      ) : (
+        <TableCell align="right">
+          <Stack direction="row" alignItems="center" gap={1}>
+            <ListItemText
+              primary={
+                amountReceived && (
                   <>
                     +<Amount wei={amountReceived} />
                   </>
-                )}{" "}
-                {tokenQuery.data?.symbol}
-              </>
-            }
-            primaryTypographyProps={{
-              variant: "h6mono",
-              color:
-                amountReceived && amountReceived !== "0"
-                  ? "primary"
-                  : "inherit",
-            }}
-          />
-        </ListItem>
-      </TableCell>
-      <TableCell>
-        <ListItem sx={{ p: 0 }}>
-          <ListItemAvatar>
-            <AddressAvatar address={isPublisher ? subscriber : publisher} />
-          </ListItemAvatar>
-          <ListItemText
-            primary={isPublisher ? "Subscriber" : "Publisher"}
-            secondary={
-              <AddressCopyTooltip
-                address={isPublisher ? subscriber : publisher}
-              >
-                <Typography variant="h6" color="text.primary" component="span">
-                  <AddressName address={isPublisher ? subscriber : publisher} />
-                </Typography>
-              </AddressCopyTooltip>
-            }
-            primaryTypographyProps={{
-              variant: "body2",
-              color: "text.secondary",
-              translate: "yes",
-            }}
-          />
-        </ListItem>
-      </TableCell>
-      <TableCell sx={{ position: "relative" }}>
-        <TxHashLink txHash={transactionHash} network={network} />
-        <NetworkBadge
-          network={network}
-          sx={{ position: "absolute", top: "0px", right: "16px" }}
-        />
-      </TableCell>
+                )
+              }
+              secondary={tokenQuery.data?.symbol}
+              primaryTypographyProps={{
+                variant: "h6mono",
+                color:
+                  amountReceived && amountReceived !== "0"
+                    ? "primary"
+                    : "inherit",
+              }}
+            />
+            <ListItemAvatar>
+              <TokenIcon
+                isSuper
+                tokenSymbol={tokenQuery.data?.symbol}
+                isUnlisted={!tokenQuery.data?.isListed}
+                isLoading={tokenQuery.isLoading}
+              />
+            </ListItemAvatar>
+          </Stack>
+        </TableCell>
+      )}
     </TableRow>
   );
 };

@@ -3,6 +3,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Stack,
   TableCell,
   TableRow,
   useMediaQuery,
@@ -51,27 +52,46 @@ const IndexCreatedActivityRow: FC<Activity<IndexCreatedEvent>> = ({
           />
         </ListItem>
       </TableCell>
-      <TableCell>
-        <ListItem sx={{ p: 0 }}>
-          <ListItemAvatar>
-            <TokenIcon
-              isSuper
-              tokenSymbol={tokenQuery.data?.symbol}
-              isUnlisted={!tokenQuery.data?.isListed}
-              isLoading={tokenQuery.isLoading}
+
+      {!isBelowMd ? (
+        <>
+          <TableCell>
+            <ListItem sx={{ p: 0 }}>
+              <ListItemAvatar>
+                <TokenIcon
+                  isSuper
+                  tokenSymbol={tokenQuery.data?.symbol}
+                  isUnlisted={!tokenQuery.data?.isListed}
+                  isLoading={tokenQuery.isLoading}
+                />
+              </ListItemAvatar>
+              <ListItemText primary={tokenQuery.data?.symbol} />
+            </ListItem>
+          </TableCell>
+          <TableCell></TableCell>
+          <TableCell sx={{ position: "relative" }}>
+            <TxHashLink txHash={transactionHash} network={network} />
+            <NetworkBadge
+              network={network}
+              sx={{ position: "absolute", top: "0px", right: "16px" }}
             />
-          </ListItemAvatar>
-          <ListItemText primary={tokenQuery.data?.symbol} />
-        </ListItem>
-      </TableCell>
-      <TableCell></TableCell>
-      <TableCell sx={{ position: "relative" }}>
-        <TxHashLink txHash={transactionHash} network={network} />
-        <NetworkBadge
-          network={network}
-          sx={{ position: "absolute", top: "0px", right: "16px" }}
-        />
-      </TableCell>
+          </TableCell>
+        </>
+      ) : (
+        <TableCell align="right">
+          <Stack direction="row" alignItems="center" gap={1}>
+            <ListItemText primary={tokenQuery.data?.symbol} />
+            <ListItemAvatar>
+              <TokenIcon
+                isSuper
+                tokenSymbol={tokenQuery.data?.symbol}
+                isUnlisted={!tokenQuery.data?.isListed}
+                isLoading={tokenQuery.isLoading}
+              />
+            </ListItemAvatar>
+          </Stack>
+        </TableCell>
+      )}
     </TableRow>
   );
 };
