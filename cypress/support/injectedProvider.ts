@@ -19,16 +19,17 @@ export const TEST_ADDRESS_NEVER_USE_SHORTENED = `${TEST_ADDRESS_NEVER_USE.substr
     6
 )}...${TEST_ADDRESS_NEVER_USE.substr(-4, 4)}`
 
-const provider = new JsonRpcProvider('https://rpc-endpoints.superfluid.dev/polygon-mainnet', 137)
+const provider = new JsonRpcProvider('https://rpc-endpoints.superfluid.dev/polygon-mainnet', "matic")
 const signer = new Wallet(TEST_PRIVATE_KEY, provider)
 export const injected = new (class extends Eip1193Bridge {
     chainId = 137
+
     async sendAsync(...args: any[]) {
-        console.log('sendAsync called', ...args)
+        console.debug('sendAsync called', ...args)
         return this.send(...args)
     }
     async send(...args: any[]) {
-        console.log('send called', ...args)
+        console.debug('send called', ...args)
         const isCallbackForm = typeof args[0] === 'object' && typeof args[1] === 'function'
         let callback
         let method
@@ -50,61 +51,58 @@ export const injected = new (class extends Eip1193Bridge {
         }
         if (method === 'eth_chainId') {
             if (isCallbackForm) {
-                console.log("in callback")
                 callback(null, { result: '0x89' })
+                console.debug("no idea what is a callback form but it is there")
             } else {
-                console.log("promise")
+                console.debug('resolved promise with 0x89')
                 return Promise.resolve('0x89')
             }
         }
         try {
             // If from is present on eth_call it errors, removing it makes the library set
             // from as the connected wallet which works fine
-            if (params && params.length && params[0].from && method === "eth_call")
-                delete params[0].from;
-            let result;
+            if (params && params.length && params[0].from && method === 'eth_call') delete params[0].from
+            let result
             // For sending a transaction if we call send it will error
             // as it wants gasLimit in sendTransaction but hexlify sets the property gas
             // to gasLimit which makes sensd transaction error.
             // This have taken the code from the super method for sendTransaction and altered
             // it slightly to make it work with the gas limit issues.
-            if (
-                params &&
-                params.length &&
-                params[0].from &&
-                method === "eth_sendTransaction"
-            ) {
+            if (params && params.length && params[0].from && method === 'eth_sendTransaction') {
                 // Hexlify will not take gas, must be gasLimit, set this property to be gasLimit
-                params[0].gasLimit = params[0].gas;
-                delete params[0].gas;
+                params[0].gasLimit = params[0].gas
+                delete params[0].gas
                 // If from is present on eth_sendTransaction it errors, removing it makes the library set
                 // from as the connected wallet which works fine
-                delete params[0].from;
-                const req = ethers.providers.JsonRpcProvider.hexlifyTransaction(
-                    params[0]
-                );
+                delete params[0].from
+                console.log(params[0])
+                const req = ethers.providers.JsonRpcProvider.hexlifyTransaction(params[0])
+
                 // Hexlify sets the gasLimit property to be gas again and send transaction requires gasLimit
-                req.gasLimit = req.gas;
-                delete req.gas;
+                req.gasLimit = req.gas
+                delete req.gas
                 // Send the transaction
-                const tx = await this.signer.sendTransaction(req);
-                result = tx.hash;
+                // @ts-ignore
+                console.log("Signer network",await this.signer.provider.getNetwork())
+
+                const tx = await this.signer.sendTransaction(req)
+                result = tx.hash
+                console.log("WOW",tx.hash)
             } else {
                 // All other transactions the base class works for
-                result = await super.send(method, params);
+                result = await super.send(method, params)
             }
-            console.log("result received", method, params, result);
+            console.debug('result received', method, params, result)
             if (isCallbackForm) {
-                callback(null, { result });
+                callback(null, { result })
             } else {
-                return result;
+                return result
             }
         } catch (error) {
-            console.log(error);
             if (isCallbackForm) {
-                callback(error, null);
+                callback(error, null)
             } else {
-                throw error;
+                throw error
             }
         }
     }
