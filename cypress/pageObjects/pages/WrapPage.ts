@@ -1,5 +1,7 @@
 import {BasePage} from "../BasePage";
 import {networksBySlug} from "../../../src/features/network/networks";
+import shortenHex from "../../../src/utils/shortenHex";
+import { format } from "date-fns";
 
 const WRAP_TAB = "[data-cy=wrap-toggle]";
 const UNWRAP_TAB = "[data-cy=unwrap-toggle]";
@@ -19,6 +21,22 @@ const SUPER_TOKEN_BALANCE = "[data-cy=balance]";
 const TOKEN_SELECT_NAME = "[data-cy=token-symbol-and-name] p";
 const TOKEN_SELECT_SYMBOL = "[data-cy=token-symbol-and-name] span";
 const TOKEN_SELECT_BALANCE = "[data-cy=token-balance]";
+const APPROVAL_MESSAGE = "[data-cy=approval-message]";
+const TX_NETWORK = "[data-cy=tx-network]"
+const WRAP_MESSAGE = "[data-cy=wrap-message]"
+const LOADING_SPINNER = "[role=progressbar]"
+const WRAP_MORE_TOKENS_BUTTON = "[data-cy=wrap-more-tokens-button]"
+const GO_TO_TOKENS_PAGE_BUTTON = "[data-cy=go-to-tokens-page-button]"
+const TX_BROADCASTED_MESSAGE = "[data-cy=broadcasted-message]"
+const TX_BROADCASTED_ICON = "[data-cy=broadcasted-icon]"
+const DRAWER_TX = "[data-cy=transaction]"
+const TX_TYPE = `${DRAWER_TX} > * > span`
+const TX_DATE = `${DRAWER_TX} [data-cy=tx-date]`
+const TX_HASH = `${DRAWER_TX} [data-cy=tx-hash]`
+const TX_HASH_BUTTONS = `${DRAWER_TX} [data-cy=tx-hash-buttons] a`
+const RESTORE_BUTTONS = "[data-testid=ReplayIcon]"
+const TX_NETWORK_BADGES = `${DRAWER_TX} [data-cy=network-badge-`
+const PROGRESS_LINE = "[data-cy=progress-line]"
 
 export class WrapPage extends BasePage {
     static checkIfWrapContainerIsVisible() {
@@ -191,7 +209,89 @@ export class WrapPage extends BasePage {
         });
     }
 
-    static test() {
-        cy.visitWithProvider("/")
+    static rememberBalanceBeforeAndWrapToken() {
+        this.isNotDisabled(UPGRADE_BUTTON)
+        cy.get(UNDERLYING_BALANCE).then( el => {
+            cy.wrap(el.text().split("Balance: ")[1]).as("underlyingBalanceBeforeWrap")
+        })
+        cy.get(SUPER_TOKEN_BALANCE).then( el => {
+            cy.wrap(el.text()).as("superTokenBalanceBeforeWrap")
+        })
+        this.click(UPGRADE_BUTTON)
     }
+
+    static validateWrapTxDialogMessage(network: string , amount:string , token:string) {
+        this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
+        this.hasText(TX_NETWORK , `(${networksBySlug.get(network)?.name})`)
+        this.hasText(WRAP_MESSAGE , `You are wrapping ${amount} ${token} to the super token ${token}x.`)
+        this.isDisabled(UPGRADE_BUTTON)
+        this.isVisible(LOADING_SPINNER)
+        this.exists(`${UPGRADE_BUTTON} ${LOADING_SPINNER}`)
+    }
+
+    static validateWrapTxBroadcastedDialog() {
+        cy.get(TX_BROADCASTED_ICON, {timeout: 45000}).should("be.visible")
+        this.isVisible(WRAP_MORE_TOKENS_BUTTON)
+        this.isVisible(GO_TO_TOKENS_PAGE_BUTTON)
+        this.hasText(TX_BROADCASTED_MESSAGE , "Transaction broadcasted")
+    }
+
+    static clickTxDialogGoToTokensPageButton() {
+        this.click(GO_TO_TOKENS_PAGE_BUTTON)
+    }
+
+    static validatePendingTransaction(type: string, network: string) {
+        this.hasText(TX_TYPE , type)
+        this.isVisible("[data-cy=Pending-tx-status]")
+        cy.get(TX_HASH_BUTTONS).then(el => {
+            el.attr("href")?.substr(-66)
+            this.isVisible(TX_HASH)
+            this.hasText(TX_HASH,shortenHex(el.attr("href")!.substr(-66)))
+        })
+        this.isVisible(PROGRESS_LINE)
+        this.isVisible(RESTORE_BUTTONS)
+        this.hasText(TX_DATE,`${format(Date.now(), "d MMM")} •`)
+        this.hasAttributeWithValue(`${TX_NETWORK_BADGES}${networksBySlug.get(network)!.id}]`, "aria-label" , networksBySlug.get(network)!.name)
+        this.isVisible(`${TX_NETWORK_BADGES}${networksBySlug.get(network)!.id}]`)
+    }
+
+    static validateSuccessfulTransaction(type: any, network: any) {
+        this.hasText(TX_TYPE , type)
+        cy.get("[data-cy=Succeeded-tx-status]" , {timeout: 45000}).should("be.visible")
+        cy.get(TX_HASH_BUTTONS).then(el => {
+            el.attr("href")?.substr(-66)
+            this.isVisible(TX_HASH)
+            this.hasText(TX_HASH,shortenHex(el.attr("href")!.substr(-66)))
+        })
+        this.doesNotExist(PROGRESS_LINE)
+        this.isVisible(RESTORE_BUTTONS)
+        this.hasText(TX_DATE,`${format(Date.now(), "d MMM")} •`)
+        this.hasAttributeWithValue(`${TX_NETWORK_BADGES}${networksBySlug.get(network)!.id}]` , "aria-label" , networksBySlug.get(network)!.name)
+        this.isVisible(`${TX_NETWORK_BADGES}${networksBySlug.get(network)!.id}]`)
+    }
+
+    static validateBalanceAfterWrapping(token: string,network:string ,amount: string) {
+        cy.get("@superTokenBalanceBeforeWrap").then((balanceBefore:any) => {
+            let expectedAmount = (parseFloat(balanceBefore) + parseFloat(amount)).toFixed(1).toString()
+            cy.wrap(expectedAmount).as("expectedSuperTokenBalance")
+            this.hasText(`[data-cy=${network}-token-snapshot-table] [data-cy=${token}-cell] [data-cy=balance]` , `${expectedAmount} `)
+            cy.get(`[data-cy=${network}-token-snapshot-table] [data-cy=${token}-cell] [data-cy=balance]`).then(el => {
+                cy.wrap(parseFloat(el.text()).toFixed(1)).should("equal" , expectedAmount)
+            })
+        })
+    }
+
+    static validateWrapAmountAfterRestoration(amount: string) {
+        this.hasValue(`${WRAP_INPUT} input`,amount)
+    }
+
+    static validateTokenBalancesAfterWrap(amount: string) {
+        cy.get("@expectedSuperTokenBalance").then((balance:any) => {
+            this.hasText(SUPER_TOKEN_BALANCE,`${balance} `)
+        })
+        cy.get("@underlyingBalanceBeforeWrap").then((balanceBefore:any) => {
+            let expectedAmount = (parseFloat(balanceBefore) - parseFloat(amount)).toFixed(4).toString().substr(0,5)
+            this.containsText(UNDERLYING_BALANCE , `Balance: ${expectedAmount}`)
+        })
+        }
 }

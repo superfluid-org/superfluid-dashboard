@@ -54,5 +54,22 @@ Feature: Wrap page test cases
     And View mode chip does not exist
 
     @only
-    Scenario: test
-      Given test
+    Scenario: Wrapping network native tokens
+      Given Transactional account is connected to the dashboard on goerli
+      And User clicks on the "wrap-unwrap" navigation button
+      And User wraps the "0.1" of the selected token
+      And Transaction dialog for goerli is shown wrapping 0.1 ETH
+      And Transaction broadcasted message is shown
+      And User clicks on the go to tokens page button from tx dialog
+      And The transaction drawer shows a pending "Wrap to Super Token" transaction on "goerli"
+      And The transaction drawer shows a succeeded "Wrap to Super Token" transaction on "goerli"
+      And Users super token balance of "ETHx" on "goerli" increases by "0.1"
+      And User restores the last transaction
+      Then Wrap field input field has "0.1" written in it
+      And The token balances after wrapping "0.1" tokens are correctly shown
+
+  Scenario: Unwrapping network native token
+    Scenario: Wrapping normal underlying tokens
+    Scenario: Unwrapping normal super tokens
+
+

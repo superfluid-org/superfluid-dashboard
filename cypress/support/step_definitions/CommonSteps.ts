@@ -96,3 +96,9 @@ Then(/^View mode chip shows "([^"]*)"$/,  (message:string) => {
 Then(/^404 page is shown$/,  () => {
     Common.errorPageIsVisible()
 });
+Given(/^Transactional account is connected to the dashboard on ([^"]*)$/,  (network:string) => {
+    Common.openDashboardWithConnectedTxAccount(network)
+});
+Given(/^User restores the last transaction$/,  () => {
+    Common.restoreLastTx()
+});

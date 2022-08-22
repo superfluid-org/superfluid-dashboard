@@ -508,12 +508,14 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                   <TransactionDialogActions>
                     <Stack gap={1} sx={{ width: "100%" }}>
                       <TransactionDialogButton
+                        data-cy={"wrap-more-tokens-button"}
                         color="secondary"
                         onClick={closeDialog}
                       >
                         Wrap more tokens
                       </TransactionDialogButton>
                       <TransactionDialogButton
+                        data-cy={"go-to-tokens-page-button"}
                         color="primary"
                         onClick={() =>
                           router
@@ -543,7 +545,7 @@ const WrapPreview: FC<{
   superTokenSymbol: string;
 }> = ({ underlyingTokenSymbol, superTokenSymbol, amountWei }) => {
   return (
-    <Typography variant="h5" color="text.secondary" translate="yes">
+    <Typography data-cy="wrap-message" variant="h5" color="text.secondary" translate="yes">
       You are wrapping{" "}
       <span translate="no">
         {formatEther(amountWei)} {underlyingTokenSymbol}

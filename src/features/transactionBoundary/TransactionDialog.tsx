@@ -70,8 +70,8 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
               <CircularProgress size={80} />
             </Box>
             <Typography variant="h4">
-              <span translate="yes">Waiting for transaction approval...</span>{" "}
-              <span translate="no">({expectedNetwork.name})</span>
+              <span data-cy="approval-message" translate="yes">Waiting for transaction approval...</span>{" "}
+              <span data-cy="tx-network" translate="no">({expectedNetwork.name})</span>
             </Typography>
             {/* // TODO(KK): wrong font! */}
             <Stack sx={{ my: 2 }}>{loadingInfo}</Stack>
@@ -87,10 +87,10 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
         <TransactionDialogTitle></TransactionDialogTitle>
         <TransactionDialogContent>
           <Stack spacing={1} alignItems="center" textAlign="center">
-            <OutlineIcon>
+            <OutlineIcon data-cy={"broadcasted-icon"}>
               <ArrowUpwardRoundedIcon fontSize="large" color="primary" />
             </OutlineIcon>
-            <Typography sx={{ my: 2 }} variant="h4" color="text.secondary">
+            <Typography data-cy={"broadcasted-message"} sx={{ my: 2 }} variant="h4" color="text.secondary">
               Transaction broadcasted
             </Typography>
           </Stack>

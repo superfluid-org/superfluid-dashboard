@@ -81,6 +81,32 @@ Then(/^The super token balances in the unwrap token dialog are shown correctly o
 Then(/^All tokens have an animation around them$/, () => {
     SendPage.verifyAllSupertokenAnimations();
 });
-Given(/^test$/, function () {
-    WrapPage.test()
+
+Given(/^User wraps the "([^"]*)" of the selected token$/,  (amount:string) => {
+    WrapPage.clearAndInputWrapAmount(amount)
+    WrapPage.rememberBalanceBeforeAndWrapToken()
+});
+Given(/^Transaction dialog for ([^"]*) is shown wrapping ([^"]*) ([^"]*)$/,  (network:string ,amount:string,token:string) => {
+    WrapPage.validateWrapTxDialogMessage(network,amount,token)
+});
+Given(/^Transaction broadcasted message is shown$/,  () => {
+    WrapPage.validateWrapTxBroadcastedDialog()
+});
+Given(/^User clicks on the go to tokens page button from tx dialog$/,  () => {
+    WrapPage.clickTxDialogGoToTokensPageButton()
+});
+Given(/^The transaction drawer shows a pending "([^"]*)" transaction on "([^"]*)"$/,  (type:string , network:string) => {
+    WrapPage.validatePendingTransaction(type,network)
+});
+Given(/^The transaction drawer shows a succeeded "([^"]*)" transaction on "([^"]*)"$/,  (type:string , network:string) => {
+    WrapPage.validateSuccessfulTransaction(type,network)
+});
+Given(/^Users super token balance of "([^"]*)" on "([^"]*)" increases by "([^"]*)"$/,  (token:string, network:string, amount:string) => {
+    WrapPage.validateBalanceAfterWrapping(token,network,amount)
+});
+Then(/^Wrap field input field has "([^"]*)" written in it$/,  (amount:string) => {
+    WrapPage.validateWrapAmountAfterRestoration(amount)
+});
+Then(/^The token balances after wrapping "([^"]*)" tokens are correctly shown$/,  (amount:string) => {
+    WrapPage.validateTokenBalancesAfterWrap(amount)
 });
