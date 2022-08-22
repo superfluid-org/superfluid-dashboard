@@ -11,9 +11,11 @@ import mockConnector from "./mockConnector/mockConnector";
 export const getAppWallets = ({
   appName,
   chains,
+  infuraId
 }: {
   appName: string;
   chains: Chain[];
+  infuraId?: string;
 }): {
   connectors: ReturnType<typeof connectorsForWallets>;
   wallets: WalletList;
@@ -43,6 +45,7 @@ export const getAppWallets = ({
           : []),
         wallet.walletConnect({ chains }),
         wallet.coinbase({ appName, chains }),
+        wallet.ledger({ chains, infuraID }),
         ...(needsMock
           ? [mockConnector({ chains })]
           : [])
