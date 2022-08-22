@@ -5,7 +5,6 @@ import {
   ListItemText,
   TableCell,
   TableRow,
-  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -83,6 +82,7 @@ const IndexUpdatedActivityRow: FC<Activity<IndexUpdatedEvent>> = ({
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
+              translate: "yes",
             }}
             secondaryTypographyProps={{
               variant: "body2mono",
@@ -126,18 +126,18 @@ const IndexUpdatedActivityRow: FC<Activity<IndexUpdatedEvent>> = ({
           <ListItemText
             primary={
               <>
-                <span>Approved: </span>
-                <Amount wei={distributedApproved}>
-                  {` ${tokenQuery.data?.symbol}`}
-                </Amount>
+                <span translate="yes">Approved: </span>
+                <Amount wei={distributedApproved} />
+                {` `}
+                {tokenQuery.data?.symbol}
               </>
             }
             secondary={
               <>
-                <span>Pending: </span>
-                <Amount wei={distributedPending}>
-                  {` ${tokenQuery.data?.symbol}`}
-                </Amount>
+                <span translate="yes">Pending: </span>
+                <Amount wei={distributedPending} />
+                {` `}
+                {tokenQuery.data?.symbol}
               </>
             }
             primaryTypographyProps={{

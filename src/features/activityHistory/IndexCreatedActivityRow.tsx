@@ -25,7 +25,7 @@ const IndexCreatedActivityRow: FC<Activity<IndexCreatedEvent>> = ({
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { indexId, timestamp, token, transactionHash } = keyEvent;
+  const { timestamp, token, transactionHash } = keyEvent;
 
   const tokenQuery = subgraphApi.useTokenQuery({
     chainId: network.id,
@@ -42,6 +42,7 @@ const IndexCreatedActivityRow: FC<Activity<IndexCreatedEvent>> = ({
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
+              translate: "yes",
             }}
             secondaryTypographyProps={{
               variant: "body2mono",

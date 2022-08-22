@@ -82,10 +82,11 @@ const IndexSubscribedActivityRow: FC<IndexSubscribedActivity> = ({
         <ListItem sx={{ p: 0 }}>
           <ActivityIcon icon={CheckRoundedIcon} />
           <ListItemText
-            primary="Distribution Approved"
+            primary="Subscription Approved"
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
+              translate: "yes",
             }}
             secondaryTypographyProps={{
               variant: "body2mono",
@@ -144,6 +145,7 @@ const IndexSubscribedActivityRow: FC<IndexSubscribedActivity> = ({
             primaryTypographyProps={{
               variant: "body2",
               color: "text.secondary",
+              translate: "yes",
             }}
           />
         </ListItem>

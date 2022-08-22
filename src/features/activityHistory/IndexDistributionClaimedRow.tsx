@@ -1,5 +1,4 @@
 import CallSplitRoundedIcon from "@mui/icons-material/CallSplitRounded";
-import PercentRoundedIcon from "@mui/icons-material/PercentRounded";
 import {
   ListItem,
   ListItemAvatar,
@@ -11,15 +10,10 @@ import {
   useTheme,
 } from "@mui/material";
 import { format } from "date-fns";
-import { BigNumber } from "ethers";
-import { FC, useCallback, useMemo } from "react";
+import { FC } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
-import {
-  IndexDistributionClaimedActivity,
-  IndexUnitsUpdatedActivity,
-} from "../../utils/activityUtils";
-import { BIG_NUMBER_ZERO } from "../../utils/tokenUtils";
+import { IndexDistributionClaimedActivity } from "../../utils/activityUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
@@ -64,6 +58,7 @@ const IndexDistributionClaimedRow: FC<IndexDistributionClaimedActivity> = ({
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
+              translate: "yes",
             }}
             secondaryTypographyProps={{
               variant: "body2mono",
@@ -116,6 +111,7 @@ const IndexDistributionClaimedRow: FC<IndexDistributionClaimedActivity> = ({
             primaryTypographyProps={{
               variant: "body2",
               color: "text.secondary",
+              translate: "yes",
             }}
           />
         </ListItem>

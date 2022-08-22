@@ -50,6 +50,7 @@ const IndexUnsubscribedActivityRow: FC<IndexUnsubscribedActivity> = ({
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
+              translate: "yes",
             }}
             secondaryTypographyProps={{
               variant: "body2mono",
@@ -90,6 +91,7 @@ const IndexUnsubscribedActivityRow: FC<IndexUnsubscribedActivity> = ({
             primaryTypographyProps={{
               variant: "body2",
               color: "text.secondary",
+              translate: "yes",
             }}
           />
         </ListItem>

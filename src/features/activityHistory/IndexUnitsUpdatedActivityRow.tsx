@@ -62,19 +62,19 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivity> = ({
   const getUnitsLabel = (units: string) =>
     BigNumber.from(units).eq(BigNumber.from(1)) ? "unit" : "units";
 
-  const unitsDiff = useMemo(
-    () => BigNumber.from(units).sub(BigNumber.from(oldUnits)),
-    [units, oldUnits]
-  );
-
   const unitsDiffString = useMemo(() => {
-    const sign = unitsDiff.gte(BIG_NUMBER_ZERO) ? "+" : "-";
+    const unitsDiff = BigNumber.from(units).sub(BigNumber.from(oldUnits));
+    const sign = unitsDiff.gte(BIG_NUMBER_ZERO) ? "+" : "";
     return `${sign}${unitsDiff} ${getUnitsLabel(unitsDiff.toString())}`;
-  }, [unitsDiff]);
+  }, [units, oldUnits]);
 
-  const unitsPercentage = useMemo(() => {
+  const unitsPercentageString = useMemo(() => {
     if (!indexQuery.data) return undefined;
-    const percentage = BigNumber.from(units)
+
+    const unitsBN = BigNumber.from(units);
+    if (unitsBN.eq(0)) return `0%`;
+
+    const percentage = unitsBN
       .mul(100)
       .div(BigNumber.from(indexQuery.data.totalUnits))
       .toNumber()
@@ -114,7 +114,7 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivity> = ({
             />
           </ListItemAvatar>
           <ListItemText
-            primary={unitsPercentage}
+            primary={unitsPercentageString}
             secondary={unitsDiffString}
             primaryTypographyProps={{
               variant: "h6mono",
@@ -122,6 +122,7 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivity> = ({
             secondaryTypographyProps={{
               variant: "body2mono",
               color: "text.secondary",
+              translate: "yes",
             }}
           />
         </ListItem>
@@ -145,6 +146,7 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivity> = ({
             primaryTypographyProps={{
               variant: "body2",
               color: "text.secondary",
+              translate: "yes",
             }}
           />
         </ListItem>
