@@ -1,18 +1,30 @@
-import { BaseSuperTokenMutation, getFramework, registerNewTransactionAndReturnQueryFnResult, RpcEndpointBuilder, TransactionInfo } from "@superfluid-finance/sdk-redux";
+import { IWeb3FlowOperatorData } from "@superfluid-finance/sdk-core";
+import {
+  BaseQuery,
+  BaseSuperTokenMutation,
+  getFramework,
+  registerNewTransactionAndReturnQueryFnResult,
+  RpcEndpointBuilder,
+  TransactionInfo,
+} from "@superfluid-finance/sdk-redux";
 import { getGoerliSdk } from "../../../eth-sdk/client";
+import { STREAM_SCHEDULAR_CONTRACT_ADDRESS } from "../../../eth-sdk/config";
 
-interface UpdateFlowOperatorPermissions extends BaseSuperTokenMutation {
-  flowOperator: string;
+interface GetStreamSchedulerPermissions
+  extends BaseQuery<IWeb3FlowOperatorData> {
+  senderAddress: string;
+  superTokenAddress: string;
+}
+
+interface UpdateStreamSchedulerPermissions extends BaseSuperTokenMutation {
   permissions: number;
   flowRateAllowance: string;
   userData?: string;
 }
 
-interface CreateStreamOrder extends BaseSuperTokenMutation {
+interface ScheduleStreamEndDate extends BaseSuperTokenMutation {
   sender: string;
   receiver: string;
-  startDate: number;
-  startDuration: number;
   flowRateWei: string;
   endDate: number;
   userData: string;
@@ -20,18 +32,42 @@ interface CreateStreamOrder extends BaseSuperTokenMutation {
 
 export const streamSchedulerEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
-    updateFlowOperatorPermissions: builder.mutation<TransactionInfo, UpdateFlowOperatorPermissions>({
-      queryFn: async ({ chainId, ...arg}, { dispatch }) => {
+    getStreamSchedulerPermissions: builder.query<
+      IWeb3FlowOperatorData,
+      GetStreamSchedulerPermissions
+    >({
+      queryFn: async ({ chainId, superTokenAddress, senderAddress }) => {
         const framework = await getFramework(chainId);
-        const superToken = await framework.loadSuperToken(arg.superTokenAddress);
+        const superToken = await framework.loadSuperToken(superTokenAddress);
 
-        const transactionResponse = await superToken.updateFlowOperatorPermissions({
-          flowOperator: arg.flowOperator,
-          flowRateAllowance: arg.flowRateAllowance,
-          permissions: arg.permissions,
-          overrides: arg.overrides,
-          userData: arg.userData
-        }).exec(arg.signer);
+        const flowOperatorData = await superToken.getFlowOperatorData({
+          flowOperator: STREAM_SCHEDULAR_CONTRACT_ADDRESS,
+          sender: senderAddress,
+          providerOrSigner: framework.settings.provider,
+        });
+
+        return { data: flowOperatorData };
+      },
+    }),
+    updateStreamSchedulerPermissions: builder.mutation<
+      TransactionInfo,
+      UpdateStreamSchedulerPermissions
+    >({
+      queryFn: async ({ chainId, ...arg }, { dispatch }) => {
+        const framework = await getFramework(chainId);
+        const superToken = await framework.loadSuperToken(
+          arg.superTokenAddress
+        );
+
+        const transactionResponse = await superToken
+          .updateFlowOperatorPermissions({
+            flowOperator: STREAM_SCHEDULAR_CONTRACT_ADDRESS,
+            flowRateAllowance: arg.flowRateAllowance,
+            permissions: arg.permissions,
+            overrides: arg.overrides,
+            userData: arg.userData,
+          })
+          .exec(arg.signer);
 
         const signerAddress = await arg.signer.getAddress();
         return registerNewTransactionAndReturnQueryFnResult({
@@ -41,14 +77,23 @@ export const streamSchedulerEndpoints = {
           waitForConfirmation: !!arg.waitForConfirmation,
           signer: signerAddress,
           extraData: arg.transactionExtraData,
-          title: "Update Flow Operator Permissions"
+          title: "Update Flow Operator Permissions",
         });
       },
     }),
-    createStreamOrder: builder.mutation<TransactionInfo, CreateStreamOrder>({
-      queryFn: async ({ chainId, ...arg}, { dispatch }) => {
+    scheduleStreamEndDate: builder.mutation<TransactionInfo, ScheduleStreamEndDate>({
+      queryFn: async ({ chainId, ...arg }, { dispatch }) => {
         const sdk = getGoerliSdk(arg.signer); // TODO(KK): Get this off of a Network.
-        const contractTransaction = await sdk.StreamScheduler.createStreamOrder(arg.receiver, arg.superTokenAddress, arg.startDate, arg.startDuration, arg.flowRateWei, arg.endDate, arg.userData, arg.overrides)
+        const contractTransaction = await sdk.StreamScheduler.createStreamOrder(
+          arg.receiver,
+          arg.superTokenAddress,
+          0, // startDate
+          0, // startDuration
+          arg.flowRateWei,
+          arg.endDate,
+          arg.userData,
+          arg.overrides
+        );
 
         const signerAddress = await arg.signer.getAddress();
         return registerNewTransactionAndReturnQueryFnResult({
@@ -58,7 +103,7 @@ export const streamSchedulerEndpoints = {
           waitForConfirmation: !!arg.waitForConfirmation,
           signer: signerAddress,
           extraData: arg.transactionExtraData,
-          title: "Create Stream Order"
+          title: "Create Stream Order",
         });
       },
     }),

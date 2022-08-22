@@ -132,6 +132,12 @@ export default memo(function SendCard() {
   );
 
   const [flowCreateTrigger, flowCreateResult] = rpcApi.useFlowCreateMutation();
+  const [
+    updateStreamSchedulerPermissions,
+    updateStreamSchedulerPermissionsResult,
+  ] = rpcApi.useUpdateStreamSchedulerPermissionsMutation();
+  const [scheduleEndDate, scheduleEndDateResult] =
+    rpcApi.useScheduleStreamEndDateMutation();
   const [flowUpdateTrigger, flowUpdateResult] = rpcApi.useFlowUpdateMutation();
   const [flowDeleteTrigger, flowDeleteResult] = rpcApi.useFlowDeleteMutation();
 
@@ -357,7 +363,7 @@ export default memo(function SendCard() {
               <FormLabel>Ends on</FormLabel>
               <TooltipIcon title="If the end date is not specified, stream will run indefinitely or until you run out of tokens." />
             </Stack>
-            <TextField data-cy={"ends-on"} value="∞" disabled fullWidth />
+            <TextField data-cy={"ends-on"} value="∞" fullWidth />
           </Box>
           <Box>
             <FormLabel>Amount per second</FormLabel>
@@ -491,6 +497,7 @@ export default memo(function SendCard() {
                       unitOfTime: formData.flowRate.unitOfTime,
                     },
                   };
+
                   flowCreateTrigger({
                     signer,
                     chainId: network.id,
@@ -508,6 +515,17 @@ export default memo(function SendCard() {
                   })
                     .unwrap()
                     .then(() => resetForm());
+
+                  // updateStreamSchedulerPermissions({
+                  //   signer,
+                  //   chainId: network.id,
+                  //   flowRateAllowance: calculateTotalAmountWei(flowRateEther).toString(),
+                  //   overrides: await getTransactionOverrides(network),
+                  //   permissions: 4,
+                  //   superTokenAddress: formData.tokenAddress,
+                  //   waitForConfirmation: true,
+                  //   userData: undefined
+                  // }).unwrap();
 
                   setDialogSuccessActions(
                     <TransactionDialogActions>
