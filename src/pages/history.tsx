@@ -98,10 +98,9 @@ const History: NextPage = () => {
               },
             },
             true
-          ).then((result) => {
-            console.log(result.data?.items || []);
-            return mapActivitiesFromEvents(result.data?.items || [], network);
-          })
+          ).then((result) =>
+            mapActivitiesFromEvents(result.data?.items || [], network)
+          )
         )
       ).then((results) => {
         setActivities(

@@ -306,7 +306,6 @@ const mapTransactionActivityRecursive = (
 
     // All unhandled events will be skipped as well
     default: {
-      console.log(keyEvent.name, keyEvent);
       return mapTransactionActivityRecursive(
         transactionEvents,
         network,
