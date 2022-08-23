@@ -7,12 +7,16 @@ import {
   RpcEndpointBuilder,
   TransactionInfo,
 } from "@superfluid-finance/sdk-redux";
+import { createGeneralTags } from "@superfluid-finance/sdk-redux/dist/module/reduxSlices/rtkQuery/cacheTags/CacheTagTypes";
 import { providers, Signer } from "ethers";
 import { getGoerliSdk, getPolygonMumbaiSdk } from "../../../eth-sdk/client";
 import { STREAM_SCHEDULAR_CONTRACT_ADDRESS } from "../../../eth-sdk/config";
 import { networkDefinition } from "../../network/networks";
 
-const getSdk = (chainId: number, providerOrSigner: providers.Provider | Signer ) => {
+const getSdk = (
+  chainId: number,
+  providerOrSigner: providers.Provider | Signer
+) => {
   if (chainId === networkDefinition.goerli.id) {
     return getGoerliSdk(providerOrSigner);
   }
@@ -22,7 +26,7 @@ const getSdk = (chainId: number, providerOrSigner: providers.Provider | Signer )
   }
 
   throw new Error();
-}
+};
 
 interface GetStreamScheduledEndDate extends BaseQuery<number | null> {
   superTokenAddress: string;
@@ -42,6 +46,8 @@ interface UpdateStreamSchedulerPermissions extends BaseSuperTokenMutation {
   userData?: string;
 }
 
+interface RevokeAllStreamSchedulerPermissions extends BaseSuperTokenMutation {}
+
 interface ScheduleStreamEndDate extends BaseSuperTokenMutation {
   senderAddress: string;
   receiverAddress: string;
@@ -51,6 +57,64 @@ interface ScheduleStreamEndDate extends BaseSuperTokenMutation {
 
 export const streamSchedulerEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
+    streamScheduledEndDate: builder.query<
+      number | null,
+      GetStreamScheduledEndDate
+    >({
+      queryFn: async ({
+        chainId,
+        superTokenAddress,
+        senderAddress,
+        receiverAddress,
+      }) => {
+        const framework = await getFramework(chainId);
+        const sdk = getSdk(chainId, framework.settings.provider); // TODO(KK): Get this off of a Network.
+
+        const streamOrder = await sdk.StreamScheduler.getStreamOrders(
+          senderAddress,
+          receiverAddress,
+          superTokenAddress
+        );
+
+        return { data: streamOrder.endDate };
+      },
+      providesTags: (_result, _error, arg) => [
+        {
+          type: "GENERAL",
+          id: arg.chainId.toString(),
+        },
+      ],
+    }),
+    scheduleStreamEndDate: builder.mutation<
+      TransactionInfo,
+      ScheduleStreamEndDate
+    >({
+      queryFn: async ({ chainId, ...arg }, { dispatch }) => {
+        const sdk = getGoerliSdk(arg.signer); // TODO(KK): Get this off of a Network.
+
+        const contractTransaction = await sdk.StreamScheduler.createStreamOrder(
+          arg.receiverAddress,
+          arg.superTokenAddress,
+          0, // startDate
+          0, // startDuration
+          "0", // flowRate
+          arg.endTimestamp,
+          arg.userData,
+          arg.overrides ?? {}
+        );
+
+        const signerAddress = await arg.signer.getAddress();
+        return registerNewTransactionAndReturnQueryFnResult({
+          dispatch,
+          chainId,
+          transactionResponse: contractTransaction,
+          waitForConfirmation: !!arg.waitForConfirmation,
+          signer: signerAddress,
+          extraData: arg.transactionExtraData,
+          title: "Schedule Stream End Date",
+        });
+      },
+    }),
     streamSchedulerPermissions: builder.query<
       IWeb3FlowOperatorData,
       GetStreamSchedulerPermissions
@@ -67,6 +131,12 @@ export const streamSchedulerEndpoints = {
 
         return { data: flowOperatorData };
       },
+      providesTags: (_result, _error, arg) => [
+        {
+          type: "GENERAL",
+          id: arg.chainId.toString(),
+        },
+      ],
     }),
     updateStreamSchedulerPermissions: builder.mutation<
       TransactionInfo,
@@ -100,55 +170,32 @@ export const streamSchedulerEndpoints = {
         });
       },
     }),
-    streamScheduledEndDate: builder.query<
-      number | null,
-      GetStreamScheduledEndDate
-    >({
-      queryFn: async ({
-        chainId,
-        superTokenAddress,
-        senderAddress,
-        receiverAddress,
-      }) => {
-        const framework = await getFramework(chainId);
-        const sdk = getSdk(chainId, framework.settings.provider); // TODO(KK): Get this off of a Network.
-
-        const streamOrder = await sdk.StreamScheduler.getStreamOrders(
-          senderAddress,
-          receiverAddress,
-          superTokenAddress
-        );
-
-        return { data: streamOrder.endDate };
-      },
-    }),
-    scheduleStreamEndDate: builder.mutation<
+    revokeAllStreamSchedulerPermissions: builder.mutation<
       TransactionInfo,
-      ScheduleStreamEndDate
+      RevokeAllStreamSchedulerPermissions
     >({
       queryFn: async ({ chainId, ...arg }, { dispatch }) => {
-        const sdk = getGoerliSdk(arg.signer); // TODO(KK): Get this off of a Network.
-
-        const contractTransaction = await sdk.StreamScheduler.createStreamOrder(
-          arg.receiverAddress,
-          arg.superTokenAddress,
-          0, // startDate
-          0, // startDuration
-          "0", // flowRate
-          arg.endTimestamp,
-          arg.userData,
-          arg.overrides ?? {}
+        const framework = await getFramework(chainId);
+        const superToken = await framework.loadSuperToken(
+          arg.superTokenAddress
         );
 
+        const transactionResponse = await superToken
+          .revokeFlowOperatorWithFullControl({
+            flowOperator: STREAM_SCHEDULAR_CONTRACT_ADDRESS,
+          })
+          .exec(arg.signer);
+
         const signerAddress = await arg.signer.getAddress();
+
         return registerNewTransactionAndReturnQueryFnResult({
           dispatch,
           chainId,
-          transactionResponse: contractTransaction,
+          transactionResponse,
           waitForConfirmation: !!arg.waitForConfirmation,
           signer: signerAddress,
           extraData: arg.transactionExtraData,
-          title: "Schedule Stream End Date",
+          title: "Update Stream Scheduler Permissions",
         });
       },
     }),

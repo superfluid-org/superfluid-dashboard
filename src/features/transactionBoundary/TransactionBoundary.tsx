@@ -1,3 +1,8 @@
+import {
+  TrackedTransaction,
+  TransactionInfo,
+  transactionTrackerSelectors,
+} from "@superfluid-finance/sdk-redux";
 import { Overrides, Signer } from "ethers";
 import {
   FC,
@@ -10,11 +15,12 @@ import {
 } from "react";
 import { useAccount, useNetwork, useSigner, useSwitchNetwork } from "wagmi";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
-import UnknownMutationResult from "../../unknownMutationResult";
+import MutationResult from "../../mutationResult";
 import { useAutoConnect } from "../autoConnect/AutoConnect";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { Network } from "../network/networks";
+import { transactionTracker, useAppSelector } from "../redux/store";
 import { useConnectButton } from "../wallet/ConnectButtonProvider";
 import { TransactionDialog } from "./TransactionDialog";
 
@@ -33,8 +39,9 @@ interface TransactionBoundaryContextValue {
   closeDialog: () => void;
   setDialogLoadingInfo: (children: ReactNode) => void;
   setDialogSuccessActions: (children: ReactNode) => void;
-  mutationResult: UnknownMutationResult;
-  getOverrides: () => Promise<Overrides>
+  mutationResult: MutationResult<TransactionInfo>;
+  getOverrides: () => Promise<Overrides>;
+  transaction: TrackedTransaction | undefined;
 }
 
 const TransactionBoundaryContext =
@@ -46,7 +53,7 @@ export const useTransactionBoundary = () =>
 interface TransactionBoundaryProps {
   children: (arg: TransactionBoundaryContextValue) => ReactNode;
   dialog?: (arg: TransactionBoundaryContextValue) => ReactNode;
-  mutationResult: UnknownMutationResult;
+  mutationResult: MutationResult<TransactionInfo>;
   expectedNetwork?: Network;
 }
 
@@ -71,6 +78,11 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
   const [dialogLoadingInfo, setDialogLoadingInfo] = useState<ReactNode>(null);
   const [dialogSuccessActions, setDialogSuccessActions] =
     useState<ReactNode>(null);
+  const trackedTransaction = useAppSelector((state) =>
+    mutationResult.isSuccess
+      ? transactionTrackerSelectors.selectById(state, mutationResult.data!.hash)
+      : undefined
+  );
 
   const contextValue = useMemo<TransactionBoundaryContextValue>(
     () => ({
@@ -89,12 +101,12 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
       openDialog: () => setDialogOpen(true),
       closeDialog: () => {
         setDialogOpen(false);
-        mutationResult.reset();
       },
       setDialogLoadingInfo,
       setDialogSuccessActions,
       mutationResult,
-      getOverrides: () => getTransactionOverrides(expectedNetwork)
+      getOverrides: () => getTransactionOverrides(expectedNetwork),
+      transaction: trackedTransaction,
     }),
     [
       signer,
@@ -110,7 +122,8 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
       setDialogLoadingInfo,
       setDialogSuccessActions,
       mutationResult,
-      getTransactionOverrides
+      getTransactionOverrides,
+      trackedTransaction,
     ]
   );
 
