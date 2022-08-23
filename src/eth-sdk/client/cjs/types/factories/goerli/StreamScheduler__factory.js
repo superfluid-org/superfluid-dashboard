@@ -118,6 +118,31 @@ const _abi = [
                 type: "address",
             },
             {
+                indexed: true,
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+        ],
+        name: "DeleteStreamOrder",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: true,
+                internalType: "address",
+                name: "sender",
+                type: "address",
+            },
+            {
+                indexed: true,
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
                 indexed: false,
                 internalType: "contract ISuperToken",
                 name: "superToken",
@@ -253,6 +278,24 @@ const _abi = [
         inputs: [
             {
                 internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+        ],
+        name: "deleteStreamOrder",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "address",
                 name: "sender",
                 type: "address",
             },
@@ -303,6 +346,62 @@ const _abi = [
         name: "executeDeleteStream",
         outputs: [],
         stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "address",
+                name: "sender",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "supertoken",
+                type: "address",
+            },
+        ],
+        name: "getStreamOrders",
+        outputs: [
+            {
+                components: [
+                    {
+                        internalType: "uint32",
+                        name: "startDate",
+                        type: "uint32",
+                    },
+                    {
+                        internalType: "uint32",
+                        name: "startDuration",
+                        type: "uint32",
+                    },
+                    {
+                        internalType: "uint32",
+                        name: "endDate",
+                        type: "uint32",
+                    },
+                    {
+                        internalType: "int96",
+                        name: "flowRate",
+                        type: "int96",
+                    },
+                    {
+                        internalType: "bytes32",
+                        name: "userData",
+                        type: "bytes32",
+                    },
+                ],
+                internalType: "struct IStreamScheduler.Order",
+                name: "",
+                type: "tuple",
+            },
+        ],
+        stateMutability: "view",
         type: "function",
     },
     {

@@ -1,4 +1,4 @@
-import { Signer } from "ethers";
+import { Overrides, Signer } from "ethers";
 import {
   FC,
   ReactNode,
@@ -9,6 +9,7 @@ import {
   useEffect,
 } from "react";
 import { useAccount, useNetwork, useSigner, useSwitchNetwork } from "wagmi";
+import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import UnknownMutationResult from "../../unknownMutationResult";
 import { useAutoConnect } from "../autoConnect/AutoConnect";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
@@ -33,6 +34,7 @@ interface TransactionBoundaryContextValue {
   setDialogLoadingInfo: (children: ReactNode) => void;
   setDialogSuccessActions: (children: ReactNode) => void;
   mutationResult: UnknownMutationResult;
+  getOverrides: () => Promise<Overrides>
 }
 
 const TransactionBoundaryContext =
@@ -62,6 +64,7 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
   const { isAutoConnecting } = useAutoConnect();
   const { openConnectModal } = useConnectButton();
   const { network } = useExpectedNetwork();
+  const getTransactionOverrides = useGetTransactionOverrides();
   const expectedNetwork = props.expectedNetwork ?? network;
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -91,6 +94,7 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
       setDialogLoadingInfo,
       setDialogSuccessActions,
       mutationResult,
+      getOverrides: () => getTransactionOverrides(expectedNetwork)
     }),
     [
       signer,
@@ -106,6 +110,7 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
       setDialogLoadingInfo,
       setDialogSuccessActions,
       mutationResult,
+      getTransactionOverrides
     ]
   );
 

@@ -1,6 +1,6 @@
 import { defineConfig } from '@dethcrypto/eth-sdk'
 
-export const STREAM_SCHEDULAR_CONTRACT_ADDRESS = "0x3eAB3c6207F488E475b7955B631B564F0E6317B9";
+export const STREAM_SCHEDULAR_CONTRACT_ADDRESS = "0x04851f0be31a98133E2D6bFFDAe56908b05cdBDB";
 
 export default defineConfig({
   contracts: {
@@ -8,5 +8,5 @@ export default defineConfig({
       "StreamScheduler": STREAM_SCHEDULAR_CONTRACT_ADDRESS,
     },
   },
-  outputPath: "./eth-sdk/client"
+  outputPath: "./src/eth-sdk/client"
 })

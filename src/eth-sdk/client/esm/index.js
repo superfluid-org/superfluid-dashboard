@@ -5,6 +5,6 @@ export function getContract(address, abi, defaultSignerOrProvider) {
 }
 export function getGoerliSdk(defaultSignerOrProvider) {
     return {
-        "StreamScheduler": getContract('0x3eAB3c6207F488E475b7955B631B564F0E6317B9', goerli_StreamScheduler_abi, defaultSignerOrProvider),
+        "StreamScheduler": getContract('0x04851f0be31a98133E2D6bFFDAe56908b05cdBDB', goerli_StreamScheduler_abi, defaultSignerOrProvider),
     };
 }

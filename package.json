@@ -12,6 +12,7 @@
     "generate-types": "eth-sdk -p ./src/eth-sdk"
   },
   "dependencies": {
+    "@date-io/date-fns": "^2.15.0",
     "@emotion/cache": "^11.7.1",
     "@emotion/react": "^11.9.3",
     "@emotion/server": "^11.4.0",
@@ -22,6 +23,7 @@
     "@mui/icons-material": "^5.8.3",
     "@mui/lab": "^5.0.0-alpha.93",
     "@mui/material": "^5.9.3",
+    "@mui/x-date-pickers": "^5.0.0-beta.6",
     "@rainbow-me/rainbowkit": "^0.4.5",
     "@reduxjs/toolkit": "^1.8.2",
     "@sentry/nextjs": "^7.8.0",

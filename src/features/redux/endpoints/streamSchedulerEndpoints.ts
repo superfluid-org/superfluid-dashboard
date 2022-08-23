@@ -7,8 +7,15 @@ import {
   RpcEndpointBuilder,
   TransactionInfo,
 } from "@superfluid-finance/sdk-redux";
+import { utils } from "ethers";
 import { getGoerliSdk } from "../../../eth-sdk/client";
 import { STREAM_SCHEDULAR_CONTRACT_ADDRESS } from "../../../eth-sdk/config";
+
+interface GetNextStreamScheduledEndDate extends BaseQuery<number | null> {
+  superTokenAddress: string;
+  senderAddress: string;
+  receiverAddress: string;
+}
 
 interface GetStreamSchedulerPermissions
   extends BaseQuery<IWeb3FlowOperatorData> {
@@ -23,10 +30,9 @@ interface UpdateStreamSchedulerPermissions extends BaseSuperTokenMutation {
 }
 
 interface ScheduleStreamEndDate extends BaseSuperTokenMutation {
-  sender: string;
-  receiver: string;
-  flowRateWei: string;
-  endDate: number;
+  senderAddress: string;
+  receiverAddress: string;
+  endTimestamp: number;
   userData: string;
 }
 
@@ -81,18 +87,40 @@ export const streamSchedulerEndpoints = {
         });
       },
     }),
-    scheduleStreamEndDate: builder.mutation<TransactionInfo, ScheduleStreamEndDate>({
+    getNextStreamScheduledEndDate: builder.query<
+      number | null,
+      GetNextStreamScheduledEndDate
+    >({
+      queryFn: async ({
+        chainId,
+        superTokenAddress,
+        senderAddress,
+        receiverAddress,
+      }) => {
+        const framework = await getFramework(chainId);
+        const sdk = getGoerliSdk(framework.settings.provider); // TODO(KK): Get this off of a Network.
+
+        const streamOrder = await sdk.StreamScheduler.getStreamOrders(senderAddress, receiverAddress, superTokenAddress);
+
+        return { data: streamOrder.endDate };
+      },
+    }),
+    scheduleStreamEndDate: builder.mutation<
+      TransactionInfo,
+      ScheduleStreamEndDate
+    >({
       queryFn: async ({ chainId, ...arg }, { dispatch }) => {
         const sdk = getGoerliSdk(arg.signer); // TODO(KK): Get this off of a Network.
+
         const contractTransaction = await sdk.StreamScheduler.createStreamOrder(
-          arg.receiver,
+          arg.receiverAddress,
           arg.superTokenAddress,
           0, // startDate
           0, // startDuration
-          arg.flowRateWei,
-          arg.endDate,
+          "0", // flowRate
+          arg.endTimestamp,
           arg.userData,
-          arg.overrides
+          arg.overrides ?? {}
         );
 
         const signerAddress = await arg.signer.getAddress();

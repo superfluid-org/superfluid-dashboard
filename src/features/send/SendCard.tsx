@@ -55,6 +55,7 @@ import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import AddressSearch from "./AddressSearch";
 import { calculateTotalAmountWei, FlowRateInput } from "./FlowRateInput";
 import { StreamingPreview } from "./SendStreamPreview";
+import StreamEndDate from "./StreamEndDate";
 import {
   PartialStreamingForm,
   ValidStreamingForm,
@@ -132,12 +133,6 @@ export default memo(function SendCard() {
   );
 
   const [flowCreateTrigger, flowCreateResult] = rpcApi.useFlowCreateMutation();
-  const [
-    updateStreamSchedulerPermissions,
-    updateStreamSchedulerPermissionsResult,
-  ] = rpcApi.useUpdateStreamSchedulerPermissionsMutation();
-  const [scheduleEndDate, scheduleEndDateResult] =
-    rpcApi.useScheduleStreamEndDateMutation();
   const [flowUpdateTrigger, flowUpdateResult] = rpcApi.useFlowUpdateMutation();
   const [flowDeleteTrigger, flowDeleteResult] = rpcApi.useFlowDeleteMutation();
 
@@ -673,6 +668,14 @@ export default memo(function SendCard() {
           </TransactionBoundary>
         </Stack>
       </Stack>
-    </Card>
+      {tokenAddress && receiverAddress && visibleAddress && (
+        <StreamEndDate
+          network={network}
+          superTokenAddress={tokenAddress}
+          receiverAddress={receiverAddress}
+          senderAddress={visibleAddress}
+        />
+      )}
+    </Card> 
   );
 });
