@@ -20,8 +20,8 @@ import { Overrides, Signer } from "ethers";
 declare module "@superfluid-finance/sdk-redux" {
   interface TransactionTitleOverrides {
     "Approve Allowance": true;
-    "Update Flow Operator Permissions": true;
-    "Create Stream Order": true;
+    "Update Stream Scheduler Permissions": true;
+    "Schedule Stream End Date": true;
   }
 }
 

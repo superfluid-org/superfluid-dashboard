@@ -7,11 +7,10 @@ import {
   RpcEndpointBuilder,
   TransactionInfo,
 } from "@superfluid-finance/sdk-redux";
-import { utils } from "ethers";
 import { getGoerliSdk } from "../../../eth-sdk/client";
 import { STREAM_SCHEDULAR_CONTRACT_ADDRESS } from "../../../eth-sdk/config";
 
-interface GetNextStreamScheduledEndDate extends BaseQuery<number | null> {
+interface GetStreamScheduledEndDate extends BaseQuery<number | null> {
   superTokenAddress: string;
   senderAddress: string;
   receiverAddress: string;
@@ -38,7 +37,7 @@ interface ScheduleStreamEndDate extends BaseSuperTokenMutation {
 
 export const streamSchedulerEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
-    getStreamSchedulerPermissions: builder.query<
+    streamSchedulerPermissions: builder.query<
       IWeb3FlowOperatorData,
       GetStreamSchedulerPermissions
     >({
@@ -83,13 +82,13 @@ export const streamSchedulerEndpoints = {
           waitForConfirmation: !!arg.waitForConfirmation,
           signer: signerAddress,
           extraData: arg.transactionExtraData,
-          title: "Update Flow Operator Permissions",
+          title: "Update Stream Scheduler Permissions",
         });
       },
     }),
-    getNextStreamScheduledEndDate: builder.query<
+    streamScheduledEndDate: builder.query<
       number | null,
-      GetNextStreamScheduledEndDate
+      GetStreamScheduledEndDate
     >({
       queryFn: async ({
         chainId,
@@ -100,7 +99,11 @@ export const streamSchedulerEndpoints = {
         const framework = await getFramework(chainId);
         const sdk = getGoerliSdk(framework.settings.provider); // TODO(KK): Get this off of a Network.
 
-        const streamOrder = await sdk.StreamScheduler.getStreamOrders(senderAddress, receiverAddress, superTokenAddress);
+        const streamOrder = await sdk.StreamScheduler.getStreamOrders(
+          senderAddress,
+          receiverAddress,
+          superTokenAddress
+        );
 
         return { data: streamOrder.endDate };
       },
@@ -131,7 +134,7 @@ export const streamSchedulerEndpoints = {
           waitForConfirmation: !!arg.waitForConfirmation,
           signer: signerAddress,
           extraData: arg.transactionExtraData,
-          title: "Create Stream Order",
+          title: "Schedule Stream End Date",
         });
       },
     }),

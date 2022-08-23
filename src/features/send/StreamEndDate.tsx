@@ -17,7 +17,7 @@ const StreamEndDate: FC<{
   const chainId = network.id;
 
   const { data: streamSchedulerPermissions } =
-    rpcApi.useGetStreamSchedulerPermissionsQuery({
+    rpcApi.useStreamSchedulerPermissionsQuery({
       chainId,
       senderAddress,
       superTokenAddress,
@@ -29,7 +29,7 @@ const StreamEndDate: FC<{
   ] = rpcApi.useUpdateStreamSchedulerPermissionsMutation();
 
   const { data: scheduledEndDate } =
-    rpcApi.useGetNextStreamScheduledEndDateQuery({
+    rpcApi.useStreamScheduledEndDateQuery({
       chainId,
       senderAddress,
       superTokenAddress,
