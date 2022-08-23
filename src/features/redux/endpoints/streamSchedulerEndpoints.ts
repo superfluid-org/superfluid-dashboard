@@ -7,8 +7,22 @@ import {
   RpcEndpointBuilder,
   TransactionInfo,
 } from "@superfluid-finance/sdk-redux";
-import { getGoerliSdk } from "../../../eth-sdk/client";
+import { providers, Signer } from "ethers";
+import { getGoerliSdk, getPolygonMumbaiSdk } from "../../../eth-sdk/client";
 import { STREAM_SCHEDULAR_CONTRACT_ADDRESS } from "../../../eth-sdk/config";
+import { networkDefinition } from "../../network/networks";
+
+const getSdk = (chainId: number, providerOrSigner: providers.Provider | Signer ) => {
+  if (chainId === networkDefinition.goerli.id) {
+    return getGoerliSdk(providerOrSigner);
+  }
+
+  if (chainId === networkDefinition.polygonMumbai.id) {
+    return getPolygonMumbaiSdk(providerOrSigner);
+  }
+
+  throw new Error();
+}
 
 interface GetStreamScheduledEndDate extends BaseQuery<number | null> {
   superTokenAddress: string;
@@ -97,7 +111,7 @@ export const streamSchedulerEndpoints = {
         receiverAddress,
       }) => {
         const framework = await getFramework(chainId);
-        const sdk = getGoerliSdk(framework.settings.provider); // TODO(KK): Get this off of a Network.
+        const sdk = getSdk(chainId, framework.settings.provider); // TODO(KK): Get this off of a Network.
 
         const streamOrder = await sdk.StreamScheduler.getStreamOrders(
           senderAddress,

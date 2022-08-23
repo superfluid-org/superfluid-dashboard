@@ -27,6 +27,7 @@ export type Network = Chain & {
       type: TokenType.NativeAssetSuperToken;
     } & TokenMinimal;
   };
+  streamSchedulerContractAddress?: `0x${string}`
 };
 
 const superfluidRpcUrls = {
@@ -77,8 +78,23 @@ const blockExplorers = {
   },
 };
 
-export const networks: Network[] = [
-  {
+export const networkDefinition: {
+  ropsten: Network;
+  rinkeby: Network;
+  goerli: Network & { streamSchedulerContractAddress: `0x${string}` };
+  kovan: Network;
+  gnosis: Network;
+  polygon: Network;
+  polygonMumbai: Network & { streamSchedulerContractAddress: `0x${string}` };
+  arbitrumRinkeby: Network;
+  optimismKovan: Network;
+  avalancheFuji: Network;
+  optimism: Network;
+  arbitrum: Network;
+  avalanche: Network;
+  bsc: Network;
+} = {
+  ropsten: {
     ...chain.ropsten,
     blockExplorers: ensureDefined(chain.ropsten.blockExplorers),
     slugName: "ropsten",
@@ -108,7 +124,7 @@ export const networks: Network[] = [
       },
     },
   },
-  {
+  rinkeby: {
     ...chain.rinkeby,
     blockExplorers: ensureDefined(chain.rinkeby.blockExplorers),
     slugName: "rinkeby",
@@ -138,7 +154,7 @@ export const networks: Network[] = [
       },
     },
   },
-  {
+  goerli: {
     ...chain.goerli,
     blockExplorers: ensureDefined(chain.goerli.blockExplorers),
     slugName: "goerli",
@@ -167,8 +183,10 @@ export const networks: Network[] = [
         decimals: 18,
       },
     },
+    streamSchedulerContractAddress:
+      "0x04851f0be31a98133E2D6bFFDAe56908b05cdBDB",
   },
-  {
+  kovan: {
     ...chain.kovan,
     blockExplorers: ensureDefined(chain.kovan.blockExplorers),
     slugName: "kovan",
@@ -198,7 +216,7 @@ export const networks: Network[] = [
       },
     },
   },
-  {
+  gnosis: {
     name: "Gnosis Chain",
     blockExplorers: {
       etherscan: undefined!,
@@ -237,7 +255,7 @@ export const networks: Network[] = [
       },
     },
   },
-  {
+  polygon: {
     ...chain.polygon,
     blockExplorers: ensureDefined(chain.polygon.blockExplorers),
     slugName: "polygon",
@@ -268,7 +286,7 @@ export const networks: Network[] = [
       },
     },
   },
-  {
+  polygonMumbai: {
     ...chain.polygonMumbai,
     blockExplorers: ensureDefined(chain.polygonMumbai.blockExplorers),
     slugName: "polygon-mumbai",
@@ -297,8 +315,10 @@ export const networks: Network[] = [
         decimals: 18,
       },
     },
+    streamSchedulerContractAddress:
+      "0x51FBAbD31A615E14b1bC12E9d887f60997264a4E",
   },
-  {
+  arbitrumRinkeby: {
     ...chain.arbitrumRinkeby,
     blockExplorers: ensureDefined(chain.arbitrumRinkeby.blockExplorers),
     slugName: "arbitrum-rinkeby",
@@ -328,7 +348,7 @@ export const networks: Network[] = [
       },
     },
   },
-  {
+  optimismKovan: {
     ...chain.optimismKovan,
     blockExplorers: ensureDefined(chain.optimismKovan.blockExplorers),
     slugName: "optimism-kovan",
@@ -358,7 +378,7 @@ export const networks: Network[] = [
       },
     },
   },
-  {
+  avalancheFuji: {
     name: "Fuji (C-Chain)",
     slugName: "avalanche-fuji",
     v1ShortName: "avalanche-fuji",
@@ -397,7 +417,7 @@ export const networks: Network[] = [
       },
     },
   },
-  {
+  optimism: {
     ...chain.optimism,
     blockExplorers: ensureDefined(chain.optimism.blockExplorers),
     slugName: "optimism",
@@ -428,7 +448,7 @@ export const networks: Network[] = [
       },
     },
   },
-  {
+  arbitrum: {
     ...chain.arbitrum,
     blockExplorers: ensureDefined(chain.arbitrum.blockExplorers),
     slugName: "arbitrum-one",
@@ -459,7 +479,7 @@ export const networks: Network[] = [
       },
     },
   },
-  {
+  avalanche: {
     name: "Avalanche C",
     slugName: "avalanche",
     v1ShortName: "avalanche-c",
@@ -500,7 +520,7 @@ export const networks: Network[] = [
       },
     },
   },
-  {
+  bsc: {
     name: "BNB Smart Chain",
     slugName: "bsc",
     v1ShortName: "bsc-mainnet",
@@ -539,6 +559,23 @@ export const networks: Network[] = [
       },
     },
   },
+};
+
+export const networks: Network[] = [
+  networkDefinition.ropsten,
+  networkDefinition.rinkeby,
+  networkDefinition.goerli,
+  networkDefinition.kovan,
+  networkDefinition.gnosis,
+  networkDefinition.polygon,
+  networkDefinition.polygonMumbai,
+  networkDefinition.arbitrumRinkeby,
+  networkDefinition.optimismKovan,
+  networkDefinition.avalancheFuji,
+  networkDefinition.optimism,
+  networkDefinition.arbitrum,
+  networkDefinition.avalanche,
+  networkDefinition.bsc,
 ];
 
 export const getNetworkDefaultTokenPair = memoize(

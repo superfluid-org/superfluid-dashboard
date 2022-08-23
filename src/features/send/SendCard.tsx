@@ -202,6 +202,9 @@ export default memo(function SendCard() {
 
   const isSendDisabled = formState.isValidating || !formState.isValid;
 
+  const doesNetworkSupportStreamScheduler =
+    !!network.streamSchedulerContractAddress;
+
   return (
     <Card
       elevation={1}
@@ -668,14 +671,17 @@ export default memo(function SendCard() {
           </TransactionBoundary>
         </Stack>
       </Stack>
-      {tokenAddress && receiverAddress && visibleAddress && (
-        <StreamEndDate
-          network={network}
-          superTokenAddress={tokenAddress}
-          receiverAddress={receiverAddress}
-          senderAddress={visibleAddress}
-        />
-      )}
-    </Card> 
+      {doesNetworkSupportStreamScheduler &&
+        tokenAddress &&
+        receiverAddress &&
+        visibleAddress && (
+          <StreamEndDate
+            network={network}
+            superTokenAddress={tokenAddress}
+            receiverAddress={receiverAddress}
+            senderAddress={visibleAddress}
+          />
+        )}
+    </Card>
   );
 });
