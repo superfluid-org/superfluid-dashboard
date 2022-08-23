@@ -17,9 +17,6 @@
 import "./commands";
 //import "@cypress/code-coverage/support";
 
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
-
     Cypress.on("uncaught:exception" , (err,runnable) => {
         if(err.name === "ConnectorNotFoundError" ||
             err.message.includes("The method eth_call is not implemented by the mock provider.")) {

@@ -1,8 +1,8 @@
 import { FlowRateWei } from "../send/FlowRateInput";
 
 export enum RestorationType {
-  Downgrade = 1,
-  Upgrade = 2,
+  Unwrap = 1,
+  Wrap = 2,
   Approve = 3,
   SendStream = 4,
   ModifyStream = 5,
@@ -38,11 +38,11 @@ export interface ApproveAllowanceRestoration
 }
 
 export interface SuperTokenUpgradeRestoration extends WrappingRestoration {
-  type: RestorationType.Upgrade;
+  type: RestorationType.Wrap;
 }
 
 export interface SuperTokenDowngradeRestoration extends WrappingRestoration {
-  type: RestorationType.Downgrade;
+  type: RestorationType.Unwrap;
 }
 
 interface UpsertStreamRestoration extends TransactionRestorationBase {

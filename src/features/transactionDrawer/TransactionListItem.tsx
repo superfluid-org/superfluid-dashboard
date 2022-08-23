@@ -37,6 +37,28 @@ export const getTransactionStatusColor = (status: TransactionStatus) => {
   }
 };
 
+const getDisplayTransactionTitle = (transaction: TrackedTransaction) => {
+  switch (transaction.title) {
+    case "Upgrade to Super Token":
+      return "Wrap to Super Token";
+    case "Downgrade from Super Token":
+      return "Unwrap from Super Token";
+    case "Create Stream":
+    case "Update Stream":
+    case "Close Stream":
+    case "Create Index":
+    case "Distribute Index":
+    case "Update Index Subscription Units":
+    case "Approve Index Subscription":
+    case "Claim from Index Subscription":
+    case "Delete Index Subscription":
+    case "Revoke Index Subscription":
+    case "Transfer Super Token":
+    default:
+      return transaction.title;
+  }
+};
+
 const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
   transaction,
 }) => {
@@ -49,7 +71,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
         <TransactionListItemAvatar status={transaction.status} />
       </ListItemAvatar>
       <ListItemText
-        primary={transaction.title}
+        primary={getDisplayTransactionTitle(transaction)}
         secondary={
           <>
             {transaction.status === "Pending" && (

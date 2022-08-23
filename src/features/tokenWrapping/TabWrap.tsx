@@ -51,11 +51,11 @@ const underlyingIbAlluoTokenOverrides = [
   "0xc2dbaaea2efa47ebda3e572aa0e55b742e408bf6",
 ];
 
-interface WrapTabUpgradeProps {
+interface TabWrapProps {
   onSwitchMode: () => void;
 }
 
-export const WrapTabUpgrade: FC<WrapTabUpgradeProps> = ({ onSwitchMode }) => {
+export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
   const router = useRouter();
@@ -76,7 +76,7 @@ export const WrapTabUpgrade: FC<WrapTabUpgradeProps> = ({ onSwitchMode }) => {
 
   // The reason to set the type and clear errors is that a single form context is used both for wrapping and unwrapping.
   useEffect(() => {
-    setValue("type", RestorationType.Upgrade, {
+    setValue("type", RestorationType.Wrap, {
       shouldDirty: false,
       shouldTouch: false,
       shouldValidate: true,
@@ -141,8 +141,7 @@ export const WrapTabUpgrade: FC<WrapTabUpgradeProps> = ({ onSwitchMode }) => {
     : ethers.BigNumber.from(0);
 
   const [approveTrigger, approveResult] = rpcApi.useApproveMutation();
-
-  const [upgradeTrigger, upgradeResult] = rpcApi.useSuperTokenUpgradeMutation();
+  const [wrapTrigger, wrapResult] = rpcApi.useSuperTokenUpgradeMutation();
 
   const isApproveAllowanceVisible = !!(
     underlyingToken &&
@@ -423,13 +422,13 @@ export const WrapTabUpgrade: FC<WrapTabUpgradeProps> = ({ onSwitchMode }) => {
                     .then(() => setTransactionDrawerOpen(true));
                 }}
               >
-                Approve Allowance
+                Allow Superfluid Protocol to wrap your {underlyingToken.symbol}
               </TransactionButton>
             )
           }
         </TransactionBoundary>
 
-        <TransactionBoundary mutationResult={upgradeResult}>
+        <TransactionBoundary mutationResult={wrapResult}>
           {({ closeDialog, setDialogLoadingInfo, setDialogSuccessActions }) => (
             <TransactionButton
               dataCy={"upgrade-button"}
@@ -451,7 +450,7 @@ export const WrapTabUpgrade: FC<WrapTabUpgradeProps> = ({ onSwitchMode }) => {
                 const amountWei = parseEther(formData.amountDecimal);
 
                 const restoration: SuperTokenUpgradeRestoration = {
-                  type: RestorationType.Upgrade,
+                  type: RestorationType.Wrap,
                   version: 2,
                   chainId: network.id,
                   tokenPair: tokenPair,
@@ -482,7 +481,7 @@ export const WrapTabUpgrade: FC<WrapTabUpgradeProps> = ({ onSwitchMode }) => {
                 }
 
                 setDialogLoadingInfo(
-                  <UpgradePreview
+                  <WrapPreview
                     {...{
                       amountWei: amountWei,
                       superTokenSymbol: superToken.symbol,
@@ -491,7 +490,7 @@ export const WrapTabUpgrade: FC<WrapTabUpgradeProps> = ({ onSwitchMode }) => {
                   />
                 );
 
-                upgradeTrigger({
+                wrapTrigger({
                   signer,
                   chainId: network.id,
                   amountWei: amountWei.toString(),
@@ -529,7 +528,7 @@ export const WrapTabUpgrade: FC<WrapTabUpgradeProps> = ({ onSwitchMode }) => {
                 );
               }}
             >
-              Upgrade to Super Token
+              Wrap
             </TransactionButton>
           )}
         </TransactionBoundary>
@@ -538,14 +537,14 @@ export const WrapTabUpgrade: FC<WrapTabUpgradeProps> = ({ onSwitchMode }) => {
   );
 };
 
-const UpgradePreview: FC<{
+const WrapPreview: FC<{
   amountWei: BigNumberish;
   underlyingTokenSymbol: string;
   superTokenSymbol: string;
 }> = ({ underlyingTokenSymbol, superTokenSymbol, amountWei }) => {
   return (
     <Typography variant="h5" color="text.secondary" translate="yes">
-      You are upgrading from{" "}
+      You are wrapping{" "}
       <span translate="no">
         {formatEther(amountWei)} {underlyingTokenSymbol}
       </span>{" "}
@@ -561,7 +560,7 @@ const AllowancePreview: FC<{
 }> = ({ amountWei, decimals, tokenSymbol }) => {
   return (
     <Typography variant="h5" color="text.secondary" translate="yes">
-      You are approving extra allowance of{" "}
+      You are approving additional allowance of{" "}
       <span translate="no">
         {formatUnits(amountWei, decimals)} {tokenSymbol}
       </span>{" "}

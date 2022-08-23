@@ -5,8 +5,8 @@ import { useRouter } from "next/router";
 import { memo } from "react";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import NetworkBadge from "../network/NetworkBadge";
-import { WrapTabDowngrade } from "./WrapTabDowngrade";
-import { WrapTabUpgrade } from "./WrapTabUpgrade";
+import { TabUnwrap } from "./TabUnwrap";
+import { TabWrap } from "./TabWrap";
 
 type WrapTab = "upgrade" | "downgrade";
 
@@ -78,10 +78,10 @@ export default memo(function WrapCard({ tabValue }: { tabValue: WrapTab }) {
         }
       />
       {tabValue === "upgrade" && (
-        <WrapTabUpgrade onSwitchMode={handleTabChange("downgrade")} />
+        <TabWrap onSwitchMode={handleTabChange("downgrade")} />
       )}
       {tabValue === "downgrade" && (
-        <WrapTabDowngrade onSwitchMode={handleTabChange("upgrade")} />
+        <TabUnwrap onSwitchMode={handleTabChange("upgrade")} />
       )}
     </Card>
   );

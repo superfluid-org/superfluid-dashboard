@@ -5,6 +5,7 @@ import {
   WalletList,
 } from "@rainbow-me/rainbowkit";
 import gnosisSafe from "./gnosisSafeWalletConnector/gnosisSafe";
+import mockConnector from "./mockConnector/mockConnector";
 
 // Inspired by: https://github.com/rainbow-me/rainbowkit/blob/main/packages/rainbowkit/src/wallets/getDefaultWallets.ts
 export const getAppWallets = ({
@@ -23,6 +24,10 @@ export const getAppWallets = ({
     !window.ethereum.isMetaMask &&
     !window.ethereum.isCoinbaseWallet;
 
+  const needsMock =
+    typeof window !== "undefined" &&
+    typeof (window as any).mockSigner !== "undefined";
+
   const wallets: WalletList = [
     {
       groupName: "Popular",
@@ -38,6 +43,9 @@ export const getAppWallets = ({
           : []),
         wallet.walletConnect({ chains }),
         wallet.coinbase({ appName, chains }),
+        ...(needsMock
+          ? [mockConnector({ chains })]
+          : [])
         // wallet.trust({ chains }),
       ],
     },

@@ -567,7 +567,7 @@ export default memo(function SendCard() {
             sx={{ ...(!activeFlow ? { display: "none" } : {}) }}
           >
             <TransactionBoundary mutationResult={flowUpdateResult}>
-              {({ setDialogLoadingInfo }) =>
+              {({ setDialogSuccessActions }) =>
                 activeFlow && (
                   <TransactionButton
                     disabled={isSendDisabled}
@@ -614,7 +614,7 @@ export default memo(function SendCard() {
                         .unwrap()
                         .then(() => resetForm());
 
-                      setDialogLoadingInfo(
+                      setDialogSuccessActions(
                         <TransactionDialogActions>
                           <Link
                             href={getTokenPagePath({
