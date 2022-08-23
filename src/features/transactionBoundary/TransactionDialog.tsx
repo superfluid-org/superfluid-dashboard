@@ -97,7 +97,7 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
         </TransactionDialogContent>
         {successActions ?? (
           <TransactionDialogActions>
-            <TransactionDialogButton onClick={closeDialog}>
+            <TransactionDialogButton data-cy={"ok-button"} onClick={closeDialog}>
               OK
             </TransactionDialogButton>
           </TransactionDialogActions>

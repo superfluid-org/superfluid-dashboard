@@ -214,7 +214,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
   );
 
   return (
-    <Stack direction="column" alignItems="center">
+    <Stack data-cy={"wrap-screen"} direction="column" alignItems="center">
       <WrapInputCard>
         <Stack direction="row" spacing={2}>
           <Controller
@@ -561,7 +561,7 @@ const AllowancePreview: FC<{
   tokenSymbol: string;
 }> = ({ amountWei, decimals, tokenSymbol }) => {
   return (
-    <Typography variant="h5" color="text.secondary" translate="yes">
+    <Typography data-cy="allowance-message" variant="h5" color="text.secondary" translate="yes">
       You are approving additional allowance of{" "}
       <span translate="no">
         {formatUnits(amountWei, decimals)} {tokenSymbol}

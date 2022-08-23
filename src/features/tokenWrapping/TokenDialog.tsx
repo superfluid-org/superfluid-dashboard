@@ -201,7 +201,6 @@ export default memo(function TokenDialog({
         <List>
           {tokenPairsQuery.isFetching && (
             <Stack
-              data-cy="test"
               direction="row"
               justifyContent="center"
               alignItems="center"
