@@ -40,12 +40,12 @@ export interface IndexUnitsUpdatedActivity
   subscriptionUnitsUpdatedEvent?: SubscriptionUnitsUpdatedEvent;
 }
 
-export interface IndexSubscribedActivity
+export interface SubscriptionApprovedActivity
   extends Activity<IndexSubscribedEvent> {
   subscriptionApprovedEvent?: SubscriptionApprovedEvent;
 }
 
-export interface IndexUnsubscribedActivity
+export interface SubscriptionRevokedActivity
   extends Activity<IndexUnsubscribedEvent> {
   subscriptionRevokedEvent?: SubscriptionRevokedEvent;
 }
@@ -222,7 +222,7 @@ const mapTransactionActivityRecursive = (
             keyEvent,
             network,
             subscriptionApprovedEvent,
-          } as IndexSubscribedActivity,
+          } as SubscriptionApprovedActivity,
         ])
       );
     }
@@ -241,7 +241,7 @@ const mapTransactionActivityRecursive = (
             keyEvent,
             network,
             subscriptionRevokedEvent,
-          } as IndexUnsubscribedActivity,
+          } as SubscriptionRevokedActivity,
         ])
       );
     }

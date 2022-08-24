@@ -15,7 +15,7 @@ import { BigNumber } from "ethers";
 import { FC, useMemo } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
-import { IndexSubscribedActivity } from "../../utils/activityUtils";
+import { SubscriptionApprovedActivity } from "../../utils/activityUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
@@ -25,7 +25,7 @@ import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
 
-const IndexSubscribedActivityRow: FC<IndexSubscribedActivity> = ({
+const SubscriptionApprovedActivityRow: FC<SubscriptionApprovedActivity> = ({
   keyEvent,
   subscriptionApprovedEvent,
   network,
@@ -187,14 +187,12 @@ const IndexSubscribedActivityRow: FC<IndexSubscribedActivity> = ({
                     : "inherit",
               }}
             />
-            <ListItemAvatar>
-              <TokenIcon
-                isSuper
-                tokenSymbol={tokenQuery.data?.symbol}
-                isUnlisted={!tokenQuery.data?.isListed}
-                isLoading={tokenQuery.isLoading}
-              />
-            </ListItemAvatar>
+            <TokenIcon
+              isSuper
+              tokenSymbol={tokenQuery.data?.symbol}
+              isUnlisted={!tokenQuery.data?.isListed}
+              isLoading={tokenQuery.isLoading}
+            />
           </Stack>
         </TableCell>
       )}
@@ -202,4 +200,4 @@ const IndexSubscribedActivityRow: FC<IndexSubscribedActivity> = ({
   );
 };
 
-export default IndexSubscribedActivityRow;
+export default SubscriptionApprovedActivityRow;

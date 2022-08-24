@@ -4,9 +4,9 @@ import {
   AgreementLiquidatedActivity,
   BurnedActivity,
   IndexDistributionClaimedActivity,
-  IndexSubscribedActivity,
+  SubscriptionApprovedActivity,
   IndexUnitsUpdatedActivity,
-  IndexUnsubscribedActivity,
+  SubscriptionRevokedActivity,
   MintedActivity,
 } from "../../utils/activityUtils";
 import BurnActivity from "./BurnActivity";
@@ -14,9 +14,9 @@ import DefaultActivityRow from "./DefaultActivityRow";
 import FlowUpdatedActivityRow from "./FlowUpdatedActivityRow";
 import IndexCreatedActivityRow from "./IndexCreatedActivityRow";
 import IndexDistributionClaimedRow from "./IndexDistributionClaimedRow";
-import IndexSubscribedActivityRow from "./IndexSubscribedActivityRow";
+import SubscriptionApprovedActivityRow from "././SubscriptionApprovedActivityRow";
 import IndexUnitsUpdatedActivityRow from "./IndexUnitsUpdatedActivityRow";
-import IndexUnsubscribedActivityRow from "./IndexUnsubscribedActivityRow";
+import SubscriptionRevokedActivityRow from "./SubscriptionRevokedActivityRow";
 import IndexUpdatedActivityRow from "./IndexUpdatedActivityRow";
 import LiquidatedActivityRow from "./LiquidatedActivityRow";
 import MintActivityRow from "./MintActivityRow";
@@ -80,10 +80,11 @@ const ActivityRow: FC<ActivityRowProps> = ({ activity }) => {
       return <IndexUpdatedActivityRow keyEvent={keyEvent} network={network} />;
 
     case "IndexSubscribed": {
-      const { subscriptionApprovedEvent } = activity as IndexSubscribedActivity;
+      const { subscriptionApprovedEvent } =
+        activity as SubscriptionApprovedActivity;
 
       return (
-        <IndexSubscribedActivityRow
+        <SubscriptionApprovedActivityRow
           keyEvent={keyEvent}
           subscriptionApprovedEvent={subscriptionApprovedEvent}
           network={network}
@@ -93,10 +94,10 @@ const ActivityRow: FC<ActivityRowProps> = ({ activity }) => {
 
     case "IndexUnsubscribed": {
       const { subscriptionRevokedEvent } =
-        activity as IndexUnsubscribedActivity;
+        activity as SubscriptionRevokedActivity;
 
       return (
-        <IndexUnsubscribedActivityRow
+        <SubscriptionRevokedActivityRow
           keyEvent={keyEvent}
           subscriptionRevokedEvent={subscriptionRevokedEvent}
           network={network}

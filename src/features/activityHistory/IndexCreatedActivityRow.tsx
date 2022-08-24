@@ -81,14 +81,12 @@ const IndexCreatedActivityRow: FC<Activity<IndexCreatedEvent>> = ({
         <TableCell align="right">
           <Stack direction="row" alignItems="center" gap={1}>
             <ListItemText primary={tokenQuery.data?.symbol} />
-            <ListItemAvatar>
-              <TokenIcon
-                isSuper
-                tokenSymbol={tokenQuery.data?.symbol}
-                isUnlisted={!tokenQuery.data?.isListed}
-                isLoading={tokenQuery.isLoading}
-              />
-            </ListItemAvatar>
+            <TokenIcon
+              isSuper
+              tokenSymbol={tokenQuery.data?.symbol}
+              isUnlisted={!tokenQuery.data?.isListed}
+              isLoading={tokenQuery.isLoading}
+            />
           </Stack>
         </TableCell>
       )}

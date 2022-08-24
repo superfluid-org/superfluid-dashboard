@@ -150,14 +150,12 @@ const IndexDistributionClaimedRow: FC<IndexDistributionClaimedActivity> = ({
                 color: "primary",
               }}
             />
-            <ListItemAvatar>
-              <TokenIcon
-                isSuper
-                tokenSymbol={tokenQuery.data?.symbol}
-                isUnlisted={!tokenQuery.data?.isListed}
-                isLoading={tokenQuery.isLoading}
-              />
-            </ListItemAvatar>
+            <TokenIcon
+              isSuper
+              tokenSymbol={tokenQuery.data?.symbol}
+              isUnlisted={!tokenQuery.data?.isListed}
+              isLoading={tokenQuery.isLoading}
+            />
           </Stack>
         </TableCell>
       )}

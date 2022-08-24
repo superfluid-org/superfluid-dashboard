@@ -183,14 +183,12 @@ const IndexUpdatedActivityRow: FC<Activity<IndexUpdatedEvent>> = ({
                 color: "text.secondary",
               }}
             />
-            <ListItemAvatar>
-              <TokenIcon
-                isSuper
-                tokenSymbol={tokenQuery.data?.symbol}
-                isUnlisted={!tokenQuery.data?.isListed}
-                isLoading={tokenQuery.isLoading}
-              />
-            </ListItemAvatar>
+            <TokenIcon
+              isSuper
+              tokenSymbol={tokenQuery.data?.symbol}
+              isUnlisted={!tokenQuery.data?.isListed}
+              isLoading={tokenQuery.isLoading}
+            />
           </Stack>
         </TableCell>
       )}

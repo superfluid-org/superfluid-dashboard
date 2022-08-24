@@ -14,7 +14,7 @@ import { format } from "date-fns";
 import { FC } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
-import { IndexUnsubscribedActivity } from "../../utils/activityUtils";
+import { SubscriptionRevokedActivity } from "../../utils/activityUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
@@ -23,7 +23,7 @@ import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
 
-const IndexUnsubscribedActivityRow: FC<IndexUnsubscribedActivity> = ({
+const SubscriptionRevokedActivityRow: FC<SubscriptionRevokedActivity> = ({
   keyEvent,
   subscriptionRevokedEvent,
   network,
@@ -117,14 +117,12 @@ const IndexUnsubscribedActivityRow: FC<IndexUnsubscribedActivity> = ({
         <TableCell align="right">
           <Stack direction="row" alignItems="center" gap={1}>
             <ListItemText primary={tokenQuery.data?.symbol} />
-            <ListItemAvatar>
-              <TokenIcon
-                isSuper
-                tokenSymbol={tokenQuery.data?.symbol}
-                isUnlisted={!tokenQuery.data?.isListed}
-                isLoading={tokenQuery.isLoading}
-              />
-            </ListItemAvatar>
+            <TokenIcon
+              isSuper
+              tokenSymbol={tokenQuery.data?.symbol}
+              isUnlisted={!tokenQuery.data?.isListed}
+              isLoading={tokenQuery.isLoading}
+            />
           </Stack>
         </TableCell>
       )}
@@ -132,4 +130,4 @@ const IndexUnsubscribedActivityRow: FC<IndexUnsubscribedActivity> = ({
   );
 };
 
-export default IndexUnsubscribedActivityRow;
+export default SubscriptionRevokedActivityRow;
