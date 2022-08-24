@@ -53,7 +53,7 @@ const WrappingFormProvider: FC<{
     | SuperTokenDowngradeRestoration
     | undefined;
 }> = ({ restoration, children }) => {
-  const { network, stopAutoSwitchToAccountNetwork } = useExpectedNetwork();
+  const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
   const router = useRouter();
   const { token: tokenQueryParam } = router.query;
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
@@ -316,7 +316,7 @@ The chain ID was: ${network.id}`);
 
   useEffect(() => {
     if (formState.isDirty) {
-      stopAutoSwitchToAccountNetwork();
+      stopAutoSwitchToWalletNetwork();
     }
   }, [formState.isDirty]);
 

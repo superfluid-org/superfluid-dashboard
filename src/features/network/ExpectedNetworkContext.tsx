@@ -21,7 +21,11 @@ interface ExpectedNetworkContextValue {
   /**
    * So that connected wallet's network wouldn't force the "expected network". The use-case here are pre-filled form links and user filling a form before connecting their wallet.
    */
-  stopAutoSwitchToAccountNetwork: () => void;
+  stopAutoSwitchToWalletNetwork: () => void;
+  /**
+   * a.k.a: "Stop automatic switch to wallet's chain on connection"
+   */
+  isAutoSwitchStopped: boolean;
 }
 
 const ExpectedNetworkContext = createContext<ExpectedNetworkContextValue>(
@@ -32,17 +36,18 @@ export const ExpectedNetworkProvider: FC<{
   children: (network: Network) => ReactNode;
 }> = ({ children }) => {
   const [network, setNetwork] = useState<Network>(networksByChainId.get(137)!);
-  const [stopAutoSwitch, setStopAutoSwitch] = useState(false);
+  const [autoSwitchStop, setAutoSwitchStop] = useState(false);
 
   const contextValue: ExpectedNetworkContextValue = useMemo(
     () => ({
       network,
       setExpectedNetwork: (chainId: number) => {
-        setNetwork(networksByChainId.get(chainId)!), setStopAutoSwitch(false);
+        setNetwork(networksByChainId.get(chainId)!), setAutoSwitchStop(false);
       },
-      stopAutoSwitchToAccountNetwork: () => setStopAutoSwitch(true),
+      stopAutoSwitchToWalletNetwork: () => setAutoSwitchStop(true),
+      isAutoSwitchStopped: autoSwitchStop
     }),
-    [network]
+    [network, autoSwitchStop, setAutoSwitchStop]
   );
 
   const router = useRouter();
@@ -50,7 +55,7 @@ export const ExpectedNetworkProvider: FC<{
   // When user navigates to a new page then enable automatic switching to user wallet's network again.
   useEffect(() => {
     const onBeforeHistoryChange = () => {
-      setStopAutoSwitch(false);
+      setAutoSwitchStop(false);
     };
     router.events.on("beforeHistoryChange", onBeforeHistoryChange);
     return () =>
@@ -60,7 +65,7 @@ export const ExpectedNetworkProvider: FC<{
   const { chain: activeChain } = useNetwork();
 
   useEffect(() => {
-    if (stopAutoSwitch) {
+    if (autoSwitchStop) {
       return;
     }
 
@@ -87,7 +92,7 @@ export const ExpectedNetworkProvider: FC<{
       const { network, ...networkQueryParamRemoved } = router.query;
       router
         .replace({ query: networkQueryParamRemoved })
-        .then(() => void setStopAutoSwitch(true));
+        .then(() => void setAutoSwitchStop(true));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [networkQueryParam]);
