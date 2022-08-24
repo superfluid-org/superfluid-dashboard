@@ -513,6 +513,7 @@ export default memo(function SendCard() {
                     <TransactionDialogActions>
                       <Stack gap={1} sx={{ width: "100%" }}>
                         <TransactionDialogButton
+                          data-cy={"send-more-streams-button"}
                           color="secondary"
                           onClick={closeDialog}
                         >
@@ -525,7 +526,7 @@ export default memo(function SendCard() {
                           })}
                           passHref
                         >
-                          <TransactionDialogButton color="primary">
+                          <TransactionDialogButton data-cy="go-to-token-page-button" color="primary">
                             Go to token page ➜
                           </TransactionDialogButton>
                         </Link>

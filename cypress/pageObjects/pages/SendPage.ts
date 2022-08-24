@@ -1,5 +1,7 @@
 import {BasePage} from "../BasePage";
-import shortenHex from "../../../src/utils/shortenHex";
+import {UnitOfTime} from "../../../src/features/send/FlowRateInput";
+import {WrapPage} from "./WrapPage";
+import {networksBySlug} from "../../../src/features/network/networks";
 
 const SEND_BUTTON = "[data-cy=send-transaction-button]";
 const RECEIVER_BUTTON = "[data-cy=address-button]";
@@ -36,6 +38,13 @@ const PREVIEW_BALANCE = "[data-cy=balance]";
 const TOKEN_NO_SEARCH_RESULTS = "[data-cy=token-search-no-results]";
 const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet]";
 const DIALOG = "[role=dialog]"
+const APPROVAL_MESSAGE = "[data-cy=approval-message]"
+const TX_MESSAGE_NETWORK = "[data-cy=tx-network]"
+const LOADING_SPINNER = "[role=progressbar]"
+const TX_BROADCASTED_MESSAGE = "[data-cy=broadcasted-message]"
+const TX_BROADCASTED_ICON = "[data-cy=broadcasted-icon]"
+const SEND_MORE_STREAMS_BUTTON = "[data-cy=send-more-streams-button]"
+const GO_TO_TOKENS_PAGE_BUTTON = "[data-cy=go-to-token-page-button]"
 
 export class SendPage extends BasePage {
     static searchForTokenInTokenList(token: string) {
@@ -79,7 +88,7 @@ export class SendPage extends BasePage {
         this.isVisible(AMOUNT_PER_SECOND);
     }
 
-    static inputStreamTestData(isConnected:string) {
+    static inputStreamTestData(isConnected: string) {
         const connected = isConnected === "with"
         this.click(RECEIVER_BUTTON);
         cy.fixture("commonData").then((commonData) => {
@@ -91,13 +100,13 @@ export class SendPage extends BasePage {
             );
             this.click(SELECT_TOKEN_BUTTON);
 
-            if(connected){
-            //Wait for all balances to load, then open and close the menu to sort them
-            cy.get(TOKEN_SEARCH_RESULTS).then( el => {
-                this.hasLength(PREVIEW_BALANCE,el.length)
-            })
-            this.click(`${DIALOG} ${CLOSE_DIALOG_BUTTON}`)
-            this.click(SELECT_TOKEN_BUTTON)
+            if (connected) {
+                //Wait for all balances to load, then open and close the menu to sort them
+                cy.get(TOKEN_SEARCH_RESULTS).then(el => {
+                    this.hasLength(PREVIEW_BALANCE, el.length)
+                })
+                this.click(`${DIALOG} ${CLOSE_DIALOG_BUTTON}`)
+                this.click(SELECT_TOKEN_BUTTON)
             } else {
                 this.doesNotExist(PREVIEW_BALANCE)
             }
@@ -282,7 +291,9 @@ export class SendPage extends BasePage {
             balances.push(parseFloat(balance.text().replace("$", "")));
         });
         cy.wrap(balances).then((array) => {
-            let expectedArray = [...array].sort(function(a, b) {return b-a} );
+            let expectedArray = [...array].sort(function (a, b) {
+                return b - a
+            });
             expect(expectedArray).to.deep.eq(array);
         });
     }
@@ -294,5 +305,34 @@ export class SendPage extends BasePage {
 
     static clickAddressButton() {
         this.click(RECEIVER_BUTTON)
+    }
+
+    static inputStreamDetails(amount: string, token: string, timeUnit: any, address: string) {
+        this.click(RECEIVER_BUTTON);
+        this.type(ADDRESS_DIALOG_INPUT, address);
+        this.click(SELECT_TOKEN_BUTTON);
+        this.click(`[data-cy=${token}-list-item]`)
+        this.type(FLOW_RATE_INPUT, amount);
+        this.click(TIME_UNIT_SELECTION_BUTTON)
+        this.click(`[data-value=${UnitOfTime[timeUnit[0].toUpperCase() + timeUnit.substring(1)]!}]`)
+        this.click(RISK_CHECKBOX)
+    }
+
+    static startStreamAndCheckDialogs(network:string) {
+        this.isNotDisabled(SEND_BUTTON)
+        this.click(SEND_BUTTON)
+        this.isVisible(LOADING_SPINNER)
+        this.exists(`${SEND_BUTTON} ${LOADING_SPINNER}`)
+        this.hasText(APPROVAL_MESSAGE,"Waiting for transaction approval...")
+        this.hasText(TX_MESSAGE_NETWORK , `(${networksBySlug.get(network)?.name})`)
+        this.isVisible(TX_BROADCASTED_ICON)
+        this.hasText(TX_BROADCASTED_MESSAGE,"Transaction broadcasted")
+        this.isVisible(SEND_MORE_STREAMS_BUTTON)
+        this.isVisible(GO_TO_TOKENS_PAGE_BUTTON)
+        this.doesNotExist(`${SEND_BUTTON} ${LOADING_SPINNER}`)
+    }
+
+    static goToTokensPageAfterTx() {
+        this.click(GO_TO_TOKENS_PAGE_BUTTON)
     }
 }

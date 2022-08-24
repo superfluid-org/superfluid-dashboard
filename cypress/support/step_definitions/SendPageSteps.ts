@@ -146,3 +146,12 @@ Given(/^User waits for token balances to load$/, () => {
 Then(/^User clicks on the address button in the send page$/,  () => {
     SendPage.clickAddressButton()
 });
+Given(/^User inputs all the details to send "([^"]*)" "([^"]*)" per "([^"]*)" to "([^"]*)"$/,  (amount:string,token:string,timeUnit:string,address:string) => {
+    SendPage.inputStreamDetails(amount,token,timeUnit,address)
+});
+Given(/^User starts the stream and the transaction dialogs are visible for "([^"]*)"$/,  (network:string) => {
+    SendPage.startStreamAndCheckDialogs(network)
+});
+Given(/^User goes to the token page from the transaction dialog$/,  () => {
+    SendPage.goToTokensPageAfterTx()
+});

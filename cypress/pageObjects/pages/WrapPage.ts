@@ -410,13 +410,5 @@ export class WrapPage extends BasePage {
                 this.doesRestoreButtonExist()
             }
         })
-        // And User approves the protocol to use fUSDC
-        // And Transaction dialog for goerli is shown approving allowance of 0.1 fUSDC
-        // And Transaction broadcasted message with ok button is shown
-        // And User clicks the OK button
-        // And The transaction drawer shows a pending "Approve Allowance" transaction on "goerli"
-        // And The restore button is not visible for the last transaction
-        // And The transaction drawer shows a succeeded "Approve Allowance" transaction on "goerli"
-        // And The restore button is not visible for the last transaction
     }
 }

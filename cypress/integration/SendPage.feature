@@ -87,6 +87,23 @@ Feature: Send Page test cases
     And User opens the token selection screen
     Then The tokens are sorted by amount in the token selection screen
 
+    @only
+  Scenario: Creating modifying and deleting a stream
+    Given Transactional account is connected to the dashboard on goerli
+    And User clicks on the "send" navigation button
+    And User inputs all the details to send "1" "fDAIx" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"
+    And User starts the stream and the transaction dialogs are visible for "goerli"
+    And User goes to the token page from the transaction dialog
+    And User opens the transaction drawer
+    And The transaction drawer shows a pending "Create Stream" transaction on "goerli"
+    And The restore button is visible for the last transaction
+    And The first row in the table shows "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" "receiving" an "ongoing" stream of "1" token per month since "now"
+    And The transaction drawer shows a succeeded "Create Stream" transaction on "goerli"
+    And The restore button is visible for the last transaction
+    And User restores the last transaction
+    Then
+
+
   #TODO: Test cases that are broken/will get changed
    #Scenario: Searching for a recent receiver
    #Not working atm, create test case when fixed
