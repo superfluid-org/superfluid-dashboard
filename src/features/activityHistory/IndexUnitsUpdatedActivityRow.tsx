@@ -92,7 +92,7 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivity> = ({
         <ListItem sx={{ p: 0 }}>
           <ActivityIcon icon={PercentRoundedIcon} />
           <ListItemText
-            primary="Subscription updated"
+            primary="Subscription Updated"
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
