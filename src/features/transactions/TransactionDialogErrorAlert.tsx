@@ -1,12 +1,12 @@
 import { Alert, AlertTitle } from "@mui/material";
 import { memo, ReactNode, useMemo } from "react";
-import UnknownMutationResult from "../../unknownMutationResult";
+import MutationResult from "../../MutationResult";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 
 export default memo(function TransactionDialogErrorAlert({
   mutationError,
 }: {
-  mutationError: UnknownMutationResult["error"];
+  mutationError: MutationResult["error"];
 }) {
   const { network } = useExpectedNetwork();
 

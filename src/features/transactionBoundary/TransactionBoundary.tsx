@@ -9,7 +9,7 @@ import {
   useEffect,
 } from "react";
 import { useAccount, useNetwork, useSigner, useSwitchNetwork } from "wagmi";
-import UnknownMutationResult from "../../unknownMutationResult";
+import MutationResult from "../../MutationResult";
 import { useAutoConnect } from "../autoConnect/AutoConnect";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -32,7 +32,7 @@ interface TransactionBoundaryContextValue {
   closeDialog: () => void;
   setDialogLoadingInfo: (children: ReactNode) => void;
   setDialogSuccessActions: (children: ReactNode) => void;
-  mutationResult: UnknownMutationResult;
+  mutationResult: MutationResult;
 }
 
 const TransactionBoundaryContext =
@@ -44,7 +44,7 @@ export const useTransactionBoundary = () =>
 interface TransactionBoundaryProps {
   children: (arg: TransactionBoundaryContextValue) => ReactNode;
   dialog?: (arg: TransactionBoundaryContextValue) => ReactNode;
-  mutationResult: UnknownMutationResult;
+  mutationResult: MutationResult;
   expectedNetwork?: Network;
 }
 
