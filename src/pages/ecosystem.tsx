@@ -9,10 +9,10 @@ import {
 } from "@mui/material";
 import { NextPage } from "next";
 import Link from "next/link";
-import { chain } from "wagmi";
 import SEO from "../components/SEO/SEO";
 import { EcosystemApp } from "../features/ecosystem/EcosystemItem";
 import EcosystemSection from "../features/ecosystem/EcosystemSection";
+import { networkDefinition } from "../features/network/networks";
 
 export const BUILT_ON_SUPERFLUID = [
   {
@@ -20,7 +20,7 @@ export const BUILT_ON_SUPERFLUID = [
     href: "https://ricochet.exchange/",
     description: `An exchange for effortless real-time crypto investing and streaming`,
     icon: "/icons/ecosystem/ricochet.svg",
-    chains: [chain.polygon.id],
+    chains: [networkDefinition.polygon.id],
     colors: {
       primary: "#1B2733",
       secondary: "#254D5A",
@@ -31,7 +31,7 @@ export const BUILT_ON_SUPERFLUID = [
     href: "https://diagonal.finance/",
     icon: "/icons/ecosystem/diagonal.svg",
     description: `Non-custodial protocol for recurring payments on Ethereum`,
-    chains: [chain.polygon.id],
+    chains: [networkDefinition.polygon.id],
     colors: {
       primary: "#D4493F",
       secondary: "#F3766C",
@@ -42,7 +42,7 @@ export const BUILT_ON_SUPERFLUID = [
     href: "https://degendogs.club/",
     icon: "/icons/ecosystem/degen-dogs.svg",
     description: `NFT project combining DeFi and streaming through a DAO treasury`,
-    chains: [chain.polygon.id],
+    chains: [networkDefinition.polygon.id],
     colors: {
       primary: "#645D5B",
       secondary: "#978D87",
@@ -53,7 +53,7 @@ export const BUILT_ON_SUPERFLUID = [
     href: "https://farm.minerva.digital/",
     icon: "/icons/ecosystem/minerva.svg",
     description: `Next-gen yield farming with continuous MIVA reward streaming`,
-    chains: [100],
+    chains: [networkDefinition.gnosis.id],
     colors: {
       primary: "#4A3FCA",
       secondary: "#7D59ED",
@@ -64,7 +64,7 @@ export const BUILT_ON_SUPERFLUID = [
     href: "https://creaton.io/",
     icon: "/icons/ecosystem/creaton.svg",
     description: `Web3 membership platform for subscription income from fans`,
-    chains: [chain.polygon.id],
+    chains: [networkDefinition.polygon.id],
     colors: {
       primary: "#342F9B",
       secondary: "#1EA450",
@@ -75,7 +75,7 @@ export const BUILT_ON_SUPERFLUID = [
     href: "https://huma.finance/",
     icon: "/icons/ecosystem/huma.svg",
     description: `Borrow against future income streams without collaterization`,
-    chains: [chain.polygon.id],
+    chains: [networkDefinition.polygon.id],
     comingSoon: true,
     colors: {
       primary: "#8A51D5",
@@ -87,7 +87,7 @@ export const BUILT_ON_SUPERFLUID = [
     href: "https://drip.stream/",
     icon: "/icons/ecosystem/drip.svg",
     description: `Web3 checkout and affiliate marketing using cash-flow NFTs`,
-    chains: [chain.polygon.id],
+    chains: [networkDefinition.polygon.id],
     comingSoon: true,
     colors: {
       primary: "#2786DB",
@@ -99,7 +99,7 @@ export const BUILT_ON_SUPERFLUID = [
     href: "https://www.geoweb.network/",
     icon: "/icons/ecosystem/huma.svg",
     description: `AR layer anchoring digital content to physical locations`,
-    chains: [chain.polygon.id],
+    chains: [networkDefinition.polygon.id],
     comingSoon: true,
     colors: {
       primary: "#434C7C",
@@ -114,7 +114,12 @@ export const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
     href: "https://gnosis-safe.io/",
     icon: "/icons/ecosystem/gnosis-safe.svg",
     description: `Multi-sig and smart contract wallet for storing digital assets safely`,
-    chains: [chain.arbitrum.id, 100, chain.optimism.id, chain.polygon.id],
+    chains: [
+      networkDefinition.arbitrum.id,
+      networkDefinition.gnosis.id,
+      networkDefinition.optimism.id,
+      networkDefinition.polygon.id,
+    ],
     colors: {
       primary: "#33806B",
       secondary: "#4BC2A2",
@@ -125,7 +130,7 @@ export const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
     href: "https://coinshift.xyz/",
     icon: "/icons/ecosystem/coinshift.svg",
     description: `A treasury management platform with efficient multi-sig tooling`,
-    chains: [chain.polygon.id],
+    chains: [networkDefinition.polygon.id],
     comingSoon: true,
     colors: {
       primary: "#1452F5",
@@ -137,7 +142,12 @@ export const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
     href: "https://www.request.finance/",
     icon: "/icons/ecosystem/request.svg",
     description: `Manage and track crypto invoices, salaries, and expenses in one place`,
-    chains: [chain.arbitrum.id, 43114, 100, chain.polygon.id],
+    chains: [
+      networkDefinition.arbitrum.id,
+      networkDefinition.avalancheC.id,
+      networkDefinition.gnosis.id,
+      networkDefinition.polygon.id,
+    ],
     comingSoon: true,
     colors: {
       primary: "#1B52D0",
@@ -149,7 +159,12 @@ export const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
     href: "https://daohaus.club/",
     icon: "/icons/ecosystem/dao-haus.svg",
     description: `No-code platform for Moloch DAOs and their summoners`,
-    chains: [chain.arbitrum.id, 100, chain.optimism.id, chain.polygon.id],
+    chains: [
+      networkDefinition.arbitrum.id,
+      networkDefinition.gnosis.id,
+      networkDefinition.optimism.id,
+      networkDefinition.polygon.id,
+    ],
     colors: {
       primary: "#192AC2",
       secondary: "#FB708B",
@@ -160,7 +175,11 @@ export const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
     href: "https://unlock-protocol.com/",
     icon: "/icons/ecosystem/unlock.svg",
     description: `Connecting creative communities with NFT-based memberships`,
-    chains: [100, chain.optimism.id, chain.polygon.id],
+    chains: [
+      networkDefinition.gnosis.id,
+      networkDefinition.optimism.id,
+      networkDefinition.polygon.id,
+    ],
     colors: {
       primary: "#E76E73",
       secondary: "#FBA58F",
@@ -172,11 +191,11 @@ export const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
     icon: "/icons/ecosystem/collab-land.svg",
     description: `User-friendly, tokenized, community-management system`,
     chains: [
-      chain.arbitrum.id,
-      43114,
-      100,
-      chain.optimism.id,
-      chain.polygon.id,
+      networkDefinition.arbitrum.id,
+      networkDefinition.avalancheC.id,
+      networkDefinition.gnosis.id,
+      networkDefinition.optimism.id,
+      networkDefinition.polygon.id,
     ],
     colors: {
       primary: "#E88F27",
@@ -189,11 +208,11 @@ export const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
     icon: "/icons/ecosystem/connext.svg",
     description: `Powers fast, secure bridging between blockchains and rollups`,
     chains: [
-      chain.arbitrum.id,
-      43114,
-      100,
-      chain.optimism.id,
-      chain.polygon.id,
+      networkDefinition.arbitrum.id,
+      networkDefinition.avalancheC.id,
+      networkDefinition.gnosis.id,
+      networkDefinition.optimism.id,
+      networkDefinition.polygon.id,
     ],
     colors: {
       primary: "#5482FC",
@@ -206,11 +225,11 @@ export const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
     icon: "/icons/ecosystem/nomad.svg",
     description: `Cross-chain messaging protocol using an optimistic mechanism`,
     chains: [
-      chain.arbitrum.id,
-      43114,
-      100,
-      chain.optimism.id,
-      chain.polygon.id,
+      networkDefinition.arbitrum.id,
+      networkDefinition.avalancheC.id,
+      networkDefinition.gnosis.id,
+      networkDefinition.optimism.id,
+      networkDefinition.polygon.id,
     ],
     colors: {
       primary: "#1F2122",
@@ -222,7 +241,12 @@ export const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
     href: "https://umaproject.org/",
     icon: "/icons/ecosystem/uma.svg",
     description: `Optimistic oracle for Web3 serving data to smart contracts`,
-    chains: [chain.arbitrum.id, 100, chain.optimism.id, chain.polygon.id],
+    chains: [
+      networkDefinition.arbitrum.id,
+      networkDefinition.gnosis.id,
+      networkDefinition.optimism.id,
+      networkDefinition.polygon.id,
+    ],
     colors: {
       primary: "#FF4A4A",
       secondary: "#F07979",
@@ -236,7 +260,7 @@ export const SUPPORTS_SUPER_TOKENS: EcosystemApp[] = [
     href: "https://minerva.digital/",
     icon: "/icons/ecosystem/minerva.svg",
     description: `User-friendly wallet for sovereign identities, data, and money`,
-    chains: [100, chain.polygon.id],
+    chains: [networkDefinition.gnosis.id, networkDefinition.polygon.id],
     colors: {
       primary: "#4A3FCA",
       secondary: "#7D59ED",
@@ -248,11 +272,11 @@ export const SUPPORTS_SUPER_TOKENS: EcosystemApp[] = [
     icon: "/icons/ecosystem/zapper.svg",
     description: `Deploy, track, and manage DeFi positions and investments`,
     chains: [
-      chain.arbitrum.id,
-      43114,
-      100,
-      chain.optimism.id,
-      chain.polygon.id,
+      networkDefinition.arbitrum.id,
+      networkDefinition.avalancheC.id,
+      networkDefinition.gnosis.id,
+      networkDefinition.optimism.id,
+      networkDefinition.polygon.id,
     ],
     colors: {
       primary: "#6A50F4",
@@ -265,11 +289,11 @@ export const SUPPORTS_SUPER_TOKENS: EcosystemApp[] = [
     icon: "/icons/ecosystem/zerion.svg",
     description: `Smart wallet to manage, swap, stake, borrow, and lend assets`,
     chains: [
-      chain.arbitrum.id,
-      43114,
-      100,
-      chain.optimism.id,
-      chain.polygon.id,
+      networkDefinition.arbitrum.id,
+      networkDefinition.avalancheC.id,
+      networkDefinition.gnosis.id,
+      networkDefinition.optimism.id,
+      networkDefinition.polygon.id,
     ],
     colors: {
       primary: "#285BE3",
@@ -282,28 +306,28 @@ export const SUPPORTS_SUPER_TOKENS: EcosystemApp[] = [
     icon: "/icons/ecosystem/debank.svg",
     description: `Multi-chain portfolio tracker that supports the largest number of DeFi protocols.`,
     chains: [
-      chain.arbitrum.id,
-      43114,
-      100,
-      chain.optimism.id,
-      chain.polygon.id,
+      networkDefinition.arbitrum.id,
+      networkDefinition.avalancheC.id,
+      networkDefinition.gnosis.id,
+      networkDefinition.optimism.id,
+      networkDefinition.polygon.id,
     ],
     colors: {
       primary: "#FF6238",
       secondary: "#FE815F",
     },
-  }, 
+  },
   {
     name: "Li.Fi",
     href: "https://li.fi/",
     icon: "/icons/ecosystem/li-fi.svg",
     description: `Advanced bridge aggregation with DEX connectivity`,
     chains: [
-      chain.arbitrum.id,
-      43114,
-      100,
-      chain.optimism.id,
-      chain.polygon.id,
+      networkDefinition.arbitrum.id,
+      networkDefinition.avalancheC.id,
+      networkDefinition.gnosis.id,
+      networkDefinition.optimism.id,
+      networkDefinition.polygon.id,
     ],
     comingSoon: true,
     colors: {
@@ -317,11 +341,11 @@ export const SUPPORTS_SUPER_TOKENS: EcosystemApp[] = [
     icon: "/icons/ecosystem/transak.svg",
     description: `Fiat on-off ramp developer integration for Web3 applications`,
     chains: [
-      chain.arbitrum.id,
-      43114,
-      100,
-      chain.optimism.id,
-      chain.polygon.id,
+      networkDefinition.arbitrum.id,
+      networkDefinition.avalancheC.id,
+      networkDefinition.gnosis.id,
+      networkDefinition.optimism.id,
+      networkDefinition.polygon.id,
     ],
     comingSoon: true,
     colors: {
