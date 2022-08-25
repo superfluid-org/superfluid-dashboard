@@ -4,10 +4,11 @@ on:
   push:
     branches-ignore:
       - master
+  pull_request:
+    types: [ opened ]
 
 jobs:
   test_setup:
-    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
