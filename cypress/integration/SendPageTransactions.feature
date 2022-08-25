@@ -1,6 +1,5 @@
 Feature: Stream transactional test cases
 
-  @only
   @numTestsKeptInMemory(0)
   Scenario: Creating a new stream
     Given Transactional account is connected to the dashboard on goerli
@@ -20,7 +19,6 @@ Feature: Stream transactional test cases
     And User restores the last transaction
     Then All the details to send "1" "fDAIx" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" on "goerli" are set in the fields
 
-  @only
   @numTestsKeptInMemory(0)
   Scenario: Modifying a stream
     Given Transactional account is connected to the dashboard on goerli
@@ -38,7 +36,6 @@ Feature: Stream transactional test cases
     And User restores the last transaction
     Then All the details to send "2" "fDAIx" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" on "goerli" are set in the fields
 
-  @only
   @numTestsKeptInMemory(0)
   Scenario: Cancelling a stream
     Given Transactional account is connected to the dashboard on goerli
