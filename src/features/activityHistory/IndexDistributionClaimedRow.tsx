@@ -1,7 +1,4 @@
-import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
-import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import CallSplitRoundedIcon from "@mui/icons-material/CallSplitRounded";
 import {
   ListItem,
   ListItemAvatar,
@@ -13,83 +10,56 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { FlowUpdatedEvent, FlowUpdateType } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
-import { BigNumber } from "ethers";
-import { FC, memo, useMemo } from "react";
+import { FC } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
-import { Activity } from "../../utils/activityUtils";
+import { IndexDistributionClaimedActivity } from "../../utils/activityUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
-import { UnitOfTime } from "../send/FlowRateInput";
 import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
 
-const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
+const IndexDistributionClaimedRow: FC<IndexDistributionClaimedActivity> = ({
   keyEvent,
+  subscriptionDistributionClaimed,
   network,
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
   const { visibleAddress } = useVisibleAddress();
 
-  const {
-    type,
-    flowRate,
-    receiver,
-    sender,
-    timestamp,
-    token,
-    transactionHash,
-  } = keyEvent;
+  const { timestamp, amount, token, transactionHash, publisher, subscriber } =
+    keyEvent;
 
   const tokenQuery = subgraphApi.useTokenQuery({
     chainId: network.id,
     id: token,
   });
 
-  const isOutgoing = useMemo(
-    () => visibleAddress?.toLowerCase() === sender.toLowerCase(),
-    [visibleAddress, sender]
-  );
-
-  const { title, icon } = useMemo(() => {
-    switch (type) {
-      case FlowUpdateType.Create:
-        return {
-          title: isOutgoing ? "Send Stream" : "Receive Stream",
-          icon: isOutgoing ? ArrowForwardRoundedIcon : ArrowBackRoundedIcon,
-        };
-      case FlowUpdateType.Update:
-        return {
-          title: "Stream Updated",
-          icon: EditRoundedIcon,
-        };
-      case FlowUpdateType.Terminate:
-        return {
-          title: "Stream Cancelled",
-          icon: CloseRoundedIcon,
-        };
-    }
-  }, [isOutgoing, type]);
+  const isPublisher = visibleAddress?.toLowerCase() === publisher.toLowerCase();
 
   return (
-    <TableRow data-cy={`${network.slugName}-row`}>
+    <TableRow>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ActivityIcon icon={icon} />
+          <ActivityIcon
+            icon={CallSplitRoundedIcon}
+            IconProps={{
+              sx: { transform: `rotate(${isPublisher ? "" : "-"}90deg)` },
+            }}
+          />
           <ListItemText
-            data-cy={"activity"}
-            primary={title}
+            primary="Distribution Claimed"
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
-              translate: "yes",
               variant: isBelowMd ? "h7" : "h6",
+              translate: "yes",
             }}
             secondaryTypographyProps={{
               variant: "body2mono",
@@ -112,56 +82,47 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
                 />
               </ListItemAvatar>
               <ListItemText
-                data-cy={"amount"}
                 primary={
                   <>
-                    <Amount
-                      wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)}
-                    >
-                      {" "}
-                      {tokenQuery.data ? `${tokenQuery.data.symbol}/mo` : "/mo"}
-                    </Amount>
+                    +<Amount wei={amount} />
+                    {` `}
+                    {tokenQuery.data?.symbol}
                   </>
                 }
-                /**
-                 * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-                 * This is just used to make table row look better
-                 */
-                // secondary="$12.59"
                 primaryTypographyProps={{
                   variant: "h6mono",
-                  sx: { lineHeight: "46px" },
-                }}
-                secondaryTypographyProps={{
-                  variant: "body2mono",
-                  color: "text.secondary",
+                  color: "primary",
                 }}
               />
             </ListItem>
           </TableCell>
+
           <TableCell>
             <ListItem sx={{ p: 0 }}>
               <ListItemAvatar>
-                <AddressAvatar address={isOutgoing ? receiver : sender} />
+                <AddressAvatar address={isPublisher ? subscriber : publisher} />
               </ListItemAvatar>
               <ListItemText
-                data-cy={"amountToFrom"}
-                primary={isOutgoing ? "To" : "From"}
+                primary={isPublisher ? "Subscriber" : "Publisher"}
                 secondary={
-                  <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
+                  <AddressCopyTooltip
+                    address={isPublisher ? subscriber : publisher}
+                  >
                     <Typography
                       variant="h6"
                       color="text.primary"
                       component="span"
                     >
-                      <AddressName address={isOutgoing ? receiver : sender} />
+                      <AddressName
+                        address={isPublisher ? subscriber : publisher}
+                      />
                     </Typography>
                   </AddressCopyTooltip>
                 }
                 primaryTypographyProps={{
-                  translate: "yes",
                   variant: "body2",
                   color: "text.secondary",
+                  translate: "yes",
                 }}
               />
             </ListItem>
@@ -179,22 +140,14 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
           <Stack direction="row" alignItems="center" gap={1}>
             <ListItemText
               primary={
-                <Amount wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)} />
+                <>
+                  +<Amount wei={amount} />
+                </>
               }
-              secondary={
-                tokenQuery.data ? `${tokenQuery.data.symbol}/mo` : "/mo"
-              }
-              /**
-               * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-               * This is just used to make table row look better
-               */
-              // secondary="$12.59"
+              secondary={tokenQuery.data?.symbol || ""}
               primaryTypographyProps={{
                 variant: "h6mono",
-              }}
-              secondaryTypographyProps={{
-                variant: "body2mono",
-                color: "text.secondary",
+                color: "primary",
               }}
             />
             <TokenIcon
@@ -210,4 +163,4 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
   );
 };
 
-export default memo(FlowUpdatedActivityRow);
+export default IndexDistributionClaimedRow;

@@ -50,5 +50,3 @@ Feature: Wrap page test cases
     And User clicks on the stop viewing as an address button
     Then Connect wallet button is visible in the wrap/unwrap page
     And View mode chip does not exist
-
-

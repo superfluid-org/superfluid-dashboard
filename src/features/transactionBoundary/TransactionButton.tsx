@@ -21,7 +21,7 @@ export const TransactionButton: FC<{
     expectedNetwork,
     isCorrectNetwork,
     switchNetwork,
-    mutationResult,
+    mutationResult
   } = useTransactionBoundary();
 
   const buttonProps: ButtonProps = {

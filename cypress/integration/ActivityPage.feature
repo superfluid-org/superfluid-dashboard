@@ -18,6 +18,7 @@ Feature: Activity History Page tests
     Given "Activity history page" is open without connecting a wallet
     Then No activity history message is shown
 
+  @skip
   Scenario: Enabling and disabling filters
     Given "Dashboard Page" is open without connecting a wallet
     And User uses view mode to look at "staticBalanceAccount"

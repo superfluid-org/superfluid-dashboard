@@ -152,13 +152,14 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
     missingAllowance.gt(0)
   );
 
-  const isUpgradeDisabled =
+  const isWrapButtonDisabled =
     !tokenPair ||
     !underlyingToken ||
     !superToken ||
     formState.isValidating ||
     !formState.isValid ||
-    !!isApproveAllowanceVisible;
+    isApproveAllowanceVisible ||
+    allowanceQuery.isLoading;
 
   const amountInputRef = useRef<HTMLInputElement>(undefined!);
 
@@ -432,9 +433,9 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
           {({ closeDialog, setDialogLoadingInfo, setDialogSuccessActions }) => (
             <TransactionButton
               dataCy={"upgrade-button"}
-              disabled={isUpgradeDisabled}
+              disabled={isWrapButtonDisabled}
               onClick={async (signer) => {
-                if (isUpgradeDisabled) {
+                if (isWrapButtonDisabled) {
                   throw Error(
                     `This should never happen. Form state: ${JSON.stringify(
                       formState,

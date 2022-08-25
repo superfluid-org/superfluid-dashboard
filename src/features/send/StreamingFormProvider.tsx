@@ -58,7 +58,7 @@ const StreamingFormProvider: FC<StreamingFormProviderProps> = ({
   initialFormValues,
 }) => {
   const { address: accountAddress } = useAccount();
-  const { network, stopAutoSwitchToAccountNetwork } = useExpectedNetwork();
+  const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryActiveFlow] = rpcApi.useLazyGetActiveFlowQuery();
   const calculateBufferInfo = useCalculateBufferInfo();
@@ -225,7 +225,7 @@ const StreamingFormProvider: FC<StreamingFormProviderProps> = ({
 
   useEffect(() => {
     if (formState.isDirty) {
-      stopAutoSwitchToAccountNetwork();
+      stopAutoSwitchToWalletNetwork();
     }
   }, [formState.isDirty]);
 
