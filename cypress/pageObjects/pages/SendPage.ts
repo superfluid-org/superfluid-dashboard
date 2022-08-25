@@ -318,22 +318,22 @@ export class SendPage extends BasePage {
         this.click(RECEIVER_BUTTON);
         this.type(ADDRESS_DIALOG_INPUT, address);
         this.click(SELECT_TOKEN_BUTTON);
-        cy.get(`[data-cy=${token}-list-item]`,{timeout:60000}).click()
+        cy.get(`[data-cy=${token}-list-item]`, {timeout: 60000}).click()
         this.type(FLOW_RATE_INPUT, amount);
         this.click(TIME_UNIT_SELECTION_BUTTON)
         this.click(`[data-value=${UnitOfTime[timeUnit[0].toUpperCase() + timeUnit.substring(1)]!}]`)
         this.click(RISK_CHECKBOX)
     }
 
-    static startStreamAndCheckDialogs(network:string) {
+    static startStreamAndCheckDialogs(network: string) {
         this.isNotDisabled(SEND_BUTTON)
         this.click(SEND_BUTTON)
         this.isVisible(LOADING_SPINNER)
         this.exists(`${SEND_BUTTON} ${LOADING_SPINNER}`)
-        this.hasText(APPROVAL_MESSAGE,"Waiting for transaction approval...")
-        this.hasText(TX_MESSAGE_NETWORK , `(${networksBySlug.get(network)?.name})`)
+        this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
+        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
         cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
-        this.hasText(TX_BROADCASTED_MESSAGE,"Transaction broadcasted")
+        this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
         this.isVisible(SEND_MORE_STREAMS_BUTTON)
         this.isVisible(GO_TO_TOKENS_PAGE_BUTTON)
         this.doesNotExist(`${SEND_BUTTON} ${LOADING_SPINNER}`)
@@ -343,26 +343,26 @@ export class SendPage extends BasePage {
         this.click(GO_TO_TOKENS_PAGE_BUTTON)
     }
 
-    static validateRestoredTransaction(amount:string,token:string,timeUnit:string,address:string , network:string) {
-        this.hasText(ADDRESS_BUTTON_TEXT,address)
-        this.hasText(SELECT_TOKEN_BUTTON,token)
-        this.hasValue(`${FLOW_RATE_INPUT} input` , parseFloat(amount).toFixed(1).toString())
-        this.hasText(`${TIME_UNIT_SELECTION_BUTTON} div`,`/ ${timeUnit}`)
+    static validateRestoredTransaction(amount: string, token: string, timeUnit: string, address: string, network: string) {
+        this.hasText(ADDRESS_BUTTON_TEXT, address)
+        this.hasText(SELECT_TOKEN_BUTTON, token)
+        this.hasValue(`${FLOW_RATE_INPUT} input`, parseFloat(amount).toFixed(1).toString())
+        this.hasText(`${TIME_UNIT_SELECTION_BUTTON} div`, `/ ${timeUnit}`)
         this.isVisible(`[data-cy=network-badge-${networksBySlug.get(network)?.id}`)
     }
 
     static cancelStreamIfStillOngoing() {
         this.isVisible(PREVIEW_BUFFER_LOSS)
         cy.get("body").then(body => {
-            if(body.find(CANCEL_STREAM_BUTTON).length > 0) {
+            if (body.find(CANCEL_STREAM_BUTTON).length > 0) {
                 this.click(CANCEL_STREAM_BUTTON)
                 WrapPage.clickOkButton()
-                this.inputStreamDetails("1","fDAIx","month","0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2")
-                cy.get(`${TX_DRAWER_BUTTON} span` , {timeout:60000}).should("not.be.visible")
-                this.hasText(SEND_OR_MOD_STREAM,"Send Stream")
+                this.inputStreamDetails("1", "fDAIx", "month", "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2")
+                cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
+                this.hasText(SEND_OR_MOD_STREAM, "Send Stream")
                 //Working around the apps dirty bugs
                 this.clear(FLOW_RATE_INPUT)
-                this.type(FLOW_RATE_INPUT,"1")
+                this.type(FLOW_RATE_INPUT, "1")
                 this.click(RISK_CHECKBOX)
             }
         })
@@ -371,28 +371,28 @@ export class SendPage extends BasePage {
     static startOrCancelStreamIfNecessary() {
         this.isVisible(PREVIEW_BUFFER_LOSS)
         cy.get("body").then(body => {
-            if(body.find(SEND_BUTTON).length > 0) {
+            if (body.find(SEND_BUTTON).length > 0) {
                 this.clear(FLOW_RATE_INPUT)
-                this.type(FLOW_RATE_INPUT,"1")
+                this.type(FLOW_RATE_INPUT, "1")
                 this.click(RISK_CHECKBOX)
                 this.click(SEND_BUTTON)
-                cy.get(SEND_MORE_STREAMS_BUTTON, {timeout:60000}).click()
-                this.inputStreamDetails("2","fDAIx","month","0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2")
-                cy.get(`${TX_DRAWER_BUTTON} span` , {timeout:60000}).should("not.be.visible")
-                this.hasText(SEND_OR_MOD_STREAM,"Modify Stream")
+                cy.get(SEND_MORE_STREAMS_BUTTON, {timeout: 60000}).click()
+                this.inputStreamDetails("2", "fDAIx", "month", "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2")
+                cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
+                this.hasText(SEND_OR_MOD_STREAM, "Modify Stream")
                 //There should be a workaround here but the app won't throw the "same flowrate" error
             }
-            if(body.find(MODIFY_STREAM_BUTTON).length > 0){
-                if(body.find("[class*=MuiAlert-root] [class*=MuiAlert-message]").length > 2) {
+            if (body.find(MODIFY_STREAM_BUTTON).length > 0) {
+                if (body.find("[class*=MuiAlert-root] [class*=MuiAlert-message]").length > 2) {
                     this.click(CANCEL_STREAM_BUTTON)
                     WrapPage.clickOkButton()
-                    this.inputStreamDetails("1","fDAIx","month","0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2")
-                    cy.get(`${TX_DRAWER_BUTTON} span` , {timeout:60000}).should("not.be.visible")
-                    this.hasText(SEND_OR_MOD_STREAM,"Send Stream")
+                    this.inputStreamDetails("1", "fDAIx", "month", "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2")
+                    cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
+                    this.hasText(SEND_OR_MOD_STREAM, "Send Stream")
                     this.click(SEND_BUTTON)
                     this.click(SEND_MORE_STREAMS_BUTTON)
-                    this.inputStreamDetails("2","fDAIx","month","0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2")
-                    cy.get(`${TX_DRAWER_BUTTON} span` , {timeout:60000}).should("not.be.visible")
+                    this.inputStreamDetails("2", "fDAIx", "month", "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2")
+                    cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
                 }
             }
         })
@@ -403,10 +403,10 @@ export class SendPage extends BasePage {
         this.click(MODIFY_STREAM_BUTTON)
         this.isVisible(LOADING_SPINNER)
         this.exists(`${MODIFY_STREAM_BUTTON} ${LOADING_SPINNER}`)
-        this.hasText(APPROVAL_MESSAGE,"Waiting for transaction approval...")
-        this.hasText(TX_MESSAGE_NETWORK , `(${networksBySlug.get(network)?.name})`)
+        this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
+        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
         cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
-        this.hasText(TX_BROADCASTED_MESSAGE,"Transaction broadcasted")
+        this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
         this.isVisible(GO_TO_TOKENS_PAGE_BUTTON)
         this.doesNotExist(`${SEND_BUTTON} ${LOADING_SPINNER}`)
     }
@@ -429,10 +429,10 @@ export class SendPage extends BasePage {
         this.click(CANCEL_STREAM_BUTTON)
         this.isVisible(LOADING_SPINNER)
         this.exists(`${CANCEL_STREAM_BUTTON} ${LOADING_SPINNER}`)
-        this.hasText(APPROVAL_MESSAGE,"Waiting for transaction approval...")
-        this.hasText(TX_MESSAGE_NETWORK , `(${networksBySlug.get(network)?.name})`)
+        this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
+        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
         cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
-        this.hasText(TX_BROADCASTED_MESSAGE,"Transaction broadcasted")
+        this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
         this.isVisible(OK_BUTTON)
         this.doesNotExist(`${CANCEL_STREAM_BUTTON} ${LOADING_SPINNER}`)
     }

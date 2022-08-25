@@ -78,7 +78,7 @@ export class Common extends BasePage {
                     throw new Error(`Hmm, you haven't set up the link for : ${page}`);
             }
         })
-        if(Cypress.config("baseUrl") === "http://localhost:3000" && Cypress.env("dev")) {
+        if (Cypress.config("baseUrl") === "http://localhost:3000" && Cypress.env("dev")) {
             //The nextjs error is annoying when developing test cases in dev mode
             cy.get("nextjs-portal").shadow().find("[aria-label=Close]").click()
         }
@@ -113,7 +113,7 @@ export class Common extends BasePage {
         }
     }
 
-    static openDashboardWithConnectedTxAccount(network : string) {
+    static openDashboardWithConnectedTxAccount(network: string) {
 
         let chainId = networksBySlug.get(network)?.id
 
@@ -130,7 +130,7 @@ export class Common extends BasePage {
                 win.mockSigner = new ethers.providers.Web3Provider(provider).getSigner();
             },
         });
-        if(Cypress.config("baseUrl") === "http://localhost:3000" && Cypress.env("dev")) {
+        if (Cypress.config("baseUrl") === "http://localhost:3000" && Cypress.env("dev")) {
             //The nextjs error is annoying when developing test cases in dev mode
             cy.get("nextjs-portal").shadow().find("[aria-label=Close]").click()
         }
@@ -150,7 +150,7 @@ export class Common extends BasePage {
 
     static changeNetwork(network: string) {
         this.click(TOP_BAR_NETWORK_BUTTON);
-        if(networksBySlug.get(network)?.testnet) {
+        if (networksBySlug.get(network)?.testnet) {
             this.click(TESTNETS_BUTTON)
         }
         this.click(`[data-cy=${network}-button]`);

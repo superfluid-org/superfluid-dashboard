@@ -16,33 +16,33 @@ const EDIT_INPUT = "[data-cy=edit-input] input"
 export class AddressBookPage extends BasePage {
 
     static validateNoAddressesMessage() {
-        this.hasText(NO_ADDRESSES_TITLE,"No Addresses Available")
-        this.hasText(NO_ADDRESSES_MESSAGE,"Addresses you have transacted with or imported will appear here.")
+        this.hasText(NO_ADDRESSES_TITLE, "No Addresses Available")
+        this.hasText(NO_ADDRESSES_MESSAGE, "Addresses you have transacted with or imported will appear here.")
     }
 
-    static addAddressBookEntry(address:string) {
+    static addAddressBookEntry(address: string) {
         this.click(ADD_ADDRESS_BUTTON)
-        this.type(ADDRESS_DIALOG_INPUT,address)
+        this.type(ADDRESS_DIALOG_INPUT, address)
     }
 
-    static validateLastAddressBookName(name:string) {
-        cy.get(ADDRESS_NAMES).last().should("have.text",name)
+    static validateLastAddressBookName(name: string) {
+        cy.get(ADDRESS_NAMES).last().should("have.text", name)
     }
 
     static editLastEntry(name: string) {
         cy.get(ADDRESS_NAMES).last().trigger("mouseover")
         this.click(EDIT_BUTTON)
         this.clear(EDIT_INPUT)
-        this.type(EDIT_INPUT,name)
+        this.type(EDIT_INPUT, name)
         this.click(EDIT_BUTTON)
     }
 
     static removeLastEntry() {
         this.click(REMOVE_ADDRESS_BUTTON)
-        this.hasText(REMOVE_ADDRESS_BUTTON,"Confirm removing (0)")
+        this.hasText(REMOVE_ADDRESS_BUTTON, "Confirm removing (0)")
         this.isDisabled(REMOVE_ADDRESS_BUTTON)
         cy.get(REMOVE_CHECKBOX).last().click()
-        this.hasText(REMOVE_ADDRESS_BUTTON,"Confirm removing (1)")
+        this.hasText(REMOVE_ADDRESS_BUTTON, "Confirm removing (1)")
         this.click(REMOVE_ADDRESS_BUTTON)
     }
 

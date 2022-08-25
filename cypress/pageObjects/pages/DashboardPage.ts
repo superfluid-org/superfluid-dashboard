@@ -75,7 +75,7 @@ export class DashboardPage extends BasePage {
 
     static waitForBalancesToLoad() {
         this.isVisible(LOADING_SKELETONS);
-        cy.get(LOADING_SKELETONS,{ timeout: 60000 }).should("not.exist")
+        cy.get(LOADING_SKELETONS, {timeout: 60000}).should("not.exist")
     }
 
     static clickTokenStreamRow(network: string, token: string) {
@@ -111,7 +111,7 @@ export class DashboardPage extends BasePage {
                     ].ongoingStreamsAccount.tokenValues.tokenAddress.toLowerCase()}-streams-table] ${STREAM_ROWS} `;
             // The data in tables doesn't show up all at the same time , and skeletons dissapear with the first entry
             // waiting and need to re-check to make sure all streams are loaded
-            this.hasLength(specificSelector,networkSpecificData[
+            this.hasLength(specificSelector, networkSpecificData[
                 network
                 ].ongoingStreamsAccount.tokenValues.streams.length)
             networkSpecificData[
@@ -250,22 +250,22 @@ export class DashboardPage extends BasePage {
     }
 
     static waitForXAmountOfEntries(amount: number) {
-        this.hasLength(STREAM_ROWS,amount)
+        this.hasLength(STREAM_ROWS, amount)
     }
 
     static validateLastStreamRowNotFlowing() {
-        cy.get(ALL_BALANCE_ROWS).first().then(el => {
+        cy.get(`${STREAM_ROWS} ${TOKEN_BALANCES}`).first().then(el => {
             cy.wait(1000)
-            cy.get(ALL_BALANCE_ROWS).first().then(elAfter => {
+            cy.get(`${STREAM_ROWS} ${TOKEN_BALANCES}`).first().then(elAfter => {
                 cy.wrap(parseFloat(elAfter.text())).should("eq", parseFloat(el.text()))
             })
         })
     }
 
     static validateNoButtonsInLastStreamRow() {
-        cy.get(STREAM_ROWS).first({timeout:45000}).find(CANCEL_BUTTONS).should("not.exist")
-        cy.get(STREAM_ROWS).first({timeout:45000}).find(SWITCH_NETWORK_BUTTON).should("not.exist")
-        cy.get(STREAM_ROWS).first({timeout:45000}).find(MODIFY_STREAM_BUTTON).should("not.exist")
+        cy.get(STREAM_ROWS).first({timeout: 45000}).find(CANCEL_BUTTONS).should("not.exist")
+        cy.get(STREAM_ROWS).first({timeout: 45000}).find(SWITCH_NETWORK_BUTTON).should("not.exist")
+        cy.get(STREAM_ROWS).first({timeout: 45000}).find(MODIFY_STREAM_BUTTON).should("not.exist")
     }
 
     static validateTokenTotalNetFlowRates(token: string, network: string, amounts: string) {
@@ -275,17 +275,23 @@ export class DashboardPage extends BasePage {
             `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${NET_FLOW_VALUES}`,
             flowValues[0]
         );
-        this.hasText(
-            `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${OUTFLOW_VALUES}`,
-            flowValues[1]
-        );
-        this.hasText(
-            `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${INFLOW_VALUES}`,
-            flowValues[2]
-        );
+
+        if (flowValues[1]) {
+            this.hasText(
+                `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${INFLOW_VALUES}`,
+                flowValues[2]);
+            this.hasText(
+                `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${OUTFLOW_VALUES}`,
+                flowValues[1]);
+        } else {
+
+            this.hasText(
+                `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${OUTFLOW_VALUES}`,
+                flowValues);
+        }
     }
 
     static validateAmountOfStreamRows(amount: number) {
-        this.hasLength(STREAM_ROWS,amount)
+        this.hasLength(STREAM_ROWS, amount)
     }
 }

@@ -1,6 +1,6 @@
 import {BasePage} from "../BasePage";
 import shortenHex from "../../../src/utils/shortenHex";
-import { format } from "date-fns";
+import {format} from "date-fns";
 
 const TOKEN_BALANCE = "[data-cy=token-balance]"
 const TOKEN_GRAPH = "[data-cy=token-graph]"
@@ -26,10 +26,10 @@ export class IndividualTokenPage extends BasePage {
         this.isVisible(TOKEN_BALANCE)
     }
 
-    static validateStreamTableFirstRowValues(address: string, sendOrReceive: string,ongoing:string ,amount: string, fromTo: string) {
-        cy.get(`${STREAM_ROWS} ${SENDER_RECEIVER_ADDRESSES}`).first().should("have.text",shortenHex(address))
+    static validateStreamTableFirstRowValues(address: string, sendOrReceive: string, ongoing: string, amount: string, fromTo: string) {
+        cy.get(`${STREAM_ROWS} ${SENDER_RECEIVER_ADDRESSES}`).first().should("have.text", shortenHex(address))
         let plusOrMinus;
-        if (sendOrReceive === "receiving" ) {
+        if (sendOrReceive === "receiving") {
             plusOrMinus = "-"
             cy.get(STREAM_ROWS).first().find(SENDING_ICON).should("be.visible")
         } else {
@@ -37,16 +37,16 @@ export class IndividualTokenPage extends BasePage {
             cy.get(STREAM_ROWS).first().find(RECEIVING_ICON).should("be.visible")
         }
         let flowRateString = parseInt(amount) > 0 ? `${plusOrMinus + amount}/mo` : "-"
-        cy.get(`${STREAM_ROWS} ${STREAM_FLOW_RATES}`).first({timeout:60000}).should("have.text", flowRateString)
+        cy.get(`${STREAM_ROWS} ${STREAM_FLOW_RATES}`).first({timeout: 60000}).should("have.text", flowRateString)
         let fromToDate = fromTo === "now" ? format((Date.now()), "d MMM. yyyy") : format(parseInt(fromTo) * 1000, "d MMM. yyyy")
-        cy.get(`${STREAM_ROWS} ${START_END_DATES}`).first().should("have.text",fromToDate)
+        cy.get(`${STREAM_ROWS} ${START_END_DATES}`).first().should("have.text", fromToDate)
     }
 
-    static validateFirstRowPendingMessage(message:string) {
-        cy.get(STREAM_ROWS).first({timeout:60000}).find(PENDING_MESSAGE).should("have.text",message)
+    static validateFirstRowPendingMessage(message: string) {
+        cy.get(STREAM_ROWS).first({timeout: 60000}).find(PENDING_MESSAGE).should("have.text", message)
     }
 
     static validateNoPendingStatusForFirstRow() {
-        cy.get(STREAM_ROWS).first({timeout:60000}).find(PENDING_MESSAGE).should("not.exist")
+        cy.get(STREAM_ROWS).first().find(PENDING_MESSAGE, {timeout: 60000}).should("not.exist")
     }
 }
