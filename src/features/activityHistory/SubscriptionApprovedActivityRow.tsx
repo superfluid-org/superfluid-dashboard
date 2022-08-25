@@ -1,7 +1,4 @@
-import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
-import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import {
   ListItem,
   ListItemAvatar,
@@ -13,25 +10,24 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { FlowUpdatedEvent, FlowUpdateType } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
-import { FC, memo, useMemo } from "react";
+import { FC, useMemo } from "react";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
-import { Activity } from "../../utils/activityUtils";
+import { SubscriptionApprovedActivity } from "../../utils/activityUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
-import { UnitOfTime } from "../send/FlowRateInput";
 import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
 
-const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
+const SubscriptionApprovedActivityRow: FC<SubscriptionApprovedActivity> = ({
   keyEvent,
+  subscriptionApprovedEvent,
   network,
 }) => {
   const theme = useTheme();
@@ -39,13 +35,13 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
   const { visibleAddress } = useVisibleAddress();
 
   const {
-    type,
-    flowRate,
-    receiver,
-    sender,
+    indexId,
     timestamp,
     token,
+    publisher,
+    subscriber,
     transactionHash,
+    blockNumber,
   } = keyEvent;
 
   const tokenQuery = subgraphApi.useTokenQuery({
@@ -53,43 +49,45 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
     id: token,
   });
 
-  const isOutgoing = useMemo(
-    () => visibleAddress?.toLowerCase() === sender.toLowerCase(),
-    [visibleAddress, sender]
-  );
+  const oldSubQuery = subgraphApi.useIndexSubscriptionQuery({
+    chainId: network.id,
+    id: `${subscriber}-${publisher}-${token}-${indexId}`,
+    block: {
+      number: blockNumber - 1,
+    },
+  });
 
-  const { title, icon } = useMemo(() => {
-    switch (type) {
-      case FlowUpdateType.Create:
-        return {
-          title: isOutgoing ? "Send Stream" : "Receive Stream",
-          icon: isOutgoing ? ArrowForwardRoundedIcon : ArrowBackRoundedIcon,
-        };
-      case FlowUpdateType.Update:
-        return {
-          title: "Stream Updated",
-          icon: EditRoundedIcon,
-        };
-      case FlowUpdateType.Terminate:
-        return {
-          title: "Stream Cancelled",
-          icon: CloseRoundedIcon,
-        };
+  const newSubQuery = subgraphApi.useIndexSubscriptionQuery({
+    chainId: network.id,
+    id: `${subscriber}-${publisher}-${token}-${indexId}`,
+    block: {
+      number: blockNumber,
+    },
+  });
+
+  const amountReceived = useMemo(() => {
+    if (oldSubQuery.data && newSubQuery.data) {
+      return BigNumber.from(newSubQuery.data.totalAmountReceivedUntilUpdatedAt)
+        .sub(BigNumber.from(oldSubQuery.data.totalAmountReceivedUntilUpdatedAt))
+        .toString();
     }
-  }, [isOutgoing, type]);
+
+    return null;
+  }, [oldSubQuery.data, newSubQuery.data]);
+
+  const isPublisher = visibleAddress?.toLowerCase() === publisher.toLowerCase();
 
   return (
-    <TableRow data-cy={`${network.slugName}-row`}>
+    <TableRow>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ActivityIcon icon={icon} />
+          <ActivityIcon icon={CheckRoundedIcon} />
           <ListItemText
-            data-cy={"activity"}
-            primary={title}
+            primary="Subscription Approved"
             secondary={format(timestamp * 1000, "HH:mm")}
             primaryTypographyProps={{
-              translate: "yes",
               variant: isBelowMd ? "h7" : "h6",
+              translate: "yes",
             }}
             secondaryTypographyProps={{
               variant: "body2mono",
@@ -98,7 +96,6 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
           />
         </ListItem>
       </TableCell>
-
       {!isBelowMd ? (
         <>
           <TableCell>
@@ -112,29 +109,22 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
                 />
               </ListItemAvatar>
               <ListItemText
-                data-cy={"amount"}
                 primary={
                   <>
-                    <Amount
-                      wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)}
-                    >
-                      {" "}
-                      {tokenQuery.data ? `${tokenQuery.data.symbol}/mo` : "/mo"}
-                    </Amount>
+                    {amountReceived && (
+                      <>
+                        +<Amount wei={amountReceived} />
+                      </>
+                    )}{" "}
+                    {tokenQuery.data?.symbol}
                   </>
                 }
-                /**
-                 * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-                 * This is just used to make table row look better
-                 */
-                // secondary="$12.59"
                 primaryTypographyProps={{
                   variant: "h6mono",
-                  sx: { lineHeight: "46px" },
-                }}
-                secondaryTypographyProps={{
-                  variant: "body2mono",
-                  color: "text.secondary",
+                  color:
+                    amountReceived && amountReceived !== "0"
+                      ? "primary"
+                      : "inherit",
                 }}
               />
             </ListItem>
@@ -142,26 +132,29 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
           <TableCell>
             <ListItem sx={{ p: 0 }}>
               <ListItemAvatar>
-                <AddressAvatar address={isOutgoing ? receiver : sender} />
+                <AddressAvatar address={isPublisher ? subscriber : publisher} />
               </ListItemAvatar>
               <ListItemText
-                data-cy={"amountToFrom"}
-                primary={isOutgoing ? "To" : "From"}
+                primary={isPublisher ? "Subscriber" : "Publisher"}
                 secondary={
-                  <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
+                  <AddressCopyTooltip
+                    address={isPublisher ? subscriber : publisher}
+                  >
                     <Typography
                       variant="h6"
                       color="text.primary"
                       component="span"
                     >
-                      <AddressName address={isOutgoing ? receiver : sender} />
+                      <AddressName
+                        address={isPublisher ? subscriber : publisher}
+                      />
                     </Typography>
                   </AddressCopyTooltip>
                 }
                 primaryTypographyProps={{
-                  translate: "yes",
                   variant: "body2",
                   color: "text.secondary",
+                  translate: "yes",
                 }}
               />
             </ListItem>
@@ -179,22 +172,19 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
           <Stack direction="row" alignItems="center" gap={1}>
             <ListItemText
               primary={
-                <Amount wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)} />
+                amountReceived && (
+                  <>
+                    +<Amount wei={amountReceived} />
+                  </>
+                )
               }
-              secondary={
-                tokenQuery.data ? `${tokenQuery.data.symbol}/mo` : "/mo"
-              }
-              /**
-               * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-               * This is just used to make table row look better
-               */
-              // secondary="$12.59"
+              secondary={tokenQuery.data?.symbol}
               primaryTypographyProps={{
                 variant: "h6mono",
-              }}
-              secondaryTypographyProps={{
-                variant: "body2mono",
-                color: "text.secondary",
+                color:
+                  amountReceived && amountReceived !== "0"
+                    ? "primary"
+                    : "inherit",
               }}
             />
             <TokenIcon
@@ -210,4 +200,4 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
   );
 };
 
-export default memo(FlowUpdatedActivityRow);
+export default SubscriptionApprovedActivityRow;

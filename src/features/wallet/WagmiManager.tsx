@@ -53,12 +53,18 @@ const Disclaimer: DisclaimerComponent = ({ Text, Link }) => (
 
 export const RainbowKitManager: FC = ({ children }) => {
   const muiTheme = useTheme();
-  const { network } = useExpectedNetwork();
+  const { network, isAutoSwitchStopped } = useExpectedNetwork();
+
+  const selectableChains = [
+    ...chains.filter((x) => x.id === network.id), // Filter the expected network to be the first chain. RainbowKit emphasizes the first chain...
+    ...chains.filter((x) => x.id !== network.id),
+  ];
+  const initialChainId = isAutoSwitchStopped ? network.id : undefined; // RainbowKit either uses the wallet's chain if it's supported by our app OR switches to the first support chain.
 
   return (
     <RainbowKitProvider
-      chains={chains}
-      initialChain={network.id}
+      chains={selectableChains}
+      initialChain={initialChainId}
       avatar={AddressAvatar}
       appInfo={{ disclaimer: Disclaimer }}
       theme={

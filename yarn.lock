@@ -2849,10 +2849,10 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
 
-"@rainbow-me/rainbowkit@^0.4.5":
-  version "0.4.5"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbowkit/-/rainbowkit-0.4.5.tgz#bebd3aeae17156f1abc3534e02001e8ba1c7ba2c"
-  integrity sha512-9JikVOkkaK41T3a1Tg8VK1h92QDJsC9Fk7vSkEmNI99gM9MKRdbsrHyRwM1Z1U/0I/PnYAi8CvShfjwfNw5jAg==
+"@rainbow-me/rainbowkit@^0.4.8":
+  version "0.4.8"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/rainbowkit/-/rainbowkit-0.4.8.tgz#1efa3b05abc7f93129db0fe4bf8db13ad6ff3d48"
+  integrity sha512-xtrMSgbXmNtZXiehiBHx9cOslGXAYRnTIUQPAn13XTZjwwyJiwKHw6nSlKEb6OvIFaCBeu2htRAnxMnWNzagOA==
   dependencies:
     "@vanilla-extract/css" "1.7.0"
     "@vanilla-extract/dynamic" "2.0.2"
@@ -3050,10 +3050,10 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
   integrity sha512-9NET910DNaIPngYnLLPeg+Ogzqsi9uM4mSboU5y6p8S5DzMTVEsJZrawi+BoDNUVBa2DhJqQYUFvMDfgU062LQ==
 
-"@superfluid-finance/sdk-core@0.5.3-dev.9e9228f.0":
-  version "0.5.3-dev.9e9228f.0"
-  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-core/-/sdk-core-0.5.3-dev.9e9228f.0.tgz#2a85ad11e109fe92d1d8fcfcb52b02fe285cb01a"
-  integrity sha512-IaRZjwlkF46BcjwJwbhwzPL+yGfYpUjy9Vn9qQIpqiRliGHu+reYZh46aoCizVELs0TS546KPDsmq5nXb4IzhQ==
+"@superfluid-finance/sdk-core@0.5.4":
+  version "0.5.4"
+  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-core/-/sdk-core-0.5.4.tgz#db3e6fde0786051b1eee91b6f6937cc01078eb6a"
+  integrity sha512-VoJsH/i37Y1b8Z/xWQQVkLcNjLkcoLjPeVav5Z3iblnv+L7CsaqNZ+55CD1+aUPypNfplD0CxOcddRQRGbh3BQ==
   dependencies:
     browserify "^17.0.0"
     graphql-request "^4.3.0"
