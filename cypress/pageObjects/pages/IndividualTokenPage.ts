@@ -1,6 +1,8 @@
 import {BasePage} from "../BasePage";
 import shortenHex from "../../../src/utils/shortenHex";
 import {format} from "date-fns";
+import HDWalletProvider from "@truffle/hdwallet-provider";
+import {ethers} from "ethers";
 
 const TOKEN_BALANCE = "[data-cy=token-balance]"
 const TOKEN_GRAPH = "[data-cy=token-graph]"
