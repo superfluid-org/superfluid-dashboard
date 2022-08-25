@@ -17,7 +17,12 @@
     "incremental": true,
     "types": [
       "cypress"
-    ]
+    ],
+    "paths": {
+      "react": [
+        "./node_modules/@types/react" // Hopefully temporary. Can be removed when React is updated to 18.
+      ]
+    }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules","cypress"]
