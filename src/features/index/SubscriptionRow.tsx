@@ -398,7 +398,7 @@ const OperationProgress: FC<{
 }> = ({ pendingUpdate, transactingText }) => (
   <Stack direction="row" alignItems="center" gap={1}>
     <CircularProgress color="warning" size="16px" />
-    <Typography variant="caption" translate="yes">
+    <Typography data-cy={"pending-message"} variant="caption" translate="yes">
       {pendingUpdate?.hasTransactionSucceeded ? (
         <span>Syncing...</span>
       ) : (

@@ -236,7 +236,7 @@ const StreamingFormProvider: FC<StreamingFormProviderProps> = ({
   }, [accountAddress]);
 
   return isInitialized ? (
-    <FormProvider {...formMethods}>{children}</FormProvider>
+    <FormProvider data-cy={"test"} {...formMethods}>{children}</FormProvider>
   ) : null;
 };
 

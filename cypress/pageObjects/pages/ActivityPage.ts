@@ -77,7 +77,7 @@ export class ActivityPage extends BasePage {
             testAbleNetworks.forEach(network => {
                 if(data[account][network.slugName][0]){
                     //The entries load faster than the amounts shown, check to make sure all are loaded
-                    cy.get(`[data-cy=${network.slugName}-row] ${ACTIVITY_AMOUNT}` , {timeout:45000}).should("have.length" , data[account][network.slugName].length)
+                    cy.get(`[data-cy=${network.slugName}-row] ${ACTIVITY_AMOUNT}` , {timeout:60000}).should("have.length" , data[account][network.slugName].length)
                     data[account][network.slugName].forEach((activity:any ,index:number) => {
                         cy.get(`[data-cy=${network.slugName}-row] ${ACTIVITY_AMOUNT}`).eq(index).should("have.text",activity.amount)
                         cy.get(`[data-cy=${network.slugName}-row] ${ACTIVITY_TYPE}`).eq(index).find("span").first().should("have.text",activity.activity)

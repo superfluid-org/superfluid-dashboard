@@ -24,6 +24,8 @@ const DISPLAYED_ROWS = "[class*=displayedRows]";
 const NEXT_PAGE_BUTTON = "[data-testid=KeyboardArrowRightIcon]";
 const STREAM_ROWS = "[data-cy=stream-row]"
 const ALL_BALANCE_ROWS = "[data-cy*=-cell]"
+const MODIFY_STREAM_BUTTON = "[data-cy=modify-stream-tooltip]"
+const SWITCH_NETWORK_BUTTON = "[data-cy=switch-network-tooltip]"
 
 export class DashboardPage extends BasePage {
     static checkIfDashboardConnectIsVisible() {
@@ -73,7 +75,7 @@ export class DashboardPage extends BasePage {
 
     static waitForBalancesToLoad() {
         this.isVisible(LOADING_SKELETONS);
-        cy.get(LOADING_SKELETONS,{ timeout: 45000 }).should("not.exist")
+        cy.get(LOADING_SKELETONS,{ timeout: 60000 }).should("not.exist")
     }
 
     static clickTokenStreamRow(network: string, token: string) {
@@ -160,7 +162,7 @@ export class DashboardPage extends BasePage {
 
     static hoverOnFirstCancelButton(network: string) {
         cy.get(
-            `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=switch-network-tooltip]`
+            `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} ${SWITCH_NETWORK_BUTTON}`
         )
             .first()
             .trigger("mouseover");
@@ -248,6 +250,42 @@ export class DashboardPage extends BasePage {
     }
 
     static waitForXAmountOfEntries(amount: number) {
+        this.hasLength(STREAM_ROWS,amount)
+    }
+
+    static validateLastStreamRowNotFlowing() {
+        cy.get(ALL_BALANCE_ROWS).first().then(el => {
+            cy.wait(1000)
+            cy.get(ALL_BALANCE_ROWS).first().then(elAfter => {
+                cy.wrap(parseFloat(elAfter.text())).should("eq", parseFloat(el.text()))
+            })
+        })
+    }
+
+    static validateNoButtonsInLastStreamRow() {
+        cy.get(STREAM_ROWS).first({timeout:45000}).find(CANCEL_BUTTONS).should("not.exist")
+        cy.get(STREAM_ROWS).first({timeout:45000}).find(SWITCH_NETWORK_BUTTON).should("not.exist")
+        cy.get(STREAM_ROWS).first({timeout:45000}).find(MODIFY_STREAM_BUTTON).should("not.exist")
+    }
+
+    static validateTokenTotalNetFlowRates(token: string, network: string, amounts: string) {
+        //Input the amounts in order seperating with a comma, e.g. 1,-1,2 = 1 net , -1 outflow , 1 inflow
+        let flowValues = amounts === "-" ? amounts : amounts.split(",")
+        this.hasText(
+            `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${NET_FLOW_VALUES}`,
+            flowValues[0]
+        );
+        this.hasText(
+            `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${OUTFLOW_VALUES}`,
+            flowValues[1]
+        );
+        this.hasText(
+            `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${INFLOW_VALUES}`,
+            flowValues[2]
+        );
+    }
+
+    static validateAmountOfStreamRows(amount: number) {
         this.hasLength(STREAM_ROWS,amount)
     }
 }

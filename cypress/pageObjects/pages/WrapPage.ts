@@ -182,7 +182,7 @@ export class WrapPage extends BasePage {
     }
 
     static chooseTokenToWrap(token: string) {
-        cy.get(`[data-cy=${token}-list-item]` , {timeout: 45000}).click()
+        cy.get(`[data-cy=${token}-list-item]` , {timeout: 60000}).click()
     }
 
     static validateUnwrapTokenSelectionBalances(network: string) {
@@ -254,7 +254,7 @@ export class WrapPage extends BasePage {
     }
 
     static validateWrapTxBroadcastedDialog() {
-        cy.get(TX_BROADCASTED_ICON, {timeout: 45000}).should("be.visible")
+        cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
         this.isVisible(WRAP_MORE_TOKENS_BUTTON)
         this.isVisible(GO_TO_TOKENS_PAGE_BUTTON)
         this.hasText(TX_BROADCASTED_MESSAGE , "Transaction broadcasted")
@@ -280,7 +280,7 @@ export class WrapPage extends BasePage {
 
     static validateSuccessfulTransaction(type: any, network: any) {
         cy.get(TX_TYPE).first().should("have.text", type)
-        cy.get(DRAWER_TX).first().find("[data-cy=Succeeded-tx-status]" , {timeout:45000}).should("be.visible")
+        cy.get(DRAWER_TX).first().find("[data-cy=Succeeded-tx-status]" , {timeout:60000}).should("be.visible")
         cy.get(TX_HASH_BUTTONS).first().then(el => {
             el.attr("href")?.substr(-66)
             cy.get(TX_HASH).should("be.visible")
@@ -342,7 +342,7 @@ export class WrapPage extends BasePage {
 
     static validateUnwrapTxBroadcastedMessage() {
         this.hasText(TX_BROADCASTED_MESSAGE , "Transaction broadcasted")
-        this.isVisible(TX_BROADCASTED_ICON)
+        cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
         this.isVisible(OK_BUTTON)
     }
 
@@ -372,7 +372,7 @@ export class WrapPage extends BasePage {
     }
 
     static approveTokenSpending(token:string) {
-        cy.get(APPROVE_ALLOWANCE_BUTTON , {timeout: 45000}).should("be.visible")
+        cy.get(APPROVE_ALLOWANCE_BUTTON , {timeout: 60000}).should("be.visible")
         this.hasText(APPROVE_ALLOWANCE_BUTTON,`Allow Superfluid Protocol to wrap your ${token}`)
         this.click(APPROVE_ALLOWANCE_BUTTON)
     }

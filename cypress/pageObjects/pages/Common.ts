@@ -125,7 +125,7 @@ export class Common extends BasePage {
                     privateKeys: [Cypress.env("TX_ACCOUNT_PRIVATE_KEY")],
                     url: networkRpc,
                     chainId: chainId,
-                    pollingInterval: 10000,
+                    pollingInterval: 1000,
                 });
                 win.mockSigner = new ethers.providers.Web3Provider(provider).getSigner();
             },

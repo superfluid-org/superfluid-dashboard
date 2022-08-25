@@ -95,3 +95,15 @@ Given(/^User opens "([^"]*)" "([^"]*)" individual token page$/, (network: string
 Given(/^User waits for (\d+) stream entries to be shown$/,  (amount:number) => {
     DashboardPage.waitForXAmountOfEntries(amount)
 });
+Given(/^The amount sent for the last stream in the table is not flowing$/,  () => {
+    DashboardPage.validateLastStreamRowNotFlowing()
+});
+Given(/^There are no cancel or modify buttons in the last stream row$/,  () => {
+    DashboardPage.validateNoButtonsInLastStreamRow()
+});
+Given(/^The netflow and incomming\/outgoing amounts in the dashboard page for "([^"]*)" on "([^"]*)" are "([^"]*)"$/,  (token:string,network:string,amounts:string) => {
+    DashboardPage.validateTokenTotalNetFlowRates(token,network,amounts)
+});
+Given(/^There are (\d+) stream rows visible$/,  (amount:number) => {
+    DashboardPage.validateAmountOfStreamRows(amount)
+});

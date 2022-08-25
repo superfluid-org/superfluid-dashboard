@@ -41,6 +41,7 @@ const ModifyStreamButton: FC<ModifyStreamButtonProps> = ({
 
   return (
     <Tooltip
+      data-cy={"modify-stream-tooltip"}
       arrow
       disableInteractive
       placement="top"

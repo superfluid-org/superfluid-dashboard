@@ -279,6 +279,7 @@ export const StreamingPreview: FC<{
 
         {newTotalFlowRate?.isNegative() && (
           <PreviewItem
+            dataCy={"buffer-loss"}
             label="Predicted buffer loss date"
             isError={isBufferLossCritical}
             oldValue={

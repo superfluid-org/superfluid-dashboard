@@ -203,6 +203,7 @@ export default memo(function SendCard() {
 
   return (
     <Card
+      data-cy={"send-card"}
       elevation={1}
       sx={{
         maxWidth: "600px",
@@ -217,6 +218,7 @@ export default memo(function SendCard() {
       }}
     >
       <Button
+        data-cy={"send-or-modify-stream"}
         color="primary"
         variant="textContained"
         size="large"
@@ -550,6 +552,7 @@ export default memo(function SendCard() {
             {({ setDialogSuccessActions }) =>
               activeFlow && (
                 <TransactionButton
+                  dataCy={"modify-stream-button"}
                   disabled={isSendDisabled}
                   onClick={async (signer) => {
                     if (!formState.isValid) {
@@ -603,7 +606,7 @@ export default memo(function SendCard() {
                           })}
                           passHref
                         >
-                          <TransactionDialogButton color="primary">
+                          <TransactionDialogButton data-cy={"go-to-token-page-button"} color="primary">
                             Go to token page ➜
                           </TransactionDialogButton>
                         </Link>

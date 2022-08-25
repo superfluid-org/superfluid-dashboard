@@ -155,3 +155,21 @@ Given(/^User starts the stream and the transaction dialogs are visible for "([^"
 Given(/^User goes to the token page from the transaction dialog$/,  () => {
     SendPage.goToTokensPageAfterTx()
 });
+Then(/^All the details to send "([^"]*)" "([^"]*)" per "([^"]*)" to "([^"]*)" on "([^"]*)" are set in the fields$/,  (amount:string,token:string,timeUnit:string,address:string,network:string) => {
+    SendPage.validateRestoredTransaction(amount, token, timeUnit, address,network)
+});
+Given(/^User cancels the stream if necessary$/,  () => {
+    SendPage.cancelStreamIfStillOngoing()
+});
+Given(/^User starts or cancels the stream if necessary$/,  () => {
+    SendPage.startOrCancelStreamIfNecessary()
+});
+Given(/^User modifies the stream and the transaction dialogs are visible for "([^"]*)"$/,  (network:string) => {
+    SendPage.modifyStreamAnvValidateDialogs(network)
+});
+Given(/^User starts the stream if necessary$/,  () => {
+    SendPage.startStreamIfNecessary()
+});
+Given(/^User cancels the stream and the transaction dialogs are visible for "([^"]*)"$/,  (network:string) => {
+    SendPage.cancelStreamAndVerifyDialogs(network)
+});

@@ -8,3 +8,9 @@ Given(/^The first row in the table shows "([^"]*)" "([^"]*)" an "([^"]*)" stream
     (address:string,sendOrReceive:string,ongoing:string,amount:string,fromTo:string) => {
     IndividualTokenPage.validateStreamTableFirstRowValues(address,sendOrReceive,ongoing,amount,fromTo)
 });
+Given(/^The first row in the table shows "([^"]*)" pending transaction status$/,  (message:string) => {
+    IndividualTokenPage.validateFirstRowPendingMessage(message)
+});
+Given(/^The first row does not have a pending transaction status$/,  () => {
+    IndividualTokenPage.validateNoPendingStatusForFirstRow()
+});

@@ -15,6 +15,7 @@ const TOOLTIPS = "[role=tooltip]";
 const RECEIVING_ICON = "[data-testid=ArrowBackIcon]"
 const SENDING_ICON = "[data-testid=ArrowForwardIcon]"
 const INFINITY_ICON = "[data-testid=AllInclusiveIcon]"
+const PENDING_MESSAGE = "[data-cy=pending-message]"
 
 export class IndividualTokenPage extends BasePage {
 
@@ -35,8 +36,17 @@ export class IndividualTokenPage extends BasePage {
             plusOrMinus = "+"
             cy.get(STREAM_ROWS).first().find(RECEIVING_ICON).should("be.visible")
         }
-        cy.get(`${STREAM_ROWS} ${STREAM_FLOW_RATES}`).first().should("have.text", `${plusOrMinus + amount}/mo`)
+        let flowRateString = parseInt(amount) > 0 ? `${plusOrMinus + amount}/mo` : "-"
+        cy.get(`${STREAM_ROWS} ${STREAM_FLOW_RATES}`).first({timeout:60000}).should("have.text", flowRateString)
         let fromToDate = fromTo === "now" ? format((Date.now()), "d MMM. yyyy") : format(parseInt(fromTo) * 1000, "d MMM. yyyy")
         cy.get(`${STREAM_ROWS} ${START_END_DATES}`).first().should("have.text",fromToDate)
+    }
+
+    static validateFirstRowPendingMessage(message:string) {
+        cy.get(STREAM_ROWS).first({timeout:60000}).find(PENDING_MESSAGE).should("have.text",message)
+    }
+
+    static validateNoPendingStatusForFirstRow() {
+        cy.get(STREAM_ROWS).first({timeout:60000}).find(PENDING_MESSAGE).should("not.exist")
     }
 }

@@ -35,6 +35,7 @@ export default defineConfig({
         viewportWidth: 1920,
         defaultCommandTimeout: 10000,
         slowTestThreshold: 30000,
+        videoCompression: 32,
         video: true,
         retries: {
             "runMode": 2,
