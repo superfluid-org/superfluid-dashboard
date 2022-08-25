@@ -15,6 +15,7 @@ if (!IsCypress && SENTRY_DSN) {
     tracesSampleRate: 0.5,
     environment: SENTRY_ENVIRONMENT,
     beforeBreadcrumb(breadcrumb, hint) {
+      // Inspired by: https://github.com/getsentry/sentry-javascript/issues/3015#issuecomment-718594200
       if (breadcrumb.category?.startsWith('ui') && hint) {
         const target = hint.event.target;
         const dataCy = target.dataset.cy;
