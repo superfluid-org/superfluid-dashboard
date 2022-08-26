@@ -341,9 +341,9 @@ const TokenPageContent: FC<{
               },
             }}
           >
-            <Tab label="Streams" value={TokenDetailsTabs.Streams} />
-            <Tab label="Distributions" value={TokenDetailsTabs.Distributions} />
-            <Tab label="Transfers" value={TokenDetailsTabs.Transfers} />
+            <Tab data-cy="streams-tab" label="Streams" value={TokenDetailsTabs.Streams} />
+            <Tab data-cy="distribution-tab" label="Distributions" value={TokenDetailsTabs.Distributions} />
+            <Tab data-cy="transfers-tab" label="Transfers" value={TokenDetailsTabs.Transfers} />
           </TabList>
 
           {activeTab === TokenDetailsTabs.Streams && (

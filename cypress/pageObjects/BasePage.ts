@@ -42,7 +42,7 @@ export class BasePage {
         cy.get(selector).should("exist");
     }
 
-    static isVisible(selector: string ) {
+    static isVisible(selector: string) {
         cy.get(selector).should("be.visible");
     }
 

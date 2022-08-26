@@ -82,75 +82,75 @@ Then(/^All tokens have an animation around them$/, () => {
     SendPage.verifyAllSupertokenAnimations();
 });
 
-Given(/^User wraps the "([^"]*)" of the selected token$/,  (amount:string) => {
+Given(/^User wraps the "([^"]*)" of the selected token$/, (amount: string) => {
     WrapPage.clearAndInputWrapAmount(amount)
     WrapPage.rememberBalanceBeforeAndWrapToken()
 });
 
-Given(/^Transaction dialog for ([^"]*) is shown wrapping ([^"]*) ([^"]*)$/,  (network:string ,amount:string,token:string) => {
-    WrapPage.validateWrapTxDialogMessage(network,amount,token)
+Given(/^Transaction dialog for ([^"]*) is shown wrapping ([^"]*) ([^"]*)$/, (network: string, amount: string, token: string) => {
+    WrapPage.validateWrapTxDialogMessage(network, amount, token)
 });
-Given(/^Wrap transaction broadcasted message is shown$/,  () => {
+Given(/^Wrap transaction broadcasted message is shown$/, () => {
     WrapPage.validateWrapTxBroadcastedDialog()
 });
-Given(/^User clicks on the go to tokens page button from tx dialog$/,  () => {
+Given(/^User clicks on the go to tokens page button from tx dialog$/, () => {
     WrapPage.clickTxDialogGoToTokensPageButton()
 });
-Given(/^The transaction drawer shows a pending "([^"]*)" transaction on "([^"]*)"$/,  (type:string , network:string) => {
-    WrapPage.validatePendingTransaction(type,network)
+Given(/^The transaction drawer shows a pending "([^"]*)" transaction on "([^"]*)"$/, (type: string, network: string) => {
+    WrapPage.validatePendingTransaction(type, network)
 });
-Given(/^The transaction drawer shows a succeeded "([^"]*)" transaction on "([^"]*)"$/,  (type:string , network:string) => {
-    WrapPage.validateSuccessfulTransaction(type,network)
+Given(/^The transaction drawer shows a succeeded "([^"]*)" transaction on "([^"]*)"$/, (type: string, network: string) => {
+    WrapPage.validateSuccessfulTransaction(type, network)
 });
-Given(/^Users super token balance of "([^"]*)" on "([^"]*)" increases by "([^"]*)" in the dashboard page$/,  (token:string, network:string, amount:string) => {
-    WrapPage.validateBalanceAfterWrapping(token,network,amount)
+Given(/^Users super token balance of "([^"]*)" on "([^"]*)" increases by "([^"]*)" in the dashboard page$/, (token: string, network: string, amount: string) => {
+    WrapPage.validateBalanceAfterWrapping(token, network, amount)
 });
-Then(/^Wrap field input field has "([^"]*)" written in it$/,  (amount:string) => {
+Then(/^Wrap field input field has "([^"]*)" written in it$/, (amount: string) => {
     WrapPage.validateWrapFieldInputAmount(amount)
 });
-Then(/^The token balances after wrapping "([^"]*)" tokens are correctly shown in the wrap page$/,  (amount:string) => {
+Then(/^The token balances after wrapping "([^"]*)" tokens are correctly shown in the wrap page$/, (amount: string) => {
     WrapPage.validateTokenBalancesAfterWrap(amount)
 });
 
-Given(/^User unwraps the "([^"]*)" of the selected token$/,  (amount:string) => {
+Given(/^User unwraps the "([^"]*)" of the selected token$/, (amount: string) => {
     WrapPage.clearAndInputUnwrapAmount(amount)
     WrapPage.rememberBalanceBeforeAndUnwrapToken()
 });
-Given(/^Transaction dialog for ([^"]*) is shown unwrapping ([^"]*) ([^"]*)$/,  (network:string ,amount:string,token:string) => {
-    WrapPage.validateUnwrapTxDialogMessage(network,amount,token)
+Given(/^Transaction dialog for ([^"]*) is shown unwrapping ([^"]*) ([^"]*)$/, (network: string, amount: string, token: string) => {
+    WrapPage.validateUnwrapTxDialogMessage(network, amount, token)
 });
-Given(/^Transaction broadcasted message with ok button is shown$/,  () => {
+Given(/^Transaction broadcasted message with ok button is shown$/, () => {
     WrapPage.validateUnwrapTxBroadcastedMessage()
 });
-Given(/^Users super token balance of "([^"]*)" on "([^"]*)" decreases by "([^"]*)" in the dashboard page$/,  (token:string, network:string, amount:string) => {
-    WrapPage.validateBalanceAfterUnwrapping(token,network,amount)
+Given(/^Users super token balance of "([^"]*)" on "([^"]*)" decreases by "([^"]*)" in the dashboard page$/, (token: string, network: string, amount: string) => {
+    WrapPage.validateBalanceAfterUnwrapping(token, network, amount)
 });
-Then(/^Unwrap field input field has "([^"]*)" written in it$/,  (amount:string) => {
+Then(/^Unwrap field input field has "([^"]*)" written in it$/, (amount: string) => {
     WrapPage.validateUnwrapInputFieldAmount(amount)
 });
-Then(/^The token balances after wrapping "([^"]*)" tokens are correctly shown in the unwrap page$/,  (amount:string) => {
+Then(/^The token balances after wrapping "([^"]*)" tokens are correctly shown in the unwrap page$/, (amount: string) => {
     WrapPage.validateTokenBalancesAfterUnwrap(amount)
 });
-Given(/^User opens the transaction drawer$/,  () => {
+Given(/^User opens the transaction drawer$/, () => {
     WrapPage.openTxDrawer()
 });
-Given(/^User clicks the OK button$/,  () => {
+Given(/^User clicks the OK button$/, () => {
     WrapPage.clickOkButton()
 });
 
-Given(/^User approves the protocol to use "([^"]*)"$/,  (token:string) => {
+Given(/^User approves the protocol to use "([^"]*)"$/, (token: string) => {
     WrapPage.approveTokenSpending(token)
 });
-Given(/^Transaction dialog for ([^"]*) is shown approving allowance of ([^"]*) ([^"]*)$/,  (network:string,amount:string,token:string) => {
-    WrapPage.validateApprovalDialog(network,amount,token)
+Given(/^Transaction dialog for ([^"]*) is shown approving allowance of ([^"]*) ([^"]*)$/, (network: string, amount: string, token: string) => {
+    WrapPage.validateApprovalDialog(network, amount, token)
 });
-Given(/^The restore button is visible for the last transaction$/,  () => {
+Given(/^The restore button is visible for the last transaction$/, () => {
     WrapPage.isRestoreButtonVisible()
 });
 
-Given(/^The restore button is not visible for the last transaction$/,  () => {
+Given(/^The restore button is not visible for the last transaction$/, () => {
     WrapPage.doesRestoreButtonExist()
 });
-Given(/^User approves the protocol to use "([^"]*)" "([^"]*)" on "([^"]*)" if necessary$/,  (amount:string,token:string,network:string) => {
-    WrapPage.approveTokenIfNeeded(token,network,amount)
+Given(/^User approves the protocol to use "([^"]*)" "([^"]*)" on "([^"]*)" if necessary$/, (amount: string, token: string, network: string) => {
+    WrapPage.approveTokenIfNeeded(token, network, amount)
 });

@@ -3,7 +3,7 @@
     "polygon": [
       {
         "flowRate": 1929012345,
-        "startedAtUnix":1625213281000,
+        "startedAtUnix": 1625213281000,
         "sender": "0xcb867BB066B29f86e7fc54C48D9eB45ecb8E42D8",
         "receiver": "0xEb85888b31FADF79CB264d065EdcB4a14551c28d",
         "amountPerMonth": "0.005",
@@ -22,7 +22,7 @@
   "staticBalanceAccount": {
     "polygon": [
       {
-        "startedAtUnix":1625213281000,
+        "startedAtUnix": 1625213281000,
         "sender": "0x8ac9C6D444D12d20BC96786243Abaae8960D27e2",
         "receiver": "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2",
         "totalAmountStreamed": "0.00009722 ",
