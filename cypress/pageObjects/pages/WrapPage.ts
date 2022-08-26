@@ -395,9 +395,6 @@ export class WrapPage extends BasePage {
     }
 
     static approveTokenIfNeeded(token: string, network: string, amount: string) {
-        //Please fix dashboard showing WRAP before getting approval amounts
-        //No good way to do this because of that thank you
-        cy.wait(5000)
         cy.get(MAIN_BUTTONS).first().then(el => {
             if (el.text() === `Allow Superfluid Protocol to wrap your ${token}`) {
                 this.approveTokenSpending(token)
