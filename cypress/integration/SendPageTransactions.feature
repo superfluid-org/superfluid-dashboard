@@ -1,4 +1,4 @@
-Feature: Stream transactional test cases
+Feature: Transactional test cases
 
   @numTestsKeptInMemory(0)
   Scenario: Creating a new stream
@@ -59,8 +59,6 @@ Feature: Stream transactional test cases
     And The amount sent for the last stream in the table is not flowing
     And The netflow and incomming/outgoing amounts in the dashboard page for "fDAIx" on "goerli" are "-"
     And The first row in the table shows "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" "receiving" an "ongoing" stream of "0" token per month since "now"
-
-Feature: Wrapping and Unwrapping transactional test cases
 
   @numTestsKeptInMemory(0)
   Scenario: Wrapping network native tokens
@@ -141,8 +139,6 @@ Feature: Wrapping and Unwrapping transactional test cases
     And User restores the last transaction
     Then Unwrap field input field has "0.1" written in it
     And The token balances after wrapping "0.1" tokens are correctly shown in the unwrap page
-
-Feature: Distribution transaction test cases
 
   @numTestsKeptInMemory(0)
   Scenario: Approving a subscription
