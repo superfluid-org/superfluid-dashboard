@@ -1,6 +1,7 @@
 import { getFramework } from "@superfluid-finance/sdk-redux";
 import { ContractCallContext, Multicall } from "ethereum-multicall";
 import { BigNumber, ethers } from "ethers";
+import promiseRetry from "promise-retry";
 import { networks } from "../../network/networks";
 import { NATIVE_ASSET_ADDRESS } from "./tokenTypes";
 
@@ -74,7 +75,18 @@ const createFetching = (
           multicallCustomContractAddress: multicallContractAddress,
         });
 
-        const results = (await multicall.call(contractCalls)).results;
+        const results = await promiseRetry(
+          (retry) =>
+            multicall
+              .call(contractCalls)
+              .catch(retry)
+              .then((x) => x.results),
+          {
+            minTimeout: 100,
+            maxTimeout: 1000,
+            retries: 5,
+          }
+        );
 
         const mappedResult = Object.fromEntries(
           queries.map((x) => {
