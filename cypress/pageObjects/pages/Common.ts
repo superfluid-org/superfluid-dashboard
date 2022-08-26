@@ -136,7 +136,7 @@ export class Common extends BasePage {
         }
         this.changeNetwork(network)
         this.clickConnectWallet()
-        this.clickInjectedWallet()
+        this.clickMockWallet()
     }
 
     static clickConnectWallet() {
@@ -144,6 +144,11 @@ export class Common extends BasePage {
     }
 
     static clickInjectedWallet() {
+        this.isVisible(WAGMI_CONNECT_WALLET_TITLE);
+        cy.contains("Injected Wallet").click();
+    }
+
+    static clickMockWallet() {
         this.isVisible(WAGMI_CONNECT_WALLET_TITLE);
         cy.contains("Mock").click();
     }
