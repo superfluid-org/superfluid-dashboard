@@ -113,7 +113,7 @@ export class Common extends BasePage {
         }
     }
 
-    static openDashboardWithConnectedTxAccount(network: string) {
+    static openDashboardWithConnectedTxAccount(number:string,network: string) {
 
         let chainId = networksBySlug.get(network)?.id
 
@@ -122,7 +122,7 @@ export class Common extends BasePage {
         cy.visit("/", {
             onBeforeLoad: (win: any) => {
                 const provider = new HDWalletProvider({
-                    privateKeys: [Cypress.env("TX_ACCOUNT_PRIVATE_KEY")],
+                    privateKeys: [Cypress.env(`TX_ACCOUNT_PRIVATE_KEY${number}`)],
                     url: networkRpc,
                     chainId: chainId,
                     pollingInterval: 1000,
