@@ -44,6 +44,7 @@ const APPROVE_ALLOWANCE_BUTTON = "[data-cy=approve-allowance-button]"
 const APPROVE_ALLOWANCE_MESSAGE = "[data-cy=allowance-message]"
 const WRAP_SCREEN = "[data-cy=wrap-screen]"
 const MAIN_BUTTONS = `${WRAP_SCREEN} [data-cy*=e-button]`
+const MAX_BUTTON = "[data-cy=max-button]"
 
 export class WrapPage extends BasePage {
     static checkIfWrapContainerIsVisible() {
@@ -395,6 +396,8 @@ export class WrapPage extends BasePage {
     }
 
     static approveTokenIfNeeded(token: string, network: string, amount: string) {
+        cy.get(MAX_BUTTON).should("be.visible")
+        cy.get(MAIN_BUTTONS).should("be.enabled")
         cy.get(MAIN_BUTTONS).first().then(el => {
             if (el.text() === `Allow Superfluid Protocol to wrap your ${token}`) {
                 this.approveTokenSpending(token)

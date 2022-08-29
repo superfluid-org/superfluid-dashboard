@@ -184,6 +184,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({
                 name="data.amountDecimal"
                 render={({ field: { onChange, onBlur } }) => (
                   <Button
+                    data-cy={"max-button"}
                     variant="textContained"
                     size="xxs"
                     onClick={() => {
