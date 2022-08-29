@@ -352,24 +352,27 @@ export class SendPage extends BasePage {
     }
 
     static cancelStreamIfStillOngoing() {
-        this.isVisible(PREVIEW_BUFFER_LOSS)
-        cy.get("body").then(body => {
-            if (body.find(CANCEL_STREAM_BUTTON).length > 0) {
-                this.click(CANCEL_STREAM_BUTTON)
-                WrapPage.clickOkButton()
-                this.inputStreamDetails("1", "fDAIx", "month", "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2")
-                cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
-                this.hasText(SEND_OR_MOD_STREAM, "Send Stream")
-                //Working around the apps dirty bugs
-                this.clear(FLOW_RATE_INPUT)
-                this.type(FLOW_RATE_INPUT, "1")
-                this.click(RISK_CHECKBOX)
-            }
+        cy.fixture("commonData").then(data => {
+            this.isVisible(PREVIEW_BUFFER_LOSS)
+            cy.get("body").then(body => {
+                if (body.find(CANCEL_STREAM_BUTTON).length > 0) {
+                    this.click(CANCEL_STREAM_BUTTON)
+                    WrapPage.clickOkButton()
+                    this.inputStreamDetails("1", "fDAIx", "month", data.accountWithLotsOfData)
+                    cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
+                    this.hasText(SEND_OR_MOD_STREAM, "Send Stream")
+                    //Working around the apps dirty bugs
+                    this.clear(FLOW_RATE_INPUT)
+                    this.type(FLOW_RATE_INPUT, "1")
+                    this.click(RISK_CHECKBOX)
+                }
+            })
         })
     }
 
     static startOrCancelStreamIfNecessary() {
         this.isVisible(PREVIEW_BUFFER_LOSS)
+        cy.fixture("commonData").then(data => {
         cy.get("body").then(body => {
             if (body.find(SEND_BUTTON).length > 0) {
                 this.clear(FLOW_RATE_INPUT)
@@ -377,7 +380,7 @@ export class SendPage extends BasePage {
                 this.click(RISK_CHECKBOX)
                 this.click(SEND_BUTTON)
                 cy.get(SEND_MORE_STREAMS_BUTTON, {timeout: 60000}).click()
-                this.inputStreamDetails("2", "fDAIx", "month", "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2")
+                this.inputStreamDetails("2", "fDAIx", "month", data.accountWithLotsOfData)
                 cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
                 this.hasText(SEND_OR_MOD_STREAM, "Modify Stream")
                 //There should be a workaround here but the app won't throw the "same flowrate" error
@@ -386,15 +389,16 @@ export class SendPage extends BasePage {
                 if (body.find("[class*=MuiAlert-root] [class*=MuiAlert-message]").length > 2) {
                     this.click(CANCEL_STREAM_BUTTON)
                     WrapPage.clickOkButton()
-                    this.inputStreamDetails("1", "fDAIx", "month", "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2")
+                    this.inputStreamDetails("1", "fDAIx", "month", data.accountWithLotsOfData)
                     cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
                     this.hasText(SEND_OR_MOD_STREAM, "Send Stream")
                     this.click(SEND_BUTTON)
                     this.click(SEND_MORE_STREAMS_BUTTON)
-                    this.inputStreamDetails("2", "fDAIx", "month", "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2")
+                    this.inputStreamDetails("2", "fDAIx", "month", data.accountWithLotsOfData)
                     cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
                 }
             }
+        })
         })
     }
 
@@ -413,14 +417,16 @@ export class SendPage extends BasePage {
 
     static startStreamIfNecessary() {
         this.isVisible(PREVIEW_BUFFER_LOSS)
+        cy.fixture("commonData").then(data => {
         cy.get("body").then(body => {
             if (body.find(SEND_BUTTON).length > 0) {
                 this.click(SEND_BUTTON)
                 cy.get(SEND_MORE_STREAMS_BUTTON, {timeout: 60000}).click()
-                this.inputStreamDetails("2", "fDAIx", "month", "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2")
+                this.inputStreamDetails("2", "fDAIx", "month",data.accountWithLotsOfData)
                 cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
                 this.hasText(SEND_OR_MOD_STREAM, "Modify Stream")
             }
+        })
         })
     }
 

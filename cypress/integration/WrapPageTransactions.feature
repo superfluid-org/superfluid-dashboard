@@ -2,7 +2,7 @@ Feature: Wrapping and Unwrapping transactional test cases
 
   @numTestsKeptInMemory(0)
   Scenario: Wrapping network native tokens
-    Given Transactional account number 3 is connected to the dashboard on goerli
+    Given Transactional account dan is connected to the dashboard on goerli
     And User clicks on the "wrap-unwrap" navigation button
     And User wraps the "0.1" of the selected token
     And Transaction dialog for goerli is shown wrapping 0.1 ETH
@@ -19,7 +19,7 @@ Feature: Wrapping and Unwrapping transactional test cases
 
   @numTestsKeptInMemory(0)
   Scenario: Unwrapping network native token
-    Given Transactional account number 3 is connected to the dashboard on goerli
+    Given Transactional account dan is connected to the dashboard on goerli
     And User clicks on the "wrap-unwrap" navigation button
     And User switches to unwrap tab
     And User unwraps the "0.1" of the selected token
@@ -39,7 +39,7 @@ Feature: Wrapping and Unwrapping transactional test cases
 
   @numTestsKeptInMemory(0)
   Scenario: Wrapping normal underlying tokens
-    Given Transactional account number 3 is connected to the dashboard on goerli
+    Given Transactional account dan is connected to the dashboard on goerli
     And User clicks on the "wrap-unwrap" navigation button
     And User opens the token selection in the wrap page
     And User chooses "fUSDC" to wrap
@@ -60,7 +60,7 @@ Feature: Wrapping and Unwrapping transactional test cases
 
   @numTestsKeptInMemory(0)
   Scenario: Unwrapping normal super tokens
-    Given Transactional account number 3 is connected to the dashboard on goerli
+    Given Transactional account dan is connected to the dashboard on goerli
     And User clicks on the "wrap-unwrap" navigation button
     And User switches to unwrap tab
     And User opens the token selection in the wrap page

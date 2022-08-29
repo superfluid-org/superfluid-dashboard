@@ -20,6 +20,14 @@ const NO_ACTIVITY_TEXT = "[data-cy=no-history-text]"
 const ACTIVITY_FILTER = "[data-cy=activity-filter-button]"
 
 
+type ActivityData = {
+    amount: string;
+    activity: string;
+    amountToFrom: string;
+    timestamp:number;
+    txHash: string | undefined;
+}
+
 export class ActivityPage extends BasePage {
 
 
@@ -41,12 +49,12 @@ export class ActivityPage extends BasePage {
         console.log(activityHistoryData)
     }
 
-    static recordNetworkData(network: any, json: any) {
+    static recordNetworkData(network: { slugName: string }, json: { account: Record<string, any[]> }) {
         json.account[network.slugName] = []
         cy.get("body").then(el => {
             if (el.find(`[data-cy=${network.slugName}-row]`).length > 0) {
                 cy.get(`[data-cy=${network.slugName}-row]`).each((row, index) => {
-                    let savableRow: any = json.account[network.slugName][index] = {}
+                    let savableRow: ActivityData = json.account[network.slugName][index]
                     cy.wrap(row).find(TOKEN_ICONS).should("exist").then(() => {
                         // To save the correct timestamp
                         // You need to remove the formatting from the entries before recording
@@ -78,14 +86,13 @@ export class ActivityPage extends BasePage {
                 if (data[account][network.slugName][0]) {
                     //The entries load faster than the amounts shown, check to make sure all are loaded
                     cy.get(`[data-cy=${network.slugName}-row] ${ACTIVITY_AMOUNT}`, {timeout: 60000}).should("have.length", data[account][network.slugName].length)
-                    data[account][network.slugName].forEach((activity: any, index: number) => {
+                    data[account][network.slugName].forEach((activity: ActivityData, index: number) => {
                         cy.get(`[data-cy=${network.slugName}-row] ${ACTIVITY_AMOUNT}`).eq(index).should("have.text", activity.amount)
                         cy.get(`[data-cy=${network.slugName}-row] ${ACTIVITY_TYPE}`).eq(index).find("span").first().should("have.text", activity.activity)
                         cy.get(`[data-cy=${network.slugName}-row] ${AMOUNT_TO_FROM}`).eq(index).should("have.text", activity.amountToFrom)
                         cy.get(`[data-cy=${network.slugName}-row] ${ACTIVITY_TYPE}`).eq(index).find("span").last().should("have.text", format(activity.timestamp * 1000, "HH:mm"))
-                        cy.get(`[data-cy=${network.slugName}-row] ${TX_HASH_LINKS}`).eq(index).should("have.attr", "href", network.getLinkForTransaction(activity.txHash))
+                        cy.get(`[data-cy=${network.slugName}-row] ${TX_HASH_LINKS}`).eq(index).should("have.attr", "href", network.getLinkForTransaction(activity.txHash!))
                     })
-
                 }
             })
         })

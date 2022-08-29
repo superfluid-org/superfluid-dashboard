@@ -78,7 +78,7 @@ export class Common extends BasePage {
                     throw new Error(`Hmm, you haven't set up the link for : ${page}`);
             }
         })
-        if (Cypress.config("baseUrl") === "http://localhost:3000" && Cypress.env("dev")) {
+        if (Cypress.env("dev")) {
             //The nextjs error is annoying when developing test cases in dev mode
             cy.get("nextjs-portal").shadow().find("[aria-label=Close]").click()
         }
@@ -113,7 +113,9 @@ export class Common extends BasePage {
         }
     }
 
-    static openDashboardWithConnectedTxAccount(number:string,network: string) {
+    static openDashboardWithConnectedTxAccount(persona:string,network: string) {
+        let personas = ["alice","bob","dan","john"]
+        let chosenPersona = personas.findIndex((el) => el === persona) + 1
 
         let chainId = networksBySlug.get(network)?.id
 
@@ -122,7 +124,7 @@ export class Common extends BasePage {
         cy.visit("/", {
             onBeforeLoad: (win: any) => {
                 const provider = new HDWalletProvider({
-                    privateKeys: [Cypress.env(`TX_ACCOUNT_PRIVATE_KEY${number}`)],
+                    privateKeys: [Cypress.env(`TX_ACCOUNT_PRIVATE_KEY${chosenPersona}`)],
                     url: networkRpc,
                     chainId: chainId,
                     pollingInterval: 1000,
@@ -130,7 +132,7 @@ export class Common extends BasePage {
                 win.mockSigner = new ethers.providers.Web3Provider(provider).getSigner();
             },
         });
-        if (Cypress.config("baseUrl") === "http://localhost:3000" && Cypress.env("dev")) {
+        if (Cypress.env("dev")) {
             //The nextjs error is annoying when developing test cases in dev mode
             cy.get("nextjs-portal").shadow().find("[aria-label=Close]").click()
         }

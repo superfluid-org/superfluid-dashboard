@@ -2,7 +2,7 @@ Feature: Distribution transaction test cases
 
   @numTestsKeptInMemory(0)
   Scenario: Approving a subscription
-    Given Transactional account number 1 is connected to the dashboard on goerli
+    Given Transactional account alice is connected to the dashboard on goerli
     And User opens "goerli" "fDAIx" individual token page
     And User opens the distributions tab
     And User revokes the last index distribution if necessary
@@ -26,7 +26,7 @@ Feature: Distribution transaction test cases
 
   @numTestsKeptInMemory(0)
   Scenario: Revoking a subscription
-    Given Transactional account number 1 is connected to the dashboard on goerli
+    Given Transactional account alice is connected to the dashboard on goerli
     And User opens "goerli" "fDAIx" individual token page
     And User opens the distributions tab
     And User approves the last index distribution if necessary
