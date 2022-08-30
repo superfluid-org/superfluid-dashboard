@@ -1,14 +1,12 @@
 import CloseIcon from "@mui/icons-material/Close";
 import {
   CircularProgress,
-  DialogActions,
   DialogContent,
   DialogTitle,
   Divider,
   IconButton,
   List,
   ListItem,
-  ListItemButton,
   Stack,
   TextField,
   Typography,
@@ -17,7 +15,7 @@ import {
 import { skipToken } from "@reduxjs/toolkit/query";
 import { ethers } from "ethers";
 import Fuse from "fuse.js";
-import { FC, memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
@@ -28,6 +26,46 @@ import {
 import { rpcApi, subgraphApi } from "../redux/store";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { TokenListItem } from "./TokenListItem";
+import { FixedSizeList } from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
+import { AccountTokenSnapshot, Address } from "@superfluid-finance/sdk-core";
+import { Network } from "../network/networks";
+import { number } from "yup";
+import { memoize } from "lodash";
+
+interface VirtualListItemProps {
+  onSelect: (token: TokenMinimal) => void;
+  showUpgrade: boolean;
+  snapshot: AccountTokenSnapshot | undefined;
+  visibleAddress: string | undefined;
+  network: Network;
+  token: TokenMinimal;
+}
+
+const VirtualListItem: FC<VirtualListItemProps> = ({
+  onSelect,
+  showUpgrade,
+  snapshot,
+  visibleAddress,
+  network,
+  token,
+}) => {
+  return (
+    <TokenListItem
+      key={token.address}
+      token={token}
+      chainId={network.id}
+      accountAddress={visibleAddress}
+      balanceWei={snapshot?.balanceUntilUpdatedAt}
+      balanceTimestamp={
+        isSuper(token) ? snapshot?.updatedAtTimestamp : undefined
+      }
+      flowRate={isSuper(token) ? snapshot?.totalNetFlowRate : undefined}
+      showUpgrade={showUpgrade}
+      onClick={() => onSelect(token)}
+    />
+  );
+};
 
 export type TokenSelectionProps = {
   showUpgrade?: boolean;
@@ -225,30 +263,32 @@ export default memo(function TokenDialog({
             </Stack>
           )}
 
-          {!!tokens.length &&
-            searchedTokens.map((token) => (
-              <TokenListItem
-                key={token.address}
-                token={token}
-                chainId={network.id}
-                accountAddress={visibleAddress}
-                balanceWei={
-                  superTokenBalances[token.address]?.balanceUntilUpdatedAt
-                }
-                balanceTimestamp={
-                  isSuper(token)
-                    ? superTokenBalances[token.address]?.updatedAtTimestamp
-                    : undefined
-                }
-                flowRate={
-                  isSuper(token)
-                    ? superTokenBalances[token.address]?.totalNetFlowRate
-                    : undefined
-                }
-                showUpgrade={showUpgrade}
-                onClick={() => onSelect(token)}
-              />
-            ))}
+          {!!tokens.length && (
+            <AutoSizer>
+              {({ height, width }) => (
+                <FixedSizeList
+                  height={height}
+                  width={width}
+                  itemSize={46}
+                  itemCount={searchedTokens.length}
+                  overscanCount={5}
+                >
+                  {({ index, style }) => (
+                    <VirtualListItem
+                      onSelect={onSelect}
+                      showUpgrade={showUpgrade}
+                      snapshot={
+                        superTokenBalances[searchedTokens[index].address]
+                      }
+                      visibleAddress={visibleAddress}
+                      network={network}
+                      token={searchedTokens[index]}
+                    />
+                  )}
+                </FixedSizeList>
+              )}
+            </AutoSizer>
+          )}
         </List>
       </DialogContent>
     </ResponsiveDialog>

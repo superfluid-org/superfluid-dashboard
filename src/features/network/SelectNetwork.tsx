@@ -16,7 +16,8 @@ import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { useExpectedNetwork } from "./ExpectedNetworkContext";
 import NetworkIcon from "./NetworkIcon";
-import { mainNetworks, Network, testNetworks } from "./networks";
+import { mainNetworks, Network, networks, testNetworks } from "./networks";
+import SelectNetworkMenu from "./NetworkSelectMenu";
 
 interface NetworkItemProps {
   network: Network;
@@ -47,7 +48,6 @@ export default memo(function SelectNetwork() {
   const { switchNetwork } = useSwitchNetwork();
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const [showTestnets, setShowTestnets] = useState(false);
 
   const open = Boolean(anchorEl);
 
@@ -59,20 +59,13 @@ export default memo(function SelectNetwork() {
 
   const handleClose = () => setAnchorEl(null);
 
-  const onNetworkSelected = (chainId: number) => () => {
+  const onNetworkSelected = (network: Network) => {
     handleClose();
-    setSelectedNetwork(chainId);
+    setSelectedNetwork(network.id);
 
     if (accountAddress && switchNetwork) {
-      switchNetwork(chainId);
+      switchNetwork(network.id);
     }
-  };
-
-  const handleShowTestnetsChange = (
-    _e: unknown,
-    testActive: boolean | null
-  ) => {
-    if (testActive !== null) setShowTestnets(testActive);
   };
 
   return (
@@ -101,55 +94,13 @@ export default memo(function SelectNetwork() {
         </IconButton>
       )}
 
-      <Menu
+      <SelectNetworkMenu
+        networkSelection={networks}
         anchorEl={anchorEl}
-        open={open}
+        selectedNetworkId={selectedNetwork.id}
+        onChange={onNetworkSelected}
         onClose={handleClose}
-        transformOrigin={{ horizontal: "right", vertical: "top" }}
-        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-        PaperProps={{ sx: { minWidth: 280 }, square: true }}
-        sx={{ marginTop: theme.spacing(1.5) }}
-      >
-        <Collapse in={!showTestnets} timeout="auto" unmountOnExit>
-          {mainNetworks.map((network) => (
-            <NetworkItem
-              key={network.id}
-              onClick={onNetworkSelected(network.id)}
-              selected={network.id === selectedNetwork.id}
-              network={network}
-            />
-          ))}
-        </Collapse>
-
-        <Collapse in={showTestnets} timeout="auto" unmountOnExit>
-          {testNetworks.map((network) => (
-            <NetworkItem
-              key={network.id}
-              onClick={onNetworkSelected(network.id)}
-              selected={network.id === selectedNetwork.id}
-              network={network}
-            />
-          ))}
-        </Collapse>
-
-        <Box sx={{ margin: "6px 16px" }}>
-          <ToggleButtonGroup
-            exclusive
-            fullWidth
-            size="small"
-            color="primary"
-            value={showTestnets}
-            onChange={handleShowTestnetsChange}
-          >
-            <ToggleButton data-cy={"mainnets-button"} value={false}>
-              Mainnets
-            </ToggleButton>
-            <ToggleButton data-cy={"testnets-button"} value={true}>
-              Testnets
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </Box>
-      </Menu>
+      />
     </>
   );
 });

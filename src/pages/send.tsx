@@ -1,21 +1,18 @@
 import { Box, Container, useTheme } from "@mui/material";
-import { Address } from "@superfluid-finance/sdk-core";
-import { BigNumber } from "ethers";
-import { formatEther, formatUnits } from "ethers/lib/utils";
+import { formatEther } from "ethers/lib/utils";
 import { isString } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import SEO from "../components/SEO/SEO";
 import {
-  FlowRateWei,
   timeUnitWordMap,
   UnitOfTime,
-  wordTimeUnitMap,
+  wordTimeUnitMap
 } from "../features/send/FlowRateInput";
 import SendCard from "../features/send/SendCard";
 import StreamingFormProvider, {
-  StreamingFormProviderProps,
+  StreamingFormProviderProps
 } from "../features/send/StreamingFormProvider";
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
 import { RestorationType } from "../features/transactionRestoration/transactionRestorations";

@@ -19,6 +19,7 @@ interface TypographyCustomVariants {
   h7mono: React.CSSProperties;
   body1mono: React.CSSProperties;
   body2mono: React.CSSProperties;
+  mediumInput: React.CSSProperties;
   largeInput: React.CSSProperties;
   menuItem: React.CSSProperties;
   tooltip: React.CSSProperties;
@@ -41,6 +42,7 @@ declare module "@mui/material/Typography" {
     h7mono: true;
     body1mono: true;
     body2mono: true;
+    mediumInput: true;
     largeInput: true;
     menuItem: true;
     tooltip: true;
@@ -301,8 +303,13 @@ const getDesignTokens = (theme: Theme): ThemeOptions => {
       overline: {
         letterSpacing: pxToRem(1),
       },
+      mediumInput: {
+        fontWeight: 500,
+        fontSize: pxToRem(24),
+        lineHeight: pxToRem(30),
+        letterSpacing: pxToRem(0.25),
+      },
       largeInput: {
-        fontStyle: "normal",
         fontWeight: 500,
         fontSize: pxToRem(30),
         lineHeight: "150%",

@@ -1,14 +1,12 @@
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Button, ButtonProps, Paper } from "@mui/material";
+import { Button, ButtonProps } from "@mui/material";
 import { FC, useState } from "react";
-import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   isSuper,
   isUnderlying,
   TokenMinimal,
 } from "../redux/endpoints/tokenTypes";
 import TokenIcon from "../token/TokenIcon";
-import { useTokenIsListed } from "../token/useTokenIsListed";
 import TokenDialog, { TokenSelectionProps } from "./TokenDialog";
 
 export const TokenDialogButton: FC<{
@@ -25,13 +23,8 @@ export const TokenDialogButton: FC<{
   onBlur = () => {},
 }) => {
   const [open, setOpen] = useState(false);
-  const { network } = useExpectedNetwork();
   const isUnderlyingToken = token && isUnderlying(token);
   const isSuperToken = token && isSuper(token);
-  const [isListed, isListedLoading] = useTokenIsListed(
-    network.id,
-    token?.address
-  );
 
   return (
     <>
@@ -45,8 +38,7 @@ export const TokenDialogButton: FC<{
               size={24}
               isSuper={!!isSuperToken}
               tokenSymbol={token.symbol}
-              isUnlisted={!isUnderlyingToken && !isListed}
-              isLoading={isListedLoading}
+              isUnlisted={!isUnderlyingToken && !token.isListed}
             />
           )
         }
