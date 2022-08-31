@@ -20,102 +20,73 @@ const useBridgeTokens = (
   useEffect(() => {
     if (!lifi || !network) return;
     setIsLoading(true);
+    setTokens([]);
 
     lifi
       .getTokens({ chains: [network.id] })
-      .then((tokensResponse) => {
-        const tokens = tokensResponse.tokens[network.id] || [];
+      .then((lifiTokensResponse) => {
+        const lifiTokens = lifiTokensResponse.tokens[network.id] || [];
 
-        tokenQueryTrigger({
-          chainId: network.id,
-          filter: {
-            id_in: tokens.map((token) => token.address.toLowerCase()),
-            isSuperToken: true,
-            isListed: true,
+        tokenQueryTrigger(
+          {
+            chainId: network.id,
+            filter: {
+              id_in: lifiTokens.map((token) => token.address.toLowerCase()),
+              isSuperToken: true,
+            },
+            pagination: {
+              take: Infinity,
+              skip: 0,
+            },
           },
-          pagination: {
-            take: Infinity,
-            skip: 0,
-          },
-        })
-          .then((tokensResponse) => {
-            setTokens(
-              (tokensResponse.data?.items || []).map((token) => ({
-                type: getSuperTokenType({
-                  network,
-                  address: token.id,
-                  underlyingAddress: token.underlyingAddress,
-                }),
-                address: token.id,
-                name: token.name,
-                symbol: token.symbol,
-                decimals: token.decimals,
-                isListed: token.isListed,
-              }))
+          true
+        )
+          .then((superTokensResponse) => {
+            const superTokens = (superTokensResponse.data?.items || []).map(
+              (superToken) => {
+                const lifiToken = lifiTokens.find(
+                  (lifiToken) => lifiToken.address === superToken.id
+                );
+
+                return {
+                  type: getSuperTokenType({
+                    network,
+                    address: superToken.id,
+                    underlyingAddress: superToken.underlyingAddress,
+                  }),
+                  address: superToken.id,
+                  name: superToken.name,
+                  symbol: superToken.symbol,
+                  decimals: superToken.decimals,
+                  isListed: superToken.isListed,
+                  iconUrl: lifiToken?.logoURI,
+                };
+              }
             );
+
+            const underlyingTokens = lifiTokens
+              .filter(
+                (lifiToken) =>
+                  !superTokens.some(
+                    (superToken) =>
+                      superToken.address === lifiToken.address.toLowerCase()
+                  )
+              )
+              .map((lifiToken) => ({
+                type: getUnderlyingTokenType({ address: lifiToken.address }),
+                address: lifiToken.address,
+                name: lifiToken.name,
+                symbol: lifiToken.symbol,
+                decimals: lifiToken.decimals,
+                isListed: false,
+                iconUrl: lifiToken.logoURI,
+              }));
+
+            setTokens(superTokens.concat(underlyingTokens));
           })
           .finally(() => {
             setIsLoading(false);
           });
-
-        // Promise.all([
-        //   tokenQueryTrigger({
-        //     chainId: network.id,
-        //     filter: {
-        //       id_in: tokens.map((token) => token.address.toLowerCase()),
-        //       isSuperToken: true,
-        //       isListed: true,
-        //     },
-        //     pagination: {
-        //       take: Infinity,
-        //       skip: 0,
-        //     },
-        //   }),
-        //   tokenQueryTrigger({
-        //     chainId: network.id,
-        //     filter: {
-        //       underlyingToken_in: tokens.map((token) =>
-        //         token.address.toLowerCase()
-        //       ),
-        //     },
-        //     pagination: {
-        //       take: Infinity,
-        //       skip: 0,
-        //     },
-        //   }),
-        // ])
-        //   .then(([superTokensResponse, underlyingTokensResponse]) => {
-        //     const mappedSuperTokens = (
-        //       superTokensResponse.data?.items || []
-        //     ).map((token) => ({
-        //       type: getSuperTokenType({
-        //         network,
-        //         address: token.id,
-        //         underlyingAddress: token.underlyingAddress,
-        //       }),
-        //       address: token.id,
-        //       name: token.name,
-        //       symbol: token.symbol,
-        //       decimals: token.decimals,
-        //       isListed: token.isListed,
-        //     }));
-
-        //     const mappedUnderlyingTokens = (
-        //       underlyingTokensResponse.data?.items || []
-        //     ).map((token) => ({
-        //       type: getUnderlyingTokenType({ address: token.id }),
-        //       address: token.id,
-        //       name: token.name,
-        //       symbol: token.symbol,
-        //       decimals: token.decimals,
-        //       isListed: token.isListed,
-        //     }));
-
-        //     setTokens(mappedSuperTokens.concat(mappedUnderlyingTokens));
-        //   })
-        //   .finally(() => {
-        //     setIsLoading(false);
-        //   });
       })
       .catch(() => {
         setIsLoading(false);

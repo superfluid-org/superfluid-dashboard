@@ -281,6 +281,7 @@ const getDesignTokens = (theme: Theme): ThemeOptions => {
       body2: {
         fontSize: pxToRem(14),
         fontWeight: 400,
+        lineHeight: pxToRem(20),
         letterSpacing: 0.17,
       },
       body2mono: {
@@ -859,6 +860,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
           sizeSmall: {
             borderRadius: "6px",
+            fontSize: "12px",
             ".MuiAvatar-root": {
               marginLeft: "3px",
             },
@@ -922,7 +924,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       },
       MuiListItem: {
         styleOverrides: {
-          root: {
+          padding: {
             padding: "8px 24px",
           },
         },

@@ -10,13 +10,14 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import Link from "next/link";
-import { FC } from "react";
+import { FC, memo } from "react";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   isSuper,
   isUnderlying,
   isWrappable,
   TokenMinimal,
+  TokenWithIcon,
 } from "../redux/endpoints/tokenTypes";
 import { rpcApi } from "../redux/store";
 import Amount from "../token/Amount";
@@ -29,13 +30,12 @@ interface TokenListItemProps {
   balanceWei?: string;
   balanceTimestamp?: number;
   flowRate?: string;
-  token: TokenMinimal;
+  token: TokenMinimal & TokenWithIcon;
   showUpgrade: boolean;
-  onClick?: () => void;
+  onClick: (token: TokenMinimal) => void;
 }
 
-// TODO(KK): memo?
-export const TokenListItem: FC<TokenListItemProps> = ({
+const TokenListItem: FC<TokenListItemProps> = ({
   chainId,
   accountAddress,
   token,
@@ -55,24 +55,26 @@ export const TokenListItem: FC<TokenListItemProps> = ({
 
   const { data: _discard, ...underlyingBalanceQuery } =
     rpcApi.useUnderlyingBalanceQuery(
-      chainId && accountAddress && isUnderlyingToken
-        ? {
-            chainId,
-            accountAddress,
-            tokenAddress: token.address,
-          }
-        : skipToken
+      skipToken
+      // chainId && accountAddress && isUnderlyingToken
+      //   ? {
+      //       chainId,
+      //       accountAddress,
+      //       tokenAddress: token.address,
+      //     }
+      //   : skipToken
     );
 
   const { data: _discard2, ...realtimeBalanceQuery } =
     rpcApi.useRealtimeBalanceQuery(
-      chainId && accountAddress && isSuperToken
-        ? {
-            chainId,
-            accountAddress,
-            tokenAddress: token.address,
-          }
-        : skipToken
+      skipToken
+      // chainId && accountAddress && isSuperToken
+      //   ? {
+      //       chainId,
+      //       accountAddress,
+      //       tokenAddress: token.address,
+      //     }
+      //   : skipToken
     );
 
   const checkedBalanceWei = isSuper(token)
@@ -85,10 +87,12 @@ export const TokenListItem: FC<TokenListItemProps> = ({
 
   const fRate = realtimeBalanceQuery?.currentData?.flowRate || flowRate;
 
+  const handleClick = () => onClick(token);
+
   return (
     <ListItemButton
       data-cy={`${token.symbol}-list-item`}
-      onClick={onClick}
+      onClick={handleClick}
       sx={{ px: 3 }}
     >
       <ListItemAvatar>
@@ -96,6 +100,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
           isSuper={isSuperToken}
           tokenSymbol={token.symbol}
           isUnlisted={!isListed}
+          iconUrl={token.iconUrl}
         />
       </ListItemAvatar>
 
@@ -144,3 +149,5 @@ export const TokenListItem: FC<TokenListItemProps> = ({
     </ListItemButton>
   );
 };
+
+export default memo(TokenListItem);

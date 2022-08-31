@@ -41,6 +41,7 @@ interface TokenIconProps {
   isUnlisted?: boolean;
   isLoading?: boolean;
   size?: number;
+  iconUrl?: string;
 }
 
 const TokenIcon: FC<TokenIconProps> = ({
@@ -49,12 +50,13 @@ const TokenIcon: FC<TokenIconProps> = ({
   isUnlisted = false,
   isLoading = false,
   size = 36,
+  iconUrl,
 }) => {
   const theme = useTheme();
 
   const { isLoading: isQueryLoading, data: tokenManifest } =
     assetApiSlice.useTokenManifestQuery(
-      !!tokenSymbol
+      !!tokenSymbol && !iconUrl
         ? {
             tokenSymbol,
           }
@@ -159,9 +161,10 @@ const TokenIcon: FC<TokenIconProps> = ({
             }}
             imgProps={{ sx: { objectFit: "contain", borderRadius: "50%" } }}
             src={
-              tokenManifest?.svgIconPath
+              iconUrl ||
+              (tokenManifest?.svgIconPath
                 ? `https://raw.githubusercontent.com/superfluid-finance/assets/master/public/${tokenManifest.svgIconPath}`
-                : "/icons/token-default.webp"
+                : "/icons/token-default.webp")
             }
           />
         )}

@@ -1,48 +1,55 @@
-import LIFI, { Token } from "@lifi/sdk";
+import LIFI, { Route } from "@lifi/sdk";
+// import type { LiFiWidget, WidgetConfig } from "@lifi/widget";
+// import dynamic from "next/dynamic";
+
 import {
   Box,
   Button,
   Card,
   Container,
-  FormGroup,
-  Input,
   OutlinedInput,
   Stack,
+  Typography,
   useTheme,
 } from "@mui/material";
-import { Address } from "@superfluid-finance/sdk-core";
 import { NextPage } from "next";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import SEO from "../components/SEO/SEO";
+import BridgeSettings from "../features/bridge/BridgeSettings";
+import RouteCard from "../features/bridge/RouteCard";
+import useBridgeNetworks from "../features/bridge/useBridgeNetworks";
 import useBridgeTokens from "../features/bridge/useBridgeTokens";
-import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
-import NetworkBadge from "../features/network/NetworkBadge";
-import { Network, networkIDs, networks } from "../features/network/networks";
+import { Network } from "../features/network/networks";
 import NetworkSelectInput from "../features/network/NetworkSelectInput";
-import SelectNetworkMenu from "../features/network/NetworkSelectMenu";
-import {
-  isUnderlying,
-  TokenMinimal,
-  TokenType,
-} from "../features/redux/endpoints/tokenTypes";
-import { subgraphApi } from "../features/redux/store";
+import { TokenMinimal } from "../features/redux/endpoints/tokenTypes";
 import { TokenDialogButton } from "../features/tokenWrapping/TokenDialogButton";
+import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
+import { parseAmountOrZero } from "../utils/tokenUtils";
+
+// const LiFiWidgetDynamic = dynamic(
+//   () => import("@lifi/widget").then((module) => module.LiFiWidget) as any,
+//   {
+//     ssr: false,
+//   }
+// ) as typeof LiFiWidget;
 
 const Send: NextPage = () => {
   const theme = useTheme();
-  const { network } = useExpectedNetwork();
+
+  const { visibleAddress } = useVisibleAddress();
 
   const [fromNetwork, setFromNetwork] = useState<Network>();
   const [toNetwork, setToNetwork] = useState<Network>();
-  const [amountDecimal, setAmountDecimal] = useState("");
+
   const [fromToken, setFromToken] = useState<TokenMinimal>();
   const [toToken, setToToken] = useState<TokenMinimal>();
 
-  const [networkSelection, setNetworkSelection] = useState<Network[]>([]);
-  const [tokenSelection, setTokenSelection] = useState<{
-    [chainId: string]: TokenMinimal[];
-  }>({});
+  const [amount, setAmount] = useState("1");
+
+  const [availableRoutes, setAvailableRoutes] = useState<Route[]>([]);
+  const [loadingAvailableRoutes, setLoadingAvailableRoutes] = useState(false);
+  const [activeRouteId, setActiveRouteId] = useState<string | null>(null);
 
   const lifi = useMemo(
     () =>
@@ -53,34 +60,106 @@ const Send: NextPage = () => {
   );
 
   const [fromTokens, fromTokensLoading] = useBridgeTokens(lifi, fromNetwork);
-
   const [toTokens, toTokensLoading] = useBridgeTokens(lifi, toNetwork);
 
-  useEffect(() => {
-    lifi.getChains().then((chainsResponse) => {
-      setNetworkSelection(
-        networks.filter((network) =>
-          chainsResponse.some((lifiNetwork) => lifiNetwork.id === network.id)
-        )
-      );
-    });
-  }, [lifi]);
-
-  const fromTokenSelection = useMemo(() => {
-    if (fromNetwork && tokenSelection) {
-      return tokenSelection[fromNetwork?.id] || [];
-    }
-    return [];
-  }, [fromNetwork, tokenSelection]);
+  const [bridgeNetworks] = useBridgeNetworks(lifi);
 
   const onFromNetworkChange = (network: Network) => setFromNetwork(network);
   const onToNetworkChange = (network: Network) => setToNetwork(network);
 
-  console.log({ fromNetwork, fromTokens });
+  const activateRoute = (routeId: string) => () => {
+    setActiveRouteId(routeId);
+  };
+
+  const activeRoute = useMemo(
+    () => availableRoutes.find((route) => route.id === activeRouteId),
+    [availableRoutes, activeRouteId]
+  );
+
+  useEffect(() => {
+    if (
+      !fromNetwork ||
+      !toNetwork ||
+      !fromToken ||
+      !toToken ||
+      !visibleAddress ||
+      !amount
+    ) {
+      return;
+    }
+
+    console.log("Fetching routes");
+    setLoadingAvailableRoutes(true);
+
+    const parsedAmount = parseAmountOrZero({
+      value: amount,
+      decimals: fromToken.decimals,
+    }).toString();
+
+    lifi
+      .getRoutes({
+        fromAmount: parsedAmount,
+        fromChainId: fromNetwork.id,
+        toChainId: toNetwork.id,
+        fromTokenAddress: fromToken.address,
+        toTokenAddress: toToken.address,
+        fromAddress: visibleAddress,
+        toAddress: visibleAddress,
+        options: {
+          integrator: "app.superfluid.finance",
+          order: "RECOMMENDED",
+          slippage: 0.03,
+          // bridges: {
+          //   allow: []
+          // },
+          // exchanges: {allow: []}
+        },
+      })
+      .then((routesResponse) => {
+        setAvailableRoutes(routesResponse.routes || []);
+      })
+      .finally(() => {
+        setLoadingAvailableRoutes(false);
+      });
+  }, [
+    fromNetwork,
+    toNetwork,
+    fromToken,
+    toToken,
+    amount,
+    lifi,
+    visibleAddress,
+    setAvailableRoutes,
+    setLoadingAvailableRoutes,
+  ]);
+
+  const hasAllInputs =
+    fromNetwork &&
+    toNetwork &&
+    fromToken &&
+    toToken &&
+    visibleAddress &&
+    amount;
+
+  console.log({ activeRoute, availableRoutes });
+
+  // const widgetConfig: WidgetConfig = useMemo(
+  //   () => ({
+  //     integrator: "SUperfluid",
+  //     containerStyle: {
+  //       border: `1px solid rgb(66, 66, 66)`,
+  //       borderRadius: "16px",
+  //       display: "flex",
+  //     },
+  //   }),
+  //   []
+  // );
 
   return (
     <SEO title="Bridge | Superfluid">
       <Container maxWidth="lg">
+        {/* <LiFiWidgetDynamic config={widgetConfig} /> */}
+
         <Box
           sx={{
             display: "flex",
@@ -107,21 +186,32 @@ const Send: NextPage = () => {
               },
             }}
           >
-            <Button
-              color="primary"
-              variant="textContained"
-              size="large"
-              sx={{ alignSelf: "flex-start", pointerEvents: "none", mb: 4 }}
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              flex={1}
+              sx={{ mb: 4 }}
             >
-              Bridge
-            </Button>
+              <Button
+                color="primary"
+                variant="textContained"
+                size="large"
+                sx={{ alignSelf: "flex-start", pointerEvents: "none" }}
+              >
+                Bridge
+              </Button>
+
+              <BridgeSettings />
+            </Stack>
 
             <Stack spacing={2}>
               <Stack direction="row">
                 <NetworkSelectInput
-                  networkSelection={networkSelection}
+                  networkSelection={bridgeNetworks}
                   selectedNetwork={fromNetwork}
                   onChange={onFromNetworkChange}
+                  placeholder="Select from network"
                   ButtonProps={{ sx: { flexGrow: 1 } }}
                 />
                 <TokenDialogButton
@@ -141,7 +231,7 @@ const Send: NextPage = () => {
               <OutlinedInput
                 fullWidth
                 placeholder="0.0"
-                value={amountDecimal}
+                value={amount}
                 type="text"
                 inputMode="decimal"
                 inputProps={{
@@ -165,9 +255,10 @@ const Send: NextPage = () => {
 
               <Stack direction="row">
                 <NetworkSelectInput
-                  networkSelection={networkSelection}
+                  networkSelection={bridgeNetworks}
                   selectedNetwork={toNetwork}
                   onChange={onToNetworkChange}
+                  placeholder="Select to network"
                   ButtonProps={{ sx: { flexGrow: 1 } }}
                 />
                 <TokenDialogButton
@@ -184,19 +275,29 @@ const Send: NextPage = () => {
                 />
               </Stack>
 
-              <OutlinedInput
-                fullWidth
-                placeholder="0.0"
-                value={amountDecimal}
-                type="text"
-                inputMode="decimal"
-                inputProps={{
-                  sx: {
-                    ...theme.typography.mediumInput,
-                  },
-                }}
-                sx={{ background: "transparent" }}
-              />
+              {loadingAvailableRoutes && (
+                <Typography>Loading available routes</Typography>
+              )}
+
+              {hasAllInputs && (
+                <>
+                  {!loadingAvailableRoutes && availableRoutes.length === 0 ? (
+                    <Typography>Could not find any routes</Typography>
+                  ) : (
+                    <Stack>
+                      {availableRoutes.map((route) => (
+                        <RouteCard
+                          key={route.id}
+                          route={route}
+                          toToken={toToken}
+                          toNetwork={toNetwork}
+                          onClick={activateRoute(route.id)}
+                        />
+                      ))}
+                    </Stack>
+                  )}
+                </>
+              )}
             </Stack>
           </Card>
         </Box>

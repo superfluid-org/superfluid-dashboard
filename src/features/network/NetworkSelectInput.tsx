@@ -9,6 +9,7 @@ interface NetworkSelectInputProps {
   networkSelection: Array<Network>;
   selectedNetwork?: Network;
   onChange: (selectedNetwork: Network) => void;
+  placeholder?: string;
   ButtonProps?: Partial<ButtonProps>;
 }
 
@@ -16,6 +17,7 @@ const NetworkSelectInput: FC<NetworkSelectInputProps> = ({
   networkSelection,
   selectedNetwork,
   onChange,
+  placeholder = "Select a network",
   ButtonProps = {},
 }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -49,7 +51,7 @@ const NetworkSelectInput: FC<NetworkSelectInputProps> = ({
         {selectedNetwork ? (
           <span translate="no">{selectedNetwork.name}</span>
         ) : (
-          <span>Select a network</span>
+          <span>{placeholder}</span>
         )}
       </Button>
 

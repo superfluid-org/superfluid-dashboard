@@ -1,5 +1,6 @@
 import CloseIcon from "@mui/icons-material/Close";
 import {
+  Box,
   CircularProgress,
   DialogContent,
   DialogTitle,
@@ -15,17 +16,26 @@ import {
 import { skipToken } from "@reduxjs/toolkit/query";
 import { ethers } from "ethers";
 import Fuse from "fuse.js";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  CSSProperties,
+  FC,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   isSuper,
   isUnderlying,
   TokenMinimal,
+  TokenWithIcon,
 } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import { TokenListItem } from "./TokenListItem";
+import TokenListItem from "./TokenListItem";
 import { FixedSizeList } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { AccountTokenSnapshot, Address } from "@superfluid-finance/sdk-core";
@@ -34,38 +44,46 @@ import { number } from "yup";
 import { memoize } from "lodash";
 
 interface VirtualListItemProps {
-  onSelect: (token: TokenMinimal) => void;
-  showUpgrade: boolean;
-  snapshot: AccountTokenSnapshot | undefined;
-  visibleAddress: string | undefined;
-  network: Network;
   token: TokenMinimal;
+  snapshot: AccountTokenSnapshot | undefined;
+  network: Network;
+  visibleAddress: string | undefined;
+  showUpgrade: boolean;
+  style: CSSProperties;
+  onSelect: (token: TokenMinimal) => void;
 }
 
-const VirtualListItem: FC<VirtualListItemProps> = ({
-  onSelect,
-  showUpgrade,
-  snapshot,
-  visibleAddress,
-  network,
-  token,
-}) => {
-  return (
-    <TokenListItem
-      key={token.address}
-      token={token}
-      chainId={network.id}
-      accountAddress={visibleAddress}
-      balanceWei={snapshot?.balanceUntilUpdatedAt}
-      balanceTimestamp={
-        isSuper(token) ? snapshot?.updatedAtTimestamp : undefined
-      }
-      flowRate={isSuper(token) ? snapshot?.totalNetFlowRate : undefined}
-      showUpgrade={showUpgrade}
-      onClick={() => onSelect(token)}
-    />
-  );
-};
+// const VirtualListItem: FC<VirtualListItemProps> = ({
+//   token,
+//   snapshot,
+//   network,
+//   visibleAddress,
+//   showUpgrade,
+//   style,
+//   onSelect,
+// }) => {
+//   return (
+//     <TokenListItem
+//       token={token}
+//       chainId={network.id}
+//       accountAddress={visibleAddress}
+//       balanceWei={snapshot?.balanceUntilUpdatedAt}
+//       balanceTimestamp={
+//         isSuper(token) ? snapshot?.updatedAtTimestamp : undefined
+//       }
+//       flowRate={isSuper(token) ? snapshot?.totalNetFlowRate : undefined}
+//       showUpgrade={showUpgrade}
+//       onClick={() => onSelect(token)}
+//       // sx={{
+//       //   position: "absolute",
+//       //   top: `${style.top}px`,
+//       //   left: `${style.left}px`,
+//       //   height: `${style.height}px`,
+//       //   width: "100%",
+//       // }}
+//     />
+//   );
+// };
 
 export type TokenSelectionProps = {
   showUpgrade?: boolean;
@@ -117,13 +135,14 @@ export default memo(function TokenDialog({
 
   const { data: _discard, ...underlyingTokenBalancesQuery } =
     rpcApi.useBalanceOfMulticallQuery(
-      underlyingTokens.length && visibleAddress
-        ? {
-            chainId: network.id,
-            accountAddress: visibleAddress,
-            tokenAddresses: underlyingTokens.map((x) => x.address),
-          }
-        : skipToken
+      // underlyingTokens.length && visibleAddress
+      //   ? {
+      //       chainId: network.id,
+      //       accountAddress: visibleAddress,
+      //       tokenAddresses: underlyingTokens.map((x) => x.address),
+      //     }
+      //   : skipToken
+      skipToken
     );
 
   const underlyingTokenBalances = useMemo(
@@ -133,18 +152,19 @@ export default memo(function TokenDialog({
 
   const { data: _discard2, ...superTokenBalancesQuery } =
     subgraphApi.useAccountTokenSnapshotsQuery(
-      tokenPairsQuery.data && visibleAddress
-        ? {
-            chainId: network.id,
-            filter: {
-              account: visibleAddress,
-              token_in: superTokens.map((x) => x.address),
-            },
-            pagination: {
-              take: Infinity,
-            },
-          }
-        : skipToken
+      // tokenPairsQuery.data && visibleAddress
+      //   ? {
+      //       chainId: network.id,
+      //       filter: {
+      //         account: visibleAddress,
+      //         token_in: superTokens.map((x) => x.address),
+      //       },
+      //       pagination: {
+      //         take: Infinity,
+      //       },
+      //     }
+      //   : skipToken
+      skipToken
     );
 
   const superTokenBalances = useMemo(
@@ -187,7 +207,7 @@ export default memo(function TokenDialog({
   const getFuse = useCallback(
     () =>
       new Fuse(tokenOrdered, {
-        keys: ["symbol"],
+        keys: ["symbol", "name"],
         threshold: 0.2,
         ignoreLocation: true,
       }),
@@ -264,30 +284,47 @@ export default memo(function TokenDialog({
           )}
 
           {!!tokens.length && (
-            <AutoSizer>
-              {({ height, width }) => (
-                <FixedSizeList
-                  height={height}
-                  width={width}
-                  itemSize={46}
-                  itemCount={searchedTokens.length}
-                  overscanCount={5}
-                >
-                  {({ index, style }) => (
-                    <VirtualListItem
-                      onSelect={onSelect}
-                      showUpgrade={showUpgrade}
-                      snapshot={
-                        superTokenBalances[searchedTokens[index].address]
-                      }
-                      visibleAddress={visibleAddress}
-                      network={network}
-                      token={searchedTokens[index]}
-                    />
-                  )}
-                </FixedSizeList>
-              )}
-            </AutoSizer>
+            <Box>
+              <AutoSizer disableHeight>
+                {({ width }) => (
+                  <FixedSizeList
+                    height={68 * Math.min(6, searchedTokens.length)}
+                    width={width}
+                    itemSize={68}
+                    itemCount={searchedTokens.length}
+                    overscanCount={5}
+                  >
+                    {({ index, style }) => {
+                      const token = searchedTokens[index];
+                      const snapshot = superTokenBalances[token.address];
+
+                      return (
+                        <div key={token.address} style={style}>
+                          <TokenListItem
+                            token={token}
+                            chainId={network.id}
+                            accountAddress={visibleAddress}
+                            balanceWei={snapshot?.balanceUntilUpdatedAt}
+                            balanceTimestamp={
+                              isSuper(token)
+                                ? snapshot?.updatedAtTimestamp
+                                : undefined
+                            }
+                            flowRate={
+                              isSuper(token)
+                                ? snapshot?.totalNetFlowRate
+                                : undefined
+                            }
+                            showUpgrade={showUpgrade}
+                            onClick={onSelect}
+                          />
+                        </div>
+                      );
+                    }}
+                  </FixedSizeList>
+                )}
+              </AutoSizer>
+            </Box>
           )}
         </List>
       </DialogContent>

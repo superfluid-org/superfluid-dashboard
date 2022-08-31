@@ -24,6 +24,10 @@ export type TokenMinimal = {
   isListed?: boolean;
 };
 
+export type TokenWithIcon = {
+  iconUrl?: string;
+};
+
 export const isUnderlying = (
   x: TokenMinimal
 ): x is ERC20TokenMinimal | NativeAsset =>
