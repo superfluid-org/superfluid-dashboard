@@ -5,10 +5,13 @@
 
 const { withSentryConfig } = require("@sentry/nextjs");
 
-const SENTRY_ENVIRONMENT = process.env.SENTRY_ENVIRONMENT || process.env.CONTEXT; // https://docs.netlify.com/configure-builds/environment-variables/#build-metadata
+const withTM = require("next-transpile-modules")(["@lifi/widget"]);
+
+const SENTRY_ENVIRONMENT =
+  process.env.SENTRY_ENVIRONMENT || process.env.CONTEXT; // https://docs.netlify.com/configure-builds/environment-variables/#build-metadata
 
 /** @type {import('next').NextConfig} */
-const moduleExports = {
+const moduleExports = withTM({
   reactStrictMode: true,
   images: {
     loader: "custom",
@@ -18,7 +21,8 @@ const moduleExports = {
     NEXT_PUBLIC_APP_URL: process.env.URL,
     NEXT_PUBLIC_SENTRY_ENVIRONMENT: SENTRY_ENVIRONMENT,
   },
-};
+  swcMinify: true,
+});
 
 const SENTRY_AUTH_TOKEN = process.env.SENTRY_AUTH_TOKEN;
 

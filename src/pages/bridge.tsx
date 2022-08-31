@@ -1,6 +1,6 @@
 import LIFI, { Route } from "@lifi/sdk";
-// import type { LiFiWidget, WidgetConfig } from "@lifi/widget";
-// import dynamic from "next/dynamic";
+import type { LiFiWidget, WidgetConfig } from "@lifi/widget";
+import dynamic from "next/dynamic";
 
 import {
   Box,
@@ -27,12 +27,12 @@ import { TokenDialogButton } from "../features/tokenWrapping/TokenDialogButton";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { parseAmountOrZero } from "../utils/tokenUtils";
 
-// const LiFiWidgetDynamic = dynamic(
-//   () => import("@lifi/widget").then((module) => module.LiFiWidget) as any,
-//   {
-//     ssr: false,
-//   }
-// ) as typeof LiFiWidget;
+const LiFiWidgetDynamic = dynamic(
+  () => import("@lifi/widget").then((module) => module.LiFiWidget) as any,
+  {
+    ssr: false,
+  }
+) as typeof LiFiWidget;
 
 const Send: NextPage = () => {
   const theme = useTheme();
@@ -143,22 +143,22 @@ const Send: NextPage = () => {
 
   console.log({ activeRoute, availableRoutes });
 
-  // const widgetConfig: WidgetConfig = useMemo(
-  //   () => ({
-  //     integrator: "SUperfluid",
-  //     containerStyle: {
-  //       border: `1px solid rgb(66, 66, 66)`,
-  //       borderRadius: "16px",
-  //       display: "flex",
-  //     },
-  //   }),
-  //   []
-  // );
+  const widgetConfig: WidgetConfig = useMemo(
+    () => ({
+      integrator: "SUperfluid",
+      containerStyle: {
+        border: `1px solid rgb(66, 66, 66)`,
+        borderRadius: "16px",
+        display: "flex",
+      },
+    }),
+    []
+  );
 
   return (
     <SEO title="Bridge | Superfluid">
       <Container maxWidth="lg">
-        {/* <LiFiWidgetDynamic config={widgetConfig} /> */}
+        <LiFiWidgetDynamic config={widgetConfig} />
 
         <Box
           sx={{
