@@ -33,7 +33,6 @@ interface MyAppProps extends AppProps {
 export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
-  console.log({ pageProps });
   useEffect(() => {
     const { id, sv } = config.hotjar;
     if (!IsCypress && id && sv) {
