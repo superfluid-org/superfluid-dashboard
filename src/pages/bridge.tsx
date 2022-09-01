@@ -145,20 +145,26 @@ const Send: NextPage = () => {
 
   const widgetConfig: WidgetConfig = useMemo(
     () => ({
-      integrator: "SUperfluid",
+      appearance: theme.palette.mode,
+      integrator: "Superfluid",
       containerStyle: {
-        border: `1px solid rgb(66, 66, 66)`,
+        width: 560,
+        height: 700,
+        border: `1px solid rgb(234, 234, 234)`,
         borderRadius: "16px",
         display: "flex",
+        maxWidth: 560,
       },
     }),
-    []
+    [theme]
   );
 
   return (
     <SEO title="Bridge | Superfluid">
       <Container maxWidth="lg">
-        <LiFiWidgetDynamic config={widgetConfig} />
+        <Stack alignItems="center" flex={1}>
+          <LiFiWidgetDynamic config={widgetConfig} />
+        </Stack>
 
         <Box
           sx={{
