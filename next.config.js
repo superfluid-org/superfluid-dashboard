@@ -11,14 +11,14 @@ const withTM = require("next-transpile-modules")(["@lifi/widget"]);
 const SENTRY_ENVIRONMENT =
   process.env.SENTRY_ENVIRONMENT || process.env.CONTEXT; // https://docs.netlify.com/configure-builds/environment-variables/#build-metadata
 
-function withSentry(existingConfig) {
+function withSentryIfNecessary(nextConfig) {
   const SENTRY_AUTH_TOKEN = process.env.SENTRY_AUTH_TOKEN;
 
   if (!SENTRY_AUTH_TOKEN) {
     console.warn(
       "Sentry release not created because SENTRY_AUTH_TOKEN is not set."
     );
-    return existingConfig;
+    return nextConfig;
   }
 
   const sentryWebpackPluginOptions = {
@@ -32,13 +32,15 @@ function withSentry(existingConfig) {
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options.
   };
+
   // Make sure adding Sentry options is the last code to run before exporting, to
   // ensure that your source maps include changes from all other Webpack plugins
-  return withSentryConfig(moduleExports, sentryWebpackPluginOptions);
+  // NOTE from developer: withTM is also recommended to keep last.
+  return withSentryConfig(nextConfig, sentryWebpackPluginOptions);
 }
 
 /** @type {import('next').NextConfig} */
-const config = {
+const moduleExports = {
   reactStrictMode: true,
   images: {
     loader: "custom",
@@ -51,4 +53,4 @@ const config = {
   swcMinify: true, // Recommended by next-transpile-modules
 };
 
-module.exports = withTM(withSentry(config));
+module.exports = withTM(withSentryIfNecessary(moduleExports));
