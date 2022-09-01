@@ -20,7 +20,7 @@ import { NextPage } from "next";
 import { MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
 import DatePicker from "../components/DatePicker/DatePicker";
 import OpenIcon from "../components/OpenIcon/OpenIcon";
-import SEO from "../components/SEO/SEO";
+import withStaticSEO from "../components/SEO/withStaticSEO";
 import ActivityRow from "../features/activityHistory/ActivityRow";
 import ActivityTypeFilter, {
   ActivityType,
@@ -359,14 +359,7 @@ const History: NextPage = () => {
   );
 };
 
-export async function getStaticProps() {
-  return {
-    props: {
-      SEO: {
-        title: "Activity History | Superfluid",
-      },
-    },
-  };
-}
-
-export default History;
+export default withStaticSEO(
+  { title: "Activity History | Superfluid" },
+  History
+);

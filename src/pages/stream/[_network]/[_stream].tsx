@@ -31,6 +31,7 @@ import { useAccount, useNetwork } from "wagmi";
 import AddressAvatar from "../../../components/AddressAvatar/AddressAvatar";
 import CopyTooltip from "../../../components/CopyTooltip/CopyTooltip";
 import SEO from "../../../components/SEO/SEO";
+import withStaticSEO from "../../../components/SEO/withStaticSEO";
 import NetworkIcon from "../../../features/network/NetworkIcon";
 import { Network, networksBySlug } from "../../../features/network/networks";
 import { subgraphApi } from "../../../features/redux/store";
@@ -781,15 +782,10 @@ const StreamPageContent: FC<{
   );
 };
 
-export async function getStaticProps() {
-  return {
-    props: {
-      SEO: {
-        title: "Stream Details | Superfluid",
-        ogImage: `${config.appUrl}/images/stream.jpg`,
-      },
-    },
-  };
-}
-
-export default StreamPage;
+export default withStaticSEO(
+  {
+    title: "Stream Details | Superfluid",
+    ogImage: `${config.appUrl}/images/stream.jpg`,
+  },
+  StreamPage
+);

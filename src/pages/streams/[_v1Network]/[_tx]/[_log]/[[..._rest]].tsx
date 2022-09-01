@@ -2,8 +2,10 @@ import { isString } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import withStaticSEO from "../../../../../components/SEO/withStaticSEO";
 import { networks } from "../../../../../features/network/networks";
 import { subgraphApi } from "../../../../../features/redux/store";
+import config from "../../../../../utils/config";
 import Page404 from "../../../../404";
 import { getStreamPagePath } from "../../../../stream/[_network]/[_stream]";
 
@@ -68,4 +70,10 @@ const V1StreamPage: NextPage = () => {
   return <></>; // TODO(KK): Show a spinner or message here?
 };
 
-export default V1StreamPage;
+export default withStaticSEO(
+  {
+    title: "Stream Details | Superfluid",
+    ogImage: `${config.appUrl}/images/stream.jpg`,
+  },
+  V1StreamPage
+);

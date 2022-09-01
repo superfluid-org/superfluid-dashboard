@@ -1,8 +1,8 @@
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import { Button, Container, Typography } from "@mui/material";
 import { NextPage } from "next";
-import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import Link from "next/link";
-import SEO from "../components/SEO/SEO";
+import withStaticSEO from "../components/SEO/withStaticSEO";
 
 const HELP_CENTER_URL = "https://help.superfluid.finance/";
 
@@ -58,14 +58,4 @@ const Page404: NextPage = () => {
   );
 };
 
-export async function getStaticProps() {
-  return {
-    props: {
-      SEO: {
-        title: "404 | Superfluid",
-      },
-    },
-  };
-}
-
-export default Page404;
+export default withStaticSEO({ title: "404 | Superfluid" }, Page404);

@@ -22,6 +22,7 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { FC, PropsWithChildren, useEffect, useState } from "react";
 import SEO from "../../../components/SEO/SEO";
+import withStaticSEO from "../../../components/SEO/withStaticSEO";
 import { useAutoConnect } from "../../../features/autoConnect/AutoConnect";
 import SubscriptionsTable from "../../../features/index/SubscriptionsTable";
 import NetworkIcon from "../../../features/network/NetworkIcon";
@@ -379,14 +380,4 @@ const TokenPageContent: FC<{
   );
 };
 
-export async function getStaticProps() {
-  return {
-    props: {
-      SEO: {
-        title: "Super Token | Superfluid",
-      },
-    },
-  };
-}
-
-export default TokenPage;
+export default withStaticSEO({ title: "Super Token | Superfluid" }, TokenPage);

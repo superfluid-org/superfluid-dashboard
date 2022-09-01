@@ -66,15 +66,13 @@ export default function MyApp(props: MyAppProps) {
                                   <LayoutContextProvider>
                                     <IntercomProvider>
                                       <Layout>
-                                        <StaticSEO {...pageProps.SEO}>
-                                          <ReduxPersistGate>
-                                            <MonitorContext />
-                                            <Component
-                                              key={`${network.slugName}`}
-                                              {...pageProps}
-                                            />
-                                          </ReduxPersistGate>
-                                        </StaticSEO>
+                                        <ReduxPersistGate>
+                                          <MonitorContext />
+                                          <Component
+                                            key={`${network.slugName}`}
+                                            {...pageProps}
+                                          />
+                                        </ReduxPersistGate>
                                       </Layout>
                                     </IntercomProvider>
                                   </LayoutContextProvider>

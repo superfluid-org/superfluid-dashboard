@@ -1,14 +1,11 @@
 import { Box, Container, useTheme } from "@mui/material";
-import { Address } from "@superfluid-finance/sdk-core";
-import { BigNumber } from "ethers";
-import { formatEther, formatUnits } from "ethers/lib/utils";
+import { formatEther } from "ethers/lib/utils";
 import { isString } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import SEO from "../components/SEO/SEO";
+import withStaticSEO from "../components/SEO/withStaticSEO";
 import {
-  FlowRateWei,
   timeUnitWordMap,
   UnitOfTime,
   wordTimeUnitMap,
@@ -150,14 +147,4 @@ const Send: NextPage = () => {
   );
 };
 
-export async function getStaticProps() {
-  return {
-    props: {
-      SEO: {
-        title: "Send Stream | Superfluid",
-      },
-    },
-  };
-}
-
-export default Send;
+export default withStaticSEO({ title: "Send Stream | Superfluid" }, Send);

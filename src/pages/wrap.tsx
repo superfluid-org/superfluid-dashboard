@@ -2,14 +2,14 @@ import { Box, Container, useTheme } from "@mui/material";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import SEO from "../components/SEO/SEO";
+import withStaticSEO from "../components/SEO/withStaticSEO";
 import WrapCard from "../features/tokenWrapping/WrapCard";
 import WrappingFormProvider from "../features/tokenWrapping/WrappingFormProvider";
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
 import {
+  RestorationType,
   SuperTokenDowngradeRestoration as SuperTokenUnwrapRestoration,
   SuperTokenUpgradeRestoration as SuperTokenWrapRestoration,
-  RestorationType,
 } from "../features/transactionRestoration/transactionRestorations";
 
 const Wrap: NextPage = () => {
@@ -65,14 +65,4 @@ const Wrap: NextPage = () => {
   );
 };
 
-export async function getStaticProps() {
-  return {
-    props: {
-      SEO: {
-        title: "Wrap / Unwrap | Superfluid",
-      },
-    },
-  };
-}
-
-export default Wrap;
+export default withStaticSEO({ title: "Wrap / Unwrap | Superfluid" }, Wrap);

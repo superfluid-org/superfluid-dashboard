@@ -12,7 +12,7 @@ import {
 import type { NextPage } from "next";
 import { FC, useCallback, useState } from "react";
 import AddressSearchDialog from "../components/AddressSearchDialog/AddressSearchDialog";
-import SEO from "../components/SEO/SEO";
+import withStaticSEO from "../components/SEO/withStaticSEO";
 import AddressSearchIndex from "../features/impersonation/AddressSearchIndex";
 import { useImpersonation } from "../features/impersonation/ImpersonationContext";
 import OnboardingCards from "../features/onboarding/OnboardingCards";
@@ -134,14 +134,4 @@ const Home: NextPage = () => {
   );
 };
 
-export async function getStaticProps() {
-  return {
-    props: {
-      SEO: {
-        title: "Dashboard | Superfluid",
-      },
-    },
-  };
-}
-
-export default Home;
+export default withStaticSEO({ title: "Dashboard | Superfluid" }, Home);

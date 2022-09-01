@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { NextPage } from "next";
 import Link from "next/link";
-import SEO from "../components/SEO/SEO";
+import withStaticSEO from "../components/SEO/withStaticSEO";
 import { EcosystemApp } from "../features/ecosystem/EcosystemItem";
 import EcosystemSection from "../features/ecosystem/EcosystemSection";
 import { networkDefinition } from "../features/network/networks";
@@ -419,14 +419,4 @@ const Ecosystem: NextPage = () => {
   );
 };
 
-export async function getStaticProps() {
-  return {
-    props: {
-      SEO: {
-        title: "Ecosystem | Superfluid",
-      },
-    },
-  };
-}
-
-export default Ecosystem;
+export default withStaticSEO({ title: "Ecosystem | Superfluid" }, Ecosystem);

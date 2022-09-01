@@ -23,7 +23,7 @@ import { useAccount } from "wagmi";
 import AddressSearchDialog from "../components/AddressSearchDialog/AddressSearchDialog";
 import DownloadButton from "../components/DownloadButton/DownloadButton";
 import ReadFileButton from "../components/ReadFileButton/ReadFileButton";
-import SEO from "../components/SEO/SEO";
+import withStaticSEO from "../components/SEO/withStaticSEO";
 import {
   addAddressBookEntries,
   addAddressBookEntry,
@@ -514,14 +514,7 @@ const AddressBook: NextPage = () => {
   );
 };
 
-export async function getStaticProps() {
-  return {
-    props: {
-      SEO: {
-        title: "Address Book | Superfluid",
-      },
-    },
-  };
-}
-
-export default AddressBook;
+export default withStaticSEO(
+  { title: "Address Book | Superfluid" },
+  AddressBook
+);
