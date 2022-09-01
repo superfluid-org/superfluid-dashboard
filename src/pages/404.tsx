@@ -58,4 +58,4 @@ const Page404: NextPage = () => {
   );
 };
 
-export default withStaticSEO({ title: "404 | Superfluid" }, Page404);
+export default withStaticSEO({ title: "Not Found | Superfluid" }, Page404);

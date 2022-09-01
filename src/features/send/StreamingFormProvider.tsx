@@ -235,9 +235,7 @@ const StreamingFormProvider: FC<
   }, [accountAddress]);
 
   return isInitialized ? (
-    <FormProvider data-cy={"test"} {...formMethods}>
-      {children}
-    </FormProvider>
+    <FormProvider {...formMethods}>{children}</FormProvider>
   ) : null;
 };
 
