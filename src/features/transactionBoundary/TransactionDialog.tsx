@@ -16,7 +16,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
 import TransactionDialogErrorAlert from "../transactions/TransactionDialogErrorAlert";
-import { FC, ReactNode } from "react";
+import { FC, PropsWithChildren, ReactNode } from "react";
 import { useTransactionBoundary } from "./TransactionBoundary";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import React from "react";
@@ -70,8 +70,12 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
               <CircularProgress size={80} />
             </Box>
             <Typography variant="h4">
-              <span data-cy="approval-message" translate="yes">Waiting for transaction approval...</span>{" "}
-              <span data-cy="tx-network" translate="no">({expectedNetwork.name})</span>
+              <span data-cy="approval-message" translate="yes">
+                Waiting for transaction approval...
+              </span>{" "}
+              <span data-cy="tx-network" translate="no">
+                ({expectedNetwork.name})
+              </span>
             </Typography>
             {/* // TODO(KK): wrong font! */}
             <Stack sx={{ my: 2 }}>{loadingInfo}</Stack>
@@ -90,14 +94,22 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
             <OutlineIcon data-cy={"broadcasted-icon"}>
               <ArrowUpwardRoundedIcon fontSize="large" color="primary" />
             </OutlineIcon>
-            <Typography data-cy={"broadcasted-message"} sx={{ my: 2 }} variant="h4" color="text.secondary">
+            <Typography
+              data-cy={"broadcasted-message"}
+              sx={{ my: 2 }}
+              variant="h4"
+              color="text.secondary"
+            >
               Transaction broadcasted
             </Typography>
           </Stack>
         </TransactionDialogContent>
         {successActions ?? (
           <TransactionDialogActions>
-            <TransactionDialogButton data-cy={"ok-button"} onClick={closeDialog}>
+            <TransactionDialogButton
+              data-cy={"ok-button"}
+              onClick={closeDialog}
+            >
               OK
             </TransactionDialogButton>
           </TransactionDialogActions>
@@ -113,9 +125,7 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
         <TransactionDialogContent>
           <Stack gap={3} alignItems="center">
             <TransactionDialogErrorAlert mutationError={mutationResult.error} />
-            <Typography variant="body2">
-              Support ID: {supportId}
-            </Typography>
+            <Typography variant="body2">Support ID: {supportId}</Typography>
           </Stack>
         </TransactionDialogContent>
         <TransactionDialogActions>
@@ -130,7 +140,7 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
   return <>{children}</>;
 };
 
-export const TransactionDialogTitle: FC = ({ children }) => {
+export const TransactionDialogTitle: FC<PropsWithChildren> = ({ children }) => {
   const theme = useTheme();
   const { closeDialog } = useTransactionBoundary();
 
@@ -152,7 +162,9 @@ export const TransactionDialogTitle: FC = ({ children }) => {
   );
 };
 
-export const TransactionDialogContent: FC = ({ children }) => {
+export const TransactionDialogContent: FC<PropsWithChildren> = ({
+  children,
+}) => {
   return (
     <Stack component={DialogContent} sx={{ p: 4 }}>
       {children}
@@ -160,7 +172,9 @@ export const TransactionDialogContent: FC = ({ children }) => {
   );
 };
 
-export const TransactionDialogActions: FC = ({ children }) => {
+export const TransactionDialogActions: FC<PropsWithChildren> = ({
+  children,
+}) => {
   return (
     <Stack component={DialogActions} spacing={1} sx={{ p: 3, pt: 0 }}>
       {children}

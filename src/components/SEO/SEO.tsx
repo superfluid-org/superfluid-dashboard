@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { FC, PropsWithChildren } from "react";
+import ReduxPersistGate from "../../features/redux/ReduxPersistGate";
 import config from "../../utils/config";
 
 type TwitterCard = "summary" | "summary_large_image" | "app" | "player";
@@ -60,7 +61,7 @@ const SEO: FC<PropsWithChildren<SEOProps>> = ({
         <meta name="twitter:site" content={twitterSite} />
         <meta name="twitter:creator" content={twitterCreator} />
       </Head>
-      {children}
+      <ReduxPersistGate>{children}</ReduxPersistGate>
     </>
   );
 };
