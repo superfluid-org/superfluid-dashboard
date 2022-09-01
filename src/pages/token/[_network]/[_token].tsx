@@ -55,7 +55,10 @@ const TokenPageContainer: FC<
     tokenSymbol?: string;
   }>
 > = ({ tokenSymbol = "Super Token", children }) => (
-  <SEO title={`${tokenSymbol} | Superfluid`} ogTitle="Super Token">
+  <SEO
+    title={`${tokenSymbol} | Superfluid`}
+    ogTitle={`${tokenSymbol} | Superfluid`}
+  >
     <Container maxWidth="lg">{children}</Container>
   </SEO>
 );
