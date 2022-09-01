@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { FC, PropsWithChildren } from "react";
+import ReduxPersistGate from "../../features/redux/ReduxPersistGate";
 import config from "../../utils/config";
 import SEO, { SEOProps } from "./SEO";
 
@@ -38,7 +39,7 @@ const StaticSEO: FC<PropsWithChildren<SEOProps>> = ({
         twitterCreator,
       }}
     >
-      {children}
+      <ReduxPersistGate>{children}</ReduxPersistGate>
     </SEO>
   );
 };
