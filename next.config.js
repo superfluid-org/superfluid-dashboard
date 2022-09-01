@@ -5,28 +5,22 @@
 
 const { withSentryConfig } = require("@sentry/nextjs");
 
+// This is used to transpile lifi widget so we can add it dom dynamically.
 const withTM = require("next-transpile-modules")(["@lifi/widget"]);
 
 const SENTRY_ENVIRONMENT =
   process.env.SENTRY_ENVIRONMENT || process.env.CONTEXT; // https://docs.netlify.com/configure-builds/environment-variables/#build-metadata
 
-/** @type {import('next').NextConfig} */
-const moduleExports = withTM({
-  reactStrictMode: true,
-  images: {
-    loader: "custom",
-    domains: ["raw.githubusercontent.com"],
-  },
-  env: {
-    NEXT_PUBLIC_APP_URL: process.env.URL,
-    NEXT_PUBLIC_SENTRY_ENVIRONMENT: SENTRY_ENVIRONMENT,
-  },
-  swcMinify: true,
-});
+function withSentry(existingConfig) {
+  const SENTRY_AUTH_TOKEN = process.env.SENTRY_AUTH_TOKEN;
 
-const SENTRY_AUTH_TOKEN = process.env.SENTRY_AUTH_TOKEN;
+  if (!SENTRY_AUTH_TOKEN) {
+    console.warn(
+      "Sentry release not created because SENTRY_AUTH_TOKEN is not set."
+    );
+    return existingConfig;
+  }
 
-if (SENTRY_AUTH_TOKEN) {
   const sentryWebpackPluginOptions = {
     // Additional config options for the Sentry Webpack plugin. Keep in mind that
     // the following options are set automatically, and overriding them is not
@@ -40,10 +34,21 @@ if (SENTRY_AUTH_TOKEN) {
   };
   // Make sure adding Sentry options is the last code to run before exporting, to
   // ensure that your source maps include changes from all other Webpack plugins
-  module.exports = withSentryConfig(moduleExports, sentryWebpackPluginOptions);
-} else {
-  console.warn(
-    "Sentry release not created because SENTRY_AUTH_TOKEN is not set."
-  );
-  module.exports = moduleExports;
+  return withSentryConfig(moduleExports, sentryWebpackPluginOptions);
 }
+
+/** @type {import('next').NextConfig} */
+const config = {
+  reactStrictMode: true,
+  images: {
+    loader: "custom",
+    domains: ["raw.githubusercontent.com"],
+  },
+  env: {
+    NEXT_PUBLIC_APP_URL: process.env.URL,
+    NEXT_PUBLIC_SENTRY_ENVIRONMENT: SENTRY_ENVIRONMENT,
+  },
+  swcMinify: true, // Recommended by next-transpile-modules
+};
+
+module.exports = withTM(withSentry(config));

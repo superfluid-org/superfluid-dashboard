@@ -34,7 +34,7 @@ const LiFiWidgetDynamic = dynamic(
   }
 ) as typeof LiFiWidget;
 
-const Send: NextPage = () => {
+const Bridge: NextPage = () => {
   const theme = useTheme();
 
   const { visibleAddress } = useVisibleAddress();
@@ -312,4 +312,4 @@ const Send: NextPage = () => {
   );
 };
 
-export default Send;
+export default Bridge;
