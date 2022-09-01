@@ -215,7 +215,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
   );
 
   return (
-    <Stack direction="column" alignItems="center">
+    <Stack data-cy={"wrap-screen"} direction="column" alignItems="center">
       <WrapInputCard>
         <Stack direction="row" spacing={2}>
           <Controller
@@ -300,6 +300,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                 name="data.amountDecimal"
                 render={({ field: { onChange, onBlur } }) => (
                   <Button
+                    data-cy={"max-button"}
                     variant="textContained"
                     size="xxs"
                     onClick={() => {
@@ -509,12 +510,14 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                   <TransactionDialogActions>
                     <Stack gap={1} sx={{ width: "100%" }}>
                       <TransactionDialogButton
+                        data-cy={"wrap-more-tokens-button"}
                         color="secondary"
                         onClick={closeDialog}
                       >
                         Wrap more tokens
                       </TransactionDialogButton>
                       <TransactionDialogButton
+                        data-cy={"go-to-tokens-page-button"}
                         color="primary"
                         onClick={() =>
                           router
@@ -544,7 +547,7 @@ const WrapPreview: FC<{
   superTokenSymbol: string;
 }> = ({ underlyingTokenSymbol, superTokenSymbol, amountWei }) => {
   return (
-    <Typography variant="h5" color="text.secondary" translate="yes">
+    <Typography data-cy="wrap-message" variant="h5" color="text.secondary" translate="yes">
       You are wrapping{" "}
       <span translate="no">
         {formatEther(amountWei)} {underlyingTokenSymbol}
@@ -560,7 +563,7 @@ const AllowancePreview: FC<{
   tokenSymbol: string;
 }> = ({ amountWei, decimals, tokenSymbol }) => {
   return (
-    <Typography variant="h5" color="text.secondary" translate="yes">
+    <Typography data-cy="allowance-message" variant="h5" color="text.secondary" translate="yes">
       You are approving additional allowance of{" "}
       <span translate="no">
         {formatUnits(amountWei, decimals)} {tokenSymbol}

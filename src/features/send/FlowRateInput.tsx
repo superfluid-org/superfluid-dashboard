@@ -14,7 +14,9 @@ export enum UnitOfTime {
   Minute = 60,
   Hour = 3600,
   Day = 86400,
+  Week = 604800,
   Month = 2592000,
+  Year = 31536000
 }
 
 export const unitOfTimeList = [
@@ -22,7 +24,9 @@ export const unitOfTimeList = [
   UnitOfTime.Minute,
   UnitOfTime.Hour,
   UnitOfTime.Day,
+  UnitOfTime.Week,
   UnitOfTime.Month,
+  UnitOfTime.Year
 ];
 
 export const timeUnitWordMap: Record<UnitOfTime, string> = {
@@ -30,7 +34,9 @@ export const timeUnitWordMap: Record<UnitOfTime, string> = {
   [UnitOfTime.Minute]: "minute",
   [UnitOfTime.Hour]: "hour",
   [UnitOfTime.Day]: "day",
+  [UnitOfTime.Week]: "week",
   [UnitOfTime.Month]: "month",
+  [UnitOfTime.Year]: "year"
 };
 
 export const wordTimeUnitMap: Record<string, UnitOfTime> = {
@@ -38,7 +44,9 @@ export const wordTimeUnitMap: Record<string, UnitOfTime> = {
   minute: UnitOfTime.Minute,
   hour: UnitOfTime.Hour,
   day: UnitOfTime.Day,
+  week: UnitOfTime.Week,
   month: UnitOfTime.Month,
+  year: UnitOfTime.Year
 };
 
 export type FlowRateWei = {

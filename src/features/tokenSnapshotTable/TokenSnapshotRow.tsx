@@ -190,7 +190,9 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                   </Amount>
                 </Typography>
               ) : (
-                "-"
+                  <Typography data-cy={"net-flow-value"}>
+                    {"-"}
+                  </Typography>
               )}
             </TableCell>
 
@@ -225,7 +227,9 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                   </Typography>
                 </Stack>
               ) : (
-                "-"
+                  <Typography data-cy={"outflow"}>
+                    {"-"}
+                  </Typography>
               )}
             </TableCell>
           </>

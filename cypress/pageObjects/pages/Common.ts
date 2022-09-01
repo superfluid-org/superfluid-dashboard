@@ -1,8 +1,10 @@
 import {BasePage} from "../BasePage";
-import {networksBySlug} from "../../../src/features/network/networks";
+import {networksBySlug, superfluidRpcUrls} from "../../../src/features/network/networks";
 // @ts-ignore
 import {MockProvider} from "@rsksmart/mock-web3-provider";
 import shortenHex from "../../../src/utils/shortenHex";
+import {ethers} from "ethers";
+import HDWalletProvider from "@truffle/hdwallet-provider";
 
 const NAVIGATION_BUTTON_PREFIX = "[data-cy=nav-";
 const TOP_BAR_NETWORK_BUTTON = "[data-cy=top-bar-network-button]";
@@ -26,6 +28,7 @@ const DROPDOWN_BACKDROP = "[role=presentation]";
 const ERROR_PAGE_MESSAGE = "[data-cy=404-message]"
 const RETURN_TO_DASHBOARD_BUTTON = "[data-cy=return-to-dashboard-button]"
 const HELP_CENTER_LINK = "[data-cy=help-center-link]"
+const RESTORE_BUTTONS = "[data-testid=ReplayIcon]"
 
 export class Common extends BasePage {
     static clickNavBarButton(button: string) {
@@ -40,41 +43,45 @@ export class Common extends BasePage {
     ) {
         cy.fixture("streamData").then(streamData => {
 
-        switch (page.toLowerCase()) {
-            case "dashboard page":
-                this.visitPage("/", mocked, account, network);
-                break;
-            case "wrap page":
-                this.visitPage("/wrap", mocked, account, network);
-                break;
-            case "send page":
-                this.visitPage("/send", mocked, account, network);
-                break;
-            case "ecosystem page":
-                this.visitPage("/ecosystem", mocked, account, network);
-                break;
-            case "address book page":
-                this.visitPage("/address-book", mocked, account, network);
-                break;
-            case "activity history page":
-                this.visitPage("/history", mocked, account, network);
-                break;
-            case "ended stream details page":
-                this.visitPage(streamData["staticBalanceAccount"]["polygon"][0].v2Link, mocked, account, network);
-                break;
-            case "ongoing stream details page":
-                this.visitPage(streamData["ongoingStreamAccount"]["polygon"][0].v2Link, mocked, account, network);
-                break;
-            case "invalid stream details page":
-                this.visitPage("/stream/polygon/testing-testing-testing", mocked, account, network);
-                break;
-            case "v1 ended stream details page":
-                this.visitPage(streamData["staticBalanceAccount"]["polygon"][0].v1Link, mocked, account, network);
-                break;
-            default:
-                throw new Error(`Hmm, you haven't set up the link for : ${page}`);
-        }
+            switch (page.toLowerCase()) {
+                case "dashboard page":
+                    this.visitPage("/", mocked, account, network);
+                    break;
+                case "wrap page":
+                    this.visitPage("/wrap", mocked, account, network);
+                    break;
+                case "send page":
+                    this.visitPage("/send", mocked, account, network);
+                    break;
+                case "ecosystem page":
+                    this.visitPage("/ecosystem", mocked, account, network);
+                    break;
+                case "address book page":
+                    this.visitPage("/address-book", mocked, account, network);
+                    break;
+                case "activity history page":
+                    this.visitPage("/history", mocked, account, network);
+                    break;
+                case "ended stream details page":
+                    this.visitPage(streamData["staticBalanceAccount"]["polygon"][0].v2Link, mocked, account, network);
+                    break;
+                case "ongoing stream details page":
+                    this.visitPage(streamData["ongoingStreamAccount"]["polygon"][0].v2Link, mocked, account, network);
+                    break;
+                case "invalid stream details page":
+                    this.visitPage("/stream/polygon/testing-testing-testing", mocked, account, network);
+                    break;
+                case "v1 ended stream details page":
+                    this.visitPage(streamData["staticBalanceAccount"]["polygon"][0].v1Link, mocked, account, network);
+                    break;
+                default:
+                    throw new Error(`Hmm, you haven't set up the link for : ${page}`);
+            }
         })
+        if (Cypress.env("dev")) {
+            //The nextjs error is annoying when developing test cases in dev mode
+            cy.get("nextjs-portal").shadow().find("[aria-label=Close]").click()
+        }
     }
 
     static visitPage(
@@ -106,6 +113,34 @@ export class Common extends BasePage {
         }
     }
 
+    static openDashboardWithConnectedTxAccount(persona:string,network: string) {
+        let personas = ["alice","bob","dan","john"]
+        let chosenPersona = personas.findIndex((el) => el === persona) + 1
+
+        let chainId = networksBySlug.get(network)?.id
+
+        // @ts-ignore
+        let networkRpc = superfluidRpcUrls[network]
+        cy.visit("/", {
+            onBeforeLoad: (win: any) => {
+                const provider = new HDWalletProvider({
+                    privateKeys: [Cypress.env(`TX_ACCOUNT_PRIVATE_KEY${chosenPersona}`)],
+                    url: networkRpc,
+                    chainId: chainId,
+                    pollingInterval: 1000,
+                });
+                win.mockSigner = new ethers.providers.Web3Provider(provider).getSigner();
+            },
+        });
+        if (Cypress.env("dev")) {
+            //The nextjs error is annoying when developing test cases in dev mode
+            cy.get("nextjs-portal").shadow().find("[aria-label=Close]").click()
+        }
+        this.changeNetwork(network)
+        this.clickConnectWallet()
+        this.clickMockWallet()
+    }
+
     static clickConnectWallet() {
         this.clickFirstVisible("[data-cy=connect-wallet-button]");
     }
@@ -115,8 +150,16 @@ export class Common extends BasePage {
         cy.contains("Injected Wallet").click();
     }
 
+    static clickMockWallet() {
+        this.isVisible(WAGMI_CONNECT_WALLET_TITLE);
+        cy.contains("Mock").click();
+    }
+
     static changeNetwork(network: string) {
         this.click(TOP_BAR_NETWORK_BUTTON);
+        if (networksBySlug.get(network)?.testnet) {
+            this.click(TESTNETS_BUTTON)
+        }
         this.click(`[data-cy=${network}-button]`);
     }
 
@@ -144,7 +187,7 @@ export class Common extends BasePage {
     }
 
     static typeIntoAddressInput(address: string) {
-        this.type(ADDRESS_DIALOG_INPUT,address)
+        this.type(ADDRESS_DIALOG_INPUT, address)
     }
 
     static clickOnViewModeButton() {
@@ -153,8 +196,8 @@ export class Common extends BasePage {
 
     static validateAddressBookSearchResult(name: string, address: string) {
         this.isVisible(ADDRESS_BOOK_ENTRIES)
-        this.hasText(ADDRESS_BOOK_RESULT_NAMES,name)
-        this.hasText(ADDRESS_BOOK_RESULT_ADDRESS,address)
+        this.hasText(ADDRESS_BOOK_RESULT_NAMES, name)
+        this.hasText(ADDRESS_BOOK_RESULT_ADDRESS, address)
     }
 
     static chooseFirstAddressBookResult() {
@@ -162,7 +205,7 @@ export class Common extends BasePage {
     }
 
     static validateViewModeChipMessage(message: string) {
-        this.hasText(VIEWED_ACCOUNT,`Viewing ${message}`)
+        this.hasText(VIEWED_ACCOUNT, `Viewing ${message}`)
     }
 
     static changeVisibleNetworksTo(type: string) {
@@ -185,5 +228,9 @@ export class Common extends BasePage {
         this.isVisible(ERROR_PAGE_MESSAGE)
         this.isVisible(RETURN_TO_DASHBOARD_BUTTON)
         this.isVisible(HELP_CENTER_LINK)
+    }
+
+    static restoreLastTx() {
+        this.clickFirstVisible(RESTORE_BUTTONS)
     }
 }

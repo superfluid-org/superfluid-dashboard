@@ -66,7 +66,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
   const network = findNetworkByChainId(transaction.chainId);
 
   return (
-    <ListItem button sx={{ cursor: "default" }}>
+    <ListItem data-cy={"transaction"} button sx={{ cursor: "default" }}>
       <ListItemAvatar>
         <TransactionListItemAvatar status={transaction.status} />
       </ListItemAvatar>
@@ -75,7 +75,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
         secondary={
           <>
             {transaction.status === "Pending" && (
-              <LinearProgress sx={{ height: 3 }} />
+              <LinearProgress data-cy="progress-line" sx={{ height: 3 }} />
             )}
             <Stack
               direction="row"
@@ -87,12 +87,14 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
                 component="span"
                 color={getTransactionStatusColor(transaction.status)}
                 translate="no"
+                data-cy={"tx-date"}
               >
                 {`${format(transaction.timestampMs, "d MMM")} •`}
               </Box>
-              <Box component="span">{shortenHex(transaction.hash)}</Box>
+              <Box data-cy="tx-hash" component="span">{shortenHex(transaction.hash)}</Box>
               {network && (
                 <Tooltip
+                  data-cy={"tx-hash-buttons"}
                   title="View on blockchain explorer"
                   arrow
                   placement="top"

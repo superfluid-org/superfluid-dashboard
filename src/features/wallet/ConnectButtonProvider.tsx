@@ -1,5 +1,5 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { createContext, FC, useContext } from "react";
+import { createContext, FC, PropsWithChildren, useContext } from "react";
 
 // TODO: PR to rainbowkit to expose this interface. It is inpossible to get it out atm.
 interface ConnectButtonContextValue {
@@ -33,11 +33,7 @@ interface ConnectButtonContextValue {
 
 const ConnectButtonContext = createContext<ConnectButtonContextValue>(null!);
 
-interface ConnectButtonProviderProps {}
-
-const ConnectButtonProvider: FC<ConnectButtonProviderProps> = ({
-  children,
-}) => (
+const ConnectButtonProvider: FC<PropsWithChildren> = ({ children }) => (
   <ConnectButton.Custom>
     {(connectButtonContext) => (
       <ConnectButtonContext.Provider value={connectButtonContext}>

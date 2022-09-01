@@ -4,7 +4,7 @@ import { isString } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import SEO from "../components/SEO/SEO";
+import withStaticSEO from "../components/SEO/withStaticSEO";
 import {
   timeUnitWordMap,
   UnitOfTime,
@@ -23,7 +23,7 @@ interface SendPageQuery {
   token?: string;
   receiver?: string;
   flowRate?: { amountEther: string; unitOfTime: UnitOfTime };
-  network?:string
+  network?: string;
 }
 
 export const getSendPagePath = (query: SendPageQuery) => {
@@ -125,28 +125,26 @@ const Send: NextPage = () => {
   }, [router.isReady]);
 
   return (
-    <SEO title="Send Stream | Superfluid">
-      <Container maxWidth="lg">
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            [theme.breakpoints.up("md")]: {
-              my: 4,
-            },
-          }}
-        >
-          {initialFormValues && (
-            <StreamingFormProvider initialFormValues={initialFormValues}>
-              <SendCard />
-            </StreamingFormProvider>
-          )}
-        </Box>
-      </Container>
-    </SEO>
+    <Container maxWidth="lg">
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          [theme.breakpoints.up("md")]: {
+            my: 4,
+          },
+        }}
+      >
+        {initialFormValues && (
+          <StreamingFormProvider initialFormValues={initialFormValues}>
+            <SendCard />
+          </StreamingFormProvider>
+        )}
+      </Box>
+    </Container>
   );
 };
 
-export default Send;
+export default withStaticSEO({ title: "Send Stream | Superfluid" }, Send);

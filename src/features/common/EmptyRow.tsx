@@ -7,9 +7,9 @@ interface EmptyRowProps {
 }
 
 export const EmptyRow: FC<EmptyRowProps> = ({ span, height = 58 }) => (
-  <TableRow>
+  <TableRow data-cy={"no-data-row"}>
     <TableCell colSpan={span} align="center" sx={{ height }}>
-      <Typography variant="h6" translate="yes">
+      <Typography data-cy={"no-data-message"} variant="h6" translate="yes">
         No data
       </Typography>
     </TableCell>

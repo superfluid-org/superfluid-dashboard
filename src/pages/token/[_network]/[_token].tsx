@@ -18,8 +18,11 @@ import {
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { isString } from "lodash";
+import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { FC, ReactChild, useEffect, useState } from "react";
+import { FC, PropsWithChildren, useEffect, useState } from "react";
+import SEO from "../../../components/SEO/SEO";
+import withStaticSEO from "../../../components/SEO/withStaticSEO";
 import { useAutoConnect } from "../../../features/autoConnect/AutoConnect";
 import SubscriptionsTable from "../../../features/index/SubscriptionsTable";
 import NetworkIcon from "../../../features/network/NetworkIcon";
@@ -36,10 +39,8 @@ import TokenGraphFilter from "../../../features/token/TokenGraph/TokenGraphFilte
 import TokenToolbar from "../../../features/token/TokenToolbar";
 import TransferEventsTable from "../../../features/transfers/TransferEventsTable";
 import { useVisibleAddress } from "../../../features/wallet/VisibleAddressContext";
-import { NextPage } from "next";
-import Page404 from "../../404";
 import useNavigateBack from "../../../hooks/useNavigateBack";
-import SEO from "../../../components/SEO/SEO";
+import Page404 from "../../404";
 
 export const getTokenPagePath = ({
   network,
@@ -49,11 +50,15 @@ export const getTokenPagePath = ({
   token: string;
 }) => `/token/${network}/${token}`;
 
-const TokenPageContainer: FC<{
-  tokenSymbol?: string;
-  children?: ReactChild;
-}> = ({ tokenSymbol = "Super Token", children }) => (
-  <SEO title={`${tokenSymbol} | Superfluid`} ogTitle="Super Token">
+const TokenPageContainer: FC<
+  PropsWithChildren<{
+    tokenSymbol?: string;
+  }>
+> = ({ tokenSymbol = "Super Token", children }) => (
+  <SEO
+    title={`${tokenSymbol} | Superfluid`}
+    ogTitle={`${tokenSymbol} | Superfluid`}
+  >
     <Container maxWidth="lg">{children}</Container>
   </SEO>
 );
@@ -341,9 +346,21 @@ const TokenPageContent: FC<{
               },
             }}
           >
-            <Tab label="Streams" value={TokenDetailsTabs.Streams} />
-            <Tab label="Distributions" value={TokenDetailsTabs.Distributions} />
-            <Tab label="Transfers" value={TokenDetailsTabs.Transfers} />
+            <Tab
+              data-cy="streams-tab"
+              label="Streams"
+              value={TokenDetailsTabs.Streams}
+            />
+            <Tab
+              data-cy="distribution-tab"
+              label="Distributions"
+              value={TokenDetailsTabs.Distributions}
+            />
+            <Tab
+              data-cy="transfers-tab"
+              label="Transfers"
+              value={TokenDetailsTabs.Transfers}
+            />
           </TabList>
 
           {activeTab === TokenDetailsTabs.Streams && (
@@ -366,4 +383,4 @@ const TokenPageContent: FC<{
   );
 };
 
-export default TokenPage;
+export default withStaticSEO({ title: "Super Token | Superfluid" }, TokenPage);

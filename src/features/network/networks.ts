@@ -29,7 +29,7 @@ export type Network = Chain & {
   };
 };
 
-const superfluidRpcUrls = {
+export const superfluidRpcUrls = {
   ropsten: "https://rpc-endpoints.superfluid.dev/eth-ropsten",
   rinkeby: "https://rpc-endpoints.superfluid.dev/eth-rinkeby",
   goerli: "https://rpc-endpoints.superfluid.dev/eth-goerli",

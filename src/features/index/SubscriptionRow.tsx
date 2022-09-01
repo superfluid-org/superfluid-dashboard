@@ -148,7 +148,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
   });
 
   return (
-    <TableRow>
+    <TableRow data-cy={"distribution-row"}>
       <TableCell>
         <Stack direction="row" alignItems="center" gap={1.5}>
           <AddressAvatar
@@ -159,6 +159,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
             BlockiesProps={{ size: 8, scale: 3 }}
           />
           <ListItemText
+            data-cy="publisher"
             primary={
               <AddressCopyTooltip address={subscription.publisher}>
                 <span>
@@ -179,12 +180,13 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
       {!isBelowMd ? (
         <>
           <TableCell>
-            <Typography variant="h7mono">
+            <Typography data-cy="amount-received" variant="h7mono">
               <Amount wei={amountReceived} />
             </Typography>
           </TableCell>
           <TableCell>
             <Typography
+              data-cy={"status"}
               variant="body2"
               color={subscription.approved ? "primary" : "warning.main"}
               translate="yes"
@@ -196,13 +198,14 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
               )}
             </Typography>
           </TableCell>
-          <TableCell>
+          <TableCell data-cy={"last-updated-at"}>
             {format(subscription.updatedAtTimestamp * 1000, "d MMM. yyyy")}
           </TableCell>
         </>
       ) : (
         <TableCell align="right">
           <ListItemText
+            data-cy={"mobile-amount-and-status"}
             primary={<Amount wei={amountReceived} />}
             secondary={
               subscription.approved ? (
@@ -274,6 +277,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
 
                           setDialogLoadingInfo(
                             <Typography
+                              data-cy={"approve-index-message"}
                               variant="h5"
                               color="text.secondary"
                               translate="yes"
@@ -355,6 +359,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
 
                           setDialogLoadingInfo(
                             <Typography
+                              data-cy={"revoke-message"}
                               variant="h5"
                               color="text.secondary"
                               translate="yes"
@@ -398,7 +403,7 @@ const OperationProgress: FC<{
 }> = ({ pendingUpdate, transactingText }) => (
   <Stack direction="row" alignItems="center" gap={1}>
     <CircularProgress color="warning" size="16px" />
-    <Typography variant="caption" translate="yes">
+    <Typography data-cy={"pending-message"} variant="caption" translate="yes">
       {pendingUpdate?.hasTransactionSucceeded ? (
         <span>Syncing...</span>
       ) : (

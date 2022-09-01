@@ -1,6 +1,5 @@
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import { AppProps } from "next/app";
-import Head from "next/head";
 import { useEffect } from "react";
 import { hotjar } from "react-hotjar";
 import MonitorContext from "../components/MonitorContext/MonitorContext";
@@ -11,7 +10,6 @@ import Layout from "../features/layout/Layout";
 import { LayoutContextProvider } from "../features/layout/LayoutContext";
 import { ActiveNetworksProvider } from "../features/network/ActiveNetworksContext";
 import { ExpectedNetworkProvider } from "../features/network/ExpectedNetworkContext";
-import ReduxPersistGate from "../features/redux/ReduxPersistGate";
 import ReduxProvider from "../features/redux/ReduxProvider";
 import createEmotionCache from "../features/theme/createEmotionCache";
 import MuiProvider from "../features/theme/MuiProvider";
@@ -47,9 +45,6 @@ export default function MyApp(props: MyAppProps) {
   return (
     <NextThemesProvider>
       <CacheProvider value={emotionCache}>
-        <Head>
-          <meta name="viewport" content="initial-scale=1, width=device-width" />
-        </Head>
         <WagmiManager>
           <AutoConnectProvider>
             <ReduxProvider>
@@ -66,13 +61,11 @@ export default function MyApp(props: MyAppProps) {
                                   <LayoutContextProvider>
                                     <IntercomProvider>
                                       <Layout>
-                                        <ReduxPersistGate>
-                                          <MonitorContext />
-                                          <Component
-                                            key={`${network.slugName}`}
-                                            {...pageProps}
-                                          />
-                                        </ReduxPersistGate>
+                                        <MonitorContext />
+                                        <Component
+                                          key={`${network.slugName}`}
+                                          {...pageProps}
+                                        />
                                       </Layout>
                                     </IntercomProvider>
                                   </LayoutContextProvider>

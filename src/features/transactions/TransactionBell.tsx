@@ -41,6 +41,7 @@ export default memo(function TransactionBell() {
       open={transactionDrawerOpen}
     >
       <Badge
+        data-cy={"tx-drawer-button"}
         invisible={!pendingTransactions.length || transactionDrawerOpen}
         badgeContent={""}
         color="warning"

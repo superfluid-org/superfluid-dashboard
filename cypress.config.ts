@@ -31,11 +31,11 @@ export default defineConfig({
         projectId: "2aaadn",
         baseUrl: "http://localhost:3000",
         excludeSpecPattern: "*.js",
-        viewportHeight: 1080,
-        viewportWidth: 1920,
+        viewportHeight: 720,
+        viewportWidth: 1450,
         defaultCommandTimeout: 10000,
         slowTestThreshold: 30000,
-        video: true,
+        video: false,
         retries: {
             "runMode": 2,
             "openMode": 0

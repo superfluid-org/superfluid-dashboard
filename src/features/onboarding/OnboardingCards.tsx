@@ -14,7 +14,7 @@ import {
 import { Address } from "@superfluid-finance/sdk-core";
 import Image from "next/image";
 import Link from "next/link";
-import { FC, useState } from "react";
+import { FC, PropsWithChildren, useState } from "react";
 import { useAccount } from "wagmi";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import TokenIcon from "../token/TokenIcon";
@@ -28,7 +28,7 @@ interface OnboardingItemProps {
   onClick?: () => void;
 }
 
-const OnboardingItem: FC<OnboardingItemProps> = ({
+const OnboardingItem: FC<PropsWithChildren<OnboardingItemProps>> = ({
   title,
   subheader,
   childrenGap = 1.5,

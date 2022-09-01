@@ -4,7 +4,7 @@ import {DashboardPage} from "../../pageObjects/pages/DashboardPage";
 Given(/^Correct "([^"]*)" wallet balances are shown for the "([^"]*)"$/,
     (networkType: string, account: string) => {
         DashboardPage.verifyBalancesForAccount(networkType, account);
-});
+    });
 
 Given(/^User clicks on the "([^"]*)" toggle$/, (network: string) => {
     DashboardPage.clickNetworkSelectionToogle(network);
@@ -38,13 +38,13 @@ Given(/^User clicks on "([^"]*)" "([^"]*)" row$/, (network: string, token: strin
     DashboardPage.clickTokenStreamRow(network, token);
 });
 Then(/^"([^"]*)" streams are shown with the correct values$/, (network: string) => {
-        DashboardPage.validateTokenStreams(network);
+    DashboardPage.validateTokenStreams(network);
 });
 
 Given(/^"([^"]*)" "([^"]*)" flow rates are shown with the correct values$/,
     (network: string, token: string) => {
-    DashboardPage.validateTokenTotalFlowRates(network, token);
-});
+        DashboardPage.validateTokenTotalFlowRates(network, token);
+    });
 
 Then(/^User clicks on the first visible cancel button$/, () => {
     DashboardPage.clickFirstCancelButton();
@@ -56,15 +56,15 @@ Then(/^The cancel stream popup button is visible$/, () => {
 
 Given(/^Cancel button is disabled on all streams on "([^"]*)"$/,
     (network: string) => {
-    DashboardPage.validateAllCancelButtonsDisabledForToken(network);
-});
+        DashboardPage.validateAllCancelButtonsDisabledForToken(network);
+    });
 
 Given(/^User hovers on the first "([^"]*)" stream cancel button$/, (network: string) => {
-        DashboardPage.hoverOnFirstCancelButton(network);
+    DashboardPage.hoverOnFirstCancelButton(network);
 });
 
 Then(/^A tooltip asking user to switch to "([^"]*)" is shown$/, (network: string) => {
-        DashboardPage.validateChangeNetworkTooltip(network);
+    DashboardPage.validateChangeNetworkTooltip(network);
 });
 
 Given(/^User changes the amount of rows shown to "([^"]*)"$/, (amount: number) => {
@@ -77,21 +77,33 @@ Then(/^"([^"]*)" streams with "([^"]*)" are shown$/, (amount: string, token: str
 
 Then(/^User switches to the next page for the "([^"]*)" token and new results are shown$/,
     (token: string) => {
-    DashboardPage.switchToNextStreamPage(token);
-});
+        DashboardPage.switchToNextStreamPage(token);
+    });
 
 Then(/^No Super Token balance screen is shown$/, () => {
     DashboardPage.noBalancesScreenIsVisible();
 });
-Given(/^User opens the first visible stream details page from the table$/,  () => {
+Given(/^User opens the first visible stream details page from the table$/, () => {
     DashboardPage.openFirstVisibleStreamDetailsPage()
 });
-Given(/^Dashboard page is open when wallet of the user is connected or in view mode$/,  () => {
+Given(/^Dashboard page is open when wallet of the user is connected or in view mode$/, () => {
     DashboardPage.checkIfAnyTokenBalancesAreShown()
 });
-Given(/^User opens "([^"]*)" "([^"]*)" individual token page$/, (network: string, token: string) =>  {
+Given(/^User opens "([^"]*)" "([^"]*)" individual token page$/, (network: string, token: string) => {
     DashboardPage.openIndividualTokenPage(network, token);
 });
-Given(/^User waits for (\d+) stream entries to be shown$/,  (amount:number) => {
+Given(/^User waits for (\d+) stream entries to be shown$/, (amount: number) => {
     DashboardPage.waitForXAmountOfEntries(amount)
+});
+Given(/^The amount sent for the last stream in the table is not flowing$/, () => {
+    DashboardPage.validateLastStreamRowNotFlowing()
+});
+Given(/^There are no cancel or modify buttons in the last stream row$/, () => {
+    DashboardPage.validateNoButtonsInLastStreamRow()
+});
+Given(/^The netflow and incomming\/outgoing amounts in the dashboard page for "([^"]*)" on "([^"]*)" are "([^"]*)"$/, (token: string, network: string, amounts: string) => {
+    DashboardPage.validateTokenTotalNetFlowRates(token, network, amounts)
+});
+Given(/^There are (\d+) stream rows visible$/, (amount: number) => {
+    DashboardPage.validateAmountOfStreamRows(amount)
 });

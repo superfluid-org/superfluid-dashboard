@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 import {
   RainbowKitProvider,
   darkTheme,
@@ -34,7 +34,7 @@ export const wagmiClient = createWagmiClient({
   provider,
 });
 
-const WagmiManager: FC = ({ children }) => {
+const WagmiManager: FC<PropsWithChildren> = ({ children }) => {
   return <WagmiConfig client={wagmiClient}>{children}</WagmiConfig>;
 };
 
@@ -51,7 +51,7 @@ const Disclaimer: DisclaimerComponent = ({ Text, Link }) => (
   </Text>
 );
 
-export const RainbowKitManager: FC = ({ children }) => {
+export const RainbowKitManager: FC<PropsWithChildren> = ({ children }) => {
   const muiTheme = useTheme();
   const { network, isAutoSwitchStopped } = useExpectedNetwork();
 

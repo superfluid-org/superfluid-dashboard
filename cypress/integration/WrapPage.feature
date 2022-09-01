@@ -17,14 +17,12 @@ Feature: Wrap page test cases
     Then The "MATIC" balance is shown correctly on "polygon"
     And User opens the token selection in the wrap page
     Then The underlying token balances in the wrap token dialog are shown correctly on "polygon"
-      #Uncomment when fixed
-      #And None of the tokens shown have got an animation around them
+    And None of the tokens shown have got an animation around them
     And User chooses "MATIC" to wrap
     And User switches to unwrap tab
     And User opens the token selection in the wrap page
     Then The super token balances in the unwrap token dialog are shown correctly on "polygon"
-      #Uncomment when fixed
-      #And All tokens have an animation around them
+    And All tokens have an animation around them
     And User chooses "USDCx" to wrap
     Then The "USDC" balance is shown correctly on "polygon"
 
@@ -52,7 +50,3 @@ Feature: Wrap page test cases
     And User clicks on the stop viewing as an address button
     Then Connect wallet button is visible in the wrap/unwrap page
     And View mode chip does not exist
-
-    @only
-    Scenario: test
-      Given test
