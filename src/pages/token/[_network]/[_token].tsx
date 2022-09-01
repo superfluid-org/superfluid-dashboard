@@ -379,4 +379,14 @@ const TokenPageContent: FC<{
   );
 };
 
+export async function getStaticProps() {
+  return {
+    props: {
+      SEO: {
+        title: "Super Token | Superfluid",
+      },
+    },
+  };
+}
+
 export default TokenPage;

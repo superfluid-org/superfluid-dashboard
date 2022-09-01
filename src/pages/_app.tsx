@@ -4,6 +4,8 @@ import Head from "next/head";
 import { useEffect } from "react";
 import { hotjar } from "react-hotjar";
 import MonitorContext from "../components/MonitorContext/MonitorContext";
+import { SEOProps } from "../components/SEO/SEO";
+import StaticSEO from "../components/SEO/StaticSEO";
 import { AutoConnectProvider } from "../features/autoConnect/AutoConnect";
 import { ImpersonationProvider } from "../features/impersonation/ImpersonationContext";
 import IntercomProvider from "../features/intercom/IntercomProvider";
@@ -35,6 +37,7 @@ interface MyAppProps extends AppProps {
 export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
+  console.log({ pageProps });
   useEffect(() => {
     const { id, sv } = config.hotjar;
     if (!IsCypress && id && sv) {
@@ -63,11 +66,15 @@ export default function MyApp(props: MyAppProps) {
                                   <LayoutContextProvider>
                                     <IntercomProvider>
                                       <Layout>
-                                        <MonitorContext />
-                                        <Component
-                                          key={`${network.slugName}`}
-                                          {...pageProps}
-                                        />
+                                        <StaticSEO {...pageProps.SEO}>
+                                          <ReduxPersistGate>
+                                            <MonitorContext />
+                                            <Component
+                                              key={`${network.slugName}`}
+                                              {...pageProps}
+                                            />
+                                          </ReduxPersistGate>
+                                        </StaticSEO>
                                       </Layout>
                                     </IntercomProvider>
                                   </LayoutContextProvider>

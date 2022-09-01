@@ -359,66 +359,74 @@ const Ecosystem: NextPage = () => {
   const theme = useTheme();
 
   return (
-    <SEO title="Ecosystem | Superfluid">
-      <Container maxWidth="lg" sx={{ mb: 4 }}>
-        <Stack gap={4.5}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            sx={{
-              [theme.breakpoints.down("md")]: {
-                flexDirection: "column",
-                alignItems: "start",
-                gap: 2,
-              },
-            }}
+    <Container maxWidth="lg" sx={{ mb: 4 }}>
+      <Stack gap={4.5}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{
+            [theme.breakpoints.down("md")]: {
+              flexDirection: "column",
+              alignItems: "start",
+              gap: 2,
+            },
+          }}
+        >
+          <Typography variant="h3" component="h1" translate="yes">
+            Explore the Superfluid ecosystem
+          </Typography>
+          <Link
+            href="https://github.com/superfluid-finance/ecosystem/"
+            passHref
+            target="_blank"
           >
-            <Typography variant="h3" component="h1" translate="yes">
-              Explore the Superfluid ecosystem
-            </Typography>
-            <Link
-              href="https://github.com/superfluid-finance/ecosystem/"
-              passHref
+            <Button
+              data-cy={"add-new-app-button"}
+              href=""
+              variant="contained"
+              color="primary"
+              endIcon={<AddIcon />}
               target="_blank"
             >
-              <Button
-                data-cy={"add-new-app-button"}
-                href=""
-                variant="contained"
-                color="primary"
-                endIcon={<AddIcon />}
-                target="_blank"
-              >
-                Add New App
-              </Button>
-            </Link>
-          </Stack>
-
-          <Divider />
-
-          <EcosystemSection
-            title="Built on Superfluid"
-            apps={BUILT_ON_SUPERFLUID}
-          />
-
-          <Divider />
-
-          <EcosystemSection
-            title="Superfluid Integrations"
-            apps={SUPERFLUID_INTEGRATIONS}
-          />
-
-          <Divider />
-
-          <EcosystemSection
-            title="Supports Super Tokens"
-            apps={SUPPORTS_SUPER_TOKENS}
-          />
+              Add New App
+            </Button>
+          </Link>
         </Stack>
-      </Container>
-    </SEO>
+
+        <Divider />
+
+        <EcosystemSection
+          title="Built on Superfluid"
+          apps={BUILT_ON_SUPERFLUID}
+        />
+
+        <Divider />
+
+        <EcosystemSection
+          title="Superfluid Integrations"
+          apps={SUPERFLUID_INTEGRATIONS}
+        />
+
+        <Divider />
+
+        <EcosystemSection
+          title="Supports Super Tokens"
+          apps={SUPPORTS_SUPER_TOKENS}
+        />
+      </Stack>
+    </Container>
   );
 };
+
+export async function getStaticProps() {
+  return {
+    props: {
+      SEO: {
+        title: "Ecosystem | Superfluid",
+      },
+    },
+  };
+}
 
 export default Ecosystem;

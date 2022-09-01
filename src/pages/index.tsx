@@ -124,16 +124,24 @@ const Home: NextPage = () => {
   const { visibleAddress } = useVisibleAddress();
 
   return (
-    <SEO title="Dashboard | Superfluid">
-      <Container maxWidth="lg">
-        {visibleAddress ? (
-          <TokenSnapshotTables address={visibleAddress} />
-        ) : (
-          <ConnectView />
-        )}
-      </Container>
-    </SEO>
+    <Container maxWidth="lg">
+      {visibleAddress ? (
+        <TokenSnapshotTables address={visibleAddress} />
+      ) : (
+        <ConnectView />
+      )}
+    </Container>
   );
 };
+
+export async function getStaticProps() {
+  return {
+    props: {
+      SEO: {
+        title: "Dashboard | Superfluid",
+      },
+    },
+  };
+}
 
 export default Home;

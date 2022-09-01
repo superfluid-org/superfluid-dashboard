@@ -43,28 +43,36 @@ const Wrap: NextPage = () => {
   }
 
   return (
-    <SEO title="Wrap / Unwrap | Superfluid">
-      <Container maxWidth="lg">
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            [theme.breakpoints.up("md")]: {
-              my: 4,
-            },
-          }}
+    <Container maxWidth="lg">
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          [theme.breakpoints.up("md")]: {
+            my: 4,
+          },
+        }}
+      >
+        <WrappingFormProvider
+          restoration={wrapRestoration || unwrapRestoration}
         >
-          <WrappingFormProvider
-            restoration={wrapRestoration || unwrapRestoration}
-          >
-            {tabValue && <WrapCard tabValue={tabValue} />}
-          </WrappingFormProvider>
-        </Box>
-      </Container>
-    </SEO>
+          {tabValue && <WrapCard tabValue={tabValue} />}
+        </WrappingFormProvider>
+      </Box>
+    </Container>
   );
 };
+
+export async function getStaticProps() {
+  return {
+    props: {
+      SEO: {
+        title: "Wrap / Unwrap | Superfluid",
+      },
+    },
+  };
+}
 
 export default Wrap;
