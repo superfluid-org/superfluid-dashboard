@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { FC, ReactChild } from "react";
+import { FC, PropsWithChildren } from "react";
 import config from "../../utils/config";
 
 type TwitterCard = "summary" | "summary_large_image" | "app" | "player";
@@ -19,11 +19,9 @@ interface SEOProps {
   twitterCreator?: string;
   twitterTitle?: string;
   twitterDescription?: string;
-
-  children: ReactChild;
 }
 
-const SEO: FC<SEOProps> = ({
+const SEO: FC<PropsWithChildren<SEOProps>> = ({
   children,
   // General meta tags
   title = `Superfluid Dashboard`,

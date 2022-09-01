@@ -1,7 +1,7 @@
 import { Stack, Paper, useTheme } from "@mui/material";
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 
-export const WrapInputCard: FC = ({ children }) => {
+export const WrapInputCard: FC<PropsWithChildren> = ({ children }) => {
   const theme = useTheme();
 
   return (

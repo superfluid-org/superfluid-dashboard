@@ -1,7 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
 import { BigNumber } from "ethers";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
 import { bool, mixed, object, ObjectSchema, string } from "yup";
@@ -53,10 +53,9 @@ export interface StreamingFormProviderProps {
   initialFormValues: Partial<ValidStreamingForm["data"]>;
 }
 
-const StreamingFormProvider: FC<StreamingFormProviderProps> = ({
-  children,
-  initialFormValues,
-}) => {
+const StreamingFormProvider: FC<
+  PropsWithChildren<StreamingFormProviderProps>
+> = ({ children, initialFormValues }) => {
   const { address: accountAddress } = useAccount();
   const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
@@ -236,7 +235,9 @@ const StreamingFormProvider: FC<StreamingFormProviderProps> = ({
   }, [accountAddress]);
 
   return isInitialized ? (
-    <FormProvider data-cy={"test"} {...formMethods}>{children}</FormProvider>
+    <FormProvider data-cy={"test"} {...formMethods}>
+      {children}
+    </FormProvider>
   ) : null;
 };
 

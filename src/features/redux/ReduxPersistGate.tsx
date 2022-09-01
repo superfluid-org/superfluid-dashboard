@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 import { PersistGate } from "redux-persist/integration/react";
 import { SSR } from "../../utils/SSRUtils";
 import { reduxPersistor } from "./store";
@@ -9,7 +9,7 @@ import { reduxPersistor } from "./store";
  * NOTE: It is critical for RTK-Query to have PersistGate around it when using persistance (had some weird race-condition anomalies otherwise where the cache didn't invalidate).
  * NOTE: While building static assets (SSR), the persistance is removed via function children and can be handled deeper in the app.
  */
-const ReduxPersistGate: FC = ({ children }) => {
+const ReduxPersistGate: FC<PropsWithChildren> = ({ children }) => {
   return (
     <PersistGate persistor={reduxPersistor}>
       {(bootstrapped) => (!!(bootstrapped || SSR) ? children : null)}

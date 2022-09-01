@@ -16,7 +16,7 @@ import {
   Tooltip,
   Typography,
   useMediaQuery,
-  useTheme,
+  useTheme
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
@@ -26,7 +26,7 @@ import { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FC, ReactChild, useEffect, useMemo, useState } from "react";
+import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { useAccount, useNetwork } from "wagmi";
 import AddressAvatar from "../../../components/AddressAvatar/AddressAvatar";
 import CopyTooltip from "../../../components/CopyTooltip/CopyTooltip";
@@ -47,7 +47,7 @@ import config from "../../../utils/config";
 import shortenHex from "../../../utils/shortenHex";
 import {
   calculateBuffer,
-  calculateMaybeCriticalAtTimestamp,
+  calculateMaybeCriticalAtTimestamp
 } from "../../../utils/tokenUtils";
 import Page404 from "../../404";
 
@@ -306,10 +306,9 @@ const StreamPage: NextPage = () => {
   }
 };
 
-const StreamPageContainer: FC<{
+const StreamPageContainer: FC<PropsWithChildren<{
   urlToShare?: string;
-  children?: ReactChild;
-}> = ({ urlToShare, children }) => (
+}>> = ({ urlToShare, children }) => (
   <SEO
     title="Stream Details | Superfluid"
     ogUrl={urlToShare}

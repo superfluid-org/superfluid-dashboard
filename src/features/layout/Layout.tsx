@@ -1,5 +1,5 @@
 import { Box, styled, Toolbar, useMediaQuery, useTheme } from "@mui/material";
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 import TransactionDrawer, {
   transactionDrawerWidth,
 } from "../transactionDrawer/TransactionDrawer";
@@ -41,7 +41,7 @@ const Main = styled("main")<{
   },
 }));
 
-const Layout: FC = ({ children }) => {
+const Layout: FC<PropsWithChildren> = ({ children }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { transactionDrawerOpen } = useLayoutContext();

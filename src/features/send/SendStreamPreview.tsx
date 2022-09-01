@@ -10,7 +10,13 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { differenceInDays, format } from "date-fns";
-import { FC, isValidElement, ReactNode, useMemo } from "react";
+import {
+  FC,
+  isValidElement,
+  PropsWithChildren,
+  ReactNode,
+  useMemo,
+} from "react";
 import shortenHex from "../../utils/shortenHex";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import TooltipIcon from "../common/TooltipIcon";
@@ -28,13 +34,22 @@ import {
 } from "./FlowRateInput";
 import useCalculateBufferInfo from "./useCalculateBufferInfo";
 
-const PreviewItem: FC<{
+interface PreviewItemProps {
   label: string | ReactNode;
   isError?: boolean;
   oldValue?: ReactNode;
   dataCy?: string;
   TypographyProps?: Partial<TypographyProps>;
-}> = ({ label, children, oldValue, isError, dataCy, TypographyProps = {} }) => {
+}
+
+const PreviewItem: FC<PropsWithChildren<PreviewItemProps>> = ({
+  label,
+  children,
+  oldValue,
+  isError,
+  dataCy,
+  TypographyProps = {},
+}) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
