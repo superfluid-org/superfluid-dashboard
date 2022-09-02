@@ -1,18 +1,13 @@
 import type { LiFiWidget, WidgetConfig } from "@lifi/widget";
 import dynamic from "next/dynamic";
 
-import { Container, Paper, Stack, useTheme } from "@mui/material";
+import { Container, useTheme } from "@mui/material";
 import { NextPage } from "next";
 import { useMemo } from "react";
 import { useDisconnect, useSigner, useSwitchNetwork } from "wagmi";
 import SEO from "../components/SEO/SEO";
 import { useConnectButton } from "../features/wallet/ConnectButtonProvider";
-import {
-  buildTheme,
-  ELEVATION1_BG,
-  FONT_FAMILY,
-} from "../features/theme/theme";
-import { deepmerge } from "@mui/utils";
+import { ELEVATION1_BG, FONT_FAMILY } from "../features/theme/theme";
 
 const LiFiWidgetDynamic = dynamic(
   () => import("@lifi/widget").then((module) => module.LiFiWidget) as any,
@@ -29,12 +24,6 @@ const Bridge: NextPage = () => {
   const { switchNetworkAsync } = useSwitchNetwork();
   const { openConnectModal } = useConnectButton();
 
-  const widgetTheme = useMemo(() => {
-    return deepmerge(theme, {
-      components: {},
-    });
-  }, [theme]);
-
   const widgetConfig: WidgetConfig = useMemo(
     () => ({
       walletManagement: {
@@ -49,52 +38,62 @@ const Bridge: NextPage = () => {
         },
         signer: signer ?? undefined,
       },
-      appearance: widgetTheme.palette.mode,
+      appearance: theme.palette.mode,
       integrator: "Superfluid",
-      theme: widgetTheme,
-
       containerStyle: {
-        animation: "none",
-        background: "none",
-        width: 560,
-        height: 700,
-        margin: "0 auto",
-        // border: `1px solid ${theme.palette.other.outline}`,
-        // background: theme.palette.background.paper,
-        // backgroundImage: ELEVATION1_BG,
-        // border: `1px solid rgb(234, 234, 234)`,
-        borderRadius: "16px",
+        maxWidth: "100%",
+        margin: "32px auto",
         display: "flex",
-        maxWidth: 560,
+        width: 560,
+        minWidth: 0,
+        borderRadius: "20px",
+        border:
+          theme.palette.mode === "dark"
+            ? `1px solid ${theme.palette.other.outline}`
+            : "none",
+        backgroundColor: theme.palette.background.paper,
+        backgroundImage: ELEVATION1_BG,
+        boxShadow: theme.shadows[1],
       },
       disableAppearance: true,
+      theme: theme,
     }),
     [
+      theme,
       signer,
       fetchSigner,
       openConnectModal,
       switchNetworkAsync,
       disconnectAsync,
-      widgetTheme,
     ]
   );
 
   return (
     <SEO title="Bridge | Superfluid">
-      <Container maxWidth="lg">
-        <Stack
-          flex={1}
-          sx={{
-            ".MuiScopedCssBaseline-root, #widget-header, .MuiAppBar-root": {
-              background: "transparent",
-            },
-          }}
-        >
-          <LiFiWidgetDynamic config={widgetConfig} />
-        </Stack>
+      <Container
+        maxWidth="lg"
+        sx={{
+          ".MuiScopedCssBaseline-root, #widget-header, .MuiAppBar-root": {
+            background: "none",
+          },
+          ".MuiButton-containedPrimary": {
+            color: "#fff",
+            textTransform: "initial",
+            padding: "14px 24px",
+            fontSize: "16px",
+          },
+          ".MuiButton-sizeMedium": {
+            letterSpacing: "0.17px",
+          },
+        }}
+      >
+        <LiFiWidgetDynamic config={widgetConfig} />
       </Container>
     </SEO>
   );
 };
 
 export default Bridge;
+
+// backgroundColor: #151619;
+// ELEVATION4_BG;
