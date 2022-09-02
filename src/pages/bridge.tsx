@@ -61,10 +61,11 @@ const Bridge: NextPage = () => {
     [
       theme,
       signer,
-      fetchSigner,
-      openConnectModal,
-      switchNetworkAsync,
-      disconnectAsync,
+      // fetchSigner,
+      // openConnectModal,
+      // switchNetworkAsync,
+      // disconnectAsync, 
+      // TODO(KK): These deps need to be not included because otherwise disconnect doesn't work...
     ]
   );
 
