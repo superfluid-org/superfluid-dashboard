@@ -16,32 +16,19 @@ import {
 import { skipToken } from "@reduxjs/toolkit/query";
 import { ethers } from "ethers";
 import Fuse from "fuse.js";
-import {
-  CSSProperties,
-  FC,
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import AutoSizer from "react-virtualized-auto-sizer";
+import { FixedSizeList } from "react-window";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   isSuper,
   isUnderlying,
   TokenMinimal,
-  TokenWithIcon,
 } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import TokenListItem from "./TokenListItem";
-import { FixedSizeList } from "react-window";
-import AutoSizer from "react-virtualized-auto-sizer";
-import { AccountTokenSnapshot, Address } from "@superfluid-finance/sdk-core";
-import { Network } from "../network/networks";
-import { number } from "yup";
-import { memoize } from "lodash";
 
 export type TokenSelectionProps = {
   showUpgrade?: boolean;

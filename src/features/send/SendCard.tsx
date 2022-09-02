@@ -306,7 +306,9 @@ export default memo(function SendCard() {
                         customSuperTokensQuery.isFetching,
                     },
                   }}
-                  onTokenSelect={(x) => onChange(x.address)}
+                  onTokenSelect={(x) => {
+                    onChange(x.address);
+                  }}
                   onBlur={onBlur}
                   ButtonProps={{ variant: "input" }}
                 />
@@ -528,7 +530,10 @@ export default memo(function SendCard() {
                           })}
                           passHref
                         >
-                          <TransactionDialogButton data-cy="go-to-token-page-button" color="primary">
+                          <TransactionDialogButton
+                            data-cy="go-to-token-page-button"
+                            color="primary"
+                          >
                             Go to token page ➜
                           </TransactionDialogButton>
                         </Link>
@@ -606,7 +611,10 @@ export default memo(function SendCard() {
                           })}
                           passHref
                         >
-                          <TransactionDialogButton data-cy={"go-to-token-page-button"} color="primary">
+                          <TransactionDialogButton
+                            data-cy={"go-to-token-page-button"}
+                            color="primary"
+                          >
                             Go to token page ➜
                           </TransactionDialogButton>
                         </Link>

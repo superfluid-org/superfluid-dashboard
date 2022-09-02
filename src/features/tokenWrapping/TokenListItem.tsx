@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import Link from "next/link";
-import { FC, memo } from "react";
+import { FC, memo, useCallback } from "react";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   isSuper,
@@ -85,7 +85,9 @@ const TokenListItem: FC<TokenListItemProps> = ({
 
   const fRate = realtimeBalanceQuery?.currentData?.flowRate || flowRate;
 
-  const handleClick = () => onClick(token);
+  const handleClick = useCallback(() => {
+    onClick(token);
+  }, [token, onClick]);
 
   return (
     <ListItemButton

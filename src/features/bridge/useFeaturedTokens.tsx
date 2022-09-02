@@ -13,6 +13,7 @@ const useFeaturedTokens = (lifi: LIFI): Token[] => {
     setFeaturedTokens([]);
 
     lifi.getTokens({ chains: networkIDs }).then((lifiTokensResponse) => {
+      console.log("lifi response", { lifiTokensResponse });
       const featuredTokens = Promise.all(
         Object.entries(lifiTokensResponse.tokens || {}).map(
           ([networkID, lifiNetworkTokens]) => {
@@ -31,26 +32,28 @@ const useFeaturedTokens = (lifi: LIFI): Token[] => {
                 },
               },
               true
-            )
-              .then((superTokensResponse) =>
-                (superTokensResponse.data?.items || []).reduce(
-                  (matchedLiFiTokens, superToken) => {
-                    const lifiToken = lifiNetworkTokens.find(
-                      (lifiToken) => lifiToken.address === superToken.id
-                    );
+            ).then((superTokensResponse) =>
+              (superTokensResponse.data?.items || []).reduce(
+                (matchedLiFiTokens, superToken) => {
+                  const lifiToken = lifiNetworkTokens.find(
+                    (lifiToken) => lifiToken.address === superToken.id
+                  );
 
-                    return matchedLiFiTokens.concat(
-                      lifiToken ? [lifiToken] : []
-                    );
-                  },
-                  [] as Token[]
-                )
+                  return matchedLiFiTokens.concat(lifiToken ? [lifiToken] : []);
+                },
+                [] as Token[]
               )
-              .catch(() => []);
+            );
           }
         )
-      ).then((allFeaturedTokens) => {
-        console.log({ allFeaturedTokens });
+      ).then((networksFeaturedTokens) => {
+        setFeaturedTokens(
+          networksFeaturedTokens.reduce(
+            (allFeaturedTokens, networkFeaturedTokens) =>
+              allFeaturedTokens.concat(networkFeaturedTokens),
+            []
+          )
+        );
       });
     });
   }, [lifi, tokenQueryTrigger]);

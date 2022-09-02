@@ -9,6 +9,7 @@ import SEO from "../components/SEO/SEO";
 import { useConnectButton } from "../features/wallet/ConnectButtonProvider";
 import { ELEVATION1_BG, FONT_FAMILY } from "../features/theme/theme";
 import LIFI from "@lifi/sdk";
+import useFeaturedTokens from "../features/bridge/useFeaturedTokens";
 
 const LiFiWidgetDynamic = dynamic(
   () => import("@lifi/widget").then((module) => module.LiFiWidget) as any,
@@ -27,8 +28,9 @@ const Bridge: NextPage = () => {
 
   const lifi = useMemo(() => new LIFI(), []);
 
+  const featuredTokens = useFeaturedTokens(lifi);
 
-
+  console.log({ featuredTokens });
 
   const widgetConfig: WidgetConfig = useMemo(
     () => ({
@@ -44,6 +46,7 @@ const Bridge: NextPage = () => {
         },
         signer: signer ?? undefined,
       },
+      featuredTokens,
       appearance: theme.palette.mode,
       integrator: "Superfluid",
       containerStyle: {
@@ -67,10 +70,11 @@ const Bridge: NextPage = () => {
     [
       theme,
       signer,
+      featuredTokens,
       // fetchSigner,
       // openConnectModal,
       // switchNetworkAsync,
-      // disconnectAsync, 
+      // disconnectAsync,
       // TODO(KK): These deps need to be not included because otherwise disconnect doesn't work...
     ]
   );
