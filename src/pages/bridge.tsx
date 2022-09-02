@@ -91,6 +91,10 @@ const Bridge: NextPage = () => {
           fontSize: "16px",
           backgroundColor: theme.palette.primary.main,
         },
+        ".MuiLoadingButton-root:hover": {
+          color: "#fff",
+          backgroundColor: "rgba(12, 149, 42, 1)",
+        },
         ".MuiButton-sizeMedium": {
           letterSpacing: "0.17px",
         },
