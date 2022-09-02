@@ -26,6 +26,25 @@ import { TokenMinimal } from "../features/redux/endpoints/tokenTypes";
 import { TokenDialogButton } from "../features/tokenWrapping/TokenDialogButton";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { parseAmountOrZero } from "../utils/tokenUtils";
+import { useAccount, useConnect, useDisconnect, useSigner, useSwitchNetwork } from "wagmi";
+import { useConnectButton } from "../features/wallet/ConnectButtonProvider";
+
+const sleepUntil = async (f: () => boolean, timeoutMs: number) => {
+  return new Promise<void>((resolve, reject) => {
+    const timeWas = Date.now();
+    const wait = setInterval(function() {
+      if (f()) {
+        console.log("resolved after", Date.now() - timeWas, "ms");
+        clearInterval(wait);
+        resolve();
+      } else if (Date.now() - timeWas > timeoutMs) { // Timeout
+        console.log("rejected after", Date.now() - timeWas, "ms");
+        clearInterval(wait);
+        reject();
+      }
+    }, 20);
+  });
+}
 
 const LiFiWidgetDynamic = dynamic(
   () => import("@lifi/widget").then((module) => module.LiFiWidget) as any,
@@ -141,10 +160,27 @@ const Bridge: NextPage = () => {
     visibleAddress &&
     amount;
 
-  console.log({ activeRoute, availableRoutes });
+  // console.log({ activeRoute, availableRoutes });
+
+  const { data: signer, refetch: fetchSigner } = useSigner();
+  const { disconnectAsync } = useDisconnect();
+  const { switchNetworkAsync } = useSwitchNetwork();
+  const { openConnectModal } = useConnectButton();
 
   const widgetConfig: WidgetConfig = useMemo(
     () => ({
+      walletManagement: {
+        switchChain: async (chainId) => {
+          await switchNetworkAsync?.(chainId);
+          return fetchSigner().then(x => x.data!);
+        },
+        disconnect: disconnectAsync,
+        connect: async () => {
+          openConnectModal();
+          return Promise.reject()
+        },
+        signer: signer ?? undefined,
+      },
       appearance: theme.palette.mode,
       integrator: "Superfluid",
       containerStyle: {
@@ -155,8 +191,9 @@ const Bridge: NextPage = () => {
         display: "flex",
         maxWidth: 560,
       },
+      disableAppearance: true
     }),
-    [theme]
+    [theme, signer, switchNetworkAsync, openConnectModal]
   );
 
   return (
@@ -166,7 +203,7 @@ const Bridge: NextPage = () => {
           <LiFiWidgetDynamic config={widgetConfig} />
         </Stack>
 
-        <Box
+        {/* <Box
           sx={{
             display: "flex",
             flexDirection: "column",
@@ -306,7 +343,7 @@ const Bridge: NextPage = () => {
               )}
             </Stack>
           </Card>
-        </Box>
+        </Box> */}
       </Container>
     </SEO>
   );
