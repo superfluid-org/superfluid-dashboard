@@ -23,7 +23,7 @@ import { useAccount } from "wagmi";
 import AddressSearchDialog from "../components/AddressSearchDialog/AddressSearchDialog";
 import DownloadButton from "../components/DownloadButton/DownloadButton";
 import ReadFileButton from "../components/ReadFileButton/ReadFileButton";
-import SEO from "../components/SEO/SEO";
+import withStaticSEO from "../components/SEO/withStaticSEO";
 import {
   addAddressBookEntries,
   addAddressBookEntry,
@@ -270,250 +270,251 @@ const AddressBook: NextPage = () => {
     incomingStreamsQuery.isLoading || outgoingStreamsQuery.isLoading;
 
   return (
-    <SEO title="Address Book | Superfluid">
-      <Container maxWidth="lg">
-        <AddressSearchDialog
-          title={"Add an address"}
-          index={<AddressSearchIndex onSelectAddress={onAddAddress} />}
-          open={showAddDialog}
-          onClose={closeAddDialog}
-          onSelectAddress={onAddAddress}
-          showAddressBook={false}
-        />
+    <Container maxWidth="lg">
+      <AddressSearchDialog
+        title={"Add an address"}
+        index={<AddressSearchIndex onSelectAddress={onAddAddress} />}
+        open={showAddDialog}
+        onClose={closeAddDialog}
+        onSelectAddress={onAddAddress}
+        showAddressBook={false}
+      />
 
-        <Stack gap={isBelowMd ? 2.5 : 4.5}>
-          <Stack direction="row" gap={1.5} alignItems="center">
-            <Typography variant="h3" component="h1" flex={1} translate="yes">
-              Address Book
-            </Typography>
+      <Stack gap={isBelowMd ? 2.5 : 4.5}>
+        <Stack direction="row" gap={1.5} alignItems="center">
+          <Typography variant="h3" component="h1" flex={1} translate="yes">
+            Address Book
+          </Typography>
 
-            {!isBelowMd ? (
-              <>
-                <ReadFileButton onLoaded={onImport} mimeType=".csv">
-                  {({ selectFile }) => (
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      onClick={selectFile}
-                    >
-                      Import
-                    </Button>
-                  )}
-                </ReadFileButton>
-
-                <DownloadButton
-                  content={exportableAddressBookContent}
-                  fileName={`address_book_${new Date().getTime()}.csv`}
-                  contentType="text/csv;charset=utf-8;"
-                >
-                  {({ download }) => (
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      onClick={download}
-                    >
-                      Export
-                    </Button>
-                  )}
-                </DownloadButton>
-              </>
-            ) : (
-              <Stack direction="row" gap={1.5}>
-                {!isDeleting && (
-                  <Button
-                    variant="textContained"
-                    color="primary"
-                    size="small"
-                    onClick={openAddDialog}
-                  >
-                    Add
-                  </Button>
-                )}
-
-                <Button
-                  variant="textContained"
-                  color="error"
-                  size="small"
-                  disabled={isDeleting && selectedAddresses.length === 0}
-                  onClick={isDeleting ? deleteEntries : startDeleting}
-                >
-                  {isDeleting
-                    ? `Confirm (${selectedAddresses.length})`
-                    : "Remove"}
-                </Button>
-
-                {isDeleting && (
+          {!isBelowMd ? (
+            <>
+              <ReadFileButton onLoaded={onImport} mimeType=".csv">
+                {({ selectFile }) => (
                   <Button
                     variant="outlined"
                     color="secondary"
-                    size="small"
-                    onClick={cancelDeleting}
+                    onClick={selectFile}
                   >
-                    Cancel
+                    Import
                   </Button>
                 )}
-              </Stack>
-            )}
-          </Stack>
+              </ReadFileButton>
 
+              <DownloadButton
+                content={exportableAddressBookContent}
+                fileName={`address_book_${new Date().getTime()}.csv`}
+                contentType="text/csv;charset=utf-8;"
+              >
+                {({ download }) => (
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={download}
+                  >
+                    Export
+                  </Button>
+                )}
+              </DownloadButton>
+            </>
+          ) : (
+            <Stack direction="row" gap={1.5}>
+              {!isDeleting && (
+                <Button
+                  variant="textContained"
+                  color="primary"
+                  size="small"
+                  onClick={openAddDialog}
+                >
+                  Add
+                </Button>
+              )}
+
+              <Button
+                variant="textContained"
+                color="error"
+                size="small"
+                disabled={isDeleting && selectedAddresses.length === 0}
+                onClick={isDeleting ? deleteEntries : startDeleting}
+              >
+                {isDeleting
+                  ? `Confirm (${selectedAddresses.length})`
+                  : "Remove"}
+              </Button>
+
+              {isDeleting && (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  size="small"
+                  onClick={cancelDeleting}
+                >
+                  Cancel
+                </Button>
+              )}
+            </Stack>
+          )}
+        </Stack>
+
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          sx={{
+            [theme.breakpoints.down("md")]: {
+              flexDirection: "column",
+              gap: 2,
+            },
+          }}
+        >
           <Stack
             direction="row"
-            justifyContent="space-between"
+            gap={1.5}
             sx={{
               [theme.breakpoints.down("md")]: {
-                flexDirection: "column",
-                gap: 2,
+                justifyContent: "space-between",
               },
             }}
           >
-            <Stack
-              direction="row"
-              gap={1.5}
-              sx={{
-                [theme.breakpoints.down("md")]: {
-                  justifyContent: "space-between",
-                },
-              }}
-            >
-              <AddressFilter
-                addressesFilter={addressesFilter}
-                onChange={onAddressesFilterChange}
-              />
-              <StreamActiveFilter
-                activeType={streamActiveFilter}
-                onChange={onStreamActiveFilterChange}
-              />
-            </Stack>
-            {!isBelowMd && (
-              <Stack direction="row" gap={1.5}>
-                {!isDeleting && (
-                  <Button
-                    data-cy={"add-address-btn"}
-                    variant="textContained"
-                    color="primary"
-                    onClick={openAddDialog}
-                  >
-                    Add Address
-                  </Button>
-                )}
-                <Button
-                  data-cy={"remove-button"}
-                  variant="textContained"
-                  color="error"
-                  disabled={isDeleting && selectedAddresses.length === 0}
-                  onClick={isDeleting ? deleteEntries : startDeleting}
-                >
-                  {isDeleting
-                    ? `Confirm removing (${selectedAddresses.length})`
-                    : "Remove Address"}
-                </Button>
-
-                {isDeleting && (
-                  <Button
-                    data-cy={"cancel-button"}
-                    variant="outlined"
-                    color="secondary"
-                    onClick={cancelDeleting}
-                  >
-                    Cancel
-                  </Button>
-                )}
-              </Stack>
-            )}
+            <AddressFilter
+              addressesFilter={addressesFilter}
+              onChange={onAddressesFilterChange}
+            />
+            <StreamActiveFilter
+              activeType={streamActiveFilter}
+              onChange={onStreamActiveFilterChange}
+            />
           </Stack>
-
-          {filteredEntries.length === 0 && (
-            <Paper elevation={1} sx={{ px: 12, py: 7 }} translate="yes">
-              <Typography
-                data-cy={"no-address-title"}
-                variant="h4"
-                textAlign="center"
+          {!isBelowMd && (
+            <Stack direction="row" gap={1.5}>
+              {!isDeleting && (
+                <Button
+                  data-cy={"add-address-btn"}
+                  variant="textContained"
+                  color="primary"
+                  onClick={openAddDialog}
+                >
+                  Add Address
+                </Button>
+              )}
+              <Button
+                data-cy={"remove-button"}
+                variant="textContained"
+                color="error"
+                disabled={isDeleting && selectedAddresses.length === 0}
+                onClick={isDeleting ? deleteEntries : startDeleting}
               >
-                No Addresses Available
-              </Typography>
-              <Typography
-                data-cy={"no-address-message"}
-                color="text.secondary"
-                textAlign="center"
-              >
-                Addresses you have transacted with or imported will appear here.
-              </Typography>
-            </Paper>
-          )}
+                {isDeleting
+                  ? `Confirm removing (${selectedAddresses.length})`
+                  : "Remove Address"}
+              </Button>
 
-          {filteredEntries.length > 0 && (
-            <TableContainer
-              sx={{
-                [theme.breakpoints.down("md")]: {
-                  borderLeft: 0,
-                  borderRight: 0,
-                  borderRadius: 0,
-                  boxShadow: "none",
-                  mx: -2,
-                  width: "auto",
-                },
-              }}
-            >
-              <Table sx={{ tableLayout: "fixed" }}>
-                {!isBelowMd && (
-                  <TableHead>
-                    <TableRow>
-                      <TableCell sx={{ pl: 10 }}>Name</TableCell>
-                      <TableCell width="200px">ENS Name</TableCell>
-                      <TableCell width="200px">Address</TableCell>
-                      <TableCell width="160px">Active Streams</TableCell>
-                      <TableCell width="88px" />
-                    </TableRow>
-                  </TableHead>
-                )}
-                <TableBody>
-                  {paginatedEntries.map(({ address, name, streams }) =>
-                    isBelowMd ? (
-                      <AddressBookMobileRow
-                        key={address}
-                        address={address}
-                        selected={selectedAddresses.includes(address)}
-                        selectable={isDeleting}
-                        onSelect={setRowSelected(address)}
-                      />
-                    ) : (
-                      <AddressBookRow
-                        key={address}
-                        address={address}
-                        name={name}
-                        selected={selectedAddresses.includes(address)}
-                        selectable={isDeleting}
-                        onSelect={setRowSelected(address)}
-                        streams={streams}
-                        streamsLoading={streamsLoading}
-                      />
-                    )
-                  )}
-                </TableBody>
-              </Table>
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={filteredEntries.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                sx={{
-                  "> *": {
-                    visibility:
-                      filteredEntries.length <= rowsPerPage
-                        ? "hidden"
-                        : "visible",
-                  },
-                }}
-              />
-            </TableContainer>
+              {isDeleting && (
+                <Button
+                  data-cy={"cancel-button"}
+                  variant="outlined"
+                  color="secondary"
+                  onClick={cancelDeleting}
+                >
+                  Cancel
+                </Button>
+              )}
+            </Stack>
           )}
         </Stack>
-      </Container>
-    </SEO>
+
+        {filteredEntries.length === 0 && (
+          <Paper elevation={1} sx={{ px: 12, py: 7 }} translate="yes">
+            <Typography
+              data-cy={"no-address-title"}
+              variant="h4"
+              textAlign="center"
+            >
+              No Addresses Available
+            </Typography>
+            <Typography
+              data-cy={"no-address-message"}
+              color="text.secondary"
+              textAlign="center"
+            >
+              Addresses you have transacted with or imported will appear here.
+            </Typography>
+          </Paper>
+        )}
+
+        {filteredEntries.length > 0 && (
+          <TableContainer
+            sx={{
+              [theme.breakpoints.down("md")]: {
+                borderLeft: 0,
+                borderRight: 0,
+                borderRadius: 0,
+                boxShadow: "none",
+                mx: -2,
+                width: "auto",
+              },
+            }}
+          >
+            <Table sx={{ tableLayout: "fixed" }}>
+              {!isBelowMd && (
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ pl: 10 }}>Name</TableCell>
+                    <TableCell width="200px">ENS Name</TableCell>
+                    <TableCell width="200px">Address</TableCell>
+                    <TableCell width="160px">Active Streams</TableCell>
+                    <TableCell width="88px" />
+                  </TableRow>
+                </TableHead>
+              )}
+              <TableBody>
+                {paginatedEntries.map(({ address, name, streams }) =>
+                  isBelowMd ? (
+                    <AddressBookMobileRow
+                      key={address}
+                      address={address}
+                      selected={selectedAddresses.includes(address)}
+                      selectable={isDeleting}
+                      onSelect={setRowSelected(address)}
+                    />
+                  ) : (
+                    <AddressBookRow
+                      key={address}
+                      address={address}
+                      name={name}
+                      selected={selectedAddresses.includes(address)}
+                      selectable={isDeleting}
+                      onSelect={setRowSelected(address)}
+                      streams={streams}
+                      streamsLoading={streamsLoading}
+                    />
+                  )
+                )}
+              </TableBody>
+            </Table>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={filteredEntries.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              sx={{
+                "> *": {
+                  visibility:
+                    filteredEntries.length <= rowsPerPage
+                      ? "hidden"
+                      : "visible",
+                },
+              }}
+            />
+          </TableContainer>
+        )}
+      </Stack>
+    </Container>
   );
 };
 
-export default AddressBook;
+export default withStaticSEO(
+  { title: "Address Book | Superfluid" },
+  AddressBook
+);

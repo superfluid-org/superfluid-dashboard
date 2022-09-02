@@ -1,4 +1,11 @@
-import { createContext, FC, useCallback, useContext, useState } from "react";
+import {
+  createContext,
+  FC,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useState,
+} from "react";
 import { TransactionRestorations } from "./transactionRestorations";
 
 const TransactionRestorationContext = createContext<{
@@ -7,7 +14,9 @@ const TransactionRestorationContext = createContext<{
   onRestored: () => void;
 }>(undefined!);
 
-export const TransactionRestorationContextProvider: FC = ({ children }) => {
+export const TransactionRestorationContextProvider: FC<PropsWithChildren> = ({
+  children,
+}) => {
   const [restoration, setRestoration] = useState<
     TransactionRestorations | undefined
   >();

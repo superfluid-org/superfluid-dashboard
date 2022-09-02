@@ -20,7 +20,7 @@ import { NextPage } from "next";
 import { MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
 import DatePicker from "../components/DatePicker/DatePicker";
 import OpenIcon from "../components/OpenIcon/OpenIcon";
-import SEO from "../components/SEO/SEO";
+import withStaticSEO from "../components/SEO/withStaticSEO";
 import ActivityRow from "../features/activityHistory/ActivityRow";
 import ActivityTypeFilter, {
   ActivityType,
@@ -170,195 +170,196 @@ const History: NextPage = () => {
   );
 
   return (
-    <SEO title="Activity History | Superfluid">
-      <Container maxWidth="lg">
-        <Stack gap={isBelowMd ? 2.5 : 4.5}>
-          <Typography variant="h3" component="h1" translate="yes">
-            Activity History
-          </Typography>
+    <Container maxWidth="lg">
+      <Stack gap={isBelowMd ? 2.5 : 4.5}>
+        <Typography variant="h3" component="h1" translate="yes">
+          Activity History
+        </Typography>
 
-          <Stack gap={2.5}>
-            <Stack direction="row" justifyContent="space-between" gap={2}>
-              <AddressSearch
-                address={searchedAddress}
-                placeholder="Filter by address or ENS"
-                onChange={setAddressSearch}
-                addressLength="medium"
-                ButtonProps={{
-                  variant: "outlined",
-                  color: "secondary",
-                  size: "large",
-                  sx: {
-                    maxWidth: "420px",
-                    flex: 1,
-                    justifyContent: "flex-start",
-                    ".MuiButton-endIcon": {
-                      marginLeft: "auto",
-                    },
-                    [theme.breakpoints.up("md")]: {
-                      height: "52px",
-                    },
-                    [theme.breakpoints.down("md")]: {
-                      ...theme.typography.body2,
-                    },
+        <Stack gap={2.5}>
+          <Stack direction="row" justifyContent="space-between" gap={2}>
+            <AddressSearch
+              address={searchedAddress}
+              placeholder="Filter by address or ENS"
+              onChange={setAddressSearch}
+              addressLength="medium"
+              ButtonProps={{
+                variant: "outlined",
+                color: "secondary",
+                size: "large",
+                sx: {
+                  maxWidth: "420px",
+                  flex: 1,
+                  justifyContent: "flex-start",
+                  ".MuiButton-endIcon": {
+                    marginLeft: "auto",
                   },
-                }}
-              />
-
-              <Button
-                data-cy={"date-picker-button"}
-                variant="outlined"
-                color="secondary"
-                size="large"
-                startIcon={<DateRangeIcon />}
-                onClick={openDatePicker}
-                translate="no"
-                sx={{
+                  [theme.breakpoints.up("md")]: {
+                    height: "52px",
+                  },
                   [theme.breakpoints.down("md")]: {
-                    p: 1,
-                    ".MuiButton-startIcon": { m: 0 },
+                    ...theme.typography.body2,
                   },
-                }}
-              >
-                {!isBelowMd &&
-                  `${format(startDate, "d MMMM yyyy")} - ${format(
-                    endDate,
-                    "d MMMM yyyy"
-                  )}`}
-              </Button>
-              <DatePicker
-                anchorEl={datePickerAnchor}
-                maxDate={dateNow}
-                startDate={startDate}
-                endDate={endDate}
-                onChange={onDateRangeChange}
-                onClose={closeDatePicker}
-              />
-            </Stack>
-            <Stack direction="row" justifyContent="space-between">
-              <Button
-                data-cy={"activity-filter-button"}
-                variant="outlined"
-                color="secondary"
-                endIcon={<OpenIcon open={!!activitySelectionAnchor} />}
-                onClick={openActivitySelection}
-              >
-                Activity Type
-              </Button>
-              <ActivityTypeFilter
-                anchorEl={activitySelectionAnchor}
-                enabledActivities={activeActivityTypes}
-                onChange={onActivityTypesChange}
-                onClose={closeActivitySelection}
-              />
+                },
+              }}
+            />
 
-              <Button
-                data-cy={"network-selection-button"}
-                variant="outlined"
-                color="secondary"
-                endIcon={<OpenIcon open={!!networkSelectionAnchor} />}
-                onClick={openNetworkSelection}
-              >
-                All Networks
-              </Button>
-              <NetworkSelectionFilter
-                open={!!networkSelectionAnchor}
-                anchorEl={networkSelectionAnchor}
-                onClose={closeNetworkSelection}
-              />
-            </Stack>
-          </Stack>
-
-          {isLoading && <LoadingActivityGroup />}
-          {!isLoading && !hasContent && (
-            <Paper
-              elevation={1}
+            <Button
+              data-cy={"date-picker-button"}
+              variant="outlined"
+              color="secondary"
+              size="large"
+              startIcon={<DateRangeIcon />}
+              onClick={openDatePicker}
+              translate="no"
               sx={{
-                px: 4,
-                py: 7,
                 [theme.breakpoints.down("md")]: {
-                  px: 2,
-                  py: 3,
+                  p: 1,
+                  ".MuiButton-startIcon": { m: 0 },
                 },
               }}
             >
-              <Typography
-                data-cy={"no-history-title"}
-                variant={isBelowMd ? "h5" : "h4"}
-                textAlign="center"
-              >
-                No Activity History Available
-              </Typography>
-              <Typography
-                data-cy={"no-history-text"}
-                color="text.secondary"
-                textAlign="center"
-              >
-                Transactions including wrapping tokens and sending streams will
-                appear here.
-              </Typography>
-            </Paper>
-          )}
+              {!isBelowMd &&
+                `${format(startDate, "d MMMM yyyy")} - ${format(
+                  endDate,
+                  "d MMMM yyyy"
+                )}`}
+            </Button>
+            <DatePicker
+              anchorEl={datePickerAnchor}
+              maxDate={dateNow}
+              startDate={startDate}
+              endDate={endDate}
+              onChange={onDateRangeChange}
+              onClose={closeDatePicker}
+            />
+          </Stack>
+          <Stack direction="row" justifyContent="space-between">
+            <Button
+              data-cy={"activity-filter-button"}
+              variant="outlined"
+              color="secondary"
+              endIcon={<OpenIcon open={!!activitySelectionAnchor} />}
+              onClick={openActivitySelection}
+            >
+              Activity Type
+            </Button>
+            <ActivityTypeFilter
+              anchorEl={activitySelectionAnchor}
+              enabledActivities={activeActivityTypes}
+              onChange={onActivityTypesChange}
+              onClose={closeActivitySelection}
+            />
 
-          {!isLoading &&
-            hasContent &&
-            Object.entries(filteredActivitiesGroups).map(
-              ([dateKey, activities]) => (
-                <Box key={dateKey}>
-                  <Typography variant="h6" sx={{ mb: 2 }}>
-                    {format(new Date(dateKey), "MMMM d, yyyy")}
-                  </Typography>
-                  <TableContainer
+            <Button
+              data-cy={"network-selection-button"}
+              variant="outlined"
+              color="secondary"
+              endIcon={<OpenIcon open={!!networkSelectionAnchor} />}
+              onClick={openNetworkSelection}
+            >
+              All Networks
+            </Button>
+            <NetworkSelectionFilter
+              open={!!networkSelectionAnchor}
+              anchorEl={networkSelectionAnchor}
+              onClose={closeNetworkSelection}
+            />
+          </Stack>
+        </Stack>
+
+        {isLoading && <LoadingActivityGroup />}
+        {!isLoading && !hasContent && (
+          <Paper
+            elevation={1}
+            sx={{
+              px: 4,
+              py: 7,
+              [theme.breakpoints.down("md")]: {
+                px: 2,
+                py: 3,
+              },
+            }}
+          >
+            <Typography
+              data-cy={"no-history-title"}
+              variant={isBelowMd ? "h5" : "h4"}
+              textAlign="center"
+            >
+              No Activity History Available
+            </Typography>
+            <Typography
+              data-cy={"no-history-text"}
+              color="text.secondary"
+              textAlign="center"
+            >
+              Transactions including wrapping tokens and sending streams will
+              appear here.
+            </Typography>
+          </Paper>
+        )}
+
+        {!isLoading &&
+          hasContent &&
+          Object.entries(filteredActivitiesGroups).map(
+            ([dateKey, activities]) => (
+              <Box key={dateKey}>
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                  {format(new Date(dateKey), "MMMM d, yyyy")}
+                </Typography>
+                <TableContainer
+                  sx={{
+                    [theme.breakpoints.down("md")]: {
+                      borderLeft: 0,
+                      borderRight: 0,
+                      borderRadius: 0,
+                      boxShadow: "none",
+                      mx: -2,
+                      width: "auto",
+                    },
+                  }}
+                >
+                  <Table
                     sx={{
-                      [theme.breakpoints.down("md")]: {
-                        borderLeft: 0,
-                        borderRight: 0,
-                        borderRadius: 0,
-                        boxShadow: "none",
-                        mx: -2,
-                        width: "auto",
+                      // TODO: Make all table layouts fixed
+                      [theme.breakpoints.up("md")]: {
+                        tableLayout: "fixed",
+                        td: {
+                          "&:nth-of-type(1)": {
+                            width: "30%",
+                          },
+                          "&:nth-of-type(2)": {
+                            width: "30%",
+                          },
+                          "&:nth-of-type(3)": {
+                            width: "30%",
+                          },
+                          "&:nth-of-type(4)": {
+                            width: "140px",
+                          },
+                        },
                       },
                     }}
                   >
-                    <Table
-                      sx={{
-                        // TODO: Make all table layouts fixed
-                        [theme.breakpoints.up("md")]: {
-                          tableLayout: "fixed",
-                          td: {
-                            "&:nth-of-type(1)": {
-                              width: "30%",
-                            },
-                            "&:nth-of-type(2)": {
-                              width: "30%",
-                            },
-                            "&:nth-of-type(3)": {
-                              width: "30%",
-                            },
-                            "&:nth-of-type(4)": {
-                              width: "140px",
-                            },
-                          },
-                        },
-                      }}
-                    >
-                      <TableBody>
-                        {activities.map((activity) => (
-                          <ActivityRow
-                            key={activity.keyEvent.id}
-                            activity={activity}
-                          />
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Box>
-              )
-            )}
-        </Stack>
-      </Container>
-    </SEO>
+                    <TableBody>
+                      {activities.map((activity) => (
+                        <ActivityRow
+                          key={activity.keyEvent.id}
+                          activity={activity}
+                        />
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Box>
+            )
+          )}
+      </Stack>
+    </Container>
   );
 };
 
-export default History;
+export default withStaticSEO(
+  { title: "Activity History | Superfluid" },
+  History
+);

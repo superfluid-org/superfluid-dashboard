@@ -1,5 +1,12 @@
 import { useMediaQuery, useTheme } from "@mui/material";
-import { createContext, FC, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  FC,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 const LayoutContext = createContext<{
   transactionDrawerOpen: boolean;
@@ -8,7 +15,7 @@ const LayoutContext = createContext<{
   setNavigationDrawerOpen: (open: boolean) => void;
 }>(undefined!);
 
-export const LayoutContextProvider: FC = ({ children }) => {
+export const LayoutContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("lg"));
 

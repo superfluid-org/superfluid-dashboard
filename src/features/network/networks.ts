@@ -29,7 +29,7 @@ export type Network = Chain & {
   };
 };
 
-const superfluidRpcUrls = {
+export const superfluidRpcUrls = {
   goerli: "https://rpc-endpoints.superfluid.dev/eth-goerli",
   gnosis: "https://rpc-endpoints.superfluid.dev/xdai-mainnet",
   polygon: "https://rpc-endpoints.superfluid.dev/polygon-mainnet",

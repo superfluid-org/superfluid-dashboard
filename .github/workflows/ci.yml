@@ -2,10 +2,11 @@ name: Dev CI/CD
 
 on:
   pull_request:
-    types: [opened, reopened, ready_for_review, synchronize]
+    types: [ opened, reopened, ready_for_review, synchronize ]
 
 jobs:
   test_setup:
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
@@ -29,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        container: [1,2,3,4,5,6,7]
+        container: [1,2,3,4,5,6,7,8,9,10,11]
     steps:
       - uses: actions/checkout@v2
 
@@ -43,7 +44,10 @@ jobs:
         with:
           parallel: true
           record: true
-          env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }}
+          env: STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }}
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
           CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
+          #https://github.com/cypress-io/github-action/issues/124
+          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+          COMMIT_INFO_SHA: ${{ github.event.pull_request.head.sha }}

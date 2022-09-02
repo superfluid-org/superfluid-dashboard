@@ -31,7 +31,7 @@ export const TransactionListItemAvatar: FC<{
   const bgcolor = getTransactionStatusColor(status);
 
   return (
-    <Avatar sx={{ bgcolor, width: 28, height: 28 }}>
+    <Avatar data-cy={`${status}-tx-status`} sx={{ bgcolor, width: 28, height: 28 }}>
       <Icon fontSize="small" />
     </Avatar>
   );

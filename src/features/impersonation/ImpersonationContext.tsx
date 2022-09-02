@@ -1,8 +1,10 @@
+import { Address } from "@superfluid-finance/sdk-core";
 import { isString } from "lodash";
 import { useRouter } from "next/router";
 import {
   createContext,
   FC,
+  PropsWithChildren,
   useCallback,
   useContext,
   useEffect,
@@ -22,7 +24,7 @@ interface ImpersonationContextValue {
 
 const ImpersonationContext = createContext<ImpersonationContextValue>(null!);
 
-export const ImpersonationProvider: FC = ({ children }) => {
+export const ImpersonationProvider: FC<PropsWithChildren> = ({ children }) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
@@ -54,7 +56,7 @@ export const ImpersonationProvider: FC = ({ children }) => {
   );
 
   const setImpersonatedAddressQueryParam = useCallback(
-    (address) => {
+    (address: Address) => {
       router.replace({
         query: {
           ...router.query,

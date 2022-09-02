@@ -95,6 +95,10 @@ export default memo(function NavigationDrawer() {
           borderTop: 0,
           borderBottom: 0,
         },
+        style: {
+          pointerEvents:
+            isBelowMd && !navigationDrawerOpen ? "none" : "initial",
+        },
       }}
       sx={{ width: menuDrawerWidth }}
       onClose={closeNavigationDrawer}

@@ -2,7 +2,7 @@ import {Given, Then} from "@badeball/cypress-cucumber-preprocessor";
 import {SendPage} from "../../pageObjects/pages/SendPage";
 import {WrapPage} from "../../pageObjects/pages/WrapPage";
 
-Given(/^User fills all stream inputs "([^"]*)" a wallet connected$/, (isConnected:string) => {
+Given(/^User fills all stream inputs "([^"]*)" a wallet connected$/, (isConnected: string) => {
     SendPage.inputStreamTestData(isConnected);
 });
 
@@ -143,6 +143,33 @@ Then(/^The tokens are sorted by amount in the token selection screen$/, () => {
 Given(/^User waits for token balances to load$/, () => {
     SendPage.waitForTokenBalancesToLoad();
 });
-Then(/^User clicks on the address button in the send page$/,  () => {
+Then(/^User clicks on the address button in the send page$/, () => {
     SendPage.clickAddressButton()
+});
+Given(/^User inputs all the details to send "([^"]*)" "([^"]*)" per "([^"]*)" to "([^"]*)"$/, (amount: string, token: string, timeUnit: string, address: string) => {
+    SendPage.inputStreamDetails(amount, token, timeUnit, address)
+});
+Given(/^User starts the stream and the transaction dialogs are visible for "([^"]*)"$/, (network: string) => {
+    SendPage.startStreamAndCheckDialogs(network)
+});
+Given(/^User goes to the token page from the transaction dialog$/, () => {
+    SendPage.goToTokensPageAfterTx()
+});
+Then(/^All the details to send "([^"]*)" "([^"]*)" per "([^"]*)" to "([^"]*)" on "([^"]*)" are set in the fields$/, (amount: string, token: string, timeUnit: string, address: string, network: string) => {
+    SendPage.validateRestoredTransaction(amount, token, timeUnit, address, network)
+});
+Given(/^User cancels the stream if necessary$/, () => {
+    SendPage.cancelStreamIfStillOngoing()
+});
+Given(/^User starts or cancels the stream if necessary$/, () => {
+    SendPage.startOrCancelStreamIfNecessary()
+});
+Given(/^User modifies the stream and the transaction dialogs are visible for "([^"]*)"$/, (network: string) => {
+    SendPage.modifyStreamAnvValidateDialogs(network)
+});
+Given(/^User starts the stream if necessary$/, () => {
+    SendPage.startStreamIfNecessary()
+});
+Given(/^User cancels the stream and the transaction dialogs are visible for "([^"]*)"$/, (network: string) => {
+    SendPage.cancelStreamAndVerifyDialogs(network)
 });

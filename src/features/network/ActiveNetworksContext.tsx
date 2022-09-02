@@ -1,6 +1,7 @@
 import {
   createContext,
   FC,
+  PropsWithChildren,
   useContext,
   useEffect,
   useMemo,
@@ -22,7 +23,7 @@ interface ActiveNetworksContextValue {
 
 const ActiveNetworksContext = createContext<ActiveNetworksContextValue>(null!);
 
-export const ActiveNetworksProvider: FC = ({ children }) => {
+export const ActiveNetworksProvider: FC<PropsWithChildren> = ({ children }) => {
   const { network } = useExpectedNetwork();
   const [testnetMode, setTestnetMode] = useState(false);
 

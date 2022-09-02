@@ -1,4 +1,10 @@
-import { createContext, FC, useContext, useMemo } from "react";
+import {
+  createContext,
+  FC,
+  PropsWithChildren,
+  useContext,
+  useMemo,
+} from "react";
 import { useAccount } from "wagmi";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 
@@ -8,7 +14,7 @@ interface VisibleAddressContextValue {
 
 const VisibleAddressContext = createContext<VisibleAddressContextValue>(null!);
 
-export const VisibleAddressProvider: FC = ({ children }) => {
+export const VisibleAddressProvider: FC<PropsWithChildren> = ({ children }) => {
   const { impersonatedAddress } = useImpersonation();
   const { address: accountAddress } = useAccount();
 
