@@ -4,12 +4,12 @@ import dynamic from "next/dynamic";
 import LIFI from "@lifi/sdk";
 import { Container, useTheme } from "@mui/material";
 import { NextPage } from "next";
-import { Suspense, useMemo } from "react";
+import { useMemo } from "react";
 import { useDisconnect, useSigner, useSwitchNetwork } from "wagmi";
-import SEO from "../components/SEO/SEO";
 import useFeaturedTokens from "../features/bridge/useFeaturedTokens";
 import { ELEVATION1_BG } from "../features/theme/theme";
 import { useConnectButton } from "../features/wallet/ConnectButtonProvider";
+import withStaticSEO from "../components/SEO/withStaticSEO";
 
 const LiFiWidgetDynamic = dynamic(
   () => import("@lifi/widget").then((module) => module.LiFiWidget) as any,
@@ -21,7 +21,7 @@ const LiFiWidgetDynamic = dynamic(
 const Bridge: NextPage = () => {
   const theme = useTheme();
 
-  const { data: signer, refetch: fetchSigner, isSuccess } = useSigner();
+  const { data: signer, refetch: fetchSigner } = useSigner();
   const { disconnectAsync } = useDisconnect();
   const { switchNetworkAsync } = useSwitchNetwork();
   const { openConnectModal } = useConnectButton();
@@ -78,29 +78,27 @@ const Bridge: NextPage = () => {
   );
 
   return (
-    <SEO title="Bridge | Superfluid">
-      <Container
-        maxWidth="lg"
-        sx={{
-          ".MuiScopedCssBaseline-root, #widget-header, .MuiAppBar-root": {
-            background: "none",
-          },
-          ".MuiLoadingButton-root": {
-            color: "#fff",
-            textTransform: "initial",
-            padding: "14px 24px",
-            fontSize: "16px",
-            backgroundColor: theme.palette.primary.main,
-          },
-          ".MuiButton-sizeMedium": {
-            letterSpacing: "0.17px",
-          },
-        }}
-      >
-        {isSuccess && <LiFiWidgetDynamic config={widgetConfig} />}
-      </Container>
-    </SEO>
+    <Container
+      maxWidth="lg"
+      sx={{
+        ".MuiScopedCssBaseline-root, #widget-header, .MuiAppBar-root": {
+          background: "none",
+        },
+        ".MuiLoadingButton-root": {
+          color: "#fff",
+          textTransform: "initial",
+          padding: "14px 24px",
+          fontSize: "16px",
+          backgroundColor: theme.palette.primary.main,
+        },
+        ".MuiButton-sizeMedium": {
+          letterSpacing: "0.17px",
+        },
+      }}
+    >
+      <LiFiWidgetDynamic config={widgetConfig} />
+    </Container>
   );
 };
 
-export default Bridge;
+export default withStaticSEO({ title: "Bridge | Superfluid" }, Bridge);
