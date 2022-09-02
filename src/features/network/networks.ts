@@ -84,7 +84,7 @@ export const networkDefinition: {
   kovan: Network;
   gnosis: Network;
   polygon: Network;
-  polygonMumbai: Network
+  polygonMumbai: Network;
   arbitrumRinkeby: Network;
   optimismKovan: Network;
   avalancheFuji: Network;
@@ -181,7 +181,7 @@ export const networkDefinition: {
         name: "Super ETH",
         decimals: 18,
       },
-    }
+    },
   },
   kovan: {
     ...chain.kovan,
@@ -311,7 +311,7 @@ export const networkDefinition: {
         name: "Super MATIC",
         decimals: 18,
       },
-    }
+    },
   },
   arbitrumRinkeby: {
     ...chain.arbitrumRinkeby,
@@ -595,6 +595,7 @@ export const networksBySlug = new Map(networks.map((x) => [x.slugName, x]));
 
 export const mainNetworks = networks.filter((network) => !network.testnet);
 export const testNetworks = networks.filter((network) => network.testnet);
+export const networkIDs = networks.map((network) => network.id);
 
 export const findNetworkByChainId = memoize((chainId: number) =>
   networks.find((network) => network.id === chainId)
