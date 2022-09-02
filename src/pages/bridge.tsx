@@ -21,7 +21,7 @@ const LiFiWidgetDynamic = dynamic(
 const Bridge: NextPage = () => {
   const theme = useTheme();
 
-  const { data: signer, refetch: fetchSigner } = useSigner();
+  const { data: signer, refetch: fetchSigner, isSuccess } = useSigner();
   const { disconnectAsync } = useDisconnect();
   const { switchNetworkAsync } = useSwitchNetwork();
   const { openConnectModal } = useConnectButton();
@@ -97,9 +97,7 @@ const Bridge: NextPage = () => {
           },
         }}
       >
-        <Suspense>
-          <LiFiWidgetDynamic config={widgetConfig} />
-        </Suspense>
+        {isSuccess && <LiFiWidgetDynamic config={widgetConfig} />}
       </Container>
     </SEO>
   );
