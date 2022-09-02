@@ -55,26 +55,24 @@ const TokenListItem: FC<TokenListItemProps> = ({
 
   const { data: _discard, ...underlyingBalanceQuery } =
     rpcApi.useUnderlyingBalanceQuery(
-      skipToken
-      // chainId && accountAddress && isUnderlyingToken
-      //   ? {
-      //       chainId,
-      //       accountAddress,
-      //       tokenAddress: token.address,
-      //     }
-      //   : skipToken
+      chainId && accountAddress && isUnderlyingToken
+        ? {
+            chainId,
+            accountAddress,
+            tokenAddress: token.address,
+          }
+        : skipToken
     );
 
   const { data: _discard2, ...realtimeBalanceQuery } =
     rpcApi.useRealtimeBalanceQuery(
-      skipToken
-      // chainId && accountAddress && isSuperToken
-      //   ? {
-      //       chainId,
-      //       accountAddress,
-      //       tokenAddress: token.address,
-      //     }
-      //   : skipToken
+      chainId && accountAddress && isSuperToken
+        ? {
+            chainId,
+            accountAddress,
+            tokenAddress: token.address,
+          }
+        : skipToken
     );
 
   const checkedBalanceWei = isSuper(token)

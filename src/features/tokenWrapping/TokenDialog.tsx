@@ -43,48 +43,6 @@ import { Network } from "../network/networks";
 import { number } from "yup";
 import { memoize } from "lodash";
 
-interface VirtualListItemProps {
-  token: TokenMinimal;
-  snapshot: AccountTokenSnapshot | undefined;
-  network: Network;
-  visibleAddress: string | undefined;
-  showUpgrade: boolean;
-  style: CSSProperties;
-  onSelect: (token: TokenMinimal) => void;
-}
-
-// const VirtualListItem: FC<VirtualListItemProps> = ({
-//   token,
-//   snapshot,
-//   network,
-//   visibleAddress,
-//   showUpgrade,
-//   style,
-//   onSelect,
-// }) => {
-//   return (
-//     <TokenListItem
-//       token={token}
-//       chainId={network.id}
-//       accountAddress={visibleAddress}
-//       balanceWei={snapshot?.balanceUntilUpdatedAt}
-//       balanceTimestamp={
-//         isSuper(token) ? snapshot?.updatedAtTimestamp : undefined
-//       }
-//       flowRate={isSuper(token) ? snapshot?.totalNetFlowRate : undefined}
-//       showUpgrade={showUpgrade}
-//       onClick={() => onSelect(token)}
-//       // sx={{
-//       //   position: "absolute",
-//       //   top: `${style.top}px`,
-//       //   left: `${style.left}px`,
-//       //   height: `${style.height}px`,
-//       //   width: "100%",
-//       // }}
-//     />
-//   );
-// };
-
 export type TokenSelectionProps = {
   showUpgrade?: boolean;
   tokenPairsQuery: {
@@ -135,14 +93,13 @@ export default memo(function TokenDialog({
 
   const { data: _discard, ...underlyingTokenBalancesQuery } =
     rpcApi.useBalanceOfMulticallQuery(
-      // underlyingTokens.length && visibleAddress
-      //   ? {
-      //       chainId: network.id,
-      //       accountAddress: visibleAddress,
-      //       tokenAddresses: underlyingTokens.map((x) => x.address),
-      //     }
-      //   : skipToken
-      skipToken
+      underlyingTokens.length && visibleAddress
+        ? {
+            chainId: network.id,
+            accountAddress: visibleAddress,
+            tokenAddresses: underlyingTokens.map((x) => x.address),
+          }
+        : skipToken
     );
 
   const underlyingTokenBalances = useMemo(
@@ -152,19 +109,18 @@ export default memo(function TokenDialog({
 
   const { data: _discard2, ...superTokenBalancesQuery } =
     subgraphApi.useAccountTokenSnapshotsQuery(
-      // tokenPairsQuery.data && visibleAddress
-      //   ? {
-      //       chainId: network.id,
-      //       filter: {
-      //         account: visibleAddress,
-      //         token_in: superTokens.map((x) => x.address),
-      //       },
-      //       pagination: {
-      //         take: Infinity,
-      //       },
-      //     }
-      //   : skipToken
-      skipToken
+      tokenPairsQuery.data && visibleAddress
+        ? {
+            chainId: network.id,
+            filter: {
+              account: visibleAddress,
+              token_in: superTokens.map((x) => x.address),
+            },
+            pagination: {
+              take: Infinity,
+            },
+          }
+        : skipToken
     );
 
   const superTokenBalances = useMemo(

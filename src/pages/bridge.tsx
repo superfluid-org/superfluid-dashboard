@@ -8,6 +8,7 @@ import { useDisconnect, useSigner, useSwitchNetwork } from "wagmi";
 import SEO from "../components/SEO/SEO";
 import { useConnectButton } from "../features/wallet/ConnectButtonProvider";
 import { ELEVATION1_BG, FONT_FAMILY } from "../features/theme/theme";
+import LIFI from "@lifi/sdk";
 
 const LiFiWidgetDynamic = dynamic(
   () => import("@lifi/widget").then((module) => module.LiFiWidget) as any,
@@ -23,6 +24,11 @@ const Bridge: NextPage = () => {
   const { disconnectAsync } = useDisconnect();
   const { switchNetworkAsync } = useSwitchNetwork();
   const { openConnectModal } = useConnectButton();
+
+  const lifi = useMemo(() => new LIFI(), []);
+
+
+
 
   const widgetConfig: WidgetConfig = useMemo(
     () => ({
@@ -77,11 +83,12 @@ const Bridge: NextPage = () => {
           ".MuiScopedCssBaseline-root, #widget-header, .MuiAppBar-root": {
             background: "none",
           },
-          ".MuiButton-containedPrimary": {
+          ".MuiLoadingButton-root": {
             color: "#fff",
             textTransform: "initial",
             padding: "14px 24px",
             fontSize: "16px",
+            backgroundColor: theme.palette.primary.main,
           },
           ".MuiButton-sizeMedium": {
             letterSpacing: "0.17px",
