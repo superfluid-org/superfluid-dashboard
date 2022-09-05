@@ -14,11 +14,13 @@ import {
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, memo, useEffect, useMemo } from "react";
 import { tokenSnapshotsDefaultSort } from "../../utils/tokenUtils";
+import { useMinigame } from "../minigame/MinigameContext";
 import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
 import TokenSnapshotRow from "./TokenSnapshotRow";
 import { FetchingStatus } from "./TokenSnapshotTables";
+import { sumBy } from "lodash";
 
 interface TokenSnapshotTableProps {
   address: Address;
@@ -99,13 +101,31 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
     [listedTokensSnapshotsQuery, unlistedTokensSnapshotsQuery]
   );
 
+  const { setCosmetics } = useMinigame();
+
   useEffect(() => {
     fetchingCallback(network.id, {
       isLoading:
         listedTokensSnapshotsQuery.isLoading ||
         unlistedTokensSnapshotsQuery.isLoading,
-      hasContent: tokenSnapshots.length > 0,
+      hasContent: !!tokenSnapshots.length,
     });
+
+    if (tokenSnapshots.length) {
+      const activeStreamCount = sumBy(
+        tokenSnapshots,
+        (x) => x.totalNumberOfActiveStreams
+      );
+      if (activeStreamCount === 2) {
+        setCosmetics(1);
+      } else if (activeStreamCount >= 3 && activeStreamCount <= 4) {
+        setCosmetics(2);
+      } else if (activeStreamCount >= 5 && activeStreamCount <= 9) {
+        setCosmetics(3);
+      } else if (activeStreamCount > 9) {
+        setCosmetics(4);
+      }
+    }
   }, [
     network.id,
     listedTokensSnapshotsQuery.isLoading,

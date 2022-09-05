@@ -8,6 +8,7 @@ import { ImpersonationProvider } from "../features/impersonation/ImpersonationCo
 import IntercomProvider from "../features/intercom/IntercomProvider";
 import Layout from "../features/layout/Layout";
 import { LayoutContextProvider } from "../features/layout/LayoutContext";
+import { MinigameProvider } from "../features/minigame/MinigameContext";
 import { ActiveNetworksProvider } from "../features/network/ActiveNetworksContext";
 import { ExpectedNetworkProvider } from "../features/network/ExpectedNetworkContext";
 import ReduxProvider from "../features/redux/ReduxProvider";
@@ -60,12 +61,14 @@ export default function MyApp(props: MyAppProps) {
                                 <TransactionRestorationContextProvider>
                                   <LayoutContextProvider>
                                     <IntercomProvider>
+                                      <MonitorContext />
                                       <Layout>
-                                        <MonitorContext />
-                                        <Component
-                                          key={`${network.slugName}`}
-                                          {...pageProps}
-                                        />
+                                        <MinigameProvider>
+                                          <Component
+                                            key={`${network.slugName}`}
+                                            {...pageProps}
+                                          />
+                                        </MinigameProvider>
                                       </Layout>
                                     </IntercomProvider>
                                   </LayoutContextProvider>

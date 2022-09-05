@@ -6,11 +6,10 @@ import {
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FC, useCallback, useMemo, useRef, useState } from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { useActiveNetworks } from "../network/ActiveNetworksContext";
 import NetworkSelectionFilter from "../network/NetworkSelectionFilter";
-import { subgraphApi } from "../redux/store";
 import TokenSnapshotEmptyCard from "./TokenSnapshotEmptyCard";
 import TokenSnapshotLoadingTable from "./TokenSnapshotLoadingTable";
 import TokenSnapshotTable from "./TokenSnapshotTable";
@@ -111,7 +110,6 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
             fetchingCallback={fetchingCallback}
           />
         ))}
-
         {isLoading && <TokenSnapshotLoadingTable />}
       </Stack>
     </>
