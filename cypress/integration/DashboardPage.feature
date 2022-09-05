@@ -34,8 +34,8 @@ Feature: Dashboard Page test cases
     And User changes the visible networks to "testnet"
     And User opens the network selection dropdown
     And User waits for balances to load
-    And User clicks on the "ropsten" toggle
-    Then "ropsten" balances are not visible
+    And User clicks on the "polygon-mumbai" toggle
+    Then "polygon-mumbai" balances are not visible
 
   @flaky
   Scenario: Flow values ,cancel buttons and wrong network warning for an account with ongoing streams

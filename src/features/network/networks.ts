@@ -30,17 +30,12 @@ export type Network = Chain & {
 };
 
 export const superfluidRpcUrls = {
-  ropsten: "https://rpc-endpoints.superfluid.dev/eth-ropsten",
-  rinkeby: "https://rpc-endpoints.superfluid.dev/eth-rinkeby",
   goerli: "https://rpc-endpoints.superfluid.dev/eth-goerli",
-  kovan: "https://rpc-endpoints.superfluid.dev/eth-kovan",
   gnosis: "https://rpc-endpoints.superfluid.dev/xdai-mainnet",
   polygon: "https://rpc-endpoints.superfluid.dev/polygon-mainnet",
   polygonMumbai: "https://rpc-endpoints.superfluid.dev/polygon-mumbai",
   arbitrum: "https://rpc-endpoints.superfluid.dev/arbitrum-one",
-  arbitrumRinkeby: "https://rpc-endpoints.superfluid.dev/arbitrum-rinkeby",
   optimism: "https://rpc-endpoints.superfluid.dev/optimism-mainnet",
-  optimismKovan: "https://rpc-endpoints.superfluid.dev/optimism-kovan",
   avalancheFuji: "https://rpc-endpoints.superfluid.dev/avalanche-fuji",
   avalancheC: "https://rpc-endpoints.superfluid.dev/avalanche-c",
   bnbSmartChain: "https://bsc-dataseed1.binance.org",
@@ -78,81 +73,16 @@ const blockExplorers = {
 };
 
 export const networkDefinition: {
-  ropsten: Network;
-  rinkeby: Network;
   goerli: Network;
-  kovan: Network;
   gnosis: Network;
   polygon: Network;
   polygonMumbai: Network;
-  arbitrumRinkeby: Network;
-  optimismKovan: Network;
   avalancheFuji: Network;
   optimism: Network;
   arbitrum: Network;
   avalancheC: Network;
   bsc: Network;
 } = {
-  ropsten: {
-    ...chain.ropsten,
-    blockExplorers: ensureDefined(chain.ropsten.blockExplorers),
-    slugName: "ropsten",
-    v1ShortName: "ropsten",
-    bufferTimeInMinutes: 60,
-    color: "#29b6af",
-    rpcUrls: {
-      ...chain.ropsten.rpcUrls,
-      superfluid: superfluidRpcUrls.ropsten,
-    },
-    subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-ropsten",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://ropsten.etherscan.io/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://ropsten.etherscan.io/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.ropsten.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        name: "Super ETH",
-        address: "0x6fc99f5591b51583ba15a8c2572408257a1d2797",
-        decimals: 18,
-      },
-    },
-  },
-  rinkeby: {
-    ...chain.rinkeby,
-    blockExplorers: ensureDefined(chain.rinkeby.blockExplorers),
-    slugName: "rinkeby",
-    v1ShortName: "rinkeby",
-    color: "#ff4a8d",
-    bufferTimeInMinutes: 60,
-    rpcUrls: {
-      ...chain.rinkeby.rpcUrls,
-      superfluid: superfluidRpcUrls.rinkeby,
-    },
-    subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-rinkeby",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://rinkeby.etherscan.io/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://rinkeby.etherscan.io/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.rinkeby.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0xa623b2dd931c5162b7a0b25852f4024db48bb1a0",
-        name: "Super ETH",
-        decimals: 18,
-      },
-    },
-  },
   goerli: {
     ...chain.goerli,
     blockExplorers: ensureDefined(chain.goerli.blockExplorers),
@@ -178,36 +108,6 @@ export const networkDefinition: {
         type: TokenType.NativeAssetSuperToken,
         symbol: "ETHx",
         address: "0x5943f705abb6834cad767e6e4bb258bc48d9c947",
-        name: "Super ETH",
-        decimals: 18,
-      },
-    },
-  },
-  kovan: {
-    ...chain.kovan,
-    blockExplorers: ensureDefined(chain.kovan.blockExplorers),
-    slugName: "kovan",
-    v1ShortName: "kovan",
-    bufferTimeInMinutes: 60,
-    color: "#f6c343",
-    rpcUrls: {
-      ...chain.kovan.rpcUrls,
-      superfluid: superfluidRpcUrls.kovan,
-    },
-    subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-kovan",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://kovan.etherscan.io/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://kovan.etherscan.io/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.kovan.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0xdd5462a7db7856c9128bc77bd65c2919ee23c6e1",
         name: "Super ETH",
         decimals: 18,
       },
@@ -309,66 +209,6 @@ export const networkDefinition: {
         symbol: "MATICx",
         address: "0x96b82b65acf7072efeb00502f45757f254c2a0d4",
         name: "Super MATIC",
-        decimals: 18,
-      },
-    },
-  },
-  arbitrumRinkeby: {
-    ...chain.arbitrumRinkeby,
-    blockExplorers: ensureDefined(chain.arbitrumRinkeby.blockExplorers),
-    slugName: "arbitrum-rinkeby",
-    v1ShortName: "arbitrum-rinkeby",
-    bufferTimeInMinutes: 60,
-    color: "#29b6af",
-    rpcUrls: {
-      ...chain.arbitrumRinkeby.rpcUrls,
-      superfluid: superfluidRpcUrls.arbitrumRinkeby,
-    },
-    subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-rinkeby",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://rinkeby-explorer.arbitrum.io/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://rinkeby-explorer.arbitrum.io/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.arbitrumRinkeby.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0xbf7bcce8d60a9c3f6bfaec9346aa85b9f781a4e9",
-        name: "Super ETH",
-        decimals: 18,
-      },
-    },
-  },
-  optimismKovan: {
-    ...chain.optimismKovan,
-    blockExplorers: ensureDefined(chain.optimismKovan.blockExplorers),
-    slugName: "optimism-kovan",
-    v1ShortName: "optimism-kovan",
-    bufferTimeInMinutes: 60,
-    color: "#8b45b6",
-    rpcUrls: {
-      ...chain.optimismKovan.rpcUrls,
-      superfluid: superfluidRpcUrls.optimismKovan,
-    },
-    subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-kovan",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://kovan-optimistic.etherscan.io/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://kovan-optimistic.etherscan.io/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.optimismKovan.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0xe72f289584eda2be69cfe487f4638f09bac920db",
-        name: "Super ETH",
         decimals: 18,
       },
     },
@@ -557,15 +397,10 @@ export const networkDefinition: {
 };
 
 export const networks: Network[] = [
-  networkDefinition.ropsten,
-  networkDefinition.rinkeby,
   networkDefinition.goerli,
-  networkDefinition.kovan,
   networkDefinition.gnosis,
   networkDefinition.polygon,
   networkDefinition.polygonMumbai,
-  networkDefinition.arbitrumRinkeby,
-  networkDefinition.optimismKovan,
   networkDefinition.avalancheFuji,
   networkDefinition.optimism,
   networkDefinition.arbitrum,
