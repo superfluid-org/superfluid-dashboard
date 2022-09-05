@@ -2333,15 +2333,19 @@
     superstruct "^0.14.2"
     tweetnacl "^1.0.3"
 
-"@superfluid-finance/sdk-core@0.5.4":
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-core/-/sdk-core-0.5.4.tgz#db3e6fde0786051b1eee91b6f6937cc01078eb6a"
-  integrity sha512-VoJsH/i37Y1b8Z/xWQQVkLcNjLkcoLjPeVav5Z3iblnv+L7CsaqNZ+55CD1+aUPypNfplD0CxOcddRQRGbh3BQ==
+"@superfluid-finance/metadata@git+https://github.com/superfluid-finance/metadata.git":
+  version "1.1.0"
+  resolved "git+https://github.com/superfluid-finance/metadata.git#953ad5b6846021122df2c9e8d64e50be6693f4e3"
+
+"@superfluid-finance/sdk-core@^0.5.5":
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-core/-/sdk-core-0.5.5.tgz#4a7085bec68f1403312cbfa7e9b9afa8f78b2604"
+  integrity sha512-r38j2ps4/wdmCNcoCxSVBriQ1TNzegJTs88xXrHJkgPj88zGApjAGjb+6n5My5Vt7HHQiXxSGUptk6lbp5i/hg==
   dependencies:
+    "@superfluid-finance/metadata" "git+https://github.com/superfluid-finance/metadata.git"
     browserify "^17.0.0"
     graphql-request "^4.3.0"
     lodash "^4.17.21"
-    serialize-error "8.1.0"
     tsify "^5.0.4"
 
 "@superfluid-finance/sdk-redux@0.3.1-dev.6cf4191.0":
@@ -8475,13 +8479,6 @@ semver@~5.4.1:
   version "5.4.1"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.4.1.tgz#e059c09d8571f0540823733433505d3a2f00b18e"
   integrity sha512-WfG/X9+oATh81XtllIo/I8gOiY9EXRdv1cQdyykeXK17YcUW3EXUAi2To4pcH6nZtJPr7ZOpM5OMyWJZm+8Rsg==
-
-serialize-error@8.1.0:
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/serialize-error/-/serialize-error-8.1.0.tgz#3a069970c712f78634942ddd50fbbc0eaebe2f67"
-  integrity sha512-3NnuWfM6vBYoy5gZFvHiYsVbafvI9vZv/+jlIigFn4oP4zjNPK3LhcY0xSCgeb1a5L8jO71Mit9LlNoi2UfDDQ==
-  dependencies:
-    type-fest "^0.20.2"
 
 set-blocking@^2.0.0, set-blocking@~2.0.0:
   version "2.0.0"
