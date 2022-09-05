@@ -1,5 +1,6 @@
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import { AppProps } from "next/app";
+import Head from "next/head";
 import { useEffect } from "react";
 import { hotjar } from "react-hotjar";
 import MonitorContext from "../components/MonitorContext/MonitorContext";
@@ -45,6 +46,9 @@ export default function MyApp(props: MyAppProps) {
   return (
     <NextThemesProvider>
       <CacheProvider value={emotionCache}>
+        <Head>
+          <meta name="viewport" content="initial-scale=1, width=device-width" />
+        </Head>
         <WagmiManager>
           <AutoConnectProvider>
             <ReduxProvider>
