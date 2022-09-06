@@ -11,7 +11,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { FC, memo, MouseEvent, useState } from "react";
+import { FC, memo, MouseEvent, useEffect, useState } from "react";
 import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { useExpectedNetwork } from "./ExpectedNetworkContext";
@@ -53,6 +53,10 @@ export default memo(function SelectNetwork() {
 
   const { network: selectedNetwork, setExpectedNetwork: setSelectedNetwork } =
     useExpectedNetwork();
+
+  useEffect(() => {
+    setShowTestnets(!!selectedNetwork.testnet);
+  }, [selectedNetwork]);
 
   const handleOpen = (event: MouseEvent<HTMLButtonElement>) =>
     setAnchorEl(event.currentTarget);
