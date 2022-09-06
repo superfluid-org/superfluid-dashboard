@@ -18,6 +18,8 @@ export default forwardRef<HTMLIFrameElement>(function MinigameContainer(
         width: "100%",
       }}
       src={getUrl().toString()}
+      allowFullScreen={true}
+      allowTransparency={true}
     />
   );
 });
