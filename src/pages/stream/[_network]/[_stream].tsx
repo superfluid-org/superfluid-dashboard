@@ -430,7 +430,7 @@ const StreamPageContent: FC<{
   // TODO: This container max width should be configured in theme. Something between small and medium
   return (
     <SEO ogUrl={urlToShare}>
-      {isPlaying ? (
+      {isAllowedToPlay && isPlaying ? (
         <Minigame />
       ) : (
         <Container maxWidth="lg">
