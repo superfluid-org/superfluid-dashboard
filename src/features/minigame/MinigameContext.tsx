@@ -11,7 +11,7 @@ import { useAccount } from "wagmi";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 
 const MINIGAME_BASE_URL =
-  "http://superfluid-runner-game.s3-website.eu-west-2.amazonaws.com/";
+  "https://superfluid-runner.netlify.app/";
 
 type MinigameCosmetics = 0 | 1 | 2 | 3 | 4;
 type MinigameContextValue = {
