@@ -1,4 +1,4 @@
-import { configureStore, Dispatch } from "@reduxjs/toolkit";
+import { configureStore, Dispatch, isRejectedWithValue, Middleware, MiddlewareAPI } from "@reduxjs/toolkit";
 import {
   allRpcEndpoints,
   allSubgraphEndpoints,
@@ -92,6 +92,19 @@ const networkPreferencesPersistedReducer = persistReducer(
 
 const sentryReduxEnhancer = Sentry.createReduxEnhancer();
 
+export const rtkQueryErrorLogger: Middleware =
+  (api: MiddlewareAPI) => (next) => (action) => {
+    // RTK Query uses `createAsyncThunk` from redux-toolkit under the hood, so we're able to utilize these matchers!
+    if (isRejectedWithValue(action)) {
+      console.warn('We got a rejected action!')
+      console.log({
+        action
+      })
+    }
+
+    return next(action)
+  }
+
 export const reduxStore = configureStore({
   reducer: {
     [rpcApi.reducerPath]: rpcApi.reducer,
@@ -116,7 +129,8 @@ export const reduxStore = configureStore({
       .concat(subgraphApi.middleware)
       .concat(assetApiSlice.middleware)
       .concat(ensApi.middleware)
-      .concat(gasApi.middleware),
+      .concat(gasApi.middleware)
+      .concat(rtkQueryErrorLogger),
   enhancers: [sentryReduxEnhancer],
 });
 
