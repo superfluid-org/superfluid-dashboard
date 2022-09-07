@@ -506,7 +506,7 @@ export default memo(function SendCard() {
                     transactionExtraData: {
                       restoration: restoration,
                     },
-                    overrides: await getTransactionOverrides(network),
+                    overrides: await getTransactionOverrides("Create Stream", network),
                   })
                     .unwrap()
                     .then(() => resetForm());
@@ -592,7 +592,7 @@ export default memo(function SendCard() {
                       transactionExtraData: {
                         restoration: restoration,
                       },
-                      overrides: await getTransactionOverrides(network),
+                      overrides: await getTransactionOverrides("Update Stream", network),
                     })
                       .unwrap()
                       .then(() => resetForm());
@@ -646,7 +646,7 @@ export default memo(function SendCard() {
                       chainId: network.id,
                       userDataBytes: undefined,
                       waitForConfirmation: false,
-                      overrides: await getTransactionOverrides(network),
+                      overrides: await getTransactionOverrides("Close Stream", network),
                     })
                       .unwrap()
                       .then(() => resetForm());

@@ -1,6 +1,7 @@
 import {
   TrackedTransaction,
   TransactionInfo,
+  TransactionTitle,
   transactionTrackerSelectors,
 } from "@superfluid-finance/sdk-redux";
 import { Overrides, Signer } from "ethers";
@@ -20,7 +21,7 @@ import { useAutoConnect } from "../autoConnect/AutoConnect";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { Network } from "../network/networks";
-import { transactionTracker, useAppSelector } from "../redux/store";
+import { useAppSelector } from "../redux/store";
 import { useConnectButton } from "../wallet/ConnectButtonProvider";
 import { TransactionDialog } from "./TransactionDialog";
 
@@ -40,7 +41,7 @@ interface TransactionBoundaryContextValue {
   setDialogLoadingInfo: (children: ReactNode) => void;
   setDialogSuccessActions: (children: ReactNode) => void;
   mutationResult: MutationResult<TransactionInfo>;
-  getOverrides: () => Promise<Overrides>;
+  getOverrides: (transactionTitle: TransactionTitle) => Promise<Overrides>;
   transaction: TrackedTransaction | undefined;
 }
 
@@ -103,7 +104,7 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
       setDialogLoadingInfo,
       setDialogSuccessActions,
       mutationResult,
-      getOverrides: () => getTransactionOverrides(expectedNetwork),
+      getOverrides: (transactionTitle: TransactionTitle) => getTransactionOverrides(transactionTitle, expectedNetwork),
       transaction: trackedTransaction,
     }),
     [

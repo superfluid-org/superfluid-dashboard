@@ -295,7 +295,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                             superTokenAddress: subscription.token,
                             userDataBytes: undefined,
                             waitForConfirmation: false,
-                            overrides: await getTransactionOverrides(network),
+                            overrides: await getTransactionOverrides("Approve Index Subscription", network),
                           });
                         }}
                       >
@@ -378,7 +378,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                             superTokenAddress: subscription.token,
                             userDataBytes: undefined,
                             waitForConfirmation: false,
-                            overrides: await getTransactionOverrides(network),
+                            overrides: await getTransactionOverrides("Revoke Index Subscription", network),
                           });
                         }}
                       >

@@ -43,10 +43,8 @@ const underlyingIbAlluoTokenOverrides = [
   "0xc677b0918a96ad258a68785c2a3955428dea7e50",
   // StIbAlluoBTC
   "0xf272ff86c86529504f0d074b210e95fc4cfcdce2",
-
   // StIbAlluoEUR
   "0xc9d8556645853c465d1d5e7d2c81a0031f0b8a92",
-
   // StIbAlluoUSD
   "0xc2dbaaea2efa47ebda3e572aa0e55b742e408bf6",
 ];
@@ -62,7 +60,6 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
   const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useLayoutContext();
   const getTransactionOverrides = useGetTransactionOverrides();
-  const { connector: activeConnector } = useAccount();
 
   const {
     watch,
@@ -418,7 +415,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                     transactionExtraData: {
                       restoration,
                     },
-                    overrides: await getTransactionOverrides(network),
+                    overrides: await getTransactionOverrides("Approve Allowance", network),
                   })
                     .unwrap()
                     .then(() => setTransactionDrawerOpen(true));
@@ -459,13 +456,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                   amountWei: amountWei.toString(),
                 };
 
-                const overrides = await getTransactionOverrides(network);
-
-                // In Gnosis Safe, Ether's estimateGas is flaky for native assets.
-                const isGnosisSafe = activeConnector?.id === "safe";
-                const isNativeAssetSuperToken =
-                  formData.tokenPair.underlyingTokenAddress ===
-                  NATIVE_ASSET_ADDRESS;
+                const overrides = await getTransactionOverrides("Upgrade to Super Token", network);
 
                 // Temp custom override for "IbAlluo" tokens on polygon
                 // TODO: Find a better solution
@@ -476,10 +467,6 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                   )
                 ) {
                   overrides.gasLimit = 200_000;
-                }
-
-                if (isGnosisSafe && isNativeAssetSuperToken) {
-                  overrides.gasLimit = 500_000;
                 }
 
                 setDialogLoadingInfo(

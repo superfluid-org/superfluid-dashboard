@@ -289,7 +289,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({
                 amountWei: parseEther(formData.amountDecimal).toString(),
               };
 
-              const overrides = await getTransactionOverrides(network);
+              const overrides = await getTransactionOverrides("Downgrade from Super Token", network);
 
               // Fix for Gnosis Safe "cannot estimate gas" issue when downgrading native asset super tokens: https://github.com/superfluid-finance/superfluid-dashboard/issues/101
               const isGnosisSafe = activeConnector?.id === "safe";

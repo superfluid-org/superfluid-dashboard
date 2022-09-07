@@ -48,7 +48,7 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
       superTokenAddress: stream.token,
       userDataBytes: undefined,
       waitForConfirmation: false,
-      overrides: await getTransactionOverrides(network),
+      overrides: await getTransactionOverrides("Close Stream", network),
     }).unwrap();
   };
 
