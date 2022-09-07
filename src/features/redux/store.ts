@@ -31,6 +31,7 @@ import { adHocMulticallEndpoints } from "./endpoints/adHocMulticallEndpoints";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
 import { setupListeners } from "@reduxjs/toolkit/query";
+import * as Sentry from "@sentry/react";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({
@@ -89,6 +90,8 @@ const networkPreferencesPersistedReducer = persistReducer(
   networkPreferencesSlice.reducer
 );
 
+const sentryReduxEnhancer = Sentry.createReduxEnhancer();
+
 export const reduxStore = configureStore({
   reducer: {
     [rpcApi.reducerPath]: rpcApi.reducer,
@@ -114,6 +117,7 @@ export const reduxStore = configureStore({
       .concat(assetApiSlice.middleware)
       .concat(ensApi.middleware)
       .concat(gasApi.middleware),
+  enhancers: [sentryReduxEnhancer],
 });
 
 export const reduxPersistor = persistStore(reduxStore);
