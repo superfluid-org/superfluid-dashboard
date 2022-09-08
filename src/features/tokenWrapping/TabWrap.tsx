@@ -461,12 +461,6 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
 
                 const overrides = await getTransactionOverrides(network);
 
-                // In Gnosis Safe, Ether's estimateGas is flaky for native assets.
-                const isGnosisSafe = activeConnector?.id === "safe";
-                const isNativeAssetSuperToken =
-                  formData.tokenPair.underlyingTokenAddress ===
-                  NATIVE_ASSET_ADDRESS;
-
                 // Temp custom override for "IbAlluo" tokens on polygon
                 // TODO: Find a better solution
                 if (
@@ -476,10 +470,6 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                   )
                 ) {
                   overrides.gasLimit = 200_000;
-                }
-
-                if (isGnosisSafe && isNativeAssetSuperToken) {
-                  overrides.gasLimit = 500_000;
                 }
 
                 setDialogLoadingInfo(
