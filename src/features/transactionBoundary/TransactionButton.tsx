@@ -75,8 +75,7 @@ export const TransactionButton: FC<{
         disabled={!switchNetwork}
         onClick={() => switchNetwork?.()}
       >
-        <span>Change Network to</span>{" "}
-        <span translate="no">{expectedNetwork.name}</span>
+        <span translate="no">Change Network to {expectedNetwork.name}</span>
       </Button>
     );
   }

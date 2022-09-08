@@ -2337,10 +2337,10 @@
   version "1.1.0"
   resolved "git+https://github.com/superfluid-finance/metadata.git#953ad5b6846021122df2c9e8d64e50be6693f4e3"
 
-"@superfluid-finance/sdk-core@^0.5.5":
-  version "0.5.5"
-  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-core/-/sdk-core-0.5.5.tgz#4a7085bec68f1403312cbfa7e9b9afa8f78b2604"
-  integrity sha512-r38j2ps4/wdmCNcoCxSVBriQ1TNzegJTs88xXrHJkgPj88zGApjAGjb+6n5My5Vt7HHQiXxSGUptk6lbp5i/hg==
+"@superfluid-finance/sdk-core@^0.5.6":
+  version "0.5.6"
+  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-core/-/sdk-core-0.5.6.tgz#ab8d23cd621cd9ca64cb1e6f257aff1306bef8c5"
+  integrity sha512-PeaIgGu/hcM/fnSZwAGOT8BlRxH/RnLxpaC7yhsTjFZXIGIhJYIEjbUHNWVpgwKqOTX5+JTnesLwIEQdNUF0wA==
   dependencies:
     "@superfluid-finance/metadata" "git+https://github.com/superfluid-finance/metadata.git"
     browserify "^17.0.0"
