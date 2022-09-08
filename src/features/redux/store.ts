@@ -32,6 +32,7 @@ import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import * as Sentry from "@sentry/react";
+import { deserializeError } from "serialize-error";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({
@@ -95,11 +96,17 @@ export const rtkQueryErrorLogger: Middleware =
     if (isRejected(action)) {
       const { error } = action;
       if (error) {
+        console.log({
+          error
+        })
         // "aborted" & "condition" inspired by: https://github.com/reduxjs/redux-toolkit/blob/64a30d83384d77bcbc59231fa32aa2f1acd67020/packages/toolkit/src/createAsyncThunk.ts#L521
         const aborted = error?.name === 'AbortError';
         const condition = error?.name === 'ConditionError';
         if (!aborted && !condition) {
-          Sentry.captureException(error);
+          console.log({
+            error
+          })
+          Sentry.captureException(deserializeError(error));
         }
       }
     }
