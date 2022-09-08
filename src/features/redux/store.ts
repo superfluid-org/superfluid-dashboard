@@ -108,7 +108,14 @@ export const sentryErrorLogger: Middleware =
         if (!aborted && !condition) {
           try {
             const deserializedError = deserializeError(error); // We need to deserialize the error because RTK has already turned it into a "SerializedError" here. We prefer the deserialized error because Sentry works a lot better with an Error object.
-            Sentry.captureException(deserializedError);
+            Sentry.captureException(deserializedError, (scope) => {
+              if (error.code) {
+                return scope.setTransactionName(
+                  `${deserializeError} (${error.code})`
+                );
+              }
+              return scope;
+            });
           } catch (e) {
             Sentry.captureException(e); // If deserialization failed, let's not break the Redux middleware chain.
           }
@@ -138,7 +145,7 @@ export const reduxStore = configureStore({
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER], // Ignore redux-persist actions: https://stackoverflow.com/a/62610422
       },
     })
-      .concat(sentryErrorLogger)
+      .prepend(sentryErrorLogger)
       .concat(rpcApi.middleware)
       .concat(subgraphApi.middleware)
       .concat(assetApiSlice.middleware)
