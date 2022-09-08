@@ -1,4 +1,4 @@
-import { configureStore, Dispatch, isRejectedWithValue, Middleware, MiddlewareAPI } from "@reduxjs/toolkit";
+import { configureStore, Dispatch, isRejected, Middleware, MiddlewareAPI } from "@reduxjs/toolkit";
 import {
   allRpcEndpoints,
   allSubgraphEndpoints,
@@ -90,16 +90,18 @@ const networkPreferencesPersistedReducer = persistReducer(
   networkPreferencesSlice.reducer
 );
 
-const sentryReduxEnhancer = Sentry.createReduxEnhancer();
-
 export const rtkQueryErrorLogger: Middleware =
   (api: MiddlewareAPI) => (next) => (action) => {
-    // RTK Query uses `createAsyncThunk` from redux-toolkit under the hood, so we're able to utilize these matchers!
-    if (isRejectedWithValue(action)) {
-      console.warn('We got a rejected action!')
-      console.log({
-        action
-      })
+    if (isRejected(action)) {
+      const { error } = action;
+      if (error) {
+        // "aborted" & "condition" inspired by: https://github.com/reduxjs/redux-toolkit/blob/64a30d83384d77bcbc59231fa32aa2f1acd67020/packages/toolkit/src/createAsyncThunk.ts#L521
+        const aborted = error?.name === 'AbortError';
+        const condition = error?.name === 'ConditionError';
+        if (!aborted && !condition) {
+          Sentry.captureException(error);
+        }
+      }
     }
 
     return next(action)
@@ -125,13 +127,12 @@ export const reduxStore = configureStore({
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER], // Ignore redux-persist actions: https://stackoverflow.com/a/62610422
       },
     })
+      .concat(rtkQueryErrorLogger)
       .concat(rpcApi.middleware)
       .concat(subgraphApi.middleware)
       .concat(assetApiSlice.middleware)
       .concat(ensApi.middleware)
       .concat(gasApi.middleware)
-      .concat(rtkQueryErrorLogger),
-  enhancers: [sentryReduxEnhancer],
 });
 
 export const reduxPersistor = persistStore(reduxStore);
