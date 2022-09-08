@@ -132,13 +132,6 @@ export default memo(function SendCard() {
   );
 
   const [flowCreateTrigger, flowCreateResult] = rpcApi.useFlowCreateMutation();
-  useEffect(() => {
-    if () {
-
-    }
-  }, [flowCreateResult]);
-
-
   const [flowUpdateTrigger, flowUpdateResult] = rpcApi.useFlowUpdateMutation();
   const [flowDeleteTrigger, flowDeleteResult] = rpcApi.useFlowDeleteMutation();
 
