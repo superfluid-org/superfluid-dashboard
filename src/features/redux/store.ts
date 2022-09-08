@@ -108,14 +108,7 @@ export const sentryErrorLogger: Middleware =
         if (!aborted && !condition) {
           try {
             const deserializedError = deserializeError(error); // We need to deserialize the error because RTK has already turned it into a "SerializedError" here. We prefer the deserialized error because Sentry works a lot better with an Error object.
-            Sentry.captureException(deserializedError, (scope) => {
-              if (error.code) {
-                return scope.setTransactionName(
-                  `${deserializeError} (${error.code})`
-                );
-              }
-              return scope;
-            });
+            Sentry.captureException(deserializedError);
           } catch (e) {
             Sentry.captureException(e); // If deserialization failed, let's not break the Redux middleware chain.
           }
