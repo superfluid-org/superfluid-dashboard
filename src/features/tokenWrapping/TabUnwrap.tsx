@@ -30,9 +30,7 @@ interface TabUnwrapProps {
   onSwitchMode: () => void;
 }
 
-export const TabUnwrap: FC<TabUnwrapProps> = ({
-  onSwitchMode,
-}) => {
+export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
@@ -72,8 +70,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({
     tokenPair,
   });
 
-  const [unwrapTrigger, unwrapResult] =
-    rpcApi.useSuperTokenDowngradeMutation();
+  const [unwrapTrigger, unwrapResult] = rpcApi.useSuperTokenDowngradeMutation();
   const isDowngradeDisabled =
     !superToken ||
     !underlyingToken ||
@@ -320,9 +317,12 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({
                   restoration,
                 },
                 overrides,
-              })
-                .unwrap()
-                .then(() => resetForm());
+              }).then((result) => {
+                const isSuccess = "data" in result;
+                if (isSuccess) {
+                  resetForm();
+                }
+              });
             }}
           >
             Unwrap
@@ -339,8 +339,13 @@ const UnwrapPreview: FC<{
   underlyingTokenSymbol: string;
 }> = ({ amountWei, superTokenSymbol, underlyingTokenSymbol }) => {
   return (
-    <Typography data-cy={"unwrap-message"} variant="h5" color="text.secondary" translate="yes">
-      You are unwrapping {" "}
+    <Typography
+      data-cy={"unwrap-message"}
+      variant="h5"
+      color="text.secondary"
+      translate="yes"
+    >
+      You are unwrapping{" "}
       <span translate="no">
         {formatEther(amountWei)} {superTokenSymbol}
       </span>{" "}

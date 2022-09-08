@@ -1,4 +1,10 @@
-import { configureStore, Dispatch, isRejected, Middleware, MiddlewareAPI } from "@reduxjs/toolkit";
+import {
+  configureStore,
+  Dispatch,
+  isRejected,
+  Middleware,
+  MiddlewareAPI,
+} from "@reduxjs/toolkit";
 import {
   allRpcEndpoints,
   allSubgraphEndpoints,
@@ -91,28 +97,26 @@ const networkPreferencesPersistedReducer = persistReducer(
   networkPreferencesSlice.reducer
 );
 
-export const rtkQueryErrorLogger: Middleware =
+export const sentryErrorLogger: Middleware =
   (api: MiddlewareAPI) => (next) => (action) => {
     if (isRejected(action)) {
       const { error } = action;
       if (error) {
-        console.log({
-          error
-        })
         // "aborted" & "condition" inspired by: https://github.com/reduxjs/redux-toolkit/blob/64a30d83384d77bcbc59231fa32aa2f1acd67020/packages/toolkit/src/createAsyncThunk.ts#L521
-        const aborted = error?.name === 'AbortError';
-        const condition = error?.name === 'ConditionError';
+        const aborted = error?.name === "AbortError";
+        const condition = error?.name === "ConditionError";
         if (!aborted && !condition) {
-          console.log({
-            error
-          })
-          Sentry.captureException(deserializeError(error));
+          try {
+            const deserializedError = deserializeError(error); // We need to deserialize the error because RTK has already turned it into a "SerializedError" here. We prefer the deserialized error because Sentry works a lot better with an Error object.
+            Sentry.captureException(deserializedError);
+          } catch (e) {
+            Sentry.captureException(e); // If deserialization failed, let's not break the Redux middleware chain.
+          }
         }
       }
     }
-
-    return next(action)
-  }
+    return next(action);
+  };
 
 export const reduxStore = configureStore({
   reducer: {
@@ -134,12 +138,12 @@ export const reduxStore = configureStore({
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER], // Ignore redux-persist actions: https://stackoverflow.com/a/62610422
       },
     })
-      .concat(rtkQueryErrorLogger)
+      .concat(sentryErrorLogger)
       .concat(rpcApi.middleware)
       .concat(subgraphApi.middleware)
       .concat(assetApiSlice.middleware)
       .concat(ensApi.middleware)
-      .concat(gasApi.middleware)
+      .concat(gasApi.middleware),
 });
 
 export const reduxPersistor = persistStore(reduxStore);

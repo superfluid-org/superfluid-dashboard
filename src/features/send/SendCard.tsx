@@ -132,6 +132,13 @@ export default memo(function SendCard() {
   );
 
   const [flowCreateTrigger, flowCreateResult] = rpcApi.useFlowCreateMutation();
+  useEffect(() => {
+    if () {
+
+    }
+  }, [flowCreateResult]);
+
+
   const [flowUpdateTrigger, flowUpdateResult] = rpcApi.useFlowUpdateMutation();
   const [flowDeleteTrigger, flowDeleteResult] = rpcApi.useFlowDeleteMutation();
 
@@ -493,6 +500,7 @@ export default memo(function SendCard() {
                       unitOfTime: formData.flowRate.unitOfTime,
                     },
                   };
+                  
                   flowCreateTrigger({
                     signer,
                     chainId: network.id,
@@ -508,8 +516,6 @@ export default memo(function SendCard() {
                     },
                     overrides: await getTransactionOverrides(network),
                   })
-                    .unwrap()
-                    .then(() => resetForm());
 
                   setDialogSuccessActions(
                     <TransactionDialogActions>
@@ -575,6 +581,7 @@ export default memo(function SendCard() {
                         unitOfTime: formData.flowRate.unitOfTime,
                       },
                     };
+
                     flowUpdateTrigger({
                       signer,
                       chainId: network.id,
@@ -593,9 +600,12 @@ export default memo(function SendCard() {
                         restoration: restoration,
                       },
                       overrides: await getTransactionOverrides(network),
+                    }).then(result => {
+                      const isSuccess = "data" in result;
+                      if (isSuccess) {
+                        resetForm()
+                      }
                     })
-                      .unwrap()
-                      .then(() => resetForm());
 
                     setDialogSuccessActions(
                       <TransactionDialogActions>
@@ -648,8 +658,12 @@ export default memo(function SendCard() {
                       waitForConfirmation: false,
                       overrides: await getTransactionOverrides(network),
                     })
-                      .unwrap()
-                      .then(() => resetForm());
+                    .then(result => {
+                      const isSuccess = "data" in result;
+                      if (isSuccess) {
+                        resetForm()
+                      }
+                    })
                   }}
                 >
                   Cancel Stream

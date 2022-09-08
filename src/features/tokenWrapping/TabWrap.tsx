@@ -502,9 +502,12 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                     restoration,
                   },
                   overrides,
-                })
-                  .unwrap()
-                  .then(() => resetForm());
+                }).then((result) => {
+                  const isSuccess = "data" in result;
+                  if (isSuccess) {
+                    resetForm();
+                  }
+                });
 
                 setDialogSuccessActions(
                   <TransactionDialogActions>
@@ -547,7 +550,12 @@ const WrapPreview: FC<{
   superTokenSymbol: string;
 }> = ({ underlyingTokenSymbol, superTokenSymbol, amountWei }) => {
   return (
-    <Typography data-cy="wrap-message" variant="h5" color="text.secondary" translate="yes">
+    <Typography
+      data-cy="wrap-message"
+      variant="h5"
+      color="text.secondary"
+      translate="yes"
+    >
       You are wrapping{" "}
       <span translate="no">
         {formatEther(amountWei)} {underlyingTokenSymbol}
@@ -563,7 +571,12 @@ const AllowancePreview: FC<{
   tokenSymbol: string;
 }> = ({ amountWei, decimals, tokenSymbol }) => {
   return (
-    <Typography data-cy="allowance-message" variant="h5" color="text.secondary" translate="yes">
+    <Typography
+      data-cy="allowance-message"
+      variant="h5"
+      color="text.secondary"
+      translate="yes"
+    >
       You are approving additional allowance of{" "}
       <span translate="no">
         {formatUnits(amountWei, decimals)} {tokenSymbol}
