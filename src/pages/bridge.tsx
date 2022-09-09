@@ -70,6 +70,10 @@ const Bridge: NextPage = () => {
       },
       disableAppearance: true,
       theme: theme,
+      // Uncomment for testnets
+      // sdkConfig: {
+      //   apiUrl: "https://staging.li.quest/v1/"
+      // },
     }),
     [
       theme,
@@ -90,20 +94,20 @@ const Bridge: NextPage = () => {
         ".MuiScopedCssBaseline-root, #widget-header, .MuiAppBar-root": {
           background: "none",
         },
-        ".MuiLoadingButton-root": {
+        ".MuiButton-root": {
           color: "#fff",
           textTransform: "initial",
           padding: "14px 24px",
           fontSize: "16px",
           backgroundColor: theme.palette.primary.main,
         },
-        ".MuiLoadingButton-root:hover": {
+        ".MuiButton-root:hover": {
           color: "#fff",
           backgroundColor: "rgba(12, 149, 42, 1)",
         },
         ".MuiButton-sizeMedium": {
           letterSpacing: "0.17px",
-        },
+        }
       }}
     >
       <LiFiWidgetDynamic config={widgetConfig} />
