@@ -1,6 +1,6 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
 import { BigNumber } from "ethers";
+import { parseEther } from "ethers/lib/utils";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";

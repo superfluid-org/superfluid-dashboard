@@ -311,11 +311,9 @@ const StreamPageContent: FC<{
   network: Network;
   streamId: string;
 }> = ({ network, streamId }) => {
-  const router = useRouter();
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { address: accountAddress } = useAccount();
-  const { chain: activeChain } = useNetwork();
   const navigateBack = useNavigateBack();
 
   const [senderAddress = "", receiverAddress, tokenAddress = ""] =

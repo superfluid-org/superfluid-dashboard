@@ -1,10 +1,10 @@
 // TODO(KK): What's a better name?
-import { BigNumber, ethers } from "ethers";
-import { FC, MouseEvent, useCallback, useEffect, useState } from "react";
+import { BigNumber } from "ethers";
+import { FC, useState } from "react";
 import { Box, MenuItem, Select, TextField } from "@mui/material";
-import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import Amount from "../token/Amount";
+import { parseEther } from "ethers/lib/utils";
 
 /**
  * Enum numerical value is expressed in seconds.
