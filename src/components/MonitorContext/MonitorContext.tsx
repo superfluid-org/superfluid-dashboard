@@ -6,6 +6,7 @@ import { hotjar } from "react-hotjar";
 import { useIntercom } from "react-use-intercom";
 import { useAccount, useNetwork } from "wagmi";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
+import config from "../../utils/config";
 import { IsCypress, SSR } from "../../utils/SSRUtils";
 
 const SENTRY_WALLET_CONTEXT = "Connected Wallet";
@@ -61,7 +62,7 @@ const MonitorContext: FC = () => {
   const { getVisitorId } = useIntercom();
 
   useEffect(() => {
-    if (!SSR && !IsCypress && getVisitorId) {
+    if (!SSR && !IsCypress && getVisitorId && config.intercom.appId) {
       // This weird retrying is because we can't be exactly sure when Intercom is initialized (booted) because it's not exposed by useIntercom()-
       promiseRetry(
         (retry) =>

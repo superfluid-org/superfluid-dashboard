@@ -50,6 +50,10 @@ export default memo(function TransactionDrawer() {
           borderTop: 0,
           borderBottom: 0,
         },
+        style: {
+          pointerEvents:
+            isBelowMd && !transactionDrawerOpen ? "none" : "initial",
+        },
       }}
       onOpen={openDrawer}
       onClose={closeDrawer}

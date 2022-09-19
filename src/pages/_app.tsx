@@ -11,7 +11,6 @@ import Layout from "../features/layout/Layout";
 import { LayoutContextProvider } from "../features/layout/LayoutContext";
 import { ActiveNetworksProvider } from "../features/network/ActiveNetworksContext";
 import { ExpectedNetworkProvider } from "../features/network/ExpectedNetworkContext";
-import ReduxPersistGate from "../features/redux/ReduxPersistGate";
 import ReduxProvider from "../features/redux/ReduxProvider";
 import createEmotionCache from "../features/theme/createEmotionCache";
 import MuiProvider from "../features/theme/MuiProvider";
@@ -66,13 +65,11 @@ export default function MyApp(props: MyAppProps) {
                                   <LayoutContextProvider>
                                     <IntercomProvider>
                                       <Layout>
-                                        <ReduxPersistGate>
-                                          <MonitorContext />
-                                          <Component
-                                            key={`${network.slugName}`}
-                                            {...pageProps}
-                                          />
-                                        </ReduxPersistGate>
+                                        <MonitorContext />
+                                        <Component
+                                          key={`${network.slugName}`}
+                                          {...pageProps}
+                                        />
                                       </Layout>
                                     </IntercomProvider>
                                   </LayoutContextProvider>

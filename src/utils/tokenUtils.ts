@@ -1,8 +1,7 @@
 import { AccountTokenSnapshot } from "@superfluid-finance/sdk-core";
-import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
 import Decimal from "decimal.js";
 import { BigNumber, BigNumberish } from "ethers";
-import { formatUnits, parseUnits } from "ethers/lib/utils";
+import { formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
 import minBy from "lodash/fp/minBy";
 import { Network } from "../features/network/networks";
 import {

@@ -17,9 +17,9 @@
 import "./commands";
 //import "@cypress/code-coverage/support";
 
-    Cypress.on("uncaught:exception" , (err,runnable) => {
-        if(err.name === "ConnectorNotFoundError" ||
-            err.message.includes("The method eth_call is not implemented by the mock provider.")) {
-                return false
-        }
-    });
+Cypress.on("uncaught:exception", (err, runnable) => {
+    if (err.name === "ConnectorNotFoundError" ||
+        err.message.includes("The method eth_call is not implemented by the mock provider.")) {
+        return false
+    }
+});

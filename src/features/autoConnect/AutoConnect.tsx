@@ -1,4 +1,11 @@
-import { createContext, FC, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  FC,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useConnect } from "wagmi";
 import { wagmiClient } from "../wallet/WagmiManager";
 
@@ -12,7 +19,7 @@ interface AutoConnectContextValue {
 
 const AutoConnectContext = createContext<AutoConnectContextValue>(null!);
 
-export const AutoConnectProvider: FC = ({ children }) => {
+export const AutoConnectProvider: FC<PropsWithChildren> = ({ children }) => {
   const { connectAsync, connectors } = useConnect();
   const [isAutoConnecting, setIsAutoConnecting] = useState(true);
   const [didAutoConnect, setDidAutoConnect] = useState(true);

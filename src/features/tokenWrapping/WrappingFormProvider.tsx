@@ -3,7 +3,7 @@ import { BigNumber } from "ethers";
 import { formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
 import { isString } from "lodash";
 import { useRouter } from "next/router";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
 import { object, ObjectSchema, string } from "yup";
@@ -47,13 +47,15 @@ export type ValidWrappingForm = {
   };
 };
 
-const WrappingFormProvider: FC<{
-  restoration:
-    | SuperTokenUpgradeRestoration
-    | SuperTokenDowngradeRestoration
-    | undefined;
-}> = ({ restoration, children }) => {
-  const { network, stopAutoSwitchToAccountNetwork } = useExpectedNetwork();
+const WrappingFormProvider: FC<
+  PropsWithChildren<{
+    restoration:
+      | SuperTokenUpgradeRestoration
+      | SuperTokenDowngradeRestoration
+      | undefined;
+  }>
+> = ({ restoration, children }) => {
+  const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
   const router = useRouter();
   const { token: tokenQueryParam } = router.query;
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
@@ -316,7 +318,7 @@ The chain ID was: ${network.id}`);
 
   useEffect(() => {
     if (formState.isDirty) {
-      stopAutoSwitchToAccountNetwork();
+      stopAutoSwitchToWalletNetwork();
     }
   }, [formState.isDirty]);
 

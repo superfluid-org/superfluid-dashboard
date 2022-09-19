@@ -208,7 +208,7 @@ export default memo(function SendCard() {
   return (
     <>
       <Card
-        elevation={1}
+        data-cy={"send-card"}elevation={1}
         sx={{
           maxWidth: "600px",
           position: "relative",
@@ -222,6 +222,7 @@ export default memo(function SendCard() {
         }}
       >
         <Button
+          data-cy={"send-or-modify-stream"}
           color="primary"
           variant="textContained"
           size="large"
@@ -534,7 +535,7 @@ export default memo(function SendCard() {
                       <TransactionDialogActions>
                         <Stack gap={1} sx={{ width: "100%" }}>
                           <TransactionDialogButton
-                            color="secondary"
+                            data-cy={"send-more-streams-button"}color="secondary"
                             onClick={closeDialog}
                           >
                             Send more streams
@@ -546,7 +547,7 @@ export default memo(function SendCard() {
                             })}
                             passHref
                           >
-                            <TransactionDialogButton color="primary">
+                            <TransactionDialogButton data-cy="go-to-token-page-button"color="primary">
                               Go to token page ➜
                             </TransactionDialogButton>
                           </Link>
@@ -570,7 +571,7 @@ export default memo(function SendCard() {
               {({ setDialogSuccessActions }) =>
                 activeFlow && (
                   <TransactionButton
-                    disabled={isSendDisabled}
+                    dataCy={"modify-stream-button"}disabled={isSendDisabled}
                     onClick={async (signer) => {
                       if (!formState.isValid) {
                         throw Error("This should never happen.");
@@ -623,7 +624,7 @@ export default memo(function SendCard() {
                             })}
                             passHref
                           >
-                            <TransactionDialogButton color="primary">
+                            <TransactionDialogButton data-cy={"go-to-token-page-button"} color="primary">
                               Go to token page ➜
                             </TransactionDialogButton>
                           </Link>

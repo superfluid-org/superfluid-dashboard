@@ -184,6 +184,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({
                 name="data.amountDecimal"
                 render={({ field: { onChange, onBlur } }) => (
                   <Button
+                    data-cy={"max-button"}
                     variant="textContained"
                     size="xxs"
                     onClick={() => {
@@ -290,14 +291,9 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({
 
               const overrides = await getTransactionOverrides(network);
 
-              // Fix for Gnosis Safe "cannot estimate gas" issue when downgrading native asset super tokens: https://github.com/superfluid-finance/superfluid-dashboard/issues/101
-              const isGnosisSafe = activeConnector?.id === "safe";
               const isNativeAssetSuperToken =
                 formData.tokenPair.underlyingTokenAddress ===
                 NATIVE_ASSET_ADDRESS;
-              if (isGnosisSafe && isNativeAssetSuperToken) {
-                overrides.gasLimit = 500_000;
-              }
 
               setDialogLoadingInfo(
                 <UnwrapPreview
@@ -338,7 +334,7 @@ const UnwrapPreview: FC<{
   underlyingTokenSymbol: string;
 }> = ({ amountWei, superTokenSymbol, underlyingTokenSymbol }) => {
   return (
-    <Typography variant="h5" color="text.secondary" translate="yes">
+    <Typography data-cy={"unwrap-message"} variant="h5" color="text.secondary" translate="yes">
       You are unwrapping {" "}
       <span translate="no">
         {formatEther(amountWei)} {superTokenSymbol}

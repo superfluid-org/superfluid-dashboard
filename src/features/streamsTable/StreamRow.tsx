@@ -225,7 +225,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
             {isPending && (
               <>
                 <CircularProgress color="warning" size="16px" />
-                <Typography variant="caption" translate="yes">
+                <Typography data-cy={"pending-message"} variant="caption" translate="yes">
                   {isPendingAndWaitingForSubgraph ? "Syncing..." : "Sending..."}
                 </Typography>
               </>

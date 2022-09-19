@@ -15,7 +15,7 @@ import {
 } from "react";
 import { useAccount, useNetwork, useSigner, useSwitchNetwork } from "wagmi";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
-import MutationResult from "../../mutationResult";
+import MutationResult from "../../MutationResult";
 import { useAutoConnect } from "../autoConnect/AutoConnect";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";

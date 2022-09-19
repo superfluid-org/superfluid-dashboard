@@ -1,7 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { parseEther } from "@superfluid-finance/sdk-redux/node_modules/@ethersproject/units";
 import { BigNumber } from "ethers";
-import { FC, useEffect, useMemo, useState } from "react";
+import { parseEther } from "ethers/lib/utils";
+import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
 import { bool, mixed, object, ObjectSchema, string } from "yup";
@@ -53,12 +53,11 @@ export interface StreamingFormProviderProps {
   initialFormValues: Partial<ValidStreamingForm["data"]>;
 }
 
-const StreamingFormProvider: FC<StreamingFormProviderProps> = ({
-  children,
-  initialFormValues,
-}) => {
+const StreamingFormProvider: FC<
+  PropsWithChildren<StreamingFormProviderProps>
+> = ({ children, initialFormValues }) => {
   const { address: accountAddress } = useAccount();
-  const { network, stopAutoSwitchToAccountNetwork } = useExpectedNetwork();
+  const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryActiveFlow] = rpcApi.useLazyGetActiveFlowQuery();
   const calculateBufferInfo = useCalculateBufferInfo();
@@ -225,7 +224,7 @@ const StreamingFormProvider: FC<StreamingFormProviderProps> = ({
 
   useEffect(() => {
     if (formState.isDirty) {
-      stopAutoSwitchToAccountNetwork();
+      stopAutoSwitchToWalletNetwork();
     }
   }, [formState.isDirty]);
 

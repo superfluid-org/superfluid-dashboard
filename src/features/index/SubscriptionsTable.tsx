@@ -116,6 +116,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
             <TableCell colSpan={5}>
               <Stack direction="row" alignItems="center" gap={1}>
                 <Button
+                  data-cy={"all-tab"}
                   variant="textContained"
                   size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(null)}
@@ -124,6 +125,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
                   All {!isLoading && ` (${indexSubscriptions.length})`}
                 </Button>
                 <Button
+                  data-cy={"approved-tab"}
                   variant="textContained"
                   size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(true)}
@@ -132,6 +134,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
                   Approved {!isLoading && ` (${approvedCount})`}
                 </Button>
                 <Button
+                  data-cy={"unapproved-tab"}
                   variant="textContained"
                   size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(false)}

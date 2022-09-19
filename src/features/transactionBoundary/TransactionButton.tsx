@@ -21,15 +21,13 @@ export const TransactionButton: FC<{
     expectedNetwork,
     isCorrectNetwork,
     switchNetwork,
-    mutationResult,
-    transaction,
+    mutationResult
   } = useTransactionBoundary();
 
   const buttonProps: ButtonProps = {
     fullWidth: true,
     variant: "contained",
     size: "xl",
-    color: "primary",
     ...ButtonProps,
   };
 
@@ -60,6 +58,7 @@ export const TransactionButton: FC<{
         data-cy={"connect-wallet"}
         {...buttonProps}
         loading={isConnecting}
+        color="primary"
         onClick={connectWallet}
       >
         <span>Connect Wallet</span>
@@ -72,11 +71,11 @@ export const TransactionButton: FC<{
       <Button
         data-cy={"change-network-button"}
         {...buttonProps}
+        color="primary"
         disabled={!switchNetwork}
         onClick={() => switchNetwork?.()}
       >
-        <span>Change Network to</span>{" "}
-        <span translate="no">{expectedNetwork.name}</span>
+        <span translate="no">Change Network to {expectedNetwork.name}</span>
       </Button>
     );
   }
@@ -85,7 +84,8 @@ export const TransactionButton: FC<{
     <LoadingButton
       {...(dataCy ? { "data-cy": dataCy } : {})}
       {...buttonProps}
-      loading={mutationResult.isLoading || transaction?.status === "Pending"}
+      loading={mutationResult.isLoading}
+      color="primary"
       disabled={!signer}
       onClick={() => {
         if (!signer) throw Error("Signer not defined.");

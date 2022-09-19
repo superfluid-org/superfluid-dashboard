@@ -4,7 +4,7 @@ import {
   setFrameworkForSdkRedux,
 } from "@superfluid-finance/sdk-redux";
 import promiseRetry from "promise-retry";
-import { FC, useCallback, useEffect } from "react";
+import { FC, PropsWithChildren, useCallback, useEffect } from "react";
 import { Provider } from "react-redux";
 import { useAccount, useSigner } from "wagmi";
 import { parseV1AddressBookEntries } from "../../utils/addressBookUtils";
@@ -15,7 +15,7 @@ import { networks } from "../network/networks";
 import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import { reduxStore, useAppDispatch } from "./store";
 
-const ReduxProviderCore: FC = ({ children }) => {
+const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
   const { connector: activeConnector } = useAccount();
   const { data: signer } = useSigner();
   const dispatch = useAppDispatch();
@@ -106,7 +106,7 @@ const ReduxProviderCore: FC = ({ children }) => {
   return <>{children}</>;
 };
 
-const ReduxProvider: FC = ({ children }) => {
+const ReduxProvider: FC<PropsWithChildren> = ({ children }) => {
   return (
     <Provider store={reduxStore}>
       <ReduxProviderCore>{children}</ReduxProviderCore>

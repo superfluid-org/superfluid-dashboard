@@ -24,6 +24,8 @@ const DISPLAYED_ROWS = "[class*=displayedRows]";
 const NEXT_PAGE_BUTTON = "[data-testid=KeyboardArrowRightIcon]";
 const STREAM_ROWS = "[data-cy=stream-row]"
 const ALL_BALANCE_ROWS = "[data-cy*=-cell]"
+const MODIFY_STREAM_BUTTON = "[data-cy=modify-stream-tooltip]"
+const SWITCH_NETWORK_BUTTON = "[data-cy=switch-network-tooltip]"
 
 export class DashboardPage extends BasePage {
     static checkIfDashboardConnectIsVisible() {
@@ -73,7 +75,7 @@ export class DashboardPage extends BasePage {
 
     static waitForBalancesToLoad() {
         this.isVisible(LOADING_SKELETONS);
-        cy.get(LOADING_SKELETONS,{ timeout: 45000 }).should("not.exist")
+        cy.get(LOADING_SKELETONS, {timeout: 60000}).should("not.exist")
     }
 
     static clickTokenStreamRow(network: string, token: string) {
@@ -109,7 +111,7 @@ export class DashboardPage extends BasePage {
                     ].ongoingStreamsAccount.tokenValues.tokenAddress.toLowerCase()}-streams-table] ${STREAM_ROWS} `;
             // The data in tables doesn't show up all at the same time , and skeletons dissapear with the first entry
             // waiting and need to re-check to make sure all streams are loaded
-            this.hasLength(specificSelector,networkSpecificData[
+            this.hasLength(specificSelector, networkSpecificData[
                 network
                 ].ongoingStreamsAccount.tokenValues.streams.length)
             networkSpecificData[
@@ -160,7 +162,7 @@ export class DashboardPage extends BasePage {
 
     static hoverOnFirstCancelButton(network: string) {
         cy.get(
-            `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=switch-network-tooltip]`
+            `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} ${SWITCH_NETWORK_BUTTON}`
         )
             .first()
             .trigger("mouseover");
@@ -248,6 +250,48 @@ export class DashboardPage extends BasePage {
     }
 
     static waitForXAmountOfEntries(amount: number) {
-        this.hasLength(STREAM_ROWS,amount)
+        this.hasLength(STREAM_ROWS, amount)
+    }
+
+    static validateLastStreamRowNotFlowing() {
+        cy.get(`${STREAM_ROWS} ${TOKEN_BALANCES}`).first().then(el => {
+            cy.wait(1000)
+            cy.get(`${STREAM_ROWS} ${TOKEN_BALANCES}`).first().then(elAfter => {
+                cy.wrap(parseFloat(elAfter.text())).should("eq", parseFloat(el.text()))
+            })
+        })
+    }
+
+    static validateNoButtonsInLastStreamRow() {
+        cy.get(STREAM_ROWS).first({timeout: 45000}).find(CANCEL_BUTTONS).should("not.exist")
+        cy.get(STREAM_ROWS).first({timeout: 45000}).find(SWITCH_NETWORK_BUTTON).should("not.exist")
+        cy.get(STREAM_ROWS).first({timeout: 45000}).find(MODIFY_STREAM_BUTTON).should("not.exist")
+    }
+
+    static validateTokenTotalNetFlowRates(token: string, network: string, amounts: string) {
+        //Input the amounts in order seperating with a comma, e.g. 1,-1,2 = 1 net , -1 outflow , 1 inflow
+        let flowValues = amounts === "-" ? amounts : amounts.split(",")
+        this.hasText(
+            `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${NET_FLOW_VALUES}`,
+            flowValues[0]
+        );
+
+        if (flowValues[1]) {
+            this.hasText(
+                `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${INFLOW_VALUES}`,
+                flowValues[2]);
+            this.hasText(
+                `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${OUTFLOW_VALUES}`,
+                flowValues[1]);
+        } else {
+
+            this.hasText(
+                `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${OUTFLOW_VALUES}`,
+                flowValues);
+        }
+    }
+
+    static validateAmountOfStreamRows(amount: number) {
+        this.hasLength(STREAM_ROWS, amount)
     }
 }

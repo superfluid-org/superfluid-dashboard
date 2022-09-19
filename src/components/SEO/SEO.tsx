@@ -1,11 +1,17 @@
 import Head from "next/head";
-import { useRouter } from "next/router";
-import { FC, ReactChild } from "react";
-import config from "../../utils/config";
+import { FC, PropsWithChildren } from "react";
 
 type TwitterCard = "summary" | "summary_large_image" | "app" | "player";
 
-interface SEOProps {
+interface MetaProps {
+  name?: string;
+  property?: string;
+  content: any;
+}
+const Meta: FC<MetaProps> = ({ name, property, content }) =>
+  content ? <meta name={name} property={property} content={content} /> : null;
+
+export interface SEOProps {
   title?: string;
   description?: string;
 
@@ -19,48 +25,41 @@ interface SEOProps {
   twitterCreator?: string;
   twitterTitle?: string;
   twitterDescription?: string;
-
-  children: ReactChild;
 }
 
-const SEO: FC<SEOProps> = ({
+const SEO: FC<PropsWithChildren<SEOProps>> = ({
   children,
   // General meta tags
-  title = `Superfluid Dashboard`,
-  description = `Superfluid is an asset streaming protocol that brings subscriptions, salaries and rewards to DAOs and crypto-native businesses.`,
+  title,
+  description,
   // Open Graph metadata
-  ogTitle = title,
-  ogDescription = description,
+  ogTitle,
+  ogDescription,
   ogUrl,
-  ogImage = `${config.appUrl}/images/superfluid-thumbnail.png`,
+  ogImage,
   // Twitter card metadata
-  twitterCard = "summary_large_image",
-  twitterTitle = ogTitle,
-  twitterDescription = ogDescription,
-  twitterSite = `@Superfluid_HQ`,
-  twitterCreator = `@Superfluid_HQ`,
+  twitterCard,
+  twitterTitle,
+  twitterDescription,
+  twitterSite,
+  twitterCreator,
 }) => {
-  const router = useRouter();
-
   return (
     <>
       <Head>
-        <title>{title}</title>
-        <meta name="description" content={description} />
+        {title && <title>{title}</title>}
+        <Meta name="description" content={description} />
 
-        <meta property="og:title" content={ogTitle} />
-        <meta property="og:description" content={ogDescription} />
-        <meta
-          property="og:url"
-          content={ogUrl || `${config.appUrl}${router.asPath}`}
-        />
-        <meta property="og:image" content={ogImage} />
+        <Meta property="og:title" content={ogTitle} />
+        <Meta property="og:description" content={ogDescription} />
+        <Meta property="og:url" content={ogUrl} />
+        <Meta property="og:image" content={ogImage} />
 
-        <meta name="twitter:card" content={twitterCard} />
-        <meta name="twitter:title" content={twitterTitle} />
-        <meta name="twitter:description" content={twitterDescription} />
-        <meta name="twitter:site" content={twitterSite} />
-        <meta name="twitter:creator" content={twitterCreator} />
+        <Meta name="twitter:card" content={twitterCard} />
+        <Meta name="twitter:title" content={twitterTitle} />
+        <Meta name="twitter:description" content={twitterDescription} />
+        <Meta name="twitter:site" content={twitterSite} />
+        <Meta name="twitter:creator" content={twitterCreator} />
       </Head>
       {children}
     </>
