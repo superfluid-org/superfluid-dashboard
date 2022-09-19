@@ -45,7 +45,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.34.2",
     "react-hotjar": "^5.1.0",
-    "react-redux": "7.2.6",
+    "react-redux": "^8.0.2",
     "react-use-intercom": "^2.0.0",
     "redux-persist": "^6.0.0",
     "wagmi": "^0.6.4",
