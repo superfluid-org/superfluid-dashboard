@@ -291,14 +291,9 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({
 
               const overrides = await getTransactionOverrides(network);
 
-              // Fix for Gnosis Safe "cannot estimate gas" issue when downgrading native asset super tokens: https://github.com/superfluid-finance/superfluid-dashboard/issues/101
-              const isGnosisSafe = activeConnector?.id === "safe";
               const isNativeAssetSuperToken =
                 formData.tokenPair.underlyingTokenAddress ===
                 NATIVE_ASSET_ADDRESS;
-              if (isGnosisSafe && isNativeAssetSuperToken) {
-                overrides.gasLimit = 500_000;
-              }
 
               setDialogLoadingInfo(
                 <UnwrapPreview
