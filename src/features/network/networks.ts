@@ -114,7 +114,7 @@ export const networkDefinition: {
       },
     },
     streamSchedulerContractAddress:
-      "0x04851f0be31a98133E2D6bFFDAe56908b05cdBDB",
+      "0x6Cd517392e1d4e7ea4B05659B4302Da20c964E2f",
   },
   gnosis: {
     name: "Gnosis Chain",

@@ -1,13 +1,13 @@
-import { IWeb3FlowOperatorData } from "@superfluid-finance/sdk-core";
+import { IWeb3FlowOperatorData, Operation } from "@superfluid-finance/sdk-core";
 import {
   BaseQuery,
   BaseSuperTokenMutation,
+  FlowCreateMutation,
   getFramework,
   registerNewTransactionAndReturnQueryFnResult,
   RpcEndpointBuilder,
   TransactionInfo,
 } from "@superfluid-finance/sdk-redux";
-import { createGeneralTags } from "@superfluid-finance/sdk-redux/dist/module/reduxSlices/rtkQuery/cacheTags/CacheTagTypes";
 import { providers, Signer } from "ethers";
 import { getGoerliSdk, getPolygonMumbaiSdk } from "../../../eth-sdk/client";
 import { STREAM_SCHEDULAR_CONTRACT_ADDRESS } from "../../../eth-sdk/config";
@@ -53,6 +53,15 @@ interface ScheduleStreamEndDate extends BaseSuperTokenMutation {
   receiverAddress: string;
   endTimestamp: number;
   userData: string;
+}
+
+interface DoEverythingTogether
+  extends FlowCreateMutation,
+    ScheduleStreamEndDate,
+    GetStreamSchedulerPermissions,
+    UpdateStreamSchedulerPermissions {
+  userData: string;
+  senderAddress: string;
 }
 
 export const streamSchedulerEndpoints = {
@@ -112,6 +121,79 @@ export const streamSchedulerEndpoints = {
           signer: signerAddress,
           extraData: arg.transactionExtraData,
           title: "Schedule Stream End Date",
+        });
+      },
+    }),
+    doEverythingTogether: builder.mutation<
+      TransactionInfo,
+      DoEverythingTogether
+    >({
+      async queryFn({ chainId, ...arg }, { dispatch }) {
+        const framework = await getFramework(chainId);
+        const superToken = await framework.loadSuperToken(
+          arg.superTokenAddress
+        );
+
+        const flowOperatorData = await superToken.getFlowOperatorData({
+          flowOperator: STREAM_SCHEDULAR_CONTRACT_ADDRESS,
+          sender: arg.senderAddress,
+          providerOrSigner: arg.signer,
+        });
+
+        const operations: Operation[] = [];
+
+        if (Number(flowOperatorData.permissions) < 4) {
+          operations.push(
+            await superToken.updateFlowOperatorPermissions({
+              flowOperator: STREAM_SCHEDULAR_CONTRACT_ADDRESS,
+              flowRateAllowance: arg.flowRateAllowance,
+              permissions: arg.permissions,
+              userData: "0x",
+              overrides: arg.overrides,
+            })
+          );
+        }
+
+        operations.push(
+          await superToken.createFlow({
+            sender: arg.senderAddress,
+            flowRate: arg.flowRateWei,
+            receiver: arg.receiverAddress,
+            userData: "0x",
+            overrides: arg.overrides,
+          })
+        );
+
+        const sdk = getGoerliSdk(arg.signer); // TODO(KK): Get this off of a Network.
+        const signerAddress = await arg.signer.getAddress();
+
+        operations.push(
+          new Operation(
+            sdk.StreamScheduler.populateTransaction.createStreamOrder(
+              arg.receiverAddress,
+              arg.superTokenAddress,
+              0, // startDate
+              0, // startDuration
+              "0", // flowRate
+              arg.endTimestamp,
+              arg.userData,
+              arg.overrides ?? {}
+            ),
+            "CALL_APP_ACTION"
+          )
+        );
+
+        const batchCall = framework.batchCall(operations);
+        const transactionResponse = await batchCall.exec(arg.signer);
+
+        return registerNewTransactionAndReturnQueryFnResult({
+          dispatch,
+          chainId,
+          transactionResponse,
+          waitForConfirmation: !!arg.waitForConfirmation,
+          signer: signerAddress,
+          extraData: arg.transactionExtraData,
+          title: "Create Close-Ended Stream",
         });
       },
     }),

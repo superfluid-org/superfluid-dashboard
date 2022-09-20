@@ -6,7 +6,7 @@ export function getContract(address, abi, defaultSignerOrProvider) {
 }
 export function getGoerliSdk(defaultSignerOrProvider) {
     return {
-        "StreamScheduler": getContract('0x04851f0be31a98133E2D6bFFDAe56908b05cdBDB', goerli_StreamScheduler_abi, defaultSignerOrProvider),
+        "StreamScheduler": getContract('0x6Cd517392e1d4e7ea4B05659B4302Da20c964E2f', goerli_StreamScheduler_abi, defaultSignerOrProvider),
     };
 }
 export function getPolygonMumbaiSdk(defaultSignerOrProvider) {

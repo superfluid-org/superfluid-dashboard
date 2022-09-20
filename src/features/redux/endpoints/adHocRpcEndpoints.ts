@@ -22,6 +22,7 @@ declare module "@superfluid-finance/sdk-redux" {
     "Approve Allowance": true;
     "Update Stream Scheduler Permissions": true;
     "Schedule Stream End Date": true;
+    "Create Close-Ended Stream": true;
   }
 }
 
