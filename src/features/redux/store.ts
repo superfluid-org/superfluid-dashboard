@@ -32,6 +32,7 @@ import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { streamSchedulerEndpoints } from "./endpoints/streamSchedulerEndpoints";
+import { platformApi } from "./platformApi/platformApi";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({
@@ -104,6 +105,7 @@ export const reduxStore = configureStore({
     networkPreferences: networkPreferencesPersistedReducer,
     [gasApi.reducerPath]: gasApi.reducer,
     pendingUpdates: pendingUpdateSlice.reducer,
+    [platformApi.reducerPath]: platformApi.reducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -115,7 +117,8 @@ export const reduxStore = configureStore({
       .concat(subgraphApi.middleware)
       .concat(assetApiSlice.middleware)
       .concat(ensApi.middleware)
-      .concat(gasApi.middleware),
+      .concat(gasApi.middleware)
+      .concat(platformApi.middleware)
 });
 
 export const reduxPersistor = persistStore(reduxStore);
