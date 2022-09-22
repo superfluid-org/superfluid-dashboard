@@ -28,6 +28,7 @@ export type Network = Chain & {
     } & TokenMinimal;
   };
   streamSchedulerContractAddress?: `0x${string}`;
+  platformUrl?: string;
 };
 
 export const superfluidRpcUrls = {
@@ -74,10 +75,16 @@ const blockExplorers = {
 };
 
 export const networkDefinition: {
-  goerli: Network & { streamSchedulerContractAddress: `0x${string}` };
+  goerli: Network & {
+    streamSchedulerContractAddress: `0x${string}`;
+    platformUrl: string;
+  };
   gnosis: Network;
   polygon: Network;
-  polygonMumbai: Network & { streamSchedulerContractAddress: `0x${string}` };
+  polygonMumbai: Network & {
+    streamSchedulerContractAddress: `0x${string}`;
+    platformUrl: string;
+  };
   avalancheFuji: Network;
   optimism: Network;
   arbitrum: Network;
@@ -115,6 +122,7 @@ export const networkDefinition: {
     },
     streamSchedulerContractAddress:
       "0x6Cd517392e1d4e7ea4B05659B4302Da20c964E2f",
+    platformUrl: "https://dev-goerli-platform-v2.dev.superfluid.dev/",
   },
   gnosis: {
     name: "Gnosis Chain",
@@ -217,6 +225,7 @@ export const networkDefinition: {
     },
     streamSchedulerContractAddress:
       "0x51FBAbD31A615E14b1bC12E9d887f60997264a4E",
+    platformUrl: "https://dev-goerli-platform-v2.dev.superfluid.dev/",
   },
   avalancheFuji: {
     name: "Fuji (C-Chain)",

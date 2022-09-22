@@ -26,7 +26,6 @@ import StreamsTable from "../streamsTable/StreamsTable";
 import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
 import TokenIcon from "../token/TokenIcon";
-import { useTokenIsListed } from "../token/useTokenIsListed";
 
 interface SnapshotRowProps {
   lastElement?: boolean;

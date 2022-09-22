@@ -12,6 +12,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Address, Stream } from "@superfluid-finance/sdk-core";
 import { FC, memo, useMemo, useState } from "react";
 import { EmptyRow } from "../common/EmptyRow";
@@ -20,9 +21,11 @@ import {
   PendingOutgoingStream,
   useAddressPendingOutgoingStreams,
 } from "../pendingUpdates/PendingOutgoingStream";
+import { platformApi } from "../redux/platformApi/platformApi";
 import { subgraphApi } from "../redux/store";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import StreamRow, { StreamRowLoading } from "./StreamRow";
+import { StreamScheduling } from "./StreamScheduling";
 
 enum StreamTypeFilter {
   All,
@@ -54,7 +57,6 @@ const StreamsTable: FC<StreamsTableProps> = ({
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
-  const [selectActive, setSelectActive] = useState(false);
   const [streamsFilter, setStreamsFilter] = useState<StreamFilter>({
     type: StreamTypeFilter.All,
   });
@@ -91,15 +93,37 @@ const StreamsTable: FC<StreamsTableProps> = ({
     },
   });
 
+  const { outgoingStreamAutomations } = platformApi.useListSubscriptionsQuery(
+    network.platformUrl
+      ? {
+          account: visibleAddress,
+          baseUrl: network.platformUrl,
+        }
+      : skipToken,
+    {
+      selectFromResult: (x) => ({
+        outgoingStreamAutomations: x.data?.data ?? [],
+      }),
+    }
+  );
+
+  // TODO(KK): How to show for incoming streams?
+
   const pendingOutgoingStreams =
     useAddressPendingOutgoingStreams(visibleAddress);
 
-  const outgoingStreams: (Stream | PendingOutgoingStream)[] = useMemo(() => {
+  const outgoingStreams = useMemo<(Stream | PendingOutgoingStream)[]>(() => {
     const queriedOutgoingStreams = outgoingStreamsQuery.data?.items ?? [];
     return [...queriedOutgoingStreams, ...pendingOutgoingStreams];
-  }, [outgoingStreamsQuery.data, pendingOutgoingStreams]);
+  }, [
+    outgoingStreamsQuery.data,
+    pendingOutgoingStreams,
+    outgoingStreamAutomations,
+  ]);
 
-  const streams = useMemo(() => {
+  const streams = useMemo<
+    ((Stream | PendingOutgoingStream) & StreamScheduling)[]
+  >(() => {
     return [
       ...([StreamTypeFilter.All, StreamTypeFilter.Incoming].includes(
         streamsFilter.type
@@ -111,7 +135,31 @@ const StreamsTable: FC<StreamsTableProps> = ({
       )
         ? outgoingStreams || []
         : []),
-    ].sort((s1, s2) => s2.updatedAtTimestamp - s1.updatedAtTimestamp);
+    ]
+      .sort((s1, s2) => s2.updatedAtTimestamp - s1.updatedAtTimestamp)
+      .map((stream) => {
+        const isStreamActive = stream.currentFlowRate !== "0";
+        const automation = isStreamActive
+          ? outgoingStreamAutomations.find(
+              (x) =>
+                x.is_subscribed &&
+                x.account?.toLowerCase() === stream.sender.toLowerCase() &&
+                x.meta_data?.token?.toLowerCase() ===
+                  stream.token.toLowerCase() &&
+                x.meta_data?.receiver?.toLowerCase() ===
+                  stream.receiver.toLowerCase()
+            )
+          : undefined;
+        return {
+          ...stream,
+          endDate: !isStreamActive
+            ? new Date(stream.updatedAtTimestamp * 1000)
+            : automation?.meta_data?.end_date
+            ? new Date(automation.meta_data.end_date)
+            : undefined,
+          startDate: new Date(stream.createdAtTimestamp * 1000)
+        };
+      });
   }, [incomingStreamsQuery.data, outgoingStreams, streamsFilter]);
 
   const handleChangePage = (_e: unknown, newPage: number) => setPage(newPage);
@@ -127,8 +175,6 @@ const StreamsTable: FC<StreamsTableProps> = ({
     setPage(0);
     setStreamsFilter({ ...streamsFilter, type });
   };
-
-  const toggleSelectActive = () => setSelectActive(!selectActive);
 
   const getFilterBtnColor = (type: StreamTypeFilter) =>
     type === streamsFilter.type ? "primary" : "secondary";
@@ -186,7 +232,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
       >
         <TableHead translate="yes">
           <TableRow>
-            <TableCell colSpan={5}>
+            <TableCell colSpan={6}>
               <Stack direction="row" alignItems="center" gap={1}>
                 <Button
                   variant="textContained"
@@ -237,6 +283,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
               <TableCell>To / From</TableCell>
               <TableCell width="250">All Time Flow</TableCell>
               <TableCell width="250">Flow rate</TableCell>
+              <TableCell width="25"></TableCell>
               <TableCell width="200">Start / End Date</TableCell>
               <TableCell width="120px" align="center"></TableCell>
             </TableRow>

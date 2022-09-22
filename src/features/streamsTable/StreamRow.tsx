@@ -1,7 +1,9 @@
 import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import TimerOutlined from "@mui/icons-material/TimerOutlined";
 import {
+  Box,
   CircularProgress,
   ListItemText,
   Skeleton,
@@ -30,6 +32,7 @@ import FlowingBalance from "../token/FlowingBalance";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import CancelStreamButton from "./CancelStreamButton/CancelStreamButton";
 import ModifyStreamButton from "./ModifyStreamButton";
+import { StreamScheduling } from "./StreamScheduling";
 
 export const StreamRowLoading = () => {
   const theme = useTheme();
@@ -83,7 +86,7 @@ export const StreamRowLoading = () => {
 };
 
 interface StreamRowProps {
-  stream: Stream | PendingOutgoingStream;
+  stream: (Stream | PendingOutgoingStream) & StreamScheduling;
   network: Network;
 }
 
@@ -170,17 +173,25 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
             )}
           </TableCell>
           <TableCell {...tableCellProps}>
-            <Stack
-              data-cy={"start-end-date"}
-              direction="row"
-              alignItems="center"
-              gap={1}
-            >
-              {format(
-                (isActive ? createdAtTimestamp : updatedAtTimestamp) * 1000,
-                "d MMM. yyyy"
-              )}
-              {isActive && <AllInclusiveIcon />}
+            {/* // TODO(KK): Tooltips? */}
+            {isActive ? (
+              stream.endDate ? (
+                <TimerOutlined />
+              ) : (
+                <AllInclusiveIcon />
+              )
+            ) : null}
+          </TableCell>
+          <TableCell {...tableCellProps}>
+            <Stack data-cy={"start-end-date"}>
+              <Box>
+                {stream.startDate &&
+                  format(stream.startDate.getTime(), "d MMM. yyyy")}
+              </Box>
+              <Box>
+                {stream.endDate &&
+                  format(stream.endDate.getTime(), "d MMM. yyyy")}
+              </Box>
             </Stack>
           </TableCell>
         </>
@@ -225,7 +236,11 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
             {isPending && (
               <>
                 <CircularProgress color="warning" size="16px" />
-                <Typography data-cy={"pending-message"} variant="caption" translate="yes">
+                <Typography
+                  data-cy={"pending-message"}
+                  variant="caption"
+                  translate="yes"
+                >
                   {isPendingAndWaitingForSubgraph ? "Syncing..." : "Sending..."}
                 </Typography>
               </>
