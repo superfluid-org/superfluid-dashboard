@@ -2,11 +2,11 @@ import type { ConfigFile } from '@rtk-query/codegen-openapi'
 
 const config: ConfigFile = {
   schemaFile: 'https://dev-goerli-platform-v2.dev.superfluid.dev/schema.json',
-  apiFile: './src/features/redux/platformApi/platformApiTemplateEmpty.ts',
+  apiFile: './platformApiTemplateEmpty.ts',
   apiImport: 'platformApiTemplateEmpty',
-  outputFile: './src/features/redux/platformApi/platformApiTemplate.ts',
+  outputFile: './platformApiTemplate.ts',
   exportName: 'platformApiTemplate',
-  filterEndpoints: ["listSubscriptions", "findSubscriptionById"],
+  filterEndpoints: ["listSubscriptions"],
   hooks: false
 }
 

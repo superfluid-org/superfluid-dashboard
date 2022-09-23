@@ -14,12 +14,6 @@ const injectedRtkApi = api.injectEndpoints({
         },
       }),
     }),
-    findSubscriptionById: build.query<
-      FindSubscriptionByIdApiResponse,
-      FindSubscriptionByIdApiArg
-    >({
-      query: (queryArg) => ({ url: `/api/v2/subscriptions/id/${queryArg.id}` }),
-    }),
   }),
   overrideExisting: false,
 });
@@ -37,12 +31,6 @@ export type ListSubscriptionsApiArg = {
     token?: any;
     type?: any;
   };
-};
-export type FindSubscriptionByIdApiResponse =
-  /** status 200 Account subscription by id */ Subscription;
-export type FindSubscriptionByIdApiArg = {
-  /** subscription id */
-  id: any;
 };
 export type RowsPerPage = number;
 export type Id = string;
