@@ -15,6 +15,10 @@ import {
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Address, Stream } from "@superfluid-finance/sdk-core";
 import { FC, memo, useMemo, useState } from "react";
+import {
+  mapStreamScheduling,
+  isActiveStreamSchedulingOrder,
+} from "../../hooks/useScheduledStream";
 import { EmptyRow } from "../common/EmptyRow";
 import { Network } from "../network/networks";
 import {
@@ -93,7 +97,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
     },
   });
 
-  const { outgoingStreamAutomations } = platformApi.useListSubscriptionsQuery(
+  const { schedulings } = platformApi.useListSubscriptionsQuery(
     network.platformUrl
       ? {
           account: visibleAddress,
@@ -102,7 +106,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
       : skipToken,
     {
       selectFromResult: (x) => ({
-        outgoingStreamAutomations: x.data?.data ?? [],
+        schedulings: x.data?.data ?? [],
       }),
     }
   );
@@ -115,11 +119,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
   const outgoingStreams = useMemo<(Stream | PendingOutgoingStream)[]>(() => {
     const queriedOutgoingStreams = outgoingStreamsQuery.data?.items ?? [];
     return [...queriedOutgoingStreams, ...pendingOutgoingStreams];
-  }, [
-    outgoingStreamsQuery.data,
-    pendingOutgoingStreams,
-    outgoingStreamAutomations,
-  ]);
+  }, [outgoingStreamsQuery.data, pendingOutgoingStreams, schedulings]);
 
   const streams = useMemo<
     ((Stream | PendingOutgoingStream) & StreamScheduling)[]
@@ -139,26 +139,12 @@ const StreamsTable: FC<StreamsTableProps> = ({
       .sort((s1, s2) => s2.updatedAtTimestamp - s1.updatedAtTimestamp)
       .map((stream) => {
         const isStreamActive = stream.currentFlowRate !== "0";
-        const automation = isStreamActive
-          ? outgoingStreamAutomations.find(
-              (x) =>
-                x.is_subscribed &&
-                x.account?.toLowerCase() === stream.sender.toLowerCase() &&
-                x.meta_data?.token?.toLowerCase() ===
-                  stream.token.toLowerCase() &&
-                x.meta_data?.receiver?.toLowerCase() ===
-                  stream.receiver.toLowerCase()
-            )
+
+        const streamScheduling = isStreamActive
+          ? schedulings.find((x) => isActiveStreamSchedulingOrder(stream, x))
           : undefined;
-        return {
-          ...stream,
-          endDate: !isStreamActive
-            ? new Date(stream.updatedAtTimestamp * 1000)
-            : automation?.meta_data?.end_date
-            ? new Date(automation.meta_data.end_date)
-            : undefined,
-          startDate: new Date(stream.createdAtTimestamp * 1000)
-        };
+
+        return mapStreamScheduling(stream, streamScheduling);
       });
   }, [incomingStreamsQuery.data, outgoingStreams, streamsFilter]);
 

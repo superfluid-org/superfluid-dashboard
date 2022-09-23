@@ -44,6 +44,7 @@ import TokenIcon from "../../../features/token/TokenIcon";
 import { useTokenIsListed } from "../../../features/token/useTokenIsListed";
 import useAddressName from "../../../hooks/useAddressName";
 import useNavigateBack from "../../../hooks/useNavigateBack";
+import { useScheduledStream } from "../../../hooks/useScheduledStream";
 import config from "../../../utils/config";
 import shortenHex from "../../../utils/shortenHex";
 import {
@@ -324,9 +325,14 @@ const StreamPageContent: FC<{
     tokenAddress
   );
 
-  const streamQuery = subgraphApi.useStreamQuery({
+  // const streamQuery = subgraphApi.useStreamQuery({
+  //   chainId: network.id,
+  //   id: streamId,
+  // });
+
+  const scheduledStreamQuery = useScheduledStream({
     chainId: network.id,
-    id: streamId,
+    id: streamId
   });
 
   const tokenSnapshotQuery = subgraphApi.useAccountTokenSnapshotQuery({
@@ -382,11 +388,11 @@ const StreamPageContent: FC<{
   })}`;
 
   const bufferSize = useMemo(() => {
-    if (!streamQuery.data || streamQuery.data.currentFlowRate === "0")
+    if (!scheduledStreamQuery.data || scheduledStreamQuery.data.currentFlowRate !== "0")
       return null;
 
     const { currentFlowRate, createdAtTimestamp, streamedUntilUpdatedAt } =
-      streamQuery.data;
+      scheduledStreamQuery.data;
 
     return calculateBuffer(
       BigNumber.from(streamedUntilUpdatedAt),
@@ -394,9 +400,9 @@ const StreamPageContent: FC<{
       createdAtTimestamp,
       network.bufferTimeInMinutes
     );
-  }, [streamQuery.data, network]);
+  }, [scheduledStreamQuery.data, network]);
 
-  if (streamQuery.isLoading || tokenSnapshotQuery.isLoading) {
+  if (scheduledStreamQuery.isLoading || tokenSnapshotQuery.isLoading) {
     return (
       <SEO ogUrl={urlToShare}>
         <Container maxWidth="lg" />
@@ -404,7 +410,7 @@ const StreamPageContent: FC<{
     );
   }
 
-  if (!streamQuery.data || !tokenSnapshotQuery.data) {
+  if (!scheduledStreamQuery.data || !tokenSnapshotQuery.data) {
     return <Page404 />;
   }
 
@@ -414,9 +420,10 @@ const StreamPageContent: FC<{
     tokenSymbol,
     receiver,
     sender,
+    startDate,
     createdAtTimestamp,
     updatedAtTimestamp,
-  } = streamQuery.data;
+  } = scheduledStreamQuery.data;
 
   const isActive = currentFlowRate !== "0";
   const encodedUrlToShare = encodeURIComponent(urlToShare);
@@ -465,14 +472,14 @@ const StreamPageContent: FC<{
                 <>
                   {isOutgoing && (
                     <ModifyStreamButton
-                      stream={streamQuery.data}
+                      stream={scheduledStreamQuery.data}
                       network={network}
                     />
                   )}
                   {isActive && (
                     <CancelStreamButton
                       data-cy={"cancel-button"}
-                      stream={streamQuery.data}
+                      stream={scheduledStreamQuery.data}
                       network={network}
                     />
                   )}
@@ -635,7 +642,7 @@ const StreamPageContent: FC<{
             <OverviewItem
               dataCy={"start-date"}
               label="Start Date:"
-              value={format(createdAtTimestamp * 1000, "d MMM. yyyy H:mm")}
+              value={format(startDate.getTime(), "d MMM. yyyy H:mm")}
             />
             <OverviewItem
               dataCy={"buffer"}
@@ -650,6 +657,11 @@ const StreamPageContent: FC<{
                 )
               }
             />
+
+            {
+              
+            }
+
             <OverviewItem
               dataCy={"updated-end-date"}
               label={`${isActive ? "Updated" : "End"} Date:`}
@@ -659,6 +671,8 @@ const StreamPageContent: FC<{
                   : "-"
               }
             />
+
+
             <OverviewItem
               dataCy={"network-name"}
               label="Network Name:"
