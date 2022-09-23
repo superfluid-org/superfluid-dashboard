@@ -8,7 +8,6 @@ import {
   Checkbox,
   Collapse,
   Divider,
-  FormControl,
   FormControlLabel,
   FormGroup,
   FormLabel,
@@ -46,7 +45,10 @@ import Amount from "../token/Amount";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
-import { TransactionButton } from "../transactionBoundary/TransactionButton";
+import {
+  TransactionButton,
+  transactionButtonDefaultProps,
+} from "../transactionBoundary/TransactionButton";
 import {
   TransactionDialogActions,
   TransactionDialogButton,
@@ -60,14 +62,16 @@ import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import AddressSearch from "./AddressSearch";
 import { calculateTotalAmountWei, FlowRateInput } from "./FlowRateInput";
 import { StreamingPreview } from "./SendStreamPreview";
-import StreamEndDate from "./StreamEndDate";
 import {
   PartialStreamingForm,
   ValidStreamingForm,
 } from "./StreamingFormProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { NonNullablePickerChangeHandler } from "@mui/x-date-pickers/internals/hooks/useViews";
+import { StreamSchedulerButton } from "./StreamSchedulerButton";
+import { platformApi } from "../redux/platformApi/platformApi";
+import { getAddress } from "../../utils/memoizedEthersUtils";
+import { isActiveStreamSchedulingOrder } from "../../hooks/useScheduledStream";
 
 export default memo(function SendCard() {
   const theme = useTheme();
@@ -213,8 +217,42 @@ export default memo(function SendCard() {
   const doesNetworkSupportStreamScheduler =
     !!network.streamSchedulerContractAddress;
 
+  const { existingScheduling } = platformApi.useListSubscriptionsQuery(
+    visibleAddress && network.platformUrl
+      ? {
+          account: getAddress(visibleAddress),
+          chainId: network.id,
+          baseUrl: network.platformUrl,
+        }
+      : skipToken,
+    {
+      selectFromResult: (queryResult) => ({
+        existingScheduling: queryResult.data?.data?.find((scheduling) =>
+          isActiveStreamSchedulingOrder(
+            {
+              receiver: receiverAddress ?? "skip",
+              sender: visibleAddress ?? "skip",
+              token: tokenAddress ?? "skip",
+            },
+            scheduling
+          )
+        ),
+      }),
+    }
+  );
+
+  // TODO(KK): Not a great solution...
+  useEffect(() => {
+    if (existingScheduling?.meta_data?.end_date) {
+      setEndDate(new Date(existingScheduling.meta_data.end_date));
+    } else {
+      setEndDate(null);
+    }
+  }, [existingScheduling]);
+
   const [streamScheduling, setStreamScheduling] = useState(false);
   const [endDate, setEndDate] = useState<Date | null>(null);
+
   // const [fixedAmountEther, setFixedAmountEther] = useState<string>("");
 
   // useEffect(() => {
@@ -622,6 +660,24 @@ export default memo(function SendCard() {
             }
           </TransactionBoundary>
 
+          {streamScheduling && (
+            <Collapse in={streamScheduling}>
+              {visibleAddress && receiverAddress && endDate && token ? (
+                <StreamSchedulerButton
+                  network={network}
+                  senderAddress={visibleAddress}
+                  receiverAddress={receiverAddress}
+                  endDate={endDate}
+                  superTokenAddress={token.address}
+                />
+              ) : (
+                <Button {...transactionButtonDefaultProps} disabled={true}>
+                  Schedule
+                </Button>
+              )}
+            </Collapse>
+          )}
+
           <Stack
             direction="column"
             gap={1}
@@ -743,7 +799,7 @@ export default memo(function SendCard() {
         </Stack>
       </Card>
 
-      {doesNetworkSupportStreamScheduler && (
+      {/* {doesNetworkSupportStreamScheduler && (
         <TransactionBoundary mutationResult={doEverythingTogetherResult}>
           {() => (
             <TransactionButton
@@ -793,9 +849,9 @@ export default memo(function SendCard() {
             </TransactionButton>
           )}
         </TransactionBoundary>
-      )}
+      )} */}
 
-      {doesNetworkSupportStreamScheduler &&
+      {/* {doesNetworkSupportStreamScheduler &&
         activeFlow &&
         tokenAddress &&
         receiverAddress &&
@@ -821,7 +877,7 @@ export default memo(function SendCard() {
             receiverAddress={receiverAddress}
             senderAddress={visibleAddress}
           />
-        )}
+        )} */}
     </>
   );
 });

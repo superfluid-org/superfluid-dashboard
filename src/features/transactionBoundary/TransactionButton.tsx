@@ -4,6 +4,12 @@ import { Button, ButtonProps } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { Signer } from "ethers";
 
+export const transactionButtonDefaultProps: ButtonProps = {
+  fullWidth: true,
+  variant: "contained",
+  size: "xl",
+};
+
 export const TransactionButton: FC<{
   children: ReactNode;
   dataCy?: string;
@@ -21,13 +27,11 @@ export const TransactionButton: FC<{
     expectedNetwork,
     isCorrectNetwork,
     switchNetwork,
-    mutationResult
+    mutationResult,
   } = useTransactionBoundary();
 
   const buttonProps: ButtonProps = {
-    fullWidth: true,
-    variant: "contained",
-    size: "xl",
+    ...transactionButtonDefaultProps,
     ...ButtonProps,
   };
 
