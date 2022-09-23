@@ -19,6 +19,7 @@ import {
   mapStreamScheduling,
   isActiveStreamSchedulingOrder,
 } from "../../hooks/useScheduledStream";
+import { getAddress } from "../../utils/memoizedEthersUtils";
 import { EmptyRow } from "../common/EmptyRow";
 import { Network } from "../network/networks";
 import {
@@ -97,10 +98,12 @@ const StreamsTable: FC<StreamsTableProps> = ({
     },
   });
 
+  // TODO(KK): How to show for incoming streams?
   const { schedulings } = platformApi.useListSubscriptionsQuery(
-    network.platformUrl
+    (visibleAddress && network.platformUrl)
       ? {
-          account: visibleAddress,
+          account: getAddress(visibleAddress),
+          chainId: network.id,
           baseUrl: network.platformUrl,
         }
       : skipToken,
@@ -110,8 +113,6 @@ const StreamsTable: FC<StreamsTableProps> = ({
       }),
     }
   );
-
-  // TODO(KK): How to show for incoming streams?
 
   const pendingOutgoingStreams =
     useAddressPendingOutgoingStreams(visibleAddress);

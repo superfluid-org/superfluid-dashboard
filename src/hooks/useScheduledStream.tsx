@@ -6,10 +6,8 @@ import { PendingOutgoingStream } from "../features/pendingUpdates/PendingOutgoin
 import { platformApi } from "../features/redux/platformApi/platformApi";
 import { Subscription } from "../features/redux/platformApi/platformApiTemplate";
 import { subgraphApi } from "../features/redux/store";
-import {
-  ScheduledStream,
-  StreamScheduling,
-} from "../features/streamsTable/StreamScheduling";
+import { StreamScheduling } from "../features/streamsTable/StreamScheduling";
+import { getAddress } from "../utils/memoizedEthersUtils";
 
 export const useScheduledStream = (
   arg: Omit<StreamQuery, "block"> | SkipToken
@@ -23,7 +21,8 @@ export const useScheduledStream = (
   const { schedulings } = platformApi.useListSubscriptionsQuery(
     stream && network?.platformUrl
       ? {
-          account: stream.sender,
+          account: getAddress(stream.sender),
+          chainId: network.id,
           baseUrl: network.platformUrl,
         }
       : skipToken,

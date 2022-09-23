@@ -1,6 +1,5 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
-
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 import LinkIcon from "@mui/icons-material/Link";
 import ShareIcon from "@mui/icons-material/Share";
@@ -27,7 +26,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, useEffect, useMemo, useState } from "react";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 import AddressAvatar from "../../../components/AddressAvatar/AddressAvatar";
 import CopyTooltip from "../../../components/CopyTooltip/CopyTooltip";
 import SEO from "../../../components/SEO/SEO";
@@ -52,6 +51,8 @@ import {
   calculateMaybeCriticalAtTimestamp,
 } from "../../../utils/tokenUtils";
 import Page404 from "../../404";
+import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
+import TimerOutlined from "@mui/icons-material/TimerOutlined";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -325,14 +326,9 @@ const StreamPageContent: FC<{
     tokenAddress
   );
 
-  // const streamQuery = subgraphApi.useStreamQuery({
-  //   chainId: network.id,
-  //   id: streamId,
-  // });
-
   const scheduledStreamQuery = useScheduledStream({
     chainId: network.id,
-    id: streamId
+    id: streamId,
   });
 
   const tokenSnapshotQuery = subgraphApi.useAccountTokenSnapshotQuery({
@@ -388,7 +384,10 @@ const StreamPageContent: FC<{
   })}`;
 
   const bufferSize = useMemo(() => {
-    if (!scheduledStreamQuery.data || scheduledStreamQuery.data.currentFlowRate !== "0")
+    if (
+      !scheduledStreamQuery.data ||
+      scheduledStreamQuery.data.currentFlowRate !== "0"
+    )
       return null;
 
     const { currentFlowRate, createdAtTimestamp, streamedUntilUpdatedAt } =
@@ -420,9 +419,12 @@ const StreamPageContent: FC<{
     tokenSymbol,
     receiver,
     sender,
-    startDate,
     createdAtTimestamp,
     updatedAtTimestamp,
+    startDate,
+    startDateScheduled,
+    endDate,
+    endDateScheduled,
   } = scheduledStreamQuery.data;
 
   const isActive = currentFlowRate !== "0";
@@ -639,11 +641,14 @@ const StreamPageContent: FC<{
               },
             }}
           >
+            {/* // TODO(KK): Handle scheduled start date */}
+
             <OverviewItem
               dataCy={"start-date"}
               label="Start Date:"
               value={format(startDate.getTime(), "d MMM. yyyy H:mm")}
             />
+
             <OverviewItem
               dataCy={"buffer"}
               label="Buffer:"
@@ -658,20 +663,31 @@ const StreamPageContent: FC<{
               }
             />
 
-            {
-              
-            }
+            {!endDate && updatedAtTimestamp > createdAtTimestamp && (
+              <OverviewItem
+                label={`Updated Date:`}
+                value={format(updatedAtTimestamp * 1000, "d MMM. yyyy H:mm")}
+              />
+            )}
 
-            <OverviewItem
-              dataCy={"updated-end-date"}
-              label={`${isActive ? "Updated" : "End"} Date:`}
-              value={
-                updatedAtTimestamp
-                  ? format(updatedAtTimestamp * 1000, "d MMM. yyyy H:mm")
-                  : "-"
-              }
-            />
-
+            {endDateScheduled ? (
+              <OverviewItem
+                label={`Scheduled End Date:`}
+                value={
+                  <>
+                    <TimerOutlined />
+                    {format(endDateScheduled.getTime(), "d MMM. yyyy H:mm")}
+                  </>
+                } // TODO(KK): icon centering
+              />
+            ) : endDate ? (
+              <OverviewItem
+                label={`End Date:`}
+                value={format(endDate.getTime(), "d MMM. yyyy H:mm")}
+              />
+            ) : (
+              <OverviewItem label={`End Date:`} value={<AllInclusiveIcon />} />
+            )}
 
             <OverviewItem
               dataCy={"network-name"}
