@@ -6,18 +6,23 @@ import {
   Button,
   Card,
   Checkbox,
+  Collapse,
   Divider,
+  FormControl,
   FormControlLabel,
   FormGroup,
   FormLabel,
+  Grid,
   IconButton,
   Stack,
+  Switch,
   TextField,
   Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Token } from "@superfluid-finance/sdk-core";
 import { formatEther, parseEther } from "ethers/lib/utils";
@@ -60,6 +65,9 @@ import {
   PartialStreamingForm,
   ValidStreamingForm,
 } from "./StreamingFormProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { NonNullablePickerChangeHandler } from "@mui/x-date-pickers/internals/hooks/useViews";
 
 export default memo(function SendCard() {
   const theme = useTheme();
@@ -205,10 +213,26 @@ export default memo(function SendCard() {
   const doesNetworkSupportStreamScheduler =
     !!network.streamSchedulerContractAddress;
 
+  const [streamScheduling, setStreamScheduling] = useState(false);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  // const [fixedAmountEther, setFixedAmountEther] = useState<string>("");
+
+  // useEffect(() => {
+  //   if (!streamScheduling) {
+  //     setFixedAmountEther("");
+  //   } else {
+
+  //   }
+  // }, [streamScheduling, endDate, setFixedAmountEther, flowRateEther])
+
+  const [doEverythingTogether, doEverythingTogetherResult] =
+    rpcApi.useDoEverythingTogetherMutation();
+
   return (
     <>
       <Card
-        data-cy={"send-card"}elevation={1}
+        data-cy={"send-card"}
+        elevation={1}
         sx={{
           maxWidth: "600px",
           position: "relative",
@@ -294,7 +318,6 @@ export default memo(function SendCard() {
           >
             <Stack justifyContent="stretch">
               <FormLabel>Super Token</FormLabel>
-
               <Controller
                 control={control}
                 name="data.tokenAddress"
@@ -328,7 +351,6 @@ export default memo(function SendCard() {
                 <FormLabel>Flow Rate</FormLabel>
                 <TooltipIcon title="Flow rate is the velocity of tokens being streamed." />
               </Stack>
-
               <Controller
                 control={control}
                 name="data.flowRate"
@@ -343,7 +365,7 @@ export default memo(function SendCard() {
             </Box>
           </Box>
 
-          <Box
+          {/* <Box
             sx={{
               display: "grid",
               gridTemplateColumns: "4fr 3fr",
@@ -374,7 +396,41 @@ export default memo(function SendCard() {
                 fullWidth
               />
             </Box>
-          </Box>
+          </Box> */}
+
+          {doesNetworkSupportStreamScheduler && (
+            <>
+              <FormControlLabel
+                control={
+                  <Switch
+                    value={streamScheduling}
+                    onChange={(_event, value) => setStreamScheduling(value)}
+                  />
+                }
+                label="Stream Scheduling"
+              />
+              <Grid component={Collapse} in={streamScheduling} spacing={1}>
+                <FormGroup>
+                  <FormLabel>End Date</FormLabel>
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <DateTimePicker
+                      renderInput={(props) => (
+                        <TextField fullWidth {...props} />
+                      )}
+                      value={endDate}
+                      onChange={(newValue) => {
+                        setEndDate(newValue);
+                      }}
+                    />
+                  </LocalizationProvider>
+                </FormGroup>
+                {/* <FormGroup>
+                  <FormLabel>Fixed Amount</FormLabel>
+                  <TextField  />
+                </FormGroup> */}
+              </Grid>
+            </>
+          )}
 
           {tokenAddress && visibleAddress && (
             <>
@@ -535,7 +591,8 @@ export default memo(function SendCard() {
                       <TransactionDialogActions>
                         <Stack gap={1} sx={{ width: "100%" }}>
                           <TransactionDialogButton
-                            data-cy={"send-more-streams-button"}color="secondary"
+                            data-cy={"send-more-streams-button"}
+                            color="secondary"
                             onClick={closeDialog}
                           >
                             Send more streams
@@ -547,7 +604,10 @@ export default memo(function SendCard() {
                             })}
                             passHref
                           >
-                            <TransactionDialogButton data-cy="go-to-token-page-button"color="primary">
+                            <TransactionDialogButton
+                              data-cy="go-to-token-page-button"
+                              color="primary"
+                            >
                               Go to token page ➜
                             </TransactionDialogButton>
                           </Link>
@@ -571,7 +631,8 @@ export default memo(function SendCard() {
               {({ setDialogSuccessActions }) =>
                 activeFlow && (
                   <TransactionButton
-                    dataCy={"modify-stream-button"}disabled={isSendDisabled}
+                    dataCy={"modify-stream-button"}
+                    disabled={isSendDisabled}
                     onClick={async (signer) => {
                       if (!formState.isValid) {
                         throw Error("This should never happen.");
@@ -624,7 +685,10 @@ export default memo(function SendCard() {
                             })}
                             passHref
                           >
-                            <TransactionDialogButton data-cy={"go-to-token-page-button"} color="primary">
+                            <TransactionDialogButton
+                              data-cy={"go-to-token-page-button"}
+                              color="primary"
+                            >
                               Go to token page ➜
                             </TransactionDialogButton>
                           </Link>
@@ -678,6 +742,58 @@ export default memo(function SendCard() {
           </Stack>
         </Stack>
       </Card>
+
+      {doesNetworkSupportStreamScheduler && (
+        <TransactionBoundary mutationResult={doEverythingTogetherResult}>
+          {() => (
+            <TransactionButton
+              disabled={isSendDisabled || !endDate}
+              ButtonProps={{
+                variant: "outlined",
+              }}
+              onClick={async (signer) => {
+                const superTokenAddress = tokenAddress;
+                const senderAddress = visibleAddress;
+                if (
+                  !receiverAddress ||
+                  !superTokenAddress ||
+                  !senderAddress ||
+                  !endDate
+                ) {
+                  throw Error("This should never happen.");
+                }
+
+                const { data: formData } = getValues() as ValidStreamingForm;
+
+                doEverythingTogether({
+                  signer,
+                  chainId: network.id,
+                  flowRateWei: calculateTotalAmountWei({
+                    amountWei: parseEther(
+                      formData.flowRate.amountEther
+                    ).toString(),
+                    unitOfTime: formData.flowRate.unitOfTime,
+                  }).toString(),
+                  senderAddress: await signer.getAddress(),
+                  receiverAddress: formData.receiverAddress,
+                  superTokenAddress: formData.tokenAddress,
+                  userDataBytes: undefined,
+                  userData: "0x",
+                  endTimestamp: Math.round(endDate.getTime() / 1000),
+                  flowRateAllowance: "0",
+                  permissions: 0,
+                  waitForConfirmation: false,
+                  overrides: await getTransactionOverrides(network),
+                })
+                  .unwrap()
+                  .then(() => resetForm());
+              }}
+            >
+              Batch
+            </TransactionButton>
+          )}
+        </TransactionBoundary>
+      )}
 
       {doesNetworkSupportStreamScheduler &&
         activeFlow &&
