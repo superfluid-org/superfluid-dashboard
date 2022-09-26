@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest",
-    "generate-types": "eth-sdk -p ./src/eth-sdk",
+    "generate-eth-sdk": "eth-sdk -p ./src/eth-sdk",
     "generate-platform-api-template": "npx @rtk-query/codegen-openapi ./src/features/redux/platformApi/platformApiCodegenConfig.ts"
   },
   "dependencies": {
