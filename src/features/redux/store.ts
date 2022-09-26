@@ -31,6 +31,8 @@ import { adHocMulticallEndpoints } from "./endpoints/adHocMulticallEndpoints";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
 import { setupListeners } from "@reduxjs/toolkit/query";
+import { accountFlagsSlice } from "../flags/accountFlags.slice";
+import faucetApi from "../faucet/faucetApi.slice";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({
@@ -89,6 +91,11 @@ const networkPreferencesPersistedReducer = persistReducer(
   networkPreferencesSlice.reducer
 );
 
+const accountFlagsPersistedReducer = persistReducer(
+  { storage, key: "accountFlags", version: 1 },
+  accountFlagsSlice.reducer
+);
+
 export const reduxStore = configureStore({
   reducer: {
     [rpcApi.reducerPath]: rpcApi.reducer,
@@ -102,6 +109,8 @@ export const reduxStore = configureStore({
     networkPreferences: networkPreferencesPersistedReducer,
     [gasApi.reducerPath]: gasApi.reducer,
     pendingUpdates: pendingUpdateSlice.reducer,
+    accountFlags: accountFlagsPersistedReducer,
+    [faucetApi.reducerPath]: faucetApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

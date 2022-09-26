@@ -66,10 +66,7 @@ export default function MyApp(props: MyAppProps) {
                                     <IntercomProvider>
                                       <Layout>
                                         <MonitorContext />
-                                        <Component
-                                          key={`${network.slugName}`}
-                                          {...pageProps}
-                                        />
+                                        <Component {...pageProps} />
                                       </Layout>
                                     </IntercomProvider>
                                   </LayoutContextProvider>
