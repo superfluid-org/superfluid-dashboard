@@ -233,165 +233,155 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
 
       <TableCell>
         <ConnectionBoundary expectedNetwork={network}>
-          {() => (
-            <>
-              <TransactionBoundary mutationResult={approveSubscriptionResult}>
-                {({ mutationResult, signer, setDialogLoadingInfo }) =>
-                  !subscription.approved && (
-                    <>
-                      {mutationResult.isLoading || pendingApproval ? (
-                        <OperationProgress
-                          transactingText={"Approving..."}
-                          pendingUpdate={pendingApproval}
-                        />
-                      ) : (
-                        <Tooltip
-                          arrow
-                          disableInteractive
-                          title={
-                            !isConnected ? (
-                              <span>
-                                Connect wallet to approve subscription
-                              </span>
-                            ) : !isCorrectNetwork ? (
-                              <span>
-                                Switch network to{" "}
-                                <span translate="no">{network.name}</span> to
-                                approve subscription
-                              </span>
-                            ) : (
-                              <span>Approve subscription</span>
-                            )
-                          }
-                        >
+          <TransactionBoundary mutationResult={approveSubscriptionResult}>
+            {({ mutationResult, signer, setDialogLoadingInfo }) =>
+              !subscription.approved && (
+                <>
+                  {mutationResult.isLoading || pendingApproval ? (
+                    <OperationProgress
+                      transactingText={"Approving..."}
+                      pendingUpdate={pendingApproval}
+                    />
+                  ) : (
+                    <Tooltip
+                      arrow
+                      disableInteractive
+                      title={
+                        !isConnected ? (
+                          <span>Connect wallet to approve subscription</span>
+                        ) : !isCorrectNetwork ? (
                           <span>
-                            <IconButton
-                              data-cy={"approve-button"}
-                              color="primary"
-                              size="small"
-                              disabled={
-                                !signer || !isConnected || !isCorrectNetwork
-                              }
-                              onClick={async () => {
-                                if (!signer)
-                                  throw new Error(
-                                    "Signer should always be available here."
-                                  );
-
-                                setDialogLoadingInfo(
-                                  <Typography
-                                    data-cy={"approve-index-message"}
-                                    variant="h5"
-                                    color="text.secondary"
-                                    translate="yes"
-                                  >
-                                    You are approving an index subscription.
-                                  </Typography>
-                                );
-
-                                // TODO(KK): Make the operation take subscriber as input. Don't just rely on the wallet's signer -- better to have explicit data flowing
-                                approveSubscription({
-                                  signer,
-                                  chainId: expectedNetwork.id,
-                                  indexId: subscription.indexId,
-                                  publisherAddress: subscription.publisher,
-                                  superTokenAddress: subscription.token,
-                                  userDataBytes: undefined,
-                                  waitForConfirmation: false,
-                                  overrides: await getTransactionOverrides(
-                                    network
-                                  ),
-                                });
-                              }}
-                            >
-                              <CheckCircleRoundedIcon />
-                            </IconButton>
+                            Switch network to{" "}
+                            <span translate="no">{network.name}</span> to
+                            approve subscription
                           </span>
-                        </Tooltip>
-                      )}
-                    </>
-                  )
-                }
-              </TransactionBoundary>
-              <TransactionBoundary mutationResult={revokeSubscriptionResult}>
-                {({ mutationResult, signer, setDialogLoadingInfo }) =>
-                  subscription.approved && (
-                    <>
-                      {mutationResult.isLoading || pendingRevoke ? (
-                        <OperationProgress
-                          transactingText={"Revoking..."}
-                          pendingUpdate={pendingRevoke}
-                        />
-                      ) : (
-                        <Tooltip
-                          arrow
-                          disableInteractive
-                          title={
-                            !isConnected ? (
-                              <span>Connect wallet to revoke subscription</span>
-                            ) : !isCorrectNetwork ? (
-                              <span>
-                                Switch network to{" "}
-                                <span translate="no">{network.name}</span> to
-                                revoke subscription
-                              </span>
-                            ) : (
-                              <span>Revoke subscription</span>
-                            )
+                        ) : (
+                          <span>Approve subscription</span>
+                        )
+                      }
+                    >
+                      <span>
+                        <IconButton
+                          data-cy={"approve-button"}
+                          color="primary"
+                          size="small"
+                          disabled={
+                            !signer || !isConnected || !isCorrectNetwork
                           }
+                          onClick={async () => {
+                            if (!signer)
+                              throw new Error(
+                                "Signer should always be available here."
+                              );
+
+                            setDialogLoadingInfo(
+                              <Typography
+                                data-cy={"approve-index-message"}
+                                variant="h5"
+                                color="text.secondary"
+                                translate="yes"
+                              >
+                                You are approving an index subscription.
+                              </Typography>
+                            );
+
+                            // TODO(KK): Make the operation take subscriber as input. Don't just rely on the wallet's signer -- better to have explicit data flowing
+                            approveSubscription({
+                              signer,
+                              chainId: expectedNetwork.id,
+                              indexId: subscription.indexId,
+                              publisherAddress: subscription.publisher,
+                              superTokenAddress: subscription.token,
+                              userDataBytes: undefined,
+                              waitForConfirmation: false,
+                              overrides: await getTransactionOverrides(network),
+                            });
+                          }}
                         >
+                          <CheckCircleRoundedIcon />
+                        </IconButton>
+                      </span>
+                    </Tooltip>
+                  )}
+                </>
+              )
+            }
+          </TransactionBoundary>
+          <TransactionBoundary mutationResult={revokeSubscriptionResult}>
+            {({ mutationResult, signer, setDialogLoadingInfo }) =>
+              subscription.approved && (
+                <>
+                  {mutationResult.isLoading || pendingRevoke ? (
+                    <OperationProgress
+                      transactingText={"Revoking..."}
+                      pendingUpdate={pendingRevoke}
+                    />
+                  ) : (
+                    <Tooltip
+                      arrow
+                      disableInteractive
+                      title={
+                        !isConnected ? (
+                          <span>Connect wallet to revoke subscription</span>
+                        ) : !isCorrectNetwork ? (
                           <span>
-                            <IconButton
-                              data-cy={"revoke-button"}
-                              color="error"
-                              size="small"
-                              disabled={
-                                !signer || !isConnected || !isCorrectNetwork
-                              }
-                              onClick={async () => {
-                                if (!signer)
-                                  throw new Error(
-                                    "Signer should always bet available here."
-                                  );
-
-                                setDialogLoadingInfo(
-                                  <Typography
-                                    data-cy={"revoke-message"}
-                                    variant="h5"
-                                    color="text.secondary"
-                                    translate="yes"
-                                  >
-                                    You are revoking approval of an index
-                                    subscription.
-                                  </Typography>
-                                );
-
-                                // TODO(KK): Make the operation take subscriber as input. Don't just rely on the wallet's signer -- better to have explicit data flowing
-                                revokeSubscription({
-                                  signer,
-                                  chainId: expectedNetwork.id,
-                                  indexId: subscription.indexId,
-                                  publisherAddress: subscription.publisher,
-                                  superTokenAddress: subscription.token,
-                                  userDataBytes: undefined,
-                                  waitForConfirmation: false,
-                                  overrides: await getTransactionOverrides(
-                                    network
-                                  ),
-                                });
-                              }}
-                            >
-                              <CancelRoundedIcon />
-                            </IconButton>
+                            Switch network to{" "}
+                            <span translate="no">{network.name}</span> to revoke
+                            subscription
                           </span>
-                        </Tooltip>
-                      )}
-                    </>
-                  )
-                }
-              </TransactionBoundary>
-            </>
-          )}
+                        ) : (
+                          <span>Revoke subscription</span>
+                        )
+                      }
+                    >
+                      <span>
+                        <IconButton
+                          data-cy={"revoke-button"}
+                          color="error"
+                          size="small"
+                          disabled={
+                            !signer || !isConnected || !isCorrectNetwork
+                          }
+                          onClick={async () => {
+                            if (!signer)
+                              throw new Error(
+                                "Signer should always bet available here."
+                              );
+
+                            setDialogLoadingInfo(
+                              <Typography
+                                data-cy={"revoke-message"}
+                                variant="h5"
+                                color="text.secondary"
+                                translate="yes"
+                              >
+                                You are revoking approval of an index
+                                subscription.
+                              </Typography>
+                            );
+
+                            // TODO(KK): Make the operation take subscriber as input. Don't just rely on the wallet's signer -- better to have explicit data flowing
+                            revokeSubscription({
+                              signer,
+                              chainId: expectedNetwork.id,
+                              indexId: subscription.indexId,
+                              publisherAddress: subscription.publisher,
+                              superTokenAddress: subscription.token,
+                              userDataBytes: undefined,
+                              waitForConfirmation: false,
+                              overrides: await getTransactionOverrides(network),
+                            });
+                          }}
+                        >
+                          <CancelRoundedIcon />
+                        </IconButton>
+                      </span>
+                    </Tooltip>
+                  )}
+                </>
+              )
+            }
+          </TransactionBoundary>
         </ConnectionBoundary>
       </TableCell>
     </TableRow>

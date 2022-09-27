@@ -1,4 +1,10 @@
-import { createContext, FC, ReactNode, useContext, useMemo } from "react";
+import React, {
+  createContext,
+  FC,
+  ReactNode,
+  useContext,
+  useMemo,
+} from "react";
 import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import { useAutoConnect } from "../autoConnect/AutoConnect";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
@@ -24,8 +30,10 @@ const ConnectionBoundaryContext = createContext<ConnectionBoundaryContextValue>(
 export const useConnectionBoundary = () =>
   useContext(ConnectionBoundaryContext);
 
+type FunctionChildType = (arg: ConnectionBoundaryContextValue) => ReactNode;
+
 interface ConnectionBoundaryProps {
-  children: (arg: ConnectionBoundaryContextValue) => ReactNode;
+  children: ReactNode | FunctionChildType;
   expectedNetwork?: Network;
 }
 
@@ -70,7 +78,7 @@ const ConnectionBoundary: FC<ConnectionBoundaryProps> = ({
 
   return (
     <ConnectionBoundaryContext.Provider value={contextValue}>
-      {children(contextValue)}
+      {typeof children === "function" ? children(contextValue) : children}
     </ConnectionBoundaryContext.Provider>
   );
 };

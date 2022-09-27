@@ -2,9 +2,7 @@ import { LoadingButton } from "@mui/lab";
 import {
   Alert,
   AlertTitle,
-  Box,
   Button,
-  Chip,
   DialogContent,
   DialogTitle,
   FormGroup,
@@ -13,6 +11,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { Address } from "@superfluid-finance/sdk-core";
 import Link from "next/link";
 import { FC, useCallback, useMemo } from "react";
 import { useAccount } from "wagmi";
@@ -22,30 +21,28 @@ import { Flag } from "../flags/accountFlags.slice";
 import { useAccountHasChainFlag } from "../flags/accountFlagsHooks";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { networkDefinition } from "../network/networks";
-import TokenIcon from "../token/TokenIcon";
+import TokenChip from "../token/TokenChip";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import ConnectionBoundaryButton from "../transactionBoundary/ConnectionBoundaryButton";
 import faucetApi from "./faucetApi.slice";
 
-interface TokenChipProps {
-  symbol: string;
+interface PrefilledAddressInputProps {
+  address: Address;
 }
 
-const TokenChip: FC<TokenChipProps> = ({ symbol }) => (
-  <Chip
-    variant="outlined"
-    label={symbol}
-    avatar={
-      <Box
-        sx={{
-          ml: 1.5, // Adding ml manually because TokenIcon is not wrapped by <Icon> or <Avatar> which is usually required by MUI theme.
-        }}
-      >
-        <TokenIcon tokenSymbol={symbol} size={24} />
-      </Box>
-    }
-  />
-);
+const PrefilledAddressInput: FC<PrefilledAddressInputProps> = ({ address }) => {
+  const addressName = useAddressName(address);
+
+  return (
+    <FormGroup>
+      <FormLabel>Connected Wallet Address</FormLabel>
+      <TextField
+        value={addressName.name || addressName.addressChecksummed}
+        disabled
+      />
+    </FormGroup>
+  );
+};
 
 interface FaucetDialogProps {
   onClose: () => void;
@@ -54,7 +51,6 @@ interface FaucetDialogProps {
 const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
   const { address: accountAddress } = useAccount();
   const { network } = useExpectedNetwork();
-  const addressName = useAddressName(accountAddress || "");
 
   const [claimTestTokensTrigger, claimTestTokensResponse] =
     faucetApi.useLazyClaimTestTokensQuery();
@@ -105,15 +101,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
             <TokenChip symbol="fDAI" />
           </Stack>
 
-          {accountAddress && (
-            <FormGroup>
-              <FormLabel>Connected Wallet Address</FormLabel>
-              <TextField
-                value={addressName.name || addressName.addressChecksummed}
-                disabled
-              />
-            </FormGroup>
-          )}
+          {accountAddress && <PrefilledAddressInput address={accountAddress} />}
 
           {claimTestTokensResponse.isError && (
             <Alert severity="error">
@@ -131,46 +119,44 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
           )}
 
           <ConnectionBoundary expectedNetwork={expectedTestNetwork}>
-            {({}) => (
-              <ConnectionBoundaryButton
-                ButtonProps={{
-                  size: "xl",
-                  fullWidth: true,
-                  variant: "contained",
-                }}
-              >
-                <Stack gap={2}>
-                  {!(
-                    claimTestTokensResponse.isError ||
-                    claimTestTokensResponse.isSuccess
-                  ) && (
-                    <LoadingButton
+            <ConnectionBoundaryButton
+              ButtonProps={{
+                size: "xl",
+                fullWidth: true,
+                variant: "contained",
+              }}
+            >
+              <Stack gap={2}>
+                {!(
+                  claimTestTokensResponse.isError ||
+                  claimTestTokensResponse.isSuccess
+                ) && (
+                  <LoadingButton
+                    size="xl"
+                    fullWidth
+                    loading={claimTestTokensResponse.isLoading}
+                    variant="contained"
+                    disabled={hasClaimedTokens}
+                    onClick={claimTokens}
+                  >
+                    {hasClaimedTokens ? "Tokens Claimed" : "Claim"}
+                  </LoadingButton>
+                )}
+
+                {hasClaimedTokens && (
+                  <Link href="/wrap" passHref>
+                    <Button
                       size="xl"
                       fullWidth
-                      loading={claimTestTokensResponse.isLoading}
                       variant="contained"
-                      disabled={hasClaimedTokens}
-                      onClick={claimTokens}
+                      href="/wrap"
                     >
-                      {hasClaimedTokens ? "Tokens Claimed" : "Claim"}
-                    </LoadingButton>
-                  )}
-
-                  {hasClaimedTokens && (
-                    <Link href="/wrap" passHref>
-                      <Button
-                        size="xl"
-                        fullWidth
-                        variant="contained"
-                        href="/wrap"
-                      >
-                        Go to wrap page ➜
-                      </Button>
-                    </Link>
-                  )}
-                </Stack>
-              </ConnectionBoundaryButton>
-            )}
+                      Go to wrap page ➜
+                    </Button>
+                  </Link>
+                )}
+              </Stack>
+            </ConnectionBoundaryButton>
           </ConnectionBoundary>
         </Stack>
       </DialogContent>
