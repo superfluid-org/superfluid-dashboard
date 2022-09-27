@@ -133,7 +133,7 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({
           py: 2,
           px: 3.5 + 2, // Column gap + 2 spacing for the next card to peek out.
           overflowY: "auto",
-          gridTemplateColumns: "repeat(3, 100%)",
+          gridTemplateColumns: "repeat(4, 100%)",
           justifyContent: "flex-start",
           alignItems: "flex-start",
           scrollSnapType: "x mandatory",

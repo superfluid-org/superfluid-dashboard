@@ -5,43 +5,66 @@ import {
   ListItemIcon,
   ListItemText,
   Paper,
+  Stack,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import Link from "next/link";
 import { FC } from "react";
 
-const FaucetCard: FC = () => (
-  <Paper sx={{ px: 6.5, py: 3.5 }}>
-    <ListItem
-      disablePadding
-      disableGutters
-      secondaryAction={
-        <Link href="/?showFaucet=true" passHref>
-          <Button
-            variant="contained"
-            size="large"
-            color="primary"
-            sx={{ width: "180px" }}
-            href="/?showFaucet=true"
-          >
-            Claim
-          </Button>
-        </Link>
-      }
+const ClaimTokensBtn = () => (
+  <Link href="/?showFaucet=true" passHref>
+    <Button
+      variant="contained"
+      color="primary"
+      href="/?showFaucet=true"
+      sx={{ width: 88 }}
     >
-      <ListItemIcon>
-        <MoveToInboxRoundedIcon fontSize="large" color="primary" />
-      </ListItemIcon>
-      <ListItemText
-        primary="Get Testnet Tokens"
-        secondary="Claim tokens from our free testnet faucet to try out streaming payments."
-        primaryTypographyProps={{ variant: "h5" }}
-        secondaryTypographyProps={{
-          variant: "body1",
-          color: "text.primary",
-        }}
-      />
-    </ListItem>
-  </Paper>
+      Claim
+    </Button>
+  </Link>
 );
+
+const FaucetCard: FC = () => {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
+  return (
+    <Paper sx={{ px: isBelowMd ? 2 : 6, py: isBelowMd ? 2 : 3 }}>
+      <ListItem
+        disablePadding
+        disableGutters
+        secondaryAction={!isBelowMd ? <ClaimTokensBtn /> : undefined}
+        sx={{
+          [theme.breakpoints.down("md")]: {
+            flexDirection: "column",
+            textAlign: "center",
+            gap: 2,
+          },
+        }}
+      >
+        <ListItemIcon
+          sx={{
+            [theme.breakpoints.down("md")]: {
+              mr: 0,
+            },
+          }}
+        >
+          <MoveToInboxRoundedIcon fontSize="large" color="primary" />
+        </ListItemIcon>
+        <ListItemText
+          primary="Get Testnet Tokens"
+          secondary="Claim tokens from our free testnet faucet to try out streaming payments."
+          primaryTypographyProps={{ variant: "h5" }}
+          secondaryTypographyProps={{
+            variant: "body1",
+            color: "text.primary",
+          }}
+        />
+        {isBelowMd && <ClaimTokensBtn />}
+      </ListItem>
+    </Paper>
+  );
+};
 
 export default FaucetCard;
