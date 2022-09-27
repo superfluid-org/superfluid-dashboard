@@ -163,16 +163,6 @@ export default memo(function SendCard() {
 
   const isWrappableSuperToken = token ? isWrappable(token) : false;
 
-  const amountPerSecond = useMemo(
-    () =>
-      formatEther(
-        parseEtherOrZero(flowRateEther.amountEther).div(
-          flowRateEther.unitOfTime
-        )
-      ),
-    [flowRateEther?.amountEther, flowRateEther?.unitOfTime]
-  );
-
   const [flowCreateTrigger, flowCreateResult] = rpcApi.useFlowCreateMutation();
   const [flowUpdateTrigger, flowUpdateResult] = rpcApi.useFlowUpdateMutation();
   const [flowDeleteTrigger, flowDeleteResult] = rpcApi.useFlowDeleteMutation();
@@ -498,10 +488,6 @@ export default memo(function SendCard() {
                     />
                   </LocalizationProvider>
                 </FormGroup>
-                {/* <FormGroup>
-                  <FormLabel>Fixed Amount</FormLabel>
-                  <TextField  />
-                </FormGroup> */}
               </Stack>
             </>
           )}
@@ -649,17 +635,6 @@ export default memo(function SendCard() {
                     })
                       .unwrap()
                       .then(() => resetForm());
-
-                    // updateStreamSchedulerPermissions({
-                    //   signer,
-                    //   chainId: network.id,
-                    //   flowRateAllowance: calculateTotalAmountWei(flowRateEther).toString(),
-                    //   overrides: await getTransactionOverrides(network),
-                    //   permissions: 4,
-                    //   superTokenAddress: formData.tokenAddress,
-                    //   waitForConfirmation: true,
-                    //   userData: undefined
-                    // }).unwrap();
 
                     setDialogSuccessActions(
                       <TransactionDialogActions>
@@ -834,86 +809,6 @@ export default memo(function SendCard() {
           </Stack>
         </Stack>
       </Card>
-
-      {/* {doesNetworkSupportStreamScheduler && (
-        <TransactionBoundary mutationResult={doEverythingTogetherResult}>
-          {() => (
-            <TransactionButton
-              disabled={isSendDisabled || !endDate}
-              ButtonProps={{
-                variant: "outlined",
-              }}
-              onClick={async (signer) => {
-                const superTokenAddress = tokenAddress;
-                const senderAddress = visibleAddress;
-                if (
-                  !receiverAddress ||
-                  !superTokenAddress ||
-                  !senderAddress ||
-                  !endDate
-                ) {
-                  throw Error("This should never happen.");
-                }
-
-                const { data: formData } = getValues() as ValidStreamingForm;
-
-                doEverythingTogether({
-                  signer,
-                  chainId: network.id,
-                  flowRateWei: calculateTotalAmountWei({
-                    amountWei: parseEther(
-                      formData.flowRate.amountEther
-                    ).toString(),
-                    unitOfTime: formData.flowRate.unitOfTime,
-                  }).toString(),
-                  senderAddress: await signer.getAddress(),
-                  receiverAddress: formData.receiverAddress,
-                  superTokenAddress: formData.tokenAddress,
-                  userDataBytes: undefined,
-                  userData: "0x",
-                  endTimestamp: Math.round(endDate.getTime() / 1000),
-                  flowRateAllowance: "0",
-                  permissions: 0,
-                  waitForConfirmation: false,
-                  overrides: await getTransactionOverrides(network),
-                })
-                  .unwrap()
-                  .then(() => resetForm());
-              }}
-            >
-              Batch
-            </TransactionButton>
-          )}
-        </TransactionBoundary>
-      )} */}
-
-      {/* {doesNetworkSupportStreamScheduler &&
-        activeFlow &&
-        tokenAddress &&
-        receiverAddress &&
-        visibleAddress && (
-          <StreamEndDate
-            CardProps={{
-              elevation: 1,
-              sx: {
-                mt: 5,
-                maxWidth: "600px",
-                position: "relative",
-                [theme.breakpoints.down("md")]: {
-                  boxShadow: "none",
-                  backgroundImage: "none",
-                  borderRadius: 0,
-                  border: 0,
-                  p: 0,
-                },
-              },
-            }}
-            network={network}
-            superTokenAddress={tokenAddress}
-            receiverAddress={receiverAddress}
-            senderAddress={visibleAddress}
-          />
-        )} */}
     </>
   );
 });

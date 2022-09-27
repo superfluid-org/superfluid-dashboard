@@ -10,6 +10,8 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { differenceInDays, format } from "date-fns";
+import { BigNumber } from "ethers";
+import { formatEther, parseEther } from "ethers/lib/utils";
 import {
   FC,
   isValidElement,
@@ -142,6 +144,19 @@ export const StreamingPreview: FC<{
       : skipToken
   );
 
+  const newAmountPerSecond = useMemo<string>(
+    () =>
+      formatEther(
+        parseEther(flowRateEther.amountEther).div(flowRateEther.unitOfTime)
+      ),
+    [flowRateEther.amountEther, flowRateEther.unitOfTime]
+  );
+
+  const oldAmountPerSecond = useMemo<string | undefined>(
+    () => (existingFlow ? formatEther(existingFlow.flowRateWei) : undefined),
+    [existingFlow]
+  );
+
   const calculateBufferInfo = useCalculateBufferInfo();
 
   const {
@@ -245,6 +260,17 @@ export const StreamingPreview: FC<{
           }
         >
           {flowRateEtherToString(flowRateEther, token.symbol)}
+        </PreviewItem>
+
+        <PreviewItem
+          label="Amount per second"
+          oldValue={
+            oldAmountPerSecond != newAmountPerSecond
+              ? oldAmountPerSecond
+              : undefined
+          }
+        >
+          {newAmountPerSecond}
         </PreviewItem>
 
         <PreviewItem dataCy="preview-ends-on" label="Ends on">
