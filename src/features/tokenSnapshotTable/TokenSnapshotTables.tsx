@@ -10,6 +10,7 @@ import { FC, useCallback, useMemo, useRef, useState } from "react";
 import { useAccount } from "wagmi";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import FaucetCard from "../faucet/FaucetCard";
+import FaucetDialog from "../faucet/FaucetDialog";
 import { Flag } from "../flags/accountFlags.slice";
 import { useAccountHasChainFlag } from "../flags/accountFlagsHooks";
 import { useActiveNetworks } from "../network/ActiveNetworksContext";
@@ -51,9 +52,13 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
     useState<NetworkFetchingStatuses>({});
 
   const [networkSelectionOpen, setNetworkSelectionOpen] = useState(false);
+  const [faucetDialogOpen, setFaucetDialogOpen] = useState(false);
 
   const openNetworkSelection = () => setNetworkSelectionOpen(true);
   const closeNetworkSelection = () => setNetworkSelectionOpen(false);
+
+  const openFaucetDialog = () => setFaucetDialogOpen(true);
+  const closeFaucetDialog = () => setFaucetDialogOpen(false);
 
   const fetchingCallback = useCallback(
     (networkId: number, fetchingStatus: FetchingStatus) =>
@@ -83,6 +88,8 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
 
   return (
     <>
+      {/* {faucetDialogOpen && <FaucetDialog onClose={closeFaucetDialog} />} */}
+
       <Stack
         direction="row"
         alignItems="center"

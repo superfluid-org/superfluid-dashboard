@@ -244,15 +244,11 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
                     IconButtonProps={{ size: "small" }}
                   />
                 )}
-                <ConnectionBoundary>
-                  {() => (
-                    <CancelStreamButton
-                      stream={stream as Stream}
-                      network={network}
-                      IconButtonProps={{ size: "small" }}
-                    />
-                  )}
-                </ConnectionBoundary>
+                <CancelStreamButton
+                  stream={stream as Stream}
+                  network={network}
+                  IconButtonProps={{ size: "small" }}
+                />
               </>
             )}
           </Stack>

@@ -12,7 +12,7 @@ import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverride
 import { Network } from "../../network/networks";
 import { usePendingStreamCancellation } from "../../pendingUpdates/PendingStreamCancellation";
 import { rpcApi } from "../../redux/store";
-import { useConnectionBoundary } from "../../transactionBoundary/ConnectionBoundary";
+import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import CancelStreamProgress from "./CancelStreamProgress";
 
@@ -30,7 +30,6 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
   TooltipProps = {},
 }) => {
   const { token, sender, receiver } = stream;
-  const { isCorrectNetwork, isConnected } = useConnectionBoundary();
   const [flowDeleteTrigger, flowDeleteMutation] =
     rpcApi.useFlowDeleteMutation();
   const getTransactionOverrides = useGetTransactionOverrides();
@@ -54,46 +53,52 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
   };
 
   return (
-    <TransactionBoundary mutationResult={flowDeleteMutation}>
-      {({ mutationResult, signer }) =>
-        mutationResult.isLoading || !!pendingCancellation ? (
-          <CancelStreamProgress pendingCancellation={pendingCancellation} />
-        ) : (
-          <>
-            <Tooltip
-              data-cy={"switch-network-tooltip"}
-              placement="top"
-              arrow
-              disableInteractive
-              title={
-                !isConnected
-                  ? "Connect wallet to cancel stream"
-                  : !isCorrectNetwork
-                  ? `Switch network to ${network.name} to cancel stream`
-                  : "Cancel stream"
-              }
-              {...TooltipProps}
-            >
-              <span>
-                <IconButton
-                  data-cy={"cancel-button"}
-                  color="error"
-                  onClick={() => {
-                    if (!signer)
-                      throw new Error("Signer should always be present here.");
-                    deleteStream(signer);
-                  }}
-                  disabled={!(isConnected && signer && isCorrectNetwork)}
-                  {...IconButtonProps}
+    <ConnectionBoundary>
+      {({ isConnected, isCorrectNetwork }) => (
+        <TransactionBoundary mutationResult={flowDeleteMutation}>
+          {({ mutationResult, signer }) =>
+            mutationResult.isLoading || !!pendingCancellation ? (
+              <CancelStreamProgress pendingCancellation={pendingCancellation} />
+            ) : (
+              <>
+                <Tooltip
+                  data-cy={"switch-network-tooltip"}
+                  placement="top"
+                  arrow
+                  disableInteractive
+                  title={
+                    !isConnected
+                      ? "Connect wallet to cancel stream"
+                      : !isCorrectNetwork
+                      ? `Switch network to ${network.name} to cancel stream`
+                      : "Cancel stream"
+                  }
+                  {...TooltipProps}
                 >
-                  <CancelRoundedIcon />
-                </IconButton>
-              </span>
-            </Tooltip>
-          </>
-        )
-      }
-    </TransactionBoundary>
+                  <span>
+                    <IconButton
+                      data-cy={"cancel-button"}
+                      color="error"
+                      onClick={() => {
+                        if (!signer)
+                          throw new Error(
+                            "Signer should always be present here."
+                          );
+                        deleteStream(signer);
+                      }}
+                      disabled={!(isConnected && signer && isCorrectNetwork)}
+                      {...IconButtonProps}
+                    >
+                      <CancelRoundedIcon />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              </>
+            )
+          }
+        </TransactionBoundary>
+      )}
+    </ConnectionBoundary>
   );
 };
 

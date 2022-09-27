@@ -471,15 +471,11 @@ const StreamPageContent: FC<{
                     />
                   )}
                   {isActive && (
-                    <ConnectionBoundary>
-                      {() => (
-                        <CancelStreamButton
-                          data-cy={"cancel-button"}
-                          stream={streamQuery.data}
-                          network={network}
-                        />
-                      )}
-                    </ConnectionBoundary>
+                    <CancelStreamButton
+                      data-cy={"cancel-button"}
+                      stream={streamQuery.data}
+                      network={network}
+                    />
                   )}
                 </>
               )}

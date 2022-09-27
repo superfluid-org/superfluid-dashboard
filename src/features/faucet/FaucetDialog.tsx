@@ -1,5 +1,7 @@
 import { LoadingButton } from "@mui/lab";
 import {
+  Alert,
+  AlertTitle,
   Box,
   Button,
   Chip,
@@ -11,28 +13,28 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import Link from "next/link";
 import { FC, useCallback, useMemo } from "react";
-import { useAccount, useSwitchNetwork } from "wagmi";
+import { useAccount } from "wagmi";
+import useAddressName from "../../hooks/useAddressName";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import { Flag } from "../flags/accountFlags.slice";
 import { useAccountHasChainFlag } from "../flags/accountFlagsHooks";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { networkDefinition } from "../network/networks";
-import { useAppDispatch } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import ConnectionBoundaryButton from "../transactionBoundary/ConnectionBoundaryButton";
 import faucetApi from "./faucetApi.slice";
 
 interface TokenChipProps {
-  name: string;
   symbol: string;
 }
 
-const TokenChip: FC<TokenChipProps> = ({ name, symbol }) => (
+const TokenChip: FC<TokenChipProps> = ({ symbol }) => (
   <Chip
     variant="outlined"
-    label={name}
+    label={symbol}
     avatar={
       <Box
         sx={{
@@ -46,15 +48,13 @@ const TokenChip: FC<TokenChipProps> = ({ name, symbol }) => (
 );
 
 interface FaucetDialogProps {
-  open: boolean;
   onClose: () => void;
 }
 
-const GOERLI_ID = networkDefinition.goerli.id;
-
-const FaucetDialog: FC<FaucetDialogProps> = ({ open, onClose }) => {
+const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
   const { address: accountAddress } = useAccount();
   const { network } = useExpectedNetwork();
+  const addressName = useAddressName(accountAddress || "");
 
   const [claimTestTokensTrigger, claimTestTokensResponse] =
     faucetApi.useLazyClaimTestTokensQuery();
@@ -81,7 +81,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ open, onClose }) => {
 
   return (
     <ResponsiveDialog
-      open={open}
+      open
       onClose={onClose}
       PaperProps={{ sx: { borderRadius: "20px", maxWidth: 520 } }}
     >
@@ -99,20 +99,36 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ open, onClose }) => {
             direction="row"
             gap={0.5}
           >
-            <TokenChip name="ETH" symbol="eth" />
-            <TokenChip name="DAI" symbol="dai" />
-            <TokenChip name="USDC" symbol="usdc" />
-            <TokenChip name="USDT" symbol="usdt" />
+            <TokenChip symbol="ETH" />
+            <TokenChip symbol="fUSDC" />
+            <TokenChip symbol="fTUSD" />
+            <TokenChip symbol="fDAI" />
           </Stack>
 
           {accountAddress && (
             <FormGroup>
               <FormLabel>Connected Wallet Address</FormLabel>
-              <TextField value={accountAddress} disabled />
+              <TextField
+                value={addressName.name || addressName.addressChecksummed}
+                disabled
+              />
             </FormGroup>
           )}
 
-          <Typography>Claimed: {hasClaimedTokens.toString()}</Typography>
+          {claimTestTokensResponse.isError && (
+            <Alert severity="error">
+              <AlertTitle>
+                You’ve already claimed tokens from another source using this
+                address
+              </AlertTitle>
+            </Alert>
+          )}
+
+          {claimTestTokensResponse.isSuccess && (
+            <Alert severity="success">
+              <AlertTitle>Testnet tokens successfully sent</AlertTitle>
+            </Alert>
+          )}
 
           <ConnectionBoundary expectedNetwork={expectedTestNetwork}>
             {({}) => (
@@ -123,16 +139,36 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ open, onClose }) => {
                   variant: "contained",
                 }}
               >
-                <LoadingButton
-                  size="xl"
-                  fullWidth
-                  loading={claimTestTokensResponse.isLoading}
-                  variant="contained"
-                  disabled={hasClaimedTokens}
-                  onClick={claimTokens}
-                >
-                  {hasClaimedTokens ? "Tokens claimed" : "Claim"}
-                </LoadingButton>
+                <Stack gap={2}>
+                  {!(
+                    claimTestTokensResponse.isError ||
+                    claimTestTokensResponse.isSuccess
+                  ) && (
+                    <LoadingButton
+                      size="xl"
+                      fullWidth
+                      loading={claimTestTokensResponse.isLoading}
+                      variant="contained"
+                      disabled={hasClaimedTokens}
+                      onClick={claimTokens}
+                    >
+                      {hasClaimedTokens ? "Tokens Claimed" : "Claim"}
+                    </LoadingButton>
+                  )}
+
+                  {hasClaimedTokens && (
+                    <Link href="/wrap" passHref>
+                      <Button
+                        size="xl"
+                        fullWidth
+                        variant="contained"
+                        href="/wrap"
+                      >
+                        Go to wrap page ➜
+                      </Button>
+                    </Link>
+                  )}
+                </Stack>
               </ConnectionBoundaryButton>
             )}
           </ConnectionBoundary>

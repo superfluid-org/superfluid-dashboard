@@ -151,7 +151,7 @@ const Home: NextPage = () => {
         <ConnectView />
       )}
 
-      <FaucetDialog open={faucetDialogOpen} onClose={closeFaucetDialog} />
+      {faucetDialogOpen && <FaucetDialog onClose={closeFaucetDialog} />}
     </Container>
   );
 };

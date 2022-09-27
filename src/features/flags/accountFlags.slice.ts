@@ -1,15 +1,13 @@
 import {
-  createAsyncThunk,
   createEntityAdapter,
-  createSelector,
   createSlice,
   EntityState,
+  isAnyOf,
 } from "@reduxjs/toolkit";
 import { Address } from "@superfluid-finance/sdk-core";
-import { useMemo } from "react";
 import { getAddress } from "../../utils/memoizedEthersUtils";
 import faucetApi from "../faucet/faucetApi.slice";
-import { RootState, useAppSelector } from "../redux/store";
+import { RootState } from "../redux/store";
 
 export enum Flag {
   TestTokensReceived = "test-tokens-received",
@@ -43,7 +41,10 @@ export const accountFlagsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addMatcher(
-      faucetApi.endpoints.claimTestTokens.matchFulfilled,
+      isAnyOf(
+        faucetApi.endpoints.claimTestTokens.matchFulfilled,
+        faucetApi.endpoints.claimTestTokens.matchRejected
+      ),
       (state, { meta }) => {
         const { account, chainId } = meta.arg.originalArgs;
 
