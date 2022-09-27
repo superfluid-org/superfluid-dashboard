@@ -4,7 +4,7 @@ import { parseEther } from "ethers/lib/utils";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
-import { bool, mixed, object, ObjectSchema, string } from "yup";
+import { bool, date, mixed, object, ObjectSchema, string } from "yup";
 import { dateNowSeconds } from "../../utils/dateUtils";
 import { getMinimumStreamTimeInMinutes } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
@@ -23,6 +23,7 @@ export type ValidStreamingForm = {
       unitOfTime: UnitOfTime;
     };
     understandLiquidationRisk: boolean;
+    endDate: Date | null;
   };
 };
 
@@ -35,6 +36,7 @@ const defaultFormValues = {
     receiverAddress: null,
     tokenAddress: null,
     understandLiquidationRisk: false,
+    endDate: null
   },
 };
 
@@ -46,6 +48,7 @@ export type PartialStreamingForm = {
       | ValidStreamingForm["data"]["flowRate"]
       | typeof defaultFormValues.data.flowRate;
     understandLiquidationRisk: boolean;
+    endDate: Date | null;
   };
 };
 
@@ -80,6 +83,7 @@ const StreamingFormProvider: FC<
                 ),
             }),
             understandLiquidationRisk: bool().required(),
+            endDate: date().nullable().required()
           }),
         });
 

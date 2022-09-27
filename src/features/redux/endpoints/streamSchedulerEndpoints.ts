@@ -85,6 +85,8 @@ export const streamSchedulerEndpoints = {
           superTokenAddress
         );
 
+        // TODO(KK): filter out end dates in history?
+
         return { data: streamOrder.endDate };
       },
       providesTags: (_result, _error, arg) => [
@@ -167,19 +169,22 @@ export const streamSchedulerEndpoints = {
         const sdk = getGoerliSdk(arg.signer); // TODO(KK): Get this off of a Network.
         const signerAddress = await arg.signer.getAddress();
 
+        const streamOrder =
+          await sdk.StreamScheduler.populateTransaction.createStreamOrder(
+            arg.receiverAddress,
+            arg.superTokenAddress,
+            0, // startDate
+            0, // startDuration
+            "0", // flowRate
+            arg.endTimestamp,
+            arg.userData,
+            arg.overrides ?? {}
+          );
+
         operations.push(
-          new Operation(
-            sdk.StreamScheduler.populateTransaction.createStreamOrder(
-              arg.receiverAddress,
-              arg.superTokenAddress,
-              0, // startDate
-              0, // startDuration
-              "0", // flowRate
-              arg.endTimestamp,
-              arg.userData,
-              arg.overrides ?? {}
-            ),
-            "CALL_APP_ACTION"
+          await framework.host.callAppAction(
+            STREAM_SCHEDULAR_CONTRACT_ADDRESS,
+            streamOrder.data!
           )
         );
 

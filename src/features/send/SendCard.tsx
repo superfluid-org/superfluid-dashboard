@@ -87,6 +87,7 @@ export default memo(function SendCard() {
     control,
     formState,
     getValues,
+    setValue,
     reset: resetForm,
   } = useFormContext<PartialStreamingForm>();
 
@@ -95,11 +96,13 @@ export default memo(function SendCard() {
     tokenAddress,
     flowRateEther,
     understandLiquidationRisk,
+    endDate,
   ] = watch([
     "data.receiverAddress",
     "data.tokenAddress",
     "data.flowRate",
     "data.understandLiquidationRisk",
+    "data.endDate",
   ]);
 
   useEffect(() => {
@@ -107,6 +110,33 @@ export default memo(function SendCard() {
       setShowBufferAlert(true);
     }
   }, [setShowBufferAlert, receiverAddress, tokenAddress, flowRateEther.amountEther]);
+
+  const shouldSearchForActiveFlow =
+    !!visibleAddress && !!receiverAddress && !!tokenAddress;
+
+  const { currentData: activeFlow, data: _discard } =
+    rpcApi.useGetActiveFlowQuery(
+      shouldSearchForActiveFlow
+        ? {
+            chainId: network.id,
+            tokenAddress: tokenAddress,
+            senderAddress: visibleAddress,
+            receiverAddress: receiverAddress,
+          }
+        : skipToken
+    );
+
+  const { data: existingScheduledEndTimestamp } =
+    rpcApi.useStreamScheduledEndDateQuery(
+      shouldSearchForActiveFlow && activeFlow
+        ? {
+            chainId: network.id,
+            superTokenAddress: tokenAddress,
+            senderAddress: visibleAddress,
+            receiverAddress: receiverAddress,
+          }
+        : skipToken
+    );
 
   const { token } = subgraphApi.useTokenQuery(
     tokenAddress
@@ -186,21 +216,6 @@ export default memo(function SendCard() {
     [listedSuperTokensQuery.data, customSuperTokensQuery.data, network]
   );
 
-  const shouldSearchForActiveFlow =
-    !!visibleAddress && !!receiverAddress && !!tokenAddress;
-
-  const { currentData: activeFlow, data: _discard } =
-    rpcApi.useGetActiveFlowQuery(
-      shouldSearchForActiveFlow
-        ? {
-            chainId: network.id,
-            tokenAddress: tokenAddress,
-            senderAddress: visibleAddress,
-            receiverAddress: receiverAddress,
-          }
-        : skipToken
-    );
-
   const bufferAmount = useMemo(() => {
     if (!flowRateEther.amountEther || !flowRateEther.unitOfTime) {
       return undefined;
@@ -217,41 +232,58 @@ export default memo(function SendCard() {
   const doesNetworkSupportStreamScheduler =
     !!network.streamSchedulerContractAddress;
 
-  const { existingScheduling } = platformApi.useListSubscriptionsQuery(
-    visibleAddress && network.platformUrl
-      ? {
-          account: getAddress(visibleAddress),
-          chainId: network.id,
-          baseUrl: network.platformUrl,
-        }
-      : skipToken,
-    {
-      selectFromResult: (queryResult) => ({
-        existingScheduling: queryResult.data?.data?.find((scheduling) =>
-          isActiveStreamSchedulingOrder(
-            {
-              receiver: receiverAddress ?? "skip",
-              sender: visibleAddress ?? "skip",
-              token: tokenAddress ?? "skip",
-            },
-            scheduling
-          )
-        ),
-      }),
-    }
-  );
+  // const { existingScheduling } = platformApi.useListSubscriptionsQuery(
+  //   visibleAddress && network.platformUrl
+  //     ? {
+  //         account: getAddress(visibleAddress),
+  //         chainId: network.id,
+  //         baseUrl: network.platformUrl,
+  //       }
+  //     : skipToken,
+  //   {
+  //     selectFromResult: (queryResult) => ({
+  //       existingScheduling: queryResult.data?.data?.find((scheduling) =>
+  //         isActiveStreamSchedulingOrder(
+  //           {
+  //             receiver: receiverAddress ?? "skip",
+  //             sender: visibleAddress ?? "skip",
+  //             token: tokenAddress ?? "skip",
+  //           },
+  //           scheduling
+  //         )
+  //       ),
+  //     }),
+  //   }
+  // );
 
   // TODO(KK): Not a great solution...
-  useEffect(() => {
-    if (existingScheduling?.meta_data?.end_date) {
-      setEndDate(new Date(existingScheduling.meta_data.end_date));
-    } else {
-      setEndDate(null);
-    }
-  }, [existingScheduling]);
+  // useEffect(() => {
+  //   if (existingScheduling?.meta_data?.end_date) {
+  //     setEndDate(new Date(existingScheduling.meta_data.end_date));
+  //   } else {
+  //     setEndDate(null);
+  //   }
+  // }, [existingScheduling]);
 
   const [streamScheduling, setStreamScheduling] = useState(false);
-  const [endDate, setEndDate] = useState<Date | null>(null);
+
+  // TODO(KK): Don't really like the useEffect solution here.
+  useEffect(() => {
+    if (existingScheduledEndTimestamp) {
+      const existingScheduledEndDate = new Date(
+        existingScheduledEndTimestamp * 1000
+      );
+
+      // Ignore old schedule orders.
+      if (existingScheduledEndDate.getTime() > Date.now()) {
+        setStreamScheduling(true);
+        setValue("data.endDate", existingScheduledEndDate);
+      }
+    } else {
+      setStreamScheduling(false);
+      setValue("data.endDate", null);
+    }
+  }, [existingScheduledEndTimestamp]);
 
   // const [fixedAmountEther, setFixedAmountEther] = useState<string>("");
 
@@ -441,7 +473,7 @@ export default memo(function SendCard() {
               <FormControlLabel
                 control={
                   <Switch
-                    value={streamScheduling}
+                    checked={streamScheduling}
                     onChange={(_event, value) => setStreamScheduling(value)}
                   />
                 }
@@ -451,14 +483,19 @@ export default memo(function SendCard() {
                 <FormGroup>
                   <FormLabel>End Date</FormLabel>
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <DateTimePicker
-                      renderInput={(props) => (
-                        <TextField fullWidth {...props} />
+                    <Controller
+                      control={control}
+                      name="data.endDate"
+                      render={({ field: { onChange, onBlur } }) => (
+                        <DateTimePicker
+                          renderInput={(props) => (
+                            <TextField fullWidth {...props} onBlur={onBlur} />
+                          )}
+                          value={endDate}
+                          onChange={onChange}
+                          disablePast={true}
+                        />
                       )}
-                      value={endDate}
-                      onChange={(newValue) => {
-                        setEndDate(newValue);
-                      }}
                     />
                   </LocalizationProvider>
                 </FormGroup>

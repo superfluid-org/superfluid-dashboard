@@ -33,7 +33,7 @@ export const StreamSchedulerButton: FC<{
     rpcApi.useScheduleStreamEndDateMutation();
 
   const hasDeletePermission = streamSchedulerPermissions
-    ? Number(streamSchedulerPermissions.permissions) > 3
+    ? Number(streamSchedulerPermissions.permissions) >= 4
     : false;
 
   return (
@@ -67,6 +67,17 @@ export const StreamSchedulerButton: FC<{
           hasDeletePermission && (
             <TransactionButton
               onClick={async (signer) => {
+                console.log({
+                  signer,
+                  superTokenAddress,
+                  senderAddress,
+                  receiverAddress,
+                  chainId: network.id,
+                  waitForConfirmation: false,
+                  endTimestamp: Math.floor(endDate.getTime() / 1000),
+                  userData: "0x",
+                });
+
                 scheduleEndDate({
                   signer,
                   superTokenAddress,
