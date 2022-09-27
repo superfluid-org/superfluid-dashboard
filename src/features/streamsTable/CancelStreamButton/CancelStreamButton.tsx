@@ -53,7 +53,7 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
   };
 
   return (
-    <ConnectionBoundary>
+    <ConnectionBoundary expectedNetwork={network}>
       {({ isConnected, isCorrectNetwork }) => (
         <TransactionBoundary mutationResult={flowDeleteMutation}>
           {({ mutationResult, signer }) =>
