@@ -40,11 +40,6 @@ export declare class StreamScheduler__factory {
         }[];
         name: string;
         outputs: {
-            components: {
-                internalType: string;
-                name: string;
-                type: string;
-            }[];
             internalType: string;
             name: string;
             type: string;
@@ -60,6 +55,11 @@ export declare class StreamScheduler__factory {
         }[];
         name: string;
         outputs: {
+            components: {
+                internalType: string;
+                name: string;
+                type: string;
+            }[];
             internalType: string;
             name: string;
             type: string;

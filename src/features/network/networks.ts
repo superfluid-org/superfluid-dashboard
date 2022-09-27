@@ -121,7 +121,7 @@ export const networkDefinition: {
       },
     },
     streamSchedulerContractAddress:
-      "0x6Cd517392e1d4e7ea4B05659B4302Da20c964E2f",
+      "0x7D37D9494a09E47e58B1F535386Ca4D9D175f23e",
     platformUrl: "https://dev-goerli-platform-v2.dev.superfluid.dev/",
   },
   gnosis: {
@@ -224,7 +224,7 @@ export const networkDefinition: {
       },
     },
     streamSchedulerContractAddress:
-      "0x51FBAbD31A615E14b1bC12E9d887f60997264a4E",
+      "0x7D37D9494a09E47e58B1F535386Ca4D9D175f23e",
     platformUrl: "https://dev-goerli-platform-v2.dev.superfluid.dev/",
   },
   avalancheFuji: {

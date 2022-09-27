@@ -2,4 +2,3 @@
 /* tslint:disable */
 /* eslint-disable */
 export * as goerli from "./goerli";
-export * as polygonMumbai from "./polygonMumbai";

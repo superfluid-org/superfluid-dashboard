@@ -26,15 +26,66 @@ export declare namespace IStreamScheduler {
 }
 export interface StreamSchedulerInterface extends utils.Interface {
     functions: {
+        "afterAgreementCreated(address,address,bytes32,bytes,bytes,bytes)": FunctionFragment;
+        "afterAgreementTerminated(address,address,bytes32,bytes,bytes,bytes)": FunctionFragment;
+        "afterAgreementUpdated(address,address,bytes32,bytes,bytes,bytes)": FunctionFragment;
+        "beforeAgreementCreated(address,address,bytes32,bytes,bytes)": FunctionFragment;
+        "beforeAgreementTerminated(address,address,bytes32,bytes,bytes)": FunctionFragment;
+        "beforeAgreementUpdated(address,address,bytes32,bytes,bytes)": FunctionFragment;
         "cfaV1()": FunctionFragment;
-        "createStreamOrder(address,address,uint32,uint32,int96,uint32,bytes)": FunctionFragment;
-        "deleteStreamOrder(address,address)": FunctionFragment;
+        "createStreamOrder(address,address,uint32,uint32,int96,uint32,bytes,bytes)": FunctionFragment;
+        "deleteStreamOrder(address,address,bytes)": FunctionFragment;
         "executeCreateStream(address,address,address,bytes)": FunctionFragment;
         "executeDeleteStream(address,address,address,bytes)": FunctionFragment;
         "getStreamOrders(address,address,address)": FunctionFragment;
         "streamOrders(bytes32)": FunctionFragment;
     };
-    getFunction(nameOrSignatureOrTopic: "cfaV1" | "createStreamOrder" | "deleteStreamOrder" | "executeCreateStream" | "executeDeleteStream" | "getStreamOrders" | "streamOrders"): FunctionFragment;
+    getFunction(nameOrSignatureOrTopic: "afterAgreementCreated" | "afterAgreementTerminated" | "afterAgreementUpdated" | "beforeAgreementCreated" | "beforeAgreementTerminated" | "beforeAgreementUpdated" | "cfaV1" | "createStreamOrder" | "deleteStreamOrder" | "executeCreateStream" | "executeDeleteStream" | "getStreamOrders" | "streamOrders"): FunctionFragment;
+    encodeFunctionData(functionFragment: "afterAgreementCreated", values: [
+        PromiseOrValue<string>,
+        PromiseOrValue<string>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>
+    ]): string;
+    encodeFunctionData(functionFragment: "afterAgreementTerminated", values: [
+        PromiseOrValue<string>,
+        PromiseOrValue<string>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>
+    ]): string;
+    encodeFunctionData(functionFragment: "afterAgreementUpdated", values: [
+        PromiseOrValue<string>,
+        PromiseOrValue<string>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>
+    ]): string;
+    encodeFunctionData(functionFragment: "beforeAgreementCreated", values: [
+        PromiseOrValue<string>,
+        PromiseOrValue<string>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>
+    ]): string;
+    encodeFunctionData(functionFragment: "beforeAgreementTerminated", values: [
+        PromiseOrValue<string>,
+        PromiseOrValue<string>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>
+    ]): string;
+    encodeFunctionData(functionFragment: "beforeAgreementUpdated", values: [
+        PromiseOrValue<string>,
+        PromiseOrValue<string>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>,
+        PromiseOrValue<BytesLike>
+    ]): string;
     encodeFunctionData(functionFragment: "cfaV1", values?: undefined): string;
     encodeFunctionData(functionFragment: "createStreamOrder", values: [
         PromiseOrValue<string>,
@@ -43,9 +94,14 @@ export interface StreamSchedulerInterface extends utils.Interface {
         PromiseOrValue<BigNumberish>,
         PromiseOrValue<BigNumberish>,
         PromiseOrValue<BigNumberish>,
+        PromiseOrValue<BytesLike>,
         PromiseOrValue<BytesLike>
     ]): string;
-    encodeFunctionData(functionFragment: "deleteStreamOrder", values: [PromiseOrValue<string>, PromiseOrValue<string>]): string;
+    encodeFunctionData(functionFragment: "deleteStreamOrder", values: [
+        PromiseOrValue<string>,
+        PromiseOrValue<string>,
+        PromiseOrValue<BytesLike>
+    ]): string;
     encodeFunctionData(functionFragment: "executeCreateStream", values: [
         PromiseOrValue<string>,
         PromiseOrValue<string>,
@@ -64,6 +120,12 @@ export interface StreamSchedulerInterface extends utils.Interface {
         PromiseOrValue<string>
     ]): string;
     encodeFunctionData(functionFragment: "streamOrders", values: [PromiseOrValue<BytesLike>]): string;
+    decodeFunctionResult(functionFragment: "afterAgreementCreated", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "afterAgreementTerminated", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "afterAgreementUpdated", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "beforeAgreementCreated", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "beforeAgreementTerminated", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "beforeAgreementUpdated", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "cfaV1", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "createStreamOrder", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "deleteStreamOrder", data: BytesLike): Result;
@@ -163,14 +225,26 @@ export interface StreamScheduler extends BaseContract {
     once: OnEvent<this>;
     removeListener: OnEvent<this>;
     functions: {
+        afterAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+            from?: PromiseOrValue<string>;
+        }): Promise<ContractTransaction>;
+        afterAgreementTerminated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+            from?: PromiseOrValue<string>;
+        }): Promise<ContractTransaction>;
+        afterAgreementUpdated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+            from?: PromiseOrValue<string>;
+        }): Promise<ContractTransaction>;
+        beforeAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<[string]>;
+        beforeAgreementTerminated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<[string]>;
+        beforeAgreementUpdated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<[string]>;
         cfaV1(overrides?: CallOverrides): Promise<[string, string] & {
             host: string;
             cfa: string;
         }>;
-        createStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startDuration: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        createStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startDuration: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, userData: PromiseOrValue<BytesLike>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<ContractTransaction>;
-        deleteStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, overrides?: Overrides & {
+        deleteStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<ContractTransaction>;
         executeCreateStream(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
@@ -194,14 +268,26 @@ export interface StreamScheduler extends BaseContract {
             userData: string;
         }>;
     };
+    afterAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        from?: PromiseOrValue<string>;
+    }): Promise<ContractTransaction>;
+    afterAgreementTerminated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        from?: PromiseOrValue<string>;
+    }): Promise<ContractTransaction>;
+    afterAgreementUpdated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        from?: PromiseOrValue<string>;
+    }): Promise<ContractTransaction>;
+    beforeAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
+    beforeAgreementTerminated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
+    beforeAgreementUpdated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
     cfaV1(overrides?: CallOverrides): Promise<[string, string] & {
         host: string;
         cfa: string;
     }>;
-    createStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startDuration: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+    createStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startDuration: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, userData: PromiseOrValue<BytesLike>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
         from?: PromiseOrValue<string>;
     }): Promise<ContractTransaction>;
-    deleteStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, overrides?: Overrides & {
+    deleteStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
         from?: PromiseOrValue<string>;
     }): Promise<ContractTransaction>;
     executeCreateStream(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
@@ -225,12 +311,18 @@ export interface StreamScheduler extends BaseContract {
         userData: string;
     }>;
     callStatic: {
+        afterAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
+        afterAgreementTerminated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
+        afterAgreementUpdated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
+        beforeAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
+        beforeAgreementTerminated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
+        beforeAgreementUpdated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
         cfaV1(overrides?: CallOverrides): Promise<[string, string] & {
             host: string;
             cfa: string;
         }>;
-        createStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startDuration: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, userData: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<void>;
-        deleteStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, overrides?: CallOverrides): Promise<void>;
+        createStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startDuration: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, userData: PromiseOrValue<BytesLike>, ctx: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
+        deleteStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
         executeCreateStream(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<void>;
         executeDeleteStream(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<void>;
         getStreamOrders(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, supertoken: PromiseOrValue<string>, overrides?: CallOverrides): Promise<IStreamScheduler.OrderStructOutput>;
@@ -259,11 +351,23 @@ export interface StreamScheduler extends BaseContract {
         ExecuteDeleteStream(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: null, endDate?: null, userData?: null): ExecuteDeleteStreamEventFilter;
     };
     estimateGas: {
-        cfaV1(overrides?: CallOverrides): Promise<BigNumber>;
-        createStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startDuration: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        afterAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<BigNumber>;
-        deleteStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, overrides?: Overrides & {
+        afterAgreementTerminated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+            from?: PromiseOrValue<string>;
+        }): Promise<BigNumber>;
+        afterAgreementUpdated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+            from?: PromiseOrValue<string>;
+        }): Promise<BigNumber>;
+        beforeAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<BigNumber>;
+        beforeAgreementTerminated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<BigNumber>;
+        beforeAgreementUpdated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<BigNumber>;
+        cfaV1(overrides?: CallOverrides): Promise<BigNumber>;
+        createStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startDuration: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, userData: PromiseOrValue<BytesLike>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+            from?: PromiseOrValue<string>;
+        }): Promise<BigNumber>;
+        deleteStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<BigNumber>;
         executeCreateStream(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
@@ -276,11 +380,23 @@ export interface StreamScheduler extends BaseContract {
         streamOrders(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<BigNumber>;
     };
     populateTransaction: {
-        cfaV1(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-        createStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startDuration: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        afterAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<PopulatedTransaction>;
-        deleteStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, overrides?: Overrides & {
+        afterAgreementTerminated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+            from?: PromiseOrValue<string>;
+        }): Promise<PopulatedTransaction>;
+        afterAgreementUpdated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+            from?: PromiseOrValue<string>;
+        }): Promise<PopulatedTransaction>;
+        beforeAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        beforeAgreementTerminated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        beforeAgreementUpdated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        cfaV1(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        createStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startDuration: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, userData: PromiseOrValue<BytesLike>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+            from?: PromiseOrValue<string>;
+        }): Promise<PopulatedTransaction>;
+        deleteStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<PopulatedTransaction>;
         executeCreateStream(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {

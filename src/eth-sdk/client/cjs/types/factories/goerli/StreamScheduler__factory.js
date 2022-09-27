@@ -9,14 +9,14 @@ const _abi = [
     {
         inputs: [
             {
-                internalType: "contract IConstantFlowAgreementV1",
-                name: "cfa",
-                type: "address",
-            },
-            {
                 internalType: "contract ISuperfluid",
                 name: "host",
                 type: "address",
+            },
+            {
+                internalType: "string",
+                name: "registrationKey",
+                type: "string",
             },
         ],
         stateMutability: "nonpayable",
@@ -25,6 +25,11 @@ const _abi = [
     {
         inputs: [],
         name: "AccountInvalid",
+        type: "error",
+    },
+    {
+        inputs: [],
+        name: "HostInvalid",
         type: "error",
     },
     {
@@ -214,6 +219,255 @@ const _abi = [
         type: "event",
     },
     {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "",
+                type: "address",
+            },
+            {
+                internalType: "bytes32",
+                name: "",
+                type: "bytes32",
+            },
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+        ],
+        name: "afterAgreementCreated",
+        outputs: [
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+        ],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "",
+                type: "address",
+            },
+            {
+                internalType: "bytes32",
+                name: "",
+                type: "bytes32",
+            },
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+        ],
+        name: "afterAgreementTerminated",
+        outputs: [
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+        ],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "",
+                type: "address",
+            },
+            {
+                internalType: "bytes32",
+                name: "",
+                type: "bytes32",
+            },
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+        ],
+        name: "afterAgreementUpdated",
+        outputs: [
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+        ],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "",
+                type: "address",
+            },
+            {
+                internalType: "bytes32",
+                name: "",
+                type: "bytes32",
+            },
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+        ],
+        name: "beforeAgreementCreated",
+        outputs: [
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "",
+                type: "address",
+            },
+            {
+                internalType: "bytes32",
+                name: "",
+                type: "bytes32",
+            },
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+        ],
+        name: "beforeAgreementTerminated",
+        outputs: [
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "",
+                type: "address",
+            },
+            {
+                internalType: "bytes32",
+                name: "",
+                type: "bytes32",
+            },
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+        ],
+        name: "beforeAgreementUpdated",
+        outputs: [
+            {
+                internalType: "bytes",
+                name: "",
+                type: "bytes",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
         inputs: [],
         name: "cfaV1",
         outputs: [
@@ -268,9 +522,20 @@ const _abi = [
                 name: "userData",
                 type: "bytes",
             },
+            {
+                internalType: "bytes",
+                name: "ctx",
+                type: "bytes",
+            },
         ],
         name: "createStreamOrder",
-        outputs: [],
+        outputs: [
+            {
+                internalType: "bytes",
+                name: "newCtx",
+                type: "bytes",
+            },
+        ],
         stateMutability: "nonpayable",
         type: "function",
     },
@@ -286,9 +551,20 @@ const _abi = [
                 name: "superToken",
                 type: "address",
             },
+            {
+                internalType: "bytes",
+                name: "ctx",
+                type: "bytes",
+            },
         ],
         name: "deleteStreamOrder",
-        outputs: [],
+        outputs: [
+            {
+                internalType: "bytes",
+                name: "newCtx",
+                type: "bytes",
+            },
+        ],
         stateMutability: "nonpayable",
         type: "function",
     },

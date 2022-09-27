@@ -44,6 +44,7 @@ const getDisplayTransactionTitle = (transaction: TrackedTransaction) => {
     case "Downgrade from Super Token":
       return "Unwrap from Super Token";
     case "Create Stream":
+      return "Send Stream";
     case "Update Stream":
     case "Close Stream":
     case "Create Index":

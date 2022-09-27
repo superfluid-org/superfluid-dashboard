@@ -149,7 +149,7 @@ export const StreamingPreview: FC<{
   const newAmountPerSecond = useMemo<string>(
     () =>
       formatEther(
-        parseEther(flowRateEther.amountEther).div(flowRateEther.unitOfTime)
+        parseEtherOrZero(flowRateEther.amountEther).div(flowRateEther.unitOfTime)
       ),
     [flowRateEther.amountEther, flowRateEther.unitOfTime]
   );

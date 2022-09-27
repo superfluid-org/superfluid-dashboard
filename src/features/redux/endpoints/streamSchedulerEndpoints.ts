@@ -9,9 +9,11 @@ import {
   TransactionInfo,
 } from "@superfluid-finance/sdk-redux";
 import { providers, Signer } from "ethers";
-import { getGoerliSdk, getPolygonMumbaiSdk } from "../../../eth-sdk/client";
-import { STREAM_SCHEDULAR_CONTRACT_ADDRESS } from "../../../eth-sdk/config";
-import { networkDefinition } from "../../network/networks";
+import { getGoerliSdk } from "../../../eth-sdk/client";
+import {
+  findNetworkByChainId,
+  networkDefinition,
+} from "../../network/networks";
 
 const getSdk = (
   chainId: number,
@@ -21,9 +23,9 @@ const getSdk = (
     return getGoerliSdk(providerOrSigner);
   }
 
-  if (chainId === networkDefinition.polygonMumbai.id) {
-    return getPolygonMumbaiSdk(providerOrSigner);
-  }
+  // if (chainId === networkDefinition.polygonMumbai.id) {
+  //   return getPolygonMumbaiSdk(providerOrSigner);
+  // }
 
   throw new Error();
 };
@@ -111,6 +113,7 @@ export const streamSchedulerEndpoints = {
           "0", // flowRate
           arg.endTimestamp,
           arg.userData,
+          "0x",
           arg.overrides ?? {}
         );
 
@@ -135,19 +138,42 @@ export const streamSchedulerEndpoints = {
         const superToken = await framework.loadSuperToken(
           arg.superTokenAddress
         );
+        const network = findNetworkByChainId(chainId);
+        if (!network?.streamSchedulerContractAddress) {
+          throw new Error("Network doesn't support stream scheduler.");
+        }
 
         const flowOperatorData = await superToken.getFlowOperatorData({
-          flowOperator: STREAM_SCHEDULAR_CONTRACT_ADDRESS,
+          flowOperator: network.streamSchedulerContractAddress,
           sender: arg.senderAddress,
+          providerOrSigner: arg.signer,
+        });
+
+        const existingFlow = await superToken.getFlow({
+          sender: arg.senderAddress,
+          receiver: arg.receiverAddress,
           providerOrSigner: arg.signer,
         });
 
         const operations: Operation[] = [];
 
+        const flowArg = {
+          sender: arg.senderAddress,
+          flowRate: arg.flowRateWei,
+          receiver: arg.receiverAddress,
+          userData: "0x",
+          overrides: arg.overrides,
+        };
+        if (existingFlow.flowRate === "0") {
+          operations.push(await superToken.createFlow(flowArg));
+        } else {
+          operations.push(await superToken.updateFlow(flowArg));
+        }
+
         if (Number(flowOperatorData.permissions) < 4) {
           operations.push(
             await superToken.updateFlowOperatorPermissions({
-              flowOperator: STREAM_SCHEDULAR_CONTRACT_ADDRESS,
+              flowOperator: network.streamSchedulerContractAddress,
               flowRateAllowance: arg.flowRateAllowance,
               permissions: arg.permissions,
               userData: "0x",
@@ -155,16 +181,6 @@ export const streamSchedulerEndpoints = {
             })
           );
         }
-
-        operations.push(
-          await superToken.createFlow({
-            sender: arg.senderAddress,
-            flowRate: arg.flowRateWei,
-            receiver: arg.receiverAddress,
-            userData: "0x",
-            overrides: arg.overrides,
-          })
-        );
 
         const sdk = getGoerliSdk(arg.signer); // TODO(KK): Get this off of a Network.
         const signerAddress = await arg.signer.getAddress();
@@ -178,12 +194,13 @@ export const streamSchedulerEndpoints = {
             "0", // flowRate
             arg.endTimestamp,
             arg.userData,
+            "0x",
             arg.overrides ?? {}
           );
 
         operations.push(
           await framework.host.callAppAction(
-            STREAM_SCHEDULAR_CONTRACT_ADDRESS,
+            network.streamSchedulerContractAddress,
             streamOrder.data!
           )
         );
@@ -209,9 +226,13 @@ export const streamSchedulerEndpoints = {
       queryFn: async ({ chainId, superTokenAddress, senderAddress }) => {
         const framework = await getFramework(chainId);
         const superToken = await framework.loadSuperToken(superTokenAddress);
+        const network = findNetworkByChainId(chainId);
+        if (!network?.streamSchedulerContractAddress) {
+          throw new Error("Network doesn't support stream scheduler.");
+        }
 
         const flowOperatorData = await superToken.getFlowOperatorData({
-          flowOperator: STREAM_SCHEDULAR_CONTRACT_ADDRESS,
+          flowOperator: network.streamSchedulerContractAddress,
           sender: senderAddress,
           providerOrSigner: framework.settings.provider,
         });
@@ -234,10 +255,14 @@ export const streamSchedulerEndpoints = {
         const superToken = await framework.loadSuperToken(
           arg.superTokenAddress
         );
+        const network = findNetworkByChainId(chainId);
+        if (!network?.streamSchedulerContractAddress) {
+          throw new Error("Network doesn't support stream scheduler.");
+        }
 
         const transactionResponse = await superToken
           .updateFlowOperatorPermissions({
-            flowOperator: STREAM_SCHEDULAR_CONTRACT_ADDRESS,
+            flowOperator: network.streamSchedulerContractAddress,
             flowRateAllowance: arg.flowRateAllowance,
             permissions: arg.permissions,
             overrides: arg.overrides,
@@ -253,7 +278,7 @@ export const streamSchedulerEndpoints = {
           waitForConfirmation: !!arg.waitForConfirmation,
           signer: signerAddress,
           extraData: arg.transactionExtraData,
-          title: "Update Stream Scheduler Permissions",
+          title: "Create Stream",
         });
       },
     }),
@@ -266,10 +291,14 @@ export const streamSchedulerEndpoints = {
         const superToken = await framework.loadSuperToken(
           arg.superTokenAddress
         );
+        const network = findNetworkByChainId(chainId);
+        if (!network?.streamSchedulerContractAddress) {
+          throw new Error("Network doesn't support stream scheduler.");
+        }
 
         const transactionResponse = await superToken
           .revokeFlowOperatorWithFullControl({
-            flowOperator: STREAM_SCHEDULAR_CONTRACT_ADDRESS,
+            flowOperator: network.streamSchedulerContractAddress,
           })
           .exec(arg.signer);
 
