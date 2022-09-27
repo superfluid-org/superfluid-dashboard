@@ -11,7 +11,6 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
-  Grid,
   IconButton,
   Stack,
   Switch,
@@ -479,7 +478,7 @@ export default memo(function SendCard() {
                 }
                 label="Stream Scheduling"
               />
-              <Grid component={Collapse} in={streamScheduling} spacing={1}>
+              <Stack component={Collapse} in={streamScheduling} spacing={1}>
                 <FormGroup>
                   <FormLabel>End Date</FormLabel>
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -503,7 +502,7 @@ export default memo(function SendCard() {
                   <FormLabel>Fixed Amount</FormLabel>
                   <TextField  />
                 </FormGroup> */}
-              </Grid>
+              </Stack>
             </>
           )}
 

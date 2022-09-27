@@ -36,7 +36,7 @@ const defaultFormValues = {
     receiverAddress: null,
     tokenAddress: null,
     understandLiquidationRisk: false,
-    endDate: null
+    endDate: null,
   },
 };
 
@@ -83,7 +83,7 @@ const StreamingFormProvider: FC<
                 ),
             }),
             understandLiquidationRisk: bool().required(),
-            endDate: date().nullable().required()
+            endDate: date().nullable().required(),
           }),
         });
 
@@ -219,6 +219,7 @@ const StreamingFormProvider: FC<
           understandLiquidationRisk:
             initialFormValues.understandLiquidationRisk ??
             defaultFormValues.data.understandLiquidationRisk,
+          endDate: null, // TODO(KK)
         },
         formRestorationOptions
       );
