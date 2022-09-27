@@ -8,7 +8,9 @@ const config = {
     sv: process.env.NEXT_PUBLIC_HJSV,
   },
   api: {
-    faucetApiUrl: process.env.NEXT_PUBLIC_FAUCET_API,
+    faucetApiUrl:
+      process.env.NEXT_PUBLIC_FAUCET_API ||
+      "https://967h1q725d.execute-api.eu-west-2.amazonaws.com",
   },
 };
 
