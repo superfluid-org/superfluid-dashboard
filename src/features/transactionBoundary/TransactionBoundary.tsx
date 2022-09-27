@@ -53,7 +53,6 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
   const { data: signer } = useSigner();
   const { expectedNetwork } = useConnectionBoundary();
   const getTransactionOverrides = useGetTransactionOverrides();
-  // const expectedNetwork = props.expectedNetwork ?? network;
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogLoadingInfo, setDialogLoadingInfo] = useState<ReactNode>(null);

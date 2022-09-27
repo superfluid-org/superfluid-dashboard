@@ -22,6 +22,12 @@ export interface AccountFlag {
 const getId = (account: Address, flag: Flag, chainId?: number) =>
   [chainId || "*", getAddress(account), flag].join("-");
 
+/**
+ * Account flags are used to store simple boolean type account data.
+ * Optionally a flag can be turned to true/false in a specific network.
+ * For example faucet funds received, onboarding steps done etc.
+ */
+
 const adapter = createEntityAdapter<AccountFlag>({
   selectId: ({ account, flag, chainId }) => getId(account, flag, chainId),
 });
