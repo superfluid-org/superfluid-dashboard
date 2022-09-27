@@ -23,7 +23,7 @@ import {
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Token } from "@superfluid-finance/sdk-core";
-import { formatEther, parseEther } from "ethers/lib/utils";
+import { parseEther } from "ethers/lib/utils";
 import Link from "next/link";
 import { memo, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
@@ -68,9 +68,6 @@ import {
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { StreamSchedulerButton } from "./StreamSchedulerButton";
-import { platformApi } from "../redux/platformApi/platformApi";
-import { getAddress } from "../../utils/memoizedEthersUtils";
-import { isActiveStreamSchedulingOrder } from "../../hooks/useScheduledStream";
 
 export default memo(function SendCard() {
   const theme = useTheme();
@@ -125,17 +122,23 @@ export default memo(function SendCard() {
         : skipToken
     );
 
-  const { data: existingScheduledEndTimestamp } =
-    rpcApi.useStreamScheduledEndDateQuery(
-      shouldSearchForActiveFlow && activeFlow
-        ? {
-            chainId: network.id,
-            superTokenAddress: tokenAddress,
-            senderAddress: visibleAddress,
-            receiverAddress: receiverAddress,
-          }
-        : skipToken
-    );
+  const { existingScheduledEndDate } = rpcApi.useStreamScheduledEndDateQuery(
+    shouldSearchForActiveFlow && activeFlow
+      ? {
+          chainId: network.id,
+          superTokenAddress: tokenAddress,
+          senderAddress: visibleAddress,
+          receiverAddress: receiverAddress,
+        }
+      : skipToken,
+    {
+      selectFromResult: (queryResult) => ({
+        existingScheduledEndDate: queryResult.currentData
+          ? new Date(queryResult.currentData * 1000)
+          : null,
+      }),
+    }
+  );
 
   const { token } = subgraphApi.useTokenQuery(
     tokenAddress
@@ -221,48 +224,11 @@ export default memo(function SendCard() {
   const doesNetworkSupportStreamScheduler =
     !!network.streamSchedulerContractAddress;
 
-  // const { existingScheduling } = platformApi.useListSubscriptionsQuery(
-  //   visibleAddress && network.platformUrl
-  //     ? {
-  //         account: getAddress(visibleAddress),
-  //         chainId: network.id,
-  //         baseUrl: network.platformUrl,
-  //       }
-  //     : skipToken,
-  //   {
-  //     selectFromResult: (queryResult) => ({
-  //       existingScheduling: queryResult.data?.data?.find((scheduling) =>
-  //         isActiveStreamSchedulingOrder(
-  //           {
-  //             receiver: receiverAddress ?? "skip",
-  //             sender: visibleAddress ?? "skip",
-  //             token: tokenAddress ?? "skip",
-  //           },
-  //           scheduling
-  //         )
-  //       ),
-  //     }),
-  //   }
-  // );
-
-  // TODO(KK): Not a great solution...
-  // useEffect(() => {
-  //   if (existingScheduling?.meta_data?.end_date) {
-  //     setEndDate(new Date(existingScheduling.meta_data.end_date));
-  //   } else {
-  //     setEndDate(null);
-  //   }
-  // }, [existingScheduling]);
-
   const [streamScheduling, setStreamScheduling] = useState(false);
 
   // TODO(KK): Don't really like the useEffect solution here.
   useEffect(() => {
-    if (existingScheduledEndTimestamp) {
-      const existingScheduledEndDate = new Date(
-        existingScheduledEndTimestamp * 1000
-      );
-
+    if (existingScheduledEndDate) {
       // Ignore old schedule orders.
       if (existingScheduledEndDate.getTime() > Date.now()) {
         setStreamScheduling(true);
@@ -272,7 +238,7 @@ export default memo(function SendCard() {
       setStreamScheduling(false);
       setValue("data.endDate", null);
     }
-  }, [existingScheduledEndTimestamp]);
+  }, [existingScheduledEndDate]);
 
   // const [fixedAmountEther, setFixedAmountEther] = useState<string>("");
 
@@ -424,39 +390,6 @@ export default memo(function SendCard() {
             </Box>
           </Box>
 
-          {/* <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: "4fr 3fr",
-              gap: 2.5,
-              [theme.breakpoints.down("md")]: {
-                gridTemplateColumns: "1fr",
-              },
-            }}
-          >
-            <Box>
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-                sx={{ mr: 0.75 }}
-              >
-                <FormLabel>Ends on</FormLabel>
-                <TooltipIcon title="If the end date is not specified, stream will run indefinitely or until you run out of tokens." />
-              </Stack>
-              <TextField data-cy={"ends-on"} value="∞" fullWidth />
-            </Box>
-            <Box>
-              <FormLabel>Amount per second</FormLabel>
-              <TextField
-                data-cy={"amount-per-second"}
-                disabled
-                value={amountPerSecond.toString()}
-                fullWidth
-              />
-            </Box>
-          </Box> */}
-
           {doesNetworkSupportStreamScheduler && (
             <>
               <FormControlLabel
@@ -537,6 +470,8 @@ export default memo(function SendCard() {
               token={token}
               flowRateEther={flowRateEther}
               existingStream={activeFlow ?? null}
+              newEndDate={endDate}
+              oldEndDate={existingScheduledEndDate}
             />
           )}
 

@@ -108,7 +108,9 @@ export const StreamingPreview: FC<{
   existingStream: {
     flowRateWei: string;
   } | null;
-}> = ({ receiver, token, flowRateEther, existingStream }) => {
+  newEndDate: Date | null;
+  oldEndDate: Date | null;
+}> = ({ receiver, token, flowRateEther, existingStream, newEndDate }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -273,7 +275,10 @@ export const StreamingPreview: FC<{
           {newAmountPerSecond}
         </PreviewItem>
 
-        <PreviewItem dataCy="preview-ends-on" label="Ends on">
+        <PreviewItem
+          dataCy="preview-ends-on"
+          label="Ends on"
+        >
           <span translate="yes">Never</span>
         </PreviewItem>
 
