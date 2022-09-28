@@ -18,6 +18,9 @@ const faucetApi = createApi({
             }
           );
 
+          // Sleep for 5 seconds for subgraph to sync
+          await new Promise((r) => setTimeout(r, 5000));
+
           return { data: null };
         },
       }

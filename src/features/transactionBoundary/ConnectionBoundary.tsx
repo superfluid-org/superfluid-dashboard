@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  FC,
-  ReactNode,
-  useContext,
-  useMemo,
-} from "react";
+import { createContext, FC, ReactNode, useContext, useMemo } from "react";
 import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import { useAutoConnect } from "../autoConnect/AutoConnect";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
