@@ -4,7 +4,7 @@ import { parseEther } from "ethers/lib/utils";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
-import { bool, date, mixed, object, ObjectSchema, string } from "yup";
+import { bool, date, mixed, number, object, ObjectSchema, string } from "yup";
 import { dateNowSeconds } from "../../utils/dateUtils";
 import { getMinimumStreamTimeInMinutes } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
@@ -23,7 +23,10 @@ export type ValidStreamingForm = {
       unitOfTime: UnitOfTime;
     };
     understandLiquidationRisk: boolean;
-    endDate: Date | null;
+    /**
+     * In seconds.
+     */
+    endTimestamp: number | null;
   };
 };
 
@@ -36,7 +39,7 @@ const defaultFormValues = {
     receiverAddress: null,
     tokenAddress: null,
     understandLiquidationRisk: false,
-    endDate: null,
+    endTimestamp: null,
   },
 };
 
@@ -48,7 +51,7 @@ export type PartialStreamingForm = {
       | ValidStreamingForm["data"]["flowRate"]
       | typeof defaultFormValues.data.flowRate;
     understandLiquidationRisk: boolean;
-    endDate: Date | null;
+    endTimestamp: number | null;
   };
 };
 
@@ -83,7 +86,7 @@ const StreamingFormProvider: FC<
                 ),
             }),
             understandLiquidationRisk: bool().required(),
-            endDate: date().nullable().required(),
+            endTimestamp: number().default(null).nullable(),
           }),
         });
 
@@ -219,7 +222,9 @@ const StreamingFormProvider: FC<
           understandLiquidationRisk:
             initialFormValues.understandLiquidationRisk ??
             defaultFormValues.data.understandLiquidationRisk,
-          endDate: null, // TODO(KK)
+          endTimestamp:
+            initialFormValues.endTimestamp ??
+            defaultFormValues.data.endTimestamp,
         },
         formRestorationOptions
       );
@@ -238,6 +243,10 @@ const StreamingFormProvider: FC<
       trigger();
     }
   }, [accountAddress]);
+
+  useEffect(() => {
+    console.log(formState);
+  }, [formState]);
 
   return isInitialized ? (
     <FormProvider {...formMethods}>{children}</FormProvider>

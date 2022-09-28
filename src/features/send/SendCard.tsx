@@ -68,6 +68,7 @@ import {
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { StreamSchedulerButton } from "./StreamSchedulerButton";
+import { dateNowSeconds, getTimeInSeconds } from "../../utils/dateUtils";
 
 export default memo(function SendCard() {
   const theme = useTheme();
@@ -92,14 +93,19 @@ export default memo(function SendCard() {
     tokenAddress,
     flowRateEther,
     understandLiquidationRisk,
-    endDate,
+    endTimestamp,
   ] = watch([
     "data.receiverAddress",
     "data.tokenAddress",
     "data.flowRate",
     "data.understandLiquidationRisk",
-    "data.endDate",
+    "data.endTimestamp",
   ]);
+
+  const endDate = useMemo<Date | null>(
+    () => (endTimestamp ? new Date(endTimestamp) : null),
+    [endTimestamp]
+  );
 
   useEffect(() => {
     if (!!receiverAddress && !!tokenAddress && !!flowRateEther.amountEther) {
@@ -122,7 +128,7 @@ export default memo(function SendCard() {
         : skipToken
     );
 
-  const { existingScheduledEndDate } = rpcApi.useStreamScheduledEndDateQuery(
+  const { data: existingEndTimestamp } = rpcApi.useStreamScheduledEndDateQuery(
     shouldSearchForActiveFlow && activeFlow
       ? {
           chainId: network.id,
@@ -130,15 +136,11 @@ export default memo(function SendCard() {
           senderAddress: visibleAddress,
           receiverAddress: receiverAddress,
         }
-      : skipToken,
-    {
-      selectFromResult: (queryResult) => ({
-        existingScheduledEndDate: queryResult.currentData
-          ? new Date(queryResult.currentData * 1000)
-          : null,
-      }),
-    }
+      : skipToken
   );
+  const existingEndDate = existingEndTimestamp
+    ? new Date(existingEndTimestamp * 1000)
+    : null;
 
   const { token } = subgraphApi.useTokenQuery(
     tokenAddress
@@ -228,17 +230,17 @@ export default memo(function SendCard() {
 
   // TODO(KK): Don't really like the useEffect solution here.
   useEffect(() => {
-    if (existingScheduledEndDate) {
-      // Ignore old schedule orders.
-      if (existingScheduledEndDate.getTime() > Date.now()) {
+    if (existingEndTimestamp) {
+      // Hide old schedule orders. It will be automatically removed.
+      if (existingEndTimestamp > dateNowSeconds()) {
         setStreamScheduling(true);
-        setValue("data.endDate", existingScheduledEndDate);
+        setValue("data.endTimestamp", existingEndTimestamp);
       }
     } else {
       setStreamScheduling(false);
-      setValue("data.endDate", null);
+      setValue("data.endTimestamp", null);
     }
-  }, [existingScheduledEndDate]);
+  }, [existingEndTimestamp]);
 
   // const [fixedAmountEther, setFixedAmountEther] = useState<string>("");
 
@@ -396,7 +398,12 @@ export default memo(function SendCard() {
                 control={
                   <Switch
                     checked={streamScheduling}
-                    onChange={(_event, value) => setStreamScheduling(value)}
+                    onChange={(_event, value) => {
+                      if (!value) {
+                        setValue("data.endTimestamp", null);
+                      }
+                      setStreamScheduling(value);
+                    }}
                   />
                 }
                 label="Stream Scheduling"
@@ -407,14 +414,16 @@ export default memo(function SendCard() {
                   <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <Controller
                       control={control}
-                      name="data.endDate"
+                      name="data.endTimestamp"
                       render={({ field: { onChange, onBlur } }) => (
                         <DateTimePicker
                           renderInput={(props) => (
                             <TextField fullWidth {...props} onBlur={onBlur} />
                           )}
                           value={endDate}
-                          onChange={onChange}
+                          onChange={(date: Date | null) =>
+                            onChange(date ? getTimeInSeconds(date) : null)
+                          }
                           disablePast={true}
                         />
                       )}
@@ -471,7 +480,7 @@ export default memo(function SendCard() {
               flowRateEther={flowRateEther}
               existingStream={activeFlow ?? null}
               newEndDate={endDate}
-              oldEndDate={existingScheduledEndDate}
+              oldEndDate={existingEndDate}
             />
           )}
 
@@ -519,7 +528,7 @@ export default memo(function SendCard() {
             </Alert>
           )}
 
-          {streamScheduling && (
+          {/* {streamScheduling && (
             <Collapse in={streamScheduling}>
               {visibleAddress && receiverAddress && endDate && token ? (
                 <StreamSchedulerButton
@@ -535,29 +544,30 @@ export default memo(function SendCard() {
                 </Button>
               )}
             </Collapse>
-          )}
+          )} */}
 
           {doesNetworkSupportStreamScheduler ? (
             <TransactionBoundary mutationResult={doEverythingTogetherResult}>
               {() => (
                 <TransactionButton
-                  disabled={isSendDisabled || !endDate}
+                  disabled={isSendDisabled}
                   ButtonProps={{
                     variant: "outlined",
                   }}
                   onClick={async (signer) => {
-                    const superTokenAddress = tokenAddress;
-                    const senderAddress = visibleAddress;
-                    if (
-                      !receiverAddress ||
-                      !superTokenAddress ||
-                      !senderAddress ||
-                      !endDate
-                    ) {
-                      throw Error("This should never happen.");
+                    if (!formState.isValid) {
+                      throw Error(
+                        `This should never happen. Form state: ${JSON.stringify(
+                          formState,
+                          null,
+                          2
+                        )}`
+                      );
                     }
+
                     const { data: formData } =
                       getValues() as ValidStreamingForm;
+
                     doEverythingTogether({
                       signer,
                       chainId: network.id,
@@ -572,7 +582,9 @@ export default memo(function SendCard() {
                       superTokenAddress: formData.tokenAddress,
                       userDataBytes: undefined,
                       userData: "0x",
-                      endTimestamp: Math.round(endDate.getTime() / 1000),
+                      endTimestamp: endDate
+                        ? Math.round(endDate.getTime() / 1000)
+                        : null,
                       flowRateAllowance: "0",
                       permissions: 0,
                       waitForConfirmation: false,
@@ -588,7 +600,6 @@ export default memo(function SendCard() {
             </TransactionBoundary>
           ) : (
             <>
-              {" "}
               <TransactionBoundary mutationResult={flowCreateResult}>
                 {({ closeDialog, setDialogSuccessActions }) =>
                   !activeFlow && (
@@ -754,7 +765,7 @@ export default memo(function SendCard() {
                     )
                   }
                 </TransactionBoundary>
-                <TransactionBoundary mutationResult={flowDeleteResult}>
+                {/* <TransactionBoundary mutationResult={flowDeleteResult}>
                   {() =>
                     activeFlow && (
                       <TransactionButton
@@ -791,7 +802,7 @@ export default memo(function SendCard() {
                       </TransactionButton>
                     )
                   }
-                </TransactionBoundary>
+                </TransactionBoundary> */}
               </Stack>
             </>
           )}

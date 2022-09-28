@@ -59,11 +59,12 @@ interface ScheduleStreamEndDate extends BaseSuperTokenMutation {
 
 interface DoEverythingTogether
   extends FlowCreateMutation,
-    ScheduleStreamEndDate,
+    Omit<ScheduleStreamEndDate, "endTimestamp">,
     GetStreamSchedulerPermissions,
     UpdateStreamSchedulerPermissions {
   userData: string;
   senderAddress: string;
+  endTimestamp: number | null;
 }
 
 export const streamSchedulerEndpoints = {
@@ -138,6 +139,7 @@ export const streamSchedulerEndpoints = {
         const superToken = await framework.loadSuperToken(
           arg.superTokenAddress
         );
+
         const network = findNetworkByChainId(chainId);
         if (!network?.streamSchedulerContractAddress) {
           throw new Error("Network doesn't support stream scheduler.");
@@ -185,25 +187,48 @@ export const streamSchedulerEndpoints = {
         const sdk = getGoerliSdk(arg.signer); // TODO(KK): Get this off of a Network.
         const signerAddress = await arg.signer.getAddress();
 
-        const streamOrder =
-          await sdk.StreamScheduler.populateTransaction.createStreamOrder(
-            arg.receiverAddress,
-            arg.superTokenAddress,
-            0, // startDate
-            0, // startDuration
-            "0", // flowRate
-            arg.endTimestamp,
-            arg.userData,
-            "0x",
-            arg.overrides ?? {}
-          );
-
-        operations.push(
-          await framework.host.callAppAction(
-            network.streamSchedulerContractAddress,
-            streamOrder.data!
-          )
+        const existingStreamOrder = await sdk.StreamScheduler.getStreamOrders(
+          arg.senderAddress,
+          arg.receiverAddress,
+          arg.superTokenAddress
         );
+
+        if (arg.endTimestamp) {
+          const streamOrder =
+            await sdk.StreamScheduler.populateTransaction.createStreamOrder(
+              arg.receiverAddress,
+              arg.superTokenAddress,
+              0, // startDate
+              0, // startDuration
+              "0", // flowRate
+              arg.endTimestamp,
+              arg.userData,
+              "0x",
+              arg.overrides ?? {}
+            );
+
+          operations.push(
+            await framework.host.callAppAction(
+              network.streamSchedulerContractAddress,
+              streamOrder.data!
+            )
+          );
+        } else {
+          if (existingStreamOrder) {
+            const streamOrder =
+              await sdk.StreamScheduler.populateTransaction.deleteStreamOrder(
+                arg.receiverAddress,
+                arg.superTokenAddress,
+                "0x"
+              );
+            operations.push(
+              await framework.host.callAppAction(
+                network.streamSchedulerContractAddress,
+                streamOrder.data!
+              )
+            );
+          }
+        }
 
         const batchCall = framework.batchCall(operations);
         const transactionResponse = await batchCall.exec(arg.signer);
@@ -215,7 +240,7 @@ export const streamSchedulerEndpoints = {
           waitForConfirmation: !!arg.waitForConfirmation,
           signer: signerAddress,
           extraData: arg.transactionExtraData,
-          title: "Create Close-Ended Stream",
+          title: "Create Stream",
         });
       },
     }),
@@ -278,7 +303,7 @@ export const streamSchedulerEndpoints = {
           waitForConfirmation: !!arg.waitForConfirmation,
           signer: signerAddress,
           extraData: arg.transactionExtraData,
-          title: "Create Stream",
+          title: "Update Stream Scheduler Permissions",
         });
       },
     }),
