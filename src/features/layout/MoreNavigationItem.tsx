@@ -136,7 +136,7 @@ const MoreNavigationItem: FC = ({}) => {
             <ListItemIcon>
               <ShowerRoundedIcon sx={{ color: theme.palette.text.primary }} />
             </ListItemIcon>
-            <ListItemText>Testnet Faucet</ListItemText>
+            <ListItemText>Faucet</ListItemText>
           </ListItemButton>
         </Link>
 
