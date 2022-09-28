@@ -1,14 +1,17 @@
 import ExpandCircleDownOutlinedIcon from "@mui/icons-material/ExpandCircleDownOutlined";
+import ErrorRoundedIcon from "@mui/icons-material/ErrorRounded";
 import {
   Collapse,
   IconButton,
   ListItem,
   ListItemAvatar,
+  ListItemIcon,
   ListItemText,
   Stack,
   styled,
   TableCell,
   TableRow,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
@@ -16,7 +19,7 @@ import {
 import { AccountTokenSnapshot } from "@superfluid-finance/sdk-core";
 import { BigNumber } from "ethers";
 import { useRouter } from "next/router";
-import { FC, memo, useState } from "react";
+import { FC, memo, useMemo, useState } from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
 import { Network } from "../network/networks";
@@ -27,6 +30,11 @@ import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
 import TokenIcon from "../token/TokenIcon";
 import { useTokenIsListed } from "../token/useTokenIsListed";
+import {
+  BIG_NUMBER_ZERO,
+  calculateMaybeCriticalAtTimestamp,
+} from "../../utils/tokenUtils";
+import { differenceInDays } from "date-fns";
 
 interface SnapshotRowProps {
   lastElement?: boolean;
@@ -120,6 +128,26 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
       })
     );
 
+  const criticalTimestamp = useMemo(
+    () =>
+      calculateMaybeCriticalAtTimestamp({
+        balanceUntilUpdatedAtWei: balance,
+        updatedAtTimestamp: balanceTimestamp,
+        totalNetFlowRateWei: netFlowRate,
+      }),
+    [balance, balanceTimestamp, netFlowRate]
+  );
+
+  const isCritical = useMemo(
+    () =>
+      criticalTimestamp.gt(BIG_NUMBER_ZERO) &&
+      differenceInDays(
+        new Date(criticalTimestamp.mul(1000).toNumber()),
+        new Date()
+      ) < 7,
+    [criticalTimestamp]
+  );
+
   return (
     <>
       <SnapshotRow
@@ -161,22 +189,31 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         {!isBelowMd ? (
           <>
             <TableCell onClick={openTokenPage}>
-              <ListItemText
-                primary={
-                  <FlowingBalance
-                    balance={balance}
-                    flowRate={netFlowRate}
-                    balanceTimestamp={balanceTimestamp}
-                    disableRoundingIndicator
-                  />
-                }
-                // secondary="$1.00"
-                primaryTypographyProps={{ variant: "h6mono" }}
-                secondaryTypographyProps={{
-                  variant: "body2mono",
-                  color: "text.secondary",
-                }}
-              />
+              <ListItem disablePadding sx={{ ml: isCritical ? -4 : 0 }}>
+                {isCritical && (
+                  <ListItemIcon sx={{ mr: 1 }}>
+                    <Tooltip arrow title="Critical!" placement="top">
+                      <ErrorRoundedIcon color="error" fontSize="medium" />
+                    </Tooltip>
+                  </ListItemIcon>
+                )}
+                <ListItemText
+                  primary={
+                    <FlowingBalance
+                      balance={balance}
+                      flowRate={netFlowRate}
+                      balanceTimestamp={balanceTimestamp}
+                      disableRoundingIndicator
+                    />
+                  }
+                  // secondary="$1.00"
+                  primaryTypographyProps={{ variant: "h6mono" }}
+                  secondaryTypographyProps={{
+                    variant: "body2mono",
+                    color: "text.secondary",
+                  }}
+                />
+              </ListItem>
             </TableCell>
 
             <TableCell data-cy={"net-flow"} onClick={openTokenPage}>
@@ -190,9 +227,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                   </Amount>
                 </Typography>
               ) : (
-                  <Typography data-cy={"net-flow-value"}>
-                    {"-"}
-                  </Typography>
+                <Typography data-cy={"net-flow-value"}>{"-"}</Typography>
               )}
             </TableCell>
 
@@ -227,9 +262,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                   </Typography>
                 </Stack>
               ) : (
-                  <Typography data-cy={"outflow"}>
-                    {"-"}
-                  </Typography>
+                <Typography data-cy={"outflow"}>{"-"}</Typography>
               )}
             </TableCell>
           </>
