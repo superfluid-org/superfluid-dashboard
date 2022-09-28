@@ -81,10 +81,7 @@ export const networkDefinition: {
   };
   gnosis: Network;
   polygon: Network;
-  polygonMumbai: Network & {
-    streamSchedulerContractAddress: `0x${string}`;
-    platformUrl: string;
-  };
+  polygonMumbai: Network;
   avalancheFuji: Network;
   optimism: Network;
   arbitrum: Network;
@@ -222,10 +219,7 @@ export const networkDefinition: {
         name: "Super MATIC",
         decimals: 18,
       },
-    },
-    streamSchedulerContractAddress:
-      "0x7D37D9494a09E47e58B1F535386Ca4D9D175f23e",
-    platformUrl: "https://dev-goerli-platform-v2.dev.superfluid.dev/",
+    }
   },
   avalancheFuji: {
     name: "Fuji (C-Chain)",

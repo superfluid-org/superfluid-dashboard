@@ -23,6 +23,9 @@ declare module "@superfluid-finance/sdk-redux" {
     "Update Stream Scheduler Permissions": true;
     "Schedule Stream End Date": true;
     "Create Close-Ended Stream": true;
+    "Batch Call": true;
+    "Create Stream Order": true;
+    "Delete Stream Order": true;
   }
 }
 

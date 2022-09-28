@@ -7,6 +7,7 @@ import {
   registerNewTransactionAndReturnQueryFnResult,
   RpcEndpointBuilder,
   TransactionInfo,
+  TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
 import { providers, Signer } from "ethers";
 import { getGoerliSdk } from "../../../eth-sdk/client";
@@ -140,24 +141,17 @@ export const streamSchedulerEndpoints = {
           arg.superTokenAddress
         );
 
-        const network = findNetworkByChainId(chainId);
-        if (!network?.streamSchedulerContractAddress) {
-          throw new Error("Network doesn't support stream scheduler.");
-        }
-
-        const flowOperatorData = await superToken.getFlowOperatorData({
-          flowOperator: network.streamSchedulerContractAddress,
-          sender: arg.senderAddress,
-          providerOrSigner: arg.signer,
-        });
+        const sdk = getGoerliSdk(arg.signer); // TODO(KK): Get this off of a Network.
+        const operations: [
+          operation: Operation,
+          transactionTitle: TransactionTitle
+        ][] = [];
 
         const existingFlow = await superToken.getFlow({
           sender: arg.senderAddress,
           receiver: arg.receiverAddress,
           providerOrSigner: arg.signer,
         });
-
-        const operations: Operation[] = [];
 
         const flowArg = {
           sender: arg.senderAddress,
@@ -167,71 +161,94 @@ export const streamSchedulerEndpoints = {
           overrides: arg.overrides,
         };
         if (existingFlow.flowRate === "0") {
-          operations.push(await superToken.createFlow(flowArg));
+          operations.push([
+            await superToken.createFlow(flowArg),
+            "Create Stream",
+          ]);
         } else {
-          operations.push(await superToken.updateFlow(flowArg));
+          operations.push([
+            await superToken.updateFlow(flowArg),
+            "Update Stream",
+          ]);
         }
 
-        if (Number(flowOperatorData.permissions) < 4) {
-          operations.push(
-            await superToken.updateFlowOperatorPermissions({
+        const network = findNetworkByChainId(chainId);
+        if (network?.streamSchedulerContractAddress) {
+          const existingStreamOrder = await sdk.StreamScheduler.getStreamOrders(
+            arg.senderAddress,
+            arg.receiverAddress,
+            arg.superTokenAddress
+          );
+          if (arg.endTimestamp) {
+            const flowOperatorData = await superToken.getFlowOperatorData({
               flowOperator: network.streamSchedulerContractAddress,
-              flowRateAllowance: arg.flowRateAllowance,
-              permissions: arg.permissions,
-              userData: "0x",
-              overrides: arg.overrides,
+              sender: arg.senderAddress,
+              providerOrSigner: arg.signer,
+            });
+
+            if (Number(flowOperatorData.permissions) < 4) {
+              operations.push([
+                await superToken.updateFlowOperatorPermissions({
+                  flowOperator: network.streamSchedulerContractAddress,
+                  flowRateAllowance: arg.flowRateAllowance,
+                  permissions: arg.permissions,
+                  userData: "0x",
+                  overrides: arg.overrides,
+                }),
+                "Update Stream Scheduler Permissions",
+              ]);
+            }
+
+            console.log({
+              timestamp: arg.endTimestamp
             })
-          );
-        }
 
-        const sdk = getGoerliSdk(arg.signer); // TODO(KK): Get this off of a Network.
-        const signerAddress = await arg.signer.getAddress();
-
-        const existingStreamOrder = await sdk.StreamScheduler.getStreamOrders(
-          arg.senderAddress,
-          arg.receiverAddress,
-          arg.superTokenAddress
-        );
-
-        if (arg.endTimestamp) {
-          const streamOrder =
-            await sdk.StreamScheduler.populateTransaction.createStreamOrder(
-              arg.receiverAddress,
-              arg.superTokenAddress,
-              0, // startDate
-              0, // startDuration
-              "0", // flowRate
-              arg.endTimestamp,
-              arg.userData,
-              "0x",
-              arg.overrides ?? {}
-            );
-
-          operations.push(
-            await framework.host.callAppAction(
-              network.streamSchedulerContractAddress,
-              streamOrder.data!
-            )
-          );
-        } else {
-          if (existingStreamOrder) {
             const streamOrder =
-              await sdk.StreamScheduler.populateTransaction.deleteStreamOrder(
+              await sdk.StreamScheduler.populateTransaction.createStreamOrder(
                 arg.receiverAddress,
                 arg.superTokenAddress,
-                "0x"
+                0, // startDate
+                0, // startDuration
+                "0", // flowRate
+                arg.endTimestamp,
+                arg.userData,
+                "0x",
+                arg.overrides ?? {}
               );
-            operations.push(
+
+            operations.push([
               await framework.host.callAppAction(
                 network.streamSchedulerContractAddress,
                 streamOrder.data!
-              )
-            );
+              ),
+              "Create Stream Order",
+            ]);
+          } else {
+            if (existingStreamOrder) {
+              const streamOrder =
+                await sdk.StreamScheduler.populateTransaction.deleteStreamOrder(
+                  arg.receiverAddress,
+                  arg.superTokenAddress,
+                  "0x"
+                );
+              operations.push([
+                await framework.host.callAppAction(
+                  network.streamSchedulerContractAddress,
+                  streamOrder.data!
+                ),
+                "Delete Stream Order",
+              ]);
+            }
           }
         }
 
-        const batchCall = framework.batchCall(operations);
-        const transactionResponse = await batchCall.exec(arg.signer);
+        const signerAddress = await arg.signer.getAddress();
+
+        const executable =
+          operations.length === 1
+            ? operations[0][0]
+            : framework.batchCall(operations.map((x) => x[0]));
+        const transactionResponse = await executable.exec(arg.signer);
 
         return registerNewTransactionAndReturnQueryFnResult({
           dispatch,
@@ -240,7 +257,7 @@ export const streamSchedulerEndpoints = {
           waitForConfirmation: !!arg.waitForConfirmation,
           signer: signerAddress,
           extraData: arg.transactionExtraData,
-          title: "Create Stream",
+          title: operations.length === 1 ? operations[0][1] : "Batch Call",
         });
       },
     }),
