@@ -147,6 +147,76 @@ export const streamSchedulerEndpoints = {
           transactionTitle: TransactionTitle
         ][] = [];
 
+        const network = findNetworkByChainId(chainId);
+        if (network?.streamSchedulerContractAddress) {
+          const existingStreamOrder = await sdk.StreamScheduler.getStreamOrders(
+            arg.senderAddress,
+            arg.receiverAddress,
+            arg.superTokenAddress
+          );
+          if (arg.endTimestamp) {
+            const flowOperatorData = await superToken.getFlowOperatorData({
+              flowOperator: network.streamSchedulerContractAddress,
+              sender: arg.senderAddress,
+              providerOrSigner: arg.signer,
+            });
+
+            const permissions = Number(flowOperatorData.permissions);
+            if (permissions < 4) {
+              operations.push([
+                await superToken.updateFlowOperatorPermissions({
+                  flowOperator: network.streamSchedulerContractAddress,
+                  flowRateAllowance: arg.flowRateAllowance,
+                  permissions: permissions + 4, // TODO(KK): Check with protocol guys if this is OK?
+                  userData: "0x",
+                  overrides: arg.overrides,
+                }),
+                "Update Stream Scheduler Permissions",
+              ]);
+            }
+
+            if (arg.endTimestamp !== existingStreamOrder.endDate) {
+              const streamOrder =
+                await sdk.StreamScheduler.populateTransaction.createStreamOrder(
+                  arg.receiverAddress,
+                  arg.superTokenAddress,
+                  0, // startDate
+                  0, // startDuration
+                  "0", // flowRate
+                  arg.endTimestamp,
+                  arg.userData,
+                  "0x",
+                  arg.overrides ?? {}
+                );
+
+              operations.push([
+                await framework.host.callAppAction(
+                  network.streamSchedulerContractAddress,
+                  streamOrder.data!
+                ),
+                "Create Stream Order",
+              ]);
+            }
+          } else {
+            if (existingStreamOrder) {
+              const streamOrder =
+                await sdk.StreamScheduler.populateTransaction.deleteStreamOrder(
+                  arg.receiverAddress,
+                  arg.superTokenAddress,
+                  "0x"
+                );
+
+              operations.push([
+                await framework.host.callAppAction(
+                  network.streamSchedulerContractAddress,
+                  streamOrder.data!
+                ),
+                "Delete Stream Order",
+              ]);
+            }
+          }
+        }
+
         const existingFlow = await superToken.getFlow({
           sender: arg.senderAddress,
           receiver: arg.receiverAddress,
@@ -170,76 +240,6 @@ export const streamSchedulerEndpoints = {
             await superToken.updateFlow(flowArg),
             "Update Stream",
           ]);
-        }
-
-        const network = findNetworkByChainId(chainId);
-        if (network?.streamSchedulerContractAddress) {
-          const existingStreamOrder = await sdk.StreamScheduler.getStreamOrders(
-            arg.senderAddress,
-            arg.receiverAddress,
-            arg.superTokenAddress
-          );
-          if (arg.endTimestamp) {
-            const flowOperatorData = await superToken.getFlowOperatorData({
-              flowOperator: network.streamSchedulerContractAddress,
-              sender: arg.senderAddress,
-              providerOrSigner: arg.signer,
-            });
-
-            if (Number(flowOperatorData.permissions) < 4) {
-              operations.push([
-                await superToken.updateFlowOperatorPermissions({
-                  flowOperator: network.streamSchedulerContractAddress,
-                  flowRateAllowance: arg.flowRateAllowance,
-                  permissions: arg.permissions,
-                  userData: "0x",
-                  overrides: arg.overrides,
-                }),
-                "Update Stream Scheduler Permissions",
-              ]);
-            }
-
-            console.log({
-              timestamp: arg.endTimestamp
-            })
-
-            const streamOrder =
-              await sdk.StreamScheduler.populateTransaction.createStreamOrder(
-                arg.receiverAddress,
-                arg.superTokenAddress,
-                0, // startDate
-                0, // startDuration
-                "0", // flowRate
-                arg.endTimestamp,
-                arg.userData,
-                "0x",
-                arg.overrides ?? {}
-              );
-
-            operations.push([
-              await framework.host.callAppAction(
-                network.streamSchedulerContractAddress,
-                streamOrder.data!
-              ),
-              "Create Stream Order",
-            ]);
-          } else {
-            if (existingStreamOrder) {
-              const streamOrder =
-                await sdk.StreamScheduler.populateTransaction.deleteStreamOrder(
-                  arg.receiverAddress,
-                  arg.superTokenAddress,
-                  "0x"
-                );
-              operations.push([
-                await framework.host.callAppAction(
-                  network.streamSchedulerContractAddress,
-                  streamOrder.data!
-                ),
-                "Delete Stream Order",
-              ]);
-            }
-          }
         }
 
         const signerAddress = await arg.signer.getAddress();

@@ -13,7 +13,7 @@ export const platformApi = createApi({
       ListSubscriptionsApiArg & { chainId: number, baseUrl: string }
     >({
       query: (queryArg) => ({
-        url: `${queryArg.baseUrl}/api/v2/subscriptions/list/${queryArg.account}`,
+        url: `${queryArg.baseUrl}/api/v2/subscriptions/list/${queryArg.account}?limit=1000`, // TODO(KK): Handle limit more gracefully
         params: {
           limit: queryArg.limit,
           page: queryArg.page,

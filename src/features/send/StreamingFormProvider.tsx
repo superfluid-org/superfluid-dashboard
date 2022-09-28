@@ -244,10 +244,6 @@ const StreamingFormProvider: FC<
     }
   }, [accountAddress]);
 
-  useEffect(() => {
-    console.log(formState);
-  }, [formState]);
-
   return isInitialized ? (
     <FormProvider {...formMethods}>{children}</FormProvider>
   ) : null;
