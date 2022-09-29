@@ -10,7 +10,7 @@ export enum RestorationType {
 
 export const formRestorationOptions = {
   shouldValidate: false,
-  shouldDirty: true,
+  shouldDirty: false,
   shouldTouch: true,
 };
 

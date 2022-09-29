@@ -166,14 +166,14 @@ const StreamingFormProvider: FC<
             }
           }
 
-          if (
-            activeFlow &&
-            BigNumber.from(activeFlow.flowRateWei).eq(newFlowRate)
-          ) {
-            handleHigherOrderValidationError({
-              message: `The stream already has the given flow rate.`,
-            });
-          }
+          // if (
+          //   activeFlow &&
+          //   BigNumber.from(activeFlow.flowRateWei).eq(newFlowRate)
+          // ) {
+          //   handleHigherOrderValidationError({
+          //     message: `The stream already has the given flow rate.`,
+          //   });
+          // }
         }
 
         if (!understandLiquidationRisk) {

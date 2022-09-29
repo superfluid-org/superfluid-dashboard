@@ -44,9 +44,7 @@ import Amount from "../token/Amount";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
-import {
-  TransactionButton,
-} from "../transactionBoundary/TransactionButton";
+import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import AddressSearch from "./AddressSearch";
 import { calculateTotalAmountWei, FlowRateInput } from "./FlowRateInput";
@@ -183,7 +181,6 @@ export default memo(function SendCard() {
   );
 
   const isWrappableSuperToken = token ? isWrappable(token) : false;
-
   const networkCustomTokens = useNetworkCustomTokens(network.id);
 
   const listedSuperTokensQuery = subgraphApi.useTokensQuery({
@@ -233,12 +230,28 @@ export default memo(function SendCard() {
     });
   }, [network, flowRateEther]);
 
-  const isSendDisabled = formState.isValidating || !formState.isValid;
+  const flowRateWei = useMemo<BigNumber>(
+    () =>
+      calculateTotalAmountWei({
+        amountWei: parseEtherOrZero(flowRateEther.amountEther).toString(),
+        unitOfTime: flowRateEther.unitOfTime,
+      }),
+    [flowRateEther.amountEther, flowRateEther.unitOfTime]
+  );
+
+  const hasAnythingChanged =
+    existingEndTimestamp !== endTimestamp ||
+    (activeFlow && activeFlow.flowRateWei !== flowRateWei.toString());
+
+  const isSendDisabled =
+    !hasAnythingChanged || formState.isValidating || !formState.isValid;
 
   const doesNetworkSupportStreamScheduler =
     !!network.streamSchedulerContractAddress;
 
-  const [streamScheduling, setStreamScheduling] = useState(false);
+  const [streamScheduling, setStreamScheduling] = useState<boolean>(
+    !!endTimestamp
+  );
   const [fixedAmountEther, setFixedAmountEther] = useState<string>("");
 
   // TODO(KK): Don't really like the useEffect solution here.
@@ -249,11 +262,6 @@ export default memo(function SendCard() {
         setStreamScheduling(true);
         setValue("data.endTimestamp", existingEndTimestamp);
         if (flowRateEther) {
-          const flowRateWei = calculateTotalAmountWei({
-            amountWei: parseEther(flowRateEther.amountEther).toString(),
-            unitOfTime: flowRateEther.unitOfTime,
-          });
-
           const totalAmountStreamed = getTotalAmountStreamed({
             endTimestamp: existingEndTimestamp,
             flowRateWei: flowRateWei,
@@ -451,22 +459,11 @@ export default memo(function SendCard() {
                                 ? getTimeInSeconds(date)
                                 : null;
                               onChange(endTimestamp);
-                              const flowRateWei = calculateTotalAmountWei({
-                                amountWei: parseEther(
-                                  flowRateEther.amountEther
-                                ).toString(),
-                                unitOfTime: flowRateEther.unitOfTime,
-                              });
                               const totalAmountStreamed =
                                 getTotalAmountStreamed({
                                   endTimestamp,
                                   flowRateWei,
                                 });
-
-                                console.log({
-                                  endTimestamp,
-                                  totalAmountStreamed
-                                })
                               setFixedAmountEther(
                                 totalAmountStreamed
                                   ? formatEther(totalAmountStreamed)
@@ -485,12 +482,6 @@ export default memo(function SendCard() {
                       value={fixedAmountEther}
                       onChange={(event) => {
                         setFixedAmountEther(event.target.value);
-                        const flowRateWei = calculateTotalAmountWei({
-                          amountWei: parseEther(
-                            flowRateEther.amountEther
-                          ).toString(),
-                          unitOfTime: flowRateEther.unitOfTime,
-                        });
                         setValue(
                           "data.endTimestamp",
                           getEndTimestamp({
