@@ -275,15 +275,21 @@ export default memo(function SendCard() {
     } else {
       setStreamScheduling(false);
       setValue("data.endTimestamp", null);
+      setFixedAmountEther("");
     }
   }, [existingEndTimestamp]);
 
   useEffect(() => {
-    if (!streamScheduling) {
-      setFixedAmountEther("");
-    } else {
+    if (endTimestamp) {
+      const totalAmountStreamed = getTotalAmountStreamed({
+        endTimestamp,
+        flowRateWei: flowRateWei,
+      });
+      setFixedAmountEther(
+        (totalAmountStreamed && !totalAmountStreamed.isZero()) ? formatEther(totalAmountStreamed) : ""
+      );
     }
-  }, [streamScheduling, endDate, setFixedAmountEther, flowRateEther]);
+  }, [flowRateWei]);
 
   const [doEverythingTogether, doEverythingTogetherResult] =
     rpcApi.useDoEverythingTogetherMutation();
