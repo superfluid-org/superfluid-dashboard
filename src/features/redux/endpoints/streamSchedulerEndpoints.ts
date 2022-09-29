@@ -238,10 +238,12 @@ export const streamSchedulerEndpoints = {
             "Create Stream",
           ]);
         } else {
-          operations.push([
-            await superToken.updateFlow(flowArg),
-            "Update Stream",
-          ]);
+          if (arg.flowRateWei !== existingFlow.flowRate) {
+            operations.push([
+              await superToken.updateFlow(flowArg),
+              "Update Stream",
+            ]);
+          }
         }
 
         const signerAddress = await arg.signer.getAddress();
