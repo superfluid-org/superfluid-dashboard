@@ -315,7 +315,7 @@ const getDesignTokens = (theme: Theme): ThemeOptions => {
         letterSpacing: pxToRem(0.15),
       },
       tooltip: {
-        fontSize: pxToRem(12),
+        fontSize: pxToRem(13),
         fontWeight: 400,
       },
     },
