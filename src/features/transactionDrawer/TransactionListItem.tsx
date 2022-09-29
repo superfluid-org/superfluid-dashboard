@@ -1,8 +1,13 @@
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
+  Collapse,
   IconButton,
   LinearProgress,
+  List,
   ListItem,
   ListItemAvatar,
   ListItemText,
@@ -14,15 +19,17 @@ import {
 import {
   TrackedTransaction,
   TransactionStatus,
+  TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
 import { format } from "date-fns";
 import Link from "next/link";
-import { FC } from "react";
+import { FC, useState } from "react";
 import shortenHex from "../../utils/shortenHex";
 import NetworkBadge from "../network/NetworkBadge";
 import { findNetworkByChainId } from "../network/networks";
-import { TransactionListItemAvatar } from "./TransactionListItemAvatar";
+import { TransactionListItemAvatar, TransactionListSubItemAvatar } from "./TransactionListItemAvatar";
 import { TransactionListItemRestoreButton } from "./TransactionListItemRestoreButton";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 export const getTransactionStatusColor = (status: TransactionStatus) => {
   switch (status) {
@@ -60,11 +67,24 @@ const getDisplayTransactionTitle = (transaction: TrackedTransaction) => {
   }
 };
 
+const getPrimaryTransactionText = (transaction: TrackedTransaction) => {
+  const mainTransactionTitle = getDisplayTransactionTitle(transaction);
+  const subTransactionTitles: TransactionTitle[] =
+    (transaction.extraData.subTransactionTitles as TransactionTitle[]) ?? [];
+  if (subTransactionTitles.length > 1) {
+    return <></>;
+  }
+};
+
 const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
   transaction,
 }) => {
   const theme = useTheme();
   const network = findNetworkByChainId(transaction.chainId);
+
+  const subTransactionTitles: TransactionTitle[] =
+    (transaction.extraData.subTransactionTitles as TransactionTitle[]) ?? [];
+  const [expand, setExpand] = useState(false);
 
   return (
     <ListItem data-cy={"transaction"} button sx={{ cursor: "default" }}>
@@ -72,7 +92,44 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
         <TransactionListItemAvatar status={transaction.status} />
       </ListItemAvatar>
       <ListItemText
-        primary={getDisplayTransactionTitle(transaction)}
+        primary={
+          subTransactionTitles.length > 1 ? (
+            <>
+              {/* TODO(KK): Width not 100%? */}
+              <Stack
+                direction="row"
+                sx={{ cursor: "pointer" }}
+                onClick={() => setExpand(!expand)}
+              >
+                {getDisplayTransactionTitle(transaction)}
+                <ExpandMoreIcon
+                  sx={{
+                    transform: expand ? "rotate(180deg)" : "rotate(0deg)",
+                    transition: "transform 150ms ease",
+                  }}
+                />
+              </Stack>
+              <Collapse in={expand}>
+                <List disablePadding>
+                  {subTransactionTitles.map((x) => (
+                    <ListItem disablePadding key={x}>
+                      <ListItemAvatar>
+                        <TransactionListSubItemAvatar
+                          status={transaction.status}
+                        />
+                      </ListItemAvatar>
+                      <ListItemText>
+                        <Typography variant="body2" color="gray">{x}</Typography>
+                      </ListItemText>
+                    </ListItem>
+                  ))}
+                </List>
+              </Collapse>
+            </>
+          ) : (
+            getDisplayTransactionTitle(transaction)
+          )
+        }
         secondary={
           <>
             {transaction.status === "Pending" && (
@@ -92,7 +149,9 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
               >
                 {`${format(transaction.timestampMs, "d MMM")} •`}
               </Box>
-              <Box data-cy="tx-hash" component="span">{shortenHex(transaction.hash)}</Box>
+              <Box data-cy="tx-hash" component="span">
+                {shortenHex(transaction.hash)}
+              </Box>
               {network && (
                 <Tooltip
                   data-cy={"tx-hash-buttons"}

@@ -36,3 +36,17 @@ export const TransactionListItemAvatar: FC<{
     </Avatar>
   );
 };
+
+export const TransactionListSubItemAvatar: FC<{
+  status: TransactionStatus;
+}> = ({ status }) => {
+  const Icon = getTransactionStatusIcon(status);
+  return (
+    // TODO(KK): Get the color right
+    <Avatar sx={{ bgcolor: "gray", width: 16, height: 16 }}>
+      <Icon sx={{
+        fontSize: 12
+      }} />
+    </Avatar>
+  );
+};

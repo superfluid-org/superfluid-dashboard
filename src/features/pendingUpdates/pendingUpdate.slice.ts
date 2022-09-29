@@ -1,10 +1,6 @@
 import { createEntityAdapter, createSlice, isAllOf } from "@reduxjs/toolkit";
-import {
-  TransactionTitle,
-  transactionTrackerSelectors,
-} from "@superfluid-finance/sdk-redux";
 import { dateNowSeconds } from "../../utils/dateUtils";
-import { reduxStore, rpcApi, transactionTracker } from "../redux/store";
+import { rpcApi, transactionTracker } from "../redux/store";
 import { PendingIndexSubscriptionApproval } from "./PendingIndexSubscriptionApprove";
 import { PendingIndexSubscriptionRevoke } from "./PendingIndexSubscriptionRevoke";
 import { PendingOutgoingStream } from "./PendingOutgoingStream";
