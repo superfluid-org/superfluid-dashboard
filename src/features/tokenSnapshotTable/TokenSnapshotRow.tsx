@@ -192,7 +192,8 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                   <ListItemIcon sx={{ mr: 1 }}>
                     <BalanceCriticalIndicator
                       network={network}
-                      token={token}
+                      tokenAddress={token}
+                      tokenSymbol={tokenSymbol}
                       criticalDate={criticalDate}
                       onClick={stopPropagation}
                     />
@@ -278,7 +279,8 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 <ListItemIcon sx={{ mr: 1 }}>
                   <BalanceCriticalIndicator
                     network={network}
-                    token={token}
+                    tokenAddress={token}
+                    tokenSymbol={tokenSymbol}
                     criticalDate={criticalDate}
                     onClick={stopPropagation}
                   />

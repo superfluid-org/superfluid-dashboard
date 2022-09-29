@@ -7,21 +7,23 @@ import { FC, MouseEvent, useMemo } from "react";
 import { Network } from "../network/networks";
 
 interface BalanceCriticalIndicatorProps {
-  token: Address;
+  tokenAddress: Address;
+  tokenSymbol: string;
   network: Network;
   criticalDate: Date;
   onClick: (e: MouseEvent) => void;
 }
 
 const BalanceCriticalIndicator: FC<BalanceCriticalIndicatorProps> = ({
-  token,
+  tokenAddress,
+  tokenSymbol,
   network,
   criticalDate,
   onClick,
 }) => {
   const href = useMemo(
-    () => `/wrap?upgrade&token=${token}&network=${network.slugName}`,
-    [token, network]
+    () => `/wrap?upgrade&token=${tokenAddress}&network=${network.slugName}`,
+    [tokenAddress, network]
   );
 
   return (
@@ -34,7 +36,7 @@ const BalanceCriticalIndicator: FC<BalanceCriticalIndicatorProps> = ({
       title={
         <Stack gap={1.5}>
           <Typography variant="tooltip" color="text.primary" textAlign="center">
-            Your USDCx balance is running low and will run out on{" "}
+            Your {tokenSymbol} balance is running low and will run out on{" "}
             <Typography variant="tooltip" color="error">
               {`${format(criticalDate, "MM/dd/yy")} at ${format(
                 criticalDate,
@@ -51,7 +53,7 @@ const BalanceCriticalIndicator: FC<BalanceCriticalIndicatorProps> = ({
               variant="contained"
               onClick={onClick}
             >
-              Wrap tokens
+              Wrap Tokens
             </Button>
           </Link>
         </Stack>
