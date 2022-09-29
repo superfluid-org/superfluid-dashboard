@@ -79,8 +79,9 @@ const getEndTimestamp = ({
 }: {
   amountEthers: string;
   flowRateWei: BigNumberish;
-}): number => {
+}): number | null => {
   const amountWei = parseEtherOrZero(amountEthers);
+  if (amountWei.isZero()) return null;
   return amountWei.div(flowRateWei).add(dateNowSeconds()).toNumber();
 };
 
