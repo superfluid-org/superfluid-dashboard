@@ -11,6 +11,7 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
+  Grid,
   IconButton,
   Stack,
   Switch,
@@ -23,12 +24,11 @@ import {
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Token } from "@superfluid-finance/sdk-core";
-import { parseEther } from "ethers/lib/utils";
+import { formatEther, parseEther } from "ethers/lib/utils";
 import Link from "next/link";
 import { memo, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
-import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
 import {
   calculateBufferAmount,
   parseEtherOrZero,
@@ -46,17 +46,7 @@ import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import {
   TransactionButton,
-  transactionButtonDefaultProps,
 } from "../transactionBoundary/TransactionButton";
-import {
-  TransactionDialogActions,
-  TransactionDialogButton,
-} from "../transactionBoundary/TransactionDialog";
-import {
-  ModifyStreamRestoration,
-  RestorationType,
-  SendStreamRestoration,
-} from "../transactionRestoration/transactionRestorations";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import AddressSearch from "./AddressSearch";
 import { calculateTotalAmountWei, FlowRateInput } from "./FlowRateInput";
@@ -67,8 +57,34 @@ import {
 } from "./StreamingFormProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { StreamSchedulerButton } from "./StreamSchedulerButton";
 import { dateNowSeconds, getTimeInSeconds } from "../../utils/dateUtils";
+import { BigNumber, BigNumberish } from "ethers";
+
+const getTotalAmountStreamed = ({
+  endTimestamp,
+  flowRateWei,
+}: {
+  endTimestamp: number | null;
+  flowRateWei: BigNumberish;
+}): BigNumber | undefined => {
+  const now = dateNowSeconds();
+  if (endTimestamp && endTimestamp > now) {
+    return BigNumber.from(flowRateWei).mul(endTimestamp - now);
+  } else {
+    return undefined;
+  }
+};
+
+const getEndTimestamp = ({
+  amountEthers,
+  flowRateWei,
+}: {
+  amountEthers: string;
+  flowRateWei: BigNumberish;
+}): number => {
+  const amountWei = parseEtherOrZero(amountEthers);
+  return amountWei.div(flowRateWei).add(dateNowSeconds()).toNumber();
+};
 
 export default memo(function SendCard() {
   const theme = useTheme();
@@ -223,6 +239,7 @@ export default memo(function SendCard() {
     !!network.streamSchedulerContractAddress;
 
   const [streamScheduling, setStreamScheduling] = useState(false);
+  const [fixedAmountEther, setFixedAmountEther] = useState<string>("");
 
   // TODO(KK): Don't really like the useEffect solution here.
   useEffect(() => {
@@ -231,6 +248,20 @@ export default memo(function SendCard() {
       if (existingEndTimestamp > dateNowSeconds()) {
         setStreamScheduling(true);
         setValue("data.endTimestamp", existingEndTimestamp);
+        if (flowRateEther) {
+          const flowRateWei = calculateTotalAmountWei({
+            amountWei: parseEther(flowRateEther.amountEther).toString(),
+            unitOfTime: flowRateEther.unitOfTime,
+          });
+
+          const totalAmountStreamed = getTotalAmountStreamed({
+            endTimestamp: existingEndTimestamp,
+            flowRateWei: flowRateWei,
+          });
+          setFixedAmountEther(
+            totalAmountStreamed ? formatEther(totalAmountStreamed) : ""
+          );
+        }
       }
     } else {
       setStreamScheduling(false);
@@ -238,15 +269,12 @@ export default memo(function SendCard() {
     }
   }, [existingEndTimestamp]);
 
-  // const [fixedAmountEther, setFixedAmountEther] = useState<string>("");
-
-  // useEffect(() => {
-  //   if (!streamScheduling) {
-  //     setFixedAmountEther("");
-  //   } else {
-
-  //   }
-  // }, [streamScheduling, endDate, setFixedAmountEther, flowRateEther])
+  useEffect(() => {
+    if (!streamScheduling) {
+      setFixedAmountEther("");
+    } else {
+    }
+  }, [streamScheduling, endDate, setFixedAmountEther, flowRateEther]);
 
   const [doEverythingTogether, doEverythingTogetherResult] =
     rpcApi.useDoEverythingTogetherMutation();
@@ -404,29 +432,81 @@ export default memo(function SendCard() {
                 }
                 label="Stream Scheduling"
               />
-              <Stack component={Collapse} in={streamScheduling} spacing={1}>
-                <FormGroup>
-                  <FormLabel>End Date</FormLabel>
-                  <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <Controller
-                      control={control}
-                      name="data.endTimestamp"
-                      render={({ field: { onChange, onBlur } }) => (
-                        <DateTimePicker
-                          renderInput={(props) => (
-                            <TextField fullWidth {...props} onBlur={onBlur} />
-                          )}
-                          value={endDate}
-                          onChange={(date: Date | null) =>
-                            onChange(date ? getTimeInSeconds(date) : null)
-                          }
-                          disablePast={true}
-                        />
-                      )}
-                    />
-                  </LocalizationProvider>
-                </FormGroup>
-              </Stack>
+              <Collapse in={streamScheduling}>
+                <Grid container spacing={1}>
+                  <Grid item component={FormGroup} xs={7}>
+                    <FormLabel>End Date</FormLabel>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                      <Controller
+                        control={control}
+                        name="data.endTimestamp"
+                        render={({ field: { onChange, onBlur } }) => (
+                          <DateTimePicker
+                            renderInput={(props) => (
+                              <TextField fullWidth {...props} onBlur={onBlur} />
+                            )}
+                            value={endDate}
+                            onChange={(date: Date | null) => {
+                              const endTimestamp = date
+                                ? getTimeInSeconds(date)
+                                : null;
+                              onChange(endTimestamp);
+                              const flowRateWei = calculateTotalAmountWei({
+                                amountWei: parseEther(
+                                  flowRateEther.amountEther
+                                ).toString(),
+                                unitOfTime: flowRateEther.unitOfTime,
+                              });
+                              const totalAmountStreamed =
+                                getTotalAmountStreamed({
+                                  endTimestamp,
+                                  flowRateWei,
+                                });
+
+                                console.log({
+                                  endTimestamp,
+                                  totalAmountStreamed
+                                })
+                              setFixedAmountEther(
+                                totalAmountStreamed
+                                  ? formatEther(totalAmountStreamed)
+                                  : ""
+                              );
+                            }}
+                            disablePast={true}
+                          />
+                        )}
+                      />
+                    </LocalizationProvider>
+                  </Grid>
+                  <Grid item component={FormGroup} xs={5}>
+                    <FormLabel>Streamed Amount</FormLabel>
+                    <TextField
+                      value={fixedAmountEther}
+                      onChange={(event) => {
+                        setFixedAmountEther(event.target.value);
+                        const flowRateWei = calculateTotalAmountWei({
+                          amountWei: parseEther(
+                            flowRateEther.amountEther
+                          ).toString(),
+                          unitOfTime: flowRateEther.unitOfTime,
+                        });
+                        setValue(
+                          "data.endTimestamp",
+                          getEndTimestamp({
+                            flowRateWei,
+                            amountEthers: event.target.value,
+                          })
+                        );
+                      }}
+                      InputProps={{
+                        startAdornment: "≈",
+                        endAdornment: token?.symbol ?? "",
+                      }}
+                    ></TextField>
+                  </Grid>
+                </Grid>
+              </Collapse>
             </>
           )}
 

@@ -154,6 +154,7 @@ export const streamSchedulerEndpoints = {
             arg.receiverAddress,
             arg.superTokenAddress
           );
+
           if (arg.endTimestamp) {
             const flowOperatorData = await superToken.getFlowOperatorData({
               flowOperator: network.streamSchedulerContractAddress,
