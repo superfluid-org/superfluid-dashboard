@@ -122,7 +122,8 @@ export const reduxStore = configureStore({
       .concat(subgraphApi.middleware)
       .concat(assetApiSlice.middleware)
       .concat(ensApi.middleware)
-      .concat(gasApi.middleware),
+      .concat(gasApi.middleware)
+      .concat(faucetApi.middleware),
 });
 
 export const reduxPersistor = persistStore(reduxStore);

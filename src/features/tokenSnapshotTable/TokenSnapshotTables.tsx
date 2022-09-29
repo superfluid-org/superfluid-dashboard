@@ -7,14 +7,9 @@ import {
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, useCallback, useMemo, useRef, useState } from "react";
-import { useAccount } from "wagmi";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import FaucetCard from "../faucet/FaucetCard";
-import FaucetDialog from "../faucet/FaucetDialog";
-import { Flag } from "../flags/accountFlags.slice";
-import { useAccountHasChainFlag } from "../flags/accountFlagsHooks";
 import { useActiveNetworks } from "../network/ActiveNetworksContext";
-import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import NetworkSelectionFilter from "../network/NetworkSelectionFilter";
 import TokenSnapshotEmptyCard from "./TokenSnapshotEmptyCard";
 import TokenSnapshotLoadingTable from "./TokenSnapshotLoadingTable";
@@ -36,15 +31,7 @@ interface TokenSnapshotTablesProps {
 const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-  const { network } = useExpectedNetwork();
-
-  const { address: accountAddress } = useAccount();
-  const { activeNetworks, testnetMode } = useActiveNetworks();
-  const hasReceivedTestTokens = useAccountHasChainFlag(
-    Flag.TestTokensReceived,
-    network.id,
-    accountAddress
-  );
+  const { activeNetworks } = useActiveNetworks();
 
   const networkSelectionRef = useRef<HTMLButtonElement>(null);
 
@@ -52,13 +39,9 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
     useState<NetworkFetchingStatuses>({});
 
   const [networkSelectionOpen, setNetworkSelectionOpen] = useState(false);
-  const [faucetDialogOpen, setFaucetDialogOpen] = useState(false);
 
   const openNetworkSelection = () => setNetworkSelectionOpen(true);
   const closeNetworkSelection = () => setNetworkSelectionOpen(false);
-
-  const openFaucetDialog = () => setFaucetDialogOpen(true);
-  const closeFaucetDialog = () => setFaucetDialogOpen(false);
 
   const fetchingCallback = useCallback(
     (networkId: number, fetchingStatus: FetchingStatus) =>
@@ -88,8 +71,6 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
 
   return (
     <>
-      {/* {faucetDialogOpen && <FaucetDialog onClose={closeFaucetDialog} />} */}
-
       <Stack
         direction="row"
         alignItems="center"

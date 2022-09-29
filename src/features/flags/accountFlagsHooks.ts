@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useAppSelector } from "../redux/store";
 import { accountFlagSelectors, Flag } from "./accountFlags.slice";
 
-export const useAccountHasFlag = (flag: Flag, account: Address = "") => {
+export const useAccountHasFlag = (flag: Flag, account?: Address) => {
   const accountFlags = useAppSelector((state) =>
     accountFlagSelectors.selectAll(state)
   );
@@ -13,7 +13,9 @@ export const useAccountHasFlag = (flag: Flag, account: Address = "") => {
       Boolean(
         accountFlags.find(
           (accountFlag) =>
-            accountFlag.account === account && accountFlag.flag === flag
+            account &&
+            accountFlag.account === account &&
+            accountFlag.flag === flag
         )
       ),
     [accountFlags, account, flag]
@@ -23,7 +25,7 @@ export const useAccountHasFlag = (flag: Flag, account: Address = "") => {
 export const useAccountHasChainFlag = (
   flag: Flag,
   chainId: number,
-  account: Address = ""
+  account?: Address
 ) => {
   const accountFlags = useAppSelector((state) =>
     accountFlagSelectors.selectAll(state)
@@ -34,9 +36,10 @@ export const useAccountHasChainFlag = (
       Boolean(
         accountFlags.find(
           (accountFlag) =>
+            account &&
             accountFlag.flag === flag &&
             accountFlag.chainId === chainId &&
-            accountFlag.account === account
+            accountFlag.account.toLowerCase() === account.toLowerCase()
         )
       ),
     [accountFlags, flag, chainId, account]

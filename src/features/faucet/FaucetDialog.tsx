@@ -151,7 +151,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
                       variant="contained"
                       href="/wrap"
                     >
-                      Go to wrap page ➜
+                      Wrap into super tokens! ➜
                     </Button>
                   </Link>
                 )}
