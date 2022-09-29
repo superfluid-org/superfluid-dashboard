@@ -4,6 +4,7 @@ import AutoAwesomeMosaicRoundedIcon from "@mui/icons-material/AutoAwesomeMosaicR
 import AutoStoriesOutlinedIcon from "@mui/icons-material/AutoStoriesOutlined";
 import ControlPointDuplicateOutlinedIcon from "@mui/icons-material/ControlPointDuplicateOutlined";
 import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
+import LooksRoundedIcon from "@mui/icons-material/LooksRounded";
 import {
   Box,
   List,
@@ -159,6 +160,15 @@ export default memo(function NavigationDrawer() {
           onClick={closeNavigationDrawer}
           active={isActiveRoute("/wrap")}
           icon={ControlPointDuplicateOutlinedIcon}
+        />
+
+        <NavigationItem
+          id="nav-bridge"
+          title="Bridge"
+          href="/bridge"
+          onClick={closeNavigationDrawer}
+          active={isActiveRoute("/bridge")}
+          icon={LooksRoundedIcon}
         />
 
         <NavigationItem
