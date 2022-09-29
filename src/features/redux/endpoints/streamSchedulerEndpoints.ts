@@ -4,6 +4,7 @@ import {
   BaseSuperTokenMutation,
   FlowCreateMutation,
   getFramework,
+  registerNewTransaction,
   registerNewTransactionAndReturnQueryFnResult,
   RpcEndpointBuilder,
   TransactionInfo,
@@ -132,7 +133,7 @@ export const streamSchedulerEndpoints = {
       },
     }),
     doEverythingTogether: builder.mutation<
-      TransactionInfo,
+      TransactionInfo & { subTransactionTitles: TransactionTitle[] },
       DoEverythingTogether
     >({
       async queryFn({ chainId, ...arg }, { dispatch }) {
@@ -251,15 +252,28 @@ export const streamSchedulerEndpoints = {
             : framework.batchCall(operations.map((x) => x[0]));
         const transactionResponse = await executable.exec(arg.signer);
 
-        return registerNewTransactionAndReturnQueryFnResult({
+        const subTransactionTitles = operations.map((x) => x[1]);
+
+        await registerNewTransaction({
           dispatch,
           chainId,
           transactionResponse,
           waitForConfirmation: !!arg.waitForConfirmation,
           signer: signerAddress,
-          extraData: arg.transactionExtraData,
+          extraData: {
+            subTransactionTitles,
+            ...(arg.transactionExtraData ?? {}),
+          },
           title: operations.length === 1 ? operations[0][1] : "Batch Call",
         });
+
+        return {
+          data: {
+            chainId,
+            hash: transactionResponse.hash,
+            subTransactionTitles,
+          },
+        };
       },
     }),
     streamSchedulerPermissions: builder.query<
