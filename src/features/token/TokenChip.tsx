@@ -1,23 +1,26 @@
-import { Chip, Box } from "@mui/material";
+import { Chip, Box, ChipProps, Avatar } from "@mui/material";
 import { FC } from "react";
-import TokenIcon from "./TokenIcon";
+import TokenIcon, { TokenIconProps } from "./TokenIcon";
 
 interface TokenChipProps {
   symbol: string;
+  ChipProps?: ChipProps;
+  IconProps?: TokenIconProps;
 }
 
-const TokenChip: FC<TokenChipProps> = ({ symbol }) => (
+const TokenChip: FC<TokenChipProps> = ({
+  symbol,
+  ChipProps = {},
+  IconProps = {},
+}) => (
   <Chip
     variant="outlined"
+    {...ChipProps}
     label={symbol}
     avatar={
-      <Box
-        sx={{
-          ml: 1.5, // Adding ml manually because TokenIcon is not wrapped by <Icon> or <Avatar> which is usually required by MUI theme.
-        }}
-      >
-        <TokenIcon tokenSymbol={symbol} size={24} />
-      </Box>
+      <Avatar sx={{ background: "transparent" }}>
+        <TokenIcon tokenSymbol={symbol} size={24} {...IconProps} />
+      </Avatar>
     }
   />
 );

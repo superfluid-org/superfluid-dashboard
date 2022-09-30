@@ -35,7 +35,7 @@ const AvatarWrapper = styled("div", {
   })
 );
 
-interface TokenIconProps {
+export interface TokenIconProps {
   tokenSymbol?: string;
   isSuper?: boolean;
   isUnlisted?: boolean;
@@ -61,9 +61,9 @@ const TokenIcon: FC<TokenIconProps> = ({
         : skipToken
     );
 
-  const diameter = size - (tokenManifest?.isSuperToken ? 4 : 0);
-  const loading = isLoading || isQueryLoading;
   const isSuperToken = isSuper || tokenManifest?.isSuperToken;
+  const diameter = size - (isSuperToken ? 4 : 0);
+  const loading = isLoading || isQueryLoading;
 
   return (
     <Tooltip

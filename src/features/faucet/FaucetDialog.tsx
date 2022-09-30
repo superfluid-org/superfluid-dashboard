@@ -10,6 +10,8 @@ import {
   Stack,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import Link from "next/link";
@@ -51,6 +53,8 @@ interface FaucetDialogProps {
 const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
   const { address: accountAddress } = useAccount();
   const { network } = useExpectedNetwork();
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const [claimTestTokensTrigger, claimTestTokensResponse] =
     faucetApi.useLazyClaimTestTokensQuery();
@@ -95,10 +99,26 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
             direction="row"
             gap={0.5}
           >
-            <TokenChip symbol="ETH" />
-            <TokenChip symbol="fUSDC" />
-            <TokenChip symbol="fTUSD" />
-            <TokenChip symbol="fDAI" />
+            <TokenChip
+              symbol="ETH"
+              ChipProps={{ size: isBelowMd ? "small" : "medium" }}
+              IconProps={{ size: isBelowMd ? 18 : 24 }}
+            />
+            <TokenChip
+              symbol="fUSDC"
+              ChipProps={{ size: isBelowMd ? "small" : "medium" }}
+              IconProps={{ size: isBelowMd ? 18 : 24 }}
+            />
+            <TokenChip
+              symbol="fTUSD"
+              ChipProps={{ size: isBelowMd ? "small" : "medium" }}
+              IconProps={{ size: isBelowMd ? 18 : 24 }}
+            />
+            <TokenChip
+              symbol="fDAI"
+              ChipProps={{ size: isBelowMd ? "small" : "medium" }}
+              IconProps={{ size: isBelowMd ? 18 : 24 }}
+            />
           </Stack>
 
           {accountAddress && <PrefilledAddressInput address={accountAddress} />}

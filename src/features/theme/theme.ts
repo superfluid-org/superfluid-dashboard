@@ -985,6 +985,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           root: {
             width: "36px",
             height: "36px",
+            background: "transparent",
           },
         },
       },
