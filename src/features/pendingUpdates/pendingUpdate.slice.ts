@@ -77,7 +77,7 @@ export const pendingUpdateSlice = createSlice({
       }
     );
     builder.addMatcher(
-      rpcApi.endpoints.doEverythingTogether.matchFulfilled,
+      rpcApi.endpoints.upsertStreamWithScheduling.matchFulfilled,
       (state, action) => {
         const {
           chainId,

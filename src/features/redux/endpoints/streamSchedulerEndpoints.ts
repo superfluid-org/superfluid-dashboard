@@ -71,7 +71,34 @@ interface DoEverythingTogether
 
 export const streamSchedulerEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
-    streamScheduledEndDate: builder.query<
+    schedulerOperatorPermissions: builder.query<
+      IWeb3FlowOperatorData,
+      GetStreamSchedulerPermissions
+    >({
+      queryFn: async ({ chainId, superTokenAddress, senderAddress }) => {
+        const framework = await getFramework(chainId);
+        const superToken = await framework.loadSuperToken(superTokenAddress);
+        const network = findNetworkByChainId(chainId);
+        if (!network?.streamSchedulerContractAddress) {
+          throw new Error("Network doesn't support stream scheduler.");
+        }
+
+        const flowOperatorData = await superToken.getFlowOperatorData({
+          flowOperator: network.streamSchedulerContractAddress,
+          sender: senderAddress,
+          providerOrSigner: framework.settings.provider,
+        });
+
+        return { data: flowOperatorData };
+      },
+      providesTags: (_result, _error, arg) => [
+        {
+          type: "GENERAL",
+          id: arg.chainId.toString(),
+        },
+      ],
+    }),
+    scheduledEndDate: builder.query<
       number | null,
       GetStreamScheduledEndDate
     >({
@@ -101,38 +128,7 @@ export const streamSchedulerEndpoints = {
         },
       ],
     }),
-    scheduleStreamEndDate: builder.mutation<
-      TransactionInfo,
-      ScheduleStreamEndDate
-    >({
-      queryFn: async ({ chainId, ...arg }, { dispatch }) => {
-        const sdk = getGoerliSdk(arg.signer); // TODO(KK): Get this off of a Network.
-
-        const contractTransaction = await sdk.StreamScheduler.createStreamOrder(
-          arg.receiverAddress,
-          arg.superTokenAddress,
-          0, // startDate
-          0, // startDuration
-          "0", // flowRate
-          arg.endTimestamp,
-          arg.userData,
-          "0x",
-          arg.overrides ?? {}
-        );
-
-        const signerAddress = await arg.signer.getAddress();
-        return registerNewTransactionAndReturnQueryFnResult({
-          dispatch,
-          chainId,
-          transactionResponse: contractTransaction,
-          waitForConfirmation: !!arg.waitForConfirmation,
-          signer: signerAddress,
-          extraData: arg.transactionExtraData,
-          title: "Schedule Stream End Date",
-        });
-      },
-    }),
-    doEverythingTogether: builder.mutation<
+    upsertStreamWithScheduling: builder.mutation<
       TransactionInfo & { subTransactionTitles: TransactionTitle[] },
       DoEverythingTogether
     >({
@@ -164,12 +160,13 @@ export const streamSchedulerEndpoints = {
             });
 
             const permissions = Number(flowOperatorData.permissions);
-            if (permissions < 4) {
+            const hasDeletePermission = permissions & 4;
+            if (hasDeletePermission) {
               operations.push([
                 await superToken.updateFlowOperatorPermissions({
                   flowOperator: network.streamSchedulerContractAddress,
                   flowRateAllowance: arg.flowRateAllowance,
-                  permissions: permissions + 4, // TODO(KK): Check with protocol guys if this is OK?
+                  permissions: permissions + 4,
                   userData: "0x",
                   overrides: arg.overrides,
                 }),
@@ -276,102 +273,6 @@ export const streamSchedulerEndpoints = {
             subTransactionTitles,
           },
         };
-      },
-    }),
-    streamSchedulerPermissions: builder.query<
-      IWeb3FlowOperatorData,
-      GetStreamSchedulerPermissions
-    >({
-      queryFn: async ({ chainId, superTokenAddress, senderAddress }) => {
-        const framework = await getFramework(chainId);
-        const superToken = await framework.loadSuperToken(superTokenAddress);
-        const network = findNetworkByChainId(chainId);
-        if (!network?.streamSchedulerContractAddress) {
-          throw new Error("Network doesn't support stream scheduler.");
-        }
-
-        const flowOperatorData = await superToken.getFlowOperatorData({
-          flowOperator: network.streamSchedulerContractAddress,
-          sender: senderAddress,
-          providerOrSigner: framework.settings.provider,
-        });
-
-        return { data: flowOperatorData };
-      },
-      providesTags: (_result, _error, arg) => [
-        {
-          type: "GENERAL",
-          id: arg.chainId.toString(),
-        },
-      ],
-    }),
-    updateStreamSchedulerPermissions: builder.mutation<
-      TransactionInfo,
-      UpdateStreamSchedulerPermissions
-    >({
-      queryFn: async ({ chainId, ...arg }, { dispatch }) => {
-        const framework = await getFramework(chainId);
-        const superToken = await framework.loadSuperToken(
-          arg.superTokenAddress
-        );
-        const network = findNetworkByChainId(chainId);
-        if (!network?.streamSchedulerContractAddress) {
-          throw new Error("Network doesn't support stream scheduler.");
-        }
-
-        const transactionResponse = await superToken
-          .updateFlowOperatorPermissions({
-            flowOperator: network.streamSchedulerContractAddress,
-            flowRateAllowance: arg.flowRateAllowance,
-            permissions: arg.permissions,
-            overrides: arg.overrides,
-            userData: arg.userData,
-          })
-          .exec(arg.signer);
-
-        const signerAddress = await arg.signer.getAddress();
-        return registerNewTransactionAndReturnQueryFnResult({
-          dispatch,
-          chainId,
-          transactionResponse,
-          waitForConfirmation: !!arg.waitForConfirmation,
-          signer: signerAddress,
-          extraData: arg.transactionExtraData,
-          title: "Update Scheduler Permissions",
-        });
-      },
-    }),
-    revokeAllStreamSchedulerPermissions: builder.mutation<
-      TransactionInfo,
-      RevokeAllStreamSchedulerPermissions
-    >({
-      queryFn: async ({ chainId, ...arg }, { dispatch }) => {
-        const framework = await getFramework(chainId);
-        const superToken = await framework.loadSuperToken(
-          arg.superTokenAddress
-        );
-        const network = findNetworkByChainId(chainId);
-        if (!network?.streamSchedulerContractAddress) {
-          throw new Error("Network doesn't support stream scheduler.");
-        }
-
-        const transactionResponse = await superToken
-          .revokeFlowOperatorWithFullControl({
-            flowOperator: network.streamSchedulerContractAddress,
-          })
-          .exec(arg.signer);
-
-        const signerAddress = await arg.signer.getAddress();
-
-        return registerNewTransactionAndReturnQueryFnResult({
-          dispatch,
-          chainId,
-          transactionResponse,
-          waitForConfirmation: !!arg.waitForConfirmation,
-          signer: signerAddress,
-          extraData: arg.transactionExtraData,
-          title: "Update Scheduler Permissions",
-        });
       },
     }),
   }),

@@ -160,7 +160,7 @@ export default memo(function SendCard() {
         : skipToken
     );
 
-  const { data: existingEndTimestamp } = rpcApi.useStreamScheduledEndDateQuery(
+  const { data: existingEndTimestamp } = rpcApi.useScheduledEndDateQuery(
     shouldSearchForActiveFlow && activeFlow
       ? {
           chainId: network.id,
@@ -306,8 +306,8 @@ export default memo(function SendCard() {
     }
   }, [flowRateWei]);
 
-  const [doEverythingTogether, doEverythingTogetherResult] =
-    rpcApi.useDoEverythingTogetherMutation();
+  const [upsertStream, upsertStreamResult] =
+    rpcApi.useUpsertStreamWithSchedulingMutation();
 
   return (
     <>
@@ -646,7 +646,7 @@ export default memo(function SendCard() {
             </Alert>
           )}
 
-          <TransactionBoundary mutationResult={doEverythingTogetherResult}>
+          <TransactionBoundary mutationResult={upsertStreamResult}>
             {() => (
               <TransactionButton
                 disabled={isSendDisabled}
@@ -666,7 +666,7 @@ export default memo(function SendCard() {
 
                   const { data: formData } = getValues() as ValidStreamingForm;
 
-                  doEverythingTogether({
+                  upsertStream({
                     signer,
                     chainId: network.id,
                     flowRateWei: calculateTotalAmountWei({
