@@ -86,7 +86,6 @@ const getTotalAmountStreamedEtherRoundedString = (arg: {
   } else {
     const decimal = new Decimal(formatEther(bigNumber));
     const decimalPlacesToRoundTo = getDecimalPlacesToRoundTo(decimal);
-    console.log(decimalPlacesToRoundTo)
     return decimal.toDP(decimalPlacesToRoundTo).toFixed();
   }
 };
@@ -297,12 +296,14 @@ export default memo(function SendCard() {
   }, [existingEndTimestamp]);
 
   useEffect(() => {
-    setFixedAmountEther(
-      getTotalAmountStreamedEtherRoundedString({
-        endTimestamp,
-        flowRateWei,
-      })
-    );
+    if (endTimestamp) {
+      setFixedAmountEther(
+        getTotalAmountStreamedEtherRoundedString({
+          endTimestamp,
+          flowRateWei,
+        })
+      );
+    }
   }, [flowRateWei]);
 
   const [doEverythingTogether, doEverythingTogetherResult] =
@@ -472,7 +473,7 @@ export default memo(function SendCard() {
                       flex={1}
                     >
                       <FormLabel>End Date</FormLabel>
-                      <TooltipIcon title="End Date" />
+                      <TooltipIcon title="The date when stream scheduler tries to cancel the stream." />
                     </Stack>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                       <Controller
@@ -515,7 +516,7 @@ export default memo(function SendCard() {
                       flex={1}
                     >
                       <FormLabel>Fixed Amount</FormLabel>
-                      <TooltipIcon title="Fixed Amount" />
+                      <TooltipIcon title="The approximate amount that will be streamed until the scheduler cancels the stream." />
                     </Stack>
                     <TextField
                       value={fixedAmountEther}

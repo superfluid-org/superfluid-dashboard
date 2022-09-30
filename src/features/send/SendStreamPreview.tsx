@@ -108,8 +108,8 @@ export const StreamingPreview: FC<{
   existingStream: {
     flowRateWei: string;
   } | null;
-  newEndDate: number | null;
-  oldEndDate: number | null;
+  newEndDate: Date | null;
+  oldEndDate: Date | null;
 }> = ({
   receiver,
   token,
