@@ -173,7 +173,7 @@ export const streamSchedulerEndpoints = {
                   userData: "0x",
                   overrides: arg.overrides,
                 }),
-                "Update Stream Scheduler Permissions",
+                "Update Scheduler Permissions",
               ]);
             }
 
@@ -337,7 +337,7 @@ export const streamSchedulerEndpoints = {
           waitForConfirmation: !!arg.waitForConfirmation,
           signer: signerAddress,
           extraData: arg.transactionExtraData,
-          title: "Update Stream Scheduler Permissions",
+          title: "Update Scheduler Permissions",
         });
       },
     }),
@@ -370,7 +370,7 @@ export const streamSchedulerEndpoints = {
           waitForConfirmation: !!arg.waitForConfirmation,
           signer: signerAddress,
           extraData: arg.transactionExtraData,
-          title: "Update Stream Scheduler Permissions",
+          title: "Update Scheduler Permissions",
         });
       },
     }),

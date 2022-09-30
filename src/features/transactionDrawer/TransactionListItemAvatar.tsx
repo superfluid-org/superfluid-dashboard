@@ -31,7 +31,10 @@ export const TransactionListItemAvatar: FC<{
   const bgcolor = getTransactionStatusColor(status);
 
   return (
-    <Avatar data-cy={`${status}-tx-status`} sx={{ bgcolor, width: 28, height: 28 }}>
+    <Avatar
+      data-cy={`${status}-tx-status`}
+      sx={{ bgcolor, width: 28, height: 28 }}
+    >
       <Icon fontSize="small" />
     </Avatar>
   );
@@ -42,11 +45,12 @@ export const TransactionListSubItemAvatar: FC<{
 }> = ({ status }) => {
   const Icon = getTransactionStatusIcon(status);
   return (
-    // TODO(KK): Get the color right
-    <Avatar sx={{ bgcolor: "gray", width: 16, height: 16 }}>
-      <Icon sx={{
-        fontSize: 12
-      }} />
+    <Avatar sx={{ bgcolor: "text.secondary", width: 16, height: 16 }}>
+      <Icon
+        sx={{
+          fontSize: 12,
+        }}
+      />
     </Avatar>
   );
 };

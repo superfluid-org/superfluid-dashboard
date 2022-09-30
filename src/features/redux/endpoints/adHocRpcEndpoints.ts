@@ -1,7 +1,4 @@
-import {
-  ERC20Token,
-  WrapperSuperToken,
-} from "@superfluid-finance/sdk-core";
+import { ERC20Token, WrapperSuperToken } from "@superfluid-finance/sdk-core";
 import {
   getFramework,
   TransactionInfo,
@@ -20,7 +17,7 @@ import { Overrides, Signer } from "ethers";
 declare module "@superfluid-finance/sdk-redux" {
   interface TransactionTitleOverrides {
     "Approve Allowance": true;
-    "Update Stream Scheduler Permissions": true;
+    "Update Scheduler Permissions": true;
     "Schedule Stream End Date": true;
     "Create Close-Ended Stream": true;
     "Batch Call": true;
@@ -38,7 +35,8 @@ export interface Web3FlowInfo {
 
 export const adHocRpcEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
-    getActiveFlow: builder.query< // TODO(KK): Create equivalent endpoint in the SDK
+    getActiveFlow: builder.query<
+      // TODO(KK): Create equivalent endpoint in the SDK
       Web3FlowInfo | null,
       {
         chainId: number;
@@ -165,8 +163,8 @@ export const adHocRpcEndpoints = {
         amountWei: string;
         waitForConfirmation?: boolean;
         transactionExtraData?: Record<string, unknown>;
-        signer: Signer,
-        overrides: Overrides
+        signer: Signer;
+        overrides: Overrides;
       }
     >({
       queryFn: async (arg, queryApi) => {
@@ -185,7 +183,7 @@ export const adHocRpcEndpoints = {
           .approve({
             amount: arg.amountWei,
             receiver: superToken.address,
-            overrides: arg.overrides
+            overrides: arg.overrides,
           })
           .exec(arg.signer);
 

@@ -57,6 +57,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { dateNowSeconds, getTimeInSeconds } from "../../utils/dateUtils";
 import { BigNumber, BigNumberish } from "ethers";
+import TokenIcon from "../token/TokenIcon";
 
 const getTotalAmountStreamed = ({
   endTimestamp,
@@ -286,7 +287,9 @@ export default memo(function SendCard() {
         flowRateWei: flowRateWei,
       });
       setFixedAmountEther(
-        (totalAmountStreamed && !totalAmountStreamed.isZero()) ? formatEther(totalAmountStreamed) : ""
+        totalAmountStreamed && !totalAmountStreamed.isZero()
+          ? formatEther(totalAmountStreamed)
+          : ""
       );
     }
   }, [flowRateWei]);
@@ -449,8 +452,17 @@ export default memo(function SendCard() {
               />
               <Collapse in={streamScheduling}>
                 <Grid container spacing={1}>
-                  <Grid item component={FormGroup} xs={7}>
-                    <FormLabel>End Date</FormLabel>
+                  <Grid item component={FormGroup} xs={6}>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      sx={{ mr: 0.75 }}
+                      flex={1}
+                    >
+                      <FormLabel>End Date</FormLabel>
+                      <TooltipIcon title="End Date" />
+                    </Stack>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                       <Controller
                         control={control}
@@ -483,8 +495,17 @@ export default memo(function SendCard() {
                       />
                     </LocalizationProvider>
                   </Grid>
-                  <Grid item component={FormGroup} xs={5}>
-                    <FormLabel>Streamed Amount</FormLabel>
+                  <Grid item component={FormGroup} xs={6}>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      sx={{ mr: 0.75 }}
+                      flex={1}
+                    >
+                      <FormLabel>Fixed Amount</FormLabel>
+                      <TooltipIcon title="Fixed Amount" />
+                    </Stack>
                     <TextField
                       value={fixedAmountEther}
                       onChange={(event) => {
@@ -498,8 +519,19 @@ export default memo(function SendCard() {
                         );
                       }}
                       InputProps={{
-                        startAdornment: "≈",
-                        endAdornment: token?.symbol ?? "",
+                        startAdornment: <>≈&nbsp;</>,
+                        endAdornment: (
+                          <Stack direction="row" gap={0.5} sx={{ ml: 0.5 }}>
+                            <TokenIcon
+                              tokenSymbol={token?.symbol}
+                              isSuper
+                              size={24}
+                            />
+                            <Typography variant="h6" component="span">
+                              {token?.symbol ?? ""}
+                            </Typography>
+                          </Stack>
+                        ),
                       }}
                     ></TextField>
                   </Grid>
@@ -607,7 +639,7 @@ export default memo(function SendCard() {
               <TransactionButton
                 disabled={isSendDisabled}
                 ButtonProps={{
-                  variant: "outlined",
+                  variant: "contained",
                 }}
                 onClick={async (signer) => {
                   if (!formState.isValid) {

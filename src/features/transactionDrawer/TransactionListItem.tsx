@@ -27,9 +27,13 @@ import { FC, useState } from "react";
 import shortenHex from "../../utils/shortenHex";
 import NetworkBadge from "../network/NetworkBadge";
 import { findNetworkByChainId } from "../network/networks";
-import { TransactionListItemAvatar, TransactionListSubItemAvatar } from "./TransactionListItemAvatar";
+import {
+  TransactionListItemAvatar,
+  TransactionListSubItemAvatar,
+} from "./TransactionListItemAvatar";
 import { TransactionListItemRestoreButton } from "./TransactionListItemRestoreButton";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import OpenIcon from "../../components/OpenIcon/OpenIcon";
 
 export const getTransactionStatusColor = (status: TransactionStatus) => {
   switch (status) {
@@ -95,31 +99,31 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
         primary={
           subTransactionTitles.length > 1 ? (
             <>
-              {/* TODO(KK): Width not 100%? */}
               <Stack
                 direction="row"
                 sx={{ cursor: "pointer" }}
                 onClick={() => setExpand(!expand)}
               >
                 {getDisplayTransactionTitle(transaction)}
-                <ExpandMoreIcon
-                  sx={{
-                    transform: expand ? "rotate(180deg)" : "rotate(0deg)",
-                    transition: "transform 150ms ease",
-                  }}
-                />
+                <OpenIcon clockwise open={expand} icon={ExpandMoreIcon} />
               </Stack>
               <Collapse in={expand}>
-                <List disablePadding>
+                <List>
                   {subTransactionTitles.map((x) => (
                     <ListItem disablePadding key={x}>
-                      <ListItemAvatar>
+                      <ListItemAvatar sx={{ mr: 1 }}>
                         <TransactionListSubItemAvatar
                           status={transaction.status}
                         />
                       </ListItemAvatar>
-                      <ListItemText>
-                        <Typography variant="body2" color="gray">{x}</Typography>
+                      <ListItemText
+                        primaryTypographyProps={{
+                          variant: "body2",
+                          color: "text.secondary",
+                        }}
+                        sx={{ my: 0.25 }}
+                      >
+                        {x}
                       </ListItemText>
                     </ListItem>
                   ))}
