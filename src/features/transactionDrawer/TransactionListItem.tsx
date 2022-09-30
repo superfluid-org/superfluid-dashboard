@@ -58,6 +58,7 @@ const getDisplayTransactionTitle = (transaction: TrackedTransaction) => {
       return "Send Stream";
     case "Update Stream":
     case "Close Stream":
+      return "Cancel Stream";
     case "Create Index":
     case "Distribute Index":
     case "Update Index Subscription Units":
@@ -68,15 +69,6 @@ const getDisplayTransactionTitle = (transaction: TrackedTransaction) => {
     case "Transfer Super Token":
     default:
       return transaction.title;
-  }
-};
-
-const getPrimaryTransactionText = (transaction: TrackedTransaction) => {
-  const mainTransactionTitle = getDisplayTransactionTitle(transaction);
-  const subTransactionTitles: TransactionTitle[] =
-    (transaction.extraData.subTransactionTitles as TransactionTitle[]) ?? [];
-  if (subTransactionTitles.length > 1) {
-    return <></>;
   }
 };
 
