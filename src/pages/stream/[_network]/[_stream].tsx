@@ -672,12 +672,12 @@ const StreamPageContent: FC<{
 
             {endDateScheduled ? (
               <OverviewItem
-                label={`Scheduled End Date:`}
+                label={`End Date:`}
                 value={
-                  <>
-                    <TimerOutlined />
+                  <Stack direction="row" alignItems="center" gap={0.5}>
+                    <TimerOutlined fontSize="small" />
                     {format(endDateScheduled.getTime(), "d MMM. yyyy H:mm")}
-                  </>
+                  </Stack>
                 } // TODO(KK): icon centering
               />
             ) : endDate ? (
@@ -686,7 +686,10 @@ const StreamPageContent: FC<{
                 value={format(endDate.getTime(), "d MMM. yyyy H:mm")}
               />
             ) : (
-              <OverviewItem label={`End Date:`} value={<AllInclusiveIcon />} />
+              <OverviewItem
+                label={`End Date:`}
+                value={<AllInclusiveIcon sx={{ display: "block" }} />}
+              />
             )}
 
             <OverviewItem
