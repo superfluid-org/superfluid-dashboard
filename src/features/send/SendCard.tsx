@@ -58,6 +58,8 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { dateNowSeconds, getTimeInSeconds } from "../../utils/dateUtils";
 import { BigNumber, BigNumberish } from "ethers";
 import TokenIcon from "../token/TokenIcon";
+import Decimal from "decimal.js";
+import { getDecimalPlacesToRoundTo } from "../../utils/DecimalUtils";
 
 const getTotalAmountStreamed = ({
   endTimestamp,
@@ -71,6 +73,21 @@ const getTotalAmountStreamed = ({
     return BigNumber.from(flowRateWei).mul(endTimestamp - now);
   } else {
     return undefined;
+  }
+};
+
+const getTotalAmountStreamedEtherRoundedString = (arg: {
+  endTimestamp: number | null;
+  flowRateWei: BigNumberish;
+}): string => {
+  const bigNumber = getTotalAmountStreamed(arg);
+  if (!bigNumber || bigNumber?.isZero()) {
+    return "";
+  } else {
+    const decimal = new Decimal(formatEther(bigNumber));
+    const decimalPlacesToRoundTo = getDecimalPlacesToRoundTo(decimal);
+    console.log(decimalPlacesToRoundTo)
+    return decimal.toDP(decimalPlacesToRoundTo).toFixed();
   }
 };
 
@@ -264,12 +281,11 @@ export default memo(function SendCard() {
         setStreamScheduling(true);
         setValue("data.endTimestamp", existingEndTimestamp);
         if (flowRateEther) {
-          const totalAmountStreamed = getTotalAmountStreamed({
-            endTimestamp: existingEndTimestamp,
-            flowRateWei: flowRateWei,
-          });
           setFixedAmountEther(
-            totalAmountStreamed ? formatEther(totalAmountStreamed) : ""
+            getTotalAmountStreamedEtherRoundedString({
+              endTimestamp: existingEndTimestamp,
+              flowRateWei: flowRateWei,
+            })
           );
         }
       }
@@ -281,17 +297,12 @@ export default memo(function SendCard() {
   }, [existingEndTimestamp]);
 
   useEffect(() => {
-    if (endTimestamp) {
-      const totalAmountStreamed = getTotalAmountStreamed({
+    setFixedAmountEther(
+      getTotalAmountStreamedEtherRoundedString({
         endTimestamp,
-        flowRateWei: flowRateWei,
-      });
-      setFixedAmountEther(
-        totalAmountStreamed && !totalAmountStreamed.isZero()
-          ? formatEther(totalAmountStreamed)
-          : ""
-      );
-    }
+        flowRateWei,
+      })
+    );
   }, [flowRateWei]);
 
   const [doEverythingTogether, doEverythingTogetherResult] =
