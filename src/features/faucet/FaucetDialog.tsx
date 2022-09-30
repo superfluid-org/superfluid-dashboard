@@ -21,6 +21,7 @@ import useAddressName from "../../hooks/useAddressName";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import { Flag } from "../flags/accountFlags.slice";
 import { useAccountHasChainFlag } from "../flags/accountFlagsHooks";
+import { useLayoutContext } from "../layout/LayoutContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { networkDefinition } from "../network/networks";
 import TokenChip from "../token/TokenChip";
@@ -55,6 +56,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
   const { network } = useExpectedNetwork();
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const { setTransactionDrawerOpen } = useLayoutContext();
 
   const [claimTestTokensTrigger, claimTestTokensResponse] =
     faucetApi.useLazyClaimTestTokensQuery();
@@ -75,9 +77,18 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
       claimTestTokensTrigger({
         chainId: expectedTestNetwork.id,
         account: accountAddress,
-      });
+      })
+        .then(() => {
+          setTransactionDrawerOpen(true);
+        })
+        .catch(() => {});
     }
-  }, [expectedTestNetwork, accountAddress, claimTestTokensTrigger]);
+  }, [
+    expectedTestNetwork,
+    accountAddress,
+    claimTestTokensTrigger,
+    setTransactionDrawerOpen,
+  ]);
 
   return (
     <ResponsiveDialog
@@ -164,16 +175,14 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
                 )}
 
                 {hasClaimedTokens && (
-                  <Link href="/wrap" passHref>
-                    <Button
-                      size="xl"
-                      fullWidth
-                      variant="contained"
-                      href="/wrap"
-                    >
-                      Wrap into super tokens! ➜
-                    </Button>
-                  </Link>
+                  <Button
+                    size="xl"
+                    fullWidth
+                    variant="contained"
+                    onClick={onClose}
+                  >
+                    Open Dashboard! ➜
+                  </Button>
                 )}
               </Stack>
             </ConnectionBoundaryButton>
