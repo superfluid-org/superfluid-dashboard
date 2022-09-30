@@ -108,9 +108,16 @@ export const StreamingPreview: FC<{
   existingStream: {
     flowRateWei: string;
   } | null;
-  newEndDate: Date | null;
-  oldEndDate: Date | null;
-}> = ({ receiver, token, flowRateEther, existingStream, newEndDate }) => {
+  newEndDate: number | null;
+  oldEndDate: number | null;
+}> = ({
+  receiver,
+  token,
+  flowRateEther,
+  existingStream,
+  newEndDate,
+  oldEndDate,
+}) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -149,7 +156,9 @@ export const StreamingPreview: FC<{
   const newAmountPerSecond = useMemo<string>(
     () =>
       formatEther(
-        parseEtherOrZero(flowRateEther.amountEther).div(flowRateEther.unitOfTime)
+        parseEtherOrZero(flowRateEther.amountEther).div(
+          flowRateEther.unitOfTime
+        )
       ),
     [flowRateEther.amountEther, flowRateEther.unitOfTime]
   );
@@ -160,6 +169,18 @@ export const StreamingPreview: FC<{
   );
 
   const calculateBufferInfo = useCalculateBufferInfo();
+
+  const newEndDateString = useMemo(() => {
+    return newEndDate
+      ? `${format(newEndDate, "P")} at ${format(newEndDate, "p")}`
+      : "Never";
+  }, [newEndDate]);
+
+  const oldEndDateString = useMemo(() => {
+    return oldEndDate
+      ? `${format(oldEndDate, "P")} at ${format(oldEndDate, "p")}`
+      : "Never";
+  }, [oldEndDate]);
 
   const {
     balanceAfterBuffer,
@@ -278,8 +299,11 @@ export const StreamingPreview: FC<{
         <PreviewItem
           dataCy="preview-ends-on"
           label="Ends on"
+          oldValue={
+            oldEndDateString != newEndDateString ? oldEndDateString : undefined
+          }
         >
-          <span translate="yes">Never</span>
+          {newEndDateString}
         </PreviewItem>
 
         {visibleAddress && balanceAfterBuffer && (
