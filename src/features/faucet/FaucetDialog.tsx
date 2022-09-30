@@ -99,7 +99,8 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
       <DialogTitle sx={{ p: 4 }}>
         <Typography variant="h4">Get Testnet Tokens</Typography>
         <Typography>
-          This faucet sends you a bunch of tokens to try out Superfluid.
+          This faucet sends you a bunch of tokens to wrap and streams to try out
+          Superfluid.
         </Typography>
       </DialogTitle>
       <DialogContent sx={{ px: 4, pb: 4 }}>
@@ -145,7 +146,9 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
 
           {claimTestTokensResponse.isSuccess && (
             <Alert severity="success">
-              <AlertTitle>Testnet tokens successfully sent</AlertTitle>
+              <AlertTitle>
+                Streams opened and testnet tokens successfully sent
+              </AlertTitle>
             </Alert>
           )}
 
@@ -174,7 +177,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
                   </LoadingButton>
                 )}
 
-                {hasClaimedTokens && (
+                {hasClaimedTokens && claimTestTokensResponse.isSuccess && (
                   <Button
                     size="xl"
                     fullWidth
@@ -183,6 +186,19 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
                   >
                     Open Dashboard! ➜
                   </Button>
+                )}
+
+                {hasClaimedTokens && claimTestTokensResponse.isError && (
+                  <Link href="/wrap">
+                    <Button
+                      size="xl"
+                      fullWidth
+                      variant="contained"
+                      href="/wrap"
+                    >
+                      Wrap into super tokens! ➜
+                    </Button>
+                  </Link>
                 )}
               </Stack>
             </ConnectionBoundaryButton>
