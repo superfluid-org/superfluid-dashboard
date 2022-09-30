@@ -100,7 +100,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
 
   // TODO(KK): How to show for incoming streams?
   const { schedulings } = platformApi.useListSubscriptionsQuery(
-    (visibleAddress && network.platformUrl)
+    visibleAddress && network.platformUrl
       ? {
           account: getAddress(visibleAddress),
           chainId: network.id,
@@ -270,8 +270,10 @@ const StreamsTable: FC<StreamsTableProps> = ({
               <TableCell>To / From</TableCell>
               <TableCell width="250">All Time Flow</TableCell>
               <TableCell width="250">Flow rate</TableCell>
-              <TableCell width="25"></TableCell>
-              <TableCell width="200">Start / End Date</TableCell>
+              <TableCell width="25" sx={{ px: 1 }} />
+              <TableCell width="200" sx={{ pl: 1 }}>
+                Start / End Date
+              </TableCell>
               <TableCell width="120px" align="center"></TableCell>
             </TableRow>
           )}

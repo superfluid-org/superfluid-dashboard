@@ -172,17 +172,17 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
               <Typography data-cy={"flow-rate"}>{"-"}</Typography>
             )}
           </TableCell>
-          <TableCell {...tableCellProps}>
+          <TableCell {...tableCellProps} sx={{ px: 1, ...tableCellProps.sx }}>
             {/* // TODO(KK): Tooltips? */}
             {isActive ? (
               stream.endDate ? (
-                <TimerOutlined />
+                <TimerOutlined sx={{ display: "block" }} />
               ) : (
-                <AllInclusiveIcon />
+                <AllInclusiveIcon sx={{ display: "block" }} />
               )
             ) : null}
           </TableCell>
-          <TableCell {...tableCellProps}>
+          <TableCell {...tableCellProps} sx={{ pl: 1, ...tableCellProps.sx }}>
             <Stack data-cy={"start-end-date"}>
               <Box>
                 {stream.startDate &&
@@ -226,11 +226,11 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
       )}
 
       {!isBelowMd && (
-        <TableCell align="center">
+        <TableCell align="right">
           <Stack
             direction="row"
             alignItems="center"
-            justifyContent="center"
+            justifyContent="end"
             gap={1}
           >
             {isPending && (
