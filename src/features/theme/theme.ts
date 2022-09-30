@@ -915,7 +915,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       },
       MuiListItem: {
         styleOverrides: {
-          root: {
+          padding: {
             padding: "8px 24px",
           },
         },
