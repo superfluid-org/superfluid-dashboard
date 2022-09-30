@@ -48,8 +48,8 @@ export const getTransactionStatusColor = (status: TransactionStatus) => {
   }
 };
 
-const getDisplayTransactionTitle = (transaction: TrackedTransaction) => {
-  switch (transaction.title) {
+const getDisplayTransactionTitle = (transactionTitle: TransactionTitle) => {
+  switch (transactionTitle) {
     case "Upgrade to Super Token":
       return "Wrap to Super Token";
     case "Downgrade from Super Token":
@@ -68,7 +68,7 @@ const getDisplayTransactionTitle = (transaction: TrackedTransaction) => {
     case "Revoke Index Subscription":
     case "Transfer Super Token":
     default:
-      return transaction.title;
+      return transactionTitle;
   }
 };
 
@@ -96,7 +96,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
                 sx={{ cursor: "pointer" }}
                 onClick={() => setExpand(!expand)}
               >
-                {getDisplayTransactionTitle(transaction)}
+                {getDisplayTransactionTitle(transaction.title)}
                 <OpenIcon clockwise open={expand} icon={ExpandMoreIcon} />
               </Stack>
               <Collapse in={expand}>
@@ -115,7 +115,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
                         }}
                         sx={{ my: 0.25 }}
                       >
-                        {x}
+                        {getDisplayTransactionTitle(transaction.title)}
                       </ListItemText>
                     </ListItem>
                   ))}
@@ -123,7 +123,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
               </Collapse>
             </>
           ) : (
-            getDisplayTransactionTitle(transaction)
+            getDisplayTransactionTitle(transaction.title)
           )
         }
         secondary={
