@@ -265,7 +265,7 @@ export const SUPPORTS_SUPER_TOKENS: EcosystemApp[] = [
       networkDefinition.gnosis.id,
       networkDefinition.optimism.id,
       networkDefinition.polygon.id,
-      networkDefinition.bnbSmartChain.id,
+      networkDefinition.bsc.id,
     ],
     colors: {
       primary: "#4A3FCA",
