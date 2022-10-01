@@ -259,7 +259,14 @@ export const SUPPORTS_SUPER_TOKENS: EcosystemApp[] = [
     href: "https://minerva.digital/",
     icon: "/icons/ecosystem/minerva.svg",
     description: `User-friendly wallet for sovereign identities, data, and money`,
-    chains: [networkDefinition.gnosis.id, networkDefinition.polygon.id],
+    chains: [
+      networkDefinition.arbitrum.id,
+      networkDefinition.avalancheC.id,
+      networkDefinition.gnosis.id,
+      networkDefinition.optimism.id,
+      networkDefinition.polygon.id,
+      networkDefinition.bnbSmartChain.id,
+    ],
     colors: {
       primary: "#4A3FCA",
       secondary: "#7D59ED",
