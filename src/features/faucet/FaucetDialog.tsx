@@ -14,11 +14,11 @@ import {
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import { getAddress } from "ethers/lib/utils";
 import Link from "next/link";
 import { FC, useCallback, useMemo } from "react";
 import { useAccount } from "wagmi";
 import useAddressName from "../../hooks/useAddressName";
+import { getAddress } from "../../utils/memoizedEthersUtils";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import { Flag } from "../flags/flags.slice";
 import { useHasFlag } from "../flags/flagsHooks";
