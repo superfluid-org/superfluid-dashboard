@@ -3,6 +3,7 @@ import {
   createSlice,
   EntityState,
   isAnyOf,
+  nanoid,
 } from "@reduxjs/toolkit";
 import { Address } from "@superfluid-finance/sdk-core";
 import { getAddress } from "../../utils/memoizedEthersUtils";
@@ -11,16 +12,27 @@ import { RootState } from "../redux/store";
 
 export enum Flag {
   TestTokensReceived = "test-tokens-received",
+  TokenAdded = "token-added",
 }
 
-export interface AccountFlag {
-  flag: Flag;
+interface BaseFlag<T> {
+  id: string;
+  type: T;
+}
+
+export interface AccountChainFlag extends BaseFlag<Flag.TestTokensReceived> {
   account: Address;
-  chainId?: number;
+  chainId: number;
 }
 
-const getId = (account: Address, flag: Flag, chainId?: number) =>
-  [chainId || "*", getAddress(account), flag].join("-");
+export interface AccountChainTokenFlag
+  extends BaseFlag<Flag.TestTokensReceived> {
+  chainId: number;
+  account: Address;
+  token: Address;
+}
+
+type FlagType = AccountChainFlag | AccountChainTokenFlag;
 
 /**
  * Account flags are used to store simple boolean type account data.
@@ -28,21 +40,22 @@ const getId = (account: Address, flag: Flag, chainId?: number) =>
  * For example faucet funds received, onboarding steps done etc.
  */
 
-const adapter = createEntityAdapter<AccountFlag>({
-  selectId: ({ account, flag, chainId }) => getId(account, flag, chainId),
+const adapter = createEntityAdapter<FlagType>({
+  selectId: ({ id }) => id,
 });
 
-export const accountFlagsSlice = createSlice({
-  name: "accountFlags",
+export const flagsSlice = createSlice({
+  name: "flags",
   initialState: adapter.getInitialState(),
   reducers: {
-    addAccountFlag: (
-      state: EntityState<AccountFlag>,
-      { payload }: { payload: AccountFlag }
+    addFlag: (
+      state: EntityState<FlagType>,
+      { payload }: { payload: FlagType }
     ) =>
       adapter.addOne(state, {
         ...payload,
         account: getAddress(payload.account),
+        id: nanoid(),
       }),
   },
   extraReducers: (builder) => {
@@ -59,8 +72,9 @@ export const accountFlagsSlice = createSlice({
           (requestStatus === "rejected" && payload === 405)
         ) {
           adapter.addOne(state, {
-            flag: Flag.TestTokensReceived,
-            account,
+            id: nanoid(),
+            type: Flag.TestTokensReceived,
+            account: getAddress(account),
             chainId,
           });
         }
@@ -69,13 +83,12 @@ export const accountFlagsSlice = createSlice({
   },
 });
 
-export const { addAccountFlag } = accountFlagsSlice.actions;
+export const { addFlag } = flagsSlice.actions;
 
-const selectSelf = (state: RootState): EntityState<AccountFlag> =>
-  state.accountFlags;
+const selectSelf = (state: RootState): EntityState<FlagType> => state.flags;
 
 const adapterSelectors = adapter.getSelectors<RootState>(selectSelf);
 
-export const accountFlagSelectors = {
+export const flagsSelectors = {
   ...adapterSelectors,
 };

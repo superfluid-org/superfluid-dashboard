@@ -14,13 +14,14 @@ import {
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
+import { getAddress } from "ethers/lib/utils";
 import Link from "next/link";
 import { FC, useCallback, useMemo } from "react";
 import { useAccount } from "wagmi";
 import useAddressName from "../../hooks/useAddressName";
 import ResponsiveDialog from "../common/ResponsiveDialog";
-import { Flag } from "../flags/accountFlags.slice";
-import { useAccountHasChainFlag } from "../flags/accountFlagsHooks";
+import { Flag } from "../flags/flags.slice";
+import { useHasFlag } from "../flags/flagsHooks";
 import { useLayoutContext } from "../layout/LayoutContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { networkDefinition } from "../network/networks";
@@ -65,10 +66,14 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
     [network]
   );
 
-  const hasClaimedTokens = useAccountHasChainFlag(
-    Flag.TestTokensReceived,
-    expectedTestNetwork.id,
+  const hasClaimedTokens = useHasFlag(
     accountAddress
+      ? {
+          type: Flag.TestTokensReceived,
+          chainId: expectedTestNetwork.id,
+          account: getAddress(accountAddress),
+        }
+      : undefined
   );
 
   const claimTokens = useCallback(() => {
