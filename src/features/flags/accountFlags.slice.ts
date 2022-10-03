@@ -51,14 +51,19 @@ export const accountFlagsSlice = createSlice({
         faucetApi.endpoints.claimTestTokens.matchFulfilled,
         faucetApi.endpoints.claimTestTokens.matchRejected
       ),
-      (state, { meta }) => {
-        const { account, chainId } = meta.arg.originalArgs;
+      (state, { meta: { arg, requestStatus }, payload }) => {
+        const { account, chainId } = arg.originalArgs;
 
-        adapter.addOne(state, {
-          flag: Flag.TestTokensReceived,
-          account,
-          chainId,
-        });
+        if (
+          requestStatus === "fulfilled" ||
+          (requestStatus === "rejected" && payload === 405)
+        ) {
+          adapter.addOne(state, {
+            flag: Flag.TestTokensReceived,
+            account,
+            chainId,
+          });
+        }
       }
     );
   },

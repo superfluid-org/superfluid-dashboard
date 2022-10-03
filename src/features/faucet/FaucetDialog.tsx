@@ -57,7 +57,6 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { setTransactionDrawerOpen } = useLayoutContext();
-
   const [claimTestTokensTrigger, claimTestTokensResponse] =
     faucetApi.useLazyClaimTestTokensQuery();
 
@@ -78,7 +77,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
         chainId: expectedTestNetwork.id,
         account: accountAddress,
       }).then((response) => {
-        if (response.data?.claimed) setTransactionDrawerOpen(true);
+        if (response.isSuccess) setTransactionDrawerOpen(true);
       });
     }
   }, [
@@ -136,8 +135,9 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
           {claimTestTokensResponse.isError && (
             <Alert severity="error">
               <AlertTitle>
-                You’ve already claimed tokens from another source using this
-                address
+                {claimTestTokensResponse.error === 405
+                  ? "You’ve already claimed tokens from another source using this address"
+                  : "Something went wrong, please try again"}
               </AlertTitle>
             </Alert>
           )}
@@ -160,7 +160,8 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
             >
               <Stack gap={2}>
                 {!(
-                  claimTestTokensResponse.isError ||
+                  (claimTestTokensResponse.isError &&
+                    claimTestTokensResponse.error === 405) ||
                   claimTestTokensResponse.isSuccess
                 ) && (
                   <LoadingButton

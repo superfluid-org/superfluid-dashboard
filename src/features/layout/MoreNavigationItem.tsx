@@ -132,7 +132,7 @@ const MoreNavigationItem: FC = ({}) => {
         </Link>
 
         <Link href="/?showFaucet=true">
-          <ListItemButton href="">
+          <ListItemButton href="" onClick={closeMoreMenu}>
             <ListItemIcon>
               <ShowerRoundedIcon sx={{ color: theme.palette.text.primary }} />
             </ListItemIcon>
