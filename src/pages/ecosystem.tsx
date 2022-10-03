@@ -131,7 +131,6 @@ export const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
     icon: "/icons/ecosystem/coinshift.svg",
     description: `A treasury management platform with efficient multi-sig tooling`,
     chains: [networkDefinition.polygon.id],
-    comingSoon: true,
     colors: {
       primary: "#1452F5",
       secondary: "#5893ED",
@@ -260,7 +259,14 @@ export const SUPPORTS_SUPER_TOKENS: EcosystemApp[] = [
     href: "https://minerva.digital/",
     icon: "/icons/ecosystem/minerva.svg",
     description: `User-friendly wallet for sovereign identities, data, and money`,
-    chains: [networkDefinition.gnosis.id, networkDefinition.polygon.id],
+    chains: [
+      networkDefinition.arbitrum.id,
+      networkDefinition.avalancheC.id,
+      networkDefinition.gnosis.id,
+      networkDefinition.optimism.id,
+      networkDefinition.polygon.id,
+      networkDefinition.bsc.id,
+    ],
     colors: {
       primary: "#4A3FCA",
       secondary: "#7D59ED",
@@ -319,7 +325,7 @@ export const SUPPORTS_SUPER_TOKENS: EcosystemApp[] = [
   },
   {
     name: "Li.Fi",
-    href: "https://li.fi/",
+    href: "https://app.superfluid.finance/bridge",
     icon: "/icons/ecosystem/li-fi.svg",
     description: `Advanced bridge aggregation with DEX connectivity`,
     chains: [
@@ -329,7 +335,6 @@ export const SUPPORTS_SUPER_TOKENS: EcosystemApp[] = [
       networkDefinition.optimism.id,
       networkDefinition.polygon.id,
     ],
-    comingSoon: true,
     colors: {
       primary: "#616BEF",
       secondary: "#EAA4FF",
