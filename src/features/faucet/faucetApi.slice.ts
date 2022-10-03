@@ -10,33 +10,36 @@ const faucetApi = createApi({
   reducerPath: "faucet",
   baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
-    claimTestTokens: builder.query<null, { chainId: number; account: Address }>(
-      {
-        queryFn: async ({ chainId, account }, queryApi) => {
-          const { status, data } = await axios.post(
-            `${config.api.faucetApiUrl}/default/fund-me-on-multi-network`,
-            {
-              receiver: account,
-              chainid: chainId,
-            }
-          );
-
-          if (status === 202 && data.tx.hash) {
-            await registerNewTransaction({
-              dispatch: queryApi.dispatch,
-              chainId,
-              transactionResponse: data.tx,
-              waitForConfirmation: false,
-              signer: account,
-              extraData: {},
-              title: "Claim Tokens",
-            });
+    claimTestTokens: builder.query<
+      { claimed: boolean },
+      { chainId: number; account: Address }
+    >({
+      queryFn: async ({ chainId, account }, queryApi) => {
+        const { status, data } = await axios.post(
+          `${config.api.faucetApiUrl}/default/fund-me-on-multi-network`,
+          {
+            receiver: account,
+            chainid: chainId,
           }
+        );
 
-          return { data: null };
-        },
-      }
-    ),
+        if (status === 202 && data.tx.hash) {
+          await registerNewTransaction({
+            dispatch: queryApi.dispatch,
+            chainId,
+            transactionResponse: data.tx,
+            waitForConfirmation: false,
+            signer: account,
+            extraData: {},
+            title: "Claim Tokens",
+          });
+
+          return { data: { claimed: true } };
+        }
+
+        return { data: { claimed: false } };
+      },
+    }),
   }),
 });
 

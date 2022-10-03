@@ -77,11 +77,9 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
       claimTestTokensTrigger({
         chainId: expectedTestNetwork.id,
         account: accountAddress,
-      })
-        .then(() => {
-          setTransactionDrawerOpen(true);
-        })
-        .catch(() => {});
+      }).then((response) => {
+        if (response.data?.claimed) setTransactionDrawerOpen(true);
+      });
     }
   }, [
     expectedTestNetwork,
