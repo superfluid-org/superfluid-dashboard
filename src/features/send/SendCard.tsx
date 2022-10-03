@@ -61,6 +61,9 @@ import TokenIcon from "../token/TokenIcon";
 import Decimal from "decimal.js";
 import { getDecimalPlacesToRoundTo } from "../../utils/DecimalUtils";
 
+const MIN_END_DATE = new Date();
+const MAX_END_DATE = new Date(2022, 12, 31, 23, 59);
+
 const getTotalAmountStreamed = ({
   endTimestamp,
   flowRateWei,
@@ -485,20 +488,18 @@ export default memo(function SendCard() {
                               <TextField fullWidth {...props} onBlur={onBlur} />
                             )}
                             value={endDate}
+                            minDateTime={MIN_END_DATE}
+                            maxDateTime={MAX_END_DATE}
                             onChange={(date: Date | null) => {
                               const endTimestamp = date
                                 ? getTimeInSeconds(date)
                                 : null;
                               onChange(endTimestamp);
-                              const totalAmountStreamed =
-                                getTotalAmountStreamed({
+                              setFixedAmountEther(
+                                getTotalAmountStreamedEtherRoundedString({
                                   endTimestamp,
                                   flowRateWei,
-                                });
-                              setFixedAmountEther(
-                                totalAmountStreamed
-                                  ? formatEther(totalAmountStreamed)
-                                  : ""
+                                })
                               );
                             }}
                             disablePast={true}
