@@ -490,6 +490,7 @@ export default memo(function SendCard() {
                             value={endDate}
                             minDateTime={MIN_END_DATE}
                             maxDateTime={MAX_END_DATE}
+                            ampm={false}
                             onChange={(date: Date | null) => {
                               const endTimestamp = date
                                 ? getTimeInSeconds(date)
