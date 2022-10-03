@@ -5,7 +5,6 @@ import {
   FlowCreateMutation,
   getFramework,
   registerNewTransaction,
-  registerNewTransactionAndReturnQueryFnResult,
   RpcEndpointBuilder,
   TransactionInfo,
   TransactionTitle,
@@ -24,10 +23,6 @@ const getSdk = (
   if (chainId === networkDefinition.goerli.id) {
     return getGoerliSdk(providerOrSigner);
   }
-
-  // if (chainId === networkDefinition.polygonMumbai.id) {
-  //   return getPolygonMumbaiSdk(providerOrSigner);
-  // }
 
   throw new Error();
 };
@@ -49,8 +44,6 @@ interface UpdateStreamSchedulerPermissions extends BaseSuperTokenMutation {
   flowRateAllowance: string;
   userData?: string;
 }
-
-interface RevokeAllStreamSchedulerPermissions extends BaseSuperTokenMutation {}
 
 interface ScheduleStreamEndDate extends BaseSuperTokenMutation {
   senderAddress: string;
@@ -158,7 +151,7 @@ export const streamSchedulerEndpoints = {
 
             const permissions = Number(flowOperatorData.permissions);
             const hasDeletePermission = permissions & 4;
-            if (hasDeletePermission) {
+            if (!hasDeletePermission) {
               subOperations.push({
                 operation: await superToken.updateFlowOperatorPermissions({
                   flowOperator: network.streamSchedulerContractAddress,
@@ -167,7 +160,7 @@ export const streamSchedulerEndpoints = {
                   userData: "0x",
                   overrides: arg.overrides,
                 }),
-                title: "Update Scheduler Permissions",
+                title: "Approve Scheduler for End Date",
               });
             }
 
@@ -190,7 +183,7 @@ export const streamSchedulerEndpoints = {
                   network.streamSchedulerContractAddress,
                   streamOrder.data!
                 ),
-                title: "Create Stream Order",
+                title: "Schedule Stream End Date",
               });
             }
           } else {
@@ -206,17 +199,18 @@ export const streamSchedulerEndpoints = {
                   network.streamSchedulerContractAddress,
                   streamOrder.data!
                 ),
-                title: "Delete Stream Order",
+                title: "Remove Stream End Date",
               });
             }
           }
         }
 
-        const existingFlow = await superToken.getFlow({
+        const currentFlow = await superToken.getFlow({
           sender: arg.senderAddress,
           receiver: arg.receiverAddress,
           providerOrSigner: arg.signer,
         });
+        const hasExistingFlow = currentFlow.flowRate !== "0";
 
         const flowArg = {
           sender: arg.senderAddress,
@@ -225,18 +219,18 @@ export const streamSchedulerEndpoints = {
           userData: "0x",
           overrides: arg.overrides,
         };
-        if (existingFlow.flowRate === "0") {
-          subOperations.push({
-            operation: await superToken.createFlow(flowArg),
-            title: "Create Stream",
-          });
-        } else {
-          if (arg.flowRateWei !== existingFlow.flowRate) {
+        if (hasExistingFlow) {
+          if (arg.flowRateWei !== currentFlow.flowRate) {
             subOperations.push({
               operation: await superToken.updateFlow(flowArg),
               title: "Update Stream",
             });
           }
+        } else {
+          subOperations.push({
+            operation: await superToken.createFlow(flowArg),
+            title: "Create Stream",
+          });
         }
 
         const signerAddress = await arg.signer.getAddress();
@@ -262,7 +256,13 @@ export const streamSchedulerEndpoints = {
             ...(arg.transactionExtraData ?? {}),
           },
           title:
-            subOperations.length === 1 ? subOperations[0].title : "Batch Call",
+            subOperations.length === 1
+              ? subOperations[0].title
+              : hasExistingFlow
+              ? "Modify Stream"
+              : arg.endTimestamp
+              ? "Send Closed-Ended Stream"
+              : "Create Stream",
         });
 
         return {

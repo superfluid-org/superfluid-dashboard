@@ -1,8 +1,5 @@
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Box,
   Collapse,
   IconButton,
@@ -13,7 +10,6 @@ import {
   ListItemText,
   Stack,
   Tooltip,
-  Typography,
   useTheme,
 } from "@mui/material";
 import {
@@ -57,6 +53,7 @@ const getDisplayTransactionTitle = (transactionTitle: TransactionTitle) => {
     case "Create Stream":
       return "Send Stream";
     case "Update Stream":
+      return "Update Flow Rate"
     case "Close Stream":
       return "Cancel Stream";
     case "Create Index":
@@ -101,8 +98,8 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
               </Stack>
               <Collapse in={expand}>
                 <List>
-                  {subTransactionTitles.map((x) => (
-                    <ListItem disablePadding key={x}>
+                  {subTransactionTitles.map((subTransactionTitle) => (
+                    <ListItem disablePadding key={subTransactionTitle}>
                       <ListItemAvatar sx={{ mr: 1 }}>
                         <TransactionListSubItemAvatar
                           status={transaction.status}
@@ -115,7 +112,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
                         }}
                         sx={{ my: 0.25 }}
                       >
-                        {getDisplayTransactionTitle(transaction.title)}
+                        {getDisplayTransactionTitle(subTransactionTitle)}
                       </ListItemText>
                     </ListItem>
                   ))}

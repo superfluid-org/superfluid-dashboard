@@ -62,7 +62,7 @@ import Decimal from "decimal.js";
 import { getDecimalPlacesToRoundTo } from "../../utils/DecimalUtils";
 
 const MIN_END_DATE = new Date();
-const MAX_END_DATE = new Date(2022, 12, 31, 23, 59);
+const MAX_END_DATE = new Date(2023, 12, 31, 23, 59);
 
 const getTotalAmountStreamed = ({
   endTimestamp,
