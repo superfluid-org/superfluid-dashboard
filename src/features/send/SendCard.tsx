@@ -278,7 +278,7 @@ export default memo(function SendCard() {
   // TODO(KK): Don't really like the useEffect solution here.
   useEffect(() => {
     if (existingEndTimestamp) {
-      // Hide old schedule orders. It will be automatically removed.
+      // Hide old schedule orders. It will be automatically deleted.
       if (existingEndTimestamp > dateNowSeconds()) {
         setStreamScheduling(true);
         setValue("data.endTimestamp", existingEndTimestamp);
@@ -453,15 +453,18 @@ export default memo(function SendCard() {
             <>
               <FormControlLabel
                 control={
-                  <Switch
-                    checked={streamScheduling}
-                    onChange={(_event, value) => {
-                      if (!value) {
-                        setValue("data.endTimestamp", null);
-                      }
-                      setStreamScheduling(value);
-                    }}
-                  />
+                  <>
+                    <Switch
+                      checked={streamScheduling}
+                      onChange={(_event, value) => {
+                        if (!value) {
+                          setValue("data.endTimestamp", null);
+                        }
+                        setStreamScheduling(value);
+                      }}
+                    />
+                    <TooltipIcon title="Pick a start and end date for your stream, and set a fixed token amount" />
+                  </>
                 }
                 label="Stream Scheduling"
               />
@@ -517,7 +520,7 @@ export default memo(function SendCard() {
                       sx={{ mr: 0.75 }}
                       flex={1}
                     >
-                      <FormLabel>Fixed Amount</FormLabel>
+                      <FormLabel>Total Stream</FormLabel>
                       <TooltipIcon title="The approximate amount that will be streamed until the scheduler cancels the stream." />
                     </Stack>
                     <TextField

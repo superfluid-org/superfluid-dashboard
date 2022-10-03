@@ -10,8 +10,7 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { differenceInDays, format } from "date-fns";
-import { BigNumber } from "ethers";
-import { formatEther, parseEther } from "ethers/lib/utils";
+import { formatEther } from "ethers/lib/utils";
 import {
   FC,
   isValidElement,
@@ -35,6 +34,8 @@ import {
   UnitOfTime,
 } from "./FlowRateInput";
 import useCalculateBufferInfo from "./useCalculateBufferInfo";
+import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
+import TimerOutlined from "@mui/icons-material/TimerOutlined";
 
 interface PreviewItemProps {
   label: string | ReactNode;
@@ -171,14 +172,22 @@ export const StreamingPreview: FC<{
   const calculateBufferInfo = useCalculateBufferInfo();
 
   const newEndDateString = useMemo(() => {
-    return newEndDate
-      ? `${format(newEndDate, "P")} at ${format(newEndDate, "p")}`
-      : "Never";
+    return newEndDate ? (
+      <Stack direction="row" alignItems="center" gap={0.5}>
+        <TimerOutlined />
+        {format(newEndDate, "P")} at {format(newEndDate, "p")}
+      </Stack>
+    ) : (
+      <Stack direction="row" alignItems="center" gap={0.5}>
+        <AllInclusiveIcon />
+        Never
+      </Stack>
+    );
   }, [newEndDate]);
 
   const oldEndDateString = useMemo(() => {
     return oldEndDate
-      ? `${format(oldEndDate, "P")} at ${format(oldEndDate, "p")}`
+      ? `${format(oldEndDate, "P")} at {format(oldEndDate, "p")}`
       : "Never";
   }, [oldEndDate]);
 
@@ -293,36 +302,16 @@ export const StreamingPreview: FC<{
               : undefined
           }
         >
-          {newAmountPerSecond}
+          {newAmountPerSecond} {token.symbol}
         </PreviewItem>
 
         <PreviewItem
           dataCy="preview-ends-on"
           label="Ends on"
-          oldValue={
-            oldEndDateString != newEndDateString ? oldEndDateString : undefined
-          }
+          oldValue={oldEndDate != newEndDate ? oldEndDateString : undefined}
         >
           {newEndDateString}
         </PreviewItem>
-
-        {visibleAddress && balanceAfterBuffer && (
-          <PreviewItem
-            dataCy="preview-balance-after-buffer"
-            label="Balance after buffer"
-            isError={balanceAfterBuffer.isNegative()}
-            TypographyProps={{ variant: "body2mono" }}
-          >
-            {realtimeBalance && (
-              <FlowingBalance
-                balance={balanceAfterBuffer.toString()}
-                balanceTimestamp={realtimeBalance.balanceTimestamp}
-                flowRate={realtimeBalance.flowRate}
-                tokenSymbol={token.symbol}
-              />
-            )}
-          </PreviewItem>
-        )}
 
         {newBufferAmount && (
           <PreviewItem
@@ -344,6 +333,24 @@ export const StreamingPreview: FC<{
             }
           >
             <Amount wei={newBufferAmount}> {token.symbol}</Amount>
+          </PreviewItem>
+        )}
+
+        {visibleAddress && balanceAfterBuffer && (
+          <PreviewItem
+            dataCy="preview-balance-after-buffer"
+            label="Balance after buffer"
+            isError={balanceAfterBuffer.isNegative()}
+            TypographyProps={{ variant: "body2mono" }}
+          >
+            {realtimeBalance && (
+              <FlowingBalance
+                balance={balanceAfterBuffer.toString()}
+                balanceTimestamp={realtimeBalance.balanceTimestamp}
+                flowRate={realtimeBalance.flowRate}
+                tokenSymbol={token.symbol}
+              />
+            )}
           </PreviewItem>
         )}
 
