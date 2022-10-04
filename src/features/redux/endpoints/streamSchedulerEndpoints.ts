@@ -3,6 +3,7 @@ import {
   BaseQuery,
   BaseSuperTokenMutation,
   FlowCreateMutation,
+  FlowUpdateMutation,
   getFramework,
   registerNewTransaction,
   RpcEndpointBuilder,
@@ -16,6 +17,8 @@ import {
   networkDefinition,
 } from "../../network/networks";
 import { rpcApi } from "../store";
+
+const ACL_DELETE_PERMISSION = 4;
 
 const getSdk = (
   chainId: number,
@@ -34,64 +37,15 @@ interface GetStreamScheduledEndDate extends BaseQuery<number | null> {
   receiverAddress: string;
 }
 
-interface GetStreamSchedulerPermissions
-  extends BaseQuery<IWeb3FlowOperatorData> {
-  senderAddress: string;
-  superTokenAddress: string;
-}
-
-interface UpdateStreamSchedulerPermissions extends BaseSuperTokenMutation {
-  permissions: number;
-  flowRateAllowance: string;
-  userData?: string;
-}
-
-interface ScheduleStreamEndDate extends BaseSuperTokenMutation {
-  senderAddress: string;
-  receiverAddress: string;
-  endTimestamp: number;
-  userData: string;
-}
-
-interface UpsertStreamWithScheduling
+interface UpsertFlowWithScheduling
   extends FlowCreateMutation,
-    Omit<ScheduleStreamEndDate, "endTimestamp">,
-    GetStreamSchedulerPermissions,
-    UpdateStreamSchedulerPermissions {
-  userData: string;
+    FlowUpdateMutation {
   senderAddress: string;
   endTimestamp: number | null;
 }
 
 export const streamSchedulerEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
-    schedulerOperatorPermissions: builder.query<
-      IWeb3FlowOperatorData,
-      GetStreamSchedulerPermissions
-    >({
-      queryFn: async ({ chainId, superTokenAddress, senderAddress }) => {
-        const framework = await getFramework(chainId);
-        const superToken = await framework.loadSuperToken(superTokenAddress);
-        const network = findNetworkByChainId(chainId);
-        if (!network?.streamSchedulerContractAddress) {
-          throw new Error("Network doesn't support stream scheduler.");
-        }
-
-        const flowOperatorData = await superToken.getFlowOperatorData({
-          flowOperator: network.streamSchedulerContractAddress,
-          sender: senderAddress,
-          providerOrSigner: framework.settings.provider,
-        });
-
-        return { data: flowOperatorData };
-      },
-      providesTags: (_result, _error, arg) => [
-        {
-          type: "GENERAL",
-          id: arg.chainId.toString(),
-        },
-      ],
-    }),
     scheduledEndDate: builder.query<number | null, GetStreamScheduledEndDate>({
       queryFn: async ({
         chainId,
@@ -117,13 +71,13 @@ export const streamSchedulerEndpoints = {
         },
       ],
     }),
-    upsertStreamWithScheduling: builder.mutation<
+    upsertFlowWithScheduling: builder.mutation<
       TransactionInfo & { subTransactionTitles: TransactionTitle[] },
-      UpsertStreamWithScheduling
+      UpsertFlowWithScheduling
     >({
       async queryFn({ chainId, ...arg }, { dispatch }) {
+        const userData = arg.userDataBytes ?? "0x";
         const framework = await getFramework(chainId);
-
         const [superToken, activeExistingFlow] = await Promise.all([
           framework.loadSuperToken(arg.superTokenAddress),
           dispatch(
@@ -171,14 +125,14 @@ export const streamSchedulerEndpoints = {
             });
 
             const permissions = Number(flowOperatorData.permissions);
-            const hasDeletePermission = permissions & 4;
+            const hasDeletePermission = permissions & ACL_DELETE_PERMISSION;
             if (!hasDeletePermission) {
               subOperations.push({
                 operation: await superToken.updateFlowOperatorPermissions({
                   flowOperator: network.streamSchedulerContractAddress,
-                  flowRateAllowance: arg.flowRateAllowance,
-                  permissions: permissions + 4,
-                  userData: "0x",
+                  flowRateAllowance: flowOperatorData.flowRateAllowance,
+                  permissions: permissions + ACL_DELETE_PERMISSION,
+                  userData: userData,
                   overrides: arg.overrides,
                 }),
                 title: "Approve Scheduler for End Date",
@@ -194,7 +148,7 @@ export const streamSchedulerEndpoints = {
                   0, // startDuration
                   "0", // flowRate
                   arg.endTimestamp,
-                  arg.userData,
+                  userData,
                   "0x",
                   arg.overrides ?? {}
                 );
@@ -227,10 +181,10 @@ export const streamSchedulerEndpoints = {
         }
 
         const flowArg = {
+          userData,
           sender: arg.senderAddress,
           flowRate: arg.flowRateWei,
           receiver: arg.receiverAddress,
-          userData: "0x",
           overrides: arg.overrides,
         };
         if (activeExistingFlow) {

@@ -87,9 +87,9 @@ export const TransactionButton: FC<{
   return (
     <LoadingButton
       {...(dataCy ? { "data-cy": dataCy } : {})}
+      color="primary"
       {...buttonProps}
       loading={mutationResult.isLoading}
-      color="primary"
       disabled={!signer}
       onClick={() => {
         if (!signer) throw Error("Signer not defined.");
