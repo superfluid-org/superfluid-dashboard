@@ -124,9 +124,22 @@ export const streamSchedulerEndpoints = {
       async queryFn({ chainId, ...arg }, { dispatch }) {
         const framework = await getFramework(chainId);
 
-        const superToken = await framework.loadSuperToken(
-          arg.superTokenAddress
-        );
+        const [superToken, activeExistingFlow] = await Promise.all([
+          framework.loadSuperToken(arg.superTokenAddress),
+          dispatch(
+            rpcApi.endpoints.getActiveFlow.initiate(
+              {
+                chainId,
+                tokenAddress: arg.superTokenAddress,
+                senderAddress: arg.senderAddress,
+                receiverAddress: arg.receiverAddress,
+              },
+              {
+                subscribe: false,
+              }
+            )
+          ).unwrap(),
+        ]);
 
         const sdk = getGoerliSdk(arg.signer); // TODO(KK): Get this off of a Network.
         const subOperations: {
@@ -145,7 +158,7 @@ export const streamSchedulerEndpoints = {
                 receiverAddress: arg.receiverAddress,
               },
               {
-                subscribe: false
+                subscribe: false,
               }
             )
           ).unwrap();
@@ -213,20 +226,6 @@ export const streamSchedulerEndpoints = {
           }
         }
 
-        const activeExistingFlow = await dispatch(
-          rpcApi.endpoints.getActiveFlow.initiate(
-            {
-              chainId,
-              tokenAddress: arg.superTokenAddress,
-              senderAddress: arg.senderAddress,
-              receiverAddress: arg.receiverAddress,
-            },
-            {
-              subscribe: false
-            }
-          )
-        ).unwrap();
-
         const flowArg = {
           sender: arg.senderAddress,
           flowRate: arg.flowRateWei,
@@ -258,7 +257,16 @@ export const streamSchedulerEndpoints = {
         const transactionResponse = await executableOperationOrBatchCall.exec(
           arg.signer
         );
+
         const subTransactionTitles = subOperations.map((x) => x.title);
+        const mainTransactionTitle =
+          subTransactionTitles.length === 1
+            ? subTransactionTitles[0]
+            : activeExistingFlow
+            ? "Modify Stream"
+            : arg.endTimestamp
+            ? "Send Closed-Ended Stream"
+            : "Create Stream";
 
         await registerNewTransaction({
           dispatch,
@@ -270,14 +278,7 @@ export const streamSchedulerEndpoints = {
             subTransactionTitles,
             ...(arg.transactionExtraData ?? {}),
           },
-          title:
-            subOperations.length === 1
-              ? subOperations[0].title
-              : activeExistingFlow
-              ? "Modify Stream"
-              : arg.endTimestamp
-              ? "Send Closed-Ended Stream"
-              : "Create Stream",
+          title: mainTransactionTitle,
         });
 
         return {
