@@ -290,10 +290,6 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
 
                 const overrides = await getTransactionOverrides(network);
 
-                const isNativeAssetSuperToken =
-                  formData.tokenPair.underlyingTokenAddress ===
-                  NATIVE_ASSET_ADDRESS;
-
                 setDialogLoadingInfo(
                   <UnwrapPreview
                     {...{

@@ -37,11 +37,11 @@ export const TransactionListItemRestoreButton: FC<{
     await router.push(`/restore-transaction?hash=${transaction.hash}`);
   };
 
-  switch (transaction.title) {
-    case "Create Stream":
-    case "Update Stream":
-    case "Downgrade from Super Token":
-    case "Upgrade to Super Token":
+  switch (transactionRestoration.type) {
+    case RestorationType.Unwrap:
+    case RestorationType.ModifyStream:
+    case RestorationType.SendStream:
+    case RestorationType.Wrap:
       return (
         <Tooltip title="Restore">
           <IconButton onClick={restoreTransaction}>

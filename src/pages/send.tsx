@@ -89,6 +89,7 @@ const Send: NextPage = () => {
               },
               receiverAddress: restoration.receiverAddress,
               tokenAddress: restoration.tokenAddress,
+              endTimestamp: restoration.endTimestamp
             });
             break;
           default:

@@ -66,6 +66,11 @@ import {
   TransactionDialogButton,
 } from "../transactionBoundary/TransactionDialog";
 import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
+import {
+  ModifyStreamRestoration,
+  RestorationType,
+  SendStreamRestoration,
+} from "../transactionRestoration/transactionRestorations";
 
 const MIN_END_DATE = new Date();
 const MAX_END_DATE = new Date(2023, 12, 31, 23, 59);
@@ -281,31 +286,32 @@ export default memo(function SendCard() {
   );
   const [fixedAmountEther, setFixedAmountEther] = useState<string>("");
 
-  // TODO(KK): Don't really like the useEffect solution here.
   useEffect(() => {
-    if (existingEndTimestamp) {
-      // Hide old schedule orders. It will be automatically deleted.
-      if (existingEndTimestamp > dateNowSeconds()) {
-        setStreamScheduling(true);
-        setValue("data.endTimestamp", existingEndTimestamp);
-        if (flowRateEther) {
-          setFixedAmountEther(
-            getTotalAmountStreamedEtherRoundedString({
-              endTimestamp: existingEndTimestamp,
-              flowRateWei: flowRateWei,
-            })
-          );
+    if (!endTimestamp) {
+      if (existingEndTimestamp) {
+        // Hide old schedule orders. It will be automatically deleted.
+        if (existingEndTimestamp > dateNowSeconds()) {
+          setStreamScheduling(true);
+          setValue("data.endTimestamp", existingEndTimestamp);
+          if (flowRateEther) {
+            setFixedAmountEther(
+              getTotalAmountStreamedEtherRoundedString({
+                endTimestamp: existingEndTimestamp,
+                flowRateWei: flowRateWei,
+              })
+            );
+          }
         }
+      } else {
+        setStreamScheduling(false);
+        setValue("data.endTimestamp", null);
+        setFixedAmountEther("");
       }
-    } else {
-      setStreamScheduling(false);
-      setValue("data.endTimestamp", null);
-      setFixedAmountEther("");
     }
   }, [existingEndTimestamp]);
 
   useEffect(() => {
-    if (endTimestamp) {
+    if (endTimestamp && flowRateWei) {
       setFixedAmountEther(
         getTotalAmountStreamedEtherRoundedString({
           endTimestamp,
@@ -313,7 +319,7 @@ export default memo(function SendCard() {
         })
       );
     }
-  }, [flowRateWei]);
+  }, [endTimestamp, flowRateWei]);
 
   const [upsertFlow, upsertFlowResult] =
     rpcApi.useUpsertFlowWithSchedulingMutation();
@@ -691,15 +697,38 @@ export default memo(function SendCard() {
                       const { data: formData } =
                         getValues() as ValidStreamingForm;
 
-                      upsertFlow({
-                        signer,
-                        chainId: network.id,
-                        flowRateWei: calculateTotalAmountWei({
+                      const flowRateWei = calculateTotalAmountWei({
+                        amountWei: parseEther(
+                          formData.flowRate.amountEther
+                        ).toString(),
+                        unitOfTime: formData.flowRate.unitOfTime,
+                      }).toString();
+
+                      const transactionRestoration:
+                        | SendStreamRestoration
+                        | ModifyStreamRestoration = {
+                        type: activeFlow
+                          ? RestorationType.ModifyStream
+                          : RestorationType.SendStream,
+                        flowRate: {
                           amountWei: parseEther(
                             formData.flowRate.amountEther
                           ).toString(),
                           unitOfTime: formData.flowRate.unitOfTime,
-                        }).toString(),
+                        },
+                        version: 2,
+                        chainId: network.id,
+                        tokenAddress: formData.tokenAddress,
+                        receiverAddress: formData.receiverAddress,
+                        ...(formData.endTimestamp
+                          ? { endTimestamp: formData.endTimestamp }
+                          : {}),
+                      };
+
+                      upsertFlow({
+                        signer,
+                        flowRateWei,
+                        chainId: network.id,
                         senderAddress: await signer.getAddress(),
                         receiverAddress: formData.receiverAddress,
                         superTokenAddress: formData.tokenAddress,
@@ -709,6 +738,9 @@ export default memo(function SendCard() {
                           : null,
                         waitForConfirmation: false,
                         overrides: await getTransactionOverrides(network),
+                        transactionExtraData: {
+                          restoration: transactionRestoration,
+                        },
                       })
                         .unwrap()
                         .then(() => resetForm());
