@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import Link from "next/link";
-import { FC, useCallback, useMemo } from "react";
+import { FC, useCallback } from "react";
 import { useAccount } from "wagmi";
 import useAddressName from "../../hooks/useAddressName";
 import { getAddress } from "../../utils/memoizedEthersUtils";
@@ -23,7 +23,6 @@ import ResponsiveDialog from "../common/ResponsiveDialog";
 import { Flag } from "../flags/flags.slice";
 import { useHasFlag } from "../flags/flagsHooks";
 import { useLayoutContext } from "../layout/LayoutContext";
-import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { networkDefinition } from "../network/networks";
 import TokenChip from "../token/TokenChip";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
@@ -54,23 +53,17 @@ interface FaucetDialogProps {
 
 const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
   const { address: accountAddress } = useAccount();
-  const { network } = useExpectedNetwork();
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { setTransactionDrawerOpen } = useLayoutContext();
   const [claimTestTokensTrigger, claimTestTokensResponse] =
     faucetApi.useLazyClaimTestTokensQuery();
 
-  const expectedTestNetwork = useMemo(
-    () => (network.testnet ? network : networkDefinition.goerli),
-    [network]
-  );
-
   const hasClaimedTokens = useHasFlag(
     accountAddress
       ? {
           type: Flag.TestTokensReceived,
-          chainId: expectedTestNetwork.id,
+          chainId: networkDefinition.goerli.id,
           account: getAddress(accountAddress),
         }
       : undefined
@@ -79,18 +72,13 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
   const claimTokens = useCallback(() => {
     if (accountAddress) {
       claimTestTokensTrigger({
-        chainId: expectedTestNetwork.id,
+        chainId: networkDefinition.goerli.id,
         account: accountAddress,
       }).then((response) => {
         if (response.isSuccess) setTransactionDrawerOpen(true);
       });
     }
-  }, [
-    expectedTestNetwork,
-    accountAddress,
-    claimTestTokensTrigger,
-    setTransactionDrawerOpen,
-  ]);
+  }, [accountAddress, claimTestTokensTrigger, setTransactionDrawerOpen]);
 
   return (
     <ResponsiveDialog
@@ -155,7 +143,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
             </Alert>
           )}
 
-          <ConnectionBoundary expectedNetwork={expectedTestNetwork}>
+          <ConnectionBoundary expectedNetwork={networkDefinition.goerli}>
             <ConnectionBoundaryButton
               ButtonProps={{
                 size: "xl",
