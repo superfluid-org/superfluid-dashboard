@@ -60,6 +60,11 @@ import { BigNumber, BigNumberish } from "ethers";
 import TokenIcon from "../token/TokenIcon";
 import Decimal from "decimal.js";
 import { getDecimalPlacesToRoundTo } from "../../utils/DecimalUtils";
+import {
+  TransactionDialogActions,
+  TransactionDialogButton,
+} from "../transactionBoundary/TransactionDialog";
+import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
 
 const MIN_END_DATE = new Date();
 const MAX_END_DATE = new Date(2023, 12, 31, 23, 59);
@@ -666,7 +671,7 @@ export default memo(function SendCard() {
 
           <Stack gap={1}>
             <TransactionBoundary mutationResult={upsertFlowResult}>
-              {() => (
+              {({ closeDialog, setDialogSuccessActions }) => (
                 <TransactionButton
                   disabled={isSendDisabled}
                   ButtonProps={{
@@ -707,6 +712,55 @@ export default memo(function SendCard() {
                     })
                       .unwrap()
                       .then(() => resetForm());
+
+                    if (activeFlow) {
+                      setDialogSuccessActions(
+                        <TransactionDialogActions>
+                          <Link
+                            href={getTokenPagePath({
+                              network: network.slugName,
+                              token: formData.tokenAddress,
+                            })}
+                            passHref
+                          >
+                            <TransactionDialogButton
+                              data-cy={"go-to-token-page-button"}
+                              color="primary"
+                            >
+                              Go to token page ➜
+                            </TransactionDialogButton>
+                          </Link>
+                        </TransactionDialogActions>
+                      );
+                    } else {
+                      setDialogSuccessActions(
+                        <TransactionDialogActions>
+                          <Stack gap={1} sx={{ width: "100%" }}>
+                            <TransactionDialogButton
+                              data-cy={"send-more-streams-button"}
+                              color="secondary"
+                              onClick={closeDialog}
+                            >
+                              Send more streams
+                            </TransactionDialogButton>
+                            <Link
+                              href={getTokenPagePath({
+                                network: network.slugName,
+                                token: formData.tokenAddress,
+                              })}
+                              passHref
+                            >
+                              <TransactionDialogButton
+                                data-cy="go-to-token-page-button"
+                                color="primary"
+                              >
+                                Go to token page ➜
+                              </TransactionDialogButton>
+                            </Link>
+                          </Stack>
+                        </TransactionDialogActions>
+                      );
+                    }
                   }}
                 >
                   {activeFlow ? "Modify Stream" : "Send Stream"}
