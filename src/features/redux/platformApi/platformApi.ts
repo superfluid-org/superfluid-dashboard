@@ -7,6 +7,9 @@ import {
 export const platformApi = createApi({
   tagTypes: ["GENERAL"], // TODO(KK): Make SDK be able to invalidate another slice!
   baseQuery: fetchBaseQuery(),
+  keepUnusedDataFor: 45,
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
   endpoints: (build) => ({
     listSubscriptions: build.query<
       ListSubscriptionsApiResponse,

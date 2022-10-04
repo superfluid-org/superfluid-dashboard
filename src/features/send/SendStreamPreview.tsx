@@ -354,7 +354,7 @@ export const StreamingPreview: FC<{
           </PreviewItem>
         )}
 
-        {newTotalFlowRate?.isNegative() && (
+        {newTotalFlowRate?.isNegative() && !balanceAfterBuffer.isNegative() && (
           <PreviewItem
             dataCy={"buffer-loss"}
             label="Predicted buffer loss date"

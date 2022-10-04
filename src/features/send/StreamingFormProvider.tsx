@@ -142,7 +142,7 @@ const StreamingFormProvider: FC<
             ).unwrap(),
           ]);
 
-          const { newDateWhenBalanceCritical, newFlowRate } =
+          const { newDateWhenBalanceCritical = new Date() } =
             calculateBufferInfo(network, realtimeBalance, activeFlow, {
               amountWei: parseEther(
                 validForm.data.flowRate.amountEther
@@ -156,7 +156,7 @@ const StreamingFormProvider: FC<
             const secondsToCritical =
               newDateWhenBalanceCritical.getTime() / 1000 - dateNowSeconds();
 
-            if (secondsToCritical < minimumStreamTimeInSeconds) {
+            if (secondsToCritical <= minimumStreamTimeInSeconds) {
               // NOTE: "secondsToCritical" might be off about 1 minute because of RTK-query cache for the balance query
               handleHigherOrderValidationError({
                 message: `You need to leave enough balance to stream for ${
@@ -165,15 +165,6 @@ const StreamingFormProvider: FC<
               });
             }
           }
-
-          // if (
-          //   activeFlow &&
-          //   BigNumber.from(activeFlow.flowRateWei).eq(newFlowRate)
-          // ) {
-          //   handleHigherOrderValidationError({
-          //     message: `The stream already has the given flow rate.`,
-          //   });
-          // }
         }
 
         if (!understandLiquidationRisk) {

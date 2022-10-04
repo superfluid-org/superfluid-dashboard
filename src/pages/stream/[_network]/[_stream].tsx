@@ -642,8 +642,6 @@ const StreamPageContent: FC<{
               },
             }}
           >
-            {/* // TODO(KK): Handle scheduled start date */}
-
             <OverviewItem
               dataCy={"start-date"}
               label="Start Date:"
