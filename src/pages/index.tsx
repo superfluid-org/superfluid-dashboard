@@ -10,9 +10,11 @@ import {
   useTheme,
 } from "@mui/material";
 import type { NextPage } from "next";
-import { FC, useCallback, useState } from "react";
+import { useRouter } from "next/router";
+import { FC, useCallback, useEffect, useState } from "react";
 import AddressSearchDialog from "../components/AddressSearchDialog/AddressSearchDialog";
 import withStaticSEO from "../components/SEO/withStaticSEO";
+import FaucetDialog from "../features/faucet/FaucetDialog";
 import AddressSearchIndex from "../features/impersonation/AddressSearchIndex";
 import { useImpersonation } from "../features/impersonation/ImpersonationContext";
 import OnboardingCards from "../features/onboarding/OnboardingCards";
@@ -123,6 +125,24 @@ const ConnectView: FC = () => {
 const Home: NextPage = () => {
   const { visibleAddress } = useVisibleAddress();
 
+  const router = useRouter();
+
+  const [faucetDialogOpen, setFaucetDialogOpen] = useState(false);
+
+  useEffect(() => {
+    const { showFaucet, ...remainingQuery } = router.query;
+
+    if (!faucetDialogOpen && Boolean(showFaucet)) {
+      setFaucetDialogOpen(true);
+
+      router.replace({
+        query: remainingQuery,
+      });
+    }
+  }, [faucetDialogOpen, router]);
+
+  const closeFaucetDialog = () => setFaucetDialogOpen(false);
+
   return (
     <Container maxWidth="lg">
       {visibleAddress ? (
@@ -130,6 +150,8 @@ const Home: NextPage = () => {
       ) : (
         <ConnectView />
       )}
+
+      {faucetDialogOpen && <FaucetDialog onClose={closeFaucetDialog} />}
     </Container>
   );
 };

@@ -1,4 +1,5 @@
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import ShowerRoundedIcon from "@mui/icons-material/ShowerRounded";
 import SupportRoundedIcon from "@mui/icons-material/SupportRounded";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import ElderlyRoundedIcon from "@mui/icons-material/ElderlyRounded";
@@ -127,6 +128,15 @@ const MoreNavigationItem: FC = ({}) => {
           <ListItemButton href="" target="_blank">
             <MenuItemImage src="/icons/social/twitter.svg" alt="Twitter logo" />
             <ListItemText>Twitter</ListItemText>
+          </ListItemButton>
+        </Link>
+
+        <Link href="/?showFaucet=true">
+          <ListItemButton href="" onClick={closeMoreMenu}>
+            <ListItemIcon>
+              <ShowerRoundedIcon sx={{ color: theme.palette.text.primary }} />
+            </ListItemIcon>
+            <ListItemText>Faucet</ListItemText>
           </ListItemButton>
         </Link>
 

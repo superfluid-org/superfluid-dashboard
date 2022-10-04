@@ -888,6 +888,22 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           message: {
             overflow: "visible",
           },
+          standard: {
+            borderRadius: 0,
+            borderLeft: "3px solid",
+          },
+          standardSuccess: {
+            borderColor: theme.palette.primary.main,
+          },
+          standardError: {
+            borderColor: theme.palette.error.main,
+          },
+          standardWarning: {
+            borderColor: theme.palette.warning.main,
+          },
+          standardInfo: {
+            borderColor: theme.palette.info.main,
+          },
         },
         variants: [
           {
@@ -969,6 +985,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           root: {
             width: "36px",
             height: "36px",
+            background: "transparent",
           },
         },
       },

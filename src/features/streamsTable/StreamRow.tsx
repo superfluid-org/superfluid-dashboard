@@ -29,6 +29,7 @@ import { PendingOutgoingStream } from "../pendingUpdates/PendingOutgoingStream";
 import { UnitOfTime } from "../send/FlowRateInput";
 import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
+import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import CancelStreamButton from "./CancelStreamButton/CancelStreamButton";
 import ModifyStreamButton from "./ModifyStreamButton";

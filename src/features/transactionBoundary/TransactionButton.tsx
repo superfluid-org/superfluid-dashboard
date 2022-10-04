@@ -3,6 +3,7 @@ import { useTransactionBoundary } from "./TransactionBoundary";
 import { Button, ButtonProps } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { Signer } from "ethers";
+import ConnectionBoundaryButton from "./ConnectionBoundaryButton";
 
 export const transactionButtonDefaultProps: ButtonProps = {
   fullWidth: true,
@@ -17,16 +18,7 @@ export const TransactionButton: FC<{
   onClick: (signer: Signer) => Promise<void>; // TODO(KK): Longer-term, get rid of async to avoid wagmi's UX pitfalls
   ButtonProps?: ButtonProps;
 }> = ({ children, dataCy, disabled, onClick, ButtonProps }) => {
-  const {
-    signer,
-    isImpersonated,
-    stopImpersonation,
-    isConnected,
-    isConnecting,
-    connectWallet,
-    expectedNetwork,
-    isCorrectNetwork,
-    switchNetwork,
+  const { signer,
     mutationResult,
   } = useTransactionBoundary();
 
@@ -43,60 +35,21 @@ export const TransactionButton: FC<{
     );
   }
 
-  if (isImpersonated) {
-    return (
-      <Button
-        data-cy={"view-mode-button"}
-        {...buttonProps}
-        color="warning"
-        onClick={stopImpersonation}
-      >
-        Stop Viewing an Address
-      </Button>
-    );
-  }
-
-  if (!isConnected) {
-    return (
-      <LoadingButton
-        data-cy={"connect-wallet"}
-        {...buttonProps}
-        loading={isConnecting}
-        color="primary"
-        onClick={connectWallet}
-      >
-        <span>Connect Wallet</span>
-      </LoadingButton>
-    );
-  }
-
-  if (!isCorrectNetwork) {
-    return (
-      <Button
-        data-cy={"change-network-button"}
-        {...buttonProps}
-        color="primary"
-        disabled={!switchNetwork}
-        onClick={() => switchNetwork?.()}
-      >
-        <span translate="no">Change Network to {expectedNetwork.name}</span>
-      </Button>
-    );
-  }
-
   return (
-    <LoadingButton
-      {...(dataCy ? { "data-cy": dataCy } : {})}
-      color="primary"
+    <ConnectionBoundaryButton ButtonProps={buttonProps}>
+      <LoadingButton
+        {...(dataCy ? { "data-cy": dataCy } : {})}
+        color="primary"
       {...buttonProps}
       loading={mutationResult.isLoading}
-      disabled={!signer}
-      onClick={() => {
-        if (!signer) throw Error("Signer not defined.");
-        onClick(signer);
-      }}
-    >
-      <span>{children}</span>
-    </LoadingButton>
+        disabled={!signer}
+        onClick={() => {
+          if (!signer) throw Error("Signer not defined.");
+          onClick(signer);
+        }}
+      >
+        <span>{children}</span>
+      </LoadingButton>
+    </ConnectionBoundaryButton>
   );
 };

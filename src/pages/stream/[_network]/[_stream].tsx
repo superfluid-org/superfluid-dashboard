@@ -41,6 +41,7 @@ import Amount from "../../../features/token/Amount";
 import FlowingBalance from "../../../features/token/FlowingBalance";
 import TokenIcon from "../../../features/token/TokenIcon";
 import { useTokenIsListed } from "../../../features/token/useTokenIsListed";
+import ConnectionBoundary from "../../../features/transactionBoundary/ConnectionBoundary";
 import useAddressName from "../../../hooks/useAddressName";
 import useNavigateBack from "../../../hooks/useNavigateBack";
 import { useScheduledStream } from "../../../hooks/useScheduledStream";

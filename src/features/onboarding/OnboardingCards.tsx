@@ -1,4 +1,5 @@
 import CancelIcon from "@mui/icons-material/Cancel";
+import MoveToInboxRoundedIcon from "@mui/icons-material/MoveToInboxRounded";
 import EditIcon from "@mui/icons-material/Edit";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import {
@@ -58,7 +59,11 @@ const OnboardingItem: FC<PropsWithChildren<OnboardingItemProps>> = ({
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >
-        <CardHeader title={title} subheader={subheader} />
+        <CardHeader
+          title={title}
+          subheader={subheader}
+          sx={{ textAlign: "center" }}
+        />
         <CardContent
           component={Stack}
           direction="row"
@@ -121,14 +126,14 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({
       gap={3.5}
       sx={{
         display: "grid",
-        gridTemplateColumns: "repeat(3, 290px)",
+        gridTemplateColumns: "repeat(2, 290px)",
         [theme.breakpoints.down("md")]: {
           maxWidth: "100vw",
           mx: -2,
           py: 2,
           px: 3.5 + 2, // Column gap + 2 spacing for the next card to peek out.
           overflowY: "auto",
-          gridTemplateColumns: "repeat(3, 100%)",
+          gridTemplateColumns: "repeat(4, 100%)",
           justifyContent: "flex-start",
           alignItems: "flex-start",
           scrollSnapType: "x mandatory",
@@ -183,6 +188,16 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({
         </IconButton>
         <IconButton color="error">
           <CancelIcon />
+        </IconButton>
+      </OnboardingItem>
+      <OnboardingItem
+        title="Try out Superfluid"
+        subheader="Start on a Testnet"
+        onClick={onClick}
+        href="/?showFaucet=true"
+      >
+        <IconButton color="primary">
+          <MoveToInboxRoundedIcon />
         </IconButton>
       </OnboardingItem>
     </Stack>

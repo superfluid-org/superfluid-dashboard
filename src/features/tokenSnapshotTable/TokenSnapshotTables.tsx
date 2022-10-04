@@ -6,11 +6,11 @@ import {
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FC, useCallback, useMemo, useRef, useState } from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
+import FaucetCard from "../faucet/FaucetCard";
 import { useActiveNetworks } from "../network/ActiveNetworksContext";
 import NetworkSelectionFilter from "../network/NetworkSelectionFilter";
-import { subgraphApi } from "../redux/store";
 import TokenSnapshotEmptyCard from "./TokenSnapshotEmptyCard";
 import TokenSnapshotLoadingTable from "./TokenSnapshotLoadingTable";
 import TokenSnapshotTable from "./TokenSnapshotTable";
@@ -31,13 +31,12 @@ interface TokenSnapshotTablesProps {
 const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-
-  const [fetchingStatuses, setFetchingStatuses] =
-    useState<NetworkFetchingStatuses>({});
-
   const { activeNetworks } = useActiveNetworks();
 
   const networkSelectionRef = useRef<HTMLButtonElement>(null);
+
+  const [fetchingStatuses, setFetchingStatuses] =
+    useState<NetworkFetchingStatuses>({});
 
   const [networkSelectionOpen, setNetworkSelectionOpen] = useState(false);
 
@@ -100,7 +99,12 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
         />
       </Stack>
 
-      {!hasContent && !isLoading && <TokenSnapshotEmptyCard />}
+      {!hasContent && !isLoading && (
+        <Stack gap={4}>
+          <TokenSnapshotEmptyCard />
+          <FaucetCard />
+        </Stack>
+      )}
 
       <Stack gap={4}>
         {activeNetworks.map((network) => (

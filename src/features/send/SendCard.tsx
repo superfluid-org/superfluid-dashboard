@@ -43,6 +43,7 @@ import { rpcApi, subgraphApi } from "../redux/store";
 import Amount from "../token/Amount";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
+import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
@@ -669,6 +670,7 @@ export default memo(function SendCard() {
             </Alert>
           )}
 
+            <ConnectionBoundary>
           <Stack gap={1}>
             <TransactionBoundary mutationResult={upsertFlowResult}>
               {({ closeDialog, setDialogSuccessActions }) => (
@@ -724,9 +726,10 @@ export default memo(function SendCard() {
                             passHref
                           >
                             <TransactionDialogButton
-                              data-cy={"go-to-token-page-button"}
+                              data-cy={"go-to-token-page-button"
+                             }
                               color="primary"
-                            >
+                              >
                               Go to token page ➜
                             </TransactionDialogButton>
                           </Link>
@@ -807,7 +810,8 @@ export default memo(function SendCard() {
               }
             </TransactionBoundary>
           </Stack>
-        </Stack>
+        </ConnectionBoundary>
+      </Stack>
       </Card>
     </>
   );

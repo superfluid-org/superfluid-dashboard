@@ -11,6 +11,7 @@ import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
+import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import {
@@ -30,9 +31,7 @@ interface TabUnwrapProps {
   onSwitchMode: () => void;
 }
 
-export const TabUnwrap: FC<TabUnwrapProps> = ({
-  onSwitchMode,
-}) => {
+export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
@@ -72,8 +71,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({
     tokenPair,
   });
 
-  const [unwrapTrigger, unwrapResult] =
-    rpcApi.useSuperTokenDowngradeMutation();
+  const [unwrapTrigger, unwrapResult] = rpcApi.useSuperTokenDowngradeMutation();
   const isDowngradeDisabled =
     !superToken ||
     !underlyingToken ||
@@ -263,67 +261,69 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({
         </Typography>
       )}
 
-      <TransactionBoundary mutationResult={unwrapResult}>
-        {({ setDialogLoadingInfo }) => (
-          <TransactionButton
-            dataCy={"downgrade-button"}
-            disabled={isDowngradeDisabled}
-            onClick={async (signer) => {
-              if (isDowngradeDisabled) {
-                throw Error(
-                  `This should never happen. Form state: ${JSON.stringify(
-                    formState,
-                    null,
-                    2
-                  )}`
+      <ConnectionBoundary>
+        <TransactionBoundary mutationResult={unwrapResult}>
+          {({ setDialogLoadingInfo }) => (
+            <TransactionButton
+              dataCy={"downgrade-button"}
+              disabled={isDowngradeDisabled}
+              onClick={async (signer) => {
+                if (isDowngradeDisabled) {
+                  throw Error(
+                    `This should never happen. Form state: ${JSON.stringify(
+                      formState,
+                      null,
+                      2
+                    )}`
+                  );
+                }
+
+                const { data: formData } = getValues() as ValidWrappingForm;
+
+                const restoration: SuperTokenDowngradeRestoration = {
+                  type: RestorationType.Unwrap,
+                  version: 2,
+                  chainId: network.id,
+                  tokenPair: formData.tokenPair,
+                  amountWei: parseEther(formData.amountDecimal).toString(),
+                };
+
+                const overrides = await getTransactionOverrides(network);
+
+                const isNativeAssetSuperToken =
+                  formData.tokenPair.underlyingTokenAddress ===
+                  NATIVE_ASSET_ADDRESS;
+
+                setDialogLoadingInfo(
+                  <UnwrapPreview
+                    {...{
+                      amountWei: parseEther(formData.amountDecimal).toString(),
+                      superTokenSymbol: superToken.symbol,
+                      underlyingTokenSymbol: underlyingToken.symbol,
+                    }}
+                  />
                 );
-              }
 
-              const { data: formData } = getValues() as ValidWrappingForm;
-
-              const restoration: SuperTokenDowngradeRestoration = {
-                type: RestorationType.Unwrap,
-                version: 2,
-                chainId: network.id,
-                tokenPair: formData.tokenPair,
-                amountWei: parseEther(formData.amountDecimal).toString(),
-              };
-
-              const overrides = await getTransactionOverrides(network);
-
-              const isNativeAssetSuperToken =
-                formData.tokenPair.underlyingTokenAddress ===
-                NATIVE_ASSET_ADDRESS;
-
-              setDialogLoadingInfo(
-                <UnwrapPreview
-                  {...{
-                    amountWei: parseEther(formData.amountDecimal).toString(),
-                    superTokenSymbol: superToken.symbol,
-                    underlyingTokenSymbol: underlyingToken.symbol,
-                  }}
-                />
-              );
-
-              unwrapTrigger({
-                signer,
-                chainId: network.id,
-                amountWei: parseEther(formData.amountDecimal).toString(),
-                superTokenAddress: formData.tokenPair.superTokenAddress,
-                waitForConfirmation: true,
-                transactionExtraData: {
-                  restoration,
-                },
-                overrides,
-              })
-                .unwrap()
-                .then(() => resetForm());
-            }}
-          >
-            Unwrap
-          </TransactionButton>
-        )}
-      </TransactionBoundary>
+                unwrapTrigger({
+                  signer,
+                  chainId: network.id,
+                  amountWei: parseEther(formData.amountDecimal).toString(),
+                  superTokenAddress: formData.tokenPair.superTokenAddress,
+                  waitForConfirmation: true,
+                  transactionExtraData: {
+                    restoration,
+                  },
+                  overrides,
+                })
+                  .unwrap()
+                  .then(() => resetForm());
+              }}
+            >
+              Unwrap
+            </TransactionButton>
+          )}
+        </TransactionBoundary>
+      </ConnectionBoundary>
     </Stack>
   );
 };
@@ -334,8 +334,13 @@ const UnwrapPreview: FC<{
   underlyingTokenSymbol: string;
 }> = ({ amountWei, superTokenSymbol, underlyingTokenSymbol }) => {
   return (
-    <Typography data-cy={"unwrap-message"} variant="h5" color="text.secondary" translate="yes">
-      You are unwrapping {" "}
+    <Typography
+      data-cy={"unwrap-message"}
+      variant="h5"
+      color="text.secondary"
+      translate="yes"
+    >
+      You are unwrapping{" "}
       <span translate="no">
         {formatEther(amountWei)} {superTokenSymbol}
       </span>{" "}

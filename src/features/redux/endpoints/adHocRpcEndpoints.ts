@@ -17,6 +17,7 @@ import { Overrides, Signer } from "ethers";
 declare module "@superfluid-finance/sdk-redux" {
   interface TransactionTitleOverrides {
     "Approve Allowance": true;
+    "Claim Tokens": true;
     "Approve Scheduler for End Date": true; // Give Stream Scheduler contract delete permission.
     "Schedule Stream End Date": true;
     "Remove Stream End Date": true;

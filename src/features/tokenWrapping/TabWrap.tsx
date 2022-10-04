@@ -18,6 +18,7 @@ import {
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
 import { useTokenIsListed } from "../token/useTokenIsListed";
+import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import {
@@ -384,148 +385,155 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
       )}
 
       <Stack gap={2} direction="column" sx={{ width: "100%" }}>
-        <TransactionBoundary mutationResult={approveResult}>
-          {({ setDialogLoadingInfo }) =>
-            isApproveAllowanceVisible && (
+        <ConnectionBoundary>
+          <TransactionBoundary mutationResult={approveResult}>
+            {({ setDialogLoadingInfo }) =>
+              isApproveAllowanceVisible && (
+                <TransactionButton
+                  dataCy={"approve-allowance-button"}
+                  onClick={async (signer) => {
+                    const approveAllowanceAmountWei =
+                      currentAllowance.add(missingAllowance);
+
+                    setDialogLoadingInfo(
+                      <AllowancePreview
+                        {...{
+                          amountWei: approveAllowanceAmountWei.toString(),
+                          decimals: underlyingToken.decimals,
+                          tokenSymbol: underlyingToken.symbol,
+                        }}
+                      />
+                    );
+
+                    const restoration: ApproveAllowanceRestoration = {
+                      type: RestorationType.Approve,
+                      chainId: network.id,
+                      amountWei: approveAllowanceAmountWei.toString(),
+                      tokenAddress: tokenPair.underlyingTokenAddress,
+                    };
+
+                    approveTrigger({
+                      signer,
+                      chainId: network.id,
+                      amountWei: approveAllowanceAmountWei.toString(),
+                      superTokenAddress: tokenPair.superTokenAddress,
+                      transactionExtraData: {
+                        restoration,
+                      },
+                      overrides: await getTransactionOverrides(network),
+                    })
+                      .unwrap()
+                      .then(() => setTransactionDrawerOpen(true));
+                  }}
+                >
+                  Allow Superfluid Protocol to wrap your{" "}
+                  {underlyingToken.symbol}
+                </TransactionButton>
+              )
+            }
+          </TransactionBoundary>
+
+          <TransactionBoundary mutationResult={wrapResult}>
+            {({
+              closeDialog,
+              setDialogLoadingInfo,
+              setDialogSuccessActions,
+            }) => (
               <TransactionButton
-                dataCy={"approve-allowance-button"}
+                dataCy={"upgrade-button"}
+                disabled={isWrapButtonDisabled}
                 onClick={async (signer) => {
-                  const approveAllowanceAmountWei =
-                    currentAllowance.add(missingAllowance);
+                  if (isWrapButtonDisabled) {
+                    throw Error(
+                      `This should never happen. Form state: ${JSON.stringify(
+                        formState,
+                        null,
+                        2
+                      )}`
+                    );
+                  }
+
+                  const { data: formData } = getValues() as ValidWrappingForm;
+
+                  // Use super token's decimals for upgrading, not the underlying's.
+                  const amountWei = parseEther(formData.amountDecimal);
+
+                  const restoration: SuperTokenUpgradeRestoration = {
+                    type: RestorationType.Wrap,
+                    version: 2,
+                    chainId: network.id,
+                    tokenPair: tokenPair,
+                    amountWei: amountWei.toString(),
+                  };
+
+                  const overrides = await getTransactionOverrides(network);
+
+                  // Temp custom override for "IbAlluo" tokens on polygon
+                  // TODO: Find a better solution
+                  if (
+                    network.id === 137 &&
+                    underlyingIbAlluoTokenOverrides.includes(
+                      tokenPair.underlyingTokenAddress.toLowerCase()
+                    )
+                  ) {
+                    overrides.gasLimit = 200_000;
+                  }
 
                   setDialogLoadingInfo(
-                    <AllowancePreview
+                    <WrapPreview
                       {...{
-                        amountWei: approveAllowanceAmountWei.toString(),
-                        decimals: underlyingToken.decimals,
-                        tokenSymbol: underlyingToken.symbol,
+                        amountWei: amountWei,
+                        superTokenSymbol: superToken.symbol,
+                        underlyingTokenSymbol: underlyingToken.symbol,
                       }}
                     />
                   );
 
-                  const restoration: ApproveAllowanceRestoration = {
-                    type: RestorationType.Approve,
-                    chainId: network.id,
-                    amountWei: approveAllowanceAmountWei.toString(),
-                    tokenAddress: tokenPair.underlyingTokenAddress,
-                  };
-
-                  approveTrigger({
+                  wrapTrigger({
                     signer,
                     chainId: network.id,
-                    amountWei: approveAllowanceAmountWei.toString(),
-                    superTokenAddress: tokenPair.superTokenAddress,
+                    amountWei: amountWei.toString(),
+                    superTokenAddress: formData.tokenPair.superTokenAddress,
+                    waitForConfirmation: true,
                     transactionExtraData: {
                       restoration,
                     },
-                    overrides: await getTransactionOverrides(network),
+                    overrides,
                   })
                     .unwrap()
-                    .then(() => setTransactionDrawerOpen(true));
+                    .then(() => resetForm());
+
+                  setDialogSuccessActions(
+                    <TransactionDialogActions>
+                      <Stack gap={1} sx={{ width: "100%" }}>
+                        <TransactionDialogButton
+                          data-cy={"wrap-more-tokens-button"}
+                          color="secondary"
+                          onClick={closeDialog}
+                        >
+                          Wrap more tokens
+                        </TransactionDialogButton>
+                        <TransactionDialogButton
+                          data-cy={"go-to-tokens-page-button"}
+                          color="primary"
+                          onClick={() =>
+                            router
+                              .push("/")
+                              .then(() => setTransactionDrawerOpen(true))
+                          }
+                        >
+                          Go to tokens page ➜
+                        </TransactionDialogButton>
+                      </Stack>
+                    </TransactionDialogActions>
+                  );
                 }}
               >
-                Allow Superfluid Protocol to wrap your {underlyingToken.symbol}
+                Wrap
               </TransactionButton>
-            )
-          }
-        </TransactionBoundary>
-
-        <TransactionBoundary mutationResult={wrapResult}>
-          {({ closeDialog, setDialogLoadingInfo, setDialogSuccessActions }) => (
-            <TransactionButton
-              dataCy={"upgrade-button"}
-              disabled={isWrapButtonDisabled}
-              onClick={async (signer) => {
-                if (isWrapButtonDisabled) {
-                  throw Error(
-                    `This should never happen. Form state: ${JSON.stringify(
-                      formState,
-                      null,
-                      2
-                    )}`
-                  );
-                }
-
-                const { data: formData } = getValues() as ValidWrappingForm;
-
-                // Use super token's decimals for upgrading, not the underlying's.
-                const amountWei = parseEther(formData.amountDecimal);
-
-                const restoration: SuperTokenUpgradeRestoration = {
-                  type: RestorationType.Wrap,
-                  version: 2,
-                  chainId: network.id,
-                  tokenPair: tokenPair,
-                  amountWei: amountWei.toString(),
-                };
-
-                const overrides = await getTransactionOverrides(network);
-
-                // Temp custom override for "IbAlluo" tokens on polygon
-                // TODO: Find a better solution
-                if (
-                  network.id === 137 &&
-                  underlyingIbAlluoTokenOverrides.includes(
-                    tokenPair.underlyingTokenAddress.toLowerCase()
-                  )
-                ) {
-                  overrides.gasLimit = 200_000;
-                }
-
-                setDialogLoadingInfo(
-                  <WrapPreview
-                    {...{
-                      amountWei: amountWei,
-                      superTokenSymbol: superToken.symbol,
-                      underlyingTokenSymbol: underlyingToken.symbol,
-                    }}
-                  />
-                );
-
-                wrapTrigger({
-                  signer,
-                  chainId: network.id,
-                  amountWei: amountWei.toString(),
-                  superTokenAddress: formData.tokenPair.superTokenAddress,
-                  waitForConfirmation: true,
-                  transactionExtraData: {
-                    restoration,
-                  },
-                  overrides,
-                })
-                  .unwrap()
-                  .then(() => resetForm());
-
-                setDialogSuccessActions(
-                  <TransactionDialogActions>
-                    <Stack gap={1} sx={{ width: "100%" }}>
-                      <TransactionDialogButton
-                        data-cy={"wrap-more-tokens-button"}
-                        color="secondary"
-                        onClick={closeDialog}
-                      >
-                        Wrap more tokens
-                      </TransactionDialogButton>
-                      <TransactionDialogButton
-                        data-cy={"go-to-tokens-page-button"}
-                        color="primary"
-                        onClick={() =>
-                          router
-                            .push("/")
-                            .then(() => setTransactionDrawerOpen(true))
-                        }
-                      >
-                        Go to tokens page ➜
-                      </TransactionDialogButton>
-                    </Stack>
-                  </TransactionDialogActions>
-                );
-              }}
-            >
-              Wrap
-            </TransactionButton>
-          )}
-        </TransactionBoundary>
+            )}
+          </TransactionBoundary>
+        </ConnectionBoundary>
       </Stack>
     </Stack>
   );
@@ -537,7 +545,12 @@ const WrapPreview: FC<{
   superTokenSymbol: string;
 }> = ({ underlyingTokenSymbol, superTokenSymbol, amountWei }) => {
   return (
-    <Typography data-cy="wrap-message" variant="h5" color="text.secondary" translate="yes">
+    <Typography
+      data-cy="wrap-message"
+      variant="h5"
+      color="text.secondary"
+      translate="yes"
+    >
       You are wrapping{" "}
       <span translate="no">
         {formatEther(amountWei)} {underlyingTokenSymbol}
@@ -553,7 +566,12 @@ const AllowancePreview: FC<{
   tokenSymbol: string;
 }> = ({ amountWei, decimals, tokenSymbol }) => {
   return (
-    <Typography data-cy="allowance-message" variant="h5" color="text.secondary" translate="yes">
+    <Typography
+      data-cy="allowance-message"
+      variant="h5"
+      color="text.secondary"
+      translate="yes"
+    >
       You are approving additional allowance of{" "}
       <span translate="no">
         {formatUnits(amountWei, decimals)} {tokenSymbol}
