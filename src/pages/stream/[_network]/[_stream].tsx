@@ -386,7 +386,7 @@ const StreamPageContent: FC<{
   const bufferSize = useMemo(() => {
     if (
       !scheduledStreamQuery.data ||
-      scheduledStreamQuery.data.currentFlowRate !== "0"
+      scheduledStreamQuery.data.currentFlowRate === "0"
     )
       return null;
 
