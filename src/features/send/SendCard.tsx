@@ -672,6 +672,7 @@ export default memo(function SendCard() {
               <TransactionBoundary mutationResult={upsertFlowResult}>
                 {({ closeDialog, setDialogSuccessActions }) => (
                   <TransactionButton
+                    dataCy={"send-transaction-button"}
                     disabled={isSendDisabled}
                     ButtonProps={{
                       variant: "contained",

@@ -295,6 +295,7 @@ export const StreamingPreview: FC<{
         </PreviewItem>
 
         <PreviewItem
+          dataCy="preview-per-second"
           label="Amount per second"
           oldValue={
             oldAmountPerSecond != newAmountPerSecond
