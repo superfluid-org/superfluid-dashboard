@@ -463,10 +463,14 @@ export default memo(function SendCard() {
                         setStreamScheduling(value);
                       }}
                     />
-                    <TooltipIcon title="Pick a start and end date for your stream, and set a fixed token amount" />
                   </>
                 }
-                label="Stream Scheduling"
+                label={
+                  <Stack direction="row" alignItems="center" gap={0.5}>
+                    Stream Scheduling
+                    <TooltipIcon title="Pick a start and end date for your stream, and set a fixed token amount." />
+                  </Stack>
+                }
               />
               <Collapse in={streamScheduling}>
                 <Grid container spacing={1}>

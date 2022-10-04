@@ -15,6 +15,7 @@ import {
   findNetworkByChainId,
   networkDefinition,
 } from "../../network/networks";
+import { rpcApi } from "../store";
 
 const getSdk = (
   chainId: number,
@@ -107,8 +108,6 @@ export const streamSchedulerEndpoints = {
           superTokenAddress
         );
 
-        // TODO(KK): filter out end dates in history?
-
         return { data: streamOrder.endDate };
       },
       providesTags: (_result, _error, arg) => [
@@ -124,6 +123,7 @@ export const streamSchedulerEndpoints = {
     >({
       async queryFn({ chainId, ...arg }, { dispatch }) {
         const framework = await getFramework(chainId);
+
         const superToken = await framework.loadSuperToken(
           arg.superTokenAddress
         );
@@ -136,11 +136,19 @@ export const streamSchedulerEndpoints = {
 
         const network = findNetworkByChainId(chainId);
         if (network?.streamSchedulerContractAddress) {
-          const existingStreamOrder = await sdk.StreamScheduler.getStreamOrders(
-            arg.senderAddress,
-            arg.receiverAddress,
-            arg.superTokenAddress
-          );
+          const existingEndTimestamp = await dispatch(
+            rpcApi.endpoints.scheduledEndDate.initiate(
+              {
+                chainId,
+                superTokenAddress: arg.superTokenAddress,
+                senderAddress: arg.senderAddress,
+                receiverAddress: arg.receiverAddress,
+              },
+              {
+                subscribe: false
+              }
+            )
+          ).unwrap();
 
           if (arg.endTimestamp) {
             const flowOperatorData = await superToken.getFlowOperatorData({
@@ -164,7 +172,7 @@ export const streamSchedulerEndpoints = {
               });
             }
 
-            if (arg.endTimestamp !== existingStreamOrder.endDate) {
+            if (arg.endTimestamp !== existingEndTimestamp) {
               const streamOrder =
                 await sdk.StreamScheduler.populateTransaction.createStreamOrder(
                   arg.receiverAddress,
@@ -187,7 +195,7 @@ export const streamSchedulerEndpoints = {
               });
             }
           } else {
-            if (existingStreamOrder.endDate) {
+            if (existingEndTimestamp) {
               const streamOrder =
                 await sdk.StreamScheduler.populateTransaction.deleteStreamOrder(
                   arg.receiverAddress,
@@ -205,12 +213,19 @@ export const streamSchedulerEndpoints = {
           }
         }
 
-        const currentFlow = await superToken.getFlow({
-          sender: arg.senderAddress,
-          receiver: arg.receiverAddress,
-          providerOrSigner: arg.signer,
-        });
-        const hasExistingFlow = currentFlow.flowRate !== "0";
+        const activeExistingFlow = await dispatch(
+          rpcApi.endpoints.getActiveFlow.initiate(
+            {
+              chainId,
+              tokenAddress: arg.superTokenAddress,
+              senderAddress: arg.senderAddress,
+              receiverAddress: arg.receiverAddress,
+            },
+            {
+              subscribe: false
+            }
+          )
+        ).unwrap();
 
         const flowArg = {
           sender: arg.senderAddress,
@@ -219,8 +234,8 @@ export const streamSchedulerEndpoints = {
           userData: "0x",
           overrides: arg.overrides,
         };
-        if (hasExistingFlow) {
-          if (arg.flowRateWei !== currentFlow.flowRate) {
+        if (activeExistingFlow) {
+          if (arg.flowRateWei !== activeExistingFlow.flowRateWei) {
             subOperations.push({
               operation: await superToken.updateFlow(flowArg),
               title: "Update Stream",
@@ -258,7 +273,7 @@ export const streamSchedulerEndpoints = {
           title:
             subOperations.length === 1
               ? subOperations[0].title
-              : hasExistingFlow
+              : activeExistingFlow
               ? "Modify Stream"
               : arg.endTimestamp
               ? "Send Closed-Ended Stream"
