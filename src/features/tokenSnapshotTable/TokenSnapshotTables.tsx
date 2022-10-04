@@ -8,6 +8,7 @@ import {
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, useCallback, useMemo, useRef, useState } from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
+import FaucetCard from "../faucet/FaucetCard";
 import { useActiveNetworks } from "../network/ActiveNetworksContext";
 import NetworkSelectionFilter from "../network/NetworkSelectionFilter";
 import TokenSnapshotEmptyCard from "./TokenSnapshotEmptyCard";
@@ -30,13 +31,12 @@ interface TokenSnapshotTablesProps {
 const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-
-  const [fetchingStatuses, setFetchingStatuses] =
-    useState<NetworkFetchingStatuses>({});
-
   const { activeNetworks } = useActiveNetworks();
 
   const networkSelectionRef = useRef<HTMLButtonElement>(null);
+
+  const [fetchingStatuses, setFetchingStatuses] =
+    useState<NetworkFetchingStatuses>({});
 
   const [networkSelectionOpen, setNetworkSelectionOpen] = useState(false);
 
@@ -99,7 +99,12 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
         />
       </Stack>
 
-      {!hasContent && !isLoading && <TokenSnapshotEmptyCard />}
+      {!hasContent && !isLoading && (
+        <Stack gap={4}>
+          <TokenSnapshotEmptyCard />
+          <FaucetCard />
+        </Stack>
+      )}
 
       <Stack gap={4}>
         {activeNetworks.map((network) => (

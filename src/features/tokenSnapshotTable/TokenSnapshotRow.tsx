@@ -4,6 +4,7 @@ import {
   IconButton,
   ListItem,
   ListItemAvatar,
+  ListItemIcon,
   ListItemText,
   Stack,
   styled,
@@ -14,11 +15,16 @@ import {
   useTheme,
 } from "@mui/material";
 import { AccountTokenSnapshot } from "@superfluid-finance/sdk-core";
+import { differenceInDays } from "date-fns";
 import { BigNumber } from "ethers";
 import { useRouter } from "next/router";
-import { FC, memo, useState } from "react";
+import { FC, memo, MouseEvent, useMemo, useState } from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
+import {
+  BIG_NUMBER_ZERO,
+  calculateMaybeCriticalAtTimestamp,
+} from "../../utils/tokenUtils";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
@@ -26,7 +32,7 @@ import StreamsTable from "../streamsTable/StreamsTable";
 import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
 import TokenIcon from "../token/TokenIcon";
-import { useTokenIsListed } from "../token/useTokenIsListed";
+import BalanceCriticalIndicator from "./BalanceCriticalIndicator";
 
 interface SnapshotRowProps {
   lastElement?: boolean;
@@ -120,6 +126,26 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
       })
     );
 
+  const stopPropagation = (e: MouseEvent) => e.stopPropagation();
+
+  const criticalDate = useMemo(() => {
+    const criticalTimestamp = calculateMaybeCriticalAtTimestamp({
+      balanceUntilUpdatedAtWei: balance,
+      updatedAtTimestamp: balanceTimestamp,
+      totalNetFlowRateWei: netFlowRate,
+    });
+
+    if (criticalTimestamp.gt(BIG_NUMBER_ZERO)) {
+      const criticalDate = new Date(criticalTimestamp.mul(1000).toNumber());
+
+      if (differenceInDays(criticalDate, new Date()) < 7) {
+        return criticalDate;
+      }
+    }
+
+    return null;
+  }, [balance, balanceTimestamp, netFlowRate]);
+
   return (
     <>
       <SnapshotRow
@@ -161,22 +187,35 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         {!isBelowMd ? (
           <>
             <TableCell onClick={openTokenPage}>
-              <ListItemText
-                primary={
-                  <FlowingBalance
-                    balance={balance}
-                    flowRate={netFlowRate}
-                    balanceTimestamp={balanceTimestamp}
-                    disableRoundingIndicator
-                  />
-                }
-                // secondary="$1.00"
-                primaryTypographyProps={{ variant: "h6mono" }}
-                secondaryTypographyProps={{
-                  variant: "body2mono",
-                  color: "text.secondary",
-                }}
-              />
+              <ListItem disablePadding sx={{ ml: criticalDate ? -4 : 0 }}>
+                {criticalDate && (
+                  <ListItemIcon sx={{ mr: 1 }}>
+                    <BalanceCriticalIndicator
+                      network={network}
+                      tokenAddress={token}
+                      tokenSymbol={tokenSymbol}
+                      criticalDate={criticalDate}
+                      onClick={stopPropagation}
+                    />
+                  </ListItemIcon>
+                )}
+                <ListItemText
+                  primary={
+                    <FlowingBalance
+                      balance={balance}
+                      flowRate={netFlowRate}
+                      balanceTimestamp={balanceTimestamp}
+                      disableRoundingIndicator
+                    />
+                  }
+                  // secondary="$1.00"
+                  primaryTypographyProps={{ variant: "h6mono" }}
+                  secondaryTypographyProps={{
+                    variant: "body2mono",
+                    color: "text.secondary",
+                  }}
+                />
+              </ListItem>
             </TableCell>
 
             <TableCell data-cy={"net-flow"} onClick={openTokenPage}>
@@ -190,9 +229,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                   </Amount>
                 </Typography>
               ) : (
-                  <Typography data-cy={"net-flow-value"}>
-                    {"-"}
-                  </Typography>
+                <Typography data-cy={"net-flow-value"}>{"-"}</Typography>
               )}
             </TableCell>
 
@@ -227,9 +264,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                   </Typography>
                 </Stack>
               ) : (
-                  <Typography data-cy={"outflow"}>
-                    {"-"}
-                  </Typography>
+                <Typography data-cy={"outflow"}>{"-"}</Typography>
               )}
             </TableCell>
           </>
@@ -239,35 +274,48 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             sx={{ [theme.breakpoints.down("md")]: { px: 0 } }}
             onClick={openTokenPage}
           >
-            <ListItemText
-              primary={
-                <FlowingBalance
-                  balance={balance}
-                  flowRate={netFlowRate}
-                  balanceTimestamp={balanceTimestamp}
-                  disableRoundingIndicator
-                />
-              }
-              secondary={
-                totalNumberOfActiveStreams > 0 ? (
-                  <>
-                    {netFlowRate.charAt(0) !== "-" && "+"}
-                    <Amount
-                      wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
-                    >
-                      /mo
-                    </Amount>
-                  </>
-                ) : (
-                  "-"
-                )
-              }
-              primaryTypographyProps={{ variant: "h7mono" }}
-              secondaryTypographyProps={{
-                variant: "body2mono",
-                color: "text.secondary",
-              }}
-            />
+            <ListItem disablePadding sx={{ textAlign: "right" }}>
+              {criticalDate && (
+                <ListItemIcon sx={{ mr: 1 }}>
+                  <BalanceCriticalIndicator
+                    network={network}
+                    tokenAddress={token}
+                    tokenSymbol={tokenSymbol}
+                    criticalDate={criticalDate}
+                    onClick={stopPropagation}
+                  />
+                </ListItemIcon>
+              )}
+              <ListItemText
+                primary={
+                  <FlowingBalance
+                    balance={balance}
+                    flowRate={netFlowRate}
+                    balanceTimestamp={balanceTimestamp}
+                    disableRoundingIndicator
+                  />
+                }
+                secondary={
+                  totalNumberOfActiveStreams > 0 ? (
+                    <>
+                      {netFlowRate.charAt(0) !== "-" && "+"}
+                      <Amount
+                        wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
+                      >
+                        /mo
+                      </Amount>
+                    </>
+                  ) : (
+                    "-"
+                  )
+                }
+                primaryTypographyProps={{ variant: "h7mono" }}
+                secondaryTypographyProps={{
+                  variant: "body2mono",
+                  color: "text.secondary",
+                }}
+              />
+            </ListItem>
           </TableCell>
         )}
 

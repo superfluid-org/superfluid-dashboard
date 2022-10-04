@@ -21,6 +21,7 @@ import { useTransactionBoundary } from "./TransactionBoundary";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import React from "react";
 import { supportId } from "../../components/MonitorContext/MonitorContext";
+import { useConnectionBoundary } from "./ConnectionBoundary";
 
 interface TransactionDialogProps {
   children: ReactNode;
@@ -57,8 +58,8 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
   successActions,
   loadingInfo,
 }) => {
-  const { mutationResult, closeDialog, expectedNetwork } =
-    useTransactionBoundary();
+  const { mutationResult, closeDialog } = useTransactionBoundary();
+  const { expectedNetwork } = useConnectionBoundary();
 
   if (mutationResult.isLoading) {
     return (

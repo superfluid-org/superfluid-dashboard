@@ -11,8 +11,6 @@ export default class MyDocument extends Document {
           <meta name="theme-color" content="#10BB35" />
           <link rel="shortcut icon" href="/favicon.ico" />
 
-          <meta name="viewport" content="initial-scale=1, width=device-width" />
-
           {/* iOS app icon and title */}
           <link rel="apple-touch-icon" href="/icon-120.png" />
           <meta name="apple-mobile-web-app-title" content="Superfluid" />

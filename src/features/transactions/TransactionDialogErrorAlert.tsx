@@ -24,16 +24,23 @@ export default memo(function TransactionDialogErrorAlert({
     } else {
       // NOTE: Sometimes errors are nested in each other. Check for the most specific one first.
 
+      const errorMessageLowerCase = mutationError.message?.toLowerCase() ?? "";
       const didUserRejectTransaction =
-        mutationError.message?.includes('4001') || // MetaMask error version
-        mutationError.message?.includes("User rejected the transaction") || // WalletConnect error version
-        mutationError.message?.includes("Transaction was rejected"); // Gnosis Safe error version
+        errorMessageLowerCase.includes("rejected") &&
+        errorMessageLowerCase.includes("transaction");
+
+      // Old approach:
+      // mutationError.message?.includes('4001') || // MetaMask error version
+      // mutationError.message?.includes("User rejected the transaction") || // WalletConnect error version
+      // mutationError.message?.includes("Transaction was rejected") || // Gnosis Safe error version
+      // mutationError.message?.includes("user rejected transaction") // Brave?
+
       if (didUserRejectTransaction) {
         return "Transaction Rejected";
       }
 
       const burnAmountExceedsBalance = mutationError.message?.includes(
-        'burn amount exceeds balance'
+        "burn amount exceeds balance"
       );
       if (burnAmountExceedsBalance) {
         return (
@@ -44,9 +51,8 @@ export default memo(function TransactionDialogErrorAlert({
         );
       }
 
-      const insufficientFunds = mutationError.message?.includes(
-        'INSUFFICIENT_FUNDS'
-      );
+      const insufficientFunds =
+        mutationError.message?.includes("INSUFFICIENT_FUNDS");
       if (insufficientFunds) {
         return (
           <>
@@ -58,7 +64,7 @@ export default memo(function TransactionDialogErrorAlert({
       }
 
       const unpredictableGasLimit = mutationError.message?.includes(
-        'UNPREDICTABLE_GAS_LIMIT'
+        "UNPREDICTABLE_GAS_LIMIT"
       );
       if (unpredictableGasLimit) {
         return (

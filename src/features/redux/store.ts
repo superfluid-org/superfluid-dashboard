@@ -1,4 +1,5 @@
 import { configureStore, Dispatch } from "@reduxjs/toolkit";
+import { setupListeners } from "@reduxjs/toolkit/query";
 import {
   allRpcEndpoints,
   allSubgraphEndpoints,
@@ -22,6 +23,8 @@ import storage from "redux-persist/lib/storage";
 import { addressBookSlice } from "../addressBook/addressBook.slice";
 import { customTokensSlice } from "../customTokens/customTokens.slice";
 import { ensApi } from "../ens/ensApi.slice";
+import faucetApi from "../faucet/faucetApi.slice";
+import { flagsSlice } from "../flags/flags.slice";
 import gasApi from "../gas/gasApi.slice";
 import { impersonationSlice } from "../impersonation/impersonation.slice";
 import { networkPreferencesSlice } from "../network/networkPreferences.slice";
@@ -30,7 +33,6 @@ import { assetApiSlice } from "../token/tokenManifestSlice";
 import { adHocMulticallEndpoints } from "./endpoints/adHocMulticallEndpoints";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
-import { setupListeners } from "@reduxjs/toolkit/query";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({
@@ -89,6 +91,11 @@ const networkPreferencesPersistedReducer = persistReducer(
   networkPreferencesSlice.reducer
 );
 
+const flagsPersistedReducer = persistReducer(
+  { storage, key: "flags", version: 1 },
+  flagsSlice.reducer
+);
+
 export const reduxStore = configureStore({
   reducer: {
     [rpcApi.reducerPath]: rpcApi.reducer,
@@ -102,6 +109,8 @@ export const reduxStore = configureStore({
     networkPreferences: networkPreferencesPersistedReducer,
     [gasApi.reducerPath]: gasApi.reducer,
     pendingUpdates: pendingUpdateSlice.reducer,
+    flags: flagsPersistedReducer,
+    [faucetApi.reducerPath]: faucetApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -113,7 +122,8 @@ export const reduxStore = configureStore({
       .concat(subgraphApi.middleware)
       .concat(assetApiSlice.middleware)
       .concat(ensApi.middleware)
-      .concat(gasApi.middleware),
+      .concat(gasApi.middleware)
+      .concat(faucetApi.middleware),
 });
 
 export const reduxPersistor = persistStore(reduxStore);

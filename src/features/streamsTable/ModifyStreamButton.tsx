@@ -8,7 +8,7 @@ import {
 import { Stream } from "@superfluid-finance/sdk-core";
 import Link from "next/link";
 import { FC, useMemo } from "react";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 import { getSendPagePath } from "../../pages/send";
 import { getPrettyEtherFlowRate } from "../../utils/tokenUtils";
 import { Network } from "../network/networks";

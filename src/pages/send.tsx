@@ -5,6 +5,7 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import withStaticSEO from "../components/SEO/withStaticSEO";
+import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import {
   timeUnitWordMap,
   UnitOfTime,
@@ -69,6 +70,7 @@ const tryParseFlowRate = (
 const Send: NextPage = () => {
   const theme = useTheme();
   const router = useRouter();
+  const { network } = useExpectedNetwork();
   const { restoration, onRestored } = useTransactionRestorationContext();
   const [initialFormValues, setInitialFormValues] = useState<
     StreamingFormProviderProps["initialFormValues"] | undefined
@@ -125,7 +127,7 @@ const Send: NextPage = () => {
   }, [router.isReady]);
 
   return (
-    <Container maxWidth="lg">
+    <Container key={`${network.slugName}`} maxWidth="lg">
       <Box
         sx={{
           display: "flex",

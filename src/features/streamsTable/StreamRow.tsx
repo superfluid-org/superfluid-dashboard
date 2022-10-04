@@ -27,6 +27,7 @@ import { PendingOutgoingStream } from "../pendingUpdates/PendingOutgoingStream";
 import { UnitOfTime } from "../send/FlowRateInput";
 import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
+import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import CancelStreamButton from "./CancelStreamButton/CancelStreamButton";
 import ModifyStreamButton from "./ModifyStreamButton";
@@ -225,7 +226,11 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
             {isPending && (
               <>
                 <CircularProgress color="warning" size="16px" />
-                <Typography data-cy={"pending-message"} variant="caption" translate="yes">
+                <Typography
+                  data-cy={"pending-message"}
+                  variant="caption"
+                  translate="yes"
+                >
                   {isPendingAndWaitingForSubgraph ? "Syncing..." : "Sending..."}
                 </Typography>
               </>
