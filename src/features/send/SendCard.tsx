@@ -138,6 +138,7 @@ export default memo(function SendCard() {
   const resetForm = useCallback(() => {
     resetFormData();
     setStreamScheduling(false);
+    setTotalStreamedEther("");
   }, [resetFormData]);
 
   const [
