@@ -54,10 +54,10 @@ const Bridge: NextPage = () => {
       appearance: theme.palette.mode,
       integrator: "Superfluid",
       containerStyle: {
-        maxWidth: "100%",
+        maxWidth: "560px",
         margin: "32px auto",
         display: "flex",
-        width: 560,
+        width: "100%",
         minWidth: 0,
         borderRadius: "20px",
         border:
@@ -107,7 +107,7 @@ const Bridge: NextPage = () => {
         },
         ".MuiButton-sizeMedium": {
           letterSpacing: "0.17px",
-        }
+        },
       }}
     >
       <LiFiWidgetDynamic config={widgetConfig} />
