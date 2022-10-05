@@ -154,6 +154,15 @@ export default memo(function NavigationDrawer() {
         />
 
         <NavigationItem
+          id="nav-send"
+          title="Send Stream"
+          href="/send"
+          onClick={closeNavigationDrawer}
+          active={isActiveRoute("/send")}
+          icon={ArrowRightAltRoundedIcon}
+        />
+
+        <NavigationItem
           id="nav-wrap-unwrap"
           title="Wrap / Unwrap"
           href="/wrap?upgrade"
@@ -169,15 +178,6 @@ export default memo(function NavigationDrawer() {
           onClick={closeNavigationDrawer}
           active={isActiveRoute("/bridge")}
           icon={LooksRoundedIcon}
-        />
-
-        <NavigationItem
-          id="nav-send"
-          title="Send Stream"
-          href="/send"
-          onClick={closeNavigationDrawer}
-          active={isActiveRoute("/send")}
-          icon={ArrowRightAltRoundedIcon}
         />
 
         <NavigationItem
