@@ -43,7 +43,7 @@ import TokenIcon from "../../../features/token/TokenIcon";
 import { useTokenIsListed } from "../../../features/token/useTokenIsListed";
 import useAddressName from "../../../hooks/useAddressName";
 import useNavigateBack from "../../../hooks/useNavigateBack";
-import { useScheduledStream } from "../../../hooks/useScheduledStream";
+import { useScheduledStream } from "../../../hooks/streamSchedulingHooks";
 import config from "../../../utils/config";
 import shortenHex from "../../../utils/shortenHex";
 import {

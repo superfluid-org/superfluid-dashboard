@@ -18,7 +18,7 @@ import { FC, memo, useMemo, useState } from "react";
 import {
   mapStreamScheduling,
   isActiveStreamSchedulingOrder,
-} from "../../hooks/useScheduledStream";
+} from "../../hooks/streamSchedulingHooks";
 import { getAddress } from "../../utils/memoizedEthersUtils";
 import { EmptyRow } from "../common/EmptyRow";
 import { Network } from "../network/networks";
@@ -98,7 +98,6 @@ const StreamsTable: FC<StreamsTableProps> = ({
     },
   });
 
-  // TODO(KK): How to show for incoming streams?
   const { schedulings } = platformApi.useListSubscriptionsQuery(
     visibleAddress && network.platformUrl
       ? {

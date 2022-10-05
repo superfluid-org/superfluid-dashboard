@@ -495,7 +495,7 @@ export default memo(function SendCard() {
     rpcApi.useUpsertFlowWithSchedulingMutation();
   const SendTransactionBoundary = (
     <TransactionBoundary mutationResult={upsertFlowResult}>
-      {({ closeDialog, setDialogSuccessActions }) => (
+      {({ closeDialog, setDialogSuccessActions, setDialogLoadingInfo }) => (
         <TransactionButton
           dataCy={"send-transaction-button"}
           disabled={isSendDisabled}
@@ -559,6 +559,13 @@ export default memo(function SendCard() {
               .unwrap()
               .then(() => resetForm());
 
+            setDialogLoadingInfo(
+              <Typography variant="h5" color="text.secondary" translate="yes">
+                You are {activeFlow ? "modifying" : "sending"} a{" "}
+                {endTimestamp ? "closed-ended" : ""} stream.
+              </Typography>
+            );
+
             if (activeFlow) {
               setDialogSuccessActions(
                 <TransactionDialogActions>
@@ -618,7 +625,7 @@ export default memo(function SendCard() {
   const [flowDeleteTrigger, flowDeleteResult] = rpcApi.useFlowDeleteMutation();
   const DeleteFlowBoundary = (
     <TransactionBoundary mutationResult={flowDeleteResult}>
-      {() =>
+      {({ setDialogLoadingInfo }) =>
         activeFlow && (
           <TransactionButton
             dataCy={"cancel-stream-button"}
@@ -632,6 +639,12 @@ export default memo(function SendCard() {
               if (!receiverAddress || !superTokenAddress || !senderAddress) {
                 throw Error("This should never happen.");
               }
+
+              setDialogLoadingInfo(
+                <Typography variant="h5" color="text.secondary" translate="yes">
+                  You are canceling a stream.
+                </Typography>
+              );
 
               flowDeleteTrigger({
                 signer,
@@ -689,7 +702,6 @@ export default memo(function SendCard() {
           sx: { [theme.breakpoints.down("md")]: { borderRadius: 1 } },
         }}
       />
-
       <Stack spacing={2.5}>
         <ErrorMessage
           name="data"
@@ -704,7 +716,6 @@ export default memo(function SendCard() {
             )
           }
         />
-
         <Box>
           <Stack
             direction="row"
@@ -717,7 +728,6 @@ export default memo(function SendCard() {
           </Stack>
           {ReceiverAddressController}
         </Box>
-
         <Box
           sx={{
             display: "grid",
@@ -732,7 +742,6 @@ export default memo(function SendCard() {
             <FormLabel>Super Token</FormLabel>
             {TokenController}
           </Stack>
-
           <Box>
             <Stack
               direction="row"
@@ -746,7 +755,6 @@ export default memo(function SendCard() {
             {FlowRateController}
           </Box>
         </Box>
-
         {doesNetworkSupportStreamScheduler && (
           <>
             <FormControlLabel
@@ -790,7 +798,6 @@ export default memo(function SendCard() {
             </Collapse>
           </>
         )}
-
         {tokenAddress && visibleAddress && (
           <>
             <Stack
@@ -829,7 +836,6 @@ export default memo(function SendCard() {
             <Divider />
           </>
         )}
-
         {!!(receiverAddress && token) && (
           <StreamingPreview
             receiver={receiverAddress}
@@ -840,9 +846,7 @@ export default memo(function SendCard() {
             oldEndDate={existingEndDate}
           />
         )}
-
         {showBufferAlert && BufferAlert}
-
         <ConnectionBoundary>
           <Stack gap={1}>
             {SendTransactionBoundary}

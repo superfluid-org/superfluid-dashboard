@@ -4,6 +4,7 @@ import {
   IconButtonProps,
   Tooltip,
   TooltipProps,
+  Typography,
 } from "@mui/material";
 import { Stream } from "@superfluid-finance/sdk-core";
 import { Signer } from "ethers";
@@ -56,7 +57,7 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
     <ConnectionBoundary expectedNetwork={network}>
       {({ isConnected, isCorrectNetwork }) => (
         <TransactionBoundary mutationResult={flowDeleteMutation}>
-          {({ mutationResult, signer }) =>
+          {({ mutationResult, signer, setDialogLoadingInfo }) =>
             mutationResult.isLoading || !!pendingCancellation ? (
               <CancelStreamProgress pendingCancellation={pendingCancellation} />
             ) : (
@@ -84,6 +85,15 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
                           throw new Error(
                             "Signer should always be present here."
                           );
+                        setDialogLoadingInfo(
+                          <Typography
+                            variant="h5"
+                            color="text.secondary"
+                            translate="yes"
+                          >
+                            You are canceling a stream.
+                          </Typography>
+                        );
                         deleteStream(signer);
                       }}
                       disabled={!(isConnected && signer && isCorrectNetwork)}
