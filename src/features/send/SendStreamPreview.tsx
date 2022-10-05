@@ -186,9 +186,13 @@ export const StreamingPreview: FC<{
   }, [newEndDate]);
 
   const oldEndDateString = useMemo(() => {
-    return oldEndDate
-      ? `${format(oldEndDate, "P")} at {format(oldEndDate, "p")}`
-      : "Never";
+    return oldEndDate ? (
+      <>
+        {format(oldEndDate, "P")} at {format(oldEndDate, "p")}
+      </>
+    ) : (
+      "Never"
+    );
   }, [oldEndDate]);
 
   const {
@@ -280,15 +284,14 @@ export const StreamingPreview: FC<{
           dataCy="preview-flow-rate"
           label="Flow rate"
           oldValue={
-            existingStream
-              ? flowRateWeiToString(
-                  {
-                    amountWei: existingStream.flowRateWei,
-                    unitOfTime: UnitOfTime.Second,
-                  },
-                  token.symbol
-                )
-              : undefined
+            existingStream &&
+            flowRateWeiToString(
+              {
+                amountWei: existingStream.flowRateWei,
+                unitOfTime: UnitOfTime.Second,
+              },
+              token.symbol
+            )
           }
         >
           {flowRateEtherToString(flowRateEther, token.symbol)}
@@ -298,9 +301,12 @@ export const StreamingPreview: FC<{
           dataCy="preview-per-second"
           label="Amount per second"
           oldValue={
-            oldAmountPerSecond != newAmountPerSecond
-              ? oldAmountPerSecond
-              : undefined
+            existingFlow &&
+            oldAmountPerSecond != newAmountPerSecond && (
+              <>
+                {oldAmountPerSecond} {token.symbol}
+              </>
+            )
           }
         >
           {newAmountPerSecond} {token.symbol}
@@ -309,7 +315,9 @@ export const StreamingPreview: FC<{
         <PreviewItem
           dataCy="preview-ends-on"
           label="Ends date"
-          oldValue={oldEndDate != newEndDate ? oldEndDateString : undefined}
+          oldValue={
+            existingFlow && oldEndDate != newEndDate && oldEndDateString
+          }
         >
           {newEndDateString}
         </PreviewItem>
@@ -328,9 +336,10 @@ export const StreamingPreview: FC<{
               </Typography>
             }
             oldValue={
-              oldBufferAmount ? (
+              existingFlow &&
+              oldBufferAmount && (
                 <Amount wei={oldBufferAmount}> {token.symbol}</Amount>
-              ) : undefined
+              )
             }
           >
             <Amount wei={newBufferAmount}> {token.symbol}</Amount>
@@ -361,12 +370,12 @@ export const StreamingPreview: FC<{
             label="Predicted buffer loss date"
             isError={isBufferLossCritical}
             oldValue={
-              oldDateWhenBalanceCritical
-                ? `${format(oldDateWhenBalanceCritical, "P")} at ${format(
-                    oldDateWhenBalanceCritical,
-                    "p"
-                  )}`
-                : undefined
+              existingFlow &&
+              oldDateWhenBalanceCritical &&
+              `${format(oldDateWhenBalanceCritical, "P")} at ${format(
+                oldDateWhenBalanceCritical,
+                "p"
+              )}`
             }
           >
             {newDateWhenBalanceCritical &&
