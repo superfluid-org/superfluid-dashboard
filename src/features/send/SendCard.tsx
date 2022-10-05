@@ -72,10 +72,10 @@ import {
   SendStreamRestoration,
 } from "../transactionRestoration/transactionRestorations";
 
-const MIN_END_DATE = new Date();
-const MAX_END_DATE = new Date(2023, 12, 31, 23, 59);
+const MIN_VISIBLE_END_DATE = new Date();
+const MAX_VISIBLE_END_DATE = new Date(2022, 12, 31, 23, 59);
 
-const getTotalAmountStreamed = ({
+const getStreamedTotal = ({
   endTimestamp,
   flowRateWei,
 }: {
@@ -90,11 +90,11 @@ const getTotalAmountStreamed = ({
   }
 };
 
-const getTotalAmountStreamedEtherRoundedString = (arg: {
+const getStreamedTotalEtherRoundedString = (arg: {
   endTimestamp: number | null;
   flowRateWei: BigNumberish;
 }): string => {
-  const bigNumber = getTotalAmountStreamed(arg);
+  const bigNumber = getStreamedTotal(arg);
   if (!bigNumber || bigNumber?.isZero()) {
     return "";
   } else {
@@ -123,8 +123,6 @@ export default memo(function SendCard() {
   const { visibleAddress } = useVisibleAddress();
   const getTransactionOverrides = useGetTransactionOverrides();
 
-  const [showBufferAlert, setShowBufferAlert] = useState(false);
-
   const {
     watch,
     control,
@@ -133,6 +131,11 @@ export default memo(function SendCard() {
     setValue,
     reset: resetFormData,
   } = useFormContext<PartialStreamingForm>();
+
+  const resetForm = useCallback(() => {
+    resetFormData();
+    setStreamScheduling(false);
+  }, [resetFormData]);
 
   const [
     receiverAddress,
@@ -147,17 +150,6 @@ export default memo(function SendCard() {
     "data.understandLiquidationRisk",
     "data.endTimestamp",
   ]);
-
-  const endDate = useMemo<Date | null>(
-    () => (endTimestamp ? new Date(endTimestamp * 1000) : null),
-    [endTimestamp]
-  );
-
-  useEffect(() => {
-    if (!!receiverAddress && !!tokenAddress && !!flowRateEther.amountEther) {
-      setShowBufferAlert(true);
-    }
-  }, [setShowBufferAlert, receiverAddress, tokenAddress, flowRateEther.amountEther]);
 
   const shouldSearchForActiveFlow =
     !!visibleAddress && !!receiverAddress && !!tokenAddress;
@@ -174,19 +166,21 @@ export default memo(function SendCard() {
         : skipToken
     );
 
-  const { data: existingEndTimestamp } = rpcApi.useScheduledEndDateQuery(
-    shouldSearchForActiveFlow && activeFlow
-      ? {
-          chainId: network.id,
-          superTokenAddress: tokenAddress,
-          senderAddress: visibleAddress,
-          receiverAddress: receiverAddress,
-        }
-      : skipToken
+  const ReceiverAddressController = (
+    <Controller
+      control={control}
+      name="data.receiverAddress"
+      render={({ field: { onChange, onBlur } }) => (
+        <AddressSearch
+          address={receiverAddress}
+          onChange={onChange}
+          onBlur={onBlur}
+          addressLength={isBelowMd ? "medium" : "long"}
+          ButtonProps={{ fullWidth: true }}
+        />
+      )}
+    />
   );
-  const existingEndDate = existingEndTimestamp
-    ? new Date(existingEndTimestamp * 1000)
-    : null;
 
   const { token } = subgraphApi.useTokenQuery(
     tokenAddress
@@ -251,6 +245,218 @@ export default memo(function SendCard() {
     [listedSuperTokensQuery.data, customSuperTokensQuery.data, network]
   );
 
+  const TokenController = (
+    <Controller
+      control={control}
+      name="data.tokenAddress"
+      render={({ field: { onChange, onBlur } }) => (
+        <TokenDialogButton
+          token={token}
+          tokenSelection={{
+            showUpgrade: true,
+            tokenPairsQuery: {
+              data: superTokens,
+              isFetching:
+                listedSuperTokensQuery.isFetching ||
+                customSuperTokensQuery.isFetching,
+            },
+          }}
+          onTokenSelect={(x) => onChange(x.address)}
+          onBlur={onBlur}
+          ButtonProps={{ variant: "input" }}
+        />
+      )}
+    />
+  );
+
+  const flowRateWei = useMemo<BigNumber>(
+    () =>
+      calculateTotalAmountWei({
+        amountWei: parseEtherOrZero(flowRateEther.amountEther).toString(),
+        unitOfTime: flowRateEther.unitOfTime,
+      }),
+    [flowRateEther.amountEther, flowRateEther.unitOfTime]
+  );
+
+  const FlowRateController = (
+    <Controller
+      control={control}
+      name="data.flowRate"
+      render={({ field: { onChange, onBlur } }) => (
+        <FlowRateInput
+          flowRateEther={flowRateEther}
+          onChange={onChange}
+          onBlur={onBlur}
+        />
+      )}
+    />
+  );
+
+  const doesNetworkSupportStreamScheduler =
+    !!network.streamSchedulerContractAddress;
+
+  const [streamScheduling, setStreamScheduling] = useState<boolean>(
+    !!endTimestamp
+  );
+
+  const StreamSchedulingController = (
+    <Switch
+      checked={streamScheduling}
+      onChange={(_event, value) => {
+        if (!value) {
+          setValue("data.endTimestamp", null);
+        }
+        setStreamScheduling(value);
+      }}
+    />
+  );
+
+  const { data: existingEndTimestamp } = rpcApi.useScheduledEndDateQuery(
+    shouldSearchForActiveFlow && activeFlow
+      ? {
+          chainId: network.id,
+          superTokenAddress: tokenAddress,
+          senderAddress: visibleAddress,
+          receiverAddress: receiverAddress,
+        }
+      : skipToken
+  );
+
+  const existingEndDate = existingEndTimestamp
+    ? new Date(existingEndTimestamp * 1000)
+    : null;
+
+  const endDate = useMemo<Date | null>(
+    () => (endTimestamp ? new Date(endTimestamp * 1000) : null),
+    [endTimestamp]
+  );
+
+  const [totalStreamedEther, setTotalStreamedEther] = useState<string>("");
+
+  useEffect(() => {
+    if (!endTimestamp) {
+      if (existingEndTimestamp) {
+        // Hide old schedule orders. It will be automatically deleted.
+        if (existingEndTimestamp > dateNowSeconds()) {
+          setStreamScheduling(true);
+          setValue("data.endTimestamp", existingEndTimestamp);
+          if (flowRateEther) {
+            setTotalStreamedEther(
+              getStreamedTotalEtherRoundedString({
+                endTimestamp: existingEndTimestamp,
+                flowRateWei: flowRateWei,
+              })
+            );
+          }
+        }
+      } else {
+        setStreamScheduling(false);
+        setValue("data.endTimestamp", null);
+        setTotalStreamedEther("");
+      }
+    }
+  }, [existingEndTimestamp]);
+
+  useEffect(() => {
+    if (endTimestamp && flowRateWei) {
+      setTotalStreamedEther(
+        getStreamedTotalEtherRoundedString({
+          endTimestamp,
+          flowRateWei,
+        })
+      );
+    }
+  }, [endTimestamp, flowRateWei]);
+
+  const EndDateController = (
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <Controller
+        control={control}
+        name="data.endTimestamp"
+        render={({ field: { onChange, onBlur } }) => (
+          <DateTimePicker
+            renderInput={(props) => (
+              <TextField fullWidth {...props} onBlur={onBlur} />
+            )}
+            value={endDate}
+            minDateTime={MIN_VISIBLE_END_DATE}
+            maxDateTime={MAX_VISIBLE_END_DATE}
+            ampm={false}
+            onChange={(date: Date | null) => {
+              const endTimestamp = date ? getTimeInSeconds(date) : null;
+              onChange(endTimestamp);
+              setTotalStreamedEther(
+                getStreamedTotalEtherRoundedString({
+                  endTimestamp,
+                  flowRateWei,
+                })
+              );
+            }}
+            disablePast={true}
+          />
+        )}
+      />
+    </LocalizationProvider>
+  );
+
+  const TotalStreamedController = (
+    <TextField
+      value={totalStreamedEther}
+      onChange={(event) => {
+        setTotalStreamedEther(event.target.value);
+        setValue(
+          "data.endTimestamp",
+          getEndTimestamp({
+            flowRateWei,
+            amountEthers: event.target.value,
+          })
+        );
+      }}
+      InputProps={{
+        startAdornment: <>≈&nbsp;</>,
+        endAdornment: (
+          <Stack direction="row" gap={0.5} sx={{ ml: 0.5 }}>
+            <TokenIcon tokenSymbol={token?.symbol} isSuper size={24} />
+            <Typography variant="h6" component="span">
+              {token?.symbol ?? ""}
+            </Typography>
+          </Stack>
+        ),
+      }}
+    />
+  );
+
+  const UnderstandLiquidationRiskController = (
+    <Controller
+      control={control}
+      name="data.understandLiquidationRisk"
+      render={({ field: { onChange, onBlur } }) => (
+        <FormControlLabel
+          control={
+            <Checkbox
+              data-cy={"risk-checkbox"}
+              checked={understandLiquidationRisk}
+              onChange={onChange}
+              onBlur={onBlur}
+              sx={{ color: "inherit" }}
+            />
+          }
+          label={
+            <Typography variant="body2">Yes, I understand the risk.</Typography>
+          }
+        />
+      )}
+    />
+  );
+
+  const [showBufferAlert, setShowBufferAlert] = useState(false);
+
+  useEffect(() => {
+    if (!!receiverAddress && !!tokenAddress && !!flowRateEther.amountEther) {
+      setShowBufferAlert(true);
+    }
+  }, [setShowBufferAlert, receiverAddress, tokenAddress, flowRateEther.amountEther]);
+
   const bufferAmount = useMemo(() => {
     if (!flowRateEther.amountEther || !flowRateEther.unitOfTime) {
       return undefined;
@@ -262,13 +468,20 @@ export default memo(function SendCard() {
     });
   }, [network, flowRateEther]);
 
-  const flowRateWei = useMemo<BigNumber>(
-    () =>
-      calculateTotalAmountWei({
-        amountWei: parseEtherOrZero(flowRateEther.amountEther).toString(),
-        unitOfTime: flowRateEther.unitOfTime,
-      }),
-    [flowRateEther.amountEther, flowRateEther.unitOfTime]
+  const BufferAlert = (
+    <Alert severity="error">
+      If you do not cancel this stream before your balance reaches zero,{" "}
+      <b>
+        you will lose your{" "}
+        {bufferAmount && token ? (
+          <span translate="no">
+            <Amount wei={bufferAmount.toString()}> {token.symbol}</Amount>
+          </span>
+        ) : null}{" "}
+        buffer.
+      </b>
+      <FormGroup>{UnderstandLiquidationRiskController}</FormGroup>
+    </Alert>
   );
 
   const hasAnythingChanged =
@@ -278,109 +491,247 @@ export default memo(function SendCard() {
   const isSendDisabled =
     !hasAnythingChanged || formState.isValidating || !formState.isValid;
 
-  const doesNetworkSupportStreamScheduler =
-    !!network.streamSchedulerContractAddress;
-
-  const [streamScheduling, setStreamScheduling] = useState<boolean>(
-    !!endTimestamp
-  );
-  const [fixedAmountEther, setFixedAmountEther] = useState<string>("");
-
-  useEffect(() => {
-    if (!endTimestamp) {
-      if (existingEndTimestamp) {
-        // Hide old schedule orders. It will be automatically deleted.
-        if (existingEndTimestamp > dateNowSeconds()) {
-          setStreamScheduling(true);
-          setValue("data.endTimestamp", existingEndTimestamp);
-          if (flowRateEther) {
-            setFixedAmountEther(
-              getTotalAmountStreamedEtherRoundedString({
-                endTimestamp: existingEndTimestamp,
-                flowRateWei: flowRateWei,
-              })
-            );
-          }
-        }
-      } else {
-        setStreamScheduling(false);
-        setValue("data.endTimestamp", null);
-        setFixedAmountEther("");
-      }
-    }
-  }, [existingEndTimestamp]);
-
-  useEffect(() => {
-    if (endTimestamp && flowRateWei) {
-      setFixedAmountEther(
-        getTotalAmountStreamedEtherRoundedString({
-          endTimestamp,
-          flowRateWei,
-        })
-      );
-    }
-  }, [endTimestamp, flowRateWei]);
-
   const [upsertFlow, upsertFlowResult] =
     rpcApi.useUpsertFlowWithSchedulingMutation();
-  const [flowDeleteTrigger, flowDeleteResult] = rpcApi.useFlowDeleteMutation();
+  const SendTransactionBoundary = (
+    <TransactionBoundary mutationResult={upsertFlowResult}>
+      {({ closeDialog, setDialogSuccessActions }) => (
+        <TransactionButton
+          dataCy={"send-transaction-button"}
+          disabled={isSendDisabled}
+          ButtonProps={{
+            variant: "contained",
+          }}
+          onClick={async (signer) => {
+            if (isSendDisabled) {
+              throw Error(
+                `This should never happen. Form state: ${JSON.stringify(
+                  formState,
+                  null,
+                  2
+                )}`
+              );
+            }
 
-  const resetForm = useCallback(() => {
-    resetFormData();
-    setStreamScheduling(false);
-  }, [resetFormData]);
+            const { data: formData } = getValues() as ValidStreamingForm;
 
-  return (
-    <>
-      <Card
-        data-cy={"send-card"}
-        elevation={1}
-        sx={{
-          maxWidth: "600px",
-          position: "relative",
-          [theme.breakpoints.down("md")]: {
-            boxShadow: "none",
-            backgroundImage: "none",
-            borderRadius: 0,
-            border: 0,
-            p: 0,
-          },
-        }}
-      >
-        <Button
-          data-cy={"send-or-modify-stream"}
-          color="primary"
-          variant="textContained"
-          size="large"
-          sx={{ alignSelf: "flex-start", pointerEvents: "none", mb: 4 }}
+            const flowRateWei = calculateTotalAmountWei({
+              amountWei: parseEther(formData.flowRate.amountEther).toString(),
+              unitOfTime: formData.flowRate.unitOfTime,
+            }).toString();
+
+            const transactionRestoration:
+              | SendStreamRestoration
+              | ModifyStreamRestoration = {
+              type: activeFlow
+                ? RestorationType.ModifyStream
+                : RestorationType.SendStream,
+              flowRate: {
+                amountWei: parseEther(formData.flowRate.amountEther).toString(),
+                unitOfTime: formData.flowRate.unitOfTime,
+              },
+              version: 2,
+              chainId: network.id,
+              tokenAddress: formData.tokenAddress,
+              receiverAddress: formData.receiverAddress,
+              ...(formData.endTimestamp
+                ? { endTimestamp: formData.endTimestamp }
+                : {}),
+            };
+
+            upsertFlow({
+              signer,
+              flowRateWei,
+              chainId: network.id,
+              senderAddress: await signer.getAddress(),
+              receiverAddress: formData.receiverAddress,
+              superTokenAddress: formData.tokenAddress,
+              userDataBytes: undefined,
+              endTimestamp: endDate
+                ? Math.round(endDate.getTime() / 1000)
+                : null,
+              waitForConfirmation: false,
+              overrides: await getTransactionOverrides(network),
+              transactionExtraData: {
+                restoration: transactionRestoration,
+              },
+            })
+              .unwrap()
+              .then(() => resetForm());
+
+            if (activeFlow) {
+              setDialogSuccessActions(
+                <TransactionDialogActions>
+                  <Link
+                    href={getTokenPagePath({
+                      network: network.slugName,
+                      token: formData.tokenAddress,
+                    })}
+                    passHref
+                  >
+                    <TransactionDialogButton
+                      data-cy={"go-to-token-page-button"}
+                      color="primary"
+                    >
+                      Go to token page ➜
+                    </TransactionDialogButton>
+                  </Link>
+                </TransactionDialogActions>
+              );
+            } else {
+              setDialogSuccessActions(
+                <TransactionDialogActions>
+                  <Stack gap={1} sx={{ width: "100%" }}>
+                    <TransactionDialogButton
+                      data-cy={"send-more-streams-button"}
+                      color="secondary"
+                      onClick={closeDialog}
+                    >
+                      Send more streams
+                    </TransactionDialogButton>
+                    <Link
+                      href={getTokenPagePath({
+                        network: network.slugName,
+                        token: formData.tokenAddress,
+                      })}
+                      passHref
+                    >
+                      <TransactionDialogButton
+                        data-cy="go-to-token-page-button"
+                        color="primary"
+                      >
+                        Go to token page ➜
+                      </TransactionDialogButton>
+                    </Link>
+                  </Stack>
+                </TransactionDialogActions>
+              );
+            }
+          }}
         >
           {activeFlow ? "Modify Stream" : "Send Stream"}
-        </Button>
+        </TransactionButton>
+      )}
+    </TransactionBoundary>
+  );
 
-        <NetworkBadge
-          network={network}
-          sx={{ position: "absolute", top: 0, right: theme.spacing(3.5) }}
-          NetworkIconProps={{
-            size: 32,
-            fontSize: 18,
-            sx: { [theme.breakpoints.down("md")]: { borderRadius: 1 } },
-          }}
+  const [flowDeleteTrigger, flowDeleteResult] = rpcApi.useFlowDeleteMutation();
+  const DeleteFlowBoundary = (
+    <TransactionBoundary mutationResult={flowDeleteResult}>
+      {() =>
+        activeFlow && (
+          <TransactionButton
+            dataCy={"cancel-stream-button"}
+            ButtonProps={{
+              variant: "outlined",
+              color: "error",
+            }}
+            onClick={async (signer) => {
+              const superTokenAddress = tokenAddress;
+              const senderAddress = visibleAddress;
+              if (!receiverAddress || !superTokenAddress || !senderAddress) {
+                throw Error("This should never happen.");
+              }
+
+              flowDeleteTrigger({
+                signer,
+                receiverAddress,
+                superTokenAddress,
+                senderAddress,
+                chainId: network.id,
+                userDataBytes: undefined,
+                waitForConfirmation: false,
+                overrides: await getTransactionOverrides(network),
+              })
+                .unwrap()
+                .then(() => resetForm());
+            }}
+          >
+            Cancel Stream
+          </TransactionButton>
+        )
+      }
+    </TransactionBoundary>
+  );
+
+  return (
+    <Card
+      data-cy={"send-card"}
+      elevation={1}
+      sx={{
+        maxWidth: "600px",
+        position: "relative",
+        [theme.breakpoints.down("md")]: {
+          boxShadow: "none",
+          backgroundImage: "none",
+          borderRadius: 0,
+          border: 0,
+          p: 0,
+        },
+      }}
+    >
+      <Button
+        data-cy={"send-or-modify-stream"}
+        color="primary"
+        variant="textContained"
+        size="large"
+        sx={{ alignSelf: "flex-start", pointerEvents: "none", mb: 4 }}
+      >
+        {activeFlow ? "Modify Stream" : "Send Stream"}
+      </Button>
+
+      <NetworkBadge
+        network={network}
+        sx={{ position: "absolute", top: 0, right: theme.spacing(3.5) }}
+        NetworkIconProps={{
+          size: 32,
+          fontSize: 18,
+          sx: { [theme.breakpoints.down("md")]: { borderRadius: 1 } },
+        }}
+      />
+
+      <Stack spacing={2.5}>
+        <ErrorMessage
+          name="data"
+          // ErrorMessage has a bug and current solution is to pass in errors via props.
+          // TODO: keep eye on this issue: https://github.com/react-hook-form/error-message/issues/91
+          errors={formState.errors}
+          render={({ message }) =>
+            !!message && (
+              <Alert severity="error" sx={{ mb: 1 }}>
+                {message}
+              </Alert>
+            )
+          }
         />
 
-        <Stack spacing={2.5}>
-          <ErrorMessage
-            name="data"
-            // ErrorMessage has a bug and current solution is to pass in errors via props.
-            // TODO: keep eye on this issue: https://github.com/react-hook-form/error-message/issues/91
-            errors={formState.errors}
-            render={({ message }) =>
-              !!message && (
-                <Alert severity="error" sx={{ mb: 1 }}>
-                  {message}
-                </Alert>
-              )
-            }
-          />
+        <Box>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{ mr: 0.75 }}
+          >
+            <FormLabel>Receiver Wallet Address</FormLabel>
+            <TooltipIcon title="Must not be an exchange address" />
+          </Stack>
+          {ReceiverAddressController}
+        </Box>
+
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "1fr 2fr",
+            gap: 2.5,
+            [theme.breakpoints.down("md")]: {
+              gridTemplateColumns: "1fr",
+            },
+          }}
+        >
+          <Stack justifyContent="stretch">
+            <FormLabel>Super Token</FormLabel>
+            {TokenController}
+          </Stack>
 
           <Box>
             <Stack
@@ -389,459 +740,116 @@ export default memo(function SendCard() {
               justifyContent="space-between"
               sx={{ mr: 0.75 }}
             >
-              <FormLabel>Receiver Wallet Address</FormLabel>
-              <TooltipIcon title="Must not be an exchange address" />
+              <FormLabel>Flow Rate</FormLabel>
+              <TooltipIcon title="Flow rate is the velocity of tokens being streamed." />
             </Stack>
-
-            <Controller
-              control={control}
-              name="data.receiverAddress"
-              render={({ field: { onChange, onBlur } }) => (
-                <AddressSearch
-                  address={receiverAddress}
-                  onChange={onChange}
-                  onBlur={onBlur}
-                  addressLength={isBelowMd ? "medium" : "long"}
-                  ButtonProps={{ fullWidth: true }}
-                />
-              )}
-            />
+            {FlowRateController}
           </Box>
+        </Box>
 
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: "1fr 2fr",
-              gap: 2.5,
-              [theme.breakpoints.down("md")]: {
-                gridTemplateColumns: "1fr",
-              },
-            }}
-          >
-            <Stack justifyContent="stretch">
-              <FormLabel>Super Token</FormLabel>
-              <Controller
-                control={control}
-                name="data.tokenAddress"
-                render={({ field: { onChange, onBlur } }) => (
-                  <TokenDialogButton
-                    token={token}
-                    tokenSelection={{
-                      showUpgrade: true,
-                      tokenPairsQuery: {
-                        data: superTokens,
-                        isFetching:
-                          listedSuperTokensQuery.isFetching ||
-                          customSuperTokensQuery.isFetching,
-                      },
-                    }}
-                    onTokenSelect={(x) => onChange(x.address)}
-                    onBlur={onBlur}
-                    ButtonProps={{ variant: "input" }}
-                  />
-                )}
-              />
-            </Stack>
-
-            <Box>
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-                sx={{ mr: 0.75 }}
-              >
-                <FormLabel>Flow Rate</FormLabel>
-                <TooltipIcon title="Flow rate is the velocity of tokens being streamed." />
-              </Stack>
-              <Controller
-                control={control}
-                name="data.flowRate"
-                render={({ field: { onChange, onBlur } }) => (
-                  <FlowRateInput
-                    flowRateEther={flowRateEther}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                  />
-                )}
-              />
-            </Box>
-          </Box>
-
-          {doesNetworkSupportStreamScheduler && (
-            <>
-              <FormControlLabel
-                control={
-                  <>
-                    <Switch
-                      checked={streamScheduling}
-                      onChange={(_event, value) => {
-                        if (!value) {
-                          setValue("data.endTimestamp", null);
-                        }
-                        setStreamScheduling(value);
-                      }}
-                    />
-                  </>
-                }
-                label={
-                  <Stack direction="row" alignItems="center" gap={0.75}>
-                    Stream Scheduling
-                    <TooltipIcon title="Pick a start and end date for your stream, and set a fixed token amount." />
-                  </Stack>
-                }
-              />
-              <Collapse in={streamScheduling}>
-                <Grid container spacing={1}>
-                  <Grid item component={FormGroup} xs={6}>
-                    <Stack
-                      direction="row"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      sx={{ mr: 0.75 }}
-                      flex={1}
-                    >
-                      <FormLabel>End Date</FormLabel>
-                      <TooltipIcon title="The date when stream scheduler tries to cancel the stream." />
-                    </Stack>
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                      <Controller
-                        control={control}
-                        name="data.endTimestamp"
-                        render={({ field: { onChange, onBlur } }) => (
-                          <DateTimePicker
-                            renderInput={(props) => (
-                              <TextField fullWidth {...props} onBlur={onBlur} />
-                            )}
-                            value={endDate}
-                            minDateTime={MIN_END_DATE}
-                            maxDateTime={MAX_END_DATE}
-                            ampm={false}
-                            onChange={(date: Date | null) => {
-                              const endTimestamp = date
-                                ? getTimeInSeconds(date)
-                                : null;
-                              onChange(endTimestamp);
-                              setFixedAmountEther(
-                                getTotalAmountStreamedEtherRoundedString({
-                                  endTimestamp,
-                                  flowRateWei,
-                                })
-                              );
-                            }}
-                            disablePast={true}
-                          />
-                        )}
-                      />
-                    </LocalizationProvider>
-                  </Grid>
-                  <Grid item component={FormGroup} xs={6}>
-                    <Stack
-                      direction="row"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      sx={{ mr: 0.75 }}
-                      flex={1}
-                    >
-                      <FormLabel>Total Stream</FormLabel>
-                      <TooltipIcon title="The approximate amount that will be streamed until the scheduler cancels the stream." />
-                    </Stack>
-                    <TextField
-                      value={fixedAmountEther}
-                      onChange={(event) => {
-                        setFixedAmountEther(event.target.value);
-                        setValue(
-                          "data.endTimestamp",
-                          getEndTimestamp({
-                            flowRateWei,
-                            amountEthers: event.target.value,
-                          })
-                        );
-                      }}
-                      InputProps={{
-                        startAdornment: <>≈&nbsp;</>,
-                        endAdornment: (
-                          <Stack direction="row" gap={0.5} sx={{ ml: 0.5 }}>
-                            <TokenIcon
-                              tokenSymbol={token?.symbol}
-                              isSuper
-                              size={24}
-                            />
-                            <Typography variant="h6" component="span">
-                              {token?.symbol ?? ""}
-                            </Typography>
-                          </Stack>
-                        ),
-                      }}
-                    ></TextField>
-                  </Grid>
-                </Grid>
-              </Collapse>
-            </>
-          )}
-
-          {tokenAddress && visibleAddress && (
-            <>
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="center"
-                gap={1}
-              >
-                <Stack direction="row" alignItems="center" gap={0.5}>
-                  <BalanceSuperToken
-                    data-cy={"balance"}
-                    chainId={network.id}
-                    accountAddress={visibleAddress}
-                    tokenAddress={tokenAddress}
-                    TypographyProps={{ variant: "h7mono" }}
-                  />
-                  <Typography variant="h7">{token?.symbol}</Typography>
+        {doesNetworkSupportStreamScheduler && (
+          <>
+            <FormControlLabel
+              control={StreamSchedulingController}
+              label={
+                <Stack direction="row" alignItems="center" gap={0.75}>
+                  Stream Scheduling
+                  <TooltipIcon title="Pick a start and end date for your stream, and set a fixed token amount." />
                 </Stack>
-                {isWrappableSuperToken && (
-                  <Link
-                    href={`/wrap?upgrade&token=${tokenAddress}&network=${network.slugName}`}
-                    passHref
-                  >
-                    <Tooltip title="Wrap more">
-                      <IconButton
-                        data-cy={"balance-wrap-button"}
-                        color="primary"
-                        size="small"
-                      >
-                        <AddCircleOutline />
-                      </IconButton>
-                    </Tooltip>
-                  </Link>
-                )}
-              </Stack>
-              <Divider />
-            </>
-          )}
-
-          {!!(receiverAddress && token) && (
-            <StreamingPreview
-              receiver={receiverAddress}
-              token={token}
-              flowRateEther={flowRateEther}
-              existingStream={activeFlow ?? null}
-              newEndDate={endDate}
-              oldEndDate={existingEndDate}
+              }
             />
-          )}
-
-          {showBufferAlert && (
-            <Alert severity="error">
-              If you do not cancel this stream before your balance reaches zero,{" "}
-              <b>
-                you will lose your{" "}
-                {bufferAmount && token ? (
-                  <span translate="no">
-                    <Amount wei={bufferAmount.toString()}>
-                      {" "}
-                      {token.symbol}
-                    </Amount>
-                  </span>
-                ) : (
-                  <span>your</span>
-                )}{" "}
-                buffer.
-              </b>
-              <FormGroup>
-                <Controller
-                  control={control}
-                  name="data.understandLiquidationRisk"
-                  render={({ field: { onChange, onBlur } }) => (
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          data-cy={"risk-checkbox"}
-                          checked={understandLiquidationRisk}
-                          onChange={onChange}
-                          onBlur={onBlur}
-                          sx={{ color: "inherit" }}
-                        />
-                      }
-                      label={
-                        <Typography variant="body2">
-                          Yes, I understand the risk.
-                        </Typography>
-                      }
-                    />
-                  )}
-                />
-              </FormGroup>
-            </Alert>
-          )}
-
-          <ConnectionBoundary>
-            <Stack gap={1}>
-              <TransactionBoundary mutationResult={upsertFlowResult}>
-                {({ closeDialog, setDialogSuccessActions }) => (
-                  <TransactionButton
-                    dataCy={"send-transaction-button"}
-                    disabled={isSendDisabled}
-                    ButtonProps={{
-                      variant: "contained",
-                    }}
-                    onClick={async (signer) => {
-                      if (isSendDisabled) {
-                        throw Error(
-                          `This should never happen. Form state: ${JSON.stringify(
-                            formState,
-                            null,
-                            2
-                          )}`
-                        );
-                      }
-
-                      const { data: formData } =
-                        getValues() as ValidStreamingForm;
-
-                      const flowRateWei = calculateTotalAmountWei({
-                        amountWei: parseEther(
-                          formData.flowRate.amountEther
-                        ).toString(),
-                        unitOfTime: formData.flowRate.unitOfTime,
-                      }).toString();
-
-                      const transactionRestoration:
-                        | SendStreamRestoration
-                        | ModifyStreamRestoration = {
-                        type: activeFlow
-                          ? RestorationType.ModifyStream
-                          : RestorationType.SendStream,
-                        flowRate: {
-                          amountWei: parseEther(
-                            formData.flowRate.amountEther
-                          ).toString(),
-                          unitOfTime: formData.flowRate.unitOfTime,
-                        },
-                        version: 2,
-                        chainId: network.id,
-                        tokenAddress: formData.tokenAddress,
-                        receiverAddress: formData.receiverAddress,
-                        ...(formData.endTimestamp
-                          ? { endTimestamp: formData.endTimestamp }
-                          : {}),
-                      };
-
-                      upsertFlow({
-                        signer,
-                        flowRateWei,
-                        chainId: network.id,
-                        senderAddress: await signer.getAddress(),
-                        receiverAddress: formData.receiverAddress,
-                        superTokenAddress: formData.tokenAddress,
-                        userDataBytes: undefined,
-                        endTimestamp: endDate
-                          ? Math.round(endDate.getTime() / 1000)
-                          : null,
-                        waitForConfirmation: false,
-                        overrides: await getTransactionOverrides(network),
-                        transactionExtraData: {
-                          restoration: transactionRestoration,
-                        },
-                      })
-                        .unwrap()
-                        .then(() => resetForm());
-
-                      if (activeFlow) {
-                        setDialogSuccessActions(
-                          <TransactionDialogActions>
-                            <Link
-                              href={getTokenPagePath({
-                                network: network.slugName,
-                                token: formData.tokenAddress,
-                              })}
-                              passHref
-                            >
-                              <TransactionDialogButton
-                                data-cy={"go-to-token-page-button"}
-                                color="primary"
-                              >
-                                Go to token page ➜
-                              </TransactionDialogButton>
-                            </Link>
-                          </TransactionDialogActions>
-                        );
-                      } else {
-                        setDialogSuccessActions(
-                          <TransactionDialogActions>
-                            <Stack gap={1} sx={{ width: "100%" }}>
-                              <TransactionDialogButton
-                                data-cy={"send-more-streams-button"}
-                                color="secondary"
-                                onClick={closeDialog}
-                              >
-                                Send more streams
-                              </TransactionDialogButton>
-                              <Link
-                                href={getTokenPagePath({
-                                  network: network.slugName,
-                                  token: formData.tokenAddress,
-                                })}
-                                passHref
-                              >
-                                <TransactionDialogButton
-                                  data-cy="go-to-token-page-button"
-                                  color="primary"
-                                >
-                                  Go to token page ➜
-                                </TransactionDialogButton>
-                              </Link>
-                            </Stack>
-                          </TransactionDialogActions>
-                        );
-                      }
-                    }}
+            <Collapse in={streamScheduling}>
+              <Grid container spacing={1}>
+                <Grid item component={FormGroup} xs={6}>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    sx={{ mr: 0.75 }}
+                    flex={1}
                   >
-                    {activeFlow ? "Modify Stream" : "Send Stream"}
-                  </TransactionButton>
-                )}
-              </TransactionBoundary>
-              <TransactionBoundary mutationResult={flowDeleteResult}>
-                {() =>
-                  activeFlow && (
-                    <TransactionButton
-                      dataCy={"cancel-stream-button"}
-                      ButtonProps={{
-                        variant: "outlined",
-                        color: "error",
-                      }}
-                      onClick={async (signer) => {
-                        const superTokenAddress = tokenAddress;
-                        const senderAddress = visibleAddress;
-                        if (
-                          !receiverAddress ||
-                          !superTokenAddress ||
-                          !senderAddress
-                        ) {
-                          throw Error("This should never happen.");
-                        }
+                    <FormLabel>End Date</FormLabel>
+                    <TooltipIcon title="The date when stream scheduler tries to cancel the stream." />
+                  </Stack>
+                  {EndDateController}
+                </Grid>
+                <Grid item component={FormGroup} xs={6}>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    sx={{ mr: 0.75 }}
+                    flex={1}
+                  >
+                    <FormLabel>Total Stream</FormLabel>
+                    <TooltipIcon title="The approximate amount that will be streamed until the scheduler cancels the stream." />
+                  </Stack>
+                  {TotalStreamedController}
+                </Grid>
+              </Grid>
+            </Collapse>
+          </>
+        )}
 
-                        flowDeleteTrigger({
-                          signer,
-                          receiverAddress,
-                          superTokenAddress,
-                          senderAddress,
-                          chainId: network.id,
-                          userDataBytes: undefined,
-                          waitForConfirmation: false,
-                          overrides: await getTransactionOverrides(network),
-                        })
-                          .unwrap()
-                          .then(() => resetForm());
-                      }}
+        {tokenAddress && visibleAddress && (
+          <>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="center"
+              gap={1}
+            >
+              <Stack direction="row" alignItems="center" gap={0.5}>
+                <BalanceSuperToken
+                  data-cy={"balance"}
+                  chainId={network.id}
+                  accountAddress={visibleAddress}
+                  tokenAddress={tokenAddress}
+                  TypographyProps={{ variant: "h7mono" }}
+                />
+                <Typography variant="h7">{token?.symbol}</Typography>
+              </Stack>
+              {isWrappableSuperToken && (
+                <Link
+                  href={`/wrap?upgrade&token=${tokenAddress}&network=${network.slugName}`}
+                  passHref
+                >
+                  <Tooltip title="Wrap more">
+                    <IconButton
+                      data-cy={"balance-wrap-button"}
+                      color="primary"
+                      size="small"
                     >
-                      Cancel Stream
-                    </TransactionButton>
-                  )
-                }
-              </TransactionBoundary>
+                      <AddCircleOutline />
+                    </IconButton>
+                  </Tooltip>
+                </Link>
+              )}
             </Stack>
-          </ConnectionBoundary>
-        </Stack>
-      </Card>
-    </>
+            <Divider />
+          </>
+        )}
+
+        {!!(receiverAddress && token) && (
+          <StreamingPreview
+            receiver={receiverAddress}
+            token={token}
+            flowRateEther={flowRateEther}
+            existingStream={activeFlow ?? null}
+            newEndDate={endDate}
+            oldEndDate={existingEndDate}
+          />
+        )}
+
+        {showBufferAlert && BufferAlert}
+
+        <ConnectionBoundary>
+          <Stack gap={1}>
+            {SendTransactionBoundary}
+            {DeleteFlowBoundary}
+          </Stack>
+        </ConnectionBoundary>
+      </Stack>
+    </Card>
   );
 });

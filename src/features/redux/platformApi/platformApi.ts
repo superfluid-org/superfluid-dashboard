@@ -4,6 +4,7 @@ import {
   ListSubscriptionsApiResponse,
 } from "./platformApiTemplate";
 
+// NOTE: This is the actual platform API slice, manually edited. A "template" is also generated for types and ideas.
 export const platformApi = createApi({
   tagTypes: ["GENERAL"], // TODO(KK): Make SDK be able to invalidate another slice!
   baseQuery: fetchBaseQuery(),
