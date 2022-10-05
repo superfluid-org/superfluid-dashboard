@@ -71,8 +71,11 @@ import {
   RestorationType,
   SendStreamRestoration,
 } from "../transactionRestoration/transactionRestorations";
+import { add } from "date-fns";
 
-const MIN_VISIBLE_END_DATE = new Date();
+const MIN_VISIBLE_END_DATE = add(new Date(), {
+  minutes: 5,
+});
 const MAX_VISIBLE_END_DATE = new Date(2022, 12, 31, 23, 59);
 
 const getStreamedTotal = ({
