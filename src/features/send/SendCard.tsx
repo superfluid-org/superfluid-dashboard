@@ -76,7 +76,7 @@ import { add } from "date-fns";
 const MIN_VISIBLE_END_DATE = add(new Date(), {
   minutes: 5,
 });
-const MAX_VISIBLE_END_DATE = new Date(2022, 12, 31, 23, 59);
+const MAX_VISIBLE_END_DATE = new Date(2022, 9, 31, 23, 59);
 
 const getStreamedTotal = ({
   endTimestamp,
@@ -766,7 +766,7 @@ export default memo(function SendCard() {
               label={
                 <Stack direction="row" alignItems="center" gap={0.75}>
                   Stream Scheduling
-                  <TooltipIcon title="Pick a start and end date for your stream, and set a fixed token amount." />
+                  <TooltipIcon title="Experimental feature to automatically cancel the stream on specified end date. Only available on Goerli." />
                 </Stack>
               }
             />
