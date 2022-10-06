@@ -1,5 +1,6 @@
 import { memoize } from "lodash";
 import { chain, Chain } from "wagmi";
+import config from "../../utils/config";
 import ensureDefined from "../../utils/ensureDefined";
 import {
   NATIVE_ASSET_ADDRESS,
@@ -32,7 +33,7 @@ export type Network = Chain & {
 };
 
 export const superfluidRpcUrls = {
-  goerli: "https://rpc-endpoints.superfluid.dev/eth-goerli",  
+  goerli: "https://rpc-endpoints.superfluid.dev/eth-goerli",
   gnosis: "https://rpc-endpoints.superfluid.dev/xdai-mainnet",
   polygon: "https://rpc-endpoints.superfluid.dev/polygon-mainnet",
   polygonMumbai: "https://rpc-endpoints.superfluid.dev/polygon-mumbai",
@@ -119,7 +120,7 @@ export const networkDefinition: {
     },
     streamSchedulerContractAddress:
       "0x7D37D9494a09E47e58B1F535386Ca4D9D175f23e",
-    platformUrl: "https://dev-goerli-platform-v2.dev.superfluid.dev/",
+    platformUrl: config.platformApi.goerli,
   },
   gnosis: {
     name: "Gnosis Chain",
@@ -219,7 +220,7 @@ export const networkDefinition: {
         name: "Super MATIC",
         decimals: 18,
       },
-    }
+    },
   },
   avalancheFuji: {
     name: "Fuji (C-Chain)",
