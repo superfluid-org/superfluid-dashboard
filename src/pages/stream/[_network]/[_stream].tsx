@@ -264,6 +264,8 @@ const StreamPage: NextPage = () => {
         // The "_stream" in the path can either be Subgraph ID or "{tx-log}" (txId). If it's a transaction ID then we will find the Subgraph ID.
         const _streamSplit = router.query._stream.split("-");
         const isTxId = _streamSplit.length === 2;
+        const isSenderReceiverToken = _streamSplit.length === 3;
+
         if (isTxId) {
           const [transactionHash, logIndex] = _streamSplit;
           // NOTE: Check V1StreamPage before changing this query.
@@ -275,6 +277,22 @@ const StreamPage: NextPage = () => {
                   transactionHash,
                   logIndex,
                 },
+              },
+              pagination: {
+                take: 1,
+              },
+            },
+            true
+          );
+        } else if (isSenderReceiverToken) {
+          const [sender, receiver, token] = _streamSplit;
+          queryStreams(
+            {
+              chainId: network.id,
+              filter: {
+                sender: sender.toLowerCase(),
+                receiver: receiver.toLowerCase(),
+                token: token.toLowerCase(),
               },
               pagination: {
                 take: 1,
