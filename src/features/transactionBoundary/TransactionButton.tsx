@@ -5,6 +5,12 @@ import { LoadingButton } from "@mui/lab";
 import { Signer } from "ethers";
 import ConnectionBoundaryButton from "./ConnectionBoundaryButton";
 
+export const transactionButtonDefaultProps: ButtonProps = {
+  fullWidth: true,
+  variant: "contained",
+  size: "xl",
+};
+
 export const TransactionButton: FC<{
   children: ReactNode;
   dataCy?: string;
@@ -12,12 +18,12 @@ export const TransactionButton: FC<{
   onClick: (signer: Signer) => Promise<void>; // TODO(KK): Longer-term, get rid of async to avoid wagmi's UX pitfalls
   ButtonProps?: ButtonProps;
 }> = ({ children, dataCy, disabled, onClick, ButtonProps }) => {
-  const { signer, mutationResult } = useTransactionBoundary();
+  const { signer,
+    mutationResult,
+  } = useTransactionBoundary();
 
   const buttonProps: ButtonProps = {
-    fullWidth: true,
-    variant: "contained",
-    size: "xl",
+    ...transactionButtonDefaultProps,
     ...ButtonProps,
   };
 
@@ -33,9 +39,9 @@ export const TransactionButton: FC<{
     <ConnectionBoundaryButton ButtonProps={buttonProps}>
       <LoadingButton
         {...(dataCy ? { "data-cy": dataCy } : {})}
-        {...buttonProps}
-        loading={mutationResult.isLoading}
         color="primary"
+      {...buttonProps}
+      loading={mutationResult.isLoading}
         disabled={!signer}
         onClick={() => {
           if (!signer) throw Error("Signer not defined.");

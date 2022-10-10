@@ -15,7 +15,7 @@ import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 
-const { chains, provider } = configureChains(networks, [
+export const { chains: wagmiChains, provider: wagmiRpcProvider } = configureChains(networks, [
   jsonRpcProvider({
     rpc: (chain) => ({
       http: networksByChainId.get(chain.id)!.rpcUrls.superfluid,
@@ -25,13 +25,13 @@ const { chains, provider } = configureChains(networks, [
 
 const { connectors } = getAppWallets({
   appName: "Superfluid Dashboard",
-  chains: chains,
+  chains: wagmiChains,
 });
 
 export const wagmiClient = createWagmiClient({
   autoConnect: false, // Disable because of special Gnosis Safe handling in useAutoConnect.
   connectors,
-  provider,
+  provider: wagmiRpcProvider
 });
 
 const WagmiManager: FC<PropsWithChildren> = ({ children }) => {
@@ -56,8 +56,8 @@ export const RainbowKitManager: FC<PropsWithChildren> = ({ children }) => {
   const { network, isAutoSwitchStopped } = useExpectedNetwork();
 
   const selectableChains = [
-    ...chains.filter((x) => x.id === network.id), // Filter the expected network to be the first chain. RainbowKit emphasizes the first chain...
-    ...chains.filter((x) => x.id !== network.id),
+    ...wagmiChains.filter((x) => x.id === network.id), // Filter the expected network to be the first chain. RainbowKit emphasizes the first chain...
+    ...wagmiChains.filter((x) => x.id !== network.id),
   ];
   const initialChainId = isAutoSwitchStopped ? network.id : undefined; // RainbowKit either uses the wallet's chain if it's supported by our app OR switches to the first support chain.
 

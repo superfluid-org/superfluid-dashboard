@@ -1,6 +1,7 @@
 import { Framework } from "@superfluid-finance/sdk-core";
 import { ethers } from "ethers";
 import promiseRetry from "promise-retry";
+import { wagmiRpcProvider } from "../wallet/WagmiManager";
 import { networks } from "./networks";
 
 const readOnlyFrameworks = networks.map((network) => ({
@@ -10,9 +11,7 @@ const readOnlyFrameworks = networks.map((network) => ({
       (retry) =>
         Framework.create({
           chainId: network.id,
-          provider: new ethers.providers.JsonRpcProvider(
-            network.rpcUrls.superfluid
-          ),
+          provider: wagmiRpcProvider({ chainId: network.id }),
         }).catch(retry),
       {
         minTimeout: 500,

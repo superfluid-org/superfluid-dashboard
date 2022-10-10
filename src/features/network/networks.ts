@@ -1,5 +1,6 @@
 import { memoize } from "lodash";
 import { chain, Chain } from "wagmi";
+import config from "../../utils/config";
 import ensureDefined from "../../utils/ensureDefined";
 import {
   NATIVE_ASSET_ADDRESS,
@@ -27,6 +28,8 @@ export type Network = Chain & {
       type: TokenType.NativeAssetSuperToken;
     } & TokenMinimal;
   };
+  streamSchedulerContractAddress?: `0x${string}`;
+  platformUrl?: string;
 };
 
 export const superfluidRpcUrls = {
@@ -73,7 +76,10 @@ const blockExplorers = {
 };
 
 export const networkDefinition: {
-  goerli: Network;
+  goerli: Network & {
+    streamSchedulerContractAddress: `0x${string}`;
+    platformUrl: string;
+  };
   gnosis: Network;
   polygon: Network;
   polygonMumbai: Network;
@@ -112,6 +118,9 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
+    streamSchedulerContractAddress:
+      "0x7D37D9494a09E47e58B1F535386Ca4D9D175f23e",
+    platformUrl: config.platformApi.goerli,
   },
   gnosis: {
     name: "Gnosis Chain",

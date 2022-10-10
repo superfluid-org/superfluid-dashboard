@@ -1,8 +1,4 @@
-import {
-  createEntityAdapter,
-  createSlice,
-  isAllOf
-} from "@reduxjs/toolkit";
+import { createEntityAdapter, createSlice, isAllOf } from "@reduxjs/toolkit";
 import { dateNowSeconds } from "../../utils/dateUtils";
 import { rpcApi, transactionTracker } from "../redux/store";
 import { PendingIndexSubscriptionApproval } from "./PendingIndexSubscriptionApprove";
@@ -77,6 +73,43 @@ export const pendingUpdateSlice = createSlice({
             currentFlowRate: flowRateWei,
           };
           adapter.addOne(state, pendingUpdate);
+        }
+      }
+    );
+    builder.addMatcher(
+      rpcApi.endpoints.upsertFlowWithScheduling.matchFulfilled,
+      (state, action) => {
+        const {
+          chainId,
+          hash: transactionHash,
+          subTransactionTitles,
+        } = action.payload;
+        const {
+          senderAddress,
+          superTokenAddress,
+          receiverAddress,
+          flowRateWei,
+        } = action.meta.arg.originalArgs;
+
+        if (subTransactionTitles.includes("Create Stream")) {
+          if (senderAddress) {
+            const timestamp = dateNowSeconds();
+            const pendingUpdate: PendingOutgoingStream = {
+              pendingType: "FlowCreate",
+              chainId,
+              transactionHash,
+              id: transactionHash,
+              timestamp: timestamp,
+              createdAtTimestamp: timestamp,
+              updatedAtTimestamp: timestamp,
+              sender: senderAddress,
+              receiver: receiverAddress,
+              token: superTokenAddress,
+              streamedUntilUpdatedAt: "0",
+              currentFlowRate: flowRateWei,
+            };
+            adapter.addOne(state, pendingUpdate);
+          }
         }
       }
     );

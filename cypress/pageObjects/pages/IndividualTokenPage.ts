@@ -64,7 +64,7 @@ export class IndividualTokenPage extends BasePage {
         let flowRateString = parseInt(amount) > 0 ? `${plusOrMinus + amount}/mo` : "-"
         cy.get(`${STREAM_ROWS} ${STREAM_FLOW_RATES}`).first({timeout: 60000}).should("have.text", flowRateString)
         let fromToDate = fromTo === "now" ? format((Date.now()), "d MMM. yyyy") : format(parseInt(fromTo) * 1000, "d MMM. yyyy")
-        cy.get(`${STREAM_ROWS} ${START_END_DATES}`).first().should("have.text", fromToDate)
+        cy.get(`${STREAM_ROWS} ${START_END_DATES}`).first().should("contain.text",  fromToDate)
     }
 
     static validateFirstStreamRowPendingMessage(message: string) {
