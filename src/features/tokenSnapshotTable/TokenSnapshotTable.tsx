@@ -111,7 +111,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
       hasContent: !!tokenSnapshots.length,
     });
 
-    if (tokenSnapshots.length) {
+    if (!network.testnet && tokenSnapshots.length) {
       const activeStreamCount = sumBy(
         tokenSnapshots,
         (x) => x.totalNumberOfActiveStreams
