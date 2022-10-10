@@ -44,7 +44,7 @@ export default function MyApp(props: MyAppProps) {
     }
   }, []);
 
-  useEffect(() => console.log(`%c${SUPERFLUID_RUNNER_ASCII}`, "font-size: 10px"), []);
+  useEffect(() => console.log(`%c${SUPERFLUID_RUNNER_ASCII}`, "font-size: 8px"), []);
 
   return (
     <NextThemesProvider>
