@@ -10,8 +10,8 @@ import {
 import { useAccount } from "wagmi";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 
-const MINIGAME_BASE_URL =
-  "https://superfluid-runner.netlify.app/";
+const G_A_M_E__U_R_L__B_A_S_E_6_4 =
+  "aHR0cHM6Ly9zdXBlcmZsdWlkLXJ1bm5lci5uZXRsaWZ5LmFwcA==";
 
 type MinigameCosmetics = 0 | 1 | 2 | 3 | 4;
 type MinigameContextValue = {
@@ -37,7 +37,7 @@ export const MinigameProvider: FC<PropsWithChildren> = ({ children }) => {
       throw new Error("Player does not meet the requirements to play.");
     }
 
-    const url = new URL(MINIGAME_BASE_URL);
+    const url = new URL(atob(G_A_M_E__U_R_L__B_A_S_E_6_4));
     if (cosmetics > 1 && cosmetics <= 4) {
       url.searchParams.set("level", cosmetics.toString());
     } else {
