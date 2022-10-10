@@ -1,6 +1,6 @@
 import { Box, Container, useTheme } from "@mui/material";
 import { formatEther } from "ethers/lib/utils";
-import { isString } from "lodash";
+import { isNumber, isString } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -89,6 +89,7 @@ const Send: NextPage = () => {
               },
               receiverAddress: restoration.receiverAddress,
               tokenAddress: restoration.tokenAddress,
+              endTimestamp: restoration.endTimestamp,
             });
             break;
           default:
@@ -100,6 +101,7 @@ const Send: NextPage = () => {
           token: maybeTokenAddress,
           receiver: maybeReceiverAddress,
           "flow-rate": maybeFlowRate,
+          "end-date": maybeEndTimestamp,
           ...remainingQuery
         } = router.query;
 
@@ -116,6 +118,10 @@ const Send: NextPage = () => {
           receiverAddress:
             maybeReceiverAddress && isString(maybeReceiverAddress)
               ? maybeReceiverAddress
+              : undefined,
+          endTimestamp:
+            maybeEndTimestamp && isString(maybeEndTimestamp)
+              ? Number(maybeEndTimestamp)
               : undefined,
         });
 

@@ -33,6 +33,8 @@ import { assetApiSlice } from "../token/tokenManifestSlice";
 import { adHocMulticallEndpoints } from "./endpoints/adHocMulticallEndpoints";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
+import { streamSchedulerEndpoints } from "./endpoints/streamSchedulerEndpoints";
+import { platformApi } from "./platformApi/platformApi";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({
@@ -43,7 +45,8 @@ export const rpcApi = initializeRpcApiSlice((options) =>
 )
   .injectEndpoints(allRpcEndpoints)
   .injectEndpoints(adHocMulticallEndpoints)
-  .injectEndpoints(adHocRpcEndpoints);
+  .injectEndpoints(adHocRpcEndpoints)
+  .injectEndpoints(streamSchedulerEndpoints);
 
 export const subgraphApi = initializeSubgraphApiSlice((options) =>
   createApiWithReactHooks({
@@ -109,8 +112,9 @@ export const reduxStore = configureStore({
     networkPreferences: networkPreferencesPersistedReducer,
     [gasApi.reducerPath]: gasApi.reducer,
     pendingUpdates: pendingUpdateSlice.reducer,
+    [platformApi.reducerPath]: platformApi.reducer,
     flags: flagsPersistedReducer,
-    [faucetApi.reducerPath]: faucetApi.reducer,
+    [faucetApi.reducerPath]: faucetApi.reducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -123,6 +127,7 @@ export const reduxStore = configureStore({
       .concat(assetApiSlice.middleware)
       .concat(ensApi.middleware)
       .concat(gasApi.middleware)
+      .concat(platformApi.middleware)
       .concat(faucetApi.middleware),
 });
 

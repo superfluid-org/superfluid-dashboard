@@ -1,7 +1,9 @@
-import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
+import TimerOutlined from "@mui/icons-material/TimerOutlined";
 import {
+  Box,
   CircularProgress,
   ListItemText,
   Skeleton,
@@ -31,6 +33,7 @@ import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import CancelStreamButton from "./CancelStreamButton/CancelStreamButton";
 import ModifyStreamButton from "./ModifyStreamButton";
+import { StreamScheduling } from "./StreamScheduling";
 
 export const StreamRowLoading = () => {
   const theme = useTheme();
@@ -84,7 +87,7 @@ export const StreamRowLoading = () => {
 };
 
 interface StreamRowProps {
-  stream: Stream | PendingOutgoingStream;
+  stream: (Stream | PendingOutgoingStream) & StreamScheduling;
   network: Network;
 }
 
@@ -170,18 +173,26 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
               <Typography data-cy={"flow-rate"}>{"-"}</Typography>
             )}
           </TableCell>
-          <TableCell {...tableCellProps}>
-            <Stack
-              data-cy={"start-end-date"}
-              direction="row"
-              alignItems="center"
-              gap={1}
-            >
-              {format(
-                (isActive ? createdAtTimestamp : updatedAtTimestamp) * 1000,
-                "d MMM. yyyy"
-              )}
-              {isActive && <AllInclusiveIcon />}
+          <TableCell {...tableCellProps} sx={{ px: 1, ...tableCellProps.sx }}>
+            {/* // TODO(KK): Tooltips? */}
+            {isActive ? (
+              stream.endDate ? (
+                <TimerOutlined sx={{ display: "block" }} />
+              ) : (
+                <AllInclusiveIcon sx={{ display: "block" }} />
+              )
+            ) : null}
+          </TableCell>
+          <TableCell {...tableCellProps} sx={{ pl: 1, ...tableCellProps.sx }}>
+            <Stack data-cy={"start-end-date"}>
+              <Box>
+                {stream.startDate &&
+                  format(stream.startDate.getTime(), "d MMM. yyyy")}
+              </Box>
+              <Box>
+                {stream.endDate &&
+                  format(stream.endDate.getTime(), "d MMM. yyyy")}
+              </Box>
             </Stack>
           </TableCell>
         </>
@@ -216,11 +227,11 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
       )}
 
       {!isBelowMd && (
-        <TableCell align="center">
+        <TableCell align="right">
           <Stack
             direction="row"
             alignItems="center"
-            justifyContent="center"
+            justifyContent="end"
             gap={1}
           >
             {isPending && (

@@ -1,28 +1,35 @@
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 import {
   Box,
+  Collapse,
   IconButton,
   LinearProgress,
+  List,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Stack,
   Tooltip,
-  Typography,
   useTheme,
 } from "@mui/material";
 import {
   TrackedTransaction,
   TransactionStatus,
+  TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
 import { format } from "date-fns";
 import Link from "next/link";
-import { FC } from "react";
+import { FC, useState } from "react";
 import shortenHex from "../../utils/shortenHex";
 import NetworkBadge from "../network/NetworkBadge";
 import { findNetworkByChainId } from "../network/networks";
-import { TransactionListItemAvatar } from "./TransactionListItemAvatar";
+import {
+  TransactionListItemAvatar,
+  TransactionListSubItemAvatar,
+} from "./TransactionListItemAvatar";
 import { TransactionListItemRestoreButton } from "./TransactionListItemRestoreButton";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import OpenIcon from "../../components/OpenIcon/OpenIcon";
 
 export const getTransactionStatusColor = (status: TransactionStatus) => {
   switch (status) {
@@ -37,15 +44,18 @@ export const getTransactionStatusColor = (status: TransactionStatus) => {
   }
 };
 
-const getDisplayTransactionTitle = (transaction: TrackedTransaction) => {
-  switch (transaction.title) {
+const getDisplayTransactionTitle = (transactionTitle: TransactionTitle) => {
+  switch (transactionTitle) {
     case "Upgrade to Super Token":
       return "Wrap to Super Token";
     case "Downgrade from Super Token":
       return "Unwrap from Super Token";
     case "Create Stream":
+      return "Send Stream";
     case "Update Stream":
+      return "Update Flow Rate"
     case "Close Stream":
+      return "Cancel Stream";
     case "Create Index":
     case "Distribute Index":
     case "Update Index Subscription Units":
@@ -55,7 +65,7 @@ const getDisplayTransactionTitle = (transaction: TrackedTransaction) => {
     case "Revoke Index Subscription":
     case "Transfer Super Token":
     default:
-      return transaction.title;
+      return transactionTitle;
   }
 };
 
@@ -65,13 +75,54 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
   const theme = useTheme();
   const network = findNetworkByChainId(transaction.chainId);
 
+  const subTransactionTitles: TransactionTitle[] =
+    (transaction.extraData.subTransactionTitles as TransactionTitle[]) ?? [];
+  const [expand, setExpand] = useState(false);
+
   return (
     <ListItem data-cy={"transaction"} button sx={{ cursor: "default" }}>
       <ListItemAvatar>
         <TransactionListItemAvatar status={transaction.status} />
       </ListItemAvatar>
       <ListItemText
-        primary={getDisplayTransactionTitle(transaction)}
+        primary={
+          subTransactionTitles.length > 1 ? (
+            <>
+              <Stack
+                direction="row"
+                sx={{ cursor: "pointer" }}
+                onClick={() => setExpand(!expand)}
+              >
+                {getDisplayTransactionTitle(transaction.title)}
+                <OpenIcon clockwise open={expand} icon={ExpandMoreIcon} />
+              </Stack>
+              <Collapse in={expand}>
+                <List>
+                  {subTransactionTitles.map((subTransactionTitle) => (
+                    <ListItem disablePadding key={subTransactionTitle}>
+                      <ListItemAvatar sx={{ mr: 1 }}>
+                        <TransactionListSubItemAvatar
+                          status={transaction.status}
+                        />
+                      </ListItemAvatar>
+                      <ListItemText
+                        primaryTypographyProps={{
+                          variant: "body2",
+                          color: "text.secondary",
+                        }}
+                        sx={{ my: 0.25 }}
+                      >
+                        {getDisplayTransactionTitle(subTransactionTitle)}
+                      </ListItemText>
+                    </ListItem>
+                  ))}
+                </List>
+              </Collapse>
+            </>
+          ) : (
+            getDisplayTransactionTitle(transaction.title)
+          )
+        }
         secondary={
           <>
             {transaction.status === "Pending" && (
@@ -91,7 +142,9 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
               >
                 {`${format(transaction.timestampMs, "d MMM")} •`}
               </Box>
-              <Box data-cy="tx-hash" component="span">{shortenHex(transaction.hash)}</Box>
+              <Box data-cy="tx-hash" component="span">
+                {shortenHex(transaction.hash)}
+              </Box>
               {network && (
                 <Tooltip
                   data-cy={"tx-hash-buttons"}

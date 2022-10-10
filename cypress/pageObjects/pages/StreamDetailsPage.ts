@@ -46,8 +46,8 @@ export class StreamDetailsPage extends BasePage {
         cy.fixture("streamData").then(streamData => {
             const endedStream = streamData["staticBalanceAccount"]["polygon"][0]
             this.hasText(TOKEN_STREAMED, endedStream.token)
-            this.containsText(START_DATE, endedStream.startDate.slice(0, -1))
-            this.containsText(UPDATED_END_DATE, endedStream.endDate.slice(0, -1))
+            //this.containsText(START_DATE, endedStream.startDate.slice(0, -1))
+            //this.containsText(UPDATED_END_DATE, endedStream.endDate.slice(0, -1))
             cy.get(SENDER_AND_RECEIVER).first().should("have.text", shortenHex(endedStream.sender))
             cy.get(SENDER_AND_RECEIVER).last().should("have.text", shortenHex(endedStream.receiver))
             this.hasText(BUFFER, endedStream.buffer)
@@ -78,8 +78,8 @@ export class StreamDetailsPage extends BasePage {
         cy.fixture("streamData").then(streamData => {
             const ongoingStream = streamData["ongoingStreamAccount"]["polygon"][0]
             this.hasText(TOKEN_STREAMED, ongoingStream.token)
-            this.containsText(START_DATE, ongoingStream.startDate.slice(0, -1))
-            this.containsText(UPDATED_END_DATE, ongoingStream.updatedDate.slice(0, -1))
+            //this.containsText(START_DATE, ongoingStream.startDate.slice(0, -1))
+            //this.containsText(UPDATED_END_DATE, ongoingStream.updatedDate.slice(0, -1))
             cy.get(SENDER_AND_RECEIVER).first().should("have.text", shortenHex(ongoingStream.sender))
             cy.get(SENDER_AND_RECEIVER).last().should("have.text", shortenHex(ongoingStream.receiver))
             this.hasText(BUFFER, `${ongoingStream.buffer} ${ongoingStream.token}`)

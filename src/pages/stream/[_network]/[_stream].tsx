@@ -1,6 +1,5 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
-
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 import LinkIcon from "@mui/icons-material/Link";
 import ShareIcon from "@mui/icons-material/Share";
@@ -27,7 +26,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, useEffect, useMemo, useState } from "react";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 import AddressAvatar from "../../../components/AddressAvatar/AddressAvatar";
 import CopyTooltip from "../../../components/CopyTooltip/CopyTooltip";
 import SEO from "../../../components/SEO/SEO";
@@ -42,9 +41,9 @@ import Amount from "../../../features/token/Amount";
 import FlowingBalance from "../../../features/token/FlowingBalance";
 import TokenIcon from "../../../features/token/TokenIcon";
 import { useTokenIsListed } from "../../../features/token/useTokenIsListed";
-import ConnectionBoundary from "../../../features/transactionBoundary/ConnectionBoundary";
 import useAddressName from "../../../hooks/useAddressName";
 import useNavigateBack from "../../../hooks/useNavigateBack";
+import { useScheduledStream } from "../../../hooks/streamSchedulingHooks";
 import config from "../../../utils/config";
 import shortenHex from "../../../utils/shortenHex";
 import {
@@ -52,6 +51,8 @@ import {
   calculateMaybeCriticalAtTimestamp,
 } from "../../../utils/tokenUtils";
 import Page404 from "../../404";
+import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
+import TimerOutlined from "@mui/icons-material/TimerOutlined";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -346,7 +347,7 @@ const StreamPageContent: FC<{
     tokenAddress
   );
 
-  const streamQuery = subgraphApi.useStreamQuery({
+  const scheduledStreamQuery = useScheduledStream({
     chainId: network.id,
     id: streamId,
   });
@@ -404,11 +405,14 @@ const StreamPageContent: FC<{
   })}`;
 
   const bufferSize = useMemo(() => {
-    if (!streamQuery.data || streamQuery.data.currentFlowRate === "0")
+    if (
+      !scheduledStreamQuery.data ||
+      scheduledStreamQuery.data.currentFlowRate === "0"
+    )
       return null;
 
     const { currentFlowRate, createdAtTimestamp, streamedUntilUpdatedAt } =
-      streamQuery.data;
+      scheduledStreamQuery.data;
 
     return calculateBuffer(
       BigNumber.from(streamedUntilUpdatedAt),
@@ -416,9 +420,9 @@ const StreamPageContent: FC<{
       createdAtTimestamp,
       network.bufferTimeInMinutes
     );
-  }, [streamQuery.data, network]);
+  }, [scheduledStreamQuery.data, network]);
 
-  if (streamQuery.isLoading || tokenSnapshotQuery.isLoading) {
+  if (scheduledStreamQuery.isLoading || tokenSnapshotQuery.isLoading) {
     return (
       <SEO ogUrl={urlToShare}>
         <Container maxWidth="lg" />
@@ -426,7 +430,7 @@ const StreamPageContent: FC<{
     );
   }
 
-  if (!streamQuery.data || !tokenSnapshotQuery.data) {
+  if (!scheduledStreamQuery.data || !tokenSnapshotQuery.data) {
     return <Page404 />;
   }
 
@@ -438,7 +442,11 @@ const StreamPageContent: FC<{
     sender,
     createdAtTimestamp,
     updatedAtTimestamp,
-  } = streamQuery.data;
+    startDate,
+    startDateScheduled,
+    endDate,
+    endDateScheduled,
+  } = scheduledStreamQuery.data;
 
   const isActive = currentFlowRate !== "0";
   const encodedUrlToShare = encodeURIComponent(urlToShare);
@@ -487,14 +495,14 @@ const StreamPageContent: FC<{
                 <>
                   {isOutgoing && (
                     <ModifyStreamButton
-                      stream={streamQuery.data}
+                      stream={scheduledStreamQuery.data}
                       network={network}
                     />
                   )}
                   {isActive && (
                     <CancelStreamButton
                       data-cy={"cancel-button"}
-                      stream={streamQuery.data}
+                      stream={scheduledStreamQuery.data}
                       network={network}
                     />
                   )}
@@ -657,8 +665,9 @@ const StreamPageContent: FC<{
             <OverviewItem
               dataCy={"start-date"}
               label="Start Date:"
-              value={format(createdAtTimestamp * 1000, "d MMM. yyyy H:mm")}
+              value={format(startDate.getTime(), "d MMM. yyyy H:mm")}
             />
+
             <OverviewItem
               dataCy={"buffer"}
               label="Buffer:"
@@ -672,15 +681,36 @@ const StreamPageContent: FC<{
                 )
               }
             />
-            <OverviewItem
-              dataCy={"updated-end-date"}
-              label={`${isActive ? "Updated" : "End"} Date:`}
-              value={
-                updatedAtTimestamp
-                  ? format(updatedAtTimestamp * 1000, "d MMM. yyyy H:mm")
-                  : "-"
-              }
-            />
+
+            {!endDate && updatedAtTimestamp > createdAtTimestamp && (
+              <OverviewItem
+                label={`Updated Date:`}
+                value={format(updatedAtTimestamp * 1000, "d MMM. yyyy H:mm")}
+              />
+            )}
+
+            {endDateScheduled ? (
+              <OverviewItem
+                label={`End Date:`}
+                value={
+                  <Stack direction="row" alignItems="center" gap={0.5}>
+                    <TimerOutlined fontSize="small" />
+                    {format(endDateScheduled.getTime(), "d MMM. yyyy H:mm")}
+                  </Stack>
+                }
+              />
+            ) : endDate ? (
+              <OverviewItem
+                label={`End Date:`}
+                value={format(endDate.getTime(), "d MMM. yyyy H:mm")}
+              />
+            ) : (
+              <OverviewItem
+                label={`End Date:`}
+                value={<AllInclusiveIcon sx={{ display: "block" }} />}
+              />
+            )}
+
             <OverviewItem
               dataCy={"network-name"}
               label="Network Name:"

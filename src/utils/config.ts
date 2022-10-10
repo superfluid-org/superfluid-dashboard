@@ -12,6 +12,9 @@ const config = {
       process.env.NEXT_PUBLIC_FAUCET_API ||
       "https://967h1q725d.execute-api.eu-west-2.amazonaws.com",
   },
+  platformApi: {
+    goerli: process.env.NEXT_PUBLIC_PLATFORM_GOERLI || "https://dev-goerli-platform-v2.dev.superfluid.dev"
+  }
 };
 
 export default Object.freeze(config);

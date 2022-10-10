@@ -10,7 +10,7 @@ export enum RestorationType {
 
 export const formRestorationOptions = {
   shouldValidate: false,
-  shouldDirty: true,
+  shouldDirty: false,
   shouldTouch: true,
 };
 
@@ -51,6 +51,7 @@ interface UpsertStreamRestoration extends TransactionRestorationBase {
   tokenAddress: string;
   receiverAddress: string;
   flowRate: FlowRateWei;
+  endTimestamp?: number;
 }
 
 export interface SendStreamRestoration extends UpsertStreamRestoration {
