@@ -11,7 +11,7 @@ import { useAccount } from "wagmi";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 
 const G_A_M_E__U_R_L__B_A_S_E_6_4 =
-  "aHR0cHM6Ly9zdXBlcmZsdWlkLXJ1bm5lci5uZXRsaWZ5LmFwcA==";
+  "aHR0cHM6Ly9hc3Ryb2J1bm55LnN1cGVyZmx1aWQuZmluYW5jZS8=";
 
 type MinigameCosmetics = 0 | 1 | 2 | 3 | 4;
 type MinigameContextValue = {
