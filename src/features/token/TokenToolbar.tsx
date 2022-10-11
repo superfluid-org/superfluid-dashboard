@@ -13,8 +13,14 @@ import {
 import { Token } from "@superfluid-finance/sdk-core";
 import Link from "next/link";
 import { FC } from "react";
+import { useAccount } from "wagmi";
+import { getAddress } from "../../utils/memoizedEthersUtils";
+import { Flag } from "../flags/flags.slice";
+import { useHasFlag } from "../flags/flagsHooks";
 import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
+import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
+import AddToWalletButton from "../wallet/AddToWalletButton";
 import TokenIcon from "./TokenIcon";
 
 interface TokenToolbarData {
@@ -48,7 +54,19 @@ interface TokenToolbarProps {
 const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-  const { symbol, name, isListed } = token;
+  const { id: tokenAddress, symbol, decimals, name, isListed } = token;
+  const { address: accountAddress } = useAccount();
+
+  const hasAddedToWallet = useHasFlag(
+    accountAddress
+      ? {
+          type: Flag.TokenAdded,
+          chainId: network.id,
+          token: getAddress(tokenAddress),
+          account: getAddress(accountAddress),
+        }
+      : undefined
+  );
 
   return (
     <Stack gap={3}>
@@ -80,6 +98,20 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
           alignItems="center"
           justifyContent="flex-end"
         >
+          {!hasAddedToWallet && (
+            <ConnectionBoundary expectedNetwork={network}>
+              {({ isConnected }) =>
+                isConnected && (
+                  <AddToWalletButton
+                    token={tokenAddress}
+                    symbol={symbol}
+                    decimals={decimals}
+                  />
+                )
+              }
+            </ConnectionBoundary>
+          )}
+
           <Link
             href={`/wrap?upgrade&token=${token.id}&network=${network.slugName}`}
             passHref

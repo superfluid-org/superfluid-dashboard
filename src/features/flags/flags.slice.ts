@@ -25,8 +25,7 @@ export interface AccountChainFlag extends BaseFlag<Flag.TestTokensReceived> {
   chainId: number;
 }
 
-export interface AccountChainTokenFlag
-  extends BaseFlag<Flag.TestTokensReceived> {
+export interface AccountChainTokenFlag extends BaseFlag<Flag.TokenAdded> {
   chainId: number;
   account: Address;
   token: Address;
@@ -50,11 +49,47 @@ export const flagsSlice = createSlice({
   reducers: {
     addFlag: (
       state: EntityState<FlagType>,
-      { payload }: { payload: FlagType }
+      { payload }: { payload: Omit<FlagType, "id"> }
+    ) => {
+      switch (payload.type) {
+        case Flag.TokenAdded: {
+          return adapter.addOne(state, {
+            ...payload,
+            account: getAddress(payload.account),
+            token: getAddress((payload as AccountChainTokenFlag).token),
+            id: nanoid(),
+          } as AccountChainTokenFlag);
+        }
+
+        case Flag.TestTokensReceived: {
+          return adapter.addOne(state, {
+            ...payload,
+            account: getAddress(payload.account),
+            id: nanoid(),
+          } as AccountChainFlag);
+        }
+
+        default:
+          return;
+      }
+    },
+    addAccountChainFlag: (
+      state: EntityState<FlagType>,
+      { payload }: { payload: Omit<AccountChainFlag, "id"> }
     ) =>
       adapter.addOne(state, {
         ...payload,
         account: getAddress(payload.account),
+        id: nanoid(),
+      }),
+    addAccountChainTokenFlag: (
+      state: EntityState<FlagType>,
+      { payload }: { payload: Omit<AccountChainTokenFlag, "id"> }
+    ) =>
+      adapter.addOne(state, {
+        ...payload,
+        account: getAddress(payload.account),
+        token: getAddress(payload.token),
         id: nanoid(),
       }),
   },
@@ -83,7 +118,8 @@ export const flagsSlice = createSlice({
   },
 });
 
-export const { addFlag } = flagsSlice.actions;
+export const { addAccountChainFlag, addAccountChainTokenFlag } =
+  flagsSlice.actions;
 
 const selectSelf = (state: RootState): EntityState<FlagType> => state.flags;
 

@@ -2,6 +2,7 @@ import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import { Avatar, Skeleton, styled, Tooltip, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
+import config from "../../utils/config";
 import { assetApiSlice } from "./tokenManifestSlice";
 
 const BorderSvg = styled("svg")(() => ({
@@ -160,7 +161,7 @@ const TokenIcon: FC<TokenIconProps> = ({
             imgProps={{ sx: { objectFit: "contain", borderRadius: "50%" } }}
             src={
               tokenManifest?.svgIconPath
-                ? `https://raw.githubusercontent.com/superfluid-finance/assets/master/public/${tokenManifest.svgIconPath}`
+                ? `${config.tokenIconUrl}${tokenManifest.svgIconPath}`
                 : "/icons/token-default.webp"
             }
           />
