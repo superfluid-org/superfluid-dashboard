@@ -51,6 +51,10 @@ const moduleExports = {
     NEXT_PUBLIC_SENTRY_ENVIRONMENT: SENTRY_ENVIRONMENT,
   },
   swcMinify: true, // Recommended by next-transpile-modules
+  productionBrowserSourceMaps: false, // Sentry will override this to `true`...
+  sentry: {
+    hideSourceMaps: true // If this not specified then Sentry will expose the production source maps. 
+  }
 };
 
 module.exports = withTM(withSentryIfNecessary(moduleExports));
