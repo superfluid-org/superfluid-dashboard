@@ -1,12 +1,13 @@
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
-import { LoadingButton } from "@mui/lab";
+import { IconButton, Tooltip } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { useAccount, useSwitchNetwork } from "wagmi";
-import { addAccountChainTokenFlag, Flag } from "../flags/flags.slice";
+import config from "../../utils/config";
+import { addTokenAddedFlag } from "../flags/flags.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { useWatchAsset } from "../token/useWatchAsset";
+import { assetApiSlice } from "../token/tokenManifestSlice";
 import { useConnectionBoundary } from "../transactionBoundary/ConnectionBoundary";
 
 interface AddToWalletButtonProps {
@@ -21,29 +22,54 @@ const AddToWalletButton: FC<AddToWalletButtonProps> = ({
   decimals,
 }) => {
   const { network } = useExpectedNetwork();
-  const watchAsset = useWatchAsset(token, symbol, decimals);
   const { expectedNetwork, isCorrectNetwork } = useConnectionBoundary();
-  const { address: accountAddress } = useAccount();
+  const { address: accountAddress, connector } = useAccount();
   const dispatch = useDispatch();
+  const [tokenManifestTrigger] = assetApiSlice.useLazyTokenManifestQuery();
 
-  const addToWallet = useCallback(() => {
-    watchAsset()
-      .then(() => {
-        if (accountAddress) {
+  const addToWallet = useCallback(async () => {
+    if (connector && connector.watchAsset && accountAddress) {
+      const tokenImage = await tokenManifestTrigger({
+        tokenSymbol: symbol,
+      })
+        .then((response) =>
+          response.data?.svgIconPath
+            ? `${config.tokenIconUrl}${response.data?.svgIconPath}`
+            : undefined
+        )
+        .catch(() => undefined);
+
+      connector
+        .watchAsset({
+          address: token,
+          symbol,
+          decimals,
+          image: tokenImage,
+        })
+        .then(() =>
           dispatch(
-            addAccountChainTokenFlag({
-              type: Flag.TokenAdded,
+            addTokenAddedFlag({
               account: accountAddress,
               chainId: network.id,
               token,
+              walletId: connector.id,
             })
-          );
-        }
-      })
-      .catch(() => {
-        console.warn("Failed to add token to wallet.");
-      });
-  }, [accountAddress, token, network, watchAsset, dispatch]);
+          )
+        )
+        .catch(() => {
+          console.warn("Failed to add token to wallet.");
+        });
+    }
+  }, [
+    accountAddress,
+    token,
+    symbol,
+    decimals,
+    network,
+    connector,
+    dispatch,
+    tokenManifestTrigger,
+  ]);
 
   const { switchNetwork } = useSwitchNetwork({
     onSuccess: addToWallet,
@@ -58,14 +84,11 @@ const AddToWalletButton: FC<AddToWalletButtonProps> = ({
   };
 
   return (
-    <LoadingButton
-      color="primary"
-      variant="textContained"
-      startIcon={<AccountBalanceWalletOutlinedIcon />}
-      onClick={addToWalletWithNetworkCheck}
-    >
-      Add To Wallet
-    </LoadingButton>
+    <Tooltip title="Add to Wallet">
+      <IconButton color="primary" onClick={addToWalletWithNetworkCheck}>
+        <AccountBalanceWalletOutlinedIcon />
+      </IconButton>
+    </Tooltip>
   );
 };
 

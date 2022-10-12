@@ -4,6 +4,7 @@ import {
   EntityState,
   isAnyOf,
   nanoid,
+  PayloadAction,
 } from "@reduxjs/toolkit";
 import { Address } from "@superfluid-finance/sdk-core";
 import { getAddress } from "../../utils/memoizedEthersUtils";
@@ -20,18 +21,20 @@ interface BaseFlag<T> {
   type: T;
 }
 
-export interface AccountChainFlag extends BaseFlag<Flag.TestTokensReceived> {
+export interface TestTokensReceivedFlag
+  extends BaseFlag<Flag.TestTokensReceived> {
   account: Address;
   chainId: number;
 }
 
-export interface AccountChainTokenFlag extends BaseFlag<Flag.TokenAdded> {
+export interface TokenAddedFlag extends BaseFlag<Flag.TokenAdded> {
   chainId: number;
   account: Address;
   token: Address;
+  walletId: string;
 }
 
-type FlagType = AccountChainFlag | AccountChainTokenFlag;
+type FlagType = TestTokensReceivedFlag | TokenAddedFlag;
 
 /**
  * Account flags are used to store simple boolean type account data.
@@ -47,51 +50,35 @@ export const flagsSlice = createSlice({
   name: "flags",
   initialState: adapter.getInitialState(),
   reducers: {
-    addFlag: (
-      state: EntityState<FlagType>,
-      { payload }: { payload: Omit<FlagType, "id"> }
-    ) => {
-      switch (payload.type) {
-        case Flag.TokenAdded: {
-          return adapter.addOne(state, {
-            ...payload,
-            account: getAddress(payload.account),
-            token: getAddress((payload as AccountChainTokenFlag).token),
-            id: nanoid(),
-          } as AccountChainTokenFlag);
-        }
-
-        case Flag.TestTokensReceived: {
-          return adapter.addOne(state, {
-            ...payload,
-            account: getAddress(payload.account),
-            id: nanoid(),
-          } as AccountChainFlag);
-        }
-
-        default:
-          return;
-      }
+    addTestTokensReceivedFlag: {
+      reducer: (
+        state: EntityState<FlagType>,
+        action: PayloadAction<TestTokensReceivedFlag>
+      ) => adapter.addOne(state, action.payload),
+      prepare: (payload: Omit<TestTokensReceivedFlag, "id" | "type">) => ({
+        payload: {
+          ...payload,
+          id: nanoid(),
+          type: Flag.TestTokensReceived,
+          account: getAddress(payload.account),
+        } as TestTokensReceivedFlag,
+      }),
     },
-    addAccountChainFlag: (
-      state: EntityState<FlagType>,
-      { payload }: { payload: Omit<AccountChainFlag, "id"> }
-    ) =>
-      adapter.addOne(state, {
-        ...payload,
-        account: getAddress(payload.account),
-        id: nanoid(),
+    addTokenAddedFlag: {
+      reducer: (
+        state: EntityState<FlagType>,
+        action: PayloadAction<TokenAddedFlag>
+      ) => adapter.addOne(state, action.payload),
+      prepare: (payload: Omit<TokenAddedFlag, "id" | "type">) => ({
+        payload: {
+          ...payload,
+          id: nanoid(),
+          type: Flag.TokenAdded,
+          account: getAddress(payload.account),
+          token: getAddress(payload.token),
+        } as TokenAddedFlag,
       }),
-    addAccountChainTokenFlag: (
-      state: EntityState<FlagType>,
-      { payload }: { payload: Omit<AccountChainTokenFlag, "id"> }
-    ) =>
-      adapter.addOne(state, {
-        ...payload,
-        account: getAddress(payload.account),
-        token: getAddress(payload.token),
-        id: nanoid(),
-      }),
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -118,7 +105,7 @@ export const flagsSlice = createSlice({
   },
 });
 
-export const { addAccountChainFlag, addAccountChainTokenFlag } =
+export const { addTestTokensReceivedFlag, addTokenAddedFlag } =
   flagsSlice.actions;
 
 const selectSelf = (state: RootState): EntityState<FlagType> => state.flags;
