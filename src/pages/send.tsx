@@ -125,9 +125,15 @@ const Send: NextPage = () => {
               : undefined,
         });
 
-        router.replace({
-          query: remainingQuery,
-        });
+        router.replace(
+          {
+            query: remainingQuery,
+          },
+          undefined,
+          {
+            shallow: true,
+          }
+        );
       }
     }
   }, [router.isReady]);

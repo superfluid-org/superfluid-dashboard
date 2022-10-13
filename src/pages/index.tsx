@@ -135,9 +135,15 @@ const Home: NextPage = () => {
     if (!faucetDialogOpen && Boolean(showFaucet)) {
       setFaucetDialogOpen(true);
 
-      router.replace({
-        query: remainingQuery,
-      });
+      router.replace(
+        {
+          query: remainingQuery,
+        },
+        undefined,
+        {
+          shallow: true,
+        }
+      );
     }
   }, [faucetDialogOpen, router]);
 

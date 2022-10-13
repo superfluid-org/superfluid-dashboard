@@ -45,7 +45,7 @@ export const ExpectedNetworkProvider: FC<{
         setNetwork(networksByChainId.get(chainId)!), setAutoSwitchStop(false);
       },
       stopAutoSwitchToWalletNetwork: () => setAutoSwitchStop(true),
-      isAutoSwitchStopped: autoSwitchStop
+      isAutoSwitchStopped: autoSwitchStop,
     }),
     [network, autoSwitchStop, setAutoSwitchStop]
   );
@@ -54,12 +54,13 @@ export const ExpectedNetworkProvider: FC<{
 
   // When user navigates to a new page then enable automatic switching to user wallet's network again.
   useEffect(() => {
-    const onBeforeHistoryChange = () => {
-      setAutoSwitchStop(false);
+    const onRouteChange = (_fullPath: string, { shallow }: { shallow: boolean }) => {
+      if (!shallow) {
+        setAutoSwitchStop(false);
+      }
     };
-    router.events.on("beforeHistoryChange", onBeforeHistoryChange);
-    return () =>
-      router.events.off("beforeHistoryChange", onBeforeHistoryChange);
+    router.events.on("routeChangeStart", onRouteChange);
+    return () => router.events.off("routeChangeStart", onRouteChange);
   }, []);
 
   const { chain: activeChain } = useNetwork();
