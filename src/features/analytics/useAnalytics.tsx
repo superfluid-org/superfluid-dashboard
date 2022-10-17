@@ -36,6 +36,5 @@ export const useAnalytics = () => {
   if (!result) {
     throw new Error("Context used outside of its Provider!");
   }
-
   return result;
 };

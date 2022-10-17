@@ -1,10 +1,12 @@
 import * as Sentry from "@sentry/browser";
 import { customAlphabet, nanoid } from "nanoid";
+import { useRouter } from "next/router";
 import promiseRetry from "promise-retry";
 import { FC, useEffect, useMemo } from "react";
 import { hotjar } from "react-hotjar";
 import { useIntercom } from "react-use-intercom";
 import { useAccount, useNetwork } from "wagmi";
+import { useAnalytics } from "../../features/analytics/useAnalytics";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import config from "../../utils/config";
 import { IsCypress, SSR } from "../../utils/SSRUtils";
@@ -86,6 +88,18 @@ const MonitorContext: FC = () => {
       );
     }
   }, [getVisitorId]);
+
+  const { page } = useAnalytics();
+  const router = useRouter();
+  useEffect(() => {
+    const onRouteChangeComplete = (
+      _fullUrl: string,
+      { shallow }: { shallow: boolean }
+    ) => (shallow ? void 0 : page());
+    router.events.on("routeChangeComplete", onRouteChangeComplete);
+    return () =>
+      router.events.off("routeChangeComplete", onRouteChangeComplete);
+  }, []);
 
   return null;
 };
