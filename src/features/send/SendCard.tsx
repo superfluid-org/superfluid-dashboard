@@ -72,6 +72,7 @@ import {
   SendStreamRestoration,
 } from "../transactionRestoration/transactionRestorations";
 import { add } from "date-fns";
+import { useAnalytics } from "../analytics/useAnalytics";
 
 const MIN_VISIBLE_END_DATE = add(new Date(), {
   minutes: 5,
@@ -125,6 +126,7 @@ export default memo(function SendCard() {
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
   const getTransactionOverrides = useGetTransactionOverrides();
+  const { track } = useAnalytics();
 
   const {
     watch,
@@ -561,7 +563,7 @@ export default memo(function SendCard() {
               },
             })
               .unwrap()
-              .then(() => resetForm());
+              .then(() => void resetForm());
 
             setDialogLoadingInfo(
               <Typography variant="h5" color="text.secondary" translate="yes">

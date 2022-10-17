@@ -16,7 +16,8 @@ const config = {
   },
   platformApi: {
     goerli: process.env.NEXT_PUBLIC_PLATFORM_GOERLI || "https://dev-goerli-platform-v2.dev.superfluid.dev"
-  }
+  },
+  segmentWriteKey: process.env.NEXT_PUBLIC_SEGMENT_WRITE_KEY || "axUnL2Cp3F4qstRzkmmstaeNBdMfoo56"
 };
 
 export default Object.freeze(config);
