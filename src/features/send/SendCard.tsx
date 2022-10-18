@@ -73,6 +73,7 @@ import {
 } from "../transactionRestoration/transactionRestorations";
 import { add } from "date-fns";
 import { useAnalytics } from "../analytics/useAnalytics";
+import { TransactionInfo } from "@superfluid-finance/sdk-redux";
 
 const MIN_VISIBLE_END_DATE = add(new Date(), {
   minutes: 5,
@@ -126,7 +127,7 @@ export default memo(function SendCard() {
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
   const getTransactionOverrides = useGetTransactionOverrides();
-  const { track } = useAnalytics();
+  const { txAnalytics } = useAnalytics();
 
   const {
     watch,
@@ -563,6 +564,7 @@ export default memo(function SendCard() {
               },
             })
               .unwrap()
+              .then(...txAnalytics)
               .then(() => void resetForm());
 
             setDialogLoadingInfo(
@@ -663,6 +665,7 @@ export default memo(function SendCard() {
                 overrides: await getTransactionOverrides(network),
               })
                 .unwrap()
+                .then(...txAnalytics)
                 .then(() => resetForm());
             }}
           >

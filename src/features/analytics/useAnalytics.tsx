@@ -1,6 +1,6 @@
 import { AnalyticsBrowser } from "@segment/analytics-next";
+import { TransactionInfo } from "@superfluid-finance/sdk-redux";
 import { createContext, useContext, useMemo } from "react";
-import { UpsertFlowWithScheduling } from "../redux/endpoints/streamSchedulerEndpoints";
 
 // Inspired by: https://github.com/segmentio/analytics-next#using-react-advanced-w-react-context
 
@@ -17,7 +17,12 @@ export const AnalyticsProvider = ({
 }: AnalyticsProviderProps) => {
   const analytics = useMemo(() => {
     if (writeKey) {
-      return AnalyticsBrowser.load({ writeKey });
+      return AnalyticsBrowser.load(
+        { writeKey },
+        {
+          initialPageview: true,
+        }
+      );
     } else {
       console.warn("Segment not initialized. No-op instance provided instead.");
       return AnalyticsBrowser.load({ writeKey: "NOOP" });
@@ -36,5 +41,18 @@ export const useAnalytics = () => {
   if (!result) {
     throw new Error("Context used outside of its Provider!");
   }
-  return result;
+  const txAnalytics = useMemo(
+    () => [
+      (value: TransactionInfo) =>
+        void result.track("Transaction Sent", {
+          transaction: {
+            hash: value.hash,
+            chainId: value.chainId,
+          },
+        }),
+      (_error: any) => void result.track("Transaction Failed"),
+    ],
+    [result]
+  );
+  return { ...result, txAnalytics };
 };

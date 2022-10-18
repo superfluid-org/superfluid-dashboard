@@ -8,6 +8,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { useAccount } from "wagmi";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { parseAmountOrZero } from "../../utils/tokenUtils";
+import { useAnalytics } from "../analytics/useAnalytics";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useLayoutContext } from "../layout/LayoutContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -63,7 +64,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
   const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useLayoutContext();
   const getTransactionOverrides = useGetTransactionOverrides();
-  const { connector: activeConnector } = useAccount();
+  const { txAnalytics } = useAnalytics();
 
   const {
     watch,
@@ -423,6 +424,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                       overrides: await getTransactionOverrides(network),
                     })
                       .unwrap()
+                      .then(...txAnalytics)
                       .then(() => setTransactionDrawerOpen(true));
                   }}
                 >
@@ -501,6 +503,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                     overrides,
                   })
                     .unwrap()
+                    .then(...txAnalytics)
                     .then(() => resetForm());
 
                   setDialogSuccessActions(

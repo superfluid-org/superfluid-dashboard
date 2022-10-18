@@ -5,6 +5,7 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import withStaticSEO from "../components/SEO/withStaticSEO";
+import { useAnalytics } from "../features/analytics/useAnalytics";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import {
   timeUnitWordMap,

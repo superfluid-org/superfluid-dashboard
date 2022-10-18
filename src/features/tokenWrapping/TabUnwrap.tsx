@@ -6,6 +6,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { useAccount } from "wagmi";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { calculateCurrentBalance } from "../../utils/tokenUtils";
+import { useAnalytics } from "../analytics/useAnalytics";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
@@ -36,7 +37,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
   const getTransactionOverrides = useGetTransactionOverrides();
-  const { connector: activeConnector } = useAccount();
+  const { txAnalytics } = useAnalytics();
 
   const {
     watch,
@@ -312,6 +313,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                   overrides,
                 })
                   .unwrap()
+                  .then(...txAnalytics)
                   .then(() => resetForm());
               }}
             >

@@ -10,6 +10,7 @@ import { Stream } from "@superfluid-finance/sdk-core";
 import { Signer } from "ethers";
 import { FC } from "react";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
+import { useAnalytics } from "../../analytics/useAnalytics";
 import { Network } from "../../network/networks";
 import { usePendingStreamCancellation } from "../../pendingUpdates/PendingStreamCancellation";
 import { rpcApi } from "../../redux/store";
@@ -39,6 +40,7 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
     senderAddress: sender,
     receiverAddress: receiver,
   });
+  const { txAnalytics } = useAnalytics();
 
   const deleteStream = async (signer: Signer) => {
     flowDeleteTrigger({
@@ -50,7 +52,9 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
       userDataBytes: undefined,
       waitForConfirmation: false,
       overrides: await getTransactionOverrides(network),
-    }).unwrap();
+    })
+      .unwrap()
+      .then(...txAnalytics);
   };
 
   return (
