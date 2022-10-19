@@ -116,7 +116,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
         tokenSnapshots,
         (x) => x.totalNumberOfActiveStreams
       );
-      if (activeStreamCount === 2) {
+      if (activeStreamCount === 1) {
         setCosmetics(1);
       } else if (activeStreamCount >= 3 && activeStreamCount <= 4) {
         setCosmetics(2);
