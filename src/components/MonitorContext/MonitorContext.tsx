@@ -2,11 +2,12 @@ import * as Sentry from "@sentry/browser";
 import { customAlphabet } from "nanoid";
 import { useRouter } from "next/router";
 import promiseRetry from "promise-retry";
-import { FC, useEffect } from "react";
+import { FC, useCallback, useEffect } from "react";
 import { hotjar } from "react-hotjar";
 import { useIntercom } from "react-use-intercom";
 import { useAccount, useNetwork } from "wagmi";
 import { useAnalytics } from "../../features/analytics/useAnalytics";
+import { useAutoConnect } from "../../features/autoConnect/AutoConnect";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import config from "../../utils/config";
 import { IsCypress, SSR } from "../../utils/SSRUtils";
@@ -40,7 +41,24 @@ const MonitorContext: FC = () => {
     });
   }, [network]);
 
-  const { connector: activeConnector, isConnected } = useAccount();
+  const { page, track } = useAnalytics();
+  const { connector: activeConnector, isConnected } = useAccount({
+    onConnect: ({ address, connector }) => {
+      if (address && connector) {
+        track("Wallet Connected", {
+          connector: connector.name,
+        });
+        connector.on("change", ({ account, chain }) => {
+          if (account) {
+            track("Wallet Account Changed");
+          } else if (chain) {
+            track("Wallet Network Changed");
+          }
+        });
+      }
+    },
+    onDisconnect: () => void track("Wallet Disconnected"),
+  });
   const { chain: activeChain } = useNetwork();
 
   useEffect(() => {
@@ -89,13 +107,14 @@ const MonitorContext: FC = () => {
     }
   }, [getVisitorId]);
 
-  const { page } = useAnalytics();
+  const onRouteChangeComplete = useCallback(
+    (_fullUrl: string, { shallow }: { shallow: boolean }) =>
+      shallow ? void 0 : page(),
+    []
+  );
+
   const router = useRouter();
   useEffect(() => {
-    const onRouteChangeComplete = (
-      _fullUrl: string,
-      { shallow }: { shallow: boolean }
-    ) => (shallow ? void 0 : page());
     router.events.on("routeChangeComplete", onRouteChangeComplete);
     return () =>
       router.events.off("routeChangeComplete", onRouteChangeComplete);
