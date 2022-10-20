@@ -32,6 +32,9 @@ import StreamsTable from "../streamsTable/StreamsTable";
 import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
 import TokenIcon from "../token/TokenIcon";
+import FiatAmount from "../tokenPrice/FiatAmount";
+import FlowingFiatBalance from "../tokenPrice/FlowingFiatBalance";
+import useTokenPrice from "../tokenPrice/useTokenPrice";
 import BalanceCriticalIndicator from "./BalanceCriticalIndicator";
 
 interface SnapshotRowProps {
@@ -100,6 +103,8 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
     totalNumberOfClosedStreams,
   } = snapshot;
 
+  const tokenPrice = useTokenPrice(token, network.id);
+
   const realtimeBalance = rpcApi.useRealtimeBalanceQuery({
     chainId: network.id,
     accountAddress: account,
@@ -167,14 +172,9 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               data-cy={"token-symbol"}
               onClick={openTokenPage}
               primary={tokenSymbol}
-              /**
-               * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-               * This is just used to make table row look better
-               */
-              // secondary="$1.00"
+              secondary={<FiatAmount price={tokenPrice.data?.price} />}
               primaryTypographyProps={{
                 variant: "h6",
-                sx: { lineHeight: "46px" },
               }}
               secondaryTypographyProps={{
                 variant: "body2mono",
@@ -208,7 +208,16 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                       disableRoundingIndicator
                     />
                   }
-                  // secondary="$1.00"
+                  secondary={
+                    tokenPrice.data?.price && (
+                      <FlowingFiatBalance
+                        balance={balance}
+                        flowRate={netFlowRate}
+                        balanceTimestamp={balanceTimestamp}
+                        price={tokenPrice.data.price}
+                      />
+                    )
+                  }
                   primaryTypographyProps={{ variant: "h6mono" }}
                   secondaryTypographyProps={{
                     variant: "body2mono",

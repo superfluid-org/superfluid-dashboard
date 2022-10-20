@@ -30,6 +30,7 @@ import { impersonationSlice } from "../impersonation/impersonation.slice";
 import { networkPreferencesSlice } from "../network/networkPreferences.slice";
 import { pendingUpdateSlice } from "../pendingUpdates/pendingUpdate.slice";
 import { assetApiSlice } from "../token/tokenManifestSlice";
+import tokenPriceApi from "../tokenPrice/tokenPriceApi.slice";
 import { adHocMulticallEndpoints } from "./endpoints/adHocMulticallEndpoints";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
@@ -114,7 +115,8 @@ export const reduxStore = configureStore({
     pendingUpdates: pendingUpdateSlice.reducer,
     [platformApi.reducerPath]: platformApi.reducer,
     flags: flagsPersistedReducer,
-    [faucetApi.reducerPath]: faucetApi.reducer
+    [faucetApi.reducerPath]: faucetApi.reducer,
+    [tokenPriceApi.reducerPath]: tokenPriceApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -128,7 +130,8 @@ export const reduxStore = configureStore({
       .concat(ensApi.middleware)
       .concat(gasApi.middleware)
       .concat(platformApi.middleware)
-      .concat(faucetApi.middleware),
+      .concat(faucetApi.middleware)
+      .concat(tokenPriceApi.middleware),
 });
 
 export const reduxPersistor = persistStore(reduxStore);
