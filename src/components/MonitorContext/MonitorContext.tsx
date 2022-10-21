@@ -26,38 +26,6 @@ const SENTRY_SUPPORT_ID_TAG = "support-id";
 
 Sentry.setTag(SENTRY_SUPPORT_ID_TAG, supportId);
 
-// const [analyticsDetails, setAnalyticsDetails] = useState<AnalyticsDetails>(mapAnalyticsDetails());
-
-// useEffect(() => {
-//   const nextDetails: AnalyticsDetails = mapAnalyticsDetails();
-
-//   if (
-//     nextDetails.dashboard.wallet.isConnected !==
-//     dashboardState.dashboard.wallet.isConnected
-//   ) {
-//     if (nextDetails.dashboard.wallet.isConnected) {
-//       track("Wallet Connected");
-//     } else {
-//       track("Wallet Disconnected");
-//     }
-//   } else {
-//     if (
-//       nextDetails.dashboard.wallet.networkId !=
-//       dashboardState.dashboard.wallet.networkId
-//     ) {
-//       track("Wallet Network Changed");
-//     }
-//     if (
-//       nextDetails.dashboard.wallet.account !=
-//       dashboardState.dashboard.wallet.account
-//     ) {
-//       track("Wallet Account Changed");
-//     }
-//   }
-
-//   setAnalyticsDetails(nextDetails);
-// }, deps);
-
 const MonitorContext: FC = () => {
   const { network } = useExpectedNetwork();
 
@@ -73,7 +41,7 @@ const MonitorContext: FC = () => {
     });
   }, [network]);
 
-  const { page, track, instanceDetails } = useAnalytics();
+  const { reset, identify, page, track, instanceDetails } = useAnalytics();
   const [previousInstanceDetails, setPreviousInstanceDetails] =
     useState(instanceDetails);
 
@@ -91,24 +59,42 @@ const MonitorContext: FC = () => {
 
     if (wallet.isConnected !== prevWallet.isConnected) {
       if (wallet.isConnected) {
-        track("Wallet Connected", {}, {
-          context: instanceDetails,
-        });
+        track(
+          "Wallet Connected",
+          {},
+          {
+            context: instanceDetails,
+          }
+        ).then(() => identify(wallet.account));
       } else {
-        track("Wallet Disconnected", {}, {
-          context: instanceDetails,
-        });
+        track(
+          "Wallet Disconnected",
+          {},
+          {
+            context: instanceDetails,
+          }
+        ).then(() => reset());
       }
     } else {
       if (wallet.networkId != prevWallet.networkId) {
-        track("Wallet Network Changed", {}, {
-          context: instanceDetails,
-        });
+        track(
+          "Wallet Network Changed",
+          {},
+          {
+            context: instanceDetails,
+          }
+        );
       }
       if (wallet.account != prevWallet.account) {
-        track("Wallet Account Changed", {}, {
-          context: instanceDetails,
-        });
+        track(
+          "Wallet Account Changed",
+          {},
+          {
+            context: instanceDetails,
+          }
+        )
+          .then(() => reset()) // Reset before not to associate next identification with previous wallet address.
+          .then(() => identify(wallet.account));
       }
     }
 

@@ -1,6 +1,13 @@
 import { AnalyticsBrowser } from "@segment/analytics-next";
 import { TransactionInfo } from "@superfluid-finance/sdk-redux";
-import { createContext, useCallback, useContext, useMemo } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 import config from "../../utils/config";
 import { useAccount, useNetwork } from "wagmi";
 import { useLayoutContext } from "../layout/LayoutContext";
@@ -117,6 +124,12 @@ const useAnalyticsBrowser = () =>
 export const AnalyticsProvider = ({ children }: AnalyticsProviderProps) => {
   const analyticsBrowser = useAnalyticsBrowser();
   const instanceDetails = useAppInstanceDetails();
+
+  const initialResetRef = useRef(false);
+  if (!initialResetRef.current) {
+    initialResetRef.current = true;
+    analyticsBrowser.reset();
+  }
 
   const contextValue = useMemo(
     () => ({
