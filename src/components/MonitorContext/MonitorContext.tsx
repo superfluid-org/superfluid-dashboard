@@ -1,13 +1,16 @@
+import { useTheme } from "@mui/material";
+import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import * as Sentry from "@sentry/browser";
+import { SeverityLevel } from "@sentry/react";
 import { customAlphabet } from "nanoid";
 import { useRouter } from "next/router";
 import promiseRetry from "promise-retry";
-import { FC, useCallback, useEffect } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { hotjar } from "react-hotjar";
 import { useIntercom } from "react-use-intercom";
 import { useAccount, useNetwork } from "wagmi";
-import { useAnalytics } from "../../features/analytics/useAnalytics";
-import { useAutoConnect } from "../../features/autoConnect/AutoConnect";
+import { supportId, useAnalytics } from "../../features/analytics/useAnalytics";
+import { useLayoutContext } from "../../features/layout/LayoutContext";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import config from "../../utils/config";
 import { IsCypress, SSR } from "../../utils/SSRUtils";
@@ -21,10 +24,39 @@ const SENTRY_EXPECTED_NETWORK_TESTNET_TAG = "network.testnet";
 
 const SENTRY_SUPPORT_ID_TAG = "support-id";
 
-export const supportId = customAlphabet("6789BCDFGHJKLMNPQRTWbcdfghjkmnpqrtwz")(
-  8
-); // Alphabet: "nolookalikesSafe"
 Sentry.setTag(SENTRY_SUPPORT_ID_TAG, supportId);
+
+// const [analyticsDetails, setAnalyticsDetails] = useState<AnalyticsDetails>(mapAnalyticsDetails());
+
+// useEffect(() => {
+//   const nextDetails: AnalyticsDetails = mapAnalyticsDetails();
+
+//   if (
+//     nextDetails.dashboard.wallet.isConnected !==
+//     dashboardState.dashboard.wallet.isConnected
+//   ) {
+//     if (nextDetails.dashboard.wallet.isConnected) {
+//       track("Wallet Connected");
+//     } else {
+//       track("Wallet Disconnected");
+//     }
+//   } else {
+//     if (
+//       nextDetails.dashboard.wallet.networkId !=
+//       dashboardState.dashboard.wallet.networkId
+//     ) {
+//       track("Wallet Network Changed");
+//     }
+//     if (
+//       nextDetails.dashboard.wallet.account !=
+//       dashboardState.dashboard.wallet.account
+//     ) {
+//       track("Wallet Account Changed");
+//     }
+//   }
+
+//   setAnalyticsDetails(nextDetails);
+// }, deps);
 
 const MonitorContext: FC = () => {
   const { network } = useExpectedNetwork();
@@ -41,43 +73,72 @@ const MonitorContext: FC = () => {
     });
   }, [network]);
 
-  const { page, track } = useAnalytics();
-  const { connector: activeConnector, isConnected } = useAccount({
-    onConnect: ({ address, connector }) => {
-      if (address && connector) {
-        track("Wallet Connected", {
-          connector: connector.name,
-        });
-        connector.on("change", ({ account, chain }) => {
-          if (account) {
-            track("Wallet Account Changed");
-          } else if (chain) {
-            track("Wallet Network Changed");
-          }
-        });
-      }
-    },
-    onDisconnect: () => void track("Wallet Disconnected"),
-  });
-  const { chain: activeChain } = useNetwork();
+  const { page, track, instanceDetails } = useAnalytics();
+  const [previousInstanceDetails, setPreviousInstanceDetails] =
+    useState(instanceDetails);
 
   useEffect(() => {
-    if (isConnected && activeConnector) {
-      Sentry.setTag(SENTRY_WALLET_TAG, activeConnector.id);
-      Sentry.setContext(SENTRY_WALLET_CONTEXT, {
-        id: activeConnector.id,
-        ...(activeChain
-          ? {
-              "network-id": activeChain.id,
-              "network-name": activeChain.name,
-            }
-          : {}),
-      });
-    } else {
-      Sentry.setTag(SENTRY_WALLET_TAG, null);
-      Sentry.setContext(SENTRY_WALLET_CONTEXT, null);
+    if (instanceDetails === previousInstanceDetails) {
+      return;
     }
-  }, [isConnected, activeConnector, activeChain]);
+
+    const {
+      appInstance: { wallet },
+    } = instanceDetails;
+    const {
+      appInstance: { wallet: prevWallet },
+    } = previousInstanceDetails;
+
+    if (wallet.isConnected !== prevWallet.isConnected) {
+      if (wallet.isConnected) {
+        track("Wallet Connected", {}, {
+          context: instanceDetails,
+        });
+      } else {
+        track("Wallet Disconnected", {}, {
+          context: instanceDetails,
+        });
+      }
+    } else {
+      if (wallet.networkId != prevWallet.networkId) {
+        track("Wallet Network Changed", {}, {
+          context: instanceDetails,
+        });
+      }
+      if (wallet.account != prevWallet.account) {
+        track("Wallet Account Changed", {}, {
+          context: instanceDetails,
+        });
+      }
+    }
+
+    setPreviousInstanceDetails(instanceDetails);
+  }, [instanceDetails]);
+
+  useEffect(() => {
+    Sentry.setContext("App Instance", instanceDetails.appInstance);
+  }, [instanceDetails]);
+
+  // const { connector: activeConnector, isConnected } = useAccount();
+  // const { chain: activeChain } = useNetwork();
+
+  // useEffect(() => {
+  //   if (isConnected && activeConnector) {
+  //     Sentry.setTag(SENTRY_WALLET_TAG, activeConnector.id);
+  //     Sentry.setContext(SENTRY_WALLET_CONTEXT, {
+  //       id: activeConnector.id,
+  //       ...(activeChain
+  //         ? {
+  //             "network-id": activeChain.id,
+  //             "network-name": activeChain.name,
+  //           }
+  //         : {}),
+  //     });
+  //   } else {
+  //     Sentry.setTag(SENTRY_WALLET_TAG, null);
+  //     Sentry.setContext(SENTRY_WALLET_CONTEXT, null);
+  //   }
+  // }, [isConnected, activeConnector, activeChain]);
 
   const { getVisitorId } = useIntercom();
 
@@ -119,6 +180,16 @@ const MonitorContext: FC = () => {
     return () =>
       router.events.off("routeChangeComplete", onRouteChangeComplete);
   }, []);
+
+  const onSentryEvent = useCallback((event: Sentry.Event) => {
+    if (event.exception) {
+      track("Error Logged", {
+        eventId: event.event_id,
+      });
+    }
+    return event;
+  }, []);
+  useEffect(() => void Sentry.addGlobalEventProcessor(onSentryEvent), []);
 
   return null;
 };

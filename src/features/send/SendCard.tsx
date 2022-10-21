@@ -564,7 +564,7 @@ export default memo(function SendCard() {
               },
             })
               .unwrap()
-              .then(...txAnalytics)
+              .then(...txAnalytics(activeFlow ? "Send Stream" : "Modify Stream"))
               .then(() => void resetForm());
 
             setDialogLoadingInfo(
@@ -665,7 +665,7 @@ export default memo(function SendCard() {
                 overrides: await getTransactionOverrides(network),
               })
                 .unwrap()
-                .then(...txAnalytics)
+                .then(...txAnalytics("Cancel Stream"))
                 .then(() => resetForm());
             }}
           >

@@ -56,21 +56,23 @@ export default function MyApp(props: MyAppProps) {
         <Head>
           <meta name="viewport" content="initial-scale=1, width=device-width" />
         </Head>
-        <AnalyticsProvider writeKey={config.segmentWriteKey}>
-          <WagmiManager>
-            <AutoConnectProvider>
-              <ReduxProvider>
-                <ImpersonationProvider>
-                  <ExpectedNetworkProvider>
-                    {(network) => (
-                      <ActiveNetworksProvider>
-                        <MuiProvider>
-                          {(_muiTheme) => (
-                            <RainbowKitManager>
-                              <ConnectButtonProvider>
-                                <VisibleAddressProvider>
-                                  <TransactionRestorationContextProvider>
-                                    <LayoutContextProvider>
+        <WagmiManager>
+          <AutoConnectProvider>
+            <ReduxProvider>
+              <ImpersonationProvider>
+                <ExpectedNetworkProvider>
+                  {(network) => (
+                    <ActiveNetworksProvider>
+                      <MuiProvider>
+                        {(_muiTheme) => (
+                          <RainbowKitManager>
+                            <ConnectButtonProvider>
+                              <VisibleAddressProvider>
+                                <TransactionRestorationContextProvider>
+                                  <LayoutContextProvider>
+                                    <AnalyticsProvider
+                                      writeKey={config.segmentWriteKey}
+                                    >
                                       <IntercomProvider>
                                         <MonitorContext />
                                         <Layout>
@@ -79,21 +81,21 @@ export default function MyApp(props: MyAppProps) {
                                           </MinigameProvider>
                                         </Layout>
                                       </IntercomProvider>
-                                    </LayoutContextProvider>
-                                  </TransactionRestorationContextProvider>
-                                </VisibleAddressProvider>
-                              </ConnectButtonProvider>
-                            </RainbowKitManager>
-                          )}
-                        </MuiProvider>
-                      </ActiveNetworksProvider>
-                    )}
-                  </ExpectedNetworkProvider>
-                </ImpersonationProvider>
-              </ReduxProvider>
-            </AutoConnectProvider>
-          </WagmiManager>
-        </AnalyticsProvider>
+                                    </AnalyticsProvider>
+                                  </LayoutContextProvider>
+                                </TransactionRestorationContextProvider>
+                              </VisibleAddressProvider>
+                            </ConnectButtonProvider>
+                          </RainbowKitManager>
+                        )}
+                      </MuiProvider>
+                    </ActiveNetworksProvider>
+                  )}
+                </ExpectedNetworkProvider>
+              </ImpersonationProvider>
+            </ReduxProvider>
+          </AutoConnectProvider>
+        </WagmiManager>
       </CacheProvider>
     </NextThemesProvider>
   );

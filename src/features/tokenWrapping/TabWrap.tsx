@@ -424,7 +424,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                       overrides: await getTransactionOverrides(network),
                     })
                       .unwrap()
-                      .then(...txAnalytics)
+                      .then(...txAnalytics("Approve Allowance"))
                       .then(() => setTransactionDrawerOpen(true));
                   }}
                 >
@@ -503,7 +503,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                     overrides,
                   })
                     .unwrap()
-                    .then(...txAnalytics)
+                    .then(...txAnalytics("Wrap"))
                     .then(() => resetForm());
 
                   setDialogSuccessActions(

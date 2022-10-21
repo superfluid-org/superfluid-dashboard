@@ -1,4 +1,4 @@
-const config = {
+const config = Object.freeze({
   appUrl: (process.env.NEXT_PUBLIC_APP_URL || "").trim(),
   intercom: {
     appId: process.env.NEXT_PUBLIC_INTERCOM_APP_ID || "",
@@ -15,9 +15,13 @@ const config = {
       "https://967h1q725d.execute-api.eu-west-2.amazonaws.com",
   },
   platformApi: {
-    goerli: process.env.NEXT_PUBLIC_PLATFORM_GOERLI || "https://dev-goerli-platform-v2.dev.superfluid.dev"
+    goerli:
+      process.env.NEXT_PUBLIC_PLATFORM_GOERLI ||
+      "https://dev-goerli-platform-v2.dev.superfluid.dev",
   },
-  segmentWriteKey: process.env.NEXT_PUBLIC_SEGMENT_WRITE_KEY || "axUnL2Cp3F4qstRzkmmstaeNBdMfoo56"
-};
+  segmentWriteKey:
+    process.env.NEXT_PUBLIC_SEGMENT_WRITE_KEY ||
+    "axUnL2Cp3F4qstRzkmmstaeNBdMfoo56",
+});
 
 export default Object.freeze(config);

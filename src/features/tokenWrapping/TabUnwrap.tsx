@@ -313,7 +313,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                   overrides,
                 })
                   .unwrap()
-                  .then(...txAnalytics)
+                  .then(...txAnalytics("Unwrap"))
                   .then(() => resetForm());
               }}
             >

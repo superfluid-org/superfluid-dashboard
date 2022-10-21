@@ -54,7 +54,7 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
       overrides: await getTransactionOverrides(network),
     })
       .unwrap()
-      .then(...txAnalytics);
+      .then(...txAnalytics("Cancel Stream"));
   };
 
   return (
