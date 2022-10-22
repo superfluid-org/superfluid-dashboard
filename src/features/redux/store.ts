@@ -1,4 +1,8 @@
-import { configureStore, Dispatch } from "@reduxjs/toolkit";
+import {
+  configureStore,
+  createListenerMiddleware,
+  Dispatch,
+} from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import {
   allRpcEndpoints,
@@ -99,6 +103,8 @@ const flagsPersistedReducer = persistReducer(
   flagsSlice.reducer
 );
 
+export const listenerMiddleware = createListenerMiddleware();
+
 export const reduxStore = configureStore({
   reducer: {
     [rpcApi.reducerPath]: rpcApi.reducer,
@@ -114,7 +120,7 @@ export const reduxStore = configureStore({
     pendingUpdates: pendingUpdateSlice.reducer,
     [platformApi.reducerPath]: platformApi.reducer,
     flags: flagsPersistedReducer,
-    [faucetApi.reducerPath]: faucetApi.reducer
+    [faucetApi.reducerPath]: faucetApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -122,6 +128,7 @@ export const reduxStore = configureStore({
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER], // Ignore redux-persist actions: https://stackoverflow.com/a/62610422
       },
     })
+      .prepend(listenerMiddleware.middleware)
       .concat(rpcApi.middleware)
       .concat(subgraphApi.middleware)
       .concat(assetApiSlice.middleware)

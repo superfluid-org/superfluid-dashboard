@@ -4,9 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useRef,
 } from "react";
 import config from "../../utils/config";
 import { useAccount, useNetwork } from "wagmi";
@@ -125,12 +123,6 @@ export const AnalyticsProvider = ({ children }: AnalyticsProviderProps) => {
   const analyticsBrowser = useAnalyticsBrowser();
   const instanceDetails = useAppInstanceDetails();
 
-  const initialResetRef = useRef(false);
-  if (!initialResetRef.current) {
-    initialResetRef.current = true;
-    analyticsBrowser.reset();
-  }
-
   const contextValue = useMemo(
     () => ({
       analyticsBrowser,
@@ -151,6 +143,7 @@ export const useAnalytics = () => {
   if (!analyticsBrowser) {
     throw new Error("Context used outside of its Provider!");
   }
+
   const txAnalytics = useCallback(
     (txName: string) => [
       (value: TransactionInfo) =>
@@ -177,5 +170,6 @@ export const useAnalytics = () => {
     ],
     [analyticsBrowser, instanceDetails]
   );
+  
   return { ...analyticsBrowser, txAnalytics, instanceDetails };
 };

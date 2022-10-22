@@ -1,17 +1,29 @@
 import { useTheme } from "@mui/material";
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
+import { addListener, isAllOf } from "@reduxjs/toolkit";
 import * as Sentry from "@sentry/browser";
 import { SeverityLevel } from "@sentry/react";
+import {
+  TransactionTrackerReducer,
+  TransactionTrackerSlice,
+} from "@superfluid-finance/sdk-redux/dist/module/reduxSlices/transactionTrackerSlice/transactionTrackerSlice";
 import { customAlphabet } from "nanoid";
 import { useRouter } from "next/router";
 import promiseRetry from "promise-retry";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { hotjar } from "react-hotjar";
+import { useDispatch, useStore } from "react-redux";
 import { useIntercom } from "react-use-intercom";
 import { useAccount, useNetwork } from "wagmi";
 import { supportId, useAnalytics } from "../../features/analytics/useAnalytics";
 import { useLayoutContext } from "../../features/layout/LayoutContext";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
+import {
+  AppStore,
+  listenerMiddleware,
+  transactionTracker,
+  useAppDispatch,
+} from "../../features/redux/store";
 import config from "../../utils/config";
 import { IsCypress, SSR } from "../../utils/SSRUtils";
 
@@ -44,6 +56,26 @@ const MonitorContext: FC = () => {
   const { reset, identify, page, track, instanceDetails } = useAnalytics();
   const [previousInstanceDetails, setPreviousInstanceDetails] =
     useState(instanceDetails);
+
+  const initialResetRef = useRef(false);
+  if (!initialResetRef.current) {
+    // When application starts up, reset the identity. Identify only on concrete wallet connections.
+    initialResetRef.current = true;
+    reset();
+  }
+
+  useEffect(
+    () =>
+      listenerMiddleware.startListening({
+        actionCreator: transactionTracker.actions.updateTransaction,
+        effect: ({ payload }) => {
+          if (payload.changes.status) {
+            track(`Transaction Marked ${payload.changes.status}`); // Succeeded, Failure, Unknown etc
+          }
+        },
+      }),
+    []
+  );
 
   useEffect(() => {
     if (instanceDetails === previousInstanceDetails) {
