@@ -289,7 +289,7 @@ const StreamPage: NextPage = () => {
         } else if (isSenderReceiverToken) {
           const [sender, receiver, token] = _streamSplit;
 
-          // Ordered by stream ID desc.
+          // Ordered by createdAtTimestamp desc.
           // Since stream ID consists of "{sender}-{receiver}-{token}-{revision}" where revision is an incrementing number we will get the latest one.
           queryStreams(
             {
