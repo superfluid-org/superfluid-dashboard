@@ -289,7 +289,7 @@ const StreamPage: NextPage = () => {
         } else if (isSenderReceiverToken) {
           const [sender, receiver, token] = _streamSplit;
 
-          // Ordered by stream ID by default.
+          // Ordered by stream ID desc.
           // Since stream ID consists of "{sender}-{receiver}-{token}-{revision}" where revision is an incrementing number we will get the latest one.
           queryStreams(
             {
@@ -686,7 +686,7 @@ const StreamPageContent: FC<{
                 dataCy={"start-date"}
                 label="Start Date:"
                 value={format(startDate.getTime(), "d MMM. yyyy H:mm")}
-            />
+              />
 
               <OverviewItem
                 dataCy={"buffer"}
@@ -700,35 +700,35 @@ const StreamPageContent: FC<{
                     "-"
                   )
                 }
-              />{!endDate && updatedAtTimestamp > createdAtTimestamp && (
-              <OverviewItem
+              />
+              {!endDate && updatedAtTimestamp > createdAtTimestamp && (
+                <OverviewItem
+                  label={`Updated Date:`}
+                  value={format(updatedAtTimestamp * 1000, "d MMM. yyyy H:mm")}
+                />
+              )}
 
-                label={`Updated Date:`}
-                value={format(updatedAtTimestamp * 1000, "d MMM. yyyy H:mm")}
-              />
-            )}
-
-            {endDateScheduled ? (
-              <OverviewItem
-                label={`End Date:`}
-                value={
-                  <Stack direction="row" alignItems="center" gap={0.5}>
-                    <TimerOutlined fontSize="small" />
-                    {format(endDateScheduled.getTime(), "d MMM. yyyy H:mm")}
-                  </Stack>
-                }
-              />
-            ) : endDate ? (
-              <OverviewItem
-                label={`End Date:`}
-                value={format(endDate.getTime(), "d MMM. yyyy H:mm")}
-              />
-            ) : (
-              <OverviewItem
-                label={`End Date:`}
-                value={<AllInclusiveIcon sx={{ display: "block" }} />}
-                    />
-                )}
+              {endDateScheduled ? (
+                <OverviewItem
+                  label={`End Date:`}
+                  value={
+                    <Stack direction="row" alignItems="center" gap={0.5}>
+                      <TimerOutlined fontSize="small" />
+                      {format(endDateScheduled.getTime(), "d MMM. yyyy H:mm")}
+                    </Stack>
+                  }
+                />
+              ) : endDate ? (
+                <OverviewItem
+                  label={`End Date:`}
+                  value={format(endDate.getTime(), "d MMM. yyyy H:mm")}
+                />
+              ) : (
+                <OverviewItem
+                  label={`End Date:`}
+                  value={<AllInclusiveIcon sx={{ display: "block" }} />}
+                />
+              )}
 
               <OverviewItem
                 dataCy={"network-name"}
