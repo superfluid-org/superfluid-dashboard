@@ -302,6 +302,10 @@ const StreamPage: NextPage = () => {
               pagination: {
                 take: 1,
               },
+              order: {
+                orderBy: "id",
+                orderDirection: "desc",
+              },
             },
             true
           );
