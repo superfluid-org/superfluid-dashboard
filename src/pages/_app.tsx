@@ -70,9 +70,7 @@ export default function MyApp(props: MyAppProps) {
                               <VisibleAddressProvider>
                                 <TransactionRestorationContextProvider>
                                   <LayoutContextProvider>
-                                    <AnalyticsProvider
-                                      writeKey={config.segmentWriteKey}
-                                    >
+                                    <AnalyticsProvider>
                                       <IntercomProvider>
                                         <MonitorContext />
                                         <Layout>

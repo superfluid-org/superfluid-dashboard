@@ -1,11 +1,6 @@
 import { AnalyticsBrowser } from "@segment/analytics-next";
 import { TransactionInfo } from "@superfluid-finance/sdk-redux";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-} from "react";
+import { createContext, useCallback, useContext, useMemo } from "react";
 import config from "../../utils/config";
 import { useAccount, useNetwork } from "wagmi";
 import { useLayoutContext } from "../layout/LayoutContext";
@@ -14,7 +9,6 @@ import { customAlphabet } from "nanoid";
 import { useAutoConnect } from "../autoConnect/AutoConnect";
 
 type AnalyticsProviderProps = {
-  writeKey: string | undefined;
   children: React.ReactNode;
 };
 
@@ -170,6 +164,6 @@ export const useAnalytics = () => {
     ],
     [analyticsBrowser, instanceDetails]
   );
-  
+
   return { ...analyticsBrowser, txAnalytics, instanceDetails };
 };
