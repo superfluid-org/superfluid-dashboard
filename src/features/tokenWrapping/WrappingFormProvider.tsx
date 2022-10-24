@@ -312,7 +312,9 @@ The chain ID was: ${network.id}`);
       }
 
       const { token, ...tokenQueryParamRemoved } = router.query;
-      router.replace({ query: tokenQueryParamRemoved });
+      router.replace({ query: tokenQueryParamRemoved }, undefined, {
+        shallow: true,
+      });
     }
   }, [tokenQueryParam, tokenPairsQuery.data]);
 
