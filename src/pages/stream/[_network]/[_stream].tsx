@@ -303,7 +303,7 @@ const StreamPage: NextPage = () => {
                 take: 1,
               },
               order: {
-                orderBy: "id",
+                orderBy: "createdAtTimestamp",
                 orderDirection: "desc",
               },
             },
