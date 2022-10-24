@@ -1,6 +1,6 @@
 import { Box, Container, useTheme } from "@mui/material";
 import { formatEther } from "ethers/lib/utils";
-import { isNumber, isString } from "lodash";
+import { isString } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";

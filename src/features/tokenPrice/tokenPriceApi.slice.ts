@@ -62,9 +62,3 @@ const tokenPriceApi = createApi({
 });
 
 export default tokenPriceApi;
-
-const getPrecision = (price: string) => {
-  const regex = /^0.([0]*)/g;
-  const asd = price.match(regex);
-  console.log(asd);
-};

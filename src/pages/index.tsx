@@ -18,8 +18,6 @@ import FaucetDialog from "../features/faucet/FaucetDialog";
 import AddressSearchIndex from "../features/impersonation/AddressSearchIndex";
 import { useImpersonation } from "../features/impersonation/ImpersonationContext";
 import OnboardingCards from "../features/onboarding/OnboardingCards";
-import tokenPriceApi from "../features/tokenPrice/tokenPriceApi.slice";
-import useTokenPrice from "../features/tokenPrice/useTokenPrice";
 import TokenSnapshotTables from "../features/tokenSnapshotTable/TokenSnapshotTables";
 import ConnectWallet from "../features/wallet/ConnectWallet";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
@@ -130,12 +128,6 @@ const Home: NextPage = () => {
 
   const [faucetDialogOpen, setFaucetDialogOpen] = useState(false);
 
-  const tokenPrice = useTokenPrice(
-    "0xcaa7349cea390f89641fe306d93591f87595dc1f",
-    137
-  );
-
-  console.log(tokenPrice);
   useEffect(() => {
     const { showFaucet, ...remainingQuery } = router.query;
 
