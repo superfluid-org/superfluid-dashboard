@@ -1,5 +1,4 @@
 import { alpha, createTheme, Theme, ThemeOptions } from "@mui/material/styles";
-import { TypographyOptions } from "@mui/material/styles/createTypography";
 import { deepmerge } from "@mui/utils";
 import React from "react";
 import { FONT_FACES } from "./fonts";

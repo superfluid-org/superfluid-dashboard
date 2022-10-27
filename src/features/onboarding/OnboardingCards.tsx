@@ -17,7 +17,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FC, PropsWithChildren, useState } from "react";
 import { useAccount } from "wagmi";
-import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import TokenIcon from "../token/TokenIcon";
 import { useConnectButton } from "../wallet/ConnectButtonProvider";
 

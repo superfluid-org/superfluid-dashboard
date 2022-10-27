@@ -3,7 +3,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import SearchIcon from "@mui/icons-material/Search";
 import { Button, ButtonProps, IconButton } from "@mui/material";
 import { memo, MouseEvent, useState } from "react";
-import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName, {
   AddressNameProps,
 } from "../../components/AddressName/AddressName";

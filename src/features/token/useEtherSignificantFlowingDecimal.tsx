@@ -5,7 +5,7 @@ import { useMemo } from "react";
 
 const ANIMATION_MINIMUM_STEP_TIME = 75;
 
-const useSignificantFlowingDecimal = (flowRate: string, price = "1") =>
+const useSignificantFlowingDecimal = (flowRate: string, price = 1) =>
   useMemo<number | undefined>(() => {
     const flowRateBigNumber = BigNumber.from(flowRate);
 

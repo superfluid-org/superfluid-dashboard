@@ -102,21 +102,24 @@ const flagsPersistedReducer = persistReducer(
 
 export const reduxStore = configureStore({
   reducer: {
+    // API slices
     [rpcApi.reducerPath]: rpcApi.reducer,
     [subgraphApi.reducerPath]: subgraphApi.reducer,
     [transactionTracker.reducerPath]: transactionTrackerPersistedReducer,
     [assetApiSlice.reducerPath]: assetApiSlice.reducer,
     [ensApi.reducerPath]: ensApi.reducer,
+    [gasApi.reducerPath]: gasApi.reducer,
+    [platformApi.reducerPath]: platformApi.reducer,
+    [faucetApi.reducerPath]: faucetApi.reducer,
+    [tokenPriceApi.reducerPath]: tokenPriceApi.reducer,
+
+    // Default slices
     impersonations: impersonationPersistedReducer,
     addressBook: addressBookPersistedReducer,
     customTokens: customTokensPersistedReducer,
     networkPreferences: networkPreferencesPersistedReducer,
-    [gasApi.reducerPath]: gasApi.reducer,
     pendingUpdates: pendingUpdateSlice.reducer,
-    [platformApi.reducerPath]: platformApi.reducer,
     flags: flagsPersistedReducer,
-    [faucetApi.reducerPath]: faucetApi.reducer,
-    [tokenPriceApi.reducerPath]: tokenPriceApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

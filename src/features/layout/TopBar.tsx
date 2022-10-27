@@ -15,6 +15,7 @@ import useBodyScrolled from "../../hooks/useBodyScrolled";
 import ImpersonationChip from "../impersonation/ImpersonationChip";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 import SelectNetwork from "../network/SelectNetwork";
+import CurrencySelect from "../tokenPrice/CurrencySelect";
 import { transactionDrawerWidth } from "../transactionDrawer/TransactionDrawer";
 import TransactionBell from "../transactions/TransactionBell";
 import ConnectWallet from "../wallet/ConnectWallet";
@@ -99,6 +100,7 @@ export default memo(function TopBar() {
           {isBelowLg && !isImpersonated && <ConnectWallet small />}
           <ImpersonationChip />
           <SelectNetwork />
+          <CurrencySelect />
           <TransactionBell />
         </Stack>
       </Stack>

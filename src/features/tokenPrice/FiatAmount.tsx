@@ -1,5 +1,6 @@
 import Decimal from "decimal.js";
 import { FC, memo, useMemo } from "react";
+import { useAppSettingsContext } from "../settings/AppSettingsContext";
 
 const FIAT_PRECISION_REGEX = `\\.([0]*)`;
 
@@ -9,21 +10,24 @@ const getFiatPrecision = (price: string, offset = 2) => {
 };
 
 interface FiatAmountProps {
-  price?: string;
+  amount: string;
+  price: number;
   decimalPlaces?: number;
 }
 
-const FiatAmount: FC<FiatAmountProps> = ({ price, decimalPlaces }) => {
+const FiatAmount: FC<FiatAmountProps> = ({ amount, price, decimalPlaces }) => {
+  const { currency } = useAppSettingsContext();
+
+  const priceDecimal = useMemo(() => {
+    return new Decimal(amount).mul(new Decimal(price));
+  }, [amount, price]);
+
   const decimals = useMemo(
-    () => decimalPlaces || getFiatPrecision(price || "0"),
-    [decimalPlaces, price]
+    () => decimalPlaces || getFiatPrecision(priceDecimal.toString() || "1"),
+    [decimalPlaces, priceDecimal]
   );
 
-  if (!price) return null;
-
-  const priceDecimal = new Decimal(price);
-
-  return <>{`$${priceDecimal.toFixed(decimals)}`}</>;
+  return <>{currency.format(priceDecimal.toFixed(decimals))}</>;
 };
 
 export default memo(FiatAmount);

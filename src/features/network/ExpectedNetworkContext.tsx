@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import {
   createContext,
   FC,
+  PropsWithChildren,
   ReactNode,
   useContext,
   useEffect,
@@ -32,9 +33,9 @@ const ExpectedNetworkContext = createContext<ExpectedNetworkContextValue>(
   null!
 );
 
-export const ExpectedNetworkProvider: FC<{
-  children: (network: Network) => ReactNode;
-}> = ({ children }) => {
+export const ExpectedNetworkProvider: FC<PropsWithChildren> = ({
+  children,
+}) => {
   const [network, setNetwork] = useState<Network>(networksByChainId.get(137)!);
   const [autoSwitchStop, setAutoSwitchStop] = useState(false);
 
@@ -45,7 +46,7 @@ export const ExpectedNetworkProvider: FC<{
         setNetwork(networksByChainId.get(chainId)!), setAutoSwitchStop(false);
       },
       stopAutoSwitchToWalletNetwork: () => setAutoSwitchStop(true),
-      isAutoSwitchStopped: autoSwitchStop
+      isAutoSwitchStopped: autoSwitchStop,
     }),
     [network, autoSwitchStop, setAutoSwitchStop]
   );
@@ -99,7 +100,7 @@ export const ExpectedNetworkProvider: FC<{
 
   return (
     <ExpectedNetworkContext.Provider value={contextValue}>
-      {children(network)}
+      {children}
     </ExpectedNetworkContext.Provider>
   );
 };

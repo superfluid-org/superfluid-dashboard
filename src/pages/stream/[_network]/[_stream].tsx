@@ -27,7 +27,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
-import AddressAvatar from "../../../components/AddressAvatar/AddressAvatar";
+import AddressAvatar from "../../../components/Avatar/AddressAvatar";
 import CopyTooltip from "../../../components/CopyTooltip/CopyTooltip";
 import SEO from "../../../components/SEO/SEO";
 import withStaticSEO from "../../../components/SEO/withStaticSEO";
@@ -682,7 +682,7 @@ const StreamPageContent: FC<{
                 dataCy={"start-date"}
                 label="Start Date:"
                 value={format(startDate.getTime(), "d MMM. yyyy H:mm")}
-            />
+              />
 
               <OverviewItem
                 dataCy={"buffer"}
@@ -696,35 +696,35 @@ const StreamPageContent: FC<{
                     "-"
                   )
                 }
-              />{!endDate && updatedAtTimestamp > createdAtTimestamp && (
-              <OverviewItem
+              />
+              {!endDate && updatedAtTimestamp > createdAtTimestamp && (
+                <OverviewItem
+                  label={`Updated Date:`}
+                  value={format(updatedAtTimestamp * 1000, "d MMM. yyyy H:mm")}
+                />
+              )}
 
-                label={`Updated Date:`}
-                value={format(updatedAtTimestamp * 1000, "d MMM. yyyy H:mm")}
-              />
-            )}
-
-            {endDateScheduled ? (
-              <OverviewItem
-                label={`End Date:`}
-                value={
-                  <Stack direction="row" alignItems="center" gap={0.5}>
-                    <TimerOutlined fontSize="small" />
-                    {format(endDateScheduled.getTime(), "d MMM. yyyy H:mm")}
-                  </Stack>
-                }
-              />
-            ) : endDate ? (
-              <OverviewItem
-                label={`End Date:`}
-                value={format(endDate.getTime(), "d MMM. yyyy H:mm")}
-              />
-            ) : (
-              <OverviewItem
-                label={`End Date:`}
-                value={<AllInclusiveIcon sx={{ display: "block" }} />}
-                    />
-                )}
+              {endDateScheduled ? (
+                <OverviewItem
+                  label={`End Date:`}
+                  value={
+                    <Stack direction="row" alignItems="center" gap={0.5}>
+                      <TimerOutlined fontSize="small" />
+                      {format(endDateScheduled.getTime(), "d MMM. yyyy H:mm")}
+                    </Stack>
+                  }
+                />
+              ) : endDate ? (
+                <OverviewItem
+                  label={`End Date:`}
+                  value={format(endDate.getTime(), "d MMM. yyyy H:mm")}
+                />
+              ) : (
+                <OverviewItem
+                  label={`End Date:`}
+                  value={<AllInclusiveIcon sx={{ display: "block" }} />}
+                />
+              )}
 
               <OverviewItem
                 dataCy={"network-name"}

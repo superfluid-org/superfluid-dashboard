@@ -172,7 +172,9 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               data-cy={"token-symbol"}
               onClick={openTokenPage}
               primary={tokenSymbol}
-              secondary={<FiatAmount price={tokenPrice.data?.price} />}
+              secondary={
+                tokenPrice ? <FiatAmount amount="1" price={tokenPrice} /> : ""
+              }
               primaryTypographyProps={{
                 variant: "h6",
               }}
@@ -209,12 +211,12 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                     />
                   }
                   secondary={
-                    tokenPrice.data?.price && (
+                    tokenPrice && (
                       <FlowingFiatBalance
                         balance={balance}
                         flowRate={netFlowRate}
                         balanceTimestamp={balanceTimestamp}
-                        price={tokenPrice.data.price}
+                        price={tokenPrice}
                       />
                     )
                   }

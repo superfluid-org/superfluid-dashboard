@@ -13,6 +13,7 @@ import { MinigameProvider } from "../features/minigame/MinigameContext";
 import { ActiveNetworksProvider } from "../features/network/ActiveNetworksContext";
 import { ExpectedNetworkProvider } from "../features/network/ExpectedNetworkContext";
 import ReduxProvider from "../features/redux/ReduxProvider";
+import { AppSettingsContextProvider } from "../features/settings/AppSettingsContext";
 import createEmotionCache from "../features/theme/createEmotionCache";
 import MuiProvider from "../features/theme/MuiProvider";
 import NextThemesProvider from "../features/theme/NextThemesProvider";
@@ -44,7 +45,10 @@ export default function MyApp(props: MyAppProps) {
     }
   }, []);
 
-  useEffect(() => console.log(`%c${SUPERFLUID_RUNNER_ASCII}`, "font-size: 8px"), []);
+  useEffect(
+    () => console.log(`%c${SUPERFLUID_RUNNER_ASCII}`, "font-size: 8px"),
+    []
+  );
 
   return (
     <NextThemesProvider>
@@ -57,14 +61,14 @@ export default function MyApp(props: MyAppProps) {
             <ReduxProvider>
               <ImpersonationProvider>
                 <ExpectedNetworkProvider>
-                  {(network) => (
-                    <ActiveNetworksProvider>
-                      <MuiProvider>
-                        {(_muiTheme) => (
-                          <RainbowKitManager>
-                            <ConnectButtonProvider>
-                              <VisibleAddressProvider>
-                                <TransactionRestorationContextProvider>
+                  <ActiveNetworksProvider>
+                    <MuiProvider>
+                      {(_muiTheme) => (
+                        <RainbowKitManager>
+                          <ConnectButtonProvider>
+                            <VisibleAddressProvider>
+                              <TransactionRestorationContextProvider>
+                                <AppSettingsContextProvider>
                                   <LayoutContextProvider>
                                     <IntercomProvider>
                                       <MonitorContext />
@@ -75,14 +79,14 @@ export default function MyApp(props: MyAppProps) {
                                       </Layout>
                                     </IntercomProvider>
                                   </LayoutContextProvider>
-                                </TransactionRestorationContextProvider>
-                              </VisibleAddressProvider>
-                            </ConnectButtonProvider>
-                          </RainbowKitManager>
-                        )}
-                      </MuiProvider>
-                    </ActiveNetworksProvider>
-                  )}
+                                </AppSettingsContextProvider>
+                              </TransactionRestorationContextProvider>
+                            </VisibleAddressProvider>
+                          </ConnectButtonProvider>
+                        </RainbowKitManager>
+                      )}
+                    </MuiProvider>
+                  </ActiveNetworksProvider>
                 </ExpectedNetworkProvider>
               </ImpersonationProvider>
             </ReduxProvider>
