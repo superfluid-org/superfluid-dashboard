@@ -309,7 +309,6 @@ const VestingForm: FC<PropsWithChildren> = () => {
           direction="row"
           alignItems="center"
           justifyContent="space-between"
-          sx={{ mr: 0.75 }}
         >
           <FormLabel>Receiver</FormLabel>
           <TooltipIcon title="Must not be an exchange address" />
@@ -318,10 +317,15 @@ const VestingForm: FC<PropsWithChildren> = () => {
       </FormGroup>
 
       <FormGroup>
-        <Stack justifyContent="stretch">
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+        >
           <FormLabel>Super Token</FormLabel>
-          {TokenController}
+          <TooltipIcon title="TODO:" />
         </Stack>
+        {TokenController}
       </FormGroup>
 
       <FormGroup>
@@ -329,8 +333,6 @@ const VestingForm: FC<PropsWithChildren> = () => {
           direction="row"
           alignItems="center"
           justifyContent="space-between"
-          sx={{ mr: 0.75 }}
-          flex={1}
         >
           <FormLabel>TODO: TotalAmountController</FormLabel>
           <TooltipIcon title="TODO:" />
@@ -343,8 +345,6 @@ const VestingForm: FC<PropsWithChildren> = () => {
           direction="row"
           alignItems="center"
           justifyContent="space-between"
-          sx={{ mr: 0.75 }}
-          flex={1}
         >
           <FormLabel>Start Date</FormLabel>
           <TooltipIcon title="The date when stream scheduler tries to cancel the stream." />
@@ -357,8 +357,6 @@ const VestingForm: FC<PropsWithChildren> = () => {
           direction="row"
           alignItems="center"
           justifyContent="space-between"
-          sx={{ mr: 0.75 }}
-          flex={1}
         >
           <FormLabel>TODO: Cliff Amount</FormLabel>
           <TooltipIcon title="TODO:" />
@@ -366,9 +364,29 @@ const VestingForm: FC<PropsWithChildren> = () => {
         {CliffAmountController}
       </FormGroup>
 
-      <FormGroup>{CliffDurationController}</FormGroup>
+      <FormGroup>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <FormLabel>TODO: Cliff Duration</FormLabel>
+          <TooltipIcon title="TODO:" />
+        </Stack>
+        {CliffDurationController}
+      </FormGroup>
 
-      <FormGroup>{VestingDurationController}</FormGroup>
+      <FormGroup>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <FormLabel>TODO: Vesting Duration</FormLabel>
+          <TooltipIcon title="TODO:" />
+        </Stack>
+        {VestingDurationController}
+      </FormGroup>
     </Box>
   );
 };
