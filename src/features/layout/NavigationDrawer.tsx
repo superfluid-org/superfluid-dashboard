@@ -4,6 +4,7 @@ import AutoAwesomeMosaicRoundedIcon from "@mui/icons-material/AutoAwesomeMosaicR
 import AutoStoriesOutlinedIcon from "@mui/icons-material/AutoStoriesOutlined";
 import ControlPointDuplicateOutlinedIcon from "@mui/icons-material/ControlPointDuplicateOutlined";
 import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
+import LooksRoundedIcon from "@mui/icons-material/LooksRounded";
 import {
   Box,
   List,
@@ -153,6 +154,15 @@ export default memo(function NavigationDrawer() {
         />
 
         <NavigationItem
+          id="nav-send"
+          title="Send Stream"
+          href="/send"
+          onClick={closeNavigationDrawer}
+          active={isActiveRoute("/send")}
+          icon={ArrowRightAltRoundedIcon}
+        />
+
+        <NavigationItem
           id="nav-wrap-unwrap"
           title="Wrap / Unwrap"
           href="/wrap?upgrade"
@@ -162,12 +172,12 @@ export default memo(function NavigationDrawer() {
         />
 
         <NavigationItem
-          id="nav-send"
-          title="Send Stream"
-          href="/send"
+          id="nav-bridge"
+          title="Bridge"
+          href="/bridge"
           onClick={closeNavigationDrawer}
-          active={isActiveRoute("/send")}
-          icon={ArrowRightAltRoundedIcon}
+          active={isActiveRoute("/bridge")}
+          icon={LooksRoundedIcon}
         />
 
         <NavigationItem

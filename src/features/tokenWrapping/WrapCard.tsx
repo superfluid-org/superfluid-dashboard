@@ -16,7 +16,9 @@ export default memo(function WrapCard({ tabValue }: { tabValue: WrapTab }) {
   const { network } = useExpectedNetwork();
 
   const handleTabChange = (newTab: WrapTab) => () =>
-    router.replace("/wrap?" + newTab);
+    router.replace("/wrap?" + newTab, undefined, {
+      shallow: true,
+    });
 
   return (
     <Card

@@ -29,12 +29,6 @@ export default memo(function FlowingBalance({
 
   const flowRateBigNumber = useMemo(() => BigNumber.from(flowRate), [flowRate]);
 
-  /*
-   * TODO: When using this variable then ~ sign in Ether should be disabled
-   * Calculating decimals based on the flow rate.
-   * This is configurable by ANIMATING_NR_COUNT and should shows
-   * roughly how many trailing numbers will animate each second.
-   */
   const etherSignificantFlowingDecimal = useMemo<number | undefined>(() => {
     if (flowRateBigNumber.isZero()) {
       return undefined;

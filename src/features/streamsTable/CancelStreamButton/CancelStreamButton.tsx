@@ -4,6 +4,7 @@ import {
   IconButtonProps,
   Tooltip,
   TooltipProps,
+  Typography,
 } from "@mui/material";
 import { Stream } from "@superfluid-finance/sdk-core";
 import { Signer } from "ethers";
@@ -12,6 +13,7 @@ import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverride
 import { Network } from "../../network/networks";
 import { usePendingStreamCancellation } from "../../pendingUpdates/PendingStreamCancellation";
 import { rpcApi } from "../../redux/store";
+import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import CancelStreamProgress from "./CancelStreamProgress";
 
@@ -29,7 +31,6 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
   TooltipProps = {},
 }) => {
   const { token, sender, receiver } = stream;
-
   const [flowDeleteTrigger, flowDeleteMutation] =
     rpcApi.useFlowDeleteMutation();
   const getTransactionOverrides = useGetTransactionOverrides();
@@ -52,46 +53,62 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
     });
   };
 
-  return (<TransactionBoundary
-          mutationResult={flowDeleteMutation}
-          expectedNetwork={network}
-      >
-        {({ mutationResult, isCorrectNetwork, signer, isConnected }) =>
+  return (
+    <ConnectionBoundary expectedNetwork={network}>
+      {({ isConnected, isCorrectNetwork }) => (
+        <TransactionBoundary mutationResult={flowDeleteMutation}>
+          {({ mutationResult, signer, setDialogLoadingInfo }) =>
             mutationResult.isLoading || !!pendingCancellation ? (
-                <CancelStreamProgress pendingCancellation={pendingCancellation} />
-            ) : (<>
-          <Tooltip
-            data-cy={"switch-network-tooltip"}
-            placement="top"
-            arrow
-            disableInteractive
-            title={
-              !isConnected
-              ? "Connect wallet to cancel stream"
-              : !isCorrectNetwork
-              ? `Switch network to ${network.name} to cancel stream`
-              : "Cancel stream"
-            }
-            {...TooltipProps}
-          >
-            <span>
-              <IconButton
-                data-cy={"cancel-button"}
-                color="error"
-                onClick={() => {
-                  if (!signer)
-                    throw new Error("Signer should always be present here.");
-                  deleteStream(signer)}}
-                disabled={!(isConnected && signer && isCorrectNetwork)}
-                {...IconButtonProps}
-              >
-                <CancelRoundedIcon />
-              </IconButton>
-            </span>
-          </Tooltip>
-        </>
+              <CancelStreamProgress pendingCancellation={pendingCancellation} />
+            ) : (
+              <>
+                <Tooltip
+                  data-cy={"switch-network-tooltip"}
+                  placement="top"
+                  arrow
+                  disableInteractive
+                  title={
+                    !isConnected
+                      ? "Connect wallet to cancel stream"
+                      : !isCorrectNetwork
+                      ? `Switch network to ${network.name} to cancel stream`
+                      : "Cancel stream"
+                  }
+                  {...TooltipProps}
+                >
+                  <span>
+                    <IconButton
+                      data-cy={"cancel-button"}
+                      color="error"
+                      onClick={() => {
+                        if (!signer)
+                          throw new Error(
+                            "Signer should always be present here."
+                          );
+                        setDialogLoadingInfo(
+                          <Typography
+                            variant="h5"
+                            color="text.secondary"
+                            translate="yes"
+                          >
+                            You are canceling a stream.
+                          </Typography>
+                        );
+                        deleteStream(signer);
+                      }}
+                      disabled={!(isConnected && signer && isCorrectNetwork)}
+                      {...IconButtonProps}
+                    >
+                      <CancelRoundedIcon />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              </>
+            )
+          }
+        </TransactionBoundary>
       )}
-      </TransactionBoundary>
+    </ConnectionBoundary>
   );
 };
 

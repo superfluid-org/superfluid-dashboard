@@ -1,5 +1,6 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import axios from "axios";
+import config from "../../utils/config";
 
 export interface TokenManifest {
   version: string;
@@ -26,12 +27,9 @@ export const assetApiSlice = createApi({
               : tokenSymbol.toLowerCase();
 
           const manifest = await axios
-            .get(
-              `https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/${assetKey}/manifest.json`,
-              {
-                validateStatus: (status) => status !== 404, // Don't worry about 404-s because not all tokens have the manifest.
-              }
-            )
+            .get(`${config.tokenIconUrl}tokens/${assetKey}/manifest.json`, {
+              validateStatus: (status) => status !== 404, // Don't worry about 404-s because not all tokens have the manifest.
+            })
             .then((response) => {
               if (response.status === 200) {
                 return response.data as TokenManifest;

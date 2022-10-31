@@ -5,6 +5,7 @@ import {
   Middleware,
   MiddlewareAPI,
 } from "@reduxjs/toolkit";
+import { setupListeners } from "@reduxjs/toolkit/query";
 import {
   allRpcEndpoints,
   allSubgraphEndpoints,
@@ -28,6 +29,8 @@ import storage from "redux-persist/lib/storage";
 import { addressBookSlice } from "../addressBook/addressBook.slice";
 import { customTokensSlice } from "../customTokens/customTokens.slice";
 import { ensApi } from "../ens/ensApi.slice";
+import faucetApi from "../faucet/faucetApi.slice";
+import { flagsSlice } from "../flags/flags.slice";
 import gasApi from "../gas/gasApi.slice";
 import { impersonationSlice } from "../impersonation/impersonation.slice";
 import { networkPreferencesSlice } from "../network/networkPreferences.slice";
@@ -36,7 +39,8 @@ import { assetApiSlice } from "../token/tokenManifestSlice";
 import { adHocMulticallEndpoints } from "./endpoints/adHocMulticallEndpoints";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
-import { setupListeners } from "@reduxjs/toolkit/query";
+import { streamSchedulerEndpoints } from "./endpoints/streamSchedulerEndpoints";
+import { platformApi } from "./platformApi/platformApi";
 import * as Sentry from "@sentry/react";
 import { deserializeError } from "serialize-error";
 
@@ -49,7 +53,8 @@ export const rpcApi = initializeRpcApiSlice((options) =>
 )
   .injectEndpoints(allRpcEndpoints)
   .injectEndpoints(adHocMulticallEndpoints)
-  .injectEndpoints(adHocRpcEndpoints);
+  .injectEndpoints(adHocRpcEndpoints)
+  .injectEndpoints(streamSchedulerEndpoints);
 
 export const subgraphApi = initializeSubgraphApiSlice((options) =>
   createApiWithReactHooks({
@@ -97,6 +102,11 @@ const networkPreferencesPersistedReducer = persistReducer(
   networkPreferencesSlice.reducer
 );
 
+const flagsPersistedReducer = persistReducer(
+  { storage, key: "flags", version: 1 },
+  flagsSlice.reducer
+);
+
 export const sentryErrorLogger: Middleware =
   (api: MiddlewareAPI) => (next) => (action) => {
     if (isRejected(action)) {
@@ -131,6 +141,9 @@ export const reduxStore = configureStore({
     networkPreferences: networkPreferencesPersistedReducer,
     [gasApi.reducerPath]: gasApi.reducer,
     pendingUpdates: pendingUpdateSlice.reducer,
+    [platformApi.reducerPath]: platformApi.reducer,
+    flags: flagsPersistedReducer,
+    [faucetApi.reducerPath]: faucetApi.reducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -143,7 +156,9 @@ export const reduxStore = configureStore({
       .concat(subgraphApi.middleware)
       .concat(assetApiSlice.middleware)
       .concat(ensApi.middleware)
-      .concat(gasApi.middleware),
+      .concat(gasApi.middleware)
+      .concat(platformApi.middleware)
+      .concat(faucetApi.middleware),
 });
 
 export const reduxPersistor = persistStore(reduxStore);

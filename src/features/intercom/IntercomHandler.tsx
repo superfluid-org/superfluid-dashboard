@@ -1,12 +1,12 @@
 import { GlobalStyles, useMediaQuery, useTheme } from "@mui/material";
-import { FC, ReactElement, useEffect } from "react";
+import { FC, ReactElement, ReactNode, useEffect } from "react";
 import { useIntercom } from "react-use-intercom";
 import config from "../../utils/config";
 import { useLayoutContext } from "../layout/LayoutContext";
 import { transactionDrawerWidth } from "../transactionDrawer/TransactionDrawer";
 
 interface IntercomHandlerProps {
-  children: ReactElement<any, any>;
+  children: ReactNode;
 }
 
 const IntercomHandler: FC<IntercomHandlerProps> = ({ children }) => {

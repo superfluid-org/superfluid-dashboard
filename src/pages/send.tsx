@@ -1,10 +1,11 @@
 import { Box, Container, useTheme } from "@mui/material";
 import { formatEther } from "ethers/lib/utils";
-import { isString } from "lodash";
+import { isNumber, isString } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import withStaticSEO from "../components/SEO/withStaticSEO";
+import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import {
   timeUnitWordMap,
   UnitOfTime,
@@ -69,6 +70,7 @@ const tryParseFlowRate = (
 const Send: NextPage = () => {
   const theme = useTheme();
   const router = useRouter();
+  const { network } = useExpectedNetwork();
   const { restoration, onRestored } = useTransactionRestorationContext();
   const [initialFormValues, setInitialFormValues] = useState<
     StreamingFormProviderProps["initialFormValues"] | undefined
@@ -87,6 +89,7 @@ const Send: NextPage = () => {
               },
               receiverAddress: restoration.receiverAddress,
               tokenAddress: restoration.tokenAddress,
+              endTimestamp: restoration.endTimestamp,
             });
             break;
           default:
@@ -98,6 +101,7 @@ const Send: NextPage = () => {
           token: maybeTokenAddress,
           receiver: maybeReceiverAddress,
           "flow-rate": maybeFlowRate,
+          "end-date": maybeEndTimestamp,
           ...remainingQuery
         } = router.query;
 
@@ -115,17 +119,27 @@ const Send: NextPage = () => {
             maybeReceiverAddress && isString(maybeReceiverAddress)
               ? maybeReceiverAddress
               : undefined,
+          endTimestamp:
+            maybeEndTimestamp && isString(maybeEndTimestamp)
+              ? Number(maybeEndTimestamp)
+              : undefined,
         });
 
-        router.replace({
-          query: remainingQuery,
-        });
+        router.replace(
+          {
+            query: remainingQuery,
+          },
+          undefined,
+          {
+            shallow: true,
+          }
+        );
       }
     }
   }, [router.isReady]);
 
   return (
-    <Container maxWidth="lg">
+    <Container key={`${network.slugName}`} maxWidth="lg">
       <Box
         sx={{
           display: "flex",

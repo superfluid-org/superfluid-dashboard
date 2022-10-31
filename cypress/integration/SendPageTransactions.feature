@@ -9,11 +9,11 @@ Feature: Stream transactional test cases
     And User starts the stream and the transaction dialogs are visible for "goerli"
     And User goes to the token page from the transaction dialog
     And User opens the transaction drawer
-    And The transaction drawer shows a pending "Create Stream" transaction on "goerli"
+    And The transaction drawer shows a pending "Send Stream" transaction on "goerli"
     And The restore button is visible for the last transaction
     And The first row in the table shows "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" "receiving" an "ongoing" stream of "1" token per month since "now"
     And The first stream row in the table shows "Sending..." pending transaction status
-    And The transaction drawer shows a succeeded "Create Stream" transaction on "goerli"
+    And The transaction drawer shows a succeeded "Send Stream" transaction on "goerli"
     And The restore button is visible for the last transaction
     And The first stream row in the table shows "Syncing..." pending transaction status
     And The first row does not have a pending transaction status
@@ -29,9 +29,9 @@ Feature: Stream transactional test cases
     And User modifies the stream and the transaction dialogs are visible for "goerli"
     And User goes to the token page from the transaction dialog
     And User opens the transaction drawer
-    And The transaction drawer shows a pending "Update Stream" transaction on "goerli"
+    And The transaction drawer shows a pending "Update Flow Rate" transaction on "goerli"
     And The restore button is visible for the last transaction
-    And The transaction drawer shows a succeeded "Update Stream" transaction on "goerli"
+    And The transaction drawer shows a succeeded "Update Flow Rate" transaction on "goerli"
     And The restore button is visible for the last transaction
     And The first row in the table shows "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" "receiving" an "ongoing" stream of "2" token per month since "now"
     And User restores the last transaction
@@ -47,12 +47,12 @@ Feature: Stream transactional test cases
     And User clicks the OK button
     And User opens the transaction drawer
     And User clicks on the "dashboard" navigation button
-    And The transaction drawer shows a pending "Close Stream" transaction on "goerli"
+    And The transaction drawer shows a pending "Cancel Stream" transaction on "goerli"
     And The restore button is not visible for the last transaction
     And User clicks on "goerli" "fDAIx" row
     And There are 5 stream rows visible
     And The first stream row in the table shows "Canceling..." pending transaction status
-    And The transaction drawer shows a succeeded "Close Stream" transaction on "goerli"
+    And The transaction drawer shows a succeeded "Cancel Stream" transaction on "goerli"
     And The restore button is not visible for the last transaction
     And The first stream row in the table shows "Syncing..." pending transaction status
     And The first row does not have a pending transaction status

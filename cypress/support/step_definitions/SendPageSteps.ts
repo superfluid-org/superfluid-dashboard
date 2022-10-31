@@ -165,7 +165,7 @@ Given(/^User starts or cancels the stream if necessary$/, () => {
     SendPage.startOrCancelStreamIfNecessary()
 });
 Given(/^User modifies the stream and the transaction dialogs are visible for "([^"]*)"$/, (network: string) => {
-    SendPage.modifyStreamAnvValidateDialogs(network)
+    SendPage.modifyStreamAndValidateDialogs(network)
 });
 Given(/^User starts the stream if necessary$/, () => {
     SendPage.startStreamIfNecessary()

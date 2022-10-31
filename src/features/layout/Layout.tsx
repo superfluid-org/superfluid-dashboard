@@ -1,4 +1,11 @@
-import { Box, styled, Toolbar, useMediaQuery, useTheme } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  styled,
+  Toolbar,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { FC, PropsWithChildren } from "react";
 import TransactionDrawer, {
   transactionDrawerWidth,

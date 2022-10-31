@@ -5,35 +5,23 @@ import {
 } from "@superfluid-finance/sdk-redux";
 import { Overrides, Signer } from "ethers";
 import {
+  createContext,
   FC,
   ReactNode,
-  useState,
-  useMemo,
-  createContext,
   useContext,
   useEffect,
+  useMemo,
+  useState,
 } from "react";
-import { useAccount, useNetwork, useSigner, useSwitchNetwork } from "wagmi";
+import { useSigner } from "wagmi";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import MutationResult from "../../MutationResult";
-import { useAutoConnect } from "../autoConnect/AutoConnect";
-import { useImpersonation } from "../impersonation/ImpersonationContext";
-import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { Network } from "../network/networks";
-import { transactionTracker, useAppSelector } from "../redux/store";
-import { useConnectButton } from "../wallet/ConnectButtonProvider";
+import { useAppSelector } from "../redux/store";
+import { useConnectionBoundary } from "./ConnectionBoundary";
 import { TransactionDialog } from "./TransactionDialog";
 
 interface TransactionBoundaryContextValue {
   signer: Signer | null | undefined;
-  isImpersonated: boolean;
-  stopImpersonation: () => void;
-  isConnecting: boolean;
-  isConnected: boolean;
-  connectWallet: () => void;
-  isCorrectNetwork: boolean;
-  switchNetwork: (() => void) | undefined;
-  expectedNetwork: Network;
   dialogOpen: boolean;
   openDialog: () => void;
   closeDialog: () => void;
@@ -51,10 +39,9 @@ export const useTransactionBoundary = () =>
   useContext(TransactionBoundaryContext);
 
 interface TransactionBoundaryProps {
-  children: (arg: TransactionBoundaryContextValue) => ReactNode;
-  dialog?: (arg: TransactionBoundaryContextValue) => ReactNode;
+  children: (transactionContext: TransactionBoundaryContextValue) => ReactNode;
+  dialog?: (transactionContext: TransactionBoundaryContextValue) => ReactNode;
   mutationResult: MutationResult<TransactionInfo>;
-  expectedNetwork?: Network;
 }
 
 export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
@@ -64,15 +51,8 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
   ...props
 }) => {
   const { data: signer } = useSigner();
-  const { isImpersonated, stopImpersonation } = useImpersonation();
-  const { chain: activeChain } = useNetwork();
-  const { switchNetwork } = useSwitchNetwork();
-  const { isConnecting, isConnected } = useAccount();
-  const { isAutoConnecting } = useAutoConnect();
-  const { openConnectModal } = useConnectButton();
-  const { network } = useExpectedNetwork();
+  const { expectedNetwork } = useConnectionBoundary();
   const getTransactionOverrides = useGetTransactionOverrides();
-  const expectedNetwork = props.expectedNetwork ?? network;
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogLoadingInfo, setDialogLoadingInfo] = useState<ReactNode>(null);
@@ -87,16 +67,6 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
   const contextValue = useMemo<TransactionBoundaryContextValue>(
     () => ({
       signer,
-      isImpersonated,
-      stopImpersonation,
-      isConnected,
-      isConnecting: isConnecting || isAutoConnecting,
-      connectWallet: () => openConnectModal(),
-      isCorrectNetwork: expectedNetwork.id === activeChain?.id,
-      switchNetwork: switchNetwork
-        ? () => void switchNetwork(expectedNetwork.id)
-        : undefined,
-      expectedNetwork,
       dialogOpen,
       openDialog: () => setDialogOpen(true),
       closeDialog: () => setDialogOpen(false),
@@ -108,14 +78,6 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
     }),
     [
       signer,
-      isImpersonated,
-      stopImpersonation,
-      isConnected,
-      isConnecting,
-      isAutoConnecting,
-      openConnectModal,
-      switchNetwork,
-      expectedNetwork,
       dialogOpen,
       setDialogLoadingInfo,
       setDialogSuccessActions,

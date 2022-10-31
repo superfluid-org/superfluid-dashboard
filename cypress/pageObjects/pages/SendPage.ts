@@ -8,7 +8,7 @@ const RECEIVER_BUTTON = "[data-cy=address-button]";
 const SELECT_TOKEN_BUTTON = "[data-cy=select-token-button]";
 const FLOW_RATE_INPUT = "[data-cy=flow-rate-input]";
 const TIME_UNIT_SELECTION_BUTTON = "[data-cy=time-unit-selection-button]";
-const AMOUNT_PER_SECOND = "[data-cy=amount-per-second] input";
+const AMOUNT_PER_SECOND = "[data-cy=preview-per-second]";
 const ADDRESS_DIALOG_INPUT = "[data-cy=address-dialog-input]";
 const CLOSE_DIALOG_BUTTON = "[data-testid=CloseIcon]";
 const ENS_ENTRIES = "[data-cy=ens-entry]";
@@ -20,7 +20,7 @@ const RECEIVER_CLEAR_BUTTON = "[data-testid=CloseIcon]";
 const TOKEN_SEARCH_INPUT = "[data-cy=token-search-input]";
 const TOKEN_SEARCH_RESULTS = "[data-cy$=list-item]";
 const RESULTS_WRAP_BUTTONS = "[data-cy=wrap-button]";
-const STREAM_ENDS_ON = "[data-cy=ends-on] input";
+const STREAM_ENDS_ON = "[data-cy=preview-ends-on]";
 const PREVIEW_AMOUNT_PER_SECOND = "[data-cy=amount-per-second]";
 const PREVIEW_FLOW_RATE = "[data-cy=preview-flow-rate]";
 const PREVIEW_RECEIVER = "[data-cy=preview-receiver]";
@@ -92,7 +92,6 @@ export class SendPage extends BasePage {
         this.isVisible(SELECT_TOKEN_BUTTON);
         this.isVisible(FLOW_RATE_INPUT);
         this.isVisible(TIME_UNIT_SELECTION_BUTTON);
-        this.isVisible(AMOUNT_PER_SECOND);
     }
 
     static inputStreamTestData(isConnected: string) {
@@ -115,7 +114,7 @@ export class SendPage extends BasePage {
                 this.click(`${DIALOG} ${CLOSE_DIALOG_BUTTON}`)
                 this.click(SELECT_TOKEN_BUTTON)
             } else {
-                this.doesNotExist(PREVIEW_BALANCE)
+                //this.doesNotExist(PREVIEW_BALANCE)
             }
             cy.get(TOKEN_SEARCH_RESULTS)
                 .eq(0)
@@ -129,8 +128,8 @@ export class SendPage extends BasePage {
     }
 
     static validateStreamEndingAndAmountPerSecond() {
-        this.hasValue(STREAM_ENDS_ON, "∞");
-        this.hasValue(AMOUNT_PER_SECOND, "0.000000385802469135");
+        this.containsText(STREAM_ENDS_ON, "Never");
+        this.containsText(AMOUNT_PER_SECOND, "0.000000385802469135");
     }
 
     static checkIfStreamPreviewIsCorrectWhenUserNotConnected() {
@@ -379,13 +378,14 @@ export class SendPage extends BasePage {
                 this.type(FLOW_RATE_INPUT, "1")
                 this.click(RISK_CHECKBOX)
                 this.click(SEND_BUTTON)
-                cy.get(SEND_MORE_STREAMS_BUTTON, {timeout: 60000}).click()
+                this.isVisible(GO_TO_TOKENS_PAGE_BUTTON)
+                cy.get(CLOSE_DIALOG_BUTTON, {timeout: 60000}).last().click()
                 this.inputStreamDetails("2", "fDAIx", "month", data.accountWithLotsOfData)
                 cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
                 this.hasText(SEND_OR_MOD_STREAM, "Modify Stream")
                 //There should be a workaround here but the app won't throw the "same flowrate" error
             }
-            if (body.find(MODIFY_STREAM_BUTTON).length > 0) {
+            if (body.find(SEND_BUTTON).length > 0) {
                 if (body.find("[class*=MuiAlert-root] [class*=MuiAlert-message]").length > 2) {
                     this.click(CANCEL_STREAM_BUTTON)
                     WrapPage.clickOkButton()
@@ -393,7 +393,7 @@ export class SendPage extends BasePage {
                     cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
                     this.hasText(SEND_OR_MOD_STREAM, "Send Stream")
                     this.click(SEND_BUTTON)
-                    this.click(SEND_MORE_STREAMS_BUTTON)
+                    this.click(CLOSE_DIALOG_BUTTON)
                     this.inputStreamDetails("2", "fDAIx", "month", data.accountWithLotsOfData)
                     cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
                 }
@@ -402,11 +402,11 @@ export class SendPage extends BasePage {
         })
     }
 
-    static modifyStreamAnvValidateDialogs(network: string) {
-        this.isNotDisabled(MODIFY_STREAM_BUTTON)
-        this.click(MODIFY_STREAM_BUTTON)
+    static modifyStreamAndValidateDialogs(network: string) {
+        this.isNotDisabled(SEND_BUTTON)
+        this.click(SEND_BUTTON)
         this.isVisible(LOADING_SPINNER)
-        this.exists(`${MODIFY_STREAM_BUTTON} ${LOADING_SPINNER}`)
+        this.exists(`${SEND_BUTTON} ${LOADING_SPINNER}`)
         this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
         this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
         cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
@@ -421,7 +421,8 @@ export class SendPage extends BasePage {
         cy.get("body").then(body => {
             if (body.find(SEND_BUTTON).length > 0) {
                 this.click(SEND_BUTTON)
-                cy.get(SEND_MORE_STREAMS_BUTTON, {timeout: 60000}).click()
+                this.isVisible(GO_TO_TOKENS_PAGE_BUTTON)
+                cy.get(CLOSE_DIALOG_BUTTON, {timeout: 60000}).last().click()
                 this.inputStreamDetails("2", "fDAIx", "month",data.accountWithLotsOfData)
                 cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
                 this.hasText(SEND_OR_MOD_STREAM, "Modify Stream")

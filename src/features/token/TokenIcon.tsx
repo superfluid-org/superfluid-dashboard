@@ -2,6 +2,7 @@ import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import { Avatar, Skeleton, styled, Tooltip, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
+import config from "../../utils/config";
 import { assetApiSlice } from "./tokenManifestSlice";
 
 const BorderSvg = styled("svg")(() => ({
@@ -35,7 +36,7 @@ const AvatarWrapper = styled("div", {
   })
 );
 
-interface TokenIconProps {
+export interface TokenIconProps {
   tokenSymbol?: string;
   isSuper?: boolean;
   isUnlisted?: boolean;
@@ -61,9 +62,9 @@ const TokenIcon: FC<TokenIconProps> = ({
         : skipToken
     );
 
-  const diameter = size - (tokenManifest?.isSuperToken ? 4 : 0);
-  const loading = isLoading || isQueryLoading;
   const isSuperToken = isSuper || tokenManifest?.isSuperToken;
+  const diameter = size - (isSuperToken ? 4 : 0);
+  const loading = isLoading || isQueryLoading;
 
   return (
     <Tooltip
@@ -160,7 +161,7 @@ const TokenIcon: FC<TokenIconProps> = ({
             imgProps={{ sx: { objectFit: "contain", borderRadius: "50%" } }}
             src={
               tokenManifest?.svgIconPath
-                ? `https://raw.githubusercontent.com/superfluid-finance/assets/master/public/${tokenManifest.svgIconPath}`
+                ? `${config.tokenIconUrl}${tokenManifest.svgIconPath}`
                 : "/icons/token-default.webp"
             }
           />

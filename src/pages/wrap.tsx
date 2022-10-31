@@ -3,6 +3,7 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import withStaticSEO from "../components/SEO/withStaticSEO";
+import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import WrapCard from "../features/tokenWrapping/WrapCard";
 import WrappingFormProvider from "../features/tokenWrapping/WrappingFormProvider";
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
@@ -15,6 +16,7 @@ import {
 const Wrap: NextPage = () => {
   const theme = useTheme();
   const router = useRouter();
+  const { network } = useExpectedNetwork();
   const { upgrade, downgrade } = router.query;
   const [tabValue, setTabValue] = useState<
     "upgrade" | "downgrade" | undefined
@@ -43,7 +45,7 @@ const Wrap: NextPage = () => {
   }
 
   return (
-    <Container maxWidth="lg">
+    <Container key={`${network.slugName}`} maxWidth="lg">
       <Box
         sx={{
           display: "flex",
