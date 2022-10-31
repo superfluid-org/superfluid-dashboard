@@ -39,7 +39,7 @@ export type PartialVestingForm = {
     receiverAddress: string | null;
     startDate: number | null;
     totalAmountEther: string | null;
-    vestingDuration: {
+    vestingPeriod: {
       numerator: number | null;
       denominator: UnitOfTime;
     };
@@ -105,7 +105,7 @@ const VestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
           denominator: UnitOfTime.Year,
         },
         startDate: null,
-        vestingDuration: {
+        vestingPeriod: {
           numerator: null,
           denominator: UnitOfTime.Year,
         },

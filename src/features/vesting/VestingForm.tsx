@@ -52,7 +52,7 @@ const VestingForm: FC<PropsWithChildren> = () => {
     totalAmountEther,
     startDate,
     cliffAmountEther,
-    vestingDuration,
+    vestingPeriod,
     cliffPeriod,
   ] = watch([
     "data.tokenAddress",
@@ -60,9 +60,19 @@ const VestingForm: FC<PropsWithChildren> = () => {
     "data.totalAmountEther",
     "data.startDate",
     "data.cliffAmountEther",
-    "data.vestingDuration",
+    "data.vestingPeriod",
     "data.cliffPeriod",
   ]);
+
+  // console.log({
+  //   tokenAddress,
+  //   receiverAddress,
+  //   totalAmountEther,
+  //   startDate,
+  //   cliffAmountEther,
+  //   vestingPeriod,
+  //   cliffPeriod
+  // })
 
   const ReceiverController = (
     <Controller
@@ -166,7 +176,7 @@ const VestingForm: FC<PropsWithChildren> = () => {
     />
   );
 
-  const TotalAmountController = (
+  const VestingAmountController = (
     <Controller
       control={control}
       name="data.totalAmountEther"
@@ -228,7 +238,7 @@ const VestingForm: FC<PropsWithChildren> = () => {
     />
   );
 
-  const CliffDurationController = (
+  const CliffPeriodController = (
     <Controller
       control={control}
       name="data.cliffPeriod"
@@ -255,7 +265,7 @@ const VestingForm: FC<PropsWithChildren> = () => {
             onBlur={onBlur}
           >
             {unitOfTimeList.map((unitOfTime) => (
-              <MenuItem value={unitOfTime} onBlur={onBlur}>
+              <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
                 {timeUnitWordMap[unitOfTime]}
               </MenuItem>
             ))}
@@ -265,10 +275,10 @@ const VestingForm: FC<PropsWithChildren> = () => {
     />
   );
 
-  const VestingDurationController = (
+  const VestingPeriodController = (
     <Controller
       control={control}
-      name="data.vestingDuration"
+      name="data.vestingPeriod"
       render={({ field: { onChange, onBlur } }) => (
         <Box>
           <TextField
@@ -292,8 +302,8 @@ const VestingForm: FC<PropsWithChildren> = () => {
             onBlur={onBlur}
           >
             {unitOfTimeList.map((unitOfTime) => (
-              <MenuItem value={unitOfTime} onBlur={onBlur}>
-                {timeUnitWordMap[unitOfTime]}
+              <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
+                {timeUnitWordMap[unitOfTime]}(s)
               </MenuItem>
             ))}
           </Select>
@@ -322,7 +332,7 @@ const VestingForm: FC<PropsWithChildren> = () => {
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>Super Token</FormLabel>
+          <FormLabel>Token</FormLabel>
           <TooltipIcon title="TODO:" />
         </Stack>
         {TokenController}
@@ -334,10 +344,10 @@ const VestingForm: FC<PropsWithChildren> = () => {
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>TODO: TotalAmountController</FormLabel>
+          <FormLabel>Total Vesting Period</FormLabel>
           <TooltipIcon title="TODO:" />
         </Stack>
-        {TotalAmountController}
+        {VestingPeriodController}
       </FormGroup>
 
       <FormGroup>
@@ -346,10 +356,10 @@ const VestingForm: FC<PropsWithChildren> = () => {
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>Start Date</FormLabel>
-          <TooltipIcon title="The date when stream scheduler tries to cancel the stream." />
+          <FormLabel>Total Vested Amount</FormLabel>
+          <TooltipIcon title="TODO:" />
         </Stack>
-        {StartDateController}
+        {VestingAmountController}
       </FormGroup>
 
       <FormGroup>
@@ -358,7 +368,19 @@ const VestingForm: FC<PropsWithChildren> = () => {
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>TODO: Cliff Amount</FormLabel>
+          <FormLabel>Cliff Period</FormLabel>
+          <TooltipIcon title="TODO:" />
+        </Stack>
+        {CliffPeriodController}
+      </FormGroup>
+
+      <FormGroup>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <FormLabel>Cliff Amount</FormLabel>
           <TooltipIcon title="TODO:" />
         </Stack>
         {CliffAmountController}
@@ -370,22 +392,10 @@ const VestingForm: FC<PropsWithChildren> = () => {
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>TODO: Cliff Duration</FormLabel>
-          <TooltipIcon title="TODO:" />
+          <FormLabel>Vesting Start Date</FormLabel>
+          <TooltipIcon title="The date when stream scheduler tries to cancel the stream." />
         </Stack>
-        {CliffDurationController}
-      </FormGroup>
-
-      <FormGroup>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <FormLabel>TODO: Vesting Duration</FormLabel>
-          <TooltipIcon title="TODO:" />
-        </Stack>
-        {VestingDurationController}
+        {StartDateController}
       </FormGroup>
     </Box>
   );
