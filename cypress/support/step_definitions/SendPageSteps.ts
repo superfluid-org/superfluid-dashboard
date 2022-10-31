@@ -173,3 +173,12 @@ Given(/^User starts the stream if necessary$/, () => {
 Given(/^User cancels the stream and the transaction dialogs are visible for "([^"]*)"$/, (network: string) => {
     SendPage.cancelStreamAndVerifyDialogs(network)
 });
+Given(/^User inputs all the details to schedule the stream to close after (\d+) minutes$/, (minutes: number) => {
+    SendPage.inputStreamScheduleDateInFuture(minutes)
+});
+Given(/^User schedules the stream and the transaction dialogs are visible for "([^"]*)"$/, (network: string) => {
+    SendPage.scheduleStreamAndVerifyDialogs(network)
+});
+Then(/^The scheduling date is restored correctly$/,  () => {
+    SendPage.validateRestoredScheduledDate()
+});

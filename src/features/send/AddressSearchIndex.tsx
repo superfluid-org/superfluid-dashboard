@@ -48,7 +48,7 @@ export default memo(function AddressSearchIndex({
       {recentsQuery.isLoading && (
         <ListItem>
           <ListItemButton>
-            <ListItemText primary="Loading..." />
+            <ListItemText data-cy={"recents-loading"} primary="Loading..." />
           </ListItemButton>
         </ListItem>
       )}

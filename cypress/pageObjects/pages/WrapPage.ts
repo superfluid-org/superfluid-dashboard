@@ -280,8 +280,15 @@ export class WrapPage extends BasePage {
     }
 
     static validateSuccessfulTransaction(type: any, network: any) {
-        cy.get(TX_TYPE).first().should("have.text", type)
-        cy.get(DRAWER_TX).first().find("[data-cy=Succeeded-tx-status]", {timeout: 60000}).should("be.visible")
+        let subDetails: string[] | undefined
+        switch (type) {
+            case "Send Closed-Ended Stream":
+                subDetails = ["Schedule Stream End Date" , "Send Stream"]
+                break;
+        }
+
+        cy.get(TX_TYPE).first().should("contain.text", type)
+        cy.get(DRAWER_TX).first().find("[data-cy=Succeeded-tx-status]", {timeout: 90000}).should("be.visible")
         cy.get(TX_HASH_BUTTONS).first().then(el => {
             el.attr("href")?.substr(-66)
             cy.get(TX_HASH).should("be.visible")
@@ -291,6 +298,13 @@ export class WrapPage extends BasePage {
         cy.get(TX_DATE).first().should("have.text", `${format(Date.now(), "d MMM")} •`)
         cy.get(`${TX_NETWORK_BADGES}${networksBySlug.get(network)!.id}]`).first().should("have.attr", "aria-label", networksBySlug.get(network)!.name)
         cy.get(`${TX_NETWORK_BADGES}${networksBySlug.get(network)!.id}]`).first().should("be.visible")
+
+        if (subDetails){
+            this.clickFirstVisible(DRAWER_TX)
+            cy.get(DRAWER_TX).first().find("[data-cy=transaction-subtitles]").each((el , index) => {
+                cy.wrap(el).should("have.text" , subDetails![index])
+            })
+        }
     }
 
     static validateBalanceAfterWrapping(token: string, network: string, amount: string) {

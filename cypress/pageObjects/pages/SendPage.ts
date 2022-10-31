@@ -52,6 +52,14 @@ const ALL_BUTTONS = "[data-cy=send-card] [data-cy*=button]"
 const PREVIEW_BUFFER_LOSS = "[data-cy=buffer-loss]"
 const TX_DRAWER_BUTTON = "[data-cy=tx-drawer-button]"
 const OK_BUTTON = "[data-cy=ok-button]"
+const RECENTS_LOADING = "[data-cy=recents-loading]"
+const RECEIVER_DIALOG = "[data-cy=receiver-dialog]"
+const SCHEDULING_TOGGLE = "[data-cy=scheduling-toggle] span"
+const SCHEDULING_TOOLTIP = "[data-cy=scheduling-tooltip] svg"
+const SCHEDULING_END_DATE = "[data-cy=scheduling-end-date-input] input"
+const SCHEDULING_TOKEN_AMOUNT = "[data-cy=scheduling-token-amount-input] input"
+const TRANSACTION_TYPE_MESSAGE = "[data-cy=transaction-type-message]"
+const TRANSACTION_SUBTITLES = "[data-cy=transaction-subtitles] span"
 
 export class SendPage extends BasePage {
     static searchForTokenInTokenList(token: string) {
@@ -315,7 +323,14 @@ export class SendPage extends BasePage {
 
     static inputStreamDetails(amount: string, token: string, timeUnit: any, address: string) {
         this.click(RECEIVER_BUTTON);
+        //Sometimes typing the address doesn't pick up it as a receiver , so re-typing to make sure it tries again
         this.type(ADDRESS_DIALOG_INPUT, address);
+        cy.get("body").then( el => {
+           if(el.find(RECEIVER_DIALOG).length < 1 ) {
+               this.clear(ADDRESS_DIALOG_INPUT)
+               this.type(ADDRESS_DIALOG_INPUT,address)
+           }
+        })
         this.click(SELECT_TOKEN_BUTTON);
         cy.get(`[data-cy=${token}-list-item]`, {timeout: 60000}).click()
         this.type(FLOW_RATE_INPUT, amount);
@@ -325,14 +340,7 @@ export class SendPage extends BasePage {
     }
 
     static startStreamAndCheckDialogs(network: string) {
-        this.isNotDisabled(SEND_BUTTON)
-        this.click(SEND_BUTTON)
-        this.isVisible(LOADING_SPINNER)
-        this.exists(`${SEND_BUTTON} ${LOADING_SPINNER}`)
-        this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
-        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
-        cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
-        this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
+        this.sendStreamAndValidateCommonElements(network)
         this.isVisible(SEND_MORE_STREAMS_BUTTON)
         this.isVisible(GO_TO_TOKENS_PAGE_BUTTON)
         this.doesNotExist(`${SEND_BUTTON} ${LOADING_SPINNER}`)
@@ -358,7 +366,7 @@ export class SendPage extends BasePage {
                     this.click(CANCEL_STREAM_BUTTON)
                     WrapPage.clickOkButton()
                     this.inputStreamDetails("1", "fDAIx", "month", data.accountWithLotsOfData)
-                    cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
+                    cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 90000}).should("not.be.visible")
                     this.hasText(SEND_OR_MOD_STREAM, "Send Stream")
                     //Working around the apps dirty bugs
                     this.clear(FLOW_RATE_INPUT)
@@ -403,14 +411,7 @@ export class SendPage extends BasePage {
     }
 
     static modifyStreamAndValidateDialogs(network: string) {
-        this.isNotDisabled(SEND_BUTTON)
-        this.click(SEND_BUTTON)
-        this.isVisible(LOADING_SPINNER)
-        this.exists(`${SEND_BUTTON} ${LOADING_SPINNER}`)
-        this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
-        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
-        cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
-        this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
+        this.sendStreamAndValidateCommonElements(network)
         this.isVisible(GO_TO_TOKENS_PAGE_BUTTON)
         this.doesNotExist(`${SEND_BUTTON} ${LOADING_SPINNER}`)
     }
@@ -442,5 +443,44 @@ export class SendPage extends BasePage {
         this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
         this.isVisible(OK_BUTTON)
         this.doesNotExist(`${CANCEL_STREAM_BUTTON} ${LOADING_SPINNER}`)
+    }
+
+    static inputStreamScheduleDateInFuture(minutes: number) {
+        let currentTime = new Date()
+        let timeInFuture = new Date(currentTime.getTime() + (minutes * 60 * 1000))
+        let inputString = `${timeInFuture.getMonth() + 1}${timeInFuture.getDate()}${timeInFuture.getFullYear()}${timeInFuture.getHours()}${timeInFuture.getMinutes()}`
+        cy.wrap(inputString).as("scheduledTime")
+        this.click(SCHEDULING_TOGGLE)
+        this.type(SCHEDULING_END_DATE, inputString)
+    }
+
+    static sendStreamAndValidateCommonElements(network:string , message?:string) {
+        this.isNotDisabled(SEND_BUTTON)
+        this.click(SEND_BUTTON)
+        this.isVisible(LOADING_SPINNER)
+        this.exists(`${SEND_BUTTON} ${LOADING_SPINNER}`)
+        this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
+        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
+        if(message) {
+            this.hasText(TRANSACTION_TYPE_MESSAGE,message)
+        }
+        cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
+        this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
+    }
+
+    static scheduleStreamAndVerifyDialogs(network: string) {
+        this.sendStreamAndValidateCommonElements(network,"You are sending a closed-ended stream.")
+        this.isVisible(SEND_MORE_STREAMS_BUTTON)
+        this.doesNotExist(`${SEND_BUTTON} ${LOADING_SPINNER}`)
+        this.click(SEND_MORE_STREAMS_BUTTON)
+    }
+
+    static validateRestoredScheduledDate() {
+        this.isVisible(SCHEDULING_END_DATE)
+        cy.get("@scheduledTime").then(date => {
+            cy.get(SCHEDULING_END_DATE).then( el => {
+                cy.wrap(el.val()!.toString().replace(/(\/)|(:)|( )/g ,"")).should("eq",date)
+            })
+        })
     }
 }
