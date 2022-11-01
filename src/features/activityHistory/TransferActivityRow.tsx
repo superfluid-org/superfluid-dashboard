@@ -40,7 +40,7 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { visibleAddress } = useVisibleAddress();
 
-  const tokenPrice = useTokenPrice(token, network.id);
+  const tokenPrice = useTokenPrice(network.id, token);
   const etherAmount = useMemo(() => formatEther(value), [value]);
 
   const tokenQuery = subgraphApi.useTokenQuery(

@@ -72,6 +72,7 @@ import {
   SendStreamRestoration,
 } from "../transactionRestoration/transactionRestorations";
 import { add } from "date-fns";
+import AddRounded from "@mui/icons-material/AddRounded";
 
 const MIN_VISIBLE_END_DATE = add(new Date(), {
   minutes: 5,
@@ -812,13 +813,15 @@ export default memo(function SendCard() {
             >
               <Stack direction="row" alignItems="center" gap={0.5}>
                 <BalanceSuperToken
+                  showFiat
                   data-cy={"balance"}
                   chainId={network.id}
                   accountAddress={visibleAddress}
                   tokenAddress={tokenAddress}
+                  symbol={token?.symbol}
                   TypographyProps={{ variant: "h7mono" }}
+                  SymbolTypographyProps={{ variant: "h7" }}
                 />
-                <Typography variant="h7">{token?.symbol}</Typography>
               </Stack>
               {isWrappableSuperToken && (
                 <Link
@@ -831,7 +834,7 @@ export default memo(function SendCard() {
                       color="primary"
                       size="small"
                     >
-                      <AddCircleOutline />
+                      <AddRounded />
                     </IconButton>
                   </Tooltip>
                 </Link>

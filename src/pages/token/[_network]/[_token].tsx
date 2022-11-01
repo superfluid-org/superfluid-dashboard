@@ -129,7 +129,7 @@ const TokenPageContent: FC<{
   const [showForecast, setShowForecast] = useState(true);
   const navigateBack = useNavigateBack();
 
-  const tokenPrice = useTokenPrice(tokenAddress, network.id);
+  const tokenPrice = useTokenPrice(network.id, tokenAddress);
 
   const realTimeBalanceQuery = rpcApi.useRealtimeBalanceQuery({
     chainId: network.id,
@@ -240,7 +240,7 @@ const TokenPageContent: FC<{
 
               {tokenPrice && (
                 <Typography
-                  data-cy={"token-balance"}
+                  data-cy={"token-fiat-balance"}
                   variant="h5mono"
                   color="text.secondary"
                 >

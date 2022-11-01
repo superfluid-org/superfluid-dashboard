@@ -103,7 +103,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
     totalNumberOfClosedStreams,
   } = snapshot;
 
-  const tokenPrice = useTokenPrice(token, network.id);
+  const tokenPrice = useTokenPrice(network.id, token);
 
   const realtimeBalance = rpcApi.useRealtimeBalanceQuery({
     chainId: network.id,

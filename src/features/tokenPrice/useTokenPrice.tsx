@@ -5,22 +5,22 @@ import { Currency } from "../../utils/currencyUtils";
 import { useAppSettingsContext } from "../settings/AppSettingsContext";
 import tokenPriceApi from "./tokenPriceApi.slice";
 
-const useTokenPrice = (token: Address, chainId: number) => {
+const useTokenPrice = (chainId: number, token?: Address) => {
   const { currency } = useAppSettingsContext();
   const exchangeRatesResponse = tokenPriceApi.useGetUSDExchangeRateQuery();
 
   const supportedNetworks = tokenPriceApi.useGetSupportedNetworkIDsQuery();
+
   const isChainSupported = (supportedNetworks.data || []).includes(chainId);
+
   const tokenPriceResponse = tokenPriceApi.useGetTokenDataQuery(
-    isChainSupported
+    isChainSupported && token
       ? {
           token,
           chainId,
         }
       : skipToken
   );
-
-  console.log(tokenPriceResponse);
 
   return useMemo(() => {
     const price = tokenPriceResponse.data?.price;

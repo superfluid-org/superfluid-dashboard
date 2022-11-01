@@ -11,6 +11,8 @@ import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
+import FiatAmount from "../tokenPrice/FiatAmount";
+import useTokenPrice from "../tokenPrice/useTokenPrice";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
@@ -79,6 +81,8 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
     !formState.isValid;
 
   const amountInputRef = useRef<HTMLInputElement>(undefined!);
+
+  const tokenPrice = useTokenPrice(network.id, tokenPair?.superTokenAddress);
 
   useEffect(() => {
     amountInputRef.current.focus();
@@ -165,42 +169,51 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
           />
         </Stack>
         {tokenPair && visibleAddress && (
-          <Stack direction="row" justifyContent="flex-end" gap={0.5}>
-            {/* <Typography variant="body2" color="text.secondary">
-            ${Number(amount || 0).toFixed(2)}
-          </Typography> */}
+          <Stack direction="row" justifyContent="space-between" gap={0.5}>
+            <Typography variant="body2mono" color="text.secondary">
+              {tokenPrice && (
+                <FiatAmount price={tokenPrice} amount={amount || "0"} />
+              )}
+            </Typography>
 
-            <BalanceSuperToken
-              chainId={network.id}
-              accountAddress={visibleAddress}
-              tokenAddress={tokenPair.superTokenAddress}
-              TypographyProps={{ color: "text.secondary" }}
-            />
-            {realtimeBalanceQuery.currentData && (
-              <Controller
-                control={control}
-                name="data.amountDecimal"
-                render={({ field: { onChange, onBlur } }) => (
-                  <Button
-                    data-cy={"max-button"}
-                    variant="textContained"
-                    size="xxs"
-                    onClick={() => {
-                      const currentBalanceBigNumber = calculateCurrentBalance({
-                        flowRateWei: realtimeBalanceQuery.currentData!.flowRate,
-                        balanceWei: realtimeBalanceQuery.currentData!.balance,
-                        balanceTimestamp:
-                          realtimeBalanceQuery.currentData!.balanceTimestamp,
-                      });
-                      return onChange(formatEther(currentBalanceBigNumber));
-                    }}
-                    onBlur={onBlur}
-                  >
-                    MAX
-                  </Button>
-                )}
+            <Stack direction="row">
+              <BalanceSuperToken
+                chainId={network.id}
+                accountAddress={visibleAddress}
+                tokenAddress={tokenPair.superTokenAddress}
+                TypographyProps={{ color: "text.secondary" }}
               />
-            )}
+              {realtimeBalanceQuery.currentData && (
+                <Controller
+                  control={control}
+                  name="data.amountDecimal"
+                  render={({ field: { onChange, onBlur } }) => (
+                    <Button
+                      data-cy={"max-button"}
+                      variant="textContained"
+                      size="xxs"
+                      onClick={() => {
+                        const currentBalanceBigNumber = calculateCurrentBalance(
+                          {
+                            flowRateWei:
+                              realtimeBalanceQuery.currentData!.flowRate,
+                            balanceWei:
+                              realtimeBalanceQuery.currentData!.balance,
+                            balanceTimestamp:
+                              realtimeBalanceQuery.currentData!
+                                .balanceTimestamp,
+                          }
+                        );
+                        return onChange(formatEther(currentBalanceBigNumber));
+                      }}
+                      onBlur={onBlur}
+                    >
+                      MAX
+                    </Button>
+                  )}
+                />
+              )}
+            </Stack>
           </Stack>
         )}
       </WrapInputCard>
@@ -240,10 +253,12 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
           </Stack>
 
           {visibleAddress && (
-            <Stack direction="row" justifyContent="flex-end">
-              {/* <Typography variant="body2" color="text.secondary">
-              ${Number(amount || 0).toFixed(2)}
-            </Typography> */}
+            <Stack direction="row" justifyContent="space-between">
+              <Typography variant="body2mono" color="text.secondary">
+                {tokenPrice && (
+                  <FiatAmount price={tokenPrice} amount={amount || "0"} />
+                )}
+              </Typography>
               <BalanceUnderlyingToken
                 chainId={network.id}
                 accountAddress={visibleAddress}
@@ -256,9 +271,16 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
       )}
 
       {!!(superToken && underlyingToken) && (
-        <Typography data-cy={"token-pair"} align="center" sx={{ my: 3 }}>
-          {`1 ${superToken.symbol} = 1 ${underlyingToken.symbol}`}
-        </Typography>
+        <Stack direction="row" alignItems="center" gap={0.5}>
+          <Typography data-cy={"token-pair"} align="center" sx={{ my: 3 }}>
+            {`1 ${superToken.symbol} = 1 ${underlyingToken.symbol}`}
+          </Typography>
+          {tokenPrice && (
+            <Typography variant="body2mono" color="text.secondary">
+              (<FiatAmount price={tokenPrice} amount="1" />)
+            </Typography>
+          )}
+        </Stack>
       )}
 
       <ConnectionBoundary>

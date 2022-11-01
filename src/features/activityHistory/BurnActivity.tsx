@@ -38,7 +38,7 @@ const BurnActivity: FC<BurnedActivity> = ({
     network.nativeCurrency.superToken.address.toLowerCase() ===
     superTokenAddress?.toLowerCase();
 
-  const tokenPrice = useTokenPrice(token, network.id);
+  const tokenPrice = useTokenPrice(network.id, token);
   const etherAmount = useMemo(() => formatEther(amount), [amount]);
 
   const superTokenQuery = subgraphApi.useTokenQuery(

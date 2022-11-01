@@ -349,7 +349,7 @@ const StreamPageContent: FC<{
   const [senderAddress = "", receiverAddress, tokenAddress = ""] =
     streamId.split("-");
 
-  const tokenPrice = useTokenPrice(tokenAddress, network.id);
+  const tokenPrice = useTokenPrice(network.id, tokenAddress);
 
   const [isTokenListed, isTokenListedLoading] = useTokenIsListed(
     network.id,
