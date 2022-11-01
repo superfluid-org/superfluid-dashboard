@@ -77,7 +77,7 @@ import AddRounded from "@mui/icons-material/AddRounded";
 const MIN_VISIBLE_END_DATE = add(new Date(), {
   minutes: 5,
 });
-const MAX_VISIBLE_END_DATE = new Date(2022, 9, 31, 23, 59);
+const MAX_VISIBLE_END_DATE = new Date(2022, 11, 31, 23, 59);
 
 const getStreamedTotal = ({
   endTimestamp,

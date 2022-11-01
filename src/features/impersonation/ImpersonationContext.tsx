@@ -57,21 +57,33 @@ export const ImpersonationProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const setImpersonatedAddressQueryParam = useCallback(
     (address: Address) => {
-      router.replace({
-        query: {
-          ...router.query,
-          view: address,
+      router.replace(
+        {
+          query: {
+            ...router.query,
+            view: address,
+          },
         },
-      });
+        undefined,
+        {
+          shallow: true,
+        }
+      );
     },
     [router]
   );
 
   const removeImpersonatedAddressQueryParam = () => {
     const { view: viewAddressQueryParam, ...queryWithoutParam } = router.query;
-    router.replace({
-      query: queryWithoutParam,
-    });
+    router.replace(
+      {
+        query: queryWithoutParam,
+      },
+      undefined,
+      {
+        shallow: true,
+      }
+    );
   };
 
   // Get impersonated address from query string
