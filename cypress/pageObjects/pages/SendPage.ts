@@ -52,6 +52,7 @@ const ALL_BUTTONS = "[data-cy=send-card] [data-cy*=button]"
 const PREVIEW_BUFFER_LOSS = "[data-cy=buffer-loss]"
 const TX_DRAWER_BUTTON = "[data-cy=tx-drawer-button]"
 const OK_BUTTON = "[data-cy=ok-button]"
+const RECEIVER_DIALOG = "[data-cy=receiver-dialog]"
 
 export class SendPage extends BasePage {
     static searchForTokenInTokenList(token: string) {
@@ -315,7 +316,14 @@ export class SendPage extends BasePage {
 
     static inputStreamDetails(amount: string, token: string, timeUnit: any, address: string) {
         this.click(RECEIVER_BUTTON);
+        //Sometimes typing the address doesn't pick up it as a receiver , so re-typing to make sure it tries again
         this.type(ADDRESS_DIALOG_INPUT, address);
+        cy.get("body").then( el => {
+           if(el.find(RECEIVER_DIALOG).length < 1 ) {
+               this.clear(ADDRESS_DIALOG_INPUT)
+               this.type(ADDRESS_DIALOG_INPUT,address)
+           }
+        })
         this.click(SELECT_TOKEN_BUTTON);
         cy.get(`[data-cy=${token}-list-item]`, {timeout: 60000}).click()
         this.type(FLOW_RATE_INPUT, amount);
