@@ -26,6 +26,9 @@ import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
+import useTokenPrice from "../tokenPrice/useTokenPrice";
+import FiatAmount from "../tokenPrice/FiatAmount";
+import { formatEther } from "ethers/lib/utils";
 
 const TransferActivityRow: FC<Activity<TransferEvent>> = ({
   keyEvent,
@@ -36,6 +39,9 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { visibleAddress } = useVisibleAddress();
+
+  const tokenPrice = useTokenPrice(token, network.id);
+  const etherAmount = useMemo(() => formatEther(value), [value]);
 
   const tokenQuery = subgraphApi.useTokenQuery(
     token
@@ -92,13 +98,13 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
                       {tokenQuery.data.symbol}
                     </Amount>
                   }
-                  /**
-                   * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-                   * This is just used to make table row look better
-                   */
+                  secondary={
+                    tokenPrice && (
+                      <FiatAmount price={tokenPrice} amount={etherAmount} />
+                    )
+                  }
                   primaryTypographyProps={{
                     variant: "h6mono",
-                    sx: { lineHeight: "46px" },
                   }}
                   secondaryTypographyProps={{
                     variant: "body2mono",

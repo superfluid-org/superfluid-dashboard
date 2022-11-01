@@ -23,7 +23,7 @@ import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { FC, memo, useCallback } from "react";
 import Link from "../common/Link";
-import ThemeChanger from "../theme/ThemeChanger";
+import AppSettingsBtn from "../settings/AppSettingsBtn";
 import ConnectWallet from "../wallet/ConnectWallet";
 import { useLayoutContext } from "./LayoutContext";
 import MoreNavigationItem from "./MoreNavigationItem";
@@ -214,7 +214,7 @@ export default memo(function NavigationDrawer() {
           gap={1}
         >
           <MoreNavigationItem />
-          <ThemeChanger />
+          <AppSettingsBtn />
         </Stack>
       </Stack>
     </SwipeableDrawer>

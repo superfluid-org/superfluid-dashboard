@@ -1,4 +1,5 @@
 import Decimal from "decimal.js";
+import { BigNumber } from "ethers";
 import { FC, memo, useMemo } from "react";
 import { useAppSettingsContext } from "../settings/AppSettingsContext";
 

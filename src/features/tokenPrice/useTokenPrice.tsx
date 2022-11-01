@@ -20,6 +20,8 @@ const useTokenPrice = (token: Address, chainId: number) => {
       : skipToken
   );
 
+  console.log(tokenPriceResponse);
+
   return useMemo(() => {
     const price = tokenPriceResponse.data?.price;
 

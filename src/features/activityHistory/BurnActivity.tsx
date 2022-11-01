@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
+import { formatEther } from "ethers/lib/utils";
 import { FC, memo, useMemo } from "react";
 import { BurnedActivity } from "../../utils/activityUtils";
 import TxHashLink from "../common/TxHashLink";
@@ -18,6 +19,8 @@ import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
 import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
+import FiatAmount from "../tokenPrice/FiatAmount";
+import useTokenPrice from "../tokenPrice/useTokenPrice";
 import ActivityIcon from "./ActivityIcon";
 
 const BurnActivity: FC<BurnedActivity> = ({
@@ -28,12 +31,15 @@ const BurnActivity: FC<BurnedActivity> = ({
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { amount, transactionHash, timestamp } = keyEvent;
+  const { amount, transactionHash, timestamp, token } = keyEvent;
   const { token: superTokenAddress } = transferEvent || {};
 
   const isNativeAssetSuperToken =
     network.nativeCurrency.superToken.address.toLowerCase() ===
     superTokenAddress?.toLowerCase();
+
+  const tokenPrice = useTokenPrice(token, network.id);
+  const etherAmount = useMemo(() => formatEther(amount), [amount]);
 
   const superTokenQuery = subgraphApi.useTokenQuery(
     !isNativeAssetSuperToken && superTokenAddress
@@ -114,14 +120,13 @@ const BurnActivity: FC<BurnedActivity> = ({
                       -<Amount wei={amount}> {superToken.symbol}</Amount>
                     </>
                   }
-                  /**
-                   * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-                   * This is just used to make table row look better
-                   */
-                  // secondary="$12.59"
+                  secondary={
+                    tokenPrice && (
+                      <FiatAmount price={tokenPrice} amount={etherAmount} />
+                    )
+                  }
                   primaryTypographyProps={{
                     variant: "h6mono",
-                    sx: { lineHeight: "46px" },
                   }}
                   secondaryTypographyProps={{
                     variant: "body2mono",
@@ -144,14 +149,13 @@ const BurnActivity: FC<BurnedActivity> = ({
                       +<Amount wei={amount}> {underlyingToken.symbol}</Amount>
                     </>
                   }
-                  /**
-                   * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-                   * This is just used to make table row look better
-                   */
-                  // secondary="$12.59"
+                  secondary={
+                    tokenPrice && (
+                      <FiatAmount price={tokenPrice} amount={etherAmount} />
+                    )
+                  }
                   primaryTypographyProps={{
                     variant: "h6mono",
-                    sx: { lineHeight: "46px" },
                   }}
                   secondaryTypographyProps={{
                     variant: "body2mono",

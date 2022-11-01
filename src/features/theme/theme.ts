@@ -999,6 +999,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           PaperProps: {
             square: true,
           },
+          TransitionProps: {
+            timeout: theme.transitions.duration.shorter,
+            easing: theme.transitions.easing.easeInOut,
+          },
         },
       },
       MuiPopover: {
@@ -1006,6 +1010,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           elevation: 2,
           PaperProps: {
             square: true,
+          },
+          TransitionProps: {
+            timeout: theme.transitions.duration.shorter,
+            easing: theme.transitions.easing.easeInOut,
           },
         },
       },
