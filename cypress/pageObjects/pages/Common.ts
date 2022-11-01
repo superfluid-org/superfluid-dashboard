@@ -19,7 +19,7 @@ const VIEW_MODE_CHIP_CLOSE =
     "[data-cy=view-mode-chip] [data-testid=CancelIcon]";
 const WAGMI_CONNECT_WALLET_TITLE = "#rk_connect_title";
 const ADDRESS_BOOK_ENTRIES = "[data-cy=address-book-entry]"
-const ADDRESS_BOOK_RESULT_NAMES = "[data-cy=address-book-entry] span"
+const ADDRESS_BOOK_RESULT_NAMES = "[data-cy=address-book-entry] h6"
 const ADDRESS_BOOK_RESULT_ADDRESS = "[data-cy=address-book-entry] p"
 const TESTNETS_BUTTON = "[data-cy=testnets-button]";
 const MAINNETS_BUTTON = "[data-cy=mainnets-button]";
