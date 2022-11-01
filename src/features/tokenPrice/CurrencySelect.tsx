@@ -10,7 +10,6 @@ import {
   useTheme,
 } from "@mui/material";
 import { FC } from "react";
-import { CircleFlag } from "react-circle-flags";
 import { useDispatch } from "react-redux";
 import CountryFlagAvatar from "../../components/Avatar/CountryFlagAvatar";
 import useMenuUtils from "../../hooks/useMenuUtils";
@@ -58,11 +57,9 @@ const CurrencyItem: FC<CurrencyItemProps> = ({ currency, onClick }) => {
         justifyContent: "flex-start",
       }}
       onClick={onClick}
-      startIcon={
-        <CircleFlag countryCode={currency.country.toLowerCase()} height="24" />
-      }
+      startIcon={<CountryFlagAvatar country={currency.country.toLowerCase()} />}
     >
-      <div>{currency.code}</div>
+      {currency.code}
     </Button>
   );
 };
