@@ -1,7 +1,6 @@
-import { IWeb3FlowOperatorData, Operation } from "@superfluid-finance/sdk-core";
+import { Operation } from "@superfluid-finance/sdk-core";
 import {
   BaseQuery,
-  BaseSuperTokenMutation,
   FlowCreateMutation,
   FlowUpdateMutation,
   getFramework,

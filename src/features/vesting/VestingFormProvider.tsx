@@ -21,7 +21,7 @@ export type ValidVestingForm = {
     receiverAddress: string;
     startDate: Date;
     totalAmountEther: string;
-    vestingDuration: {
+    vestingPeriod: {
       numerator: number;
       denominator: UnitOfTime;
     };
@@ -62,7 +62,7 @@ const VestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
           totalAmountEther: string()
             .required()
             .test(testEtherAmount({ notNegative: true, notZero: true })),
-          vestingDuration: object({
+          vestingPeriod: object({
             numerator: number().required(),
             denominator: mixed<UnitOfTime>()
               .required()

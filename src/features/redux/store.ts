@@ -34,6 +34,7 @@ import { adHocMulticallEndpoints } from "./endpoints/adHocMulticallEndpoints";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
 import { streamSchedulerEndpoints } from "./endpoints/streamSchedulerEndpoints";
+import { vestingSchedulerEndpoints } from "./endpoints/vestingSchedulerEndpoints";
 import { platformApi } from "./platformApi/platformApi";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
@@ -46,7 +47,8 @@ export const rpcApi = initializeRpcApiSlice((options) =>
   .injectEndpoints(allRpcEndpoints)
   .injectEndpoints(adHocMulticallEndpoints)
   .injectEndpoints(adHocRpcEndpoints)
-  .injectEndpoints(streamSchedulerEndpoints);
+  .injectEndpoints(streamSchedulerEndpoints)
+  .injectEndpoints(vestingSchedulerEndpoints);
 
 export const subgraphApi = initializeSubgraphApiSlice((options) =>
   createApiWithReactHooks({
@@ -114,7 +116,7 @@ export const reduxStore = configureStore({
     pendingUpdates: pendingUpdateSlice.reducer,
     [platformApi.reducerPath]: platformApi.reducer,
     flags: flagsPersistedReducer,
-    [faucetApi.reducerPath]: faucetApi.reducer
+    [faucetApi.reducerPath]: faucetApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

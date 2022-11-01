@@ -1,7 +1,11 @@
 import {
+  Alert,
   Box,
+  Button,
+  Card,
   FormGroup,
   FormLabel,
+  IconButton,
   MenuItem,
   Select,
   Stack,
@@ -10,28 +14,89 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Token } from "@superfluid-finance/sdk-core";
-import { on } from "events";
-import { FC, PropsWithChildren, useMemo } from "react";
+import { FC, PropsWithChildren, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { getTimeInSeconds } from "../../utils/dateUtils";
 import TooltipIcon from "../common/TooltipIcon";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
-import { isWrappable, SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
-import { subgraphApi } from "../redux/store";
+import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
+import { rpcApi, subgraphApi } from "../redux/store";
 import AddressSearch from "../send/AddressSearch";
 import { timeUnitWordMap, unitOfTimeList } from "../send/FlowRateInput";
-import TokenIcon from "../token/TokenIcon";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
-import { PartialVestingForm } from "./VestingFormProvider";
+import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
+import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
+import {
+  TransactionButton,
+  transactionButtonDefaultProps,
+} from "../transactionBoundary/TransactionButton";
+import { PartialVestingForm, ValidVestingForm } from "./VestingFormProvider";
+import { ErrorMessage } from "@hookform/error-message";
+import { dateNowSeconds } from "../../utils/dateUtils";
+import format from "date-fns/fp/format";
+import add from "date-fns/fp/add";
 
-const VestingForm: FC<PropsWithChildren> = () => {
+type VestingToken = Token & SuperTokenMinimal;
+
+enum CreateVestingView {
+  Form,
+  Preview,
+}
+
+export const CreateVestingScheduleCard: FC<PropsWithChildren> = () => {
+  const { watch } = useFormContext<PartialVestingForm>();
+  const [tokenAddress] = watch(["data.tokenAddress"]);
+
+  const { network } = useExpectedNetwork();
+  const { token } = subgraphApi.useTokenQuery(
+    tokenAddress
+      ? {
+          chainId: network.id,
+          id: tokenAddress,
+        }
+      : skipToken,
+    {
+      selectFromResult: (result) => ({
+        token: result.currentData
+          ? ({
+              ...result.currentData,
+              address: result.currentData.id,
+              type: getSuperTokenType({
+                network,
+                address: result.currentData.id,
+                underlyingAddress: result.currentData.underlyingAddress,
+              }),
+            } as VestingToken)
+          : undefined,
+      }),
+    }
+  );
+
+  const [view, setView] = useState<CreateVestingView>(CreateVestingView.Form);
+
+  return (
+    <Card>
+      {view === CreateVestingView.Form && (
+        <VestingForm token={token} setView={setView} />
+      )}
+      {view === CreateVestingView.Preview && (
+        <VestingPreview token={token} setView={setView} />
+      )}
+    </Card>
+  );
+};
+
+const VestingForm: FC<{
+  token: VestingToken | undefined;
+  setView: (value: CreateVestingView) => void;
+}> = ({ token, setView }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -88,30 +153,6 @@ const VestingForm: FC<PropsWithChildren> = () => {
         />
       )}
     />
-  );
-
-  const { token } = subgraphApi.useTokenQuery(
-    tokenAddress
-      ? {
-          chainId: network.id,
-          id: tokenAddress,
-        }
-      : skipToken,
-    {
-      selectFromResult: (result) => ({
-        token: result.currentData
-          ? ({
-              ...result.currentData,
-              address: result.currentData.id,
-              type: getSuperTokenType({
-                network,
-                address: result.currentData.id,
-                underlyingAddress: result.currentData.underlyingAddress,
-              }),
-            } as Token & SuperTokenMinimal)
-          : undefined,
-      }),
-    }
   );
 
   const networkCustomTokens = useNetworkCustomTokens(network.id);
@@ -242,27 +283,37 @@ const VestingForm: FC<PropsWithChildren> = () => {
     <Controller
       control={control}
       name="data.cliffPeriod"
-      render={({ field: { onChange, onBlur } }) => (
-        <Box>
+      render={({ field: { onChange, onBlur, value } }) => (
+        <Box sx={{ display: "grid", gridTemplateColumns: "2fr 1fr" }}>
           <TextField
-            value={cliffPeriod.numerator}
+            value={value.numerator}
             onChange={(e) =>
               onChange({
                 numerator: e.target.value,
-                denominator: cliffPeriod.denominator,
+                denominator: value.denominator,
               })
             }
             onBlur={onBlur}
+            InputProps={{
+              sx: {
+                "border-top-right-radius": 0,
+                "border-bottom-right-radius": 0,
+              },
+            }}
           />
           <Select
-            value={cliffPeriod.denominator}
+            value={value.denominator}
             onChange={(e) =>
               onChange({
-                numerator: cliffPeriod.numerator,
+                numerator: value.numerator,
                 denominator: e.target.value,
               })
             }
             onBlur={onBlur}
+            sx={{
+              "border-top-left-radius": 0,
+              "border-bottom-left-radius": 0,
+            }}
           >
             {unitOfTimeList.map((unitOfTime) => (
               <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
@@ -279,27 +330,37 @@ const VestingForm: FC<PropsWithChildren> = () => {
     <Controller
       control={control}
       name="data.vestingPeriod"
-      render={({ field: { onChange, onBlur } }) => (
-        <Box>
+      render={({ field: { onChange, onBlur, value } }) => (
+        <Box sx={{ display: "grid", gridTemplateColumns: "2fr 1fr" }}>
           <TextField
-            value={cliffPeriod.numerator}
+            value={value.numerator}
             onChange={(e) =>
               onChange({
                 numerator: e.target.value,
-                denominator: cliffPeriod.denominator,
+                denominator: value.denominator,
               })
             }
             onBlur={onBlur}
+            InputProps={{
+              sx: {
+                "border-top-right-radius": 0,
+                "border-bottom-right-radius": 0,
+              },
+            }}
           />
           <Select
-            value={cliffPeriod.denominator}
+            value={value.denominator}
             onChange={(e) =>
               onChange({
-                numerator: cliffPeriod.numerator,
+                numerator: value.numerator,
                 denominator: e.target.value,
               })
             }
             onBlur={onBlur}
+            sx={{
+              "border-top-left-radius": 0,
+              "border-bottom-left-radius": 0,
+            }}
           >
             {unitOfTimeList.map((unitOfTime) => (
               <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
@@ -312,15 +373,47 @@ const VestingForm: FC<PropsWithChildren> = () => {
     />
   );
 
+  const PreviewVestingScheduleButton = (
+    <Button
+      {...transactionButtonDefaultProps}
+      disabled={!formState.isValid || formState.isValidating}
+      onClick={() => setView(CreateVestingView.Preview)}
+    >
+      Preview Vesting Schedule
+    </Button>
+  );
+
+  const ValidationSummary = (
+    <ErrorMessage
+      name="data"
+      // ErrorMessage has a bug and current solution is to pass in errors via props.
+      // TODO: keep eye on this issue: https://github.com/react-hook-form/error-message/issues/91
+      errors={formState.errors}
+      render={({ message }) =>
+        !!message && (
+          <Alert severity="error" sx={{ mb: 1 }}>
+            {message}
+          </Alert>
+        )
+      }
+    />
+  );
+
   return (
-    <Box component={"form"}>
+    <Stack component={"form"} gap={1}>
+      <Typography component="h2" variant="h5" sx={{ mb: 3 }}>
+        Create Vesting Schedule
+      </Typography>
+
+      {ValidationSummary}
+
       <FormGroup>
         <Stack
           direction="row"
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>Receiver</FormLabel>
+          <FormLabel>{Labels.Receiver}</FormLabel>
           <TooltipIcon title="Must not be an exchange address" />
         </Stack>
         {ReceiverController}
@@ -332,7 +425,7 @@ const VestingForm: FC<PropsWithChildren> = () => {
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>Token</FormLabel>
+          <FormLabel>{Labels.Token}</FormLabel>
           <TooltipIcon title="TODO:" />
         </Stack>
         {TokenController}
@@ -344,7 +437,7 @@ const VestingForm: FC<PropsWithChildren> = () => {
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>Total Vesting Period</FormLabel>
+          <FormLabel>{Labels.TotalVestingPeriod}</FormLabel>
           <TooltipIcon title="TODO:" />
         </Stack>
         {VestingPeriodController}
@@ -356,7 +449,7 @@ const VestingForm: FC<PropsWithChildren> = () => {
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>Total Vested Amount</FormLabel>
+          <FormLabel>{Labels.TotalVestedAmount}</FormLabel>
           <TooltipIcon title="TODO:" />
         </Stack>
         {VestingAmountController}
@@ -368,7 +461,7 @@ const VestingForm: FC<PropsWithChildren> = () => {
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>Cliff Period</FormLabel>
+          <FormLabel>{Labels.CliffPeriod}</FormLabel>
           <TooltipIcon title="TODO:" />
         </Stack>
         {CliffPeriodController}
@@ -380,7 +473,7 @@ const VestingForm: FC<PropsWithChildren> = () => {
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>Cliff Amount</FormLabel>
+          <FormLabel>{Labels.CliffAmount}</FormLabel>
           <TooltipIcon title="TODO:" />
         </Stack>
         {CliffAmountController}
@@ -392,13 +485,155 @@ const VestingForm: FC<PropsWithChildren> = () => {
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>Vesting Start Date</FormLabel>
+          <FormLabel>{Labels.VestingStartDate}</FormLabel>
           <TooltipIcon title="The date when stream scheduler tries to cancel the stream." />
         </Stack>
         {StartDateController}
       </FormGroup>
-    </Box>
+
+      <FormGroup>{PreviewVestingScheduleButton}</FormGroup>
+    </Stack>
   );
 };
 
-export default VestingForm;
+const VestingPreview: FC<{
+  token: VestingToken | undefined;
+  setView: (value: CreateVestingView) => void;
+}> = ({ token, setView }) => {
+  const { watch } = useFormContext<ValidVestingForm>();
+
+  const [
+    tokenAddress,
+    receiverAddress,
+    totalAmountEther,
+    startDate,
+    cliffAmountEther,
+    vestingPeriod,
+    cliffPeriod,
+  ] = watch([
+    "data.tokenAddress",
+    "data.receiverAddress",
+    "data.totalAmountEther",
+    "data.startDate",
+    "data.cliffAmountEther",
+    "data.vestingPeriod",
+    "data.cliffPeriod",
+  ]);
+
+  const [createVestingSchedule, createVestingScheduleResult] =
+    rpcApi.useCreateVestingScheduleMutation();
+
+  const BackButton = (
+    <Box>
+      <IconButton
+        data-cy={"back-button"}
+        color="inherit"
+        onClick={() => setView(CreateVestingView.Form)}
+      >
+        <ArrowBackIcon />
+      </IconButton>
+    </Box>
+  );
+
+  const SubmitButton = (
+    <TransactionBoundary mutationResult={createVestingScheduleResult}>
+      {() => (
+        <TransactionButton onClick={async (signer) => {}}>
+          Create Vesting Schedule
+        </TransactionButton>
+      )}
+    </TransactionBoundary>
+  );
+
+  const cliffDate = add(
+    {
+      seconds: cliffPeriod.numerator * cliffPeriod.denominator,
+    },
+    startDate
+  );
+
+  const endDate = add(
+    {
+      seconds: vestingPeriod.numerator * vestingPeriod.denominator,
+    },
+    startDate
+  );
+
+  return (
+    <Stack gap={1}>
+      {BackButton}
+      <Typography component="h2" variant="h5" sx={{ mb: 3 }}>
+        Preview Vesting Schedule
+      </Typography>
+
+      <Stack>
+        <Typography color="text.secondary">{Labels.Receiver}</Typography>
+        <Typography color="text.primary">{receiverAddress}</Typography>
+      </Stack>
+
+      <Stack>
+        <Typography color="text.secondary">{Labels.Token}</Typography>
+        <Typography color="text.primary">{tokenAddress}</Typography>
+      </Stack>
+
+      <Stack>
+        <Typography color="text.secondary">
+          {Labels.TotalVestedAmount}
+        </Typography>
+        <Typography color="text.primary">
+          {totalAmountEther} {token?.symbol}
+        </Typography>
+      </Stack>
+
+      <Stack>
+        <Typography color="text.secondary">
+          {Labels.VestingStartDate}
+        </Typography>
+        <Typography color="text.primary">
+          {format("LLLL d, yyyy", startDate)}
+        </Typography>
+      </Stack>
+
+      <Stack>
+        <Typography color="text.secondary">{Labels.CliffPeriod}</Typography>
+        <Typography color="text.primary">
+          {cliffPeriod.numerator} {timeUnitWordMap[cliffPeriod.denominator]}
+        </Typography>
+        <Typography color="text.primary">
+          {format("LLLL d, yyyy", cliffDate)}
+        </Typography>
+      </Stack>
+
+      <Stack>
+        <Typography color="text.secondary">{Labels.CliffAmount}</Typography>
+        <Typography color="text.primary">
+          {cliffAmountEther} {token?.symbol}
+        </Typography>
+      </Stack>
+
+      <Stack>
+        <Typography color="text.secondary">
+          {Labels.TotalVestingPeriod}
+        </Typography>
+        <Typography color="text.primary">
+          {vestingPeriod.numerator} {timeUnitWordMap[vestingPeriod.denominator]}
+        </Typography>
+        <Typography color="text.primary">
+          {format("LLLL d, yyyy", endDate)}
+        </Typography>
+      </Stack>
+
+      <ConnectionBoundary>{SubmitButton}</ConnectionBoundary>
+    </Stack>
+  );
+};
+
+enum Labels {
+  Receiver = "Receiver",
+  CliffPeriod = "Cliff Period",
+  CliffAmount = "Cliff Amount",
+  VestingStartDate = "Vesting Start Date",
+  Token = "Token",
+  TotalVestingPeriod = "Total Vesting Period",
+  TotalVestedAmount = "Total Vested Amount",
+}
