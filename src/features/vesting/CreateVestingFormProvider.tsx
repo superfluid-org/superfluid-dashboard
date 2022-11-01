@@ -51,7 +51,7 @@ export type PartialVestingForm = {
   };
 };
 
-const VestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
+const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const primarySchema = useMemo<ObjectSchema<ValidVestingForm>>(
     () =>
       object({
@@ -133,7 +133,7 @@ const VestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
   ) : null;
 };
 
-export default VestingFormProvider;
+export default CreateVestingFormProvider;
 
 // findClosestUnitOfTime
 // UnitOfAmount

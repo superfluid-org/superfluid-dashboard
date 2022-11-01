@@ -1,8 +1,8 @@
 import { Box, Card, Container, Typography, useTheme } from "@mui/material";
 import { NextPage } from "next";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
-import { CreateVestingScheduleCard } from "../features/vesting/VestingForm";
-import VestingFormProvider from "../features/vesting/VestingFormProvider";
+import { CreateVestingCard } from "../features/vesting/CreateVestingCard";
+import CreateVestingFormProvider from "../features/vesting/CreateVestingFormProvider";
 
 const VestingPage: NextPage = () => {
   const theme = useTheme();
@@ -24,9 +24,9 @@ const VestingPage: NextPage = () => {
         <Typography component="h1" variant="h4" sx={{ mb: 3 }}>
           Vesting
         </Typography>
-        <VestingFormProvider>
-          <CreateVestingScheduleCard />
-        </VestingFormProvider>
+        <CreateVestingFormProvider>
+          <CreateVestingCard />
+        </CreateVestingFormProvider>
       </Box>
     </Container>
   );
