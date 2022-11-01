@@ -8,7 +8,7 @@ import HDWalletProvider from "@truffle/hdwallet-provider";
 
 const NAVIGATION_BUTTON_PREFIX = "[data-cy=nav-";
 const TOP_BAR_NETWORK_BUTTON = "[data-cy=top-bar-network-button]";
-const CONNECTED_WALLET = "[data-cy=wallet-connection-status] span";
+const CONNECTED_WALLET = "[data-cy=wallet-connection-status] h6";
 const WALLET_CONNECTION_STATUS = "[data-cy=wallet-connection-status] p";
 const NAVIGATION_DRAWER = "[data-cy=navigation-drawer]";
 const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet-button]";

@@ -31,7 +31,7 @@ const RISK_CHECKBOX = "[data-cy=risk-checkbox]";
 const ADDRESS_BUTTON_TEXT = "[data-cy=address-button]";
 const CHOSEN_ENS_ADDRESS = "[data-cy=address-button] span p";
 const TOKEN_SELECT_NAME = "[data-cy=token-symbol-and-name] p";
-const TOKEN_SELECT_SYMBOL = "[data-cy=token-symbol-and-name] span";
+const TOKEN_SELECT_SYMBOL = "[data-cy=token-symbol-and-name] h6";
 const TOKEN_SELECT_BALANCE = "[data-cy=token-balance] span";
 const BALANCE_WRAP_BUTTON = "[data-cy=balance-wrap-button]";
 const PREVIEW_BALANCE = "[data-cy=balance]";
@@ -118,7 +118,7 @@ export class SendPage extends BasePage {
             }
             cy.get(TOKEN_SEARCH_RESULTS)
                 .eq(0)
-                .find("[data-cy=token-symbol-and-name] span")
+                .find(TOKEN_SELECT_SYMBOL)
                 .then(($tokenSearchResultName) => {
                     cy.wrap($tokenSearchResultName.text()).as("lastChosenToken");
                 });
@@ -270,7 +270,7 @@ export class SendPage extends BasePage {
     }
 
     static tokenSearchResultsOnlyContain(token: string) {
-        cy.get("[data-cy*=-list-item] [data-cy=token-symbol-and-name] span").each(
+        cy.get(`[data-cy*=-list-item] ${TOKEN_SELECT_SYMBOL}`).each(
             (el) => {
                 cy.wrap(el).should("contain", token);
             }

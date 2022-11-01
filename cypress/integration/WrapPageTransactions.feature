@@ -37,7 +37,7 @@ Feature: Wrapping and Unwrapping transactional test cases
     Then Unwrap field input field has "0.1" written in it
     And The token balances after wrapping "0.1" tokens are correctly shown in the unwrap page
 
-  @only
+  @numTestsKeptInMemory(0)
   Scenario: Wrapping normal underlying tokens
     Given Transactional account dan is connected to the dashboard on goerli
     And User clicks on the "wrap-unwrap" navigation button
