@@ -13,7 +13,6 @@ import { MinigameProvider } from "../features/minigame/MinigameContext";
 import { ActiveNetworksProvider } from "../features/network/ActiveNetworksContext";
 import { ExpectedNetworkProvider } from "../features/network/ExpectedNetworkContext";
 import ReduxProvider from "../features/redux/ReduxProvider";
-import { AppSettingsContextProvider } from "../features/settings/AppSettingsContext";
 import createEmotionCache from "../features/theme/createEmotionCache";
 import MuiProvider from "../features/theme/MuiProvider";
 import NextThemesProvider from "../features/theme/NextThemesProvider";
@@ -68,18 +67,16 @@ export default function MyApp(props: MyAppProps) {
                           <ConnectButtonProvider>
                             <VisibleAddressProvider>
                               <TransactionRestorationContextProvider>
-                                <AppSettingsContextProvider>
-                                  <LayoutContextProvider>
-                                    <IntercomProvider>
-                                      <MonitorContext />
-                                      <Layout>
-                                        <MinigameProvider>
-                                          <Component {...pageProps} />
-                                        </MinigameProvider>
-                                      </Layout>
-                                    </IntercomProvider>
-                                  </LayoutContextProvider>
-                                </AppSettingsContextProvider>
+                                <LayoutContextProvider>
+                                  <IntercomProvider>
+                                    <MonitorContext />
+                                    <Layout>
+                                      <MinigameProvider>
+                                        <Component {...pageProps} />
+                                      </MinigameProvider>
+                                    </Layout>
+                                  </IntercomProvider>
+                                </LayoutContextProvider>
                               </TransactionRestorationContextProvider>
                             </VisibleAddressProvider>
                           </ConnectButtonProvider>

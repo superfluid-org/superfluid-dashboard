@@ -11,10 +11,12 @@ import {
 } from "@mui/material";
 import { FC } from "react";
 import { CircleFlag } from "react-circle-flags";
+import { useDispatch } from "react-redux";
 import CountryFlagAvatar from "../../components/Avatar/CountryFlagAvatar";
 import useMenuUtils from "../../hooks/useMenuUtils";
 import { Currency } from "../../utils/currencyUtils";
-import { useAppSettingsContext } from "../settings/AppSettingsContext";
+import { applySettings } from "../settings/appSettings.slice";
+import { useAppCurrency } from "../settings/appSettingsHooks";
 
 const POPULAR_CURRENCIES = [
   Currency.USD,
@@ -22,6 +24,7 @@ const POPULAR_CURRENCIES = [
   Currency.AUD,
   Currency.BRL,
 ];
+
 const FIAT_CURRENCIES = [
   Currency.CAD,
   Currency.CHF,
@@ -67,14 +70,16 @@ const CurrencyItem: FC<CurrencyItemProps> = ({ currency, onClick }) => {
 interface CurrencySelectProps {}
 
 const CurrencySelect: FC<CurrencySelectProps> = ({}) => {
-  const { currency: activeCurrency, setCurrency } = useAppSettingsContext();
+  const dispatch = useDispatch();
+  const activeCurrency = useAppCurrency();
 
   const [open, anchorEl, handleOpen, handleClose] = useMenuUtils();
 
   const theme = useTheme();
 
   const selectCurrency = (currency: Currency) => () => {
-    setCurrency(currency);
+    console.log("Apply settings", currency.code);
+    dispatch(applySettings({ currencyCode: currency.code }));
     handleClose();
   };
 

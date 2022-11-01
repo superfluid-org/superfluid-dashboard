@@ -1,7 +1,6 @@
 import Decimal from "decimal.js";
-import { BigNumber } from "ethers";
 import { FC, memo, useMemo } from "react";
-import { useAppSettingsContext } from "../settings/AppSettingsContext";
+import { useAppCurrency } from "../settings/appSettingsHooks";
 
 const FIAT_PRECISION_REGEX = `\\.([0]*)`;
 
@@ -17,7 +16,7 @@ interface FiatAmountProps {
 }
 
 const FiatAmount: FC<FiatAmountProps> = ({ amount, price, decimalPlaces }) => {
-  const { currency } = useAppSettingsContext();
+  const currency = useAppCurrency();
 
   const priceDecimal = useMemo(() => {
     return new Decimal(amount).mul(new Decimal(price));

@@ -29,6 +29,7 @@ import gasApi from "../gas/gasApi.slice";
 import { impersonationSlice } from "../impersonation/impersonation.slice";
 import { networkPreferencesSlice } from "../network/networkPreferences.slice";
 import { pendingUpdateSlice } from "../pendingUpdates/pendingUpdate.slice";
+import appSettingsReducer from "../settings/appSettings.slice";
 import { assetApiSlice } from "../token/tokenManifestSlice";
 import tokenPriceApi from "../tokenPrice/tokenPriceApi.slice";
 import { adHocMulticallEndpoints } from "./endpoints/adHocMulticallEndpoints";
@@ -100,6 +101,11 @@ const flagsPersistedReducer = persistReducer(
   flagsSlice.reducer
 );
 
+const appSettingsPersistedReducer = persistReducer(
+  { storage, key: "appSettings", version: 1 },
+  appSettingsReducer
+);
+
 export const reduxStore = configureStore({
   reducer: {
     // API slices
@@ -113,13 +119,16 @@ export const reduxStore = configureStore({
     [faucetApi.reducerPath]: faucetApi.reducer,
     [tokenPriceApi.reducerPath]: tokenPriceApi.reducer,
 
-    // Default slices
+    // Persisted slices
+    appSettings: appSettingsPersistedReducer,
     impersonations: impersonationPersistedReducer,
     addressBook: addressBookPersistedReducer,
     customTokens: customTokensPersistedReducer,
     networkPreferences: networkPreferencesPersistedReducer,
-    pendingUpdates: pendingUpdateSlice.reducer,
     flags: flagsPersistedReducer,
+
+    // Default slices
+    pendingUpdates: pendingUpdateSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
