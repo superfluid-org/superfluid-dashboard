@@ -23,6 +23,8 @@ declare module "@superfluid-finance/sdk-redux" {
     "Remove Stream End Date": true;
     "Send Closed-Ended Stream": true;
     "Modify Stream": true;
+    "Create Vesting Schedule": true;
+    "Increase Allowance": true;
   }
 }
 

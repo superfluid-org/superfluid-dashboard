@@ -1,4 +1,4 @@
-import {Operation} from "@superfluid-finance/sdk-core";
+import { Operation } from "@superfluid-finance/sdk-core";
 import {
   BaseQuery,
   FlowCreateMutation,
@@ -9,12 +9,13 @@ import {
   TransactionInfo,
   TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
-import {getGoerliSdk} from "../../../eth-sdk/client";
-import {findNetworkByChainId,} from "../../network/networks";
-import {rpcApi} from "../store";
-import {getEthSdk} from "../../../eth-sdk/getEthSdk";
+import { findNetworkByChainId } from "../../network/networks";
+import { rpcApi } from "../store";
+import { getEthSdk } from "../../../eth-sdk/getEthSdk";
 
-const ACL_DELETE_PERMISSION = 4;
+export const ACL_CREATE_PERMISSION = 1;
+export const ACL_UPDATE_PERMISSION = 2;
+export const ACL_DELETE_PERMISSION = 4;
 
 interface GetStreamScheduledEndDate extends BaseQuery<number | null> {
   superTokenAddress: string;
@@ -39,7 +40,10 @@ export const streamSchedulerEndpoints = {
         receiverAddress,
       }) => {
         const framework = await getFramework(chainId);
-        const { streamScheduler } = getEthSdk(chainId, framework.settings.provider); // TODO(KK): Get this off of a Network.
+        const { streamScheduler } = getEthSdk(
+          chainId,
+          framework.settings.provider
+        );
 
         const streamOrder = await streamScheduler.getStreamOrders(
           senderAddress,
@@ -80,7 +84,7 @@ export const streamSchedulerEndpoints = {
           ).unwrap(),
         ]);
 
-        const { streamScheduler } = getGoerliSdk(arg.signer); // TODO(KK): Get this off of a Network.
+        const { streamScheduler } = getEthSdk(chainId, arg.signer);
         const subOperations: {
           operation: Operation;
           title: TransactionTitle;
