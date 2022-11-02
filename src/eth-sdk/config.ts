@@ -4,8 +4,8 @@ import { networkDefinition } from "../features/network/networks";
 export default defineConfig({
   contracts: {
     goerli: {
-      StreamScheduler: networkDefinition.goerli.streamSchedulerContractAddress,
-      VestingScheduler:
+      streamScheduler: networkDefinition.goerli.streamSchedulerContractAddress,
+      vestingScheduler:
         networkDefinition.goerli.vestingSchedulerContractAddress,
     },
     // polygonMumbai: {

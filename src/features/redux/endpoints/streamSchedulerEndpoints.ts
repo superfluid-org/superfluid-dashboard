@@ -1,4 +1,4 @@
-import { Operation } from "@superfluid-finance/sdk-core";
+import {Operation} from "@superfluid-finance/sdk-core";
 import {
   BaseQuery,
   FlowCreateMutation,
@@ -9,26 +9,12 @@ import {
   TransactionInfo,
   TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
-import { providers, Signer } from "ethers";
-import { getGoerliSdk } from "../../../eth-sdk/client";
-import {
-  findNetworkByChainId,
-  networkDefinition,
-} from "../../network/networks";
-import { rpcApi } from "../store";
+import {getGoerliSdk} from "../../../eth-sdk/client";
+import {findNetworkByChainId,} from "../../network/networks";
+import {rpcApi} from "../store";
+import {getEthSdk} from "../../../eth-sdk/getEthSdk";
 
 const ACL_DELETE_PERMISSION = 4;
-
-const getSdk = (
-  chainId: number,
-  providerOrSigner: providers.Provider | Signer
-) => {
-  if (chainId === networkDefinition.goerli.id) {
-    return getGoerliSdk(providerOrSigner);
-  }
-
-  throw new Error();
-};
 
 interface GetStreamScheduledEndDate extends BaseQuery<number | null> {
   superTokenAddress: string;
@@ -53,9 +39,9 @@ export const streamSchedulerEndpoints = {
         receiverAddress,
       }) => {
         const framework = await getFramework(chainId);
-        const sdk = getSdk(chainId, framework.settings.provider); // TODO(KK): Get this off of a Network.
+        const { streamScheduler } = getEthSdk(chainId, framework.settings.provider); // TODO(KK): Get this off of a Network.
 
-        const streamOrder = await sdk.StreamScheduler.getStreamOrders(
+        const streamOrder = await streamScheduler.getStreamOrders(
           senderAddress,
           receiverAddress,
           superTokenAddress
@@ -94,7 +80,7 @@ export const streamSchedulerEndpoints = {
           ).unwrap(),
         ]);
 
-        const sdk = getGoerliSdk(arg.signer); // TODO(KK): Get this off of a Network.
+        const { streamScheduler } = getGoerliSdk(arg.signer); // TODO(KK): Get this off of a Network.
         const subOperations: {
           operation: Operation;
           title: TransactionTitle;
@@ -140,7 +126,7 @@ export const streamSchedulerEndpoints = {
 
             if (arg.endTimestamp !== existingEndTimestamp) {
               const streamOrder =
-                await sdk.StreamScheduler.populateTransaction.createStreamOrder(
+                await streamScheduler.populateTransaction.createStreamOrder(
                   arg.receiverAddress,
                   arg.superTokenAddress,
                   0, // startDate
@@ -163,7 +149,7 @@ export const streamSchedulerEndpoints = {
           } else {
             if (existingEndTimestamp) {
               const streamOrder =
-                await sdk.StreamScheduler.populateTransaction.deleteStreamOrder(
+                await streamScheduler.populateTransaction.deleteStreamOrder(
                   arg.receiverAddress,
                   arg.superTokenAddress,
                   "0x"
