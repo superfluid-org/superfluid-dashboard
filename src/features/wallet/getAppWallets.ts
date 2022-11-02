@@ -1,9 +1,15 @@
 import {
   Chain,
   connectorsForWallets,
-  wallet,
   WalletList,
 } from "@rainbow-me/rainbowkit";
+import {
+  injectedWallet,
+  metaMaskWallet,
+  braveWallet,
+  walletConnectWallet,
+  coinbaseWallet,
+} from "@rainbow-me/rainbowkit/wallets";
 import gnosisSafe from "./gnosisSafeWalletConnector/gnosisSafe";
 import mockConnector from "./mockConnector/mockConnector";
 
@@ -32,20 +38,18 @@ export const getAppWallets = ({
     {
       groupName: "Popular",
       wallets: [
-        wallet.metaMask({
+        metaMaskWallet({
           chains,
           shimDisconnect: true,
         }),
-        wallet.brave({ chains, shimDisconnect: true }),
+        braveWallet({ chains, shimDisconnect: true }),
         gnosisSafe({ chains }),
         ...(needsInjectedWalletFallback
-          ? [wallet.injected({ chains, shimDisconnect: true })]
+          ? [injectedWallet({ chains, shimDisconnect: true })]
           : []),
-        wallet.walletConnect({ chains }),
-        wallet.coinbase({ appName, chains }),
-        ...(needsMock
-          ? [mockConnector({ chains })]
-          : [])
+        walletConnectWallet({ chains }),
+        coinbaseWallet({ appName, chains }),
+        ...(needsMock ? [mockConnector({ chains })] : []),
         // wallet.trust({ chains }),
       ],
     },

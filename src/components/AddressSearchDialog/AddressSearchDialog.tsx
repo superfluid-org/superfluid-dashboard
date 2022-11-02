@@ -129,6 +129,7 @@ export default memo(function AddressSearchDialog({
 
   return (
     <ResponsiveDialog
+      data-cy={"receiver-dialog"}
       open={open}
       onClose={() => onClose()}
       PaperProps={{ sx: { borderRadius: "20px", maxWidth: 500 } }}
