@@ -5,7 +5,10 @@ import { FC, useEffect, useRef } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { useAccount } from "wagmi";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
-import { calculateCurrentBalance } from "../../utils/tokenUtils";
+import {
+  calculateCurrentBalance,
+  parseAmountOrZero,
+} from "../../utils/tokenUtils";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi, subgraphApi } from "../redux/store";
@@ -98,7 +101,9 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
         : skipToken
     );
 
-  const amountWei = parseEther(amount || "0");
+  const amountWei = parseAmountOrZero(
+    amount ? { value: amount, decimals: 18 } : undefined
+  );
 
   return (
     <Stack direction="column" alignItems="center">
