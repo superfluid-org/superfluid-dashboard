@@ -29,6 +29,7 @@ export type Network = Chain & {
     } & TokenMinimal;
   };
   streamSchedulerContractAddress?: `0x${string}`;
+  vestingSchedulerContractAddress?: `0x${string}`;
   platformUrl?: string;
 };
 
@@ -78,6 +79,7 @@ const blockExplorers = {
 export const networkDefinition: {
   goerli: Network & {
     streamSchedulerContractAddress: `0x${string}`;
+    vestingSchedulerContractAddress: `0x${string}`;
     platformUrl: string;
   };
   gnosis: Network;
@@ -120,6 +122,8 @@ export const networkDefinition: {
     },
     streamSchedulerContractAddress:
       "0x7D37D9494a09E47e58B1F535386Ca4D9D175f23e",
+    vestingSchedulerContractAddress:
+      "0xaab383b52F17E709fA5E5fD016D3205F563D89c7",
     platformUrl: config.platformApi.goerli,
   },
   gnosis: {
