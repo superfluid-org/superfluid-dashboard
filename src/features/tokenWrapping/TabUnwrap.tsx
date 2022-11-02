@@ -171,7 +171,15 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
         </Stack>
         {tokenPair && visibleAddress && (
           <Stack direction="row" justifyContent="space-between" gap={0.5}>
-            <Typography variant="body2mono" color="text.secondary">
+            <Typography
+              variant="body2mono"
+              color="text.secondary"
+              sx={{
+                flexShrink: 1,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
               {tokenPrice && <FiatAmount price={tokenPrice} wei={amountWei} />}
             </Typography>
 
@@ -253,7 +261,15 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
 
           {visibleAddress && (
             <Stack direction="row" justifyContent="space-between">
-              <Typography variant="body2mono" color="text.secondary">
+              <Typography
+                variant="body2mono"
+                color="text.secondary"
+                sx={{
+                  flexShrink: 1,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
                 {tokenPrice && (
                   <FiatAmount price={tokenPrice} wei={amountWei} />
                 )}
