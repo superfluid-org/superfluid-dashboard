@@ -11,7 +11,6 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format } from "date-fns";
-import { formatEther } from "ethers/lib/utils";
 import { FC, memo, useMemo } from "react";
 import { BurnedActivity } from "../../utils/activityUtils";
 import TxHashLink from "../common/TxHashLink";
@@ -39,7 +38,6 @@ const BurnActivity: FC<BurnedActivity> = ({
     superTokenAddress?.toLowerCase();
 
   const tokenPrice = useTokenPrice(network.id, token);
-  const etherAmount = useMemo(() => formatEther(amount), [amount]);
 
   const superTokenQuery = subgraphApi.useTokenQuery(
     !isNativeAssetSuperToken && superTokenAddress
@@ -121,9 +119,7 @@ const BurnActivity: FC<BurnedActivity> = ({
                     </>
                   }
                   secondary={
-                    tokenPrice && (
-                      <FiatAmount price={tokenPrice} amount={etherAmount} />
-                    )
+                    tokenPrice && <FiatAmount price={tokenPrice} wei={amount} />
                   }
                   primaryTypographyProps={{
                     variant: "h6mono",
@@ -150,9 +146,7 @@ const BurnActivity: FC<BurnedActivity> = ({
                     </>
                   }
                   secondary={
-                    tokenPrice && (
-                      <FiatAmount price={tokenPrice} amount={etherAmount} />
-                    )
+                    tokenPrice && <FiatAmount price={tokenPrice} wei={amount} />
                   }
                   primaryTypographyProps={{
                     variant: "h6mono",

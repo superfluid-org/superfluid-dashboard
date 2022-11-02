@@ -15,8 +15,8 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { TransferEvent } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { FC, memo, useMemo } from "react";
-import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
+import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import { Activity } from "../../utils/activityUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
@@ -24,11 +24,10 @@ import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
 import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
+import FiatAmount from "../tokenPrice/FiatAmount";
+import useTokenPrice from "../tokenPrice/useTokenPrice";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
-import useTokenPrice from "../tokenPrice/useTokenPrice";
-import FiatAmount from "../tokenPrice/FiatAmount";
-import { formatEther } from "ethers/lib/utils";
 
 const TransferActivityRow: FC<Activity<TransferEvent>> = ({
   keyEvent,
@@ -41,7 +40,6 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
   const { visibleAddress } = useVisibleAddress();
 
   const tokenPrice = useTokenPrice(network.id, token);
-  const etherAmount = useMemo(() => formatEther(value), [value]);
 
   const tokenQuery = subgraphApi.useTokenQuery(
     token
@@ -99,9 +97,7 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
                     </Amount>
                   }
                   secondary={
-                    tokenPrice && (
-                      <FiatAmount price={tokenPrice} amount={etherAmount} />
-                    )
+                    tokenPrice && <FiatAmount price={tokenPrice} wei={value} />
                   }
                   primaryTypographyProps={{
                     variant: "h6mono",

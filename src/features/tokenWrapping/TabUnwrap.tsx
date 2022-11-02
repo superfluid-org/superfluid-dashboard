@@ -8,7 +8,6 @@ import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { calculateCurrentBalance } from "../../utils/tokenUtils";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
 import FiatAmount from "../tokenPrice/FiatAmount";
@@ -99,6 +98,8 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
         : skipToken
     );
 
+  const amountWei = parseEther(amount || "0");
+
   return (
     <Stack direction="column" alignItems="center">
       <WrapInputCard>
@@ -171,9 +172,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
         {tokenPair && visibleAddress && (
           <Stack direction="row" justifyContent="space-between" gap={0.5}>
             <Typography variant="body2mono" color="text.secondary">
-              {tokenPrice && (
-                <FiatAmount price={tokenPrice} amount={amount || "0"} />
-              )}
+              {tokenPrice && <FiatAmount price={tokenPrice} wei={amountWei} />}
             </Typography>
 
             <Stack direction="row">
@@ -256,7 +255,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
             <Stack direction="row" justifyContent="space-between">
               <Typography variant="body2mono" color="text.secondary">
                 {tokenPrice && (
-                  <FiatAmount price={tokenPrice} amount={amount || "0"} />
+                  <FiatAmount price={tokenPrice} wei={amountWei} />
                 )}
               </Typography>
               <BalanceUnderlyingToken
@@ -277,7 +276,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
           </Typography>
           {tokenPrice && (
             <Typography variant="body2mono" color="text.secondary">
-              (<FiatAmount price={tokenPrice} amount="1" />)
+              (<FiatAmount price={tokenPrice} />)
             </Typography>
           )}
         </Stack>

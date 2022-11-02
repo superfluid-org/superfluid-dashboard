@@ -24,10 +24,7 @@ const selectSelf = (state: RootState): AppSettingsState => state.appSettings;
 
 export const settingSelector = createSelector(
   [selectSelf, (_state: RootState, setting: keyof AppSettingsState) => setting],
-  (state: AppSettingsState, setting: keyof AppSettingsState) => {
-    console.log("Select setting", setting, state[setting]);
-    return state[setting];
-  }
+  (state: AppSettingsState, setting: keyof AppSettingsState) => state[setting]
 );
 
 export const { applySettings } = appSettingsSlice.actions;

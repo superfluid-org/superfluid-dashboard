@@ -1,33 +1,27 @@
 import Decimal from "decimal.js";
-import { FC, memo, useMemo } from "react";
+import { BigNumberish, utils } from "ethers";
+import { FC, memo, PropsWithChildren } from "react";
 import { useAppCurrency } from "../settings/appSettingsHooks";
 
-const FIAT_PRECISION_REGEX = `\\.([0]*)`;
-
-const getFiatPrecision = (price: string, offset = 2) => {
-  const result = new RegExp(FIAT_PRECISION_REGEX, "gm").exec(price);
-  return Math.max(result ? result[1].length + offset : 2, offset);
-};
-
 interface FiatAmountProps {
-  amount: string;
+  wei?: BigNumberish;
   price: number;
-  decimalPlaces?: number;
 }
 
-const FiatAmount: FC<FiatAmountProps> = ({ amount, price, decimalPlaces }) => {
+const FiatAmount: FC<PropsWithChildren<FiatAmountProps>> = ({
+  wei = "1000000000000000000",
+  price,
+  children,
+}) => {
   const currency = useAppCurrency();
+  const decimal = new Decimal(utils.formatUnits(wei)).mul(price);
 
-  const priceDecimal = useMemo(() => {
-    return new Decimal(amount).mul(new Decimal(price));
-  }, [amount, price]);
-
-  const decimals = useMemo(
-    () => decimalPlaces || getFiatPrecision(priceDecimal.toString() || "1"),
-    [decimalPlaces, priceDecimal]
+  return (
+    <>
+      {currency.format(decimal.toFixed(2))}
+      {children}
+    </>
   );
-
-  return <>{currency.format(priceDecimal.toFixed(decimals))}</>;
 };
 
 export default memo(FiatAmount);

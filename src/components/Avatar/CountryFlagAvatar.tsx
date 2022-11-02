@@ -15,7 +15,7 @@ const CountryFlagAvatar: FC<CountryFlagAvatarProps> = ({
 }) => {
   return (
     <Avatar
-      alt="ens avatar"
+      alt={`${country} flag`}
       variant="rounded"
       sx={{ width: size, height: size }}
       src={`${CDN_URL}${country.toLowerCase()}.${FILE_SUFFIX}`}

@@ -1,7 +1,4 @@
-import Decimal from "decimal.js";
-import { formatEther } from "ethers/lib/utils";
-import { FC, memo, useMemo } from "react";
-import useEtherSignificantFlowingDecimal from "../token/useEtherSignificantFlowingDecimal";
+import { FC, memo } from "react";
 import useFlowingBalance from "../token/useFlowingBalance";
 import FiatAmount from "./FiatAmount";
 
@@ -19,15 +16,7 @@ const FlowingFiatBalance: FC<FlowingFiatBalanceProps> = ({
   price,
 }) => {
   const { weiValue } = useFlowingBalance(balance, balanceTimestamp, flowRate);
-  const decimalPlaces = useEtherSignificantFlowingDecimal(flowRate, price);
-
-  return (
-    <FiatAmount
-      amount={formatEther(weiValue)}
-      price={price}
-      decimalPlaces={decimalPlaces}
-    />
-  );
+  return <FiatAmount wei={weiValue} price={price} />;
 };
 
 export default memo(FlowingFiatBalance);

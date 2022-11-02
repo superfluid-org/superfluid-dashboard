@@ -15,8 +15,6 @@ export enum CurrencyCode {
   NOK = "NOK",
   RUB = "RUB",
   SEK = "SEK",
-  TRY = "TRY",
-  ZAR = "ZAR",
 }
 
 // Basically an Enum with more data
@@ -37,8 +35,6 @@ export class Currency {
   static readonly NOK = new Currency(CurrencyCode.NOK, "NO", (v) => `kr ${v}`);
   static readonly RUB = new Currency(CurrencyCode.RUB, "RU", (v) => `${v} p.`);
   static readonly SEK = new Currency(CurrencyCode.SEK, "SE", (v) => `${v} kr`);
-  static readonly TRY = new Currency(CurrencyCode.TRY, "TR", (v) => `${v} ₺`);
-  static readonly ZAR = new Currency(CurrencyCode.ZAR, "ZA", (v) => `R ${v}`);
 
   // private to disallow creating other instances of this type
   private constructor(
@@ -69,8 +65,6 @@ export const currenciesByCode = {
   [CurrencyCode.NOK]: Currency.NOK,
   [CurrencyCode.RUB]: Currency.RUB,
   [CurrencyCode.SEK]: Currency.SEK,
-  [CurrencyCode.TRY]: Currency.TRY,
-  [CurrencyCode.ZAR]: Currency.ZAR,
 };
 
 export const currencies = Object.values(currenciesByCode);

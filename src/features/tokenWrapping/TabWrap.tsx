@@ -291,9 +291,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
         {underlyingToken && visibleAddress && (
           <Stack direction="row" justifyContent="space-between" gap={0.5}>
             <Typography variant="body2mono" color="text.secondary">
-              {tokenPrice && (
-                <FiatAmount price={tokenPrice} amount={amountDecimal || "0"} />
-              )}
+              {tokenPrice && <FiatAmount price={tokenPrice} wei={amountWei} />}
             </Typography>
             <Stack direction="row">
               <BalanceUnderlyingToken
@@ -374,10 +372,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
             <Stack direction="row" justifyContent="space-between">
               <Typography variant="body2mono" color="text.secondary">
                 {tokenPrice && (
-                  <FiatAmount
-                    price={tokenPrice}
-                    amount={amountDecimal || "0"}
-                  />
+                  <FiatAmount price={tokenPrice} wei={amountWei} />
                 )}
               </Typography>
               <BalanceSuperToken
@@ -398,7 +393,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
           </Typography>
           {tokenPrice && (
             <Typography variant="body2mono" color="text.secondary">
-              (<FiatAmount price={tokenPrice} amount="1" />)
+              (<FiatAmount price={tokenPrice} />)
             </Typography>
           )}
         </Stack>

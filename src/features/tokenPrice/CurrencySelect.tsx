@@ -20,14 +20,14 @@ import { useAppCurrency } from "../settings/appSettingsHooks";
 const POPULAR_CURRENCIES = [
   Currency.USD,
   Currency.EUR,
+  Currency.CNY,
   Currency.AUD,
-  Currency.BRL,
 ];
 
 const FIAT_CURRENCIES = [
   Currency.CAD,
   Currency.CHF,
-  Currency.CNY,
+  Currency.BRL,
   Currency.GBP,
   Currency.HKD,
   Currency.INR,
@@ -37,8 +37,6 @@ const FIAT_CURRENCIES = [
   Currency.NOK,
   Currency.RUB,
   Currency.SEK,
-  Currency.TRY,
-  Currency.ZAR,
 ];
 
 interface CurrencyItemProps {
@@ -75,7 +73,6 @@ const CurrencySelect: FC<CurrencySelectProps> = ({}) => {
   const theme = useTheme();
 
   const selectCurrency = (currency: Currency) => () => {
-    console.log("Apply settings", currency.code);
     dispatch(applySettings({ currencyCode: currency.code }));
     handleClose();
   };
