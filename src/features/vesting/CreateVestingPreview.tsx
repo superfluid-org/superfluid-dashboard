@@ -69,13 +69,29 @@ export const CreateVestingPreview: FC<{
       </Typography>
 
       <Stack>
-        <Typography color="text.secondary">{VestingFormLabels.Receiver}</Typography>
+        <Typography color="text.secondary">
+          {VestingFormLabels.Receiver}
+        </Typography>
         <Typography color="text.primary">{receiverAddress}</Typography>
       </Stack>
 
       <Stack>
-        <Typography color="text.secondary">{VestingFormLabels.Token}</Typography>
+        <Typography color="text.secondary">
+          {VestingFormLabels.Token}
+        </Typography>
         <Typography color="text.primary">{superTokenAddress}</Typography>
+      </Stack>
+
+      <Stack>
+        <Typography color="text.secondary">
+          {VestingFormLabels.TotalVestingPeriod}
+        </Typography>
+        <Typography color="text.primary">
+          {vestingPeriod.numerator} {timeUnitWordMap[vestingPeriod.denominator]}
+        </Typography>
+        <Typography color="text.primary">
+          {format("LLLL d, yyyy", endDate)}
+        </Typography>
       </Stack>
 
       <Stack>
@@ -84,15 +100,6 @@ export const CreateVestingPreview: FC<{
         </Typography>
         <Typography color="text.primary">
           {totalAmountEther} {token?.symbol}
-        </Typography>
-      </Stack>
-
-      <Stack>
-        <Typography color="text.secondary">
-          {VestingFormLabels.VestingStartDate}
-        </Typography>
-        <Typography color="text.primary">
-          {format("LLLL d, yyyy", startDate)}
         </Typography>
       </Stack>
 
@@ -119,13 +126,10 @@ export const CreateVestingPreview: FC<{
 
       <Stack>
         <Typography color="text.secondary">
-          {VestingFormLabels.TotalVestingPeriod}
+          {VestingFormLabels.VestingStartDate}
         </Typography>
         <Typography color="text.primary">
-          {vestingPeriod.numerator} {timeUnitWordMap[vestingPeriod.denominator]}
-        </Typography>
-        <Typography color="text.primary">
-          {format("LLLL d, yyyy", endDate)}
+          {format("LLLL d, yyyy", startDate)}
         </Typography>
       </Stack>
 
