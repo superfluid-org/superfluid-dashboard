@@ -1,5 +1,4 @@
 import { alpha, createTheme, Theme, ThemeOptions } from "@mui/material/styles";
-import { TypographyOptions } from "@mui/material/styles/createTypography";
 import { deepmerge } from "@mui/utils";
 import React from "react";
 import { FONT_FACES } from "./fonts";
@@ -1000,6 +999,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           PaperProps: {
             square: true,
           },
+          TransitionProps: {
+            timeout: theme.transitions.duration.shorter,
+            easing: theme.transitions.easing.easeInOut,
+          },
         },
       },
       MuiPopover: {
@@ -1007,6 +1010,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           elevation: 2,
           PaperProps: {
             square: true,
+          },
+          TransitionProps: {
+            timeout: theme.transitions.duration.shorter,
+            easing: theme.transitions.easing.easeInOut,
           },
         },
       },

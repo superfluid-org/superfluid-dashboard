@@ -18,6 +18,8 @@ import {
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
 import { useTokenIsListed } from "../token/useTokenIsListed";
+import FiatAmount from "../tokenPrice/FiatAmount";
+import useTokenPrice from "../tokenPrice/useTokenPrice";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
@@ -103,6 +105,8 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
     network,
     tokenPair,
   });
+
+  const tokenPrice = useTokenPrice(network.id, tokenPair?.superTokenAddress);
 
   useEffect(() => {
     if (underlyingToken && amountDecimal) {
@@ -285,40 +289,50 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
           />
         </Stack>
         {underlyingToken && visibleAddress && (
-          <Stack direction="row" justifyContent="flex-end" gap={0.5}>
-            {/* <Typography variant="body2" color="text.secondary">
-            ${Number(amount || 0).toFixed(2)}
-          </Typography> */}
-            <BalanceUnderlyingToken
-              chainId={network.id}
-              accountAddress={visibleAddress}
-              tokenAddress={underlyingToken.address}
-              decimals={underlyingToken.decimals}
-            />
-            {underlyingBalance && (
-              <Controller
-                control={control}
-                name="data.amountDecimal"
-                render={({ field: { onChange, onBlur } }) => (
-                  <Button
-                    data-cy={"max-button"}
-                    variant="textContained"
-                    size="xxs"
-                    onClick={() => {
-                      return onChange(
-                        formatUnits(
-                          underlyingBalance,
-                          underlyingToken.decimals
-                        ) as WrappingForm["data"]["amountDecimal"]
-                      );
-                    }}
-                    onBlur={onBlur}
-                  >
-                    MAX
-                  </Button>
-                )}
+          <Stack direction="row" justifyContent="space-between" gap={0.5}>
+            <Typography
+              variant="body2mono"
+              color="text.secondary"
+              sx={{
+                flexShrink: 1,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {tokenPrice && <FiatAmount price={tokenPrice} wei={amountWei} />}
+            </Typography>
+            <Stack direction="row">
+              <BalanceUnderlyingToken
+                chainId={network.id}
+                accountAddress={visibleAddress}
+                tokenAddress={underlyingToken.address}
+                decimals={underlyingToken.decimals}
               />
-            )}
+              {underlyingBalance && (
+                <Controller
+                  control={control}
+                  name="data.amountDecimal"
+                  render={({ field: { onChange, onBlur } }) => (
+                    <Button
+                      data-cy={"max-button"}
+                      variant="textContained"
+                      size="xxs"
+                      onClick={() => {
+                        return onChange(
+                          formatUnits(
+                            underlyingBalance,
+                            underlyingToken.decimals
+                          ) as WrappingForm["data"]["amountDecimal"]
+                        );
+                      }}
+                      onBlur={onBlur}
+                    >
+                      MAX
+                    </Button>
+                  )}
+                />
+              )}
+            </Stack>
           </Stack>
         )}
       </WrapInputCard>
@@ -363,10 +377,20 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
           </Stack>
 
           {!!(superToken && visibleAddress) && (
-            <Stack direction="row" justifyContent="flex-end">
-              {/* <Typography variant="body2" color="text.secondary">
-              ${Number(amount || 0).toFixed(2)}
-            </Typography> */}
+            <Stack direction="row" justifyContent="space-between">
+              <Typography
+                variant="body2mono"
+                color="text.secondary"
+                sx={{
+                  flexShrink: 1,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {tokenPrice && (
+                  <FiatAmount price={tokenPrice} wei={amountWei} />
+                )}
+              </Typography>
               <BalanceSuperToken
                 chainId={network.id}
                 accountAddress={visibleAddress}
@@ -379,9 +403,16 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
       )}
 
       {!!(superToken && underlyingToken) && (
-        <Typography data-cy="token-pair" align="center" sx={{ my: 3 }}>
-          {`1 ${underlyingToken.symbol} = 1 ${superToken.symbol}`}
-        </Typography>
+        <Stack direction="row" alignItems="center" gap={0.5}>
+          <Typography data-cy="token-pair" align="center" sx={{ my: 3 }}>
+            {`1 ${underlyingToken.symbol} = 1 ${superToken.symbol}`}
+          </Typography>
+          {tokenPrice && (
+            <Typography variant="body2mono" color="text.secondary">
+              (<FiatAmount price={tokenPrice} />)
+            </Typography>
+          )}
+        </Stack>
       )}
 
       <Stack gap={2} direction="column" sx={{ width: "100%" }}>

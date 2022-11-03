@@ -31,7 +31,7 @@ const RISK_CHECKBOX = "[data-cy=risk-checkbox]";
 const ADDRESS_BUTTON_TEXT = "[data-cy=address-button]";
 const CHOSEN_ENS_ADDRESS = "[data-cy=address-button] span p";
 const TOKEN_SELECT_NAME = "[data-cy=token-symbol-and-name] p";
-const TOKEN_SELECT_SYMBOL = "[data-cy=token-symbol-and-name] span";
+const TOKEN_SELECT_SYMBOL = "[data-cy=token-symbol-and-name] h6";
 const TOKEN_SELECT_BALANCE = "[data-cy=token-balance] span";
 const BALANCE_WRAP_BUTTON = "[data-cy=balance-wrap-button]";
 const PREVIEW_BALANCE = "[data-cy=balance]";
@@ -52,6 +52,7 @@ const ALL_BUTTONS = "[data-cy=send-card] [data-cy*=button]"
 const PREVIEW_BUFFER_LOSS = "[data-cy=buffer-loss]"
 const TX_DRAWER_BUTTON = "[data-cy=tx-drawer-button]"
 const OK_BUTTON = "[data-cy=ok-button]"
+const RECEIVER_DIALOG = "[data-cy=receiver-dialog]"
 
 export class SendPage extends BasePage {
     static searchForTokenInTokenList(token: string) {
@@ -118,7 +119,7 @@ export class SendPage extends BasePage {
             }
             cy.get(TOKEN_SEARCH_RESULTS)
                 .eq(0)
-                .find("[data-cy=token-symbol-and-name] span")
+                .find(TOKEN_SELECT_SYMBOL)
                 .then(($tokenSearchResultName) => {
                     cy.wrap($tokenSearchResultName.text()).as("lastChosenToken");
                 });
@@ -270,7 +271,7 @@ export class SendPage extends BasePage {
     }
 
     static tokenSearchResultsOnlyContain(token: string) {
-        cy.get("[data-cy*=-list-item] [data-cy=token-symbol-and-name] span").each(
+        cy.get(`[data-cy*=-list-item] ${TOKEN_SELECT_SYMBOL}`).each(
             (el) => {
                 cy.wrap(el).should("contain", token);
             }
@@ -315,7 +316,14 @@ export class SendPage extends BasePage {
 
     static inputStreamDetails(amount: string, token: string, timeUnit: any, address: string) {
         this.click(RECEIVER_BUTTON);
+        //Sometimes typing the address doesn't pick up it as a receiver , so re-typing to make sure it tries again
         this.type(ADDRESS_DIALOG_INPUT, address);
+        cy.get("body").then( el => {
+           if(el.find(RECEIVER_DIALOG).length < 1 ) {
+               this.clear(ADDRESS_DIALOG_INPUT)
+               this.type(ADDRESS_DIALOG_INPUT,address)
+           }
+        })
         this.click(SELECT_TOKEN_BUTTON);
         cy.get(`[data-cy=${token}-list-item]`, {timeout: 60000}).click()
         this.type(FLOW_RATE_INPUT, amount);

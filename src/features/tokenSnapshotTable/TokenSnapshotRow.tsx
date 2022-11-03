@@ -32,6 +32,9 @@ import StreamsTable from "../streamsTable/StreamsTable";
 import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
 import TokenIcon from "../token/TokenIcon";
+import FiatAmount from "../tokenPrice/FiatAmount";
+import FlowingFiatBalance from "../tokenPrice/FlowingFiatBalance";
+import useTokenPrice from "../tokenPrice/useTokenPrice";
 import BalanceCriticalIndicator from "./BalanceCriticalIndicator";
 
 interface SnapshotRowProps {
@@ -100,6 +103,8 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
     totalNumberOfClosedStreams,
   } = snapshot;
 
+  const tokenPrice = useTokenPrice(network.id, token);
+
   const realtimeBalance = rpcApi.useRealtimeBalanceQuery({
     chainId: network.id,
     accountAddress: account,
@@ -146,6 +151,16 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
     return null;
   }, [balance, balanceTimestamp, netFlowRate]);
 
+  const weiAmountMonthly = useMemo(
+    () => BigNumber.from(netFlowRate).mul(UnitOfTime.Month),
+    [netFlowRate]
+  );
+
+  const flowRateMonthly = useMemo(
+    () => BigNumber.from(netFlowRate).mul(UnitOfTime.Month),
+    [netFlowRate]
+  );
+
   return (
     <>
       <SnapshotRow
@@ -167,14 +182,10 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               data-cy={"token-symbol"}
               onClick={openTokenPage}
               primary={tokenSymbol}
-              /**
-               * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-               * This is just used to make table row look better
-               */
-              // secondary="$1.00"
+              secondary={tokenPrice && <FiatAmount price={tokenPrice} />}
               primaryTypographyProps={{
                 variant: "h6",
-                sx: { lineHeight: "46px" },
+                sx: !tokenPrice ? { lineHeight: "44px" } : {},
               }}
               secondaryTypographyProps={{
                 variant: "body2mono",
@@ -208,7 +219,16 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                       disableRoundingIndicator
                     />
                   }
-                  // secondary="$1.00"
+                  secondary={
+                    tokenPrice && (
+                      <FlowingFiatBalance
+                        balance={balance}
+                        flowRate={netFlowRate}
+                        balanceTimestamp={balanceTimestamp}
+                        price={tokenPrice}
+                      />
+                    )
+                  }
                   primaryTypographyProps={{ variant: "h6mono" }}
                   secondaryTypographyProps={{
                     variant: "body2mono",
@@ -220,14 +240,31 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
 
             <TableCell data-cy={"net-flow"} onClick={openTokenPage}>
               {totalNumberOfActiveStreams > 0 ? (
-                <Typography data-cy={"net-flow-value"} variant="body2mono">
-                  {netFlowRate.charAt(0) !== "-" && "+"}
-                  <Amount
-                    wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
-                  >
-                    /mo
-                  </Amount>
-                </Typography>
+                <ListItemText
+                  data-cy="net-flow-value"
+                  primary={
+                    <>
+                      {netFlowRate.charAt(0) !== "-" && "+"}
+                      <Amount wei={weiAmountMonthly}>/mo</Amount>
+                    </>
+                  }
+                  secondary={
+                    tokenPrice && (
+                      <FiatAmount
+                        price={tokenPrice}
+                        wei={weiAmountMonthly.abs()}
+                      >
+                        {" "}
+                        /mo
+                      </FiatAmount>
+                    )
+                  }
+                  primaryTypographyProps={{ variant: "body2mono" }}
+                  secondaryTypographyProps={{
+                    variant: "body2mono",
+                    color: "text.secondary",
+                  }}
+                />
               ) : (
                 <Typography data-cy={"net-flow-value"}>{"-"}</Typography>
               )}
@@ -299,11 +336,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                   totalNumberOfActiveStreams > 0 ? (
                     <>
                       {netFlowRate.charAt(0) !== "-" && "+"}
-                      <Amount
-                        wei={BigNumber.from(netFlowRate).mul(UnitOfTime.Month)}
-                      >
-                        /mo
-                      </Amount>
+                      <Amount wei={flowRateMonthly}>/mo</Amount>
                     </>
                   ) : (
                     "-"

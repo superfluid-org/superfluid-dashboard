@@ -124,7 +124,6 @@ const ConnectView: FC = () => {
 
 const Home: NextPage = () => {
   const { visibleAddress } = useVisibleAddress();
-
   const router = useRouter();
 
   const [faucetDialogOpen, setFaucetDialogOpen] = useState(false);

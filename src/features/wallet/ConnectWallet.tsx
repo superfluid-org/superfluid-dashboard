@@ -11,7 +11,7 @@ import {
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, memo } from "react";
 import { useAccount, useNetwork } from "wagmi";
-import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import { useAutoConnect } from "../autoConnect/AutoConnect";
 import { useImpersonation } from "../impersonation/ImpersonationContext";

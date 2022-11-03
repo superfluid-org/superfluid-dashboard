@@ -27,7 +27,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
-import AddressAvatar from "../../../components/AddressAvatar/AddressAvatar";
+import AddressAvatar from "../../../components/Avatar/AddressAvatar";
 import CopyTooltip from "../../../components/CopyTooltip/CopyTooltip";
 import SEO from "../../../components/SEO/SEO";
 import withStaticSEO from "../../../components/SEO/withStaticSEO";
@@ -55,6 +55,8 @@ import {
 import Page404 from "../../404";
 import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import TimerOutlined from "@mui/icons-material/TimerOutlined";
+import FlowingFiatBalance from "../../../features/tokenPrice/FlowingFiatBalance";
+import useTokenPrice from "../../../features/tokenPrice/useTokenPrice";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -351,6 +353,8 @@ const StreamPageContent: FC<{
   const [senderAddress = "", receiverAddress, tokenAddress = ""] =
     streamId.split("-");
 
+  const tokenPrice = useTokenPrice(network.id, tokenAddress);
+
   const [isTokenListed, isTokenListedLoading] = useTokenIsListed(
     network.id,
     tokenAddress
@@ -601,8 +605,15 @@ const StreamPageContent: FC<{
                 </Stack>
               )}
 
-              <Typography variant="h4" color="text.secondary">
-                {/* $2241.30486 USD */}
+              <Typography variant="h4mono" color="text.secondary">
+                {tokenPrice && (
+                  <FlowingFiatBalance
+                    balance={streamedUntilUpdatedAt}
+                    flowRate={currentFlowRate}
+                    balanceTimestamp={updatedAtTimestamp}
+                    price={tokenPrice}
+                  />
+                )}
               </Typography>
             </Stack>
 
