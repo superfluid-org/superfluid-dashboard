@@ -1,11 +1,8 @@
 import { FC } from "react";
 import { useFormContext } from "react-hook-form";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
-import { rpcApi } from "../redux/store";
 import { Box, IconButton, Stack, Typography } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
-import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import add from "date-fns/fp/add";
 import format from "date-fns/fp/format";
 import { timeUnitWordMap } from "../send/FlowRateInput";
@@ -15,16 +12,13 @@ import {
   VestingLabels,
   VestingToken,
 } from "./CreateVestingCard";
-import { parseEtherOrZero } from "../../utils/tokenUtils";
-import { getTimeInSeconds } from "../../utils/dateUtils";
-import { BigNumber } from "ethers";
 import { CreateVestingTransactionButton } from "./CreateVestingTransactionButton";
 
 export const CreateVestingPreview: FC<{
   token: VestingToken | undefined;
   setView: (value: CreateVestingCardView) => void;
 }> = ({ token, setView }) => {
-  const { watch, formState, handleSubmit } = useFormContext<ValidVestingForm>();
+  const { watch } = useFormContext<ValidVestingForm>();
 
   const [
     superTokenAddress,
@@ -43,9 +37,6 @@ export const CreateVestingPreview: FC<{
     "data.vestingPeriod",
     "data.cliffPeriod",
   ]);
-
-  const [createVestingSchedule, createVestingScheduleResult] =
-    rpcApi.useCreateVestingScheduleMutation();
 
   const BackButton = (
     <Box>
