@@ -17,7 +17,7 @@ type UnitOfAmount =
 
 export type ValidVestingForm = {
   data: {
-    tokenAddress: string;
+    superTokenAddress: string;
     receiverAddress: string;
     startDate: Date;
     totalAmountEther: string;
@@ -35,7 +35,7 @@ export type ValidVestingForm = {
 
 export type PartialVestingForm = {
   data: {
-    tokenAddress: string | null;
+    superTokenAddress: string | null;
     receiverAddress: string | null;
     startDate: number | null;
     totalAmountEther: string | null;
@@ -56,7 +56,7 @@ const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
     () =>
       object({
         data: object({
-          tokenAddress: string().required().test(testAddress()),
+          superTokenAddress: string().required().test(testAddress()),
           receiverAddress: string().required().test(testAddress()),
           startDate: date().required(),
           totalAmountEther: string()
@@ -97,7 +97,7 @@ const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const formMethods = useForm<PartialVestingForm>({
     defaultValues: {
       data: {
-        tokenAddress: null,
+        superTokenAddress: null,
         totalAmountEther: null,
         cliffAmountEther: null,
         cliffPeriod: {

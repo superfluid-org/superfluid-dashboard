@@ -1,15 +1,15 @@
-import {Card,} from "@mui/material";
-import {skipToken} from "@reduxjs/toolkit/dist/query";
-import {Token} from "@superfluid-finance/sdk-core";
-import {FC, PropsWithChildren, useState} from "react";
-import {useFormContext} from "react-hook-form";
-import {useExpectedNetwork} from "../network/ExpectedNetworkContext";
-import {getSuperTokenType} from "../redux/endpoints/adHocSubgraphEndpoints";
-import {SuperTokenMinimal} from "../redux/endpoints/tokenTypes";
-import {subgraphApi} from "../redux/store";
-import {PartialVestingForm} from "./CreateVestingFormProvider";
-import {CreateVestingPreview} from "./CreateVestingPreview";
-import {CreateVestingForm} from "./CreateVestingForm";
+import { Card } from "@mui/material";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { Token } from "@superfluid-finance/sdk-core";
+import { FC, PropsWithChildren, useState } from "react";
+import { useFormContext } from "react-hook-form";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
+import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
+import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
+import { subgraphApi } from "../redux/store";
+import { PartialVestingForm } from "./CreateVestingFormProvider";
+import { CreateVestingPreview } from "./CreateVestingPreview";
+import { CreateVestingForm } from "./CreateVestingForm";
 
 export type VestingToken = Token & SuperTokenMinimal;
 
@@ -20,14 +20,14 @@ export enum CreateVestingCardView {
 
 export const CreateVestingCard: FC<PropsWithChildren> = () => {
   const { watch } = useFormContext<PartialVestingForm>();
-  const [tokenAddress] = watch(["data.tokenAddress"]);
+  const [superTokenAddress] = watch(["data.superTokenAddress"]);
 
   const { network } = useExpectedNetwork();
   const { token } = subgraphApi.useTokenQuery(
-    tokenAddress
+    superTokenAddress
       ? {
           chainId: network.id,
-          id: tokenAddress,
+          id: superTokenAddress,
         }
       : skipToken,
     {
@@ -47,7 +47,9 @@ export const CreateVestingCard: FC<PropsWithChildren> = () => {
     }
   );
 
-  const [view, setView] = useState<CreateVestingCardView>(CreateVestingCardView.Form);
+  const [view, setView] = useState<CreateVestingCardView>(
+    CreateVestingCardView.Form
+  );
 
   return (
     <Card>
