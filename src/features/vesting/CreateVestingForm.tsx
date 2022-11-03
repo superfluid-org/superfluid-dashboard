@@ -31,9 +31,18 @@ import { ErrorMessage } from "@hookform/error-message";
 import TooltipIcon from "../common/TooltipIcon";
 import {
   CreateVestingCardView,
-  VestingLabels,
   VestingToken,
 } from "./CreateVestingCard";
+
+export enum VestingFormLabels {
+    Receiver = "Receiver",
+    CliffPeriod = "Cliff Period",
+    CliffAmount = "Cliff Amount",
+    VestingStartDate = "Vesting Start Date",
+    Token = "Token",
+    TotalVestingPeriod = "Total Vesting Period",
+    TotalVestedAmount = "Total Vested Amount",
+  }
 
 export const CreateVestingForm: FC<{
   token: VestingToken | undefined;
@@ -355,7 +364,7 @@ export const CreateVestingForm: FC<{
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>{VestingLabels.Receiver}</FormLabel>
+          <FormLabel>{VestingFormLabels.Receiver}</FormLabel>
           <TooltipIcon title="Must not be an exchange address" />
         </Stack>
         {ReceiverController}
@@ -367,7 +376,7 @@ export const CreateVestingForm: FC<{
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>{VestingLabels.Token}</FormLabel>
+          <FormLabel>{VestingFormLabels.Token}</FormLabel>
           <TooltipIcon title="TODO:" />
         </Stack>
         {TokenController}
@@ -379,7 +388,7 @@ export const CreateVestingForm: FC<{
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>{VestingLabels.TotalVestingPeriod}</FormLabel>
+          <FormLabel>{VestingFormLabels.TotalVestingPeriod}</FormLabel>
           <TooltipIcon title="TODO:" />
         </Stack>
         {VestingPeriodController}
@@ -391,7 +400,7 @@ export const CreateVestingForm: FC<{
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>{VestingLabels.TotalVestedAmount}</FormLabel>
+          <FormLabel>{VestingFormLabels.TotalVestedAmount}</FormLabel>
           <TooltipIcon title="TODO:" />
         </Stack>
         {VestingAmountController}
@@ -403,7 +412,7 @@ export const CreateVestingForm: FC<{
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>{VestingLabels.CliffPeriod}</FormLabel>
+          <FormLabel>{VestingFormLabels.CliffPeriod}</FormLabel>
           <TooltipIcon title="TODO:" />
         </Stack>
         {CliffPeriodController}
@@ -415,7 +424,7 @@ export const CreateVestingForm: FC<{
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>{VestingLabels.CliffAmount}</FormLabel>
+          <FormLabel>{VestingFormLabels.CliffAmount}</FormLabel>
           <TooltipIcon title="TODO:" />
         </Stack>
         {CliffAmountController}
@@ -427,7 +436,7 @@ export const CreateVestingForm: FC<{
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>{VestingLabels.VestingStartDate}</FormLabel>
+          <FormLabel>{VestingFormLabels.VestingStartDate}</FormLabel>
           <TooltipIcon title="The date when stream scheduler tries to cancel the stream." />
         </Stack>
         {StartDateController}

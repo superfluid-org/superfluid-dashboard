@@ -6,15 +6,6 @@ import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { UnitOfTime } from "../send/FlowRateInput";
 
-type UnitOfAmount =
-  | "wei"
-  | "kwei"
-  | "mwei"
-  | "gwei"
-  | "szabo"
-  | "finney"
-  | "ether";
-
 export type ValidVestingForm = {
   data: {
     superTokenAddress: string;
@@ -135,5 +126,16 @@ const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
 export default CreateVestingFormProvider;
 
+// TODO(KK): throw-away below?
+
 // findClosestUnitOfTime
 // UnitOfAmount
+
+type UnitOfAmount =
+  | "wei"
+  | "kwei"
+  | "mwei"
+  | "gwei"
+  | "szabo"
+  | "finney"
+  | "ether";

@@ -7,12 +7,9 @@ import add from "date-fns/fp/add";
 import format from "date-fns/fp/format";
 import { timeUnitWordMap } from "../send/FlowRateInput";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
-import {
-  CreateVestingCardView,
-  VestingLabels,
-  VestingToken,
-} from "./CreateVestingCard";
+import { CreateVestingCardView, VestingToken } from "./CreateVestingCard";
 import { CreateVestingTransactionButton } from "./CreateVestingTransactionButton";
+import { VestingFormLabels } from "./CreateVestingForm";
 
 export const CreateVestingPreview: FC<{
   token: VestingToken | undefined;
@@ -38,18 +35,6 @@ export const CreateVestingPreview: FC<{
     "data.cliffPeriod",
   ]);
 
-  const BackButton = (
-    <Box>
-      <IconButton
-        data-cy={"back-button"}
-        color="inherit"
-        onClick={() => setView(CreateVestingCardView.Form)}
-      >
-        <ArrowBackIcon />
-      </IconButton>
-    </Box>
-  );
-
   const cliffDate = add(
     {
       seconds: cliffPeriod.numerator * cliffPeriod.denominator,
@@ -64,6 +49,18 @@ export const CreateVestingPreview: FC<{
     startDate
   );
 
+  const BackButton = (
+    <Box>
+      <IconButton
+        data-cy={"back-button"}
+        color="inherit"
+        onClick={() => setView(CreateVestingCardView.Form)}
+      >
+        <ArrowBackIcon />
+      </IconButton>
+    </Box>
+  );
+
   return (
     <Stack gap={1}>
       {BackButton}
@@ -72,18 +69,18 @@ export const CreateVestingPreview: FC<{
       </Typography>
 
       <Stack>
-        <Typography color="text.secondary">{VestingLabels.Receiver}</Typography>
+        <Typography color="text.secondary">{VestingFormLabels.Receiver}</Typography>
         <Typography color="text.primary">{receiverAddress}</Typography>
       </Stack>
 
       <Stack>
-        <Typography color="text.secondary">{VestingLabels.Token}</Typography>
+        <Typography color="text.secondary">{VestingFormLabels.Token}</Typography>
         <Typography color="text.primary">{superTokenAddress}</Typography>
       </Stack>
 
       <Stack>
         <Typography color="text.secondary">
-          {VestingLabels.TotalVestedAmount}
+          {VestingFormLabels.TotalVestedAmount}
         </Typography>
         <Typography color="text.primary">
           {totalAmountEther} {token?.symbol}
@@ -92,7 +89,7 @@ export const CreateVestingPreview: FC<{
 
       <Stack>
         <Typography color="text.secondary">
-          {VestingLabels.VestingStartDate}
+          {VestingFormLabels.VestingStartDate}
         </Typography>
         <Typography color="text.primary">
           {format("LLLL d, yyyy", startDate)}
@@ -101,7 +98,7 @@ export const CreateVestingPreview: FC<{
 
       <Stack>
         <Typography color="text.secondary">
-          {VestingLabels.CliffPeriod}
+          {VestingFormLabels.CliffPeriod}
         </Typography>
         <Typography color="text.primary">
           {cliffPeriod.numerator} {timeUnitWordMap[cliffPeriod.denominator]}
@@ -113,7 +110,7 @@ export const CreateVestingPreview: FC<{
 
       <Stack>
         <Typography color="text.secondary">
-          {VestingLabels.CliffAmount}
+          {VestingFormLabels.CliffAmount}
         </Typography>
         <Typography color="text.primary">
           {cliffAmountEther} {token?.symbol}
@@ -122,7 +119,7 @@ export const CreateVestingPreview: FC<{
 
       <Stack>
         <Typography color="text.secondary">
-          {VestingLabels.TotalVestingPeriod}
+          {VestingFormLabels.TotalVestingPeriod}
         </Typography>
         <Typography color="text.primary">
           {vestingPeriod.numerator} {timeUnitWordMap[vestingPeriod.denominator]}

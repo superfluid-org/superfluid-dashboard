@@ -62,13 +62,3 @@ export const CreateVestingCard: FC<PropsWithChildren> = () => {
     </Card>
   );
 };
-
-export enum VestingLabels {
-  Receiver = "Receiver",
-  CliffPeriod = "Cliff Period",
-  CliffAmount = "Cliff Amount",
-  VestingStartDate = "Vesting Start Date",
-  Token = "Token",
-  TotalVestingPeriod = "Total Vesting Period",
-  TotalVestedAmount = "Total Vested Amount",
-}
