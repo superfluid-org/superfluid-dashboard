@@ -92,22 +92,10 @@ export const CreateVestingPreview: FC<{
 
       <Stack>
         <Typography color="text.secondary">
-          {VestingFormLabels.TotalVestingPeriod}
+          {VestingFormLabels.VestingStartDate}
         </Typography>
         <Typography color="text.primary">
-          {vestingPeriod.numerator} {timeUnitWordMap[vestingPeriod.denominator]}
-        </Typography>
-        <Typography color="text.primary">
-          {format("LLLL d, yyyy", endDate)}
-        </Typography>
-      </Stack>
-
-      <Stack>
-        <Typography color="text.secondary">
-          {VestingFormLabels.TotalVestedAmount}
-        </Typography>
-        <Typography color="text.primary">
-          {totalAmountEther} {token?.symbol}
+          {format("LLLL d, yyyy", startDate)}
         </Typography>
       </Stack>
 
@@ -134,10 +122,22 @@ export const CreateVestingPreview: FC<{
 
       <Stack>
         <Typography color="text.secondary">
-          {VestingFormLabels.VestingStartDate}
+          {VestingFormLabels.TotalVestingPeriod}
         </Typography>
         <Typography color="text.primary">
-          {format("LLLL d, yyyy", startDate)}
+          {vestingPeriod.numerator} {timeUnitWordMap[vestingPeriod.denominator]}
+        </Typography>
+        <Typography color="text.primary">
+          {format("LLLL d, yyyy", endDate)}
+        </Typography>
+      </Stack>
+
+      <Stack>
+        <Typography color="text.secondary">
+          {VestingFormLabels.TotalVestedAmount}
+        </Typography>
+        <Typography color="text.primary">
+          {totalAmountEther} {token?.symbol}
         </Typography>
       </Stack>
 

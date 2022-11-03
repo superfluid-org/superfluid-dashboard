@@ -394,22 +394,10 @@ export const CreateVestingForm: FC<{
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>{VestingFormLabels.TotalVestingPeriod}</FormLabel>
-          <TooltipIcon title="TODO:" />
+          <FormLabel>{VestingFormLabels.VestingStartDate}</FormLabel>
+          <TooltipIcon title="The date when stream scheduler tries to cancel the stream." />
         </Stack>
-        {VestingPeriodController}
-      </FormGroup>
-
-      <FormGroup>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <FormLabel>{VestingFormLabels.TotalVestedAmount}</FormLabel>
-          <TooltipIcon title="TODO:" />
-        </Stack>
-        {VestingAmountController}
+        {StartDateController}
       </FormGroup>
 
       <FormGroup>
@@ -442,10 +430,22 @@ export const CreateVestingForm: FC<{
           alignItems="center"
           justifyContent="space-between"
         >
-          <FormLabel>{VestingFormLabels.VestingStartDate}</FormLabel>
-          <TooltipIcon title="The date when stream scheduler tries to cancel the stream." />
+          <FormLabel>{VestingFormLabels.TotalVestingPeriod}</FormLabel>
+          <TooltipIcon title="TODO:" />
         </Stack>
-        {StartDateController}
+        {VestingPeriodController}
+      </FormGroup>
+
+      <FormGroup>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <FormLabel>{VestingFormLabels.TotalVestedAmount}</FormLabel>
+          <TooltipIcon title="TODO:" />
+        </Stack>
+        {VestingAmountController}
       </FormGroup>
 
       <FormGroup>{PreviewVestingScheduleButton}</FormGroup>
