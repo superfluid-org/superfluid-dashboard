@@ -25,7 +25,11 @@ import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { timeUnitWordMap, unitOfTimeList } from "../send/FlowRateInput";
+import {
+  UnitOfTime,
+  timeUnitWordMap,
+  unitOfTimeList,
+} from "../send/FlowRateInput";
 import { transactionButtonDefaultProps } from "../transactionBoundary/TransactionButton";
 import { ErrorMessage } from "@hookform/error-message";
 import TooltipIcon from "../common/TooltipIcon";
@@ -264,11 +268,13 @@ export const CreateVestingForm: FC<{
               "border-bottom-left-radius": 0,
             }}
           >
-            {unitOfTimeList.map((unitOfTime) => (
-              <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
-                {timeUnitWordMap[unitOfTime]}
-              </MenuItem>
-            ))}
+            {unitOfTimeList
+              .filter((x) => x >= UnitOfTime.Day)
+              .map((unitOfTime) => (
+                <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
+                  {timeUnitWordMap[unitOfTime]}
+                </MenuItem>
+              ))}
           </Select>
         </Box>
       )}
@@ -311,11 +317,13 @@ export const CreateVestingForm: FC<{
               "border-bottom-left-radius": 0,
             }}
           >
-            {unitOfTimeList.map((unitOfTime) => (
-              <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
-                {timeUnitWordMap[unitOfTime]}(s)
-              </MenuItem>
-            ))}
+            {unitOfTimeList
+              .filter((x) => x >= UnitOfTime.Day)
+              .map((unitOfTime) => (
+                <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
+                  {timeUnitWordMap[unitOfTime]}(s)
+                </MenuItem>
+              ))}
           </Select>
         </Box>
       )}
