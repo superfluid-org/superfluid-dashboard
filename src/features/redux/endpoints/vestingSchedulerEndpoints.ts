@@ -12,21 +12,24 @@ import {
 } from "@superfluid-finance/sdk-redux";
 import { BigNumber } from "ethers";
 import { getEthSdk } from "../../../eth-sdk/getEthSdk";
+import { UnitOfTime } from "../../send/FlowRateInput";
 import {
   ACL_CREATE_PERMISSION,
   ACL_DELETE_PERMISSION,
 } from "./streamSchedulerEndpoints";
+
+export const MIN_VESTING_DURATION_SECONDS = 7 * UnitOfTime.Day;
+export const START_DATE_VALID_AFTER_SECONDS = 3 * UnitOfTime.Day;
+export const END_DATE_VALID_BEFORE_SECONDS = 1 * UnitOfTime.Day;
 
 interface CreateVestingSchedule extends BaseSuperTokenMutation {
   chainId: number;
   senderAddress: string;
   receiverAddress: string;
   startDateTimestamp: number;
-  startDateValidForSeconds: number;
   cliffDateTimestamp: number;
   flowRateWei: string;
   endDateTimestamp: number;
-  endDateValidBeforeSeconds: number;
   cliffTransferAmountWei: string;
 }
 
@@ -165,8 +168,8 @@ export const vestingSchedulerEndpoints = {
         const maximumNeededAllowance = BigNumber.from(
           arg.cliffTransferAmountWei
         )
-          .add(flowRateBigNumber.mul(arg.startDateValidForSeconds))
-          .add(flowRateBigNumber.mul(arg.endDateValidBeforeSeconds));
+          .add(flowRateBigNumber.mul(START_DATE_VALID_AFTER_SECONDS))
+          .add(flowRateBigNumber.mul(END_DATE_VALID_BEFORE_SECONDS));
 
         const increaseAllowancePromise = SuperToken__factory.connect(
           superToken.address,
@@ -186,12 +189,10 @@ export const vestingSchedulerEndpoints = {
             arg.receiverAddress,
             superTokenAddress,
             arg.startDateTimestamp,
-            arg.startDateValidForSeconds,
             arg.cliffDateTimestamp,
             arg.flowRateWei,
             arg.cliffTransferAmountWei,
             arg.endDateTimestamp,
-            arg.endDateValidBeforeSeconds,
             []
           );
         subOperations.push({

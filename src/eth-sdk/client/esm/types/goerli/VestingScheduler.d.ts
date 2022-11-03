@@ -5,24 +5,13 @@ import type { TypedEventFilter, TypedEvent, TypedListener, OnEvent, PromiseOrVal
 export declare namespace IVestingScheduler {
     type ScheduleStruct = {
         effectiveStartDate: PromiseOrValue<BigNumberish>;
-        startDateValidFor: PromiseOrValue<BigNumberish>;
         endDate: PromiseOrValue<BigNumberish>;
-        endDateValidBefore: PromiseOrValue<BigNumberish>;
         flowRate: PromiseOrValue<BigNumberish>;
         cliffTransferAmount: PromiseOrValue<BigNumberish>;
     };
-    type ScheduleStructOutput = [
-        number,
-        number,
-        number,
-        number,
-        BigNumber,
-        BigNumber
-    ] & {
+    type ScheduleStructOutput = [number, number, BigNumber, BigNumber] & {
         effectiveStartDate: number;
-        startDateValidFor: number;
         endDate: number;
-        endDateValidBefore: number;
         flowRate: BigNumber;
         cliffTransferAmount: BigNumber;
     };
@@ -36,7 +25,7 @@ export interface VestingSchedulerInterface extends utils.Interface {
         "beforeAgreementTerminated(address,address,bytes32,bytes,bytes)": FunctionFragment;
         "beforeAgreementUpdated(address,address,bytes32,bytes,bytes)": FunctionFragment;
         "cfaV1()": FunctionFragment;
-        "createVestingSchedule(address,address,uint32,uint32,uint32,int96,uint256,uint32,uint32,bytes)": FunctionFragment;
+        "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,bytes)": FunctionFragment;
         "deleteVestingSchedule(address,address,bytes)": FunctionFragment;
         "executeCloseVesting(address,address,address)": FunctionFragment;
         "executeVesting(address,address,address)": FunctionFragment;
@@ -98,8 +87,6 @@ export interface VestingSchedulerInterface extends utils.Interface {
         PromiseOrValue<BigNumberish>,
         PromiseOrValue<BigNumberish>,
         PromiseOrValue<BigNumberish>,
-        PromiseOrValue<BigNumberish>,
-        PromiseOrValue<BigNumberish>,
         PromiseOrValue<BytesLike>
     ]): string;
     encodeFunctionData(functionFragment: "deleteVestingSchedule", values: [
@@ -137,10 +124,10 @@ export interface VestingSchedulerInterface extends utils.Interface {
     decodeFunctionResult(functionFragment: "getVestingSchedule", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "vestingSchedules", data: BytesLike): Result;
     events: {
-        "CreateVestingSchedule(address,address,address,uint32,uint32,uint32,int96,uint32,uint32,uint256)": EventFragment;
+        "CreateVestingSchedule(address,address,address,uint32,uint32,int96,uint32,uint256)": EventFragment;
         "DeleteVestingSchedule(address,address,address)": EventFragment;
-        "ExecuteClosingVesting(address,address,address,uint32,uint32,uint256,bool)": EventFragment;
-        "ExecuteVesting(address,address,address,uint32,uint32,int96,uint256,uint256)": EventFragment;
+        "ExecuteClosingVesting(address,address,address,uint32,uint256,bool)": EventFragment;
+        "ExecuteVesting(address,address,address,uint32,int96,uint256,uint256)": EventFragment;
     };
     getEvent(nameOrSignatureOrTopic: "CreateVestingSchedule"): EventFragment;
     getEvent(nameOrSignatureOrTopic: "DeleteVestingSchedule"): EventFragment;
@@ -152,11 +139,9 @@ export interface CreateVestingScheduleEventObject {
     receiver: string;
     superToken: string;
     startDate: number;
-    startDateValidFor: number;
     cliffDate: number;
     flowRate: BigNumber;
     endDate: number;
-    endDateValidBefore: number;
     cliffTransferAmount: BigNumber;
 }
 export declare type CreateVestingScheduleEvent = TypedEvent<[
@@ -165,9 +150,7 @@ export declare type CreateVestingScheduleEvent = TypedEvent<[
     string,
     number,
     number,
-    number,
     BigNumber,
-    number,
     number,
     BigNumber
 ], CreateVestingScheduleEventObject>;
@@ -188,7 +171,6 @@ export interface ExecuteClosingVestingEventObject {
     receiver: string;
     superToken: string;
     endDate: number;
-    endDateValidBefore: number;
     closingTransferAmount: BigNumber;
     didTransferFail: boolean;
 }
@@ -196,7 +178,6 @@ export declare type ExecuteClosingVestingEvent = TypedEvent<[
     string,
     string,
     string,
-    number,
     number,
     BigNumber,
     boolean
@@ -207,7 +188,6 @@ export interface ExecuteVestingEventObject {
     receiver: string;
     superToken: string;
     effectiveStartDate: number;
-    startDateValidFor: number;
     flowRate: BigNumber;
     cliffTransferAmount: BigNumber;
     adjustedAmount: BigNumber;
@@ -216,7 +196,6 @@ export declare type ExecuteVestingEvent = TypedEvent<[
     string,
     string,
     string,
-    number,
     number,
     BigNumber,
     BigNumber,
@@ -254,7 +233,7 @@ export interface VestingScheduler extends BaseContract {
             host: string;
             cfa: string;
         }>;
-        createVestingSchedule(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startDateValidFor: PromiseOrValue<BigNumberish>, cliffDate: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, cliffTransferAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, endDateValidBefore: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        createVestingSchedule(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, cliffDate: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, cliffTransferAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<ContractTransaction>;
         deleteVestingSchedule(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
@@ -270,15 +249,11 @@ export interface VestingScheduler extends BaseContract {
         vestingSchedules(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<[
             number,
             number,
-            number,
-            number,
             BigNumber,
             BigNumber
         ] & {
             effectiveStartDate: number;
-            startDateValidFor: number;
             endDate: number;
-            endDateValidBefore: number;
             flowRate: BigNumber;
             cliffTransferAmount: BigNumber;
         }>;
@@ -299,7 +274,7 @@ export interface VestingScheduler extends BaseContract {
         host: string;
         cfa: string;
     }>;
-    createVestingSchedule(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startDateValidFor: PromiseOrValue<BigNumberish>, cliffDate: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, cliffTransferAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, endDateValidBefore: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+    createVestingSchedule(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, cliffDate: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, cliffTransferAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
         from?: PromiseOrValue<string>;
     }): Promise<ContractTransaction>;
     deleteVestingSchedule(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
@@ -315,15 +290,11 @@ export interface VestingScheduler extends BaseContract {
     vestingSchedules(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<[
         number,
         number,
-        number,
-        number,
         BigNumber,
         BigNumber
     ] & {
         effectiveStartDate: number;
-        startDateValidFor: number;
         endDate: number;
-        endDateValidBefore: number;
         flowRate: BigNumber;
         cliffTransferAmount: BigNumber;
     }>;
@@ -338,7 +309,7 @@ export interface VestingScheduler extends BaseContract {
             host: string;
             cfa: string;
         }>;
-        createVestingSchedule(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startDateValidFor: PromiseOrValue<BigNumberish>, cliffDate: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, cliffTransferAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, endDateValidBefore: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
+        createVestingSchedule(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, cliffDate: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, cliffTransferAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
         deleteVestingSchedule(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
         executeCloseVesting(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, overrides?: CallOverrides): Promise<void>;
         executeVesting(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, overrides?: CallOverrides): Promise<void>;
@@ -346,28 +317,24 @@ export interface VestingScheduler extends BaseContract {
         vestingSchedules(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<[
             number,
             number,
-            number,
-            number,
             BigNumber,
             BigNumber
         ] & {
             effectiveStartDate: number;
-            startDateValidFor: number;
             endDate: number;
-            endDateValidBefore: number;
             flowRate: BigNumber;
             cliffTransferAmount: BigNumber;
         }>;
     };
     filters: {
-        "CreateVestingSchedule(address,address,address,uint32,uint32,uint32,int96,uint32,uint32,uint256)"(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: PromiseOrValue<string> | null, startDate?: null, startDateValidFor?: null, cliffDate?: null, flowRate?: null, endDate?: null, endDateValidBefore?: null, cliffTransferAmount?: null): CreateVestingScheduleEventFilter;
-        CreateVestingSchedule(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: PromiseOrValue<string> | null, startDate?: null, startDateValidFor?: null, cliffDate?: null, flowRate?: null, endDate?: null, endDateValidBefore?: null, cliffTransferAmount?: null): CreateVestingScheduleEventFilter;
+        "CreateVestingSchedule(address,address,address,uint32,uint32,int96,uint32,uint256)"(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: PromiseOrValue<string> | null, startDate?: null, cliffDate?: null, flowRate?: null, endDate?: null, cliffTransferAmount?: null): CreateVestingScheduleEventFilter;
+        CreateVestingSchedule(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: PromiseOrValue<string> | null, startDate?: null, cliffDate?: null, flowRate?: null, endDate?: null, cliffTransferAmount?: null): CreateVestingScheduleEventFilter;
         "DeleteVestingSchedule(address,address,address)"(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: PromiseOrValue<string> | null): DeleteVestingScheduleEventFilter;
         DeleteVestingSchedule(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: PromiseOrValue<string> | null): DeleteVestingScheduleEventFilter;
-        "ExecuteClosingVesting(address,address,address,uint32,uint32,uint256,bool)"(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: PromiseOrValue<string> | null, endDate?: null, endDateValidBefore?: null, closingTransferAmount?: null, didTransferFail?: null): ExecuteClosingVestingEventFilter;
-        ExecuteClosingVesting(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: PromiseOrValue<string> | null, endDate?: null, endDateValidBefore?: null, closingTransferAmount?: null, didTransferFail?: null): ExecuteClosingVestingEventFilter;
-        "ExecuteVesting(address,address,address,uint32,uint32,int96,uint256,uint256)"(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: PromiseOrValue<string> | null, effectiveStartDate?: null, startDateValidFor?: null, flowRate?: null, cliffTransferAmount?: null, adjustedAmount?: null): ExecuteVestingEventFilter;
-        ExecuteVesting(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: PromiseOrValue<string> | null, effectiveStartDate?: null, startDateValidFor?: null, flowRate?: null, cliffTransferAmount?: null, adjustedAmount?: null): ExecuteVestingEventFilter;
+        "ExecuteClosingVesting(address,address,address,uint32,uint256,bool)"(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: PromiseOrValue<string> | null, endDate?: null, closingTransferAmount?: null, didTransferFail?: null): ExecuteClosingVestingEventFilter;
+        ExecuteClosingVesting(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: PromiseOrValue<string> | null, endDate?: null, closingTransferAmount?: null, didTransferFail?: null): ExecuteClosingVestingEventFilter;
+        "ExecuteVesting(address,address,address,uint32,int96,uint256,uint256)"(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: PromiseOrValue<string> | null, effectiveStartDate?: null, flowRate?: null, cliffTransferAmount?: null, adjustedAmount?: null): ExecuteVestingEventFilter;
+        ExecuteVesting(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: PromiseOrValue<string> | null, effectiveStartDate?: null, flowRate?: null, cliffTransferAmount?: null, adjustedAmount?: null): ExecuteVestingEventFilter;
     };
     estimateGas: {
         afterAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
@@ -383,7 +350,7 @@ export interface VestingScheduler extends BaseContract {
         beforeAgreementTerminated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<BigNumber>;
         beforeAgreementUpdated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<BigNumber>;
         cfaV1(overrides?: CallOverrides): Promise<BigNumber>;
-        createVestingSchedule(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startDateValidFor: PromiseOrValue<BigNumberish>, cliffDate: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, cliffTransferAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, endDateValidBefore: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        createVestingSchedule(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, cliffDate: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, cliffTransferAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<BigNumber>;
         deleteVestingSchedule(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
@@ -412,7 +379,7 @@ export interface VestingScheduler extends BaseContract {
         beforeAgreementTerminated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
         beforeAgreementUpdated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
         cfaV1(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-        createVestingSchedule(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startDateValidFor: PromiseOrValue<BigNumberish>, cliffDate: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, cliffTransferAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, endDateValidBefore: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        createVestingSchedule(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, cliffDate: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, cliffTransferAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<PopulatedTransaction>;
         deleteVestingSchedule(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {

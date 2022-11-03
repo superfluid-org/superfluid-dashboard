@@ -87,12 +87,6 @@ const _abi = [
             {
                 indexed: false,
                 internalType: "uint32",
-                name: "startDateValidFor",
-                type: "uint32",
-            },
-            {
-                indexed: false,
-                internalType: "uint32",
                 name: "cliffDate",
                 type: "uint32",
             },
@@ -106,12 +100,6 @@ const _abi = [
                 indexed: false,
                 internalType: "uint32",
                 name: "endDate",
-                type: "uint32",
-            },
-            {
-                indexed: false,
-                internalType: "uint32",
-                name: "endDateValidBefore",
                 type: "uint32",
             },
             {
@@ -178,12 +166,6 @@ const _abi = [
             },
             {
                 indexed: false,
-                internalType: "uint32",
-                name: "endDateValidBefore",
-                type: "uint32",
-            },
-            {
-                indexed: false,
                 internalType: "uint256",
                 name: "closingTransferAmount",
                 type: "uint256",
@@ -223,12 +205,6 @@ const _abi = [
                 indexed: false,
                 internalType: "uint32",
                 name: "effectiveStartDate",
-                type: "uint32",
-            },
-            {
-                indexed: false,
-                internalType: "uint32",
-                name: "startDateValidFor",
                 type: "uint32",
             },
             {
@@ -539,11 +515,6 @@ const _abi = [
             },
             {
                 internalType: "uint32",
-                name: "startDateValidFor",
-                type: "uint32",
-            },
-            {
-                internalType: "uint32",
                 name: "cliffDate",
                 type: "uint32",
             },
@@ -560,11 +531,6 @@ const _abi = [
             {
                 internalType: "uint32",
                 name: "endDate",
-                type: "uint32",
-            },
-            {
-                internalType: "uint32",
-                name: "endDateValidBefore",
                 type: "uint32",
             },
             {
@@ -688,17 +654,7 @@ const _abi = [
                     },
                     {
                         internalType: "uint32",
-                        name: "startDateValidFor",
-                        type: "uint32",
-                    },
-                    {
-                        internalType: "uint32",
                         name: "endDate",
-                        type: "uint32",
-                    },
-                    {
-                        internalType: "uint32",
-                        name: "endDateValidBefore",
                         type: "uint32",
                     },
                     {
@@ -737,17 +693,7 @@ const _abi = [
             },
             {
                 internalType: "uint32",
-                name: "startDateValidFor",
-                type: "uint32",
-            },
-            {
-                internalType: "uint32",
                 name: "endDate",
-                type: "uint32",
-            },
-            {
-                internalType: "uint32",
-                name: "endDateValidBefore",
                 type: "uint32",
             },
             {
