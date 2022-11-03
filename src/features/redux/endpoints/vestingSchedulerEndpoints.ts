@@ -1,6 +1,7 @@
 import { Operation } from "@superfluid-finance/sdk-core";
 import { SuperToken__factory } from "@superfluid-finance/sdk-core";
 import {
+  BaseQuery,
   BaseSuperTokenMutation,
   getFramework,
   registerNewTransaction,
@@ -28,8 +29,49 @@ interface CreateVestingSchedule extends BaseSuperTokenMutation {
   cliffTransferAmountWei: string;
 }
 
+interface GetVestingSchedule extends BaseQuery<RpcVestingSchedule | null> {
+  superTokenAddress: string;
+  senderAddress: string;
+  receiverAddress: string;
+}
+
+interface RpcVestingSchedule {
+  endDateTimestamp: number;
+}
+
 export const vestingSchedulerEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
+    getVestingSchedule: builder.query<
+      RpcVestingSchedule | null,
+      GetVestingSchedule
+    >({
+      queryFn: async ({
+        chainId,
+        superTokenAddress,
+        senderAddress,
+        receiverAddress,
+      }) => {
+        const framework = await getFramework(chainId);
+        const { vestingScheduler } = getEthSdk(
+          chainId,
+          framework.settings.provider
+        );
+
+        const rawVestingSchedule = await vestingScheduler.getVestingSchedule(
+          senderAddress,
+          receiverAddress,
+          superTokenAddress
+        );
+
+        const mappedVestingSchedule = rawVestingSchedule.endDate ? {
+          endDateTimestamp: rawVestingSchedule.endDate
+        } : null;
+
+        return {
+          data: mappedVestingSchedule,
+        };
+      },
+    }),
     createVestingSchedule: builder.mutation<
       TransactionInfo,
       CreateVestingSchedule
