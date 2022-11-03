@@ -18,7 +18,10 @@ import {
   ACL_DELETE_PERMISSION,
 } from "./streamSchedulerEndpoints";
 
-export const MIN_VESTING_DURATION_SECONDS = 7 * UnitOfTime.Day;
+export const MIN_VESTING_DURATION_DAYS = 7;
+export const MIN_VESTING_DURATION_SECONDS =
+  MIN_VESTING_DURATION_DAYS * UnitOfTime.Day;
+
 export const START_DATE_VALID_AFTER_SECONDS = 3 * UnitOfTime.Day;
 export const END_DATE_VALID_BEFORE_SECONDS = 1 * UnitOfTime.Day;
 
@@ -72,11 +75,12 @@ export const vestingSchedulerEndpoints = {
           superTokenAddress
         );
 
-        const mappedVestingSchedule = rawVestingSchedule.endDate
-          ? {
-              endDateTimestamp: rawVestingSchedule.endDate,
-            }
-          : null;
+        const mappedVestingSchedule =
+          rawVestingSchedule.endDate > 0
+            ? {
+                endDateTimestamp: rawVestingSchedule.endDate,
+              }
+            : null;
 
         return {
           data: mappedVestingSchedule,

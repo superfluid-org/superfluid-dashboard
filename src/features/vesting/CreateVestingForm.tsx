@@ -298,8 +298,8 @@ export const CreateVestingForm: FC<{
             onBlur={onBlur}
             InputProps={{
               sx: {
-                "border-top-right-radius": 0,
-                "border-bottom-right-radius": 0,
+                borderTopRightRadius: 0,
+                borderBottomRightRadius: 0,
               },
             }}
           />
@@ -313,8 +313,8 @@ export const CreateVestingForm: FC<{
             }
             onBlur={onBlur}
             sx={{
-              "border-top-left-radius": 0,
-              "border-bottom-left-radius": 0,
+              borderTopLeftRadius: 0,
+              borderBottomLeftRadius: 0,
             }}
           >
             {unitOfTimeList

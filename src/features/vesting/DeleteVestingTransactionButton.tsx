@@ -32,16 +32,17 @@ export const DeleteVestingTransactionButton: FC<{
 
   const isQueryable = senderAddress && superTokenAddress && receiverAddress;
 
-  const existingVestingSchedule = rpcApi.useGetVestingScheduleQuery(
-    isQueryable
-      ? {
-          chainId: network.id,
-          superTokenAddress,
-          receiverAddress,
-          senderAddress,
-        }
-      : skipToken
-  );
+  const { currentData: existingVestingSchedule } =
+    rpcApi.useGetVestingScheduleQuery(
+      isQueryable
+        ? {
+            chainId: network.id,
+            superTokenAddress,
+            receiverAddress,
+            senderAddress,
+          }
+        : skipToken
+    );
 
   const isVisible = !!existingVestingSchedule && isQueryable;
 
@@ -54,6 +55,10 @@ export const DeleteVestingTransactionButton: FC<{
         isVisible && (
           <TransactionButton
             {...TransactionButtonProps}
+            ButtonProps={{
+              variant: "outlined",
+              color: "error",
+            }}
             onClick={async (signer) => {
               deleteVestingSchedule({
                 signer,

@@ -62,8 +62,6 @@ export const CreateVestingTransactionButton: FC = () => {
                   flowRateWei: flowRate.toString(),
                   cliffTransferAmountWei: cliffTransferAmount.toString(),
                   overrides: await getOverrides(),
-                  endDateValidBeforeSeconds: 0,
-                  startDateValidForSeconds: 0,
                   transactionExtraData: undefined,
                   waitForConfirmation: false,
                 });

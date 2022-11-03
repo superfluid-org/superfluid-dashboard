@@ -1,9 +1,17 @@
 import { yupResolver } from "@hookform/resolvers/yup";
+import add from "date-fns/fp/add";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { date, mixed, number, object, ObjectSchema, string } from "yup";
+import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
+import {
+  END_DATE_VALID_BEFORE_SECONDS,
+  MIN_VESTING_DURATION_DAYS,
+  MIN_VESTING_DURATION_SECONDS,
+  START_DATE_VALID_AFTER_SECONDS,
+} from "../redux/endpoints/vestingSchedulerEndpoints";
 import { UnitOfTime } from "../send/FlowRateInput";
 
 export type ValidVestingForm = {
@@ -77,11 +85,77 @@ const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
     () =>
       object().test(async (values, context) => {
         clearErrors("data");
-        const validForm = (await primarySchema.validate(
-          values
-        )) as ValidVestingForm;
+        const {
+          data: {
+            startDate,
+            cliffAmountEther,
+            totalAmountEther,
+            cliffPeriod,
+            vestingPeriod,
+          },
+        } = (await primarySchema.validate(values)) as ValidVestingForm;
 
-        
+        // TODO(KK): This is now duplicated 3 times. DRY, please
+        // # Higher order validation
+        const handleHigherOrderValidationError = ({
+          message,
+        }: {
+          message: string;
+        }) => {
+          setError("data", {
+            message: message,
+          });
+          throw context.createError({
+            path: "data",
+            message: message,
+          });
+        };
+
+        // cliff longer than total
+        // start in history
+
+        const vestingDuration =
+          vestingPeriod.numerator * vestingPeriod.denominator;
+        if (vestingDuration < MIN_VESTING_DURATION_SECONDS) {
+          handleHigherOrderValidationError({
+            message: `The vesting period has to be at least ${MIN_VESTING_DURATION_DAYS} days.`,
+          });
+        }
+
+        const effectiveStartDate = add(
+          {
+            seconds: cliffPeriod.numerator * cliffPeriod.denominator,
+          },
+          startDate
+        );
+
+        const endDate = add(
+          {
+            seconds: vestingPeriod.numerator * vestingPeriod.denominator,
+          },
+          startDate
+        );
+
+        const secondsFromStartToEnd = Math.floor(
+          (endDate.getTime() - effectiveStartDate.getTime()) / 1000
+        );
+        if (
+          secondsFromStartToEnd <
+          START_DATE_VALID_AFTER_SECONDS + END_DATE_VALID_BEFORE_SECONDS
+        ) {
+          handleHigherOrderValidationError({
+            message: `[elvi.js error]: Invalid vesting schedule.`,
+          });
+        }
+
+        const cliffAmount = parseEtherOrZero(cliffAmountEther);
+        const totalAmount = parseEtherOrZero(totalAmountEther);
+
+        if (cliffAmount.gte(totalAmount)) {
+          handleHigherOrderValidationError({
+            message: `Cliff amount has to be less than total amount.`,
+          });
+        }
 
         return true;
       }),
