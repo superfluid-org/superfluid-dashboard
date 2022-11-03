@@ -10,6 +10,7 @@ import { subgraphApi } from "../redux/store";
 import { PartialVestingForm } from "./CreateVestingFormProvider";
 import { CreateVestingPreview } from "./CreateVestingPreview";
 import { CreateVestingForm } from "./CreateVestingForm";
+import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 
 export type VestingToken = Token & SuperTokenMinimal;
 
@@ -53,12 +54,14 @@ export const CreateVestingCard: FC<PropsWithChildren> = () => {
 
   return (
     <Card>
-      {view === CreateVestingCardView.Form && (
-        <CreateVestingForm token={token} setView={setView} />
-      )}
-      {view === CreateVestingCardView.Preview && (
-        <CreateVestingPreview token={token} setView={setView} />
-      )}
+      <ConnectionBoundary>
+        {view === CreateVestingCardView.Form && (
+          <CreateVestingForm token={token} setView={setView} />
+        )}
+        {view === CreateVestingCardView.Preview && (
+          <CreateVestingPreview token={token} setView={setView} />
+        )}
+      </ConnectionBoundary>
     </Card>
   );
 };

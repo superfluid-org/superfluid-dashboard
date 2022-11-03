@@ -5,6 +5,7 @@ import {
   BaseSuperTokenMutation,
   getFramework,
   registerNewTransaction,
+  registerNewTransactionAndReturnQueryFnResult,
   RpcEndpointBuilder,
   TransactionInfo,
   TransactionTitle,
@@ -27,6 +28,11 @@ interface CreateVestingSchedule extends BaseSuperTokenMutation {
   endDateTimestamp: number;
   endDateValidBeforeSeconds: number;
   cliffTransferAmountWei: string;
+}
+
+interface DeleteVestingSchedule extends BaseSuperTokenMutation {
+  chainId: number;
+  receiverAddress: string;
 }
 
 interface GetVestingSchedule extends BaseQuery<RpcVestingSchedule | null> {
@@ -63,13 +69,53 @@ export const vestingSchedulerEndpoints = {
           superTokenAddress
         );
 
-        const mappedVestingSchedule = rawVestingSchedule.endDate ? {
-          endDateTimestamp: rawVestingSchedule.endDate
-        } : null;
+        const mappedVestingSchedule = rawVestingSchedule.endDate
+          ? {
+              endDateTimestamp: rawVestingSchedule.endDate,
+            }
+          : null;
 
         return {
           data: mappedVestingSchedule,
         };
+      },
+    }),
+    deleteVestingSchedule: builder.mutation<
+      TransactionInfo,
+      DeleteVestingSchedule
+    >({
+      queryFn: async (
+        {
+          chainId,
+          signer,
+          superTokenAddress,
+          receiverAddress,
+          overrides,
+          waitForConfirmation,
+          transactionExtraData,
+        },
+        { dispatch }
+      ) => {
+        const { vestingScheduler } = getEthSdk(chainId, signer);
+        const signerAddress = await signer.getAddress();
+
+        const transactionResponse =
+          await vestingScheduler.deleteVestingSchedule(
+            receiverAddress,
+            superTokenAddress,
+            [],
+            overrides
+          );
+
+        return registerNewTransactionAndReturnQueryFnResult({
+          transactionResponse,
+          chainId,
+          dispatch,
+          signer: signerAddress,
+          title: "Delete Vesting Schedule",
+          extraData: transactionExtraData,
+          waitForConfirmation: !!waitForConfirmation,
+        });
       },
     }),
     createVestingSchedule: builder.mutation<

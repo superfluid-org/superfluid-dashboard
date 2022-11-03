@@ -40,7 +40,7 @@ const TransactionBoundaryContext =
 export const useTransactionBoundary = () =>
   useContext(TransactionBoundaryContext);
 
-interface TransactionBoundaryProps {
+export interface TransactionBoundaryProps {
   children: (transactionContext: TransactionBoundaryContextValue) => ReactNode;
   dialog?: (transactionContext: TransactionBoundaryContextValue) => ReactNode;
   mutationResult: MutationResult<TransactionInfo>;

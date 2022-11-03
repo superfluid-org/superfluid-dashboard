@@ -25,6 +25,7 @@ declare module "@superfluid-finance/sdk-redux" {
     "Modify Stream": true;
     "Create Vesting Schedule": true;
     "Increase Allowance": true;
+    "Delete Vesting Schedule": true;
   }
 }
 

@@ -29,20 +29,18 @@ import { timeUnitWordMap, unitOfTimeList } from "../send/FlowRateInput";
 import { transactionButtonDefaultProps } from "../transactionBoundary/TransactionButton";
 import { ErrorMessage } from "@hookform/error-message";
 import TooltipIcon from "../common/TooltipIcon";
-import {
-  CreateVestingCardView,
-  VestingToken,
-} from "./CreateVestingCard";
+import { CreateVestingCardView, VestingToken } from "./CreateVestingCard";
+import { DeleteVestingTransactionButton } from "./DeleteVestingTransactionButton";
 
 export enum VestingFormLabels {
-    Receiver = "Receiver",
-    CliffPeriod = "Cliff Period",
-    CliffAmount = "Cliff Amount",
-    VestingStartDate = "Vesting Start Date",
-    Token = "Token",
-    TotalVestingPeriod = "Total Vesting Period",
-    TotalVestedAmount = "Total Vested Amount",
-  }
+  Receiver = "Receiver",
+  CliffPeriod = "Cliff Period",
+  CliffAmount = "Cliff Amount",
+  VestingStartDate = "Vesting Start Date",
+  Token = "Token",
+  TotalVestingPeriod = "Total Vesting Period",
+  TotalVestedAmount = "Total Vested Amount",
+}
 
 export const CreateVestingForm: FC<{
   token: VestingToken | undefined;
@@ -443,6 +441,9 @@ export const CreateVestingForm: FC<{
       </FormGroup>
 
       <FormGroup>{PreviewVestingScheduleButton}</FormGroup>
+      <FormGroup>
+        <DeleteVestingTransactionButton />
+      </FormGroup>
     </Stack>
   );
 };

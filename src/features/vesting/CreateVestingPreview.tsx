@@ -219,9 +219,7 @@ export const CreateVestingPreview: FC<{
         </Typography>
       </Stack>
 
-      <ConnectionBoundary>
-        <CreateVestingTransactionButton />
-      </ConnectionBoundary>
+      <CreateVestingTransactionButton />
     </Stack>
   );
 };
