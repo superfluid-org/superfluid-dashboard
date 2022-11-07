@@ -1,0 +1,14 @@
+query getSentVestingSchedules($sender: Bytes) {
+  createVestingScheduleEvents(where: {sender: $sender}) {
+    cliffDate
+    cliffTransferAmount
+    endDate
+    flowRate
+    receiver
+    sender
+    startDate
+    superToken
+    timestamp
+    transactionHash
+  }
+}

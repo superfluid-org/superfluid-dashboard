@@ -11,7 +11,8 @@
     "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest",
     "generate-eth-sdk": "del-cli ./src/eth-sdk/client && del-cli ./src/eth-sdk/abis && eth-sdk -p ./src/eth-sdk",
     "generate-platform-api-template": "npx @rtk-query/codegen-openapi ./src/features/redux/platformApi/platformApiCodegenConfig.ts",
-    "get-vesting-graphql-schema": "get-graphql-schema https://api.studio.thegraph.com/query/14557/vesting-scheduler/v0.0.2 > src/vesting-subgraph/schema.graphql"
+    "vesting-get-graphql-schema": "get-graphql-schema https://api.studio.thegraph.com/query/14557/vesting-scheduler/v0.0.2 > src/vesting-subgraph/schema.graphql",
+    "vesting-graphql-codegen": "graphql-codegen --config ./src/vesting-subgraph/codegen.yaml"
   },
   "dependencies": {
     "@date-io/date-fns": "^2.16.0",
@@ -30,6 +31,7 @@
     "@mui/x-date-pickers": "^5.0.6",
     "@rainbow-me/rainbowkit": "^0.7.4",
     "@reduxjs/toolkit": "^1.8.6",
+    "@rtk-query/graphql-request-base-query": "^2.2.0",
     "@sentry/nextjs": "^7.17.2",
     "@superfluid-finance/sdk-core": "^0.5.7",
     "@superfluid-finance/sdk-redux": "0.3.1-dev.6cf4191.0",
@@ -40,7 +42,7 @@
     "ethereum-multicall": "^2.15.0",
     "ethers": "^5.7.2",
     "fuse.js": "^6.6.2",
-    "graphql": "16.3.0",
+    "graphql": "^16.6.0",
     "lodash": "^4.17.21",
     "nanoid": "^4.0.0",
     "next": "^12.3.2",
@@ -64,6 +66,10 @@
     "@cypress/browserify-preprocessor": "^3.0.2",
     "@dethcrypto/eth-sdk": "^0.3.3",
     "@dethcrypto/eth-sdk-client": "^0.1.6",
+    "@graphql-codegen/cli": "^2.13.11",
+    "@graphql-codegen/near-operation-file-preset": "^2.4.4",
+    "@graphql-codegen/typescript-operations": "^2.5.6",
+    "@graphql-codegen/typescript-rtk-query": "^2.3.7",
     "@rsksmart/mock-web3-provider": "1.0.0",
     "@rtk-query/codegen-openapi": "^1.0.0",
     "@truffle/hdwallet-provider": "^2.1.0",
