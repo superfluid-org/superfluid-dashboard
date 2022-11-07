@@ -11,5 +11,5 @@ generates:
     plugins:
       - typescript-operations
       - typescript-rtk-query:
-          importBaseApiFrom: './baseApi'
+          importBaseApiFrom: './vestingSubgraphApi'
           exportHooks: true

@@ -1,17 +1,18 @@
 import * as Types from './schema.generated';
 
-import { api } from './baseApi';
+import { api } from './vestingSubgraphApi';
 export type GetSentVestingSchedulesQueryVariables = Types.Exact<{
   sender?: Types.InputMaybe<Types.Scalars['Bytes']>;
 }>;
 
 
-export type GetSentVestingSchedulesQuery = { __typename?: 'Query', createVestingScheduleEvents: Array<{ __typename?: 'CreateVestingScheduleEvent', cliffDate: any, cliffTransferAmount: any, endDate: any, flowRate: any, receiver: any, sender: any, startDate: any, superToken: any, timestamp: any, transactionHash: any }> };
+export type GetSentVestingSchedulesQuery = { __typename?: 'Query', createVestingScheduleEvents: Array<{ __typename?: 'CreateVestingScheduleEvent', id: string, cliffDate: any, cliffTransferAmount: any, endDate: any, flowRate: any, receiver: any, sender: any, startDate: any, superToken: any, timestamp: any, transactionHash: any }> };
 
 
 export const GetSentVestingSchedulesDocument = `
     query getSentVestingSchedules($sender: Bytes) {
   createVestingScheduleEvents(where: {sender: $sender}) {
+    id
     cliffDate
     cliffTransferAmount
     endDate

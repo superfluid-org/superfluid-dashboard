@@ -336,7 +336,7 @@ export const CreateVestingForm: FC<{
       disabled={!formState.isValid || formState.isValidating}
       onClick={() => setView(CreateVestingCardView.Preview)}
     >
-      Preview Vesting Schedule
+      Preview the Vesting Schedule
     </Button>
   );
 
@@ -359,7 +359,7 @@ export const CreateVestingForm: FC<{
   return (
     <Stack component={"form"} gap={1}>
       <Typography component="h2" variant="h5" sx={{ mb: 3 }}>
-        Create Vesting Schedule
+        Create a Vesting Schedule
       </Typography>
 
       {ValidationSummary}

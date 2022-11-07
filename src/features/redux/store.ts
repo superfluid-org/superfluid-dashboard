@@ -20,6 +20,7 @@ import {
   REHYDRATE,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
 import { addressBookSlice } from "../addressBook/addressBook.slice";
 import { customTokensSlice } from "../customTokens/customTokens.slice";
 import { ensApi } from "../ens/ensApi.slice";
@@ -120,6 +121,7 @@ export const reduxStore = configureStore({
     [platformApi.reducerPath]: platformApi.reducer,
     [faucetApi.reducerPath]: faucetApi.reducer,
     [tokenPriceApi.reducerPath]: tokenPriceApi.reducer,
+    [vestingSubgraphApi.reducerPath]: vestingSubgraphApi.reducer,
 
     // Persisted slices
     appSettings: appSettingsPersistedReducer,
@@ -145,7 +147,8 @@ export const reduxStore = configureStore({
       .concat(gasApi.middleware)
       .concat(platformApi.middleware)
       .concat(faucetApi.middleware)
-      .concat(tokenPriceApi.middleware),
+      .concat(tokenPriceApi.middleware)
+      .concat(vestingSubgraphApi.middleware)
 });
 
 export const reduxPersistor = persistStore(reduxStore);

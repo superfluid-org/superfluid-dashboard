@@ -1,5 +1,6 @@
 query getSentVestingSchedules($sender: Bytes) {
   createVestingScheduleEvents(where: {sender: $sender}) {
+    id
     cliffDate
     cliffTransferAmount
     endDate
