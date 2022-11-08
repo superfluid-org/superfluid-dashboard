@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { FC, memo, ReactNode, useEffect, useState } from "react";
 import ResponsiveDialog from "../../features/common/ResponsiveDialog";
-import AddressAvatar from "../AddressAvatar/AddressAvatar";
+import AddressAvatar from "../Avatar/AddressAvatar";
 import { getAddress, isAddress } from "../../utils/memoizedEthersUtils";
 import useAddressName from "../../hooks/useAddressName";
 import { useAppSelector } from "../../features/redux/store";

@@ -50,7 +50,7 @@ const moduleExports = {
     NEXT_PUBLIC_APP_URL: process.env.URL,
     NEXT_PUBLIC_SENTRY_ENVIRONMENT: SENTRY_ENVIRONMENT,
   },
-  swcMinify: true, // Recommended by next-transpile-modules
+  swcMinify: false, // Recommended by next-transpile-modules... BUT Chart.js has problems with it so it needs to be turned off: https://github.com/chartjs/Chart.js/issues/10673
   productionBrowserSourceMaps: false, // Sentry will override this to `true`...
   sentry: {
     hideSourceMaps: true // If this not specified then Sentry will expose the production source maps. 

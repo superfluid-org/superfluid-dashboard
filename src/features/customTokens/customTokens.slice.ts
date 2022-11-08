@@ -1,6 +1,5 @@
 import {
   createEntityAdapter,
-  createSelector,
   createSlice,
   EntityState,
 } from "@reduxjs/toolkit";

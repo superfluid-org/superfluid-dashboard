@@ -61,6 +61,10 @@ Feature: Stream transactional test cases
     And The netflow and incomming/outgoing amounts in the dashboard page for "fDAIx" on "goerli" are "-"
     And The first row in the table shows "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" "receiving" an "ongoing" stream of "0" token per month since "now"
 
+    #Scheduling cases are really flaky due to transactions getting stuck as "pending"
+    #Need to look into bumping the gas price more than the SDK multiplier?
+    @skip
+    @numTestsKeptInMemory(0)
     Scenario: Scheduling a stream closing
       Given Transactional account bob is connected to the dashboard on goerli
       And User clicks on the "send" navigation button
@@ -75,9 +79,35 @@ Feature: Stream transactional test cases
       And The scheduling date is restored correctly
       Then All the details to send "1" "fDAIx" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" on "goerli" are set in the fields
 
-
+    @skip
+    @numTestsKeptInMemory(0)
     Scenario: Modifying stream scheduling time
       Given Transactional account bob is connected to the dashboard on goerli
       And User clicks on the "send" navigation button
       And User inputs all the details to send "2" "fDAIx" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"
       And User starts or cancels the stream if necessary
+      And User inputs all the details to schedule the stream to close after 60 minutes
+      And User modifies the scheduled stream and the transaction dialogs are visible for "goerli"
+      And User opens the transaction drawer
+      And The transaction drawer shows a succeeded "Modify Stream" transaction on "goerli"
+      And The restore button is visible for the last transaction
+      And User restores the last transaction
+      And The scheduling date is restored correctly
+      Then All the details to send "2" "fDAIx" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" on "goerli" are set in the fields
+
+
+    @skip
+    @numTestsKeptInMemory(0)
+    Scenario: Cancelling a scheduled stream
+      Given Transactional account bob is connected to the dashboard on goerli
+      And User clicks on the "send" navigation button
+      And User inputs all the details to send "2" "fDAIx" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"
+      And User starts the stream if necessary
+      And User cancels the stream and the transaction dialogs are visible for "goerli"
+      And User clicks the OK button
+      And User opens the transaction drawer
+      And User clicks on the "dashboard" navigation button
+      And The transaction drawer shows a pending "Cancel Stream" transaction on "goerli"
+      And The restore button is not visible for the last transaction
+      And The transaction drawer shows a succeeded "Cancel Stream" transaction on "goerli"
+      And The restore button is not visible for the last transaction

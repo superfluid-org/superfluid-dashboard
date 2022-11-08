@@ -15,8 +15,8 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { TransferEvent } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { FC, memo, useMemo } from "react";
-import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
+import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import { Activity } from "../../utils/activityUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
@@ -24,6 +24,8 @@ import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
 import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
+import FiatAmount from "../tokenPrice/FiatAmount";
+import useTokenPrice from "../tokenPrice/useTokenPrice";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
 
@@ -36,6 +38,8 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { visibleAddress } = useVisibleAddress();
+
+  const tokenPrice = useTokenPrice(network.id, token);
 
   const tokenQuery = subgraphApi.useTokenQuery(
     token
@@ -92,13 +96,11 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
                       {tokenQuery.data.symbol}
                     </Amount>
                   }
-                  /**
-                   * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-                   * This is just used to make table row look better
-                   */
+                  secondary={
+                    tokenPrice && <FiatAmount price={tokenPrice} wei={value} />
+                  }
                   primaryTypographyProps={{
                     variant: "h6mono",
-                    sx: { lineHeight: "46px" },
                   }}
                   secondaryTypographyProps={{
                     variant: "body2mono",

@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import {
   createContext,
   FC,
+  PropsWithChildren,
   ReactNode,
   useContext,
   useEffect,
@@ -32,9 +33,9 @@ const ExpectedNetworkContext = createContext<ExpectedNetworkContextValue>(
   null!
 );
 
-export const ExpectedNetworkProvider: FC<{
-  children: (network: Network) => ReactNode;
-}> = ({ children }) => {
+export const ExpectedNetworkProvider: FC<PropsWithChildren> = ({
+  children,
+}) => {
   const [network, setNetwork] = useState<Network>(networksByChainId.get(137)!);
   const [autoSwitchStop, setAutoSwitchStop] = useState(false);
 
@@ -45,7 +46,7 @@ export const ExpectedNetworkProvider: FC<{
         setNetwork(networksByChainId.get(chainId)!), setAutoSwitchStop(false);
       },
       stopAutoSwitchToWalletNetwork: () => setAutoSwitchStop(true),
-      isAutoSwitchStopped: autoSwitchStop
+      isAutoSwitchStopped: autoSwitchStop,
     }),
     [network, autoSwitchStop, setAutoSwitchStop]
   );
@@ -54,12 +55,13 @@ export const ExpectedNetworkProvider: FC<{
 
   // When user navigates to a new page then enable automatic switching to user wallet's network again.
   useEffect(() => {
-    const onBeforeHistoryChange = () => {
-      setAutoSwitchStop(false);
+    const onRouteChange = (_fullPath: string, { shallow }: { shallow: boolean }) => {
+      if (!shallow) {
+        setAutoSwitchStop(false);
+      }
     };
-    router.events.on("beforeHistoryChange", onBeforeHistoryChange);
-    return () =>
-      router.events.off("beforeHistoryChange", onBeforeHistoryChange);
+    router.events.on("routeChangeStart", onRouteChange);
+    return () => router.events.off("routeChangeStart", onRouteChange);
   }, []);
 
   const { chain: activeChain } = useNetwork();
@@ -99,7 +101,7 @@ export const ExpectedNetworkProvider: FC<{
 
   return (
     <ExpectedNetworkContext.Provider value={contextValue}>
-      {children(network)}
+      {children}
     </ExpectedNetworkContext.Provider>
   );
 };

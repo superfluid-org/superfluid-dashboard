@@ -27,7 +27,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
-import AddressAvatar from "../../../components/AddressAvatar/AddressAvatar";
+import AddressAvatar from "../../../components/Avatar/AddressAvatar";
 import CopyTooltip from "../../../components/CopyTooltip/CopyTooltip";
 import SEO from "../../../components/SEO/SEO";
 import withStaticSEO from "../../../components/SEO/withStaticSEO";
@@ -55,6 +55,8 @@ import {
 import Page404 from "../../404";
 import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import TimerOutlined from "@mui/icons-material/TimerOutlined";
+import FlowingFiatBalance from "../../../features/tokenPrice/FlowingFiatBalance";
+import useTokenPrice from "../../../features/tokenPrice/useTokenPrice";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -289,7 +291,7 @@ const StreamPage: NextPage = () => {
         } else if (isSenderReceiverToken) {
           const [sender, receiver, token] = _streamSplit;
 
-          // Ordered by stream ID by default.
+          // Ordered by createdAtTimestamp desc.
           // Since stream ID consists of "{sender}-{receiver}-{token}-{revision}" where revision is an incrementing number we will get the latest one.
           queryStreams(
             {
@@ -301,6 +303,10 @@ const StreamPage: NextPage = () => {
               },
               pagination: {
                 take: 1,
+              },
+              order: {
+                orderBy: "createdAtTimestamp",
+                orderDirection: "desc",
               },
             },
             true
@@ -346,6 +352,8 @@ const StreamPageContent: FC<{
 
   const [senderAddress = "", receiverAddress, tokenAddress = ""] =
     streamId.split("-");
+
+  const tokenPrice = useTokenPrice(network.id, tokenAddress);
 
   const [isTokenListed, isTokenListedLoading] = useTokenIsListed(
     network.id,
@@ -597,8 +605,15 @@ const StreamPageContent: FC<{
                 </Stack>
               )}
 
-              <Typography variant="h4" color="text.secondary">
-                {/* $2241.30486 USD */}
+              <Typography variant="h4mono" color="text.secondary">
+                {tokenPrice && (
+                  <FlowingFiatBalance
+                    balance={streamedUntilUpdatedAt}
+                    flowRate={currentFlowRate}
+                    balanceTimestamp={updatedAtTimestamp}
+                    price={tokenPrice}
+                  />
+                )}
               </Typography>
             </Stack>
 
@@ -682,7 +697,7 @@ const StreamPageContent: FC<{
                 dataCy={"start-date"}
                 label="Start Date:"
                 value={format(startDate.getTime(), "d MMM. yyyy H:mm")}
-            />
+              />
 
               <OverviewItem
                 dataCy={"buffer"}
@@ -696,35 +711,35 @@ const StreamPageContent: FC<{
                     "-"
                   )
                 }
-              />{!endDate && updatedAtTimestamp > createdAtTimestamp && (
-              <OverviewItem
+              />
+              {!endDate && updatedAtTimestamp > createdAtTimestamp && (
+                <OverviewItem
+                  label={`Updated Date:`}
+                  value={format(updatedAtTimestamp * 1000, "d MMM. yyyy H:mm")}
+                />
+              )}
 
-                label={`Updated Date:`}
-                value={format(updatedAtTimestamp * 1000, "d MMM. yyyy H:mm")}
-              />
-            )}
-
-            {endDateScheduled ? (
-              <OverviewItem
-                label={`End Date:`}
-                value={
-                  <Stack direction="row" alignItems="center" gap={0.5}>
-                    <TimerOutlined fontSize="small" />
-                    {format(endDateScheduled.getTime(), "d MMM. yyyy H:mm")}
-                  </Stack>
-                }
-              />
-            ) : endDate ? (
-              <OverviewItem
-                label={`End Date:`}
-                value={format(endDate.getTime(), "d MMM. yyyy H:mm")}
-              />
-            ) : (
-              <OverviewItem
-                label={`End Date:`}
-                value={<AllInclusiveIcon sx={{ display: "block" }} />}
-                    />
-                )}
+              {endDateScheduled ? (
+                <OverviewItem
+                  label={`End Date:`}
+                  value={
+                    <Stack direction="row" alignItems="center" gap={0.5}>
+                      <TimerOutlined fontSize="small" />
+                      {format(endDateScheduled.getTime(), "d MMM. yyyy H:mm")}
+                    </Stack>
+                  }
+                />
+              ) : endDate ? (
+                <OverviewItem
+                  label={`End Date:`}
+                  value={format(endDate.getTime(), "d MMM. yyyy H:mm")}
+                />
+              ) : (
+                <OverviewItem
+                  label={`End Date:`}
+                  value={<AllInclusiveIcon sx={{ display: "block" }} />}
+                />
+              )}
 
               <OverviewItem
                 dataCy={"network-name"}

@@ -142,13 +142,19 @@ const StreamingFormProvider: FC<
             ).unwrap(),
           ]);
 
-          const { newDateWhenBalanceCritical = new Date() } =
+          const { newDateWhenBalanceCritical, balanceAfterBuffer } =
             calculateBufferInfo(network, realtimeBalance, activeFlow, {
               amountWei: parseEther(
                 validForm.data.flowRate.amountEther
               ).toString(),
               unitOfTime: validForm.data.flowRate.unitOfTime,
             });
+
+          if (balanceAfterBuffer.isNegative()) {
+            handleHigherOrderValidationError({
+              message: `You do not have enough balance for buffer.`,
+            });
+          }
 
           if (newDateWhenBalanceCritical) {
             const minimumStreamTimeInSeconds =

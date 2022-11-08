@@ -182,3 +182,6 @@ Given(/^User schedules the stream and the transaction dialogs are visible for "(
 Then(/^The scheduling date is restored correctly$/,  () => {
     SendPage.validateRestoredScheduledDate()
 });
+Given(/^User modifies the scheduled stream and the transaction dialogs are visible for "([^"]*)"$/, (network: string) => {
+    SendPage.modifyScheduledStreamAndVerifyDialogs(network)
+});

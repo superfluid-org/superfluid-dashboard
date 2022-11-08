@@ -37,6 +37,8 @@ import TokenBalanceGraph, {
 } from "../../../features/token/TokenGraph/TokenBalanceGraph";
 import TokenGraphFilter from "../../../features/token/TokenGraph/TokenGraphFilter";
 import TokenToolbar from "../../../features/token/TokenToolbar";
+import FlowingFiatBalance from "../../../features/tokenPrice/FlowingFiatBalance";
+import useTokenPrice from "../../../features/tokenPrice/useTokenPrice";
 import TransferEventsTable from "../../../features/transfers/TransferEventsTable";
 import { useVisibleAddress } from "../../../features/wallet/VisibleAddressContext";
 import useNavigateBack from "../../../hooks/useNavigateBack";
@@ -127,6 +129,8 @@ const TokenPageContent: FC<{
   const [showForecast, setShowForecast] = useState(true);
   const navigateBack = useNavigateBack();
 
+  const tokenPrice = useTokenPrice(network.id, tokenAddress);
+
   const realTimeBalanceQuery = rpcApi.useRealtimeBalanceQuery({
     chainId: network.id,
     tokenAddress: tokenAddress,
@@ -216,14 +220,38 @@ const TokenPageContent: FC<{
               >
                 Balance
               </Typography>
-              <Typography data-cy={"token-balance"} variant="h3mono">
-                <FlowingBalance
-                  balance={balance}
-                  flowRate={flowRate}
-                  balanceTimestamp={balanceTimestamp}
-                  disableRoundingIndicator
-                />
-              </Typography>
+              <Stack direction="row" alignItems="flex-end" columnGap={1}>
+                <Typography data-cy={"token-balance"} variant="h3mono">
+                  <FlowingBalance
+                    balance={balance}
+                    flowRate={flowRate}
+                    balanceTimestamp={balanceTimestamp}
+                    disableRoundingIndicator
+                  />
+                </Typography>
+                <Typography
+                  variant="h5mono"
+                  color="text.secondary"
+                  sx={{ lineHeight: "30px" }}
+                >
+                  {tokenSymbol}
+                </Typography>
+              </Stack>
+
+              {tokenPrice && (
+                <Typography
+                  data-cy={"token-fiat-balance"}
+                  variant="h5mono"
+                  color="text.secondary"
+                >
+                  <FlowingFiatBalance
+                    balance={balance}
+                    flowRate={flowRate}
+                    balanceTimestamp={balanceTimestamp}
+                    price={tokenPrice}
+                  />
+                </Typography>
+              )}
               <Stack direction="row" alignItems="center" gap={1}>
                 <Typography
                   variant="body2"
