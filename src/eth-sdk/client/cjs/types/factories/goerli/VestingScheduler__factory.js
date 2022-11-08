@@ -39,12 +39,17 @@ const _abi = [
     },
     {
         inputs: [],
-        name: "ScheduleDontExist",
+        name: "ScheduleAlreadyExists",
         type: "error",
     },
     {
         inputs: [],
-        name: "ScheduleExist",
+        name: "ScheduleDoesNotExist",
+        type: "error",
+    },
+    {
+        inputs: [],
+        name: "ScheduleNotFlowing",
         type: "error",
     },
     {
@@ -62,6 +67,12 @@ const _abi = [
         inputs: [
             {
                 indexed: true,
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                indexed: true,
                 internalType: "address",
                 name: "sender",
                 type: "address",
@@ -73,9 +84,95 @@ const _abi = [
                 type: "address",
             },
             {
+                indexed: false,
+                internalType: "uint32",
+                name: "cliffAndFlowDate",
+                type: "uint32",
+            },
+            {
+                indexed: false,
+                internalType: "int96",
+                name: "flowRate",
+                type: "int96",
+            },
+            {
+                indexed: false,
+                internalType: "uint256",
+                name: "cliffAmount",
+                type: "uint256",
+            },
+            {
+                indexed: false,
+                internalType: "uint256",
+                name: "flowDelayCompensation",
+                type: "uint256",
+            },
+        ],
+        name: "VestingCliffAndFlowExecuted",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
                 indexed: true,
                 internalType: "contract ISuperToken",
                 name: "superToken",
+                type: "address",
+            },
+            {
+                indexed: true,
+                internalType: "address",
+                name: "sender",
+                type: "address",
+            },
+            {
+                indexed: true,
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
+                indexed: false,
+                internalType: "uint32",
+                name: "endDate",
+                type: "uint32",
+            },
+            {
+                indexed: false,
+                internalType: "uint256",
+                name: "earlyEndCompensation",
+                type: "uint256",
+            },
+            {
+                indexed: false,
+                internalType: "bool",
+                name: "didCompensationFail",
+                type: "bool",
+            },
+        ],
+        name: "VestingEndExecuted",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: true,
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                indexed: true,
+                internalType: "address",
+                name: "sender",
+                type: "address",
+            },
+            {
+                indexed: true,
+                internalType: "address",
+                name: "receiver",
                 type: "address",
             },
             {
@@ -105,16 +202,22 @@ const _abi = [
             {
                 indexed: false,
                 internalType: "uint256",
-                name: "cliffTransferAmount",
+                name: "cliffAmount",
                 type: "uint256",
             },
         ],
-        name: "CreateVestingSchedule",
+        name: "VestingScheduleCreated",
         type: "event",
     },
     {
         anonymous: false,
         inputs: [
+            {
+                indexed: true,
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
             {
                 indexed: true,
                 internalType: "address",
@@ -125,21 +228,21 @@ const _abi = [
                 indexed: true,
                 internalType: "address",
                 name: "receiver",
-                type: "address",
-            },
-            {
-                indexed: true,
-                internalType: "contract ISuperToken",
-                name: "superToken",
                 type: "address",
             },
         ],
-        name: "DeleteVestingSchedule",
+        name: "VestingScheduleDeleted",
         type: "event",
     },
     {
         anonymous: false,
         inputs: [
+            {
+                indexed: true,
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
             {
                 indexed: true,
                 internalType: "address",
@@ -153,10 +256,10 @@ const _abi = [
                 type: "address",
             },
             {
-                indexed: true,
-                internalType: "contract ISuperToken",
-                name: "superToken",
-                type: "address",
+                indexed: false,
+                internalType: "uint32",
+                name: "oldEndDate",
+                type: "uint32",
             },
             {
                 indexed: false,
@@ -164,69 +267,8 @@ const _abi = [
                 name: "endDate",
                 type: "uint32",
             },
-            {
-                indexed: false,
-                internalType: "uint256",
-                name: "closingTransferAmount",
-                type: "uint256",
-            },
-            {
-                indexed: false,
-                internalType: "bool",
-                name: "didTransferFail",
-                type: "bool",
-            },
         ],
-        name: "ExecuteClosingVesting",
-        type: "event",
-    },
-    {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: true,
-                internalType: "address",
-                name: "sender",
-                type: "address",
-            },
-            {
-                indexed: true,
-                internalType: "address",
-                name: "receiver",
-                type: "address",
-            },
-            {
-                indexed: true,
-                internalType: "contract ISuperToken",
-                name: "superToken",
-                type: "address",
-            },
-            {
-                indexed: false,
-                internalType: "uint32",
-                name: "effectiveStartDate",
-                type: "uint32",
-            },
-            {
-                indexed: false,
-                internalType: "int96",
-                name: "flowRate",
-                type: "int96",
-            },
-            {
-                indexed: false,
-                internalType: "uint256",
-                name: "cliffTransferAmount",
-                type: "uint256",
-            },
-            {
-                indexed: false,
-                internalType: "uint256",
-                name: "adjustedAmount",
-                type: "uint256",
-            },
-        ],
-        name: "ExecuteVesting",
+        name: "VestingScheduleUpdated",
         type: "event",
     },
     {
@@ -499,13 +541,13 @@ const _abi = [
     {
         inputs: [
             {
-                internalType: "address",
-                name: "receiver",
+                internalType: "contract ISuperToken",
+                name: "superToken",
                 type: "address",
             },
             {
-                internalType: "contract ISuperToken",
-                name: "superToken",
+                internalType: "address",
+                name: "receiver",
                 type: "address",
             },
             {
@@ -525,7 +567,7 @@ const _abi = [
             },
             {
                 internalType: "uint256",
-                name: "cliffTransferAmount",
+                name: "cliffAmount",
                 type: "uint256",
             },
             {
@@ -553,13 +595,13 @@ const _abi = [
     {
         inputs: [
             {
-                internalType: "address",
-                name: "receiver",
+                internalType: "contract ISuperToken",
+                name: "superToken",
                 type: "address",
             },
             {
-                internalType: "contract ISuperToken",
-                name: "superToken",
+                internalType: "address",
+                name: "receiver",
                 type: "address",
             },
             {
@@ -582,6 +624,11 @@ const _abi = [
     {
         inputs: [
             {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
                 internalType: "address",
                 name: "sender",
                 type: "address",
@@ -591,20 +638,26 @@ const _abi = [
                 name: "receiver",
                 type: "address",
             },
+        ],
+        name: "executeCliffAndFlow",
+        outputs: [
             {
-                internalType: "contract ISuperToken",
-                name: "superToken",
-                type: "address",
+                internalType: "bool",
+                name: "success",
+                type: "bool",
             },
         ],
-        name: "executeCloseVesting",
-        outputs: [],
         stateMutability: "nonpayable",
         type: "function",
     },
     {
         inputs: [
             {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
                 internalType: "address",
                 name: "sender",
                 type: "address",
@@ -614,32 +667,33 @@ const _abi = [
                 name: "receiver",
                 type: "address",
             },
+        ],
+        name: "executeEndVesting",
+        outputs: [
             {
-                internalType: "contract ISuperToken",
-                name: "superToken",
-                type: "address",
+                internalType: "bool",
+                name: "success",
+                type: "bool",
             },
         ],
-        name: "executeVesting",
-        outputs: [],
         stateMutability: "nonpayable",
         type: "function",
     },
     {
         inputs: [
-            {
-                internalType: "address",
-                name: "sender",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "receiver",
-                type: "address",
-            },
             {
                 internalType: "address",
                 name: "supertoken",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "sender",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "receiver",
                 type: "address",
             },
         ],
@@ -649,7 +703,7 @@ const _abi = [
                 components: [
                     {
                         internalType: "uint32",
-                        name: "effectiveStartDate",
+                        name: "cliffAndFlowDate",
                         type: "uint32",
                     },
                     {
@@ -664,16 +718,50 @@ const _abi = [
                     },
                     {
                         internalType: "uint256",
-                        name: "cliffTransferAmount",
+                        name: "cliffAmount",
                         type: "uint256",
                     },
                 ],
-                internalType: "struct IVestingScheduler.Schedule",
+                internalType: "struct IVestingScheduler.VestingSchedule",
                 name: "",
                 type: "tuple",
             },
         ],
         stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
+                internalType: "uint32",
+                name: "endDate",
+                type: "uint32",
+            },
+            {
+                internalType: "bytes",
+                name: "ctx",
+                type: "bytes",
+            },
+        ],
+        name: "updateVestingSchedule",
+        outputs: [
+            {
+                internalType: "bytes",
+                name: "newCtx",
+                type: "bytes",
+            },
+        ],
+        stateMutability: "nonpayable",
         type: "function",
     },
     {
@@ -688,7 +776,7 @@ const _abi = [
         outputs: [
             {
                 internalType: "uint32",
-                name: "effectiveStartDate",
+                name: "cliffAndFlowDate",
                 type: "uint32",
             },
             {
@@ -703,7 +791,7 @@ const _abi = [
             },
             {
                 internalType: "uint256",
-                name: "cliffTransferAmount",
+                name: "cliffAmount",
                 type: "uint256",
             },
         ],
