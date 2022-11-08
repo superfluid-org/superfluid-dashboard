@@ -57,7 +57,7 @@ export const CreateVestingSection: FC<PropsWithChildren> = () => {
       {view === CreateVestingCardView.Form && (
         <CreateVestingForm token={token} setView={setView} />
       )}
-      {view === CreateVestingCardView.Preview && (
+      {view === CreateVestingCardView.Preview && token && (
         <CreateVestingPreview token={token} setView={setView} />
       )}
     </ConnectionBoundary>

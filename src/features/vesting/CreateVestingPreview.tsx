@@ -10,9 +10,11 @@ import { VestingFormLabels } from "./CreateVestingForm";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { CreateVestingTransactionButton } from "./CreateVestingTransactionButton";
 import { VestingScheduleGraph } from "./VestingScheduleGraph";
+import { AccountChip } from "./AccountChip";
+import { TokenChip } from "./TokenChip";
 
 export const CreateVestingPreview: FC<{
-  token: VestingToken | undefined;
+  token: VestingToken;
   setView: (value: CreateVestingCardView) => void;
 }> = ({ token, setView }) => {
   const { watch } = useFormContext<ValidVestingForm>();
@@ -80,14 +82,15 @@ export const CreateVestingPreview: FC<{
         <Typography color="text.secondary">
           {VestingFormLabels.Receiver}
         </Typography>
-        <Typography color="text.primary">{receiverAddress}</Typography>
+
+        <AccountChip address={receiverAddress}></AccountChip>
       </Stack>
 
       <Stack>
         <Typography color="text.secondary">
           {VestingFormLabels.Token}
         </Typography>
-        <Typography color="text.primary">{superTokenAddress}</Typography>
+        <TokenChip token={token} />
       </Stack>
 
       <Stack>

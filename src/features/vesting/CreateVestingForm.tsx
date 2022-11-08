@@ -204,7 +204,7 @@ export const CreateVestingForm: FC<{
             value={startDate}
             ampm={false}
             onChange={onChange}
-            disablePast={true}
+            disablePast
           />
         )}
       />
@@ -272,7 +272,7 @@ export const CreateVestingForm: FC<{
               .filter((x) => x >= UnitOfTime.Day)
               .map((unitOfTime) => (
                 <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
-                  {timeUnitWordMap[unitOfTime]}
+                  {timeUnitWordMap[unitOfTime]}(s)
                 </MenuItem>
               ))}
           </Select>

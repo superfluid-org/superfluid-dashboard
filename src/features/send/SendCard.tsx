@@ -397,7 +397,7 @@ export default memo(function SendCard() {
                 })
               );
             }}
-            disablePast={true}
+            disablePast
           />
         )}
       />
