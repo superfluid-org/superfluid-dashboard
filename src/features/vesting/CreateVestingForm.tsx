@@ -33,7 +33,7 @@ import {
 import { transactionButtonDefaultProps } from "../transactionBoundary/TransactionButton";
 import { ErrorMessage } from "@hookform/error-message";
 import TooltipIcon from "../common/TooltipIcon";
-import { CreateVestingCardView, VestingToken } from "./CreateVestingCard";
+import { CreateVestingCardView, VestingToken } from "./CreateVestingSection";
 import { DeleteVestingTransactionButton } from "./DeleteVestingTransactionButton";
 
 export enum VestingFormLabels {

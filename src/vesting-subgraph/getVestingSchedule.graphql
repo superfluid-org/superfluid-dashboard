@@ -1,0 +1,15 @@
+query getVestingSchedule($id: ID!) {
+  createVestingScheduleEvent(id: $id) {
+    id
+    cliffDate
+    cliffTransferAmount
+    endDate
+    flowRate
+    receiver
+    sender
+    startDate
+    superToken
+    timestamp
+    transactionHash
+  }
+}

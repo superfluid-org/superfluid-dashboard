@@ -19,7 +19,7 @@ export enum CreateVestingCardView {
   Preview,
 }
 
-export const CreateVestingCard: FC<PropsWithChildren> = () => {
+export const CreateVestingSection: FC<PropsWithChildren> = () => {
   const { watch } = useFormContext<PartialVestingForm>();
   const [superTokenAddress] = watch(["data.superTokenAddress"]);
 
@@ -53,15 +53,13 @@ export const CreateVestingCard: FC<PropsWithChildren> = () => {
   );
 
   return (
-    <Card>
-      <ConnectionBoundary>
-        {view === CreateVestingCardView.Form && (
-          <CreateVestingForm token={token} setView={setView} />
-        )}
-        {view === CreateVestingCardView.Preview && (
-          <CreateVestingPreview token={token} setView={setView} />
-        )}
-      </ConnectionBoundary>
-    </Card>
+    <ConnectionBoundary>
+      {view === CreateVestingCardView.Form && (
+        <CreateVestingForm token={token} setView={setView} />
+      )}
+      {view === CreateVestingCardView.Preview && (
+        <CreateVestingPreview token={token} setView={setView} />
+      )}
+    </ConnectionBoundary>
   );
 };

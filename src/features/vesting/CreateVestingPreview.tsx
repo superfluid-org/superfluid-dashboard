@@ -5,7 +5,7 @@ import format from "date-fns/fp/format";
 import { FC } from "react";
 import { useFormContext } from "react-hook-form";
 import { timeUnitWordMap } from "../send/FlowRateInput";
-import { CreateVestingCardView, VestingToken } from "./CreateVestingCard";
+import { CreateVestingCardView, VestingToken } from "./CreateVestingSection";
 import { VestingFormLabels } from "./CreateVestingForm";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { CreateVestingTransactionButton } from "./CreateVestingTransactionButton";
