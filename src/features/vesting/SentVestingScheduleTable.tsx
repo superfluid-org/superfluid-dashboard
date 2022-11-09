@@ -1,4 +1,5 @@
 import {
+  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -10,6 +11,9 @@ import { FC } from "react";
 import { useAddressPendingVestingSchedules } from "../pendingUpdates/PendingVestingSchedule";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { useGetVestingSchedulesQuery } from "../../vesting-subgraph/getVestingSchedules.generated";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { DetailsButton } from "./DetailsButton";
+import NextLink from "next/link";
 
 export const SentVestingScheduleTable: FC = () => {
   const { visibleAddress } = useVisibleAddress();
@@ -36,6 +40,7 @@ export const SentVestingScheduleTable: FC = () => {
     <Table>
       <TableHead>
         <TableRow>
+          <TableCell></TableCell>
           <TableCell>Asset</TableCell>
           <TableCell>Receiver</TableCell>
           <TableCell></TableCell>
@@ -43,15 +48,25 @@ export const SentVestingScheduleTable: FC = () => {
       </TableHead>
       <TableBody>
         {pendingVestingSchedules.map((x) => (
-          <TableRow key={x.id}>
+          <TableRow hover key={x.id}>
+            <TableCell></TableCell>
             <TableCell>{x.superTokenAddress}</TableCell>
+            <TableCell></TableCell>
             <TableCell>PENDING</TableCell>
           </TableRow>
         ))}
         {vestingSchedules.map((x) => (
-          <TableRow key={x.id}>
+          <TableRow hover key={x.id}>
+            <TableCell>
+              <NextLink href={`/vesting/goerli/${x.id}`} passHref>
+                <IconButton>
+                  <ArrowForwardIcon fontSize="small" />
+                </IconButton>
+              </NextLink>
+            </TableCell>
             <TableCell>{x.superToken}</TableCell>
             <TableCell>{x.receiver}</TableCell>
+            <TableCell></TableCell>
           </TableRow>
         ))}
       </TableBody>

@@ -1,10 +1,17 @@
+import { Box, Stack } from "@mui/material";
 import { isString } from "lodash";
-import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { ReactElement, useEffect, useState } from "react";
+import {
+  FC,
+  PropsWithChildren,
+  ReactElement,
+  useEffect,
+  useState,
+} from "react";
 import { Network, networksBySlug } from "../../../features/network/networks";
 import { VestingLayout } from "../../../features/vesting/VestingLayout";
 import { VestingScheduleDetails } from "../../../features/vesting/VestingScheduleDetails";
+import { VestingScheduleDetailsLayout } from "../../../features/vesting/VestingScheduleDetailsLayout";
 import Page404 from "../../404";
 import { NextPageWithLayout } from "../../_app";
 
@@ -33,7 +40,7 @@ const VestingScheduleDetailsPage: NextPageWithLayout = () => {
 
   const isPageReady = routeHandled;
   if (!isPageReady) {
-    return <>TODO</>;
+    return <>Loading...</>;
   }
 
   if (!network || !vestingScheduleId) {
@@ -44,7 +51,7 @@ const VestingScheduleDetailsPage: NextPageWithLayout = () => {
 };
 
 VestingScheduleDetailsPage.getLayout = function getLayout(page: ReactElement) {
-  return <VestingLayout>{page}</VestingLayout>;
+  return <VestingScheduleDetailsLayout>{page}</VestingScheduleDetailsLayout>;
 };
 
 export default VestingScheduleDetailsPage;
