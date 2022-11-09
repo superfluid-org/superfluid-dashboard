@@ -11,14 +11,14 @@ Feature: Test cases that run indefinitely on all supported networks
     And The could not find any tokens message is not shown
     Then The native token "<token>" balance for "staticBalanceAccount" on "<network>" in the token list
     Examples:
-    |network|token|
-    | goerli      | ETH    |
-    |polygon-mumbai      |  MATIC   |
-    |  avalanche-fuji    |  AVAX   |
-    |  gnosis    |   XDAI  |
-    | polygon      |   MATIC  |
-    |  optimism     |  ETH   |
-    |   arbitrum-one    |  ETH   |
-    |   avalanche    |   AVAX  |
-    |   bsc    | BNB    |
+      | network        | token |
+      | goerli         | ETH   |
+      | polygon-mumbai | MATIC |
+      | avalanche-fuji | AVAX  |
+      | gnosis         | XDAI  |
+      | polygon        | MATIC |
+      | optimism       | ETH   |
+      | arbitrum-one   | ETH   |
+      | avalanche      | AVAX  |
+      | bsc            | BNB   |
 
