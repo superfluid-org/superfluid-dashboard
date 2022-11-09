@@ -1,12 +1,14 @@
 import { isString } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import { Network, networksBySlug } from "../../../features/network/networks";
+import { VestingLayout } from "../../../features/vesting/VestingLayout";
 import { VestingScheduleDetails } from "../../../features/vesting/VestingScheduleDetails";
 import Page404 from "../../404";
+import { NextPageWithLayout } from "../../_app";
 
-const VestingScheduleDetailsPage: NextPage = () => {
+const VestingScheduleDetailsPage: NextPageWithLayout = () => {
   const router = useRouter();
   const [routeHandled, setRouteHandled] = useState(false);
 
@@ -39,6 +41,10 @@ const VestingScheduleDetailsPage: NextPage = () => {
   }
 
   return <VestingScheduleDetails network={network} id={vestingScheduleId} />;
+};
+
+VestingScheduleDetailsPage.getLayout = function getLayout(page: ReactElement) {
+  return <VestingLayout>{page}</VestingLayout>;
 };
 
 export default VestingScheduleDetailsPage;
