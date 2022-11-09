@@ -6,6 +6,7 @@ import { date, mixed, number, object, ObjectSchema, string } from "yup";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
+import { networkDefinition } from "../network/networks";
 import {
   END_DATE_VALID_BEFORE_SECONDS,
   MIN_VESTING_DURATION_DAYS,
@@ -81,19 +82,11 @@ const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
     []
   );
 
+  const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
   const formSchema = useMemo(
     () =>
       object().test(async (values, context) => {
         clearErrors("data");
-        const {
-          data: {
-            startDate,
-            cliffAmountEther,
-            totalAmountEther,
-            cliffPeriod,
-            vestingPeriod,
-          },
-        } = (await primarySchema.validate(values)) as ValidVestingForm;
 
         // TODO(KK): This is now duplicated 3 times. DRY, please
         // # Higher order validation
@@ -110,6 +103,22 @@ const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
             message: message,
           });
         };
+
+        if (network !== networkDefinition.goerli) {
+          handleHigherOrderValidationError({
+            message: `The feature is only available on Goerli.`,
+          });
+        }
+
+        const {
+          data: {
+            startDate,
+            cliffAmountEther,
+            totalAmountEther,
+            cliffPeriod,
+            vestingPeriod,
+          },
+        } = (await primarySchema.validate(values)) as ValidVestingForm;
 
         // cliff longer than total
         // start in history
@@ -159,7 +168,7 @@ const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
         return true;
       }),
-    []
+    [network]
   );
 
   const formMethods = useForm<PartialVestingForm>({
@@ -187,7 +196,6 @@ const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const { formState, setValue, trigger, clearErrors, setError, watch } =
     formMethods;
 
-  const { stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
   useEffect(() => {
     if (formState.isDirty) {
       stopAutoSwitchToWalletNetwork();

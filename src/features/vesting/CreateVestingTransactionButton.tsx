@@ -64,7 +64,8 @@ export const CreateVestingTransactionButton: FC = () => {
                   overrides: await getOverrides(),
                   transactionExtraData: undefined,
                   waitForConfirmation: false,
-                });
+                }).unwrap();
+
               }
             )()
           }

@@ -17,7 +17,9 @@ import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { subgraphApi } from "../redux/store";
-import { PartialVestingForm } from "./CreateVestingFormProvider";
+import CreateVestingFormProvider, {
+  PartialVestingForm,
+} from "./CreateVestingFormProvider";
 import { CreateVestingPreview } from "./CreateVestingPreview";
 import { CreateVestingForm } from "./CreateVestingForm";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
@@ -101,7 +103,7 @@ export const CreateVestingSection: FC<PropsWithChildren> = () => {
   );
 
   return (
-    <ConnectionBoundary>
+    <>
       <Stack
         direction="row"
         justifyContent="start"
@@ -123,6 +125,6 @@ export const CreateVestingSection: FC<PropsWithChildren> = () => {
       {view === CreateVestingCardView.Preview && token && (
         <CreateVestingPreview token={token} setView={setView} />
       )}
-    </ConnectionBoundary>
+    </>
   );
 };
