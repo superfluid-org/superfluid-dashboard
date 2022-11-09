@@ -7,18 +7,18 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
-import { useGetSentVestingSchedulesQuery } from "../../vesting-subgraph/getSentVestingSchedules.generated";
 import { useAddressPendingVestingSchedules } from "../pendingUpdates/PendingVestingSchedule";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import { useGetVestingSchedulesQuery } from "../../vesting-subgraph/getVestingSchedules.generated";
 
-export const VestingScheduleTable: FC = () => {
+export const SentVestingScheduleTable: FC = () => {
   const { visibleAddress } = useVisibleAddress();
 
   // TODO(KK): Not really vesting schedules, just creation events.
-  const { vestingSchedules } = useGetSentVestingSchedulesQuery(
+  const { vestingSchedules } = useGetVestingSchedulesQuery(
     visibleAddress
       ? {
-          sender: visibleAddress?.toLowerCase(),
+          where: { sender: visibleAddress?.toLowerCase() },
         }
       : skipToken,
     {

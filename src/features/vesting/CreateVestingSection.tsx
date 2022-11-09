@@ -28,7 +28,7 @@ export type VestingToken = Token & SuperTokenMinimal;
 
 export enum CreateVestingCardView {
   Form,
-  Preview
+  Preview,
 }
 
 export const CreateVestingSection: FC<PropsWithChildren> = () => {

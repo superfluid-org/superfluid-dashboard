@@ -27,7 +27,7 @@ import AppSettingsBtn from "../settings/AppSettingsBtn";
 import ConnectWallet from "../wallet/ConnectWallet";
 import { useLayoutContext } from "./LayoutContext";
 import MoreNavigationItem from "./MoreNavigationItem";
-import ElderlyRoundedIcon from '@mui/icons-material/ElderlyRounded';
+import ElderlyRoundedIcon from "@mui/icons-material/ElderlyRounded";
 
 export const menuDrawerWidth = 260;
 
@@ -213,7 +213,11 @@ export default memo(function NavigationDrawer() {
           title="Vesting"
           href="/vesting"
           onClick={closeNavigationDrawer}
-          active={isActiveRoute("/vesting")}
+          active={isActiveRoute(
+            "/vesting",
+            "/vesting/create",
+            "/vesting/[_network]/[_id]"
+          )}
           icon={ElderlyRoundedIcon}
         />
       </Stack>

@@ -7,7 +7,7 @@ export const VestingLayout: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <Container key={`${network.slugName}`} maxWidth="md">
-      <Box sx={{ mb: 3 }}>
+      <Box sx={{ mb: 5 }}>
         <Typography component="h1" variant="h4">
           Vesting
         </Typography>

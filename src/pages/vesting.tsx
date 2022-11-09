@@ -1,9 +1,10 @@
 import { Card, Typography, Divider, Button, Stack, Box } from "@mui/material";
 import { ReactElement } from "react";
-import { VestingScheduleTable } from "../features/vesting/VestingScheduleTable";
+import { SentVestingScheduleTable } from "../features/vesting/SentVestingScheduleTable";
 import { NextPageWithLayout } from "./_app";
 import { VestingLayout } from "../features/vesting/VestingLayout";
 import NextLink from "next/link";
+import { ReceivedVestingScheduleTable } from "../features/vesting/ReceivedVestingScheduleTable";
 
 const VestingPage: NextPageWithLayout = () => {
   return (
@@ -15,12 +16,21 @@ const VestingPage: NextPageWithLayout = () => {
           </Button>
         </NextLink>
       </Box>
-      <Card>
+
+      <Card sx={{ mb: 3}}>
         <Typography variant="h5" component="h2" sx={{ mb: 3 }}>
           Sent Vesting Schedules
         </Typography>
         <Divider />
-        <VestingScheduleTable />
+        <SentVestingScheduleTable />
+      </Card>
+
+      <Card>
+        <Typography variant="h5" component="h2" sx={{ mb: 3 }}>
+          Received Vesting Schedules
+        </Typography>
+        <Divider />
+        <ReceivedVestingScheduleTable />
       </Card>
     </Stack>
   );
