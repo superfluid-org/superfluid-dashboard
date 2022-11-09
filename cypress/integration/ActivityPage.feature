@@ -1,4 +1,3 @@
-@hourly
 Feature: Activity History Page tests
 
   @skip

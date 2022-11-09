@@ -1,4 +1,3 @@
-@hourly
 Feature: Common element test cases
 
   Scenario: Switching between pages using navigation drawer

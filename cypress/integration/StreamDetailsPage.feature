@@ -1,4 +1,3 @@
-@hourly
 Feature: Stream details page test cases
 
   Scenario: Stream details page for an ongoing stream

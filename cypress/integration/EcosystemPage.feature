@@ -1,4 +1,3 @@
-@hourly
 Feature: Ecosystem page tests
 
   Scenario: Ecosystem page showing all the awesome projects
