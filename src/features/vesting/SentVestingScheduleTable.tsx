@@ -1,4 +1,5 @@
 import {
+  CircularProgress,
   IconButton,
   Table,
   TableBody,
@@ -14,6 +15,8 @@ import { useGetVestingSchedulesQuery } from "../../vesting-subgraph/getVestingSc
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { DetailsButton } from "./DetailsButton";
 import NextLink from "next/link";
+import { AccountChip } from "./AccountChip";
+import { TokenChip } from "./TokenChip";
 
 export const SentVestingScheduleTable: FC = () => {
   const { visibleAddress } = useVisibleAddress();
@@ -49,10 +52,14 @@ export const SentVestingScheduleTable: FC = () => {
       <TableBody>
         {pendingVestingSchedules.map((x) => (
           <TableRow hover key={x.id}>
-            <TableCell></TableCell>
+            <TableCell>
+              <CircularProgress color="warning" size="16px" />
+            </TableCell>
             <TableCell>{x.superTokenAddress}</TableCell>
+            <TableCell>
+              <AccountChip address={x.receiverAddress} />
+            </TableCell>
             <TableCell></TableCell>
-            <TableCell>PENDING</TableCell>
           </TableRow>
         ))}
         {vestingSchedules.map((x) => (
@@ -65,7 +72,9 @@ export const SentVestingScheduleTable: FC = () => {
               </NextLink>
             </TableCell>
             <TableCell>{x.superToken}</TableCell>
-            <TableCell>{x.receiver}</TableCell>
+            <TableCell>
+              <AccountChip address={x.receiver} />
+            </TableCell>
             <TableCell></TableCell>
           </TableRow>
         ))}
