@@ -3,15 +3,13 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  ListSubheader,
-  Menu,
   Popover,
   useTheme,
 } from "@mui/material";
 import { FC } from "react";
+import AppCurrencySelect from "../../components/CurrencySelect/AppCurrencySelect";
 import useMenuUtils from "../../hooks/useMenuUtils";
 import ThemeChanger from "../theme/ThemeChanger";
-import CurrencySelect from "../tokenPrice/CurrencySelect";
 
 interface AppSettingsBtnProps {}
 
@@ -39,7 +37,7 @@ const AppSettingsBtn: FC<AppSettingsBtnProps> = ({}) => {
         }}
       >
         <ThemeChanger />
-        <CurrencySelect />
+        <AppCurrencySelect />
       </Popover>
     </>
   );

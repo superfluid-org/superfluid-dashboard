@@ -26,6 +26,7 @@
     "@mui/icons-material": "^5.10.9",
     "@mui/lab": "^5.0.0-alpha.105",
     "@mui/material": "^5.10.11",
+    "@mui/x-data-grid": "^5.17.10",
     "@mui/x-date-pickers": "^5.0.6",
     "@rainbow-me/rainbowkit": "^0.7.4",
     "@reduxjs/toolkit": "^1.8.6",

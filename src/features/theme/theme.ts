@@ -540,6 +540,12 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             },
           },
         },
+        styleOverrides: {
+          select: {
+            // fontSize: "14px",
+            // fontWeight: 500,
+          },
+        },
       },
       MuiOutlinedInput: {
         styleOverrides: {
@@ -747,13 +753,15 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             props: { variant: "input" },
             style: {
               border: "1px solid",
+              fontWeight: 400,
+              fontSize: "16px",
               color: theme.palette.text.primary,
               borderColor: theme.palette.other.outline,
               background: theme.palette.background.paper,
               backgroundImage: getModeStyle("none", ELEVATION1_BG),
               justifyContent: "flex-start",
               textAlign: "left",
-              minHeight: 54,
+              minHeight: 56,
               ".MuiButton-endIcon": {
                 marginLeft: "auto",
               },
