@@ -12,6 +12,7 @@ import format from "date-fns/fp/format";
 import { formatEther } from "ethers/lib/utils";
 import { TokenChip } from "./TokenChip";
 import { PageLoader } from "./PageLoader";
+import { getTimeInSeconds } from "../../utils/dateUtils";
 
 export const VestingScheduleDetails: FC<{
   network: Network;
@@ -38,20 +39,17 @@ export const VestingScheduleDetails: FC<{
     return <Page404 />;
   }
 
-  const {
-    cliffAmount,
-    receiver,
-    sender,
-    superToken,
-    flowRate
-  } = vestingSchedule;
-  const cliffDate = Number(vestingSchedule.cliffDate);
-  const startDate = Number(vestingSchedule.startDate);
-  const endDate = Number(vestingSchedule.endDate);
+  const { cliffAmount, receiver, sender, superToken, flowRate } =
+    vestingSchedule;
+  const cliffDate = new Date(Number(vestingSchedule.cliffDate) * 1000);
+  const startDate = new Date(Number(vestingSchedule.startDate) * 1000);
+  const endDate = new Date(Number(vestingSchedule.endDate) * 1000);
 
   // TODO(KK): get this to Subgraph
   const cliffAndFlowDate = cliffDate ? startDate : cliffDate;
-  const totalFlowed = BigNumber.from(flowRate).mul(endDate - cliffAndFlowDate);
+  const totalFlowed = BigNumber.from(flowRate).mul(
+    getTimeInSeconds(endDate) - getTimeInSeconds(cliffAndFlowDate)
+  );
   const totalAmount = BigNumber.from(cliffAmount).add(totalFlowed);
 
   const cliffAmountEther = formatEther(cliffAmount);
@@ -61,9 +59,9 @@ export const VestingScheduleDetails: FC<{
     <>
       <VestingScheduleGraph
         cliffAmount={cliffAmount}
-        cliffDate={new Date(cliffDate * 1000)}
-        endDate={new Date(endDate * 1000)}
-        startDate={new Date(startDate * 1000)}
+        cliffDate={cliffDate}
+        endDate={endDate}
+        startDate={startDate}
         totalAmount={totalAmount}
       />
       <Stack>
