@@ -10,9 +10,9 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  BigDecimal: any;
-  BigInt: any;
-  Bytes: any;
+  BigDecimal: string;
+  BigInt: string;
+  Bytes: string;
 };
 
 export type BlockChangedFilter = {

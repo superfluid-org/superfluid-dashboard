@@ -189,8 +189,8 @@ export const vestingSchedulerEndpoints = {
 
         const createVestingSchedule =
           await vestingScheduler.populateTransaction.createVestingSchedule(
-            arg.receiverAddress,
             superTokenAddress,
+            arg.receiverAddress,
             arg.startDateTimestamp,
             arg.cliffDateTimestamp,
             arg.flowRateWei,

@@ -1,4 +1,4 @@
-import { Box, Stack } from "@mui/material";
+import { Box, CircularProgress, Container, Stack } from "@mui/material";
 import { isString } from "lodash";
 import { useRouter } from "next/router";
 import {
@@ -10,10 +10,11 @@ import {
 } from "react";
 import { Network, networksBySlug } from "../../../features/network/networks";
 import { VestingLayout } from "../../../features/vesting/VestingLayout";
-import { VestingScheduleDetails } from "../../../features/vesting/VestingScheduleDetails";
+import { VestingScheduleDetails } from "../../../features/vesting/VestingScheduleDetailsSection";
 import { VestingScheduleDetailsLayout } from "../../../features/vesting/VestingScheduleDetailsLayout";
 import Page404 from "../../404";
 import { NextPageWithLayout } from "../../_app";
+import { PageLoader } from "../../../features/vesting/PageLoader";
 
 const VestingScheduleDetailsPage: NextPageWithLayout = () => {
   const router = useRouter();
@@ -40,7 +41,7 @@ const VestingScheduleDetailsPage: NextPageWithLayout = () => {
 
   const isPageReady = routeHandled;
   if (!isPageReady) {
-    return <>Loading...</>;
+    return <PageLoader />;
   }
 
   if (!network || !vestingScheduleId) {

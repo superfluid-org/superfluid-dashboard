@@ -109,7 +109,7 @@ export const CreateVestingPreview: FC<{
           {VestingFormLabels.CliffAmount}
         </Typography>
         <Typography color="text.primary">
-          {cliffAmountEther} {token?.symbol}
+          {cliffAmountEther} {token.symbol}
         </Typography>
       </Stack>
 
@@ -130,7 +130,7 @@ export const CreateVestingPreview: FC<{
           {VestingFormLabels.TotalVestedAmount}
         </Typography>
         <Typography color="text.primary">
-          {totalAmountEther} {token?.symbol}
+          {totalAmountEther} {token.symbol}
         </Typography>
       </Stack>
 

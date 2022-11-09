@@ -17,14 +17,15 @@ export const useVestingToken = (
       : skipToken,
     {
       selectFromResult: (result) => ({
-        token: result.currentData
+        ...result,
+        token: result.data
           ? ({
-              ...result.currentData,
-              address: result.currentData.id,
+              ...result.data,
+              address: result.data.id,
               type: getSuperTokenType({
                 network,
-                address: result.currentData.id,
-                underlyingAddress: result.currentData.underlyingAddress,
+                address: result.data.id,
+                underlyingAddress: result.data.underlyingAddress,
               }),
             } as VestingToken)
           : undefined,

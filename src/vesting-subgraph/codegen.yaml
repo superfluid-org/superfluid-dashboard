@@ -1,5 +1,10 @@
 schema: "src/vesting-subgraph/schema.graphql"
 documents: "src/vesting-subgraph/**/*.graphql"
+config:
+  scalars:
+      Bytes: string
+      BigInt: string
+      BigDecimal: string
 generates:
   src/vesting-subgraph/schema.generated.ts:
     plugins:
