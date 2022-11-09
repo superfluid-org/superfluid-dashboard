@@ -57,18 +57,6 @@ export const CreateVestingPreview: FC<{
     startDate
   );
 
-  const BackButtonWithArrow = (
-    <Box>
-      <IconButton
-        data-cy={"back-button"}
-        color="inherit"
-        onClick={() => setView(CreateVestingCardView.Form)}
-      >
-        <ArrowBackIcon />
-      </IconButton>
-    </Box>
-  );
-
   const BackButton = (
     <Button type="button" onClick={() => setView(CreateVestingCardView.Form)}>
       Back
@@ -160,7 +148,7 @@ export const CreateVestingPreview: FC<{
         }}
       >
         {BackButton}
-        <CreateVestingTransactionButton />
+        <CreateVestingTransactionButton setView={setView} />
       </Stack>
     </Stack>
   );

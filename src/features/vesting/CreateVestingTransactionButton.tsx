@@ -7,8 +7,11 @@ import { rpcApi } from "../redux/store";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
+import { CreateVestingCardView } from "./CreateVestingSection";
 
-export const CreateVestingTransactionButton: FC = () => {
+export const CreateVestingTransactionButton: FC<{
+  setView: (value: CreateVestingCardView) => void;
+}> = ({ setView }) => {
   const [createVestingSchedule, createVestingScheduleResult] =
     rpcApi.useCreateVestingScheduleMutation();
 
@@ -34,7 +37,7 @@ export const CreateVestingTransactionButton: FC = () => {
                 },
               }) => {
                 const startDateTimestamp = getTimeInSeconds(startDate);
-                
+
                 const cliffDateTimestamp =
                   startDateTimestamp +
                   cliffPeriod.numerator * cliffPeriod.denominator;
@@ -50,6 +53,7 @@ export const CreateVestingTransactionButton: FC = () => {
                 const streamedAmount = totalAmount.sub(cliffTransferAmount);
                 const flowRate = BigNumber.from(streamedAmount).div(timeToFlow);
 
+                setView(CreateVestingCardView.PreviewApproving);
                 createVestingSchedule({
                   chainId: network.id,
                   signer,
@@ -64,8 +68,10 @@ export const CreateVestingTransactionButton: FC = () => {
                   overrides: await getOverrides(),
                   transactionExtraData: undefined,
                   waitForConfirmation: false,
-                }).unwrap();
-
+                })
+                  .unwrap()
+                  .then(() => setView(CreateVestingCardView.Success))
+                  .catch(() => setView(CreateVestingCardView.Preview));
               }
             )()
           }

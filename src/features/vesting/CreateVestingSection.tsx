@@ -31,6 +31,8 @@ export type VestingToken = Token & SuperTokenMinimal;
 export enum CreateVestingCardView {
   Form,
   Preview,
+  PreviewApproving,
+  Success,
 }
 
 export const CreateVestingSection: FC<PropsWithChildren> = () => {
@@ -85,6 +87,10 @@ export const CreateVestingSection: FC<PropsWithChildren> = () => {
         return 0;
       case CreateVestingCardView.Preview:
         return 1;
+      case CreateVestingCardView.PreviewApproving:
+        return 2;
+      case CreateVestingCardView.Success:
+        return 3;
     }
   };
 
@@ -122,9 +128,10 @@ export const CreateVestingSection: FC<PropsWithChildren> = () => {
       {view === CreateVestingCardView.Form && (
         <CreateVestingForm token={token} setView={setView} />
       )}
-      {view === CreateVestingCardView.Preview && token && (
-        <CreateVestingPreview token={token} setView={setView} />
-      )}
+      {(view === CreateVestingCardView.Preview ||
+        view === CreateVestingCardView.PreviewApproving) &&
+        token && <CreateVestingPreview token={token} setView={setView} />}
+      {view === CreateVestingCardView.Success && token && <Box>Success!</Box>}
     </>
   );
 };
