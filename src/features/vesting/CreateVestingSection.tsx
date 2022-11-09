@@ -30,10 +30,10 @@ import { useVestingToken } from "./useVestingToken";
 export type VestingToken = Token & SuperTokenMinimal;
 
 export enum CreateVestingCardView {
-  Form,
-  Preview,
-  PreviewApproving,
-  Success,
+  Form = 0,
+  Preview = 1,
+  PreviewApproving = 2,
+  Success = 3,
 }
 
 export const CreateVestingSection: FC<PropsWithChildren> = () => {
@@ -53,35 +53,28 @@ export const CreateVestingSection: FC<PropsWithChildren> = () => {
       <IconButton
         data-cy={"close-button"}
         color="inherit"
-        onClick={() => router.push("/vesting")}
+        onClick={() => {
+          if (view === CreateVestingCardView.Form) {
+            router.push("/vesting");
+          } else {
+            setView(view - 1);
+          }
+        }}
       >
         <ArrowBackIcon />
       </IconButton>
     </Box>
   );
 
-  const getActiveStep = () => {
-    switch (view) {
-      case CreateVestingCardView.Form:
-        return 0;
-      case CreateVestingCardView.Preview:
-        return 1;
-      case CreateVestingCardView.PreviewApproving:
-        return 2;
-      case CreateVestingCardView.Success:
-        return 3;
-    }
-  };
-
   const StepperContainer = (
-    <Stepper activeStep={getActiveStep()} alternativeLabel>
-      <Step key="fill">
+    <Stepper activeStep={view} alternativeLabel>
+      <Step key={CreateVestingCardView.Form}>
         <StepLabel>Form</StepLabel>
       </Step>
-      <Step key="preview">
+      <Step key={CreateVestingCardView.Preview}>
         <StepLabel>Preview</StepLabel>
       </Step>
-      <Step key="approve">
+      <Step key={CreateVestingCardView.PreviewApproving}>
         <StepLabel>Approve</StepLabel>
       </Step>
     </Stepper>
