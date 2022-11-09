@@ -240,23 +240,28 @@ export const CreateVestingForm: FC<{
         <Box sx={{ display: "grid", gridTemplateColumns: "2fr 1fr" }}>
           <TextField
             value={value.numerator}
-            onChange={(e) => onChange({
-              numerator: e.target.value,
-              denominator: value.denominator,
-            })}
+            onChange={(e) =>
+              onChange({
+                numerator: e.target.value,
+                denominator: value.denominator,
+              })
+            }
             onBlur={onBlur}
             InputProps={{
               sx: {
                 borderTopRightRadius: 0,
                 borderBottomRightRadius: 0,
               },
-            }} />
+            }}
+          />
           <Select
             value={value.denominator}
-            onChange={(e) => onChange({
-              numerator: value.numerator,
-              denominator: e.target.value,
-            })}
+            onChange={(e) =>
+              onChange({
+                numerator: value.numerator,
+                denominator: e.target.value,
+              })
+            }
             onBlur={onBlur}
             sx={{
               borderTopLeftRadius: 0,
@@ -352,7 +357,7 @@ export const CreateVestingForm: FC<{
   );
 
   return (
-    <Stack component={"form"} gap={1}>
+    <Stack component={"form"} gap={3}>
       {ValidationSummary}
 
       <FormGroup>
@@ -367,82 +372,87 @@ export const CreateVestingForm: FC<{
         {ReceiverController}
       </FormGroup>
 
-      <FormGroup>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <FormLabel>{VestingFormLabels.Token}</FormLabel>
-          <TooltipIcon title="TODO:" />
-        </Stack>
-        {TokenController}
-      </FormGroup>
+      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+        <FormGroup>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <FormLabel>{VestingFormLabels.Token}</FormLabel>
+            <TooltipIcon title="TODO:" />
+          </Stack>
+          {TokenController}
+        </FormGroup>
+        <FormGroup>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <FormLabel>{VestingFormLabels.VestingStartDate}</FormLabel>
+            <TooltipIcon title="The date when stream scheduler tries to cancel the stream." />
+          </Stack>
+          {StartDateController}
+        </FormGroup>
+      </Box>
 
-      <FormGroup>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <FormLabel>{VestingFormLabels.VestingStartDate}</FormLabel>
-          <TooltipIcon title="The date when stream scheduler tries to cancel the stream." />
-        </Stack>
-        {StartDateController}
-      </FormGroup>
+      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+        <FormGroup>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <FormLabel>{VestingFormLabels.CliffAmount}</FormLabel>
+            <TooltipIcon title="TODO:" />
+          </Stack>
+          {CliffAmountController}
+        </FormGroup>
 
-      <FormGroup>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <FormLabel>{VestingFormLabels.CliffPeriod}</FormLabel>
-          <TooltipIcon title="TODO:" />
-        </Stack>
-        {CliffPeriodController}
-      </FormGroup>
+        <FormGroup>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <FormLabel>{VestingFormLabels.CliffPeriod}</FormLabel>
+            <TooltipIcon title="TODO:" />
+          </Stack>
+          {CliffPeriodController}
+        </FormGroup>
+      </Box>
 
-      <FormGroup>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <FormLabel>{VestingFormLabels.CliffAmount}</FormLabel>
-          <TooltipIcon title="TODO:" />
-        </Stack>
-        {CliffAmountController}
-      </FormGroup>
+      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+        <FormGroup>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <FormLabel>{VestingFormLabels.TotalVestedAmount}</FormLabel>
+            <TooltipIcon title="TODO:" />
+          </Stack>
+          {VestingAmountController}
+        </FormGroup>
 
-      <FormGroup>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <FormLabel>{VestingFormLabels.TotalVestingPeriod}</FormLabel>
-          <TooltipIcon title="TODO:" />
-        </Stack>
-        {VestingPeriodController}
-      </FormGroup>
+        <FormGroup>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <FormLabel>{VestingFormLabels.TotalVestingPeriod}</FormLabel>
+            <TooltipIcon title="TODO:" />
+          </Stack>
+          {VestingPeriodController}
+        </FormGroup>
+      </Box>
 
-      <FormGroup>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <FormLabel>{VestingFormLabels.TotalVestedAmount}</FormLabel>
-          <TooltipIcon title="TODO:" />
-        </Stack>
-        {VestingAmountController}
-      </FormGroup>
-
-      <FormGroup>{PreviewVestingScheduleButton}</FormGroup>
-      <FormGroup>
+      <Stack gap={1}>
+        {PreviewVestingScheduleButton}
         <DeleteVestingTransactionButton />
-      </FormGroup>
+      </Stack>
     </Stack>
   );
 };

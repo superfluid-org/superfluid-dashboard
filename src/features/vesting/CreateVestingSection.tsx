@@ -67,9 +67,9 @@ export const CreateVestingSection: FC<PropsWithChildren> = () => {
   );
 
   const StepperContainer = (
-    <Stepper activeStep={view} alternativeLabel>
+    <Stepper activeStep={view} sx={{ mt: 0, mb: 4 }}>
       <Step key={CreateVestingCardView.Form}>
-        <StepLabel>Form</StepLabel>
+        <StepLabel>Create</StepLabel>
       </Step>
       <Step key={CreateVestingCardView.Preview}>
         <StepLabel>Preview</StepLabel>
@@ -87,7 +87,7 @@ export const CreateVestingSection: FC<PropsWithChildren> = () => {
         justifyContent="start"
         alignItems="center"
         gap={2}
-        sx={{ mb: 5 }}
+        sx={{ mb: 3 }}
       >
         {BackButton}
         <Typography component="h2" variant="h5">

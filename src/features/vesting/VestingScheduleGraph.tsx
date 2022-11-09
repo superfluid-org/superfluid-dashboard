@@ -1,3 +1,5 @@
+import { Box, Stack, Typography } from "@mui/material";
+import { format } from "date-fns";
 import Decimal from "decimal.js";
 import { BigNumber, BigNumberish } from "ethers";
 import { FC } from "react";
@@ -19,64 +21,93 @@ export const VestingScheduleGraph: FC<VestingScheduleGraphProps> = ({
 }) => {
   const totalSeconds = endDate.getTime() - startDate.getTime();
   const cliffSeconds = cliffDate.getTime() - startDate.getTime();
-  const timePercentage = cliffSeconds / totalSeconds;
+  const cliffRatio = cliffSeconds / totalSeconds;
 
   const amountPercentage = new Decimal(BigNumber.from(cliffAmount).toString())
     .div(new Decimal(BigNumber.from(totalAmount).toString()))
     .toDP(6)
     .toNumber();
 
+  const cliffPercentage = cliffRatio * 100;
+
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="100%"
-      height="140px"
-      viewBox="0 0 200 100"
-      fill="none"
-      preserveAspectRatio="none"
-    >
-      <defs>
-        <linearGradient
-          id="vesting-graph-gradient"
-          x1="0"
-          y1="0"
-          x2="0"
-          y2="200"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#10BB35" stopOpacity="0.2" />
-          <stop offset="0.68" stopColor="#10BB35" stopOpacity="0" />
-        </linearGradient>
-      </defs>
+    <Stack gap={0.5} sx={{ position: "relative" }}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="100%"
+        height="140px"
+        viewBox="0 0 200 100"
+        fill="none"
+        preserveAspectRatio="none"
+        style={{
+          display: "block",
+          // marginLeft: "-6px",
+          // marginRight: "-6px",
+          // width: "calc(100% + 12px)",
+        }}
+      >
+        <defs>
+          <linearGradient
+            id="vesting-graph-gradient"
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="200"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stopColor="#10BB35" stopOpacity="0.2" />
+            <stop offset="0.68" stopColor="#10BB35" stopOpacity="0" />
+          </linearGradient>
+        </defs>
 
-      <line
-        x1={194 * timePercentage}
-        y1={96 - 96 * amountPercentage}
-        x2={194 * timePercentage}
-        y2="3"
-        stroke="#12141e61"
-        strokeWidth="3"
-        strokeDasharray="6"
-        vectorEffect="non-scaling-stroke"
-      />
+        <line
+          x1={194 * cliffRatio}
+          y1={96 - 96 * amountPercentage}
+          x2={194 * cliffRatio}
+          y2="3"
+          stroke="#12141e61"
+          strokeWidth="3"
+          strokeDasharray="6"
+          vectorEffect="non-scaling-stroke"
+        />
 
-      <path
-        d={`M 3 97 H ${194 * timePercentage} V ${
-          96 - 96 * amountPercentage
-        } L 197 3`}
-        stroke="#10BB35"
-        strokeWidth="3"
-        strokeLinecap="round"
-        vectorEffect="non-scaling-stroke"
-      />
+        <path
+          d={`M 3 97 H ${194 * cliffRatio} V ${
+            96 - 96 * amountPercentage
+          } L 197 3`}
+          stroke="#10BB35"
+          strokeWidth="3"
+          strokeLinecap="round"
+          vectorEffect="non-scaling-stroke"
+        />
 
-      <path
-        d={`M ${194 * timePercentage} 98 V ${
-          96 - 96 * amountPercentage
-        } L 198 3 V 98 Z`}
-        vectorEffect="non-scaling-stroke"
-        fill="url(#vesting-graph-gradient)"
-      />
-    </svg>
+        <path
+          d={`M ${194 * cliffRatio} 98 V ${
+            96 - 96 * amountPercentage
+          } L 198 3 V 98 Z`}
+          vectorEffect="non-scaling-stroke"
+          fill="url(#vesting-graph-gradient)"
+        />
+      </svg>
+      <Typography
+        variant="body2"
+        color="text.disabled"
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: `calc(${cliffPercentage}% - 14px)`,
+        }}
+      >
+        Cliff: {format(cliffDate, "LLL d, yyyy HH:mm")}
+      </Typography>
+      <Stack direction="row" justifyContent="space-between">
+        <Typography variant="body2" color="text.disabled">
+          Start: {format(startDate, "LLL d, yyyy HH:mm")}
+        </Typography>
+        <Typography variant="body2" color="text.disabled">
+          End: {format(endDate, "LLL d, yyyy HH:mm")}
+        </Typography>
+      </Stack>
+    </Stack>
   );
 };
