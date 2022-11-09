@@ -1,3 +1,4 @@
+@hourly
 Feature: Address Book test cases
 
   Scenario: No addresses added onboarding message

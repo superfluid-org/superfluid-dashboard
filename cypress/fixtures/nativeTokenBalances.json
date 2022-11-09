@@ -13,7 +13,7 @@
       }
     },
     "avalanche-fuji": {
-      "ETH": {
+      "AVAX": {
         "underlyingBalance": "0.9733",
         "superTokenBalance": "0"
       }
@@ -43,13 +43,13 @@
       }
     },
     "avalanche": {
-      "ETH": {
+      "AVAX": {
         "underlyingBalance": "0",
         "superTokenBalance": "0"
       }
     },
     "bsc": {
-      "ETH": {
+      "BNB": {
         "underlyingBalance": "0",
         "superTokenBalance": "0"
       }

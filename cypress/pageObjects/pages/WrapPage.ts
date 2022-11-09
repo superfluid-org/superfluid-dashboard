@@ -45,6 +45,7 @@ const APPROVE_ALLOWANCE_MESSAGE = "[data-cy=allowance-message]"
 const WRAP_SCREEN = "[data-cy=wrap-screen]"
 const MAIN_BUTTONS = `${WRAP_SCREEN} [data-cy*=e-button]`
 const MAX_BUTTON = "[data-cy=max-button]"
+const TOKEN_SEARCH_NO_RESULTS = "[data-cy=token-search-no-results]"
 
 export class WrapPage extends BasePage {
     static checkIfWrapContainerIsVisible() {
@@ -411,6 +412,25 @@ export class WrapPage extends BasePage {
                 this.validateSuccessfulTransaction("Approve Allowance", network)
                 this.doesRestoreButtonExist()
             }
+        })
+    }
+
+    static validateWrapPageNativeTokenBalance(token: string, account: string, network: string) {
+        cy.fixture("nativeTokenBalances").then(fixture => {
+            cy.get(UNDERLYING_BALANCE , {timeout: 60000}).should("have.text",`Balance: ${fixture[account][network][token].underlyingBalance}`)
+            cy.get(SUPER_TOKEN_BALANCE , {timeout: 60000}).should("have.text",`${fixture[account][network][token].superTokenBalance} `)
+        })
+    }
+
+    static validateNoTokenMessageNotVisible() {
+        this.doesNotExist(TOKEN_SEARCH_NO_RESULTS)
+    }
+
+    static validateNativeTokenBalanceInTokenList(token: string, account: string, network: string) {
+        cy.fixture("nativeTokenBalances").then(fixture => {
+            let expectedString = fixture[account][network][token].underlyingBalance === "0" ? fixture[account][network][token].underlyingBalance : `~${fixture[account][network][token].underlyingBalance}`
+            cy.get(`[data-cy=${token}-list-item]`).scrollIntoView()
+            this.hasText(`[data-cy=${token}-list-item] ${TOKEN_SELECT_BALANCE}`,expectedString)
         })
     }
 }

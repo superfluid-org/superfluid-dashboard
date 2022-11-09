@@ -151,6 +151,18 @@ Given(/^The restore button is visible for the last transaction$/, () => {
 Given(/^The restore button is not visible for the last transaction$/, () => {
     WrapPage.doesRestoreButtonExist()
 });
+
 Given(/^User approves the protocol to use "([^"]*)" "([^"]*)" on "([^"]*)" if necessary$/, (amount: string, token: string, network: string) => {
     WrapPage.approveTokenIfNeeded(token, network, amount)
+});
+
+Then(/^The native token "([^"]*)" balance for "([^"]*)" on "([^"]*)" is shown under the token selection button$/,  (token:string,account:string,network:string) => {
+    WrapPage.validateWrapPageNativeTokenBalance(token,account,network)
+});
+
+Then(/^The could not find any tokens message is not shown$/,  () => {
+    WrapPage.validateNoTokenMessageNotVisible()
+});
+Then(/^The native token "([^"]*)" balance for "([^"]*)" on "([^"]*)" in the token list$/,  (token:string,account:string,network:string) => {
+    WrapPage.validateNativeTokenBalanceInTokenList(token,account,network)
 });

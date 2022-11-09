@@ -1,3 +1,4 @@
+@hourly
 Feature: Wrap page test cases
 
   Scenario: Connect wallet button shown to a user who hasn't got their wallet connected
