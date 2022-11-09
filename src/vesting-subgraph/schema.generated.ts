@@ -25,326 +25,6 @@ export type Block_Height = {
   number_gte?: InputMaybe<Scalars['Int']>;
 };
 
-export type CreateVestingScheduleEvent = Event & {
-  __typename?: 'CreateVestingScheduleEvent';
-  /** Holds the addresses for sender and receiver. */
-  addresses: Array<Scalars['Bytes']>;
-  blockNumber: Scalars['BigInt'];
-  cliffDate: Scalars['BigInt'];
-  cliffTransferAmount: Scalars['BigInt'];
-  endDate: Scalars['BigInt'];
-  flowRate: Scalars['BigInt'];
-  gasPrice: Scalars['BigInt'];
-  id: Scalars['ID'];
-  logIndex: Scalars['BigInt'];
-  name: Scalars['String'];
-  order: Scalars['BigInt'];
-  receiver: Scalars['Bytes'];
-  sender: Scalars['Bytes'];
-  startDate: Scalars['BigInt'];
-  superToken: Scalars['Bytes'];
-  timestamp: Scalars['BigInt'];
-  transactionHash: Scalars['Bytes'];
-};
-
-export type CreateVestingScheduleEvent_Filter = {
-  /** Filter for the block changed event. */
-  _change_block?: InputMaybe<BlockChangedFilter>;
-  addresses?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_contains?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_not?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_not_contains?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_not_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
-  blockNumber?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_gt?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_gte?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  blockNumber_lt?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_lte?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_not?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  cliffDate?: InputMaybe<Scalars['BigInt']>;
-  cliffDate_gt?: InputMaybe<Scalars['BigInt']>;
-  cliffDate_gte?: InputMaybe<Scalars['BigInt']>;
-  cliffDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  cliffDate_lt?: InputMaybe<Scalars['BigInt']>;
-  cliffDate_lte?: InputMaybe<Scalars['BigInt']>;
-  cliffDate_not?: InputMaybe<Scalars['BigInt']>;
-  cliffDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  cliffTransferAmount?: InputMaybe<Scalars['BigInt']>;
-  cliffTransferAmount_gt?: InputMaybe<Scalars['BigInt']>;
-  cliffTransferAmount_gte?: InputMaybe<Scalars['BigInt']>;
-  cliffTransferAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  cliffTransferAmount_lt?: InputMaybe<Scalars['BigInt']>;
-  cliffTransferAmount_lte?: InputMaybe<Scalars['BigInt']>;
-  cliffTransferAmount_not?: InputMaybe<Scalars['BigInt']>;
-  cliffTransferAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  endDate?: InputMaybe<Scalars['BigInt']>;
-  endDate_gt?: InputMaybe<Scalars['BigInt']>;
-  endDate_gte?: InputMaybe<Scalars['BigInt']>;
-  endDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  endDate_lt?: InputMaybe<Scalars['BigInt']>;
-  endDate_lte?: InputMaybe<Scalars['BigInt']>;
-  endDate_not?: InputMaybe<Scalars['BigInt']>;
-  endDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  flowRate?: InputMaybe<Scalars['BigInt']>;
-  flowRate_gt?: InputMaybe<Scalars['BigInt']>;
-  flowRate_gte?: InputMaybe<Scalars['BigInt']>;
-  flowRate_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  flowRate_lt?: InputMaybe<Scalars['BigInt']>;
-  flowRate_lte?: InputMaybe<Scalars['BigInt']>;
-  flowRate_not?: InputMaybe<Scalars['BigInt']>;
-  flowRate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  gasPrice?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_gt?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_gte?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  gasPrice_lt?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_lte?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_not?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  id?: InputMaybe<Scalars['ID']>;
-  id_gt?: InputMaybe<Scalars['ID']>;
-  id_gte?: InputMaybe<Scalars['ID']>;
-  id_in?: InputMaybe<Array<Scalars['ID']>>;
-  id_lt?: InputMaybe<Scalars['ID']>;
-  id_lte?: InputMaybe<Scalars['ID']>;
-  id_not?: InputMaybe<Scalars['ID']>;
-  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
-  logIndex?: InputMaybe<Scalars['BigInt']>;
-  logIndex_gt?: InputMaybe<Scalars['BigInt']>;
-  logIndex_gte?: InputMaybe<Scalars['BigInt']>;
-  logIndex_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  logIndex_lt?: InputMaybe<Scalars['BigInt']>;
-  logIndex_lte?: InputMaybe<Scalars['BigInt']>;
-  logIndex_not?: InputMaybe<Scalars['BigInt']>;
-  logIndex_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  name?: InputMaybe<Scalars['String']>;
-  name_contains?: InputMaybe<Scalars['String']>;
-  name_contains_nocase?: InputMaybe<Scalars['String']>;
-  name_ends_with?: InputMaybe<Scalars['String']>;
-  name_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  name_gt?: InputMaybe<Scalars['String']>;
-  name_gte?: InputMaybe<Scalars['String']>;
-  name_in?: InputMaybe<Array<Scalars['String']>>;
-  name_lt?: InputMaybe<Scalars['String']>;
-  name_lte?: InputMaybe<Scalars['String']>;
-  name_not?: InputMaybe<Scalars['String']>;
-  name_not_contains?: InputMaybe<Scalars['String']>;
-  name_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  name_not_ends_with?: InputMaybe<Scalars['String']>;
-  name_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  name_not_in?: InputMaybe<Array<Scalars['String']>>;
-  name_not_starts_with?: InputMaybe<Scalars['String']>;
-  name_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  name_starts_with?: InputMaybe<Scalars['String']>;
-  name_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  order?: InputMaybe<Scalars['BigInt']>;
-  order_gt?: InputMaybe<Scalars['BigInt']>;
-  order_gte?: InputMaybe<Scalars['BigInt']>;
-  order_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  order_lt?: InputMaybe<Scalars['BigInt']>;
-  order_lte?: InputMaybe<Scalars['BigInt']>;
-  order_not?: InputMaybe<Scalars['BigInt']>;
-  order_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  receiver?: InputMaybe<Scalars['Bytes']>;
-  receiver_contains?: InputMaybe<Scalars['Bytes']>;
-  receiver_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  receiver_not?: InputMaybe<Scalars['Bytes']>;
-  receiver_not_contains?: InputMaybe<Scalars['Bytes']>;
-  receiver_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  sender?: InputMaybe<Scalars['Bytes']>;
-  sender_contains?: InputMaybe<Scalars['Bytes']>;
-  sender_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  sender_not?: InputMaybe<Scalars['Bytes']>;
-  sender_not_contains?: InputMaybe<Scalars['Bytes']>;
-  sender_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  startDate?: InputMaybe<Scalars['BigInt']>;
-  startDate_gt?: InputMaybe<Scalars['BigInt']>;
-  startDate_gte?: InputMaybe<Scalars['BigInt']>;
-  startDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  startDate_lt?: InputMaybe<Scalars['BigInt']>;
-  startDate_lte?: InputMaybe<Scalars['BigInt']>;
-  startDate_not?: InputMaybe<Scalars['BigInt']>;
-  startDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  superToken?: InputMaybe<Scalars['Bytes']>;
-  superToken_contains?: InputMaybe<Scalars['Bytes']>;
-  superToken_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  superToken_not?: InputMaybe<Scalars['Bytes']>;
-  superToken_not_contains?: InputMaybe<Scalars['Bytes']>;
-  superToken_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  timestamp?: InputMaybe<Scalars['BigInt']>;
-  timestamp_gt?: InputMaybe<Scalars['BigInt']>;
-  timestamp_gte?: InputMaybe<Scalars['BigInt']>;
-  timestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  timestamp_lt?: InputMaybe<Scalars['BigInt']>;
-  timestamp_lte?: InputMaybe<Scalars['BigInt']>;
-  timestamp_not?: InputMaybe<Scalars['BigInt']>;
-  timestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  transactionHash?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_contains?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  transactionHash_not?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_not_contains?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-};
-
-export enum CreateVestingScheduleEvent_OrderBy {
-  Addresses = 'addresses',
-  BlockNumber = 'blockNumber',
-  CliffDate = 'cliffDate',
-  CliffTransferAmount = 'cliffTransferAmount',
-  EndDate = 'endDate',
-  FlowRate = 'flowRate',
-  GasPrice = 'gasPrice',
-  Id = 'id',
-  LogIndex = 'logIndex',
-  Name = 'name',
-  Order = 'order',
-  Receiver = 'receiver',
-  Sender = 'sender',
-  StartDate = 'startDate',
-  SuperToken = 'superToken',
-  Timestamp = 'timestamp',
-  TransactionHash = 'transactionHash'
-}
-
-export type DeleteVestingScheduleEvent = Event & {
-  __typename?: 'DeleteVestingScheduleEvent';
-  /** Holds the addresses for sender and receiver. */
-  addresses: Array<Scalars['Bytes']>;
-  blockNumber: Scalars['BigInt'];
-  gasPrice: Scalars['BigInt'];
-  id: Scalars['ID'];
-  logIndex: Scalars['BigInt'];
-  name: Scalars['String'];
-  order: Scalars['BigInt'];
-  receiver: Scalars['Bytes'];
-  sender: Scalars['Bytes'];
-  superToken: Scalars['Bytes'];
-  timestamp: Scalars['BigInt'];
-  transactionHash: Scalars['Bytes'];
-};
-
-export type DeleteVestingScheduleEvent_Filter = {
-  /** Filter for the block changed event. */
-  _change_block?: InputMaybe<BlockChangedFilter>;
-  addresses?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_contains?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_not?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_not_contains?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_not_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
-  blockNumber?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_gt?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_gte?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  blockNumber_lt?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_lte?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_not?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  gasPrice?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_gt?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_gte?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  gasPrice_lt?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_lte?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_not?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  id?: InputMaybe<Scalars['ID']>;
-  id_gt?: InputMaybe<Scalars['ID']>;
-  id_gte?: InputMaybe<Scalars['ID']>;
-  id_in?: InputMaybe<Array<Scalars['ID']>>;
-  id_lt?: InputMaybe<Scalars['ID']>;
-  id_lte?: InputMaybe<Scalars['ID']>;
-  id_not?: InputMaybe<Scalars['ID']>;
-  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
-  logIndex?: InputMaybe<Scalars['BigInt']>;
-  logIndex_gt?: InputMaybe<Scalars['BigInt']>;
-  logIndex_gte?: InputMaybe<Scalars['BigInt']>;
-  logIndex_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  logIndex_lt?: InputMaybe<Scalars['BigInt']>;
-  logIndex_lte?: InputMaybe<Scalars['BigInt']>;
-  logIndex_not?: InputMaybe<Scalars['BigInt']>;
-  logIndex_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  name?: InputMaybe<Scalars['String']>;
-  name_contains?: InputMaybe<Scalars['String']>;
-  name_contains_nocase?: InputMaybe<Scalars['String']>;
-  name_ends_with?: InputMaybe<Scalars['String']>;
-  name_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  name_gt?: InputMaybe<Scalars['String']>;
-  name_gte?: InputMaybe<Scalars['String']>;
-  name_in?: InputMaybe<Array<Scalars['String']>>;
-  name_lt?: InputMaybe<Scalars['String']>;
-  name_lte?: InputMaybe<Scalars['String']>;
-  name_not?: InputMaybe<Scalars['String']>;
-  name_not_contains?: InputMaybe<Scalars['String']>;
-  name_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  name_not_ends_with?: InputMaybe<Scalars['String']>;
-  name_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  name_not_in?: InputMaybe<Array<Scalars['String']>>;
-  name_not_starts_with?: InputMaybe<Scalars['String']>;
-  name_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  name_starts_with?: InputMaybe<Scalars['String']>;
-  name_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  order?: InputMaybe<Scalars['BigInt']>;
-  order_gt?: InputMaybe<Scalars['BigInt']>;
-  order_gte?: InputMaybe<Scalars['BigInt']>;
-  order_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  order_lt?: InputMaybe<Scalars['BigInt']>;
-  order_lte?: InputMaybe<Scalars['BigInt']>;
-  order_not?: InputMaybe<Scalars['BigInt']>;
-  order_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  receiver?: InputMaybe<Scalars['Bytes']>;
-  receiver_contains?: InputMaybe<Scalars['Bytes']>;
-  receiver_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  receiver_not?: InputMaybe<Scalars['Bytes']>;
-  receiver_not_contains?: InputMaybe<Scalars['Bytes']>;
-  receiver_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  sender?: InputMaybe<Scalars['Bytes']>;
-  sender_contains?: InputMaybe<Scalars['Bytes']>;
-  sender_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  sender_not?: InputMaybe<Scalars['Bytes']>;
-  sender_not_contains?: InputMaybe<Scalars['Bytes']>;
-  sender_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  superToken?: InputMaybe<Scalars['Bytes']>;
-  superToken_contains?: InputMaybe<Scalars['Bytes']>;
-  superToken_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  superToken_not?: InputMaybe<Scalars['Bytes']>;
-  superToken_not_contains?: InputMaybe<Scalars['Bytes']>;
-  superToken_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  timestamp?: InputMaybe<Scalars['BigInt']>;
-  timestamp_gt?: InputMaybe<Scalars['BigInt']>;
-  timestamp_gte?: InputMaybe<Scalars['BigInt']>;
-  timestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  timestamp_lt?: InputMaybe<Scalars['BigInt']>;
-  timestamp_lte?: InputMaybe<Scalars['BigInt']>;
-  timestamp_not?: InputMaybe<Scalars['BigInt']>;
-  timestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  transactionHash?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_contains?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  transactionHash_not?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_not_contains?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-};
-
-export enum DeleteVestingScheduleEvent_OrderBy {
-  Addresses = 'addresses',
-  BlockNumber = 'blockNumber',
-  GasPrice = 'gasPrice',
-  Id = 'id',
-  LogIndex = 'logIndex',
-  Name = 'name',
-  Order = 'order',
-  Receiver = 'receiver',
-  Sender = 'sender',
-  SuperToken = 'superToken',
-  Timestamp = 'timestamp',
-  TransactionHash = 'transactionHash'
-}
-
 /**
  * Event: An interface which is shared by all
  * event entities and contains basic transaction
@@ -460,175 +140,419 @@ export enum Event_OrderBy {
   TransactionHash = 'transactionHash'
 }
 
-export type ExecuteClosingVestingEvent = Event & {
-  __typename?: 'ExecuteClosingVestingEvent';
-  /** Holds the addresses for sender and receiver. */
-  addresses: Array<Scalars['Bytes']>;
-  blockNumber: Scalars['BigInt'];
-  closingTransferAmount: Scalars['BigInt'];
-  didTransferFail: Scalars['Boolean'];
-  endDate: Scalars['BigInt'];
-  gasPrice: Scalars['BigInt'];
-  id: Scalars['ID'];
-  logIndex: Scalars['BigInt'];
-  name: Scalars['String'];
-  order: Scalars['BigInt'];
-  receiver: Scalars['Bytes'];
-  sender: Scalars['Bytes'];
-  superToken: Scalars['Bytes'];
-  timestamp: Scalars['BigInt'];
-  transactionHash: Scalars['Bytes'];
-};
-
-export type ExecuteClosingVestingEvent_Filter = {
-  /** Filter for the block changed event. */
-  _change_block?: InputMaybe<BlockChangedFilter>;
-  addresses?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_contains?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_not?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_not_contains?: InputMaybe<Array<Scalars['Bytes']>>;
-  addresses_not_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
-  blockNumber?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_gt?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_gte?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  blockNumber_lt?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_lte?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_not?: InputMaybe<Scalars['BigInt']>;
-  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  closingTransferAmount?: InputMaybe<Scalars['BigInt']>;
-  closingTransferAmount_gt?: InputMaybe<Scalars['BigInt']>;
-  closingTransferAmount_gte?: InputMaybe<Scalars['BigInt']>;
-  closingTransferAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  closingTransferAmount_lt?: InputMaybe<Scalars['BigInt']>;
-  closingTransferAmount_lte?: InputMaybe<Scalars['BigInt']>;
-  closingTransferAmount_not?: InputMaybe<Scalars['BigInt']>;
-  closingTransferAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  didTransferFail?: InputMaybe<Scalars['Boolean']>;
-  didTransferFail_in?: InputMaybe<Array<Scalars['Boolean']>>;
-  didTransferFail_not?: InputMaybe<Scalars['Boolean']>;
-  didTransferFail_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
-  endDate?: InputMaybe<Scalars['BigInt']>;
-  endDate_gt?: InputMaybe<Scalars['BigInt']>;
-  endDate_gte?: InputMaybe<Scalars['BigInt']>;
-  endDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  endDate_lt?: InputMaybe<Scalars['BigInt']>;
-  endDate_lte?: InputMaybe<Scalars['BigInt']>;
-  endDate_not?: InputMaybe<Scalars['BigInt']>;
-  endDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  gasPrice?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_gt?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_gte?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  gasPrice_lt?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_lte?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_not?: InputMaybe<Scalars['BigInt']>;
-  gasPrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  id?: InputMaybe<Scalars['ID']>;
-  id_gt?: InputMaybe<Scalars['ID']>;
-  id_gte?: InputMaybe<Scalars['ID']>;
-  id_in?: InputMaybe<Array<Scalars['ID']>>;
-  id_lt?: InputMaybe<Scalars['ID']>;
-  id_lte?: InputMaybe<Scalars['ID']>;
-  id_not?: InputMaybe<Scalars['ID']>;
-  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
-  logIndex?: InputMaybe<Scalars['BigInt']>;
-  logIndex_gt?: InputMaybe<Scalars['BigInt']>;
-  logIndex_gte?: InputMaybe<Scalars['BigInt']>;
-  logIndex_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  logIndex_lt?: InputMaybe<Scalars['BigInt']>;
-  logIndex_lte?: InputMaybe<Scalars['BigInt']>;
-  logIndex_not?: InputMaybe<Scalars['BigInt']>;
-  logIndex_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  name?: InputMaybe<Scalars['String']>;
-  name_contains?: InputMaybe<Scalars['String']>;
-  name_contains_nocase?: InputMaybe<Scalars['String']>;
-  name_ends_with?: InputMaybe<Scalars['String']>;
-  name_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  name_gt?: InputMaybe<Scalars['String']>;
-  name_gte?: InputMaybe<Scalars['String']>;
-  name_in?: InputMaybe<Array<Scalars['String']>>;
-  name_lt?: InputMaybe<Scalars['String']>;
-  name_lte?: InputMaybe<Scalars['String']>;
-  name_not?: InputMaybe<Scalars['String']>;
-  name_not_contains?: InputMaybe<Scalars['String']>;
-  name_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  name_not_ends_with?: InputMaybe<Scalars['String']>;
-  name_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  name_not_in?: InputMaybe<Array<Scalars['String']>>;
-  name_not_starts_with?: InputMaybe<Scalars['String']>;
-  name_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  name_starts_with?: InputMaybe<Scalars['String']>;
-  name_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  order?: InputMaybe<Scalars['BigInt']>;
-  order_gt?: InputMaybe<Scalars['BigInt']>;
-  order_gte?: InputMaybe<Scalars['BigInt']>;
-  order_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  order_lt?: InputMaybe<Scalars['BigInt']>;
-  order_lte?: InputMaybe<Scalars['BigInt']>;
-  order_not?: InputMaybe<Scalars['BigInt']>;
-  order_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  receiver?: InputMaybe<Scalars['Bytes']>;
-  receiver_contains?: InputMaybe<Scalars['Bytes']>;
-  receiver_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  receiver_not?: InputMaybe<Scalars['Bytes']>;
-  receiver_not_contains?: InputMaybe<Scalars['Bytes']>;
-  receiver_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  sender?: InputMaybe<Scalars['Bytes']>;
-  sender_contains?: InputMaybe<Scalars['Bytes']>;
-  sender_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  sender_not?: InputMaybe<Scalars['Bytes']>;
-  sender_not_contains?: InputMaybe<Scalars['Bytes']>;
-  sender_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  superToken?: InputMaybe<Scalars['Bytes']>;
-  superToken_contains?: InputMaybe<Scalars['Bytes']>;
-  superToken_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  superToken_not?: InputMaybe<Scalars['Bytes']>;
-  superToken_not_contains?: InputMaybe<Scalars['Bytes']>;
-  superToken_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  timestamp?: InputMaybe<Scalars['BigInt']>;
-  timestamp_gt?: InputMaybe<Scalars['BigInt']>;
-  timestamp_gte?: InputMaybe<Scalars['BigInt']>;
-  timestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  timestamp_lt?: InputMaybe<Scalars['BigInt']>;
-  timestamp_lte?: InputMaybe<Scalars['BigInt']>;
-  timestamp_not?: InputMaybe<Scalars['BigInt']>;
-  timestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  transactionHash?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_contains?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  transactionHash_not?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_not_contains?: InputMaybe<Scalars['Bytes']>;
-  transactionHash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-};
-
-export enum ExecuteClosingVestingEvent_OrderBy {
-  Addresses = 'addresses',
-  BlockNumber = 'blockNumber',
-  ClosingTransferAmount = 'closingTransferAmount',
-  DidTransferFail = 'didTransferFail',
-  EndDate = 'endDate',
-  GasPrice = 'gasPrice',
-  Id = 'id',
-  LogIndex = 'logIndex',
-  Name = 'name',
-  Order = 'order',
-  Receiver = 'receiver',
-  Sender = 'sender',
-  SuperToken = 'superToken',
-  Timestamp = 'timestamp',
-  TransactionHash = 'transactionHash'
+/** Defines the order direction, either ascending or descending */
+export enum OrderDirection {
+  Asc = 'asc',
+  Desc = 'desc'
 }
 
-export type ExecuteVestingEvent = Event & {
-  __typename?: 'ExecuteVestingEvent';
+export type Query = {
+  __typename?: 'Query';
+  /** Access to subgraph metadata */
+  _meta?: Maybe<_Meta_>;
+  event?: Maybe<Event>;
+  events: Array<Event>;
+  tokenSenderReceiverCursor?: Maybe<TokenSenderReceiverCursor>;
+  tokenSenderReceiverCursors: Array<TokenSenderReceiverCursor>;
+  vestingCliffAndFlowExecutedEvent?: Maybe<VestingCliffAndFlowExecutedEvent>;
+  vestingCliffAndFlowExecutedEvents: Array<VestingCliffAndFlowExecutedEvent>;
+  vestingEndExecutedEvent?: Maybe<VestingEndExecutedEvent>;
+  vestingEndExecutedEvents: Array<VestingEndExecutedEvent>;
+  vestingSchedule?: Maybe<VestingSchedule>;
+  vestingScheduleCreatedEvent?: Maybe<VestingScheduleCreatedEvent>;
+  vestingScheduleCreatedEvents: Array<VestingScheduleCreatedEvent>;
+  vestingScheduleDeletedEvent?: Maybe<VestingScheduleDeletedEvent>;
+  vestingScheduleDeletedEvents: Array<VestingScheduleDeletedEvent>;
+  vestingScheduleUpdatedEvent?: Maybe<VestingScheduleUpdatedEvent>;
+  vestingScheduleUpdatedEvents: Array<VestingScheduleUpdatedEvent>;
+  vestingSchedules: Array<VestingSchedule>;
+};
+
+
+export type Query_MetaArgs = {
+  block?: InputMaybe<Block_Height>;
+};
+
+
+export type QueryEventArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryEventsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Event_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<Event_Filter>;
+};
+
+
+export type QueryTokenSenderReceiverCursorArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryTokenSenderReceiverCursorsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<TokenSenderReceiverCursor_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<TokenSenderReceiverCursor_Filter>;
+};
+
+
+export type QueryVestingCliffAndFlowExecutedEventArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryVestingCliffAndFlowExecutedEventsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<VestingCliffAndFlowExecutedEvent_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<VestingCliffAndFlowExecutedEvent_Filter>;
+};
+
+
+export type QueryVestingEndExecutedEventArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryVestingEndExecutedEventsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<VestingEndExecutedEvent_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<VestingEndExecutedEvent_Filter>;
+};
+
+
+export type QueryVestingScheduleArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryVestingScheduleCreatedEventArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryVestingScheduleCreatedEventsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<VestingScheduleCreatedEvent_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<VestingScheduleCreatedEvent_Filter>;
+};
+
+
+export type QueryVestingScheduleDeletedEventArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryVestingScheduleDeletedEventsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<VestingScheduleDeletedEvent_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<VestingScheduleDeletedEvent_Filter>;
+};
+
+
+export type QueryVestingScheduleUpdatedEventArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryVestingScheduleUpdatedEventsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<VestingScheduleUpdatedEvent_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<VestingScheduleUpdatedEvent_Filter>;
+};
+
+
+export type QueryVestingSchedulesArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<VestingSchedule_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<VestingSchedule_Filter>;
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  /** Access to subgraph metadata */
+  _meta?: Maybe<_Meta_>;
+  event?: Maybe<Event>;
+  events: Array<Event>;
+  tokenSenderReceiverCursor?: Maybe<TokenSenderReceiverCursor>;
+  tokenSenderReceiverCursors: Array<TokenSenderReceiverCursor>;
+  vestingCliffAndFlowExecutedEvent?: Maybe<VestingCliffAndFlowExecutedEvent>;
+  vestingCliffAndFlowExecutedEvents: Array<VestingCliffAndFlowExecutedEvent>;
+  vestingEndExecutedEvent?: Maybe<VestingEndExecutedEvent>;
+  vestingEndExecutedEvents: Array<VestingEndExecutedEvent>;
+  vestingSchedule?: Maybe<VestingSchedule>;
+  vestingScheduleCreatedEvent?: Maybe<VestingScheduleCreatedEvent>;
+  vestingScheduleCreatedEvents: Array<VestingScheduleCreatedEvent>;
+  vestingScheduleDeletedEvent?: Maybe<VestingScheduleDeletedEvent>;
+  vestingScheduleDeletedEvents: Array<VestingScheduleDeletedEvent>;
+  vestingScheduleUpdatedEvent?: Maybe<VestingScheduleUpdatedEvent>;
+  vestingScheduleUpdatedEvents: Array<VestingScheduleUpdatedEvent>;
+  vestingSchedules: Array<VestingSchedule>;
+};
+
+
+export type Subscription_MetaArgs = {
+  block?: InputMaybe<Block_Height>;
+};
+
+
+export type SubscriptionEventArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionEventsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Event_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<Event_Filter>;
+};
+
+
+export type SubscriptionTokenSenderReceiverCursorArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionTokenSenderReceiverCursorsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<TokenSenderReceiverCursor_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<TokenSenderReceiverCursor_Filter>;
+};
+
+
+export type SubscriptionVestingCliffAndFlowExecutedEventArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionVestingCliffAndFlowExecutedEventsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<VestingCliffAndFlowExecutedEvent_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<VestingCliffAndFlowExecutedEvent_Filter>;
+};
+
+
+export type SubscriptionVestingEndExecutedEventArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionVestingEndExecutedEventsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<VestingEndExecutedEvent_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<VestingEndExecutedEvent_Filter>;
+};
+
+
+export type SubscriptionVestingScheduleArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionVestingScheduleCreatedEventArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionVestingScheduleCreatedEventsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<VestingScheduleCreatedEvent_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<VestingScheduleCreatedEvent_Filter>;
+};
+
+
+export type SubscriptionVestingScheduleDeletedEventArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionVestingScheduleDeletedEventsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<VestingScheduleDeletedEvent_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<VestingScheduleDeletedEvent_Filter>;
+};
+
+
+export type SubscriptionVestingScheduleUpdatedEventArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionVestingScheduleUpdatedEventsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<VestingScheduleUpdatedEvent_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<VestingScheduleUpdatedEvent_Filter>;
+};
+
+
+export type SubscriptionVestingSchedulesArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<VestingSchedule_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<VestingSchedule_Filter>;
+};
+
+export type TokenSenderReceiverCursor = {
+  __typename?: 'TokenSenderReceiverCursor';
+  currentVestingSchedule?: Maybe<VestingSchedule>;
+  id: Scalars['String'];
+};
+
+export type TokenSenderReceiverCursor_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  currentVestingSchedule?: InputMaybe<Scalars['String']>;
+  currentVestingSchedule_?: InputMaybe<VestingSchedule_Filter>;
+  currentVestingSchedule_contains?: InputMaybe<Scalars['String']>;
+  currentVestingSchedule_contains_nocase?: InputMaybe<Scalars['String']>;
+  currentVestingSchedule_ends_with?: InputMaybe<Scalars['String']>;
+  currentVestingSchedule_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  currentVestingSchedule_gt?: InputMaybe<Scalars['String']>;
+  currentVestingSchedule_gte?: InputMaybe<Scalars['String']>;
+  currentVestingSchedule_in?: InputMaybe<Array<Scalars['String']>>;
+  currentVestingSchedule_lt?: InputMaybe<Scalars['String']>;
+  currentVestingSchedule_lte?: InputMaybe<Scalars['String']>;
+  currentVestingSchedule_not?: InputMaybe<Scalars['String']>;
+  currentVestingSchedule_not_contains?: InputMaybe<Scalars['String']>;
+  currentVestingSchedule_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  currentVestingSchedule_not_ends_with?: InputMaybe<Scalars['String']>;
+  currentVestingSchedule_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  currentVestingSchedule_not_in?: InputMaybe<Array<Scalars['String']>>;
+  currentVestingSchedule_not_starts_with?: InputMaybe<Scalars['String']>;
+  currentVestingSchedule_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  currentVestingSchedule_starts_with?: InputMaybe<Scalars['String']>;
+  currentVestingSchedule_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['String']>;
+  id_contains?: InputMaybe<Scalars['String']>;
+  id_contains_nocase?: InputMaybe<Scalars['String']>;
+  id_ends_with?: InputMaybe<Scalars['String']>;
+  id_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  id_gt?: InputMaybe<Scalars['String']>;
+  id_gte?: InputMaybe<Scalars['String']>;
+  id_in?: InputMaybe<Array<Scalars['String']>>;
+  id_lt?: InputMaybe<Scalars['String']>;
+  id_lte?: InputMaybe<Scalars['String']>;
+  id_not?: InputMaybe<Scalars['String']>;
+  id_not_contains?: InputMaybe<Scalars['String']>;
+  id_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  id_not_ends_with?: InputMaybe<Scalars['String']>;
+  id_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']>>;
+  id_not_starts_with?: InputMaybe<Scalars['String']>;
+  id_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  id_starts_with?: InputMaybe<Scalars['String']>;
+  id_starts_with_nocase?: InputMaybe<Scalars['String']>;
+};
+
+export enum TokenSenderReceiverCursor_OrderBy {
+  CurrentVestingSchedule = 'currentVestingSchedule',
+  Id = 'id'
+}
+
+export type VestingCliffAndFlowExecutedEvent = Event & {
+  __typename?: 'VestingCliffAndFlowExecutedEvent';
   /** Holds the addresses for sender and receiver. */
   addresses: Array<Scalars['Bytes']>;
-  adjustedAmount: Scalars['BigInt'];
   blockNumber: Scalars['BigInt'];
-  cliffTransferAmount: Scalars['BigInt'];
-  effectiveStartDate: Scalars['BigInt'];
+  cliffAmount: Scalars['BigInt'];
+  cliffAndFlowDate: Scalars['BigInt'];
+  flowDelayCompensation: Scalars['BigInt'];
   flowRate: Scalars['BigInt'];
   gasPrice: Scalars['BigInt'];
   id: Scalars['ID'];
@@ -642,7 +566,7 @@ export type ExecuteVestingEvent = Event & {
   transactionHash: Scalars['Bytes'];
 };
 
-export type ExecuteVestingEvent_Filter = {
+export type VestingCliffAndFlowExecutedEvent_Filter = {
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   addresses?: InputMaybe<Array<Scalars['Bytes']>>;
@@ -651,14 +575,6 @@ export type ExecuteVestingEvent_Filter = {
   addresses_not?: InputMaybe<Array<Scalars['Bytes']>>;
   addresses_not_contains?: InputMaybe<Array<Scalars['Bytes']>>;
   addresses_not_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
-  adjustedAmount?: InputMaybe<Scalars['BigInt']>;
-  adjustedAmount_gt?: InputMaybe<Scalars['BigInt']>;
-  adjustedAmount_gte?: InputMaybe<Scalars['BigInt']>;
-  adjustedAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  adjustedAmount_lt?: InputMaybe<Scalars['BigInt']>;
-  adjustedAmount_lte?: InputMaybe<Scalars['BigInt']>;
-  adjustedAmount_not?: InputMaybe<Scalars['BigInt']>;
-  adjustedAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   blockNumber?: InputMaybe<Scalars['BigInt']>;
   blockNumber_gt?: InputMaybe<Scalars['BigInt']>;
   blockNumber_gte?: InputMaybe<Scalars['BigInt']>;
@@ -667,22 +583,30 @@ export type ExecuteVestingEvent_Filter = {
   blockNumber_lte?: InputMaybe<Scalars['BigInt']>;
   blockNumber_not?: InputMaybe<Scalars['BigInt']>;
   blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  cliffTransferAmount?: InputMaybe<Scalars['BigInt']>;
-  cliffTransferAmount_gt?: InputMaybe<Scalars['BigInt']>;
-  cliffTransferAmount_gte?: InputMaybe<Scalars['BigInt']>;
-  cliffTransferAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  cliffTransferAmount_lt?: InputMaybe<Scalars['BigInt']>;
-  cliffTransferAmount_lte?: InputMaybe<Scalars['BigInt']>;
-  cliffTransferAmount_not?: InputMaybe<Scalars['BigInt']>;
-  cliffTransferAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  effectiveStartDate?: InputMaybe<Scalars['BigInt']>;
-  effectiveStartDate_gt?: InputMaybe<Scalars['BigInt']>;
-  effectiveStartDate_gte?: InputMaybe<Scalars['BigInt']>;
-  effectiveStartDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  effectiveStartDate_lt?: InputMaybe<Scalars['BigInt']>;
-  effectiveStartDate_lte?: InputMaybe<Scalars['BigInt']>;
-  effectiveStartDate_not?: InputMaybe<Scalars['BigInt']>;
-  effectiveStartDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  cliffAmount?: InputMaybe<Scalars['BigInt']>;
+  cliffAmount_gt?: InputMaybe<Scalars['BigInt']>;
+  cliffAmount_gte?: InputMaybe<Scalars['BigInt']>;
+  cliffAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  cliffAmount_lt?: InputMaybe<Scalars['BigInt']>;
+  cliffAmount_lte?: InputMaybe<Scalars['BigInt']>;
+  cliffAmount_not?: InputMaybe<Scalars['BigInt']>;
+  cliffAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  cliffAndFlowDate?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowDate_gt?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowDate_gte?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  cliffAndFlowDate_lt?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowDate_lte?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowDate_not?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  flowDelayCompensation?: InputMaybe<Scalars['BigInt']>;
+  flowDelayCompensation_gt?: InputMaybe<Scalars['BigInt']>;
+  flowDelayCompensation_gte?: InputMaybe<Scalars['BigInt']>;
+  flowDelayCompensation_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  flowDelayCompensation_lt?: InputMaybe<Scalars['BigInt']>;
+  flowDelayCompensation_lte?: InputMaybe<Scalars['BigInt']>;
+  flowDelayCompensation_not?: InputMaybe<Scalars['BigInt']>;
+  flowDelayCompensation_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   flowRate?: InputMaybe<Scalars['BigInt']>;
   flowRate_gt?: InputMaybe<Scalars['BigInt']>;
   flowRate_gte?: InputMaybe<Scalars['BigInt']>;
@@ -777,12 +701,12 @@ export type ExecuteVestingEvent_Filter = {
   transactionHash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
 };
 
-export enum ExecuteVestingEvent_OrderBy {
+export enum VestingCliffAndFlowExecutedEvent_OrderBy {
   Addresses = 'addresses',
-  AdjustedAmount = 'adjustedAmount',
   BlockNumber = 'blockNumber',
-  CliffTransferAmount = 'cliffTransferAmount',
-  EffectiveStartDate = 'effectiveStartDate',
+  CliffAmount = 'cliffAmount',
+  CliffAndFlowDate = 'cliffAndFlowDate',
+  FlowDelayCompensation = 'flowDelayCompensation',
   FlowRate = 'flowRate',
   GasPrice = 'gasPrice',
   Id = 'id',
@@ -796,233 +720,749 @@ export enum ExecuteVestingEvent_OrderBy {
   TransactionHash = 'transactionHash'
 }
 
-/** Defines the order direction, either ascending or descending */
-export enum OrderDirection {
-  Asc = 'asc',
-  Desc = 'desc'
+export type VestingEndExecutedEvent = Event & {
+  __typename?: 'VestingEndExecutedEvent';
+  /** Holds the addresses for sender and receiver. */
+  addresses: Array<Scalars['Bytes']>;
+  blockNumber: Scalars['BigInt'];
+  didCompensationFail: Scalars['Boolean'];
+  earlyEndCompensation: Scalars['BigInt'];
+  endDate: Scalars['BigInt'];
+  gasPrice: Scalars['BigInt'];
+  id: Scalars['ID'];
+  logIndex: Scalars['BigInt'];
+  name: Scalars['String'];
+  order: Scalars['BigInt'];
+  receiver: Scalars['Bytes'];
+  sender: Scalars['Bytes'];
+  superToken: Scalars['Bytes'];
+  timestamp: Scalars['BigInt'];
+  transactionHash: Scalars['Bytes'];
+};
+
+export type VestingEndExecutedEvent_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  addresses?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_contains?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_not?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_not_contains?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_not_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
+  blockNumber?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  blockNumber_lt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_lte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_not?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  didCompensationFail?: InputMaybe<Scalars['Boolean']>;
+  didCompensationFail_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  didCompensationFail_not?: InputMaybe<Scalars['Boolean']>;
+  didCompensationFail_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  earlyEndCompensation?: InputMaybe<Scalars['BigInt']>;
+  earlyEndCompensation_gt?: InputMaybe<Scalars['BigInt']>;
+  earlyEndCompensation_gte?: InputMaybe<Scalars['BigInt']>;
+  earlyEndCompensation_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  earlyEndCompensation_lt?: InputMaybe<Scalars['BigInt']>;
+  earlyEndCompensation_lte?: InputMaybe<Scalars['BigInt']>;
+  earlyEndCompensation_not?: InputMaybe<Scalars['BigInt']>;
+  earlyEndCompensation_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  endDate?: InputMaybe<Scalars['BigInt']>;
+  endDate_gt?: InputMaybe<Scalars['BigInt']>;
+  endDate_gte?: InputMaybe<Scalars['BigInt']>;
+  endDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  endDate_lt?: InputMaybe<Scalars['BigInt']>;
+  endDate_lte?: InputMaybe<Scalars['BigInt']>;
+  endDate_not?: InputMaybe<Scalars['BigInt']>;
+  endDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasPrice?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_gt?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_gte?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasPrice_lt?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_lte?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_not?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  id?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  logIndex?: InputMaybe<Scalars['BigInt']>;
+  logIndex_gt?: InputMaybe<Scalars['BigInt']>;
+  logIndex_gte?: InputMaybe<Scalars['BigInt']>;
+  logIndex_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  logIndex_lt?: InputMaybe<Scalars['BigInt']>;
+  logIndex_lte?: InputMaybe<Scalars['BigInt']>;
+  logIndex_not?: InputMaybe<Scalars['BigInt']>;
+  logIndex_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  name?: InputMaybe<Scalars['String']>;
+  name_contains?: InputMaybe<Scalars['String']>;
+  name_contains_nocase?: InputMaybe<Scalars['String']>;
+  name_ends_with?: InputMaybe<Scalars['String']>;
+  name_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  name_gt?: InputMaybe<Scalars['String']>;
+  name_gte?: InputMaybe<Scalars['String']>;
+  name_in?: InputMaybe<Array<Scalars['String']>>;
+  name_lt?: InputMaybe<Scalars['String']>;
+  name_lte?: InputMaybe<Scalars['String']>;
+  name_not?: InputMaybe<Scalars['String']>;
+  name_not_contains?: InputMaybe<Scalars['String']>;
+  name_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  name_not_ends_with?: InputMaybe<Scalars['String']>;
+  name_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  name_not_in?: InputMaybe<Array<Scalars['String']>>;
+  name_not_starts_with?: InputMaybe<Scalars['String']>;
+  name_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  name_starts_with?: InputMaybe<Scalars['String']>;
+  name_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  order?: InputMaybe<Scalars['BigInt']>;
+  order_gt?: InputMaybe<Scalars['BigInt']>;
+  order_gte?: InputMaybe<Scalars['BigInt']>;
+  order_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  order_lt?: InputMaybe<Scalars['BigInt']>;
+  order_lte?: InputMaybe<Scalars['BigInt']>;
+  order_not?: InputMaybe<Scalars['BigInt']>;
+  order_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  receiver?: InputMaybe<Scalars['Bytes']>;
+  receiver_contains?: InputMaybe<Scalars['Bytes']>;
+  receiver_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  receiver_not?: InputMaybe<Scalars['Bytes']>;
+  receiver_not_contains?: InputMaybe<Scalars['Bytes']>;
+  receiver_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sender?: InputMaybe<Scalars['Bytes']>;
+  sender_contains?: InputMaybe<Scalars['Bytes']>;
+  sender_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sender_not?: InputMaybe<Scalars['Bytes']>;
+  sender_not_contains?: InputMaybe<Scalars['Bytes']>;
+  sender_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  superToken?: InputMaybe<Scalars['Bytes']>;
+  superToken_contains?: InputMaybe<Scalars['Bytes']>;
+  superToken_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  superToken_not?: InputMaybe<Scalars['Bytes']>;
+  superToken_not_contains?: InputMaybe<Scalars['Bytes']>;
+  superToken_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  timestamp?: InputMaybe<Scalars['BigInt']>;
+  timestamp_gt?: InputMaybe<Scalars['BigInt']>;
+  timestamp_gte?: InputMaybe<Scalars['BigInt']>;
+  timestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  timestamp_lt?: InputMaybe<Scalars['BigInt']>;
+  timestamp_lte?: InputMaybe<Scalars['BigInt']>;
+  timestamp_not?: InputMaybe<Scalars['BigInt']>;
+  timestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  transactionHash?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_contains?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  transactionHash_not?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_not_contains?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+};
+
+export enum VestingEndExecutedEvent_OrderBy {
+  Addresses = 'addresses',
+  BlockNumber = 'blockNumber',
+  DidCompensationFail = 'didCompensationFail',
+  EarlyEndCompensation = 'earlyEndCompensation',
+  EndDate = 'endDate',
+  GasPrice = 'gasPrice',
+  Id = 'id',
+  LogIndex = 'logIndex',
+  Name = 'name',
+  Order = 'order',
+  Receiver = 'receiver',
+  Sender = 'sender',
+  SuperToken = 'superToken',
+  Timestamp = 'timestamp',
+  TransactionHash = 'transactionHash'
 }
 
-export type Query = {
-  __typename?: 'Query';
-  /** Access to subgraph metadata */
-  _meta?: Maybe<_Meta_>;
-  createVestingScheduleEvent?: Maybe<CreateVestingScheduleEvent>;
-  createVestingScheduleEvents: Array<CreateVestingScheduleEvent>;
-  deleteVestingScheduleEvent?: Maybe<DeleteVestingScheduleEvent>;
-  deleteVestingScheduleEvents: Array<DeleteVestingScheduleEvent>;
-  event?: Maybe<Event>;
-  events: Array<Event>;
-  executeClosingVestingEvent?: Maybe<ExecuteClosingVestingEvent>;
-  executeClosingVestingEvents: Array<ExecuteClosingVestingEvent>;
-  executeVestingEvent?: Maybe<ExecuteVestingEvent>;
-  executeVestingEvents: Array<ExecuteVestingEvent>;
+export type VestingSchedule = {
+  __typename?: 'VestingSchedule';
+  cliffAmount: Scalars['BigInt'];
+  cliffDate: Scalars['BigInt'];
+  endDate: Scalars['BigInt'];
+  flowRate: Scalars['BigInt'];
+  id: Scalars['String'];
+  receiver: Scalars['Bytes'];
+  sender: Scalars['Bytes'];
+  startDate: Scalars['BigInt'];
+  superToken: Scalars['Bytes'];
 };
 
-
-export type Query_MetaArgs = {
-  block?: InputMaybe<Block_Height>;
-};
-
-
-export type QueryCreateVestingScheduleEventArgs = {
-  block?: InputMaybe<Block_Height>;
+export type VestingScheduleCreatedEvent = Event & {
+  __typename?: 'VestingScheduleCreatedEvent';
+  /** Holds the addresses for sender and receiver. */
+  addresses: Array<Scalars['Bytes']>;
+  blockNumber: Scalars['BigInt'];
+  cliffAmount: Scalars['BigInt'];
+  cliffDate: Scalars['BigInt'];
+  endDate: Scalars['BigInt'];
+  flowRate: Scalars['BigInt'];
+  gasPrice: Scalars['BigInt'];
   id: Scalars['ID'];
-  subgraphError?: _SubgraphErrorPolicy_;
+  logIndex: Scalars['BigInt'];
+  name: Scalars['String'];
+  order: Scalars['BigInt'];
+  receiver: Scalars['Bytes'];
+  sender: Scalars['Bytes'];
+  startDate: Scalars['BigInt'];
+  superToken: Scalars['Bytes'];
+  timestamp: Scalars['BigInt'];
+  transactionHash: Scalars['Bytes'];
 };
 
-
-export type QueryCreateVestingScheduleEventsArgs = {
-  block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<CreateVestingScheduleEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  subgraphError?: _SubgraphErrorPolicy_;
-  where?: InputMaybe<CreateVestingScheduleEvent_Filter>;
+export type VestingScheduleCreatedEvent_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  addresses?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_contains?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_not?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_not_contains?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_not_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
+  blockNumber?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  blockNumber_lt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_lte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_not?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  cliffAmount?: InputMaybe<Scalars['BigInt']>;
+  cliffAmount_gt?: InputMaybe<Scalars['BigInt']>;
+  cliffAmount_gte?: InputMaybe<Scalars['BigInt']>;
+  cliffAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  cliffAmount_lt?: InputMaybe<Scalars['BigInt']>;
+  cliffAmount_lte?: InputMaybe<Scalars['BigInt']>;
+  cliffAmount_not?: InputMaybe<Scalars['BigInt']>;
+  cliffAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  cliffDate?: InputMaybe<Scalars['BigInt']>;
+  cliffDate_gt?: InputMaybe<Scalars['BigInt']>;
+  cliffDate_gte?: InputMaybe<Scalars['BigInt']>;
+  cliffDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  cliffDate_lt?: InputMaybe<Scalars['BigInt']>;
+  cliffDate_lte?: InputMaybe<Scalars['BigInt']>;
+  cliffDate_not?: InputMaybe<Scalars['BigInt']>;
+  cliffDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  endDate?: InputMaybe<Scalars['BigInt']>;
+  endDate_gt?: InputMaybe<Scalars['BigInt']>;
+  endDate_gte?: InputMaybe<Scalars['BigInt']>;
+  endDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  endDate_lt?: InputMaybe<Scalars['BigInt']>;
+  endDate_lte?: InputMaybe<Scalars['BigInt']>;
+  endDate_not?: InputMaybe<Scalars['BigInt']>;
+  endDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  flowRate?: InputMaybe<Scalars['BigInt']>;
+  flowRate_gt?: InputMaybe<Scalars['BigInt']>;
+  flowRate_gte?: InputMaybe<Scalars['BigInt']>;
+  flowRate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  flowRate_lt?: InputMaybe<Scalars['BigInt']>;
+  flowRate_lte?: InputMaybe<Scalars['BigInt']>;
+  flowRate_not?: InputMaybe<Scalars['BigInt']>;
+  flowRate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasPrice?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_gt?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_gte?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasPrice_lt?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_lte?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_not?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  id?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  logIndex?: InputMaybe<Scalars['BigInt']>;
+  logIndex_gt?: InputMaybe<Scalars['BigInt']>;
+  logIndex_gte?: InputMaybe<Scalars['BigInt']>;
+  logIndex_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  logIndex_lt?: InputMaybe<Scalars['BigInt']>;
+  logIndex_lte?: InputMaybe<Scalars['BigInt']>;
+  logIndex_not?: InputMaybe<Scalars['BigInt']>;
+  logIndex_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  name?: InputMaybe<Scalars['String']>;
+  name_contains?: InputMaybe<Scalars['String']>;
+  name_contains_nocase?: InputMaybe<Scalars['String']>;
+  name_ends_with?: InputMaybe<Scalars['String']>;
+  name_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  name_gt?: InputMaybe<Scalars['String']>;
+  name_gte?: InputMaybe<Scalars['String']>;
+  name_in?: InputMaybe<Array<Scalars['String']>>;
+  name_lt?: InputMaybe<Scalars['String']>;
+  name_lte?: InputMaybe<Scalars['String']>;
+  name_not?: InputMaybe<Scalars['String']>;
+  name_not_contains?: InputMaybe<Scalars['String']>;
+  name_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  name_not_ends_with?: InputMaybe<Scalars['String']>;
+  name_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  name_not_in?: InputMaybe<Array<Scalars['String']>>;
+  name_not_starts_with?: InputMaybe<Scalars['String']>;
+  name_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  name_starts_with?: InputMaybe<Scalars['String']>;
+  name_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  order?: InputMaybe<Scalars['BigInt']>;
+  order_gt?: InputMaybe<Scalars['BigInt']>;
+  order_gte?: InputMaybe<Scalars['BigInt']>;
+  order_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  order_lt?: InputMaybe<Scalars['BigInt']>;
+  order_lte?: InputMaybe<Scalars['BigInt']>;
+  order_not?: InputMaybe<Scalars['BigInt']>;
+  order_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  receiver?: InputMaybe<Scalars['Bytes']>;
+  receiver_contains?: InputMaybe<Scalars['Bytes']>;
+  receiver_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  receiver_not?: InputMaybe<Scalars['Bytes']>;
+  receiver_not_contains?: InputMaybe<Scalars['Bytes']>;
+  receiver_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sender?: InputMaybe<Scalars['Bytes']>;
+  sender_contains?: InputMaybe<Scalars['Bytes']>;
+  sender_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sender_not?: InputMaybe<Scalars['Bytes']>;
+  sender_not_contains?: InputMaybe<Scalars['Bytes']>;
+  sender_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  startDate?: InputMaybe<Scalars['BigInt']>;
+  startDate_gt?: InputMaybe<Scalars['BigInt']>;
+  startDate_gte?: InputMaybe<Scalars['BigInt']>;
+  startDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  startDate_lt?: InputMaybe<Scalars['BigInt']>;
+  startDate_lte?: InputMaybe<Scalars['BigInt']>;
+  startDate_not?: InputMaybe<Scalars['BigInt']>;
+  startDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  superToken?: InputMaybe<Scalars['Bytes']>;
+  superToken_contains?: InputMaybe<Scalars['Bytes']>;
+  superToken_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  superToken_not?: InputMaybe<Scalars['Bytes']>;
+  superToken_not_contains?: InputMaybe<Scalars['Bytes']>;
+  superToken_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  timestamp?: InputMaybe<Scalars['BigInt']>;
+  timestamp_gt?: InputMaybe<Scalars['BigInt']>;
+  timestamp_gte?: InputMaybe<Scalars['BigInt']>;
+  timestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  timestamp_lt?: InputMaybe<Scalars['BigInt']>;
+  timestamp_lte?: InputMaybe<Scalars['BigInt']>;
+  timestamp_not?: InputMaybe<Scalars['BigInt']>;
+  timestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  transactionHash?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_contains?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  transactionHash_not?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_not_contains?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
 };
 
+export enum VestingScheduleCreatedEvent_OrderBy {
+  Addresses = 'addresses',
+  BlockNumber = 'blockNumber',
+  CliffAmount = 'cliffAmount',
+  CliffDate = 'cliffDate',
+  EndDate = 'endDate',
+  FlowRate = 'flowRate',
+  GasPrice = 'gasPrice',
+  Id = 'id',
+  LogIndex = 'logIndex',
+  Name = 'name',
+  Order = 'order',
+  Receiver = 'receiver',
+  Sender = 'sender',
+  StartDate = 'startDate',
+  SuperToken = 'superToken',
+  Timestamp = 'timestamp',
+  TransactionHash = 'transactionHash'
+}
 
-export type QueryDeleteVestingScheduleEventArgs = {
-  block?: InputMaybe<Block_Height>;
+export type VestingScheduleDeletedEvent = Event & {
+  __typename?: 'VestingScheduleDeletedEvent';
+  /** Holds the addresses for sender and receiver. */
+  addresses: Array<Scalars['Bytes']>;
+  blockNumber: Scalars['BigInt'];
+  gasPrice: Scalars['BigInt'];
   id: Scalars['ID'];
-  subgraphError?: _SubgraphErrorPolicy_;
+  logIndex: Scalars['BigInt'];
+  name: Scalars['String'];
+  order: Scalars['BigInt'];
+  receiver: Scalars['Bytes'];
+  sender: Scalars['Bytes'];
+  superToken: Scalars['Bytes'];
+  timestamp: Scalars['BigInt'];
+  transactionHash: Scalars['Bytes'];
 };
 
-
-export type QueryDeleteVestingScheduleEventsArgs = {
-  block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<DeleteVestingScheduleEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  subgraphError?: _SubgraphErrorPolicy_;
-  where?: InputMaybe<DeleteVestingScheduleEvent_Filter>;
+export type VestingScheduleDeletedEvent_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  addresses?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_contains?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_not?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_not_contains?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_not_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
+  blockNumber?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  blockNumber_lt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_lte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_not?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasPrice?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_gt?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_gte?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasPrice_lt?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_lte?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_not?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  id?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  logIndex?: InputMaybe<Scalars['BigInt']>;
+  logIndex_gt?: InputMaybe<Scalars['BigInt']>;
+  logIndex_gte?: InputMaybe<Scalars['BigInt']>;
+  logIndex_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  logIndex_lt?: InputMaybe<Scalars['BigInt']>;
+  logIndex_lte?: InputMaybe<Scalars['BigInt']>;
+  logIndex_not?: InputMaybe<Scalars['BigInt']>;
+  logIndex_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  name?: InputMaybe<Scalars['String']>;
+  name_contains?: InputMaybe<Scalars['String']>;
+  name_contains_nocase?: InputMaybe<Scalars['String']>;
+  name_ends_with?: InputMaybe<Scalars['String']>;
+  name_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  name_gt?: InputMaybe<Scalars['String']>;
+  name_gte?: InputMaybe<Scalars['String']>;
+  name_in?: InputMaybe<Array<Scalars['String']>>;
+  name_lt?: InputMaybe<Scalars['String']>;
+  name_lte?: InputMaybe<Scalars['String']>;
+  name_not?: InputMaybe<Scalars['String']>;
+  name_not_contains?: InputMaybe<Scalars['String']>;
+  name_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  name_not_ends_with?: InputMaybe<Scalars['String']>;
+  name_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  name_not_in?: InputMaybe<Array<Scalars['String']>>;
+  name_not_starts_with?: InputMaybe<Scalars['String']>;
+  name_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  name_starts_with?: InputMaybe<Scalars['String']>;
+  name_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  order?: InputMaybe<Scalars['BigInt']>;
+  order_gt?: InputMaybe<Scalars['BigInt']>;
+  order_gte?: InputMaybe<Scalars['BigInt']>;
+  order_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  order_lt?: InputMaybe<Scalars['BigInt']>;
+  order_lte?: InputMaybe<Scalars['BigInt']>;
+  order_not?: InputMaybe<Scalars['BigInt']>;
+  order_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  receiver?: InputMaybe<Scalars['Bytes']>;
+  receiver_contains?: InputMaybe<Scalars['Bytes']>;
+  receiver_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  receiver_not?: InputMaybe<Scalars['Bytes']>;
+  receiver_not_contains?: InputMaybe<Scalars['Bytes']>;
+  receiver_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sender?: InputMaybe<Scalars['Bytes']>;
+  sender_contains?: InputMaybe<Scalars['Bytes']>;
+  sender_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sender_not?: InputMaybe<Scalars['Bytes']>;
+  sender_not_contains?: InputMaybe<Scalars['Bytes']>;
+  sender_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  superToken?: InputMaybe<Scalars['Bytes']>;
+  superToken_contains?: InputMaybe<Scalars['Bytes']>;
+  superToken_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  superToken_not?: InputMaybe<Scalars['Bytes']>;
+  superToken_not_contains?: InputMaybe<Scalars['Bytes']>;
+  superToken_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  timestamp?: InputMaybe<Scalars['BigInt']>;
+  timestamp_gt?: InputMaybe<Scalars['BigInt']>;
+  timestamp_gte?: InputMaybe<Scalars['BigInt']>;
+  timestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  timestamp_lt?: InputMaybe<Scalars['BigInt']>;
+  timestamp_lte?: InputMaybe<Scalars['BigInt']>;
+  timestamp_not?: InputMaybe<Scalars['BigInt']>;
+  timestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  transactionHash?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_contains?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  transactionHash_not?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_not_contains?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
 };
 
+export enum VestingScheduleDeletedEvent_OrderBy {
+  Addresses = 'addresses',
+  BlockNumber = 'blockNumber',
+  GasPrice = 'gasPrice',
+  Id = 'id',
+  LogIndex = 'logIndex',
+  Name = 'name',
+  Order = 'order',
+  Receiver = 'receiver',
+  Sender = 'sender',
+  SuperToken = 'superToken',
+  Timestamp = 'timestamp',
+  TransactionHash = 'transactionHash'
+}
 
-export type QueryEventArgs = {
-  block?: InputMaybe<Block_Height>;
+export type VestingScheduleUpdatedEvent = Event & {
+  __typename?: 'VestingScheduleUpdatedEvent';
+  /** Holds the addresses for sender and receiver. */
+  addresses: Array<Scalars['Bytes']>;
+  blockNumber: Scalars['BigInt'];
+  endDate: Scalars['BigInt'];
+  gasPrice: Scalars['BigInt'];
   id: Scalars['ID'];
-  subgraphError?: _SubgraphErrorPolicy_;
+  logIndex: Scalars['BigInt'];
+  name: Scalars['String'];
+  oldEndDate: Scalars['BigInt'];
+  order: Scalars['BigInt'];
+  receiver: Scalars['Bytes'];
+  sender: Scalars['Bytes'];
+  superToken: Scalars['Bytes'];
+  timestamp: Scalars['BigInt'];
+  transactionHash: Scalars['Bytes'];
 };
 
-
-export type QueryEventsArgs = {
-  block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Event_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  subgraphError?: _SubgraphErrorPolicy_;
-  where?: InputMaybe<Event_Filter>;
+export type VestingScheduleUpdatedEvent_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  addresses?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_contains?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_not?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_not_contains?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_not_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
+  blockNumber?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  blockNumber_lt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_lte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_not?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  endDate?: InputMaybe<Scalars['BigInt']>;
+  endDate_gt?: InputMaybe<Scalars['BigInt']>;
+  endDate_gte?: InputMaybe<Scalars['BigInt']>;
+  endDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  endDate_lt?: InputMaybe<Scalars['BigInt']>;
+  endDate_lte?: InputMaybe<Scalars['BigInt']>;
+  endDate_not?: InputMaybe<Scalars['BigInt']>;
+  endDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasPrice?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_gt?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_gte?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasPrice_lt?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_lte?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_not?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  id?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  logIndex?: InputMaybe<Scalars['BigInt']>;
+  logIndex_gt?: InputMaybe<Scalars['BigInt']>;
+  logIndex_gte?: InputMaybe<Scalars['BigInt']>;
+  logIndex_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  logIndex_lt?: InputMaybe<Scalars['BigInt']>;
+  logIndex_lte?: InputMaybe<Scalars['BigInt']>;
+  logIndex_not?: InputMaybe<Scalars['BigInt']>;
+  logIndex_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  name?: InputMaybe<Scalars['String']>;
+  name_contains?: InputMaybe<Scalars['String']>;
+  name_contains_nocase?: InputMaybe<Scalars['String']>;
+  name_ends_with?: InputMaybe<Scalars['String']>;
+  name_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  name_gt?: InputMaybe<Scalars['String']>;
+  name_gte?: InputMaybe<Scalars['String']>;
+  name_in?: InputMaybe<Array<Scalars['String']>>;
+  name_lt?: InputMaybe<Scalars['String']>;
+  name_lte?: InputMaybe<Scalars['String']>;
+  name_not?: InputMaybe<Scalars['String']>;
+  name_not_contains?: InputMaybe<Scalars['String']>;
+  name_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  name_not_ends_with?: InputMaybe<Scalars['String']>;
+  name_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  name_not_in?: InputMaybe<Array<Scalars['String']>>;
+  name_not_starts_with?: InputMaybe<Scalars['String']>;
+  name_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  name_starts_with?: InputMaybe<Scalars['String']>;
+  name_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  oldEndDate?: InputMaybe<Scalars['BigInt']>;
+  oldEndDate_gt?: InputMaybe<Scalars['BigInt']>;
+  oldEndDate_gte?: InputMaybe<Scalars['BigInt']>;
+  oldEndDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  oldEndDate_lt?: InputMaybe<Scalars['BigInt']>;
+  oldEndDate_lte?: InputMaybe<Scalars['BigInt']>;
+  oldEndDate_not?: InputMaybe<Scalars['BigInt']>;
+  oldEndDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  order?: InputMaybe<Scalars['BigInt']>;
+  order_gt?: InputMaybe<Scalars['BigInt']>;
+  order_gte?: InputMaybe<Scalars['BigInt']>;
+  order_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  order_lt?: InputMaybe<Scalars['BigInt']>;
+  order_lte?: InputMaybe<Scalars['BigInt']>;
+  order_not?: InputMaybe<Scalars['BigInt']>;
+  order_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  receiver?: InputMaybe<Scalars['Bytes']>;
+  receiver_contains?: InputMaybe<Scalars['Bytes']>;
+  receiver_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  receiver_not?: InputMaybe<Scalars['Bytes']>;
+  receiver_not_contains?: InputMaybe<Scalars['Bytes']>;
+  receiver_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sender?: InputMaybe<Scalars['Bytes']>;
+  sender_contains?: InputMaybe<Scalars['Bytes']>;
+  sender_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sender_not?: InputMaybe<Scalars['Bytes']>;
+  sender_not_contains?: InputMaybe<Scalars['Bytes']>;
+  sender_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  superToken?: InputMaybe<Scalars['Bytes']>;
+  superToken_contains?: InputMaybe<Scalars['Bytes']>;
+  superToken_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  superToken_not?: InputMaybe<Scalars['Bytes']>;
+  superToken_not_contains?: InputMaybe<Scalars['Bytes']>;
+  superToken_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  timestamp?: InputMaybe<Scalars['BigInt']>;
+  timestamp_gt?: InputMaybe<Scalars['BigInt']>;
+  timestamp_gte?: InputMaybe<Scalars['BigInt']>;
+  timestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  timestamp_lt?: InputMaybe<Scalars['BigInt']>;
+  timestamp_lte?: InputMaybe<Scalars['BigInt']>;
+  timestamp_not?: InputMaybe<Scalars['BigInt']>;
+  timestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  transactionHash?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_contains?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  transactionHash_not?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_not_contains?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
 };
 
+export enum VestingScheduleUpdatedEvent_OrderBy {
+  Addresses = 'addresses',
+  BlockNumber = 'blockNumber',
+  EndDate = 'endDate',
+  GasPrice = 'gasPrice',
+  Id = 'id',
+  LogIndex = 'logIndex',
+  Name = 'name',
+  OldEndDate = 'oldEndDate',
+  Order = 'order',
+  Receiver = 'receiver',
+  Sender = 'sender',
+  SuperToken = 'superToken',
+  Timestamp = 'timestamp',
+  TransactionHash = 'transactionHash'
+}
 
-export type QueryExecuteClosingVestingEventArgs = {
-  block?: InputMaybe<Block_Height>;
-  id: Scalars['ID'];
-  subgraphError?: _SubgraphErrorPolicy_;
+export type VestingSchedule_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  cliffAmount?: InputMaybe<Scalars['BigInt']>;
+  cliffAmount_gt?: InputMaybe<Scalars['BigInt']>;
+  cliffAmount_gte?: InputMaybe<Scalars['BigInt']>;
+  cliffAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  cliffAmount_lt?: InputMaybe<Scalars['BigInt']>;
+  cliffAmount_lte?: InputMaybe<Scalars['BigInt']>;
+  cliffAmount_not?: InputMaybe<Scalars['BigInt']>;
+  cliffAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  cliffDate?: InputMaybe<Scalars['BigInt']>;
+  cliffDate_gt?: InputMaybe<Scalars['BigInt']>;
+  cliffDate_gte?: InputMaybe<Scalars['BigInt']>;
+  cliffDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  cliffDate_lt?: InputMaybe<Scalars['BigInt']>;
+  cliffDate_lte?: InputMaybe<Scalars['BigInt']>;
+  cliffDate_not?: InputMaybe<Scalars['BigInt']>;
+  cliffDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  endDate?: InputMaybe<Scalars['BigInt']>;
+  endDate_gt?: InputMaybe<Scalars['BigInt']>;
+  endDate_gte?: InputMaybe<Scalars['BigInt']>;
+  endDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  endDate_lt?: InputMaybe<Scalars['BigInt']>;
+  endDate_lte?: InputMaybe<Scalars['BigInt']>;
+  endDate_not?: InputMaybe<Scalars['BigInt']>;
+  endDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  flowRate?: InputMaybe<Scalars['BigInt']>;
+  flowRate_gt?: InputMaybe<Scalars['BigInt']>;
+  flowRate_gte?: InputMaybe<Scalars['BigInt']>;
+  flowRate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  flowRate_lt?: InputMaybe<Scalars['BigInt']>;
+  flowRate_lte?: InputMaybe<Scalars['BigInt']>;
+  flowRate_not?: InputMaybe<Scalars['BigInt']>;
+  flowRate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  id?: InputMaybe<Scalars['String']>;
+  id_contains?: InputMaybe<Scalars['String']>;
+  id_contains_nocase?: InputMaybe<Scalars['String']>;
+  id_ends_with?: InputMaybe<Scalars['String']>;
+  id_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  id_gt?: InputMaybe<Scalars['String']>;
+  id_gte?: InputMaybe<Scalars['String']>;
+  id_in?: InputMaybe<Array<Scalars['String']>>;
+  id_lt?: InputMaybe<Scalars['String']>;
+  id_lte?: InputMaybe<Scalars['String']>;
+  id_not?: InputMaybe<Scalars['String']>;
+  id_not_contains?: InputMaybe<Scalars['String']>;
+  id_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  id_not_ends_with?: InputMaybe<Scalars['String']>;
+  id_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']>>;
+  id_not_starts_with?: InputMaybe<Scalars['String']>;
+  id_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  id_starts_with?: InputMaybe<Scalars['String']>;
+  id_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  receiver?: InputMaybe<Scalars['Bytes']>;
+  receiver_contains?: InputMaybe<Scalars['Bytes']>;
+  receiver_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  receiver_not?: InputMaybe<Scalars['Bytes']>;
+  receiver_not_contains?: InputMaybe<Scalars['Bytes']>;
+  receiver_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sender?: InputMaybe<Scalars['Bytes']>;
+  sender_contains?: InputMaybe<Scalars['Bytes']>;
+  sender_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sender_not?: InputMaybe<Scalars['Bytes']>;
+  sender_not_contains?: InputMaybe<Scalars['Bytes']>;
+  sender_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  startDate?: InputMaybe<Scalars['BigInt']>;
+  startDate_gt?: InputMaybe<Scalars['BigInt']>;
+  startDate_gte?: InputMaybe<Scalars['BigInt']>;
+  startDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  startDate_lt?: InputMaybe<Scalars['BigInt']>;
+  startDate_lte?: InputMaybe<Scalars['BigInt']>;
+  startDate_not?: InputMaybe<Scalars['BigInt']>;
+  startDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  superToken?: InputMaybe<Scalars['Bytes']>;
+  superToken_contains?: InputMaybe<Scalars['Bytes']>;
+  superToken_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  superToken_not?: InputMaybe<Scalars['Bytes']>;
+  superToken_not_contains?: InputMaybe<Scalars['Bytes']>;
+  superToken_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
 };
 
-
-export type QueryExecuteClosingVestingEventsArgs = {
-  block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<ExecuteClosingVestingEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  subgraphError?: _SubgraphErrorPolicy_;
-  where?: InputMaybe<ExecuteClosingVestingEvent_Filter>;
-};
-
-
-export type QueryExecuteVestingEventArgs = {
-  block?: InputMaybe<Block_Height>;
-  id: Scalars['ID'];
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QueryExecuteVestingEventsArgs = {
-  block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<ExecuteVestingEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  subgraphError?: _SubgraphErrorPolicy_;
-  where?: InputMaybe<ExecuteVestingEvent_Filter>;
-};
-
-export type Subscription = {
-  __typename?: 'Subscription';
-  /** Access to subgraph metadata */
-  _meta?: Maybe<_Meta_>;
-  createVestingScheduleEvent?: Maybe<CreateVestingScheduleEvent>;
-  createVestingScheduleEvents: Array<CreateVestingScheduleEvent>;
-  deleteVestingScheduleEvent?: Maybe<DeleteVestingScheduleEvent>;
-  deleteVestingScheduleEvents: Array<DeleteVestingScheduleEvent>;
-  event?: Maybe<Event>;
-  events: Array<Event>;
-  executeClosingVestingEvent?: Maybe<ExecuteClosingVestingEvent>;
-  executeClosingVestingEvents: Array<ExecuteClosingVestingEvent>;
-  executeVestingEvent?: Maybe<ExecuteVestingEvent>;
-  executeVestingEvents: Array<ExecuteVestingEvent>;
-};
-
-
-export type Subscription_MetaArgs = {
-  block?: InputMaybe<Block_Height>;
-};
-
-
-export type SubscriptionCreateVestingScheduleEventArgs = {
-  block?: InputMaybe<Block_Height>;
-  id: Scalars['ID'];
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionCreateVestingScheduleEventsArgs = {
-  block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<CreateVestingScheduleEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  subgraphError?: _SubgraphErrorPolicy_;
-  where?: InputMaybe<CreateVestingScheduleEvent_Filter>;
-};
-
-
-export type SubscriptionDeleteVestingScheduleEventArgs = {
-  block?: InputMaybe<Block_Height>;
-  id: Scalars['ID'];
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionDeleteVestingScheduleEventsArgs = {
-  block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<DeleteVestingScheduleEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  subgraphError?: _SubgraphErrorPolicy_;
-  where?: InputMaybe<DeleteVestingScheduleEvent_Filter>;
-};
-
-
-export type SubscriptionEventArgs = {
-  block?: InputMaybe<Block_Height>;
-  id: Scalars['ID'];
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionEventsArgs = {
-  block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Event_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  subgraphError?: _SubgraphErrorPolicy_;
-  where?: InputMaybe<Event_Filter>;
-};
-
-
-export type SubscriptionExecuteClosingVestingEventArgs = {
-  block?: InputMaybe<Block_Height>;
-  id: Scalars['ID'];
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionExecuteClosingVestingEventsArgs = {
-  block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<ExecuteClosingVestingEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  subgraphError?: _SubgraphErrorPolicy_;
-  where?: InputMaybe<ExecuteClosingVestingEvent_Filter>;
-};
-
-
-export type SubscriptionExecuteVestingEventArgs = {
-  block?: InputMaybe<Block_Height>;
-  id: Scalars['ID'];
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionExecuteVestingEventsArgs = {
-  block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<ExecuteVestingEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  subgraphError?: _SubgraphErrorPolicy_;
-  where?: InputMaybe<ExecuteVestingEvent_Filter>;
-};
+export enum VestingSchedule_OrderBy {
+  CliffAmount = 'cliffAmount',
+  CliffDate = 'cliffDate',
+  EndDate = 'endDate',
+  FlowRate = 'flowRate',
+  Id = 'id',
+  Receiver = 'receiver',
+  Sender = 'sender',
+  StartDate = 'startDate',
+  SuperToken = 'superToken'
+}
 
 export type _Block_ = {
   __typename?: '_Block_';

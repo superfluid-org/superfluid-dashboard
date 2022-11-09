@@ -1,11 +1,5 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import {
-  Box,
-  Button,
-  IconButton,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Button, IconButton, Stack, Typography } from "@mui/material";
 import add from "date-fns/fp/add";
 import format from "date-fns/fp/format";
 import { FC } from "react";
@@ -18,6 +12,7 @@ import { CreateVestingTransactionButton } from "./CreateVestingTransactionButton
 import { VestingScheduleGraph } from "./VestingScheduleGraph";
 import { AccountChip } from "./AccountChip";
 import { TokenChip } from "./TokenChip";
+import { parseEtherOrZero } from "../../utils/tokenUtils";
 
 export const CreateVestingPreview: FC<{
   token: VestingToken;
@@ -69,8 +64,8 @@ export const CreateVestingPreview: FC<{
         startDate={startDate}
         endDate={endDate}
         cliffDate={cliffDate}
-        cliffAmountEther={cliffAmountEther}
-        totalAmountEther={totalAmountEther}
+        cliffAmount={parseEtherOrZero(cliffAmountEther)}
+        totalAmount={parseEtherOrZero(totalAmountEther)}
       />
 
       <Stack>

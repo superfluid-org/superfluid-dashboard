@@ -28,7 +28,7 @@ export const SentVestingScheduleTable: FC = () => {
     {
       selectFromResult: (result) => ({
         ...result,
-        vestingSchedules: result.data?.createVestingScheduleEvents ?? [],
+        vestingSchedules: result.data?.vestingSchedules ?? [],
       }),
     }
   );

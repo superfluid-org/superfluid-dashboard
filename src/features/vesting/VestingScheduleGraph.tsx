@@ -1,26 +1,29 @@
 import Decimal from "decimal.js";
+import { BigNumber, BigNumberish } from "ethers";
 import { FC } from "react";
 
 export interface VestingScheduleGraphProps {
   startDate: Date;
   endDate: Date;
   cliffDate: Date;
-  cliffAmountEther: string;
-  totalAmountEther: string;
+  cliffAmount: BigNumberish;
+  totalAmount: BigNumberish;
 }
 
 export const VestingScheduleGraph: FC<VestingScheduleGraphProps> = ({
   startDate,
   endDate,
   cliffDate,
-  cliffAmountEther,
-  totalAmountEther,
+  cliffAmount,
+  totalAmount,
 }) => {
   const totalSeconds = endDate.getTime() - startDate.getTime();
   const cliffSeconds = cliffDate.getTime() - startDate.getTime();
   const timePercentage = cliffSeconds / totalSeconds;
-  const amountPercentage = new Decimal(cliffAmountEther)
-    .div(new Decimal(totalAmountEther))
+
+  const amountPercentage = new Decimal(BigNumber.from(cliffAmount).toString())
+    .div(new Decimal(BigNumber.from(totalAmount).toString()))
+    .toDP(6)
     .toNumber();
 
   return (

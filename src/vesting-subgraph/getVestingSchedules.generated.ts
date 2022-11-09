@@ -2,27 +2,25 @@ import * as Types from './schema.generated';
 
 import { api } from './vestingSubgraphApi';
 export type GetVestingSchedulesQueryVariables = Types.Exact<{
-  where?: Types.InputMaybe<Types.CreateVestingScheduleEvent_Filter>;
+  where?: Types.InputMaybe<Types.VestingSchedule_Filter>;
 }>;
 
 
-export type GetVestingSchedulesQuery = { __typename?: 'Query', createVestingScheduleEvents: Array<{ __typename?: 'CreateVestingScheduleEvent', id: string, cliffDate: any, cliffTransferAmount: any, endDate: any, flowRate: any, receiver: any, sender: any, startDate: any, superToken: any, timestamp: any, transactionHash: any }> };
+export type GetVestingSchedulesQuery = { __typename?: 'Query', vestingSchedules: Array<{ __typename?: 'VestingSchedule', id: string, cliffDate: any, cliffAmount: any, endDate: any, flowRate: any, receiver: any, sender: any, startDate: any, superToken: any }> };
 
 
 export const GetVestingSchedulesDocument = `
-    query getVestingSchedules($where: CreateVestingScheduleEvent_filter) {
-  createVestingScheduleEvents(where: $where) {
+    query getVestingSchedules($where: VestingSchedule_filter) {
+  vestingSchedules(where: $where) {
     id
     cliffDate
-    cliffTransferAmount
+    cliffAmount
     endDate
     flowRate
     receiver
     sender
     startDate
     superToken
-    timestamp
-    transactionHash
   }
 }
     `;

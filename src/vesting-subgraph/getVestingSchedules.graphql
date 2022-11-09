@@ -1,15 +1,13 @@
-query getVestingSchedules($where: CreateVestingScheduleEvent_filter) {
-  createVestingScheduleEvents(where: $where) {
+query getVestingSchedules($where: VestingSchedule_filter) {
+  vestingSchedules(where: $where) {
     id
     cliffDate
-    cliffTransferAmount
+    cliffAmount
     endDate
     flowRate
     receiver
     sender
     startDate
     superToken
-    timestamp
-    transactionHash
   }
 }
