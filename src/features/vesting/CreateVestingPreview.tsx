@@ -1,5 +1,11 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Box, IconButton, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import add from "date-fns/fp/add";
 import format from "date-fns/fp/format";
 import { FC } from "react";
@@ -51,7 +57,7 @@ export const CreateVestingPreview: FC<{
     startDate
   );
 
-  const BackButton = (
+  const BackButtonWithArrow = (
     <Box>
       <IconButton
         data-cy={"back-button"}
@@ -63,13 +69,14 @@ export const CreateVestingPreview: FC<{
     </Box>
   );
 
+  const BackButton = (
+    <Button type="button" onClick={() => setView(CreateVestingCardView.Form)}>
+      Back
+    </Button>
+  );
+
   return (
     <Stack gap={1}>
-      {BackButton}
-      <Typography component="h2" variant="h5" sx={{ mb: 3 }}>
-        Preview Vesting Schedule
-      </Typography>
-
       <VestingScheduleGraph
         startDate={startDate}
         endDate={endDate}
@@ -144,7 +151,17 @@ export const CreateVestingPreview: FC<{
         </Typography>
       </Stack>
 
-      <CreateVestingTransactionButton />
+      <Stack
+        direction="row"
+        gap={1}
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "1fr 2fr",
+        }}
+      >
+        {BackButton}
+        <CreateVestingTransactionButton />
+      </Stack>
     </Stack>
   );
 };

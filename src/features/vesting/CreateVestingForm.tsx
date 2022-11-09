@@ -358,9 +358,6 @@ export const CreateVestingForm: FC<{
 
   return (
     <Stack component={"form"} gap={1}>
-      <Typography component="h2" variant="h5" sx={{ mb: 3 }}>
-        Create a Vesting Schedule
-      </Typography>
 
       {ValidationSummary}
 

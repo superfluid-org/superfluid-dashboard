@@ -1,15 +1,14 @@
 import {
-  Card,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  Typography,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
 import { useGetSentVestingSchedulesQuery } from "../../vesting-subgraph/getSentVestingSchedules.generated";
+import { useAddressPendingVestingSchedules } from "../pendingUpdates/PendingVestingSchedule";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 export const VestingScheduleTable: FC = () => {
@@ -30,15 +29,25 @@ export const VestingScheduleTable: FC = () => {
     }
   );
 
+  const pendingVestingSchedules =
+    useAddressPendingVestingSchedules(visibleAddress);
+
   return (
     <Table>
       <TableHead>
         <TableRow>
           <TableCell>Asset</TableCell>
           <TableCell>Receiver</TableCell>
+          <TableCell></TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
+        {pendingVestingSchedules.map((x) => (
+          <TableRow key={x.id}>
+            <TableCell>{x.superTokenAddress}</TableCell>
+            <TableCell>PENDING</TableCell>
+          </TableRow>
+        ))}
         {vestingSchedules.map((x) => (
           <TableRow key={x.id}>
             <TableCell>{x.superToken}</TableCell>

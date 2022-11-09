@@ -25,8 +25,7 @@ export const MIN_VESTING_DURATION_SECONDS =
 export const START_DATE_VALID_AFTER_SECONDS = 3 * UnitOfTime.Day;
 export const END_DATE_VALID_BEFORE_SECONDS = 1 * UnitOfTime.Day;
 
-interface CreateVestingSchedule extends BaseSuperTokenMutation {
-  chainId: number;
+export interface CreateVestingSchedule extends BaseSuperTokenMutation {
   senderAddress: string;
   receiverAddress: string;
   startDateTimestamp: number;

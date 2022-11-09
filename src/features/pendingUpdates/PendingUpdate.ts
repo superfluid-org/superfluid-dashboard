@@ -7,7 +7,7 @@ export interface PendingUpdate {
    * Keep it the same as the tracked transaction ID.
    */
   id: string;
-  pendingType: "FlowCreate" | "FlowDelete" | "IndexSubscriptionApprove" | "IndexSubscriptionRevoke";
+  pendingType: "FlowCreate" | "FlowDelete" | "IndexSubscriptionApprove" | "IndexSubscriptionRevoke" | "VestingScheduleCreate";
   transactionHash: string;
   chainId: number;
   timestamp: number;

@@ -1,4 +1,14 @@
-import { Card } from "@mui/material";
+import {
+  Box,
+  Card,
+  Divider,
+  IconButton,
+  Stack,
+  Step,
+  StepLabel,
+  Stepper,
+  Typography,
+} from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Token } from "@superfluid-finance/sdk-core";
 import { FC, PropsWithChildren, useState } from "react";
@@ -11,12 +21,14 @@ import { PartialVestingForm } from "./CreateVestingFormProvider";
 import { CreateVestingPreview } from "./CreateVestingPreview";
 import { CreateVestingForm } from "./CreateVestingForm";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
+import { useRouter } from "next/router";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 export type VestingToken = Token & SuperTokenMinimal;
 
 export enum CreateVestingCardView {
   Form,
-  Preview,
+  Preview
 }
 
 export const CreateVestingSection: FC<PropsWithChildren> = () => {
@@ -52,8 +64,59 @@ export const CreateVestingSection: FC<PropsWithChildren> = () => {
     CreateVestingCardView.Form
   );
 
+  const router = useRouter();
+  const BackButton = (
+    <Box>
+      <IconButton
+        data-cy={"close-button"}
+        color="inherit"
+        onClick={() => router.push("/vesting")}
+      >
+        <ArrowBackIcon />
+      </IconButton>
+    </Box>
+  );
+
+  const getActiveStep = () => {
+    switch (view) {
+      case CreateVestingCardView.Form:
+        return 0;
+      case CreateVestingCardView.Preview:
+        return 1;
+    }
+  };
+
+  const StepperContainer = (
+    <Stepper activeStep={getActiveStep()} alternativeLabel>
+      <Step key="fill">
+        <StepLabel>Form</StepLabel>
+      </Step>
+      <Step key="preview">
+        <StepLabel>Preview</StepLabel>
+      </Step>
+      <Step key="approve">
+        <StepLabel>Approve</StepLabel>
+      </Step>
+    </Stepper>
+  );
+
   return (
     <ConnectionBoundary>
+      <Stack
+        direction="row"
+        justifyContent="start"
+        alignItems="center"
+        gap={2}
+        sx={{ mb: 5 }}
+      >
+        {BackButton}
+        <Typography component="h2" variant="h5">
+          Create a Vesting Schedule
+        </Typography>
+      </Stack>
+
+      {StepperContainer}
+
       {view === CreateVestingCardView.Form && (
         <CreateVestingForm token={token} setView={setView} />
       )}

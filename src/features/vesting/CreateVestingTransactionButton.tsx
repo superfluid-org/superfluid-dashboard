@@ -69,7 +69,7 @@ export const CreateVestingTransactionButton: FC = () => {
             )()
           }
         >
-          Start Vesting
+          Create
         </TransactionButton>
       )}
     </TransactionBoundary>
