@@ -25,6 +25,7 @@ import { CreateVestingForm } from "./CreateVestingForm";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { useRouter } from "next/router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useVestingToken } from "./useVestingToken";
 
 export type VestingToken = Token & SuperTokenMinimal;
 
@@ -40,29 +41,7 @@ export const CreateVestingSection: FC<PropsWithChildren> = () => {
   const [superTokenAddress] = watch(["data.superTokenAddress"]);
 
   const { network } = useExpectedNetwork();
-  const { token } = subgraphApi.useTokenQuery(
-    superTokenAddress
-      ? {
-          chainId: network.id,
-          id: superTokenAddress,
-        }
-      : skipToken,
-    {
-      selectFromResult: (result) => ({
-        token: result.currentData
-          ? ({
-              ...result.currentData,
-              address: result.currentData.id,
-              type: getSuperTokenType({
-                network,
-                address: result.currentData.id,
-                underlyingAddress: result.currentData.underlyingAddress,
-              }),
-            } as VestingToken)
-          : undefined,
-      }),
-    }
-  );
+  const { token } = useVestingToken(network, superTokenAddress);
 
   const [view, setView] = useState<CreateVestingCardView>(
     CreateVestingCardView.Form

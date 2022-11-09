@@ -18,7 +18,7 @@ const VestingPage: NextPageWithLayout = () => {
       </Box>
 
       <Card sx={{ mb: 3}}>
-        <Typography variant="h5" component="h2" sx={{ mb: 3 }}>
+        <Typography variant="h6" component="h2" sx={{ mb: 3 }}>
           Sent Vesting Schedules
         </Typography>
         <Divider />
@@ -26,7 +26,7 @@ const VestingPage: NextPageWithLayout = () => {
       </Card>
 
       <Card>
-        <Typography variant="h5" component="h2" sx={{ mb: 3 }}>
+        <Typography variant="h6" component="h2" sx={{ mb: 3 }}>
           Received Vesting Schedules
         </Typography>
         <Divider />
