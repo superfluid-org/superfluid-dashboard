@@ -12,7 +12,7 @@ export const VestingLayout: FC<PropsWithChildren> = ({ children }) => {
           Vesting
         </Typography>
         <Typography variant="subtitle1">
-          You can vest using Superfluid streams! Look at the tutorial here.
+          You can now vest using Superfluid streams!
         </Typography>
       </Box>
       {children}

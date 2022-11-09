@@ -37,14 +37,14 @@ export type PartialVestingForm = {
     superTokenAddress: string | null;
     receiverAddress: string | null;
     startDate: number | null;
-    totalAmountEther: string | null;
+    totalAmountEther: string | "";
     vestingPeriod: {
-      numerator: number | null;
+      numerator: number | "";
       denominator: UnitOfTime;
     };
-    cliffAmountEther: string | null;
+    cliffAmountEther: string | "";
     cliffPeriod: {
-      numerator: number | null;
+      numerator: number | "";
       denominator: UnitOfTime;
     };
   };
@@ -166,15 +166,15 @@ const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
     defaultValues: {
       data: {
         superTokenAddress: null,
-        totalAmountEther: null,
-        cliffAmountEther: null,
+        totalAmountEther: "",
+        cliffAmountEther: "",
         cliffPeriod: {
-          numerator: null,
+          numerator: "",
           denominator: UnitOfTime.Year,
         },
         startDate: null,
         vestingPeriod: {
-          numerator: null,
+          numerator: "",
           denominator: UnitOfTime.Year,
         },
         receiverAddress: null,
@@ -194,7 +194,9 @@ const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
     }
   }, [formState.isDirty]);
 
-  const [isInitialized, setIsInitialized] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => setIsInitialized(true), []);
 
   return isInitialized ? (
     <FormProvider {...formMethods}>{children}</FormProvider>

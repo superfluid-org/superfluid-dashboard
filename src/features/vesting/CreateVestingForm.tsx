@@ -240,28 +240,23 @@ export const CreateVestingForm: FC<{
         <Box sx={{ display: "grid", gridTemplateColumns: "2fr 1fr" }}>
           <TextField
             value={value.numerator}
-            onChange={(e) =>
-              onChange({
-                numerator: e.target.value,
-                denominator: value.denominator,
-              })
-            }
+            onChange={(e) => onChange({
+              numerator: e.target.value,
+              denominator: value.denominator,
+            })}
             onBlur={onBlur}
             InputProps={{
               sx: {
                 borderTopRightRadius: 0,
                 borderBottomRightRadius: 0,
               },
-            }}
-          />
+            }} />
           <Select
             value={value.denominator}
-            onChange={(e) =>
-              onChange({
-                numerator: value.numerator,
-                denominator: e.target.value,
-              })
-            }
+            onChange={(e) => onChange({
+              numerator: value.numerator,
+              denominator: e.target.value,
+            })}
             onBlur={onBlur}
             sx={{
               borderTopLeftRadius: 0,
