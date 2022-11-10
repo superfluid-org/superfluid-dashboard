@@ -35,6 +35,10 @@ import { ErrorMessage } from "@hookform/error-message";
 import TooltipIcon from "../common/TooltipIcon";
 import { CreateVestingCardView, VestingToken } from "./CreateVestingSection";
 import { DeleteVestingTransactionButton } from "./DeleteVestingTransactionButton";
+import {
+  MAX_VESTING_START_DATE,
+  MIN_VESTING_START_DATE,
+} from "../redux/endpoints/vestingSchedulerEndpoints";
 
 export enum VestingFormLabels {
   Receiver = "Receiver",
@@ -205,6 +209,8 @@ export const CreateVestingForm: FC<{
             ampm={false}
             onChange={onChange}
             disablePast
+            minDateTime={MIN_VESTING_START_DATE}
+            maxDateTime={MAX_VESTING_START_DATE}
           />
         )}
       />
@@ -253,6 +259,7 @@ export const CreateVestingForm: FC<{
                 borderBottomRightRadius: 0,
               },
             }}
+            inputMode="numeric"
           />
           <Select
             value={value.denominator}
@@ -269,7 +276,7 @@ export const CreateVestingForm: FC<{
             }}
           >
             {unitOfTimeList
-              .filter((x) => x >= UnitOfTime.Day)
+              .filter((x) => x >= UnitOfTime.Day && x <= UnitOfTime.Year)
               .map((unitOfTime) => (
                 <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
                   {timeUnitWordMap[unitOfTime]}(s)
@@ -302,6 +309,7 @@ export const CreateVestingForm: FC<{
                 borderBottomRightRadius: 0,
               },
             }}
+            inputMode="numeric"
           />
           <Select
             value={value.denominator}
@@ -318,7 +326,7 @@ export const CreateVestingForm: FC<{
             }}
           >
             {unitOfTimeList
-              .filter((x) => x >= UnitOfTime.Day)
+              .filter((x) => x >= UnitOfTime.Day && x <= UnitOfTime.Year)
               .map((unitOfTime) => (
                 <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
                   {timeUnitWordMap[unitOfTime]}(s)

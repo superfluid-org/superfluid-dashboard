@@ -1,14 +1,18 @@
 import { yupResolver } from "@hookform/resolvers/yup";
+import { sub } from "date-fns/fp";
 import add from "date-fns/fp/add";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { date, mixed, number, object, ObjectSchema, string } from "yup";
+import { getTimeInSeconds } from "../../utils/dateUtils";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { networkDefinition } from "../network/networks";
 import {
   END_DATE_VALID_BEFORE_SECONDS,
+  MAX_VESTING_DURATION_SECONDS,
+  MAX_VESTING_DURATION_YEARS,
   MIN_VESTING_DURATION_DAYS,
   MIN_VESTING_DURATION_SECONDS,
   START_DATE_VALID_AFTER_SECONDS,
@@ -63,7 +67,10 @@ const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
             .required()
             .test(testEtherAmount({ notNegative: true, notZero: true })),
           vestingPeriod: object({
-            numerator: number().required(),
+            numerator: number()
+              .positive()
+              .max(Number.MAX_SAFE_INTEGER)
+              .required(),
             denominator: mixed<UnitOfTime>()
               .required()
               .test((x) => Object.values(UnitOfTime).includes(x as UnitOfTime)),
@@ -72,7 +79,10 @@ const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
             .required()
             .test(testEtherAmount({ notNegative: true, notZero: true })),
           cliffPeriod: object({
-            numerator: number().required(),
+            numerator: number()
+              .positive()
+              .max(Number.MAX_SAFE_INTEGER)
+              .required(),
             denominator: mixed<UnitOfTime>()
               .required()
               .test((x) => Object.values(UnitOfTime).includes(x as UnitOfTime)),
@@ -120,18 +130,7 @@ const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
           },
         } = (await primarySchema.validate(values)) as ValidVestingForm;
 
-        // cliff longer than total
-        // start in history
-
-        const vestingDuration =
-          vestingPeriod.numerator * vestingPeriod.denominator;
-        if (vestingDuration < MIN_VESTING_DURATION_SECONDS) {
-          handleHigherOrderValidationError({
-            message: `The vesting period has to be at least ${MIN_VESTING_DURATION_DAYS} days.`,
-          });
-        }
-
-        const effectiveStartDate = add(
+        const cliffAndFlowDate = add(
           {
             seconds: cliffPeriod.numerator * cliffPeriod.denominator,
           },
@@ -145,15 +144,35 @@ const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
           startDate
         );
 
+        const durationFromCliffAndFlowDateToEndDate = Math.floor(
+          (endDate.getTime() - cliffAndFlowDate.getTime()) / 1000
+        );
+        if (
+          durationFromCliffAndFlowDateToEndDate < MIN_VESTING_DURATION_SECONDS
+        ) {
+          handleHigherOrderValidationError({
+            message: `The vesting end has to be at least ${MIN_VESTING_DURATION_DAYS} days from the start or the cliff.`,
+          });
+        }
+
+        const vestingDuration =
+          vestingPeriod.numerator * vestingPeriod.denominator;
+
+        if (vestingDuration > MAX_VESTING_DURATION_SECONDS) {
+          handleHigherOrderValidationError({
+            message: `The vesting period has to be less than ${MAX_VESTING_DURATION_YEARS} years.`,
+          });
+        }
+
         const secondsFromStartToEnd = Math.floor(
-          (endDate.getTime() - effectiveStartDate.getTime()) / 1000
+          (endDate.getTime() - cliffAndFlowDate.getTime()) / 1000
         );
         if (
           secondsFromStartToEnd <
           START_DATE_VALID_AFTER_SECONDS + END_DATE_VALID_BEFORE_SECONDS
         ) {
           handleHigherOrderValidationError({
-            message: `[elvi.js error]: Invalid vesting schedule.`,
+            message: `Invalid vesting schedule time frame.`,
           });
         }
 

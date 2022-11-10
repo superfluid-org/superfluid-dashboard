@@ -10,6 +10,7 @@ import {
   TransactionInfo,
   TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
+import add from "date-fns/add";
 import { BigNumber } from "ethers";
 import { getEthSdk } from "../../../eth-sdk/getEthSdk";
 import { UnitOfTime } from "../../send/FlowRateInput";
@@ -22,8 +23,20 @@ export const MIN_VESTING_DURATION_DAYS = 7;
 export const MIN_VESTING_DURATION_SECONDS =
   MIN_VESTING_DURATION_DAYS * UnitOfTime.Day;
 
+export const MAX_VESTING_DURATION_YEARS = 10;
+export const MAX_VESTING_DURATION_SECONDS =
+  MAX_VESTING_DURATION_YEARS * UnitOfTime.Year;
+
 export const START_DATE_VALID_AFTER_SECONDS = 3 * UnitOfTime.Day;
 export const END_DATE_VALID_BEFORE_SECONDS = 1 * UnitOfTime.Day;
+
+export const MIN_VESTING_START_DATE = add(new Date(), {
+  minutes: 15,
+});
+
+export const MAX_VESTING_START_DATE = add(new Date(), {
+  years: 1,
+});
 
 export interface CreateVestingSchedule extends BaseSuperTokenMutation {
   senderAddress: string;
