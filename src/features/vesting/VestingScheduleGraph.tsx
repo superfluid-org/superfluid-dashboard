@@ -1,8 +1,16 @@
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, setRef, Stack, Typography } from "@mui/material";
 import { format } from "date-fns";
 import Decimal from "decimal.js";
 import { BigNumber, BigNumberish } from "ethers";
-import { FC } from "react";
+import {
+  createRef,
+  FC,
+  LegacyRef,
+  RefObject,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 export interface VestingScheduleGraphProps {
   startDate: Date;
@@ -19,6 +27,11 @@ export const VestingScheduleGraph: FC<VestingScheduleGraphProps> = ({
   cliffAmount,
   totalAmount,
 }) => {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const cliffRef = useRef<SVGLineElement>(null);
+
+  const [cliffLabelX, setCliffLabelX] = useState(0);
+
   const totalSeconds = endDate.getTime() - startDate.getTime();
   const cliffSeconds = cliffDate.getTime() - startDate.getTime();
   const cliffRatio = cliffSeconds / totalSeconds;
@@ -28,11 +41,18 @@ export const VestingScheduleGraph: FC<VestingScheduleGraphProps> = ({
     .toDP(6)
     .toNumber();
 
-  const cliffPercentage = cliffRatio * 100;
+  useEffect(() => {
+    if (svgRef.current && cliffRef.current) {
+      const { x: x1, width: w1 } = svgRef.current.getBoundingClientRect();
+      const { x: x2, width: w2 } = cliffRef.current.getBoundingClientRect();
+      setCliffLabelX(((x2 - x1) / (w1 - w2)) * 100);
+    }
+  }, [svgRef, cliffRef]);
 
   return (
     <Stack gap={0.5} sx={{ position: "relative" }}>
       <svg
+        ref={svgRef}
         xmlns="http://www.w3.org/2000/svg"
         width="100%"
         height="140px"
@@ -41,9 +61,6 @@ export const VestingScheduleGraph: FC<VestingScheduleGraphProps> = ({
         preserveAspectRatio="none"
         style={{
           display: "block",
-          // marginLeft: "-6px",
-          // marginRight: "-6px",
-          // width: "calc(100% + 12px)",
         }}
       >
         <defs>
@@ -52,7 +69,7 @@ export const VestingScheduleGraph: FC<VestingScheduleGraphProps> = ({
             x1="0"
             y1="0"
             x2="0"
-            y2="200"
+            y2="150"
             gradientUnits="userSpaceOnUse"
           >
             <stop stopColor="#10BB35" stopOpacity="0.2" />
@@ -61,11 +78,12 @@ export const VestingScheduleGraph: FC<VestingScheduleGraphProps> = ({
         </defs>
 
         <line
+          ref={cliffRef}
           x1={194 * cliffRatio}
           y1={96 - 96 * amountPercentage}
           x2={194 * cliffRatio}
           y2="3"
-          stroke="#12141e61"
+          stroke="#12141E61"
           strokeWidth="3"
           strokeDasharray="6"
           vectorEffect="non-scaling-stroke"
@@ -95,12 +113,14 @@ export const VestingScheduleGraph: FC<VestingScheduleGraphProps> = ({
         sx={{
           position: "absolute",
           top: 0,
-          left: `calc(${cliffPercentage}% - 14px)`,
+          ...(cliffLabelX > 45
+            ? { right: `calc(${100 - cliffLabelX}% + 8px)` }
+            : { left: `calc(${cliffLabelX}% + 8px)` }),
         }}
       >
         Cliff: {format(cliffDate, "LLL d, yyyy HH:mm")}
       </Typography>
-      <Stack direction="row" justifyContent="space-between">
+      <Stack direction="row" justifyContent="space-between" sx={{ mx: 0.75 }}>
         <Typography variant="body2" color="text.disabled">
           Start: {format(startDate, "LLL d, yyyy HH:mm")}
         </Typography>
