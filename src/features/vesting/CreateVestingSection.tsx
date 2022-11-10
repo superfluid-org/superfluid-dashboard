@@ -22,7 +22,6 @@ import CreateVestingFormProvider, {
 } from "./CreateVestingFormProvider";
 import { CreateVestingPreview } from "./CreateVestingPreview";
 import { CreateVestingForm } from "./CreateVestingForm";
-import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { useRouter } from "next/router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useVestingToken } from "./useVestingToken";
@@ -32,7 +31,7 @@ export type VestingToken = Token & SuperTokenMinimal;
 export enum CreateVestingCardView {
   Form = 0,
   Preview = 1,
-  PreviewApproving = 2,
+  Approving = 2,
   Success = 3,
 }
 
@@ -56,6 +55,8 @@ export const CreateVestingSection: FC<PropsWithChildren> = () => {
         onClick={() => {
           if (view === CreateVestingCardView.Form) {
             router.push("/vesting");
+          } else if (view === CreateVestingCardView.Success) {
+            router.push("/vesting");
           } else {
             setView(view - 1);
           }
@@ -74,7 +75,7 @@ export const CreateVestingSection: FC<PropsWithChildren> = () => {
       <Step key={CreateVestingCardView.Preview}>
         <StepLabel>Preview</StepLabel>
       </Step>
-      <Step key={CreateVestingCardView.PreviewApproving}>
+      <Step key={CreateVestingCardView.Approving}>
         <StepLabel>Approve</StepLabel>
       </Step>
     </Stepper>
@@ -101,9 +102,9 @@ export const CreateVestingSection: FC<PropsWithChildren> = () => {
         <CreateVestingForm token={token} setView={setView} />
       )}
       {(view === CreateVestingCardView.Preview ||
-        view === CreateVestingCardView.PreviewApproving) &&
+        view === CreateVestingCardView.Approving ||
+        view === CreateVestingCardView.Success) &&
         token && <CreateVestingPreview token={token} setView={setView} />}
-      {view === CreateVestingCardView.Success && token && <Box>Success!</Box>}
     </>
   );
 };

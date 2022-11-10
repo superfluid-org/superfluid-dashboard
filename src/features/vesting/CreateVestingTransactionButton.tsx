@@ -20,65 +20,69 @@ export const CreateVestingTransactionButton: FC<{
 
   return (
     <TransactionBoundary mutationResult={createVestingScheduleResult}>
-      {({ network, getOverrides }) => (
-        <TransactionButton
-          disabled={isDisabled}
-          onClick={async (signer) =>
-            handleSubmit(
-              async ({
-                data: {
-                  cliffAmountEther,
-                  cliffPeriod,
-                  receiverAddress,
-                  startDate,
-                  superTokenAddress,
-                  totalAmountEther,
-                  vestingPeriod,
-                },
-              }) => {
-                const startDateTimestamp = getTimeInSeconds(startDate);
+      {({ network, getOverrides }) =>
+        !createVestingScheduleResult.isSuccess && (
+          <TransactionButton
+            disabled={isDisabled}
+            onClick={async (signer) =>
+              handleSubmit(
+                async ({
+                  data: {
+                    cliffAmountEther,
+                    cliffPeriod,
+                    receiverAddress,
+                    startDate,
+                    superTokenAddress,
+                    totalAmountEther,
+                    vestingPeriod,
+                  },
+                }) => {
+                  const startDateTimestamp = getTimeInSeconds(startDate);
 
-                const cliffDateTimestamp =
-                  startDateTimestamp +
-                  cliffPeriod.numerator * cliffPeriod.denominator;
+                  const cliffDateTimestamp =
+                    startDateTimestamp +
+                    cliffPeriod.numerator * cliffPeriod.denominator;
 
-                const endDateTimestamp =
-                  startDateTimestamp +
-                  vestingPeriod.numerator * vestingPeriod.denominator;
+                  const endDateTimestamp =
+                    startDateTimestamp +
+                    vestingPeriod.numerator * vestingPeriod.denominator;
 
-                const timeToFlow = endDateTimestamp - cliffDateTimestamp;
+                  const timeToFlow = endDateTimestamp - cliffDateTimestamp;
 
-                const cliffTransferAmount = parseEtherOrZero(cliffAmountEther);
-                const totalAmount = parseEtherOrZero(totalAmountEther);
-                const streamedAmount = totalAmount.sub(cliffTransferAmount);
-                const flowRate = BigNumber.from(streamedAmount).div(timeToFlow);
+                  const cliffTransferAmount =
+                    parseEtherOrZero(cliffAmountEther);
+                  const totalAmount = parseEtherOrZero(totalAmountEther);
+                  const streamedAmount = totalAmount.sub(cliffTransferAmount);
+                  const flowRate =
+                    BigNumber.from(streamedAmount).div(timeToFlow);
 
-                setView(CreateVestingCardView.PreviewApproving);
-                createVestingSchedule({
-                  chainId: network.id,
-                  signer,
-                  superTokenAddress,
-                  receiverAddress,
-                  senderAddress: await signer.getAddress(),
-                  startDateTimestamp,
-                  cliffDateTimestamp,
-                  endDateTimestamp,
-                  flowRateWei: flowRate.toString(),
-                  cliffTransferAmountWei: cliffTransferAmount.toString(),
-                  overrides: await getOverrides(),
-                  transactionExtraData: undefined,
-                  waitForConfirmation: false,
-                })
-                  .unwrap()
-                  .then(() => setView(CreateVestingCardView.Success))
-                  .catch(() => setView(CreateVestingCardView.Preview));
-              }
-            )()
-          }
-        >
-          Create
-        </TransactionButton>
-      )}
+                  setView(CreateVestingCardView.Approving);
+                  createVestingSchedule({
+                    chainId: network.id,
+                    signer,
+                    superTokenAddress,
+                    receiverAddress,
+                    senderAddress: await signer.getAddress(),
+                    startDateTimestamp,
+                    cliffDateTimestamp,
+                    endDateTimestamp,
+                    flowRateWei: flowRate.toString(),
+                    cliffTransferAmountWei: cliffTransferAmount.toString(),
+                    overrides: await getOverrides(),
+                    transactionExtraData: undefined,
+                    waitForConfirmation: false,
+                  })
+                    .unwrap()
+                    .then(() => setView(CreateVestingCardView.Success))
+                    .catch(() => setView(CreateVestingCardView.Preview));
+                }
+              )()
+            }
+          >
+            Create
+          </TransactionButton>
+        )
+      }
     </TransactionBoundary>
   );
 };
