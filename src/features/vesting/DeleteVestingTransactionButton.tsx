@@ -1,6 +1,5 @@
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
-import { useFormContext } from "react-hook-form";
 import { rpcApi } from "../redux/store";
 import { useConnectionBoundary } from "../transactionBoundary/ConnectionBoundary";
 import {
@@ -12,39 +11,42 @@ import {
   TransactionButtonProps,
 } from "../transactionBoundary/TransactionButton";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import { PartialVestingForm } from "./CreateVestingFormProvider";
 
 export const DeleteVestingTransactionButton: FC<{
+  superTokenAddress: string;
+  senderAddress: string;
+  receiverAddress: string;
   TransactionBoundaryProps?: TransactionBoundaryProps;
   TransactionButtonProps?: TransactionButtonProps;
-}> = ({ TransactionBoundaryProps, TransactionButtonProps }) => {
+}> = ({
+  superTokenAddress,
+  senderAddress,
+  receiverAddress,
+  TransactionBoundaryProps,
+  TransactionButtonProps,
+}) => {
   const [deleteVestingSchedule, deleteVestingScheduleResult] =
     rpcApi.useDeleteVestingScheduleMutation();
 
-  const { watch } = useFormContext<PartialVestingForm>(); // TODO(KK): Scope down.
-  const [superTokenAddress, receiverAddress] = watch([
-    "data.superTokenAddress",
-    "data.receiverAddress",
-  ]);
-
   const { expectedNetwork: network } = useConnectionBoundary();
-  const { visibleAddress: senderAddress } = useVisibleAddress();
 
-  const isQueryable = senderAddress && superTokenAddress && receiverAddress;
+  const { visibleAddress } = useVisibleAddress();
+  const isSender =
+    senderAddress.toLowerCase() === visibleAddress?.toLowerCase();
 
   const { currentData: existingVestingSchedule } =
     rpcApi.useGetVestingScheduleQuery(
-      isQueryable
+      isSender
         ? {
             chainId: network.id,
-            superTokenAddress,
-            receiverAddress,
-            senderAddress,
+            superTokenAddress: superTokenAddress,
+            receiverAddress: receiverAddress,
+            senderAddress: senderAddress,
           }
         : skipToken
     );
 
-  const isVisible = !!existingVestingSchedule && isQueryable;
+  const isVisible = !!existingVestingSchedule;
 
   return (
     <TransactionBoundary

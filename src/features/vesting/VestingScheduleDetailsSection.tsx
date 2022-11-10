@@ -13,6 +13,8 @@ import { formatEther } from "ethers/lib/utils";
 import { TokenChip } from "./TokenChip";
 import { PageLoader } from "./PageLoader";
 import { getTimeInSeconds } from "../../utils/dateUtils";
+import { DeleteVestingTransactionButton } from "./DeleteVestingTransactionButton";
+import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 
 export const VestingScheduleDetails: FC<{
   network: Network;
@@ -39,8 +41,13 @@ export const VestingScheduleDetails: FC<{
     return <Page404 />;
   }
 
-  const { cliffAmount, receiver, sender, superToken, flowRate } =
-    vestingSchedule;
+  const {
+    cliffAmount,
+    receiver: receiverAddress,
+    sender: senderAddress,
+    superToken: superTokenAddress,
+    flowRate,
+  } = vestingSchedule;
   const cliffDate = new Date(Number(vestingSchedule.cliffDate) * 1000);
   const startDate = new Date(Number(vestingSchedule.startDate) * 1000);
   const endDate = new Date(Number(vestingSchedule.endDate) * 1000);
@@ -68,7 +75,7 @@ export const VestingScheduleDetails: FC<{
         <Typography color="text.secondary">
           {VestingFormLabels.Receiver}
         </Typography>
-        <AccountChip address={receiver}></AccountChip>
+        <AccountChip address={receiverAddress}></AccountChip>
       </Stack>
 
       <Stack>
@@ -121,6 +128,15 @@ export const VestingScheduleDetails: FC<{
         <Typography color="text.primary">
           {totalAmountEther} {token.symbol}
         </Typography>
+      </Stack>
+      <Stack>
+        <ConnectionBoundary expectedNetwork={network}>
+          <DeleteVestingTransactionButton
+            superTokenAddress={superTokenAddress}
+            senderAddress={senderAddress}
+            receiverAddress={receiverAddress}
+          />
+        </ConnectionBoundary>
       </Stack>
     </>
   );

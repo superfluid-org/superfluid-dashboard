@@ -69,6 +69,12 @@ export const vestingSchedulerEndpoints = {
       RpcVestingSchedule | null,
       GetVestingSchedule
     >({
+      providesTags: (_result, _error, arg) => [
+        {
+          type: "GENERAL",
+          id: arg.chainId.toString(),
+        },
+      ],
       queryFn: async ({
         chainId,
         superTokenAddress,
@@ -82,9 +88,9 @@ export const vestingSchedulerEndpoints = {
         );
 
         const rawVestingSchedule = await vestingScheduler.getVestingSchedule(
+          superTokenAddress,
           senderAddress,
-          receiverAddress,
-          superTokenAddress
+          receiverAddress
         );
 
         const mappedVestingSchedule =
@@ -120,8 +126,8 @@ export const vestingSchedulerEndpoints = {
 
         const transactionResponse =
           await vestingScheduler.deleteVestingSchedule(
-            receiverAddress,
             superTokenAddress,
+            receiverAddress,
             [],
             overrides
           );

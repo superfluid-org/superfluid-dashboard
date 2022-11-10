@@ -461,7 +461,6 @@ export const CreateVestingForm: FC<{
 
       <Stack gap={1}>
         {PreviewVestingScheduleButton}
-        <DeleteVestingTransactionButton />
       </Stack>
     </Stack>
   );
