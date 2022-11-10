@@ -884,8 +884,11 @@ export enum VestingEndExecutedEvent_OrderBy {
 export type VestingSchedule = {
   __typename?: 'VestingSchedule';
   cliffAmount: Scalars['BigInt'];
+  cliffAndFlowExecutedAt?: Maybe<Scalars['BigInt']>;
   cliffDate: Scalars['BigInt'];
+  deletedAt?: Maybe<Scalars['BigInt']>;
   endDate: Scalars['BigInt'];
+  endExecutedAt?: Maybe<Scalars['BigInt']>;
   flowRate: Scalars['BigInt'];
   id: Scalars['String'];
   receiver: Scalars['Bytes'];
@@ -1380,6 +1383,14 @@ export type VestingSchedule_Filter = {
   cliffAmount_lte?: InputMaybe<Scalars['BigInt']>;
   cliffAmount_not?: InputMaybe<Scalars['BigInt']>;
   cliffAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  cliffAndFlowExecutedAt?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowExecutedAt_gt?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowExecutedAt_gte?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowExecutedAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  cliffAndFlowExecutedAt_lt?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowExecutedAt_lte?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowExecutedAt_not?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowExecutedAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   cliffDate?: InputMaybe<Scalars['BigInt']>;
   cliffDate_gt?: InputMaybe<Scalars['BigInt']>;
   cliffDate_gte?: InputMaybe<Scalars['BigInt']>;
@@ -1388,6 +1399,14 @@ export type VestingSchedule_Filter = {
   cliffDate_lte?: InputMaybe<Scalars['BigInt']>;
   cliffDate_not?: InputMaybe<Scalars['BigInt']>;
   cliffDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  deletedAt?: InputMaybe<Scalars['BigInt']>;
+  deletedAt_gt?: InputMaybe<Scalars['BigInt']>;
+  deletedAt_gte?: InputMaybe<Scalars['BigInt']>;
+  deletedAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  deletedAt_lt?: InputMaybe<Scalars['BigInt']>;
+  deletedAt_lte?: InputMaybe<Scalars['BigInt']>;
+  deletedAt_not?: InputMaybe<Scalars['BigInt']>;
+  deletedAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   endDate?: InputMaybe<Scalars['BigInt']>;
   endDate_gt?: InputMaybe<Scalars['BigInt']>;
   endDate_gte?: InputMaybe<Scalars['BigInt']>;
@@ -1396,6 +1415,14 @@ export type VestingSchedule_Filter = {
   endDate_lte?: InputMaybe<Scalars['BigInt']>;
   endDate_not?: InputMaybe<Scalars['BigInt']>;
   endDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  endExecutedAt?: InputMaybe<Scalars['BigInt']>;
+  endExecutedAt_gt?: InputMaybe<Scalars['BigInt']>;
+  endExecutedAt_gte?: InputMaybe<Scalars['BigInt']>;
+  endExecutedAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  endExecutedAt_lt?: InputMaybe<Scalars['BigInt']>;
+  endExecutedAt_lte?: InputMaybe<Scalars['BigInt']>;
+  endExecutedAt_not?: InputMaybe<Scalars['BigInt']>;
+  endExecutedAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   flowRate?: InputMaybe<Scalars['BigInt']>;
   flowRate_gt?: InputMaybe<Scalars['BigInt']>;
   flowRate_gte?: InputMaybe<Scalars['BigInt']>;
@@ -1454,8 +1481,11 @@ export type VestingSchedule_Filter = {
 
 export enum VestingSchedule_OrderBy {
   CliffAmount = 'cliffAmount',
+  CliffAndFlowExecutedAt = 'cliffAndFlowExecutedAt',
   CliffDate = 'cliffDate',
+  DeletedAt = 'deletedAt',
   EndDate = 'endDate',
+  EndExecutedAt = 'endExecutedAt',
   FlowRate = 'flowRate',
   Id = 'id',
   Receiver = 'receiver',

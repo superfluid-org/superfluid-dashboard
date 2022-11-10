@@ -1257,6 +1257,9 @@ type VestingSchedule {
   cliffDate: BigInt!
   cliffAmount: BigInt!
   flowRate: BigInt!
+  deletedAt: BigInt
+  cliffAndFlowExecutedAt: BigInt
+  endExecutedAt: BigInt
 }
 
 input VestingSchedule_filter {
@@ -1338,6 +1341,30 @@ input VestingSchedule_filter {
   flowRate_lte: BigInt
   flowRate_in: [BigInt!]
   flowRate_not_in: [BigInt!]
+  deletedAt: BigInt
+  deletedAt_not: BigInt
+  deletedAt_gt: BigInt
+  deletedAt_lt: BigInt
+  deletedAt_gte: BigInt
+  deletedAt_lte: BigInt
+  deletedAt_in: [BigInt!]
+  deletedAt_not_in: [BigInt!]
+  cliffAndFlowExecutedAt: BigInt
+  cliffAndFlowExecutedAt_not: BigInt
+  cliffAndFlowExecutedAt_gt: BigInt
+  cliffAndFlowExecutedAt_lt: BigInt
+  cliffAndFlowExecutedAt_gte: BigInt
+  cliffAndFlowExecutedAt_lte: BigInt
+  cliffAndFlowExecutedAt_in: [BigInt!]
+  cliffAndFlowExecutedAt_not_in: [BigInt!]
+  endExecutedAt: BigInt
+  endExecutedAt_not: BigInt
+  endExecutedAt_gt: BigInt
+  endExecutedAt_lt: BigInt
+  endExecutedAt_gte: BigInt
+  endExecutedAt_lte: BigInt
+  endExecutedAt_in: [BigInt!]
+  endExecutedAt_not_in: [BigInt!]
 
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
@@ -1353,6 +1380,9 @@ enum VestingSchedule_orderBy {
   cliffDate
   cliffAmount
   flowRate
+  deletedAt
+  cliffAndFlowExecutedAt
+  endExecutedAt
 }
 
 type VestingScheduleCreatedEvent implements Event {
