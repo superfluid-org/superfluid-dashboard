@@ -48,8 +48,9 @@ export interface CreateVestingSchedule extends BaseSuperTokenMutation {
   cliffTransferAmountWei: string;
 }
 
-interface DeleteVestingSchedule extends BaseSuperTokenMutation {
+export interface DeleteVestingSchedule extends BaseSuperTokenMutation {
   chainId: number;
+  senderAddress: string; // This will be discarded. It's used for getting the "signer" from other parts of Redux. TODO(KK): Handle with a better transaction response.
   receiverAddress: string;
 }
 

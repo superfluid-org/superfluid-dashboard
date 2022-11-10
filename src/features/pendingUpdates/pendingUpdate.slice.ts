@@ -7,6 +7,7 @@ import { PendingOutgoingStream } from "./PendingOutgoingStream";
 import { PendingStreamCancellation } from "./PendingStreamCancellation";
 import { PendingUpdate } from "./PendingUpdate";
 import { PendingVestingSchedule } from "./PendingVestingSchedule";
+import { PendingVestingScheduleDeletion as PendingVestingScheduleDelete } from "./PendingVestingScheduleDelete";
 
 const adapter = createEntityAdapter<PendingUpdate>({
   selectId: (x) => x.id,
@@ -166,7 +167,6 @@ export const pendingUpdateSlice = createSlice({
           endDateTimestamp,
           flowRateWei,
         } = action.meta.arg.originalArgs;
-        if (senderAddress) {
           const pendingUpdate: PendingVestingSchedule = {
             chainId,
             transactionHash,
@@ -183,7 +183,28 @@ export const pendingUpdateSlice = createSlice({
             flowRateWei,
           };
           adapter.addOne(state, pendingUpdate);
-        }
+      }
+    );
+    builder.addMatcher(
+      rpcApi.endpoints.deleteVestingSchedule.matchFulfilled,
+      (state, action) => {
+        const { chainId, hash: transactionHash } = action.payload;
+        const {
+          senderAddress,
+          superTokenAddress,
+          receiverAddress,
+        } = action.meta.arg.originalArgs;
+          const pendingUpdate: PendingVestingScheduleDelete = {
+            chainId,
+            transactionHash,
+            senderAddress,
+            receiverAddress,
+            id: transactionHash,
+            superTokenAddress,
+            pendingType: "VestingScheduleDelete",
+            timestamp: dateNowSeconds(),
+          };
+          adapter.addOne(state, pendingUpdate);
       }
     );
     builder.addMatcher(

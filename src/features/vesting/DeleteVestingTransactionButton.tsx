@@ -1,5 +1,6 @@
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
+import { useAddressPendingVestingScheduleDeletes } from "../pendingUpdates/PendingVestingScheduleDelete";
 import { rpcApi } from "../redux/store";
 import { useConnectionBoundary } from "../transactionBoundary/ConnectionBoundary";
 import {
@@ -46,7 +47,20 @@ export const DeleteVestingTransactionButton: FC<{
         : skipToken
     );
 
-  const isVisible = !!existingVestingSchedule;
+  const pendingDeletes = useAddressPendingVestingScheduleDeletes(senderAddress);
+  const isBeingDeleted = pendingDeletes.some(
+    (x) =>
+      x.chainId === network.id &&
+      x.superTokenAddress.toLowerCase() === superTokenAddress.toLowerCase() &&
+      x.senderAddress.toLowerCase() === senderAddress.toLowerCase() &&
+      x.receiverAddress.toLowerCase() === receiverAddress.toLowerCase()
+  );
+
+  console.log({
+    isBeingDeleted
+  })
+
+  const isButtonVisible = !!existingVestingSchedule && !isBeingDeleted;
 
   return (
     <TransactionBoundary
@@ -54,7 +68,7 @@ export const DeleteVestingTransactionButton: FC<{
       mutationResult={deleteVestingScheduleResult}
     >
       {({ getOverrides }) =>
-        isVisible && (
+        isButtonVisible && (
           <TransactionButton
             {...TransactionButtonProps}
             ButtonProps={{
@@ -65,8 +79,9 @@ export const DeleteVestingTransactionButton: FC<{
               deleteVestingSchedule({
                 signer,
                 chainId: network.id,
-                receiverAddress: receiverAddress,
                 superTokenAddress: superTokenAddress,
+                senderAddress: await signer.getAddress(),
+                receiverAddress: receiverAddress,
                 transactionExtraData: undefined,
                 overrides: await getOverrides(),
                 waitForConfirmation: false,
