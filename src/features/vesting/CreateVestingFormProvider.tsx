@@ -151,7 +151,7 @@ const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
           durationFromCliffAndFlowDateToEndDate < MIN_VESTING_DURATION_SECONDS
         ) {
           handleHigherOrderValidationError({
-            message: `The vesting end has to be at least ${MIN_VESTING_DURATION_DAYS} days from the start or the cliff.`,
+            message: `The vesting end date has to be at least ${MIN_VESTING_DURATION_DAYS} days from the start or the cliff.`,
           });
         }
 
