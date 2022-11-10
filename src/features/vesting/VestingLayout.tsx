@@ -6,7 +6,7 @@ export const VestingLayout: FC<PropsWithChildren> = ({ children }) => {
   const { network } = useExpectedNetwork();
 
   return (
-    <Container key={`${network.slugName}`} maxWidth="md">
+    <Container key={`${network.slugName}`} maxWidth="lg">
       <Box sx={{ mb: 5 }}>
         <Typography component="h1" variant="h4">
           Vesting

@@ -3,6 +3,8 @@ import { PendingUpdate } from "./PendingUpdate";
 import { pendingUpdateSelectors } from "./pendingUpdate.slice";
 import { useAppSelector } from "../redux/store";
 import { CreateVestingSchedule } from "../redux/endpoints/vestingSchedulerEndpoints";
+import { Address } from "@superfluid-finance/sdk-core";
+import { VestingSchedule } from "../../vesting-subgraph/schema.generated";
 
 export interface PendingVestingSchedule
   extends PendingUpdate,
@@ -43,4 +45,30 @@ export const useAddressPendingVestingSchedules = (
         : [],
     [address, allPendingUpdates]
   );
+};
+
+export const mapPendingToVestingSchedule = (
+  address: Address,
+  pendingVestingSchedule: PendingVestingSchedule
+): VestingSchedule => {
+  const {
+    cliffDateTimestamp,
+    cliffTransferAmountWei,
+    endDateTimestamp,
+    receiverAddress,
+    startDateTimestamp,
+    superTokenAddress,
+  } = pendingVestingSchedule;
+
+  return {
+    id: `${receiverAddress}-${superTokenAddress}-${startDateTimestamp}`,
+    cliffDate: cliffDateTimestamp.toString(),
+    cliffAmount: cliffTransferAmountWei,
+    endDate: endDateTimestamp.toString(),
+    flowRate: "0",
+    receiver: receiverAddress,
+    sender: address,
+    startDate: startDateTimestamp.toString(),
+    superToken: superTokenAddress,
+  };
 };

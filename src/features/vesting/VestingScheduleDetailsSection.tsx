@@ -36,8 +36,6 @@ export const VestingScheduleDetails: FC<{
 
   const token = tokenQuery.token;
 
-  console.log(vestingScheduleQuery, tokenQuery);
-
   if (vestingScheduleQuery.isLoading || !token) {
     return <PageLoader />;
   }

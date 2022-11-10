@@ -16,22 +16,19 @@ export const useVestingToken = (
         }
       : skipToken,
     {
-      selectFromResult: (result) => {
-        console.log("Token query result", result);
-        return {
-          ...result,
-          token: result.data
-            ? ({
-                ...result.data,
+      selectFromResult: (result) => ({
+        ...result,
+        token: result.data
+          ? ({
+              ...result.data,
+              address: result.data.id,
+              type: getSuperTokenType({
+                network,
                 address: result.data.id,
-                type: getSuperTokenType({
-                  network,
-                  address: result.data.id,
-                  underlyingAddress: result.data.underlyingAddress,
-                }),
-              } as VestingToken)
-            : undefined,
-        };
-      },
+                underlyingAddress: result.data.underlyingAddress,
+              }),
+            } as VestingToken)
+          : undefined,
+      }),
     }
   );
