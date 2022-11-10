@@ -7,6 +7,7 @@ export const client = new GraphQLClient(
 );
 
 export const api = createApi({
+  tagTypes: ["GENERAL", "SPECIFIC"], // TODO(KK): Make SDK be able to invalidate another slice!
   reducerPath: "superfluid_vesting",
   baseQuery: graphqlRequestBaseQuery({
     client,

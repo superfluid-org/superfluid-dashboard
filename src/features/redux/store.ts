@@ -1,4 +1,8 @@
-import { configureStore, Dispatch } from "@reduxjs/toolkit";
+import {
+  configureStore,
+  createListenerMiddleware,
+  Dispatch,
+} from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import {
   allRpcEndpoints,
@@ -109,6 +113,8 @@ const appSettingsPersistedReducer = persistReducer(
   appSettingsReducer
 );
 
+export const listenerMiddleware = createListenerMiddleware();
+
 export const reduxStore = configureStore({
   reducer: {
     // API slices
@@ -140,6 +146,7 @@ export const reduxStore = configureStore({
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER], // Ignore redux-persist actions: https://stackoverflow.com/a/62610422
       },
     })
+      .prepend(listenerMiddleware.middleware)
       .concat(rpcApi.middleware)
       .concat(subgraphApi.middleware)
       .concat(assetApiSlice.middleware)
@@ -148,7 +155,7 @@ export const reduxStore = configureStore({
       .concat(platformApi.middleware)
       .concat(faucetApi.middleware)
       .concat(tokenPriceApi.middleware)
-      .concat(vestingSubgraphApi.middleware)
+      .concat(vestingSubgraphApi.middleware),
 });
 
 export const reduxPersistor = persistStore(reduxStore);

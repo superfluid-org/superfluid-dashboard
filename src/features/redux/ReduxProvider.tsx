@@ -9,11 +9,17 @@ import { Provider } from "react-redux";
 import { useAccount, useSigner } from "wagmi";
 import { parseV1AddressBookEntries } from "../../utils/addressBookUtils";
 import { parseV1CustomTokens } from "../../utils/customTokenUtils";
+import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
 import { addAddressBookEntries } from "../addressBook/addressBook.slice";
 import { addCustomTokens } from "../customTokens/customTokens.slice";
 import { networks } from "../network/networks";
 import readOnlyFrameworks from "../network/readOnlyFrameworks";
-import { reduxStore, useAppDispatch } from "./store";
+import {
+  listenerMiddleware,
+  reduxStore,
+  subgraphApi,
+  useAppDispatch,
+} from "./store";
 
 const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
   const { connector: activeConnector } = useAccount();
@@ -102,6 +108,19 @@ const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
       });
     }
   }, [signer]);
+
+  // # Cache invalidation for vesting:
+  // TO DO(KK): Find a better place for this. This is also not a perfect solution because it assumes 2 subgraphs are about it sync... A change should be made to SDK to handle this better.
+  useEffect(
+    () =>
+      listenerMiddleware.startListening({
+        actionCreator: subgraphApi.util.invalidateTags,
+        effect: ({ payload }) => {
+          dispatch(vestingSubgraphApi.util.invalidateTags([""]));
+        },
+      }),
+    []
+  );
 
   return <>{children}</>;
 };
