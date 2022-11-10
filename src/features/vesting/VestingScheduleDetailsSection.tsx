@@ -1,20 +1,24 @@
-import { FC } from "react";
-import { useGetVestingScheduleQuery } from "../../vesting-subgraph/getVestingSchedule.generated";
-import Page404 from "../../pages/404";
-import { Network } from "../network/networks";
-import { VestingScheduleGraph } from "./VestingScheduleGraph";
-import { BigNumber } from "ethers";
-import { CircularProgress, Stack, Typography } from "@mui/material";
-import { useVestingToken } from "./useVestingToken";
-import { VestingFormLabels } from "./CreateVestingForm";
-import { AccountChip } from "./AccountChip";
+import { Box, Stack, Typography } from "@mui/material";
 import format from "date-fns/fp/format";
+import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils";
-import { TokenChip } from "./TokenChip";
-import { PageLoader } from "./PageLoader";
+import { FC } from "react";
+import AddressName from "../../components/AddressName/AddressName";
+import AddressAvatar from "../../components/Avatar/AddressAvatar";
+import Page404 from "../../pages/404";
+import config from "../../utils/config";
 import { getTimeInSeconds } from "../../utils/dateUtils";
+import { parseEtherOrZero } from "../../utils/tokenUtils";
+import { useGetVestingScheduleQuery } from "../../vesting-subgraph/getVestingSchedule.generated";
+import { Network } from "../network/networks";
+import SharingSection from "../socialSharing/SharingSection";
+import TokenIcon from "../token/TokenIcon";
+import { VestingFormLabels } from "./CreateVestingForm";
+import { PageLoader } from "./PageLoader";
 import { DeleteVestingTransactionButton } from "./DeleteVestingTransactionButton";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
+import { useVestingToken } from "./useVestingToken";
+import { VestingScheduleGraph } from "./VestingScheduleGraph";
 
 export const VestingScheduleDetails: FC<{
   network: Network;
@@ -29,7 +33,10 @@ export const VestingScheduleDetails: FC<{
     network,
     vestingScheduleQuery?.data?.vestingSchedule?.superToken
   );
+
   const token = tokenQuery.token;
+
+  console.log(vestingScheduleQuery, tokenQuery);
 
   if (vestingScheduleQuery.isLoading || !token) {
     return <PageLoader />;
@@ -62,74 +69,94 @@ export const VestingScheduleDetails: FC<{
   const cliffAmountEther = formatEther(cliffAmount);
   const totalAmountEther = formatEther(totalAmount);
 
+  const urlToShare = `${config.appUrl}/vesting/${network.slugName}/${id}`;
+
   return (
-    <>
-      <VestingScheduleGraph
-        cliffAmount={cliffAmount}
-        cliffDate={cliffDate}
-        endDate={endDate}
-        startDate={startDate}
-        totalAmount={totalAmount}
-      />
-      <Stack>
-        <Typography color="text.secondary">
-          {VestingFormLabels.Receiver}
-        </Typography>
-        <AccountChip address={receiverAddress}></AccountChip>
+    <Stack gap={3}>
+      <Box sx={{ my: 2 }}>
+        <VestingScheduleGraph
+          cliffAmount={cliffAmount}
+          cliffDate={cliffDate}
+          endDate={endDate}
+          startDate={startDate}
+          totalAmount={totalAmount}
+        />
+      </Box>
+
+      <Stack gap={2}>
+        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+          <Stack>
+            <Typography color="text.secondary">
+              {VestingFormLabels.Receiver}
+            </Typography>
+
+            <Stack direction="row" alignItems="center" gap={1.5}>
+              <AddressAvatar
+                address={receiverAddress}
+                AvatarProps={{
+                  sx: { width: "24px", height: "24px", borderRadius: "5px" },
+                }}
+                BlockiesProps={{ size: 8, scale: 3 }}
+              />
+              <Typography>
+                <AddressName address={receiverAddress} />
+              </Typography>
+            </Stack>
+          </Stack>
+          <Stack>
+            <Typography color="text.secondary">Start Date</Typography>
+            <Typography color="text.primary">
+              {format("LLLL d, yyyy", startDate)}
+            </Typography>
+          </Stack>
+        </Box>
+
+        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+          <Stack>
+            <Typography color="text.secondary">
+              {VestingFormLabels.CliffAmount}
+            </Typography>
+            <Stack direction="row" alignItems="center" gap={1}>
+              <TokenIcon isSuper tokenSymbol={token.symbol} size={28} />
+              <Typography>
+                {cliffAmountEther} {token.symbol}
+              </Typography>
+            </Stack>
+          </Stack>
+
+          <Stack>
+            <Typography color="text.secondary">
+              {VestingFormLabels.CliffPeriod}
+            </Typography>
+            <Typography color="text.primary">
+              {format("LLLL d, yyyy", cliffDate)}
+            </Typography>
+          </Stack>
+        </Box>
+
+        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+          <Stack>
+            <Typography color="text.secondary">
+              {VestingFormLabels.TotalVestedAmount}
+            </Typography>
+            <Stack direction="row" alignItems="center" gap={1}>
+              <TokenIcon isSuper tokenSymbol={token.symbol} size={28} />
+              <Typography>
+                {totalAmountEther} {token.symbol}
+              </Typography>
+            </Stack>
+          </Stack>
+
+          <Stack>
+            <Typography color="text.secondary">End Date</Typography>
+            <Typography color="text.primary">
+              {format("LLLL d, yyyy", endDate)}
+            </Typography>
+          </Stack>
+        </Box>
       </Stack>
 
-      <Stack>
-        <Typography color="text.secondary">
-          {VestingFormLabels.Token}
-        </Typography>
-        <TokenChip token={token} />
-      </Stack>
-
-      <Stack>
-        <Typography color="text.secondary">
-          {VestingFormLabels.VestingStartDate}
-        </Typography>
-        <Typography color="text.primary">
-          {format("LLLL d, yyyy", startDate)}
-        </Typography>
-      </Stack>
-
-      <Stack>
-        <Typography color="text.secondary">
-          {VestingFormLabels.CliffPeriod}
-        </Typography>
-        <Typography color="text.primary">
-          {format("LLLL d, yyyy", cliffDate)}
-        </Typography>
-      </Stack>
-
-      <Stack>
-        <Typography color="text.secondary">
-          {VestingFormLabels.CliffAmount}
-        </Typography>
-        <Typography color="text.primary">
-          {cliffAmountEther} {token.symbol}
-        </Typography>
-      </Stack>
-
-      <Stack>
-        <Typography color="text.secondary">
-          {VestingFormLabels.TotalVestingPeriod}
-        </Typography>
-        <Typography color="text.primary">
-          {format("LLLL d, yyyy", endDate)}
-        </Typography>
-      </Stack>
-
-      <Stack>
-        <Typography color="text.secondary">
-          {VestingFormLabels.TotalVestedAmount}
-        </Typography>
-        <Typography color="text.primary">
-          {totalAmountEther} {token.symbol}
-        </Typography>
-      </Stack>
-      <Stack>
+      <Stack gap={2} sx={{ mt: 2 }}>
         <ConnectionBoundary expectedNetwork={network}>
           <DeleteVestingTransactionButton
             superTokenAddress={superTokenAddress}
@@ -137,7 +164,14 @@ export const VestingScheduleDetails: FC<{
             receiverAddress={receiverAddress}
           />
         </ConnectionBoundary>
+
+        <SharingSection
+          url={urlToShare}
+          twitterText="Start vesting with Superfluid!"
+          telegramText="Start vesting with Superfluid!"
+          twitterHashtags="Superfluid,Vesting"
+        />
       </Stack>
-    </>
+    </Stack>
   );
 };
