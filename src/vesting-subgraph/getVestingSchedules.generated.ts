@@ -1,4 +1,5 @@
 import * as Types from "./schema.generated";
+import { VestingSchedule } from "./schema.generated";
 
 import { api } from "./vestingSubgraphApi";
 export type GetVestingSchedulesQueryVariables = Types.Exact<{
@@ -7,7 +8,7 @@ export type GetVestingSchedulesQueryVariables = Types.Exact<{
 
 export type GetVestingSchedulesQuery = {
   __typename?: "Query";
-  vestingSchedules: Array<Types.VestingSchedule>;
+  vestingSchedules: Array<VestingSchedule>;
 };
 
 export const GetVestingSchedulesDocument = `

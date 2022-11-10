@@ -1,6 +1,4 @@
 import {
-  CircularProgress,
-  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -9,17 +7,14 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC, useMemo } from "react";
+import { useGetVestingSchedulesQuery } from "../../vesting-subgraph/getVestingSchedules.generated";
+import { networkDefinition } from "../network/networks";
 import {
   mapPendingToVestingSchedule,
   useAddressPendingVestingSchedules,
 } from "../pendingUpdates/PendingVestingSchedule";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import { useGetVestingSchedulesQuery } from "../../vesting-subgraph/getVestingSchedules.generated";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import NextLink from "next/link";
-import { AccountChip } from "./AccountChip";
 import VestingRow from "./VestingRow";
-import { networkDefinition, networks } from "../network/networks";
 
 export const SentVestingScheduleTable: FC = () => {
   const { visibleAddress } = useVisibleAddress();
@@ -57,7 +52,7 @@ export const SentVestingScheduleTable: FC = () => {
     <Table>
       <TableHead>
         <TableRow>
-          <TableCell sx={{ ml: 8.5 }}>Receiver</TableCell>
+          <TableCell sx={{ pl: 8.5 }}>Receiver</TableCell>
           <TableCell>Total vesting</TableCell>
           <TableCell>Cliff</TableCell>
           <TableCell>Start / End</TableCell>
