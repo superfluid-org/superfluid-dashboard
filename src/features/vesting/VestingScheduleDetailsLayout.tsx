@@ -1,13 +1,22 @@
-import { FC, PropsWithChildren } from "react";
-import { Box, Card, IconButton, Stack, Typography } from "@mui/material";
-import { useRouter } from "next/router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { VestingLayout } from "./VestingLayout";
+import {
+  Box,
+  Card,
+  Container,
+  IconButton,
+  Stack,
+  Typography,
+  useTheme
+} from "@mui/material";
+import { useRouter } from "next/router";
+import { FC, PropsWithChildren } from "react";
 
 export const VestingScheduleDetailsLayout: FC<PropsWithChildren> = ({
   children,
 }) => {
   const router = useRouter();
+  const theme = useTheme();
+
   const BackButton = (
     <Box>
       <IconButton
@@ -21,22 +30,48 @@ export const VestingScheduleDetailsLayout: FC<PropsWithChildren> = ({
   );
 
   return (
-    <VestingLayout>
-      <Card>
-        <Stack
-          direction="row"
-          justifyContent="start"
-          alignItems="center"
-          gap={2}
-          sx={{ mb: 5 }}
+    <Container maxWidth="md">
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          [theme.breakpoints.up("md")]: {
+            my: 4,
+          },
+        }}
+      >
+        <Card
+          elevation={1}
+          sx={{
+            maxWidth: "600px",
+            width: "100%",
+            position: "relative",
+            [theme.breakpoints.down("md")]: {
+              boxShadow: "none",
+              backgroundImage: "none",
+              borderRadius: 0,
+              border: 0,
+              p: 0,
+            },
+          }}
         >
-          {BackButton}
-          <Typography component="h2" variant="h5">
-            Vesting Schedule Details
-          </Typography>
-        </Stack>
-        {children}
-      </Card>
-    </VestingLayout>
+          <Stack
+            direction="row"
+            justifyContent="start"
+            alignItems="center"
+            gap={2}
+            sx={{ mb: 5 }}
+          >
+            {BackButton}
+            <Typography component="h2" variant="h5">
+              Vesting Schedule Details
+            </Typography>
+          </Stack>
+          {children}
+        </Card>
+      </Box>
+    </Container>
   );
 };
