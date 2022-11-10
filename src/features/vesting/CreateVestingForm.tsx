@@ -357,58 +357,9 @@ export const CreateVestingForm: FC<{
   );
 
   return (
-    <Stack component={"form"} gap={3}>
-      {ValidationSummary}
-
-      <FormGroup>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <FormLabel>{VestingFormLabels.Receiver}</FormLabel>
-          <TooltipIcon title="Must not be an exchange address" />
-        </Stack>
-        {ReceiverController}
-      </FormGroup>
-
-      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
-        <FormGroup>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <FormLabel>{VestingFormLabels.Token}</FormLabel>
-            <TooltipIcon title="TODO:" />
-          </Stack>
-          {TokenController}
-        </FormGroup>
-        <FormGroup>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <FormLabel>{VestingFormLabels.VestingStartDate}</FormLabel>
-            <TooltipIcon title="The date when stream scheduler tries to cancel the stream." />
-          </Stack>
-          {StartDateController}
-        </FormGroup>
-      </Box>
-
-      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
-        <FormGroup>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <FormLabel>{VestingFormLabels.CliffAmount}</FormLabel>
-            <TooltipIcon title="TODO:" />
-          </Stack>
-          {CliffAmountController}
-        </FormGroup>
+    <Stack component={"form"} gap={4}>
+      <Stack gap={2.5}>
+        {ValidationSummary}
 
         <FormGroup>
           <Stack
@@ -416,38 +367,89 @@ export const CreateVestingForm: FC<{
             alignItems="center"
             justifyContent="space-between"
           >
-            <FormLabel>{VestingFormLabels.CliffPeriod}</FormLabel>
-            <TooltipIcon title="TODO:" />
+            <FormLabel>{VestingFormLabels.Receiver}</FormLabel>
+            <TooltipIcon title="Must not be an exchange address" />
           </Stack>
-          {CliffPeriodController}
-        </FormGroup>
-      </Box>
-
-      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
-        <FormGroup>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <FormLabel>{VestingFormLabels.TotalVestedAmount}</FormLabel>
-            <TooltipIcon title="TODO:" />
-          </Stack>
-          {VestingAmountController}
+          {ReceiverController}
         </FormGroup>
 
-        <FormGroup>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <FormLabel>{VestingFormLabels.TotalVestingPeriod}</FormLabel>
-            <TooltipIcon title="TODO:" />
-          </Stack>
-          {VestingPeriodController}
-        </FormGroup>
-      </Box>
+        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+          <FormGroup>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <FormLabel>{VestingFormLabels.Token}</FormLabel>
+              <TooltipIcon title="TODO:" />
+            </Stack>
+            {TokenController}
+          </FormGroup>
+          <FormGroup>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <FormLabel>{VestingFormLabels.VestingStartDate}</FormLabel>
+              <TooltipIcon title="The date when stream scheduler tries to cancel the stream." />
+            </Stack>
+            {StartDateController}
+          </FormGroup>
+        </Box>
+
+        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+          <FormGroup>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <FormLabel>{VestingFormLabels.CliffAmount}</FormLabel>
+              <TooltipIcon title="TODO:" />
+            </Stack>
+            {CliffAmountController}
+          </FormGroup>
+
+          <FormGroup>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <FormLabel>{VestingFormLabels.CliffPeriod}</FormLabel>
+              <TooltipIcon title="TODO:" />
+            </Stack>
+            {CliffPeriodController}
+          </FormGroup>
+        </Box>
+
+        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+          <FormGroup>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <FormLabel>{VestingFormLabels.TotalVestedAmount}</FormLabel>
+              <TooltipIcon title="TODO:" />
+            </Stack>
+            {VestingAmountController}
+          </FormGroup>
+
+          <FormGroup>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <FormLabel>{VestingFormLabels.TotalVestingPeriod}</FormLabel>
+              <TooltipIcon title="TODO:" />
+            </Stack>
+            {VestingPeriodController}
+          </FormGroup>
+        </Box>
+      </Stack>
 
       <Stack gap={1}>
         {PreviewVestingScheduleButton}

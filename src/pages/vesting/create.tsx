@@ -1,4 +1,4 @@
-import { Box, Card, useTheme } from "@mui/material";
+import { Box, Card, Container, useTheme } from "@mui/material";
 import { ReactElement } from "react";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import NetworkBadge from "../../features/network/NetworkBadge";
@@ -13,54 +13,52 @@ const CreateVestingSchedulePage: NextPageWithLayout = () => {
   const { network } = useExpectedNetwork();
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        [theme.breakpoints.up("md")]: {
-          my: 4,
-        },
-      }}
-    >
-      <Card
-        elevation={1}
+    <Container key={`${network.slugName}`} maxWidth="md">
+      <Box
         sx={{
-          maxWidth: "600px",
-          width: "100%",
-          position: "relative",
-          [theme.breakpoints.down("md")]: {
-            boxShadow: "none",
-            backgroundImage: "none",
-            borderRadius: 0,
-            border: 0,
-            p: 0,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          [theme.breakpoints.up("md")]: {
+            my: 4,
           },
         }}
       >
-        <NetworkBadge
-          network={network}
-          sx={{ position: "absolute", top: 0, right: theme.spacing(3.5) }}
-          NetworkIconProps={{
-            size: 32,
-            fontSize: 18,
-            sx: { [theme.breakpoints.down("md")]: { borderRadius: 1 } },
+        <Card
+          elevation={1}
+          sx={{
+            maxWidth: "600px",
+            width: "100%",
+            position: "relative",
+            [theme.breakpoints.down("md")]: {
+              boxShadow: "none",
+              backgroundImage: "none",
+              borderRadius: 0,
+              border: 0,
+              p: 0,
+            },
           }}
-        />
+        >
+          <NetworkBadge
+            network={network}
+            sx={{ position: "absolute", top: 0, right: theme.spacing(3.5) }}
+            NetworkIconProps={{
+              size: 32,
+              fontSize: 18,
+              sx: { [theme.breakpoints.down("md")]: { borderRadius: 1 } },
+            }}
+          />
 
-        <ConnectionBoundary>
-          <CreateVestingFormProvider>
-            <CreateVestingSection />
-          </CreateVestingFormProvider>
-        </ConnectionBoundary>
-      </Card>
-    </Box>
+          <ConnectionBoundary>
+            <CreateVestingFormProvider>
+              <CreateVestingSection />
+            </CreateVestingFormProvider>
+          </ConnectionBoundary>
+        </Card>
+      </Box>
+    </Container>
   );
-};
-
-CreateVestingSchedulePage.getLayout = function getLayout(page: ReactElement) {
-  return <VestingLayout>{page}</VestingLayout>;
 };
 
 export default CreateVestingSchedulePage;
