@@ -69,7 +69,7 @@ const VestingRow: FC<VestingRowProps> = ({
             BlockiesProps={{ size: 8, scale: 3 }}
           />
           <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
-            <Typography data-cy={"sender-receiver-address"} variant="h7">
+            <Typography variant="h7">
               <AddressName address={isOutgoing ? receiver : sender} />
             </Typography>
           </AddressCopyTooltip>
