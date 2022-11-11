@@ -37,7 +37,7 @@ const VestingPage: NextPageWithLayout = () => {
 };
 
 VestingPage.getLayout = function getLayout(page: ReactElement) {
-  return <VestingLayout>{page}</VestingLayout>;
+  return <VestingLayout showSubtitle>{page}</VestingLayout>;
 };
 
 export default VestingPage;

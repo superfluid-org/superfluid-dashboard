@@ -2,14 +2,14 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {
   Box,
   Card,
-  Container,
   IconButton,
   Stack,
   Typography,
-  useTheme
+  useTheme,
 } from "@mui/material";
 import { useRouter } from "next/router";
 import { FC, PropsWithChildren } from "react";
+import { VestingLayout } from "./VestingLayout";
 
 export const VestingScheduleDetailsLayout: FC<PropsWithChildren> = ({
   children,
@@ -30,7 +30,7 @@ export const VestingScheduleDetailsLayout: FC<PropsWithChildren> = ({
   );
 
   return (
-    <Container maxWidth="md">
+    <VestingLayout>
       <Box
         sx={{
           display: "flex",
@@ -72,6 +72,6 @@ export const VestingScheduleDetailsLayout: FC<PropsWithChildren> = ({
           {children}
         </Card>
       </Box>
-    </Container>
+    </VestingLayout>
   );
 };

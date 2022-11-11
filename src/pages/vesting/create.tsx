@@ -61,4 +61,8 @@ const CreateVestingSchedulePage: NextPageWithLayout = () => {
   );
 };
 
+CreateVestingSchedulePage.getLayout = function getLayout(page: ReactElement) {
+  return <VestingLayout>{page}</VestingLayout>;
+};
+
 export default CreateVestingSchedulePage;

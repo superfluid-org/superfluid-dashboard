@@ -2,7 +2,11 @@ import { Box, Container, Typography } from "@mui/material";
 import { FC, PropsWithChildren } from "react";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 
-export const VestingLayout: FC<PropsWithChildren> = ({ children }) => {
+export const VestingLayout: FC<
+  PropsWithChildren<{
+    showSubtitle?: boolean;
+  }>
+> = ({ children, showSubtitle }) => {
   const { network } = useExpectedNetwork();
 
   return (
@@ -11,9 +15,11 @@ export const VestingLayout: FC<PropsWithChildren> = ({ children }) => {
         <Typography component="h1" variant="h4">
           Vesting
         </Typography>
-        <Typography variant="subtitle1">
-          You can now vest using Superfluid streams!
-        </Typography>
+        {showSubtitle && (
+          <Typography variant="subtitle1">
+            You can now vest using Superfluid streams!
+          </Typography>
+        )}
       </Box>
       {children}
     </Container>
