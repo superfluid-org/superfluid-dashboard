@@ -18,6 +18,7 @@ import { DeleteVestingTransactionButton } from "./DeleteVestingTransactionButton
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { useVestingToken } from "./useVestingToken";
 import { VestingScheduleGraph } from "./VestingScheduleGraph";
+import Amount from "../token/Amount";
 
 export const VestingScheduleDetails: FC<{
   network: Network;
@@ -142,7 +143,7 @@ export const VestingScheduleDetails: FC<{
             <Stack direction="row" alignItems="center" gap={1}>
               <TokenIcon isSuper tokenSymbol={token.symbol} size={28} />
               <Typography>
-                {totalAmountEther} {token.symbol}
+                <Amount wei={totalAmount} /> {token.symbol}
               </Typography>
             </Stack>
           </Stack>
