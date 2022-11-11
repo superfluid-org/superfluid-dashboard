@@ -1,6 +1,7 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import {
+  CircularProgress,
   ListItemText,
   Stack,
   TableCell,
@@ -15,6 +16,7 @@ import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import { VestingSchedule } from "../../vesting-subgraph/schema.generated";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { Network } from "../network/networks";
+import { PendingVestingSchedule } from "../pendingUpdates/PendingVestingSchedule";
 import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
@@ -22,7 +24,7 @@ import { useVestingToken } from "./useVestingToken";
 
 interface VestingRowProps {
   network: Network;
-  vestingSchedule: VestingSchedule;
+  vestingSchedule: VestingSchedule | PendingVestingSchedule;
   onClick?: () => void;
 }
 
@@ -31,6 +33,9 @@ const VestingRow: FC<VestingRowProps> = ({
   vestingSchedule,
   onClick,
 }) => {
+  // pendingType: "VestingScheduleCreate"
+  // pendingType: "VestingScheduleDelete"
+
   const {
     superToken,
     receiver,
@@ -40,7 +45,12 @@ const VestingRow: FC<VestingRowProps> = ({
     flowRate,
     endDate,
     startDate,
-  } = vestingSchedule;
+  } = vestingSchedule as VestingSchedule;
+
+  const pendingType = (vestingSchedule as PendingVestingSchedule).pendingType;
+  const isPendingAndWaitingForSubgraph = !!(
+    vestingSchedule as PendingVestingSchedule
+  ).hasTransactionSucceeded;
 
   const { visibleAddress } = useVisibleAddress();
 
@@ -105,12 +115,26 @@ const VestingRow: FC<VestingRowProps> = ({
           secondary={format(fromUnixTime(Number(cliffDate)), "LLL d, yyyy")}
         />
       </TableCell>
-      <TableCell>
+      <TableCell sx={{ pr: 2 }}>
         <ListItemText
           primary={format(fromUnixTime(Number(startDate)), "LLL d, yyyy")}
           secondary={format(fromUnixTime(Number(endDate)), "LLL d, yyyy")}
           primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
         />
+      </TableCell>
+      <TableCell sx={{ pl: 0, pr: 2 }}>
+        {pendingType && (
+          <Stack direction="row" alignItems="center" gap={1}>
+            <CircularProgress color="warning" size="16px" />
+            <Typography variant="caption" translate="yes">
+              {isPendingAndWaitingForSubgraph
+                ? "Syncing..."
+                : pendingType === "VestingScheduleCreate"
+                ? "Creating..."
+                : "Deleting..."}
+            </Typography>
+          </Stack>
+        )}
       </TableCell>
     </TableRow>
   );

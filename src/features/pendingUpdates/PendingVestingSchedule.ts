@@ -61,6 +61,7 @@ export const mapPendingToVestingSchedule = (
   } = pendingVestingSchedule;
 
   return {
+    ...pendingVestingSchedule,
     id: `${receiverAddress}-${superTokenAddress}-${startDateTimestamp}`,
     cliffDate: cliffDateTimestamp.toString(),
     cliffAmount: cliffTransferAmountWei,

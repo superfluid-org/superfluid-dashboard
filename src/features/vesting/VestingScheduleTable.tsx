@@ -34,7 +34,8 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
           <TableCell sx={{ pl: 8.5 }}>Receiver</TableCell>
           <TableCell>Total vesting</TableCell>
           <TableCell>Cliff</TableCell>
-          <TableCell>Start / End</TableCell>
+          <TableCell sx={{ pr: 2 }}>Start / End</TableCell>
+          <TableCell sx={{ pr: 2, pl: 0, width: 0 }}></TableCell>
         </TableRow>
       </TableHead>
       <TableBody>

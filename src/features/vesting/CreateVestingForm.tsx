@@ -373,25 +373,11 @@ export const CreateVestingForm: FC<{
 
         <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
           <FormGroup>
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-            >
-              <FormLabel>{VestingFormLabels.Token}</FormLabel>
-              <TooltipIcon title="TODO:" />
-            </Stack>
+            <FormLabel>{VestingFormLabels.Token}</FormLabel>
             {TokenController}
           </FormGroup>
           <FormGroup>
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-            >
-              <FormLabel>{VestingFormLabels.VestingStartDate}</FormLabel>
-              <TooltipIcon title="The date when stream scheduler tries to cancel the stream." />
-            </Stack>
+            <FormLabel>{VestingFormLabels.VestingStartDate}</FormLabel>
             {StartDateController}
           </FormGroup>
         </Box>
@@ -404,7 +390,7 @@ export const CreateVestingForm: FC<{
               justifyContent="space-between"
             >
               <FormLabel>{VestingFormLabels.CliffAmount}</FormLabel>
-              <TooltipIcon title="TODO:" />
+              <TooltipIcon title="Set the amount to be vested at the cliff" />
             </Stack>
             {CliffAmountController}
           </FormGroup>
@@ -416,7 +402,7 @@ export const CreateVestingForm: FC<{
               justifyContent="space-between"
             >
               <FormLabel>{VestingFormLabels.CliffPeriod}</FormLabel>
-              <TooltipIcon title="TODO:" />
+              <TooltipIcon title="Set the time until the cliff from the start date" />
             </Stack>
             {CliffPeriodController}
           </FormGroup>
@@ -430,7 +416,7 @@ export const CreateVestingForm: FC<{
               justifyContent="space-between"
             >
               <FormLabel>{VestingFormLabels.TotalVestedAmount}</FormLabel>
-              <TooltipIcon title="TODO:" />
+              <TooltipIcon title="Set the total amount to be vested" />
             </Stack>
             {VestingAmountController}
           </FormGroup>
@@ -442,16 +428,14 @@ export const CreateVestingForm: FC<{
               justifyContent="space-between"
             >
               <FormLabel>{VestingFormLabels.TotalVestingPeriod}</FormLabel>
-              <TooltipIcon title="TODO:" />
+              <TooltipIcon title="Set the total length of time for vesting" />
             </Stack>
             {VestingPeriodController}
           </FormGroup>
         </Box>
       </Stack>
 
-      <Stack gap={1}>
-        {PreviewVestingScheduleButton}
-      </Stack>
+      <Stack gap={1}>{PreviewVestingScheduleButton}</Stack>
     </Stack>
   );
 };
