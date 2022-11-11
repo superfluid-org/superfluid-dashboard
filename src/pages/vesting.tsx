@@ -17,19 +17,21 @@ const VestingPage: NextPageWithLayout = () => {
         </NextLink>
       </Box>
 
-      <Card sx={{ mb: 3 }}>
-        <Typography variant="h6" component="h2" sx={{ mb: 3 }}>
+      <Typography variant="h4">Sent Vesting Schedules</Typography>
+      <Card sx={{ mb: 3, p: 0 }}>
+        {/* <Typography variant="h6" component="h2" sx={{ mb: 3 }}>
           Sent Vesting Schedules
         </Typography>
-        <Divider />
+        <Divider /> */}
         <SentVestingScheduleTable />
       </Card>
 
-      <Card>
-        <Typography variant="h6" component="h2" sx={{ mb: 3 }}>
+      <Typography variant="h4">Received Vesting Schedules</Typography>
+      <Card sx={{ p: 0 }}>
+        {/* <Typography variant="h6" component="h2" sx={{ mb: 3 }}>
           Received Vesting Schedules
-        </Typography>
-        <Divider />
+        </Typography> */}
+        {/* <Divider /> */}
         <ReceivedVestingScheduleTable />
       </Card>
     </Stack>
@@ -37,7 +39,7 @@ const VestingPage: NextPageWithLayout = () => {
 };
 
 VestingPage.getLayout = function getLayout(page: ReactElement) {
-  return <VestingLayout>{page}</VestingLayout>;
+  return <VestingLayout showSubtitle>{page}</VestingLayout>;
 };
 
 export default VestingPage;
