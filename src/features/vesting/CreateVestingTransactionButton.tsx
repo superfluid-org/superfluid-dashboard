@@ -1,4 +1,5 @@
 import { BigNumber } from "ethers";
+import Link from "next/link";
 import { FC } from "react";
 import { useFormContext } from "react-hook-form";
 import { getTimeInSeconds } from "../../utils/dateUtils";
@@ -6,6 +7,10 @@ import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { rpcApi } from "../redux/store";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
+import {
+  TransactionDialogActions,
+  TransactionDialogButton,
+} from "../transactionBoundary/TransactionDialog";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { CreateVestingCardView } from "./CreateVestingSection";
 
@@ -20,7 +25,7 @@ export const CreateVestingTransactionButton: FC<{
 
   return (
     <TransactionBoundary mutationResult={createVestingScheduleResult}>
-      {({ network, getOverrides }) =>
+      {({ network, getOverrides, setDialogSuccessActions }) =>
         !createVestingScheduleResult.isSuccess && (
           <TransactionButton
             disabled={isDisabled}
@@ -75,11 +80,21 @@ export const CreateVestingTransactionButton: FC<{
                     .unwrap()
                     .then(() => setView(CreateVestingCardView.Success))
                     .catch(() => setView(CreateVestingCardView.Preview));
+
+                  setDialogSuccessActions(
+                    <TransactionDialogActions>
+                      <Link href="/vesting" passHref>
+                        <TransactionDialogButton color="primary">
+                          OK
+                        </TransactionDialogButton>
+                      </Link>
+                    </TransactionDialogActions>
+                  );
                 }
               )()
             }
           >
-            Create
+            Create the Vesting Schedule
           </TransactionButton>
         )
       }

@@ -11,7 +11,12 @@ import {
   TransactionButton,
   TransactionButtonProps,
 } from "../transactionBoundary/TransactionButton";
+import {
+  TransactionDialogActions,
+  TransactionDialogButton,
+} from "../transactionBoundary/TransactionDialog";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import Link from "next/link";
 
 export const DeleteVestingTransactionButton: FC<{
   superTokenAddress: string;
@@ -57,8 +62,8 @@ export const DeleteVestingTransactionButton: FC<{
   );
 
   console.log({
-    isBeingDeleted
-  })
+    isBeingDeleted,
+  });
 
   const isButtonVisible = !!existingVestingSchedule && !isBeingDeleted;
 
@@ -67,7 +72,7 @@ export const DeleteVestingTransactionButton: FC<{
       {...TransactionBoundaryProps}
       mutationResult={deleteVestingScheduleResult}
     >
-      {({ getOverrides }) =>
+      {({ getOverrides, setDialogSuccessActions }) =>
         isButtonVisible && (
           <TransactionButton
             {...TransactionButtonProps}
@@ -86,6 +91,16 @@ export const DeleteVestingTransactionButton: FC<{
                 overrides: await getOverrides(),
                 waitForConfirmation: false,
               });
+
+              setDialogSuccessActions(
+                <TransactionDialogActions>
+                  <Link href="/vesting" passHref>
+                    <TransactionDialogButton color="primary">
+                      OK
+                    </TransactionDialogButton>
+                  </Link>
+                </TransactionDialogActions>
+              );
             }}
           >
             Delete Vesting Schedule
