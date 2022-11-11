@@ -6,6 +6,7 @@ import {
   TableRow,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { useRouter } from "next/router";
 import { FC, useMemo } from "react";
 import { useGetVestingSchedulesQuery } from "../../vesting-subgraph/getVestingSchedules.generated";
 import { networkDefinition } from "../network/networks";
@@ -18,6 +19,7 @@ import VestingRow from "./VestingRow";
 
 export const SentVestingScheduleTable: FC = () => {
   const { visibleAddress } = useVisibleAddress();
+  const router = useRouter();
   const network = networkDefinition.goerli;
 
   // TODO(KK): Not really vesting schedules, just creation events.
@@ -48,6 +50,9 @@ export const SentVestingScheduleTable: FC = () => {
     [pendingVestingSchedules, visibleAddress]
   );
 
+  const openDetails = (id: string) => () =>
+    router.push(`/vesting/${network.slugName}/${id}`);
+
   return (
     <Table>
       <TableHead>
@@ -71,6 +76,7 @@ export const SentVestingScheduleTable: FC = () => {
             key={vestingSchedule.id}
             network={network}
             vestingSchedule={vestingSchedule}
+            onClick={openDetails(vestingSchedule.id)}
           />
         ))}
       </TableBody>

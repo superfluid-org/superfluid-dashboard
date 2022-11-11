@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import { format, fromUnixTime } from "date-fns";
 import { BigNumber } from "ethers";
-import { useRouter } from "next/router";
 import { FC, useMemo } from "react";
 import AddressName from "../../components/AddressName/AddressName";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
@@ -24,11 +23,15 @@ import { useVestingToken } from "./useVestingToken";
 interface VestingRowProps {
   network: Network;
   vestingSchedule: VestingSchedule;
+  onClick?: () => void;
 }
 
-const VestingRow: FC<VestingRowProps> = ({ network, vestingSchedule }) => {
+const VestingRow: FC<VestingRowProps> = ({
+  network,
+  vestingSchedule,
+  onClick,
+}) => {
   const {
-    id,
     superToken,
     receiver,
     sender,
@@ -39,12 +42,9 @@ const VestingRow: FC<VestingRowProps> = ({ network, vestingSchedule }) => {
     startDate,
   } = vestingSchedule;
 
-  const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
 
   const tokenQuery = useVestingToken(network, superToken);
-
-  const openDetails = () => router.push(`/vesting/goerli/${id}`);
 
   const totalAmount = useMemo(() => {
     return BigNumber.from(endDate)
@@ -57,7 +57,7 @@ const VestingRow: FC<VestingRowProps> = ({ network, vestingSchedule }) => {
   const isOutgoing = sender.toLowerCase() === visibleAddress?.toLowerCase();
 
   return (
-    <TableRow hover onClick={openDetails}>
+    <TableRow hover={!!onClick} onClick={onClick}>
       <TableCell>
         <Stack direction="row" alignItems="center" gap={1.5}>
           {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
