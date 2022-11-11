@@ -13,7 +13,6 @@ const VestingPage: NextPageWithLayout = () => {
       <Card sx={{ mb: 3, p: 0 }}>
         <SentVestingScheduleTable />
       </Card>
-
       <Typography variant="h6">Received Vesting Schedules</Typography>
       <Card sx={{ p: 0 }}>
         <ReceivedVestingScheduleTable />

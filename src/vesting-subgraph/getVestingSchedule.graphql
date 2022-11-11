@@ -9,5 +9,8 @@ query getVestingSchedule($id: ID!) {
     sender
     startDate
     superToken
+    endExecutedAt
+    deletedAt
+    cliffAndFlowExecutedAt
   }
 }

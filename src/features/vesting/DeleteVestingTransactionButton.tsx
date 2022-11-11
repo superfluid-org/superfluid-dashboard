@@ -61,10 +61,6 @@ export const DeleteVestingTransactionButton: FC<{
       x.receiverAddress.toLowerCase() === receiverAddress.toLowerCase()
   );
 
-  console.log({
-    isBeingDeleted,
-  });
-
   const isButtonVisible = !!existingVestingSchedule && !isBeingDeleted;
 
   return (

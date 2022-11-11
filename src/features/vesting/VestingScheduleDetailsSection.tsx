@@ -8,7 +8,6 @@ import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import Page404 from "../../pages/404";
 import config from "../../utils/config";
 import { getTimeInSeconds } from "../../utils/dateUtils";
-import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { useGetVestingScheduleQuery } from "../../vesting-subgraph/getVestingSchedule.generated";
 import { Network } from "../network/networks";
 import SharingSection from "../socialSharing/SharingSection";
@@ -52,10 +51,13 @@ export const VestingScheduleDetails: FC<{
     sender: senderAddress,
     superToken: superTokenAddress,
     flowRate,
+    deletedAt,
+    endExecutedAt,
   } = vestingSchedule;
   const cliffDate = new Date(Number(vestingSchedule.cliffDate) * 1000);
   const startDate = new Date(Number(vestingSchedule.startDate) * 1000);
   const endDate = new Date(Number(vestingSchedule.endDate) * 1000);
+  const canDelete = !deletedAt && !endExecutedAt;
 
   // TODO(KK): get this to Subgraph
   const cliffAndFlowDate = cliffDate ? startDate : cliffDate;
@@ -155,13 +157,15 @@ export const VestingScheduleDetails: FC<{
       </Stack>
 
       <Stack gap={2} sx={{ mt: 2 }}>
-        <ConnectionBoundary expectedNetwork={network}>
-          <DeleteVestingTransactionButton
-            superTokenAddress={superTokenAddress}
-            senderAddress={senderAddress}
-            receiverAddress={receiverAddress}
-          />
-        </ConnectionBoundary>
+        {canDelete && (
+          <ConnectionBoundary expectedNetwork={network}>
+            <DeleteVestingTransactionButton
+              superTokenAddress={superTokenAddress}
+              senderAddress={senderAddress}
+              receiverAddress={receiverAddress}
+            />
+          </ConnectionBoundary>
+        )}
 
         <SharingSection
           url={urlToShare}

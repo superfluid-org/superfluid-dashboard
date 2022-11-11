@@ -1,15 +1,11 @@
-import { Box, CircularProgress, Container, Stack } from "@mui/material";
 import { isString } from "lodash";
 import { useRouter } from "next/router";
 import {
-  FC,
-  PropsWithChildren,
   ReactElement,
   useEffect,
   useState,
 } from "react";
 import { Network, networksBySlug } from "../../../features/network/networks";
-import { VestingLayout } from "../../../features/vesting/VestingLayout";
 import { VestingScheduleDetails } from "../../../features/vesting/VestingScheduleDetailsSection";
 import { VestingScheduleDetailsLayout } from "../../../features/vesting/VestingScheduleDetailsLayout";
 import Page404 from "../../404";
