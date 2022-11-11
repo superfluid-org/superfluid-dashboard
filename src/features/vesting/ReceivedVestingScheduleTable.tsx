@@ -1,5 +1,6 @@
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
+import NoContentPaper from "../../components/NoContent/NoContentPaper";
 import { useGetVestingSchedulesQuery } from "../../vesting-subgraph/getVestingSchedules.generated";
 import { networkDefinition } from "../network/networks";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
@@ -24,10 +25,22 @@ export const ReceivedVestingScheduleTable: FC = () => {
     }
   );
 
+  const hasContent = vestingSchedules.length > 0;
+
   return (
-    <VestingScheduleTable
-      network={network}
-      vestingSchedules={vestingSchedules}
-    />
+    <>
+      {hasContent && (
+        <VestingScheduleTable
+          network={network}
+          vestingSchedules={vestingSchedules}
+        />
+      )}
+      {!hasContent && (
+        <NoContentPaper
+          title="No Received Vesting Schedules"
+          description="Vesting schedules that you have received will appear here."
+        />
+      )}
+    </>
   );
 };
