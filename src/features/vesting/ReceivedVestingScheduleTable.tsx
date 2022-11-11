@@ -26,7 +26,6 @@ export const ReceivedVestingScheduleTable: FC = () => {
     }
   );
 
-  console.log(vestingSchedulesRequest);
   const { vestingSchedules, isLoading } = vestingSchedulesRequest;
 
   const hasContent = vestingSchedules.length > 0;

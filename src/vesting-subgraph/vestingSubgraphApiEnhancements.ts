@@ -8,7 +8,7 @@ api_getVestingSchedules.enhanceEndpoints({
       providesTags: (_result, _error, arg) => [
         {
           type: "GENERAL",
-          id: networkDefinition.goerli.id, // TODO(KK): Works for only Goerli right now
+          id: "5", // TODO(KK): Works for only Goerli right now
         },
       ],
     },
@@ -21,7 +21,7 @@ api_getVestingSchedule.enhanceEndpoints({
       providesTags: (_result, _error, arg) => [
         {
           type: "GENERAL",
-          id: networkDefinition.goerli.id, // TODO(KK): Works for only Goerli right now
+          id: "5", // TODO(KK): Works for only Goerli right now
         },
       ],
     },
