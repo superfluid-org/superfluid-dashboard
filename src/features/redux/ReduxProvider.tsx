@@ -116,7 +116,7 @@ const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
       listenerMiddleware.startListening({
         actionCreator: subgraphApi.util.invalidateTags,
         effect: ({ payload }) => {
-          dispatch(vestingSubgraphApi.util.invalidateTags([""]));
+          dispatch(vestingSubgraphApi.util.invalidateTags(payload));
         },
       }),
     []
