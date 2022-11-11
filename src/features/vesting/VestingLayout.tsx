@@ -12,14 +12,14 @@ export const VestingLayout: FC<
   return (
     <Container key={`${network.slugName}`} maxWidth="lg">
       <Box sx={{ mb: 5 }}>
-        <Typography component="h1" variant="h4">
+        <Typography component="h1" variant="h4" textAlign="center">
           Vesting
         </Typography>
-        {showSubtitle && (
-          <Typography variant="subtitle1">
-            You can now vest using Superfluid streams!
-          </Typography>
-        )}
+        {/* {showSubtitle && ( */}
+        <Typography variant="subtitle1" textAlign="center">
+          You can now vest using Superfluid streams!
+        </Typography>
+        {/* )} */}
       </Box>
       {children}
     </Container>

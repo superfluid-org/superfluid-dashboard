@@ -36,7 +36,7 @@ export const VestingScheduleDetailsLayout: FC<PropsWithChildren> = ({
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          // alignItems: "center",
+          alignItems: "center",
           [theme.breakpoints.up("md")]: {
             my: 4,
           },
