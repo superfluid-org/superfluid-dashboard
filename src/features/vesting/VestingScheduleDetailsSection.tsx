@@ -106,7 +106,7 @@ export const VestingScheduleDetails: FC<{
           <Stack>
             <Typography color="text.secondary">Start Date</Typography>
             <Typography color="text.primary">
-              {format("LLLL d, yyyy", startDate)}
+              {format("LLLL d, yyyy HH:mm", startDate)}
             </Typography>
           </Stack>
         </Box>
@@ -129,7 +129,7 @@ export const VestingScheduleDetails: FC<{
               {VestingFormLabels.CliffPeriod}
             </Typography>
             <Typography color="text.primary">
-              {format("LLLL d, yyyy", cliffDate)}
+              {format("LLLL d, yyyy HH:mm", cliffDate)}
             </Typography>
           </Stack>
         </Box>
@@ -150,7 +150,7 @@ export const VestingScheduleDetails: FC<{
           <Stack>
             <Typography color="text.secondary">End Date</Typography>
             <Typography color="text.primary">
-              {format("LLLL d, yyyy", endDate)}
+              {format("LLLL d, yyyy HH:mm", endDate)}
             </Typography>
           </Stack>
         </Box>

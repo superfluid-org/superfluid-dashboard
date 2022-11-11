@@ -57,7 +57,11 @@ const VestingRow: FC<VestingRowProps> = ({
   const isOutgoing = sender.toLowerCase() === visibleAddress?.toLowerCase();
 
   return (
-    <TableRow hover={!!onClick} onClick={onClick}>
+    <TableRow
+      hover={!!onClick}
+      onClick={onClick}
+      sx={{ cursor: onClick ? "pointer" : "initial" }}
+    >
       <TableCell>
         <Stack direction="row" alignItems="center" gap={1.5}>
           {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
