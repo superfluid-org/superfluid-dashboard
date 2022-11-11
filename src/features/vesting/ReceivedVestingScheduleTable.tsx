@@ -14,7 +14,7 @@ export const ReceivedVestingScheduleTable: FC = () => {
   const { vestingSchedules } = useGetVestingSchedulesQuery(
     visibleAddress
       ? {
-          where: { receiver: visibleAddress?.toLowerCase() },
+          where: { receiver: visibleAddress?.toLowerCase(), deletedAt: null },
         }
       : skipToken,
     {
