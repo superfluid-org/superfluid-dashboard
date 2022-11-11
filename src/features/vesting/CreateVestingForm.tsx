@@ -86,16 +86,6 @@ export const CreateVestingForm: FC<{
     "data.cliffPeriod",
   ]);
 
-  // console.log({
-  //   tokenAddress,
-  //   receiverAddress,
-  //   totalAmountEther,
-  //   startDate,
-  //   cliffAmountEther,
-  //   vestingPeriod,
-  //   cliffPeriod
-  // })
-
   const ReceiverController = (
     <Controller
       control={control}

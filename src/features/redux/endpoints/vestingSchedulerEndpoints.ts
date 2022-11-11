@@ -66,7 +66,7 @@ interface RpcVestingSchedule {
 
 export const vestingSchedulerEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
-    getVestingSchedule: builder.query<
+    getActiveVestingSchedule: builder.query<
       RpcVestingSchedule | null,
       GetVestingSchedule
     >({

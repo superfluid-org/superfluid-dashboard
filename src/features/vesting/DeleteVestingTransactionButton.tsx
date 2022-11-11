@@ -40,8 +40,8 @@ export const DeleteVestingTransactionButton: FC<{
   const isSender =
     senderAddress.toLowerCase() === visibleAddress?.toLowerCase();
 
-  const { currentData: existingVestingSchedule } =
-    rpcApi.useGetVestingScheduleQuery(
+  const { currentData: activeVestingSchedule } =
+    rpcApi.useGetActiveVestingScheduleQuery(
       isSender
         ? {
             chainId: network.id,
@@ -61,7 +61,7 @@ export const DeleteVestingTransactionButton: FC<{
       x.receiverAddress.toLowerCase() === receiverAddress.toLowerCase()
   );
 
-  const isButtonVisible = !!existingVestingSchedule && !isBeingDeleted;
+  const isButtonVisible = !!activeVestingSchedule && !isBeingDeleted;
 
   return (
     <TransactionBoundary

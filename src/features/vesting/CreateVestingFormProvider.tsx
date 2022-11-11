@@ -17,7 +17,9 @@ import {
   MIN_VESTING_DURATION_SECONDS,
   START_DATE_VALID_AFTER_SECONDS,
 } from "../redux/endpoints/vestingSchedulerEndpoints";
+import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 export type ValidVestingForm = {
   data: {
@@ -93,6 +95,10 @@ const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
   );
 
   const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
+  const [getActiveVestingSchedule] =
+    rpcApi.useLazyGetActiveVestingScheduleQuery();
+  const { visibleAddress: senderAddress } = useVisibleAddress();
+
   const formSchema = useMemo(
     () =>
       object().test(async (values, context) => {
@@ -127,6 +133,8 @@ const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
             totalAmountEther,
             cliffPeriod,
             vestingPeriod,
+            receiverAddress,
+            superTokenAddress,
           },
         } = (await primarySchema.validate(values)) as ValidVestingForm;
 
@@ -185,9 +193,24 @@ const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
           });
         }
 
+        if (senderAddress) {
+          const { data: vestingSchedule } = await getActiveVestingSchedule({
+            chainId: network.id,
+            superTokenAddress,
+            senderAddress,
+            receiverAddress,
+          });
+
+          if (vestingSchedule) {
+            handleHigherOrderValidationError({
+              message: `There already exists a vesting schedule between the accounts for the token. To create a new schedule, the active schedule needs to end or be deleted.`,
+            });
+          }
+        }
+
         return true;
       }),
-    [network]
+    [network, getActiveVestingSchedule, senderAddress]
   );
 
   const formMethods = useForm<PartialVestingForm>({
