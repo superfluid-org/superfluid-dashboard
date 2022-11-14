@@ -1,4 +1,5 @@
 import {
+  autoBatchEnhancer,
   configureStore,
   createListenerMiddleware,
   Dispatch,
@@ -140,6 +141,8 @@ export const reduxStore = configureStore({
     // Default slices
     pendingUpdates: pendingUpdateSlice.reducer,
   },
+  enhancers: (existingEnhancers) =>
+    existingEnhancers.concat(autoBatchEnhancer()), // https://redux-toolkit.js.org/api/autoBatchEnhancer#autobatchenhancer-1
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
