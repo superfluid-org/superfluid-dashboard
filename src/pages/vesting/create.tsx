@@ -5,6 +5,7 @@ import NetworkBadge from "../../features/network/NetworkBadge";
 import ConnectionBoundary from "../../features/transactionBoundary/ConnectionBoundary";
 import CreateVestingFormProvider from "../../features/vesting/CreateVestingFormProvider";
 import { CreateVestingSection } from "../../features/vesting/CreateVestingSection";
+import { BigLoader } from "../../features/vesting/BigLoader";
 import { VestingLayout } from "../../features/vesting/VestingLayout";
 import { NextPageWithLayout } from "../_app";
 
@@ -52,7 +53,9 @@ const CreateVestingSchedulePage: NextPageWithLayout = () => {
 
           <ConnectionBoundary>
             <CreateVestingFormProvider>
-              <CreateVestingSection />
+              {(isInitialized) =>
+                isInitialized ? <CreateVestingSection /> : <BigLoader />
+              }
             </CreateVestingFormProvider>
           </ConnectionBoundary>
         </Card>

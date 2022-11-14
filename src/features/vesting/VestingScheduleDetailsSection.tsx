@@ -13,7 +13,7 @@ import { Network } from "../network/networks";
 import SharingSection from "../socialSharing/SharingSection";
 import TokenIcon from "../token/TokenIcon";
 import { VestingFormLabels } from "./CreateVestingForm";
-import { PageLoader } from "./PageLoader";
+import { BigLoader } from "./BigLoader";
 import { DeleteVestingTransactionButton } from "./DeleteVestingTransactionButton";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { useVestingToken } from "./useVestingToken";
@@ -37,7 +37,7 @@ export const VestingScheduleDetails: FC<{
   const token = tokenQuery.token;
 
   if (vestingScheduleQuery.isLoading || !token) {
-    return <PageLoader />;
+    return <BigLoader />;
   }
 
   const vestingSchedule = vestingScheduleQuery.data?.vestingSchedule;

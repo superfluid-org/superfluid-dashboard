@@ -1,10 +1,15 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { sub } from "date-fns/fp";
 import add from "date-fns/fp/add";
-import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
+import React, {
+  FC,
+  PropsWithChildren,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { date, mixed, number, object, ObjectSchema, string } from "yup";
-import { getTimeInSeconds } from "../../utils/dateUtils";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -57,7 +62,9 @@ export type PartialVestingForm = {
   };
 };
 
-const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
+const CreateVestingFormProvider: FC<{
+  children: (isInitialized: boolean) => ReactNode;
+}> = ({ children }) => {
   const primarySchema = useMemo<ObjectSchema<ValidVestingForm>>(
     () =>
       object({
@@ -248,9 +255,9 @@ const CreateVestingFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   useEffect(() => setIsInitialized(true), []);
 
-  return isInitialized ? (
-    <FormProvider {...formMethods}>{children}</FormProvider>
-  ) : null;
+  return (
+    <FormProvider {...formMethods}>{children(isInitialized)}</FormProvider>
+  );
 };
 
 export default CreateVestingFormProvider;

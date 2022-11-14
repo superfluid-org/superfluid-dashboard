@@ -10,7 +10,7 @@ import { VestingScheduleDetails } from "../../../features/vesting/VestingSchedul
 import { VestingScheduleDetailsLayout } from "../../../features/vesting/VestingScheduleDetailsLayout";
 import Page404 from "../../404";
 import { NextPageWithLayout } from "../../_app";
-import { PageLoader } from "../../../features/vesting/PageLoader";
+import { BigLoader } from "../../../features/vesting/BigLoader";
 
 const VestingScheduleDetailsPage: NextPageWithLayout = () => {
   const router = useRouter();
@@ -37,7 +37,7 @@ const VestingScheduleDetailsPage: NextPageWithLayout = () => {
 
   const isPageReady = routeHandled;
   if (!isPageReady) {
-    return <PageLoader />;
+    return <BigLoader />;
   }
 
   if (!network || !vestingScheduleId) {
