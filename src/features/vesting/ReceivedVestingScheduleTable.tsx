@@ -11,8 +11,7 @@ export const ReceivedVestingScheduleTable: FC = () => {
   const { visibleAddress } = useVisibleAddress();
   const network = networkDefinition.goerli;
 
-  // TODO(KK): Not really vesting schedules, just creation events.
-  const vestingSchedulesRequest = useGetVestingSchedulesQuery(
+  const vestingSchedulesQuery = useGetVestingSchedulesQuery(
     visibleAddress
       ? {
           where: { receiver: visibleAddress?.toLowerCase(), deletedAt: null },
@@ -26,25 +25,24 @@ export const ReceivedVestingScheduleTable: FC = () => {
     }
   );
 
-  const { vestingSchedules, isLoading } = vestingSchedulesRequest;
-
+  const { vestingSchedules, isLoading } = vestingSchedulesQuery;
   const hasContent = vestingSchedules.length > 0;
 
   return (
     <>
-      {hasContent && !isLoading && (
+      {isLoading ? (
+        <VestingScheduleLoadingTable />
+      ) : hasContent ? (
         <VestingScheduleTable
           network={network}
           vestingSchedules={vestingSchedules}
         />
-      )}
-      {!hasContent && !isLoading && (
+      ) : (
         <NoContentPaper
           title="No Received Vesting Schedules"
           description="Vesting schedules that you have received will appear here."
         />
       )}
-      {isLoading && <VestingScheduleLoadingTable />}
     </>
   );
 };

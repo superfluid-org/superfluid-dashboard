@@ -1,7 +1,6 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import {
-  CircularProgress,
   ListItemText,
   Stack,
   TableCell,
@@ -16,7 +15,9 @@ import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import { VestingSchedule } from "../../vesting-subgraph/schema.generated";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { Network } from "../network/networks";
+import { PendingProgress } from "../pendingUpdates/PendingProgress";
 import { PendingVestingSchedule } from "../pendingUpdates/PendingVestingSchedule";
+import { usePendingVestingScheduleDelete } from "../pendingUpdates/PendingVestingScheduleDelete";
 import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
@@ -24,7 +25,7 @@ import { useVestingToken } from "./useVestingToken";
 
 interface VestingRowProps {
   network: Network;
-  vestingSchedule: VestingSchedule | PendingVestingSchedule;
+  vestingSchedule: VestingSchedule & { pendingCreate?: PendingVestingSchedule };
   onClick?: () => void;
 }
 
@@ -33,9 +34,6 @@ const VestingRow: FC<VestingRowProps> = ({
   vestingSchedule,
   onClick,
 }) => {
-  // pendingType: "VestingScheduleCreate"
-  // pendingType: "VestingScheduleDelete"
-
   const {
     superToken,
     receiver,
@@ -45,12 +43,15 @@ const VestingRow: FC<VestingRowProps> = ({
     flowRate,
     endDate,
     startDate,
-  } = vestingSchedule as VestingSchedule;
+    pendingCreate,
+  } = vestingSchedule;
 
-  const pendingType = (vestingSchedule as PendingVestingSchedule).pendingType;
-  const isPendingAndWaitingForSubgraph = !!(
-    vestingSchedule as PendingVestingSchedule
-  ).hasTransactionSucceeded;
+  const pendingDelete = usePendingVestingScheduleDelete({
+    chainId: network.id,
+    superTokenAddress: superToken,
+    receiverAddress: receiver,
+    senderAddress: sender,
+  });
 
   const { visibleAddress } = useVisibleAddress();
 
@@ -123,18 +124,17 @@ const VestingRow: FC<VestingRowProps> = ({
         />
       </TableCell>
       <TableCell sx={{ pl: 0, pr: 2 }}>
-        {pendingType && (
-          <Stack direction="row" alignItems="center" gap={1}>
-            <CircularProgress color="warning" size="16px" />
-            <Typography variant="caption" translate="yes">
-              {isPendingAndWaitingForSubgraph
-                ? "Syncing..."
-                : pendingType === "VestingScheduleCreate"
-                ? "Creating..."
-                : "Deleting..."}
-            </Typography>
-          </Stack>
-        )}
+        {pendingDelete ? (
+          <PendingProgress
+            pendingUpdate={pendingDelete}
+            transactingText="Deleting..."
+          />
+        ) : pendingCreate ? (
+          <PendingProgress
+            pendingUpdate={pendingDelete}
+            transactingText="Creating..."
+          />
+        ) : null}
       </TableCell>
     </TableRow>
   );

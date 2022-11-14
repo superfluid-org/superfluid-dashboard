@@ -1,6 +1,9 @@
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
-import { useAddressPendingVestingScheduleDeletes } from "../pendingUpdates/PendingVestingScheduleDelete";
+import {
+  useAddressPendingVestingScheduleDeletes,
+  usePendingVestingScheduleDelete,
+} from "../pendingUpdates/PendingVestingScheduleDelete";
 import { rpcApi } from "../redux/store";
 import { useConnectionBoundary } from "../transactionBoundary/ConnectionBoundary";
 import {
@@ -45,22 +48,19 @@ export const DeleteVestingTransactionButton: FC<{
       isSender
         ? {
             chainId: network.id,
-            superTokenAddress: superTokenAddress,
-            receiverAddress: receiverAddress,
-            senderAddress: senderAddress,
+            superTokenAddress,
+            receiverAddress,
+            senderAddress,
           }
         : skipToken
     );
 
-  const pendingDeletes = useAddressPendingVestingScheduleDeletes(senderAddress);
-  const isBeingDeleted = pendingDeletes.some(
-    (x) =>
-      x.chainId === network.id &&
-      x.superTokenAddress.toLowerCase() === superTokenAddress.toLowerCase() &&
-      x.senderAddress.toLowerCase() === senderAddress.toLowerCase() &&
-      x.receiverAddress.toLowerCase() === receiverAddress.toLowerCase()
-  );
-
+  const isBeingDeleted = !!usePendingVestingScheduleDelete({
+    chainId: network.id,
+    superTokenAddress,
+    receiverAddress,
+    senderAddress,
+  });
   const isButtonVisible = !!activeVestingSchedule && !isBeingDeleted;
 
   return (

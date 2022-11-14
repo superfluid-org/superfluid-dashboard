@@ -1,5 +1,4 @@
 import {
-  CircularProgress,
   IconButton,
   ListItemText,
   Skeleton,
@@ -25,13 +24,11 @@ import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { Network } from "../network/networks";
 import { usePendingIndexSubscriptionApprove } from "../pendingUpdates/PendingIndexSubscriptionApprove";
 import { usePendingIndexSubscriptionRevoke } from "../pendingUpdates/PendingIndexSubscriptionRevoke";
-import { PendingUpdate } from "../pendingUpdates/PendingUpdate";
 import { rpcApi } from "../redux/store";
 import Amount from "../token/Amount";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
-import ConnectionBoundary, {
-  useConnectionBoundary,
-} from "../transactionBoundary/ConnectionBoundary";
+import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
+import { PendingProgress } from "../pendingUpdates/PendingProgress";
 
 export const SubscriptionLoadingRow = () => {
   const theme = useTheme();
@@ -237,7 +234,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                   !subscription.approved && (
                     <>
                       {mutationResult.isLoading || pendingApproval ? (
-                        <OperationProgress
+                        <PendingProgress
                           transactingText={"Approving..."}
                           pendingUpdate={pendingApproval}
                         />
@@ -315,7 +312,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                   subscription.approved && (
                     <>
                       {mutationResult.isLoading || pendingRevoke ? (
-                        <OperationProgress
+                        <PendingProgress
                           transactingText={"Revoking..."}
                           pendingUpdate={pendingRevoke}
                         />
@@ -394,22 +391,5 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
     </TableRow>
   );
 };
-
-// TODO(KK): Consider making this re-used with stream cancellation?
-const OperationProgress: FC<{
-  pendingUpdate: PendingUpdate | undefined;
-  transactingText: string;
-}> = ({ pendingUpdate, transactingText }) => (
-  <Stack direction="row" alignItems="center" gap={1}>
-    <CircularProgress color="warning" size="16px" />
-    <Typography data-cy={"pending-message"} variant="caption" translate="yes">
-      {pendingUpdate?.hasTransactionSucceeded ? (
-        <span>Syncing...</span>
-      ) : (
-        <span>{transactingText}</span>
-      )}
-    </Typography>
-  </Stack>
-);
 
 export default SubscriptionRow;

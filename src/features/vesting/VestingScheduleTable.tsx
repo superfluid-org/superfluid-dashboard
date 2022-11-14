@@ -9,12 +9,13 @@ import { useRouter } from "next/router";
 import { FC } from "react";
 import { VestingSchedule } from "../../vesting-subgraph/schema.generated";
 import { Network } from "../network/networks";
+import { PendingVestingSchedule } from "../pendingUpdates/PendingVestingSchedule";
 import VestingRow from "./VestingRow";
 
 interface VestingScheduleTableProps {
   network: Network;
   vestingSchedules: Array<VestingSchedule>;
-  pendingVestingSchedules?: Array<VestingSchedule>;
+  pendingVestingSchedules?: Array<VestingSchedule & { pendingCreate: PendingVestingSchedule }>;
 }
 
 const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
