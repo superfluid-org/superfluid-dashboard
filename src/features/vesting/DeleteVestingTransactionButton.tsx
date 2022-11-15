@@ -20,6 +20,7 @@ import {
 } from "../transactionBoundary/TransactionDialog";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import Link from "next/link";
+import { Typography } from "@mui/material";
 
 export const DeleteVestingTransactionButton: FC<{
   superTokenAddress: string;
@@ -68,7 +69,7 @@ export const DeleteVestingTransactionButton: FC<{
       {...TransactionBoundaryProps}
       mutationResult={deleteVestingScheduleResult}
     >
-      {({ getOverrides, setDialogSuccessActions }) =>
+      {({ getOverrides, setDialogLoadingInfo, setDialogSuccessActions }) =>
         isButtonVisible && (
           <TransactionButton
             {...TransactionButtonProps}
@@ -77,6 +78,12 @@ export const DeleteVestingTransactionButton: FC<{
               color: "error",
             }}
             onClick={async (signer) => {
+              setDialogLoadingInfo(
+                <Typography variant="h5" color="text.secondary" translate="yes">
+                  You are deleting a vesting schedule.
+                </Typography>
+              );
+
               deleteVestingSchedule({
                 signer,
                 chainId: network.id,

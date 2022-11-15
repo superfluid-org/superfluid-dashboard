@@ -1,3 +1,4 @@
+import { Typography } from "@mui/material";
 import { BigNumber } from "ethers";
 import Link from "next/link";
 import { FC } from "react";
@@ -25,7 +26,12 @@ export const CreateVestingTransactionButton: FC<{
 
   return (
     <TransactionBoundary mutationResult={createVestingScheduleResult}>
-      {({ network, getOverrides, setDialogSuccessActions }) =>
+      {({
+        network,
+        getOverrides,
+        setDialogLoadingInfo,
+        setDialogSuccessActions
+      }) =>
         !createVestingScheduleResult.isSuccess && (
           <TransactionButton
             disabled={isDisabled}
@@ -60,6 +66,16 @@ export const CreateVestingTransactionButton: FC<{
                   const streamedAmount = totalAmount.sub(cliffTransferAmount);
                   const flowRate =
                     BigNumber.from(streamedAmount).div(timeToFlow);
+
+                  setDialogLoadingInfo(
+                    <Typography
+                      variant="h5"
+                      color="text.secondary"
+                      translate="yes"
+                    >
+                      You are creating a vesting schedule.
+                    </Typography>
+                  );
 
                   setView(CreateVestingCardView.Approving);
                   createVestingSchedule({
