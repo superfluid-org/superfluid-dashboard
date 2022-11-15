@@ -144,10 +144,7 @@ export const reduxStore = configureStore({
   enhancers: (existingEnhancers) =>
     existingEnhancers.concat(
       autoBatchEnhancer({
-        type:
-          typeof window !== "undefined" && window.requestAnimationFrame
-            ? "raf"
-            : "tick",
+        type: typeof window !== "undefined" ? "raf" : "tick",
       })
     ), // https://redux-toolkit.js.org/api/autoBatchEnhancer#autobatchenhancer-1
   middleware: (getDefaultMiddleware) =>

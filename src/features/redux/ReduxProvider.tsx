@@ -2,6 +2,7 @@ import { Framework } from "@superfluid-finance/sdk-core";
 import {
   initiateOldPendingTransactionsTrackingThunk,
   setFrameworkForSdkRedux,
+  transactionTrackerSelectors,
 } from "@superfluid-finance/sdk-redux";
 import promiseRetry from "promise-retry";
 import { FC, PropsWithChildren, useCallback, useEffect } from "react";
@@ -9,15 +10,17 @@ import { Provider } from "react-redux";
 import { useAccount, useSigner } from "wagmi";
 import { parseV1AddressBookEntries } from "../../utils/addressBookUtils";
 import { parseV1CustomTokens } from "../../utils/customTokenUtils";
+import { useLazyPollQuery } from "../../vesting-subgraph/poll.generated";
 import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
 import { addAddressBookEntries } from "../addressBook/addressBook.slice";
 import { addCustomTokens } from "../customTokens/customTokens.slice";
-import { networks } from "../network/networks";
+import { networkDefinition, networks } from "../network/networks";
 import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import {
   listenerMiddleware,
   reduxStore,
   subgraphApi,
+  transactionTracker,
   useAppDispatch,
 } from "./store";
 
@@ -109,14 +112,50 @@ const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
     }
   }, [signer]);
 
+  const [pollQuery] = useLazyPollQuery();
+
   // # Cache invalidation for vesting:
-  // TO DO(KK): Find a better place for this. This is also not a perfect solution because it assumes 2 subgraphs are about it sync... A change should be made to SDK to handle this better.
   useEffect(
     () =>
       listenerMiddleware.startListening({
-        actionCreator: subgraphApi.util.invalidateTags,
-        effect: ({ payload }) => {
-          dispatch(vestingSubgraphApi.util.resetApiState()); // Bad solution
+        actionCreator: transactionTracker.actions.updateTransaction,
+        effect: ({ payload }, { getState }) => {
+          const { blockTransactionSucceededIn } = payload.changes;
+          const trackedTransaction = transactionTrackerSelectors.selectById(
+            getState() as any, // TODO(KK): Get rid of any
+            payload.id
+          )!;
+
+          if (
+            trackedTransaction.chainId === networkDefinition.goerli.id &&
+            blockTransactionSucceededIn
+          ) {
+            // Poll Subgraph for all the events for this block and then invalidate Subgraph cache based on that.
+            promiseRetry(
+              (retry, _number) =>
+                pollQuery({
+                  block: {
+                    number: blockTransactionSucceededIn,
+                  },
+                })
+                  .then((x) => (x.isError ? retry(x.error) : void 0))
+                  .catch(retry),
+              {
+                minTimeout: 500,
+                factor: 2,
+                forever: true,
+              }
+            ).then((_subgraphEventsQueryResult) => {
+              dispatch(
+                vestingSubgraphApi.util.invalidateTags([
+                  {
+                    type: "GENERAL",
+                    id: trackedTransaction.chainId,
+                  },
+                ])
+              );
+            });
+          }
         },
       }),
     []
