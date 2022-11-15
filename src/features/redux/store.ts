@@ -142,7 +142,14 @@ export const reduxStore = configureStore({
     pendingUpdates: pendingUpdateSlice.reducer,
   },
   enhancers: (existingEnhancers) =>
-    existingEnhancers.concat(autoBatchEnhancer()), // https://redux-toolkit.js.org/api/autoBatchEnhancer#autobatchenhancer-1
+    existingEnhancers.concat(
+      autoBatchEnhancer({
+        type:
+          typeof window !== "undefined" && window.requestAnimationFrame
+            ? "raf"
+            : "tick",
+      })
+    ), // https://redux-toolkit.js.org/api/autoBatchEnhancer#autobatchenhancer-1
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
