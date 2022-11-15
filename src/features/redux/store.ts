@@ -25,7 +25,7 @@ import {
   REHYDRATE,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
+import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApiEnhancements";
 import { addressBookSlice } from "../addressBook/addressBook.slice";
 import { customTokensSlice } from "../customTokens/customTokens.slice";
 import { ensApi } from "../ens/ensApi.slice";
@@ -155,14 +155,14 @@ export const reduxStore = configureStore({
     })
       .prepend(listenerMiddleware.middleware)
       .concat(rpcApi.middleware)
+      .concat(vestingSubgraphApi.middleware)
       .concat(subgraphApi.middleware)
       .concat(assetApiSlice.middleware)
       .concat(ensApi.middleware)
       .concat(gasApi.middleware)
       .concat(platformApi.middleware)
       .concat(faucetApi.middleware)
-      .concat(tokenPriceApi.middleware)
-      .concat(vestingSubgraphApi.middleware),
+      .concat(tokenPriceApi.middleware),
 });
 
 export const reduxPersistor = persistStore(reduxStore);

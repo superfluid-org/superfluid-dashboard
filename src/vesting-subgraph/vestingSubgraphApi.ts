@@ -7,12 +7,12 @@ export const client = new GraphQLClient(
 );
 
 export const api = createApi({
-  tagTypes: ["GENERAL", "SPECIFIC"], // TODO(KK): Make SDK be able to invalidate another slice!
   reducerPath: "superfluid_vesting",
   baseQuery: graphqlRequestBaseQuery({
     client,
   }),
+  tagTypes: ["GENERAL", "SPECIFIC"], // TODO(KK): Make SDK be able to invalidate another slice!
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
   endpoints: () => ({}),
 });
-
-export const vestingSubgraphApi = api;

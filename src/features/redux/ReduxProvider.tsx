@@ -11,7 +11,7 @@ import { useAccount, useSigner } from "wagmi";
 import { parseV1AddressBookEntries } from "../../utils/addressBookUtils";
 import { parseV1CustomTokens } from "../../utils/customTokenUtils";
 import { useLazyPollQuery } from "../../vesting-subgraph/poll.generated";
-import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
+import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApiEnhancements";
 import { addAddressBookEntries } from "../addressBook/addressBook.slice";
 import { addCustomTokens } from "../customTokens/customTokens.slice";
 import { networkDefinition, networks } from "../network/networks";
@@ -138,7 +138,11 @@ const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
                     number: blockTransactionSucceededIn,
                   },
                 })
-                  .then((x) => (x.isError ? retry(x.error) : void 0))
+                  .then((queryResult) =>
+                    queryResult.isError
+                      ? void retry(queryResult.error)
+                      : queryResult
+                  )
                   .catch(retry),
               {
                 minTimeout: 500,
