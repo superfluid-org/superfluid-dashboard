@@ -1,8 +1,7 @@
 import {BasePage} from "../BasePage";
-import {networksBySlug, superfluidRpcUrls} from "../../../src/features/network/networks";
+import {networksBySlug, superfluidRpcUrls} from "../../superData/networks";
 // @ts-ignore
 import {MockProvider} from "@rsksmart/mock-web3-provider";
-import shortenHex from "../../../src/utils/shortenHex";
 import {ethers} from "ethers";
 import HDWalletProvider from "@truffle/hdwallet-provider";
 
@@ -166,7 +165,7 @@ export class Common extends BasePage {
     static checkNavBarWalletStatus(account: string, message: string) {
         cy.fixture("commonData").then((commonData) => {
             this.hasText(WALLET_CONNECTION_STATUS, message);
-            this.hasText(CONNECTED_WALLET, shortenHex(commonData[account]));
+            this.hasText(CONNECTED_WALLET, BasePage.shortenHex(commonData[account]));
         });
     }
 

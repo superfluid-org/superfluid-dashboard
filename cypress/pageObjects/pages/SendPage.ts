@@ -1,7 +1,7 @@
 import {BasePage} from "../BasePage";
-import {UnitOfTime} from "../../../src/features/send/FlowRateInput";
+import {UnitOfTime} from "../BasePage";
 import {WrapPage} from "./WrapPage";
-import {networksBySlug} from "../../../src/features/network/networks";
+import {networksBySlug} from "../../superData/networks";
 
 const SEND_BUTTON = "[data-cy=send-transaction-button]";
 const RECEIVER_BUTTON = "[data-cy=address-button]";
