@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        container: [ActivityPage,AddressBook,AllNetworkTests,Common,DashboardPage,EcosystemPage,SendPage,StreamDetailsPage,WrapPage]
+        container: [AllNetworkTests]
     steps:
       - uses: actions/checkout@v2
 
