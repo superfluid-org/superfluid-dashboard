@@ -36,3 +36,9 @@ This repository implements the Superfluid Dashboard v2 as a Next.js web app buil
 ### ✨ [Superfluid Console](https://console.superfluid.finance/)
 
 ### 📖 [Docs](https://docs.superfluid.finance)
+
+## Notes
+
+### `window.superfluid_dashboard.advanced.nextGasOverrides`
+
+`ethers` `Overrides` to override gas settings for only the next transaction attempt. 
