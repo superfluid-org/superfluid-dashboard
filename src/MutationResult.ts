@@ -20,5 +20,5 @@ export type MutationResult<T = unknown> = {
 
   reset: () => void; // A method to manually unsubscribe from the mutation call and reset the result to the uninitialized state
 };
-
+ 
 export default MutationResult;
