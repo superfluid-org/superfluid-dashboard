@@ -89,6 +89,7 @@ const Bridge: NextPage = () => {
 
   return (
     <Container
+      data-cy={"lifi-widget"}
       maxWidth="lg"
       sx={{
         ".MuiScopedCssBaseline-root, #widget-header, .MuiAppBar-root": {

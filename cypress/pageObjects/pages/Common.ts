@@ -62,6 +62,9 @@ export class Common extends BasePage {
                 case "activity history page":
                     this.visitPage("/history", mocked, account, network);
                     break;
+                case "bridge page":
+                    this.visitPage("/bridge", mocked, account, network);
+                    break;
                 case "ended stream details page":
                     this.visitPage(streamData["staticBalanceAccount"]["polygon"][0].v2Link, mocked, account, network);
                     break;
