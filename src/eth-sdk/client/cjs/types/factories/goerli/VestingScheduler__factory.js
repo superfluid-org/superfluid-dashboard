@@ -29,6 +29,11 @@ const _abi = [
     },
     {
         inputs: [],
+        name: "CliffInvalid",
+        type: "error",
+    },
+    {
+        inputs: [],
         name: "FlowRateInvalid",
         type: "error",
     },

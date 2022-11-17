@@ -123,7 +123,7 @@ export const networkDefinition: {
     streamSchedulerContractAddress:
       "0x7D37D9494a09E47e58B1F535386Ca4D9D175f23e",
     vestingSchedulerContractAddress:
-      "0x91134bC1Ed5FFB24c48F4b1A282231620608b7cc",
+      "0x6f54e4744b13879482b5a487e832b23e566661b5",
     platformUrl: config.platformApi.goerli,
   },
   gnosis: {

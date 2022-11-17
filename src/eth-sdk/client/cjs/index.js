@@ -14,7 +14,7 @@ exports.getContract = getContract;
 function getGoerliSdk(defaultSignerOrProvider) {
     return {
         "streamScheduler": getContract('0x7D37D9494a09E47e58B1F535386Ca4D9D175f23e', streamScheduler_json_1.default, defaultSignerOrProvider),
-        "vestingScheduler": getContract('0x91134bC1Ed5FFB24c48F4b1A282231620608b7cc', vestingScheduler_json_1.default, defaultSignerOrProvider),
+        "vestingScheduler": getContract('0x6f54e4744b13879482b5a487e832b23e566661b5', vestingScheduler_json_1.default, defaultSignerOrProvider),
     };
 }
 exports.getGoerliSdk = getGoerliSdk;

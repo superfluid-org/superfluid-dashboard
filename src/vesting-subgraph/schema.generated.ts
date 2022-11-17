@@ -891,6 +891,7 @@ export type VestingSchedule = {
   endExecutedAt?: Maybe<Scalars['BigInt']>;
   flowRate: Scalars['BigInt'];
   id: Scalars['String'];
+  nextExecutionAt?: Maybe<Scalars['BigInt']>;
   receiver: Scalars['Bytes'];
   sender: Scalars['Bytes'];
   startDate: Scalars['BigInt'];
@@ -1451,6 +1452,14 @@ export type VestingSchedule_Filter = {
   id_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
   id_starts_with?: InputMaybe<Scalars['String']>;
   id_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  nextExecutionAt?: InputMaybe<Scalars['BigInt']>;
+  nextExecutionAt_gt?: InputMaybe<Scalars['BigInt']>;
+  nextExecutionAt_gte?: InputMaybe<Scalars['BigInt']>;
+  nextExecutionAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  nextExecutionAt_lt?: InputMaybe<Scalars['BigInt']>;
+  nextExecutionAt_lte?: InputMaybe<Scalars['BigInt']>;
+  nextExecutionAt_not?: InputMaybe<Scalars['BigInt']>;
+  nextExecutionAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   receiver?: InputMaybe<Scalars['Bytes']>;
   receiver_contains?: InputMaybe<Scalars['Bytes']>;
   receiver_in?: InputMaybe<Array<Scalars['Bytes']>>;
@@ -1488,6 +1497,7 @@ export enum VestingSchedule_OrderBy {
   EndExecutedAt = 'endExecutedAt',
   FlowRate = 'flowRate',
   Id = 'id',
+  NextExecutionAt = 'nextExecutionAt',
   Receiver = 'receiver',
   Sender = 'sender',
   StartDate = 'startDate',
