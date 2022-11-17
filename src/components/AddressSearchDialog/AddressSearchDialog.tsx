@@ -15,7 +15,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { FC, memo, ReactNode, useEffect, useState } from "react";
+import { FC, memo, ReactNode, useCallback, useEffect, useState } from "react";
 import ResponsiveDialog from "../../features/common/ResponsiveDialog";
 import AddressAvatar from "../Avatar/AddressAvatar";
 import { getAddress, isAddress } from "../../utils/memoizedEthersUtils";
@@ -88,15 +88,22 @@ export default memo(function AddressSearchDialog({
   const [searchTermDebounced, _setSearchTermDebounced] =
     useState(searchTermVisible);
 
-  const [setSearchTermDebounced] = useState(() =>
+  const setSearchTermDebounced = useCallback(
     debounce((searchTerm) => {
       _setSearchTermDebounced(searchTerm);
-    }, 250)
+    }, 250),
+    []
   );
 
   const setSearchTerm = (searchTerm: string) => {
     setSearchTermVisible(searchTerm);
-    setSearchTermDebounced(searchTerm.trim());
+    
+    const searchTermTrimmed = searchTerm.trim();
+    if (isAddress(searchTermTrimmed)) {
+      onSelectAddress(getAddress(searchTermTrimmed));
+    }
+
+    setSearchTermDebounced(searchTermTrimmed);
   };
 
   const [openCounter, setOpenCounter] = useState(0);
@@ -110,13 +117,6 @@ export default memo(function AddressSearchDialog({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  useEffect(() => {
-    if (isAddress(searchTermDebounced)) {
-      onSelectAddress(getAddress(searchTermDebounced));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchTermDebounced]);
-
   const addressBookResults = useAppSelector((state) =>
     addressBookSelectors.searchAddressBookEntries(state, searchTermDebounced)
   );
@@ -125,7 +125,7 @@ export default memo(function AddressSearchDialog({
   const ensData = ensQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!ensQuery.data` means that the data is not undefined nor null.
   const showEns = !!searchTermDebounced && !isAddress(searchTermDebounced);
 
-  const searchSynced = searchTermDebounced === searchTermVisible;
+  const searchSynced = searchTermDebounced === searchTermVisible.trim();
 
   return (
     <ResponsiveDialog
