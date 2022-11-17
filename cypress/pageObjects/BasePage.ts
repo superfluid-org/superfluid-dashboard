@@ -23,7 +23,10 @@ export class BasePage {
     }
 
     static click(selector: string, index: number = 0) {
-        cy.get(selector).eq(index).click();
+        if(index){
+            cy.get(selector).eq(index).click();
+        }
+        cy.get(selector).click()
     }
 
     static clickVisible(selector: string) {
