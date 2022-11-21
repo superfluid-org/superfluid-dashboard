@@ -125,7 +125,12 @@ export const sentryErrorLogger: Middleware =
         if (!aborted && !condition) {
           try {
             const deserializedError = deserializeError(error); // We need to deserialize the error because RTK has already turned it into a "SerializedError" here. We prefer the deserialized error because Sentry works a lot better with an Error object.
-            Sentry.captureException(deserializedError);
+
+            const isUserRejectedRequest =
+              (deserializedError as { code?: number }).code === 4001; // Inspired by wagmi: https://github.com/wagmi-dev/wagmi/blob/348148b4048e4c6cb930a03b88a7aebe2fad4121/packages/core/src/actions/transactions/sendTransaction.ts#L105
+            if (!isUserRejectedRequest) {
+              Sentry.captureException(deserializedError);
+            }
           } catch (e) {
             Sentry.captureException(e); // If deserialization failed, let's not break the Redux middleware chain. This should never happen though.
           }
