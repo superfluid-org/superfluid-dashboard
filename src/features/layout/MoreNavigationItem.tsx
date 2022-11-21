@@ -10,6 +10,7 @@ import {
   ListItemText,
   Menu,
   Modal,
+  Popover,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -79,14 +80,14 @@ const MoreNavigationItem: FC = ({}) => {
         <ListItemText primary="More" />
       </ListItemButton>
 
-      <Menu
+      <Popover
         open={!!moreMenuAnchor}
         anchorEl={moreMenuAnchor}
         onClose={closeMoreMenu}
         transformOrigin={{ horizontal: "left", vertical: "bottom" }}
-        anchorOrigin={{ horizontal: "left", vertical: "top" }}
+        anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
         PaperProps={{
-          sx: { minWidth: 228, marginTop: "-8px" },
+          sx: { minWidth: 228 },
           square: true,
         }}
       >
@@ -146,7 +147,7 @@ const MoreNavigationItem: FC = ({}) => {
           </ListItemIcon>
           <ListItemText>Getting Started</ListItemText>
         </ListItemButton>
-      </Menu>
+      </Popover>
 
       <Modal open={showOnboardingModal} onClose={closeOnboardingModal}>
         <Box

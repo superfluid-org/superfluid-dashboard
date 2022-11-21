@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { format } from "date-fns";
 import { FC, memo } from "react";
-import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import { Activity } from "../../utils/activityUtils";
 import TxHashLink from "../common/TxHashLink";

@@ -22,11 +22,14 @@ import { VisibleAddressProvider } from "../features/wallet/VisibleAddressContext
 import WagmiManager, {
   RainbowKitManager,
 } from "../features/wallet/WagmiManager";
+import { initializeSuperfluidDashboardGlobalObject } from "../global";
 import config from "../utils/config";
 import { IsCypress } from "../utils/SSRUtils";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
+
+initializeSuperfluidDashboardGlobalObject();
 
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -44,7 +47,10 @@ export default function MyApp(props: MyAppProps) {
     }
   }, []);
 
-  useEffect(() => console.log(`%c${SUPERFLUID_RUNNER_ASCII}`, "font-size: 8px"), []);
+  useEffect(
+    () => console.log(`%c${SUPERFLUID_RUNNER_ASCII}`, "font-size: 8px"),
+    []
+  );
 
   return (
     <NextThemesProvider>
@@ -57,32 +63,30 @@ export default function MyApp(props: MyAppProps) {
             <ReduxProvider>
               <ImpersonationProvider>
                 <ExpectedNetworkProvider>
-                  {(network) => (
-                    <ActiveNetworksProvider>
-                      <MuiProvider>
-                        {(_muiTheme) => (
-                          <RainbowKitManager>
-                            <ConnectButtonProvider>
-                              <VisibleAddressProvider>
-                                <TransactionRestorationContextProvider>
-                                  <LayoutContextProvider>
-                                    <IntercomProvider>
-                                      <MonitorContext />
-                                      <Layout>
-                                        <MinigameProvider>
-                                          <Component {...pageProps} />
-                                        </MinigameProvider>
-                                      </Layout>
-                                    </IntercomProvider>
-                                  </LayoutContextProvider>
-                                </TransactionRestorationContextProvider>
-                              </VisibleAddressProvider>
-                            </ConnectButtonProvider>
-                          </RainbowKitManager>
-                        )}
-                      </MuiProvider>
-                    </ActiveNetworksProvider>
-                  )}
+                  <ActiveNetworksProvider>
+                    <MuiProvider>
+                      {(_muiTheme) => (
+                        <RainbowKitManager>
+                          <ConnectButtonProvider>
+                            <VisibleAddressProvider>
+                              <TransactionRestorationContextProvider>
+                                <LayoutContextProvider>
+                                  <IntercomProvider>
+                                    <MonitorContext />
+                                    <Layout>
+                                      <MinigameProvider>
+                                        <Component {...pageProps} />
+                                      </MinigameProvider>
+                                    </Layout>
+                                  </IntercomProvider>
+                                </LayoutContextProvider>
+                              </TransactionRestorationContextProvider>
+                            </VisibleAddressProvider>
+                          </ConnectButtonProvider>
+                        </RainbowKitManager>
+                      )}
+                    </MuiProvider>
+                  </ActiveNetworksProvider>
                 </ExpectedNetworkProvider>
               </ImpersonationProvider>
             </ReduxProvider>

@@ -10,7 +10,8 @@ const NETWORK_SELECTION_TOGGLE_APPENDIX = "-toggle]";
 const NO_BALANCE_WRAP_BUTTON = "[data-cy=no-balance-wrap-button]";
 const NO_BALANCE_MESSAGE = "[data-cy=no-balance-message]";
 const LOADING_SKELETONS = "[data-cy=loading-skeletons]";
-const NET_FLOW_VALUES = "[data-cy=net-flow-value]";
+const NET_FLOW_VALUES = "[data-cy=net-flow-value] span:first-child";
+const NET_FLOW_FIAT = "[data-cy=net-flow-value] span:last-child"
 const INFLOW_VALUES = "[data-cy=inflow]";
 const OUTFLOW_VALUES = "[data-cy=outflow]";
 const SENDER_RECEIVER_ADDRESSES = "[data-cy=sender-receiver-address]";

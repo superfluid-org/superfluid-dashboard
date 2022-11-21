@@ -16,7 +16,7 @@ export class BasePage {
     }
 
     static type(selector: string, text: string) {
-        cy.get(selector).filter(":visible").type(text, {delay: 0});
+        cy.get(selector).filter(":visible").type(text, {delay: 100});
     }
 
     static hasText(

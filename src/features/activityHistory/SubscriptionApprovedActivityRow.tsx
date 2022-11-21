@@ -13,7 +13,7 @@ import {
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { FC, useMemo } from "react";
-import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import { SubscriptionApprovedActivity } from "../../utils/activityUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";

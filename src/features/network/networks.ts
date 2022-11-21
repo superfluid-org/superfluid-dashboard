@@ -41,7 +41,7 @@ export const superfluidRpcUrls = {
   optimism: "https://rpc-endpoints.superfluid.dev/optimism-mainnet",
   avalancheFuji: "https://rpc-endpoints.superfluid.dev/avalanche-fuji",
   avalancheC: "https://rpc-endpoints.superfluid.dev/avalanche-c",
-  bnbSmartChain: "https://bsc-dataseed1.binance.org",
+  bnbSmartChain: "https://rpc-endpoints.superfluid.dev/bsc-mainnet",
 };
 
 const blockExplorers = {

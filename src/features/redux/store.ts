@@ -35,7 +35,9 @@ import gasApi from "../gas/gasApi.slice";
 import { impersonationSlice } from "../impersonation/impersonation.slice";
 import { networkPreferencesSlice } from "../network/networkPreferences.slice";
 import { pendingUpdateSlice } from "../pendingUpdates/pendingUpdate.slice";
+import appSettingsReducer from "../settings/appSettings.slice";
 import { assetApiSlice } from "../token/tokenManifestSlice";
+import tokenPriceApi from "../tokenPrice/tokenPriceApi.slice";
 import { adHocMulticallEndpoints } from "./endpoints/adHocMulticallEndpoints";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
@@ -107,6 +109,11 @@ const flagsPersistedReducer = persistReducer(
   flagsSlice.reducer
 );
 
+const appSettingsPersistedReducer = persistReducer(
+  { storage, key: "appSettings", version: 1 },
+  appSettingsReducer
+);
+
 export const sentryErrorLogger: Middleware =
   (api: MiddlewareAPI) => (next) => (action) => {
     if (isRejected(action)) {
@@ -130,20 +137,27 @@ export const sentryErrorLogger: Middleware =
 
 export const reduxStore = configureStore({
   reducer: {
+    // API slices
     [rpcApi.reducerPath]: rpcApi.reducer,
     [subgraphApi.reducerPath]: subgraphApi.reducer,
     [transactionTracker.reducerPath]: transactionTrackerPersistedReducer,
     [assetApiSlice.reducerPath]: assetApiSlice.reducer,
     [ensApi.reducerPath]: ensApi.reducer,
+    [gasApi.reducerPath]: gasApi.reducer,
+    [platformApi.reducerPath]: platformApi.reducer,
+    [faucetApi.reducerPath]: faucetApi.reducer,
+    [tokenPriceApi.reducerPath]: tokenPriceApi.reducer,
+
+    // Persisted slices
+    appSettings: appSettingsPersistedReducer,
     impersonations: impersonationPersistedReducer,
     addressBook: addressBookPersistedReducer,
     customTokens: customTokensPersistedReducer,
     networkPreferences: networkPreferencesPersistedReducer,
-    [gasApi.reducerPath]: gasApi.reducer,
-    pendingUpdates: pendingUpdateSlice.reducer,
-    [platformApi.reducerPath]: platformApi.reducer,
     flags: flagsPersistedReducer,
-    [faucetApi.reducerPath]: faucetApi.reducer
+
+    // Default slices
+    pendingUpdates: pendingUpdateSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -158,7 +172,8 @@ export const reduxStore = configureStore({
       .concat(ensApi.middleware)
       .concat(gasApi.middleware)
       .concat(platformApi.middleware)
-      .concat(faucetApi.middleware),
+      .concat(faucetApi.middleware)
+      .concat(tokenPriceApi.middleware),
 });
 
 export const reduxPersistor = persistStore(reduxStore);

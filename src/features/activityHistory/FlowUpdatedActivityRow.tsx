@@ -17,7 +17,7 @@ import { FlowUpdatedEvent, FlowUpdateType } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { FC, memo, useMemo } from "react";
-import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import { Activity } from "../../utils/activityUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
@@ -29,6 +29,9 @@ import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
+import useTokenPrice from "../tokenPrice/useTokenPrice";
+import FiatAmount from "../tokenPrice/FiatAmount";
+import { formatEther } from "ethers/lib/utils";
 
 const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
   keyEvent,
@@ -58,6 +61,8 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
     [visibleAddress, sender]
   );
 
+  const tokenPrice = useTokenPrice(network.id, token);
+
   const { title, icon } = useMemo(() => {
     switch (type) {
       case FlowUpdateType.Create:
@@ -77,6 +82,11 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
         };
     }
   }, [isOutgoing, type]);
+
+  const weiAmountMonthly = useMemo(
+    () => BigNumber.from(flowRate).mul(UnitOfTime.Month),
+    [flowRate]
+  );
 
   return (
     <TableRow data-cy={`${network.slugName}-row`}>
@@ -115,22 +125,22 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
                 data-cy={"amount"}
                 primary={
                   <>
-                    <Amount
-                      wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)}
-                    >
+                    <Amount wei={weiAmountMonthly}>
                       {" "}
                       {tokenQuery.data ? `${tokenQuery.data.symbol}/mo` : "/mo"}
                     </Amount>
                   </>
                 }
-                /**
-                 * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-                 * This is just used to make table row look better
-                 */
-                // secondary="$12.59"
+                secondary={
+                  tokenPrice && (
+                    <FiatAmount price={tokenPrice} wei={weiAmountMonthly}>
+                      {" "}
+                      /mo
+                    </FiatAmount>
+                  )
+                }
                 primaryTypographyProps={{
                   variant: "h6mono",
-                  sx: { lineHeight: "46px" },
                 }}
                 secondaryTypographyProps={{
                   variant: "body2mono",

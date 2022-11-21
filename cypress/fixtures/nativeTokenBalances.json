@@ -1,0 +1,58 @@
+{
+  "staticBalanceAccount": {
+    "goerli": {
+      "ETH": {
+        "underlyingBalance": "0.062135",
+        "superTokenBalance": "0"
+      }
+    },
+    "polygon-mumbai": {
+      "MATIC": {
+        "underlyingBalance": "0.002891",
+        "superTokenBalance": "0"
+      }
+    },
+    "avalanche-fuji": {
+      "AVAX": {
+        "underlyingBalance": "0.9733",
+        "superTokenBalance": "0"
+      }
+    },
+    "gnosis": {
+      "XDAI": {
+        "underlyingBalance": "0.9886",
+        "superTokenBalance": "5"
+      }
+    },
+    "polygon": {
+      "MATIC": {
+        "underlyingBalance": "0.9989",
+        "superTokenBalance": "4"
+      }
+    },
+    "optimism": {
+      "ETH": {
+        "underlyingBalance": "0.004737",
+        "superTokenBalance": "0.0008"
+      }
+    },
+    "arbitrum-one": {
+      "ETH": {
+        "underlyingBalance": "0.005157",
+        "superTokenBalance": "0.001157"
+      }
+    },
+    "avalanche": {
+      "AVAX": {
+        "underlyingBalance": "0",
+        "superTokenBalance": "0"
+      }
+    },
+    "bsc": {
+      "BNB": {
+        "underlyingBalance": "0",
+        "superTokenBalance": "0"
+      }
+    }
+  }
+}

@@ -1,6 +1,5 @@
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import {
-  Avatar,
   ListItem,
   ListItemAvatar,
   ListItemText,
@@ -19,6 +18,8 @@ import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
 import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
+import FiatAmount from "../tokenPrice/FiatAmount";
+import useTokenPrice from "../tokenPrice/useTokenPrice";
 import ActivityIcon from "./ActivityIcon";
 
 const MintActivityRow: FC<MintedActivity> = ({
@@ -29,12 +30,14 @@ const MintActivityRow: FC<MintedActivity> = ({
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { amount, transactionHash, timestamp } = keyEvent;
+  const { amount, transactionHash, timestamp, token } = keyEvent;
   const { token: superTokenAddress } = transferEvent || {};
 
   const isNativeAssetSuperToken =
     network.nativeCurrency.superToken.address.toLowerCase() ===
     superTokenAddress?.toLowerCase();
+
+  const tokenPrice = useTokenPrice(network.id, token);
 
   const superTokenQuery = subgraphApi.useTokenQuery(
     !isNativeAssetSuperToken && superTokenAddress
@@ -115,14 +118,11 @@ const MintActivityRow: FC<MintedActivity> = ({
                       <Amount wei={amount} /> {underlyingToken.symbol}
                     </>
                   }
-                  /**
-                   * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-                   * This is just used to make table row look better
-                   */
-                  // secondary="$12.59"
+                  secondary={
+                    tokenPrice && <FiatAmount price={tokenPrice} wei={amount} />
+                  }
                   primaryTypographyProps={{
                     variant: "h6mono",
-                    sx: { lineHeight: "46px" },
                   }}
                   secondaryTypographyProps={{
                     variant: "body2mono",
@@ -150,14 +150,11 @@ const MintActivityRow: FC<MintedActivity> = ({
                       +<Amount wei={amount}> {superToken.symbol}</Amount>
                     </>
                   }
-                  /**
-                   * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-                   * This is just used to make table row look better
-                   */
-                  // secondary="$12.59"
+                  secondary={
+                    tokenPrice && <FiatAmount price={tokenPrice} wei={amount} />
+                  }
                   primaryTypographyProps={{
                     variant: "h6mono",
-                    sx: { lineHeight: "46px" },
                   }}
                   secondaryTypographyProps={{
                     variant: "body2mono",
