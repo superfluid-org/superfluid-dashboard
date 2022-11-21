@@ -40,7 +40,7 @@ const BalanceCriticalIndicator: FC<BalanceCriticalIndicatorProps> = ({
             <Typography variant="tooltip" color="error">
               {`${format(criticalDate, "MM/dd/yy")} at ${format(
                 criticalDate,
-                "mm:HH"
+                "HH:mm"
               )}`}
             </Typography>
           </Typography>

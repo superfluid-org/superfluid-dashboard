@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { format } from "date-fns";
 import { FC } from "react";
-import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import { IndexDistributionClaimedActivity } from "../../utils/activityUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";

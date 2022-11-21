@@ -20,7 +20,7 @@ import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { useRouter } from "next/router";
 import { FC, memo } from "react";
-import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import { getStreamPagePath } from "../../pages/stream/[_network]/[_stream]";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";

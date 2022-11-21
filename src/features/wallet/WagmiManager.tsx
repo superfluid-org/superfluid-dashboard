@@ -13,15 +13,16 @@ import { getAppWallets } from "./getAppWallets";
 import { configureChains } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressAvatar from "../../components/Avatar/AddressAvatar";
 
-export const { chains: wagmiChains, provider: wagmiRpcProvider } = configureChains(networks, [
-  jsonRpcProvider({
-    rpc: (chain) => ({
-      http: networksByChainId.get(chain.id)!.rpcUrls.superfluid,
+export const { chains: wagmiChains, provider: wagmiRpcProvider } =
+  configureChains(networks, [
+    jsonRpcProvider({
+      rpc: (chain) => ({
+        http: networksByChainId.get(chain.id)!.rpcUrls.superfluid,
+      }),
     }),
-  }),
-]);
+  ]);
 
 const { connectors } = getAppWallets({
   appName: "Superfluid Dashboard",
@@ -31,7 +32,7 @@ const { connectors } = getAppWallets({
 export const wagmiClient = createWagmiClient({
   autoConnect: false, // Disable because of special Gnosis Safe handling in useAutoConnect.
   connectors,
-  provider: wagmiRpcProvider
+  provider: wagmiRpcProvider,
 });
 
 const WagmiManager: FC<PropsWithChildren> = ({ children }) => {

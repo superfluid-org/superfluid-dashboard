@@ -12,6 +12,7 @@ export const WrapInputCard: FC<PropsWithChildren> = ({ children }) => {
       sx={{
         px: 2.5,
         py: 1.5,
+        maxWidth: "100%",
         border: "1px solid",
         borderColor: theme.palette.other.outline,
         borderRadius: "15px",

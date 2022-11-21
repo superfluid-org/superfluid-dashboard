@@ -23,11 +23,14 @@ import { VisibleAddressProvider } from "../features/wallet/VisibleAddressContext
 import WagmiManager, {
   RainbowKitManager,
 } from "../features/wallet/WagmiManager";
+import { initializeSuperfluidDashboardGlobalObject } from "../global";
 import config from "../utils/config";
 import { IsCypress } from "../utils/SSRUtils";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
+
+initializeSuperfluidDashboardGlobalObject();
 
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -61,16 +64,15 @@ export default function MyApp(props: MyAppProps) {
             <ReduxProvider>
               <ImpersonationProvider>
                 <ExpectedNetworkProvider>
-                  {(network) => (
-                    <ActiveNetworksProvider>
-                      <MuiProvider>
-                        {(_muiTheme) => (
-                          <RainbowKitManager>
-                            <ConnectButtonProvider>
-                              <VisibleAddressProvider>
-                                <TransactionRestorationContextProvider>
-                                  <LayoutContextProvider>
-                                    <AnalyticsProvider>
+                  <ActiveNetworksProvider>
+                    <MuiProvider>
+                      {(_muiTheme) => (
+                        <RainbowKitManager>
+                          <ConnectButtonProvider>
+                            <VisibleAddressProvider>
+                              <TransactionRestorationContextProvider>
+                                <LayoutContextProvider>
+                                  <AnalyticsProvider>
                                       <IntercomProvider>
                                         <MonitorContext />
                                         <Layout>
@@ -80,15 +82,14 @@ export default function MyApp(props: MyAppProps) {
                                         </Layout>
                                       </IntercomProvider>
                                     </AnalyticsProvider>
-                                  </LayoutContextProvider>
-                                </TransactionRestorationContextProvider>
-                              </VisibleAddressProvider>
-                            </ConnectButtonProvider>
-                          </RainbowKitManager>
-                        )}
-                      </MuiProvider>
-                    </ActiveNetworksProvider>
-                  )}
+                                </LayoutContextProvider>
+                              </TransactionRestorationContextProvider>
+                            </VisibleAddressProvider>
+                          </ConnectButtonProvider>
+                        </RainbowKitManager>
+                      )}
+                    </MuiProvider>
+                  </ActiveNetworksProvider>
                 </ExpectedNetworkProvider>
               </ImpersonationProvider>
             </ReduxProvider>

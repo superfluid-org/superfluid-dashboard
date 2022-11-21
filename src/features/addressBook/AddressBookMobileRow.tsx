@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC } from "react";
-import AddressAvatar from "../../components/AddressAvatar/AddressAvatar";
+import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import useAddressName from "../../hooks/useAddressName";
 import shortenHex from "../../utils/shortenHex";

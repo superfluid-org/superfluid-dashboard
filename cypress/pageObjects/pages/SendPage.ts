@@ -31,7 +31,7 @@ const RISK_CHECKBOX = "[data-cy=risk-checkbox]";
 const ADDRESS_BUTTON_TEXT = "[data-cy=address-button]";
 const CHOSEN_ENS_ADDRESS = "[data-cy=address-button] span p";
 const TOKEN_SELECT_NAME = "[data-cy=token-symbol-and-name] p";
-const TOKEN_SELECT_SYMBOL = "[data-cy=token-symbol-and-name] span";
+const TOKEN_SELECT_SYMBOL = "[data-cy=token-symbol-and-name] h6";
 const TOKEN_SELECT_BALANCE = "[data-cy=token-balance] span";
 const BALANCE_WRAP_BUTTON = "[data-cy=balance-wrap-button]";
 const PREVIEW_BALANCE = "[data-cy=balance]";
@@ -52,6 +52,7 @@ const ALL_BUTTONS = "[data-cy=send-card] [data-cy*=button]"
 const PREVIEW_BUFFER_LOSS = "[data-cy=buffer-loss]"
 const TX_DRAWER_BUTTON = "[data-cy=tx-drawer-button]"
 const OK_BUTTON = "[data-cy=ok-button]"
+const RECEIVER_DIALOG = "[data-cy=receiver-dialog]"
 
 export class SendPage extends BasePage {
     static searchForTokenInTokenList(token: string) {
@@ -118,7 +119,7 @@ export class SendPage extends BasePage {
             }
             cy.get(TOKEN_SEARCH_RESULTS)
                 .eq(0)
-                .find("[data-cy=token-symbol-and-name] span")
+                .find(TOKEN_SELECT_SYMBOL)
                 .then(($tokenSearchResultName) => {
                     cy.wrap($tokenSearchResultName.text()).as("lastChosenToken");
                 });
@@ -270,7 +271,7 @@ export class SendPage extends BasePage {
     }
 
     static tokenSearchResultsOnlyContain(token: string) {
-        cy.get("[data-cy*=-list-item] [data-cy=token-symbol-and-name] span").each(
+        cy.get(`[data-cy*=-list-item] ${TOKEN_SELECT_SYMBOL}`).each(
             (el) => {
                 cy.wrap(el).should("contain", token);
             }
@@ -315,7 +316,14 @@ export class SendPage extends BasePage {
 
     static inputStreamDetails(amount: string, token: string, timeUnit: any, address: string) {
         this.click(RECEIVER_BUTTON);
+        cy.get(RECENT_ENTRIES,{timeout:30000}).should("be.visible")
         this.type(ADDRESS_DIALOG_INPUT, address);
+        cy.get("body").then( el => {
+           if(el.find(RECEIVER_DIALOG).length < 1 ) {
+               this.clear(ADDRESS_DIALOG_INPUT)
+               this.type(ADDRESS_DIALOG_INPUT,address)
+           }
+        })
         this.click(SELECT_TOKEN_BUTTON);
         cy.get(`[data-cy=${token}-list-item]`, {timeout: 60000}).click()
         this.type(FLOW_RATE_INPUT, amount);
@@ -324,8 +332,19 @@ export class SendPage extends BasePage {
         this.click(RISK_CHECKBOX)
     }
 
+    static overrideNextGasPrice() {
+        cy.window().then((win) => {
+            // @ts-ignore
+            win.mockSigner.getGasPrice().then((gas) => {
+                // @ts-ignore
+                win.superfluid_dashboard.advanced.nextGasOverrides.gasPrice = gas._hex.toString() * 3
+            })
+        })
+    }
+
     static startStreamAndCheckDialogs(network: string) {
-        this.isNotDisabled(SEND_BUTTON)
+        this.overrideNextGasPrice()
+        cy.get(SEND_BUTTON).should("not.have.attr", "disabled" , {timeout:30000});
         this.click(SEND_BUTTON)
         this.isVisible(LOADING_SPINNER)
         this.exists(`${SEND_BUTTON} ${LOADING_SPINNER}`)
@@ -355,12 +374,13 @@ export class SendPage extends BasePage {
             this.isVisible(PREVIEW_BUFFER_LOSS)
             cy.get("body").then(body => {
                 if (body.find(CANCEL_STREAM_BUTTON).length > 0) {
+                    this.overrideNextGasPrice()
                     this.click(CANCEL_STREAM_BUTTON)
                     WrapPage.clickOkButton()
-                    this.inputStreamDetails("1", "fDAIx", "month", data.accountWithLotsOfData)
+                    this.isVisible(`${TX_DRAWER_BUTTON} span`)
                     cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
-                    this.hasText(SEND_OR_MOD_STREAM, "Send Stream")
-                    //Working around the apps dirty bugs
+                    this.inputStreamDetails("1", "fDAIx", "month", data.accountWithLotsOfData)
+                    cy.get(SEND_OR_MOD_STREAM,{timeout:30000}).should("have.text","Send Stream")
                     this.clear(FLOW_RATE_INPUT)
                     this.type(FLOW_RATE_INPUT, "1")
                     this.click(RISK_CHECKBOX)
@@ -377,25 +397,29 @@ export class SendPage extends BasePage {
                 this.clear(FLOW_RATE_INPUT)
                 this.type(FLOW_RATE_INPUT, "1")
                 this.click(RISK_CHECKBOX)
+                this.overrideNextGasPrice()
                 this.click(SEND_BUTTON)
                 this.isVisible(GO_TO_TOKENS_PAGE_BUTTON)
                 cy.get(CLOSE_DIALOG_BUTTON, {timeout: 60000}).last().click()
+                this.isVisible(`${TX_DRAWER_BUTTON} span`)
+                cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 90000}).should("not.be.visible")
                 this.inputStreamDetails("2", "fDAIx", "month", data.accountWithLotsOfData)
-                cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
                 this.hasText(SEND_OR_MOD_STREAM, "Modify Stream")
-                //There should be a workaround here but the app won't throw the "same flowrate" error
             }
             if (body.find(SEND_BUTTON).length > 0) {
                 if (body.find("[class*=MuiAlert-root] [class*=MuiAlert-message]").length > 2) {
+                    this.overrideNextGasPrice()
                     this.click(CANCEL_STREAM_BUTTON)
                     WrapPage.clickOkButton()
-                    this.inputStreamDetails("1", "fDAIx", "month", data.accountWithLotsOfData)
+                    this.isVisible(`${TX_DRAWER_BUTTON} span`)
                     cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
+                    this.inputStreamDetails("1", "fDAIx", "month", data.accountWithLotsOfData)
                     this.hasText(SEND_OR_MOD_STREAM, "Send Stream")
                     this.click(SEND_BUTTON)
                     this.click(CLOSE_DIALOG_BUTTON)
-                    this.inputStreamDetails("2", "fDAIx", "month", data.accountWithLotsOfData)
+                    this.isVisible(`${TX_DRAWER_BUTTON} span`)
                     cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
+                    this.inputStreamDetails("2", "fDAIx", "month", data.accountWithLotsOfData)
                 }
             }
         })
@@ -403,7 +427,8 @@ export class SendPage extends BasePage {
     }
 
     static modifyStreamAndValidateDialogs(network: string) {
-        this.isNotDisabled(SEND_BUTTON)
+        this.overrideNextGasPrice()
+        cy.get(SEND_BUTTON).should("not.have.attr", "disabled" , {timeout:30000});
         this.click(SEND_BUTTON)
         this.isVisible(LOADING_SPINNER)
         this.exists(`${SEND_BUTTON} ${LOADING_SPINNER}`)
@@ -420,11 +445,13 @@ export class SendPage extends BasePage {
         cy.fixture("commonData").then(data => {
         cy.get("body").then(body => {
             if (body.find(SEND_BUTTON).length > 0) {
+                this.overrideNextGasPrice()
                 this.click(SEND_BUTTON)
                 this.isVisible(GO_TO_TOKENS_PAGE_BUTTON)
                 cy.get(CLOSE_DIALOG_BUTTON, {timeout: 60000}).last().click()
-                this.inputStreamDetails("2", "fDAIx", "month",data.accountWithLotsOfData)
+                this.isVisible(`${TX_DRAWER_BUTTON} span`)
                 cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
+                this.inputStreamDetails("2", "fDAIx", "month",data.accountWithLotsOfData)
                 this.hasText(SEND_OR_MOD_STREAM, "Modify Stream")
             }
         })
@@ -432,7 +459,8 @@ export class SendPage extends BasePage {
     }
 
     static cancelStreamAndVerifyDialogs(network: string) {
-        this.isNotDisabled(CANCEL_STREAM_BUTTON)
+        this.overrideNextGasPrice()
+        cy.get(CANCEL_STREAM_BUTTON).should("not.have.attr", "disabled" , {timeout:30000});
         this.click(CANCEL_STREAM_BUTTON)
         this.isVisible(LOADING_SPINNER)
         this.exists(`${CANCEL_STREAM_BUTTON} ${LOADING_SPINNER}`)

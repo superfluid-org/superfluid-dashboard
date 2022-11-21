@@ -1,0 +1,69 @@
+name: Production Cypress tests
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 * * * *"
+
+jobs:
+  test-suite:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        container: [AllNetworkTests]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+
+      - name: Cypress tests
+        id: cypress
+        uses: cypress-io/github-action@v4
+        with:
+          parallel: false
+          spec: cypress/integration/${{ matrix.container }}.feature
+          record: false
+          env: TAGS=@hourly,STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }}
+        env:
+          CYPRESS_baseUrl: "https://app.superfluid.finance"
+
+  report:
+    needs: test-suite
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Send a slack message if a test run fails
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '
+            {
+             "blocks": [
+               {
+                 "type": "header",
+                 "text": {
+                   "type": "plain_text",
+                   "text": "Cypress hourly test run #${{ github.run_number }} has failed :warning:",
+                   "emoji": true
+                 }
+               },
+               {
+                 "type": "section",
+                 "text": {
+                   "type": "mrkdwn",
+                   "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|See the Github Action here >"
+                 },
+                 "accessory": {
+                   "type": "image",
+                   "image_url": "https://tse3.mm.bing.net/th?id=OIP.w0TGv--KfEGI5uCOmwJdXQHaEy",
+                   "alt_text": "why u no work???"
+                 }
+               }
+             ]
+            }' ${{ secrets.CI_SLACK_WEBHOOK }}
+
+
