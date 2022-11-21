@@ -23,7 +23,7 @@ if (!IsCypress && SENTRY_DSN) {
         breadcrumb.message = dataCy ? cyMessage : breadcrumb.message;
       }
       return breadcrumb;
-    }
+    },
     // ...
     // Note: if you want to override the automatic release value, do not set a
     // `release` value here - use the environment variable `SENTRY_RELEASE`, so

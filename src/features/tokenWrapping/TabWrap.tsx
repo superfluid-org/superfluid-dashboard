@@ -454,6 +454,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                       overrides: await getTransactionOverrides(network),
                     })
                       .unwrap()
+                      .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
                       .then(() => setTransactionDrawerOpen(true));
                   }}
                 >
@@ -532,6 +533,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                     overrides,
                   })
                     .unwrap()
+                    .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
                     .then(() => resetForm());
 
                   setDialogSuccessActions(

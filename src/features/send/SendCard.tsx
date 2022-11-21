@@ -562,6 +562,7 @@ export default memo(function SendCard() {
               },
             })
               .unwrap()
+              .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
               .then(() => resetForm());
 
             setDialogLoadingInfo(
@@ -662,6 +663,7 @@ export default memo(function SendCard() {
                 overrides: await getTransactionOverrides(network),
               })
                 .unwrap()
+                .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
                 .then(() => resetForm());
             }}
           >
