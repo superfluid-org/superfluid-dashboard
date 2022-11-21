@@ -24,7 +24,8 @@ if (!IsCypress && SENTRY_DSN) {
       }
       return breadcrumb;
     },
-    maxValueLength: 1000, // ethers can have very long errors so we increase this limit.
+    maxValueLength: 500, // ethers can have very long errors so we increase this limit.
+    maxBreadcrumbs: 50 // The long list of breadcrumbs seems to be rarely useful.
     // ...
     // Note: if you want to override the automatic release value, do not set a
     // `release` value here - use the environment variable `SENTRY_RELEASE`, so
