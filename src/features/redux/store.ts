@@ -45,6 +45,8 @@ import { streamSchedulerEndpoints } from "./endpoints/streamSchedulerEndpoints";
 import { platformApi } from "./platformApi/platformApi";
 import * as Sentry from "@sentry/react";
 import { deserializeError } from "serialize-error";
+import { ethers } from "ethers";
+import { ErrorCode } from "@ethersproject/logger";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({
@@ -127,7 +129,8 @@ export const sentryErrorLogger: Middleware =
             const deserializedError = deserializeError(error); // We need to deserialize the error because RTK has already turned it into a "SerializedError" here. We prefer the deserialized error because Sentry works a lot better with an Error object.
 
             const isUserRejectedRequest =
-              (deserializedError as { code?: number }).code === 4001; // Inspired by wagmi: https://github.com/wagmi-dev/wagmi/blob/348148b4048e4c6cb930a03b88a7aebe2fad4121/packages/core/src/actions/transactions/sendTransaction.ts#L105
+              (deserializedError as { code?: string }).code ===
+              "ACTION_REJECTED"; // Inspired by wagmi: https://github.com/wagmi-dev/wagmi/blob/348148b4048e4c6cb930a03b88a7aebe2fad4121/packages/core/src/actions/transactions/sendTransaction.ts#L105 & ethers: https://github.com/ethers-io/ethers.js/blob/ec1b9583039a14a0e0fa15d0a2a6082a2f41cf5b/packages/logger/src.ts/index.ts#L156
             if (!isUserRejectedRequest) {
               Sentry.captureException(deserializedError);
             }
