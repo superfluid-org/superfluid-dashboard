@@ -129,7 +129,15 @@ export const sentryErrorLogger: Middleware =
       if (!aborted && !condition) {
         try {
           const deserializedError = deserializeError(error); // We need to deserialize the error because RTK has already turned it into a "SerializedError" here. We prefer the deserialized error because Sentry works a lot better with an Error object.
+          
+          const errorMessage = (deserializedError as { message?: string }).message;
+          const ethersV5ErrorParts = (errorMessage ?? "").split(" [ See: https:/\/links.ethers.org/v5-errors-"); // https://github.com/ethers-io/ethers.js/blob/c80fcddf50a9023486e9f9acb1848aba4c19f7b6/packages/logger/src.ts/index.ts#L261
+          const isEthersV5Error = ethersV5ErrorParts.length === 2;
 
+          if (isEthersV5Error) {
+            (deserializedError as { message: string }).message = ethersV5ErrorParts[0]; // Shorten ethers error message to just "reason".
+          }
+          
           const isUserRejectedRequest =
             (deserializedError as { code?: string }).code === "ACTION_REJECTED"; // Inspired by wagmi: https://github.com/wagmi-dev/wagmi/blob/348148b4048e4c6cb930a03b88a7aebe2fad4121/packages/core/src/actions/transactions/sendTransaction.ts#L105 & ethers: https://github.com/ethers-io/ethers.js/blob/ec1b9583039a14a0e0fa15d0a2a6082a2f41cf5b/packages/logger/src.ts/index.ts#L156
           if (!isUserRejectedRequest) {
