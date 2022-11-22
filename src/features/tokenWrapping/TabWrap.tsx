@@ -454,8 +454,8 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                       overrides: await getTransactionOverrides(network),
                     })
                       .unwrap()
+                      .then(() => setTransactionDrawerOpen(true))
                       .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
-                      .then(() => setTransactionDrawerOpen(true));
                   }}
                 >
                   Allow Superfluid Protocol to wrap your{" "}
@@ -533,8 +533,8 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                     overrides,
                   })
                     .unwrap()
+                    .then(() => resetForm())
                     .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
-                    .then(() => resetForm());
 
                   setDialogSuccessActions(
                     <TransactionDialogActions>

@@ -562,8 +562,8 @@ export default memo(function SendCard() {
               },
             })
               .unwrap()
+              .then(() => resetForm())
               .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
-              .then(() => resetForm());
 
             setDialogLoadingInfo(
               <Typography variant="h5" color="text.secondary" translate="yes">
@@ -663,8 +663,8 @@ export default memo(function SendCard() {
                 overrides: await getTransactionOverrides(network),
               })
                 .unwrap()
+                .then(() => resetForm())
                 .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
-                .then(() => resetForm());
             }}
           >
             Cancel Stream
