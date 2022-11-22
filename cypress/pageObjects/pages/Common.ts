@@ -29,6 +29,8 @@ const ERROR_PAGE_MESSAGE = "[data-cy=404-message]"
 const RETURN_TO_DASHBOARD_BUTTON = "[data-cy=return-to-dashboard-button]"
 const HELP_CENTER_LINK = "[data-cy=help-center-link]"
 const RESTORE_BUTTONS = "[data-testid=ReplayIcon]"
+const DISCONNECT_BUTTON = "[data-testid=rk-disconnect-button]"
+const RAINBOWKIT_CLOSE_BUTTON = "[aria-label=Close]"
 
 export class Common extends BasePage {
     static clickNavBarButton(button: string) {
@@ -235,5 +237,11 @@ export class Common extends BasePage {
 
     static restoreLastTx() {
         this.clickFirstVisible(RESTORE_BUTTONS)
+    }
+
+    static disconnectWallet() {
+        this.click(WALLET_CONNECTION_STATUS)
+        this.click(DISCONNECT_BUTTON)
+        this.click(RAINBOWKIT_CLOSE_BUTTON)
     }
 }

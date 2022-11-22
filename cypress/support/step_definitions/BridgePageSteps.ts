@@ -1,4 +1,4 @@
-import {Given} from "@badeball/cypress-cucumber-preprocessor";
+import {Given,Then} from "@badeball/cypress-cucumber-preprocessor";
 import {BridgePage} from "../../pageObjects/pages/BridgePage";
 
 Given(/^User chooses "([^"]*)" token to swap "([^"]*)" on "([^"]*)"$/, (token:string,toFrom:string,network:string) => {
@@ -26,9 +26,33 @@ Given(/^Review swap button is disabled$/,  () => {
 Given(/^Not enough funds error is shown$/,  () => {
     BridgePage.validateNotEnoughFundsError()
 });
-Given(/^You pay section icon for a token without icon is shown correctly$/,  () => {
-    BridgePage.validatePaySectionIconsForDefaultIconTokens()
+
+Given(/^Not enough gas funds error is shown$/,  () => {
+    BridgePage.validateNotEnoughGasFundsError()
 });
-Given(/^Token swapping route for is correctly shown for a token that has no icon$/,  () => {
-    BridgePage.validateSwapRouteForDefaultIconTokens()
+
+Given(/^User clicks on the history button$/,  () => {
+    BridgePage.clickOnHistoryPageButton()
+});
+
+Then(/^No history message is shown$/,  () => {
+    BridgePage.validateNoHistoryMessage()
+});
+
+Then(/^LiFi bridge inputs are visible$/,  () => {
+    BridgePage.validateFromToInputsVisible()
+});
+
+Given(/^History button is not visible$/,  () => {
+    BridgePage.validateNoHistoryButtonWhenNotConnected()
+});
+
+Given(/^User clicks on the connect wallet button in the lifi widget$/,  () => {
+    BridgePage.clickConnectWalletButton()
+});
+Given(/^User opens the lifi widget settings$/,  () => {
+    BridgePage.openLifiSettings()
+});
+Given(/^Lifi widget settings are visible$/,  () => {
+    BridgePage.verifyLifiSettingsFields()
 });

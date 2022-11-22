@@ -10,6 +10,8 @@ const WARNING_TEXT = "[data-testid=WarningAmberIcon] + div > p"
 const FROM_AMOUNT = "[name=fromAmount]"
 const LOADING_SKELETONS = "[class*=MuiSkeleton]"
 const FROM_TO_HEADERS = `${LIFI_WIDGET_CONTAINER} [class*=MuiCardHeader-avatar]`
+const HISTORY_BUTTON = "[data-testid=HistoryIcon]"
+const SETTINGS_BUTTON = "[data-testid=SettingsOutlinedIcon]"
 
 export class BridgePage extends BasePage {
 
@@ -70,11 +72,46 @@ export class BridgePage extends BasePage {
         this.hasText(WARNING_TEXT,"You don't have enough funds to execute the swap.")
     }
 
-    static validatePaySectionIconsForDefaultIconTokens() {
-
+    static validateNotEnoughGasFundsError() {
+        this.containsText(WARNING_TEXT,"Insufficient gas")
     }
 
-    static validateSwapRouteForDefaultIconTokens() {
+    static clickOnHistoryPageButton() {
+        this.click(HISTORY_BUTTON)
+    }
 
+    static validateNoHistoryMessage() {
+        cy.get(HISTORY_BUTTON).parent().parent().find("p").contains("No recent swaps")
+        cy.get(HISTORY_BUTTON).parent().parent().find("p").contains("Swap history is only stored locally and will be deleted if you clear your browser data.")
+    }
+
+    static validateFromToInputsVisible() {
+        cy.contains("From").should("be.visible")
+        cy.contains("To").should("be.visible")
+        cy.contains("Select chain and token")
+        cy.contains("You pay")
+    }
+
+    static validateNoHistoryButtonWhenNotConnected() {
+        this.doesNotExist(HISTORY_BUTTON)
+    }
+
+    static clickConnectWalletButton() {
+        cy.get(LIFI_BUTTONS).contains("Connect wallet").click()
+    }
+
+    static openLifiSettings() {
+        this.click(SETTINGS_BUTTON)
+    }
+
+    static verifyLifiSettingsFields() {
+        cy.contains("Language").should("be.visible")
+        cy.contains("English").should("be.visible")
+        cy.contains("Route priority").should("be.visible")
+        cy.contains("Recommended").should("be.visible")
+        cy.contains("Slippage").should("be.visible")
+        cy.contains("Gas price").should("be.visible")
+        cy.contains("Show destination wallet").should("be.visible")
+        cy.contains("Advanced preferences").should("be.visible")
     }
 }
