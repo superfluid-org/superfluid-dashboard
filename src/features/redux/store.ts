@@ -2,6 +2,7 @@ import {
   configureStore,
   Dispatch,
   isRejected,
+  isRejectedWithValue,
   Middleware,
   MiddlewareAPI,
 } from "@reduxjs/toolkit";
@@ -118,25 +119,24 @@ const appSettingsPersistedReducer = persistReducer(
 
 export const sentryErrorLogger: Middleware =
   (api: MiddlewareAPI) => (next) => (action) => {
-    if (isRejected(action)) {
-      const { error } = action;
-      if (error) {
-        // "aborted" & "condition" inspired by: https://github.com/reduxjs/redux-toolkit/blob/64a30d83384d77bcbc59231fa32aa2f1acd67020/packages/toolkit/src/createAsyncThunk.ts#L521
-        const aborted = error?.name === "AbortError";
-        const condition = error?.name === "ConditionError";
-        if (!aborted && !condition) {
-          try {
-            const deserializedError = deserializeError(error); // We need to deserialize the error because RTK has already turned it into a "SerializedError" here. We prefer the deserialized error because Sentry works a lot better with an Error object.
+    const { error } = action;
 
-            const isUserRejectedRequest =
-              (deserializedError as { code?: string }).code ===
-              "ACTION_REJECTED"; // Inspired by wagmi: https://github.com/wagmi-dev/wagmi/blob/348148b4048e4c6cb930a03b88a7aebe2fad4121/packages/core/src/actions/transactions/sendTransaction.ts#L105 & ethers: https://github.com/ethers-io/ethers.js/blob/ec1b9583039a14a0e0fa15d0a2a6082a2f41cf5b/packages/logger/src.ts/index.ts#L156
-            if (!isUserRejectedRequest) {
-              Sentry.captureException(deserializedError);
-            }
-          } catch (e) {
-            Sentry.captureException(e); // If deserialization failed, let's not break the Redux middleware chain. This should never happen though.
+    // Log when there was an error/exception but it wasn't explicitly rejected.
+    if (error && isRejected(action) && !isRejectedWithValue(action)) {
+      // "aborted" & "condition" inspired by: https://github.com/reduxjs/redux-toolkit/blob/64a30d83384d77bcbc59231fa32aa2f1acd67020/packages/toolkit/src/createAsyncThunk.ts#L521
+      const aborted = error?.name === "AbortError";
+      const condition = error?.name === "ConditionError";
+      if (!aborted && !condition) {
+        try {
+          const deserializedError = deserializeError(error); // We need to deserialize the error because RTK has already turned it into a "SerializedError" here. We prefer the deserialized error because Sentry works a lot better with an Error object.
+
+          const isUserRejectedRequest =
+            (deserializedError as { code?: string }).code === "ACTION_REJECTED"; // Inspired by wagmi: https://github.com/wagmi-dev/wagmi/blob/348148b4048e4c6cb930a03b88a7aebe2fad4121/packages/core/src/actions/transactions/sendTransaction.ts#L105 & ethers: https://github.com/ethers-io/ethers.js/blob/ec1b9583039a14a0e0fa15d0a2a6082a2f41cf5b/packages/logger/src.ts/index.ts#L156
+          if (!isUserRejectedRequest) {
+            Sentry.captureException(deserializedError);
           }
+        } catch (e) {
+          Sentry.captureException(e); // If deserialization failed, let's not break the Redux middleware chain. This should never happen though.
         }
       }
     }
