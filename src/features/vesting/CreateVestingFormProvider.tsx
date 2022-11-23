@@ -2,13 +2,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import add from "date-fns/fp/add";
 import React, {
   FC,
-  PropsWithChildren,
   ReactNode,
   useEffect,
   useMemo,
   useState,
 } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm, UseFormSetError } from "react-hook-form";
 import { date, mixed, number, object, ObjectSchema, string } from "yup";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
@@ -25,6 +24,7 @@ import {
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import { createHandleHigherOrderValidationErrorFunc } from "../../utils/createHandleHigherOrderValidationErrorFunc";
 
 export type ValidVestingForm = {
   data: {
@@ -111,21 +111,11 @@ const CreateVestingFormProvider: FC<{
       object().test(async (values, context) => {
         clearErrors("data");
 
-        // TODO(KK): This is now duplicated 3 times. DRY, please
-        // # Higher order validation
-        const handleHigherOrderValidationError = ({
-          message,
-        }: {
-          message: string;
-        }) => {
-          setError("data", {
-            message: message,
-          });
-          throw context.createError({
-            path: "data",
-            message: message,
-          });
-        };
+        const handleHigherOrderValidationError =
+          createHandleHigherOrderValidationErrorFunc(
+            setError,
+            context.createError
+          );
 
         if (network !== networkDefinition.goerli) {
           handleHigherOrderValidationError({
