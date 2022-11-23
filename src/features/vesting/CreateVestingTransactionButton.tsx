@@ -95,9 +95,9 @@ export const CreateVestingTransactionButton: FC<{
                   })
                     .unwrap()
                     .then(() => setView(CreateVestingCardView.Success))
-                    .catch(() => setView(CreateVestingCardView.Preview));
+                    .catch(() => setView(CreateVestingCardView.Preview)); // Error is already logged and handled in the middleware & UI.
 
-                  setDialogSuccessActions(
+                    setDialogSuccessActions(
                     <TransactionDialogActions>
                       <Link href="/vesting" passHref>
                         <TransactionDialogButton color="primary">
