@@ -354,7 +354,8 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                   overrides,
                 })
                   .unwrap()
-                  .then(() => resetForm());
+                  .then(() => resetForm())
+                  .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
               }}
             >
               Unwrap

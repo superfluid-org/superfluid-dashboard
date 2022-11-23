@@ -1,7 +1,6 @@
 import {BasePage} from "../BasePage";
-import shortenHex from "../../../src/utils/shortenHex";
 import {format} from "date-fns";
-import {networksBySlug} from "../../../src/features/network/networks";
+import {networksBySlug} from "../../superData/networks";
 
 const TOKEN_BALANCE = "[data-cy=token-balance]"
 const TOKEN_GRAPH = "[data-cy=token-graph]"
@@ -52,7 +51,7 @@ export class IndividualTokenPage extends BasePage {
     }
 
     static validateStreamTableFirstRowValues(address: string, sendOrReceive: string, ongoing: string, amount: string, fromTo: string) {
-        cy.get(`${STREAM_ROWS} ${SENDER_RECEIVER_ADDRESSES}`).first().should("have.text", shortenHex(address))
+        cy.get(`${STREAM_ROWS} ${SENDER_RECEIVER_ADDRESSES}`).first().should("have.text", BasePage.shortenHex(address))
         let plusOrMinus;
         if (sendOrReceive === "receiving") {
             plusOrMinus = "-"
@@ -88,7 +87,7 @@ export class IndividualTokenPage extends BasePage {
     }
 
     static validateLastDistributionRow(address: string, amount: string, status: string, when: string) {
-        cy.get(PUBLISHERS).first().should("have.text", shortenHex(address))
+        cy.get(PUBLISHERS).first().should("have.text", BasePage.shortenHex(address))
         cy.get(AMOUNT_RECEIVED).first().should("have.text", amount)
         cy.get(STATUS).first().should("have.text", status)
         let fromToDate = when === "now" ? format((Date.now()), "d MMM. yyyy") : format(parseInt(when) * 1000, "d MMM. yyyy")

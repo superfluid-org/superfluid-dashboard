@@ -1,6 +1,5 @@
 import {BasePage} from "../BasePage";
-import {networksBySlug} from "../../../src/features/network/networks";
-import shortenHex from "../../../src/utils/shortenHex";
+import {networksBySlug} from "../../superData/networks";
 import {format} from "date-fns";
 
 const WRAP_TAB = "[data-cy=wrap-toggle]";
@@ -273,7 +272,7 @@ export class WrapPage extends BasePage {
         cy.get(TX_HASH_BUTTONS).first().then(el => {
             el.attr("href")?.substr(-66)
             cy.get(TX_HASH).should("be.visible")
-            cy.get(TX_HASH).first().should("have.text", shortenHex(el.attr("href")!.substr(-66)))
+            cy.get(TX_HASH).first().should("have.text", BasePage.shortenHex(el.attr("href")!.substr(-66)))
         })
         this.isVisible(PROGRESS_LINE)
         cy.get(TX_DATE).first().should("have.text", `${format(Date.now(), "d MMM")} •`)
@@ -287,7 +286,7 @@ export class WrapPage extends BasePage {
         cy.get(TX_HASH_BUTTONS).first().then(el => {
             el.attr("href")?.substr(-66)
             cy.get(TX_HASH).should("be.visible")
-            cy.get(TX_HASH).first().should("have.text", shortenHex(el.attr("href")!.substr(-66)))
+            cy.get(TX_HASH).first().should("have.text", BasePage.shortenHex(el.attr("href")!.substr(-66)))
         })
         this.doesNotExist(PROGRESS_LINE)
         cy.get(TX_DATE).first().should("have.text", `${format(Date.now(), "d MMM")} •`)
@@ -360,7 +359,7 @@ export class WrapPage extends BasePage {
         })
         cy.get("@underlyingBalanceBeforeUnwrap").then((balanceBefore: any) => {
             let expectedAmount = (parseFloat(balanceBefore) + parseFloat(amount)).toFixed(4).toString().substr(0, 4)
-            this.containsText(UNDERLYING_BALANCE, `Balance: ${expectedAmount}`)
+            cy.get(UNDERLYING_BALANCE, {timeout: 45000}).should("contain.text",`Balance: ${expectedAmount}`)
         })
         cy.get("@lastUnwrappedToken").then((lastToken: any) => {
             this.hasText(SELECT_TOKEN_BUTTON, lastToken)

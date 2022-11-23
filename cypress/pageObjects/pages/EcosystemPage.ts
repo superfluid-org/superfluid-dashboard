@@ -1,5 +1,5 @@
 import {BasePage} from "../BasePage";
-import {BUILT_ON_SUPERFLUID, SUPERFLUID_INTEGRATIONS, SUPPORTS_SUPER_TOKENS} from "../../../src/pages/ecosystem";
+import {BUILT_ON_SUPERFLUID, SUPERFLUID_INTEGRATIONS, SUPPORTS_SUPER_TOKENS} from "../../superData/ecosystem";
 
 const APP_NAMES = "[data-cy=app-name]"
 const APP_DESCRIPTIONS = "[data-cy=app-description]"
