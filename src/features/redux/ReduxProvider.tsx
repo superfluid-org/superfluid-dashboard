@@ -19,7 +19,6 @@ import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import {
   listenerMiddleware,
   reduxStore,
-  subgraphApi,
   transactionTracker,
   useAppDispatch,
 } from "./store";

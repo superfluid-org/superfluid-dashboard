@@ -5,6 +5,7 @@ import { VestingLayout } from "../features/vesting/VestingLayout";
 import { NextPageWithLayout } from "./_app";
 
 import { ReceivedVestingScheduleTable } from "../features/vesting/ReceivedVestingScheduleTable";
+import ReduxPersistGate from "../features/redux/ReduxPersistGate";
 
 const VestingPage: NextPageWithLayout = () => {
   return (

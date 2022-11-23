@@ -6,6 +6,7 @@ import { ReactElement, ReactNode, useEffect } from "react";
 import { hotjar } from "react-hotjar";
 import MonitorContext from "../components/MonitorContext/MonitorContext";
 import { AutoConnectProvider } from "../features/autoConnect/AutoConnect";
+import { FeatureFlagProvider } from "../features/featureFlags/FeatureFlagContext";
 import { ImpersonationProvider } from "../features/impersonation/ImpersonationContext";
 import IntercomProvider from "../features/intercom/IntercomProvider";
 import Layout from "../features/layout/Layout";
@@ -70,36 +71,38 @@ export default function MyApp(props: AppPropsWithLayout) {
         <WagmiManager>
           <AutoConnectProvider>
             <ReduxProvider>
-              <ImpersonationProvider>
-                <ExpectedNetworkProvider>
-                  <ActiveNetworksProvider>
-                    <MuiProvider>
-                      {(_muiTheme) => (
-                        <RainbowKitManager>
-                          <ConnectButtonProvider>
-                            <VisibleAddressProvider>
-                              <TransactionRestorationContextProvider>
-                                <LayoutContextProvider>
-                                  <IntercomProvider>
-                                    <MonitorContext />
-                                    <Layout>
-                                      <MinigameProvider>
-                                        {getLayout(
-                                          <Component {...pageProps} />
-                                        )}
-                                      </MinigameProvider>
-                                    </Layout>
-                                  </IntercomProvider>
-                                </LayoutContextProvider>
-                              </TransactionRestorationContextProvider>
-                            </VisibleAddressProvider>
-                          </ConnectButtonProvider>
-                        </RainbowKitManager>
-                      )}
-                    </MuiProvider>
-                  </ActiveNetworksProvider>
-                </ExpectedNetworkProvider>
-              </ImpersonationProvider>
+              <FeatureFlagProvider>
+                <ImpersonationProvider>
+                  <ExpectedNetworkProvider>
+                    <ActiveNetworksProvider>
+                      <MuiProvider>
+                        {(_muiTheme) => (
+                          <RainbowKitManager>
+                            <ConnectButtonProvider>
+                              <VisibleAddressProvider>
+                                <TransactionRestorationContextProvider>
+                                  <LayoutContextProvider>
+                                    <IntercomProvider>
+                                      <MonitorContext />
+                                      <Layout>
+                                        <MinigameProvider>
+                                          {getLayout(
+                                            <Component {...pageProps} />
+                                          )}
+                                        </MinigameProvider>
+                                      </Layout>
+                                    </IntercomProvider>
+                                  </LayoutContextProvider>
+                                </TransactionRestorationContextProvider>
+                              </VisibleAddressProvider>
+                            </ConnectButtonProvider>
+                          </RainbowKitManager>
+                        )}
+                      </MuiProvider>
+                    </ActiveNetworksProvider>
+                  </ExpectedNetworkProvider>
+                </ImpersonationProvider>
+              </FeatureFlagProvider>
             </ReduxProvider>
           </AutoConnectProvider>
         </WagmiManager>

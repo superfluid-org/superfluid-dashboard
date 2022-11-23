@@ -28,6 +28,8 @@ import ConnectWallet from "../wallet/ConnectWallet";
 import { useLayoutContext } from "./LayoutContext";
 import MoreNavigationItem from "./MoreNavigationItem";
 import ElderlyRoundedIcon from "@mui/icons-material/ElderlyRounded";
+import { useFeatureFlags } from "../featureFlags/FeatureFlagContext";
+import ReduxPersistGate from "../redux/ReduxPersistGate";
 
 export const menuDrawerWidth = 260;
 
@@ -67,7 +69,7 @@ export default memo(function NavigationDrawer() {
   const router = useRouter();
   const isBelowLg = useMediaQuery(theme.breakpoints.down("lg"));
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-
+  const { isVestingEnabled } = useFeatureFlags();
   const { navigationDrawerOpen, setNavigationDrawerOpen } = useLayoutContext();
 
   const closeNavigationDrawer = useCallback(() => {
@@ -207,19 +209,22 @@ export default memo(function NavigationDrawer() {
           active={isActiveRoute("/ecosystem")}
           icon={AppsRoundedIcon}
         />
-
-        <NavigationItem
-          id="nav-vesting"
-          title="Vesting"
-          href="/vesting"
-          onClick={closeNavigationDrawer}
-          active={isActiveRoute(
-            "/vesting",
-            "/vesting/create",
-            "/vesting/[_network]/[_id]"
+        <ReduxPersistGate>
+          {isVestingEnabled && (
+            <NavigationItem
+              id="nav-vesting"
+              title="Vesting"
+              href="/vesting"
+              onClick={closeNavigationDrawer}
+              active={isActiveRoute(
+                "/vesting",
+                "/vesting/create",
+                "/vesting/[_network]/[_id]"
+              )}
+              icon={ElderlyRoundedIcon}
+            />
           )}
-          icon={ElderlyRoundedIcon}
-        />
+        </ReduxPersistGate>
       </Stack>
 
       <Stack justifyContent="flex-end" sx={{ flex: 1 }}>

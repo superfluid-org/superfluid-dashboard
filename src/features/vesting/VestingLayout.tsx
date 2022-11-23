@@ -10,6 +10,9 @@ import { FC, PropsWithChildren } from "react";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import NextLink from "next/link";
 import AddIcon from "@mui/icons-material/Add";
+import { useFeatureFlags } from "../featureFlags/FeatureFlagContext";
+import Page404 from "../../pages/404";
+import ReduxPersistGate from "../redux/ReduxPersistGate";
 
 const VestingHeader = () => {
   return (
@@ -33,14 +36,21 @@ const VestingHeader = () => {
 
 export const VestingLayout: FC<PropsWithChildren> = ({ children }) => {
   const { network } = useExpectedNetwork();
+  const { isVestingEnabled } = useFeatureFlags();
 
   return (
-    <Container key={`${network.slugName}`} maxWidth="lg">
-      <Stack gap={4.5}>
-        <VestingHeader />
-        <Divider />
-        {children}
-      </Stack>
-    </Container>
+    <ReduxPersistGate>
+      {isVestingEnabled ? (
+        <Container key={`${network.slugName}`} maxWidth="lg">
+          <Stack gap={4.5}>
+            <VestingHeader />
+            <Divider />
+            {children}
+          </Stack>
+        </Container>
+      ) : (
+        <Page404 />
+      )}
+    </ReduxPersistGate>
   );
 };
