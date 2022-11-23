@@ -23,7 +23,9 @@ if (!IsCypress && SENTRY_DSN) {
         breadcrumb.message = dataCy ? cyMessage : breadcrumb.message;
       }
       return breadcrumb;
-    }
+    },
+    maxValueLength: 750, // ethers can have very long errors so we increase this limit.
+    maxBreadcrumbs: 25 // The long list of breadcrumbs seem to be rarely useful so we decrease this.
     // ...
     // Note: if you want to override the automatic release value, do not set a
     // `release` value here - use the environment variable `SENTRY_RELEASE`, so

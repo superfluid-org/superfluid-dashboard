@@ -1,6 +1,5 @@
 import {BasePage} from "../BasePage";
-import {networksBySlug} from "../../../src/features/network/networks";
-import shortenHex from "../../../src/utils/shortenHex";
+import {networksBySlug} from "../../superData/networks";
 import {format} from "date-fns";
 
 const WRAP_TAB = "[data-cy=wrap-toggle]";
@@ -45,6 +44,7 @@ const APPROVE_ALLOWANCE_MESSAGE = "[data-cy=allowance-message]"
 const WRAP_SCREEN = "[data-cy=wrap-screen]"
 const MAIN_BUTTONS = `${WRAP_SCREEN} [data-cy*=e-button]`
 const MAX_BUTTON = "[data-cy=max-button]"
+const TOKEN_SEARCH_NO_RESULTS = "[data-cy=token-search-no-results]"
 
 export class WrapPage extends BasePage {
     static checkIfWrapContainerIsVisible() {
@@ -272,7 +272,7 @@ export class WrapPage extends BasePage {
         cy.get(TX_HASH_BUTTONS).first().then(el => {
             el.attr("href")?.substr(-66)
             cy.get(TX_HASH).should("be.visible")
-            cy.get(TX_HASH).first().should("have.text", shortenHex(el.attr("href")!.substr(-66)))
+            cy.get(TX_HASH).first().should("have.text", BasePage.shortenHex(el.attr("href")!.substr(-66)))
         })
         this.isVisible(PROGRESS_LINE)
         cy.get(TX_DATE).first().should("have.text", `${format(Date.now(), "d MMM")} •`)
@@ -286,7 +286,7 @@ export class WrapPage extends BasePage {
         cy.get(TX_HASH_BUTTONS).first().then(el => {
             el.attr("href")?.substr(-66)
             cy.get(TX_HASH).should("be.visible")
-            cy.get(TX_HASH).first().should("have.text", shortenHex(el.attr("href")!.substr(-66)))
+            cy.get(TX_HASH).first().should("have.text", BasePage.shortenHex(el.attr("href")!.substr(-66)))
         })
         this.doesNotExist(PROGRESS_LINE)
         cy.get(TX_DATE).first().should("have.text", `${format(Date.now(), "d MMM")} •`)
@@ -411,6 +411,25 @@ export class WrapPage extends BasePage {
                 this.validateSuccessfulTransaction("Approve Allowance", network)
                 this.doesRestoreButtonExist()
             }
+        })
+    }
+
+    static validateWrapPageNativeTokenBalance(token: string, account: string, network: string) {
+        cy.fixture("nativeTokenBalances").then(fixture => {
+            cy.get(UNDERLYING_BALANCE , {timeout: 60000}).should("have.text",`Balance: ${fixture[account][network][token].underlyingBalance}`)
+            cy.get(SUPER_TOKEN_BALANCE , {timeout: 60000}).should("have.text",`${fixture[account][network][token].superTokenBalance} `)
+        })
+    }
+
+    static validateNoTokenMessageNotVisible() {
+        this.doesNotExist(TOKEN_SEARCH_NO_RESULTS)
+    }
+
+    static validateNativeTokenBalanceInTokenList(token: string, account: string, network: string) {
+        cy.fixture("nativeTokenBalances").then(fixture => {
+            let expectedString = fixture[account][network][token].underlyingBalance === "0" ? fixture[account][network][token].underlyingBalance : `~${fixture[account][network][token].underlyingBalance}`
+            cy.get(`[data-cy=${token}-list-item]`).scrollIntoView()
+            this.hasText(`[data-cy=${token}-list-item] ${TOKEN_SELECT_BALANCE}`,expectedString)
         })
     }
 }

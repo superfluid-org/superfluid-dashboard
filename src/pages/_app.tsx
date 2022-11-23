@@ -24,11 +24,14 @@ import { VisibleAddressProvider } from "../features/wallet/VisibleAddressContext
 import WagmiManager, {
   RainbowKitManager,
 } from "../features/wallet/WagmiManager";
+import { initializeSuperfluidDashboardGlobalObject } from "../global";
 import config from "../utils/config";
 import { IsCypress } from "../utils/SSRUtils";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
+
+initializeSuperfluidDashboardGlobalObject();
 
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
