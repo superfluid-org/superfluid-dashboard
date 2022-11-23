@@ -251,17 +251,3 @@ const CreateVestingFormProvider: FC<{
 };
 
 export default CreateVestingFormProvider;
-
-// TODO(KK): throw-away below?
-
-// findClosestUnitOfTime
-// UnitOfAmount
-
-type UnitOfAmount =
-  | "wei"
-  | "kwei"
-  | "mwei"
-  | "gwei"
-  | "szabo"
-  | "finney"
-  | "ether";

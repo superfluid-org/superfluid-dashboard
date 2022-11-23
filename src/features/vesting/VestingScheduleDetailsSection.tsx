@@ -28,7 +28,6 @@ export const VestingScheduleDetails: FC<{
     id,
   });
 
-  // TODO(KK): handle failure and skip here?
   const tokenQuery = useVestingToken(
     network,
     vestingScheduleQuery?.data?.vestingSchedule?.superToken
