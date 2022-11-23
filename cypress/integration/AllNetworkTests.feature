@@ -1,7 +1,7 @@
 @hourly
 Feature: Test cases that run indefinitely on all supported networks
 
-  Scenario Outline: Smoke testing RPC and Graph in Wrap page
+  Scenario Outline: Smoke testing RPC and Graph in Wrap page on <network>
     Given "Dashboard Page" is open without connecting a wallet
     Given User uses view mode to look at "staticBalanceAccount"
     And User clicks on the "wrap-unwrap" navigation button

@@ -242,6 +242,5 @@ export class Common extends BasePage {
     static disconnectWallet() {
         this.click(WALLET_CONNECTION_STATUS)
         this.click(DISCONNECT_BUTTON)
-        this.click(RAINBOWKIT_CLOSE_BUTTON)
     }
 }
