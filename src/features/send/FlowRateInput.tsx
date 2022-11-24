@@ -121,8 +121,6 @@ export const FlowRateInput: FC<{
     <Box sx={{ display: "grid", gridTemplateColumns: "6fr 4fr" }}>
       <TextField
         data-cy={"flow-rate-input"}
-        type="text"
-        inputMode="decimal"
         autoComplete="off"
         autoCorrect="off"
         placeholder="0.0"

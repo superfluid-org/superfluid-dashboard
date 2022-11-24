@@ -114,18 +114,17 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
             name="data.amountDecimal"
             render={({ field: { onChange, onBlur } }) => (
               <Input
-                {...inputPropsForEtherAmount}
                 data-cy={"unwrap-input"}
                 fullWidth
                 disableUnderline
                 type="text"
                 placeholder="0.0"
-                inputMode="decimal"
                 inputRef={amountInputRef}
                 value={amount}
                 onChange={onChange}
                 onBlur={onBlur}
                 inputProps={{
+                  ...inputPropsForEtherAmount,
                   sx: {
                     ...theme.typography.largeInput,
                     p: 0,

@@ -5,7 +5,6 @@ import { formatEther, formatUnits, parseEther } from "ethers/lib/utils";
 import { useRouter } from "next/router";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { useAccount } from "wagmi";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import { parseAmountOrZero } from "../../utils/tokenUtils";
@@ -228,7 +227,6 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
             name="data.amountDecimal"
             render={({ field: { onChange, onBlur } }) => (
               <Input
-                {...inputPropsForEtherAmount}
                 data-cy={"wrap-input"}
                 fullWidth
                 disableUnderline
@@ -238,6 +236,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                 onChange={onChange}
                 onBlur={onBlur}
                 inputProps={{
+                  ...inputPropsForEtherAmount,
                   sx: {
                     ...theme.typography.largeInput,
                     p: 0,

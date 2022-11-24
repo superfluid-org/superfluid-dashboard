@@ -214,7 +214,6 @@ export const CreateVestingForm: FC<{
       name="data.cliffAmountEther"
       render={({ field: { onChange, onBlur } }) => (
         <TextField
-          {...inputPropsForEtherAmount}
           value={cliffAmountEther}
           onChange={onChange}
           onBlur={onBlur}
@@ -224,6 +223,9 @@ export const CreateVestingForm: FC<{
                 {token?.symbol ?? ""}
               </Typography>
             ),
+          }}
+          inputProps={{
+            inputPropsForEtherAmount
           }}
         />
       )}
