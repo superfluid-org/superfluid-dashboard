@@ -159,8 +159,17 @@ export const VestingScheduleDetails: FC<{
         </Box>
       </Stack>
 
-      <Stack gap={2} sx={{ mt: 2 }}>
-        {canDelete && (
+      <Box sx={{ mt: 2 }}>
+        <SharingSection
+          url={urlToShare}
+          twitterText="Start vesting with Superfluid!"
+          telegramText="Start vesting with Superfluid!"
+          twitterHashtags="Superfluid,Vesting"
+        />
+      </Box>
+
+      {canDelete && (
+        <Box sx={{ mt: 2 }}>
           <ConnectionBoundary expectedNetwork={network}>
             <DeleteVestingTransactionButton
               superTokenAddress={superTokenAddress}
@@ -168,15 +177,8 @@ export const VestingScheduleDetails: FC<{
               receiverAddress={receiverAddress}
             />
           </ConnectionBoundary>
-        )}
-
-        <SharingSection
-          url={urlToShare}
-          twitterText="Start vesting with Superfluid!"
-          telegramText="Start vesting with Superfluid!"
-          twitterHashtags="Superfluid,Vesting"
-        />
-      </Stack>
+        </Box>
+      )}
     </Stack>
   );
 };
