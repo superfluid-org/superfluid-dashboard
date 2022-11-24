@@ -191,6 +191,12 @@ const CreateVestingFormProvider: FC<{
         }
 
         if (senderAddress) {
+          if (senderAddress.toLowerCase() === receiverAddress.toLowerCase()) {
+            handleHigherOrderValidationError({
+              message: `Can not vest to yourself.`,
+            });
+          }
+
           const { data: vestingSchedule } = await getActiveVestingSchedule({
             chainId: network.id,
             superTokenAddress,

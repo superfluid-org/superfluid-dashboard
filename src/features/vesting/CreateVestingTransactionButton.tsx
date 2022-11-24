@@ -30,7 +30,7 @@ export const CreateVestingTransactionButton: FC<{
         network,
         getOverrides,
         setDialogLoadingInfo,
-        setDialogSuccessActions
+        setDialogSuccessActions,
       }) =>
         !createVestingScheduleResult.isSuccess && (
           <TransactionButton
@@ -97,7 +97,7 @@ export const CreateVestingTransactionButton: FC<{
                     .then(() => setView(CreateVestingCardView.Success))
                     .catch(() => setView(CreateVestingCardView.Preview)); // Error is already logged and handled in the middleware & UI.
 
-                    setDialogSuccessActions(
+                  setDialogSuccessActions(
                     <TransactionDialogActions>
                       <Link href="/vesting" passHref>
                         <TransactionDialogButton color="primary">
@@ -106,7 +106,8 @@ export const CreateVestingTransactionButton: FC<{
                       </Link>
                     </TransactionDialogActions>
                   );
-                }
+                },
+                () => setView(CreateVestingCardView.Form) // Go back to form on validation errors.
               )()
             }
           >
