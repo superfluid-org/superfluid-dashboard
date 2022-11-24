@@ -1,33 +1,33 @@
 import { yupResolver } from "@hookform/resolvers/yup";
+import { Address } from "@superfluid-finance/sdk-core";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
-import { mixed, number, object, ObjectSchema, string } from "yup";
+import { array, mixed, number, object, ObjectSchema, ref } from "yup";
 import { CurrencyCode } from "../../utils/currencyUtils";
-import { testAddress } from "../../utils/yupUtils";
+import { testAddresses } from "../../utils/yupUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { UnitOfTime } from "../send/FlowRateInput";
-import { formRestorationOptions } from "../transactionRestoration/transactionRestorations";
 
 type Nullable<T> = { [K in keyof T]: T[K] | null };
 
 export interface ValidAccountingExportForm {
   data: {
-    receiverAddress: string;
+    receiverAddresses: Address[];
     priceGranularity: UnitOfTime;
     virtualizationPeriod: UnitOfTime;
     currencyCode: CurrencyCode;
     /**
      * startTimestamp and endTimestamp represented in Unix timestamp (seconds)
      */
-    startTimestamp: number | null;
-    endTimestamp: number | null;
+    startTimestamp: number;
+    endTimestamp: number;
   };
 }
 
 const defaultFormValues = {
   data: {
-    receiverAddress: null,
+    receiverAddresses: [],
     startTimestamp: null,
     endTimestamp: null,
     priceGranularity: UnitOfTime.Day,
@@ -53,12 +53,16 @@ const AccountingExportFormProvider: FC<
   const formSchema = useMemo(
     () =>
       object().test(async (values, context) => {
+        console.log("Validating");
         const primaryValidation: ObjectSchema<ValidAccountingExportForm> =
           object({
             data: object({
-              receiverAddress: string().required().test(testAddress()),
-              startTimestamp: number().default(null).nullable(),
-              endTimestamp: number().default(null).nullable(),
+              receiverAddresses: array()
+                .min(1)
+                .required()
+                .test(testAddresses()),
+              startTimestamp: number().required(),
+              endTimestamp: number().required(),
               priceGranularity: mixed<UnitOfTime>()
                 .required()
                 .test((x) =>
@@ -97,38 +101,30 @@ const AccountingExportFormProvider: FC<
 
   useEffect(() => {
     if (initialFormValues) {
-      setValue(
-        "data",
-        {
-          receiverAddress:
-            initialFormValues.receiverAddress ??
-            defaultFormValues.data.receiverAddress,
-          startTimestamp:
-            initialFormValues.startTimestamp ??
-            defaultFormValues.data.startTimestamp,
-          endTimestamp:
-            initialFormValues.endTimestamp ??
-            defaultFormValues.data.endTimestamp,
-          priceGranularity:
-            initialFormValues.priceGranularity ??
-            defaultFormValues.data.priceGranularity,
-          virtualizationPeriod:
-            initialFormValues.virtualizationPeriod ??
-            defaultFormValues.data.virtualizationPeriod,
-          currencyCode:
-            initialFormValues.currencyCode ??
-            defaultFormValues.data.currencyCode,
-        },
-        formRestorationOptions
-      );
+      setValue("data", {
+        receiverAddresses:
+          initialFormValues.receiverAddresses ??
+          defaultFormValues.data.receiverAddresses,
+        startTimestamp:
+          initialFormValues.startTimestamp ??
+          defaultFormValues.data.startTimestamp,
+        endTimestamp:
+          initialFormValues.endTimestamp ?? defaultFormValues.data.endTimestamp,
+        priceGranularity:
+          initialFormValues.priceGranularity ??
+          defaultFormValues.data.priceGranularity,
+        virtualizationPeriod:
+          initialFormValues.virtualizationPeriod ??
+          defaultFormValues.data.virtualizationPeriod,
+        currencyCode:
+          initialFormValues.currencyCode ?? defaultFormValues.data.currencyCode,
+      });
       setIsInitialized(true);
     }
   }, []);
 
   useEffect(() => {
-    if (formState.isDirty) {
-      trigger();
-    }
+    if (formState.isDirty) trigger();
   }, [accountAddress]);
 
   return isInitialized ? (

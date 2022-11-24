@@ -1,4 +1,6 @@
+import { ErrorMessage } from "@hookform/error-message";
 import {
+  Alert,
   Button,
   Card,
   FormLabel,
@@ -12,14 +14,33 @@ import {
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { fromUnixTime, getUnixTime } from "date-fns";
+import {
+  endOfMonth,
+  fromUnixTime,
+  getUnixTime,
+  startOfMonth,
+  sub,
+} from "date-fns";
 import { FC, useMemo } from "react";
-import { useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
+import MultiAddressSearch from "../../components/AddressSearch/MultiAddressSearch";
 import CurrencySelect from "../../components/CurrencySelect/CurrencySelect";
 import { CurrencyCode } from "../../utils/currencyUtils";
 import TooltipIcon from "../common/TooltipIcon";
 import { UnitOfTime } from "../send/FlowRateInput";
-import { PartialAccountingExportForm } from "./AccountingExportFormProvider";
+import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
+import ConnectionBoundaryButton from "../transactionBoundary/ConnectionBoundaryButton";
+import {
+  PartialAccountingExportForm,
+  ValidAccountingExportForm,
+} from "./AccountingExportFormProvider";
+
+const MIN_DATE = startOfMonth(
+  sub(new Date(), {
+    years: 3,
+  })
+);
+const MAX_DATE = endOfMonth(new Date());
 
 const GranularityOptions = [
   UnitOfTime.Day,
@@ -38,40 +59,21 @@ const GranularityWordMap = {
   [UnitOfTime.Year]: "Yearly",
 };
 
-interface AccountingExportFormProps {}
+interface AccountingExportFormProps {
+  onSubmit: (data: ValidAccountingExportForm["data"]) => void;
+}
 
-const AccountingExportForm: FC<AccountingExportFormProps> = ({}) => {
+const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
   const theme = useTheme();
 
-  const {
-    watch,
-    control,
-    formState,
-    getValues,
-    setValue,
-    reset: resetFormData,
-  } = useFormContext<PartialAccountingExportForm>();
+  const { watch, control, formState, getValues } =
+    useFormContext<PartialAccountingExportForm>();
 
-  const [
-    receiverAddress,
-    startTimestamp,
-    endTimestamp,
-    priceGranularity,
-    virtualizationPeriod,
-    currencyCode,
-  ] = watch([
-    "data.receiverAddress",
+  const [receiverAddresses, startTimestamp, endTimestamp] = watch([
+    "data.receiverAddresses",
     "data.startTimestamp",
     "data.endTimestamp",
-    "data.priceGranularity",
-    "data.virtualizationPeriod",
-    "data.currencyCode",
   ]);
-
-  const onDateRangeChange = (startDate?: Date, endDate?: Date) => {
-    setValue("data.startTimestamp", startDate ? getUnixTime(startDate) : null);
-    setValue("data.endTimestamp", endDate ? getUnixTime(endDate) : null);
-  };
 
   const startDate = useMemo(
     () => (startTimestamp ? fromUnixTime(startTimestamp) : null),
@@ -83,25 +85,13 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({}) => {
     [endTimestamp]
   );
 
-  const onStartDateChange = (date: Date | null) => {
-    setValue("data.startTimestamp", date ? getUnixTime(date) : null);
+  const submitAccountingForm = () => {
+    const { data } = getValues() as ValidAccountingExportForm;
+    onSubmit(data);
   };
 
-  const onEndDateChange = (date: Date | null) => {
-    setValue("data.endTimestamp", date ? getUnixTime(date) : null);
-  };
+  const isFormValid = !formState.isValidating && formState.isValid;
 
-  const onPriceGranularityChange = (e: any) => {
-    setValue("data.priceGranularity", Number(e.target.value) as UnitOfTime);
-  };
-
-  const onVirtualizationPeriodChange = (e: any) => {
-    setValue("data.virtualizationPeriod", Number(e.target.value) as UnitOfTime);
-  };
-
-  const onCurrencyCodeChange = (newCurrencyCode: CurrencyCode) => {
-    setValue("data.currencyCode", newCurrencyCode);
-  };
   return (
     <Card
       elevation={1}
@@ -126,14 +116,41 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({}) => {
           </Typography>
         </Stack>
 
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={{ mr: 0.75 }}
-        >
-          <FormLabel>Receiver</FormLabel>
-          <TooltipIcon title="Must not be an exchange address" />
+        <ErrorMessage
+          name="data"
+          // ErrorMessage has a bug and current solution is to pass in errors via props.
+          // TODO: keep eye on this issue: https://github.com/react-hook-form/error-message/issues/91
+          errors={formState.errors}
+          render={({ message }) =>
+            !!message && (
+              <Alert severity="error" sx={{ mb: 1 }}>
+                {message}
+              </Alert>
+            )
+          }
+        />
+
+        <Stack>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{ mr: 0.75 }}
+          >
+            <FormLabel>Receiver</FormLabel>
+            <TooltipIcon title="Must not be an exchange address" />
+          </Stack>
+          <Controller
+            control={control}
+            name="data.receiverAddresses"
+            render={({ field: { onChange } }) => (
+              <MultiAddressSearch
+                placeholder="Select receiver addresses"
+                addresses={receiverAddresses || []}
+                onChange={onChange}
+              />
+            )}
+          />
         </Stack>
 
         <Stack direction="row" gap={2} alignItems="center" flex={1}>
@@ -141,26 +158,43 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({}) => {
             <FormLabel>Date Range</FormLabel>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <Stack direction="row" gap={1}>
-                <DatePicker
-                  views={["year", "month"]}
-                  inputFormat="MM/yy"
-                  minDate={new Date("2012-03-01")}
-                  maxDate={new Date("2023-06-01")}
-                  value={startDate}
-                  onChange={onStartDateChange}
-                  renderInput={(params: any) => (
-                    <TextField {...params} helperText={null} />
+                <Controller
+                  control={control}
+                  name="data.startTimestamp"
+                  render={({ field: { value, onChange } }) => (
+                    <DatePicker
+                      views={["year", "month"]}
+                      inputFormat="MM/yy"
+                      minDate={MIN_DATE}
+                      maxDate={endDate || MAX_DATE}
+                      value={value ? fromUnixTime(value) : null}
+                      onChange={(date) =>
+                        onChange(date ? getUnixTime(startOfMonth(date)) : null)
+                      }
+                      renderInput={(params: any) => (
+                        <TextField {...params} helperText={null} />
+                      )}
+                    />
                   )}
                 />
-                <DatePicker
-                  views={["year", "month"]}
-                  inputFormat="MM/yy"
-                  minDate={startDate || new Date("2012-03-01")}
-                  maxDate={new Date("2023-06-01")}
-                  value={endDate}
-                  onChange={onEndDateChange}
-                  renderInput={(params: any) => (
-                    <TextField {...params} helperText={null} />
+
+                <Controller
+                  control={control}
+                  name="data.endTimestamp"
+                  render={({ field: { value, onChange } }) => (
+                    <DatePicker
+                      views={["year", "month"]}
+                      inputFormat="MM/yy"
+                      minDate={startDate || MIN_DATE}
+                      maxDate={MAX_DATE}
+                      value={value ? fromUnixTime(value) : null}
+                      onChange={(date) =>
+                        onChange(date ? getUnixTime(endOfMonth(date)) : null)
+                      }
+                      renderInput={(params: any) => (
+                        <TextField {...params} helperText={null} />
+                      )}
+                    />
                   )}
                 />
               </Stack>
@@ -169,16 +203,28 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({}) => {
 
           <Stack flex={1}>
             <FormLabel>Price Granularity</FormLabel>
-            <Select
-              value={priceGranularity}
-              onChange={onPriceGranularityChange}
-            >
-              {GranularityOptions.map((unitOfTime) => (
-                <MenuItem key={unitOfTime} value={unitOfTime} translate="yes">
-                  {GranularityWordMap[unitOfTime]}
-                </MenuItem>
-              ))}
-            </Select>
+            <Controller
+              control={control}
+              name="data.priceGranularity"
+              render={({ field: { value, onChange } }) => (
+                <Select
+                  value={value}
+                  onChange={(e) =>
+                    onChange(Number(e.target.value) as UnitOfTime)
+                  }
+                >
+                  {GranularityOptions.map((unitOfTime) => (
+                    <MenuItem
+                      key={unitOfTime}
+                      value={unitOfTime}
+                      translate="yes"
+                    >
+                      {GranularityWordMap[unitOfTime]}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+            />
           </Stack>
         </Stack>
 
@@ -192,30 +238,61 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({}) => {
               <FormLabel>Virtualization Period</FormLabel>
               <TooltipIcon title="The date when stream scheduler tries to cancel the stream." />
             </Stack>
-            <Select
-              value={virtualizationPeriod}
-              onChange={onVirtualizationPeriodChange}
-            >
-              {GranularityOptions.map((unitOfTime) => (
-                <MenuItem key={unitOfTime} value={unitOfTime} translate="yes">
-                  {GranularityWordMap[unitOfTime]}
-                </MenuItem>
-              ))}
-            </Select>
+            <Controller
+              control={control}
+              name="data.virtualizationPeriod"
+              render={({ field: { value, onChange } }) => (
+                <Select value={value} onChange={onChange}>
+                  {GranularityOptions.map((unitOfTime) => (
+                    <MenuItem
+                      key={unitOfTime}
+                      value={unitOfTime}
+                      translate="yes"
+                    >
+                      {GranularityWordMap[unitOfTime]}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+            />
           </Stack>
 
           <Stack flex={1}>
             <FormLabel>Fiat Conversion</FormLabel>
-            <CurrencySelect
-              value={currencyCode || undefined}
-              onChange={onCurrencyCodeChange}
+            <Controller
+              control={control}
+              name="data.currencyCode"
+              render={({ field: { value, onChange } }) => (
+                <CurrencySelect
+                  value={value || undefined}
+                  onChange={onChange}
+                  PopoverProps={{
+                    transformOrigin: {
+                      horizontal: "right",
+                      vertical: "top",
+                    },
+                    anchorOrigin: { horizontal: "right", vertical: "top" },
+                  }}
+                />
+              )}
             />
           </Stack>
         </Stack>
 
-        <Button variant="contained" size="xl">
-          Export Preview
-        </Button>
+        <ConnectionBoundary allowImpersonation>
+          <ConnectionBoundaryButton
+            ButtonProps={{ variant: "contained", size: "xl" }}
+          >
+            <Button
+              variant="contained"
+              size="xl"
+              onClick={submitAccountingForm}
+              disabled={!isFormValid}
+            >
+              Export Preview
+            </Button>
+          </ConnectionBoundaryButton>
+        </ConnectionBoundary>
       </Stack>
     </Card>
   );

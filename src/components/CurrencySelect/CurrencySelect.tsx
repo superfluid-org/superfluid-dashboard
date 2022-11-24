@@ -1,4 +1,5 @@
-import { Button, ListItemAvatar } from "@mui/material";
+import { Button, ListItemAvatar, PopoverProps } from "@mui/material";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { FC, useMemo } from "react";
 import useMenuUtils from "../../hooks/useMenuUtils";
 import {
@@ -12,9 +13,14 @@ import CurrencySelectMenu from "./CurrencySelectMenu";
 interface CurrencySelectProps {
   value?: CurrencyCode;
   onChange: (currencyCode: CurrencyCode) => void;
+  PopoverProps?: Partial<PopoverProps>;
 }
 
-const CurrencySelect: FC<CurrencySelectProps> = ({ value, onChange }) => {
+const CurrencySelect: FC<CurrencySelectProps> = ({
+  value,
+  onChange,
+  PopoverProps = {},
+}) => {
   const [open, anchorEl, handleOpen, handleClose] = useMenuUtils();
 
   const currency = useMemo(
@@ -39,6 +45,16 @@ const CurrencySelect: FC<CurrencySelectProps> = ({ value, onChange }) => {
             </ListItemAvatar>
           )
         }
+        endIcon={
+          <ArrowDropDownIcon
+            sx={{
+              mr: -1,
+              color: "action.active",
+              width: "24px",
+              height: "24px",
+            }}
+          />
+        }
       >
         {currency?.code || "Select Currency"}
       </Button>
@@ -48,6 +64,7 @@ const CurrencySelect: FC<CurrencySelectProps> = ({ value, onChange }) => {
         anchorEl={anchorEl}
         onChange={selectCurrency}
         onClose={handleClose}
+        PopoverProps={PopoverProps}
       />
     </>
   );

@@ -13,6 +13,7 @@ const ConnectionBoundaryButton: FC<
   PropsWithChildren<ConnectionBoundaryButtonProps>
 > = ({ children, ButtonProps }) => {
   const {
+    allowImpersonation,
     isImpersonated,
     stopImpersonation,
     isConnected,
@@ -23,7 +24,7 @@ const ConnectionBoundaryButton: FC<
     switchNetwork,
   } = useConnectionBoundary();
 
-  if (isImpersonated) {
+  if (isImpersonated && !allowImpersonation) {
     return (
       <Button
         data-cy={"view-mode-button"}
@@ -36,7 +37,7 @@ const ConnectionBoundaryButton: FC<
     );
   }
 
-  if (!isConnected) {
+  if (!(isConnected || (isImpersonated && allowImpersonation))) {
     return (
       <LoadingButton
         data-cy={"connect-wallet"}
@@ -50,7 +51,7 @@ const ConnectionBoundaryButton: FC<
     );
   }
 
-  if (!isCorrectNetwork) {
+  if (!isCorrectNetwork && !allowImpersonation) {
     return (
       <Button
         data-cy={"change-network-button"}

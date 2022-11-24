@@ -1,4 +1,11 @@
-import { Popover, Typography, Box, Divider, useTheme } from "@mui/material";
+import {
+  Box,
+  Divider,
+  Popover,
+  PopoverProps,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { FC } from "react";
 import { Currency } from "../../utils/currencyUtils";
 import CurrencyMenuItem from "./CurrencyMenuItem";
@@ -30,6 +37,7 @@ interface CurrencySelectMenuProps {
   anchorEl: HTMLElement | null;
   onChange: (currency: Currency) => void;
   onClose: () => void;
+  PopoverProps?: Partial<PopoverProps>;
 }
 
 const CurrencySelectMenu: FC<CurrencySelectMenuProps> = ({
@@ -37,6 +45,7 @@ const CurrencySelectMenu: FC<CurrencySelectMenuProps> = ({
   anchorEl,
   onChange,
   onClose,
+  PopoverProps = {},
 }) => {
   const theme = useTheme();
 
@@ -54,6 +63,7 @@ const CurrencySelectMenu: FC<CurrencySelectMenuProps> = ({
         sx: { px: theme.spacing(3), py: theme.spacing(1.5) },
         square: true,
       }}
+      {...PopoverProps}
     >
       <Typography color="text.secondary">Popular</Typography>
       <Box

@@ -1,5 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import { Address } from "@superfluid-finance/sdk-core";
+import { CurrencyCode } from "../../utils/currencyUtils";
+import { UnitOfTime } from "../send/FlowRateInput";
 
 export interface VirtualStreamPeriod {
   startTime: number;
@@ -37,16 +39,27 @@ export interface AccountingStreamPeriod {
   virtualPeriods: VirtualStreamPeriod[];
 }
 
+interface StreamPeriodsArguments {
+  chains: number[];
+  address: Address;
+  start: number;
+  end: number;
+  priceGranularity: UnitOfTime;
+  virtualization: UnitOfTime;
+  currency: CurrencyCode;
+  receivers: Address[];
+}
+
 const accountingApi = createApi({
   reducerPath: "accounting",
   baseQuery: fetchBaseQuery(),
   endpoints: (builder) => ({
     streamPeriods: builder.query<
       AccountingStreamPeriod[],
-      { chains: number[]; address: Address; start: number; end: number }
+      StreamPeriodsArguments
     >({
       query: (params) => ({
-        url: "http://localhost:8888/v1/getAccountingItems",
+        url: "http://localhost:8888/v1/stream-periods",
         params,
       }),
     }),
