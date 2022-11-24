@@ -36,7 +36,7 @@ for = "/*"
 
 [[redirects]]
   from = "/vesting/*"
-  to = "/token/[_network]/[_id].html"
+  to = "/vesting/[_network]/[_id].html"
   status = 200
   force = false
 

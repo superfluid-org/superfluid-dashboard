@@ -112,7 +112,7 @@ const getEndTimestamp = ({
   amountEthers,
   flowRateWei,
 }: {
-  amountEthers: string;
+  amountEthers: string; 
   flowRateWei: BigNumberish;
 }): number | null => {
   const amountWei = parseEtherOrZero(amountEthers);
