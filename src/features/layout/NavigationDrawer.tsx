@@ -27,7 +27,7 @@ import AppSettingsBtn from "../settings/AppSettingsBtn";
 import ConnectWallet from "../wallet/ConnectWallet";
 import { useLayoutContext } from "./LayoutContext";
 import MoreNavigationItem from "./MoreNavigationItem";
-import ElderlyRoundedIcon from "@mui/icons-material/ElderlyRounded";
+import LockClockRoundedIcon from '@mui/icons-material/LockClockRounded';
 import { useFeatureFlags } from "../featureFlags/FeatureFlagContext";
 import ReduxPersistGate from "../redux/ReduxPersistGate";
 
@@ -221,7 +221,7 @@ export default memo(function NavigationDrawer() {
                 "/vesting/create",
                 "/vesting/[_network]/[_id]"
               )}
-              icon={ElderlyRoundedIcon}
+              icon={LockClockRoundedIcon}
             />
           )}
         </ReduxPersistGate>
