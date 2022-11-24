@@ -411,7 +411,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
           </Typography>
           {tokenPrice && (
             <Typography variant="body2mono" color="text.secondary">
-              (<FiatAmount wei={amountWei} decimals={18} price={tokenPrice} />)
+              (<FiatAmount wei={amountWei} price={tokenPrice} />)
             </Typography>
           )}
         </Stack>
