@@ -183,7 +183,7 @@ export const vestingSchedulerEndpoints = {
               permissions: updatedPermissions,
               overrides: arg.overrides,
             }),
-            title: "Approve Scheduler for End Date",
+            title: "Approve Vesting Scheduler",
           });
         }
 
@@ -204,7 +204,7 @@ export const vestingSchedulerEndpoints = {
 
         subOperations.push({
           operation: new Operation(increaseAllowancePromise, "ERC20_APPROVE"),
-          title: "Increase Allowance",
+          title: "Approve Allowance",
         });
 
         const createVestingSchedule =
