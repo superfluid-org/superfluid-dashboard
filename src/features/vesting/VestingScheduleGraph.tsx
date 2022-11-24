@@ -1,12 +1,9 @@
-import { Box, setRef, Stack, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { format } from "date-fns";
 import Decimal from "decimal.js";
 import { BigNumber, BigNumberish } from "ethers";
 import {
-  createRef,
   FC,
-  LegacyRef,
-  RefObject,
   useEffect,
   useRef,
   useState,

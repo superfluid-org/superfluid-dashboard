@@ -58,6 +58,7 @@ export const mapPendingToVestingSchedule = (
     receiverAddress,
     startDateTimestamp,
     superTokenAddress,
+    flowRateWei,
   } = pendingVestingSchedule;
 
   return {
@@ -66,7 +67,7 @@ export const mapPendingToVestingSchedule = (
     cliffDate: cliffDateTimestamp.toString(),
     cliffAmount: cliffTransferAmountWei,
     endDate: endDateTimestamp.toString(),
-    flowRate: "0",
+    flowRate: flowRateWei,
     receiver: receiverAddress,
     sender: address,
     startDate: startDateTimestamp.toString(),
