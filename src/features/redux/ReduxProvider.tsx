@@ -14,6 +14,7 @@ import { addCustomTokens } from "../customTokens/customTokens.slice";
 import { networks } from "../network/networks";
 import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import { reduxStore, useAppDispatch } from "./store";
+import { useVestingTransactionTracking } from "./UseVestingTransactionTracking";
 
 const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
   const { connector: activeConnector } = useAccount();
@@ -102,6 +103,8 @@ const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
       });
     }
   }, [signer]);
+
+  useVestingTransactionTracking();
 
   return <>{children}</>;
 };
