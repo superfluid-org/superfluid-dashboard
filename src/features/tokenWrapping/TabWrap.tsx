@@ -65,7 +65,6 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
   const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useLayoutContext();
   const getTransactionOverrides = useGetTransactionOverrides();
-  const { connector: activeConnector } = useAccount();
 
   const {
     watch,
@@ -91,7 +90,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
     "data.amountDecimal",
   ]);
 
-  const [amountWei, setAmountWei] = useState<BigNumber>(
+  const [amountWei, setAmountWei] = useState<BigNumber>( // The wei is based on the underlying token, so be careful with decimals.
     ethers.BigNumber.from(0)
   );
 
@@ -106,7 +105,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
     tokenPair,
   });
 
-  const tokenPrice = useTokenPrice(network.id, tokenPair?.superTokenAddress);
+  const tokenPrice = useTokenPrice(network.id, tokenPair?.superTokenAddress); // We always get the price for the super token. 
 
   useEffect(() => {
     if (underlyingToken && amountDecimal) {
@@ -378,7 +377,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
             </Button>
           </Stack>
 
-          {!!(superToken && visibleAddress) && (
+          {!!(underlyingToken && superToken && visibleAddress) && (
             <Stack direction="row" justifyContent="space-between">
               <Typography
                 variant="body2mono"
@@ -390,7 +389,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                 }}
               >
                 {tokenPrice && (
-                  <FiatAmount wei={amountWei} price={tokenPrice} />
+                  <FiatAmount wei={amountWei} decimals={underlyingToken.decimals} price={tokenPrice} />
                 )}
               </Typography>
               <BalanceSuperToken
@@ -411,7 +410,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
           </Typography>
           {tokenPrice && (
             <Typography variant="body2mono" color="text.secondary">
-              (<FiatAmount wei={amountWei} price={tokenPrice} />)
+              (<FiatAmount wei={amountWei} decimals={underlyingToken.decimals} price={tokenPrice} />)
             </Typography>
           )}
         </Stack>
