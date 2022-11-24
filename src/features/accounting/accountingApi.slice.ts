@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import { Address } from "@superfluid-finance/sdk-core";
+import config from "../../utils/config";
 import { CurrencyCode } from "../../utils/currencyUtils";
 import { UnitOfTime } from "../send/FlowRateInput";
 
@@ -59,7 +60,7 @@ const accountingApi = createApi({
       StreamPeriodsArguments
     >({
       query: (params) => ({
-        url: "http://localhost:8888/v1/stream-periods",
+        url: `${config.accountingApi}/stream-periods`,
         params,
       }),
     }),
