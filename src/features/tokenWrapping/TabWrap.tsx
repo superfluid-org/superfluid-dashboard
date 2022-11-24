@@ -7,6 +7,7 @@ import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { useAccount } from "wagmi";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
+import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import { parseAmountOrZero } from "../../utils/tokenUtils";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useLayoutContext } from "../layout/LayoutContext";
@@ -105,7 +106,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
     tokenPair,
   });
 
-  const tokenPrice = useTokenPrice(network.id, tokenPair?.superTokenAddress); // We always get the price for the super token. 
+  const tokenPrice = useTokenPrice(network.id, tokenPair?.superTokenAddress); // We always get the price for the super token.
 
   useEffect(() => {
     if (underlyingToken && amountDecimal) {
@@ -227,14 +228,13 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
             name="data.amountDecimal"
             render={({ field: { onChange, onBlur } }) => (
               <Input
+                {...inputPropsForEtherAmount}
                 data-cy={"wrap-input"}
                 fullWidth
                 disableUnderline
                 placeholder="0.0"
                 inputRef={amountInputRef}
                 value={amountDecimal}
-                type="text"
-                inputMode="decimal"
                 onChange={onChange}
                 onBlur={onBlur}
                 inputProps={{
@@ -299,7 +299,11 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
               }}
             >
               {tokenPrice && (
-                <FiatAmount wei={amountWei} decimals={underlyingToken.decimals} price={tokenPrice} />
+                <FiatAmount
+                  wei={amountWei}
+                  decimals={underlyingToken.decimals}
+                  price={tokenPrice}
+                />
               )}
             </Typography>
             <Stack direction="row">
@@ -389,7 +393,11 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                 }}
               >
                 {tokenPrice && (
-                  <FiatAmount wei={amountWei} decimals={underlyingToken.decimals} price={tokenPrice} />
+                  <FiatAmount
+                    wei={amountWei}
+                    decimals={underlyingToken.decimals}
+                    price={tokenPrice}
+                  />
                 )}
               </Typography>
               <BalanceSuperToken
@@ -410,7 +418,13 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
           </Typography>
           {tokenPrice && (
             <Typography variant="body2mono" color="text.secondary">
-              (<FiatAmount wei={amountWei} decimals={underlyingToken.decimals} price={tokenPrice} />)
+              (
+              <FiatAmount
+                wei={amountWei}
+                decimals={underlyingToken.decimals}
+                price={tokenPrice}
+              />
+              )
             </Typography>
           )}
         </Stack>

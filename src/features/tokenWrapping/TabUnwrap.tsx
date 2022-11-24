@@ -5,6 +5,7 @@ import { FC, useEffect, useRef } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { useAccount } from "wagmi";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
+import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import {
   calculateCurrentBalance,
   parseAmountOrZero,
@@ -113,6 +114,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
             name="data.amountDecimal"
             render={({ field: { onChange, onBlur } }) => (
               <Input
+                {...inputPropsForEtherAmount}
                 data-cy={"unwrap-input"}
                 fullWidth
                 disableUnderline
@@ -184,9 +186,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                 textOverflow: "ellipsis",
               }}
             >
-              {tokenPrice && (
-                <FiatAmount wei={amountWei} price={tokenPrice} />
-              )}
+              {tokenPrice && <FiatAmount wei={amountWei} price={tokenPrice} />}
             </Typography>
 
             <Stack direction="row">

@@ -39,6 +39,7 @@ import {
   MAX_VESTING_START_DATE,
   MIN_VESTING_START_DATE,
 } from "../redux/endpoints/vestingSchedulerEndpoints";
+import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 
 export enum VestingFormLabels {
   Receiver = "Receiver",
@@ -213,6 +214,7 @@ export const CreateVestingForm: FC<{
       name="data.cliffAmountEther"
       render={({ field: { onChange, onBlur } }) => (
         <TextField
+          {...inputPropsForEtherAmount}
           value={cliffAmountEther}
           onChange={onChange}
           onBlur={onBlur}
