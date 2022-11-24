@@ -40,7 +40,6 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
   const getTransactionOverrides = useGetTransactionOverrides();
-  const { connector: activeConnector } = useAccount();
 
   const {
     watch,
@@ -185,7 +184,9 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                 textOverflow: "ellipsis",
               }}
             >
-              {tokenPrice && <FiatAmount price={tokenPrice} wei={amountWei} />}
+              {tokenPrice && (
+                <FiatAmount wei={amountWei} price={tokenPrice} />
+              )}
             </Typography>
 
             <Stack direction="row">
@@ -276,7 +277,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                 }}
               >
                 {tokenPrice && (
-                  <FiatAmount price={tokenPrice} wei={amountWei} />
+                  <FiatAmount wei={amountWei} price={tokenPrice} />
                 )}
               </Typography>
               <BalanceUnderlyingToken
@@ -297,7 +298,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
           </Typography>
           {tokenPrice && (
             <Typography variant="body2mono" color="text.secondary">
-              (<FiatAmount price={tokenPrice} />)
+              (<FiatAmount wei={1} decimals={0} price={tokenPrice} />)
             </Typography>
           )}
         </Stack>
@@ -355,7 +356,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                 })
                   .unwrap()
                   .then(() => resetForm())
-                  .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
+                  .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
               }}
             >
               Unwrap

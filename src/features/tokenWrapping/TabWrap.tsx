@@ -299,7 +299,9 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                 textOverflow: "ellipsis",
               }}
             >
-              {tokenPrice && <FiatAmount price={tokenPrice} wei={amountWei} />}
+              {tokenPrice && (
+                <FiatAmount wei={amountWei} decimals={underlyingToken.decimals} price={tokenPrice} />
+              )}
             </Typography>
             <Stack direction="row">
               <BalanceUnderlyingToken
@@ -388,7 +390,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                 }}
               >
                 {tokenPrice && (
-                  <FiatAmount price={tokenPrice} wei={amountWei} />
+                  <FiatAmount wei={amountWei} price={tokenPrice} />
                 )}
               </Typography>
               <BalanceSuperToken
@@ -409,7 +411,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
           </Typography>
           {tokenPrice && (
             <Typography variant="body2mono" color="text.secondary">
-              (<FiatAmount price={tokenPrice} />)
+              (<FiatAmount wei={amountWei} decimals={18} price={tokenPrice} />)
             </Typography>
           )}
         </Stack>
@@ -455,7 +457,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                     })
                       .unwrap()
                       .then(() => setTransactionDrawerOpen(true))
-                      .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
+                      .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
                   }}
                 >
                   Allow Superfluid Protocol to wrap your{" "}
@@ -534,7 +536,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                   })
                     .unwrap()
                     .then(() => resetForm())
-                    .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
+                    .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
 
                   setDialogSuccessActions(
                     <TransactionDialogActions>
