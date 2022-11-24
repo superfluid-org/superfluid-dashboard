@@ -6,6 +6,7 @@ import { useFormContext } from "react-hook-form";
 import AddressName from "../../components/AddressName/AddressName";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
+import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { timeUnitWordMap } from "../send/FlowRateInput";
 import TokenIcon from "../token/TokenIcon";
 import { VestingFormLabels } from "./CreateVestingForm";
@@ -71,18 +72,20 @@ export const CreateVestingPreview: FC<{
               {VestingFormLabels.Receiver}
             </Typography>
 
-            <Stack direction="row" alignItems="center" gap={1.5}>
-              <AddressAvatar
-                address={receiverAddress}
-                AvatarProps={{
-                  sx: { width: "24px", height: "24px", borderRadius: "5px" },
-                }}
-                BlockiesProps={{ size: 8, scale: 3 }}
-              />
-              <Typography>
-                <AddressName address={receiverAddress} />
-              </Typography>
-            </Stack>
+            <AddressCopyTooltip address={receiverAddress}>
+              <Stack direction="row" alignItems="center" gap={1.5}>
+                <AddressAvatar
+                  address={receiverAddress}
+                  AvatarProps={{
+                    sx: { width: "24px", height: "24px", borderRadius: "5px" },
+                  }}
+                  BlockiesProps={{ size: 8, scale: 3 }}
+                />
+                <Typography>
+                  <AddressName address={receiverAddress} />
+                </Typography>
+              </Stack>
+            </AddressCopyTooltip>
           </Stack>
           <Stack>
             <Typography color="text.secondary">

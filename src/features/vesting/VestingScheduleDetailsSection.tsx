@@ -19,6 +19,7 @@ import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { useVestingToken } from "./useVestingToken";
 import { VestingScheduleGraph } from "./VestingScheduleGraph";
 import Amount from "../token/Amount";
+import AddressCopyTooltip from "../common/AddressCopyTooltip";
 
 export const VestingScheduleDetails: FC<{
   network: Network;
@@ -90,18 +91,20 @@ export const VestingScheduleDetails: FC<{
               {VestingFormLabels.Receiver}
             </Typography>
 
-            <Stack direction="row" alignItems="center" gap={1.5}>
-              <AddressAvatar
-                address={receiverAddress}
-                AvatarProps={{
-                  sx: { width: "24px", height: "24px", borderRadius: "5px" },
-                }}
-                BlockiesProps={{ size: 8, scale: 3 }}
-              />
-              <Typography>
-                <AddressName address={receiverAddress} />
-              </Typography>
-            </Stack>
+            <AddressCopyTooltip address={receiverAddress}>
+              <Stack direction="row" alignItems="center" gap={1.5}>
+                <AddressAvatar
+                  address={receiverAddress}
+                  AvatarProps={{
+                    sx: { width: "24px", height: "24px", borderRadius: "5px" },
+                  }}
+                  BlockiesProps={{ size: 8, scale: 3 }}
+                />
+                <Typography>
+                  <AddressName address={receiverAddress} />
+                </Typography>
+              </Stack>
+            </AddressCopyTooltip>
           </Stack>
           <Stack>
             <Typography color="text.secondary">Start Date</Typography>
