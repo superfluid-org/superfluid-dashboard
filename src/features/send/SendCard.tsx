@@ -1,5 +1,4 @@
 import { ErrorMessage } from "@hookform/error-message";
-import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import {
   Alert,
   Box,
@@ -112,7 +111,7 @@ const getEndTimestamp = ({
   amountEthers,
   flowRateWei,
 }: {
-  amountEthers: string; 
+  amountEthers: string;
   flowRateWei: BigNumberish;
 }): number | null => {
   const amountWei = parseEtherOrZero(amountEthers);
@@ -130,7 +129,11 @@ export default memo(function SendCard() {
   const {
     watch,
     control,
-    formState,
+    formState: {
+      errors: formErrors,
+      isValidating: isFormValidating,
+      isValid: isFormValid,
+    },
     getValues,
     setValue,
     reset: resetFormData,
@@ -494,7 +497,7 @@ export default memo(function SendCard() {
     (activeFlow && activeFlow.flowRateWei !== flowRateWei.toString());
 
   const isSendDisabled =
-    !hasAnythingChanged || formState.isValidating || !formState.isValid;
+    !hasAnythingChanged || isFormValidating || !isFormValid;
 
   const [upsertFlow, upsertFlowResult] =
     rpcApi.useUpsertFlowWithSchedulingMutation();
@@ -509,13 +512,7 @@ export default memo(function SendCard() {
           }}
           onClick={async (signer) => {
             if (isSendDisabled) {
-              throw Error(
-                `This should never happen. Form state: ${JSON.stringify(
-                  formState,
-                  null,
-                  2
-                )}`
-              );
+              throw Error("This should never happen.");
             }
 
             const { data: formData } = getValues() as SanitizedStreamingForm;
@@ -563,7 +560,7 @@ export default memo(function SendCard() {
             })
               .unwrap()
               .then(() => resetForm())
-              .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
+              .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
 
             setDialogLoadingInfo(
               <Typography variant="h5" color="text.secondary" translate="yes">
@@ -664,7 +661,7 @@ export default memo(function SendCard() {
               })
                 .unwrap()
                 .then(() => resetForm())
-                .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
+                .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
             }}
           >
             Cancel Stream
@@ -714,7 +711,7 @@ export default memo(function SendCard() {
           name="data"
           // ErrorMessage has a bug and current solution is to pass in errors via props.
           // TODO: keep eye on this issue: https://github.com/react-hook-form/error-message/issues/91
-          errors={formState.errors}
+          errors={formErrors}
           render={({ message }) =>
             !!message && (
               <Alert severity="error" sx={{ mb: 1 }}>
