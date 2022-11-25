@@ -34,12 +34,12 @@ const TokenToolbarData: FC<TokenToolbarData> = ({
   name,
   isUnlisted,
 }) => (
-  <Stack direction="row" alignItems="center" gap={2}>
+  <Stack data-cy={"token-header"} direction="row" alignItems="center" gap={2}>
     <TokenIcon isSuper tokenSymbol={symbol} isUnlisted={isUnlisted} />
-    <Typography variant="h3" component="h1">
+    <Typography data-cy={"token-name"} variant="h3" component="h1">
       {name}
     </Typography>
-    <Typography variant="h4" color="text.secondary">
+    <Typography data-cy={"token-symbol"} variant="h4" color="text.secondary">
       {symbol}
     </Typography>
   </Stack>
@@ -113,6 +113,7 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
           )}
 
           <Link
+            data-cy={"wrap-button"}
             href={`/wrap?upgrade&token=${token.id}&network=${network.slugName}`}
             passHref
           >
@@ -123,6 +124,7 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
             </Tooltip>
           </Link>
           <Link
+            data-cy={"unwrap-button"}
             href={`/wrap?downgrade&token=${token.id}&network=${network.slugName}`}
             passHref
           >

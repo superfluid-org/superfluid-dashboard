@@ -40,6 +40,12 @@ const DIST_TABLE_APPROVED_TAB = "[data-cy=approved-tab]"
 const DIST_TABLE_UNAPPROVED_TAB = "[data-cy=unapproved-tab]"
 const NO_DATA_ROW = "[data-cy=no-data-row]"
 const NO_DATA_MESSAGE = "[data-cy=no-data-message]"
+const HEADER_SYMBOL = "[data-cy=token-header] [data-cy=token-symbol]"
+const HEADER_NAME = "[data-cy=token-header] [data-cy=token-name]"
+const TOKEN_ICON = "[data-cy=token-icon] img"
+const TOKEN_ANIMATION = "[data-cy=animation]"
+const TOKEN_CONTAINER = "[data-cy=token-container-by-graph]"
+const GRAPH_BALANCE_SYMBOL = `${TOKEN_CONTAINER} [data-cy=token-symbol]`
 
 export class IndividualTokenPage extends BasePage {
 
@@ -179,5 +185,27 @@ export class IndividualTokenPage extends BasePage {
         this.hasText(NO_DATA_MESSAGE,"No data")
         this.doesNotExist(STREAM_ROWS)
         this.doesNotExist(DISTRIBUTION_ROWS)
+    }
+
+    static validateTokenNameAndIconsPerNetwork(token: string, network: string) {
+        cy.fixture("networkSpecificData").then(data => {
+            let chosenToken = data[network].ongoingStreamsAccount.tokenValues[1] ?
+                data[network].ongoingStreamsAccount.tokenValues
+                    .filter((values: any) => values.token === token)[0] : data[network].ongoingStreamsAccount.tokenValues
+
+            this.hasText(HEADER_SYMBOL,token)
+            this.hasText(HEADER_NAME,chosenToken.tokenName)
+            this.hasText(LIQUIDATION_DATE,chosenToken.liquidationDate)
+            this.hasAttributeWithValue(TOKEN_ICON,"alt",`${token} token icon`)
+            this.isVisible(TOKEN_ANIMATION)
+            this.hasText(GRAPH_BALANCE_SYMBOL,token)
+            this.isVisible(`[data-cy="${networksBySlug.get(network)?.id}-icon"]`)
+        })
+    }
+
+    static validateNetFlowRatesForToken(token: string, account: string, network: string) {
+        cy.fixture("networkSpecificData").then(data => {
+
+        })
     }
 }

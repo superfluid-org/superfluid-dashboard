@@ -29,6 +29,8 @@
     },
     "ongoingStreamsAccount": {
       "tokenValues": {
+        "tokenName": "Super fDAI Fake Token",
+        "liquidationDate": "October 15th, 2032",
         "token": "fDAIx",
         "netFlowRate": "-1/mo",
         "inFlow": "+4/mo",

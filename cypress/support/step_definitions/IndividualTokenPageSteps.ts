@@ -63,3 +63,9 @@ Given(/^User opens the unapproved distribution tab$/,  () => {
 Then(/^No data row is shown$/,  () => {
     IndividualTokenPage.validateNoRowsShown()
 });
+Then(/^Token symbol name, icons and liquidation date in token page are shown correctly for "([^"]*)" on "([^"]*)"$/,  (token:string , network:string) => {
+    IndividualTokenPage.validateTokenNameAndIconsPerNetwork(token,network)
+});
+Then(/^"([^"]*)" net flow balances are shown correctly for "([^"]*)" on "([^"]*)"$/,  (token:string,account:string,network:string) => {
+    IndividualTokenPage.validateNetFlowRatesForToken(token,account,network)
+});
