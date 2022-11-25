@@ -60,7 +60,7 @@
     "redux-persist": "^6.0.0",
     "serialize-error": "^8.1.0",
     "wagmi": "^0.7.9",
-    "yup": "^1.0.0-beta.7"
+    "yup": "^1.0.0-beta.8"
   },
   "devDependencies": {
     "@badeball/cypress-cucumber-preprocessor": "^11.5.1",
