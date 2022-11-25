@@ -191,7 +191,7 @@ const StreamingFormProvider: FC<
     () =>
       object().test(async (values, context) => {
         clearErrors("data");
-        const sanitizedForm = await sanitizedSchema.validate(values);
+        const sanitizedForm = sanitizedSchema.validateSync(values);
 
         const handleHigherValidationError =
           createHigherValidationErrorFunc(setError, context.createError);

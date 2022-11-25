@@ -214,7 +214,7 @@ const CreateVestingFormProvider: FC<{
           });
         }
 
-        const sanitizedForm = await sanitizedSchema.validate(values);
+        const sanitizedForm = sanitizedSchema.validateSync(values);
 
         return await higherValidate(sanitizedForm, handleHigherValidationError);
       }),
