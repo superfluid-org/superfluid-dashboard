@@ -113,7 +113,7 @@ const StreamingFormProvider: FC<
   );
 
   const higherValidate = useHigherValidation<SanitizedStreamingForm>(
-    async (sanitizedForm, handleHigherValidationError) => {
+    async (sanitizedForm, handleError) => {
       const { tokenAddress, receiverAddress, understandLiquidationRisk } =
         sanitizedForm.data;
 
@@ -121,7 +121,7 @@ const StreamingFormProvider: FC<
         accountAddress &&
         accountAddress.toLowerCase() === receiverAddress.toLowerCase()
       ) {
-        return handleHigherValidationError({
+        return handleError({
           message: `You can't stream to yourself.`,
         });
       }
@@ -156,7 +156,7 @@ const StreamingFormProvider: FC<
           });
 
         if (balanceAfterBuffer.isNegative()) {
-          return handleHigherValidationError({
+          return handleError({
             message: `You do not have enough balance for buffer.`,
           });
         }
@@ -169,7 +169,7 @@ const StreamingFormProvider: FC<
 
           if (secondsToCritical <= minimumStreamTimeInSeconds) {
             // NOTE: "secondsToCritical" might be off about 1 minute because of RTK-query cache for the balance query
-            return handleHigherValidationError({
+            return handleError({
               message: `You need to leave enough balance to stream for ${
                 minimumStreamTimeInSeconds / 3600
               } hours.`,
