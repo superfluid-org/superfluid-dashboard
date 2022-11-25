@@ -1,7 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { BigNumber } from "ethers";
 import { formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
-import { isString } from "lodash";
+import { debounce, isString } from "lodash";
 import { useRouter } from "next/router";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -67,25 +67,30 @@ const WrappingFormProvider: FC<
     network,
   });
 
+  const primarySchema = useMemo<ObjectSchema<ValidWrappingForm>>(
+    () =>
+      object({
+        data: object({
+          tokenPair: object({
+            superTokenAddress: string().required().test(testAddress()),
+            underlyingTokenAddress: string().required().test(testAddress()),
+          }).required(),
+          amountDecimal: string()
+            .required()
+            .test(testEtherAmount({ notNegative: true, notZero: true })),
+        }),
+      }),
+    []
+  );
+
   const formSchema = useMemo(
     () =>
       object().test(async (values, context) => {
         const { type } = values as WrappingForm;
 
-        const primarySchema: ObjectSchema<ValidWrappingForm> = object({
-          data: object({
-            tokenPair: object({
-              superTokenAddress: string().required().test(testAddress()),
-              underlyingTokenAddress: string().required().test(testAddress()),
-            }).required(),
-            amountDecimal: string()
-              .required()
-              .test(testEtherAmount({ notNegative: true, notZero: true })),
-          }),
-        });
-
         clearErrors("data");
         await primarySchema.validate(values);
+
         const validForm = values as ValidWrappingForm;
 
         const handleHigherOrderValidationError =
@@ -229,7 +234,7 @@ The chain ID was: ${network.id}`);
 
         return true;
       }),
-    [network, accountAddress, tokenPairsQuery.data]
+    [network, accountAddress, tokenPairsQuery.data, primarySchema]
   );
 
   const networkDefaultTokenPair = getNetworkDefaultTokenPair(network);

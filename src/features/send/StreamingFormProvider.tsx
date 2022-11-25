@@ -68,30 +68,34 @@ const StreamingFormProvider: FC<
   const [queryActiveFlow] = rpcApi.useLazyGetActiveFlowQuery();
   const calculateBufferInfo = useCalculateBufferInfo();
 
+  const primarySchema = useMemo<ObjectSchema<ValidStreamingForm>>(
+    () =>
+      object({
+        data: object({
+          tokenAddress: string().required().test(testAddress()),
+          receiverAddress: string().required().test(testAddress()),
+          flowRate: object({
+            amountEther: string()
+              .required()
+              .test(testEtherAmount({ notNegative: true, notZero: true })),
+            unitOfTime: mixed<UnitOfTime>()
+              .required()
+              .test(
+                (x) => Object.values(UnitOfTime).includes(x as UnitOfTime) // To check whether value is from an enum: https://github.com/microsoft/TypeScript/issues/33200#issuecomment-527670779
+              ),
+          }),
+          understandLiquidationRisk: bool().required(),
+          endTimestamp: number().default(null).nullable(),
+        }),
+      }),
+    []
+  );
+
   const formSchema = useMemo(
     () =>
       object().test(async (values, context) => {
-        const primaryValidation: ObjectSchema<ValidStreamingForm> = object({
-          data: object({
-            tokenAddress: string().required().test(testAddress()),
-            receiverAddress: string().required().test(testAddress()),
-            flowRate: object({
-              amountEther: string()
-                .required()
-                .test(testEtherAmount({ notNegative: true, notZero: true })),
-              unitOfTime: mixed<UnitOfTime>()
-                .required()
-                .test(
-                  (x) => Object.values(UnitOfTime).includes(x as UnitOfTime) // To check whether value is from an enum: https://github.com/microsoft/TypeScript/issues/33200#issuecomment-527670779
-                ),
-            }),
-            understandLiquidationRisk: bool().required(),
-            endTimestamp: number().default(null).nullable(),
-          }),
-        });
-
         clearErrors("data");
-        await primaryValidation.validate(values);
+        await primarySchema.validate(values);
         const validForm = values as ValidStreamingForm;
 
         // # Higher order validation
@@ -179,7 +183,7 @@ const StreamingFormProvider: FC<
 
         return true;
       }),
-    [network, accountAddress, calculateBufferInfo]
+    [network, accountAddress, calculateBufferInfo, primarySchema]
   );
 
   const formMethods = useForm<PartialStreamingForm>({
