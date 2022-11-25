@@ -187,18 +187,18 @@ const StreamingFormProvider: FC<
     [network, accountAddress, calculateBufferInfo]
   );
 
-  const formSchema = useMemo(
+  const finalSchema = useMemo(
     () =>
       object().test(async (values, context) => {
         clearErrors("data");
         const sanitizedForm = await sanitizedSchema.validate(values);
 
-        const handleHigherOrderValidationError =
+        const handleHigherValidationError =
           createHigherValidationErrorFunc(setError, context.createError);
 
         return await higherValidate(
           sanitizedForm,
-          handleHigherOrderValidationError
+          handleHigherValidationError
         );
       }),
     [sanitizedSchema, higherValidate]
@@ -206,7 +206,7 @@ const StreamingFormProvider: FC<
 
   const formMethods = useForm<PartialStreamingForm>({
     defaultValues: defaultFormValues,
-    resolver: yupResolver(formSchema),
+    resolver: yupResolver(finalSchema),
     mode: "onChange",
   });
 

@@ -1,7 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import add from "date-fns/fp/add";
-import React, { FC, ReactNode, useEffect, useMemo, useState } from "react";
-import { FormProvider, useForm, UseFormSetError } from "react-hook-form";
+import { FC, ReactNode, useEffect, useMemo, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { date, mixed, number, object, ObjectSchema, string } from "yup";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
@@ -198,7 +198,7 @@ const CreateVestingFormProvider: FC<{
     [network, getActiveVestingSchedule, senderAddress]
   );
 
-  const formSchema = useMemo(
+  const finalSchema = useMemo(
     () =>
       object().test(async (values, context) => {
         clearErrors("data");
@@ -239,7 +239,7 @@ const CreateVestingFormProvider: FC<{
         receiverAddress: null,
       },
     },
-    resolver: yupResolver(formSchema),
+    resolver: yupResolver(finalSchema),
     mode: "onChange",
   });
 

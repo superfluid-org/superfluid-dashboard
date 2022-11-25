@@ -39,7 +39,7 @@ import { SwitchWrapModeBtn } from "./SwitchWrapModeBtn";
 import { TokenDialogButton } from "./TokenDialogButton";
 import { useTokenPairQuery } from "./useTokenPairQuery";
 import { WrapInputCard } from "./WrapInputCard";
-import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
+import { SanitizedWrappingForm, WrappingForm } from "./WrappingFormProvider";
 
 const underlyingIbAlluoTokenOverrides = [
   // StIbAlluoEth
@@ -499,7 +499,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                     );
                   }
 
-                  const { data: formData } = getValues() as ValidWrappingForm;
+                  const { data: formData } = getValues() as SanitizedWrappingForm;
 
                   // Use super token's decimals for upgrading, not the underlying's.
                   const amountWei = parseEther(formData.amountDecimal);

@@ -30,7 +30,7 @@ import { SwitchWrapModeBtn } from "./SwitchWrapModeBtn";
 import { TokenDialogButton } from "./TokenDialogButton";
 import { useTokenPairQuery } from "./useTokenPairQuery";
 import { WrapInputCard } from "./WrapInputCard";
-import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
+import { SanitizedWrappingForm, WrappingForm } from "./WrappingFormProvider";
 
 interface TabUnwrapProps {
   onSwitchMode: () => void;
@@ -320,7 +320,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                   );
                 }
 
-                const { data: formData } = getValues() as ValidWrappingForm;
+                const { data: formData } = getValues() as SanitizedWrappingForm;
 
                 const restoration: SuperTokenDowngradeRestoration = {
                   type: RestorationType.Unwrap,
