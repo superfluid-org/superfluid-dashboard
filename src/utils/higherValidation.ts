@@ -34,4 +34,5 @@ export const useHigherValidation = <T>(
     handleError: HandleHigherValidationErrorFunc
   ) => Promise<boolean | ValidationError>,
   deps: DependencyList
-) => useCallback(debounce(callback, 250, { leading: true }), deps);
+) =>
+  useCallback(debounce(callback, 250, { leading: true, trailing: true }), deps);
