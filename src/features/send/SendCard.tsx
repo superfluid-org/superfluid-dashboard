@@ -52,7 +52,7 @@ import { calculateTotalAmountWei, FlowRateInput } from "./FlowRateInput";
 import { StreamingPreview } from "./SendStreamPreview";
 import {
   PartialStreamingForm,
-  ValidStreamingForm,
+  SanitizedStreamingForm,
 } from "./StreamingFormProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -518,7 +518,7 @@ export default memo(function SendCard() {
               );
             }
 
-            const { data: formData } = getValues() as ValidStreamingForm;
+            const { data: formData } = getValues() as SanitizedStreamingForm;
 
             const flowRateWei = calculateTotalAmountWei({
               amountWei: parseEther(formData.flowRate.amountEther).toString(),

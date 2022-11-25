@@ -24,7 +24,7 @@ import {
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import { createHandleHigherOrderValidationErrorFunc } from "../../utils/createHandleHigherOrderValidationErrorFunc";
+import { createHigherValidationErrorFunc } from "../../utils/higherValidation";
 
 export type ValidVestingForm = {
   data: {
@@ -112,7 +112,7 @@ const CreateVestingFormProvider: FC<{
         clearErrors("data");
 
         const handleHigherOrderValidationError =
-          createHandleHigherOrderValidationErrorFunc(
+          createHigherValidationErrorFunc(
             setError,
             context.createError
           );

@@ -7,7 +7,7 @@ import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
 import { object, ObjectSchema, string } from "yup";
-import { createHandleHigherOrderValidationErrorFunc } from "../../utils/createHandleHigherOrderValidationErrorFunc";
+import { createHigherValidationErrorFunc } from "../../utils/higherValidation";
 import { dateNowSeconds } from "../../utils/dateUtils";
 import {
   calculateCurrentBalance,
@@ -94,7 +94,7 @@ const WrappingFormProvider: FC<
         const validForm = values as ValidWrappingForm;
 
         const handleHigherOrderValidationError =
-          createHandleHigherOrderValidationErrorFunc(
+          createHigherValidationErrorFunc(
             setError,
             context.createError
           );

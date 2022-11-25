@@ -1,11 +1,31 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { BigNumber } from "ethers";
 import { parseEther } from "ethers/lib/utils";
-import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
+import { debounce } from "lodash";
+import {
+  FC,
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
-import { bool, date, mixed, number, object, ObjectSchema, string } from "yup";
-import { createHandleHigherOrderValidationErrorFunc } from "../../utils/createHandleHigherOrderValidationErrorFunc";
+import {
+  bool,
+  date,
+  mixed,
+  number,
+  object,
+  ObjectSchema,
+  string,
+  ValidationError,
+} from "yup";
+import {
+  createHigherValidationErrorFunc,
+  useHigherValidation,
+} from "../../utils/higherValidation";
 import { dateNowSeconds } from "../../utils/dateUtils";
 import { getMinimumStreamTimeInMinutes } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
@@ -15,7 +35,7 @@ import { formRestorationOptions } from "../transactionRestoration/transactionRes
 import { UnitOfTime } from "./FlowRateInput";
 import useCalculateBufferInfo from "./useCalculateBufferInfo";
 
-export type ValidStreamingForm = {
+export type SanitizedStreamingForm = {
   data: {
     tokenAddress: string;
     receiverAddress: string;
@@ -46,10 +66,10 @@ const defaultFormValues = {
 
 export type PartialStreamingForm = {
   data: {
-    tokenAddress: ValidStreamingForm["data"]["tokenAddress"] | null;
-    receiverAddress: ValidStreamingForm["data"]["receiverAddress"] | null;
+    tokenAddress: SanitizedStreamingForm["data"]["tokenAddress"] | null;
+    receiverAddress: SanitizedStreamingForm["data"]["receiverAddress"] | null;
     flowRate:
-      | ValidStreamingForm["data"]["flowRate"]
+      | SanitizedStreamingForm["data"]["flowRate"]
       | typeof defaultFormValues.data.flowRate;
     understandLiquidationRisk: boolean;
     endTimestamp: number | null;
@@ -57,7 +77,7 @@ export type PartialStreamingForm = {
 };
 
 export interface StreamingFormProviderProps {
-  initialFormValues: Partial<ValidStreamingForm["data"]>;
+  initialFormValues: Partial<SanitizedStreamingForm["data"]>;
 }
 
 const StreamingFormProvider: FC<
@@ -69,7 +89,7 @@ const StreamingFormProvider: FC<
   const [queryActiveFlow] = rpcApi.useLazyGetActiveFlowQuery();
   const calculateBufferInfo = useCalculateBufferInfo();
 
-  const primarySchema = useMemo<ObjectSchema<ValidStreamingForm>>(
+  const sanitizedSchema = useMemo<ObjectSchema<SanitizedStreamingForm>>(
     () =>
       object({
         data: object({
@@ -92,90 +112,96 @@ const StreamingFormProvider: FC<
     []
   );
 
+  const higherValidate = useHigherValidation<SanitizedStreamingForm>(
+    async (sanitizedForm, handleHigherValidationError) => {
+      const { tokenAddress, receiverAddress, understandLiquidationRisk } =
+        sanitizedForm.data;
+
+      if (
+        accountAddress &&
+        accountAddress.toLowerCase() === receiverAddress.toLowerCase()
+      ) {
+        return handleHigherValidationError({
+          message: `You can't stream to yourself.`,
+        });
+      }
+
+      if (accountAddress && tokenAddress && receiverAddress) {
+        const [realtimeBalance, activeFlow] = await Promise.all([
+          queryRealtimeBalance(
+            {
+              accountAddress,
+              chainId: network.id,
+              tokenAddress: tokenAddress,
+            },
+            true
+          ).unwrap(),
+          queryActiveFlow(
+            {
+              tokenAddress,
+              receiverAddress,
+              chainId: network.id,
+              senderAddress: accountAddress,
+            },
+            true
+          ).unwrap(),
+        ]);
+
+        const { newDateWhenBalanceCritical, balanceAfterBuffer } =
+          calculateBufferInfo(network, realtimeBalance, activeFlow, {
+            amountWei: parseEther(
+              sanitizedForm.data.flowRate.amountEther
+            ).toString(),
+            unitOfTime: sanitizedForm.data.flowRate.unitOfTime,
+          });
+
+        if (balanceAfterBuffer.isNegative()) {
+          return handleHigherValidationError({
+            message: `You do not have enough balance for buffer.`,
+          });
+        }
+
+        if (newDateWhenBalanceCritical) {
+          const minimumStreamTimeInSeconds =
+            getMinimumStreamTimeInMinutes(network.bufferTimeInMinutes) * 60;
+          const secondsToCritical =
+            newDateWhenBalanceCritical.getTime() / 1000 - dateNowSeconds();
+
+          if (secondsToCritical <= minimumStreamTimeInSeconds) {
+            // NOTE: "secondsToCritical" might be off about 1 minute because of RTK-query cache for the balance query
+            return handleHigherValidationError({
+              message: `You need to leave enough balance to stream for ${
+                minimumStreamTimeInSeconds / 3600
+              } hours.`,
+            });
+          }
+        }
+      }
+
+      if (!understandLiquidationRisk) {
+        return false;
+      }
+
+      return true;
+    },
+    [network, accountAddress, calculateBufferInfo]
+  );
+
   const formSchema = useMemo(
     () =>
       object().test(async (values, context) => {
         clearErrors("data");
-        await primarySchema.validate(values);
-        const validForm = values as ValidStreamingForm;
+        const sanitizedForm = await sanitizedSchema.validate(values);
 
         const handleHigherOrderValidationError =
-          createHandleHigherOrderValidationErrorFunc(
-            setError,
-            context.createError
-          );
+          createHigherValidationErrorFunc(setError, context.createError);
 
-        const { tokenAddress, receiverAddress, understandLiquidationRisk } =
-          validForm.data;
-
-        if (
-          accountAddress &&
-          accountAddress.toLowerCase() === receiverAddress.toLowerCase()
-        ) {
-          handleHigherOrderValidationError({
-            message: `You can't stream to yourself.`,
-          });
-        }
-
-        if (accountAddress && tokenAddress && receiverAddress) {
-          const [realtimeBalance, activeFlow] = await Promise.all([
-            queryRealtimeBalance(
-              {
-                accountAddress,
-                chainId: network.id,
-                tokenAddress: tokenAddress,
-              },
-              true
-            ).unwrap(),
-            queryActiveFlow(
-              {
-                tokenAddress,
-                receiverAddress,
-                chainId: network.id,
-                senderAddress: accountAddress,
-              },
-              true
-            ).unwrap(),
-          ]);
-
-          const { newDateWhenBalanceCritical, balanceAfterBuffer } =
-            calculateBufferInfo(network, realtimeBalance, activeFlow, {
-              amountWei: parseEther(
-                validForm.data.flowRate.amountEther
-              ).toString(),
-              unitOfTime: validForm.data.flowRate.unitOfTime,
-            });
-
-          if (balanceAfterBuffer.isNegative()) {
-            handleHigherOrderValidationError({
-              message: `You do not have enough balance for buffer.`,
-            });
-          }
-
-          if (newDateWhenBalanceCritical) {
-            const minimumStreamTimeInSeconds =
-              getMinimumStreamTimeInMinutes(network.bufferTimeInMinutes) * 60;
-            const secondsToCritical =
-              newDateWhenBalanceCritical.getTime() / 1000 - dateNowSeconds();
-
-            if (secondsToCritical <= minimumStreamTimeInSeconds) {
-              // NOTE: "secondsToCritical" might be off about 1 minute because of RTK-query cache for the balance query
-              handleHigherOrderValidationError({
-                message: `You need to leave enough balance to stream for ${
-                  minimumStreamTimeInSeconds / 3600
-                } hours.`,
-              });
-            }
-          }
-        }
-
-        if (!understandLiquidationRisk) {
-          return false;
-        }
-
-        return true;
+        return await higherValidate(
+          sanitizedForm,
+          handleHigherOrderValidationError
+        );
       }),
-    [network, accountAddress, calculateBufferInfo, primarySchema]
+    [sanitizedSchema, higherValidate]
   );
 
   const formMethods = useForm<PartialStreamingForm>({
