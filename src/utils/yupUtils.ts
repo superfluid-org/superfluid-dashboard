@@ -11,7 +11,7 @@ interface IsEtherAmountOptions {
 export const testAddress: () => TestFunction<string, AnyObject> =
   () => (value, context) => {
     if (!isAddress(value) && value !== NATIVE_ASSET_ADDRESS) {
-      throw context.createError({
+      return context.createError({
         message: "Not an address.",
       });
     }
@@ -26,19 +26,19 @@ export const testEtherAmount: (
   try {
     bigNumber = parseEther(value);
   } catch (error) {
-    throw context.createError({
+    return context.createError({
       message: "Not a number.",
     });
   }
 
   if (options.notNegative && bigNumber.isNegative()) {
-    throw context.createError({
+    return context.createError({
       message: "May not be negative.",
     });
   }
 
   if (options.notZero && bigNumber.isZero()) {
-    throw context.createError({
+    return context.createError({
       message: "May not be zero.",
     });
   }

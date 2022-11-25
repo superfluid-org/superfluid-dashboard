@@ -35,4 +35,4 @@ if (SENTRY_DSN) {
   });
 } else {
   console.warn("Sentry not initialized on the client.");
-}
+} 
