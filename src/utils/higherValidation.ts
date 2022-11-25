@@ -31,7 +31,7 @@ export const createHigherValidationErrorFunc =
 export const useHigherValidation = <T>(
   callback: (
     sanitizedForm: T,
-    handleHigherValidationError: HandleHigherValidationErrorFunc
+    handleError: HandleHigherValidationErrorFunc
   ) => Promise<boolean | ValidationError>,
   deps: DependencyList
 ) => useCallback(debounce(callback, 250, { leading: true }), deps);

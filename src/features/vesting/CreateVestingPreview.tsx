@@ -10,7 +10,7 @@ import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { timeUnitWordMap } from "../send/FlowRateInput";
 import TokenIcon from "../token/TokenIcon";
 import { VestingFormLabels } from "./CreateVestingForm";
-import { ValidVestingForm } from "./CreateVestingFormProvider";
+import { SanitizedVestingForm } from "./CreateVestingFormProvider";
 import { CreateVestingCardView, VestingToken } from "./CreateVestingSection";
 import { CreateVestingTransactionButton } from "./CreateVestingTransactionButton";
 import { VestingScheduleGraph } from "./VestingScheduleGraph";
@@ -19,7 +19,7 @@ export const CreateVestingPreview: FC<{
   token: VestingToken;
   setView: (value: CreateVestingCardView) => void;
 }> = ({ token, setView }) => {
-  const { watch } = useFormContext<ValidVestingForm>();
+  const { watch } = useFormContext<SanitizedVestingForm>();
 
   const [
     superTokenAddress,
