@@ -5,6 +5,7 @@ import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
 import { bool, date, mixed, number, object, ObjectSchema, string } from "yup";
+import { createHandleHigherOrderValidationErrorFunc } from "../../utils/createHandleHigherOrderValidationErrorFunc";
 import { dateNowSeconds } from "../../utils/dateUtils";
 import { getMinimumStreamTimeInMinutes } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
@@ -98,20 +99,11 @@ const StreamingFormProvider: FC<
         await primarySchema.validate(values);
         const validForm = values as ValidStreamingForm;
 
-        // # Higher order validation
-        const handleHigherOrderValidationError = ({
-          message,
-        }: {
-          message: string;
-        }) => {
-          setError("data", {
-            message: message,
-          });
-          throw context.createError({
-            path: "data",
-            message: message,
-          });
-        };
+        const handleHigherOrderValidationError =
+          createHandleHigherOrderValidationErrorFunc(
+            setError,
+            context.createError
+          );
 
         const { tokenAddress, receiverAddress, understandLiquidationRisk } =
           validForm.data;
