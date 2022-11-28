@@ -138,9 +138,15 @@ export class Common extends BasePage {
                 // Inspired by: https://github.com/MetaMask/web3-provider-engine/blob/e835b80bf09e76d92b785d797f89baa43ae3fd60/subproviders/hooked-wallet.js#L326
                 for (const provider of hdwallet.engine._providers) {
                     if (provider.autoApprove) {
-                        provider.autoApprove = function(txParams, cb) {
+                        const autoReject = function(txParams, cb) {
                             cb(null, false)
                         }
+                        provider.approveTransaction = autoReject
+                        provider.approveMessage = autoReject
+                        provider.approvePersonalMessage = autoReject
+                        provider.approveDecryptMessage = autoReject
+                        provider.approveEncryptionPublicKey = autoReject
+                        provider.approveTypedMessage = autoReject
                     }
                 }
 
