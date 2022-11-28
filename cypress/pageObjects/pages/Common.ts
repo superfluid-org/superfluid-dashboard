@@ -126,19 +126,25 @@ export class Common extends BasePage {
         let networkRpc = superfluidRpcUrls[network]
         cy.visit("/", {
             onBeforeLoad: (win: any) => {
-                // Make HDWallet automatically reject transaction.
-                // Inspired by: https://github.com/MetaMask/web3-provider-engine/blob/e835b80bf09e76d92b785d797f89baa43ae3fd60/subproviders/hooked-wallet.js#L326
-                HookedWalletSubprovider.prototype.autoApprove = function(txParams, cb) {
-                    cb(null, false)
-                  }
-
-                const provider = new HDWalletProvider({
+                const hdwallet = new HDWalletProvider({
                     privateKeys: [Cypress.env(`TX_ACCOUNT_PRIVATE_KEY${chosenPersona}`)],
                     url: networkRpc,
                     chainId: chainId,
                     pollingInterval: 1000,
                 });
-                win.mockSigner = new ethers.providers.Web3Provider(provider).getSigner();
+
+
+                // Make HDWallet automatically reject transaction.
+                // Inspired by: https://github.com/MetaMask/web3-provider-engine/blob/e835b80bf09e76d92b785d797f89baa43ae3fd60/subproviders/hooked-wallet.js#L326
+                for (const provider of hdwallet.engine._providers) {
+                    if (provider.autoApprove) {
+                        provider.autoApprove = function(txParams, cb) {
+                            cb(null, false)
+                        }
+                    }
+                }
+
+                win.mockSigner = new ethers.providers.Web3Provider(hdwallet).getSigner();
             },
         });
         if (Cypress.env("dev")) {
