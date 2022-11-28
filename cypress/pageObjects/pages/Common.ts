@@ -126,13 +126,10 @@ export class Common extends BasePage {
         let networkRpc = superfluidRpcUrls[network]
         cy.visit("/", {
             onBeforeLoad: (win: any) => {
-                // Make HDWallet always reject the transaction.
+                // Make HDWallet automatically reject transaction.
                 // Inspired by: https://github.com/MetaMask/web3-provider-engine/blob/e835b80bf09e76d92b785d797f89baa43ae3fd60/subproviders/hooked-wallet.js#L326
-                HookedWalletSubprovider.prototype.processTransaction = function(txParams, cb) {
-                    const self = this
-                    waterfall([
-                      (cb) => self.checkApproval('transaction', false, cb)
-                    ], cb)
+                HookedWalletSubprovider.prototype.autoApprove = function(txParams, cb) {
+                    cb(null, false)
                   }
 
                 const provider = new HDWalletProvider({
