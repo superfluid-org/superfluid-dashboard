@@ -137,16 +137,10 @@ export class Common extends BasePage {
                 // Make HDWallet automatically reject transaction.
                 // Inspired by: https://github.com/MetaMask/web3-provider-engine/blob/e835b80bf09e76d92b785d797f89baa43ae3fd60/subproviders/hooked-wallet.js#L326
                 for (const provider of hdwallet.engine._providers) {
-                    if (provider.autoApprove) {
-                        const autoReject = function(txParams, cb) {
-                            cb(null, false)
+                    if (provider.checkApproval) {
+                        provider.checkApproval = function(type, didApprove, cb) {
+                            cb(new Error('User denied '+type+' signature.') )
                         }
-                        provider.approveTransaction = autoReject
-                        provider.approveMessage = autoReject
-                        provider.approvePersonalMessage = autoReject
-                        provider.approveDecryptMessage = autoReject
-                        provider.approveEncryptionPublicKey = autoReject
-                        provider.approveTypedMessage = autoReject
                     }
                 }
 
