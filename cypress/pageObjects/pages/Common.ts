@@ -5,6 +5,10 @@ import {MockProvider} from "@rsksmart/mock-web3-provider";
 import {ethers} from "ethers";
 import HDWalletProvider from "@truffle/hdwallet-provider";
 
+// @ts-ignore - web3-provider-engine doesn't have declaration files for these subproviders
+import HookedWalletSubprovider from "web3-provider-engine/subproviders/hooked-wallet";
+import { waterfall } from "async";
+
 const NAVIGATION_BUTTON_PREFIX = "[data-cy=nav-";
 const TOP_BAR_NETWORK_BUTTON = "[data-cy=top-bar-network-button]";
 const CONNECTED_WALLET = "[data-cy=wallet-connection-status] h6";
@@ -122,6 +126,15 @@ export class Common extends BasePage {
         let networkRpc = superfluidRpcUrls[network]
         cy.visit("/", {
             onBeforeLoad: (win: any) => {
+                // Make HDWallet always reject the transaction.
+                // Inspired by: https://github.com/MetaMask/web3-provider-engine/blob/e835b80bf09e76d92b785d797f89baa43ae3fd60/subproviders/hooked-wallet.js#L326
+                HookedWalletSubprovider.prototype.processTransaction = function(txParams, cb) {
+                    const self = this
+                    waterfall([
+                      (cb) => self.checkApproval('transaction', false, cb)
+                    ], cb)
+                  }
+
                 const provider = new HDWalletProvider({
                     privateKeys: [Cypress.env(`TX_ACCOUNT_PRIVATE_KEY${chosenPersona}`)],
                     url: networkRpc,
