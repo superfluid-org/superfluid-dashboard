@@ -7,7 +7,6 @@ import HDWalletProvider from "@truffle/hdwallet-provider";
 
 // @ts-ignore - web3-provider-engine doesn't have declaration files for these subproviders
 import HookedWalletSubprovider from "web3-provider-engine/subproviders/hooked-wallet";
-import { waterfall } from "async";
 
 const NAVIGATION_BUTTON_PREFIX = "[data-cy=nav-";
 const TOP_BAR_NETWORK_BUTTON = "[data-cy=top-bar-network-button]";
