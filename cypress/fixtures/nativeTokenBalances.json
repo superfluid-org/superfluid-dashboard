@@ -2,7 +2,7 @@
   "staticBalanceAccount": {
     "goerli": {
       "ETH": {
-        "underlyingBalance": "0.062135",
+        "underlyingBalance": "0.1553",
         "superTokenBalance": "0"
       }
     },

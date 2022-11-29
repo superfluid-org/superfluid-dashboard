@@ -37,14 +37,13 @@ Feature: Dashboard Page test cases
     And User clicks on the "polygon-mumbai" toggle
     Then "polygon-mumbai" balances are not visible
 
-  @flaky
   Scenario: Flow values ,cancel buttons and wrong network warning for an account with ongoing streams
     Given "Dashboard Page" is open with a mocked connection to "ongoingStreamAccount" on "polygon"
     And User connects their wallet to the dashboard
     And User waits for balances to load
     And User clicks on "gnosis" "xDAIx" row
     And "gnosis" "xDAIx" flow rates are shown with the correct values
-    Then "gnosis" streams are shown with the correct values
+    Then "gnosis" streams are shown with the correct values in dashboard page
       # Broken due to mocked provider
 #    And User clicks on the first visible cancel button
 #    Then The cancel stream popup button is visible

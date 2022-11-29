@@ -113,23 +113,21 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
           )}
 
           <Link
-            data-cy={"wrap-button"}
             href={`/wrap?upgrade&token=${token.id}&network=${network.slugName}`}
             passHref
           >
             <Tooltip title="Wrap">
-              <IconButton color="primary">
+              <IconButton data-cy={"wrap-button"} color="primary">
                 <AddIcon />
               </IconButton>
             </Tooltip>
           </Link>
           <Link
-            data-cy={"unwrap-button"}
             href={`/wrap?downgrade&token=${token.id}&network=${network.slugName}`}
             passHref
           >
             <Tooltip title="Unwrap">
-              <IconButton color="primary">
+              <IconButton data-cy={"unwrap-button"} color="primary">
                 <RemoveIcon />
               </IconButton>
             </Tooltip>

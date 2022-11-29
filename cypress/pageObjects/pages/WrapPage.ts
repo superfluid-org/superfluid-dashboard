@@ -7,6 +7,7 @@ const UNWRAP_TAB = "[data-cy=unwrap-toggle]";
 const WRAP_INPUT = "[data-cy=wrap-input]";
 const UNWRAP_INPUT = "[data-cy=unwrap-input]";
 const SELECT_TOKEN_BUTTON = "[data-cy=select-token-button]";
+const SELECTED_TOKEN = `${SELECT_TOKEN_BUTTON} span[translate=no]`
 const WRAP_PREVIEW = "[data-cy=wrapable-amount] input";
 const UNWRAP_PREVIEW = "[data-cy=unwrap-amount-preview] input";
 const TOKEN_PAIR = "[data-cy=token-pair]";
@@ -429,7 +430,19 @@ export class WrapPage extends BasePage {
         cy.fixture("nativeTokenBalances").then(fixture => {
             let expectedString = fixture[account][network][token].underlyingBalance === "0" ? fixture[account][network][token].underlyingBalance : `~${fixture[account][network][token].underlyingBalance}`
             cy.get(`[data-cy=${token}-list-item]`).scrollIntoView()
-            this.hasText(`[data-cy=${token}-list-item] ${TOKEN_SELECT_BALANCE}`,expectedString)
+            this.hasText(`[data-cy=${token}-list-item] ${TOKEN_SELECT_BALANCE}`, expectedString)
         })
+    }
+
+    static validateTokenSelectedForWrapping(token: string) {
+        this.hasText(SELECTED_TOKEN, token)
+        this.isVisible(WRAP_INPUT)
+        this.doesNotExist(UNWRAP_INPUT)
+    }
+
+    static validateTokenSelectedForUnwrapping(token: string) {
+        this.hasText(SELECTED_TOKEN, token)
+        this.doesNotExist(WRAP_INPUT)
+        this.isVisible(UNWRAP_INPUT)
     }
 }

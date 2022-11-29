@@ -28,6 +28,9 @@ const ERROR_PAGE_MESSAGE = "[data-cy=404-message]"
 const RETURN_TO_DASHBOARD_BUTTON = "[data-cy=return-to-dashboard-button]"
 const HELP_CENTER_LINK = "[data-cy=help-center-link]"
 const RESTORE_BUTTONS = "[data-testid=ReplayIcon]"
+const SENDER_RECEIVER_ADDRESSES = "[data-cy=sender-receiver-address]";
+const STREAM_FLOW_RATES = "[data-cy=flow-rate]";
+const START_END_DATES = "[data-cy=start-end-date]";
 
 export class Common extends BasePage {
     static clickNavBarButton(button: string) {
@@ -232,4 +235,41 @@ export class Common extends BasePage {
     static restoreLastTx() {
         this.clickFirstVisible(RESTORE_BUTTONS)
     }
+
+
+    static validateStreamsTable(network:string , selector:string) {
+        cy.fixture("networkSpecificData").then((networkSpecificData) => {
+            this.hasLength(selector, networkSpecificData[
+                network
+                ].ongoingStreamsAccount.tokenValues.streams.length)
+            networkSpecificData[
+                network
+                ].ongoingStreamsAccount.tokenValues.streams.forEach(
+                (stream: any, index: number) => {
+                    cy.get(`${selector} ${STREAM_FLOW_RATES}`)
+                        .eq(index)
+                        .should("have.text", stream.flowRate);
+                    cy.get(`${selector} ${SENDER_RECEIVER_ADDRESSES}`)
+                        .eq(index)
+                        .should("have.text", stream.fromTo);
+                    cy.get(`${selector} ${START_END_DATES}`)
+                        .eq(index)
+                        .should("have.text", stream.endDate);
+                }
+            );
+        });
+    }
+
+    static mockQueryToEmptyState(operationName:string) {
+        cy.intercept("POST","**protocol-v1**" , (req) => {
+            const { body } = req;
+            if(body.hasOwnProperty("operationName") && body.operationName === operationName) {
+                req.alias = `${operationName}Query`
+                req.continue((res) => {
+                    res.body.data[operationName] = []
+                })
+            }
+        })
+    }
+
 }

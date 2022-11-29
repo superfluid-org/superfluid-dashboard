@@ -5,6 +5,7 @@ Feature: Distribution transaction test cases
     Given Transactional account alice is connected to the dashboard on goerli
     And User opens "goerli" "fDAIx" individual token page
     And User opens the distributions tab
+    And Add to wallet button is visible
     And User revokes the last index distribution if necessary
     And User approves the last index distributions
     And Distribution approval dialog on "goerli" shows up and user closes it
