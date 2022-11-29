@@ -192,6 +192,10 @@ const MonitorContext: FC = () => {
         return event;
       }
 
+      console.log({
+        event
+      })
+
       if (event.exception) {
         track("Error Logged", {
           eventId: event.event_id,
