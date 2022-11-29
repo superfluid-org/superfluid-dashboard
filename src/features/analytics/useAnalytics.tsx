@@ -150,9 +150,9 @@ export const useAnalytics = () => {
 
   const txAnalytics = useCallback(
     (txName: string, originalArgs: unknown) => {
-      const serializedAndDeserializedArgs = JSON.parse(
-        serialize(originalArgs, undefined, undefined, () => undefined)
-      );
+      // const serializedAndDeserializedArgs = JSON.parse(
+      //   serialize(originalArgs, undefined, undefined, () => undefined)
+      // );
       return [
         (value: TransactionInfo) =>
           void analyticsBrowser.track(
@@ -162,7 +162,6 @@ export const useAnalytics = () => {
                 hash: value.hash,
                 chainId: value.chainId,
               },
-              originalArgs: serializedAndDeserializedArgs,
             },
             {
               context: instanceDetails,
