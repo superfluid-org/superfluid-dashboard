@@ -5,7 +5,7 @@ import {
 } from "@superfluid-finance/sdk-redux";
 import { createContext, useCallback, useContext, useMemo } from "react";
 import config from "../../utils/config";
-import { useAccount, useNetwork } from "wagmi";
+import { serialize, useAccount, useNetwork } from "wagmi";
 import { useLayoutContext } from "../layout/LayoutContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { customAlphabet } from "nanoid";
@@ -149,32 +149,34 @@ export const useAnalytics = () => {
   }
 
   const txAnalytics = useCallback(
-    (txName: string, originalArgs: unknown) => [
-      (value: TransactionInfo) =>
-        void analyticsBrowser.track(
+    (txName: string, originalArgs: unknown) => {
+      const serializedAndDeserializedArgs = JSON.parse(serialize(originalArgs));
+      return [
+        (value: TransactionInfo) => void analyticsBrowser.track(
           `${txName} Broadcasted`,
           {
             transaction: {
               hash: value.hash,
               chainId: value.chainId,
             },
-            originalArgs,
+            originalArgs: serializedAndDeserializedArgs,
           },
           {
             context: instanceDetails,
           }
         ),
-      (reason: any) => {
-        analyticsBrowser.track(
-          `${txName} Failed`,
-          {},
-          {
-            context: instanceDetails,
-          }
-        );
-        throw reason;
-      },
-    ],
+        (reason: any) => {
+          analyticsBrowser.track(
+            `${txName} Failed`,
+            {},
+            {
+              context: instanceDetails,
+            }
+          );
+          throw reason;
+        },
+      ];
+    },
     [analyticsBrowser, instanceDetails]
   );
 
