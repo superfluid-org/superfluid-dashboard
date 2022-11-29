@@ -3,11 +3,28 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs";
+import { Event as SentryEvent, EventHint } from "@sentry/nextjs";
 import { IsCypress } from "./src/utils/SSRUtils";
 
 const SENTRY_DSN = process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN;
-const SENTRY_ENVIRONMENT = process.env.SENTRY_ENVIRONMENT || process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT;
+const SENTRY_ENVIRONMENT =
+  process.env.SENTRY_ENVIRONMENT || process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT;
 const isProduction = SENTRY_ENVIRONMENT === "production";
+
+export type BeforeSendFunc = (
+  event: SentryEvent,
+  hint: EventHint
+) => PromiseLike<SentryEvent | null> | SentryEvent | null;
+
+const beforeSendCallbacks: BeforeSendFunc[] = [];
+
+export const addBeforeSend = (callback: BeforeSendFunc) => {
+  beforeSendCallbacks.push(callback);
+};
+
+export const removeBeforeSend = (callback: BeforeSendFunc) => {
+  beforeSendCallbacks.splice(beforeSendCallbacks.indexOf(callback), 1);
+};
 
 if (!IsCypress && SENTRY_DSN) {
   Sentry.init({
@@ -17,7 +34,7 @@ if (!IsCypress && SENTRY_DSN) {
     environment: SENTRY_ENVIRONMENT,
     beforeBreadcrumb(breadcrumb, hint) {
       // Inspired by: https://github.com/getsentry/sentry-javascript/issues/3015#issuecomment-718594200
-      if (breadcrumb.category?.startsWith('ui') && hint) {
+      if (breadcrumb.category?.startsWith("ui") && hint) {
         const target = hint.event.target;
         const dataCy = target.dataset.cy;
         const cyMessage = `[data-cy="${dataCy}"]`;
@@ -25,8 +42,17 @@ if (!IsCypress && SENTRY_DSN) {
       }
       return breadcrumb;
     },
+    async beforeSend(event, hint) {
+      let eventModified = event;
+
+      for (const callback of beforeSendCallbacks) {
+        eventModified = (await callback(eventModified, hint)) ?? eventModified;
+      }
+
+      return eventModified;
+    },
     maxValueLength: 750, // ethers can have very long errors so we increase this limit.
-    maxBreadcrumbs: 25 // The long list of breadcrumbs seem to be rarely useful so we decrease this.
+    maxBreadcrumbs: 25, // The long list of breadcrumbs seem to be rarely useful so we decrease this.
     // ...
     // Note: if you want to override the automatic release value, do not set a
     // `release` value here - use the environment variable `SENTRY_RELEASE`, so

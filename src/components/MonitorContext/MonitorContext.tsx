@@ -4,6 +4,11 @@ import promiseRetry from "promise-retry";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { hotjar } from "react-hotjar";
 import { useIntercom } from "react-use-intercom";
+import {
+  addBeforeSend,
+  BeforeSendFunc,
+  removeBeforeSend,
+} from "../../../sentry.client.config";
 import { supportId, useAnalytics } from "../../features/analytics/useAnalytics";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import {
@@ -186,27 +191,23 @@ const MonitorContext: FC = () => {
   }, []);
 
   useEffect(() => {
-    let isEventProcessorExpired = false;
-    const onSentryEvent = (event: Sentry.Event) => {
-      if (isEventProcessorExpired) {
-        return event;
+    const onSentryEvent: BeforeSendFunc = (event) => {
+      if (event.exception) {
+        track("Error Logged", {
+          eventId: event.event_id,
+        });
       }
 
       console.log({
         event
       })
 
-      if (event.exception) {
-        track("Error Logged", {
-          eventId: event.event_id,
-        });
-      }
       return event;
     };
-    Sentry.addGlobalEventProcessor(onSentryEvent);
-    return () => {
-      isEventProcessorExpired = true;
-    };
+
+    addBeforeSend(onSentryEvent);
+
+    return () => removeBeforeSend(onSentryEvent);
   }, [track]);
 
   return null;
