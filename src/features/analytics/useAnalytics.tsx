@@ -150,21 +150,24 @@ export const useAnalytics = () => {
 
   const txAnalytics = useCallback(
     (txName: string, originalArgs: unknown) => {
-      const serializedAndDeserializedArgs = JSON.parse(serialize(originalArgs));
+      const serializedAndDeserializedArgs = JSON.parse(
+        serialize(originalArgs, undefined, undefined, () => undefined)
+      );
       return [
-        (value: TransactionInfo) => void analyticsBrowser.track(
-          `${txName} Broadcasted`,
-          {
-            transaction: {
-              hash: value.hash,
-              chainId: value.chainId,
+        (value: TransactionInfo) =>
+          void analyticsBrowser.track(
+            `${txName} Broadcasted`,
+            {
+              transaction: {
+                hash: value.hash,
+                chainId: value.chainId,
+              },
+              originalArgs: serializedAndDeserializedArgs,
             },
-            originalArgs: serializedAndDeserializedArgs,
-          },
-          {
-            context: instanceDetails,
-          }
-        ),
+            {
+              context: instanceDetails,
+            }
+          ),
         (reason: any) => {
           analyticsBrowser.track(
             `${txName} Failed`,
