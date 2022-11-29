@@ -1,5 +1,8 @@
 import { AnalyticsBrowser } from "@segment/analytics-next";
-import { TransactionInfo } from "@superfluid-finance/sdk-redux";
+import {
+  getSerializeQueryArgs,
+  TransactionInfo,
+} from "@superfluid-finance/sdk-redux";
 import { createContext, useCallback, useContext, useMemo } from "react";
 import config from "../../utils/config";
 import { useAccount, useNetwork } from "wagmi";
@@ -146,7 +149,7 @@ export const useAnalytics = () => {
   }
 
   const txAnalytics = useCallback(
-    (txName: string) => [
+    (txName: string, originalArgs: unknown) => [
       (value: TransactionInfo) =>
         void analyticsBrowser.track(
           `${txName} Broadcasted`,
@@ -155,19 +158,22 @@ export const useAnalytics = () => {
               hash: value.hash,
               chainId: value.chainId,
             },
+            originalArgs,
           },
           {
             context: instanceDetails,
           }
         ),
-      (_error: any) =>
-        void analyticsBrowser.track(
+      (reason: any) => {
+        analyticsBrowser.track(
           `${txName} Failed`,
           {},
           {
             context: instanceDetails,
           }
-        ),
+        );
+        throw reason;
+      },
     ],
     [analyticsBrowser, instanceDetails]
   );

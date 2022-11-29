@@ -459,7 +459,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                       tokenAddress: tokenPair.underlyingTokenAddress,
                     };
 
-                    approveTrigger({
+                    const originalArgs = {
                       signer,
                       chainId: network.id,
                       amountWei: approveAllowanceAmountWei.toString(),
@@ -468,9 +468,10 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                         restoration,
                       },
                       overrides: await getTransactionOverrides(network),
-                    })
+                    };
+                    approveTrigger(originalArgs)
                       .unwrap()
-                      .then(...txAnalytics("Approve Allowance"))
+                      .then(...txAnalytics("Approve Allowance", originalArgs))
                       .then(() => setTransactionDrawerOpen(true))
                       .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
                   }}
@@ -538,7 +539,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                     />
                   );
 
-                  wrapTrigger({
+                  const originalArgs = {
                     signer,
                     chainId: network.id,
                     amountWei: amountWei.toString(),
@@ -548,9 +549,10 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                       restoration,
                     },
                     overrides,
-                  })
+                  };
+                  wrapTrigger(originalArgs)
                     .unwrap()
-                    .then(...txAnalytics("Wrap"))
+                    .then(...txAnalytics("Wrap", originalArgs))
                     .then(() => resetForm())
                     .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
 

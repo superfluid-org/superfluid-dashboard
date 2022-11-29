@@ -344,7 +344,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                   />
                 );
 
-                unwrapTrigger({
+                const originalArgs = {
                   signer,
                   chainId: network.id,
                   amountWei: parseEther(formData.amountDecimal).toString(),
@@ -354,9 +354,10 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                     restoration,
                   },
                   overrides,
-                })
+                };
+                unwrapTrigger(originalArgs)
                   .unwrap()
-                  .then(...txAnalytics("Unwrap"))
+                  .then(...txAnalytics("Unwrap", originalArgs))
                   .then(() => resetForm())
                   .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
               }}

@@ -546,7 +546,7 @@ export default memo(function SendCard() {
                 : {}),
             };
 
-            upsertFlow({
+            const originalArgs = {
               signer,
               flowRateWei,
               chainId: network.id,
@@ -562,11 +562,17 @@ export default memo(function SendCard() {
               transactionExtraData: {
                 restoration: transactionRestoration,
               },
-            })
+            };
+            upsertFlow(originalArgs)
               .unwrap()
-              .then(...txAnalytics(activeFlow ? "Send Stream" : "Modify Stream"))
+              .then(
+                ...txAnalytics(
+                  activeFlow ? "Send Stream" : "Modify Stream",
+                  originalArgs
+                )
+              )
               .then(() => void resetForm())
-              .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
+              .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
 
             setDialogLoadingInfo(
               <Typography variant="h5" color="text.secondary" translate="yes">
@@ -655,7 +661,7 @@ export default memo(function SendCard() {
                 </Typography>
               );
 
-              flowDeleteTrigger({
+              const originalArgs = {
                 signer,
                 receiverAddress,
                 superTokenAddress,
@@ -664,11 +670,12 @@ export default memo(function SendCard() {
                 userDataBytes: undefined,
                 waitForConfirmation: false,
                 overrides: await getTransactionOverrides(network),
-              })
+              };
+              flowDeleteTrigger(originalArgs)
                 .unwrap()
-                .then(...txAnalytics("Cancel Stream"))
+                .then(...txAnalytics("Cancel Stream", originalArgs))
                 .then(() => resetForm())
-                .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
+                .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
             }}
           >
             Cancel Stream

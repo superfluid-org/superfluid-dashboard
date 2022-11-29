@@ -21,6 +21,7 @@ import {
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import Link from "next/link";
 import { Typography } from "@mui/material";
+import { useAnalytics } from "../analytics/useAnalytics";
 
 export const DeleteVestingTransactionButton: FC<{
   superTokenAddress: string;
@@ -35,6 +36,7 @@ export const DeleteVestingTransactionButton: FC<{
   TransactionBoundaryProps,
   TransactionButtonProps,
 }) => {
+  const { txAnalytics } = useAnalytics();
   const [deleteVestingSchedule, deleteVestingScheduleResult] =
     rpcApi.useDeleteVestingScheduleMutation();
 
@@ -84,7 +86,7 @@ export const DeleteVestingTransactionButton: FC<{
                 </Typography>
               );
 
-              deleteVestingSchedule({
+              const originalArgs = {
                 signer,
                 chainId: network.id,
                 superTokenAddress: superTokenAddress,
@@ -93,7 +95,10 @@ export const DeleteVestingTransactionButton: FC<{
                 transactionExtraData: undefined,
                 overrides: await getOverrides(),
                 waitForConfirmation: false,
-              });
+              };
+              deleteVestingSchedule(originalArgs)
+                .unwrap()
+                .then(...txAnalytics("Delete Vesting Schedule", originalArgs));
 
               setDialogSuccessActions(
                 <TransactionDialogActions>
