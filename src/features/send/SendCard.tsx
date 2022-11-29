@@ -249,7 +249,7 @@ export default memo(function SendCard() {
           decimals: 18,
           isListed: x.isListed,
         })),
-    [listedSuperTokensQuery.data, customSuperTokensQuery.data, network]
+    [network, listedSuperTokensQuery.data, customSuperTokensQuery.data]
   );
 
   const TokenController = (
@@ -399,7 +399,7 @@ export default memo(function SendCard() {
                 })
               );
             }}
-            disablePast={true}
+            disablePast
           />
         )}
       />
@@ -422,7 +422,7 @@ export default memo(function SendCard() {
       InputProps={{
         startAdornment: <>≈&nbsp;</>,
         endAdornment: (
-          <Stack direction="row" gap={0.5} sx={{ ml: 0.5 }}>
+          <Stack direction="row" gap={0.75} sx={{ ml: 0.5 }}>
             <TokenIcon tokenSymbol={token?.symbol} isSuper size={24} />
             <Typography variant="h6" component="span">
               {token?.symbol ?? ""}
@@ -565,7 +565,8 @@ export default memo(function SendCard() {
             })
               .unwrap()
               .then(...txAnalytics(activeFlow ? "Send Stream" : "Modify Stream"))
-              .then(() => void resetForm());
+              .then(() => void resetForm())
+              .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
 
             setDialogLoadingInfo(
               <Typography variant="h5" color="text.secondary" translate="yes">
@@ -666,7 +667,8 @@ export default memo(function SendCard() {
               })
                 .unwrap()
                 .then(...txAnalytics("Cancel Stream"))
-                .then(() => resetForm());
+                .then(() => resetForm())
+                .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
             }}
           >
             Cancel Stream

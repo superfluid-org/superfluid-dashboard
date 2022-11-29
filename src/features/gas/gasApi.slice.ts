@@ -17,7 +17,7 @@ const gasApi = createApi({
         if (chainId === chain.polygon.id) {
           const {
             data: {
-              standard: { maxFee, maxPriorityFee },
+              fast: { maxFee, maxPriorityFee },
             },
           } = await axios.get<MaticGasStationResponse>(
             "https://gasstation-mainnet.matic.network/v2"
@@ -34,7 +34,7 @@ const gasApi = createApi({
         if (chainId === chain.polygonMumbai.id) {
           const {
             data: {
-              standard: { maxFee, maxPriorityFee },
+              fast: { maxFee, maxPriorityFee },
             },
           } = await axios.get<MaticGasStationResponse>(
             "https://gasstation-mumbai.matic.today/v2"

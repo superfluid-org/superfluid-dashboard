@@ -1,7 +1,7 @@
 import {BasePage} from "../BasePage";
-import {UnitOfTime} from "../../../src/features/send/FlowRateInput";
+import {UnitOfTime} from "../BasePage";
 import {WrapPage} from "./WrapPage";
-import {networksBySlug} from "../../../src/features/network/networks";
+import {networksBySlug} from "../../superData/networks";
 
 const SEND_BUTTON = "[data-cy=send-transaction-button]";
 const RECEIVER_BUTTON = "[data-cy=address-button]";
@@ -318,12 +318,6 @@ export class SendPage extends BasePage {
         this.click(RECEIVER_BUTTON);
         cy.get(RECENT_ENTRIES,{timeout:30000}).should("be.visible")
         this.type(ADDRESS_DIALOG_INPUT, address);
-        cy.get("body").then( el => {
-           if(el.find(RECEIVER_DIALOG).length < 1 ) {
-               this.clear(ADDRESS_DIALOG_INPUT)
-               this.type(ADDRESS_DIALOG_INPUT,address)
-           }
-        })
         this.click(SELECT_TOKEN_BUTTON);
         cy.get(`[data-cy=${token}-list-item]`, {timeout: 60000}).click()
         this.type(FLOW_RATE_INPUT, amount);
@@ -415,6 +409,7 @@ export class SendPage extends BasePage {
                     cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
                     this.inputStreamDetails("1", "fDAIx", "month", data.accountWithLotsOfData)
                     this.hasText(SEND_OR_MOD_STREAM, "Send Stream")
+                    this.overrideNextGasPrice()
                     this.click(SEND_BUTTON)
                     this.click(CLOSE_DIALOG_BUTTON)
                     this.isVisible(`${TX_DRAWER_BUTTON} span`)

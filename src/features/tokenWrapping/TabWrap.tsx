@@ -5,8 +5,8 @@ import { formatEther, formatUnits, parseEther } from "ethers/lib/utils";
 import { useRouter } from "next/router";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { useAccount } from "wagmi";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
+import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import { parseAmountOrZero } from "../../utils/tokenUtils";
 import { useAnalytics } from "../analytics/useAnalytics";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
@@ -92,7 +92,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
     "data.amountDecimal",
   ]);
 
-  const [amountWei, setAmountWei] = useState<BigNumber>(
+  const [amountWei, setAmountWei] = useState<BigNumber>( // The wei is based on the underlying token, so be careful with decimals.
     ethers.BigNumber.from(0)
   );
 
@@ -107,7 +107,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
     tokenPair,
   });
 
-  const tokenPrice = useTokenPrice(network.id, tokenPair?.superTokenAddress);
+  const tokenPrice = useTokenPrice(network.id, tokenPair?.superTokenAddress); // We always get the price for the super token.
 
   useEffect(() => {
     if (underlyingToken && amountDecimal) {
@@ -235,11 +235,10 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                 placeholder="0.0"
                 inputRef={amountInputRef}
                 value={amountDecimal}
-                type="text"
-                inputMode="decimal"
                 onChange={onChange}
                 onBlur={onBlur}
                 inputProps={{
+                  ...inputPropsForEtherAmount,
                   sx: {
                     ...theme.typography.largeInput,
                     p: 0,
@@ -300,7 +299,13 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                 textOverflow: "ellipsis",
               }}
             >
-              {tokenPrice && <FiatAmount price={tokenPrice} wei={amountWei} />}
+              {tokenPrice && (
+                <FiatAmount
+                  wei={amountWei}
+                  decimals={underlyingToken.decimals}
+                  price={tokenPrice}
+                />
+              )}
             </Typography>
             <Stack direction="row">
               <BalanceUnderlyingToken
@@ -377,7 +382,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
             </Button>
           </Stack>
 
-          {!!(superToken && visibleAddress) && (
+          {!!(underlyingToken && superToken && visibleAddress) && (
             <Stack direction="row" justifyContent="space-between">
               <Typography
                 variant="body2mono"
@@ -389,7 +394,11 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                 }}
               >
                 {tokenPrice && (
-                  <FiatAmount price={tokenPrice} wei={amountWei} />
+                  <FiatAmount
+                    wei={amountWei}
+                    decimals={underlyingToken.decimals}
+                    price={tokenPrice}
+                  />
                 )}
               </Typography>
               <BalanceSuperToken
@@ -410,7 +419,13 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
           </Typography>
           {tokenPrice && (
             <Typography variant="body2mono" color="text.secondary">
-              (<FiatAmount price={tokenPrice} />)
+              (
+              <FiatAmount
+                wei={amountWei}
+                decimals={underlyingToken.decimals}
+                price={tokenPrice}
+              />
+              )
             </Typography>
           )}
         </Stack>
@@ -456,7 +471,8 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                     })
                       .unwrap()
                       .then(...txAnalytics("Approve Allowance"))
-                      .then(() => setTransactionDrawerOpen(true));
+                      .then(() => setTransactionDrawerOpen(true))
+                      .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
                   }}
                 >
                   Allow Superfluid Protocol to wrap your{" "}
@@ -535,7 +551,8 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                   })
                     .unwrap()
                     .then(...txAnalytics("Wrap"))
-                    .then(() => resetForm());
+                    .then(() => resetForm())
+                    .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
 
                   setDialogSuccessActions(
                     <TransactionDialogActions>

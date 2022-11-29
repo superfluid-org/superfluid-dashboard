@@ -5,6 +5,7 @@ import { FC, useEffect, useRef } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { useAccount } from "wagmi";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
+import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import {
   calculateCurrentBalance,
   parseAmountOrZero,
@@ -120,12 +121,12 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                 disableUnderline
                 type="text"
                 placeholder="0.0"
-                inputMode="decimal"
                 inputRef={amountInputRef}
                 value={amount}
                 onChange={onChange}
                 onBlur={onBlur}
                 inputProps={{
+                  ...inputPropsForEtherAmount,
                   sx: {
                     ...theme.typography.largeInput,
                     p: 0,
@@ -186,7 +187,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                 textOverflow: "ellipsis",
               }}
             >
-              {tokenPrice && <FiatAmount price={tokenPrice} wei={amountWei} />}
+              {tokenPrice && <FiatAmount wei={amountWei} price={tokenPrice} />}
             </Typography>
 
             <Stack direction="row">
@@ -277,7 +278,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                 }}
               >
                 {tokenPrice && (
-                  <FiatAmount price={tokenPrice} wei={amountWei} />
+                  <FiatAmount wei={amountWei} price={tokenPrice} />
                 )}
               </Typography>
               <BalanceUnderlyingToken
@@ -298,7 +299,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
           </Typography>
           {tokenPrice && (
             <Typography variant="body2mono" color="text.secondary">
-              (<FiatAmount price={tokenPrice} />)
+              (<FiatAmount wei={1} decimals={0} price={tokenPrice} />)
             </Typography>
           )}
         </Stack>
@@ -356,7 +357,8 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                 })
                   .unwrap()
                   .then(...txAnalytics("Unwrap"))
-                  .then(() => resetForm());
+                  .then(() => resetForm())
+                  .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
               }}
             >
               Unwrap

@@ -55,6 +55,7 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
     })
       .unwrap()
       .then(...txAnalytics("Cancel Stream"));
+      // TODO(KK): This needs better handling
   };
 
   return (

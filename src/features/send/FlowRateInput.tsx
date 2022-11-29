@@ -5,6 +5,7 @@ import { Box, MenuItem, Select, TextField } from "@mui/material";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import Amount from "../token/Amount";
 import { parseEther } from "ethers/lib/utils";
+import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 
 /**
  * Enum numerical value is expressed in seconds.
@@ -16,7 +17,7 @@ export enum UnitOfTime {
   Day = 86400,
   Week = 604800,
   Month = 2592000,
-  Year = 31536000
+  Year = 31536000,
 }
 
 export const unitOfTimeList = [
@@ -26,7 +27,7 @@ export const unitOfTimeList = [
   UnitOfTime.Day,
   UnitOfTime.Week,
   UnitOfTime.Month,
-  UnitOfTime.Year
+  UnitOfTime.Year,
 ];
 
 export const timeUnitWordMap: Record<UnitOfTime, string> = {
@@ -36,7 +37,7 @@ export const timeUnitWordMap: Record<UnitOfTime, string> = {
   [UnitOfTime.Day]: "day",
   [UnitOfTime.Week]: "week",
   [UnitOfTime.Month]: "month",
-  [UnitOfTime.Year]: "year"
+  [UnitOfTime.Year]: "year",
 };
 
 export const wordTimeUnitMap: Record<string, UnitOfTime> = {
@@ -46,7 +47,7 @@ export const wordTimeUnitMap: Record<string, UnitOfTime> = {
   day: UnitOfTime.Day,
   week: UnitOfTime.Week,
   month: UnitOfTime.Month,
-  year: UnitOfTime.Year
+  year: UnitOfTime.Year,
 };
 
 export type FlowRateWei = {
@@ -120,8 +121,6 @@ export const FlowRateInput: FC<{
     <Box sx={{ display: "grid", gridTemplateColumns: "6fr 4fr" }}>
       <TextField
         data-cy={"flow-rate-input"}
-        type="text"
-        inputMode="decimal"
         autoComplete="off"
         autoCorrect="off"
         placeholder="0.0"
@@ -133,6 +132,9 @@ export const FlowRateInput: FC<{
             ...flowRate,
             amountEther: e.currentTarget.value,
           });
+        }}
+        inputProps={{
+          ...inputPropsForEtherAmount,
         }}
         InputProps={{
           sx: { borderRadius: "10px 0 0 10px" },

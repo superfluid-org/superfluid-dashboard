@@ -1,14 +1,13 @@
+import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
-import LinkIcon from "@mui/icons-material/Link";
-import ShareIcon from "@mui/icons-material/Share";
+import TimerOutlined from "@mui/icons-material/TimerOutlined";
 import {
   Box,
   Container,
   Divider,
   IconButton,
-  Link as MuiLink,
   ListItemText,
   Paper,
   Stack,
@@ -25,7 +24,7 @@ import { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import AddressAvatar from "../../../components/Avatar/AddressAvatar";
 import CopyTooltip from "../../../components/CopyTooltip/CopyTooltip";
@@ -37,15 +36,18 @@ import NetworkIcon from "../../../features/network/NetworkIcon";
 import { Network, networksBySlug } from "../../../features/network/networks";
 import { subgraphApi } from "../../../features/redux/store";
 import { UnitOfTime } from "../../../features/send/FlowRateInput";
+import SharingSection from "../../../features/socialSharing/SharingSection";
 import CancelStreamButton from "../../../features/streamsTable/CancelStreamButton/CancelStreamButton";
 import ModifyStreamButton from "../../../features/streamsTable/ModifyStreamButton";
 import Amount from "../../../features/token/Amount";
 import FlowingBalance from "../../../features/token/FlowingBalance";
 import TokenIcon from "../../../features/token/TokenIcon";
 import { useTokenIsListed } from "../../../features/token/useTokenIsListed";
+import FlowingFiatBalance from "../../../features/tokenPrice/FlowingFiatBalance";
+import useTokenPrice from "../../../features/tokenPrice/useTokenPrice";
+import { useScheduledStream } from "../../../hooks/streamSchedulingHooks";
 import useAddressName from "../../../hooks/useAddressName";
 import useNavigateBack from "../../../hooks/useNavigateBack";
-import { useScheduledStream } from "../../../hooks/streamSchedulingHooks";
 import config from "../../../utils/config";
 import shortenHex from "../../../utils/shortenHex";
 import {
@@ -53,10 +55,6 @@ import {
   calculateMaybeCriticalAtTimestamp,
 } from "../../../utils/tokenUtils";
 import Page404 from "../../404";
-import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
-import TimerOutlined from "@mui/icons-material/TimerOutlined";
-import FlowingFiatBalance from "../../../features/tokenPrice/FlowingFiatBalance";
-import useTokenPrice from "../../../features/tokenPrice/useTokenPrice";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -192,37 +190,6 @@ const CancelledIndicator: FC<CancelledIndicatorProps> = ({
     </Stack>
   );
 };
-
-interface ShareButtonProps {
-  imgSrc: string;
-  alt: string;
-  tooltip: string;
-  href?: string;
-  dataCy?: string;
-}
-
-const ShareButton: FC<ShareButtonProps> = ({
-  imgSrc,
-  alt,
-  tooltip,
-  href,
-  dataCy,
-}) => (
-  <Tooltip title={tooltip} arrow placement="top">
-    <MuiLink data-cy={dataCy} href={href} target="_blank">
-      <Box sx={{ display: "flex" }}>
-        <Image
-          unoptimized
-          src={imgSrc}
-          width={30}
-          height={30}
-          layout="fixed"
-          alt={alt}
-        />
-      </Box>
-    </MuiLink>
-  </Tooltip>
-);
 
 interface OverviewItemProps {
   label: string;
@@ -462,7 +429,6 @@ const StreamPageContent: FC<{
   } = scheduledStreamQuery.data;
 
   const isActive = currentFlowRate !== "0";
-  const encodedUrlToShare = encodeURIComponent(urlToShare);
   const isOutgoing = accountAddress?.toLowerCase() === sender.toLowerCase();
 
   // TODO: This container max width should be configured in theme. Something between small and medium
@@ -809,57 +775,12 @@ const StreamPageContent: FC<{
 
             <Divider sx={{ maxWidth: "375px", width: "100%", my: 1 }} />
 
-            <Stack direction="row" alignItems="center" gap={1}>
-              <ShareIcon sx={{ width: 18, height: 18 }} />
-              <Typography variant="h5" translate="yes" sx={{ mr: 1 }}>
-                Share:
-              </Typography>
-
-              <CopyTooltip content={urlToShare} copyText="Copy link">
-                {({ copy }) => (
-                  <IconButton
-                    data-cy={"copy-button"}
-                    onClick={copy}
-                    sx={{
-                      color: "#fff",
-                      width: 30,
-                      height: 30,
-                      borderRadius: "50%",
-                      backgroundColor: theme.palette.primary.main,
-                      "&:hover": {
-                        backgroundColor: theme.palette.primary.main,
-                      },
-                    }}
-                  >
-                    <LinkIcon
-                      sx={{
-                        transform: "rotate(135deg)",
-                        width: 20,
-                        height: 20,
-                      }}
-                    />
-                  </IconButton>
-                )}
-              </CopyTooltip>
-
-              <ShareButton
-                dataCy={"twitter-button"}
-                imgSrc="/icons/social/twitter.svg"
-                alt="Twitter logo"
-                tooltip="Share on Twitter"
-                href={`https://twitter.com/intent/tweet?text=${TEXT_TO_SHARE()}&url=${encodedUrlToShare}&hashtags=${HASHTAGS_TO_SHARE}`}
-              />
-              {/* <ShareButton imgSrc="/icons/social/discord.svg" alt="Discord logo" /> */}
-              <ShareButton
-                dataCy={"telegram-button"}
-                imgSrc="/icons/social/telegram.svg"
-                alt="Telegram logo"
-                tooltip="Share on Telegram"
-                href={`https://t.me/share/url?text=${TEXT_TO_SHARE(
-                  true
-                )}&url=${encodedUrlToShare}`}
-              />
-            </Stack>
+            <SharingSection
+              url={urlToShare}
+              twitterText={TEXT_TO_SHARE()}
+              telegramText={TEXT_TO_SHARE(true)}
+              twitterHashtags={HASHTAGS_TO_SHARE}
+            />
           </Stack>
         </Container>
       )}

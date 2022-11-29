@@ -1,6 +1,32 @@
+export enum UnitOfTime {
+    Second = 1,
+    Minute = 60,
+    Hour = 3600,
+    Day = 86400,
+    Week = 604800,
+    Month = 2592000,
+    Year = 31536000
+}
+
 export class BasePage {
+
+    static ensureDefined<T>(value: T | undefined | null): T {
+        if (!value) throw Error('Value has to be defined.');
+        return value;
+    }
+
+    static shortenHex(address: string, length = 4) {
+        return `${address.substring(0, 2 + length)}...${address.substring(
+            address.length - length,
+            address.length
+        )}`;
+    }
+
     static click(selector: string, index: number = 0) {
-        cy.get(selector).eq(index).click();
+        if(index){
+            cy.get(selector).eq(index).click();
+        }
+        cy.get(selector).click()
     }
 
     static clickVisible(selector: string) {
@@ -111,4 +137,5 @@ export class BasePage {
     static getShortenedHashAddress(hash: string, chars = 6) {
         return `${hash.slice(0, chars)}...`;
     }
+
 }

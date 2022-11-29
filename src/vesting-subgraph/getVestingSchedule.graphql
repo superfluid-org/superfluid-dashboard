@@ -1,0 +1,16 @@
+query getVestingSchedule($id: ID!) {
+  vestingSchedule(id: $id) {
+    id
+    cliffDate
+    cliffAmount
+    endDate
+    flowRate
+    receiver
+    sender
+    startDate
+    superToken
+    endExecutedAt
+    deletedAt
+    cliffAndFlowExecutedAt
+  }
+}

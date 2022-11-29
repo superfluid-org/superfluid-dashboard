@@ -194,7 +194,7 @@ export const TransactionDialogButton = React.forwardRef<
   );
 });
 
-const OutlineIcon = styled(Avatar)(({ theme }) => ({
+export const OutlineIcon = styled(Avatar)(({ theme }) => ({
   borderRadius: "50%",
   border: `5px solid ${theme.palette.primary.main}`,
   width: 80,

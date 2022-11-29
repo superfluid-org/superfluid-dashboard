@@ -16,6 +16,7 @@ import {
 import { useSigner } from "wagmi";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import MutationResult from "../../MutationResult";
+import { Network } from "../network/networks";
 import { useAppSelector } from "../redux/store";
 import { useConnectionBoundary } from "./ConnectionBoundary";
 import { TransactionDialog } from "./TransactionDialog";
@@ -30,6 +31,7 @@ interface TransactionBoundaryContextValue {
   mutationResult: MutationResult<TransactionInfo>;
   getOverrides: () => Promise<Overrides>;
   transaction: TrackedTransaction | undefined;
+  network: Network;
 }
 
 const TransactionBoundaryContext =
@@ -38,7 +40,7 @@ const TransactionBoundaryContext =
 export const useTransactionBoundary = () =>
   useContext(TransactionBoundaryContext);
 
-interface TransactionBoundaryProps {
+export interface TransactionBoundaryProps {
   children: (transactionContext: TransactionBoundaryContextValue) => ReactNode;
   dialog?: (transactionContext: TransactionBoundaryContextValue) => ReactNode;
   mutationResult: MutationResult<TransactionInfo>;
@@ -75,6 +77,7 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
       mutationResult,
       getOverrides: () => getTransactionOverrides(expectedNetwork),
       transaction: trackedTransaction,
+      network: expectedNetwork,
     }),
     [
       signer,
@@ -84,6 +87,7 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
       mutationResult,
       getTransactionOverrides,
       trackedTransaction,
+      expectedNetwork,
     ]
   );
 

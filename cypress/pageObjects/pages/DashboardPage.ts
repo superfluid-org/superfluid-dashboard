@@ -1,5 +1,5 @@
 import {BasePage} from "../BasePage";
-import {mainNetworks, networksBySlug, testNetworks,} from "../../../src/features/network/networks";
+import {mainNetworks, networksBySlug, testNetworks,} from "../../superData/networks";
 
 const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet-button]";
 const NETWORK_SNAPSHOT_TABLE_APPENDIX = "-token-snapshot-table]";
@@ -11,6 +11,7 @@ const NO_BALANCE_WRAP_BUTTON = "[data-cy=no-balance-wrap-button]";
 const NO_BALANCE_MESSAGE = "[data-cy=no-balance-message]";
 const LOADING_SKELETONS = "[data-cy=loading-skeletons]";
 const NET_FLOW_VALUES = "[data-cy=net-flow-value] span:first-child";
+const NO_NET_FLOW_VALUE = "[data-cy=net-flow-value]"
 const NET_FLOW_FIAT = "[data-cy=net-flow-value] span:last-child"
 const INFLOW_VALUES = "[data-cy=inflow]";
 const OUTFLOW_VALUES = "[data-cy=outflow]";
@@ -272,11 +273,17 @@ export class DashboardPage extends BasePage {
     static validateTokenTotalNetFlowRates(token: string, network: string, amounts: string) {
         //Input the amounts in order seperating with a comma, e.g. 1,-1,2 = 1 net , -1 outflow , 1 inflow
         let flowValues = amounts === "-" ? amounts : amounts.split(",")
+        if(amounts === "-") {
+            this.hasText(
+                `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${NO_NET_FLOW_VALUE}`,
+                flowValues[0]
+            );
+        } else {
         this.hasText(
             `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${NET_FLOW_VALUES}`,
             flowValues[0]
         );
-
+        }
         if (flowValues[1]) {
             this.hasText(
                 `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${INFLOW_VALUES}`,

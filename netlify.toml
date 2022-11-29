@@ -35,6 +35,12 @@ for = "/*"
   force = false
 
 [[redirects]]
+  from = "/vesting/*"
+  to = "/vesting/[_network]/[_id].html"
+  status = 200
+  force = false
+
+[[redirects]]
   from = "/dashboard"
   to = "/"
   status = 301
