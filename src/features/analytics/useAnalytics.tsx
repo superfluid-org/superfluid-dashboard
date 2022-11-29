@@ -7,6 +7,7 @@ import { useLayoutContext } from "../layout/LayoutContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { customAlphabet } from "nanoid";
 import { useAutoConnect } from "../autoConnect/AutoConnect";
+import { IsCypress } from "../../utils/SSRUtils";
 
 type AnalyticsProviderProps = {
   children: React.ReactNode;
@@ -100,7 +101,7 @@ const useAppInstanceDetails = () => {
 const useAnalyticsBrowser = () =>
   useMemo(() => {
     const writeKey = config.segmentWriteKey;
-    if (writeKey) {
+    if (!IsCypress && writeKey) {
       return AnalyticsBrowser.load(
         { writeKey },
         {

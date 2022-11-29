@@ -197,11 +197,6 @@ const MonitorContext: FC = () => {
           eventId: event.event_id,
         });
       }
-
-      console.log({
-        event
-      })
-
       return event;
     };
 
