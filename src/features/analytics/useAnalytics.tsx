@@ -23,11 +23,11 @@ const AnalyticsContext = createContext<AnalyticsContextValue>(undefined!);
 export type AppInstanceDetails = {
   appInstance: {
     supportId: string;
-    expectedNetwork: string;
-    expectedNetworkId: number;
-    isExpectedNetworkTestnet: boolean;
-    layout: {
-      isTransactionDrawerOpen: boolean;
+    expectedNetwork: {
+      id: number;
+      name: string;
+      slug: string;
+      isTestnet: boolean;
     };
     wallet: {
       isConnected: boolean;
@@ -36,6 +36,9 @@ export type AppInstanceDetails = {
       connectorId?: string;
       network?: string;
       networkId?: number;
+    };
+    layout: {
+      isTransactionDrawerOpen: boolean;
     };
   };
 };
@@ -69,11 +72,11 @@ const useAppInstanceDetails = () => {
     () => ({
       appInstance: {
         supportId: supportId,
-        expectedNetwork: expectedNetwork.name,
-        expectedNetworkId: expectedNetwork.id,
-        isExpectedNetworkTestnet: !!expectedNetwork.testnet,
-        layout: {
-          isTransactionDrawerOpen: transactionDrawerOpen,
+        expectedNetwork: {
+          id: expectedNetwork.id,
+          name: expectedNetwork.name,
+          slug: expectedNetwork.slugName,
+          isTestnet: !!expectedNetwork.testnet,
         },
         wallet: {
           isConnected,
@@ -91,6 +94,9 @@ const useAppInstanceDetails = () => {
                   : {}),
               }
             : {}),
+        },
+        layout: {
+          isTransactionDrawerOpen: transactionDrawerOpen,
         },
       },
     }),
