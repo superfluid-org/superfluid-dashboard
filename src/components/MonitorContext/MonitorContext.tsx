@@ -185,15 +185,25 @@ const MonitorContext: FC = () => {
       router.events.off("routeChangeComplete", onRouteChangeComplete);
   }, []);
 
-  const onSentryEvent = useCallback((event: Sentry.Event) => {
-    if (event.exception) {
-      track("Error Logged", {
-        eventId: event.event_id,
-      });
-    }
-    return event;
-  }, []);
-  useEffect(() => void Sentry.addGlobalEventProcessor(onSentryEvent), []);
+  useEffect(() => {
+    let isEventProcessorExpired = false;
+    const onSentryEvent = (event: Sentry.Event) => {
+      if (isEventProcessorExpired) {
+        return event;
+      }
+
+      if (event.exception) {
+        track("Error Logged", {
+          eventId: event.event_id,
+        });
+      }
+      return event;
+    };
+    Sentry.addGlobalEventProcessor(onSentryEvent);
+    return () => {
+      isEventProcessorExpired = true;
+    };
+  }, [track]);
 
   return null;
 };
