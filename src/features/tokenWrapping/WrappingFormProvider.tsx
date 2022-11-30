@@ -267,8 +267,14 @@ The chain ID was: ${network.id}`);
     resolver: yupResolver(formSchema),
   });
 
-  const { formState, setValue, trigger, clearErrors, setError, watch } =
-    formMethods;
+  const {
+    formState: { isDirty: isFormDirty },
+    setValue,
+    trigger,
+    clearErrors,
+    setError,
+    watch,
+  } = formMethods;
 
   const [hasRestored, setHasRestored] = useState(!restoration);
   useEffect(() => {
@@ -330,13 +336,13 @@ The chain ID was: ${network.id}`);
   }, [tokenQueryParam, tokenPairsQuery.data]);
 
   useEffect(() => {
-    if (formState.isDirty) {
+    if (isFormDirty) {
       stopAutoSwitchToWalletNetwork();
     }
-  }, [formState.isDirty]);
+  }, [isFormDirty]);
 
   useEffect(() => {
-    if (formState.isDirty) {
+    if (isFormDirty) {
       trigger();
     }
   }, [accountAddress]);

@@ -193,13 +193,12 @@ const StreamingFormProvider: FC<
         clearErrors("data");
         const sanitizedForm = sanitizedSchema.validateSync(values);
 
-        const handleHigherValidationError =
-          createHigherValidationErrorFunc(setError, context.createError);
-
-        return await higherValidate(
-          sanitizedForm,
-          handleHigherValidationError
+        const handleHigherValidationError = createHigherValidationErrorFunc(
+          setError,
+          context.createError
         );
+
+        return await higherValidate(sanitizedForm, handleHigherValidationError);
       }),
     [sanitizedSchema, higherValidate]
   );
@@ -210,8 +209,16 @@ const StreamingFormProvider: FC<
     mode: "onChange",
   });
 
-  const { formState, setValue, trigger, clearErrors, setError, watch } =
-    formMethods;
+  const {
+    formState: {
+      isDirty: isFormDirty,
+    },
+    setValue,
+    trigger,
+    clearErrors,
+    setError,
+    watch,
+  } = formMethods;
 
   const [receiverAddress, tokenAddress, flowRateEther] = watch([
     "data.receiverAddress",
@@ -252,13 +259,13 @@ const StreamingFormProvider: FC<
   }, []);
 
   useEffect(() => {
-    if (formState.isDirty) {
+    if (isFormDirty) {
       stopAutoSwitchToWalletNetwork();
     }
-  }, [formState.isDirty]);
+  }, [isFormDirty]);
 
   useEffect(() => {
-    if (formState.isDirty) {
+    if (isFormDirty) {
       trigger();
     }
   }, [accountAddress]);

@@ -21,8 +21,11 @@ export const CreateVestingTransactionButton: FC<{
   const [createVestingSchedule, createVestingScheduleResult] =
     rpcApi.useCreateVestingScheduleMutation();
 
-  const { formState, handleSubmit } = useFormContext<SanitizedVestingForm>();
-  const isDisabled = !formState.isValid || formState.isValidating;
+  const {
+    formState: { isValid: isFormValid, isValidating: isFormValidating },
+    handleSubmit,
+  } = useFormContext<SanitizedVestingForm>();
+  const isDisabled = !isFormValid || isFormValidating;
 
   return (
     <TransactionBoundary mutationResult={createVestingScheduleResult}>

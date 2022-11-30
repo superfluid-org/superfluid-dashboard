@@ -243,14 +243,20 @@ const CreateVestingFormProvider: FC<{
     mode: "onChange",
   });
 
-  const { formState, setValue, trigger, clearErrors, setError, watch } =
-    formMethods;
+  const {
+    formState: { isDirty: isFormDirty },
+    setValue,
+    trigger,
+    clearErrors,
+    setError,
+    watch,
+  } = formMethods;
 
   useEffect(() => {
-    if (formState.isDirty) {
+    if (isFormDirty) {
       stopAutoSwitchToWalletNetwork();
     }
-  }, [formState.isDirty]);
+  }, [isFormDirty]);
 
   const [isInitialized, setIsInitialized] = useState(false);
 
