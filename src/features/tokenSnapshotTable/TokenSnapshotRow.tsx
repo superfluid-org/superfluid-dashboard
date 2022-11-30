@@ -182,7 +182,11 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               data-cy={"token-symbol"}
               onClick={openTokenPage}
               primary={tokenSymbol}
-              secondary={tokenPrice && <FiatAmount price={tokenPrice} />}
+              secondary={
+                tokenPrice && (
+                  <FiatAmount wei={1} decimals={0} price={tokenPrice} />
+                )
+              }
               primaryTypographyProps={{
                 variant: "h6",
                 sx: !tokenPrice ? { lineHeight: "44px" } : {},

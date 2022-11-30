@@ -1,0 +1,20 @@
+schema: "src/vesting-subgraph/schema.graphql"
+documents: "src/vesting-subgraph/**/*.graphql"
+config:
+  scalars:
+      Bytes: string
+      BigInt: string
+      BigDecimal: string
+generates:
+  src/vesting-subgraph/schema.generated.ts:
+    plugins:
+      - typescript
+  src/vesting-subgraph/queries/:
+    preset: near-operation-file
+    presetConfig:
+      baseTypesPath: ../schema.generated.ts
+    plugins:
+      - typescript-operations
+      - typescript-rtk-query:
+          importBaseApiFrom: './vestingSubgraphApi'
+          exportHooks: true

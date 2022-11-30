@@ -6,7 +6,7 @@ import {
 
 // NOTE: This is the actual platform API slice, manually edited. A "template" is also generated for types and ideas.
 export const platformApi = createApi({
-  tagTypes: ["GENERAL"], // TODO(KK): Make SDK be able to invalidate another slice!
+  tagTypes: ["GENERAL", "SPECIFIC"], // TODO(KK): Make SDK be able to invalidate another slice!
   baseQuery: fetchBaseQuery(),
   keepUnusedDataFor: 45,
   refetchOnFocus: true,

@@ -6,6 +6,8 @@ import { PendingIndexSubscriptionRevoke } from "./PendingIndexSubscriptionRevoke
 import { PendingOutgoingStream } from "./PendingOutgoingStream";
 import { PendingStreamCancellation } from "./PendingStreamCancellation";
 import { PendingUpdate } from "./PendingUpdate";
+import { PendingVestingSchedule } from "./PendingVestingSchedule";
+import { PendingVestingScheduleDeletion as PendingVestingScheduleDelete } from "./PendingVestingScheduleDelete";
 
 const adapter = createEntityAdapter<PendingUpdate>({
   selectId: (x) => x.id,
@@ -149,6 +151,60 @@ export const pendingUpdateSlice = createSlice({
           timestamp: dateNowSeconds(),
         };
         adapter.addOne(state, pendingUpdate);
+      }
+    );
+    builder.addMatcher(
+      rpcApi.endpoints.createVestingSchedule.matchFulfilled,
+      (state, action) => {
+        const { chainId, hash: transactionHash } = action.payload;
+        const {
+          senderAddress,
+          superTokenAddress,
+          receiverAddress,
+          startDateTimestamp,
+          cliffDateTimestamp,
+          cliffTransferAmountWei,
+          endDateTimestamp,
+          flowRateWei,
+        } = action.meta.arg.originalArgs;
+          const pendingUpdate: PendingVestingSchedule = {
+            chainId,
+            transactionHash,
+            senderAddress,
+            receiverAddress,
+            id: transactionHash,
+            superTokenAddress,
+            pendingType: "VestingScheduleCreate",
+            timestamp: dateNowSeconds(),
+            cliffDateTimestamp,
+            cliffTransferAmountWei,
+            startDateTimestamp,
+            endDateTimestamp,
+            flowRateWei,
+          };
+          adapter.addOne(state, pendingUpdate);
+      }
+    );
+    builder.addMatcher(
+      rpcApi.endpoints.deleteVestingSchedule.matchFulfilled,
+      (state, action) => {
+        const { chainId, hash: transactionHash } = action.payload;
+        const {
+          senderAddress,
+          superTokenAddress,
+          receiverAddress,
+        } = action.meta.arg.originalArgs;
+          const pendingUpdate: PendingVestingScheduleDelete = {
+            chainId,
+            transactionHash,
+            senderAddress,
+            receiverAddress,
+            id: transactionHash,
+            superTokenAddress,
+            pendingType: "VestingScheduleDelete",
+            timestamp: dateNowSeconds(),
+          };
+          adapter.addOne(state, pendingUpdate);
       }
     );
     builder.addMatcher(

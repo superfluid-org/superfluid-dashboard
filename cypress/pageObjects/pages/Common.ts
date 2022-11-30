@@ -31,6 +31,8 @@ const RESTORE_BUTTONS = "[data-testid=ReplayIcon]"
 const SENDER_RECEIVER_ADDRESSES = "[data-cy=sender-receiver-address]";
 const STREAM_FLOW_RATES = "[data-cy=flow-rate]";
 const START_END_DATES = "[data-cy=start-end-date]";
+const DISCONNECT_BUTTON = "[data-testid=rk-disconnect-button]"
+const RAINBOWKIT_CLOSE_BUTTON = "[aria-label=Close]"
 
 export class Common extends BasePage {
     static clickNavBarButton(button: string) {
@@ -63,6 +65,9 @@ export class Common extends BasePage {
                     break;
                 case "activity history page":
                     this.visitPage("/history", mocked, account, network);
+                    break;
+                case "bridge page":
+                    this.visitPage("/bridge", mocked, account, network);
                     break;
                 case "ended stream details page":
                     this.visitPage(streamData["staticBalanceAccount"]["polygon"][0].v2Link, mocked, account, network);
@@ -236,7 +241,6 @@ export class Common extends BasePage {
         this.clickFirstVisible(RESTORE_BUTTONS)
     }
 
-
     static validateStreamsTable(network:string , selector:string) {
         cy.fixture("networkSpecificData").then((networkSpecificData) => {
             this.hasLength(selector, networkSpecificData[
@@ -272,4 +276,9 @@ export class Common extends BasePage {
         })
     }
 
+
+    static disconnectWallet() {
+        this.click(WALLET_CONNECTION_STATUS)
+        this.click(DISCONNECT_BUTTON)
+    }
 }
