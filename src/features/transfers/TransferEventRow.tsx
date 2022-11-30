@@ -86,8 +86,8 @@ const TransferEventRow: FC<TransferEventRowProps> = ({
   });
 
   return (
-    <TableRow>
-      <TableCell>
+    <TableRow data-cy={"transfer-row"}>
+      <TableCell data-cy={"sender-receiver-address"}>
         <Stack direction="row" alignItems="center" gap={1.5}>
           {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
           <AddressAvatar
@@ -104,7 +104,7 @@ const TransferEventRow: FC<TransferEventRowProps> = ({
           </AddressCopyTooltip>
         </Stack>
       </TableCell>
-      <TableCell align="right">
+      <TableCell data-cy={"transfer-amount"} align="right">
         {tokenQuery.data && (
           <ListItemText
             primary={<Amount wei={value} decimals={tokenQuery.data.decimals} />}
@@ -116,7 +116,7 @@ const TransferEventRow: FC<TransferEventRowProps> = ({
         )}
       </TableCell>
       {!isBelowMd && (
-        <TableCell>{format(timestamp * 1000, "d MMM. yyyy")}</TableCell>
+        <TableCell data-cy={"transfer-date"}>{format(timestamp * 1000, "d MMM. yyyy")}</TableCell>
       )}
     </TableRow>
   );

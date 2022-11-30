@@ -6,22 +6,41 @@
           "tokenAddress": "0x8aE68021f6170E5a766bE613cEA0d75236ECCa9a",
           "token": "fUSDCx",
           "id": "usdc",
-          "balance": "349.99696180",
-          "underlyingBalance": "1800"
+          "balance": "363.5",
+          "underlyingBalance": "2800",
+          "transfers": [
+            {
+              "toFrom": "0xB0d69105b5802099EBA8843D3a7823E52B0D2cb4",
+              "amount": 100,
+              "dateSent": "21 May. 2021"
+            },
+            {
+              "toFrom": "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2",
+              "amount": -50,
+              "dateSent": "21 May. 2021"
+            },
+            {
+              "toFrom": "0x0000000000000000000000000000000000000000",
+              "amount": 300,
+              "dateSent": "21 May. 2021"
+            }
+          ]
+
+
         },
         {
           "tokenAddress": "0x95697ec24439E3Eb7ba588c7B279b9B369236941",
           "token": "fTUSDx",
           "id": "true-usd",
-          "balance": "500",
-          "underlyingBalance": "1500"
+          "balance": "513.6",
+          "underlyingBalance": "2500"
         },
         {
           "tokenAddress": "0xF2d68898557cCb2Cf4C10c3Ef2B034b2a69DAD00",
           "token": "fDAIx",
           "id": "dai",
-          "balance": "400",
-          "underlyingBalance": "1700",
+          "balance": "413.5",
+          "underlyingBalance": "2700",
           "incoming": 4,
           "outgoing": 5
         }
@@ -29,19 +48,27 @@
     },
     "ongoingStreamsAccount": {
       "tokenValues": {
+        "tokenAddress": "0x2bF02814EA0b2B155ed47B7cEDE18CaA752940e6",
+        "tokenName": "Super fDAI Fake Token",
+        "liquidationDate": "March 31st, 2036",
         "token": "fDAIx",
         "netFlowRate": "-1/mo",
         "inFlow": "+4/mo",
         "outFlow": "-5/mo",
         "streams": [
           {
-            "fromTo": "0xcb86...42D8",
-            "flowRate": "+4/mo",
-            "endDate": "2 Jul. 2021"
+            "fromTo": "0x13a9...4244",
+            "flowRate": "-",
+            "endDate": "28 Nov. 202229 Nov. 2022"
           },
           {
             "fromTo": "0x618a...DE40",
             "flowRate": "-5/mo",
+            "endDate": "2 Jul. 2021"
+          },
+          {
+            "fromTo": "0xcb86...42D8",
+            "flowRate": "+4/mo",
             "endDate": "2 Jul. 2021"
           }
         ]

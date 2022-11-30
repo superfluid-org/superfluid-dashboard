@@ -166,3 +166,10 @@ Then(/^The could not find any tokens message is not shown$/,  () => {
 Then(/^The native token "([^"]*)" balance for "([^"]*)" on "([^"]*)" in the token list$/,  (token:string,account:string,network:string) => {
     WrapPage.validateNativeTokenBalanceInTokenList(token,account,network)
 });
+Then(/^"([^"]*)" is selected as the token to wrap$/, function (token:string) {
+    WrapPage.validateTokenSelectedForWrapping(token)
+});
+Then(/^"([^"]*)" is selected as the token to unwrap$/, function (token:string) {
+    WrapPage.validateTokenSelectedForUnwrapping(token)
+
+});

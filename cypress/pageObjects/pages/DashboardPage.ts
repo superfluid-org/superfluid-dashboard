@@ -1,5 +1,6 @@
 import {BasePage} from "../BasePage";
 import {mainNetworks, networksBySlug, testNetworks,} from "../../superData/networks";
+import {Common} from "./Common";
 
 const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet-button]";
 const NETWORK_SNAPSHOT_TABLE_APPENDIX = "-token-snapshot-table]";
@@ -15,9 +16,6 @@ const NO_NET_FLOW_VALUE = "[data-cy=net-flow-value]"
 const NET_FLOW_FIAT = "[data-cy=net-flow-value] span:last-child"
 const INFLOW_VALUES = "[data-cy=inflow]";
 const OUTFLOW_VALUES = "[data-cy=outflow]";
-const SENDER_RECEIVER_ADDRESSES = "[data-cy=sender-receiver-address]";
-const STREAM_FLOW_RATES = "[data-cy=flow-rate]";
-const START_END_DATES = "[data-cy=start-end-date]";
 const CANCEL_BUTTONS = "[data-cy=cancel-button]";
 const CANCEL_STREAM_BUTTON = "[data-cy=cancel-stream-button]";
 const TOOLTIPS = "[role=tooltip]";
@@ -111,27 +109,8 @@ export class DashboardPage extends BasePage {
                 `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${networkSpecificData[
                     network
                     ].ongoingStreamsAccount.tokenValues.tokenAddress.toLowerCase()}-streams-table] ${STREAM_ROWS} `;
-            // The data in tables doesn't show up all at the same time , and skeletons dissapear with the first entry
-            // waiting and need to re-check to make sure all streams are loaded
-            this.hasLength(specificSelector, networkSpecificData[
-                network
-                ].ongoingStreamsAccount.tokenValues.streams.length)
-            networkSpecificData[
-                network
-                ].ongoingStreamsAccount.tokenValues.streams.forEach(
-                (stream: any, index: number) => {
-                    cy.get(specificSelector + STREAM_FLOW_RATES)
-                        .eq(index)
-                        .should("have.text", stream.flowRate);
-                    cy.get(specificSelector + SENDER_RECEIVER_ADDRESSES)
-                        .eq(index)
-                        .should("have.text", stream.fromTo);
-                    cy.get(specificSelector + START_END_DATES)
-                        .eq(index)
-                        .should("have.text", stream.endDate);
-                }
-            );
-        });
+            Common.validateStreamsTable(network, specificSelector)
+        })
     }
 
     static clickFirstCancelButton() {
@@ -246,6 +225,7 @@ export class DashboardPage extends BasePage {
     }
 
     static openIndividualTokenPage(network: string, token: string) {
+        cy.get(`[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX}`, {timeout: 45000}).should("be.visible")
         this.click(
             `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell]`
         );
