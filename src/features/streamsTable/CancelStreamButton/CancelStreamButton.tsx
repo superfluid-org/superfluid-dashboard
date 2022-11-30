@@ -42,23 +42,25 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
   });
   const { txAnalytics } = useAnalytics();
 
-  flowDeleteMutation.endpointName
+  flowDeleteMutation.endpointName;
 
   const deleteStream = async (signer: Signer) => {
-    const originalArgs = {
-      signer,
+    const primaryArgs = {
       chainId: network.id,
-      receiverAddress: receiver,
-      senderAddress: sender,
       superTokenAddress: stream.token,
+      senderAddress: sender,
+      receiverAddress: receiver,
       userDataBytes: undefined,
+    };
+    flowDeleteTrigger({
+      ...primaryArgs,
+      signer,
       waitForConfirmation: false,
       overrides: await getTransactionOverrides(network),
-    }
-    flowDeleteTrigger(originalArgs)
+    })
       .unwrap()
-      .then(...txAnalytics("Cancel Stream", originalArgs));
-      // TODO(KK): This needs better handling
+      .then(...txAnalytics("Cancel Stream", primaryArgs))
+      .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
   };
 
   return (

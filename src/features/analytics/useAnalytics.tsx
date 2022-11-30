@@ -1,8 +1,5 @@
 import { AnalyticsBrowser } from "@segment/analytics-next";
-import {
-  getSerializeQueryArgs,
-  TransactionInfo,
-} from "@superfluid-finance/sdk-redux";
+import { TransactionInfo } from "@superfluid-finance/sdk-redux";
 import { createContext, useCallback, useContext, useMemo } from "react";
 import config from "../../utils/config";
 import { serialize, useAccount, useNetwork } from "wagmi";
@@ -11,6 +8,7 @@ import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { customAlphabet } from "nanoid";
 import { useAutoConnect } from "../autoConnect/AutoConnect";
 import { IsCypress } from "../../utils/SSRUtils";
+import * as Sentry from "@sentry/react";
 
 type AnalyticsProviderProps = {
   children: React.ReactNode;
@@ -149,15 +147,22 @@ export const useAnalytics = () => {
   }
 
   const txAnalytics = useCallback(
-    (txName: string, originalArgs: unknown) => {
-      // const serializedAndDeserializedArgs = JSON.parse(
-      //   serialize(originalArgs, undefined, undefined, () => undefined)
-      // );
+    (txName: string, primaryArgs: unknown) => {
+      const ensureSafeSerializationOfArgs = () => {
+        try {
+          JSON.parse(serialize(primaryArgs));
+        } catch (error) {
+          Sentry.captureException(error);
+          return {}; // When something wrong with serialization then simplify to an empty object and don't crash the app.
+        }
+      };
+
       return [
         (value: TransactionInfo) =>
           void analyticsBrowser.track(
             `${txName} Broadcasted`,
             {
+              args: ensureSafeSerializationOfArgs(),
               transaction: {
                 hash: value.hash,
                 chainId: value.chainId,

@@ -50,8 +50,6 @@ import { vestingSchedulerEndpoints } from "./endpoints/vestingSchedulerEndpoints
 import { platformApi } from "./platformApi/platformApi";
 import * as Sentry from "@sentry/react";
 import { deserializeError } from "serialize-error";
-import { ethers } from "ethers";
-import { ErrorCode } from "@ethersproject/logger";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({

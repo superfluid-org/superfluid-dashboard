@@ -86,19 +86,20 @@ export const DeleteVestingTransactionButton: FC<{
                 </Typography>
               );
 
-              const originalArgs = {
-                signer,
+              const primaryArgs = {
                 chainId: network.id,
                 superTokenAddress: superTokenAddress,
                 senderAddress: await signer.getAddress(),
                 receiverAddress: receiverAddress,
-                transactionExtraData: undefined,
+              };
+              deleteVestingSchedule({
+                ...primaryArgs,
+                signer,
                 overrides: await getOverrides(),
                 waitForConfirmation: false,
-              };
-              deleteVestingSchedule(originalArgs)
+              })
                 .unwrap()
-                .then(...txAnalytics("Delete Vesting Schedule", originalArgs));
+                .then(...txAnalytics("Delete Vesting Schedule", primaryArgs));
 
               setDialogSuccessActions(
                 <TransactionDialogActions>

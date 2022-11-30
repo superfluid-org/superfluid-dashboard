@@ -546,29 +546,31 @@ export default memo(function SendCard() {
                 : {}),
             };
 
-            const originalArgs = {
-              signer,
-              flowRateWei,
+            const primaryArgs = {
               chainId: network.id,
               senderAddress: await signer.getAddress(),
               receiverAddress: formData.receiverAddress,
               superTokenAddress: formData.tokenAddress,
+              flowRateWei,
               userDataBytes: undefined,
               endTimestamp: endDate
                 ? Math.round(endDate.getTime() / 1000)
                 : null,
-              waitForConfirmation: false,
-              overrides: await getTransactionOverrides(network),
+            };
+            upsertFlow({
+              ...primaryArgs,
               transactionExtraData: {
                 restoration: transactionRestoration,
               },
-            };
-            upsertFlow(originalArgs)
+              signer,
+              overrides: await getTransactionOverrides(network),
+              waitForConfirmation: false,
+            })
               .unwrap()
               .then(
                 ...txAnalytics(
                   activeFlow ? "Send Stream" : "Modify Stream",
-                  originalArgs
+                  primaryArgs
                 )
               )
               .then(() => void resetForm())
@@ -661,19 +663,21 @@ export default memo(function SendCard() {
                 </Typography>
               );
 
-              const originalArgs = {
-                signer,
-                receiverAddress,
+              const primaryArgs = {
+                chainId: network.id,
                 superTokenAddress,
                 senderAddress,
-                chainId: network.id,
+                receiverAddress,
                 userDataBytes: undefined,
+              };
+              flowDeleteTrigger({
+                ...primaryArgs,
+                signer,
                 waitForConfirmation: false,
                 overrides: await getTransactionOverrides(network),
-              };
-              flowDeleteTrigger(originalArgs)
+              })
                 .unwrap()
-                .then(...txAnalytics("Cancel Stream", originalArgs))
+                .then(...txAnalytics("Cancel Stream", primaryArgs))
                 .then(() => resetForm())
                 .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
             }}

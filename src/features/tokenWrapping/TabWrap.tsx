@@ -459,19 +459,21 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                       tokenAddress: tokenPair.underlyingTokenAddress,
                     };
 
-                    const originalArgs = {
-                      signer,
+                    const primaryArgs = {
                       chainId: network.id,
                       amountWei: approveAllowanceAmountWei.toString(),
                       superTokenAddress: tokenPair.superTokenAddress,
+                    };
+                    approveTrigger({
+                      ...primaryArgs,
                       transactionExtraData: {
                         restoration,
                       },
+                      signer,
                       overrides: await getTransactionOverrides(network),
-                    };
-                    approveTrigger(originalArgs)
+                    })
                       .unwrap()
-                      .then(...txAnalytics("Approve Allowance", originalArgs))
+                      .then(...txAnalytics("Approve Allowance", primaryArgs))
                       .then(() => setTransactionDrawerOpen(true))
                       .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
                   }}
@@ -539,20 +541,22 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                     />
                   );
 
-                  const originalArgs = {
-                    signer,
+                  const primaryArgs = {
                     chainId: network.id,
                     amountWei: amountWei.toString(),
                     superTokenAddress: formData.tokenPair.superTokenAddress,
-                    waitForConfirmation: true,
+                  };
+                  wrapTrigger({
+                    ...primaryArgs,
                     transactionExtraData: {
                       restoration,
                     },
+                    signer,
                     overrides,
-                  };
-                  wrapTrigger(originalArgs)
+                    waitForConfirmation: false,
+                  })
                     .unwrap()
-                    .then(...txAnalytics("Wrap", originalArgs))
+                    .then(...txAnalytics("Wrap", primaryArgs))
                     .then(() => resetForm())
                     .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
 

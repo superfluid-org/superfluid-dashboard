@@ -344,20 +344,22 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                   />
                 );
 
-                const originalArgs = {
-                  signer,
+                const primaryArgs = {
                   chainId: network.id,
                   amountWei: parseEther(formData.amountDecimal).toString(),
                   superTokenAddress: formData.tokenPair.superTokenAddress,
-                  waitForConfirmation: true,
+                };
+                unwrapTrigger({
+                  ...primaryArgs,
                   transactionExtraData: {
                     restoration,
                   },
+                  signer,
                   overrides,
-                };
-                unwrapTrigger(originalArgs)
+                  waitForConfirmation: false,
+                })
                   .unwrap()
-                  .then(...txAnalytics("Unwrap", originalArgs))
+                  .then(...txAnalytics("Unwrap", primaryArgs))
                   .then(() => resetForm())
                   .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
               }}
