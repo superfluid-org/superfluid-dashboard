@@ -102,3 +102,9 @@ Given(/^Transactional account ([^"]*) is connected to the dashboard on ([^"]*)$/
 Given(/^User restores the last transaction$/, () => {
     Common.restoreLastTx()
 });
+Given(/^User waits for (\d+) seconds$/, function (seconds:number) {
+    Common.wait(seconds)
+});
+Then(/^Transaction rejected error is shown$/, function () {
+    Common.transactionRejectedErrorIsShown()
+});

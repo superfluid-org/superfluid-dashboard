@@ -1,3 +1,4 @@
+@skip
 Feature: Stream transactional test cases
 
   @numTestsKeptInMemory(0)

@@ -31,6 +31,7 @@ const ERROR_PAGE_MESSAGE = "[data-cy=404-message]"
 const RETURN_TO_DASHBOARD_BUTTON = "[data-cy=return-to-dashboard-button]"
 const HELP_CENTER_LINK = "[data-cy=help-center-link]"
 const RESTORE_BUTTONS = "[data-testid=ReplayIcon]"
+const TX_ERROR = "[data-cy=tx-error]"
 
 export class Common extends BasePage {
     static clickNavBarButton(button: string) {
@@ -132,17 +133,17 @@ export class Common extends BasePage {
                     pollingInterval: 1000,
                 });
 
-
+                if(Cypress.env("rejected")) {
                 // Make HDWallet automatically reject transaction.
                 // Inspired by: https://github.com/MetaMask/web3-provider-engine/blob/e835b80bf09e76d92b785d797f89baa43ae3fd60/subproviders/hooked-wallet.js#L326
-                for (const provider of hdwallet.engine._providers) {
-                    if (provider.checkApproval) {
-                        provider.checkApproval = function(type, didApprove, cb) {
-                            cb(new Error('User denied '+type+' signature.') )
+                    for (const provider of hdwallet.engine._providers) {
+                        if (provider.checkApproval) {
+                          provider.checkApproval = function(type, didApprove, cb) {
+                              cb(new Error('User denied '+type+' signature.') )
+                          }
                         }
                     }
                 }
-
                 win.mockSigner = new ethers.providers.Web3Provider(hdwallet).getSigner();
             },
         });
@@ -246,5 +247,14 @@ export class Common extends BasePage {
 
     static restoreLastTx() {
         this.clickFirstVisible(RESTORE_BUTTONS)
+    }
+
+    static wait(seconds: number) {
+        cy.wait(seconds * 1000)
+    }
+
+    static transactionRejectedErrorIsShown() {
+        this.hasText(TX_ERROR,"Transaction Rejected")
+        this.hasText
     }
 }
