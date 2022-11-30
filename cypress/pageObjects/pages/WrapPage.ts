@@ -224,6 +224,8 @@ export class WrapPage extends BasePage {
         cy.get(SELECT_TOKEN_BUTTON).then(el => {
             cy.wrap(el.text()).as("lastWrappedToken")
         })
+        this.isVisible(MAX_BUTTON)
+        cy.get(UNDERLYING_BALANCE).invoke("text").should("match", /Balance: \d+/)
         cy.get(UNDERLYING_BALANCE).then(el => {
             cy.wrap(el.text().split("Balance: ")[1]).as("underlyingBalanceBeforeWrap")
         })
@@ -236,6 +238,7 @@ export class WrapPage extends BasePage {
     static rememberBalanceBeforeAndUnwrapToken() {
         this.isNotDisabled(DOWNGRADE_BUTTON)
         this.isVisible(MAX_BUTTON)
+        cy.get(UNDERLYING_BALANCE).invoke("text").should("match", /Balance: \d+/)
         cy.get(UNDERLYING_BALANCE).then(el => {
             cy.wrap(parseFloat(el.text().split("Balance: ")[1])).as("underlyingBalanceBeforeUnwrap")
         })
