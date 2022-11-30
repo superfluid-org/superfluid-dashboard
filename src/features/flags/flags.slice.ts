@@ -14,6 +14,7 @@ import { RootState } from "../redux/store";
 export enum Flag {
   TestTokensReceived = "test-tokens-received",
   TokenAdded = "token-added",
+  VestingFeature = "vesting-feature",
 }
 
 interface BaseFlag<T> {
@@ -34,7 +35,11 @@ export interface TokenAddedFlag extends BaseFlag<Flag.TokenAdded> {
   walletId: string;
 }
 
-type FlagType = TestTokensReceivedFlag | TokenAddedFlag;
+interface VestingFeatureFlag extends BaseFlag<Flag.VestingFeature> {
+  id: Flag.VestingFeature;
+}
+
+type FlagType = TestTokensReceivedFlag | TokenAddedFlag | VestingFeatureFlag;
 
 /**
  * Account flags are used to store simple boolean type account data.
@@ -79,6 +84,15 @@ export const flagsSlice = createSlice({
         } as TokenAddedFlag,
       }),
     },
+    enableVestingFeature: {
+      reducer: adapter.upsertOne,
+      prepare: () => ({
+        payload: {
+          id: Flag.VestingFeature,
+          type: Flag.VestingFeature,
+        } as VestingFeatureFlag,
+      }),
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -105,7 +119,7 @@ export const flagsSlice = createSlice({
   },
 });
 
-export const { addTestTokensReceivedFlag, addTokenAddedFlag } =
+export const { addTestTokensReceivedFlag, addTokenAddedFlag, enableVestingFeature } =
   flagsSlice.actions;
 
 const selectSelf = (state: RootState): EntityState<FlagType> => state.flags;

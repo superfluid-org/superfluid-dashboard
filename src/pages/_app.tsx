@@ -1,10 +1,12 @@
 import { CacheProvider, EmotionCache } from "@emotion/react";
+import { NextPage } from "next";
 import { AppProps } from "next/app";
 import Head from "next/head";
-import { useEffect } from "react";
+import { ReactElement, ReactNode, useEffect } from "react";
 import { hotjar } from "react-hotjar";
 import MonitorContext from "../components/MonitorContext/MonitorContext";
 import { AutoConnectProvider } from "../features/autoConnect/AutoConnect";
+import { FeatureFlagProvider } from "../features/featureFlags/FeatureFlagContext";
 import { ImpersonationProvider } from "../features/impersonation/ImpersonationContext";
 import IntercomProvider from "../features/intercom/IntercomProvider";
 import Layout from "../features/layout/Layout";
@@ -35,8 +37,19 @@ interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
 }
 
-export default function MyApp(props: MyAppProps) {
+type AppPropsWithLayout = MyAppProps & {
+  Component: NextPageWithLayout;
+};
+
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
+
+export default function MyApp(props: AppPropsWithLayout) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+
+  // Use the layout defined at the page level, if available
+  const getLayout = Component.getLayout || ((page) => page);
 
   useEffect(() => {
     const { id, sv } = config.hotjar;
@@ -61,34 +74,38 @@ export default function MyApp(props: MyAppProps) {
         <WagmiManager>
           <AutoConnectProvider>
             <ReduxProvider>
-              <ImpersonationProvider>
-                <ExpectedNetworkProvider>
-                  <ActiveNetworksProvider>
-                    <MuiProvider>
-                      {(_muiTheme) => (
-                        <RainbowKitManager>
-                          <ConnectButtonProvider>
-                            <VisibleAddressProvider>
-                              <TransactionRestorationContextProvider>
-                                <LayoutContextProvider>
-                                  <IntercomProvider>
-                                    <MonitorContext />
-                                    <Layout>
-                                      <MinigameProvider>
-                                        <Component {...pageProps} />
-                                      </MinigameProvider>
-                                    </Layout>
-                                  </IntercomProvider>
-                                </LayoutContextProvider>
-                              </TransactionRestorationContextProvider>
-                            </VisibleAddressProvider>
-                          </ConnectButtonProvider>
-                        </RainbowKitManager>
-                      )}
-                    </MuiProvider>
-                  </ActiveNetworksProvider>
-                </ExpectedNetworkProvider>
-              </ImpersonationProvider>
+              <FeatureFlagProvider>
+                <ImpersonationProvider>
+                  <ExpectedNetworkProvider>
+                    <ActiveNetworksProvider>
+                      <MuiProvider>
+                        {(_muiTheme) => (
+                          <RainbowKitManager>
+                            <ConnectButtonProvider>
+                              <VisibleAddressProvider>
+                                <TransactionRestorationContextProvider>
+                                  <LayoutContextProvider>
+                                    <IntercomProvider>
+                                      <MonitorContext />
+                                      <Layout>
+                                        <MinigameProvider>
+                                          {getLayout(
+                                            <Component {...pageProps} />
+                                          )}
+                                        </MinigameProvider>
+                                      </Layout>
+                                    </IntercomProvider>
+                                  </LayoutContextProvider>
+                                </TransactionRestorationContextProvider>
+                              </VisibleAddressProvider>
+                            </ConnectButtonProvider>
+                          </RainbowKitManager>
+                        )}
+                      </MuiProvider>
+                    </ActiveNetworksProvider>
+                  </ExpectedNetworkProvider>
+                </ImpersonationProvider>
+              </FeatureFlagProvider>
             </ReduxProvider>
           </AutoConnectProvider>
         </WagmiManager>

@@ -1,0 +1,13 @@
+query getVestingSchedules($where: VestingSchedule_filter) {
+  vestingSchedules(where: $where) {
+    id
+    cliffDate
+    cliffAmount
+    endDate
+    flowRate
+    receiver
+    sender
+    startDate
+    superToken
+  }
+}

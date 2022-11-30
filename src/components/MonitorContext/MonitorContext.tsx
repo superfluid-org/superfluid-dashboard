@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/browser";
-import { customAlphabet, nanoid } from "nanoid";
+import { customAlphabet } from "nanoid";
 import promiseRetry from "promise-retry";
-import { FC, useEffect, useMemo } from "react";
+import { FC, useEffect } from "react";
 import { hotjar } from "react-hotjar";
 import { useIntercom } from "react-use-intercom";
 import { useAccount, useNetwork } from "wagmi";

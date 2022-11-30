@@ -19,10 +19,13 @@ declare module "@superfluid-finance/sdk-redux" {
     "Approve Allowance": true;
     "Claim Tokens": true;
     "Approve Scheduler for End Date": true; // Give Stream Scheduler contract delete permission.
+    "Approve Vesting Scheduler": true; // Give Stream Scheduler contract delete & update permission.
     "Schedule Stream End Date": true;
     "Remove Stream End Date": true;
     "Send Closed-Ended Stream": true;
     "Modify Stream": true;
+    "Create Vesting Schedule": true;
+    "Delete Vesting Schedule": true;
   }
 }
 

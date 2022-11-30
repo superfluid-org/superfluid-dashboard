@@ -1,4 +1,3 @@
-
 /**
  * The pending update will be deleted once Subgraph syncs.
  */
@@ -7,7 +6,13 @@ export interface PendingUpdate {
    * Keep it the same as the tracked transaction ID.
    */
   id: string;
-  pendingType: "FlowCreate" | "FlowDelete" | "IndexSubscriptionApprove" | "IndexSubscriptionRevoke";
+  pendingType:
+    | "FlowCreate"
+    | "FlowDelete"
+    | "IndexSubscriptionApprove"
+    | "IndexSubscriptionRevoke"
+    | "VestingScheduleCreate"
+    | "VestingScheduleDelete";
   transactionHash: string;
   chainId: number;
   timestamp: number;
