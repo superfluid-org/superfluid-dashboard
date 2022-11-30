@@ -34,5 +34,5 @@ export const useHigherValidation = <T>(
     handleError: HandleHigherValidationErrorFunc
   ) => Promise<boolean | ValidationError>,
   deps: DependencyList
-) =>
-  useCallback(debounce(callback, 250, { leading: true, trailing: true }), deps); // Learn about leading and trailing here: https://llu.is/throttle-and-debounce-visualized/
+) => useCallback(callback, deps);
+// useCallback(debounce(callback, 250, { leading: true, trailing: true }), deps); // Learn about leading and trailing here: https://llu.is/throttle-and-debounce-visualized/
