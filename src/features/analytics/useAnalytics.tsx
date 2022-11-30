@@ -148,9 +148,9 @@ export const useAnalytics = () => {
 
   const txAnalytics = useCallback(
     (txName: string, primaryArgs: unknown) => {
-      const ensureSafeSerializationOfArgs = () => {
+      const ensureSafeSerializationOfArgs = (): Record<string, unknown> => {
         try {
-          JSON.parse(serialize(primaryArgs));
+          return JSON.parse(serialize(primaryArgs));
         } catch (error) {
           Sentry.captureException(error);
           return {}; // When something wrong with serialization then simplify to an empty object and don't crash the app.
