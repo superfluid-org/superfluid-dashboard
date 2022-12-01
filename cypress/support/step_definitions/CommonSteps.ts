@@ -102,3 +102,16 @@ Given(/^Transactional account ([^"]*) is connected to the dashboard on ([^"]*)$/
 Given(/^User restores the last transaction$/, () => {
     Common.restoreLastTx()
 });
+Given(/^Stream table requests are mocked to an empty state$/, function () {
+    Common.mockQueryToEmptyState("streams")
+});
+Given(/^Transfer event requests are mocked to an empty state$/, function () {
+    Common.mockQueryToEmptyState("transferEvents")
+});
+
+Given(/^User disconnects their wallet from the dashboard$/,  () => {
+    Common.disconnectWallet()
+});
+Given(/^User chooses to connect the mock wallet$/,  () => {
+    Common.clickMockWallet()
+});

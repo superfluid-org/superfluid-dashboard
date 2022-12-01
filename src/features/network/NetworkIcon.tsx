@@ -26,6 +26,7 @@ const NetworkIcon: FC<NetworkIconProps> = ({
 
   return (
     <Avatar
+      data-cy={`${network.id}-icon`}
       sx={{
         width: size,
         height: size,

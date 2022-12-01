@@ -85,7 +85,7 @@ const AddToWalletButton: FC<AddToWalletButtonProps> = ({
 
   return (
     <Tooltip title="Add to Wallet">
-      <IconButton color="primary" onClick={addToWalletWithNetworkCheck}>
+      <IconButton data-cy={"add-to-wallet-button"} color="primary" onClick={addToWalletWithNetworkCheck}>
         <AccountBalanceWalletOutlinedIcon />
       </IconButton>
     </Tooltip>
