@@ -27,7 +27,7 @@ export type Network = Chain & {
             type: TokenType.NativeAssetSuperToken;
         } & TokenMinimal;
     };
-    streamSchedulerContractAddress?: `0x${string}`;
+    flowSchedulerContractAddress?: `0x${string}`;
     platformUrl?: string;
 };
 
@@ -76,7 +76,7 @@ const blockExplorers = {
 
 export const networkDefinition: {
     goerli: Network & {
-        streamSchedulerContractAddress: `0x${string}`;
+        flowSchedulerContractAddress: `0x${string}`;
         platformUrl: string;
     };
     gnosis: Network;
@@ -117,8 +117,8 @@ export const networkDefinition: {
             decimals: 18,
     },
 },
-streamSchedulerContractAddress:
-    "0x7D37D9494a09E47e58B1F535386Ca4D9D175f23e",
+flowSchedulerContractAddress:
+    "0x5b2D8d18FE90D840cbc012a8a06C3EeAA5cBe1a6",
         platformUrl: "https://prod-goerli-platform-service.dev.superfluid.dev",
 },
 gnosis: {

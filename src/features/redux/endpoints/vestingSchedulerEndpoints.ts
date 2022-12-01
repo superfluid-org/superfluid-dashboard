@@ -17,7 +17,7 @@ import { UnitOfTime } from "../../send/FlowRateInput";
 import {
   ACL_CREATE_PERMISSION,
   ACL_DELETE_PERMISSION,
-} from "./streamSchedulerEndpoints";
+} from "./flowSchedulerEndpoints";
 
 export const MIN_VESTING_DURATION_DAYS = 7;
 export const MIN_VESTING_DURATION_SECONDS =
