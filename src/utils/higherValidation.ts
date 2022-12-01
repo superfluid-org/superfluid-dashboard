@@ -1,6 +1,5 @@
 import { ErrorOption } from "react-hook-form";
 import { CreateErrorOptions, ValidationError } from "yup";
-import { debounce } from "lodash";
 import { DependencyList, useCallback } from "react";
 
 export type HandleHigherValidationErrorFunc = (arg: {

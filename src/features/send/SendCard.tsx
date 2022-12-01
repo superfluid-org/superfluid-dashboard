@@ -139,6 +139,7 @@ export default memo(function SendCard() {
     reset: resetFormData,
   } = useFormContext<PartialStreamingForm>();
 
+
   const resetForm = useCallback(() => {
     resetFormData();
     setStreamScheduling(false);
@@ -149,13 +150,11 @@ export default memo(function SendCard() {
     receiverAddress,
     tokenAddress,
     flowRateEther,
-    understandLiquidationRisk,
     endTimestamp,
   ] = watch([
     "data.receiverAddress",
     "data.tokenAddress",
     "data.flowRate",
-    "data.understandLiquidationRisk",
     "data.endTimestamp",
   ]);
 
@@ -438,7 +437,7 @@ export default memo(function SendCard() {
     <Controller
       control={control}
       name="data.understandLiquidationRisk"
-      render={({ field: { onChange, onBlur } }) => (
+      render={({ field: { value: understandLiquidationRisk, onChange, onBlur } }) => (
         <FormControlLabel
           control={
             <Checkbox

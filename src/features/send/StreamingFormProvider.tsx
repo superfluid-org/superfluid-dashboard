@@ -1,27 +1,20 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { BigNumber } from "ethers";
 import { parseEther } from "ethers/lib/utils";
-import { debounce } from "lodash";
 import {
-  FC,
+  memo,
   PropsWithChildren,
   useCallback,
   useEffect,
   useMemo,
   useState,
 } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { useAccount } from "wagmi";
 import {
-  bool,
-  date,
-  mixed,
-  number,
-  object,
-  ObjectSchema,
-  string,
-  ValidationError,
-} from "yup";
+  FormProvider,
+  Resolver,
+  useForm,
+} from "react-hook-form";
+import { useAccount } from "wagmi";
+import { bool, mixed, number, object, ObjectSchema, string } from "yup";
 import {
   createHigherValidationErrorFunc,
   useHigherValidation,
@@ -34,6 +27,7 @@ import { rpcApi } from "../redux/store";
 import { formRestorationOptions } from "../transactionRestoration/transactionRestorations";
 import { UnitOfTime } from "./FlowRateInput";
 import useCalculateBufferInfo from "./useCalculateBufferInfo";
+import { debouncePromiseToLastResult } from "../../utils/debouncePromiseToLastResult";
 
 export type SanitizedStreamingForm = {
   data: {
@@ -80,9 +74,10 @@ export interface StreamingFormProviderProps {
   initialFormValues: Partial<SanitizedStreamingForm["data"]>;
 }
 
-const StreamingFormProvider: FC<
-  PropsWithChildren<StreamingFormProviderProps>
-> = ({ children, initialFormValues }) => {
+const StreamingFormProvider = memo(function StreamingFormProvider({
+  children,
+  initialFormValues,
+}: PropsWithChildren<StreamingFormProviderProps>) {
   const { address: accountAddress } = useAccount();
   const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
@@ -184,51 +179,48 @@ const StreamingFormProvider: FC<
 
       return true;
     },
-    [network, accountAddress, calculateBufferInfo]
+    [
+      network,
+      accountAddress,
+      calculateBufferInfo,
+      queryActiveFlow,
+      queryRealtimeBalance,
+    ]
   );
 
-  const finalSchema = useMemo(
-    () =>
-      object().test(async (values, context) => {
-        clearErrors("data");
-        const sanitizedForm = await sanitizedSchema.validate(values);
+  const finalSchema = useMemo(() => {
+    return object().test(async (values, context) => {
+      clearErrors("data");
+      const sanitizedForm = await sanitizedSchema.validate(values);
 
-        const handleHigherValidationError = createHigherValidationErrorFunc(
-          setError,
-          context.createError
-        );
+      const handleHigherValidationError = createHigherValidationErrorFunc(
+        setError,
+        context.createError
+      );
 
-        return await higherValidate(sanitizedForm, handleHigherValidationError);
-      }),
-    [sanitizedSchema, higherValidate]
+      return await higherValidate(sanitizedForm, handleHigherValidationError);
+    });
+  }, [sanitizedSchema, higherValidate]);
+
+  const resolver = useCallback<Resolver<PartialStreamingForm>>(
+    debouncePromiseToLastResult(yupResolver(finalSchema), 250),
+    [finalSchema]
   );
 
   const formMethods = useForm<PartialStreamingForm>({
     defaultValues: defaultFormValues,
-    resolver: yupResolver(finalSchema),
+    resolver,
     mode: "onChange",
   });
 
   const {
-    formState: {
-      isDirty: isFormDirty,
-    },
     setValue,
-    trigger,
     clearErrors,
     setError,
+    trigger,
+    formState: { isDirty: isFormDirty },
     watch,
   } = formMethods;
-
-  const [receiverAddress, tokenAddress, flowRateEther] = watch([
-    "data.receiverAddress",
-    "data.tokenAddress",
-    "data.flowRate",
-  ]);
-
-  useEffect(() => {
-    setValue("data.understandLiquidationRisk", false);
-  }, [receiverAddress, tokenAddress, flowRateEther, setValue]);
 
   const [isInitialized, setIsInitialized] = useState(!initialFormValues);
 
@@ -270,9 +262,19 @@ const StreamingFormProvider: FC<
     }
   }, [accountAddress]);
 
+  const [receiverAddress, tokenAddress, flowRateEther] = watch([
+    "data.receiverAddress",
+    "data.tokenAddress",
+    "data.flowRate",
+  ]);
+
+  useEffect(() => {
+    setValue("data.understandLiquidationRisk", false);
+  }, [accountAddress, receiverAddress, tokenAddress, flowRateEther, setValue]);
+
   return isInitialized ? (
     <FormProvider {...formMethods}>{children}</FormProvider>
   ) : null;
-};
+});
 
 export default StreamingFormProvider;

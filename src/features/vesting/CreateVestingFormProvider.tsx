@@ -1,7 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import add from "date-fns/fp/add";
-import { FC, ReactNode, useEffect, useMemo, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { FC, ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { FormProvider, Resolver, useForm } from "react-hook-form";
 import { date, mixed, number, object, ObjectSchema, string } from "yup";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
@@ -22,6 +22,7 @@ import {
   createHigherValidationErrorFunc,
   useHigherValidation,
 } from "../../utils/higherValidation";
+import { debouncePromiseToLastResult } from "../../utils/debouncePromiseToLastResult";
 
 export type SanitizedVestingForm = {
   data: {
@@ -198,7 +199,7 @@ const CreateVestingFormProvider: FC<{
     [network, getActiveVestingSchedule, senderAddress]
   );
 
-  const finalSchema = useMemo(
+  const formSchema = useMemo(
     () =>
       object().test(async (values, context) => {
         clearErrors("data");
@@ -221,6 +222,11 @@ const CreateVestingFormProvider: FC<{
     [network, sanitizedSchema, higherValidate]
   );
 
+  const resolver = useCallback<Resolver<PartialVestingForm>>(
+    debouncePromiseToLastResult(yupResolver(formSchema), 250),
+    [formSchema]
+  );
+
   const formMethods = useForm<PartialVestingForm>({
     defaultValues: {
       data: {
@@ -239,17 +245,14 @@ const CreateVestingFormProvider: FC<{
         receiverAddress: null,
       },
     },
-    resolver: yupResolver(finalSchema),
+    resolver,
     mode: "onChange",
   });
 
   const {
     formState: { isDirty: isFormDirty },
-    setValue,
-    trigger,
     clearErrors,
     setError,
-    watch,
   } = formMethods;
 
   useEffect(() => {

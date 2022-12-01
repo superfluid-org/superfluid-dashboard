@@ -1,10 +1,16 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { BigNumber } from "ethers";
 import { formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
-import { debounce, isString } from "lodash";
 import { useRouter } from "next/router";
-import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import {
+  memo,
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { FormProvider, Resolver, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
 import { object, ObjectSchema, string } from "yup";
 import {
@@ -29,6 +35,8 @@ import {
   SuperTokenUpgradeRestoration,
 } from "../transactionRestoration/transactionRestorations";
 import { useTokenPairsQuery } from "./useTokenPairsQuery";
+import { debouncePromiseToLastResult } from "../../utils/debouncePromiseToLastResult";
+import { isString } from "lodash";
 
 export type WrappingForm = {
   type: RestorationType.Wrap | RestorationType.Unwrap;
@@ -51,14 +59,15 @@ export type SanitizedWrappingForm = {
   };
 };
 
-const WrappingFormProvider: FC<
-  PropsWithChildren<{
-    restoration:
-      | SuperTokenUpgradeRestoration
-      | SuperTokenDowngradeRestoration
-      | undefined;
-  }>
-> = ({ restoration, children }) => {
+const WrappingFormProvider = memo(function WrappingFormProvider({
+  restoration,
+  children,
+}: PropsWithChildren<{
+  restoration:
+    | SuperTokenUpgradeRestoration
+    | SuperTokenDowngradeRestoration
+    | undefined;
+}>) {
   const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
   const router = useRouter();
   const { token: tokenQueryParam } = router.query;
@@ -259,6 +268,12 @@ The chain ID was: ${network.id}`);
   );
 
   const networkDefaultTokenPair = getNetworkDefaultTokenPair(network);
+
+  const resolver = useCallback<Resolver<WrappingForm>>(
+    debouncePromiseToLastResult(yupResolver(formSchema), 250),
+    [formSchema]
+  );
+
   const formMethods = useForm<WrappingForm>({
     defaultValues: {
       data: {
@@ -271,7 +286,7 @@ The chain ID was: ${network.id}`);
       },
     },
     mode: "onChange",
-    resolver: yupResolver(formSchema),
+    resolver,
   });
 
   const {
@@ -280,7 +295,6 @@ The chain ID was: ${network.id}`);
     trigger,
     clearErrors,
     setError,
-    watch,
   } = formMethods;
 
   const [hasRestored, setHasRestored] = useState(!restoration);
@@ -357,6 +371,6 @@ The chain ID was: ${network.id}`);
   return hasRestored ? (
     <FormProvider {...formMethods}>{children}</FormProvider>
   ) : null;
-};
+});
 
 export default WrappingFormProvider;
