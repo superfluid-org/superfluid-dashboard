@@ -37,7 +37,7 @@ Given(/^User waits for balances to load$/, () => {
 Given(/^User clicks on "([^"]*)" "([^"]*)" row$/, (network: string, token: string) => {
     DashboardPage.clickTokenStreamRow(network, token);
 });
-Then(/^"([^"]*)" streams are shown with the correct values$/, (network: string) => {
+Then(/^"([^"]*)" streams are shown with the correct values in dashboard page$/, (network: string) => {
     DashboardPage.validateTokenStreams(network);
 });
 

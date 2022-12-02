@@ -7,6 +7,7 @@ const UNWRAP_TAB = "[data-cy=unwrap-toggle]";
 const WRAP_INPUT = "[data-cy=wrap-input]";
 const UNWRAP_INPUT = "[data-cy=unwrap-input]";
 const SELECT_TOKEN_BUTTON = "[data-cy=select-token-button]";
+const SELECTED_TOKEN = `${SELECT_TOKEN_BUTTON} span[translate=no]`
 const WRAP_PREVIEW = "[data-cy=wrapable-amount] input";
 const UNWRAP_PREVIEW = "[data-cy=unwrap-amount-preview] input";
 const TOKEN_PAIR = "[data-cy=token-pair]";
@@ -223,6 +224,8 @@ export class WrapPage extends BasePage {
         cy.get(SELECT_TOKEN_BUTTON).then(el => {
             cy.wrap(el.text()).as("lastWrappedToken")
         })
+        this.isVisible(MAX_BUTTON)
+        cy.get(UNDERLYING_BALANCE).invoke("text").should("match", /Balance: \d+/)
         cy.get(UNDERLYING_BALANCE).then(el => {
             cy.wrap(el.text().split("Balance: ")[1]).as("underlyingBalanceBeforeWrap")
         })
@@ -234,8 +237,10 @@ export class WrapPage extends BasePage {
 
     static rememberBalanceBeforeAndUnwrapToken() {
         this.isNotDisabled(DOWNGRADE_BUTTON)
+        this.isVisible(MAX_BUTTON)
+        cy.get(UNDERLYING_BALANCE).invoke("text").should("match", /Balance: \d+/)
         cy.get(UNDERLYING_BALANCE).then(el => {
-            cy.wrap(el.text().split("Balance: ")[1]).as("underlyingBalanceBeforeUnwrap")
+            cy.wrap(parseFloat(el.text().split("Balance: ")[1])).as("underlyingBalanceBeforeUnwrap")
         })
         cy.get(SUPER_TOKEN_BALANCE).then(el => {
             cy.wrap(el.text()).as("superTokenBalanceBeforeUnwrap")
@@ -309,7 +314,7 @@ export class WrapPage extends BasePage {
         cy.get("@superTokenBalanceBeforeUnwrap").then((balanceBefore: any) => {
             let expectedAmount = (parseFloat(balanceBefore) - parseFloat(amount)).toFixed(1).toString()
             cy.wrap(expectedAmount).as("expectedSuperTokenBalance")
-            this.hasText(`[data-cy=${network}-token-snapshot-table] [data-cy=${token}-cell] [data-cy=balance]`, `${expectedAmount} `)
+            cy.get(`[data-cy=${network}-token-snapshot-table] [data-cy=${token}-cell] [data-cy=balance]` , {timeout: 30000}).should("not.have.text",balanceBefore)
             cy.get(`[data-cy=${network}-token-snapshot-table] [data-cy=${token}-cell] [data-cy=balance]`).then(el => {
                 cy.wrap(parseFloat(el.text()).toFixed(1)).should("equal", expectedAmount)
             })
@@ -325,11 +330,19 @@ export class WrapPage extends BasePage {
             this.hasText(SUPER_TOKEN_BALANCE, `${balance} `)
         })
         cy.get("@underlyingBalanceBeforeWrap").then((balanceBefore: any) => {
-            let expectedAmount = (parseFloat(balanceBefore) - parseFloat(amount)).toFixed(4).toString().substr(0, 4)
-            this.containsText(UNDERLYING_BALANCE, `Balance: ${expectedAmount}`)
+            let expectedAmount = (parseFloat(balanceBefore) - parseFloat(amount)).toFixed(4).toString().substr(0, 5)
+                this.validateUnderlyingBalanceAfterTx(balanceBefore,expectedAmount)
         })
         cy.get("@lastWrappedToken").then((lastToken: any) => {
             this.hasText(SELECT_TOKEN_BUTTON, lastToken)
+        })
+    }
+
+    static validateUnderlyingBalanceAfterTx(balanceBefore:any,expectedAmount:string) {
+        cy.get(UNDERLYING_BALANCE).should("contain.text",balanceBefore.toString().charAt(0))
+        cy.get(UNDERLYING_BALANCE).should("not.have.text",`Balance: ${balanceBefore}`)
+        cy.get(UNDERLYING_BALANCE).then(el => {
+            cy.wrap(parseFloat(el.text().split("Balance: ")[1])).should("be.closeTo" , parseFloat(expectedAmount), 0.05)
         })
     }
 
@@ -355,11 +368,14 @@ export class WrapPage extends BasePage {
 
     static validateTokenBalancesAfterUnwrap(amount: string) {
         cy.get("@expectedSuperTokenBalance").then((balance: any) => {
-            this.hasText(SUPER_TOKEN_BALANCE, `${balance} `)
+            cy.get(SUPER_TOKEN_BALANCE).then(el => {
+                cy.wrap(parseFloat(el.text()).toFixed(1)).should("be.equal" , balance)
+            })
         })
+
         cy.get("@underlyingBalanceBeforeUnwrap").then((balanceBefore: any) => {
-            let expectedAmount = (parseFloat(balanceBefore) + parseFloat(amount)).toFixed(4).toString().substr(0, 4)
-            this.containsText(UNDERLYING_BALANCE, `Balance: ${expectedAmount}`)
+            let expectedAmount = (parseFloat(balanceBefore) + parseFloat(amount)).toFixed(4).toString().substr(0, 5)
+            this.validateUnderlyingBalanceAfterTx(balanceBefore,expectedAmount)
         })
         cy.get("@lastUnwrappedToken").then((lastToken: any) => {
             this.hasText(SELECT_TOKEN_BUTTON, lastToken)
@@ -429,7 +445,19 @@ export class WrapPage extends BasePage {
         cy.fixture("nativeTokenBalances").then(fixture => {
             let expectedString = fixture[account][network][token].underlyingBalance === "0" ? fixture[account][network][token].underlyingBalance : `~${fixture[account][network][token].underlyingBalance}`
             cy.get(`[data-cy=${token}-list-item]`).scrollIntoView()
-            this.hasText(`[data-cy=${token}-list-item] ${TOKEN_SELECT_BALANCE}`,expectedString)
+            this.hasText(`[data-cy=${token}-list-item] ${TOKEN_SELECT_BALANCE}`, expectedString)
         })
+    }
+
+    static validateTokenSelectedForWrapping(token: string) {
+        this.hasText(SELECTED_TOKEN, token)
+        this.isVisible(WRAP_INPUT)
+        this.doesNotExist(UNWRAP_INPUT)
+    }
+
+    static validateTokenSelectedForUnwrapping(token: string) {
+        this.hasText(SELECTED_TOKEN, token)
+        this.doesNotExist(WRAP_INPUT)
+        this.isVisible(UNWRAP_INPUT)
     }
 }

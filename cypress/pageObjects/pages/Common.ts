@@ -28,6 +28,11 @@ const ERROR_PAGE_MESSAGE = "[data-cy=404-message]"
 const RETURN_TO_DASHBOARD_BUTTON = "[data-cy=return-to-dashboard-button]"
 const HELP_CENTER_LINK = "[data-cy=help-center-link]"
 const RESTORE_BUTTONS = "[data-testid=ReplayIcon]"
+const SENDER_RECEIVER_ADDRESSES = "[data-cy=sender-receiver-address]";
+const STREAM_FLOW_RATES = "[data-cy=flow-rate]";
+const START_END_DATES = "[data-cy=start-end-date]";
+const DISCONNECT_BUTTON = "[data-testid=rk-disconnect-button]"
+const RAINBOWKIT_CLOSE_BUTTON = "[aria-label=Close]"
 
 export class Common extends BasePage {
     static clickNavBarButton(button: string) {
@@ -60,6 +65,9 @@ export class Common extends BasePage {
                     break;
                 case "activity history page":
                     this.visitPage("/history", mocked, account, network);
+                    break;
+                case "bridge page":
+                    this.visitPage("/bridge", mocked, account, network);
                     break;
                 case "ended stream details page":
                     this.visitPage(streamData["staticBalanceAccount"]["polygon"][0].v2Link, mocked, account, network);
@@ -231,5 +239,46 @@ export class Common extends BasePage {
 
     static restoreLastTx() {
         this.clickFirstVisible(RESTORE_BUTTONS)
+    }
+
+    static validateStreamsTable(network:string , selector:string) {
+        cy.fixture("networkSpecificData").then((networkSpecificData) => {
+            this.hasLength(selector, networkSpecificData[
+                network
+                ].ongoingStreamsAccount.tokenValues.streams.length)
+            networkSpecificData[
+                network
+                ].ongoingStreamsAccount.tokenValues.streams.forEach(
+                (stream: any, index: number) => {
+                    cy.get(`${selector} ${STREAM_FLOW_RATES}`)
+                        .eq(index)
+                        .should("have.text", stream.flowRate);
+                    cy.get(`${selector} ${SENDER_RECEIVER_ADDRESSES}`)
+                        .eq(index)
+                        .should("have.text", stream.fromTo);
+                    cy.get(`${selector} ${START_END_DATES}`)
+                        .eq(index)
+                        .should("have.text", stream.endDate);
+                }
+            );
+        });
+    }
+
+    static mockQueryToEmptyState(operationName:string) {
+        cy.intercept("POST","**protocol-v1**" , (req) => {
+            const { body } = req;
+            if(body.hasOwnProperty("operationName") && body.operationName === operationName) {
+                req.alias = `${operationName}Query`
+                req.continue((res) => {
+                    res.body.data[operationName] = []
+                })
+            }
+        })
+    }
+
+
+    static disconnectWallet() {
+        this.click(WALLET_CONNECTION_STATUS)
+        this.click(DISCONNECT_BUTTON)
     }
 }

@@ -138,6 +138,7 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
             <TableCell colSpan={5}>
               <Stack direction="row" alignItems="center" gap={1}>
                 <Button
+                  data-cy={"all-tab"}
                   variant="textContained"
                   size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(TransferTypeFilter.All)}
@@ -146,6 +147,7 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
                   All {!isLoading && ` (${transferEvents.length})`}
                 </Button>
                 <Button
+                  data-cy={"sent-tab"}
                   variant="textContained"
                   size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(TransferTypeFilter.Sent)}
@@ -154,6 +156,7 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
                   Sent {!isLoading && ` (${sentCount})`}
                 </Button>
                 <Button
+                  data-cy={"received-tab"}
                   variant="textContained"
                   size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(TransferTypeFilter.Received)}
