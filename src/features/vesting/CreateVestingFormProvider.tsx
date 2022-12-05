@@ -223,7 +223,7 @@ const CreateVestingFormProvider: FC<{
   );
 
   const resolver = useCallback<Resolver<PartialVestingForm>>(
-    debouncePromiseToLastResult(yupResolver(formSchema), 250),
+    debouncePromiseToLastResult(yupResolver(formSchema), 200),
     [formSchema]
   );
 
