@@ -91,7 +91,7 @@ export default memo(function AddressSearchDialog({
   const setSearchTermDebounced = useCallback(
     debounce((searchTerm) => {
       _setSearchTermDebounced(searchTerm);
-    }, 200),
+    }, 250),
     []
   );
 

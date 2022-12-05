@@ -203,7 +203,7 @@ const StreamingFormProvider = memo(function StreamingFormProvider({
   }, [sanitizedSchema, higherValidate]);
 
   const resolver = useCallback<Resolver<PartialStreamingForm>>(
-    debouncePromiseToLastResult(yupResolver(finalSchema), 200),
+    debouncePromiseToLastResult(yupResolver(finalSchema), 250),
     [finalSchema]
   );
 

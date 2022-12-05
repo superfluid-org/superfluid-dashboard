@@ -270,7 +270,7 @@ The chain ID was: ${network.id}`);
   const networkDefaultTokenPair = getNetworkDefaultTokenPair(network);
 
   const resolver = useCallback<Resolver<WrappingForm>>(
-    debouncePromiseToLastResult(yupResolver(formSchema), 200),
+    debouncePromiseToLastResult(yupResolver(formSchema), 250),
     [formSchema]
   );
 
