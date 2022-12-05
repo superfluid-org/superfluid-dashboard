@@ -421,6 +421,7 @@ export class SendPage extends BasePage {
 
     static startOrModifyStreamAndValidateTxApprovalDialog(network:string) {
         this.overrideNextGasPrice()
+        this.isVisible(PREVIEW_UPFRONT_BUFFER)
         cy.get(SEND_BUTTON).should("not.have.attr", "disabled" , {timeout:30000});
         this.click(SEND_BUTTON)
         this.isVisible(LOADING_SPINNER)

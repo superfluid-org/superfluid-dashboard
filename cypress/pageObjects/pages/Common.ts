@@ -303,7 +303,6 @@ export class Common extends BasePage {
     }
 
     static transactionRejectedErrorIsShown() {
-        this.hasText(TX_ERROR,"Transaction Rejected")
-        this.hasText
+        cy.get(TX_ERROR,{timeout:45000}).should("have.text","Transaction Rejected")
     }
 }

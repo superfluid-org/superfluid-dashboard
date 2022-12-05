@@ -124,29 +124,37 @@ export class IndividualTokenPage extends BasePage {
     }
 
     static validateApprovalDialogAndCloseIt(network: string) {
-        this.doesNotExist(APPROVE_BUTTON)
-        this.isVisible(LOADING_SPINNER)
-        this.exists(`${DISTRIBUTION_ROWS} ${LOADING_SPINNER}`)
-        this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
-        this.hasText(APPROVE_SUBSCRIPTION_MESSAGE, "You are approving an index subscription.")
-        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
+        this.validateApprovalTransactionDialog(network)
         cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
         this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
         this.isVisible(OK_BUTTON)
         this.click(OK_BUTTON)
     }
 
+    static validateApprovalTransactionDialog(network:string) {
+        this.doesNotExist(APPROVE_BUTTON)
+        this.isVisible(LOADING_SPINNER)
+        this.exists(`${DISTRIBUTION_ROWS} ${LOADING_SPINNER}`)
+        this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
+        this.hasText(APPROVE_SUBSCRIPTION_MESSAGE, "You are approving an index subscription.")
+        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
+    }
+
     static validateRevokeDialogAndCloseIt(network: string) {
+        this.validateRevokeTransactionDialog(network)
+        cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
+        this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
+        this.isVisible(OK_BUTTON)
+        this.click(OK_BUTTON)
+    }
+
+    static validateRevokeTransactionDialog(network:string) {
         this.doesNotExist(REVOKE_BUTTON)
         this.isVisible(LOADING_SPINNER)
         this.exists(`${DISTRIBUTION_ROWS} ${LOADING_SPINNER}`)
         this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
         this.hasText(REVOKE_MESSAGE, "You are revoking approval of an index subscription.")
         this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
-        cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
-        this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
-        this.isVisible(OK_BUTTON)
-        this.click(OK_BUTTON)
     }
 
     static revokeLastIndex() {
