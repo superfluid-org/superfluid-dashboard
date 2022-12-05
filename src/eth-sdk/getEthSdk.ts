@@ -10,5 +10,5 @@ export const getEthSdk = (
         return getGoerliSdk(providerOrSigner);
     }
 
-    throw new Error();
+    throw new Error("Eth-SDK not available for network.");
 };
