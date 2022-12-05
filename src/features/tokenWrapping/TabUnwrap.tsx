@@ -119,7 +119,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                 inputRef={amountInputRef}
                 value={amount}
                 onChange={onChange}
-                onBlur={onBlur}
+                // onBlur={onBlur} // TODO(KK): Remove for now. Weirdly triggering validation.
                 inputProps={{
                   ...inputPropsForEtherAmount,
                   sx: {

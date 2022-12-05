@@ -269,7 +269,7 @@ export default memo(function SendCard() {
             },
           }}
           onTokenSelect={(x) => onChange(x.address)}
-          onBlur={onBlur}
+          // onBlur={onBlur} // TODO(KK): Remove for now. Weirdly triggering validation.
           ButtonProps={{ variant: "input" }}
         />
       )}

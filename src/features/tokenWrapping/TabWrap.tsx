@@ -234,7 +234,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                 inputRef={amountInputRef}
                 value={amountDecimal}
                 onChange={onChange}
-                onBlur={onBlur}
+                // onBlur={onBlur} // TODO(KK): Remove for now. Weirdly triggering validation.
                 inputProps={{
                   ...inputPropsForEtherAmount,
                   sx: {
