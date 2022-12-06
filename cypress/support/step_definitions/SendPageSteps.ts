@@ -150,7 +150,8 @@ Given(/^User inputs all the details to send "([^"]*)" "([^"]*)" per "([^"]*)" to
     SendPage.inputStreamDetails(amount, token, timeUnit, address)
 });
 Given(/^User starts the stream and the transaction dialogs are visible for "([^"]*)"$/, (network: string) => {
-    SendPage.startStreamAndCheckDialogs(network)
+    SendPage.startOrModifyStreamAndValidateTxApprovalDialog(network)
+    SendPage.checkNewStreamBrodcastedDialogs()
 });
 Given(/^User goes to the token page from the transaction dialog$/, () => {
     SendPage.goToTokensPageAfterTx()
@@ -165,11 +166,19 @@ Given(/^User starts or cancels the stream if necessary$/, () => {
     SendPage.startOrCancelStreamIfNecessary()
 });
 Given(/^User modifies the stream and the transaction dialogs are visible for "([^"]*)"$/, (network: string) => {
-    SendPage.modifyStreamAndValidateDialogs(network)
+    SendPage.startOrModifyStreamAndValidateTxApprovalDialog(network)
+    SendPage.validateBroadcastedDialogsAfterModifyingStream()
 });
 Given(/^User starts the stream if necessary$/, () => {
     SendPage.startStreamIfNecessary()
 });
 Given(/^User cancels the stream and the transaction dialogs are visible for "([^"]*)"$/, (network: string) => {
-    SendPage.cancelStreamAndVerifyDialogs(network)
+    SendPage.cancelStreamAndVerifyApprovalDialogs(network)
+    SendPage.verifyDialogAfterBroadcastingCancelledStream()
+});
+Given(/^User tries to start or modify the stream and the first transaction dialogs are visible on "([^"]*)"$/, function (network:string) {
+    SendPage.startOrModifyStreamAndValidateTxApprovalDialog(network)
+});
+Given(/^User tries to cancel the stream and the first transaction dialogs are visible on "([^"]*)"$/, function (network:string) {
+    SendPage.cancelStreamAndVerifyApprovalDialogs(network)
 });
