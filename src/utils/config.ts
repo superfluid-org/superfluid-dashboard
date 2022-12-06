@@ -19,7 +19,9 @@ const config = {
       process.env.NEXT_PUBLIC_PLATFORM_GOERLI ||
       "https://prod-goerli-platform-service.dev.superfluid.dev",
   },
-  accountingApi: "https://magical-faun-123e59.netlify.app/v1",
+  accountingApi:
+    process.env.NEXT_PUBLIC_ACCOUNTING_API ||
+    "https://magical-faun-123e59.netlify.app/v1",
 };
 
 export default Object.freeze(config);

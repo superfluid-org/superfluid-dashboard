@@ -21,7 +21,7 @@ import AddressAvatar from "../Avatar/AddressAvatar";
 
 interface MultiAddressSearchProps {
   addresses: string[];
-  onChange: (addresses: string[]) => void; // TODO(KK): better name
+  onChange: (addresses: string[]) => void;
   placeholder?: string;
   dialogTitle?: string;
   addressLength?: AddressNameProps["length"];
@@ -45,15 +45,9 @@ export default memo(function MultiAddressSearch({
     setDialogOpen(true);
   };
 
-  const clearSearch = (event: MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    event.preventDefault();
-    onChange([]);
-  };
-
   const onSelectAddress = (address: string) => {
     setDialogOpen(false);
-    onChange([...addresses, address]);
+    onChange([...addresses.filter((a: string) => a !== address), address]);
     onBlur();
   };
 
@@ -105,7 +99,13 @@ export default memo(function MultiAddressSearch({
 
       <AddressSearchDialog
         title={dialogTitle}
-        index={<AddressSearchIndex onSelectAddress={onSelectAddress} />}
+        index={
+          <AddressSearchIndex
+            addresses={addresses}
+            onSelectAddress={onSelectAddress}
+          />
+        }
+        addresses={addresses}
         open={dialogOpen}
         onClose={() => {
           setDialogOpen(false);

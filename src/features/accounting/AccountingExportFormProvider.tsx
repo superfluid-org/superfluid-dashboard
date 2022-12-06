@@ -53,7 +53,6 @@ const AccountingExportFormProvider: FC<
   const formSchema = useMemo(
     () =>
       object().test(async (values, context) => {
-        console.log("Validating");
         const primaryValidation: ObjectSchema<ValidAccountingExportForm> =
           object({
             data: object({

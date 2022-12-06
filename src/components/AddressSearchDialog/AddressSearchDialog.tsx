@@ -24,11 +24,13 @@ import { useAppSelector } from "../../features/redux/store";
 import { addressBookSelectors } from "../../features/addressBook/addressBook.slice";
 import { ensApi } from "../../features/ens/ensApi.slice";
 import shortenHex from "../../utils/shortenHex";
+import { Address } from "@superfluid-finance/sdk-core";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
 interface AddressListItemProps {
   address: string;
+  selected?: boolean;
   namePlaceholder?: string;
   dataCy?: string;
   onClick: () => void;
@@ -36,6 +38,7 @@ interface AddressListItemProps {
 
 export const AddressListItem: FC<AddressListItemProps> = ({
   address,
+  selected = false,
   dataCy,
   onClick,
   namePlaceholder,
@@ -45,7 +48,12 @@ export const AddressListItem: FC<AddressListItemProps> = ({
   const { name, addressChecksummed: checksumHex } = useAddressName(address);
 
   return (
-    <ListItemButton onClick={onClick} sx={LIST_ITEM_STYLE} translate="no">
+    <ListItemButton
+      onClick={onClick}
+      sx={LIST_ITEM_STYLE}
+      translate="no"
+      selected={selected}
+    >
       <ListItemAvatar>
         <AddressAvatar address={checksumHex} />
       </ListItemAvatar>
@@ -67,6 +75,7 @@ export const AddressListItem: FC<AddressListItemProps> = ({
 
 export type AddressSearchDialogProps = {
   open: boolean;
+  addresses?: Address[];
   onClose: () => void;
   onSelectAddress: (address: string) => void;
   title: string;
@@ -76,6 +85,7 @@ export type AddressSearchDialogProps = {
 
 export default memo(function AddressSearchDialog({
   open,
+  addresses = [],
   onSelectAddress,
   onClose,
   title,
@@ -180,6 +190,7 @@ export default memo(function AddressSearchDialog({
                     {!!ensData ? (
                       <AddressListItem
                         dataCy={"ens-entry"}
+                        selected={addresses.includes(ensData.address)}
                         address={ensData.address}
                         onClick={() => onSelectAddress(ensData.address)}
                         namePlaceholder={ensData.name}
@@ -206,6 +217,7 @@ export default memo(function AddressSearchDialog({
                   <AddressListItem
                     dataCy={"address-book-entry"}
                     key={addressBookEntry.address}
+                    selected={addresses.includes(addressBookEntry.address)}
                     address={addressBookEntry.address}
                     onClick={() => onSelectAddress(addressBookEntry.address)}
                     namePlaceholder={addressBookEntry.name}

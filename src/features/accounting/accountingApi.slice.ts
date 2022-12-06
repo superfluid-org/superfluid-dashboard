@@ -8,10 +8,12 @@ export interface VirtualStreamPeriod {
   startTime: number;
   endTime: number;
   amount: string;
+  amountFiat: string;
 }
 
 export interface AccountingStreamPeriod {
   id: string;
+  chainId: number;
   flowRate: string;
   token: {
     id: Address;

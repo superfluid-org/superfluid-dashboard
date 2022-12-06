@@ -1,14 +1,13 @@
+import AssessmentIcon from "@mui/icons-material/Assessment";
+import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import ShowerRoundedIcon from "@mui/icons-material/ShowerRounded";
 import SupportRoundedIcon from "@mui/icons-material/SupportRounded";
-import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
-import ElderlyRoundedIcon from "@mui/icons-material/ElderlyRounded";
 import {
   Box,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Menu,
   Modal,
   Popover,
   useMediaQuery,
@@ -138,6 +137,15 @@ const MoreNavigationItem: FC = ({}) => {
               <ShowerRoundedIcon sx={{ color: theme.palette.text.primary }} />
             </ListItemIcon>
             <ListItemText>Faucet</ListItemText>
+          </ListItemButton>
+        </Link>
+
+        <Link href="/accounting">
+          <ListItemButton href="" onClick={closeMoreMenu}>
+            <ListItemIcon>
+              <AssessmentIcon sx={{ color: theme.palette.text.primary }} />
+            </ListItemIcon>
+            <ListItemText>Export Stream Data</ListItemText>
           </ListItemButton>
         </Link>
 
