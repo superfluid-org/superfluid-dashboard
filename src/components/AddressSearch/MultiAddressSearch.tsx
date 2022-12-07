@@ -7,6 +7,7 @@ import {
   List,
   ListItem,
   ListItemAvatar,
+  ListItemButton,
   ListItemText,
   Stack,
 } from "@mui/material";
@@ -73,7 +74,7 @@ export default memo(function MultiAddressSearch({
       {addresses.length > 0 && (
         <List>
           {addresses.map((address) => (
-            <ListItem key={address} sx={{ px: 1 }}>
+            <ListItemButton key={address} sx={{ px: 1 }}>
               <ListItemAvatar>
                 <AddressAvatar
                   address={address}
@@ -92,7 +93,7 @@ export default memo(function MultiAddressSearch({
               <IconButton onClick={removeAddress(address)} size="small">
                 <CloseRoundedIcon />
               </IconButton>
-            </ListItem>
+            </ListItemButton>
           ))}
         </List>
       )}

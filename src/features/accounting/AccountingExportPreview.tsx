@@ -26,7 +26,7 @@ import accountingApi, {
 import { ValidAccountingExportForm } from "./AccountingExportFormProvider";
 import uniq from "lodash/fp/uniq";
 import useAddressNames from "../../hooks/useAddressNames";
-import { Button } from "@mui/material";
+import { Button, Paper, TablePagination } from "@mui/material";
 
 const CustomToolbar = () => {
   const gridApiContext = useGridApiContext();
@@ -283,22 +283,33 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
   );
 
   return (
-    <DataGrid
-      autoHeight
-      initialState={{
-        sorting: {
-          sortModel: [{ field: "startDate", sort: "asc" }],
-        },
-      }}
-      rows={virtualStreamPeriods}
-      columns={columns}
-      pageSize={10}
-      loading={
-        streamPeriodsResponse.isLoading || streamPeriodsResponse.isFetching
-      }
-      rowsPerPageOptions={[10, 25, 50]}
-      components={{ Toolbar: CustomToolbar }}
-    />
+    <Paper elevation={1}>
+      <DataGrid
+        sx={{
+          borderRadius: "20px",
+          ".MuiTablePagination-root": {
+            background: "transparent",
+            border: "none",
+          },
+        }}
+        autoHeight
+        initialState={{
+          sorting: {
+            sortModel: [{ field: "startDate", sort: "asc" }],
+          },
+        }}
+        rows={virtualStreamPeriods}
+        columns={columns}
+        pageSize={10}
+        loading={
+          streamPeriodsResponse.isLoading || streamPeriodsResponse.isFetching
+        }
+        rowsPerPageOptions={[10, 25, 50]}
+        components={{
+          Toolbar: CustomToolbar,
+        }}
+      />
+    </Paper>
   );
 };
 
