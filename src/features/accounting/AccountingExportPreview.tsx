@@ -23,6 +23,8 @@ import accountingApi, {
   VirtualStreamPeriod,
 } from "./accountingApi.slice";
 import { ValidAccountingExportForm } from "./AccountingExportFormProvider";
+import uniq from "lodash/fp/uniq";
+import useAddressNames from "../../hooks/useAddressNames";
 
 const CustomToolbar = () => (
   <GridCsvExportMenuItem options={{ fileName: "asd" }} />
@@ -88,6 +90,23 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
     [streamPeriodsResponse.data]
   );
 
+  const uniqueAddresses = useMemo(
+    () =>
+      uniq(
+        (streamPeriodsResponse.data || []).reduce(
+          (allAddresses, streamPeriod) => [
+            ...allAddresses,
+            streamPeriod.sender.id,
+            streamPeriod.receiver.id,
+          ],
+          [] as string[]
+        )
+      ),
+    [streamPeriodsResponse.data]
+  );
+
+  const mappedAddresses = useAddressNames(uniqueAddresses);
+
   const columns: GridColDef[] = useMemo(
     () => [
       {
@@ -112,17 +131,37 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         field: "amount",
         headerName: "Amount",
         width: 120,
-        valueGetter: (params: GridValueGetterParams) => {
-          return currency.format(new Decimal(params.row.amountFiat).toFixed(2));
-        },
+        valueGetter: (params: GridValueGetterParams) =>
+          currency.format(new Decimal(params.row.amountFiat).toFixed(2)),
       },
       {
         field: "counterparty",
         headerName: "Counterparty",
         width: 150,
-        renderCell: (params) => (
-          <AddressName address={params.row.receiver.id} />
-        ),
+        valueGetter: (params: GridValueGetterParams) => {
+          const isOutgoing =
+            params.row.sender.id.toLowerCase() ===
+            visibleAddress?.toLowerCase();
+
+          const counterparty = isOutgoing
+            ? params.row.receiver.id
+            : params.row.sender.id;
+          const nameData = mappedAddresses[counterparty];
+
+          return nameData.name || nameData.addressChecksummed;
+        },
+      },
+      {
+        field: "counterpartyAddress",
+        headerName: "Counterparty Address",
+        width: 150,
+        valueGetter: (params: GridValueGetterParams) => {
+          const isOutgoing =
+            params.row.sender.id.toLowerCase() ===
+            visibleAddress?.toLowerCase();
+
+          return isOutgoing ? params.row.receiver.id : params.row.sender.id;
+        },
       },
       {
         field: "transaction",
@@ -197,8 +236,9 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
           `${formatAmount(params.row.amount)} ${params.row.token.symbol}`,
       },
     ],
-    [currency]
+    [currency, mappedAddresses, visibleAddress]
   );
+
   return (
     <DataGrid
       autoHeight
