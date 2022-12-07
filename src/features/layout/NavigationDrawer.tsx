@@ -206,15 +206,6 @@ export default memo(function NavigationDrawer() {
           active={isActiveRoute("/ecosystem")}
           icon={AppsRoundedIcon}
         />
-
-        <NavigationItem
-          id="nav-accounting"
-          title="Accounting"
-          href="/accounting"
-          onClick={closeNavigationDrawer}
-          active={isActiveRoute("/accounting")}
-          icon={AppsRoundedIcon}
-        />
       </Stack>
 
       <Stack justifyContent="flex-end" sx={{ flex: 1 }}>

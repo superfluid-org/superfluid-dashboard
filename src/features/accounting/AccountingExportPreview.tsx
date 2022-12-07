@@ -3,6 +3,7 @@ import {
   GridColDef,
   GridCsvExportMenuItem,
   GridValueGetterParams,
+  useGridApiContext,
 } from "@mui/x-data-grid";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format, fromUnixTime } from "date-fns";
@@ -25,10 +26,29 @@ import accountingApi, {
 import { ValidAccountingExportForm } from "./AccountingExportFormProvider";
 import uniq from "lodash/fp/uniq";
 import useAddressNames from "../../hooks/useAddressNames";
+import { Button } from "@mui/material";
 
-const CustomToolbar = () => (
-  <GridCsvExportMenuItem options={{ fileName: "asd" }} />
-);
+const CustomToolbar = () => {
+  const gridApiContext = useGridApiContext();
+
+  const handleClick = () => {
+    // This is a workaround to trigger DataGrid functionality from outside
+    if (gridApiContext.current) {
+      gridApiContext.current.exportDataAsCsv({
+        fileName: "Stream periods export",
+      });
+    }
+  };
+
+  // Invisible button which will be triggered from outside of DataGrid
+  return (
+    <Button
+      id="export-btn"
+      sx={{ visibility: "hidden", display: "none" }}
+      onClick={handleClick}
+    />
+  );
+};
 
 type MappedVirtualStreamPeriod = VirtualStreamPeriod &
   Omit<AccountingStreamPeriod, "virtualPeriods">;
@@ -113,7 +133,8 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         field: "startDate",
         headerName: "Start Date",
         type: "date",
-        width: 120,
+        minWidth: 120,
+        flex: 1,
         valueGetter: (params: GridValueGetterParams) => {
           return format(fromUnixTime(params.row.startTime), "yyyy/MM/dd");
         },
@@ -122,7 +143,8 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         field: "endDate",
         headerName: "End Date",
         type: "date",
-        width: 120,
+        minWidth: 120,
+        flex: 1,
         valueGetter: (params: GridValueGetterParams) => {
           return format(fromUnixTime(params.row.endTime), "yyyy/MM/dd");
         },
@@ -130,14 +152,16 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
       {
         field: "amount",
         headerName: "Amount",
-        width: 120,
+        minWidth: 100,
+        flex: 1,
         valueGetter: (params: GridValueGetterParams) =>
           currency.format(new Decimal(params.row.amountFiat).toFixed(2)),
       },
       {
         field: "counterparty",
         headerName: "Counterparty",
-        width: 150,
+        minWidth: 120,
+        flex: 1,
         valueGetter: (params: GridValueGetterParams) => {
           const isOutgoing =
             params.row.sender.id.toLowerCase() ===
@@ -154,7 +178,9 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
       {
         field: "counterpartyAddress",
         headerName: "Counterparty Address",
-        width: 150,
+        flex: 1,
+        minWidth: 200,
+        hide: true,
         valueGetter: (params: GridValueGetterParams) => {
           const isOutgoing =
             params.row.sender.id.toLowerCase() ===
@@ -166,8 +192,9 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
       {
         field: "transaction",
         headerName: "Transaction URL",
-        width: 90,
-        renderCell: (params) => {
+        minWidth: 150,
+        flex: 1,
+        valueGetter: (params: GridValueGetterParams) => {
           const network = findNetworkByChainId(params.row.chainId);
           if (!network) return "";
           return network.getLinkForTransaction(
@@ -178,20 +205,24 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
       {
         field: "tokenSymbol",
         headerName: "Token Symbol",
-        width: 90,
+        minWidth: 110,
+        flex: 1,
         valueGetter: (params: GridValueGetterParams) =>
           `${params.row.token.symbol}`,
       },
       {
         field: "network",
         headerName: "Network",
-        width: 90,
-        renderCell: (params) => findNetworkByChainId(params.row.chainId)?.name,
+        minWidth: 100,
+        flex: 1,
+        valueGetter: (params) => findNetworkByChainId(params.row.chainId)?.name,
       },
       {
         field: "sender",
         headerName: "Sender",
-        width: 90,
+        minWidth: 90,
+        flex: 1,
+        hide: true,
         renderCell: (params) => {
           return <AddressName address={params.row.sender.id} />;
         },
@@ -199,7 +230,9 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
       {
         field: "receiver",
         headerName: "Receiver",
-        width: 90,
+        minWidth: 90,
+        flex: 1,
+        hide: true,
         renderCell: (params) => {
           return <AddressName address={params.row.receiver.id} />;
         },
@@ -207,32 +240,42 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
       {
         field: "transactionHash",
         headerName: "Tx Hash",
-        width: 90,
+        flex: 1,
+        minWidth: 90,
+        hide: true,
         valueGetter: (params) => params.row.startedAtEvent.transactionHash,
       },
       {
         field: "tokenAddress",
         headerName: "Token",
-        width: 90,
+        flex: 1,
+        minWidth: 100,
+        hide: true,
         valueGetter: (params) => params.row.token.id,
       },
       {
         field: "tokenName",
         headerName: "Token Name",
-        width: 90,
+        minWidth: 120,
+        flex: 1,
+        hide: true,
         valueGetter: (params) => params.row.token.name,
       },
       {
         field: "underlyingTokenAddress",
         headerName: "Underlying token",
-        width: 90,
+        minWidth: 140,
+        flex: 1,
+        hide: true,
         valueGetter: (params) => params.row.token.underlyingAddress,
       },
       {
         field: "tokensAmount",
         headerName: "Token amount",
-        width: 90,
-        renderCell: (params) =>
+        minWidth: 120,
+        flex: 1,
+        hide: true,
+        valueGetter: (params) =>
           `${formatAmount(params.row.amount)} ${params.row.token.symbol}`,
       },
     ],
@@ -242,6 +285,11 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
   return (
     <DataGrid
       autoHeight
+      initialState={{
+        sorting: {
+          sortModel: [{ field: "startDate", sort: "asc" }],
+        },
+      }}
       rows={virtualStreamPeriods}
       columns={columns}
       pageSize={10}
