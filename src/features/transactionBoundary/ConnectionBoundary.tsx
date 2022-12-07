@@ -48,11 +48,11 @@ const ConnectionBoundary: FC<ConnectionBoundaryProps> = ({
   const expectedNetwork = props.expectedNetwork ?? network;
 
   const isCorrectNetwork = useMemo(() => {
+    if (allowImpersonation && isImpersonated) return true;
+
     if (props.expectedNetwork) {
       return props.expectedNetwork.id === activeChain?.id;
     }
-
-    if (allowImpersonation) return true;
 
     return network.id === activeChain?.id;
   }, [props.expectedNetwork, network, activeChain, allowImpersonation]);

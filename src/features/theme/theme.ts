@@ -540,12 +540,6 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             },
           },
         },
-        styleOverrides: {
-          select: {
-            // fontSize: "14px",
-            // fontWeight: 500,
-          },
-        },
       },
       MuiOutlinedInput: {
         styleOverrides: {

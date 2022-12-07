@@ -3,7 +3,7 @@ import { Address } from "@superfluid-finance/sdk-core";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
-import { array, mixed, number, object, ObjectSchema, ref } from "yup";
+import { array, date, mixed, number, object, ObjectSchema, ref } from "yup";
 import { CurrencyCode } from "../../utils/currencyUtils";
 import { testAddresses } from "../../utils/yupUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -17,22 +17,19 @@ export interface ValidAccountingExportForm {
     priceGranularity: UnitOfTime;
     virtualizationPeriod: UnitOfTime;
     currencyCode: CurrencyCode;
-    /**
-     * startTimestamp and endTimestamp represented in Unix timestamp (seconds)
-     */
-    startTimestamp: number;
-    endTimestamp: number;
+    startDate: Date;
+    endDate: Date;
   };
 }
 
 const defaultFormValues = {
   data: {
     receiverAddresses: [],
-    startTimestamp: null,
-    endTimestamp: null,
     priceGranularity: UnitOfTime.Day,
     virtualizationPeriod: UnitOfTime.Month,
     currencyCode: CurrencyCode.USD,
+    startDate: null,
+    endDate: null,
   },
 };
 
@@ -60,8 +57,8 @@ const AccountingExportFormProvider: FC<
                 .min(1)
                 .required()
                 .test(testAddresses()),
-              startTimestamp: number().required(),
-              endTimestamp: number().required(),
+              startDate: date().required(),
+              endDate: date().required(),
               priceGranularity: mixed<UnitOfTime>()
                 .required()
                 .test((x) =>
@@ -104,11 +101,9 @@ const AccountingExportFormProvider: FC<
         receiverAddresses:
           initialFormValues.receiverAddresses ??
           defaultFormValues.data.receiverAddresses,
-        startTimestamp:
-          initialFormValues.startTimestamp ??
-          defaultFormValues.data.startTimestamp,
-        endTimestamp:
-          initialFormValues.endTimestamp ?? defaultFormValues.data.endTimestamp,
+        startDate:
+          initialFormValues.startDate ?? defaultFormValues.data.startDate,
+        endDate: initialFormValues.endDate ?? defaultFormValues.data.endDate,
         priceGranularity:
           initialFormValues.priceGranularity ??
           defaultFormValues.data.priceGranularity,

@@ -6,7 +6,7 @@ import {
   useGridApiContext,
 } from "@mui/x-data-grid";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { format, fromUnixTime } from "date-fns";
+import { format, fromUnixTime, getUnixTime } from "date-fns";
 import Decimal from "decimal.js";
 import { FC, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
@@ -60,8 +60,8 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
   const { visibleAddress } = useVisibleAddress();
   const {
     data: {
-      startTimestamp,
-      endTimestamp,
+      startDate,
+      endDate,
       priceGranularity,
       virtualizationPeriod,
       currencyCode,
@@ -76,8 +76,8 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
       ? {
           address: visibleAddress,
           chains: mainNetworkIDs,
-          start: startTimestamp,
-          end: endTimestamp,
+          start: getUnixTime(startDate),
+          end: getUnixTime(endDate),
           priceGranularity: priceGranularity,
           virtualization: virtualizationPeriod,
           currency: currencyCode,

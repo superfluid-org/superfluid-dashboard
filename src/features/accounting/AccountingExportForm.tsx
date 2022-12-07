@@ -69,21 +69,11 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
   const { watch, control, formState, getValues } =
     useFormContext<PartialAccountingExportForm>();
 
-  const [receiverAddresses, startTimestamp, endTimestamp] = watch([
+  const [receiverAddresses, startDate, endDate] = watch([
     "data.receiverAddresses",
-    "data.startTimestamp",
-    "data.endTimestamp",
+    "data.startDate",
+    "data.endDate",
   ]);
-
-  const startDate = useMemo(
-    () => (startTimestamp ? fromUnixTime(startTimestamp) : null),
-    [startTimestamp]
-  );
-
-  const endDate = useMemo(
-    () => (endTimestamp ? fromUnixTime(endTimestamp) : null),
-    [endTimestamp]
-  );
 
   const submitAccountingForm = () => {
     const { data } = getValues() as ValidAccountingExportForm;
@@ -160,16 +150,16 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
               <Stack direction="row" gap={1}>
                 <Controller
                   control={control}
-                  name="data.startTimestamp"
+                  name="data.startDate"
                   render={({ field: { value, onChange } }) => (
                     <DatePicker
                       views={["year", "month"]}
                       inputFormat="MM/yy"
                       minDate={MIN_DATE}
                       maxDate={endDate || MAX_DATE}
-                      value={value ? fromUnixTime(value) : null}
+                      value={value}
                       onChange={(date) =>
-                        onChange(date ? getUnixTime(startOfMonth(date)) : null)
+                        onChange(date ? startOfMonth(date) : null)
                       }
                       renderInput={(params: any) => (
                         <TextField {...params} helperText={null} />
@@ -180,16 +170,16 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
 
                 <Controller
                   control={control}
-                  name="data.endTimestamp"
+                  name="data.endDate"
                   render={({ field: { value, onChange } }) => (
                     <DatePicker
                       views={["year", "month"]}
                       inputFormat="MM/yy"
                       minDate={startDate || MIN_DATE}
                       maxDate={MAX_DATE}
-                      value={value ? fromUnixTime(value) : null}
+                      value={value}
                       onChange={(date) =>
-                        onChange(date ? getUnixTime(endOfMonth(date)) : null)
+                        onChange(date ? endOfMonth(date) : null)
                       }
                       renderInput={(params: any) => (
                         <TextField {...params} helperText={null} />
