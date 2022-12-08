@@ -170,6 +170,7 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
           const counterparty = isOutgoing
             ? params.row.receiver.id
             : params.row.sender.id;
+
           const nameData = mappedAddresses[counterparty];
 
           return nameData.name || nameData.addressChecksummed;

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { addressBookSelectors } from "../features/addressBook/addressBook.slice";
 import { ensApi } from "../features/ens/ensApi.slice";
 import { useAppSelector } from "../features/redux/store";
@@ -8,8 +8,10 @@ import { AddressNameResult } from "./useAddressName";
 interface AddressNames {
   [any: string]: AddressNameResult;
 }
+
 const useAddressNames = (addresses: string[]): AddressNames => {
   const [ensLookupQueryTrigger] = ensApi.useLazyLookupAddressQuery();
+  const [ensNames, setEnsNames] = useState<{ [any: string]: string }>({});
 
   const addressBookNames = useAppSelector((state) =>
     addressBookSelectors.selectByAddresses(state, addresses)
@@ -17,9 +19,21 @@ const useAddressNames = (addresses: string[]): AddressNames => {
 
   useEffect(() => {
     Promise.allSettled(
-      addresses.map((address) => ensLookupQueryTrigger(address))
+      addresses.map((address) => ensLookupQueryTrigger(address, true))
     ).then((ensResults) => {
-      console.log({ ensResults });
+      setEnsNames(
+        ensResults.reduce((ensNamesMap, ensResult) => {
+          if (ensResult.status === "rejected" || !ensResult.value.data) {
+            return ensNamesMap;
+          }
+
+          return {
+            ...ensNamesMap,
+            [ensResult.value.data.address.toLowerCase()]:
+              ensResult.value.data.name,
+          };
+        }, {})
+      );
     });
   }, [addresses, ensLookupQueryTrigger]);
 
@@ -29,7 +43,7 @@ const useAddressNames = (addresses: string[]): AddressNames => {
         (addressBookName) =>
           addressBookName.address.toLowerCase() === address.toLowerCase()
       )?.name || "";
-    const ensName = "";
+    const ensName = ensNames[address.toLowerCase()];
 
     return {
       ...mappedAddresses,
