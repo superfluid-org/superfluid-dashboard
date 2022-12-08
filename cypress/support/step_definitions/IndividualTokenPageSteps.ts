@@ -33,6 +33,9 @@ Given(/^The first distribution row in the table shows "([^"]*)" pending transact
 Given(/^Distribution approval dialog on "([^"]*)" shows up and user closes it$/, (network: string) => {
     IndividualTokenPage.validateApprovalDialogAndCloseIt(network)
 });
+Given(/^Distribution approval dialog on "([^"]*)" shows up$/, (network: string) => {
+    IndividualTokenPage.validateApprovalTransactionDialog(network)
+});
 Given(/^There is no pending status for the first distribution row$/, () => {
     IndividualTokenPage.validateNoPendingStatusForFirstDistributionsRow()
 });
@@ -41,6 +44,9 @@ Given(/^User revokes the last index distributions$/, () => {
 });
 Given(/^Distribution revoking dialog on "([^"]*)" shows up and user closes it$/, (network: string) => {
     IndividualTokenPage.validateRevokeDialogAndCloseIt(network)
+});
+Given(/^Distribution revoking dialog on "([^"]*)" shows up$/, (network: string) => {
+    IndividualTokenPage.validateRevokeTransactionDialog(network)
 });
 Given(/^The last distribution row has got a approve subscription button$/, () => {
     IndividualTokenPage.validateLastDistRowHasApproveButton()

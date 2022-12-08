@@ -324,28 +324,24 @@ export class SendPage extends BasePage {
         this.click(TIME_UNIT_SELECTION_BUTTON)
         this.click(`[data-value=${UnitOfTime[timeUnit[0].toUpperCase() + timeUnit.substring(1)]!}]`)
         this.click(RISK_CHECKBOX)
+        this.isVisible(PREVIEW_UPFRONT_BUFFER)
     }
 
     static overrideNextGasPrice() {
-        cy.window().then((win) => {
+        if(!Cypress.env("rejected")) {
+                cy.window().then((win) => {
             // @ts-ignore
-            win.mockSigner.getGasPrice().then((gas) => {
+                win.mockSigner.getGasPrice().then((gas) => {
                 // @ts-ignore
-                win.superfluid_dashboard.advanced.nextGasOverrides.gasPrice = gas._hex.toString() * 2
+                    win.superfluid_dashboard.advanced.nextGasOverrides.gasPrice = gas._hex.toString() * 2
                 // @ts-ignore
                 win.superfluid_dashboard.advanced.nextGasOverrides.gasLimit = "1000000"
+                })
             })
-        })
+        }
     }
 
-    static startStreamAndCheckDialogs(network: string) {
-        this.overrideNextGasPrice()
-        cy.get(SEND_BUTTON).should("not.have.attr", "disabled" , {timeout:30000});
-        this.click(SEND_BUTTON)
-        this.isVisible(LOADING_SPINNER)
-        this.exists(`${SEND_BUTTON} ${LOADING_SPINNER}`)
-        this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
-        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
+    static checkNewStreamBrodcastedDialogs() {
         cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
         this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
         this.isVisible(SEND_MORE_STREAMS_BUTTON)
@@ -423,14 +419,18 @@ export class SendPage extends BasePage {
         })
     }
 
-    static modifyStreamAndValidateDialogs(network: string) {
+    static startOrModifyStreamAndValidateTxApprovalDialog(network:string) {
         this.overrideNextGasPrice()
+        this.isVisible(PREVIEW_UPFRONT_BUFFER)
         cy.get(SEND_BUTTON).should("not.have.attr", "disabled" , {timeout:30000});
         this.click(SEND_BUTTON)
         this.isVisible(LOADING_SPINNER)
         this.exists(`${SEND_BUTTON} ${LOADING_SPINNER}`)
         this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
         this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
+    }
+
+    static validateBroadcastedDialogsAfterModifyingStream() {
         cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
         this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
         this.isVisible(GO_TO_TOKENS_PAGE_BUTTON)
@@ -455,7 +455,7 @@ export class SendPage extends BasePage {
         })
     }
 
-    static cancelStreamAndVerifyDialogs(network: string) {
+    static cancelStreamAndVerifyApprovalDialogs(network:string) {
         this.overrideNextGasPrice()
         cy.get(CANCEL_STREAM_BUTTON).should("not.have.attr", "disabled" , {timeout:30000});
         this.click(CANCEL_STREAM_BUTTON)
@@ -463,6 +463,9 @@ export class SendPage extends BasePage {
         this.exists(`${CANCEL_STREAM_BUTTON} ${LOADING_SPINNER}`)
         this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
         this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
+    }
+
+    static verifyDialogAfterBroadcastingCancelledStream() {
         cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
         this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
         this.isVisible(OK_BUTTON)

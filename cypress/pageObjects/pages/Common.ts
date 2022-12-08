@@ -5,6 +5,9 @@ import {MockProvider} from "@rsksmart/mock-web3-provider";
 import {ethers} from "ethers";
 import HDWalletProvider from "@truffle/hdwallet-provider";
 
+// @ts-ignore - web3-provider-engine doesn't have declaration files for these subproviders
+import HookedWalletSubprovider from "web3-provider-engine/subproviders/hooked-wallet";
+
 const NAVIGATION_BUTTON_PREFIX = "[data-cy=nav-";
 const TOP_BAR_NETWORK_BUTTON = "[data-cy=top-bar-network-button]";
 const CONNECTED_WALLET = "[data-cy=wallet-connection-status] h6";
@@ -33,6 +36,7 @@ const STREAM_FLOW_RATES = "[data-cy=flow-rate]";
 const START_END_DATES = "[data-cy=start-end-date]";
 const DISCONNECT_BUTTON = "[data-testid=rk-disconnect-button]"
 const RAINBOWKIT_CLOSE_BUTTON = "[aria-label=Close]"
+const TX_ERROR = "[data-cy=tx-error]"
 
 export class Common extends BasePage {
     static clickNavBarButton(button: string) {
@@ -130,13 +134,25 @@ export class Common extends BasePage {
         let networkRpc = superfluidRpcUrls[network]
         cy.visit("/", {
             onBeforeLoad: (win: any) => {
-                const provider = new HDWalletProvider({
+                const hdwallet = new HDWalletProvider({
                     privateKeys: [Cypress.env(`TX_ACCOUNT_PRIVATE_KEY${chosenPersona}`)],
                     url: networkRpc,
                     chainId: chainId,
                     pollingInterval: 1000,
                 });
-                win.mockSigner = new ethers.providers.Web3Provider(provider).getSigner();
+
+                if(Cypress.env("rejected")) {
+                // Make HDWallet automatically reject transaction.
+                // Inspired by: https://github.com/MetaMask/web3-provider-engine/blob/e835b80bf09e76d92b785d797f89baa43ae3fd60/subproviders/hooked-wallet.js#L326
+                    for (const provider of hdwallet.engine._providers) {
+                        if (provider.checkApproval) {
+                          provider.checkApproval = function(type, didApprove, cb) {
+                              cb(new Error('User denied '+type+' signature.') )
+                          }
+                        }
+                    }
+                }
+                win.mockSigner = new ethers.providers.Web3Provider(hdwallet).getSigner();
             },
         });
         if (Cypress.env("dev")) {
@@ -280,5 +296,13 @@ export class Common extends BasePage {
     static disconnectWallet() {
         this.click(WALLET_CONNECTION_STATUS)
         this.click(DISCONNECT_BUTTON)
+    }
+
+    static wait(seconds: number) {
+        cy.wait(seconds * 1000)
+    }
+
+    static transactionRejectedErrorIsShown() {
+        cy.get(TX_ERROR,{timeout:45000}).should("have.text","Transaction Rejected")
     }
 }

@@ -251,6 +251,19 @@ export const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
       secondary: "#F07979",
     },
   },
+  {
+    name: "TokenOps",
+    href: `https://www.tokenops.xyz/`,
+    icon: "/icons/ecosystem/tokenops.svg",
+    description: `Create, track, and automate token vesting schedules`,
+    chains: [
+      networkDefinition.polygon.id,
+    ],
+    colors: {
+      primary: "#2D6DEC",
+      secondary: "#8F98F4",
+    },
+  },
 ];
 
 export const SUPPORTS_SUPER_TOKENS: EcosystemApp[] = [
