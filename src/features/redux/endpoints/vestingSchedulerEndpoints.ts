@@ -178,7 +178,7 @@ export const vestingSchedulerEndpoints = {
         subOperations.push({
           operation: await superToken.updateFlowOperatorPermissions({
             flowOperator: vestingScheduler.address,
-            flowRateAllowance: flowOperatorData + arg.flowRateWei,
+            flowRateAllowance: flowOperatorData.flowRateAllowance + arg.flowRateWei,
             permissions: updatedPermissions,
             overrides: arg.overrides,
           }),
