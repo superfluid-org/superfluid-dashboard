@@ -121,9 +121,9 @@ export const networkDefinition: {
       },
     },
     flowSchedulerContractAddress:
-      "0x5b2D8d18FE90D840cbc012a8a06C3EeAA5cBe1a6",
+      "0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca",
     vestingSchedulerContractAddress:
-      "0x6f54e4744b13879482b5a487e832b23e566661b5",
+      "0x46fd3EfDD1d19694403dbE967Ee1D7842eE0E131",
     platformUrl: config.platformApi.goerli,
   },
   gnosis: {

@@ -701,7 +701,7 @@ const _abi = [
         inputs: [
             {
                 internalType: "address",
-                name: "supertoken",
+                name: "superToken",
                 type: "address",
             },
             {

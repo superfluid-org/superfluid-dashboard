@@ -13,8 +13,8 @@ function getContract(address, abi, defaultSignerOrProvider) {
 exports.getContract = getContract;
 function getGoerliSdk(defaultSignerOrProvider) {
     return {
-        "flowScheduler": getContract('0x5b2D8d18FE90D840cbc012a8a06C3EeAA5cBe1a6', flowScheduler_json_1.default, defaultSignerOrProvider),
-        "vestingScheduler": getContract('0x6f54e4744b13879482b5a487e832b23e566661b5', vestingScheduler_json_1.default, defaultSignerOrProvider),
+        "flowScheduler": getContract('0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca', flowScheduler_json_1.default, defaultSignerOrProvider),
+        "vestingScheduler": getContract('0x46fd3EfDD1d19694403dbE967Ee1D7842eE0E131', vestingScheduler_json_1.default, defaultSignerOrProvider),
     };
 }
 exports.getGoerliSdk = getGoerliSdk;
