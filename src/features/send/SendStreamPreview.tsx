@@ -314,7 +314,7 @@ export const StreamingPreview: FC<{
 
         <PreviewItem
           dataCy="preview-ends-on"
-          label="Ends date"
+          label="End date"
           oldValue={
             existingFlow && oldEndDate != newEndDate && oldEndDateString
           }
