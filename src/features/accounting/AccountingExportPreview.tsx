@@ -309,7 +309,6 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
           },
         }}
         disableSelectionOnClick
-        disableColumnSelector
         rows={virtualStreamPeriods}
         columns={columns}
         pageSize={pageSize}
