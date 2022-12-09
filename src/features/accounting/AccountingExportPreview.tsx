@@ -195,7 +195,7 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
             params.row.startedAtEvent.transactionHash
           );
         },
-        renderCell: (params: GridValueGetterParams) => {
+        renderCell: (params) => {
           const network = findNetworkByChainId(params.row.chainId);
           if (!network) return "";
           const linkUrl = network.getLinkForTransaction(
