@@ -127,15 +127,16 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
             justifyContent="space-between"
             sx={{ mr: 0.75 }}
           >
-            <FormLabel>Receiver</FormLabel>
-            <TooltipIcon title="Must not be an exchange address" />
+            <FormLabel>Counterparties</FormLabel>
+            <TooltipIcon title="Must not be an exchange address. If no addresses are selected, all counterparties will be fetched." />
           </Stack>
           <Controller
             control={control}
             name="data.receiverAddresses"
             render={({ field: { onChange } }) => (
               <MultiAddressSearch
-                placeholder="Select receiver addresses"
+                placeholder="Select addresses"
+                helperText="If no addresses are selected, all counterparties will be fetched."
                 addresses={receiverAddresses || []}
                 onChange={onChange}
               />
@@ -226,7 +227,6 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
               justifyContent="space-between"
             >
               <FormLabel>Virtualization Period</FormLabel>
-              <TooltipIcon title="The date when stream scheduler tries to cancel the stream." />
             </Stack>
             <Controller
               control={control}

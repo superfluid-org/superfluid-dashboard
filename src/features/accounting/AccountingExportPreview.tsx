@@ -8,7 +8,7 @@ import {
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format, fromUnixTime, getUnixTime } from "date-fns";
 import Decimal from "decimal.js";
-import { FC, useMemo } from "react";
+import { FC, useMemo, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import AddressName from "../../components/AddressName/AddressName";
 import { currenciesByCode } from "../../utils/currencyUtils";
@@ -27,6 +27,7 @@ import { ValidAccountingExportForm } from "./AccountingExportFormProvider";
 import uniq from "lodash/fp/uniq";
 import useAddressNames from "../../hooks/useAddressNames";
 import { Button, Paper, TablePagination } from "@mui/material";
+import Link from "../common/Link";
 
 const CustomToolbar = () => {
   const gridApiContext = useGridApiContext();
@@ -81,7 +82,9 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
           priceGranularity: priceGranularity,
           virtualization: virtualizationPeriod,
           currency: currencyCode,
-          receivers: receiverAddresses,
+          ...(receiverAddresses.length > 0
+            ? { receivers: receiverAddresses }
+            : {}),
         }
       : skipToken
   );
@@ -130,18 +133,8 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
   const columns: GridColDef[] = useMemo(
     () => [
       {
-        field: "startDate",
-        headerName: "Start Date",
-        type: "date",
-        minWidth: 120,
-        flex: 1,
-        valueGetter: (params: GridValueGetterParams) => {
-          return format(fromUnixTime(params.row.startTime), "yyyy/MM/dd");
-        },
-      },
-      {
-        field: "endDate",
-        headerName: "End Date",
+        field: "date",
+        headerName: "Date",
         type: "date",
         minWidth: 120,
         flex: 1,
@@ -200,6 +193,18 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
           if (!network) return "";
           return network.getLinkForTransaction(
             params.row.startedAtEvent.transactionHash
+          );
+        },
+        renderCell: (params: GridValueGetterParams) => {
+          const network = findNetworkByChainId(params.row.chainId);
+          if (!network) return "";
+          const linkUrl = network.getLinkForTransaction(
+            params.row.startedAtEvent.transactionHash
+          );
+          return (
+            <Link href={linkUrl} target="_blank">
+              {linkUrl}
+            </Link>
           );
         },
       },
@@ -283,6 +288,10 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
     [currency, mappedAddresses, visibleAddress]
   );
 
+  const [pageSize, setPageSize] = useState(10);
+
+  const onPageSizeChange = (newPageSize: number) => setPageSize(newPageSize);
+
   return (
     <Paper elevation={1}>
       <DataGrid
@@ -296,16 +305,19 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         autoHeight
         initialState={{
           sorting: {
-            sortModel: [{ field: "startDate", sort: "asc" }],
+            sortModel: [{ field: "date", sort: "asc" }],
           },
         }}
+        disableSelectionOnClick
+        disableColumnSelector
         rows={virtualStreamPeriods}
         columns={columns}
-        pageSize={10}
+        pageSize={pageSize}
         loading={
           streamPeriodsResponse.isLoading || streamPeriodsResponse.isFetching
         }
         rowsPerPageOptions={[10, 25, 50]}
+        onPageSizeChange={onPageSizeChange}
         components={{
           Toolbar: CustomToolbar,
         }}

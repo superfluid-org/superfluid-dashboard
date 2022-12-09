@@ -53,10 +53,7 @@ const AccountingExportFormProvider: FC<
         const primaryValidation: ObjectSchema<ValidAccountingExportForm> =
           object({
             data: object({
-              receiverAddresses: array()
-                .min(1)
-                .required()
-                .test(testAddresses()),
+              receiverAddresses: array().required().test(testAddresses()),
               startDate: date().required(),
               endDate: date().required(),
               priceGranularity: mixed<UnitOfTime>()

@@ -3,6 +3,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import {
   Button,
   ButtonProps,
+  FormGroup,
+  FormHelperText,
   IconButton,
   List,
   ListItem,
@@ -25,6 +27,7 @@ interface MultiAddressSearchProps {
   onChange: (addresses: string[]) => void;
   placeholder?: string;
   dialogTitle?: string;
+  helperText?: string;
   addressLength?: AddressNameProps["length"];
   ButtonProps?: ButtonProps;
   onBlur?: () => void;
@@ -35,6 +38,7 @@ export default memo(function MultiAddressSearch({
   onChange,
   placeholder = "Public Address or ENS",
   dialogTitle = "Select a receiver",
+  helperText = "",
   addressLength = "long",
   ButtonProps = {},
   onBlur = () => {},
@@ -60,16 +64,19 @@ export default memo(function MultiAddressSearch({
 
   return (
     <>
-      <Button
-        data-cy={"address-button"}
-        variant="input"
-        onClick={onOpenDialog}
-        startIcon={<SearchIcon />}
-        endIcon={<KeyboardArrowDownIcon />}
-        {...ButtonProps}
-      >
-        {placeholder}
-      </Button>
+      <FormGroup>
+        <Button
+          data-cy={"address-button"}
+          variant="input"
+          onClick={onOpenDialog}
+          startIcon={<SearchIcon />}
+          endIcon={<KeyboardArrowDownIcon />}
+          {...ButtonProps}
+        >
+          {placeholder}
+        </Button>
+        {helperText && <FormHelperText>{helperText}</FormHelperText>}
+      </FormGroup>
 
       {addresses.length > 0 && (
         <List>

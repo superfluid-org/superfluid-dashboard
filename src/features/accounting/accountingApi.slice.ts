@@ -50,7 +50,7 @@ interface StreamPeriodsArguments {
   priceGranularity: UnitOfTime;
   virtualization: UnitOfTime;
   currency: CurrencyCode;
-  receivers: Address[];
+  receivers?: Address[];
 }
 
 const accountingApi = createApi({

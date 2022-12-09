@@ -562,6 +562,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         },
       },
+      MuiFormHelperText: {
+        styleOverrides: {
+          root: {
+            marginLeft: "10px",
+          },
+        },
+      },
       MuiSvgIcon: {
         styleOverrides: {
           fontSizeLarge: {
