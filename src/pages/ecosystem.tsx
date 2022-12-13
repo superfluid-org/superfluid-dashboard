@@ -14,7 +14,7 @@ import { EcosystemApp } from "../features/ecosystem/EcosystemItem";
 import EcosystemSection from "../features/ecosystem/EcosystemSection";
 import { networkDefinition } from "../features/network/networks";
 
-export const AUTOMATE_CRYPTO_PAYROLL: EcosystemApp[] = [
+const AUTOMATE_CRYPTO_PAYROLL: EcosystemApp[] = [
   {
     name: "Coinshift",
     href: "https://coinshift.xyz/",
@@ -43,39 +43,34 @@ export const AUTOMATE_CRYPTO_PAYROLL: EcosystemApp[] = [
       secondary: "#5184F7",
     },
   },
-  ]
+];
 
-export const AUTOMATE_CRYPTO_VESTING: EcosystemApp[] = [
+const AUTOMATE_CRYPTO_VESTING: EcosystemApp[] = [
   {
-      name: "TokenOps",
-      href: `https://www.tokenops.xyz/`,
-      icon: "/icons/ecosystem/tokenops.svg",
-      description: `Create, track, and automate token vesting schedules`,
-      chains: [
-        networkDefinition.polygon.id,
-      ],
-      colors: {
-        primary: "#2D6DEC",
-        secondary: "#8F98F4",
-      },
+    name: "TokenOps",
+    href: `https://www.tokenops.xyz/`,
+    icon: "/icons/ecosystem/tokenops.svg",
+    description: `Create, track, and automate token vesting schedules`,
+    chains: [networkDefinition.polygon.id],
+    colors: {
+      primary: "#2D6DEC",
+      secondary: "#8F98F4",
     },
-    {
-        name: "Superfluid Dashboard",
-        href: `https://superfluid.finance/vesting`,
-        icon: "/icons/ecosystem/superfluid.svg",
-        description: `Create vesting schedules directly from the Superfluid app`,
-        chains: [
-          networkDefinition.polygon.id,
-        ],
-        colors: {
-          primary: "#2D6DEC",
-          secondary: "#8F98F4",
-        },
-      },
-      ]
+  },
+  {
+    name: "Superfluid Dashboard",
+    href: `https://superfluid.finance/vesting`,
+    icon: "/icons/ecosystem/superfluid.svg",
+    description: `Create vesting schedules directly from the Superfluid app`,
+    chains: [networkDefinition.polygon.id],
+    colors: {
+      primary: "#2D6DEC",
+      secondary: "#8F98F4",
+    },
+  },
+];
 
-export const INVEST_IN_REALTIME: EcosystemApp[] = [
-
+const INVEST_IN_REALTIME: EcosystemApp[] = [
   {
     name: "Ricochet",
     href: "https://ricochet.exchange/",
@@ -87,9 +82,9 @@ export const INVEST_IN_REALTIME: EcosystemApp[] = [
       secondary: "#254D5A",
     },
   },
-  ]
+];
 
-export const BRIDGE_AND_EXCHANGE: EcosystemApp[] = [
+const BRIDGE_AND_EXCHANGE: EcosystemApp[] = [
   {
     name: "Li.Fi",
     href: "https://app.superfluid.finance/bridge",
@@ -107,9 +102,9 @@ export const BRIDGE_AND_EXCHANGE: EcosystemApp[] = [
       secondary: "#EAA4FF",
     },
   },
-  ]
+];
 
-export const ON_OFFRAMP: EcosystemApp[] = [
+const ON_OFFRAMP: EcosystemApp[] = [
   {
     name: "Transak",
     href: "https://transak.com/",
@@ -128,92 +123,92 @@ export const ON_OFFRAMP: EcosystemApp[] = [
       secondary: "#33AAFF",
     },
   },
-  ]
+];
 
-export const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
-    {
-      name: "Gnosis Safe",
-      href: "https://gnosis-safe.io/",
-      icon: "/icons/ecosystem/gnosis-safe.svg",
-      description: `Multi-sig and smart contract wallet for storing digital assets safely`,
-      chains: [
-        networkDefinition.arbitrum.id,
-        networkDefinition.gnosis.id,
-        networkDefinition.optimism.id,
-        networkDefinition.polygon.id,
-      ],
-      colors: {
-        primary: "#33806B",
-        secondary: "#4BC2A2",
-      },
+const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
+  {
+    name: "Gnosis Safe",
+    href: "https://gnosis-safe.io/",
+    icon: "/icons/ecosystem/gnosis-safe.svg",
+    description: `Multi-sig and smart contract wallet for storing digital assets safely`,
+    chains: [
+      networkDefinition.arbitrum.id,
+      networkDefinition.gnosis.id,
+      networkDefinition.optimism.id,
+      networkDefinition.polygon.id,
+    ],
+    colors: {
+      primary: "#33806B",
+      secondary: "#4BC2A2",
     },
-    {
-      name: "Unlock Protocol",
-      href: "https://unlock-protocol.com/",
-      icon: "/icons/ecosystem/unlock.svg",
-      description: `Connecting creative communities with NFT-based memberships`,
-      chains: [
-        networkDefinition.gnosis.id,
-        networkDefinition.optimism.id,
-        networkDefinition.polygon.id,
-      ],
-      colors: {
-        primary: "#E76E73",
-        secondary: "#FBA58F",
-      },
+  },
+  {
+    name: "Unlock Protocol",
+    href: "https://unlock-protocol.com/",
+    icon: "/icons/ecosystem/unlock.svg",
+    description: `Connecting creative communities with NFT-based memberships`,
+    chains: [
+      networkDefinition.gnosis.id,
+      networkDefinition.optimism.id,
+      networkDefinition.polygon.id,
+    ],
+    colors: {
+      primary: "#E76E73",
+      secondary: "#FBA58F",
     },
-    {
-      name: "Collab.Land",
-      href: "https://collab.land/",
-      icon: "/icons/ecosystem/collab-land.svg",
-      description: `User-friendly, tokenized, community-management system`,
-      chains: [
-        networkDefinition.arbitrum.id,
-        networkDefinition.avalancheC.id,
-        networkDefinition.gnosis.id,
-        networkDefinition.optimism.id,
-        networkDefinition.polygon.id,
-      ],
-      colors: {
-        primary: "#E88F27",
-        secondary: "#FDB867",
-      },
+  },
+  {
+    name: "Collab.Land",
+    href: "https://collab.land/",
+    icon: "/icons/ecosystem/collab-land.svg",
+    description: `User-friendly, tokenized, community-management system`,
+    chains: [
+      networkDefinition.arbitrum.id,
+      networkDefinition.avalancheC.id,
+      networkDefinition.gnosis.id,
+      networkDefinition.optimism.id,
+      networkDefinition.polygon.id,
+    ],
+    colors: {
+      primary: "#E88F27",
+      secondary: "#FDB867",
     },
-    {
-      name: "UMA",
-      href: "https://umaproject.org/",
-      icon: "/icons/ecosystem/uma.svg",
-      description: `Optimistic oracle for Web3 serving data to smart contracts`,
-      chains: [
-        networkDefinition.arbitrum.id,
-        networkDefinition.gnosis.id,
-        networkDefinition.optimism.id,
-        networkDefinition.polygon.id,
-      ],
-      colors: {
-        primary: "#FF4A4A",
-        secondary: "#F07979",
-      },
+  },
+  {
+    name: "UMA",
+    href: "https://umaproject.org/",
+    icon: "/icons/ecosystem/uma.svg",
+    description: `Optimistic oracle for Web3 serving data to smart contracts`,
+    chains: [
+      networkDefinition.arbitrum.id,
+      networkDefinition.gnosis.id,
+      networkDefinition.optimism.id,
+      networkDefinition.polygon.id,
+    ],
+    colors: {
+      primary: "#FF4A4A",
+      secondary: "#F07979",
     },
-    {
-      name: "DAO Haus",
-      href: "https://daohaus.club/",
-      icon: "/icons/ecosystem/dao-haus.svg",
-      description: `No-code platform for Moloch DAOs and their summoners`,
-      chains: [
-        networkDefinition.arbitrum.id,
-        networkDefinition.gnosis.id,
-        networkDefinition.optimism.id,
-        networkDefinition.polygon.id,
-      ],
-      colors: {
-        primary: "#192AC2",
-        secondary: "#FB708B",
-      },
+  },
+  {
+    name: "DAO Haus",
+    href: "https://daohaus.club/",
+    icon: "/icons/ecosystem/dao-haus.svg",
+    description: `No-code platform for Moloch DAOs and their summoners`,
+    chains: [
+      networkDefinition.arbitrum.id,
+      networkDefinition.gnosis.id,
+      networkDefinition.optimism.id,
+      networkDefinition.polygon.id,
+    ],
+    colors: {
+      primary: "#192AC2",
+      secondary: "#FB708B",
     },
-  ]
+  },
+];
 
-export const OTHER_APPS_BUILT_ON_SUPERFLUID: EcosystemApp[] = [
+const OTHER_APPS_BUILT_ON_SUPERFLUID: EcosystemApp[] = [
   {
     name: "Degen Dogs",
     href: "https://degendogs.club/",
@@ -294,9 +289,9 @@ export const OTHER_APPS_BUILT_ON_SUPERFLUID: EcosystemApp[] = [
       secondary: "#5E71E2",
     },
   },
-  ]
+];
 
-export const SUPPORTS_SUPER_TOKENS: EcosystemApp[] = [
+const SUPPORTS_SUPER_TOKENS: EcosystemApp[] = [
   {
     name: "Minerva",
     href: "https://minerva.digital/",
@@ -366,7 +361,47 @@ export const SUPPORTS_SUPER_TOKENS: EcosystemApp[] = [
       secondary: "#FE815F",
     },
   },
-  ];
+];
+
+interface SectionConf {
+  title: string;
+  apps: EcosystemApp[];
+}
+
+const ECOSYSTEM_SECTIONS: SectionConf[] = [
+  {
+    title: "Automate Crypto Payroll",
+    apps: AUTOMATE_CRYPTO_PAYROLL,
+  },
+  {
+    title: "Automate Crypto Vesting",
+    apps: AUTOMATE_CRYPTO_VESTING,
+  },
+  {
+    title: "Invest in Real-Time",
+    apps: INVEST_IN_REALTIME,
+  },
+  {
+    title: "Bridge & Exchange",
+    apps: BRIDGE_AND_EXCHANGE,
+  },
+  {
+    title: "On/Offramp",
+    apps: ON_OFFRAMP,
+  },
+  {
+    title: "Integrations",
+    apps: SUPERFLUID_INTEGRATIONS,
+  },
+  {
+    title: "Other Apps Built on Superfluid",
+    apps: OTHER_APPS_BUILT_ON_SUPERFLUID,
+  },
+  {
+    title: "Supports Super Tokens",
+    apps: SUPPORTS_SUPER_TOKENS,
+  },
+];
 
 const Ecosystem: NextPage = () => {
   const theme = useTheme();
@@ -407,26 +442,12 @@ const Ecosystem: NextPage = () => {
           </Link>
         </Stack>
 
-        <Divider />
-
-        <EcosystemSection
-          title="Built on Superfluid"
-          apps={BUILT_ON_SUPERFLUID}
-        />
-
-        <Divider />
-
-        <EcosystemSection
-          title="Superfluid Integrations"
-          apps={SUPERFLUID_INTEGRATIONS}
-        />
-
-        <Divider />
-
-        <EcosystemSection
-          title="Supports Super Tokens"
-          apps={SUPPORTS_SUPER_TOKENS}
-        />
+        {ECOSYSTEM_SECTIONS.map((section) => (
+          <>
+            <Divider />
+            <EcosystemSection title={section.title} apps={section.apps} />
+          </>
+        ))}
       </Stack>
     </Container>
   );
