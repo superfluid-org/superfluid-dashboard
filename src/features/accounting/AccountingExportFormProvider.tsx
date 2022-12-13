@@ -3,7 +3,7 @@ import { Address } from "@superfluid-finance/sdk-core";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
-import { array, date, mixed, number, object, ObjectSchema, ref } from "yup";
+import { array, date, mixed, object, ObjectSchema } from "yup";
 import { CurrencyCode } from "../../utils/currencyUtils";
 import { testAddresses } from "../../utils/yupUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -13,7 +13,7 @@ type Nullable<T> = { [K in keyof T]: T[K] | null };
 
 export interface ValidAccountingExportForm {
   data: {
-    receiverAddresses: Address[];
+    counterparties: Address[];
     priceGranularity: UnitOfTime;
     virtualizationPeriod: UnitOfTime;
     currencyCode: CurrencyCode;
@@ -24,7 +24,7 @@ export interface ValidAccountingExportForm {
 
 const defaultFormValues = {
   data: {
-    receiverAddresses: [],
+    counterparties: [],
     priceGranularity: UnitOfTime.Day,
     virtualizationPeriod: UnitOfTime.Month,
     currencyCode: CurrencyCode.USD,
@@ -53,7 +53,7 @@ const AccountingExportFormProvider: FC<
         const primaryValidation: ObjectSchema<ValidAccountingExportForm> =
           object({
             data: object({
-              receiverAddresses: array().required().test(testAddresses()),
+              counterparties: array().required().test(testAddresses()),
               startDate: date().required(),
               endDate: date().required(),
               priceGranularity: mixed<UnitOfTime>()
@@ -87,17 +87,16 @@ const AccountingExportFormProvider: FC<
     mode: "onChange",
   });
 
-  const { formState, setValue, trigger, clearErrors, setError, watch } =
-    formMethods;
+  const { formState, setValue, trigger, clearErrors } = formMethods;
 
   const [isInitialized, setIsInitialized] = useState(!initialFormValues);
 
   useEffect(() => {
     if (initialFormValues) {
       setValue("data", {
-        receiverAddresses:
-          initialFormValues.receiverAddresses ??
-          defaultFormValues.data.receiverAddresses,
+        counterparties:
+          initialFormValues.counterparties ??
+          defaultFormValues.data.counterparties,
         startDate:
           initialFormValues.startDate ?? defaultFormValues.data.startDate,
         endDate: initialFormValues.endDate ?? defaultFormValues.data.endDate,

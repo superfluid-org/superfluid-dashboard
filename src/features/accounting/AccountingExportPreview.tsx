@@ -1,33 +1,28 @@
+import { Button, Paper } from "@mui/material";
 import {
   DataGrid,
   GridColDef,
-  GridCsvExportMenuItem,
   GridValueGetterParams,
   useGridApiContext,
 } from "@mui/x-data-grid";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { format, fromUnixTime, getUnixTime } from "date-fns";
 import Decimal from "decimal.js";
+import uniq from "lodash/fp/uniq";
 import { FC, useMemo, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import AddressName from "../../components/AddressName/AddressName";
+import useAddressNames from "../../hooks/useAddressNames";
 import { currenciesByCode } from "../../utils/currencyUtils";
-import {
-  findNetworkByChainId,
-  mainNetworkIDs,
-  networkDefinition,
-} from "../network/networks";
-import Amount, { formatAmount } from "../token/Amount";
+import Link from "../common/Link";
+import { findNetworkByChainId, mainNetworkIDs } from "../network/networks";
+import { formatAmount } from "../token/Amount";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import accountingApi, {
   AccountingStreamPeriod,
   VirtualStreamPeriod,
 } from "./accountingApi.slice";
 import { ValidAccountingExportForm } from "./AccountingExportFormProvider";
-import uniq from "lodash/fp/uniq";
-import useAddressNames from "../../hooks/useAddressNames";
-import { Button, Paper, TablePagination } from "@mui/material";
-import Link from "../common/Link";
 
 const CustomToolbar = () => {
   const gridApiContext = useGridApiContext();
@@ -66,7 +61,7 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
       priceGranularity,
       virtualizationPeriod,
       currencyCode,
-      receiverAddresses,
+      counterparties,
     },
   } = getValues();
 
@@ -82,9 +77,7 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
           priceGranularity: priceGranularity,
           virtualization: virtualizationPeriod,
           currency: currencyCode,
-          ...(receiverAddresses.length > 0
-            ? { receivers: receiverAddresses }
-            : {}),
+          ...(counterparties.length > 0 ? { counterparties } : {}),
         }
       : skipToken
   );

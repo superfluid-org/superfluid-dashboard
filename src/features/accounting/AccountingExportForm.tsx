@@ -14,18 +14,11 @@ import {
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import {
-  endOfMonth,
-  fromUnixTime,
-  getUnixTime,
-  startOfMonth,
-  sub,
-} from "date-fns";
-import { FC, useMemo } from "react";
+import { endOfMonth, startOfMonth, sub } from "date-fns";
+import { FC } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import MultiAddressSearch from "../../components/AddressSearch/MultiAddressSearch";
 import CurrencySelect from "../../components/CurrencySelect/CurrencySelect";
-import { CurrencyCode } from "../../utils/currencyUtils";
 import TooltipIcon from "../common/TooltipIcon";
 import { UnitOfTime } from "../send/FlowRateInput";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
@@ -69,11 +62,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
   const { watch, control, formState, getValues } =
     useFormContext<PartialAccountingExportForm>();
 
-  const [receiverAddresses, startDate, endDate] = watch([
-    "data.receiverAddresses",
-    "data.startDate",
-    "data.endDate",
-  ]);
+  const [startDate, endDate] = watch(["data.startDate", "data.endDate"]);
 
   const submitAccountingForm = () => {
     const { data } = getValues() as ValidAccountingExportForm;
@@ -132,12 +121,12 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
           </Stack>
           <Controller
             control={control}
-            name="data.receiverAddresses"
-            render={({ field: { onChange } }) => (
+            name="data.counterparties"
+            render={({ field: { value, onChange } }) => (
               <MultiAddressSearch
                 placeholder="Select addresses"
                 helperText="If no addresses are selected, all counterparties will be fetched."
-                addresses={receiverAddresses || []}
+                addresses={value || []}
                 onChange={onChange}
               />
             )}
