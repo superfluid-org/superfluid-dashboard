@@ -99,8 +99,9 @@ export const BUILT_ON_SUPERFLUID = [
     href: "https://www.geoweb.network/",
     icon: "/icons/ecosystem/huma.svg",
     description: `AR layer anchoring digital content to physical locations`,
-    chains: [networkDefinition.polygon.id],
-    comingSoon: true,
+    chains: [
+          networkDefinition.optimism.id,
+        ],    
     colors: {
       primary: "#434C7C",
       secondary: "#5E71E2",
