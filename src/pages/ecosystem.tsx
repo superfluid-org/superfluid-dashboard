@@ -97,7 +97,7 @@ export const BUILT_ON_SUPERFLUID = [
   {
     name: "Geo Web",
     href: "https://www.geoweb.network/",
-    icon: "/icons/ecosystem/huma.svg",
+    icon: "/icons/ecosystem/geoweb.svg",
     description: `AR layer anchoring digital content to physical locations`,
     chains: [
           networkDefinition.optimism.id,
