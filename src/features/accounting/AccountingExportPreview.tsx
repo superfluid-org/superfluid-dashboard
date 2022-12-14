@@ -112,8 +112,8 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         (streamPeriodsResponse.data || []).reduce(
           (allAddresses, streamPeriod) => [
             ...allAddresses,
-            streamPeriod.sender.id,
-            streamPeriod.receiver.id,
+            streamPeriod.sender,
+            streamPeriod.receiver,
           ],
           [] as string[]
         )
@@ -150,12 +150,11 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         flex: 1,
         valueGetter: (params: GridValueGetterParams) => {
           const isOutgoing =
-            params.row.sender.id.toLowerCase() ===
-            visibleAddress?.toLowerCase();
+            params.row.sender.toLowerCase() === visibleAddress?.toLowerCase();
 
           const counterparty = isOutgoing
-            ? params.row.receiver.id
-            : params.row.sender.id;
+            ? params.row.receiver
+            : params.row.sender;
 
           const nameData = mappedAddresses[counterparty];
 
@@ -170,10 +169,9 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         hide: true,
         valueGetter: (params: GridValueGetterParams) => {
           const isOutgoing =
-            params.row.sender.id.toLowerCase() ===
-            visibleAddress?.toLowerCase();
+            params.row.sender.toLowerCase() === visibleAddress?.toLowerCase();
 
-          return isOutgoing ? params.row.receiver.id : params.row.sender.id;
+          return isOutgoing ? params.row.receiver : params.row.sender;
         },
       },
       {
@@ -223,7 +221,7 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         flex: 1,
         hide: true,
         renderCell: (params) => {
-          return <AddressName address={params.row.sender.id} />;
+          return <AddressName address={params.row.sender} />;
         },
       },
       {
@@ -233,7 +231,7 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         flex: 1,
         hide: true,
         renderCell: (params) => {
-          return <AddressName address={params.row.receiver.id} />;
+          return <AddressName address={params.row.receiver} />;
         },
       },
       {

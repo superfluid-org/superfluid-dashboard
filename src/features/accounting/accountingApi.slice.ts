@@ -21,24 +21,15 @@ export interface AccountingStreamPeriod {
     name: string;
     underlyingAddress: Address;
   };
-  sender: {
-    id: Address;
-  };
-  receiver: {
-    id: Address;
-  };
+  sender: Address;
+  receiver: Address;
   startedAtTimestamp: number;
   startedAtBlockNumber: number;
-  startedAtEvent: {
-    transactionHash: string;
-  };
+  startedAtEvent: string;
   stoppedAtTimestamp?: number;
   stoppedAtBlockNumber?: number;
-  stoppedAtEvent?: {
-    transactionHash: string;
-  };
+  stoppedAtEvent?: string;
   totalAmountStreamed: string;
-
   virtualPeriods: VirtualStreamPeriod[];
 }
 
