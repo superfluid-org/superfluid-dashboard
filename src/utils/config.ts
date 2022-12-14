@@ -21,7 +21,7 @@ const config = {
   },
   accountingApi:
     process.env.NEXT_PUBLIC_ACCOUNTING_API ||
-    "https://magical-faun-123e59.netlify.app/v1",
+    "https://accounting.superfluid.dev/v1",
 };
 
 export default Object.freeze(config);

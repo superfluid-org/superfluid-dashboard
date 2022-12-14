@@ -2,6 +2,7 @@ import { alpha, createTheme, Theme, ThemeOptions } from "@mui/material/styles";
 import { deepmerge } from "@mui/utils";
 import React from "react";
 import { FONT_FACES } from "./fonts";
+import type {} from "@mui/x-data-grid/themeAugmentation";
 
 // TODO: Move to separate declaration file to make theme file cleaner?
 
@@ -1197,6 +1198,32 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             "&:last-child": {
               paddingBottom: "0px",
             },
+          },
+        },
+      },
+      MuiDataGrid: {
+        styleOverrides: {
+          cell: {
+            ":focus": {
+              outline: "none",
+            },
+            ":focus-within": {
+              outline: "none",
+            },
+          },
+          columnHeader: {
+            ":focus": {
+              outline: "none",
+            },
+            ":focus-within": {
+              outline: "none",
+            },
+          },
+          columnHeaderDraggableContainer: {
+            zIndex: 1,
+          },
+          columnSeparator: {
+            zIndex: 0,
           },
         },
       },
