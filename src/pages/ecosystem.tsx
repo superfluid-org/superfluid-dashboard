@@ -103,8 +103,8 @@ export const BUILT_ON_SUPERFLUID = [
           networkDefinition.optimism.id,
         ],    
     colors: {
-      primary: "#434C7C",
-      secondary: "#5E71E2",
+      primary: "#4B5588",
+      secondary: "#2FC1C1",
     },
   },
 ];
