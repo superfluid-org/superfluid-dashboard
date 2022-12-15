@@ -9,6 +9,11 @@
     "TokenTwo": "USDC",
     "TokenGas": "xDAI"
   },
+  "polygon-mumbai": {
+    "TokenOne": "DAI",
+    "TokenTwo": "USDC",
+    "TokenGas": "BNB"
+  },
   "polygon": {
     "TokenOne": "DAI",
     "TokenTwo": "USDC",
@@ -27,6 +32,11 @@
   "avalanche": {
     "TokenOne": "DAI.e",
     "TokenTwo": "USDC",
+    "TokenGas": "AVAX"
+  },
+  "avalanche-fuji": {
+    "TokenOne": "fDAI",
+    "TokenTwo": "fUSDC",
     "TokenGas": "AVAX"
   },
   "bsc": {

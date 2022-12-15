@@ -62,7 +62,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        network: ["goerli","gnosis"]
+        network: ["goerli","gnosis","polygon-mumbai","polygon","optimism","arbitrum-one","avalanche","avalanche-fuji","bsc"]
     steps:
       - uses: actions/checkout@v2
 
