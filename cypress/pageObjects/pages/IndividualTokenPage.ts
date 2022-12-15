@@ -104,7 +104,7 @@ export class IndividualTokenPage extends BasePage {
     }
 
     static openDistributionTab() {
-        this.click(DISTRIBUTIONS_TAB)
+        cy.get(DISTRIBUTIONS_TAB, {timeout: 30000}).click()
     }
 
     static validateLastDistributionRow(address: string, amount: string, status: string, when: string) {
