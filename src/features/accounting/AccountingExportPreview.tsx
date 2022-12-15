@@ -2,6 +2,7 @@ import { Button, Paper } from "@mui/material";
 import {
   DataGrid,
   GridColDef,
+  GridSortCellParams,
   GridValueGetterParams,
   useGridApiContext,
 } from "@mui/x-data-grid";
@@ -140,8 +141,10 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         headerName: "Amount",
         minWidth: 100,
         flex: 1,
+        sortComparator: (v1, v2) => (Number(v1) > Number(v2) ? 1 : -1),
         valueGetter: (params: GridValueGetterParams) =>
-          currency.format(new Decimal(params.row.amountFiat).toFixed(2)),
+          new Decimal(params.row.amountFiat).toFixed(2),
+        renderCell: (params) => currency.format(params.value),
       },
       {
         field: "counterparty",
@@ -240,7 +243,7 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         flex: 1,
         minWidth: 90,
         hide: true,
-        valueGetter: (params) => params.row.startedAtEvent.transactionHash,
+        valueGetter: (params) => params.row.startedAtEvent,
       },
       {
         field: "tokenAddress",
