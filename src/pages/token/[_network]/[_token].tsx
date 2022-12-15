@@ -202,6 +202,7 @@ const TokenPageContent: FC<{
           }}
         >
           <Stack
+            data-cy={"token-container-by-graph"}
             direction="row"
             justifyContent="space-between"
             sx={{
@@ -230,6 +231,7 @@ const TokenPageContent: FC<{
                   />
                 </Typography>
                 <Typography
+                  data-cy={"token-symbol"}
                   variant="h5mono"
                   color="text.secondary"
                   sx={{ lineHeight: "30px" }}
@@ -295,7 +297,7 @@ const TokenPageContent: FC<{
                   />
                 )}
                 <Stack direction="row" alignItems="center">
-                  <Typography variant="h5mono">
+                  <Typography data-cy={"net-incoming"} variant="h5mono">
                     <Amount
                       wei={BigNumber.from(totalInflowRate).mul(
                         UnitOfTime.Month
@@ -307,7 +309,7 @@ const TokenPageContent: FC<{
                 </Stack>
 
                 <Stack direction="row" alignItems="center">
-                  <Typography variant="h5mono">
+                  <Typography data-cy={"net-outgoing"} variant="h5mono">
                     <Amount
                       wei={BigNumber.from(totalOutflowRate).mul(
                         UnitOfTime.Month

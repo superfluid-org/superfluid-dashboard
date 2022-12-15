@@ -1,5 +1,4 @@
 import {BasePage} from "../BasePage";
-import shortenHex from "../../../src/utils/shortenHex";
 
 const ANIMATION = "[data-cy=animation]"
 const SENT_SO_FAR = "[data-cy=balance]"
@@ -48,11 +47,11 @@ export class StreamDetailsPage extends BasePage {
             this.hasText(TOKEN_STREAMED, endedStream.token)
             //this.containsText(START_DATE, endedStream.startDate.slice(0, -1))
             //this.containsText(UPDATED_END_DATE, endedStream.endDate.slice(0, -1))
-            cy.get(SENDER_AND_RECEIVER).first().should("have.text", shortenHex(endedStream.sender))
-            cy.get(SENDER_AND_RECEIVER).last().should("have.text", shortenHex(endedStream.receiver))
+            cy.get(SENDER_AND_RECEIVER).first().should("have.text", BasePage.shortenHex(endedStream.sender))
+            cy.get(SENDER_AND_RECEIVER).last().should("have.text", BasePage.shortenHex(endedStream.receiver))
             this.hasText(BUFFER, endedStream.buffer)
             this.hasText(NETWORK_NAME, endedStream.networkName)
-            this.hasText(TX_HASH, shortenHex(endedStream.txHash))
+            this.hasText(TX_HASH, BasePage.shortenHex(endedStream.txHash))
             this.hasText(PROJECTED_LIQUIDATION, endedStream.projectedLiquidation)
             this.hasText(SENT_SO_FAR, endedStream.totalAmountStreamed)
             this.doesNotExist(AMOUNT_PER_MONTH)
@@ -80,11 +79,11 @@ export class StreamDetailsPage extends BasePage {
             this.hasText(TOKEN_STREAMED, ongoingStream.token)
             //this.containsText(START_DATE, ongoingStream.startDate.slice(0, -1))
             //this.containsText(UPDATED_END_DATE, ongoingStream.updatedDate.slice(0, -1))
-            cy.get(SENDER_AND_RECEIVER).first().should("have.text", shortenHex(ongoingStream.sender))
-            cy.get(SENDER_AND_RECEIVER).last().should("have.text", shortenHex(ongoingStream.receiver))
+            cy.get(SENDER_AND_RECEIVER).first().should("have.text", BasePage.shortenHex(ongoingStream.sender))
+            cy.get(SENDER_AND_RECEIVER).last().should("have.text", BasePage.shortenHex(ongoingStream.receiver))
             this.hasText(BUFFER, `${ongoingStream.buffer} ${ongoingStream.token}`)
             this.hasText(NETWORK_NAME, ongoingStream.networkName)
-            this.hasText(TX_HASH, shortenHex(ongoingStream.txHash))
+            this.hasText(TX_HASH, BasePage.shortenHex(ongoingStream.txHash))
             this.containsText(PROJECTED_LIQUIDATION, ongoingStream.projectedLiquidation.slice(0, -1))
             this.hasText(AMOUNT_PER_MONTH, `${ongoingStream.amountPerMonth} ${ongoingStream.token}`)
             //Asserting without last 4 decimals

@@ -5,17 +5,19 @@ import { Currency } from "../../utils/currencyUtils";
 import { useAppCurrency } from "../settings/appSettingsHooks";
 
 interface FiatAmountProps {
-  wei?: BigNumberish;
+  wei: BigNumberish | undefined;
+  decimals?: number;
   price: number;
 }
 
 const FiatAmount: FC<PropsWithChildren<FiatAmountProps>> = ({
-  wei = "1000000000000000000",
+  wei = 0,
+  decimals = 18,
   price,
   children,
 }) => {
   const currency = useAppCurrency();
-  const decimal = new Decimal(utils.formatUnits(wei)).mul(price);
+  const decimal = new Decimal(utils.formatUnits(wei, decimals)).mul(price);
 
   return (
     <>

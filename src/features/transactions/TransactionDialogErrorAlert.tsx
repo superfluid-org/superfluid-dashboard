@@ -82,7 +82,7 @@ export default memo(function TransactionDialogErrorAlert({
   }, [mutationError, network]);
 
   return (
-    <Alert severity="error" sx={{ wordBreak: "break-word", width: "100%" }}>
+    <Alert data-cy={"tx-error"} severity="error" sx={{ wordBreak: "break-word", width: "100%" }}>
       {alertContent}
     </Alert>
   );

@@ -112,7 +112,7 @@ const getEndTimestamp = ({
   amountEthers,
   flowRateWei,
 }: {
-  amountEthers: string;
+  amountEthers: string; 
   flowRateWei: BigNumberish;
 }): number | null => {
   const amountWei = parseEtherOrZero(amountEthers);
@@ -247,7 +247,7 @@ export default memo(function SendCard() {
           decimals: 18,
           isListed: x.isListed,
         })),
-    [listedSuperTokensQuery.data, customSuperTokensQuery.data, network]
+    [network, listedSuperTokensQuery.data, customSuperTokensQuery.data]
   );
 
   const TokenController = (
@@ -297,8 +297,8 @@ export default memo(function SendCard() {
     />
   );
 
-  const doesNetworkSupportStreamScheduler =
-    !!network.streamSchedulerContractAddress;
+  const doesNetworkSupportFlowScheduler =
+    !!network.flowSchedulerContractAddress;
 
   const [streamScheduling, setStreamScheduling] = useState<boolean>(
     !!endTimestamp
@@ -397,7 +397,7 @@ export default memo(function SendCard() {
                 })
               );
             }}
-            disablePast={true}
+            disablePast
           />
         )}
       />
@@ -420,7 +420,7 @@ export default memo(function SendCard() {
       InputProps={{
         startAdornment: <>≈&nbsp;</>,
         endAdornment: (
-          <Stack direction="row" gap={0.5} sx={{ ml: 0.5 }}>
+          <Stack direction="row" gap={0.75} sx={{ ml: 0.5 }}>
             <TokenIcon tokenSymbol={token?.symbol} isSuper size={24} />
             <Typography variant="h6" component="span">
               {token?.symbol ?? ""}
@@ -562,7 +562,8 @@ export default memo(function SendCard() {
               },
             })
               .unwrap()
-              .then(() => resetForm());
+              .then(() => resetForm())
+              .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
 
             setDialogLoadingInfo(
               <Typography variant="h5" color="text.secondary" translate="yes">
@@ -662,7 +663,8 @@ export default memo(function SendCard() {
                 overrides: await getTransactionOverrides(network),
               })
                 .unwrap()
-                .then(() => resetForm());
+                .then(() => resetForm())
+                .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
             }}
           >
             Cancel Stream
@@ -760,7 +762,7 @@ export default memo(function SendCard() {
             {FlowRateController}
           </Box>
         </Box>
-        {doesNetworkSupportStreamScheduler && (
+        {doesNetworkSupportFlowScheduler && (
           <>
             <FormControlLabel
               control={StreamSchedulingController}

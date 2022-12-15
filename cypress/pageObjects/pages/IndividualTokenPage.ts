@@ -1,7 +1,7 @@
 import {BasePage} from "../BasePage";
-import shortenHex from "../../../src/utils/shortenHex";
 import {format} from "date-fns";
-import {networksBySlug} from "../../../src/features/network/networks";
+import {networksBySlug} from "../../superData/networks";
+import {Common} from "./Common";
 
 const TOKEN_BALANCE = "[data-cy=token-balance]"
 const TOKEN_GRAPH = "[data-cy=token-graph]"
@@ -41,6 +41,26 @@ const DIST_TABLE_APPROVED_TAB = "[data-cy=approved-tab]"
 const DIST_TABLE_UNAPPROVED_TAB = "[data-cy=unapproved-tab]"
 const NO_DATA_ROW = "[data-cy=no-data-row]"
 const NO_DATA_MESSAGE = "[data-cy=no-data-message]"
+const HEADER_SYMBOL = "[data-cy=token-header] [data-cy=token-symbol]"
+const HEADER_NAME = "[data-cy=token-header] [data-cy=token-name]"
+const TOKEN_ICON = "[data-cy=token-icon] img"
+const TOKEN_ANIMATION = "[data-cy=animation]"
+const TOKEN_CONTAINER = "[data-cy=token-container-by-graph]"
+const GRAPH_BALANCE_SYMBOL = `${TOKEN_CONTAINER} [data-cy=token-symbol]`
+const TRANSFER_ROWS = "[data-cy=transfer-row]"
+const TRANSFER_AMOUNTS = "[data-cy=transfer-amount]"
+const TRANSFER_DATE = "[data-cy=transfer-date]"
+const INCOMING_ARROW = "[data-testid=ArrowBackIcon]"
+const OUTGOING_ARROW = "[data-testid=ArrowForwardIcon]"
+const WRAP_BUTTON = "[data-cy=wrap-button]"
+const UNWRAP_BUTTON = "[data-cy=unwrap-button]"
+const ADD_TO_WALLET_BUTTON = "[data-cy=add-to-wallet-button]"
+
+interface Transfer {
+    toFrom: string
+    amount: number
+    dateSent: string
+}
 
 export class IndividualTokenPage extends BasePage {
 
@@ -52,7 +72,7 @@ export class IndividualTokenPage extends BasePage {
     }
 
     static validateStreamTableFirstRowValues(address: string, sendOrReceive: string, ongoing: string, amount: string, fromTo: string) {
-        cy.get(`${STREAM_ROWS} ${SENDER_RECEIVER_ADDRESSES}`).first().should("have.text", shortenHex(address))
+        cy.get(`${STREAM_ROWS} ${SENDER_RECEIVER_ADDRESSES}`).first().should("have.text", BasePage.shortenHex(address))
         let plusOrMinus;
         if (sendOrReceive === "receiving") {
             plusOrMinus = "-"
@@ -88,10 +108,10 @@ export class IndividualTokenPage extends BasePage {
     }
 
     static validateLastDistributionRow(address: string, amount: string, status: string, when: string) {
-        cy.get(PUBLISHERS).first().should("have.text", shortenHex(address))
+        cy.get(PUBLISHERS).first().should("have.text", BasePage.shortenHex(address))
         cy.get(AMOUNT_RECEIVED).first().should("have.text", amount)
         cy.get(STATUS).first().should("have.text", status)
-        let fromToDate = when === "now" ? format((Date.now()), "d MMM. yyyy") : format(parseInt(when) * 1000, "d MMM. yyyy")
+        let fromToDate = when === "now" ? format((Date.now()), "d MMM. yyyy") : when
         cy.get(LAST_UPDATED_AT).first().should("have.text", fromToDate)
     }
 
@@ -104,29 +124,37 @@ export class IndividualTokenPage extends BasePage {
     }
 
     static validateApprovalDialogAndCloseIt(network: string) {
-        this.doesNotExist(APPROVE_BUTTON)
-        this.isVisible(LOADING_SPINNER)
-        this.exists(`${DISTRIBUTION_ROWS} ${LOADING_SPINNER}`)
-        this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
-        this.hasText(APPROVE_SUBSCRIPTION_MESSAGE, "You are approving an index subscription.")
-        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
+        this.validateApprovalTransactionDialog(network)
         cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
         this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
         this.isVisible(OK_BUTTON)
         this.click(OK_BUTTON)
     }
 
+    static validateApprovalTransactionDialog(network:string) {
+        this.doesNotExist(APPROVE_BUTTON)
+        this.isVisible(LOADING_SPINNER)
+        this.exists(`${DISTRIBUTION_ROWS} ${LOADING_SPINNER}`)
+        this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
+        this.hasText(APPROVE_SUBSCRIPTION_MESSAGE, "You are approving an index subscription.")
+        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
+    }
+
     static validateRevokeDialogAndCloseIt(network: string) {
+        this.validateRevokeTransactionDialog(network)
+        cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
+        this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
+        this.isVisible(OK_BUTTON)
+        this.click(OK_BUTTON)
+    }
+
+    static validateRevokeTransactionDialog(network:string) {
         this.doesNotExist(REVOKE_BUTTON)
         this.isVisible(LOADING_SPINNER)
         this.exists(`${DISTRIBUTION_ROWS} ${LOADING_SPINNER}`)
         this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
         this.hasText(REVOKE_MESSAGE, "You are revoking approval of an index subscription.")
         this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
-        cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
-        this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
-        this.isVisible(OK_BUTTON)
-        this.click(OK_BUTTON)
     }
 
     static revokeLastIndex() {
@@ -180,5 +208,87 @@ export class IndividualTokenPage extends BasePage {
         this.hasText(NO_DATA_MESSAGE,"No data")
         this.doesNotExist(STREAM_ROWS)
         this.doesNotExist(DISTRIBUTION_ROWS)
+        this.doesNotExist(TRANSFER_ROWS)
+    }
+
+    static validateTokenNameAndIconsPerNetwork(token: string, network: string) {
+        cy.fixture("networkSpecificData").then(data => {
+            let chosenToken = data[network].ongoingStreamsAccount.tokenValues[1] ?
+                data[network].ongoingStreamsAccount.tokenValues
+                    .filter((values: any) => values.token === token)[0] : data[network].ongoingStreamsAccount.tokenValues
+
+            this.hasText(HEADER_SYMBOL,token)
+            this.hasText(HEADER_NAME,chosenToken.tokenName)
+            this.hasText(LIQUIDATION_DATE,chosenToken.liquidationDate)
+            this.hasAttributeWithValue(TOKEN_ICON,"alt",`${token} token icon`)
+            this.isVisible(TOKEN_ANIMATION)
+            this.hasText(GRAPH_BALANCE_SYMBOL, token)
+            this.isVisible(`[data-cy="${networksBySlug.get(network)?.id}-icon"]`)
+        })
+    }
+
+    static validateNetFlowRatesForToken(token: string, account: string, network: string) {
+        cy.fixture("networkSpecificData").then(data => {
+
+        })
+    }
+
+    static validateTokenPageStreamsTable(network: string) {
+        Common.validateStreamsTable(network, STREAM_ROWS)
+    }
+
+    static validateDisabledRevokeButtons() {
+        this.isDisabled(REVOKE_BUTTON)
+    }
+
+    static openTransfersTab() {
+        this.click(TRANSFERS_TAB)
+    }
+
+    static clickWrapButton() {
+        this.click(WRAP_BUTTON)
+    }
+
+    static clickUnwrapButton() {
+        this.click(UNWRAP_BUTTON)
+    }
+
+    static validateAllTokenTransfers(account: string, token: string, network: string) {
+        cy.fixture("networkSpecificData").then(fixture => {
+            let chosenTransfers = fixture[network][account].tokenValues.filter((x: any) => x.token = token)[0].transfers
+            this.hasText("[data-cy=all-tab]", `All  (${chosenTransfers.length})`)
+            this.validateTransferTable(chosenTransfers)
+        })
+    }
+
+    static switchTableTab(tab: string) {
+        this.click(`[data-cy=${tab}-tab]`)
+    }
+
+    static validateTransferTable(transfers: Transfer[]) {
+        transfers.forEach((transfer: Transfer, index: number) => {
+            let expectedArrowIcon = transfer.amount >= 0 ? INCOMING_ARROW : OUTGOING_ARROW
+            cy.get(TRANSFER_ROWS).should("have.length", transfers.length)
+            cy.get(TRANSFER_ROWS).eq(index).find(expectedArrowIcon).should("be.visible")
+            cy.get(TRANSFER_ROWS).eq(index).find(SENDER_RECEIVER_ADDRESSES).should("have.text", this.shortenHex(transfer.toFrom))
+            cy.get(TRANSFER_ROWS).eq(index).find(TRANSFER_AMOUNTS).should("have.text", Math.abs(transfer.amount))
+            cy.get(TRANSFER_ROWS).eq(index).find(TRANSFER_DATE).should("have.text", transfer.dateSent)
+        })
+
+    }
+
+    static validateFilteredTokenTransfers(sentOrReceived: string, account: string, network: string, token: string) {
+        cy.fixture("networkSpecificData").then(fixture => {
+            let expectedToBeOverZero = sentOrReceived.toLowerCase() === "received"
+            let chosenTokenTransfers = fixture[network][account].tokenValues.filter((x: any) => x.token = token)[0].transfers
+            let filtrate = (el: Transfer) => expectedToBeOverZero ? el.amount > 0 : el.amount < 0
+            let filteredTransfers = chosenTokenTransfers.filter(filtrate)
+            this.hasText(`[data-cy=${sentOrReceived.toLowerCase()}-tab]`, `${sentOrReceived}  (${filteredTransfers.length})`)
+            this.validateTransferTable(filteredTransfers)
+        })
+    }
+
+    static addToWalletbuttonIsVisible() {
+        this.isVisible(ADD_TO_WALLET_BUTTON)
     }
 }

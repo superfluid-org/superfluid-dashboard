@@ -1,10 +1,12 @@
 import {BasePage} from "../BasePage";
-import {networksBySlug, superfluidRpcUrls} from "../../../src/features/network/networks";
+import {networksBySlug, superfluidRpcUrls} from "../../superData/networks";
 // @ts-ignore
 import {MockProvider} from "@rsksmart/mock-web3-provider";
-import shortenHex from "../../../src/utils/shortenHex";
 import {ethers} from "ethers";
 import HDWalletProvider from "@truffle/hdwallet-provider";
+
+// @ts-ignore - web3-provider-engine doesn't have declaration files for these subproviders
+import HookedWalletSubprovider from "web3-provider-engine/subproviders/hooked-wallet";
 
 const NAVIGATION_BUTTON_PREFIX = "[data-cy=nav-";
 const TOP_BAR_NETWORK_BUTTON = "[data-cy=top-bar-network-button]";
@@ -29,6 +31,12 @@ const ERROR_PAGE_MESSAGE = "[data-cy=404-message]"
 const RETURN_TO_DASHBOARD_BUTTON = "[data-cy=return-to-dashboard-button]"
 const HELP_CENTER_LINK = "[data-cy=help-center-link]"
 const RESTORE_BUTTONS = "[data-testid=ReplayIcon]"
+const SENDER_RECEIVER_ADDRESSES = "[data-cy=sender-receiver-address]";
+const STREAM_FLOW_RATES = "[data-cy=flow-rate]";
+const START_END_DATES = "[data-cy=start-end-date]";
+const DISCONNECT_BUTTON = "[data-testid=rk-disconnect-button]"
+const RAINBOWKIT_CLOSE_BUTTON = "[aria-label=Close]"
+const TX_ERROR = "[data-cy=tx-error]"
 
 export class Common extends BasePage {
     static clickNavBarButton(button: string) {
@@ -61,6 +69,9 @@ export class Common extends BasePage {
                     break;
                 case "activity history page":
                     this.visitPage("/history", mocked, account, network);
+                    break;
+                case "bridge page":
+                    this.visitPage("/bridge", mocked, account, network);
                     break;
                 case "ended stream details page":
                     this.visitPage(streamData["staticBalanceAccount"]["polygon"][0].v2Link, mocked, account, network);
@@ -123,13 +134,25 @@ export class Common extends BasePage {
         let networkRpc = superfluidRpcUrls[network]
         cy.visit("/", {
             onBeforeLoad: (win: any) => {
-                const provider = new HDWalletProvider({
+                const hdwallet = new HDWalletProvider({
                     privateKeys: [Cypress.env(`TX_ACCOUNT_PRIVATE_KEY${chosenPersona}`)],
                     url: networkRpc,
                     chainId: chainId,
                     pollingInterval: 1000,
                 });
-                win.mockSigner = new ethers.providers.Web3Provider(provider).getSigner();
+
+                if(Cypress.env("rejected")) {
+                // Make HDWallet automatically reject transaction.
+                // Inspired by: https://github.com/MetaMask/web3-provider-engine/blob/e835b80bf09e76d92b785d797f89baa43ae3fd60/subproviders/hooked-wallet.js#L326
+                    for (const provider of hdwallet.engine._providers) {
+                        if (provider.checkApproval) {
+                          provider.checkApproval = function(type, didApprove, cb) {
+                              cb(new Error('User denied '+type+' signature.') )
+                          }
+                        }
+                    }
+                }
+                win.mockSigner = new ethers.providers.Web3Provider(hdwallet).getSigner();
             },
         });
         if (Cypress.env("dev")) {
@@ -166,7 +189,7 @@ export class Common extends BasePage {
     static checkNavBarWalletStatus(account: string, message: string) {
         cy.fixture("commonData").then((commonData) => {
             this.hasText(WALLET_CONNECTION_STATUS, message);
-            this.hasText(CONNECTED_WALLET, shortenHex(commonData[account]));
+            this.hasText(CONNECTED_WALLET, BasePage.shortenHex(commonData[account]));
         });
     }
 
@@ -232,5 +255,54 @@ export class Common extends BasePage {
 
     static restoreLastTx() {
         this.clickFirstVisible(RESTORE_BUTTONS)
+    }
+
+    static validateStreamsTable(network:string , selector:string) {
+        cy.fixture("networkSpecificData").then((networkSpecificData) => {
+            this.hasLength(selector, networkSpecificData[
+                network
+                ].ongoingStreamsAccount.tokenValues.streams.length)
+            networkSpecificData[
+                network
+                ].ongoingStreamsAccount.tokenValues.streams.forEach(
+                (stream: any, index: number) => {
+                    cy.get(`${selector} ${STREAM_FLOW_RATES}`)
+                        .eq(index)
+                        .should("have.text", stream.flowRate);
+                    cy.get(`${selector} ${SENDER_RECEIVER_ADDRESSES}`)
+                        .eq(index)
+                        .should("have.text", stream.fromTo);
+                    cy.get(`${selector} ${START_END_DATES}`)
+                        .eq(index)
+                        .should("have.text", stream.endDate);
+                }
+            );
+        });
+    }
+
+    static mockQueryToEmptyState(operationName:string) {
+        cy.intercept("POST","**protocol-v1**" , (req) => {
+            const { body } = req;
+            if(body.hasOwnProperty("operationName") && body.operationName === operationName) {
+                req.alias = `${operationName}Query`
+                req.continue((res) => {
+                    res.body.data[operationName] = []
+                })
+            }
+        })
+    }
+
+
+    static disconnectWallet() {
+        this.click(WALLET_CONNECTION_STATUS)
+        this.click(DISCONNECT_BUTTON)
+    }
+
+    static wait(seconds: number) {
+        cy.wait(seconds * 1000)
+    }
+
+    static transactionRejectedErrorIsShown() {
+        cy.get(TX_ERROR,{timeout:45000}).should("have.text","Transaction Rejected")
     }
 }

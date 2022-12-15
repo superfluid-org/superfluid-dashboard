@@ -5,14 +5,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getGoerliSdk = exports.getContract = void 0;
 const ethers_1 = require("ethers");
-const StreamScheduler_json_1 = __importDefault(require("../../abis/goerli/StreamScheduler.json"));
+const flowScheduler_json_1 = __importDefault(require("../../abis/goerli/flowScheduler.json"));
+const vestingScheduler_json_1 = __importDefault(require("../../abis/goerli/vestingScheduler.json"));
 function getContract(address, abi, defaultSignerOrProvider) {
     return new ethers_1.Contract(address, abi, defaultSignerOrProvider);
 }
 exports.getContract = getContract;
 function getGoerliSdk(defaultSignerOrProvider) {
     return {
-        "StreamScheduler": getContract('0x7D37D9494a09E47e58B1F535386Ca4D9D175f23e', StreamScheduler_json_1.default, defaultSignerOrProvider),
+        "flowScheduler": getContract('0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca', flowScheduler_json_1.default, defaultSignerOrProvider),
+        "vestingScheduler": getContract('0x46fd3EfDD1d19694403dbE967Ee1D7842eE0E131', vestingScheduler_json_1.default, defaultSignerOrProvider),
     };
 }
 exports.getGoerliSdk = getGoerliSdk;

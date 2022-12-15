@@ -50,7 +50,7 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
       userDataBytes: undefined,
       waitForConfirmation: false,
       overrides: await getTransactionOverrides(network),
-    }).unwrap();
+    });
   };
 
   return (

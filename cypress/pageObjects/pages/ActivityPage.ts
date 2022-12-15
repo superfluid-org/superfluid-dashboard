@@ -1,8 +1,7 @@
 import {BasePage} from "../BasePage";
-import {mainNetworks, testNetworks} from "../../../src/features/network/networks";
+import {mainNetworks, testNetworks} from "../../superData/networks";
 import {Common} from "./Common";
 import {format} from "date-fns";
-import shortenHex from "../../../src/utils/shortenHex";
 
 const ACTIVITY_TYPE = "[data-cy=activity]"
 const ACTIVITY_AMOUNT = "[data-cy=amount]"
@@ -125,7 +124,7 @@ export class ActivityPage extends BasePage {
     static validateActivityVisibleByAddress(address: string) {
         cy.get(AMOUNT_TO_FROM).should("have.length", 2)
         cy.get(AMOUNT_TO_FROM).each(el => {
-            cy.wrap(el).should("have.text", `From${shortenHex(address)}`)
+            cy.wrap(el).should("have.text", `From${BasePage.shortenHex(address)}`)
         })
     }
 

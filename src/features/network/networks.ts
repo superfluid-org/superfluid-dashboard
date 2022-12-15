@@ -28,7 +28,8 @@ export type Network = Chain & {
       type: TokenType.NativeAssetSuperToken;
     } & TokenMinimal;
   };
-  streamSchedulerContractAddress?: `0x${string}`;
+  flowSchedulerContractAddress?: `0x${string}`;
+  vestingSchedulerContractAddress?: `0x${string}`;
   platformUrl?: string;
 };
 
@@ -41,7 +42,7 @@ export const superfluidRpcUrls = {
   optimism: "https://rpc-endpoints.superfluid.dev/optimism-mainnet",
   avalancheFuji: "https://rpc-endpoints.superfluid.dev/avalanche-fuji",
   avalancheC: "https://rpc-endpoints.superfluid.dev/avalanche-c",
-  bnbSmartChain: "https://bsc-dataseed1.binance.org",
+  bnbSmartChain: "https://rpc-endpoints.superfluid.dev/bsc-mainnet",
 };
 
 const blockExplorers = {
@@ -77,7 +78,8 @@ const blockExplorers = {
 
 export const networkDefinition: {
   goerli: Network & {
-    streamSchedulerContractAddress: `0x${string}`;
+    flowSchedulerContractAddress: `0x${string}`;
+    vestingSchedulerContractAddress: `0x${string}`;
     platformUrl: string;
   };
   gnosis: Network;
@@ -118,8 +120,10 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
-    streamSchedulerContractAddress:
-      "0x7D37D9494a09E47e58B1F535386Ca4D9D175f23e",
+    flowSchedulerContractAddress:
+      "0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca",
+    vestingSchedulerContractAddress:
+      "0x46fd3EfDD1d19694403dbE967Ee1D7842eE0E131",
     platformUrl: config.platformApi.goerli,
   },
   gnosis: {

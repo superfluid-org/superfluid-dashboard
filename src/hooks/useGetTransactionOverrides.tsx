@@ -4,6 +4,8 @@ import { Network } from "../features/network/networks";
 import gasApi, { GasRecommendation } from "../features/gas/gasApi.slice";
 import { useCallback } from "react";
 import { useAccount } from "wagmi";
+import { merge } from "lodash";
+import { popGlobalGasOverrides } from "../global";
 
 const useGetTransactionOverrides = () => {
   const [queryRecommendedGas] = gasApi.useLazyRecommendedGasQuery();
@@ -38,7 +40,8 @@ const useGetTransactionOverrides = () => {
         overrides.gasLimit = 0; // Disable gas estimation for Gnosis Safe completely because they don't use it anyway.
       }
 
-      return overrides;
+      const globalOverrides = popGlobalGasOverrides();
+      return merge(overrides, globalOverrides);
     },
     [queryRecommendedGas, activeConnector]
   );

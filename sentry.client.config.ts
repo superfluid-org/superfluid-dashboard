@@ -7,12 +7,13 @@ import { IsCypress } from "./src/utils/SSRUtils";
 
 const SENTRY_DSN = process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN;
 const SENTRY_ENVIRONMENT = process.env.SENTRY_ENVIRONMENT || process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT;
+const isProduction = SENTRY_ENVIRONMENT === "production";
 
 if (!IsCypress && SENTRY_DSN) {
   Sentry.init({
     dsn: SENTRY_DSN,
     // Adjust this value in production, or use tracesSampler for greater control
-    tracesSampleRate: 0.5,
+    tracesSampleRate: isProduction ? 0.2 : 0.6,
     environment: SENTRY_ENVIRONMENT,
     beforeBreadcrumb(breadcrumb, hint) {
       // Inspired by: https://github.com/getsentry/sentry-javascript/issues/3015#issuecomment-718594200
@@ -23,7 +24,9 @@ if (!IsCypress && SENTRY_DSN) {
         breadcrumb.message = dataCy ? cyMessage : breadcrumb.message;
       }
       return breadcrumb;
-    }
+    },
+    maxValueLength: 750, // ethers can have very long errors so we increase this limit.
+    maxBreadcrumbs: 25 // The long list of breadcrumbs seem to be rarely useful so we decrease this.
     // ...
     // Note: if you want to override the automatic release value, do not set a
     // `release` value here - use the environment variable `SENTRY_RELEASE`, so
