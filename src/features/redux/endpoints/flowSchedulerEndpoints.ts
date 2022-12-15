@@ -17,7 +17,7 @@ export const ACL_CREATE_PERMISSION = 1;
 export const ACL_UPDATE_PERMISSION = 2;
 export const ACL_DELETE_PERMISSION = 4;
 
-interface GetStreamScheduledEndDate extends BaseQuery<number | null> {
+interface GetFlowScheduledEndDate extends BaseQuery<number | null> {
   superTokenAddress: string;
   senderAddress: string;
   receiverAddress: string;
@@ -30,9 +30,9 @@ interface UpsertFlowWithScheduling
   endTimestamp: number | null;
 }
 
-export const streamSchedulerEndpoints = {
+export const flowSchedulerEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
-    scheduledEndDate: builder.query<number | null, GetStreamScheduledEndDate>({
+    scheduledEndDate: builder.query<number | null, GetFlowScheduledEndDate>({
       queryFn: async ({
         chainId,
         superTokenAddress,
@@ -40,18 +40,18 @@ export const streamSchedulerEndpoints = {
         receiverAddress,
       }) => {
         const framework = await getFramework(chainId);
-        const { streamScheduler } = getEthSdk(
+        const { flowScheduler } = getEthSdk(
           chainId,
           framework.settings.provider
         );
 
-        const streamOrder = await streamScheduler.getStreamOrders(
+        const flowSchedule = await flowScheduler.getFlowSchedule(
+          superTokenAddress,
           senderAddress,
           receiverAddress,
-          superTokenAddress
         );
 
-        return { data: streamOrder.endDate };
+        return { data: flowSchedule.endDate };
       },
       providesTags: (_result, _error, arg) => [
         {
@@ -90,9 +90,8 @@ export const streamSchedulerEndpoints = {
         }[] = [];
 
         const network = findNetworkByChainId(chainId);
-        if (network?.streamSchedulerContractAddress) {
-          const { streamScheduler } = getEthSdk(chainId, arg.signer);
-
+        if (network?.flowSchedulerContractAddress) {
+          const { flowScheduler } = getEthSdk(chainId, arg.signer);
           const existingEndTimestamp = await dispatch(
             rpcApi.endpoints.scheduledEndDate.initiate(
               {
@@ -109,7 +108,7 @@ export const streamSchedulerEndpoints = {
 
           if (arg.endTimestamp) {
             const flowOperatorData = await superToken.getFlowOperatorData({
-              flowOperator: network.streamSchedulerContractAddress,
+              flowOperator: network.flowSchedulerContractAddress,
               sender: arg.senderAddress,
               providerOrSigner: arg.signer,
             });
@@ -119,7 +118,7 @@ export const streamSchedulerEndpoints = {
             if (!hasDeletePermission) {
               subOperations.push({
                 operation: await superToken.updateFlowOperatorPermissions({
-                  flowOperator: network.streamSchedulerContractAddress,
+                  flowOperator: network.flowSchedulerContractAddress,
                   flowRateAllowance: flowOperatorData.flowRateAllowance,
                   permissions: permissions + ACL_DELETE_PERMISSION,
                   userData: userData,
@@ -131,12 +130,13 @@ export const streamSchedulerEndpoints = {
 
             if (arg.endTimestamp !== existingEndTimestamp) {
               const streamOrder =
-                await streamScheduler.populateTransaction.createStreamOrder(
-                  arg.receiverAddress,
+                await flowScheduler.populateTransaction.createFlowSchedule(
                   arg.superTokenAddress,
+                  arg.receiverAddress,
                   0, // startDate
                   0, // startDuration
-                  "0", // flowRate
+                  0, // flowRate
+                  0, // startAmount
                   arg.endTimestamp,
                   userData,
                   "0x",
@@ -145,7 +145,7 @@ export const streamSchedulerEndpoints = {
 
               subOperations.push({
                 operation: await framework.host.callAppAction(
-                  network.streamSchedulerContractAddress,
+                  network.flowSchedulerContractAddress,
                   streamOrder.data!
                 ),
                 title: "Schedule Stream End Date",
@@ -154,14 +154,14 @@ export const streamSchedulerEndpoints = {
           } else {
             if (existingEndTimestamp) {
               const streamOrder =
-                await streamScheduler.populateTransaction.deleteStreamOrder(
-                  arg.receiverAddress,
+                await flowScheduler.populateTransaction.deleteFlowSchedule(
                   arg.superTokenAddress,
+                  arg.receiverAddress,
                   "0x"
                 );
               subOperations.push({
                 operation: await framework.host.callAppAction(
-                  network.streamSchedulerContractAddress,
+                  network.flowSchedulerContractAddress,
                   streamOrder.data!
                 ),
                 title: "Remove Stream End Date",

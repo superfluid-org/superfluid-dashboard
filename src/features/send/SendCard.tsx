@@ -297,8 +297,8 @@ export default memo(function SendCard() {
     />
   );
 
-  const doesNetworkSupportStreamScheduler =
-    !!network.streamSchedulerContractAddress;
+  const doesNetworkSupportFlowScheduler =
+    !!network.flowSchedulerContractAddress;
 
   const [streamScheduling, setStreamScheduling] = useState<boolean>(
     !!endTimestamp
@@ -762,7 +762,7 @@ export default memo(function SendCard() {
             {FlowRateController}
           </Box>
         </Box>
-        {doesNetworkSupportStreamScheduler && (
+        {doesNetworkSupportFlowScheduler && (
           <>
             <FormControlLabel
               control={StreamSchedulingController}

@@ -31,7 +31,7 @@ const _abi = [
     },
     {
         inputs: [],
-        name: "StreamOrderInvalid",
+        name: "ScheduleInvalid",
         type: "error",
     },
     {
@@ -54,6 +54,12 @@ const _abi = [
         inputs: [
             {
                 indexed: true,
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                indexed: true,
                 internalType: "address",
                 name: "sender",
                 type: "address",
@@ -65,9 +71,95 @@ const _abi = [
                 type: "address",
             },
             {
+                indexed: false,
+                internalType: "uint32",
+                name: "startDate",
+                type: "uint32",
+            },
+            {
+                indexed: false,
+                internalType: "uint32",
+                name: "startMaxDelay",
+                type: "uint32",
+            },
+            {
+                indexed: false,
+                internalType: "int96",
+                name: "flowRate",
+                type: "int96",
+            },
+            {
+                indexed: false,
+                internalType: "uint256",
+                name: "startAmount",
+                type: "uint256",
+            },
+            {
+                indexed: false,
+                internalType: "bytes",
+                name: "userData",
+                type: "bytes",
+            },
+        ],
+        name: "CreateFlowExecuted",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
                 indexed: true,
                 internalType: "contract ISuperToken",
                 name: "superToken",
+                type: "address",
+            },
+            {
+                indexed: true,
+                internalType: "address",
+                name: "sender",
+                type: "address",
+            },
+            {
+                indexed: true,
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
+                indexed: false,
+                internalType: "uint32",
+                name: "endDate",
+                type: "uint32",
+            },
+            {
+                indexed: false,
+                internalType: "bytes",
+                name: "userData",
+                type: "bytes",
+            },
+        ],
+        name: "DeleteFlowExecuted",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: true,
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                indexed: true,
+                internalType: "address",
+                name: "sender",
+                type: "address",
+            },
+            {
+                indexed: true,
+                internalType: "address",
+                name: "receiver",
                 type: "address",
             },
             {
@@ -79,7 +171,7 @@ const _abi = [
             {
                 indexed: false,
                 internalType: "uint32",
-                name: "startDuration",
+                name: "startMaxDelay",
                 type: "uint32",
             },
             {
@@ -96,17 +188,29 @@ const _abi = [
             },
             {
                 indexed: false,
+                internalType: "uint256",
+                name: "startAmount",
+                type: "uint256",
+            },
+            {
+                indexed: false,
                 internalType: "bytes",
                 name: "userData",
                 type: "bytes",
             },
         ],
-        name: "CreateStreamOrder",
+        name: "FlowScheduleCreated",
         type: "event",
     },
     {
         anonymous: false,
         inputs: [
+            {
+                indexed: true,
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
             {
                 indexed: true,
                 internalType: "address",
@@ -119,100 +223,8 @@ const _abi = [
                 name: "receiver",
                 type: "address",
             },
-            {
-                indexed: true,
-                internalType: "contract ISuperToken",
-                name: "superToken",
-                type: "address",
-            },
         ],
-        name: "DeleteStreamOrder",
-        type: "event",
-    },
-    {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: true,
-                internalType: "address",
-                name: "sender",
-                type: "address",
-            },
-            {
-                indexed: true,
-                internalType: "address",
-                name: "receiver",
-                type: "address",
-            },
-            {
-                indexed: false,
-                internalType: "contract ISuperToken",
-                name: "superToken",
-                type: "address",
-            },
-            {
-                indexed: false,
-                internalType: "uint32",
-                name: "startDate",
-                type: "uint32",
-            },
-            {
-                indexed: false,
-                internalType: "uint32",
-                name: "startDuration",
-                type: "uint32",
-            },
-            {
-                indexed: false,
-                internalType: "int96",
-                name: "flowRate",
-                type: "int96",
-            },
-            {
-                indexed: false,
-                internalType: "bytes",
-                name: "userData",
-                type: "bytes",
-            },
-        ],
-        name: "ExecuteCreateStream",
-        type: "event",
-    },
-    {
-        anonymous: false,
-        inputs: [
-            {
-                indexed: true,
-                internalType: "address",
-                name: "sender",
-                type: "address",
-            },
-            {
-                indexed: true,
-                internalType: "address",
-                name: "receiver",
-                type: "address",
-            },
-            {
-                indexed: false,
-                internalType: "contract ISuperToken",
-                name: "superToken",
-                type: "address",
-            },
-            {
-                indexed: false,
-                internalType: "uint32",
-                name: "endDate",
-                type: "uint32",
-            },
-            {
-                indexed: false,
-                internalType: "bytes",
-                name: "userData",
-                type: "bytes",
-            },
-        ],
-        name: "ExecuteDeleteStream",
+        name: "FlowScheduleDeleted",
         type: "event",
     },
     {
@@ -485,13 +497,13 @@ const _abi = [
     {
         inputs: [
             {
-                internalType: "address",
-                name: "receiver",
+                internalType: "contract ISuperToken",
+                name: "superToken",
                 type: "address",
             },
             {
-                internalType: "contract ISuperToken",
-                name: "superToken",
+                internalType: "address",
+                name: "receiver",
                 type: "address",
             },
             {
@@ -501,13 +513,18 @@ const _abi = [
             },
             {
                 internalType: "uint32",
-                name: "startDuration",
+                name: "startMaxDelay",
                 type: "uint32",
             },
             {
                 internalType: "int96",
                 name: "flowRate",
                 type: "int96",
+            },
+            {
+                internalType: "uint256",
+                name: "startAmount",
+                type: "uint256",
             },
             {
                 internalType: "uint32",
@@ -525,7 +542,7 @@ const _abi = [
                 type: "bytes",
             },
         ],
-        name: "createStreamOrder",
+        name: "createFlowSchedule",
         outputs: [
             {
                 internalType: "bytes",
@@ -539,13 +556,13 @@ const _abi = [
     {
         inputs: [
             {
-                internalType: "address",
-                name: "receiver",
+                internalType: "contract ISuperToken",
+                name: "superToken",
                 type: "address",
             },
             {
-                internalType: "contract ISuperToken",
-                name: "superToken",
+                internalType: "address",
+                name: "receiver",
                 type: "address",
             },
             {
@@ -554,7 +571,7 @@ const _abi = [
                 type: "bytes",
             },
         ],
-        name: "deleteStreamOrder",
+        name: "deleteFlowSchedule",
         outputs: [
             {
                 internalType: "bytes",
@@ -568,6 +585,11 @@ const _abi = [
     {
         inputs: [
             {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
                 internalType: "address",
                 name: "sender",
                 type: "address",
@@ -575,11 +597,6 @@ const _abi = [
             {
                 internalType: "address",
                 name: "receiver",
-                type: "address",
-            },
-            {
-                internalType: "contract ISuperToken",
-                name: "superToken",
                 type: "address",
             },
             {
@@ -588,13 +605,24 @@ const _abi = [
                 type: "bytes",
             },
         ],
-        name: "executeCreateStream",
-        outputs: [],
+        name: "executeCreateFlow",
+        outputs: [
+            {
+                internalType: "bool",
+                name: "success",
+                type: "bool",
+            },
+        ],
         stateMutability: "nonpayable",
         type: "function",
     },
     {
         inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
             {
                 internalType: "address",
                 name: "sender",
@@ -603,11 +631,6 @@ const _abi = [
             {
                 internalType: "address",
                 name: "receiver",
-                type: "address",
-            },
-            {
-                internalType: "contract ISuperToken",
-                name: "superToken",
                 type: "address",
             },
             {
@@ -616,13 +639,68 @@ const _abi = [
                 type: "bytes",
             },
         ],
-        name: "executeDeleteStream",
-        outputs: [],
+        name: "executeDeleteFlow",
+        outputs: [
+            {
+                internalType: "bool",
+                name: "success",
+                type: "bool",
+            },
+        ],
         stateMutability: "nonpayable",
         type: "function",
     },
     {
         inputs: [
+            {
+                internalType: "bytes32",
+                name: "",
+                type: "bytes32",
+            },
+        ],
+        name: "flowSchedules",
+        outputs: [
+            {
+                internalType: "uint32",
+                name: "startDate",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "startMaxDelay",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "endDate",
+                type: "uint32",
+            },
+            {
+                internalType: "int96",
+                name: "flowRate",
+                type: "int96",
+            },
+            {
+                internalType: "uint256",
+                name: "startAmount",
+                type: "uint256",
+            },
+            {
+                internalType: "bytes32",
+                name: "userData",
+                type: "bytes32",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "address",
+                name: "superToken",
+                type: "address",
+            },
             {
                 internalType: "address",
                 name: "sender",
@@ -633,13 +711,8 @@ const _abi = [
                 name: "receiver",
                 type: "address",
             },
-            {
-                internalType: "address",
-                name: "supertoken",
-                type: "address",
-            },
         ],
-        name: "getStreamOrders",
+        name: "getFlowSchedule",
         outputs: [
             {
                 components: [
@@ -650,7 +723,7 @@ const _abi = [
                     },
                     {
                         internalType: "uint32",
-                        name: "startDuration",
+                        name: "startMaxDelay",
                         type: "uint32",
                     },
                     {
@@ -664,12 +737,17 @@ const _abi = [
                         type: "int96",
                     },
                     {
+                        internalType: "uint256",
+                        name: "startAmount",
+                        type: "uint256",
+                    },
+                    {
                         internalType: "bytes32",
                         name: "userData",
                         type: "bytes32",
                     },
                 ],
-                internalType: "struct IStreamScheduler.Order",
+                internalType: "struct IFlowScheduler.FlowSchedule",
                 name: "",
                 type: "tuple",
             },
@@ -677,47 +755,8 @@ const _abi = [
         stateMutability: "view",
         type: "function",
     },
-    {
-        inputs: [
-            {
-                internalType: "bytes32",
-                name: "",
-                type: "bytes32",
-            },
-        ],
-        name: "streamOrders",
-        outputs: [
-            {
-                internalType: "uint32",
-                name: "startDate",
-                type: "uint32",
-            },
-            {
-                internalType: "uint32",
-                name: "startDuration",
-                type: "uint32",
-            },
-            {
-                internalType: "uint32",
-                name: "endDate",
-                type: "uint32",
-            },
-            {
-                internalType: "int96",
-                name: "flowRate",
-                type: "int96",
-            },
-            {
-                internalType: "bytes32",
-                name: "userData",
-                type: "bytes32",
-            },
-        ],
-        stateMutability: "view",
-        type: "function",
-    },
 ];
-export class StreamScheduler__factory {
+export class FlowScheduler__factory {
     static createInterface() {
         return new utils.Interface(_abi);
     }
@@ -725,4 +764,4 @@ export class StreamScheduler__factory {
         return new Contract(address, _abi, signerOrProvider);
     }
 }
-StreamScheduler__factory.abi = _abi;
+FlowScheduler__factory.abi = _abi;

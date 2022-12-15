@@ -183,6 +183,37 @@ const _abi = [
             {
                 indexed: false,
                 internalType: "uint32",
+                name: "endDate",
+                type: "uint32",
+            },
+        ],
+        name: "VestingEndFailed",
+        type: "event",
+    },
+    {
+        anonymous: false,
+        inputs: [
+            {
+                indexed: true,
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                indexed: true,
+                internalType: "address",
+                name: "sender",
+                type: "address",
+            },
+            {
+                indexed: true,
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
+                indexed: false,
+                internalType: "uint32",
                 name: "startDate",
                 type: "uint32",
             },

@@ -2,29 +2,32 @@ import type { BaseContract, BigNumber, BigNumberish, BytesLike, CallOverrides, C
 import type { FunctionFragment, Result, EventFragment } from "@ethersproject/abi";
 import type { Listener, Provider } from "@ethersproject/providers";
 import type { TypedEventFilter, TypedEvent, TypedListener, OnEvent, PromiseOrValue } from "../common";
-export declare namespace IStreamScheduler {
-    type OrderStruct = {
+export declare namespace IFlowScheduler {
+    type FlowScheduleStruct = {
         startDate: PromiseOrValue<BigNumberish>;
-        startDuration: PromiseOrValue<BigNumberish>;
+        startMaxDelay: PromiseOrValue<BigNumberish>;
         endDate: PromiseOrValue<BigNumberish>;
         flowRate: PromiseOrValue<BigNumberish>;
+        startAmount: PromiseOrValue<BigNumberish>;
         userData: PromiseOrValue<BytesLike>;
     };
-    type OrderStructOutput = [
+    type FlowScheduleStructOutput = [
         number,
         number,
         number,
         BigNumber,
+        BigNumber,
         string
     ] & {
         startDate: number;
-        startDuration: number;
+        startMaxDelay: number;
         endDate: number;
         flowRate: BigNumber;
+        startAmount: BigNumber;
         userData: string;
     };
 }
-export interface StreamSchedulerInterface extends utils.Interface {
+export interface FlowSchedulerInterface extends utils.Interface {
     functions: {
         "afterAgreementCreated(address,address,bytes32,bytes,bytes,bytes)": FunctionFragment;
         "afterAgreementTerminated(address,address,bytes32,bytes,bytes,bytes)": FunctionFragment;
@@ -33,14 +36,14 @@ export interface StreamSchedulerInterface extends utils.Interface {
         "beforeAgreementTerminated(address,address,bytes32,bytes,bytes)": FunctionFragment;
         "beforeAgreementUpdated(address,address,bytes32,bytes,bytes)": FunctionFragment;
         "cfaV1()": FunctionFragment;
-        "createStreamOrder(address,address,uint32,uint32,int96,uint32,bytes,bytes)": FunctionFragment;
-        "deleteStreamOrder(address,address,bytes)": FunctionFragment;
-        "executeCreateStream(address,address,address,bytes)": FunctionFragment;
-        "executeDeleteStream(address,address,address,bytes)": FunctionFragment;
-        "getStreamOrders(address,address,address)": FunctionFragment;
-        "streamOrders(bytes32)": FunctionFragment;
+        "createFlowSchedule(address,address,uint32,uint32,int96,uint256,uint32,bytes,bytes)": FunctionFragment;
+        "deleteFlowSchedule(address,address,bytes)": FunctionFragment;
+        "executeCreateFlow(address,address,address,bytes)": FunctionFragment;
+        "executeDeleteFlow(address,address,address,bytes)": FunctionFragment;
+        "flowSchedules(bytes32)": FunctionFragment;
+        "getFlowSchedule(address,address,address)": FunctionFragment;
     };
-    getFunction(nameOrSignatureOrTopic: "afterAgreementCreated" | "afterAgreementTerminated" | "afterAgreementUpdated" | "beforeAgreementCreated" | "beforeAgreementTerminated" | "beforeAgreementUpdated" | "cfaV1" | "createStreamOrder" | "deleteStreamOrder" | "executeCreateStream" | "executeDeleteStream" | "getStreamOrders" | "streamOrders"): FunctionFragment;
+    getFunction(nameOrSignatureOrTopic: "afterAgreementCreated" | "afterAgreementTerminated" | "afterAgreementUpdated" | "beforeAgreementCreated" | "beforeAgreementTerminated" | "beforeAgreementUpdated" | "cfaV1" | "createFlowSchedule" | "deleteFlowSchedule" | "executeCreateFlow" | "executeDeleteFlow" | "flowSchedules" | "getFlowSchedule"): FunctionFragment;
     encodeFunctionData(functionFragment: "afterAgreementCreated", values: [
         PromiseOrValue<string>,
         PromiseOrValue<string>,
@@ -87,9 +90,10 @@ export interface StreamSchedulerInterface extends utils.Interface {
         PromiseOrValue<BytesLike>
     ]): string;
     encodeFunctionData(functionFragment: "cfaV1", values?: undefined): string;
-    encodeFunctionData(functionFragment: "createStreamOrder", values: [
+    encodeFunctionData(functionFragment: "createFlowSchedule", values: [
         PromiseOrValue<string>,
         PromiseOrValue<string>,
+        PromiseOrValue<BigNumberish>,
         PromiseOrValue<BigNumberish>,
         PromiseOrValue<BigNumberish>,
         PromiseOrValue<BigNumberish>,
@@ -97,29 +101,29 @@ export interface StreamSchedulerInterface extends utils.Interface {
         PromiseOrValue<BytesLike>,
         PromiseOrValue<BytesLike>
     ]): string;
-    encodeFunctionData(functionFragment: "deleteStreamOrder", values: [
+    encodeFunctionData(functionFragment: "deleteFlowSchedule", values: [
         PromiseOrValue<string>,
         PromiseOrValue<string>,
         PromiseOrValue<BytesLike>
     ]): string;
-    encodeFunctionData(functionFragment: "executeCreateStream", values: [
-        PromiseOrValue<string>,
-        PromiseOrValue<string>,
-        PromiseOrValue<string>,
-        PromiseOrValue<BytesLike>
-    ]): string;
-    encodeFunctionData(functionFragment: "executeDeleteStream", values: [
+    encodeFunctionData(functionFragment: "executeCreateFlow", values: [
         PromiseOrValue<string>,
         PromiseOrValue<string>,
         PromiseOrValue<string>,
         PromiseOrValue<BytesLike>
     ]): string;
-    encodeFunctionData(functionFragment: "getStreamOrders", values: [
+    encodeFunctionData(functionFragment: "executeDeleteFlow", values: [
+        PromiseOrValue<string>,
+        PromiseOrValue<string>,
+        PromiseOrValue<string>,
+        PromiseOrValue<BytesLike>
+    ]): string;
+    encodeFunctionData(functionFragment: "flowSchedules", values: [PromiseOrValue<BytesLike>]): string;
+    encodeFunctionData(functionFragment: "getFlowSchedule", values: [
         PromiseOrValue<string>,
         PromiseOrValue<string>,
         PromiseOrValue<string>
     ]): string;
-    encodeFunctionData(functionFragment: "streamOrders", values: [PromiseOrValue<BytesLike>]): string;
     decodeFunctionResult(functionFragment: "afterAgreementCreated", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "afterAgreementTerminated", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "afterAgreementUpdated", data: BytesLike): Result;
@@ -127,34 +131,71 @@ export interface StreamSchedulerInterface extends utils.Interface {
     decodeFunctionResult(functionFragment: "beforeAgreementTerminated", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "beforeAgreementUpdated", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "cfaV1", data: BytesLike): Result;
-    decodeFunctionResult(functionFragment: "createStreamOrder", data: BytesLike): Result;
-    decodeFunctionResult(functionFragment: "deleteStreamOrder", data: BytesLike): Result;
-    decodeFunctionResult(functionFragment: "executeCreateStream", data: BytesLike): Result;
-    decodeFunctionResult(functionFragment: "executeDeleteStream", data: BytesLike): Result;
-    decodeFunctionResult(functionFragment: "getStreamOrders", data: BytesLike): Result;
-    decodeFunctionResult(functionFragment: "streamOrders", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "createFlowSchedule", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "deleteFlowSchedule", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "executeCreateFlow", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "executeDeleteFlow", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "flowSchedules", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "getFlowSchedule", data: BytesLike): Result;
     events: {
-        "CreateStreamOrder(address,address,address,uint32,uint32,int96,uint32,bytes)": EventFragment;
-        "DeleteStreamOrder(address,address,address)": EventFragment;
-        "ExecuteCreateStream(address,address,address,uint32,uint32,int96,bytes)": EventFragment;
-        "ExecuteDeleteStream(address,address,address,uint32,bytes)": EventFragment;
+        "CreateFlowExecuted(address,address,address,uint32,uint32,int96,uint256,bytes)": EventFragment;
+        "DeleteFlowExecuted(address,address,address,uint32,bytes)": EventFragment;
+        "FlowScheduleCreated(address,address,address,uint32,uint32,int96,uint32,uint256,bytes)": EventFragment;
+        "FlowScheduleDeleted(address,address,address)": EventFragment;
     };
-    getEvent(nameOrSignatureOrTopic: "CreateStreamOrder"): EventFragment;
-    getEvent(nameOrSignatureOrTopic: "DeleteStreamOrder"): EventFragment;
-    getEvent(nameOrSignatureOrTopic: "ExecuteCreateStream"): EventFragment;
-    getEvent(nameOrSignatureOrTopic: "ExecuteDeleteStream"): EventFragment;
+    getEvent(nameOrSignatureOrTopic: "CreateFlowExecuted"): EventFragment;
+    getEvent(nameOrSignatureOrTopic: "DeleteFlowExecuted"): EventFragment;
+    getEvent(nameOrSignatureOrTopic: "FlowScheduleCreated"): EventFragment;
+    getEvent(nameOrSignatureOrTopic: "FlowScheduleDeleted"): EventFragment;
 }
-export interface CreateStreamOrderEventObject {
+export interface CreateFlowExecutedEventObject {
+    superToken: string;
     sender: string;
     receiver: string;
-    superToken: string;
     startDate: number;
-    startDuration: number;
+    startMaxDelay: number;
     flowRate: BigNumber;
+    startAmount: BigNumber;
+    userData: string;
+}
+export declare type CreateFlowExecutedEvent = TypedEvent<[
+    string,
+    string,
+    string,
+    number,
+    number,
+    BigNumber,
+    BigNumber,
+    string
+], CreateFlowExecutedEventObject>;
+export declare type CreateFlowExecutedEventFilter = TypedEventFilter<CreateFlowExecutedEvent>;
+export interface DeleteFlowExecutedEventObject {
+    superToken: string;
+    sender: string;
+    receiver: string;
     endDate: number;
     userData: string;
 }
-export declare type CreateStreamOrderEvent = TypedEvent<[
+export declare type DeleteFlowExecutedEvent = TypedEvent<[
+    string,
+    string,
+    string,
+    number,
+    string
+], DeleteFlowExecutedEventObject>;
+export declare type DeleteFlowExecutedEventFilter = TypedEventFilter<DeleteFlowExecutedEvent>;
+export interface FlowScheduleCreatedEventObject {
+    superToken: string;
+    sender: string;
+    receiver: string;
+    startDate: number;
+    startMaxDelay: number;
+    flowRate: BigNumber;
+    endDate: number;
+    startAmount: BigNumber;
+    userData: string;
+}
+export declare type FlowScheduleCreatedEvent = TypedEvent<[
     string,
     string,
     string,
@@ -162,59 +203,26 @@ export declare type CreateStreamOrderEvent = TypedEvent<[
     number,
     BigNumber,
     number,
-    string
-], CreateStreamOrderEventObject>;
-export declare type CreateStreamOrderEventFilter = TypedEventFilter<CreateStreamOrderEvent>;
-export interface DeleteStreamOrderEventObject {
-    sender: string;
-    receiver: string;
-    superToken: string;
-}
-export declare type DeleteStreamOrderEvent = TypedEvent<[
-    string,
-    string,
-    string
-], DeleteStreamOrderEventObject>;
-export declare type DeleteStreamOrderEventFilter = TypedEventFilter<DeleteStreamOrderEvent>;
-export interface ExecuteCreateStreamEventObject {
-    sender: string;
-    receiver: string;
-    superToken: string;
-    startDate: number;
-    startDuration: number;
-    flowRate: BigNumber;
-    userData: string;
-}
-export declare type ExecuteCreateStreamEvent = TypedEvent<[
-    string,
-    string,
-    string,
-    number,
-    number,
     BigNumber,
     string
-], ExecuteCreateStreamEventObject>;
-export declare type ExecuteCreateStreamEventFilter = TypedEventFilter<ExecuteCreateStreamEvent>;
-export interface ExecuteDeleteStreamEventObject {
+], FlowScheduleCreatedEventObject>;
+export declare type FlowScheduleCreatedEventFilter = TypedEventFilter<FlowScheduleCreatedEvent>;
+export interface FlowScheduleDeletedEventObject {
+    superToken: string;
     sender: string;
     receiver: string;
-    superToken: string;
-    endDate: number;
-    userData: string;
 }
-export declare type ExecuteDeleteStreamEvent = TypedEvent<[
+export declare type FlowScheduleDeletedEvent = TypedEvent<[
     string,
     string,
-    string,
-    number,
     string
-], ExecuteDeleteStreamEventObject>;
-export declare type ExecuteDeleteStreamEventFilter = TypedEventFilter<ExecuteDeleteStreamEvent>;
-export interface StreamScheduler extends BaseContract {
+], FlowScheduleDeletedEventObject>;
+export declare type FlowScheduleDeletedEventFilter = TypedEventFilter<FlowScheduleDeletedEvent>;
+export interface FlowScheduler extends BaseContract {
     connect(signerOrProvider: Signer | Provider | string): this;
     attach(addressOrName: string): this;
     deployed(): Promise<this>;
-    interface: StreamSchedulerInterface;
+    interface: FlowSchedulerInterface;
     queryFilter<TEvent extends TypedEvent>(event: TypedEventFilter<TEvent>, fromBlockOrBlockhash?: string | number | undefined, toBlock?: string | number | undefined): Promise<Array<TEvent>>;
     listeners<TEvent extends TypedEvent>(eventFilter?: TypedEventFilter<TEvent>): Array<TypedListener<TEvent>>;
     listeners(eventName?: string): Array<Listener>;
@@ -241,32 +249,34 @@ export interface StreamScheduler extends BaseContract {
             host: string;
             cfa: string;
         }>;
-        createStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startDuration: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, userData: PromiseOrValue<BytesLike>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        createFlowSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startMaxDelay: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, startAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, userData: PromiseOrValue<BytesLike>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<ContractTransaction>;
-        deleteStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        deleteFlowSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<ContractTransaction>;
-        executeCreateStream(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        executeCreateFlow(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<ContractTransaction>;
-        executeDeleteStream(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        executeDeleteFlow(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<ContractTransaction>;
-        getStreamOrders(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, supertoken: PromiseOrValue<string>, overrides?: CallOverrides): Promise<[IStreamScheduler.OrderStructOutput]>;
-        streamOrders(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<[
+        flowSchedules(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<[
             number,
             number,
             number,
             BigNumber,
+            BigNumber,
             string
         ] & {
             startDate: number;
-            startDuration: number;
+            startMaxDelay: number;
             endDate: number;
             flowRate: BigNumber;
+            startAmount: BigNumber;
             userData: string;
         }>;
+        getFlowSchedule(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<[IFlowScheduler.FlowScheduleStructOutput]>;
     };
     afterAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
         from?: PromiseOrValue<string>;
@@ -284,32 +294,34 @@ export interface StreamScheduler extends BaseContract {
         host: string;
         cfa: string;
     }>;
-    createStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startDuration: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, userData: PromiseOrValue<BytesLike>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+    createFlowSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startMaxDelay: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, startAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, userData: PromiseOrValue<BytesLike>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
         from?: PromiseOrValue<string>;
     }): Promise<ContractTransaction>;
-    deleteStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+    deleteFlowSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
         from?: PromiseOrValue<string>;
     }): Promise<ContractTransaction>;
-    executeCreateStream(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+    executeCreateFlow(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
         from?: PromiseOrValue<string>;
     }): Promise<ContractTransaction>;
-    executeDeleteStream(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+    executeDeleteFlow(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
         from?: PromiseOrValue<string>;
     }): Promise<ContractTransaction>;
-    getStreamOrders(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, supertoken: PromiseOrValue<string>, overrides?: CallOverrides): Promise<IStreamScheduler.OrderStructOutput>;
-    streamOrders(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<[
+    flowSchedules(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<[
         number,
         number,
         number,
         BigNumber,
+        BigNumber,
         string
     ] & {
         startDate: number;
-        startDuration: number;
+        startMaxDelay: number;
         endDate: number;
         flowRate: BigNumber;
+        startAmount: BigNumber;
         userData: string;
     }>;
+    getFlowSchedule(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<IFlowScheduler.FlowScheduleStructOutput>;
     callStatic: {
         afterAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
         afterAgreementTerminated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
@@ -321,34 +333,36 @@ export interface StreamScheduler extends BaseContract {
             host: string;
             cfa: string;
         }>;
-        createStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startDuration: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, userData: PromiseOrValue<BytesLike>, ctx: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
-        deleteStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
-        executeCreateStream(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<void>;
-        executeDeleteStream(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<void>;
-        getStreamOrders(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, supertoken: PromiseOrValue<string>, overrides?: CallOverrides): Promise<IStreamScheduler.OrderStructOutput>;
-        streamOrders(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<[
+        createFlowSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startMaxDelay: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, startAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, userData: PromiseOrValue<BytesLike>, ctx: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
+        deleteFlowSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
+        executeCreateFlow(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<boolean>;
+        executeDeleteFlow(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<boolean>;
+        flowSchedules(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<[
             number,
             number,
             number,
             BigNumber,
+            BigNumber,
             string
         ] & {
             startDate: number;
-            startDuration: number;
+            startMaxDelay: number;
             endDate: number;
             flowRate: BigNumber;
+            startAmount: BigNumber;
             userData: string;
         }>;
+        getFlowSchedule(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<IFlowScheduler.FlowScheduleStructOutput>;
     };
     filters: {
-        "CreateStreamOrder(address,address,address,uint32,uint32,int96,uint32,bytes)"(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: PromiseOrValue<string> | null, startDate?: null, startDuration?: null, flowRate?: null, endDate?: null, userData?: null): CreateStreamOrderEventFilter;
-        CreateStreamOrder(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: PromiseOrValue<string> | null, startDate?: null, startDuration?: null, flowRate?: null, endDate?: null, userData?: null): CreateStreamOrderEventFilter;
-        "DeleteStreamOrder(address,address,address)"(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: PromiseOrValue<string> | null): DeleteStreamOrderEventFilter;
-        DeleteStreamOrder(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: PromiseOrValue<string> | null): DeleteStreamOrderEventFilter;
-        "ExecuteCreateStream(address,address,address,uint32,uint32,int96,bytes)"(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: null, startDate?: null, startDuration?: null, flowRate?: null, userData?: null): ExecuteCreateStreamEventFilter;
-        ExecuteCreateStream(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: null, startDate?: null, startDuration?: null, flowRate?: null, userData?: null): ExecuteCreateStreamEventFilter;
-        "ExecuteDeleteStream(address,address,address,uint32,bytes)"(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: null, endDate?: null, userData?: null): ExecuteDeleteStreamEventFilter;
-        ExecuteDeleteStream(sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, superToken?: null, endDate?: null, userData?: null): ExecuteDeleteStreamEventFilter;
+        "CreateFlowExecuted(address,address,address,uint32,uint32,int96,uint256,bytes)"(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, startDate?: null, startMaxDelay?: null, flowRate?: null, startAmount?: null, userData?: null): CreateFlowExecutedEventFilter;
+        CreateFlowExecuted(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, startDate?: null, startMaxDelay?: null, flowRate?: null, startAmount?: null, userData?: null): CreateFlowExecutedEventFilter;
+        "DeleteFlowExecuted(address,address,address,uint32,bytes)"(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, endDate?: null, userData?: null): DeleteFlowExecutedEventFilter;
+        DeleteFlowExecuted(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, endDate?: null, userData?: null): DeleteFlowExecutedEventFilter;
+        "FlowScheduleCreated(address,address,address,uint32,uint32,int96,uint32,uint256,bytes)"(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, startDate?: null, startMaxDelay?: null, flowRate?: null, endDate?: null, startAmount?: null, userData?: null): FlowScheduleCreatedEventFilter;
+        FlowScheduleCreated(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, startDate?: null, startMaxDelay?: null, flowRate?: null, endDate?: null, startAmount?: null, userData?: null): FlowScheduleCreatedEventFilter;
+        "FlowScheduleDeleted(address,address,address)"(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null): FlowScheduleDeletedEventFilter;
+        FlowScheduleDeleted(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null): FlowScheduleDeletedEventFilter;
     };
     estimateGas: {
         afterAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
@@ -364,20 +378,20 @@ export interface StreamScheduler extends BaseContract {
         beforeAgreementTerminated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<BigNumber>;
         beforeAgreementUpdated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<BigNumber>;
         cfaV1(overrides?: CallOverrides): Promise<BigNumber>;
-        createStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startDuration: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, userData: PromiseOrValue<BytesLike>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        createFlowSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startMaxDelay: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, startAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, userData: PromiseOrValue<BytesLike>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<BigNumber>;
-        deleteStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        deleteFlowSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<BigNumber>;
-        executeCreateStream(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        executeCreateFlow(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<BigNumber>;
-        executeDeleteStream(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        executeDeleteFlow(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<BigNumber>;
-        getStreamOrders(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, supertoken: PromiseOrValue<string>, overrides?: CallOverrides): Promise<BigNumber>;
-        streamOrders(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<BigNumber>;
+        flowSchedules(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<BigNumber>;
+        getFlowSchedule(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<BigNumber>;
     };
     populateTransaction: {
         afterAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
@@ -393,19 +407,19 @@ export interface StreamScheduler extends BaseContract {
         beforeAgreementTerminated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
         beforeAgreementUpdated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
         cfaV1(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-        createStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startDuration: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, userData: PromiseOrValue<BytesLike>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        createFlowSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, startMaxDelay: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, startAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, userData: PromiseOrValue<BytesLike>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<PopulatedTransaction>;
-        deleteStreamOrder(receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        deleteFlowSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<PopulatedTransaction>;
-        executeCreateStream(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        executeCreateFlow(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<PopulatedTransaction>;
-        executeDeleteStream(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, superToken: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        executeDeleteFlow(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, userData: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<PopulatedTransaction>;
-        getStreamOrders(sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, supertoken: PromiseOrValue<string>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
-        streamOrders(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        flowSchedules(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        getFlowSchedule(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
     };
 }
