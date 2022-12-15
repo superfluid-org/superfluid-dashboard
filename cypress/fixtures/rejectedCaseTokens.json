@@ -10,8 +10,8 @@
     "TokenGas": "xDAI"
   },
   "polygon-mumbai": {
-    "TokenOne": "DAI",
-    "TokenTwo": "USDC",
+    "TokenOne": "fDAI",
+    "TokenTwo": "fUSDC",
     "TokenGas": "BNB"
   },
   "polygon": {
