@@ -43,6 +43,7 @@ export const superfluidRpcUrls = {
   avalancheFuji: "https://rpc-endpoints.superfluid.dev/avalanche-fuji",
   avalancheC: "https://rpc-endpoints.superfluid.dev/avalanche-c",
   bnbSmartChain: "https://rpc-endpoints.superfluid.dev/bsc-mainnet",
+  ethereum: "https://rpc-endpoints.superfluid.dev/eth-mainnet",
 };
 
 const blockExplorers = {
@@ -90,6 +91,7 @@ export const networkDefinition: {
   arbitrum: Network;
   avalancheC: Network;
   bsc: Network;
+  ethereum: Network;
 } = {
   goerli: {
     ...chain.goerli,
@@ -120,8 +122,7 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
-    flowSchedulerContractAddress:
-      "0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca",
+    flowSchedulerContractAddress: "0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca",
     vestingSchedulerContractAddress:
       "0x46fd3EfDD1d19694403dbE967Ee1D7842eE0E131",
     platformUrl: config.platformApi.goerli,
@@ -407,9 +408,40 @@ export const networkDefinition: {
       },
     },
   },
+  ethereum: {
+    ...chain.mainnet,
+    blockExplorers: ensureDefined(chain.mainnet.blockExplorers),
+    slugName: "ethereum",
+    v1ShortName: "eth",
+    bufferTimeInMinutes: 240,
+    icon: "/icons/network/ethereum.svg",
+    color: "#627EEA",
+    rpcUrls: {
+      ...chain.mainnet.rpcUrls,
+      superfluid: superfluidRpcUrls.ethereum,
+    },
+    subgraphUrl: "https://subgraph.satsuma-prod.com/superfluid/eth-mainnet/api",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://etherscan.io/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://etherscan.io/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.mainnet.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0xC22BeA0Be9872d8B7B3933CEc70Ece4D53A900da",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+  },
 };
 
 export const networks: Network[] = [
+  networkDefinition.ethereum,
   networkDefinition.goerli,
   networkDefinition.gnosis,
   networkDefinition.polygon,

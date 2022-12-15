@@ -67,6 +67,7 @@ const StreamingFormProvider: FC<
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryActiveFlow] = rpcApi.useLazyGetActiveFlowQuery();
   const calculateBufferInfo = useCalculateBufferInfo();
+  const [tokenBufferTrigger] = rpcApi.useLazyTokenBufferQuery();
 
   const formSchema = useMemo(
     () =>
@@ -142,33 +143,46 @@ const StreamingFormProvider: FC<
             ).unwrap(),
           ]);
 
-          const { newDateWhenBalanceCritical, balanceAfterBuffer } =
-            calculateBufferInfo(network, realtimeBalance, activeFlow, {
-              amountWei: parseEther(
-                validForm.data.flowRate.amountEther
-              ).toString(),
-              unitOfTime: validForm.data.flowRate.unitOfTime,
-            });
+          const tokenBufferQuery = await tokenBufferTrigger({
+            chainId: network.id,
+            token: tokenAddress,
+          });
 
-          if (balanceAfterBuffer.isNegative()) {
-            handleHigherOrderValidationError({
-              message: `You do not have enough balance for buffer.`,
-            });
-          }
+          if (tokenBufferQuery.data) {
+            const { newDateWhenBalanceCritical, balanceAfterBuffer } =
+              calculateBufferInfo(
+                network,
+                realtimeBalance,
+                activeFlow,
+                {
+                  amountWei: parseEther(
+                    validForm.data.flowRate.amountEther
+                  ).toString(),
+                  unitOfTime: validForm.data.flowRate.unitOfTime,
+                },
+                tokenBufferQuery.data
+              );
 
-          if (newDateWhenBalanceCritical) {
-            const minimumStreamTimeInSeconds =
-              getMinimumStreamTimeInMinutes(network.bufferTimeInMinutes) * 60;
-            const secondsToCritical =
-              newDateWhenBalanceCritical.getTime() / 1000 - dateNowSeconds();
-
-            if (secondsToCritical <= minimumStreamTimeInSeconds) {
-              // NOTE: "secondsToCritical" might be off about 1 minute because of RTK-query cache for the balance query
+            if (balanceAfterBuffer.isNegative()) {
               handleHigherOrderValidationError({
-                message: `You need to leave enough balance to stream for ${
-                  minimumStreamTimeInSeconds / 3600
-                } hours.`,
+                message: `You do not have enough balance for buffer.`,
               });
+            }
+
+            if (newDateWhenBalanceCritical) {
+              const minimumStreamTimeInSeconds =
+                getMinimumStreamTimeInMinutes(network.bufferTimeInMinutes) * 60;
+              const secondsToCritical =
+                newDateWhenBalanceCritical.getTime() / 1000 - dateNowSeconds();
+
+              if (secondsToCritical <= minimumStreamTimeInSeconds) {
+                // NOTE: "secondsToCritical" might be off about 1 minute because of RTK-query cache for the balance query
+                handleHigherOrderValidationError({
+                  message: `You need to leave enough balance to stream for ${
+                    minimumStreamTimeInSeconds / 3600
+                  } hours.`,
+                });
+              }
             }
           }
         }

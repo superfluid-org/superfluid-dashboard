@@ -8,6 +8,7 @@ import {
 import { Network } from "../network/networks";
 import { Web3FlowInfo } from "../redux/endpoints/adHocRpcEndpoints";
 import { RealtimeBalance } from "../redux/endpoints/balanceFetcher";
+import { rpcApi } from "../redux/store";
 import {
   calculateTotalAmountWei,
   FlowRateWei,
@@ -33,6 +34,7 @@ const calculateDateWhenBalanceCritical = (
   return new Date(criticalAtTimestamp.mul(1000).toNumber());
 };
 
+// TODO(MK): Move token buffer calculation to a hook instead of having it in callback func
 // TODO(KK): Memoize in a way that multiple components could invoke it and not calc twice?
 export default function useCalculateBufferInfo() {
   return useCallback(
@@ -40,15 +42,24 @@ export default function useCalculateBufferInfo() {
       network: Network,
       realtimeBalance: RealtimeBalance,
       activeFlow: Web3FlowInfo | null,
-      flowRate: FlowRateWei
+      flowRate: FlowRateWei,
+      tokenBuffer: string
     ) => {
-      const newBufferAmount = calculateBufferAmount(network, flowRate);
+      const newBufferAmount = calculateBufferAmount(
+        network,
+        flowRate,
+        tokenBuffer
+      );
 
       const oldBufferAmount = activeFlow
-        ? calculateBufferAmount(network, {
-            amountWei: activeFlow.flowRateWei,
-            unitOfTime: UnitOfTime.Second,
-          })
+        ? calculateBufferAmount(
+            network,
+            {
+              amountWei: activeFlow.flowRateWei,
+              unitOfTime: UnitOfTime.Second,
+            },
+            tokenBuffer
+          )
         : BigNumber.from(0);
 
       const bufferDelta = newBufferAmount.sub(oldBufferAmount);

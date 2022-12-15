@@ -135,11 +135,18 @@ export function calculateBuffer(
     .mul(bufferTimeInSeconds);
 }
 
-export const calculateBufferAmount = (
+export function calculateBufferAmount(
   network: Network,
-  flowRateWei: FlowRateWei
-): BigNumber =>
-  calculateTotalAmountWei(flowRateWei).mul(network.bufferTimeInMinutes).mul(60);
+  flowRateWei: FlowRateWei,
+  minBuffer: string
+): BigNumber {
+  const minBufferBN = BigNumber.from(minBuffer);
+  const calculatedBuffer = calculateTotalAmountWei(flowRateWei)
+    .mul(network.bufferTimeInMinutes)
+    .mul(60);
+
+  return calculatedBuffer.gte(minBufferBN) ? calculatedBuffer : minBufferBN;
+}
 
 export const calculateCurrentBalance = ({
   flowRateWei,

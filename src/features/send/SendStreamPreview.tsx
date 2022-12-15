@@ -195,6 +195,10 @@ export const StreamingPreview: FC<{
     );
   }, [oldEndDate]);
 
+  const tokenBufferQuery = rpcApi.useTokenBufferQuery(
+    token.address ? { chainId: network.id, token: token.address } : skipToken
+  );
+
   const {
     balanceAfterBuffer,
     oldBufferAmount,
@@ -206,10 +210,12 @@ export const StreamingPreview: FC<{
     if (
       !realtimeBalance ||
       !realtimeBalanceQuery.isSuccess ||
-      !activeFlowQuery.isSuccess
+      !activeFlowQuery.isSuccess ||
+      !tokenBufferQuery.data
     ) {
       return {} as Record<string, any>;
     }
+
     const { newDateWhenBalanceCritical, ...bufferInfo } = calculateBufferInfo(
       network,
       realtimeBalance,
@@ -217,7 +223,8 @@ export const StreamingPreview: FC<{
       {
         amountWei: parseEtherOrZero(flowRateEther.amountEther).toString(),
         unitOfTime: flowRateEther.unitOfTime,
-      }
+      },
+      tokenBufferQuery.data
     );
 
     const currentDate = new Date();
@@ -237,6 +244,7 @@ export const StreamingPreview: FC<{
     calculateBufferInfo,
     existingFlow,
     realtimeBalance,
+    tokenBufferQuery.data,
   ]);
 
   const isBufferLossCritical = useMemo(
