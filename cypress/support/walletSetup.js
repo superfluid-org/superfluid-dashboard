@@ -2,68 +2,253 @@ const { Framework } = require("@superfluid-finance/sdk-core");
 const { ethers } =  require("ethers");
 const { getNetwork } = require("@ethersproject/networks");
 const minimist = require("minimist");
+
 const args = minimist(process.argv.slice(2) , {
     alias: {
         t1: "tokenOne",
         t2: "tokenTwo",
+        pk: "privateKey"
     }
 });
 
-const nativeUnderlyingTokenAddresses = {
-    goerli: ""
+const networkGasTokenSymbols =  {
+    1: "ETHx",
+    5: "ETHx",
+    10: "ETHx",
+    56: "BNBx",
+    100: "xDAIx",
+    137: "MATICx",
+    42161: "ETHx",
+    43113: "AVAXx",
+    43114: "AVAXx",
+    80001: "MATICx"
 }
 
-//Check native token balance
-//Check native super token balance
-//Check super token one balance
-//Check super token two balance
+function checkArgs() {
+    if (!args.tokenOne || !args.tokenTwo || !args.privateKey || !args.chainId) {
+        throw new Error("You forgot an argument to the script , it requires:\n" +
+            "--t1 or --tokenOne : Resolver name or address of the token\n" +
+            "--t2 or --tokenTwo : Resolver name or address of the token\n" +
+            "--pk or --privateKey : The private key of the wallet you want to set up\n" +
+            "--chainId : The chainId of the network you want to set the wallet on to\n" +
+            "Optional:\n" +
+            "--receiver to change the wallet who receives flows from the wallet")
+    }
+    if(!networkGasTokenSymbols[args.chainId]) {
+        throw new Error(`${args.chainId} does not seem to be supported by the script, please update the networkGasTokenSymbols JSON in the script `)
+    }
+}
 
 async function main() {
+    checkArgs()
+    const receiverAddress = args.receiver ? args.receiver : "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"
+    const provider = args.rpc ? new ethers.providers.JsonRpcProvider(args.rpc) : new ethers.providers.InfuraProvider(getNetwork(args.chainId));
+    const wallet = new ethers.Wallet(args.privateKey, provider);
+    const nativeUnderlyingBalance = await wallet.getBalance();
+    const nativeTokenSymbol = networkGasTokenSymbols[args.chainId]
+    console.log(`Trying to set up ${wallet.address} on chain: ${args.chainId}`)
+    const sf = await Framework.create({
+        chainId: args.chainId,
+        provider: provider
+    });
+
+    const signer = sf.createSigner({
+        privateKey: args.privateKey,
+        provider
+    })
+    const units = ethers.utils.parseUnits("0.01").toString();
+
+
+    const nativeToken = await sf.loadNativeAssetSuperToken("0xBE916845D8678b5d2F7aD79525A62D7c08ABba7e")
+    const nativeTokenName = nativeToken.name({providerOrSigner: provider}).toString()
+
+    const tokenOne = await sf.loadSuperToken(args.tokenOne)
+    const tokenOneName = tokenOne.name({providerOrSigner: provider}).toString()
+
+    let tokenOneIndex = await (tokenOne.getIndex({publisher: wallet.address, indexId: "0", providerOrSigner: signer}))
+    const tokenOneStream = await (tokenOne.getFlow({sender: wallet.address ,receiver: receiverAddress , providerOrSigner: signer}))
+
+    const tokenTwo = await sf.loadSuperToken(args.tokenTwo)
+    const tokenTwoName = tokenTwo.name({providerOrSigner: provider}).toString()
+    let tokenTwoIndex = await tokenTwo.getIndex({publisher: wallet.address, indexId: "0", providerOrSigner: signer})
+
     try {
-        console.log(args)
-        const provider = new ethers.providers.InfuraProvider(getNetwork(args.chainId));
 
-
-        const sf = await Framework.create({
-            networkName: args.networkName,
-            chainId: args.chainId,
-            provider: provider
-        });
-
-        const nativeToken = await sf.loadNativeAssetSuperToken(args.gasToken).catch(() => {
-            console.log(`Looks like I was unable to fetch the gas token: ${args.gasToken}, make sure the address is correct , or the token symbol is listed in the resolver`)
-        });
-
-        const underlyingNativeToken = await sf.loadNativeAssetSuperToken()
-
-        const tokenOne = await sf.loadSuperToken(args.tokenOne).catch(() => {
-            console.log(`Looks like I was unable to fetch the first token: ${args.tokenOne}, make sure the address is correct , or the token symbol is listed in the resolver`)
-        });
-
-
-        const tokenOneBalance = await tokenOne.realtimeBalanceOf({
+        const nativeBalance = (await nativeToken.realtimeBalanceOf({
             providerOrSigner: provider,
-            account: "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"
-        });
+            account: wallet.address
+        })).availableBalance;
 
-        const tokenTwo = await sf.loadSuperToken(args.tokenOne).catch(() => {
-            console.log(`Looks like I was unable to fetch the first token: ${args.tokenOne}, make sure the address is correct , or the token symbol is listed in the resolver`)
-        });
-
-
-        const tokenTwoBalance = await tokenOne.realtimeBalanceOf({
+        const tokenOneBalance = (await tokenOne.realtimeBalanceOf({
             providerOrSigner: provider,
-            account: "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"
-        });
+            account: wallet.address
+        })).availableBalance;
 
-        if(tokenOneBalance.availableBalance === "0" || tokenOneBalance.availableBalance === "0" ){
-            new Error(`${args.tokenOne} does not have enough balance to continue setting up the wallet , please add some`)
+        const tokenOneUnderylingBalance = await tokenOne.underlyingToken.balanceOf({
+            providerOrSigner: provider,
+            account: wallet.address
+        })
+
+        const tokenTwoBalance = (await tokenOne.realtimeBalanceOf({
+            providerOrSigner: provider,
+            account: wallet.address
+        })).availableBalance;
+
+        const tokenTwoUnderylingBalance = await tokenTwo.underlyingToken.balanceOf({
+            providerOrSigner: provider,
+            account: wallet.address
+        })
+
+        const underlyingBalances = {
+            tokenOneUnderylingBalance,
+            tokenTwoUnderylingBalance,
+            nativeUnderlyingBalance: nativeUnderlyingBalance.toString()
+        };
+
+        const balanceValues = Object.values(underlyingBalances);
+        if (balanceValues.some(x => (x / 1e18) < 0.02)) {
+            //TODO go over all balances , check the wrapped ones also , and downgrade if neccessary to save some tokens
+            // when running the script on used wallets , not needed atm
+            console.log(underlyingBalances)
+            new Error("Amigo, you need to add some balances to the wallet, this is not enough")
         }
-        console.log(tokenOneBalance);
-    } catch (e) {
-            console.log(e)
-    }
 
+        if (nativeBalance / 1e18 < 0.01) {
+            console.log(`${nativeTokenName.toString()} balance not sufficient for rejected tx tests:`)
+            const upgradeAmount = ethers.utils.parseEther("0.01") - nativeBalance
+            console.log(`Upgrading ${upgradeAmount} ${nativeTokenName} to get 0.01 ${nativeTokenName}`)
+            const upgradeTx = await nativeToken.upgrade({amount: upgradeAmount.toString()}).exec(signer)
+            await upgradeTx.wait()
+        } else {
+            console.log(`${nativeTokenName.toString()} balance already sufficient, not upgrading`)
+        }
+
+        if (tokenOneBalance / 1e18 < 0.01) {
+            console.log(`${args.tokenOne} balance not sufficient for rejected tx tests:`)
+            const upgradeAmount = ethers.utils.parseEther("1.5") - tokenOneBalance
+            const approvalTxn = await tokenOne.underlyingToken.approve({
+                amount: ethers.utils.parseEther("100").toString(),
+                receiver: tokenOne.address
+            }).exec(signer)
+            console.log(`Approving the use of 100 ${args.tokenOne}`)
+            await approvalTxn.wait()
+            const upgradeTx = await tokenOne.upgrade({amount: upgradeAmount.toString()}).exec(signer)
+            console.log(`Upgrading ${upgradeAmount} ${args.tokenOne} , to get 1.5 ${args.tokenOne}`)
+            await upgradeTx.wait()
+        } else {
+            console.log(`${args.tokenOne} balance already sufficient, not upgrading`)
+        }
+
+        // if (tokenTwoBalance / 1e18 < 0.01) {
+        //     console.log(`${tokenTwoName} balance not sufficient for rejected tx tests:`)
+        //     const upgradeAmount = ethers.utils.parseEther("0.1") - tokenTwoBalance
+        //     const approvalTxn = await tokenTwo.underlyingToken.approve({
+        //         amount: upgradeAmount.toString(),
+        //         receiver: tokenTwo.address
+        //     }).exec(signer)
+        //     console.log(`Approving the use of ${upgradeAmount} ${tokenTwoName}`)
+        //     await approvalTxn.wait()
+        //     const upgradeTx = await tokenTwo.upgrade({amount: upgradeAmount.toString().toString()}).exec(signer)
+        //     console.log(`Upgrading ${upgradeAmount} ${tokenTwoName} , to get 0.1 ${tokenOneName}`)
+        //     upgradeTx.wait()
+        // } else {
+        //     console.log(`${args.tokenTwo} balance already sufficient, not upgrading`)
+        // }
+
+
+        if(tokenOneStream.flowRate === "0") {
+            console.log(`Creating a flow of 0.01 ${args.tokenOne} per month to ${receiverAddress}`)
+            const createStreamTx = await tokenOne
+                .createFlow({
+                    sender: wallet.address,
+                    receiver: receiverAddress,
+                    flowRate: "3858024691", //0.01 per month
+                })
+                .exec(signer)
+            await createStreamTx.wait()
+        } else if (tokenOneStream.flowRate !== "3858024691") {
+            console.log(`There seems to be a different flow rate than 0.01 , lets fix it`)
+            const updateStreamTx = await tokenOne
+                .updateFlow({
+                    sender: wallet.address,
+                    receiver: receiverAddress,
+                    flowRate: "3858024691", //0.01 per month
+                })
+                .exec(signer)
+            console.log(`Updating the flowrate to 0.01 ${args.tokenOne} per month to ${receiverAddress}`)
+            await updateStreamTx.wait()
+        } else {
+            console.log(`Already streaming 0.01 ${args.tokenOne} per month to ${receiverAddress}`)
+        }
+
+        if (!tokenOneIndex.exist) {
+            const createIndexTx = await tokenOne.createIndex({indexId: "0"}).exec(signer)
+            console.log(`Creating ${args.tokenOne} index`)
+            await createIndexTx.wait()
+        } else {
+            console.log(`${args.tokenOne} index already created`)
+        }
+            if(parseFloat(tokenOneIndex.totalUnitsPending) + parseFloat(tokenOneIndex.totalUnitsApproved) === 0) {
+            const updateUnitsTx = await tokenOne
+                .updateSubscriptionUnits({
+                    indexId: "0",
+                    subscriber: wallet.address,
+                    units,
+                }).exec(signer)
+                console.log(`Updating ${args.tokenTwo} index units to ${units}`)
+                await updateUnitsTx.wait()
+                tokenOneIndex = await (tokenOne.getIndex({publisher: wallet.address, indexId: "0", providerOrSigner: signer}))
+            }
+
+        if (tokenOneIndex.totalUnitsPending === "0") {
+            console.log(`${args.tokenOne} index needs to be revoked!`)
+            const revokeTx = await tokenOne
+                .revokeSubscription({
+                    indexId: "0",
+                    publisher: wallet.address,
+                })
+                .exec(signer)
+            console.log(`Revoking ${args.tokenOne} index`)
+            await revokeTx.wait()
+        } else {
+            console.log(`${args.tokenOne} index approval status is correct`)
+        }
+
+        if (!tokenTwoIndex.exist) {
+            const createIndexTx = await tokenTwo.createIndex({indexId: "0"}).exec(signer)
+            console.log(`Creating ${args.tokenTwo} index`)
+            await createIndexTx.wait()
+            const updateUnitsTx = await tokenTwo
+                .updateSubscriptionUnits({
+                    indexId: "0",
+                    subscriber: wallet.address,
+                    units,
+                })
+                .exec(signer)
+            console.log(`Updating ${args.tokenTwo} index units`)
+            await updateUnitsTx.wait()
+            tokenTwoIndex = await tokenTwo.getIndex({publisher: wallet.address, indexId: "0", providerOrSigner: signer})
+        } else {
+            console.log(`${args.tokenTwo} index already created`)
+        }
+
+        if (tokenTwoIndex.totalUnitsPending !== "0") {
+            console.log(`Approving ${args.tokenTwo} index`)
+            await tokenTwo
+                .approveSubscription({
+                    indexId: "0",
+                    publisher: wallet.address,
+                })
+                .exec(signer)
+        } else {
+            console.log(`${args.tokenTwo} index already approved`)
+        }
+
+        console.log(`${wallet.address} was successfully set up for being used with rejected tx test cases on chain: ${args.chainId}`)
+
+    } catch (e) {
+        console.log(e)
+    }
 }
 
 main();

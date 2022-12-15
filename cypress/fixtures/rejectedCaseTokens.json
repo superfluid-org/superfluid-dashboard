@@ -1,0 +1,12 @@
+{
+  "goerli": {
+    "TokenOne": "fUSDC",
+    "TokenTwo": "fDAI",
+    "TokenGas": "ETH"
+  },
+  "gnosis": {
+    "TokenOne": "TDL",
+    "TokenTwo": "USDC",
+    "TokenGas": "xDAI"
+  }
+}

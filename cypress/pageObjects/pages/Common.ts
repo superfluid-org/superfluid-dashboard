@@ -125,13 +125,14 @@ export class Common extends BasePage {
     }
 
     static openDashboardWithConnectedTxAccount(persona:string,network: string) {
+        let selectedNetwork = network === "selected network" ? Cypress.env("network") : network
         let personas = ["alice","bob","dan","john"]
         let chosenPersona = personas.findIndex((el) => el === persona) + 1
 
-        let chainId = networksBySlug.get(network)?.id
+        let chainId = networksBySlug.get(selectedNetwork)?.id
 
         // @ts-ignore
-        let networkRpc = superfluidRpcUrls[network]
+        let networkRpc = superfluidRpcUrls[selectedNetwork]
         cy.visit("/", {
             onBeforeLoad: (win: any) => {
                 const hdwallet = new HDWalletProvider({
@@ -159,7 +160,7 @@ export class Common extends BasePage {
             //The nextjs error is annoying when developing test cases in dev mode
             cy.get("nextjs-portal").shadow().find("[aria-label=Close]").click()
         }
-        this.changeNetwork(network)
+        this.changeNetwork(selectedNetwork)
         this.clickConnectWallet()
         this.clickMockWallet()
     }
