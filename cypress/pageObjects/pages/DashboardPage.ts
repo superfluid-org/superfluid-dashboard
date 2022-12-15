@@ -235,7 +235,7 @@ export class DashboardPage extends BasePage {
             let selectedNetwork = network === "selected network" ? Cypress.env("network") : network
             cy.get(`[data-cy=${selectedNetwork}${NETWORK_SNAPSHOT_TABLE_APPENDIX}`, {timeout: 45000}).should("be.visible")
             this.click(
-                `[data-cy=${selectedNetwork}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${selectedToken}-cell]`
+                `[data-cy=${selectedNetwork}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy="${selectedToken}-cell"]`
             );
         })
     }

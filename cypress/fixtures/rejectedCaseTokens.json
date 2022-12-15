@@ -1,12 +1,37 @@
 {
   "goerli": {
-    "TokenOne": "fUSDC",
-    "TokenTwo": "fDAI",
+    "TokenOne": "fDAI",
+    "TokenTwo": "fUSDC",
     "TokenGas": "ETH"
   },
   "gnosis": {
     "TokenOne": "TDL",
     "TokenTwo": "USDC",
     "TokenGas": "xDAI"
+  },
+  "polygon": {
+    "TokenOne": "DAI",
+    "TokenTwo": "USDC",
+    "TokenGas": "MATIC"
+  },
+  "optimism": {
+    "TokenOne": "DAI",
+    "TokenTwo": "USDC",
+    "TokenGas": "ETH"
+  },
+  "arbitrum-one": {
+    "TokenOne": "DAI",
+    "TokenTwo": "USDC",
+    "TokenGas": "ETH"
+  },
+  "avalanche": {
+    "TokenOne": "DAI.e",
+    "TokenTwo": "USDC",
+    "TokenGas": "AVAX"
+  },
+  "bsc": {
+    "TokenOne": "DAI",
+    "TokenTwo": "USDC",
+    "TokenGas": "BNB"
   }
 }

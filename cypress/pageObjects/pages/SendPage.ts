@@ -325,7 +325,7 @@ export class SendPage extends BasePage {
         cy.get(RECENT_ENTRIES,{timeout:30000}).should("be.visible")
         this.type(ADDRESS_DIALOG_INPUT, address);
         this.click(SELECT_TOKEN_BUTTON);
-        cy.get(`[data-cy=${selectedToken}-list-item]`, {timeout: 60000}).click()
+        cy.get(`[data-cy="${selectedToken}-list-item"]`, {timeout: 60000}).click()
         this.type(FLOW_RATE_INPUT, amount);
         this.click(TIME_UNIT_SELECTION_BUTTON)
         this.click(`[data-value=${UnitOfTime[timeUnit[0].toUpperCase() + timeUnit.substring(1)]!}]`)

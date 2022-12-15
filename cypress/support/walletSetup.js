@@ -32,7 +32,9 @@ function checkArgs() {
             "--pk or --privateKey : The private key of the wallet you want to set up\n" +
             "--chainId : The chainId of the network you want to set the wallet on to\n" +
             "Optional:\n" +
-            "--receiver to change the wallet who receives flows from the wallet")
+            "--receiver : change the wallet who receives flows from the wallet\n" +
+            "--rpc : in case the network is not supported by the free ethers InfuraProviders you can provide your own RPC\n" +
+            "--amount : override the default 0.01 token upgrade amount")
     }
     if(!networkGasTokenSymbols[args.chainId]) {
         throw new Error(`${args.chainId} does not seem to be supported by the script, please update the networkGasTokenSymbols JSON in the script `)
@@ -57,19 +59,14 @@ async function main() {
         provider
     })
     const units = ethers.utils.parseUnits("0.01").toString();
-
-
-    const nativeToken = await sf.loadNativeAssetSuperToken("0xBE916845D8678b5d2F7aD79525A62D7c08ABba7e")
-    const nativeTokenName = nativeToken.name({providerOrSigner: provider}).toString()
+    const upgradeTargetAmount = args.amount ? args.amount : ethers.utils.parseEther("0.01")
+    const nativeToken = await sf.loadNativeAssetSuperToken(nativeTokenSymbol)
 
     const tokenOne = await sf.loadSuperToken(args.tokenOne)
-    const tokenOneName = tokenOne.name({providerOrSigner: provider}).toString()
-
     let tokenOneIndex = await (tokenOne.getIndex({publisher: wallet.address, indexId: "0", providerOrSigner: signer}))
     const tokenOneStream = await (tokenOne.getFlow({sender: wallet.address ,receiver: receiverAddress , providerOrSigner: signer}))
 
     const tokenTwo = await sf.loadSuperToken(args.tokenTwo)
-    const tokenTwoName = tokenTwo.name({providerOrSigner: provider}).toString()
     let tokenTwoIndex = await tokenTwo.getIndex({publisher: wallet.address, indexId: "0", providerOrSigner: signer})
 
     try {
@@ -114,46 +111,52 @@ async function main() {
         }
 
         if (nativeBalance / 1e18 < 0.01) {
-            console.log(`${nativeTokenName.toString()} balance not sufficient for rejected tx tests:`)
-            const upgradeAmount = ethers.utils.parseEther("0.01") - nativeBalance
-            console.log(`Upgrading ${upgradeAmount} ${nativeTokenName} to get 0.01 ${nativeTokenName}`)
+            console.log(`${nativeTokenSymbol} balance not sufficient for rejected tx tests:`)
+            const upgradeAmount = upgradeTargetAmount - nativeBalance
+            console.log(`Upgrading ${ethers.utils.parseUnits(upgradeAmount.toString())} ${nativeTokenSymbol} to get 0.01 ${nativeTokenSymbol}`)
             const upgradeTx = await nativeToken.upgrade({amount: upgradeAmount.toString()}).exec(signer)
             await upgradeTx.wait()
         } else {
-            console.log(`${nativeTokenName.toString()} balance already sufficient, not upgrading`)
+            console.log(`${nativeTokenSymbol} balance already sufficient, not upgrading`)
         }
 
         if (tokenOneBalance / 1e18 < 0.01) {
             console.log(`${args.tokenOne} balance not sufficient for rejected tx tests:`)
-            const upgradeAmount = ethers.utils.parseEther("1.5") - tokenOneBalance
+            //Upgrades 1.5 tokens , will stream 0.01 per month afterwards
+            const upgradeAmount = (parseFloat(upgradeTargetAmount) * 150) - tokenOneBalance
             const approvalTxn = await tokenOne.underlyingToken.approve({
-                amount: ethers.utils.parseEther("100").toString(),
+                amount: upgradeAmount.toString(),
                 receiver: tokenOne.address
             }).exec(signer)
-            console.log(`Approving the use of 100 ${args.tokenOne}`)
+            console.log(`Approving the use of ${ethers.utils.parseUnits(upgradeAmount.toString())} ${args.tokenOne}`)
             await approvalTxn.wait()
             const upgradeTx = await tokenOne.upgrade({amount: upgradeAmount.toString()}).exec(signer)
-            console.log(`Upgrading ${upgradeAmount} ${args.tokenOne} , to get 1.5 ${args.tokenOne}`)
+            console.log(`Upgrading ${ethers.utils.parseUnits(upgradeAmount.toString())} ${args.tokenOne} , to get ${ethers.utils.parseUnits(upgradeAmount.toString())} ${args.tokenOne}`)
             await upgradeTx.wait()
         } else {
             console.log(`${args.tokenOne} balance already sufficient, not upgrading`)
         }
 
-        // if (tokenTwoBalance / 1e18 < 0.01) {
-        //     console.log(`${tokenTwoName} balance not sufficient for rejected tx tests:`)
-        //     const upgradeAmount = ethers.utils.parseEther("0.1") - tokenTwoBalance
-        //     const approvalTxn = await tokenTwo.underlyingToken.approve({
-        //         amount: upgradeAmount.toString(),
-        //         receiver: tokenTwo.address
-        //     }).exec(signer)
-        //     console.log(`Approving the use of ${upgradeAmount} ${tokenTwoName}`)
-        //     await approvalTxn.wait()
-        //     const upgradeTx = await tokenTwo.upgrade({amount: upgradeAmount.toString().toString()}).exec(signer)
-        //     console.log(`Upgrading ${upgradeAmount} ${tokenTwoName} , to get 0.1 ${tokenOneName}`)
-        //     upgradeTx.wait()
-        // } else {
-        //     console.log(`${args.tokenTwo} balance already sufficient, not upgrading`)
-        // }
+        if (tokenTwoBalance / 1e18 < 0.01) {
+            console.log(`${args.tokenTwo} balance not sufficient for rejected tx tests:`)
+            const upgradeAmount = ethers.utils.parseEther("0.1") - tokenTwoBalance
+            const approvalTxn = await tokenTwo.underlyingToken.approve({
+                amount: upgradeAmount.toString(),
+                receiver: tokenTwo.address
+            }).exec(signer)
+            const overApprovalTxn = await tokenTwo.underlyingToken.approve({
+                amount: upgradeAmount.toString(),
+                receiver: tokenTwo.address
+            }).exec(signer)
+            console.log(`Approving the use of ${ethers.utils.parseUnits(upgradeAmount.toString())} ${args.tokenTwo}`)
+            await approvalTxn.wait()
+            await overApprovalTxn.wait()
+            const upgradeTx = await tokenTwo.upgrade({amount: upgradeAmount.toString().toString()}).exec(signer)
+            console.log(`Upgrading ${ethers.utils.parseUnits(upgradeAmount.toString())} ${args.tokenTwo} , to get 0.1 ${args.tokenTwo}`)
+            upgradeTx.wait()
+        } else {
+            console.log(`${args.tokenTwo} balance already sufficient, not upgrading`)
+        }
 
 
         if(tokenOneStream.flowRate === "0") {
