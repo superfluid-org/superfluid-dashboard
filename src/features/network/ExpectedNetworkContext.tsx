@@ -83,6 +83,7 @@ export const ExpectedNetworkProvider: FC<PropsWithChildren> = ({
 
   useEffect(() => {
     if (autoSwitchStop) {
+      console.log("Autoswitch is stopped", autoSwitchStop);
       return;
     }
 
