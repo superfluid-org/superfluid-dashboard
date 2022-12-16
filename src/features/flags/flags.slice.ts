@@ -15,6 +15,7 @@ export enum Flag {
   TestTokensReceived = "test-tokens-received",
   TokenAdded = "token-added",
   VestingFeature = "vesting-feature",
+  MainnetFeature = "mainnet-feature",
 }
 
 interface BaseFlag<T> {
@@ -39,7 +40,13 @@ interface VestingFeatureFlag extends BaseFlag<Flag.VestingFeature> {
   id: Flag.VestingFeature;
 }
 
-type FlagType = TestTokensReceivedFlag | TokenAddedFlag | VestingFeatureFlag;
+interface MainnetFeatureFlag extends BaseFlag<Flag.MainnetFeature> {}
+
+type FlagType =
+  | TestTokensReceivedFlag
+  | TokenAddedFlag
+  | VestingFeatureFlag
+  | MainnetFeatureFlag;
 
 /**
  * Account flags are used to store simple boolean type account data.
@@ -84,6 +91,8 @@ export const flagsSlice = createSlice({
         } as TokenAddedFlag,
       }),
     },
+
+    // TODO: We should merge logic for these simple feature flags
     enableVestingFeature: {
       reducer: adapter.upsertOne,
       prepare: () => ({
@@ -91,6 +100,15 @@ export const flagsSlice = createSlice({
           id: Flag.VestingFeature,
           type: Flag.VestingFeature,
         } as VestingFeatureFlag,
+      }),
+    },
+    enableMainnetFeature: {
+      reducer: adapter.upsertOne,
+      prepare: () => ({
+        payload: {
+          id: nanoid(),
+          type: Flag.MainnetFeature,
+        } as MainnetFeatureFlag,
       }),
     },
   },
@@ -119,8 +137,12 @@ export const flagsSlice = createSlice({
   },
 });
 
-export const { addTestTokensReceivedFlag, addTokenAddedFlag, enableVestingFeature } =
-  flagsSlice.actions;
+export const {
+  addTestTokensReceivedFlag,
+  addTokenAddedFlag,
+  enableVestingFeature,
+  enableMainnetFeature,
+} = flagsSlice.actions;
 
 const selectSelf = (state: RootState): EntityState<FlagType> => state.flags;
 

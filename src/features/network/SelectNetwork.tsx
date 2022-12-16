@@ -14,9 +14,10 @@ import {
 import { FC, memo, MouseEvent, useEffect, useState } from "react";
 import { useAccount, useSwitchNetwork } from "wagmi";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
+import { useAvailableNetworks } from "./AvailableNetworksContext";
 import { useExpectedNetwork } from "./ExpectedNetworkContext";
 import NetworkIcon from "./NetworkIcon";
-import { mainNetworks, Network, testNetworks } from "./networks";
+import { Network, testNetworks } from "./networks";
 
 interface NetworkItemProps {
   network: Network;
@@ -42,6 +43,8 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
 export default memo(function SelectNetwork() {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
+  const { availableMainNetworks } = useAvailableNetworks();
 
   const { address: accountAddress } = useAccount();
   const { switchNetwork } = useSwitchNetwork();
@@ -115,7 +118,7 @@ export default memo(function SelectNetwork() {
         sx={{ marginTop: theme.spacing(1.5) }}
       >
         <Collapse in={!showTestnets} timeout="auto" unmountOnExit>
-          {mainNetworks.map((network) => (
+          {availableMainNetworks.map((network) => (
             <NetworkItem
               key={network.id}
               onClick={onNetworkSelected(network.id)}

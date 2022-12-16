@@ -337,9 +337,9 @@ export const StreamingPreview: FC<{
               <Typography variant="body2" translate="yes">
                 Upfront buffer{` `}
                 <TooltipIcon
-                  title={`A ${
+                  title={`A minimum buffer or ${
                     network.bufferTimeInMinutes / 60
-                  } hour buffer of the flow rate is taken when starting a stream and returned when you manually cancel it.`}
+                  } hour flow rate is taken when starting a stream and returned when you manually cancel it.`}
                 />
               </Typography>
             }
