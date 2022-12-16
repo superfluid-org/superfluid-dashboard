@@ -16,6 +16,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Address } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
@@ -34,7 +35,7 @@ import Minigame from "../../../features/minigame/MinigameContainer";
 import { useMinigame } from "../../../features/minigame/MinigameContext";
 import NetworkIcon from "../../../features/network/NetworkIcon";
 import { Network, networksBySlug } from "../../../features/network/networks";
-import { subgraphApi } from "../../../features/redux/store";
+import { rpcApi, subgraphApi } from "../../../features/redux/store";
 import { UnitOfTime } from "../../../features/send/FlowRateInput";
 import SharingSection from "../../../features/socialSharing/SharingSection";
 import CancelStreamButton from "../../../features/streamsTable/CancelStreamButton/CancelStreamButton";
@@ -384,9 +385,14 @@ const StreamPageContent: FC<{
     stream: txIdOrSubgraphId,
   })}`;
 
+  const tokenBufferQuery = rpcApi.useTokenBufferQuery(
+    tokenAddress ? { chainId: network.id, token: tokenAddress } : skipToken
+  );
+
   const bufferSize = useMemo(() => {
     if (
       !scheduledStreamQuery.data ||
+      !tokenBufferQuery.data ||
       scheduledStreamQuery.data.currentFlowRate === "0"
     )
       return null;
@@ -398,9 +404,10 @@ const StreamPageContent: FC<{
       BigNumber.from(streamedUntilUpdatedAt),
       BigNumber.from(currentFlowRate),
       createdAtTimestamp,
-      network.bufferTimeInMinutes
+      network.bufferTimeInMinutes,
+      BigNumber.from(tokenBufferQuery.data)
     );
-  }, [scheduledStreamQuery.data, network]);
+  }, [scheduledStreamQuery.data, tokenBufferQuery.data, network]);
 
   if (scheduledStreamQuery.isLoading || tokenSnapshotQuery.isLoading) {
     return (

@@ -123,16 +123,21 @@ export function calculateBuffer(
   streamedUntilUpdatedAt: BigNumber,
   currentFlowRate: BigNumber,
   createdAtTimestamp: number,
-  bufferTimeInMinutes: number
+  bufferTimeInMinutes: number,
+  minBuffer: BigNumber
 ) {
   const bufferTimeInSeconds = BigNumber.from(bufferTimeInMinutes * 60);
 
-  if (!currentFlowRate.isZero())
-    return currentFlowRate.mul(bufferTimeInSeconds);
+  if (!currentFlowRate.isZero()) {
+    const calculatedBuffer = currentFlowRate.mul(bufferTimeInSeconds);
+    return calculatedBuffer.gte(minBuffer) ? calculatedBuffer : minBuffer;
+  }
 
-  return streamedUntilUpdatedAt
+  const calculatedBuffer = streamedUntilUpdatedAt
     .div(BigNumber.from(createdAtTimestamp))
     .mul(bufferTimeInSeconds);
+
+  return calculatedBuffer.gte(minBuffer) ? calculatedBuffer : minBuffer;
 }
 
 export function calculateBufferAmount(
