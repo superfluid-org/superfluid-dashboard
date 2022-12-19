@@ -51,11 +51,6 @@ export const ExpectedNetworkProvider: FC<PropsWithChildren> = ({
       setExpectedNetwork: (chainId: number) => {
         setNetwork(availableNetworksByChainId.get(chainId)!),
           setAutoSwitchStop(false);
-        console.log(
-          "Setting expected network",
-          chainId,
-          availableNetworksByChainId.get(chainId)
-        );
       },
       stopAutoSwitchToWalletNetwork: () => setAutoSwitchStop(true),
       isAutoSwitchStopped: autoSwitchStop,
@@ -83,13 +78,11 @@ export const ExpectedNetworkProvider: FC<PropsWithChildren> = ({
 
   useEffect(() => {
     if (autoSwitchStop) {
-      console.log("Autoswitch is stopped", autoSwitchStop);
       return;
     }
 
     if (activeChain && activeChain.id !== network.id) {
       const networkFromWallet = availableNetworksByChainId.get(activeChain.id);
-      console.log("Active chain changed", activeChain, networkFromWallet);
       if (networkFromWallet) {
         // setTestnetMode(!!activeChain.testnet);
         setNetwork(networkFromWallet);

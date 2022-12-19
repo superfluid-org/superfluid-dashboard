@@ -20,6 +20,7 @@ const FeatureFlagContext = createContext<FeatureFlagContextValue>(null!);
 
 interface FeatureFlagContextValue {
   isVestingEnabled: boolean;
+  isMainnetEnabled: boolean;
 }
 
 const MAINNET_FEATURE_CODE = "724ZX_ENS";
@@ -67,8 +68,9 @@ export const FeatureFlagProvider: FC<PropsWithChildren> = ({ children }) => {
   const contextValue = useMemo<FeatureFlagContextValue>(
     () => ({
       isVestingEnabled,
+      isMainnetEnabled,
     }),
-    [isVestingEnabled]
+    [isVestingEnabled, isMainnetEnabled]
   );
 
   return (

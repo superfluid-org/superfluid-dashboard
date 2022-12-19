@@ -3,22 +3,10 @@ import {
   FC,
   PropsWithChildren,
   useContext,
-  useEffect,
   useMemo,
-  useState,
 } from "react";
-import { useNetwork } from "wagmi";
-import { Flag } from "../flags/flags.slice";
-import { useHasFlag } from "../flags/flagsHooks";
-import { useAppDispatch, useAppSelector } from "../redux/store";
-import { useExpectedNetwork } from "./ExpectedNetworkContext";
-import { hideNetwork, unhideNetwork } from "./networkPreferences.slice";
-import {
-  Network,
-  networkDefinition,
-  networks,
-  networksByChainId,
-} from "./networks";
+import { useFeatureFlags } from "../featureFlags/FeatureFlagContext";
+import { Network, networkDefinition, networks } from "./networks";
 
 interface AvailableNetworksContextValue {
   availableNetworks: Network[];
@@ -35,9 +23,7 @@ const AvailableNetworksContext = createContext<AvailableNetworksContextValue>(
 export const AvailableNetworksProvider: FC<PropsWithChildren> = ({
   children,
 }) => {
-  const isMainnetEnabled = useHasFlag({
-    type: Flag.MainnetFeature,
-  });
+  const { isMainnetEnabled } = useFeatureFlags();
 
   const availableNetworks = useMemo(
     () =>
