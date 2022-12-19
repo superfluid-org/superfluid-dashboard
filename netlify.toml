@@ -77,6 +77,12 @@ for = "/*"
   force = false
 
 [[redirects]]
+  from = "/mainnet/*"
+  to = "?code=724ZX_ENS"
+  status = 301
+  force = false
+
+[[redirects]]
   from = "/GT-Walsheim-Pro-Medium.otf"
   to = "/fonts/GT-Walsheim-Pro-Medium.otf"
   status = 301
