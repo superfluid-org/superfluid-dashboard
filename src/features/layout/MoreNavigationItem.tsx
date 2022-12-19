@@ -1,14 +1,13 @@
+import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import QrCodeRoundedIcon from "@mui/icons-material/QrCodeRounded";
 import ShowerRoundedIcon from "@mui/icons-material/ShowerRounded";
 import SupportRoundedIcon from "@mui/icons-material/SupportRounded";
-import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
-import ElderlyRoundedIcon from "@mui/icons-material/ElderlyRounded";
 import {
   Box,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Menu,
   Modal,
   Popover,
   useMediaQuery,
@@ -17,6 +16,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { FC, MouseEvent, useState } from "react";
+import AccessCodeDialog from "../featureFlags/AccessCodeDialog";
 import OnboardingCards from "../onboarding/OnboardingCards";
 import { useLayoutContext } from "./LayoutContext";
 
@@ -43,6 +43,7 @@ const MoreNavigationItem: FC = ({}) => {
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const { setNavigationDrawerOpen } = useLayoutContext();
+  const [showAccessCodeDialog, setShowAccessCodeDialog] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [moreMenuAnchor, setMoreMenuAnchor] = useState<HTMLElement | null>(
     null
@@ -66,6 +67,13 @@ const MoreNavigationItem: FC = ({}) => {
     closeOnboardingModal();
     setNavigationDrawerOpen(false);
   };
+
+  const openAccessCodeDialog = () => {
+    closeMoreMenu();
+    setShowAccessCodeDialog(true);
+  };
+
+  const closeAccessCodeDialog = () => setShowAccessCodeDialog(false);
 
   return (
     <>
@@ -147,6 +155,13 @@ const MoreNavigationItem: FC = ({}) => {
           </ListItemIcon>
           <ListItemText>Getting Started</ListItemText>
         </ListItemButton>
+
+        <ListItemButton onClick={openAccessCodeDialog}>
+          <ListItemIcon>
+            <QrCodeRoundedIcon sx={{ color: theme.palette.text.primary }} />
+          </ListItemIcon>
+          <ListItemText>Access Code</ListItemText>
+        </ListItemButton>
       </Popover>
 
       <Modal open={showOnboardingModal} onClose={closeOnboardingModal}>
@@ -167,6 +182,10 @@ const MoreNavigationItem: FC = ({}) => {
           />
         </Box>
       </Modal>
+
+      {showAccessCodeDialog && (
+        <AccessCodeDialog onClose={closeAccessCodeDialog} />
+      )}
     </>
   );
 };

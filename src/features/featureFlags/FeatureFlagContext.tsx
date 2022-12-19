@@ -23,7 +23,7 @@ interface FeatureFlagContextValue {
   isMainnetEnabled: boolean;
 }
 
-const MAINNET_FEATURE_CODE = "724ZX_ENS";
+export const MAINNET_FEATURE_CODE = "724ZX_ENS";
 
 export const FeatureFlagProvider: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
