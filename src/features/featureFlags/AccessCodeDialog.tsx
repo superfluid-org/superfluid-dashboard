@@ -69,7 +69,7 @@ const AccessCodeDialog: FC<AccessCodeDialogProps> = ({ onClose }) => {
         </Typography>
         <Typography>
           Apply for the access code{" "}
-          <Link href="https://airtable.com/shr8rwXolThzG0q5H" target="_blank">
+          <Link href="https://use.superfluid.finance/ethmainnet" target="_blank">
             here
           </Link>
           .
