@@ -78,7 +78,7 @@ for = "/*"
 
 [[redirects]]
   from = "/mainnet/*"
-  to = "?code=724ZX_ENS"
+  to = "/?code=724ZX_ENS"
   status = 301
   force = false
 
