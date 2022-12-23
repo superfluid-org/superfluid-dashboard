@@ -35,7 +35,7 @@ export interface AccountingStreamPeriod {
 
 interface StreamPeriodsArguments {
   chains: number[];
-  address: Address;
+  addresses: Address[];
   start: number;
   end: number;
   priceGranularity: UnitOfTime;

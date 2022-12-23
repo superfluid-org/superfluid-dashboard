@@ -13,6 +13,7 @@ type Nullable<T> = { [K in keyof T]: T[K] | null };
 
 export interface ValidAccountingExportForm {
   data: {
+    addresses: Address[];
     counterparties: Address[];
     priceGranularity: UnitOfTime;
     virtualizationPeriod: UnitOfTime;
@@ -24,6 +25,7 @@ export interface ValidAccountingExportForm {
 
 const defaultFormValues = {
   data: {
+    addresses: [],
     counterparties: [],
     priceGranularity: UnitOfTime.Day,
     virtualizationPeriod: UnitOfTime.Month,
@@ -49,10 +51,11 @@ const AccountingExportFormProvider: FC<
 
   const formSchema = useMemo(
     () =>
-      object().test(async (values, context) => {
+      object().test(async (values) => {
         const primaryValidation: ObjectSchema<ValidAccountingExportForm> =
           object({
             data: object({
+              addresses: array().min(1).required().test(testAddresses()),
               counterparties: array().required().test(testAddresses()),
               startDate: date().required(),
               endDate: date().required(),
@@ -94,6 +97,8 @@ const AccountingExportFormProvider: FC<
   useEffect(() => {
     if (initialFormValues) {
       setValue("data", {
+        addresses:
+          initialFormValues.addresses ?? defaultFormValues.data.addresses,
         counterparties:
           initialFormValues.counterparties ??
           defaultFormValues.data.counterparties,

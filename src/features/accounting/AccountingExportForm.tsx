@@ -33,6 +33,7 @@ const MIN_DATE = startOfMonth(
     years: 3,
   })
 );
+
 const MAX_DATE = endOfMonth(new Date());
 
 const GranularityOptions = [
@@ -116,7 +117,30 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
             justifyContent="space-between"
             sx={{ mr: 0.75 }}
           >
-            <FormLabel>Counterparties</FormLabel>
+            <FormLabel>View for addresses</FormLabel>
+            <TooltipIcon title="tooltip" />
+          </Stack>
+          <Controller
+            control={control}
+            name="data.addresses"
+            render={({ field: { value, onChange } }) => (
+              <MultiAddressSearch
+                placeholder="Select addresses"
+                addresses={value || []}
+                onChange={onChange}
+              />
+            )}
+          />
+        </Stack>
+
+        <Stack>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{ mr: 0.75 }}
+          >
+            <FormLabel>Counterparty addresses *</FormLabel>
             <TooltipIcon title="Must not be an exchange address. If no addresses are selected, all counterparties will be fetched." />
           </Stack>
           <Controller
@@ -125,7 +149,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
             render={({ field: { value, onChange } }) => (
               <MultiAddressSearch
                 placeholder="Select addresses"
-                helperText="If no addresses are selected, all counterparties will be fetched."
+                helperText="* This field is optional. If no addresses are selected, all counterparties will be fetched."
                 addresses={value || []}
                 onChange={onChange}
               />
@@ -215,7 +239,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
               alignItems="center"
               justifyContent="space-between"
             >
-              <FormLabel>Virtualization Period</FormLabel>
+              <FormLabel>Accounting Period</FormLabel>
             </Stack>
             <Controller
               control={control}
@@ -258,20 +282,14 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
           </Stack>
         </Stack>
 
-        <ConnectionBoundary allowImpersonation>
-          <ConnectionBoundaryButton
-            ButtonProps={{ variant: "contained", size: "xl" }}
-          >
-            <Button
-              variant="contained"
-              size="xl"
-              onClick={submitAccountingForm}
-              disabled={!isFormValid}
-            >
-              Export Preview
-            </Button>
-          </ConnectionBoundaryButton>
-        </ConnectionBoundary>
+        <Button
+          variant="contained"
+          size="xl"
+          onClick={submitAccountingForm}
+          disabled={!isFormValid}
+        >
+          Export Preview
+        </Button>
       </Stack>
     </Card>
   );

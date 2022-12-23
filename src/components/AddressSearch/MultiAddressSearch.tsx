@@ -11,20 +11,24 @@ import {
   ListItemAvatar,
   ListItemButton,
   ListItemText,
+  ListSubheader,
   Stack,
 } from "@mui/material";
-import { memo, MouseEvent, useState } from "react";
+import { FC, memo, MouseEvent, useState } from "react";
 import AddressName, {
   AddressNameProps,
 } from "../../components/AddressName/AddressName";
-import AddressSearchDialog from "../../components/AddressSearchDialog/AddressSearchDialog";
+import AddressSearchDialog, {
+  AddressListItem,
+} from "../../components/AddressSearchDialog/AddressSearchDialog";
 import AddressSearchIndex from "../../features/send/AddressSearchIndex";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import AddressAvatar from "../Avatar/AddressAvatar";
+import { Address } from "@superfluid-finance/sdk-core";
 
 interface MultiAddressSearchProps {
-  addresses: string[];
-  onChange: (addresses: string[]) => void;
+  addresses: Address[];
+  onChange: (addresses: Address[]) => void;
   placeholder?: string;
   dialogTitle?: string;
   helperText?: string;
@@ -51,8 +55,11 @@ export default memo(function MultiAddressSearch({
   };
 
   const onSelectAddress = (address: string) => {
-    setDialogOpen(false);
-    onChange([...addresses.filter((a: string) => a !== address), address]);
+    if (addresses.includes(address)) {
+      onChange(addresses.filter((a: string) => a !== address));
+    } else {
+      onChange([...addresses.filter((a: string) => a !== address), address]);
+    }
     onBlur();
   };
 

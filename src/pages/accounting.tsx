@@ -9,18 +9,31 @@ import {
   useTheme,
 } from "@mui/material";
 import { NextPage } from "next";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import AccountingExportForm from "../features/accounting/AccountingExportForm";
 import AccountingExportFormProvider from "../features/accounting/AccountingExportFormProvider";
 import AccountingExportPreview from "../features/accounting/AccountingExportPreview";
 import FileDownloadRoundedIcon from "@mui/icons-material/FileDownloadRounded";
+import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
+import { endOfMonth, startOfMonth, sub } from "date-fns";
 
 const Accounting: NextPage = () => {
   const theme = useTheme();
   const [showPreview, setShowPreview] = useState(false);
 
+  const { visibleAddress } = useVisibleAddress();
+
   const onSubmitForm = () => setShowPreview(true);
   const closePreview = () => setShowPreview(false);
+
+  const { lastMonthStart, lastMonthEnd } = useMemo(() => {
+    const lastMonth = sub(new Date(), { months: 1 });
+
+    return {
+      lastMonthStart: startOfMonth(lastMonth),
+      lastMonthEnd: endOfMonth(lastMonth),
+    };
+  }, []);
 
   const exportData = () => {
     // This is a workaround to trigger DataGrid internal functionality from outside
@@ -32,7 +45,13 @@ const Accounting: NextPage = () => {
 
   return (
     <Container maxWidth="lg">
-      <AccountingExportFormProvider initialFormValues={{}}>
+      <AccountingExportFormProvider
+        initialFormValues={{
+          addresses: visibleAddress ? [visibleAddress] : [],
+          startDate: lastMonthStart,
+          endDate: lastMonthEnd,
+        }}
+      >
         {!showPreview && (
           <Box
             sx={{

@@ -74,12 +74,12 @@ export const AddressListItem: FC<AddressListItemProps> = ({
 };
 
 export type AddressSearchDialogProps = {
+  title: string;
   open: boolean;
+  index: ReactNode | null;
   addresses?: Address[];
   onClose: () => void;
   onSelectAddress: (address: string) => void;
-  title: string;
-  index: ReactNode | null;
   showAddressBook?: boolean;
 };
 
@@ -107,7 +107,7 @@ export default memo(function AddressSearchDialog({
 
   const setSearchTerm = (searchTerm: string) => {
     setSearchTermVisible(searchTerm);
-    
+
     const searchTermTrimmed = searchTerm.trim();
     if (isAddress(searchTermTrimmed)) {
       onSelectAddress(getAddress(searchTermTrimmed));

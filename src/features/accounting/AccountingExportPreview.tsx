@@ -1,8 +1,9 @@
+import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import { Button, Paper } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
 import {
   DataGrid,
   GridColDef,
-  GridSortCellParams,
   GridValueGetterParams,
   useGridApiContext,
 } from "@mui/x-data-grid";
@@ -18,7 +19,6 @@ import { currenciesByCode } from "../../utils/currencyUtils";
 import Link from "../common/Link";
 import { findNetworkByChainId, mainNetworkIDs } from "../network/networks";
 import { formatAmount } from "../token/Amount";
-import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import accountingApi, {
   AccountingStreamPeriod,
   VirtualStreamPeriod,
@@ -54,9 +54,9 @@ interface AccountingExportPreviewProps {}
 
 const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
   const { formState, getValues } = useFormContext<ValidAccountingExportForm>();
-  const { visibleAddress } = useVisibleAddress();
   const {
     data: {
+      addresses,
       startDate,
       endDate,
       priceGranularity,
@@ -66,12 +66,17 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
     },
   } = getValues();
 
+  const lowerCaseAddresses = useMemo(
+    () => addresses.map((addr) => addr.toLowerCase()),
+    [addresses]
+  );
+
   const currency = currenciesByCode[currencyCode];
 
   const streamPeriodsResponse = accountingApi.useStreamPeriodsQuery(
-    visibleAddress && formState.isValid
+    formState.isValid
       ? {
-          address: visibleAddress,
+          addresses,
           chains: mainNetworkIDs,
           start: getUnixTime(startDate),
           end: getUnixTime(endDate),
@@ -131,10 +136,16 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         headerName: "Date",
         type: "date",
         minWidth: 120,
-        flex: 1,
-        valueGetter: (params: GridValueGetterParams) => {
-          return format(fromUnixTime(params.row.endTime), "yyyy/MM/dd");
-        },
+        valueGetter: (params: GridValueGetterParams) =>
+          format(fromUnixTime(params.row.endTime), "yyyy/MM/dd"),
+      },
+      {
+        field: "startDate",
+        headerName: "Start Date",
+        type: "date",
+        minWidth: 120,
+        valueGetter: (params: GridValueGetterParams) =>
+          format(fromUnixTime(params.row.startTime), "yyyy/MM/dd"),
       },
       {
         field: "amount",
@@ -144,7 +155,12 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         sortComparator: (v1, v2) => (Number(v1) > Number(v2) ? 1 : -1),
         valueGetter: (params: GridValueGetterParams) =>
           new Decimal(params.row.amountFiat).toFixed(2),
-        renderCell: (params) => currency.format(params.value),
+        renderCell: (params) => {
+          const sign = Decimal.sign(params.value);
+          const absDecimal = Decimal.abs(params.value);
+
+          return `${sign < 0 ? "- " : ""}${currency.format(absDecimal)}`;
+        },
       },
       {
         field: "counterparty",
@@ -152,8 +168,9 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         minWidth: 120,
         flex: 1,
         valueGetter: (params: GridValueGetterParams) => {
-          const isOutgoing =
-            params.row.sender.toLowerCase() === visibleAddress?.toLowerCase();
+          const isOutgoing = lowerCaseAddresses.includes(
+            params.row.sender.toLowerCase()
+          );
 
           const counterparty = isOutgoing
             ? params.row.receiver
@@ -171,35 +188,10 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         minWidth: 200,
         hide: true,
         valueGetter: (params: GridValueGetterParams) => {
-          const isOutgoing =
-            params.row.sender.toLowerCase() === visibleAddress?.toLowerCase();
-
+          const isOutgoing = lowerCaseAddresses.includes(
+            params.row.sender.toLowerCase()
+          );
           return isOutgoing ? params.row.receiver : params.row.sender;
-        },
-      },
-      {
-        field: "transaction",
-        headerName: "Transaction URL",
-        minWidth: 150,
-        flex: 1,
-        valueGetter: (params: GridValueGetterParams) => {
-          const network = findNetworkByChainId(params.row.chainId);
-          if (!network) return "";
-          return network.getLinkForTransaction(
-            params.row.startedAtEvent.transactionHash
-          );
-        },
-        renderCell: (params) => {
-          const network = findNetworkByChainId(params.row.chainId);
-          if (!network) return "";
-          const linkUrl = network.getLinkForTransaction(
-            params.row.startedAtEvent.transactionHash
-          );
-          return (
-            <Link href={linkUrl} target="_blank">
-              {linkUrl}
-            </Link>
-          );
         },
       },
       {
@@ -216,6 +208,31 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         minWidth: 100,
         flex: 1,
         valueGetter: (params) => findNetworkByChainId(params.row.chainId)?.name,
+      },
+      {
+        field: "transaction",
+        headerName: "TX",
+        maxWidth: 100,
+        flex: 1,
+        valueGetter: (params: GridValueGetterParams) => {
+          const network = findNetworkByChainId(params.row.chainId);
+          if (!network) return "";
+          return network.getLinkForTransaction(params.row.startedAtEvent);
+        },
+        renderCell: (params) => {
+          const network = findNetworkByChainId(params.row.chainId);
+          if (!network) return "";
+          const linkUrl = network.getLinkForTransaction(
+            params.row.startedAtEvent
+          );
+          return (
+            <Link href={linkUrl} target="_blank">
+              <IconButton component="a">
+                <OpenInNewRoundedIcon />
+              </IconButton>
+            </Link>
+          );
+        },
       },
       {
         field: "sender",
@@ -279,7 +296,7 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
           `${formatAmount(params.row.amount)} ${params.row.token.symbol}`,
       },
     ],
-    [currency, mappedAddresses, visibleAddress]
+    [currency, mappedAddresses, lowerCaseAddresses]
   );
 
   const [pageSize, setPageSize] = useState(10);
