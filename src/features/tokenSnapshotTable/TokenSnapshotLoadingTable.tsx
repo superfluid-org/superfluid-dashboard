@@ -1,4 +1,3 @@
-import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import {
   Skeleton,
   Stack,
@@ -105,9 +104,7 @@ const TokenSnapshotLoadingTable = () => {
               <TableCell>Balance</TableCell>
               <TableCell width="300">Net Flow</TableCell>
               <TableCell width="300">Inflow/Outflow</TableCell>
-              <TableCell width="120" align="center">
-                <KeyboardDoubleArrowDownIcon />
-              </TableCell>
+              <TableCell width="120" align="center"></TableCell>
             </TableRow>
           )}
         </TableHead>
