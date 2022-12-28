@@ -14,10 +14,10 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Address, Stream } from "@superfluid-finance/sdk-core";
-import { FC, memo, useMemo, useState } from "react";
+import { FC, memo, useCallback, useMemo, useState } from "react";
 import {
-  mapStreamScheduling,
   isActiveStreamSchedulingOrder,
+  mapStreamScheduling,
 } from "../../hooks/streamSchedulingHooks";
 import { getAddress } from "../../utils/memoizedEthersUtils";
 import { EmptyRow } from "../common/EmptyRow";
@@ -37,6 +37,8 @@ enum StreamTypeFilter {
   Incoming,
   Outgoing,
 }
+
+type StreamType = (Stream | PendingOutgoingStream) & StreamScheduling;
 
 interface StreamFilter {
   type: StreamTypeFilter;
@@ -62,6 +64,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
+
   const [streamsFilter, setStreamsFilter] = useState<StreamFilter>({
     type: StreamTypeFilter.All,
   });
@@ -121,9 +124,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
     return [...queriedOutgoingStreams, ...pendingOutgoingStreams];
   }, [outgoingStreamsQuery.data, pendingOutgoingStreams, schedulings]);
 
-  const streams = useMemo<
-    ((Stream | PendingOutgoingStream) & StreamScheduling)[]
-  >(() => {
+  const streams = useMemo<StreamType[]>(() => {
     return [
       ...([StreamTypeFilter.All, StreamTypeFilter.Incoming].includes(
         streamsFilter.type
@@ -136,7 +137,12 @@ const StreamsTable: FC<StreamsTableProps> = ({
         ? outgoingStreams || []
         : []),
     ]
-      .sort((s1, s2) => s2.updatedAtTimestamp - s1.updatedAtTimestamp)
+      .sort((s1, s2) => {
+        if (s1.currentFlowRate !== "0" && s2.currentFlowRate === "0") return -1;
+        if (s1.currentFlowRate === "0" && s2.currentFlowRate !== "0") return 1;
+
+        return s2.updatedAtTimestamp - s1.updatedAtTimestamp;
+      })
       .map((stream) => {
         const isStreamActive = stream.currentFlowRate !== "0";
 
@@ -162,8 +168,11 @@ const StreamsTable: FC<StreamsTableProps> = ({
     setStreamsFilter({ ...streamsFilter, type });
   };
 
-  const getFilterBtnColor = (type: StreamTypeFilter) =>
-    type === streamsFilter.type ? "primary" : "secondary";
+  const getFilterBtnColor = useCallback(
+    (type: StreamTypeFilter) =>
+      type === streamsFilter.type ? "primary" : "secondary",
+    [streamsFilter.type]
+  );
 
   const isLoading =
     streams.length === 0 &&
