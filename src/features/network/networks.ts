@@ -1,4 +1,4 @@
-import { memoize } from "lodash";
+import memoize from "lodash/memoize";
 import { chain, Chain } from "wagmi";
 import config from "../../utils/config";
 import ensureDefined from "../../utils/ensureDefined";
@@ -32,6 +32,14 @@ export type Network = Chain & {
   vestingSchedulerContractAddress?: `0x${string}`;
   platformUrl?: string;
 };
+
+// We are using Satsuma endpoints when the app is deployed to *.superfluid.finance domain
+const useSatsumaEndpoints = (globalThis.window?.location.href || "").match(
+  /^(?:https?:\/\/)?(?:[^.]+\.)?superfluid\.finance(\/.*)?$/g
+);
+
+const getSubgraphUrl = (satsumaUrl: string, graphUrl: string) =>
+  useSatsumaEndpoints ? satsumaUrl : graphUrl;
 
 export const superfluidRpcUrls = {
   goerli: "https://rpc-endpoints.superfluid.dev/eth-goerli",
@@ -145,8 +153,10 @@ export const networkDefinition: {
       superfluid: superfluidRpcUrls.gnosis,
       default: "https://rpc.gnosischain.com/",
     },
-    subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-xdai",
+    subgraphUrl: getSubgraphUrl(
+      "https://subgraph.satsuma-prod.com/superfluid/xdai/api",
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-xdai"
+    ),
     getLinkForTransaction: (txHash: string): string =>
       `https://blockscout.com/xdai/mainnet/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -420,7 +430,10 @@ export const networkDefinition: {
       ...chain.mainnet.rpcUrls,
       superfluid: superfluidRpcUrls.ethereum,
     },
-    subgraphUrl: "https://subgraph.satsuma-prod.com/superfluid/eth-mainnet/api",
+    subgraphUrl: getSubgraphUrl(
+      "https://subgraph.satsuma-prod.com/superfluid/eth-mainnet/api",
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-eth-mainnet"
+    ),
     getLinkForTransaction: (txHash: string): string =>
       `https://etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
