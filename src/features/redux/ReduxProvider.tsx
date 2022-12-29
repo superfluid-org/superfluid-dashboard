@@ -82,7 +82,6 @@ const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
         setFrameworkForSdkRedux(chainId, () =>
           promiseRetry<Framework>(
             (retry) =>
-              // Is this correct? Shouldnt we take the framework from readonly frameworks?
               Framework.create({
                 chainId: chainId,
                 provider: signer,
