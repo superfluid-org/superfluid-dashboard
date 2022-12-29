@@ -84,7 +84,7 @@ const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
             (retry) =>
               Framework.create({
                 chainId: chainId,
-                provider: signer,
+                provider: signer as any,
                 ...(network
                   ? { customSubgraphQueriesEndpoint: network.subgraphUrl }
                   : {}),

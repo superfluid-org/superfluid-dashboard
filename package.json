@@ -33,7 +33,7 @@
     "@reduxjs/toolkit": "^1.9.0",
     "@rtk-query/graphql-request-base-query": "^2.2.0",
     "@sentry/nextjs": "^7.20.0",
-    "@superfluid-finance/sdk-core": "0.5.9",
+    "@superfluid-finance/sdk-core": "0.6.1",
     "@superfluid-finance/sdk-redux": "^0.4.1-dev.e038cad.0",
     "axios": "^0.26.1",
     "chart.js": "^3.9.1",
