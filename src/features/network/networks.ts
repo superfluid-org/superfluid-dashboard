@@ -34,11 +34,9 @@ export type Network = Chain & {
 };
 
 // We are using Satsuma endpoints when the app is deployed to *.superfluid.finance domain
-const useSatsumaEndpoints = (process.env.NEXT_PUBLIC_APP_URL || "").match(
+const useSatsumaEndpoints = (globalThis.window?.location.href || "").match(
   /^(?:https?:\/\/)?(?:[^.]+\.)?superfluid\.finance(\/.*)?$/g
 );
-
-console.log("Deployment URL test", process.env.NEXT_PUBLIC_APP_URL);
 
 const getSubgraphUrl = (satsumaUrl: string, graphUrl: string) =>
   useSatsumaEndpoints ? satsumaUrl : graphUrl;
