@@ -1,4 +1,4 @@
-import { memoize } from "lodash";
+import memoize from "lodash/memoize";
 import { chain, Chain } from "wagmi";
 import config from "../../utils/config";
 import ensureDefined from "../../utils/ensureDefined";
