@@ -135,28 +135,6 @@ const AddressBook: NextPage = () => {
     closeAddDialog();
   };
 
-  // Deleting addresses
-
-  const setRowSelected = (address: Address) => (isSelected: boolean) => {
-    setSelectedAddresses(
-      selectedAddresses
-        .filter((a) => a !== address)
-        .concat(isSelected ? [address] : [])
-    );
-  };
-
-  const startDeleting = () => setIsDeleting(true);
-
-  const cancelDeleting = () => {
-    setIsDeleting(false);
-    setSelectedAddresses([]);
-  };
-
-  const deleteEntries = useCallback(() => {
-    dispatch(removeAddressBookEntries(selectedAddresses));
-    cancelDeleting();
-  }, [selectedAddresses, dispatch]);
-
   // Pagination
 
   const handleChangePage = (_e: unknown, newPage: number) => {
@@ -265,6 +243,44 @@ const AddressBook: NextPage = () => {
     () => filteredEntries.slice(page * rowsPerPage, (page + 1) * rowsPerPage),
     [page, rowsPerPage, filteredEntries]
   );
+
+  // Deleting addresses
+
+  const setRowSelected = (address: Address) => (isSelected: boolean) => {
+    setSelectedAddresses(
+      selectedAddresses
+        .filter((a) => a !== address)
+        .concat(isSelected ? [address] : [])
+    );
+  };
+
+  const startDeleting = () => setIsDeleting(true);
+
+  const cancelDeleting = () => {
+    setIsDeleting(false);
+    setSelectedAddresses([]);
+  };
+
+  const deleteEntries = useCallback(() => {
+    dispatch(removeAddressBookEntries(selectedAddresses));
+    cancelDeleting();
+
+    // If all entries on the last page are removed then move one page back.
+    if (
+      page > 0 &&
+      Math.ceil(filteredEntries.length / rowsPerPage) - 1 === page &&
+      selectedAddresses.length === paginatedEntries.length
+    ) {
+      setPage(page - 1);
+    }
+  }, [
+    selectedAddresses,
+    dispatch,
+    paginatedEntries,
+    filteredEntries,
+    rowsPerPage,
+    page,
+  ]);
 
   const streamsLoading =
     incomingStreamsQuery.isLoading || outgoingStreamsQuery.isLoading;
