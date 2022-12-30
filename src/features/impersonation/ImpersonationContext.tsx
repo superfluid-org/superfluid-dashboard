@@ -75,15 +75,19 @@ export const ImpersonationProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const removeImpersonatedAddressQueryParam = () => {
     const { view: viewAddressQueryParam, ...queryWithoutParam } = router.query;
-    router.replace(
-      {
-        query: queryWithoutParam,
-      },
-      undefined,
-      {
-        shallow: true,
-      }
-    );
+
+    // Replacing query without impersonating someone will create nextjs router interpolation error.
+    if (viewAddressQueryParam) {
+      router.replace(
+        {
+          query: queryWithoutParam,
+        },
+        undefined,
+        {
+          shallow: true,
+        }
+      );
+    }
   };
 
   // Get impersonated address from query string
