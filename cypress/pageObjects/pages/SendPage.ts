@@ -430,7 +430,8 @@ export class SendPage extends BasePage {
         let selectedNetwork = network === "selected network" ? Cypress.env("network") : network
         this.overrideNextGasPrice()
         this.isVisible(PREVIEW_UPFRONT_BUFFER)
-        cy.get(SEND_BUTTON).should("not.have.attr", "disabled" , {timeout:30000});
+        this.isNotDisabled(SEND_BUTTON)
+        cy.get(SEND_BUTTON).should("be.enabled")
         this.click(SEND_BUTTON)
         this.isVisible(LOADING_SPINNER)
         this.exists(`${SEND_BUTTON} ${LOADING_SPINNER}`)
