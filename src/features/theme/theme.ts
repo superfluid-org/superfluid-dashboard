@@ -1,4 +1,11 @@
-import { alpha, createTheme, Theme, ThemeOptions } from "@mui/material/styles";
+import {
+  alpha,
+  createTheme,
+  darken,
+  lighten,
+  Theme,
+  ThemeOptions,
+} from "@mui/material/styles";
 import { deepmerge } from "@mui/utils";
 import React from "react";
 import { FONT_FACES } from "./fonts";
@@ -932,7 +939,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         styleOverrides: {
           root: {
             color: theme.palette.text.primary,
-            backgroundColor: alpha(theme.palette.text.primary, 0.04),
+            backgroundColor: getModeStyle(
+              lighten(theme.palette.text.primary, 0.96),
+              darken(theme.palette.text.primary, 0.96)
+            ),
             ...theme.typography.body2,
             lineHeight: "48px",
           },
