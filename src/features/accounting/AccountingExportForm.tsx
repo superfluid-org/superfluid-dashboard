@@ -63,7 +63,12 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
   const { watch, control, formState, getValues } =
     useFormContext<PartialAccountingExportForm>();
 
-  const [startDate, endDate] = watch(["data.startDate", "data.endDate"]);
+  const [addresses, counterparties, startDate, endDate] = watch([
+    "data.addresses",
+    "data.counterparties",
+    "data.startDate",
+    "data.endDate",
+  ]);
 
   const submitAccountingForm = () => {
     const { data } = getValues() as ValidAccountingExportForm;
@@ -128,6 +133,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
                 placeholder="Select addresses"
                 addresses={value || []}
                 onChange={onChange}
+                disabledAddresses={counterparties || []}
               />
             )}
           />
@@ -152,6 +158,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
                 helperText="* This field is optional. If no addresses are selected, all counterparties will be fetched."
                 addresses={value || []}
                 onChange={onChange}
+                disabledAddresses={addresses || []}
               />
             )}
           />

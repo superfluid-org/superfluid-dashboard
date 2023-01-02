@@ -15,7 +15,15 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { FC, memo, ReactNode, useCallback, useEffect, useState } from "react";
+import {
+  FC,
+  memo,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import ResponsiveDialog from "../../features/common/ResponsiveDialog";
 import AddressAvatar from "../Avatar/AddressAvatar";
 import { getAddress, isAddress } from "../../utils/memoizedEthersUtils";
@@ -31,6 +39,7 @@ const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 interface AddressListItemProps {
   address: string;
   selected?: boolean;
+  disabled?: boolean;
   namePlaceholder?: string;
   dataCy?: string;
   onClick: () => void;
@@ -39,6 +48,7 @@ interface AddressListItemProps {
 export const AddressListItem: FC<AddressListItemProps> = ({
   address,
   selected = false,
+  disabled = false,
   dataCy,
   onClick,
   namePlaceholder,
@@ -53,6 +63,7 @@ export const AddressListItem: FC<AddressListItemProps> = ({
       sx={LIST_ITEM_STYLE}
       translate="no"
       selected={selected}
+      disabled={disabled}
     >
       <ListItemAvatar>
         <AddressAvatar address={checksumHex} />
@@ -81,6 +92,8 @@ export type AddressSearchDialogProps = {
   onClose: () => void;
   onSelectAddress: (address: string) => void;
   showAddressBook?: boolean;
+  disableAutoselect?: boolean;
+  disabledAddresses?: Address[];
 };
 
 export default memo(function AddressSearchDialog({
@@ -91,6 +104,8 @@ export default memo(function AddressSearchDialog({
   title,
   index,
   showAddressBook = true,
+  disableAutoselect = false,
+  disabledAddresses = [],
 }: AddressSearchDialogProps) {
   const theme = useTheme();
 
@@ -105,16 +120,24 @@ export default memo(function AddressSearchDialog({
     []
   );
 
-  const setSearchTerm = (searchTerm: string) => {
-    setSearchTermVisible(searchTerm);
+  const setSearchTerm = useCallback(
+    (searchTerm: string) => {
+      setSearchTermVisible(searchTerm);
 
-    const searchTermTrimmed = searchTerm.trim();
-    if (isAddress(searchTermTrimmed)) {
-      onSelectAddress(getAddress(searchTermTrimmed));
-    }
+      const searchTermTrimmed = searchTerm.trim();
+      if (isAddress(searchTermTrimmed) && !disableAutoselect) {
+        onSelectAddress(getAddress(searchTermTrimmed));
+      }
 
-    setSearchTermDebounced(searchTermTrimmed);
-  };
+      setSearchTermDebounced(searchTermTrimmed);
+    },
+    [
+      disableAutoselect,
+      onSelectAddress,
+      setSearchTermVisible,
+      setSearchTermDebounced,
+    ]
+  );
 
   const [openCounter, setOpenCounter] = useState(0);
 
@@ -134,6 +157,13 @@ export default memo(function AddressSearchDialog({
   const ensQuery = ensApi.useResolveNameQuery(searchTermDebounced);
   const ensData = ensQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!ensQuery.data` means that the data is not undefined nor null.
   const showEns = !!searchTermDebounced && !isAddress(searchTermDebounced);
+
+  const checksummedSearchedAddress = useMemo(() => {
+    if (!!searchTermDebounced && isAddress(searchTermDebounced)) {
+      return getAddress(searchTermDebounced);
+    }
+    return null;
+  }, [searchTermDebounced]);
 
   const searchSynced = searchTermDebounced === searchTermVisible.trim();
 
@@ -191,6 +221,7 @@ export default memo(function AddressSearchDialog({
                       <AddressListItem
                         dataCy={"ens-entry"}
                         selected={addresses.includes(ensData.address)}
+                        disabled={disabledAddresses.includes(ensData.address)}
                         address={ensData.address}
                         onClick={() => onSelectAddress(ensData.address)}
                         namePlaceholder={ensData.name}
@@ -205,6 +236,21 @@ export default memo(function AddressSearchDialog({
               </>
             ) : null}
 
+            {checksummedSearchedAddress && (
+              <>
+                <ListSubheader sx={{ px: 3 }}>Search</ListSubheader>
+                <AddressListItem
+                  key={checksummedSearchedAddress}
+                  selected={addresses.includes(checksummedSearchedAddress)}
+                  disabled={disabledAddresses.includes(
+                    checksummedSearchedAddress
+                  )}
+                  address={checksummedSearchedAddress}
+                  onClick={() => onSelectAddress(checksummedSearchedAddress)}
+                />
+              </>
+            )}
+
             {showAddressBook && (
               <>
                 <ListSubheader sx={{ px: 3 }}>Address Book</ListSubheader>
@@ -213,14 +259,15 @@ export default memo(function AddressSearchDialog({
                     <ListItemText translate="yes" primary="No results" />
                   </ListItem>
                 )}
-                {addressBookResults.map((addressBookEntry) => (
+                {addressBookResults.map(({ address, name }) => (
                   <AddressListItem
                     dataCy={"address-book-entry"}
-                    key={addressBookEntry.address}
-                    selected={addresses.includes(addressBookEntry.address)}
-                    address={addressBookEntry.address}
-                    onClick={() => onSelectAddress(addressBookEntry.address)}
-                    namePlaceholder={addressBookEntry.name}
+                    key={address}
+                    selected={addresses.includes(address)}
+                    disabled={disabledAddresses.includes(address)}
+                    address={address}
+                    onClick={() => onSelectAddress(address)}
+                    namePlaceholder={name}
                   />
                 ))}
               </>

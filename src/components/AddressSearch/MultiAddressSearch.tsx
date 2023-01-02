@@ -35,6 +35,7 @@ interface MultiAddressSearchProps {
   addressLength?: AddressNameProps["length"];
   ButtonProps?: ButtonProps;
   onBlur?: () => void;
+  disabledAddresses?: Address[];
 }
 
 export default memo(function MultiAddressSearch({
@@ -46,6 +47,7 @@ export default memo(function MultiAddressSearch({
   addressLength = "long",
   ButtonProps = {},
   onBlur = () => {},
+  disabledAddresses = [],
 }: MultiAddressSearchProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -113,14 +115,17 @@ export default memo(function MultiAddressSearch({
       )}
 
       <AddressSearchDialog
+        disableAutoselect
         title={dialogTitle}
         index={
           <AddressSearchIndex
             addresses={addresses}
             onSelectAddress={onSelectAddress}
+            disabledAddresses={disabledAddresses}
           />
         }
         addresses={addresses}
+        disabledAddresses={disabledAddresses}
         open={dialogOpen}
         onClose={() => {
           setDialogOpen(false);

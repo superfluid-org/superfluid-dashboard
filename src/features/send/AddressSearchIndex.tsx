@@ -19,11 +19,13 @@ import { Address } from "@superfluid-finance/sdk-core";
 interface AddressSearchIndexProps {
   addresses?: Address[];
   onSelectAddress: AddressSearchDialogProps["onSelectAddress"];
+  disabledAddresses?: Address[];
 }
 
 export default memo(function AddressSearchIndex({
   addresses = [],
   onSelectAddress,
+  disabledAddresses = [],
 }: AddressSearchIndexProps) {
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
@@ -74,6 +76,7 @@ export default memo(function AddressSearchIndex({
             key={address}
             address={address}
             onClick={() => onSelectAddress(address)}
+            disabled={disabledAddresses.includes(address)}
           />
         ))}
     </List>
