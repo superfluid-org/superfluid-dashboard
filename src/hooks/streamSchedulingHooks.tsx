@@ -81,7 +81,7 @@ export const isActiveStreamSchedulingOrder = (
   },
   subscription: Subscription
 ) =>
-  subscription.type === "SCHEDULED_STREAM_ORDER" &&
+  subscription.type === "SCHEDULED_FLOW_CREATE" &&
   subscription.is_subscribed &&
   subscription.account?.toLowerCase() === stream.sender.toLowerCase() &&
   subscription.meta_data?.token?.toLowerCase() === stream.token.toLowerCase() &&
