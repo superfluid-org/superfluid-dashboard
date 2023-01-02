@@ -43,5 +43,11 @@
     "TokenOne": "DAI",
     "TokenTwo": "USDC",
     "TokenGas": "BNB"
+  },
+  "ethereum": {
+    "TokenOne": "DAI",
+    "TokenTwo": "USDC",
+    "TokenGas": "ETH"
   }
+
 }

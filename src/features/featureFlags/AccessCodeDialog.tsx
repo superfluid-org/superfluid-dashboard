@@ -83,12 +83,14 @@ const AccessCodeDialog: FC<AccessCodeDialogProps> = ({ onClose }) => {
             </Alert>
           )}
           <TextField
+            data-cy={"access-code-input"}
             fullWidth
             placeholder="Enter Access Code"
             variant="outlined"
             onChange={onFeatureCodeChange}
           />
           <Button
+            data-cy={"submit-access-code"}
             variant="contained"
             disabled={!featureCode}
             size="xl"
