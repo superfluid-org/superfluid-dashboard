@@ -1,6 +1,7 @@
-import AssessmentIcon from "@mui/icons-material/Assessment";
+import AssessmentRoundedIcon from "@mui/icons-material/AssessmentRounded";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import QrCodeRoundedIcon from "@mui/icons-material/QrCodeRounded";
 import ShowerRoundedIcon from "@mui/icons-material/ShowerRounded";
 import SupportRoundedIcon from "@mui/icons-material/SupportRounded";
 import {
@@ -16,6 +17,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { FC, MouseEvent, useState } from "react";
+import AccessCodeDialog from "../featureFlags/AccessCodeDialog";
 import OnboardingCards from "../onboarding/OnboardingCards";
 import { useLayoutContext } from "./LayoutContext";
 
@@ -42,6 +44,7 @@ const MoreNavigationItem: FC = ({}) => {
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const { setNavigationDrawerOpen } = useLayoutContext();
+  const [showAccessCodeDialog, setShowAccessCodeDialog] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [moreMenuAnchor, setMoreMenuAnchor] = useState<HTMLElement | null>(
     null
@@ -65,6 +68,13 @@ const MoreNavigationItem: FC = ({}) => {
     closeOnboardingModal();
     setNavigationDrawerOpen(false);
   };
+
+  const openAccessCodeDialog = () => {
+    closeMoreMenu();
+    setShowAccessCodeDialog(true);
+  };
+
+  const closeAccessCodeDialog = () => setShowAccessCodeDialog(false);
 
   return (
     <>
@@ -143,7 +153,9 @@ const MoreNavigationItem: FC = ({}) => {
         <Link href="/accounting">
           <ListItemButton href="" onClick={closeMoreMenu}>
             <ListItemIcon>
-              <AssessmentIcon sx={{ color: theme.palette.text.primary }} />
+              <AssessmentRoundedIcon
+                sx={{ color: theme.palette.text.primary }}
+              />
             </ListItemIcon>
             <ListItemText>Export Stream Data</ListItemText>
           </ListItemButton>
@@ -154,6 +166,13 @@ const MoreNavigationItem: FC = ({}) => {
             <SupportRoundedIcon color="primary" />
           </ListItemIcon>
           <ListItemText>Getting Started</ListItemText>
+        </ListItemButton>
+
+        <ListItemButton onClick={openAccessCodeDialog}>
+          <ListItemIcon>
+            <QrCodeRoundedIcon sx={{ color: theme.palette.text.primary }} />
+          </ListItemIcon>
+          <ListItemText>Access Code</ListItemText>
         </ListItemButton>
       </Popover>
 
@@ -175,6 +194,10 @@ const MoreNavigationItem: FC = ({}) => {
           />
         </Box>
       </Modal>
+
+      {showAccessCodeDialog && (
+        <AccessCodeDialog onClose={closeAccessCodeDialog} />
+      )}
     </>
   );
 };

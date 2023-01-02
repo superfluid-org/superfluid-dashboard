@@ -112,7 +112,7 @@ const getEndTimestamp = ({
   amountEthers,
   flowRateWei,
 }: {
-  amountEthers: string; 
+  amountEthers: string;
   flowRateWei: BigNumberish;
 }): number | null => {
   const amountWei = parseEtherOrZero(amountEthers);
@@ -462,16 +462,28 @@ export default memo(function SendCard() {
     }
   }, [setShowBufferAlert, receiverAddress, tokenAddress, flowRateEther.amountEther]);
 
+  const tokenBufferQuery = rpcApi.useTokenBufferQuery(
+    tokenAddress ? { chainId: network.id, token: tokenAddress } : skipToken
+  );
+
   const bufferAmount = useMemo(() => {
-    if (!flowRateEther.amountEther || !flowRateEther.unitOfTime) {
+    if (
+      !flowRateEther.amountEther ||
+      !flowRateEther.unitOfTime ||
+      !tokenBufferQuery.data
+    ) {
       return undefined;
     }
 
-    return calculateBufferAmount(network, {
-      amountWei: parseEtherOrZero(flowRateEther.amountEther).toString(),
-      unitOfTime: flowRateEther.unitOfTime,
-    });
-  }, [network, flowRateEther]);
+    return calculateBufferAmount(
+      network,
+      {
+        amountWei: parseEtherOrZero(flowRateEther.amountEther).toString(),
+        unitOfTime: flowRateEther.unitOfTime,
+      },
+      tokenBufferQuery.data
+    );
+  }, [network, flowRateEther, tokenBufferQuery.data]);
 
   const BufferAlert = (
     <Alert severity="error">
@@ -563,7 +575,7 @@ export default memo(function SendCard() {
             })
               .unwrap()
               .then(() => resetForm())
-              .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
+              .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
 
             setDialogLoadingInfo(
               <Typography variant="h5" color="text.secondary" translate="yes">
@@ -664,7 +676,7 @@ export default memo(function SendCard() {
               })
                 .unwrap()
                 .then(() => resetForm())
-                .catch((error) => void error) // Error is already logged and handled in the middleware & UI.
+                .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
             }}
           >
             Cancel Stream
