@@ -195,6 +195,10 @@ export const StreamingPreview: FC<{
     );
   }, [oldEndDate]);
 
+  const tokenBufferQuery = rpcApi.useTokenBufferQuery(
+    token.address ? { chainId: network.id, token: token.address } : skipToken
+  );
+
   const {
     balanceAfterBuffer,
     oldBufferAmount,
@@ -206,10 +210,12 @@ export const StreamingPreview: FC<{
     if (
       !realtimeBalance ||
       !realtimeBalanceQuery.isSuccess ||
-      !activeFlowQuery.isSuccess
+      !activeFlowQuery.isSuccess ||
+      !tokenBufferQuery.data
     ) {
       return {} as Record<string, any>;
     }
+
     const { newDateWhenBalanceCritical, ...bufferInfo } = calculateBufferInfo(
       network,
       realtimeBalance,
@@ -217,7 +223,8 @@ export const StreamingPreview: FC<{
       {
         amountWei: parseEtherOrZero(flowRateEther.amountEther).toString(),
         unitOfTime: flowRateEther.unitOfTime,
-      }
+      },
+      tokenBufferQuery.data
     );
 
     const currentDate = new Date();
@@ -237,6 +244,7 @@ export const StreamingPreview: FC<{
     calculateBufferInfo,
     existingFlow,
     realtimeBalance,
+    tokenBufferQuery.data,
   ]);
 
   const isBufferLossCritical = useMemo(
@@ -329,9 +337,9 @@ export const StreamingPreview: FC<{
               <Typography variant="body2" translate="yes">
                 Upfront buffer{` `}
                 <TooltipIcon
-                  title={`A ${
+                  title={`A minimum buffer or ${
                     network.bufferTimeInMinutes / 60
-                  } hour buffer of the flow rate is taken when starting a stream and returned when you manually cancel it.`}
+                  } hour flow rate is taken when starting a stream and returned when you manually cancel it.`}
                 />
               </Typography>
             }

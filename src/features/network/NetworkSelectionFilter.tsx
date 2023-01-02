@@ -14,6 +14,7 @@ import { useTheme } from "@mui/system";
 import { FC } from "react";
 import { useAppSelector } from "../redux/store";
 import { useActiveNetworks } from "./ActiveNetworksContext";
+import { useAvailableNetworks } from "./AvailableNetworksContext";
 import NetworkIcon from "./NetworkIcon";
 import { Network, networks } from "./networks";
 
@@ -60,14 +61,10 @@ const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
 }) => {
   const theme = useTheme();
   const isBelowSm = useMediaQuery(theme.breakpoints.down("sm"));
-
-  const {
-    activeNetworks,
-    testnetMode,
-    hideNetwork,
-    unhideNetwork,
-    setTestnetMode,
-  } = useActiveNetworks();
+  const { availableMainNetworks, availableTestNetworks } =
+    useAvailableNetworks();
+  const { testnetMode, hideNetwork, unhideNetwork, setTestnetMode } =
+    useActiveNetworks();
 
   const hiddenNetworkChainIds = useAppSelector(
     (state) => state.networkPreferences.hidden
@@ -78,9 +75,6 @@ const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
 
   const onNetworkTypeChange = (_e: unknown, testActive: boolean | null) =>
     void setTestnetMode(!!testActive);
-
-  const mainnets = networks.filter((network) => !network.testnet);
-  const testnets = networks.filter((network) => network.testnet);
 
   return (
     <Menu
@@ -97,7 +91,7 @@ const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
         timeout={isBelowSm ? 0 : "auto"}
         unmountOnExit
       >
-        {mainnets.map((network) => (
+        {availableMainNetworks.map((network) => (
           <NetworkItem
             data-cy={`${network.slugName}-button`}
             key={network.id}
@@ -109,7 +103,7 @@ const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
       </Collapse>
 
       <Collapse in={testnetMode} timeout={isBelowSm ? 0 : "auto"} unmountOnExit>
-        {testnets.map((network) => (
+        {availableTestNetworks.map((network) => (
           <NetworkItem
             data-cy={`${network.slugName}-button`}
             key={network.id}

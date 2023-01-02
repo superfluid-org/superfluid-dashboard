@@ -8,7 +8,11 @@ import {
   useEffect,
   useMemo,
 } from "react";
-import { enableVestingFeature, Flag } from "../flags/flags.slice";
+import {
+  enableMainnetFeature,
+  enableVestingFeature,
+  Flag,
+} from "../flags/flags.slice";
 import { useHasFlag } from "../flags/flagsHooks";
 import { useAppDispatch } from "../redux/store";
 
@@ -16,24 +20,38 @@ const FeatureFlagContext = createContext<FeatureFlagContextValue>(null!);
 
 interface FeatureFlagContextValue {
   isVestingEnabled: boolean;
+  isMainnetEnabled: boolean;
 }
+
+export const MAINNET_FEATURE_CODE = "724ZX_ENS";
 
 export const FeatureFlagProvider: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+
   const isVestingEnabled = useHasFlag({
     id: Flag.VestingFeature,
     type: Flag.VestingFeature,
   });
 
+  const isMainnetEnabled = useHasFlag({
+    type: Flag.MainnetFeature,
+  });
+
   useEffect(() => {
     if (router.isReady) {
-      const { enable_experimental_vesting_feature, ...query } = router.query;
+      const { enable_experimental_vesting_feature, code, ...query } =
+        router.query;
 
-      if (!isUndefined(enable_experimental_vesting_feature)) {
-        if (!isVestingEnabled) {
-          dispatch(enableVestingFeature());
-        }
+      const enableVesting =
+        !isUndefined(enable_experimental_vesting_feature) && !isVestingEnabled;
+
+      const enableMainnet = code === MAINNET_FEATURE_CODE && !isMainnetEnabled;
+
+      if (enableVesting) dispatch(enableVestingFeature());
+      if (enableMainnet) dispatch(enableMainnetFeature());
+
+      if (enableVesting || enableMainnet) {
         router.replace(
           {
             query,
@@ -50,8 +68,9 @@ export const FeatureFlagProvider: FC<PropsWithChildren> = ({ children }) => {
   const contextValue = useMemo<FeatureFlagContextValue>(
     () => ({
       isVestingEnabled,
+      isMainnetEnabled,
     }),
-    [isVestingEnabled]
+    [isVestingEnabled, isMainnetEnabled]
   );
 
   return (

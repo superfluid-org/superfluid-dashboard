@@ -8,7 +8,10 @@ export interface PendingOutgoingStream
   extends PendingUpdate,
     Omit<
       Stream,
-      "createdAtBlockNumber" | "updatedAtBlockNumber" | "tokenSymbol"
+      | "createdAtBlockNumber"
+      | "updatedAtBlockNumber"
+      | "tokenSymbol"
+      | "deposit"
     > {
   pendingType: "FlowCreate";
 }

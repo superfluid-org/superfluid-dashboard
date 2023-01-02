@@ -13,6 +13,7 @@ import Layout from "../features/layout/Layout";
 import { LayoutContextProvider } from "../features/layout/LayoutContext";
 import { MinigameProvider } from "../features/minigame/MinigameContext";
 import { ActiveNetworksProvider } from "../features/network/ActiveNetworksContext";
+import { AvailableNetworksProvider } from "../features/network/AvailableNetworksContext";
 import { ExpectedNetworkProvider } from "../features/network/ExpectedNetworkContext";
 import ReduxProvider from "../features/redux/ReduxProvider";
 import createEmotionCache from "../features/theme/createEmotionCache";
@@ -75,36 +76,38 @@ export default function MyApp(props: AppPropsWithLayout) {
           <AutoConnectProvider>
             <ReduxProvider>
               <FeatureFlagProvider>
-                <ImpersonationProvider>
-                  <ExpectedNetworkProvider>
-                    <ActiveNetworksProvider>
-                      <MuiProvider>
-                        {(_muiTheme) => (
-                          <RainbowKitManager>
-                            <ConnectButtonProvider>
-                              <VisibleAddressProvider>
-                                <TransactionRestorationContextProvider>
-                                  <LayoutContextProvider>
-                                    <IntercomProvider>
-                                      <MonitorContext />
-                                      <Layout>
-                                        <MinigameProvider>
-                                          {getLayout(
-                                            <Component {...pageProps} />
-                                          )}
-                                        </MinigameProvider>
-                                      </Layout>
-                                    </IntercomProvider>
-                                  </LayoutContextProvider>
-                                </TransactionRestorationContextProvider>
-                              </VisibleAddressProvider>
-                            </ConnectButtonProvider>
-                          </RainbowKitManager>
-                        )}
-                      </MuiProvider>
-                    </ActiveNetworksProvider>
-                  </ExpectedNetworkProvider>
-                </ImpersonationProvider>
+                <AvailableNetworksProvider>
+                  <ImpersonationProvider>
+                    <ExpectedNetworkProvider>
+                      <ActiveNetworksProvider>
+                        <MuiProvider>
+                          {(_muiTheme) => (
+                            <RainbowKitManager>
+                              <ConnectButtonProvider>
+                                <VisibleAddressProvider>
+                                  <TransactionRestorationContextProvider>
+                                    <LayoutContextProvider>
+                                      <IntercomProvider>
+                                        <MonitorContext />
+                                        <Layout>
+                                          <MinigameProvider>
+                                            {getLayout(
+                                              <Component {...pageProps} />
+                                            )}
+                                          </MinigameProvider>
+                                        </Layout>
+                                      </IntercomProvider>
+                                    </LayoutContextProvider>
+                                  </TransactionRestorationContextProvider>
+                                </VisibleAddressProvider>
+                              </ConnectButtonProvider>
+                            </RainbowKitManager>
+                          )}
+                        </MuiProvider>
+                      </ActiveNetworksProvider>
+                    </ExpectedNetworkProvider>
+                  </ImpersonationProvider>
+                </AvailableNetworksProvider>
               </FeatureFlagProvider>
             </ReduxProvider>
           </AutoConnectProvider>

@@ -123,23 +123,35 @@ export function calculateBuffer(
   streamedUntilUpdatedAt: BigNumber,
   currentFlowRate: BigNumber,
   createdAtTimestamp: number,
-  bufferTimeInMinutes: number
+  bufferTimeInMinutes: number,
+  minBuffer: BigNumber
 ) {
   const bufferTimeInSeconds = BigNumber.from(bufferTimeInMinutes * 60);
 
-  if (!currentFlowRate.isZero())
-    return currentFlowRate.mul(bufferTimeInSeconds);
+  if (!currentFlowRate.isZero()) {
+    const calculatedBuffer = currentFlowRate.mul(bufferTimeInSeconds);
+    return calculatedBuffer.gte(minBuffer) ? calculatedBuffer : minBuffer;
+  }
 
-  return streamedUntilUpdatedAt
+  const calculatedBuffer = streamedUntilUpdatedAt
     .div(BigNumber.from(createdAtTimestamp))
     .mul(bufferTimeInSeconds);
+
+  return calculatedBuffer.gte(minBuffer) ? calculatedBuffer : minBuffer;
 }
 
-export const calculateBufferAmount = (
+export function calculateBufferAmount(
   network: Network,
-  flowRateWei: FlowRateWei
-): BigNumber =>
-  calculateTotalAmountWei(flowRateWei).mul(network.bufferTimeInMinutes).mul(60);
+  flowRateWei: FlowRateWei,
+  minBuffer: string
+): BigNumber {
+  const minBufferBN = BigNumber.from(minBuffer);
+  const calculatedBuffer = calculateTotalAmountWei(flowRateWei)
+    .mul(network.bufferTimeInMinutes)
+    .mul(60);
+
+  return calculatedBuffer.gte(minBufferBN) ? calculatedBuffer : minBufferBN;
+}
 
 export const calculateCurrentBalance = ({
   flowRateWei,
