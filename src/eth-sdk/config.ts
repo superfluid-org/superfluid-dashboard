@@ -4,13 +4,10 @@ import { networkDefinition } from "../features/network/networks";
 export default defineConfig({
   contracts: {
     goerli: {
-      streamScheduler: networkDefinition.goerli.streamSchedulerContractAddress,
+      flowScheduler: networkDefinition.goerli.flowSchedulerContractAddress,
       vestingScheduler:
         networkDefinition.goerli.vestingSchedulerContractAddress,
-    },
-    // polygonMumbai: {
-    //   "StreamScheduler": networkDefinition.polygonMumbai.streamSchedulerContractAddress,
-    // },
+    }
   },
   outputPath: "./src/eth-sdk/client",
 });

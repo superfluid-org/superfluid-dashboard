@@ -13,6 +13,7 @@ import {
   RealtimeBalance,
 } from "./balanceFetcher";
 import { Overrides, Signer } from "ethers";
+import { Address } from "wagmi";
 
 declare module "@superfluid-finance/sdk-redux" {
   interface TransactionTitleOverrides {
@@ -200,6 +201,25 @@ export const adHocRpcEndpoints = {
           extraData: arg.transactionExtraData,
         });
       },
+    }),
+    tokenBuffer: builder.query<string, { chainId: number; token: string }>({
+      queryFn: async (arg) => {
+        const framework = await getFramework(arg.chainId);
+        const minBuffer = await framework.governance.getMinimumDeposit({
+          token: arg.token,
+          providerOrSigner: framework.settings.provider,
+        });
+
+        return {
+          data: minBuffer,
+        };
+      },
+      providesTags: (_result, _error, arg) => [
+        {
+          type: "GENERAL",
+          id: arg.chainId, // TODO(KK): Could be made more specific.
+        },
+      ],
     }),
   }),
 };

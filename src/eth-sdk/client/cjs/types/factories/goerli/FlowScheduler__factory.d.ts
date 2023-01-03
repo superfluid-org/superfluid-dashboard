@@ -1,7 +1,7 @@
 import { Signer } from "ethers";
 import type { Provider } from "@ethersproject/providers";
-import type { StreamScheduler, StreamSchedulerInterface } from "../../goerli/StreamScheduler";
-export declare class StreamScheduler__factory {
+import type { FlowScheduler, FlowSchedulerInterface } from "../../goerli/FlowScheduler";
+export declare class FlowScheduler__factory {
     static readonly abi: ({
         inputs: {
             internalType: string;
@@ -68,6 +68,6 @@ export declare class StreamScheduler__factory {
         type: string;
         anonymous?: undefined;
     })[];
-    static createInterface(): StreamSchedulerInterface;
-    static connect(address: string, signerOrProvider: Signer | Provider): StreamScheduler;
+    static createInterface(): FlowSchedulerInterface;
+    static connect(address: string, signerOrProvider: Signer | Provider): FlowScheduler;
 }

@@ -5,6 +5,9 @@ import {MockProvider} from "@rsksmart/mock-web3-provider";
 import {ethers} from "ethers";
 import HDWalletProvider from "@truffle/hdwallet-provider";
 
+// @ts-ignore - web3-provider-engine doesn't have declaration files for these subproviders
+import HookedWalletSubprovider from "web3-provider-engine/subproviders/hooked-wallet";
+
 const NAVIGATION_BUTTON_PREFIX = "[data-cy=nav-";
 const TOP_BAR_NETWORK_BUTTON = "[data-cy=top-bar-network-button]";
 const CONNECTED_WALLET = "[data-cy=wallet-connection-status] h6";
@@ -33,6 +36,11 @@ const STREAM_FLOW_RATES = "[data-cy=flow-rate]";
 const START_END_DATES = "[data-cy=start-end-date]";
 const DISCONNECT_BUTTON = "[data-testid=rk-disconnect-button]"
 const RAINBOWKIT_CLOSE_BUTTON = "[aria-label=Close]"
+const TX_ERROR = "[data-cy=tx-error]"
+const NAVIGATION_MORE_BUTTON = "[data-cy=nav-more-button]"
+const ACCESS_CODE_BUTTON = "[data-cy=more-access-code-btn]"
+const ACCESS_CODE_INPUT = "[data-cy=access-code-input]"
+const ACCESS_CODE_SUBMIT = "[data-cy=submit-access-code]"
 
 export class Common extends BasePage {
     static clickNavBarButton(button: string) {
@@ -121,31 +129,54 @@ export class Common extends BasePage {
     }
 
     static openDashboardWithConnectedTxAccount(persona:string,network: string) {
+        let selectedNetwork = network === "selected network" ? Cypress.env("network") : network
         let personas = ["alice","bob","dan","john"]
         let chosenPersona = personas.findIndex((el) => el === persona) + 1
 
-        let chainId = networksBySlug.get(network)?.id
+        let chainId = networksBySlug.get(selectedNetwork)?.id
 
-        // @ts-ignore
-        let networkRpc = superfluidRpcUrls[network]
+        let networkRpc = networksBySlug.get(selectedNetwork)?.rpcUrls.superfluid
+
         cy.visit("/", {
             onBeforeLoad: (win: any) => {
-                const provider = new HDWalletProvider({
+                const hdwallet = new HDWalletProvider({
                     privateKeys: [Cypress.env(`TX_ACCOUNT_PRIVATE_KEY${chosenPersona}`)],
                     url: networkRpc,
                     chainId: chainId,
                     pollingInterval: 1000,
                 });
-                win.mockSigner = new ethers.providers.Web3Provider(provider).getSigner();
+
+                if(Cypress.env("rejected")) {
+                // Make HDWallet automatically reject transaction.
+                // Inspired by: https://github.com/MetaMask/web3-provider-engine/blob/e835b80bf09e76d92b785d797f89baa43ae3fd60/subproviders/hooked-wallet.js#L326
+                    for (const provider of hdwallet.engine._providers) {
+                        if (provider.checkApproval) {
+                          provider.checkApproval = function(type, didApprove, cb) {
+                              cb(new Error('User denied '+type+' signature.') )
+                          }
+                        }
+                    }
+                }
+                win.mockSigner = new ethers.providers.Web3Provider(hdwallet).getSigner();
             },
         });
         if (Cypress.env("dev")) {
             //The nextjs error is annoying when developing test cases in dev mode
             cy.get("nextjs-portal").shadow().find("[aria-label=Close]").click()
         }
-        this.changeNetwork(network)
+        if(selectedNetwork === "ethereum") {
+            this.click(NAVIGATION_MORE_BUTTON)
+            this.click(ACCESS_CODE_BUTTON)
+            this.type(ACCESS_CODE_INPUT ,"724ZX_ENS")
+            this.click(ACCESS_CODE_SUBMIT)
+        }
+        this.changeNetwork(selectedNetwork)
         this.clickConnectWallet()
         this.clickMockWallet()
+        //Workaround for the connection issue after mainnet branch was merged
+        let workaroundNetwork = selectedNetwork === "goerli" ? "polygon-mumbai" : "goerli"
+        this.changeNetwork(workaroundNetwork)
+        this.changeNetwork(selectedNetwork)
     }
 
     static clickConnectWallet() {
@@ -164,6 +195,7 @@ export class Common extends BasePage {
 
     static changeNetwork(network: string) {
         this.click(TOP_BAR_NETWORK_BUTTON);
+        this.click(MAINNETS_BUTTON)
         if (networksBySlug.get(network)?.testnet) {
             this.click(TESTNETS_BUTTON)
         }
@@ -280,5 +312,13 @@ export class Common extends BasePage {
     static disconnectWallet() {
         this.click(WALLET_CONNECTION_STATUS)
         this.click(DISCONNECT_BUTTON)
+    }
+
+    static wait(seconds: number) {
+        cy.wait(seconds * 1000)
+    }
+
+    static transactionRejectedErrorIsShown() {
+        cy.get(TX_ERROR,{timeout:45000}).should("have.text","Transaction Rejected")
     }
 }

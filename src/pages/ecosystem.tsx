@@ -97,13 +97,14 @@ export const BUILT_ON_SUPERFLUID = [
   {
     name: "Geo Web",
     href: "https://www.geoweb.network/",
-    icon: "/icons/ecosystem/huma.svg",
+    icon: "/icons/ecosystem/geoweb.svg",
     description: `AR layer anchoring digital content to physical locations`,
-    chains: [networkDefinition.polygon.id],
-    comingSoon: true,
+    chains: [
+          networkDefinition.optimism.id,
+        ],    
     colors: {
-      primary: "#434C7C",
-      secondary: "#5E71E2",
+      primary: "#4B5588",
+      secondary: "#2FC1C1",
     },
   },
 ];
@@ -249,6 +250,19 @@ export const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
     colors: {
       primary: "#FF4A4A",
       secondary: "#F07979",
+    },
+  },
+  {
+    name: "TokenOps",
+    href: `https://www.tokenops.xyz/`,
+    icon: "/icons/ecosystem/tokenops.svg",
+    description: `Create, track, and automate token vesting schedules`,
+    chains: [
+      networkDefinition.polygon.id,
+    ],
+    colors: {
+      primary: "#2D6DEC",
+      secondary: "#8F98F4",
     },
   },
 ];

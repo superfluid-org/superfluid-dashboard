@@ -299,8 +299,8 @@ export default memo(function SendCard() {
     />
   );
 
-  const doesNetworkSupportStreamScheduler =
-    !!network.streamSchedulerContractAddress;
+  const doesNetworkSupportFlowScheduler =
+    !!network.flowSchedulerContractAddress;
 
   const [streamScheduling, setStreamScheduling] = useState<boolean>(
     !!endTimestamp
@@ -464,16 +464,28 @@ export default memo(function SendCard() {
     }
   }, [setShowBufferAlert, receiverAddress, tokenAddress, flowRateEther.amountEther]);
 
+  const tokenBufferQuery = rpcApi.useTokenBufferQuery(
+    tokenAddress ? { chainId: network.id, token: tokenAddress } : skipToken
+  );
+
   const bufferAmount = useMemo(() => {
-    if (!flowRateEther.amountEther || !flowRateEther.unitOfTime) {
+    if (
+      !flowRateEther.amountEther ||
+      !flowRateEther.unitOfTime ||
+      !tokenBufferQuery.data
+    ) {
       return undefined;
     }
 
-    return calculateBufferAmount(network, {
-      amountWei: parseEtherOrZero(flowRateEther.amountEther).toString(),
-      unitOfTime: flowRateEther.unitOfTime,
-    });
-  }, [network, flowRateEther]);
+    return calculateBufferAmount(
+      network,
+      {
+        amountWei: parseEtherOrZero(flowRateEther.amountEther).toString(),
+        unitOfTime: flowRateEther.unitOfTime,
+      },
+      tokenBufferQuery.data
+    );
+  }, [network, flowRateEther, tokenBufferQuery.data]);
 
   const BufferAlert = (
     <Alert severity="error">
@@ -758,7 +770,7 @@ export default memo(function SendCard() {
             {FlowRateController}
           </Box>
         </Box>
-        {doesNetworkSupportStreamScheduler && (
+        {doesNetworkSupportFlowScheduler && (
           <>
             <FormControlLabel
               control={StreamSchedulingController}

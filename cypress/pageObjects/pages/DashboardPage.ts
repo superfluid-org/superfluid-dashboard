@@ -225,10 +225,19 @@ export class DashboardPage extends BasePage {
     }
 
     static openIndividualTokenPage(network: string, token: string) {
-        cy.get(`[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX}`, {timeout: 45000}).should("be.visible")
-        this.click(
-            `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell]`
-        );
+        cy.fixture("rejectedCaseTokens").then(tokens => {
+            let selectedToken;
+            if(token.startsWith("Token")) {
+                selectedToken = token.endsWith("x") ? `${tokens[Cypress.env("network")][token.slice(0, -1)]}x`: tokens[Cypress.env("network")][token]
+            } else {
+                selectedToken = token
+            }
+            let selectedNetwork = network === "selected network" ? Cypress.env("network") : network
+            cy.get(`[data-cy=${selectedNetwork}${NETWORK_SNAPSHOT_TABLE_APPENDIX}`, {timeout: 45000}).should("be.visible")
+            this.click(
+                `[data-cy=${selectedNetwork}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy="${selectedToken}-cell"]`
+            );
+        })
     }
 
     static waitForXAmountOfEntries(amount: number) {

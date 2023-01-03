@@ -83,6 +83,7 @@ const StreamingFormProvider = memo(function StreamingFormProvider({
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryActiveFlow] = rpcApi.useLazyGetActiveFlowQuery();
   const calculateBufferInfo = useCalculateBufferInfo();
+  const [tokenBufferTrigger] = rpcApi.useLazyTokenBufferQuery();
 
   const sanitizedSchema = useMemo<ObjectSchema<SanitizedStreamingForm>>(
     () =>
@@ -142,13 +143,20 @@ const StreamingFormProvider = memo(function StreamingFormProvider({
           ).unwrap(),
         ]);
 
-        const { newDateWhenBalanceCritical, balanceAfterBuffer } =
-          calculateBufferInfo(network, realtimeBalance, activeFlow, {
-            amountWei: parseEther(
+        const tokenBufferQuery = await tokenBufferTrigger({
+            chainId: network.id,
+            token: tokenAddress,
+          });
+
+          if (tokenBufferQuery.data) {const { newDateWhenBalanceCritical, balanceAfterBuffer } =
+          calculateBufferInfo(network, realtimeBalance, activeFlow,
+            {amountWei: parseEther(
               sanitizedForm.data.flowRate.amountEther
             ).toString(),
             unitOfTime: sanitizedForm.data.flowRate.unitOfTime,
-          });
+          },
+                tokenBufferQuery.data
+              );
 
         if (balanceAfterBuffer.isNegative()) {
           return handleError({
@@ -171,7 +179,7 @@ const StreamingFormProvider = memo(function StreamingFormProvider({
             });
           }
         }
-      }
+      }}
 
       if (!understandLiquidationRisk) {
         return false;

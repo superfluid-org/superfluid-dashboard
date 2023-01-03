@@ -14,7 +14,7 @@
 [[headers]]
 for = "/*"
   [headers.values]
-  Access-Control-Allow-Origin = "https://gnosis-safe.io"
+  Access-Control-Allow-Origin = "https://app.safe.global"
 
 [[redirects]]
   from = "/streams/*"
