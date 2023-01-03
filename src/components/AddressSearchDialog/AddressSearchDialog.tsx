@@ -279,7 +279,14 @@ export default memo(function AddressSearchDialog({
         )}
       </DialogContent>
       {showSelected && addresses.length > 0 && (
-        <DialogActions sx={{ p: 0, maxHeight: "35vh", overflow: "auto" }}>
+        <DialogActions
+          sx={{
+            p: 0,
+            maxHeight: "35vh",
+            overflow: "auto",
+            alignItems: "start",
+          }}
+        >
           <List
             disablePadding
             sx={{
