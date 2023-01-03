@@ -1,5 +1,6 @@
-import CloseIcon from "@mui/icons-material/Close";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import {
+  Button,
   debounce,
   DialogActions,
   DialogContent,
@@ -34,6 +35,7 @@ import { addressBookSelectors } from "../../features/addressBook/addressBook.sli
 import { ensApi } from "../../features/ens/ensApi.slice";
 import shortenHex from "../../utils/shortenHex";
 import { Address } from "@superfluid-finance/sdk-core";
+import Box from "@mui/material/Box/Box";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
@@ -44,6 +46,7 @@ interface AddressListItemProps {
   namePlaceholder?: string;
   dataCy?: string;
   onClick: () => void;
+  showRemove?: boolean;
 }
 
 export const AddressListItem: FC<AddressListItemProps> = ({
@@ -53,6 +56,7 @@ export const AddressListItem: FC<AddressListItemProps> = ({
   dataCy,
   onClick,
   namePlaceholder,
+  showRemove = false,
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -81,6 +85,11 @@ export const AddressListItem: FC<AddressListItemProps> = ({
           (isBelowMd ? shortenHex(checksumHex, 8) : checksumHex)
         }
       />
+      {showRemove && (
+        <IconButton size="small" onClick={onClick}>
+          <CloseRoundedIcon sx={{ color: theme.palette.text.secondary }} />
+        </IconButton>
+      )}
     </ListItemButton>
   );
 };
@@ -175,7 +184,7 @@ export default memo(function AddressSearchDialog({
       data-cy={"receiver-dialog"}
       open={open}
       onClose={() => onClose()}
-      PaperProps={{ sx: { borderRadius: "20px", maxWidth: 500 } }}
+      PaperProps={{ sx: { borderRadius: "20px", maxWidth: 550 } }}
     >
       <DialogTitle sx={{ p: 3 }}>
         <Typography variant="h4" sx={{ mb: 3 }}>
@@ -189,7 +198,7 @@ export default memo(function AddressSearchDialog({
             top: theme.spacing(3),
           }}
         >
-          <CloseIcon />
+          <CloseRoundedIcon />
         </IconButton>
         <TextField
           data-cy={"address-dialog-input"}
@@ -279,34 +288,42 @@ export default memo(function AddressSearchDialog({
         )}
       </DialogContent>
       {showSelected && addresses.length > 0 && (
-        <DialogActions
-          sx={{
-            p: 0,
-            maxHeight: "35vh",
-            overflow: "auto",
-            alignItems: "start",
-          }}
-        >
-          <List
-            disablePadding
+        <>
+          <DialogContent
             sx={{
-              position: "sticky",
-              bottom: 0,
-              width: "100%",
-              background: theme.palette.background.paper,
+              p: 0,
+              maxHeight: "320px",
+              overflow: "auto",
+              flex: "0 0 auto",
             }}
           >
-            <ListSubheader sx={{ px: 3 }}>Selected</ListSubheader>
-            {addresses.map((address) => (
-              <AddressListItem
-                key={`${address}-selected`}
-                selected
-                address={address}
-                onClick={() => onSelectAddress(address)}
-              />
-            ))}
-          </List>
-        </DialogActions>
+            <List
+              disablePadding
+              sx={{
+                position: "sticky",
+                bottom: 0,
+                width: "100%",
+                background: theme.palette.background.paper,
+              }}
+            >
+              <ListSubheader sx={{ px: 3 }}>Selected</ListSubheader>
+              {addresses.map((address) => (
+                <AddressListItem
+                  key={`${address}-selected`}
+                  selected
+                  showRemove
+                  address={address}
+                  onClick={() => onSelectAddress(address)}
+                />
+              ))}
+            </List>
+          </DialogContent>
+          <DialogActions sx={{ p: 3 }}>
+            <Button variant="contained" size="xl" onClick={onClose}>
+              Ok
+            </Button>
+          </DialogActions>
+        </>
       )}
     </ResponsiveDialog>
   );

@@ -287,10 +287,12 @@ const getDesignTokens = (theme: Theme): ThemeOptions => {
         fontSize: pxToRem(14),
         fontWeight: 400,
         letterSpacing: 0.17,
+        lineHeight: 1.429,
       },
       body2mono: {
         fontSize: pxToRem(14),
         fontWeight: 400,
+        lineHeight: 1.429,
         whiteSpace: "pre",
         fontVariantNumeric: "tabular-nums",
       },
