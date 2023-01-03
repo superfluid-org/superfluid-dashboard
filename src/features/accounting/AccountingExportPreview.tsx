@@ -144,6 +144,7 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         headerName: "Start Date",
         type: "date",
         minWidth: 120,
+        hide: true,
         valueGetter: (params: GridValueGetterParams) =>
           format(fromUnixTime(params.row.startTime), "yyyy/MM/dd"),
       },
