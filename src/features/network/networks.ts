@@ -145,7 +145,7 @@ export const networkDefinition: {
       superfluid: superfluidRpcUrls.gnosis,
       default: "https://rpc.gnosischain.com/",
     },
-    subgraphUrl: "https://subgraph.satsuma-prod.com/superfluid/xdai/api",
+    subgraphUrl: "https://subgraph.satsuma-prod.com/c5br3jaVlJI6/superfluid/xdai/api",
     getLinkForTransaction: (txHash: string): string =>
       `https://blockscout.com/xdai/mainnet/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -419,7 +419,7 @@ export const networkDefinition: {
       ...chain.mainnet.rpcUrls,
       superfluid: superfluidRpcUrls.ethereum,
     },
-    subgraphUrl: "https://subgraph.satsuma-prod.com/superfluid/eth-mainnet/api",
+    subgraphUrl: "https://subgraph.satsuma-prod.com/c5br3jaVlJI6/superfluid/eth-mainnet/api",
     getLinkForTransaction: (txHash: string): string =>
       `https://etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
