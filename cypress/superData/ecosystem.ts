@@ -43,17 +43,17 @@ export const AUTOMATE_CRYPTO_VESTING = [
             secondary: "#8F98F4",
         },
     },
-    {
-        name: "Superfluid Dashboard",
-        href: `https://superfluid.finance/vesting`,
-        icon: "/icons/ecosystem/superfluid.svg",
-        description: `Create vesting schedules directly from the Superfluid app`,
-        chains: [networkDefinition.polygon.id],
-        colors: {
-            primary: "#2D6DEC",
-            secondary: "#8F98F4",
-        },
-    },
+    // {
+    //     name: "Superfluid Dashboard",
+    //     href: `https://superfluid.finance/vesting`,
+    //     icon: "/icons/ecosystem/superfluid.svg",
+    //     description: `Create vesting schedules directly from the Superfluid app`,
+    //     chains: [networkDefinition.polygon.id],
+    //     colors: {
+    //         primary: "#2D6DEC",
+    //         secondary: "#8F98F4",
+    //     },
+    // },
 ];
 
 export const INVEST_IN_REALTIME = [
