@@ -160,7 +160,7 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
           const sign = Decimal.sign(params.value);
           const absDecimal = Decimal.abs(params.value);
 
-          return `${sign < 0 ? "- " : ""}${currency.format(absDecimal)}`;
+          return `${sign < 0 ? "-" : ""}${currency.format(absDecimal)}`;
         },
       },
       {

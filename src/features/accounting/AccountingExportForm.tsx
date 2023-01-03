@@ -63,7 +63,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
   const { watch, control, formState, getValues } =
     useFormContext<PartialAccountingExportForm>();
 
-  const [addresses, counterparties, startDate, endDate] = watch([
+  const [addresses = [], counterparties = [], startDate, endDate] = watch([
     "data.addresses",
     "data.counterparties",
     "data.startDate",
@@ -130,7 +130,11 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
             name="data.addresses"
             render={({ field: { value, onChange } }) => (
               <MultiAddressSearch
-                placeholder="Select address(es)"
+                placeholder={
+                  (addresses || []).length > 0
+                    ? `${(addresses || []).length} address(es) selected`
+                    : "Select address(es)"
+                }
                 addresses={value || []}
                 onChange={onChange}
                 disabledAddresses={counterparties || []}
@@ -146,7 +150,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
             justifyContent="space-between"
             sx={{ mr: 0.75 }}
           >
-            <FormLabel>Counterparty addresses *</FormLabel>
+            <FormLabel>Counterparty addresses (optional)</FormLabel>
             <TooltipIcon title="Must not be an exchange address. If no addresses are selected, all counterparties will be fetched." />
           </Stack>
           <Controller
@@ -154,8 +158,11 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
             name="data.counterparties"
             render={({ field: { value, onChange } }) => (
               <MultiAddressSearch
-                placeholder="Select address(es)"
-                helperText="* This field is optional. If no addresses are selected, all counterparties will be fetched."
+                placeholder={
+                  (counterparties || []).length > 0
+                    ? `${(counterparties || []).length} address(es) selected`
+                    : "Select address(es)"
+                }
                 addresses={value || []}
                 onChange={onChange}
                 disabledAddresses={addresses || []}
