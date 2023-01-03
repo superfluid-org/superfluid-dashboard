@@ -123,7 +123,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
             sx={{ mr: 0.75 }}
           >
             <FormLabel>View for addresses</FormLabel>
-            <TooltipIcon title="tooltip" />
+            <TooltipIcon title="The address(es) you’re getting accounting data for." />
           </Stack>
           <Controller
             control={control}

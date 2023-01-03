@@ -116,6 +116,7 @@ export default memo(function MultiAddressSearch({
 
       <AddressSearchDialog
         disableAutoselect
+        showSelected
         title={dialogTitle}
         index={
           <AddressSearchIndex

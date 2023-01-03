@@ -1,6 +1,7 @@
 import CloseIcon from "@mui/icons-material/Close";
 import {
   debounce,
+  DialogActions,
   DialogContent,
   DialogTitle,
   IconButton,
@@ -94,6 +95,7 @@ export type AddressSearchDialogProps = {
   showAddressBook?: boolean;
   disableAutoselect?: boolean;
   disabledAddresses?: Address[];
+  showSelected?: boolean;
 };
 
 export default memo(function AddressSearchDialog({
@@ -106,6 +108,7 @@ export default memo(function AddressSearchDialog({
   showAddressBook = true,
   disableAutoselect = false,
   disabledAddresses = [],
+  showSelected = false,
 }: AddressSearchDialogProps) {
   const theme = useTheme();
 
@@ -275,6 +278,29 @@ export default memo(function AddressSearchDialog({
           </List>
         )}
       </DialogContent>
+      {showSelected && addresses.length > 0 && (
+        <DialogActions sx={{ p: 0, maxHeight: "35vh", overflow: "auto" }}>
+          <List
+            disablePadding
+            sx={{
+              position: "sticky",
+              bottom: 0,
+              width: "100%",
+              background: theme.palette.background.paper,
+            }}
+          >
+            <ListSubheader sx={{ px: 3 }}>Selected</ListSubheader>
+            {addresses.map((address) => (
+              <AddressListItem
+                key={`${address}-selected`}
+                selected
+                address={address}
+                onClick={() => onSelectAddress(address)}
+              />
+            ))}
+          </List>
+        </DialogActions>
+      )}
     </ResponsiveDialog>
   );
 });
