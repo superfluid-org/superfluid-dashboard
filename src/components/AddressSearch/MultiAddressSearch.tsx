@@ -42,7 +42,7 @@ export default memo(function MultiAddressSearch({
   addresses,
   onChange,
   placeholder = "Public Address or ENS",
-  dialogTitle = "Select a receiver",
+  dialogTitle = "Select Address(es)",
   helperText = "",
   addressLength = "long",
   ButtonProps = {},

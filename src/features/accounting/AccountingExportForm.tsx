@@ -130,7 +130,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
             name="data.addresses"
             render={({ field: { value, onChange } }) => (
               <MultiAddressSearch
-                placeholder="Select addresses"
+                placeholder="Select address(es)"
                 addresses={value || []}
                 onChange={onChange}
                 disabledAddresses={counterparties || []}
@@ -154,7 +154,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
             name="data.counterparties"
             render={({ field: { value, onChange } }) => (
               <MultiAddressSearch
-                placeholder="Select addresses"
+                placeholder="Select address(es)"
                 helperText="* This field is optional. If no addresses are selected, all counterparties will be fetched."
                 addresses={value || []}
                 onChange={onChange}
