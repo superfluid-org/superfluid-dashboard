@@ -95,15 +95,22 @@ export const networkDefinition: {
 } = {
   goerli: {
     ...chain.goerli,
+    name: process.env.NODE_ENV === "development" ? "Local" : chain.goerli.name,
     blockExplorers: ensureDefined(chain.goerli.blockExplorers),
     slugName: "goerli",
     v1ShortName: "goerli",
     bufferTimeInMinutes: 60,
     color: "#9064ff",
-    rpcUrls: {
-      ...chain.goerli.rpcUrls,
-      superfluid: superfluidRpcUrls.goerli,
-    },
+    rpcUrls:
+      process.env.NODE_ENV === "development"
+        ? {
+            default: "http://127.0.0.1:8545",
+            superfluid: "http://127.0.0.1:8545",
+          }
+        : {
+            ...chain.goerli.rpcUrls,
+            superfluid: superfluidRpcUrls.goerli,
+          },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli",
     getLinkForTransaction: (txHash: string): string =>

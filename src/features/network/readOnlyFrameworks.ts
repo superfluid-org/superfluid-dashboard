@@ -1,5 +1,4 @@
 import { Framework } from "@superfluid-finance/sdk-core";
-import { ethers } from "ethers";
 import promiseRetry from "promise-retry";
 import { wagmiRpcProvider } from "../wallet/WagmiManager";
 import { networkDefinition, networks } from "./networks";

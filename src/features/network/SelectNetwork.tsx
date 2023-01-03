@@ -10,19 +10,19 @@ import {
   ToggleButtonGroup,
   useMediaQuery,
   useTheme,
-} from "@mui/material";
-import { FC, memo, MouseEvent, useEffect, useState } from "react";
-import { useAccount, useSwitchNetwork } from "wagmi";
-import OpenIcon from "../../components/OpenIcon/OpenIcon";
-import { useAvailableNetworks } from "./AvailableNetworksContext";
-import { useExpectedNetwork } from "./ExpectedNetworkContext";
-import NetworkIcon from "./NetworkIcon";
-import { Network, testNetworks } from "./networks";
+} from '@mui/material'
+import { FC, memo, MouseEvent, useEffect, useState } from 'react'
+import { useAccount, useSwitchNetwork } from 'wagmi'
+import OpenIcon from '../../components/OpenIcon/OpenIcon'
+import { useAvailableNetworks } from './AvailableNetworksContext'
+import { useExpectedNetwork } from './ExpectedNetworkContext'
+import NetworkIcon from './NetworkIcon'
+import { Network, testNetworks } from './networks'
 
 interface NetworkItemProps {
-  network: Network;
-  selected: boolean;
-  onClick: () => void;
+  network: Network
+  selected: boolean
+  onClick: () => void
 }
 
 const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
@@ -38,55 +38,57 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
     </ListItemAvatar>
     {network.name}
   </MenuItem>
-);
+)
 
 export default memo(function SelectNetwork() {
-  const theme = useTheme();
-  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const theme = useTheme()
+  const isBelowMd = useMediaQuery(theme.breakpoints.down('md'))
 
-  const { availableMainNetworks } = useAvailableNetworks();
+  const { availableMainNetworks } = useAvailableNetworks()
 
-  const { address: accountAddress } = useAccount();
-  const { switchNetwork } = useSwitchNetwork();
+  const { address: accountAddress } = useAccount()
+  const { switchNetwork } = useSwitchNetwork()
 
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const [showTestnets, setShowTestnets] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const [showTestnets, setShowTestnets] = useState(false)
 
-  const open = Boolean(anchorEl);
+  const open = Boolean(anchorEl)
 
-  const { network: selectedNetwork, setExpectedNetwork: setSelectedNetwork } =
-    useExpectedNetwork();
+  const {
+    network: selectedNetwork,
+    setExpectedNetwork: setSelectedNetwork,
+  } = useExpectedNetwork()
 
   useEffect(() => {
-    setShowTestnets(!!selectedNetwork.testnet);
-  }, [selectedNetwork]);
+    setShowTestnets(!!selectedNetwork.testnet)
+  }, [selectedNetwork])
 
   const handleOpen = (event: MouseEvent<HTMLButtonElement>) =>
-    setAnchorEl(event.currentTarget);
+    setAnchorEl(event.currentTarget)
 
-  const handleClose = () => setAnchorEl(null);
+  const handleClose = () => setAnchorEl(null)
 
   const onNetworkSelected = (chainId: number) => () => {
-    handleClose();
-    setSelectedNetwork(chainId);
+    handleClose()
+    setSelectedNetwork(chainId)
 
     if (accountAddress && switchNetwork) {
-      switchNetwork(chainId);
+      switchNetwork(chainId)
     }
-  };
+  }
 
   const handleShowTestnetsChange = (
     _e: unknown,
-    testActive: boolean | null
+    testActive: boolean | null,
   ) => {
-    if (testActive !== null) setShowTestnets(testActive);
-  };
+    if (testActive !== null) setShowTestnets(testActive)
+  }
 
   return (
     <>
       {!isBelowMd ? (
         <Button
-          data-cy={"top-bar-network-button"}
+          data-cy={'top-bar-network-button'}
           variant="outlined"
           color="secondary"
           size="large"
@@ -96,7 +98,7 @@ export default memo(function SelectNetwork() {
           endIcon={<OpenIcon open={open} />}
           onClick={handleOpen}
           sx={{
-            ".MuiButton-startIcon > *:nth-of-type(1)": { fontSize: "16px" },
+            '.MuiButton-startIcon > *:nth-of-type(1)': { fontSize: '16px' },
           }}
           translate="no"
         >
@@ -112,8 +114,8 @@ export default memo(function SelectNetwork() {
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        transformOrigin={{ horizontal: "right", vertical: "top" }}
-        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         PaperProps={{ sx: { minWidth: 280 }, square: true }}
         sx={{ marginTop: theme.spacing(1.5) }}
       >
@@ -139,7 +141,7 @@ export default memo(function SelectNetwork() {
           ))}
         </Collapse>
 
-        <Box sx={{ margin: "6px 16px" }}>
+        <Box sx={{ margin: '6px 16px' }}>
           <ToggleButtonGroup
             exclusive
             fullWidth
@@ -148,15 +150,15 @@ export default memo(function SelectNetwork() {
             value={showTestnets}
             onChange={handleShowTestnetsChange}
           >
-            <ToggleButton data-cy={"mainnets-button"} value={false}>
+            <ToggleButton data-cy={'mainnets-button'} value={false}>
               Mainnets
             </ToggleButton>
-            <ToggleButton data-cy={"testnets-button"} value={true}>
+            <ToggleButton data-cy={'testnets-button'} value={true}>
               Testnets
             </ToggleButton>
           </ToggleButtonGroup>
         </Box>
       </Menu>
     </>
-  );
-});
+  )
+})
