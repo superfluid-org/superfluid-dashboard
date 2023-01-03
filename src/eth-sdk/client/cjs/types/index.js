@@ -23,9 +23,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.VestingScheduler__factory = exports.StreamScheduler__factory = exports.factories = void 0;
+exports.VestingScheduler__factory = exports.FlowScheduler__factory = exports.factories = void 0;
 exports.factories = __importStar(require("./factories"));
-var StreamScheduler__factory_1 = require("./factories/goerli/StreamScheduler__factory");
-Object.defineProperty(exports, "StreamScheduler__factory", { enumerable: true, get: function () { return StreamScheduler__factory_1.StreamScheduler__factory; } });
+var FlowScheduler__factory_1 = require("./factories/goerli/FlowScheduler__factory");
+Object.defineProperty(exports, "FlowScheduler__factory", { enumerable: true, get: function () { return FlowScheduler__factory_1.FlowScheduler__factory; } });
 var VestingScheduler__factory_1 = require("./factories/goerli/VestingScheduler__factory");
 Object.defineProperty(exports, "VestingScheduler__factory", { enumerable: true, get: function () { return VestingScheduler__factory_1.VestingScheduler__factory; } });

@@ -139,12 +139,14 @@ export interface VestingSchedulerInterface extends utils.Interface {
     events: {
         "VestingCliffAndFlowExecuted(address,address,address,uint32,int96,uint256,uint256)": EventFragment;
         "VestingEndExecuted(address,address,address,uint32,uint256,bool)": EventFragment;
+        "VestingEndFailed(address,address,address,uint32)": EventFragment;
         "VestingScheduleCreated(address,address,address,uint32,uint32,int96,uint32,uint256)": EventFragment;
         "VestingScheduleDeleted(address,address,address)": EventFragment;
         "VestingScheduleUpdated(address,address,address,uint32,uint32)": EventFragment;
     };
     getEvent(nameOrSignatureOrTopic: "VestingCliffAndFlowExecuted"): EventFragment;
     getEvent(nameOrSignatureOrTopic: "VestingEndExecuted"): EventFragment;
+    getEvent(nameOrSignatureOrTopic: "VestingEndFailed"): EventFragment;
     getEvent(nameOrSignatureOrTopic: "VestingScheduleCreated"): EventFragment;
     getEvent(nameOrSignatureOrTopic: "VestingScheduleDeleted"): EventFragment;
     getEvent(nameOrSignatureOrTopic: "VestingScheduleUpdated"): EventFragment;
@@ -185,6 +187,19 @@ export declare type VestingEndExecutedEvent = TypedEvent<[
     boolean
 ], VestingEndExecutedEventObject>;
 export declare type VestingEndExecutedEventFilter = TypedEventFilter<VestingEndExecutedEvent>;
+export interface VestingEndFailedEventObject {
+    superToken: string;
+    sender: string;
+    receiver: string;
+    endDate: number;
+}
+export declare type VestingEndFailedEvent = TypedEvent<[
+    string,
+    string,
+    string,
+    number
+], VestingEndFailedEventObject>;
+export declare type VestingEndFailedEventFilter = TypedEventFilter<VestingEndFailedEvent>;
 export interface VestingScheduleCreatedEventObject {
     superToken: string;
     sender: string;
@@ -368,6 +383,8 @@ export interface VestingScheduler extends BaseContract {
         VestingCliffAndFlowExecuted(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, cliffAndFlowDate?: null, flowRate?: null, cliffAmount?: null, flowDelayCompensation?: null): VestingCliffAndFlowExecutedEventFilter;
         "VestingEndExecuted(address,address,address,uint32,uint256,bool)"(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, endDate?: null, earlyEndCompensation?: null, didCompensationFail?: null): VestingEndExecutedEventFilter;
         VestingEndExecuted(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, endDate?: null, earlyEndCompensation?: null, didCompensationFail?: null): VestingEndExecutedEventFilter;
+        "VestingEndFailed(address,address,address,uint32)"(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, endDate?: null): VestingEndFailedEventFilter;
+        VestingEndFailed(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, endDate?: null): VestingEndFailedEventFilter;
         "VestingScheduleCreated(address,address,address,uint32,uint32,int96,uint32,uint256)"(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, startDate?: null, cliffDate?: null, flowRate?: null, endDate?: null, cliffAmount?: null): VestingScheduleCreatedEventFilter;
         VestingScheduleCreated(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, startDate?: null, cliffDate?: null, flowRate?: null, endDate?: null, cliffAmount?: null): VestingScheduleCreatedEventFilter;
         "VestingScheduleDeleted(address,address,address)"(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null): VestingScheduleDeletedEventFilter;

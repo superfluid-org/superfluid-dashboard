@@ -17,7 +17,7 @@ import { UnitOfTime } from "../../send/FlowRateInput";
 import {
   ACL_CREATE_PERMISSION,
   ACL_DELETE_PERMISSION,
-} from "./streamSchedulerEndpoints";
+} from "./flowSchedulerEndpoints";
 
 export const MIN_VESTING_DURATION_DAYS = 7;
 export const MIN_VESTING_DURATION_SECONDS =
@@ -175,17 +175,15 @@ export const vestingSchedulerEndpoints = {
           (hasDeletePermission ? 0 : ACL_DELETE_PERMISSION) +
           (hasCreatePermission ? 0 : ACL_CREATE_PERMISSION);
 
-        if (existingPermissions !== updatedPermissions) {
-          subOperations.push({
-            operation: await superToken.updateFlowOperatorPermissions({
-              flowOperator: vestingScheduler.address,
-              flowRateAllowance: flowOperatorData.flowRateAllowance,
-              permissions: updatedPermissions,
-              overrides: arg.overrides,
-            }),
-            title: "Approve Vesting Scheduler",
-          });
-        }
+        subOperations.push({
+          operation: await superToken.updateFlowOperatorPermissions({
+            flowOperator: vestingScheduler.address,
+            flowRateAllowance: flowOperatorData.flowRateAllowance + arg.flowRateWei,
+            permissions: updatedPermissions,
+            overrides: arg.overrides,
+          }),
+          title: "Approve Vesting Scheduler",
+        });
 
         const flowRateBigNumber = BigNumber.from(arg.flowRateWei);
         const maximumNeededAllowance = BigNumber.from(

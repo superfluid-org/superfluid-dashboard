@@ -45,7 +45,7 @@ import tokenPriceApi from "../tokenPrice/tokenPriceApi.slice";
 import { adHocMulticallEndpoints } from "./endpoints/adHocMulticallEndpoints";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
-import { streamSchedulerEndpoints } from "./endpoints/streamSchedulerEndpoints";
+import { flowSchedulerEndpoints } from "./endpoints/flowSchedulerEndpoints";
 import { vestingSchedulerEndpoints } from "./endpoints/vestingSchedulerEndpoints";
 import { platformApi } from "./platformApi/platformApi";
 import * as Sentry from "@sentry/react";
@@ -63,7 +63,7 @@ export const rpcApi = initializeRpcApiSlice((options) =>
   .injectEndpoints(allRpcEndpoints)
   .injectEndpoints(adHocMulticallEndpoints)
   .injectEndpoints(adHocRpcEndpoints)
-  .injectEndpoints(streamSchedulerEndpoints)
+  .injectEndpoints(flowSchedulerEndpoints)
   .injectEndpoints(vestingSchedulerEndpoints);
 
 export const subgraphApi = initializeSubgraphApiSlice((options) =>

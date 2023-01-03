@@ -51,23 +51,26 @@ const AUTOMATE_CRYPTO_VESTING: EcosystemApp[] = [
     href: `https://www.tokenops.xyz/`,
     icon: "/icons/ecosystem/tokenops.svg",
     description: `Create, track, and automate token vesting schedules`,
-    chains: [networkDefinition.polygon.id],
+    chains: [
+      networkDefinition.polygon.id,
+    ],
     colors: {
       primary: "#2D6DEC",
       secondary: "#8F98F4",
     },
   },
-  {
-    name: "Superfluid Dashboard",
-    href: `https://superfluid.finance/vesting`,
-    icon: "/icons/ecosystem/superfluid.svg",
-    description: `Create vesting schedules directly from the Superfluid app`,
-    chains: [networkDefinition.polygon.id],
-    colors: {
-      primary: "#2D6DEC",
-      secondary: "#8F98F4",
-    },
-  },
+  // TODO(KK): Removing this for now as vesting is not yet released.
+  // {
+  //   name: "Superfluid Dashboard",
+  //   href: `https://superfluid.finance/vesting`,
+  //   icon: "/icons/ecosystem/superfluid.svg",
+  //   description: `Create vesting schedules directly from the Superfluid app`,
+  //   chains: [networkDefinition.polygon.id],
+  //   colors: {
+  //     primary: "#2D6DEC",
+  //     secondary: "#8F98F4",
+  //   },
+  // },
 ];
 
 const INVEST_IN_REALTIME: EcosystemApp[] = [
@@ -280,13 +283,14 @@ const OTHER_APPS_BUILT_ON_SUPERFLUID: EcosystemApp[] = [
   {
     name: "Geo Web",
     href: "https://www.geoweb.network/",
-    icon: "/icons/ecosystem/huma.svg",
+    icon: "/icons/ecosystem/geoweb.svg",
     description: `AR layer anchoring digital content to physical locations`,
-    chains: [networkDefinition.polygon.id],
-    comingSoon: true,
+    chains: [
+      networkDefinition.optimism.id,
+    ],
     colors: {
-      primary: "#434C7C",
-      secondary: "#5E71E2",
+      primary: "#4B5588",
+      secondary: "#2FC1C1",
     },
   },
 ];

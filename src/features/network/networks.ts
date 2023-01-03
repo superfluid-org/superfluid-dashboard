@@ -1,4 +1,4 @@
-import { memoize } from "lodash";
+import memoize from "lodash/memoize";
 import { chain, Chain } from "wagmi";
 import config from "../../utils/config";
 import ensureDefined from "../../utils/ensureDefined";
@@ -28,10 +28,18 @@ export type Network = Chain & {
       type: TokenType.NativeAssetSuperToken;
     } & TokenMinimal;
   };
-  streamSchedulerContractAddress?: `0x${string}`;
+  flowSchedulerContractAddress?: `0x${string}`;
   vestingSchedulerContractAddress?: `0x${string}`;
   platformUrl?: string;
 };
+
+// We are using Satsuma endpoints when the app is deployed to *.superfluid.finance domain
+const useSatsumaEndpoints = (globalThis.window?.location.href || "").match(
+  /^(?:https?:\/\/)?(?:[^.]+\.)?superfluid\.finance(\/.*)?$/g
+);
+
+const getSubgraphUrl = (satsumaUrl: string, graphUrl: string) =>
+  useSatsumaEndpoints ? satsumaUrl : graphUrl;
 
 export const superfluidRpcUrls = {
   goerli: "https://rpc-endpoints.superfluid.dev/eth-goerli",
@@ -43,6 +51,7 @@ export const superfluidRpcUrls = {
   avalancheFuji: "https://rpc-endpoints.superfluid.dev/avalanche-fuji",
   avalancheC: "https://rpc-endpoints.superfluid.dev/avalanche-c",
   bnbSmartChain: "https://rpc-endpoints.superfluid.dev/bsc-mainnet",
+  ethereum: "https://rpc-endpoints.superfluid.dev/eth-mainnet",
 };
 
 const blockExplorers = {
@@ -78,7 +87,7 @@ const blockExplorers = {
 
 export const networkDefinition: {
   goerli: Network & {
-    streamSchedulerContractAddress: `0x${string}`;
+    flowSchedulerContractAddress: `0x${string}`;
     vestingSchedulerContractAddress: `0x${string}`;
     platformUrl: string;
   };
@@ -90,6 +99,7 @@ export const networkDefinition: {
   arbitrum: Network;
   avalancheC: Network;
   bsc: Network;
+  ethereum: Network;
 } = {
   goerli: {
     ...chain.goerli,
@@ -120,10 +130,9 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
-    streamSchedulerContractAddress:
-      "0x7D37D9494a09E47e58B1F535386Ca4D9D175f23e",
+    flowSchedulerContractAddress: "0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca",
     vestingSchedulerContractAddress:
-      "0x6f54e4744b13879482b5a487e832b23e566661b5",
+      "0x46fd3EfDD1d19694403dbE967Ee1D7842eE0E131",
     platformUrl: config.platformApi.goerli,
   },
   gnosis: {
@@ -144,8 +153,10 @@ export const networkDefinition: {
       superfluid: superfluidRpcUrls.gnosis,
       default: "https://rpc.gnosischain.com/",
     },
-    subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-xdai",
+    subgraphUrl: getSubgraphUrl(
+      "https://subgraph.satsuma-prod.com/superfluid/xdai/api",
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-xdai"
+    ),
     getLinkForTransaction: (txHash: string): string =>
       `https://blockscout.com/xdai/mainnet/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -407,9 +418,43 @@ export const networkDefinition: {
       },
     },
   },
+  ethereum: {
+    ...chain.mainnet,
+    blockExplorers: ensureDefined(chain.mainnet.blockExplorers),
+    slugName: "ethereum",
+    v1ShortName: "eth",
+    bufferTimeInMinutes: 240,
+    icon: "/icons/network/ethereum.svg",
+    color: "#627EEA",
+    rpcUrls: {
+      ...chain.mainnet.rpcUrls,
+      superfluid: superfluidRpcUrls.ethereum,
+    },
+    subgraphUrl: getSubgraphUrl(
+      "https://subgraph.satsuma-prod.com/superfluid/eth-mainnet/api",
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-eth-mainnet"
+    ),
+    getLinkForTransaction: (txHash: string): string =>
+      `https://etherscan.io/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://etherscan.io/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.mainnet.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0xC22BeA0Be9872d8B7B3933CEc70Ece4D53A900da",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+  },
 };
 
 export const networks: Network[] = [
+  networkDefinition.ethereum,
   networkDefinition.goerli,
   networkDefinition.gnosis,
   networkDefinition.polygon,

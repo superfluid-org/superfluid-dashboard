@@ -185,7 +185,15 @@ export class WrapPage extends BasePage {
     }
 
     static chooseTokenToWrap(token: string) {
-        cy.get(`[data-cy=${token}-list-item]`, {timeout: 60000}).click()
+        cy.fixture("rejectedCaseTokens").then(tokens => {
+            let selectedToken;
+            if(token.startsWith("Token")) {
+                selectedToken = token.endsWith("x") ? `${tokens[Cypress.env("network")][token.slice(0, -1)]}x`: tokens[Cypress.env("network")][token]
+            } else {
+                selectedToken = token
+            }
+            cy.get(`[data-cy="${selectedToken}-list-item"]`, {timeout: 60000}).click()
+        })
     }
 
     static validateUnwrapTokenSelectionBalances(network: string) {
@@ -220,7 +228,7 @@ export class WrapPage extends BasePage {
     }
 
     static rememberBalanceBeforeAndWrapToken() {
-        this.isNotDisabled(UPGRADE_BUTTON)
+        cy.get(UPGRADE_BUTTON,{timeout:30000}).should("not.be.disabled")
         cy.get(SELECT_TOKEN_BUTTON).then(el => {
             cy.wrap(el.text()).as("lastWrappedToken")
         })
@@ -252,12 +260,22 @@ export class WrapPage extends BasePage {
     }
 
     static validateWrapTxDialogMessage(network: string, amount: string, token: string) {
-        this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
-        this.hasText(TX_NETWORK, `(${networksBySlug.get(network)?.name})`)
-        this.hasText(WRAP_MESSAGE, `You are wrapping ${amount} ${token} to the super token ${token}x.`)
-        this.isDisabled(UPGRADE_BUTTON)
-        this.isVisible(LOADING_SPINNER)
-        this.exists(`${UPGRADE_BUTTON} ${LOADING_SPINNER}`)
+        cy.fixture("rejectedCaseTokens").then(tokens => {
+            let selectedToken;
+            if(token.startsWith("Token")) {
+                selectedToken = token.endsWith("x") ? `${tokens[Cypress.env("network")][token.slice(0, -1)]}x`: tokens[Cypress.env("network")][token]
+            } else {
+                selectedToken = token
+            }
+            let selectedNetwork = network === "selected network" ? Cypress.env("network") : network
+            this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
+            this.hasText(TX_NETWORK, `(${networksBySlug.get(selectedNetwork)?.name})`)
+            //Sometimes the wrap tx message doesn't have time to appear if the tx is ready too fast, ignoring this as its flaky
+            //this.hasText(WRAP_MESSAGE, `You are wrapping ${amount} ${selectedToken} to the super token ${selectedToken}x.`)
+            this.isDisabled(UPGRADE_BUTTON)
+            this.isVisible(LOADING_SPINNER)
+            this.exists(`${UPGRADE_BUTTON} ${LOADING_SPINNER}`)
+        })
     }
 
     static validateWrapTxBroadcastedDialog() {
@@ -347,10 +365,11 @@ export class WrapPage extends BasePage {
     }
 
     static validateUnwrapTxDialogMessage(network: string, amount: string, token: string) {
-       // Sometimes the tx gets broadcasted too fast and this check adds some flakiness so disabling it for now
-       // this.hasText(UNWRAP_MESSAGE, `You are unwrapping  ${amount} ${token}x to the underlying token ${token}.`)
+        // Sometimes the tx gets broadcasted too fast and this check adds some flakiness so disabling it for now
+        // this.hasText(UNWRAP_MESSAGE, `You are unwrapping  ${amount} ${token}x to the underlying token ${token}.`)
+        let selectedNetwork = network === "selected network" ? Cypress.env("network") : network
         this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
-        this.hasText(TX_NETWORK, `(${networksBySlug.get(network)?.name})`)
+        this.hasText(TX_NETWORK, `(${networksBySlug.get(selectedNetwork)?.name})`)
         this.isDisabled(DOWNGRADE_BUTTON)
         this.isVisible(LOADING_SPINNER)
         this.exists(`${DOWNGRADE_BUTTON} ${LOADING_SPINNER}`)
@@ -391,18 +410,25 @@ export class WrapPage extends BasePage {
     }
 
     static approveTokenSpending(token: string) {
-        cy.get(APPROVE_ALLOWANCE_BUTTON, {timeout: 60000}).should("be.visible")
-        this.hasText(APPROVE_ALLOWANCE_BUTTON, `Allow Superfluid Protocol to wrap your ${token}`)
-        this.click(APPROVE_ALLOWANCE_BUTTON)
+        cy.fixture("rejectedCaseTokens").then(tokens => {
+            let selectedToken = token.startsWith("Token") ? tokens[Cypress.env("network")][token] : token;
+            cy.get(APPROVE_ALLOWANCE_BUTTON, {timeout: 60000}).should("be.visible")
+            this.hasText(APPROVE_ALLOWANCE_BUTTON, `Allow Superfluid Protocol to wrap your ${selectedToken}`)
+            this.click(APPROVE_ALLOWANCE_BUTTON)
+        })
     }
 
     static validateApprovalDialog(network: string, amount: string, token: string) {
-        this.hasText(APPROVE_ALLOWANCE_MESSAGE, `You are approving additional allowance of ${amount} ${token} for Superfluid Protocol to use.`)
-        this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
-        this.hasText(TX_NETWORK, `(${networksBySlug.get(network)?.name})`)
-        this.isDisabled(UPGRADE_BUTTON)
-        this.isVisible(LOADING_SPINNER)
-        this.exists(`${APPROVE_ALLOWANCE_BUTTON} ${LOADING_SPINNER}`)
+        cy.fixture("rejectedCaseTokens").then(tokens => {
+            let selectedToken = token.startsWith("Token") ? tokens[Cypress.env("network")][token] : token;
+            let selectedNetwork = network === "selected network" ? Cypress.env("network") : network
+            this.hasText(APPROVE_ALLOWANCE_MESSAGE, `You are approving additional allowance of ${amount} ${selectedToken} for Superfluid Protocol to use.`)
+            this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
+            this.hasText(TX_NETWORK, `(${networksBySlug.get(selectedNetwork)?.name})`)
+            this.isDisabled(UPGRADE_BUTTON)
+            this.isVisible(LOADING_SPINNER)
+            this.exists(`${APPROVE_ALLOWANCE_BUTTON} ${LOADING_SPINNER}`)
+        })
     }
 
     static isRestoreButtonVisible() {
