@@ -135,13 +135,7 @@ export class Common extends BasePage {
 
         let chainId = networksBySlug.get(selectedNetwork)?.id
 
-        // @ts-ignore
-        console.log(selectedNetwork)
-        console.log(Cypress.env("network"))
-        let networkRpc = Cypress.env("network") === "polygon-mumbai" ? "https://matic-testnet-archive-rpc.bwarelabs.com" : networksBySlug.get(selectedNetwork)?.rpcUrls.superfluid
-        console.log(networkRpc)
-        console.log(networksBySlug.get("ethereum"))
-        console.log(networksBySlug)
+        let networkRpc = networksBySlug.get(selectedNetwork)?.rpcUrls.superfluid
 
         cy.visit("/", {
             onBeforeLoad: (win: any) => {
