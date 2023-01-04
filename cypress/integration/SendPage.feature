@@ -75,7 +75,7 @@ Feature: Send Page test cases
     And User accepts the risk warning
     And Change network button is visible with a message asking user to switch to "polygon"
 
-  @skip @bug @MikkSaidHeWillTakeAlook
+  @skip @MikkSaidHeWillTakeAlook
   Scenario: Tokens getting sorted by amount in the token selection screen
     Given "Dashboard Page" is open without connecting a wallet
     And User uses view mode to look at "accountWithLotsOfData"
