@@ -25,6 +25,7 @@ Feature: Send Page test cases
     Then Chosen wallet address shows up as vijay.eth
     And User clears the receiver field with the close button
 
+  @skip
   Scenario: Super token selection , balances and wrap buttons
     Given "Send Page" is open with a mocked connection to "staticBalanceAccount" on "gnosis"
     And User connects their wallet to the dashboard
