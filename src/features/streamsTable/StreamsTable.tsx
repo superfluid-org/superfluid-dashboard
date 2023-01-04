@@ -138,9 +138,14 @@ const StreamsTable: FC<StreamsTableProps> = ({
         : []),
     ]
       .sort((s1, s2) => {
-        if (s1.currentFlowRate !== "0" && s2.currentFlowRate === "0") return -1;
-        if (s1.currentFlowRate === "0" && s2.currentFlowRate !== "0") return 1;
+        const stream1Active = s1.currentFlowRate !== "0";
+        const stream2Active = s2.currentFlowRate !== "0";
 
+        // First sorting by active state.
+        if (stream1Active && !stream2Active) return -1;
+        if (!stream2Active && stream2Active) return 1;
+
+        // If both streams are active or inactive then sort those by updated at timestamp.
         return s2.updatedAtTimestamp - s1.updatedAtTimestamp;
       })
       .map((stream) => {

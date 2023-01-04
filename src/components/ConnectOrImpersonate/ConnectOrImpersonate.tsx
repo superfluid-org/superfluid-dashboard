@@ -40,7 +40,7 @@ const ConnectOrImpersonate: FC<ConnectOrImpersonateProps> = ({}) => {
             startIcon={<PersonSearchRoundedIcon />}
             onClick={openAddressSearchDialog}
           >
-            View the Dashboard as any Address
+            View the dashboard as any address
           </Button>
           <AddressSearchDialog
             title="Select Address To View"
