@@ -132,7 +132,7 @@
           "id": "matic-network",
           "balance": "4",
           "underlyingBalance": "0.998914208450974000",
-          "underlyingTokenName": "Polygon Native Asset",
+          "underlyingTokenName": "MATIC",
           "underlyingTokenSymbol": "MATIC"
         },
         {

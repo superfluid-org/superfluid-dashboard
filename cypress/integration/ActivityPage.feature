@@ -12,8 +12,6 @@ Feature: Activity History Page tests
     And User changes the visible networks to "testnet"
     And Activity history data for "staticBalanceAccount" is shown correctly on "testnet"
 
-
-  #Still think we should show connect wallet here, but will use this to test the no data screen for now
   Scenario: No activity history message shown
     Given "Activity history page" is open without connecting a wallet
     Then No activity history message is shown

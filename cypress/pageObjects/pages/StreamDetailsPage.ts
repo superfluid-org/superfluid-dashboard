@@ -21,6 +21,8 @@ const ALL_COPY_BUTTONS = "[data-cy=copy-button]"
 const TWITTER_BUTTON = "[data-cy=twitter-button]"
 const TELEGRAM_BUTTON = "[data-cy=telegram-button]"
 const BACK_BUTTON = "[data-testid=ArrowBackIcon]"
+const TIMER_ICON = "[data-testid=TimerOutlinedIcon]"
+const TOTAL_SCHEDULED_AMOUNT = "[data-cy=scheduled-amount]"
 
 const polygonExplorerLink = "https://polygonscan.com"
 
@@ -232,5 +234,26 @@ export class StreamDetailsPage extends BasePage {
 
     static clickBackButton() {
         this.click(BACK_BUTTON)
+    }
+
+    static validateCloseEndedStreamData() {
+        cy.fixture("streamData").then(streamData => {
+            const closeEndedStream = streamData["accountWithLotsOfData"]["goerli"][0]
+            this.hasText(TOKEN_STREAMED, closeEndedStream.token)
+            cy.get(SENDER_AND_RECEIVER).first().should("have.text", BasePage.shortenHex(closeEndedStream.sender))
+            cy.get(SENDER_AND_RECEIVER).last().should("have.text", BasePage.shortenHex(closeEndedStream.receiver))
+            this.isVisible(TIMER_ICON)
+            this.hasText(TOTAL_SCHEDULED_AMOUNT, `${closeEndedStream.scheduledAmount} ${closeEndedStream.token}`)
+            this.hasText(BUFFER, `${closeEndedStream.buffer} ${closeEndedStream.token}`)
+            this.hasText(NETWORK_NAME, closeEndedStream.networkName)
+            this.hasText(TX_HASH, BasePage.shortenHex(closeEndedStream.txHash))
+            this.hasText(AMOUNT_PER_MONTH, `${closeEndedStream.amountPerMonth} ${closeEndedStream.token}`)
+            this.containsText(
+                SENT_SO_FAR,
+                (((Date.now() - closeEndedStream.startedAtUnix) * closeEndedStream.flowRate) /
+                    1e21
+                ).toString().substring(0, 6)
+            );
+        })
     }
 }

@@ -670,7 +670,7 @@ const StreamPageContent: FC<{
                       Total scheduled amount
                     </Typography>
 
-                    <Typography variant="h6">
+                    <Typography data-cy={"scheduled-amount"} variant="h6">
                       <Amount
                         wei={totalToBeStreamedIfScheduled}
                       >{` ${tokenSymbol}`}</Amount>
