@@ -295,7 +295,7 @@ const History: NextPage = () => {
               textAlign="center"
             >
               {!visibleAddress
-                ? `Connect wallet or view the Dashboard as any Address to see transactions.`
+                ? `Connect wallet or view the dashboard as any address to see transactions.`
                 : `Transactions including wrapping tokens and sending streams will appear here.`}
             </Typography>
 
