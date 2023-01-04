@@ -175,10 +175,14 @@ export const vestingSchedulerEndpoints = {
           (hasDeletePermission ? 0 : ACL_DELETE_PERMISSION) +
           (hasCreatePermission ? 0 : ACL_CREATE_PERMISSION);
 
+        const newFlowRateAllowance = BigNumber.from(
+          flowOperatorData.flowRateAllowance
+        ).add(BigNumber.from(arg.flowRateWei)); // TODO(KK): Need to handle max flow rate allowance overflow.
+
         subOperations.push({
           operation: await superToken.updateFlowOperatorPermissions({
             flowOperator: vestingScheduler.address,
-            flowRateAllowance: flowOperatorData.flowRateAllowance + arg.flowRateWei,
+            flowRateAllowance: newFlowRateAllowance.toString(),
             permissions: updatedPermissions,
             overrides: arg.overrides,
           }),
