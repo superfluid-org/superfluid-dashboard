@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react";
+import { ErrorMessage } from '@hookform/error-message'
 import {
   Alert,
   Box,
@@ -12,53 +12,52 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-} from "@mui/material";
-import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { Controller, useFormContext } from "react-hook-form";
-import { PartialVestingForm } from "./CreateVestingFormProvider";
-import AddressSearch from "../send/AddressSearch";
-import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
-import { subgraphApi } from "../redux/store";
-import { skipToken } from "@reduxjs/toolkit/query";
-import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
-import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import {
-  UnitOfTime,
-  timeUnitWordMap,
-  unitOfTimeList,
-} from "../send/FlowRateInput";
-import { transactionButtonDefaultProps } from "../transactionBoundary/TransactionButton";
-import { ErrorMessage } from "@hookform/error-message";
-import TooltipIcon from "../common/TooltipIcon";
-import { CreateVestingCardView, VestingToken } from "./CreateVestingSection";
-import { DeleteVestingTransactionButton } from "./DeleteVestingTransactionButton";
+} from '@mui/material'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { skipToken } from '@reduxjs/toolkit/query'
+import { FC, useMemo } from 'react'
+import { Controller, useFormContext } from 'react-hook-form'
+import { inputPropsForEtherAmount } from '../../utils/inputPropsForEtherAmount'
+import TooltipIcon from '../common/TooltipIcon'
+import { useNetworkCustomTokens } from '../customTokens/customTokens.slice'
+import { useExpectedNetwork } from '../network/ExpectedNetworkContext'
+import { getSuperTokenType } from '../redux/endpoints/adHocSubgraphEndpoints'
 import {
   MAX_VESTING_START_DATE,
   MIN_VESTING_START_DATE,
-} from "../redux/endpoints/vestingSchedulerEndpoints";
-import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
+} from '../redux/endpoints/vestingSchedulerEndpoints'
+import { subgraphApi } from '../redux/store'
+import AddressSearch from '../send/AddressSearch'
+import {
+  timeUnitWordMap,
+  UnitOfTime,
+  unitOfTimeList,
+} from '../send/FlowRateInput'
+import { TokenDialogButton } from '../tokenWrapping/TokenDialogButton'
+import { transactionButtonDefaultProps } from '../transactionBoundary/TransactionButton'
+import { PartialVestingForm } from './CreateVestingFormProvider'
+import { CreateVestingCardView, VestingToken } from './CreateVestingSection'
 
 export enum VestingFormLabels {
-  Receiver = "Receiver",
-  CliffPeriod = "Cliff Period",
-  CliffAmount = "Cliff Amount",
-  VestingStartDate = "Vesting Start Date",
-  Token = "Token",
-  TotalVestingPeriod = "Total Vesting Period",
-  TotalVestedAmount = "Total Vested Amount",
+  Receiver = 'Receiver',
+  CliffPeriod = 'Cliff Period',
+  CliffAmount = 'Cliff Amount',
+  VestingStartDate = 'Vesting Start Date',
+  Token = 'Token',
+  TotalVestingPeriod = 'Total Vesting Period',
+  TotalVestedAmount = 'Total Vested Amount',
 }
 
 export const CreateVestingForm: FC<{
-  token: VestingToken | undefined;
-  setView: (value: CreateVestingCardView) => void;
+  token: VestingToken | undefined
+  setView: (value: CreateVestingCardView) => void
 }> = ({ token, setView }) => {
-  const theme = useTheme();
-  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const theme = useTheme()
+  const isBelowMd = useMediaQuery(theme.breakpoints.down('md'))
 
-  const { network } = useExpectedNetwork();
+  const { network } = useExpectedNetwork()
 
   const {
     watch,
@@ -67,7 +66,7 @@ export const CreateVestingForm: FC<{
     getValues,
     setValue,
     reset: resetFormData,
-  } = useFormContext<PartialVestingForm>();
+  } = useFormContext<PartialVestingForm>()
 
   const [
     superTokenAddress,
@@ -78,14 +77,14 @@ export const CreateVestingForm: FC<{
     vestingPeriod,
     cliffPeriod,
   ] = watch([
-    "data.superTokenAddress",
-    "data.receiverAddress",
-    "data.totalAmountEther",
-    "data.startDate",
-    "data.cliffAmountEther",
-    "data.vestingPeriod",
-    "data.cliffPeriod",
-  ]);
+    'data.superTokenAddress',
+    'data.receiverAddress',
+    'data.totalAmountEther',
+    'data.startDate',
+    'data.cliffAmountEther',
+    'data.vestingPeriod',
+    'data.cliffPeriod',
+  ])
 
   const ReceiverController = (
     <Controller
@@ -96,14 +95,14 @@ export const CreateVestingForm: FC<{
           address={receiverAddress}
           onChange={onChange}
           onBlur={onBlur}
-          addressLength={isBelowMd ? "medium" : "long"}
+          addressLength={isBelowMd ? 'medium' : 'long'}
           ButtonProps={{ fullWidth: true }}
         />
       )}
     />
-  );
+  )
 
-  const networkCustomTokens = useNetworkCustomTokens(network.id);
+  const networkCustomTokens = useNetworkCustomTokens(network.id)
 
   const listedSuperTokensQuery = subgraphApi.useTokensQuery({
     chainId: network.id,
@@ -111,7 +110,7 @@ export const CreateVestingForm: FC<{
       isSuperToken: true,
       isListed: true,
     },
-  });
+  })
 
   const customSuperTokensQuery = subgraphApi.useTokensQuery(
     networkCustomTokens.length > 0
@@ -123,8 +122,8 @@ export const CreateVestingForm: FC<{
             id_in: networkCustomTokens,
           },
         }
-      : skipToken
-  );
+      : skipToken,
+  )
 
   const superTokens = useMemo(
     () =>
@@ -138,8 +137,8 @@ export const CreateVestingForm: FC<{
           decimals: 18,
           isListed: x.isListed,
         })),
-    [network, listedSuperTokensQuery.data, customSuperTokensQuery.data]
-  );
+    [network, listedSuperTokensQuery.data, customSuperTokensQuery.data],
+  )
 
   const TokenController = (
     <Controller
@@ -159,11 +158,11 @@ export const CreateVestingForm: FC<{
           }}
           onTokenSelect={(x) => onChange(x.address)}
           onBlur={onBlur}
-          ButtonProps={{ variant: "input" }}
+          ButtonProps={{ variant: 'input' }}
         />
       )}
     />
-  );
+  )
 
   const VestingAmountController = (
     <Controller
@@ -176,15 +175,15 @@ export const CreateVestingForm: FC<{
           onBlur={onBlur}
           InputProps={{
             endAdornment: (
-              <Typography component="span" color={"text.secondary"}>
-                {token?.symbol ?? ""}
+              <Typography component="span" color={'text.secondary'}>
+                {token?.symbol ?? ''}
               </Typography>
             ),
           }}
         />
       )}
     />
-  );
+  )
 
   const StartDateController = (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -206,7 +205,7 @@ export const CreateVestingForm: FC<{
         )}
       />
     </LocalizationProvider>
-  );
+  )
 
   const CliffAmountController = (
     <Controller
@@ -219,25 +218,25 @@ export const CreateVestingForm: FC<{
           onBlur={onBlur}
           InputProps={{
             endAdornment: (
-              <Typography component="span" color={"text.secondary"}>
-                {token?.symbol ?? ""}
+              <Typography component="span" color={'text.secondary'}>
+                {token?.symbol ?? ''}
               </Typography>
             ),
           }}
           inputProps={{
-            inputPropsForEtherAmount
+            inputPropsForEtherAmount,
           }}
         />
       )}
     />
-  );
+  )
 
   const CliffPeriodController = (
     <Controller
       control={control}
       name="data.cliffPeriod"
       render={({ field: { onChange, onBlur, value } }) => (
-        <Box sx={{ display: "grid", gridTemplateColumns: "2fr 1fr" }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: '2fr 1fr' }}>
           <TextField
             value={value.numerator}
             onChange={(e) =>
@@ -270,7 +269,7 @@ export const CreateVestingForm: FC<{
             }}
           >
             {unitOfTimeList
-              .filter((x) => x >= UnitOfTime.Day && x <= UnitOfTime.Year)
+              .filter((x) => x >= UnitOfTime.Second && x <= UnitOfTime.Year)
               .map((unitOfTime) => (
                 <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
                   {timeUnitWordMap[unitOfTime]}(s)
@@ -280,14 +279,14 @@ export const CreateVestingForm: FC<{
         </Box>
       )}
     />
-  );
+  )
 
   const VestingPeriodController = (
     <Controller
       control={control}
       name="data.vestingPeriod"
       render={({ field: { onChange, onBlur, value } }) => (
-        <Box sx={{ display: "grid", gridTemplateColumns: "2fr 1fr" }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: '2fr 1fr' }}>
           <TextField
             value={value.numerator}
             onChange={(e) =>
@@ -320,7 +319,7 @@ export const CreateVestingForm: FC<{
             }}
           >
             {unitOfTimeList
-              .filter((x) => x >= UnitOfTime.Day && x <= UnitOfTime.Year)
+              .filter((x) => x >= UnitOfTime.Second && x <= UnitOfTime.Year)
               .map((unitOfTime) => (
                 <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
                   {timeUnitWordMap[unitOfTime]}(s)
@@ -330,7 +329,7 @@ export const CreateVestingForm: FC<{
         </Box>
       )}
     />
-  );
+  )
 
   const PreviewVestingScheduleButton = (
     <Button
@@ -340,7 +339,7 @@ export const CreateVestingForm: FC<{
     >
       Preview the Vesting Schedule
     </Button>
-  );
+  )
 
   const ValidationSummary = (
     <ErrorMessage
@@ -356,10 +355,10 @@ export const CreateVestingForm: FC<{
         )
       }
     />
-  );
+  )
 
   return (
-    <Stack component={"form"} gap={4}>
+    <Stack component={'form'} gap={4}>
       <Stack gap={2.5}>
         {ValidationSummary}
 
@@ -375,7 +374,7 @@ export const CreateVestingForm: FC<{
           {ReceiverController}
         </FormGroup>
 
-        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
           <FormGroup>
             <FormLabel>{VestingFormLabels.Token}</FormLabel>
             {TokenController}
@@ -386,7 +385,7 @@ export const CreateVestingForm: FC<{
           </FormGroup>
         </Box>
 
-        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
           <FormGroup>
             <Stack
               direction="row"
@@ -412,7 +411,7 @@ export const CreateVestingForm: FC<{
           </FormGroup>
         </Box>
 
-        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
           <FormGroup>
             <Stack
               direction="row"
@@ -441,5 +440,5 @@ export const CreateVestingForm: FC<{
 
       <Stack gap={1}>{PreviewVestingScheduleButton}</Stack>
     </Stack>
-  );
-};
+  )
+}

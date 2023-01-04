@@ -23,6 +23,9 @@ export declare namespace IVestingScheduler {
 }
 export interface VestingSchedulerInterface extends utils.Interface {
     functions: {
+        "END_DATE_VALID_BEFORE()": FunctionFragment;
+        "MIN_VESTING_DURATION()": FunctionFragment;
+        "START_DATE_VALID_AFTER()": FunctionFragment;
         "afterAgreementCreated(address,address,bytes32,bytes,bytes,bytes)": FunctionFragment;
         "afterAgreementTerminated(address,address,bytes32,bytes,bytes,bytes)": FunctionFragment;
         "afterAgreementUpdated(address,address,bytes32,bytes,bytes,bytes)": FunctionFragment;
@@ -38,7 +41,10 @@ export interface VestingSchedulerInterface extends utils.Interface {
         "updateVestingSchedule(address,address,uint32,bytes)": FunctionFragment;
         "vestingSchedules(bytes32)": FunctionFragment;
     };
-    getFunction(nameOrSignatureOrTopic: "afterAgreementCreated" | "afterAgreementTerminated" | "afterAgreementUpdated" | "beforeAgreementCreated" | "beforeAgreementTerminated" | "beforeAgreementUpdated" | "cfaV1" | "createVestingSchedule" | "deleteVestingSchedule" | "executeCliffAndFlow" | "executeEndVesting" | "getVestingSchedule" | "updateVestingSchedule" | "vestingSchedules"): FunctionFragment;
+    getFunction(nameOrSignatureOrTopic: "END_DATE_VALID_BEFORE" | "MIN_VESTING_DURATION" | "START_DATE_VALID_AFTER" | "afterAgreementCreated" | "afterAgreementTerminated" | "afterAgreementUpdated" | "beforeAgreementCreated" | "beforeAgreementTerminated" | "beforeAgreementUpdated" | "cfaV1" | "createVestingSchedule" | "deleteVestingSchedule" | "executeCliffAndFlow" | "executeEndVesting" | "getVestingSchedule" | "updateVestingSchedule" | "vestingSchedules"): FunctionFragment;
+    encodeFunctionData(functionFragment: "END_DATE_VALID_BEFORE", values?: undefined): string;
+    encodeFunctionData(functionFragment: "MIN_VESTING_DURATION", values?: undefined): string;
+    encodeFunctionData(functionFragment: "START_DATE_VALID_AFTER", values?: undefined): string;
     encodeFunctionData(functionFragment: "afterAgreementCreated", values: [
         PromiseOrValue<string>,
         PromiseOrValue<string>,
@@ -122,6 +128,9 @@ export interface VestingSchedulerInterface extends utils.Interface {
         PromiseOrValue<BytesLike>
     ]): string;
     encodeFunctionData(functionFragment: "vestingSchedules", values: [PromiseOrValue<BytesLike>]): string;
+    decodeFunctionResult(functionFragment: "END_DATE_VALID_BEFORE", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "MIN_VESTING_DURATION", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "START_DATE_VALID_AFTER", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "afterAgreementCreated", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "afterAgreementTerminated", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "afterAgreementUpdated", data: BytesLike): Result;
@@ -262,6 +271,9 @@ export interface VestingScheduler extends BaseContract {
     once: OnEvent<this>;
     removeListener: OnEvent<this>;
     functions: {
+        END_DATE_VALID_BEFORE(overrides?: CallOverrides): Promise<[number]>;
+        MIN_VESTING_DURATION(overrides?: CallOverrides): Promise<[number]>;
+        START_DATE_VALID_AFTER(overrides?: CallOverrides): Promise<[number]>;
         afterAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<ContractTransaction>;
@@ -306,6 +318,9 @@ export interface VestingScheduler extends BaseContract {
             cliffAmount: BigNumber;
         }>;
     };
+    END_DATE_VALID_BEFORE(overrides?: CallOverrides): Promise<number>;
+    MIN_VESTING_DURATION(overrides?: CallOverrides): Promise<number>;
+    START_DATE_VALID_AFTER(overrides?: CallOverrides): Promise<number>;
     afterAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
         from?: PromiseOrValue<string>;
     }): Promise<ContractTransaction>;
@@ -350,6 +365,9 @@ export interface VestingScheduler extends BaseContract {
         cliffAmount: BigNumber;
     }>;
     callStatic: {
+        END_DATE_VALID_BEFORE(overrides?: CallOverrides): Promise<number>;
+        MIN_VESTING_DURATION(overrides?: CallOverrides): Promise<number>;
+        START_DATE_VALID_AFTER(overrides?: CallOverrides): Promise<number>;
         afterAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
         afterAgreementTerminated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
         afterAgreementUpdated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
@@ -393,6 +411,9 @@ export interface VestingScheduler extends BaseContract {
         VestingScheduleUpdated(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, oldEndDate?: null, endDate?: null): VestingScheduleUpdatedEventFilter;
     };
     estimateGas: {
+        END_DATE_VALID_BEFORE(overrides?: CallOverrides): Promise<BigNumber>;
+        MIN_VESTING_DURATION(overrides?: CallOverrides): Promise<BigNumber>;
+        START_DATE_VALID_AFTER(overrides?: CallOverrides): Promise<BigNumber>;
         afterAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<BigNumber>;
@@ -425,6 +446,9 @@ export interface VestingScheduler extends BaseContract {
         vestingSchedules(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<BigNumber>;
     };
     populateTransaction: {
+        END_DATE_VALID_BEFORE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        MIN_VESTING_DURATION(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        START_DATE_VALID_AFTER(overrides?: CallOverrides): Promise<PopulatedTransaction>;
         afterAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<PopulatedTransaction>;

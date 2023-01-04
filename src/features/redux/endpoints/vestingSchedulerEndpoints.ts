@@ -1,5 +1,4 @@
-import { Operation } from "@superfluid-finance/sdk-core";
-import { SuperToken__factory } from "@superfluid-finance/sdk-core";
+import { Operation, SuperToken__factory } from "@superfluid-finance/sdk-core";
 import {
   BaseQuery,
   BaseSuperTokenMutation,
@@ -21,14 +20,14 @@ import {
 
 export const MIN_VESTING_DURATION_DAYS = 7;
 export const MIN_VESTING_DURATION_SECONDS =
-  MIN_VESTING_DURATION_DAYS * UnitOfTime.Day;
+  MIN_VESTING_DURATION_DAYS * UnitOfTime.Minute;
 
 export const MAX_VESTING_DURATION_YEARS = 10;
 export const MAX_VESTING_DURATION_SECONDS =
   MAX_VESTING_DURATION_YEARS * UnitOfTime.Year;
 
-export const START_DATE_VALID_AFTER_SECONDS = 3 * UnitOfTime.Day;
-export const END_DATE_VALID_BEFORE_SECONDS = 1 * UnitOfTime.Day;
+export const START_DATE_VALID_AFTER_SECONDS = 3 * UnitOfTime.Minute;
+export const END_DATE_VALID_BEFORE_SECONDS = 1 * UnitOfTime.Minute;
 
 export const MIN_VESTING_START_DATE = add(new Date(), {
   minutes: 15,
@@ -178,7 +177,8 @@ export const vestingSchedulerEndpoints = {
         subOperations.push({
           operation: await superToken.updateFlowOperatorPermissions({
             flowOperator: vestingScheduler.address,
-            flowRateAllowance: flowOperatorData.flowRateAllowance + arg.flowRateWei,
+            flowRateAllowance:
+              flowOperatorData.flowRateAllowance + arg.flowRateWei,
             permissions: updatedPermissions,
             overrides: arg.overrides,
           }),
