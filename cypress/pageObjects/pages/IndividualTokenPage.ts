@@ -104,7 +104,7 @@ export class IndividualTokenPage extends BasePage {
     }
 
     static openDistributionTab() {
-        this.click(DISTRIBUTIONS_TAB)
+        cy.get(DISTRIBUTIONS_TAB, {timeout: 30000}).click()
     }
 
     static validateLastDistributionRow(address: string, amount: string, status: string, when: string) {
@@ -132,12 +132,13 @@ export class IndividualTokenPage extends BasePage {
     }
 
     static validateApprovalTransactionDialog(network:string) {
+        let selectedNetwork = network === "selected network" ? Cypress.env("network") : network
         this.doesNotExist(APPROVE_BUTTON)
         this.isVisible(LOADING_SPINNER)
         this.exists(`${DISTRIBUTION_ROWS} ${LOADING_SPINNER}`)
         this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
         this.hasText(APPROVE_SUBSCRIPTION_MESSAGE, "You are approving an index subscription.")
-        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
+        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(selectedNetwork)?.name})`)
     }
 
     static validateRevokeDialogAndCloseIt(network: string) {
@@ -149,12 +150,13 @@ export class IndividualTokenPage extends BasePage {
     }
 
     static validateRevokeTransactionDialog(network:string) {
+        let selectedNetwork = network === "selected network" ? Cypress.env("network") : network
         this.doesNotExist(REVOKE_BUTTON)
         this.isVisible(LOADING_SPINNER)
         this.exists(`${DISTRIBUTION_ROWS} ${LOADING_SPINNER}`)
         this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
         this.hasText(REVOKE_MESSAGE, "You are revoking approval of an index subscription.")
-        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
+        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(selectedNetwork)?.name})`)
     }
 
     static revokeLastIndex() {

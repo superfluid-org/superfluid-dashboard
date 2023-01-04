@@ -55,6 +55,7 @@ const MoreNavigationItem: FC = () => {
   return (
     <>
       <ListItemButton
+        data-cy={"nav-more-button"}
         sx={{ borderRadius: "10px" }}
         onClick={openMoreMenu}
         selected={!!moreMenuAnchor}
@@ -77,7 +78,7 @@ const MoreNavigationItem: FC = () => {
         }}
       >
         <Link href="https://www.superfluid.finance" target="_blank" passHref>
-          <ListItemButton href="" target="_blank">
+          <ListItemButton data-cy={"more-website-btn"} href="" target="_blank">
             <MenuItemImage
               src={
                 theme.palette.mode === "dark"
@@ -91,7 +92,7 @@ const MoreNavigationItem: FC = () => {
         </Link>
 
         <Link href="https://v1.superfluid.finance" target="_blank" passHref>
-          <ListItemButton href="" target="_blank">
+          <ListItemButton data-cy={"more-v1-btn"} href="" target="_blank">
             <ListItemIcon>
               <GridViewRoundedIcon sx={{ color: theme.palette.text.primary }} />
             </ListItemIcon>
@@ -100,7 +101,7 @@ const MoreNavigationItem: FC = () => {
         </Link>
 
         <Link href="https://discord.gg/XsK7nahanQ" target="_blank" passHref>
-          <ListItemButton href="" target="_blank">
+          <ListItemButton data-cy={"more-discord-btn"} href="" target="_blank">
             <MenuItemImage src="/icons/social/discord.svg" alt="Discord logo" />
             <ListItemText>Discord</ListItemText>
           </ListItemButton>
@@ -111,22 +112,27 @@ const MoreNavigationItem: FC = () => {
           target="_blank"
           passHref
         >
-          <ListItemButton href="" target="_blank">
+          <ListItemButton data-cy={"more-twitter-btn"} href="" target="_blank">
             <MenuItemImage src="/icons/social/twitter.svg" alt="Twitter logo" />
             <ListItemText>Twitter</ListItemText>
           </ListItemButton>
         </Link>
 
         <Link href="/?showFaucet=true">
-          <ListItemButton href="" onClick={closeMoreMenu}>
+          <ListItemButton data-cy={"more-faucet-btn"} href="" onClick={closeMoreMenu}>
             <ListItemIcon>
               <ShowerRoundedIcon sx={{ color: theme.palette.text.primary }} />
             </ListItemIcon>
             <ListItemText>Testnet Faucet</ListItemText>
           </ListItemButton>
         </Link>
-
-        <ListItemButton onClick={openAccessCodeDialog}>
+        <ListItemButton data-cy={"more-getting-started-btn"} onClick={openOnboardingModal}>
+          <ListItemIcon>
+            <SupportRoundedIcon color="primary" />
+          </ListItemIcon>
+          <ListItemText>Getting Started</ListItemText>
+        </ListItemButton>
+        <ListItemButton data-cy={"more-access-code-btn"} onClick={openAccessCodeDialog}>
           <ListItemIcon>
             <QrCodeRoundedIcon sx={{ color: theme.palette.text.primary }} />
           </ListItemIcon>
