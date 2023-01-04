@@ -71,6 +71,7 @@ export class SendPage extends BasePage {
     }
 
     static clickBalancePreviewWrapButton() {
+        this.doesNotExist(TOKEN_SEARCH_INPUT)
         this.click(BALANCE_WRAP_BUTTON);
     }
 

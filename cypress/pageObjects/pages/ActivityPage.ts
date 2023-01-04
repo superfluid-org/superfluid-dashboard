@@ -101,7 +101,7 @@ export class ActivityPage extends BasePage {
 
     static validateNoHistoryMessage() {
         this.hasText(NO_ACTIVITY_TITLE, "No Activity History Available")
-        this.hasText(NO_ACTIVITY_TEXT, "Connect wallet or view the Dashboard as any Address to see transactions.")
+        this.hasText(NO_ACTIVITY_TEXT, "Connect wallet or view the dashboard as any address to see transactions.")
         this.isVisible(CONNECT_WALLET_BUTTON)
     }
 
