@@ -126,12 +126,6 @@ const MoreNavigationItem: FC = () => {
             <ListItemText>Testnet Faucet</ListItemText>
           </ListItemButton>
         </Link>
-        <ListItemButton data-cy={"more-getting-started-btn"} onClick={openOnboardingModal}>
-          <ListItemIcon>
-            <SupportRoundedIcon color="primary" />
-          </ListItemIcon>
-          <ListItemText>Getting Started</ListItemText>
-        </ListItemButton>
         <ListItemButton data-cy={"more-access-code-btn"} onClick={openAccessCodeDialog}>
           <ListItemIcon>
             <QrCodeRoundedIcon sx={{ color: theme.palette.text.primary }} />
