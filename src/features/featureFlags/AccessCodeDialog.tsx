@@ -15,7 +15,7 @@ import { useDispatch } from "react-redux";
 import Link from "../common/Link";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import { enableMainnetFeature } from "../flags/flags.slice";
-import { MAINNET_FEATURE_CODE } from "./FeatureFlagContext";
+import { MAINNET_FEATURE_CODES } from "./FeatureFlagContext";
 
 interface AccessCodeDialogProps {
   onClose: () => void;
@@ -34,7 +34,7 @@ const AccessCodeDialog: FC<AccessCodeDialogProps> = ({ onClose }) => {
   };
 
   const submitCode = () => {
-    if (featureCode === MAINNET_FEATURE_CODE) {
+    if (MAINNET_FEATURE_CODES.includes(featureCode)) {
       dispatch(enableMainnetFeature());
       onClose();
     } else {
@@ -69,7 +69,10 @@ const AccessCodeDialog: FC<AccessCodeDialogProps> = ({ onClose }) => {
         </Typography>
         <Typography>
           Apply for the access code{" "}
-          <Link href="https://use.superfluid.finance/ethmainnet" target="_blank">
+          <Link
+            href="https://use.superfluid.finance/ethmainnet"
+            target="_blank"
+          >
             here
           </Link>
           .
