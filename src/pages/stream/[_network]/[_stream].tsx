@@ -56,6 +56,7 @@ import {
   calculateMaybeCriticalAtTimestamp,
 } from "../../../utils/tokenUtils";
 import Page404 from "../../404";
+import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -409,6 +410,21 @@ const StreamPageContent: FC<{
     );
   }, [scheduledStreamQuery.data, tokenBufferQuery.data, network]);
 
+  const totalToBeStreamedIfScheduled = useMemo(() => {
+    if (!scheduledStreamQuery.data) return null;
+
+    const { currentFlowRate, startDate, endDateScheduled } =
+      scheduledStreamQuery.data;
+
+    if (!endDateScheduled) return null;
+
+    return BigNumber.from(currentFlowRate).mul(
+      BigNumber.from(Math.floor(endDateScheduled.getTime() / 1000)).sub(
+        BigNumber.from(Math.floor(startDate.getTime() / 1000))
+      )
+    );
+  }, [scheduledStreamQuery.data]);
+
   if (scheduledStreamQuery.isLoading || tokenSnapshotQuery.isLoading) {
     return (
       <SEO ogUrl={urlToShare}>
@@ -613,41 +629,73 @@ const StreamPageContent: FC<{
 
               <StreamAccountCard address={sender} network={network} />
 
-              <Box
-                sx={{
-                  mx: -0.25,
-                  height: isBelowMd ? 24 : 48,
-                  zIndex: isAllowedToPlay ? 1 : -1,
-                  cursor: isAllowedToPlay ? "pointer" : "auto",
-                }}
-                onClick={onPlay}
-              >
-                <Image
-                  unoptimized
-                  src="/gifs/stream-loop.gif"
-                  width={isBelowMd ? 46 : 92}
-                  height={isBelowMd ? 24 : 48}
-                  layout="fixed"
-                  alt="Superfluid stream"
+              {isActive ? (
+                <Box
+                  sx={{
+                    mx: -0.25,
+                    height: isBelowMd ? 24 : 48,
+                    zIndex: isAllowedToPlay ? 1 : -1,
+                    cursor: isAllowedToPlay ? "pointer" : "auto",
+                  }}
+                  onClick={onPlay}
+                >
+                  <Image
+                    unoptimized
+                    src="/gifs/stream-loop.gif"
+                    width={isBelowMd ? 46 : 92}
+                    height={isBelowMd ? 24 : 48}
+                    layout="fixed"
+                    alt="Superfluid stream"
+                  />
+                </Box>
+              ) : (
+                <CancelRoundedIcon
+                  color="error"
+                  sx={{ justifySelf: "center", width: "32px", height: "32px" }}
                 />
-              </Box>
+              )}
 
               <StreamAccountCard address={receiver} network={network} />
             </Stack>
 
             {currentFlowRate !== "0" && (
-              <Stack direction="row" alignItems="center" gap={0.5}>
-                <Typography data-cy={"amount-per-month"} variant="h6">
-                  <Amount
-                    wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
-                  >
-                    {` ${tokenSymbol}`}
-                  </Amount>
-                </Typography>
+              <Stack alignItems="center" gap={1}>
+                {totalToBeStreamedIfScheduled && (
+                  <Stack direction="row" alignItems="center" gap={0.5}>
+                    <Typography
+                      variant="h6"
+                      color="text.secondary"
+                      translate="yes"
+                    >
+                      Total scheduled amount
+                    </Typography>
 
-                <Typography variant="h6" color="text.secondary" translate="yes">
-                  per month
-                </Typography>
+                    <Typography data-cy={"scheduled-amount"} variant="h6">
+                      <Amount
+                        wei={totalToBeStreamedIfScheduled}
+                      >{` ${tokenSymbol}`}</Amount>
+                    </Typography>
+                  </Stack>
+                )}
+                <Stack direction="row" alignItems="center" gap={0.5}>
+                  <Typography data-cy={"amount-per-month"} variant="h6">
+                    <Amount
+                      wei={BigNumber.from(currentFlowRate).mul(
+                        UnitOfTime.Month
+                      )}
+                    >
+                      {` ${tokenSymbol}`}
+                    </Amount>
+                  </Typography>
+
+                  <Typography
+                    variant="h6"
+                    color="text.secondary"
+                    translate="yes"
+                  >
+                    per month
+                  </Typography>
+                </Stack>
               </Stack>
             )}
 

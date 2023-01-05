@@ -53,6 +53,12 @@ Feature: Stream details page test cases
     And The stream copy button tooltips show up when user clicks on them
     And The social network tooltips show up and have the correct links
 
+    Scenario: Scheduled stream showing correct details
+      Given "Close-ended stream details page" is open without connecting a wallet
+      Then The token icon has got an animation around it
+      And The streamed amount is flowing
+      And Close-ended stream data is shown correctly
+
   #TODO once a better solution for connecting the wallet is done or cancel button
   #And Once wrap/unwrap buttons and liquidation info gets added to the page
 #  Scenario: Stream details page wrap/unwrap buttons

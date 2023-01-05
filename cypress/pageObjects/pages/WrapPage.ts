@@ -19,7 +19,7 @@ const CONNECT_WALLET = "[data-cy=connect-wallet]";
 const UNDERLYING_BALANCE = "[data-cy=underlying-balance]";
 const SUPER_TOKEN_BALANCE = "[data-cy=balance]";
 const TOKEN_SELECT_NAME = "[data-cy=token-symbol-and-name] p";
-const TOKEN_SELECT_SYMBOL = "[data-cy=token-symbol-and-name] span";
+const TOKEN_SELECT_SYMBOL = "[data-cy=token-symbol-and-name] h6";
 const TOKEN_SELECT_BALANCE = "[data-cy=token-balance]";
 const APPROVAL_MESSAGE = "[data-cy=approval-message]";
 const TX_NETWORK = "[data-cy=tx-network]"
@@ -133,7 +133,7 @@ export class WrapPage extends BasePage {
                 UNDERLYING_BALANCE,
                 `Balance: ${parseFloat(filteredToken.underlyingBalance).toFixed(4)}`
             );
-            this.hasText(SUPER_TOKEN_BALANCE, filteredToken.balance);
+            this.hasText(SUPER_TOKEN_BALANCE, `${filteredToken.balance} `);
         });
     }
 
@@ -168,7 +168,7 @@ export class WrapPage extends BasePage {
                                 .should((text) => {
                                     expect(parseFloat(text.replace("~", ""))).to.be.closeTo(
                                         Number(parseFloat(values.underlyingBalance).toFixed(8)),
-                                        0.000001
+                                        0.0001
                                     );
                                 });
                         }

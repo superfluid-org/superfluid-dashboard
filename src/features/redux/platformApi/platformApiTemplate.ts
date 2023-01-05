@@ -62,7 +62,7 @@ export type CreateStreamMetaData = {
 };
 export type Subscription = {
   id?: Id;
-  type?: "SCHEDULED_TOP_UP_ORDER" | "SCHEDULED_STREAM_ORDER";
+  type?: "SCHEDULED_TOP_UP_ORDER" | "SCHEDULED_FLOW_CREATE";
   account?: Address;
   created_at?: Date;
   updated_at?: Date;

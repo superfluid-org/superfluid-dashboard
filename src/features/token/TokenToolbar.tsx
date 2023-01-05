@@ -12,13 +12,19 @@ import {
 } from "@mui/material";
 import { Token } from "@superfluid-finance/sdk-core";
 import Link from "next/link";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { useAccount } from "wagmi";
 import { getAddress } from "../../utils/memoizedEthersUtils";
 import { Flag } from "../flags/flags.slice";
 import { useHasFlag } from "../flags/flagsHooks";
 import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
+import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
+import {
+  isSuper,
+  isWrappable,
+  SuperTokenMinimal,
+} from "../redux/endpoints/tokenTypes";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import AddToWalletButton from "../wallet/AddToWalletButton";
 import TokenIcon from "./TokenIcon";
@@ -54,8 +60,27 @@ interface TokenToolbarProps {
 const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-  const { id: tokenAddress, symbol, decimals, name, isListed } = token;
+  const {
+    id: tokenAddress,
+    underlyingAddress,
+    symbol,
+    decimals,
+    name,
+    isListed,
+  } = token;
   const { address: accountAddress } = useAccount();
+
+  const wrappable = useMemo(
+    () =>
+      isWrappable({
+        type: getSuperTokenType({
+          network,
+          address: tokenAddress,
+          underlyingAddress: underlyingAddress,
+        }),
+      }),
+    [network, tokenAddress, underlyingAddress]
+  );
 
   const hasAddedToWallet = useHasFlag(
     accountAddress
@@ -111,27 +136,30 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
               }
             </ConnectionBoundary>
           )}
-
-          <Link
-            href={`/wrap?upgrade&token=${token.id}&network=${network.slugName}`}
-            passHref
-          >
-            <Tooltip title="Wrap">
-              <IconButton data-cy={"wrap-button"} color="primary">
-                <AddIcon />
-              </IconButton>
-            </Tooltip>
-          </Link>
-          <Link
-            href={`/wrap?downgrade&token=${token.id}&network=${network.slugName}`}
-            passHref
-          >
-            <Tooltip title="Unwrap">
-              <IconButton data-cy={"unwrap-button"} color="primary">
-                <RemoveIcon />
-              </IconButton>
-            </Tooltip>
-          </Link>
+          {wrappable && (
+            <>
+              <Link
+                href={`/wrap?upgrade&token=${token.id}&network=${network.slugName}`}
+                passHref
+              >
+                <Tooltip title="Wrap">
+                  <IconButton data-cy={"wrap-button"} color="primary">
+                    <AddIcon />
+                  </IconButton>
+                </Tooltip>
+              </Link>
+              <Link
+                href={`/wrap?downgrade&token=${token.id}&network=${network.slugName}`}
+                passHref
+              >
+                <Tooltip title="Unwrap">
+                  <IconButton data-cy={"unwrap-button"} color="primary">
+                    <RemoveIcon />
+                  </IconButton>
+                </Tooltip>
+              </Link>
+            </>
+          )}
         </Stack>
       </Stack>
 

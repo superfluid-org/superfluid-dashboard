@@ -25,11 +25,13 @@ export const addressBookSlice = createSlice({
       state: EntityState<AddressBookEntry>,
       { payload }: { payload: AddressBookEntry }
     ) =>
-      adapter.addOne(state, {
-        ...payload,
-        address: getAddress(payload.address),
-      }),
-
+      adapter.setAll(state, [
+        {
+          ...payload,
+          address: getAddress(payload.address),
+        },
+        ...adapterSelectors.selectAll(state),
+      ]),
     addAddressBookEntries: (
       state: EntityState<AddressBookEntry>,
       { payload }: { payload: Array<AddressBookEntry> }

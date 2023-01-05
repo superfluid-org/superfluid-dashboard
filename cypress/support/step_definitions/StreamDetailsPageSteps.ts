@@ -46,3 +46,6 @@ Given(/^The social network tooltips show up and have the correct links$/, () => 
 Given(/^User clicks on the back button$/, () => {
     StreamDetailsPage.clickBackButton()
 });
+Then(/^Close\-ended stream data is shown correctly$/, function () {
+    StreamDetailsPage.validateCloseEndedStreamData()
+});

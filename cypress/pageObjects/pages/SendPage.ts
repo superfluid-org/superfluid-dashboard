@@ -11,10 +11,10 @@ const AMOUNT_PER_SECOND = "[data-cy=preview-per-second]";
 const ADDRESS_DIALOG_INPUT = "[data-cy=address-dialog-input]";
 const CLOSE_DIALOG_BUTTON = "[data-testid=CloseIcon]";
 const ENS_ENTRIES = "[data-cy=ens-entry]";
-const ENS_ENTRY_NAMES = "[data-cy=ens-entry] span";
+const ENS_ENTRY_NAMES = "[data-cy=ens-entry] h6";
 const ENS_ENTRY_ADDRESS = "[data-cy=ens-entry] p";
 const RECENT_ENTRIES = "[data-cy=recents-entry]";
-const RECENT_ENTRIES_ADDRESS = "[data-cy=recents-entry] span";
+const RECENT_ENTRIES_ADDRESS = "[data-cy=recents-entry] h6";
 const RECEIVER_CLEAR_BUTTON = "[data-testid=CloseIcon]";
 const TOKEN_SEARCH_INPUT = "[data-cy=token-search-input]";
 const TOKEN_SEARCH_RESULTS = "[data-cy$=list-item]";
@@ -60,17 +60,18 @@ export class SendPage extends BasePage {
 
     static validateSendPagePreviewBalance() {
         cy.fixture("networkSpecificData").then((networkSpecificData) => {
+            let selectedValues = networkSpecificData.polygon.staticBalanceAccount.tokenValues[0]
+                .balance
+
             this.hasText(
                 PREVIEW_BALANCE,
-                parseFloat(
-                    networkSpecificData.polygon.staticBalanceAccount.tokenValues[0]
-                        .balance
-                ).toFixed(18)
+                `${selectedValues} `
             );
         });
     }
 
     static clickBalancePreviewWrapButton() {
+        this.doesNotExist(TOKEN_SEARCH_INPUT)
         this.click(BALANCE_WRAP_BUTTON);
     }
 
@@ -174,7 +175,7 @@ export class SendPage extends BasePage {
     }
 
     static clearReceiverField() {
-        this.click(RECEIVER_CLEAR_BUTTON);
+        this.clickFirstVisible(RECEIVER_CLEAR_BUTTON);
         this.hasText(RECEIVER_BUTTON, "Public Address or ENS");
     }
 
@@ -230,9 +231,10 @@ export class SendPage extends BasePage {
                         specificToken + TOKEN_SELECT_NAME,
                         values.tokenName
                     );
+                    let assertableBalance = Number.isInteger(parseFloat(values.balance)) ? values.balance : parseFloat(values.balance).toFixed(4)
                     this.scrollToAndhasText(
                         specificToken + TOKEN_SELECT_BALANCE,
-                        values.balance
+                        `${assertableBalance} `
                     );
                 }
             );
@@ -261,7 +263,7 @@ export class SendPage extends BasePage {
     }
 
     static validateBalanceAndNoWrapButtonForNativeToken() {
-        this.hasText(PREVIEW_BALANCE, "0");
+        this.hasText(PREVIEW_BALANCE, "0 ");
         this.doesNotExist(BALANCE_WRAP_BUTTON);
     }
 

@@ -2,23 +2,17 @@ import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import QrCodeRoundedIcon from "@mui/icons-material/QrCodeRounded";
 import ShowerRoundedIcon from "@mui/icons-material/ShowerRounded";
-import SupportRoundedIcon from "@mui/icons-material/SupportRounded";
 import {
-  Box,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Modal,
   Popover,
-  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import { FC, MouseEvent, useState } from "react";
 import AccessCodeDialog from "../featureFlags/AccessCodeDialog";
-import OnboardingCards from "../onboarding/OnboardingCards";
-import { useLayoutContext } from "./LayoutContext";
 
 interface MenuItemImageProps {
   src: string;
@@ -38,13 +32,10 @@ const MenuItemImage: FC<MenuItemImageProps> = ({ src, alt }) => (
   </ListItemIcon>
 );
 
-const MoreNavigationItem: FC = ({}) => {
+const MoreNavigationItem: FC = () => {
   const theme = useTheme();
-  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { setNavigationDrawerOpen } = useLayoutContext();
   const [showAccessCodeDialog, setShowAccessCodeDialog] = useState(false);
-  const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [moreMenuAnchor, setMoreMenuAnchor] = useState<HTMLElement | null>(
     null
   );
@@ -53,20 +44,6 @@ const MoreNavigationItem: FC = ({}) => {
     setMoreMenuAnchor(event.currentTarget);
 
   const closeMoreMenu = () => setMoreMenuAnchor(null);
-
-  const openOnboardingModal = () => {
-    setShowOnboardingModal(true);
-    closeMoreMenu();
-  };
-
-  const closeOnboardingModal = () => {
-    setShowOnboardingModal(false);
-  };
-
-  const onOnboardingItemClicked = () => {
-    closeOnboardingModal();
-    setNavigationDrawerOpen(false);
-  };
 
   const openAccessCodeDialog = () => {
     closeMoreMenu();
@@ -146,17 +123,9 @@ const MoreNavigationItem: FC = ({}) => {
             <ListItemIcon>
               <ShowerRoundedIcon sx={{ color: theme.palette.text.primary }} />
             </ListItemIcon>
-            <ListItemText>Faucet</ListItemText>
+            <ListItemText>Testnet Faucet</ListItemText>
           </ListItemButton>
         </Link>
-
-        <ListItemButton data-cy={"more-getting-started-btn"} onClick={openOnboardingModal}>
-          <ListItemIcon>
-            <SupportRoundedIcon color="primary" />
-          </ListItemIcon>
-          <ListItemText>Getting Started</ListItemText>
-        </ListItemButton>
-
         <ListItemButton data-cy={"more-access-code-btn"} onClick={openAccessCodeDialog}>
           <ListItemIcon>
             <QrCodeRoundedIcon sx={{ color: theme.palette.text.primary }} />
@@ -164,25 +133,6 @@ const MoreNavigationItem: FC = ({}) => {
           <ListItemText>Access Code</ListItemText>
         </ListItemButton>
       </Popover>
-
-      <Modal open={showOnboardingModal} onClose={closeOnboardingModal}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "40%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            [theme.breakpoints.down("md")]: {
-              top: "50%",
-            },
-          }}
-        >
-          <OnboardingCards
-            vertical={isBelowMd}
-            onClick={onOnboardingItemClicked}
-          />
-        </Box>
-      </Modal>
 
       {showAccessCodeDialog && (
         <AccessCodeDialog onClose={closeAccessCodeDialog} />

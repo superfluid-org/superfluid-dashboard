@@ -3,8 +3,8 @@ Feature: Bridge page test cases (Li-Fi widget)
   Scenario: Routes and connect wallet button showing up for a user without a connected wallet
     Given "Dashboard page" is open without connecting a wallet
     And User clicks on the "bridge" navigation button
-    And User chooses "MKR" token to swap "From" on "Polygon"
-    And User chooses "MKRx" token to swap "To" on "Polygon"
+    And User chooses "DAIx" token to swap "From" on "Polygon"
+    And User chooses "USDC" token to swap "To" on "Polygon"
     And User inputs "1" into the swap amount
     And The You pay section shows the correct token and network icons
     And Token swapping route for is correctly shown
@@ -13,8 +13,8 @@ Feature: Bridge page test cases (Li-Fi widget)
   Scenario: Routes and swap button showing up for a user with a connected wallet but with no balance for it
     Given Transactional account bob is connected to the dashboard on goerli
     And User clicks on the "bridge" navigation button
-    And User chooses "MKR" token to swap "From" on "Polygon"
-    And User chooses "MKRx" token to swap "To" on "Polygon"
+    And User chooses "DAIx" token to swap "From" on "Polygon"
+    And User chooses "USDC" token to swap "To" on "Polygon"
     And User inputs "1" into the swap amount
     And Token swapping route for is correctly shown
     And Review swap button is disabled
@@ -24,8 +24,8 @@ Feature: Bridge page test cases (Li-Fi widget)
     Given "Dashboard Page" is open without connecting a wallet
     And User uses view mode to look at "ongoingStreamAccount"
     And User clicks on the "bridge" navigation button
-    And User chooses "MKR" token to swap "From" on "Polygon"
-    And User chooses "MKRx" token to swap "To" on "Polygon"
+    And User chooses "DAIx" token to swap "From" on "Polygon"
+    And User chooses "USDC" token to swap "To" on "Polygon"
     And User inputs "1" into the swap amount
     And The You pay section shows the correct token and network icons
     And Token swapping route for is correctly shown

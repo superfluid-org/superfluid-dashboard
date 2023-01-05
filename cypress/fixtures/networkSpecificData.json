@@ -57,11 +57,6 @@
         "outFlow": "-5/mo",
         "streams": [
           {
-            "fromTo": "0x13a9...4244",
-            "flowRate": "-",
-            "endDate": "28 Nov. 202229 Nov. 2022"
-          },
-          {
             "fromTo": "0x618a...DE40",
             "flowRate": "-5/mo",
             "endDate": "2 Jul. 2021"
@@ -70,6 +65,11 @@
             "fromTo": "0xcb86...42D8",
             "flowRate": "+4/mo",
             "endDate": "2 Jul. 2021"
+          },
+          {
+            "fromTo": "0x13a9...4244",
+            "flowRate": "-",
+            "endDate": "28 Nov. 202229 Nov. 2022"
           }
         ]
       }
@@ -132,7 +132,7 @@
           "id": "matic-network",
           "balance": "4",
           "underlyingBalance": "0.998914208450974000",
-          "underlyingTokenName": "Polygon Native Asset",
+          "underlyingTokenName": "MATIC",
           "underlyingTokenSymbol": "MATIC"
         },
         {

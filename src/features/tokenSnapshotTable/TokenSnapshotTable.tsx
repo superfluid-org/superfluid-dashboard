@@ -1,4 +1,3 @@
-import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import {
   Stack,
   Table,
@@ -12,6 +11,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
+import { sumBy } from "lodash";
 import { FC, memo, useEffect, useMemo } from "react";
 import { tokenSnapshotsDefaultSort } from "../../utils/tokenUtils";
 import { useMinigame } from "../minigame/MinigameContext";
@@ -20,7 +20,6 @@ import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
 import TokenSnapshotRow from "./TokenSnapshotRow";
 import { FetchingStatus } from "./TokenSnapshotTables";
-import { sumBy } from "lodash";
 
 interface TokenSnapshotTableProps {
   address: Address;
@@ -190,9 +189,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
               <TableCell>Balance</TableCell>
               <TableCell width="300">Net Flow</TableCell>
               <TableCell width="300">Inflow/Outflow</TableCell>
-              <TableCell width="120" align="center">
-                <KeyboardDoubleArrowDownIcon />
-              </TableCell>
+              <TableCell width="120" align="center"></TableCell>
             </TableRow>
           )}
         </TableHead>

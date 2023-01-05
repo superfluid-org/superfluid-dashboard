@@ -41,14 +41,15 @@ export class BridgePage extends BasePage {
     static validateSwapRoute(){
             cy.get("@ToNetwork").then( network => {
                 cy.get("@ToToken").then(token => {
-                cy.get("@swapAmount").then( (amount) => {
-                    cy.get(SWAP_ROUTE_AMOUNT).should("have.text",amount)
+                cy.get("@swapAmount").then(amount => {
+                    cy.get(SWAP_ROUTE_AMOUNT).first().then(el => {
+                        expect(parseFloat(el.text())).to.be.closeTo(parseFloat(amount.toString()) , 0.1)
+                    })
                     cy.get(SWAP_ROUTE_AMOUNT).parent().parent().find("img").first().should("have.attr","alt",token)
                     cy.get(SWAP_ROUTE_AMOUNT).parent().parent().find("img").last().should("have.attr","alt",network)
                 })
-             })
-            }
-        )
+            })
+        })
     }
 
     static validateYouPayTokenIcons() {

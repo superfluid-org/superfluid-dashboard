@@ -89,6 +89,9 @@ export class Common extends BasePage {
                 case "v1 ended stream details page":
                     this.visitPage(streamData["staticBalanceAccount"]["polygon"][0].v1Link, mocked, account, network);
                     break;
+                case "close-ended stream details page":
+                    this.visitPage(streamData["accountWithLotsOfData"]["goerli"][0].v2Link, mocked, account, network);
+                    break;
                 default:
                     throw new Error(`Hmm, you haven't set up the link for : ${page}`);
             }
