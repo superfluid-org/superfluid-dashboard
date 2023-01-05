@@ -22,6 +22,7 @@ import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { useVestingToken } from "./useVestingToken";
+import VestingStatus from "./VestingStatus";
 
 interface VestingRowProps {
   network: Network;
@@ -75,7 +76,16 @@ const VestingRow: FC<VestingRowProps> = ({
     >
       <TableCell>
         <Stack direction="row" alignItems="center" gap={1.5}>
-          {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
+          <TokenIcon
+            isSuper
+            tokenSymbol={tokenQuery.data?.symbol}
+            isLoading={tokenQuery.isLoading}
+          />
+          <ListItemText primary={tokenQuery.data?.symbol} />
+        </Stack>
+      </TableCell>
+      <TableCell>
+        <Stack direction="row" alignItems="center" gap={1.5}>
           <AddressAvatar
             address={isOutgoing ? receiver : sender}
             AvatarProps={{
@@ -90,40 +100,21 @@ const VestingRow: FC<VestingRowProps> = ({
           </AddressCopyTooltip>
         </Stack>
       </TableCell>
-      <TableCell sx={{ py: 0.5 }}>
-        <Stack direction="row" alignItems="center" gap={1.5}>
-          <TokenIcon
-            isSuper
-            tokenSymbol={tokenQuery.data?.symbol}
-            isLoading={tokenQuery.isLoading}
-          />
-          <ListItemText
-            primary={
-              <>
-                <Amount wei={totalAmount} /> {tokenQuery.data?.symbol}
-              </>
-            }
-          />
-        </Stack>
+      <TableCell>
+        <Amount wei={totalAmount} /> {tokenQuery.data?.symbol}
       </TableCell>
       <TableCell>
-        <ListItemText
-          primary={
-            <>
-              <Amount wei={cliffAmount} /> {tokenQuery.data?.symbol}
-            </>
-          }
-          secondary={format(fromUnixTime(Number(cliffDate)), "LLL d, yyyy")}
-        />
+        <Amount wei={totalAmount} /> {tokenQuery.data?.symbol}
       </TableCell>
       <TableCell sx={{ pr: 2 }}>
         <ListItemText
           primary={format(fromUnixTime(Number(startDate)), "LLL d, yyyy")}
           secondary={format(fromUnixTime(Number(endDate)), "LLL d, yyyy")}
-          primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
+          primaryTypographyProps={{ variant: "body2" }}
+          secondaryTypographyProps={{ color: "text.primary" }}
         />
       </TableCell>
-      <TableCell sx={{ pl: 0, pr: 2 }}>
+      <TableCell sx={{ pl: 0 }}>
         {pendingDelete ? (
           <PendingProgress
             pendingUpdate={pendingDelete}
@@ -134,7 +125,9 @@ const VestingRow: FC<VestingRowProps> = ({
             pendingUpdate={pendingDelete}
             transactingText="Creating..."
           />
-        ) : null}
+        ) : (
+          <VestingStatus />
+        )}
       </TableCell>
     </TableRow>
   );

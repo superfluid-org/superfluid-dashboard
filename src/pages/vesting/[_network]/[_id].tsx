@@ -1,19 +1,37 @@
+import {
+  Card,
+  Container,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Paper,
+  Stack,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import { fromUnixTime, getUnixTime } from "date-fns";
 import { isString } from "lodash";
 import { useRouter } from "next/router";
-import {
-  ReactElement,
-  useEffect,
-  useState,
-} from "react";
+import { FC, ReactElement, useEffect, useMemo, useState } from "react";
+import TimeUnitFilter, {
+  TimeUnitFilterType,
+} from "../../../features/graph/TimeUnitFilter";
 import { Network, networksBySlug } from "../../../features/network/networks";
-import { VestingScheduleDetails } from "../../../features/vesting/VestingScheduleDetailsSection";
-import { VestingScheduleDetailsLayout } from "../../../features/vesting/VestingScheduleDetailsLayout";
+import FlowingBalance from "../../../features/token/FlowingBalance";
+import TokenIcon from "../../../features/token/TokenIcon";
+import { BigLoader } from "../../../features/vesting/BigLoader";
+import { useVestingToken } from "../../../features/vesting/useVestingToken";
+import VestingHeader from "../../../features/vesting/VestingHeader";
+import { VestingLayout } from "../../../features/vesting/VestingLayout";
+import useNavigateBack from "../../../hooks/useNavigateBack";
+import { useGetVestingScheduleQuery } from "../../../vesting-subgraph/getVestingSchedule.generated";
 import Page404 from "../../404";
 import { NextPageWithLayout } from "../../_app";
-import { BigLoader } from "../../../features/vesting/BigLoader";
 
 const VestingScheduleDetailsPage: NextPageWithLayout = () => {
   const router = useRouter();
+
   const [routeHandled, setRouteHandled] = useState(false);
 
   const [network, setNetwork] = useState<Network | undefined>();
@@ -44,11 +62,180 @@ const VestingScheduleDetailsPage: NextPageWithLayout = () => {
     return <Page404 />;
   }
 
-  return <VestingScheduleDetails network={network} id={vestingScheduleId} />;
+  return (
+    <VestingScheduleDetailsContent id={vestingScheduleId} network={network} />
+  );
+};
+
+interface VestingScheduleDetailsContentProps {
+  id: string;
+  network: Network;
+}
+
+const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
+  id,
+  network,
+}) => {
+  const navigateBack = useNavigateBack();
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
+  const [graphFilter, setGraphFilter] = useState(TimeUnitFilterType.All);
+
+  const vestingScheduleQuery = useGetVestingScheduleQuery({
+    id,
+  });
+  const vestingSchedule = vestingScheduleQuery.data?.vestingSchedule;
+
+  const tokenQuery = useVestingToken(
+    network,
+    vestingScheduleQuery?.data?.vestingSchedule?.superToken
+  );
+  const token = tokenQuery.data;
+
+  const onGraphFilterChange = (newGraphFilter: TimeUnitFilterType) =>
+    setGraphFilter(newGraphFilter);
+
+  const balance = useMemo(() => {
+    if (
+      !vestingSchedule ||
+      fromUnixTime(Number(vestingSchedule.cliffDate)) < new Date()
+    ) {
+      return "0";
+    }
+    return vestingSchedule.cliffAmount;
+  }, [vestingSchedule]);
+
+  if (vestingScheduleQuery.isLoading || tokenQuery.isLoading) {
+    return <BigLoader />;
+  }
+
+  if (!vestingSchedule || !token) return <Page404 />;
+
+  const { symbol } = token;
+
+  const { cliffDate, cliffAmount, endDate, flowRate, startDate } =
+    vestingSchedule;
+
+  return (
+    <Container maxWidth="lg">
+      <VestingHeader onBack={navigateBack}>
+        <>
+          <TokenIcon isSuper tokenSymbol="USDCx" />
+          <Typography component="h1" variant="h4">
+            Vesting
+          </Typography>
+        </>
+      </VestingHeader>
+
+      <Stack gap={3}>
+        <Card
+          sx={{
+            pb: 2,
+            [theme.breakpoints.down("md")]: {
+              p: 2,
+              mx: -2,
+              border: 0,
+              background: "transparent",
+              boxShadow: "none",
+            },
+          }}
+        >
+          <Stack
+            data-cy={"token-container-by-graph"}
+            direction="row"
+            justifyContent="space-between"
+            alignItems="start"
+            sx={{
+              mb: 4,
+              [theme.breakpoints.down("md")]: {
+                mb: 0,
+                alignItems: "end",
+              },
+            }}
+          >
+            <Stack gap={0.5}>
+              <Typography
+                variant={isBelowMd ? "body2" : "body1"}
+                color="text.secondary"
+                translate="yes"
+              >
+                Vested so far
+              </Typography>
+              <Stack direction="row" alignItems="flex-end" columnGap={1}>
+                <Typography data-cy={"token-balance"} variant="h3mono">
+                  <FlowingBalance
+                    balance={balance}
+                    flowRate={flowRate}
+                    balanceTimestamp={
+                      vestingSchedule.cliffDate || vestingSchedule.startDate
+                    }
+                    disableRoundingIndicator
+                  />
+                </Typography>
+                <Typography
+                  data-cy={"token-symbol"}
+                  variant="h5mono"
+                  color="text.secondary"
+                  sx={{ lineHeight: "30px" }}
+                >
+                  {symbol}
+                </Typography>
+              </Stack>
+
+              {/* {tokenPrice && (
+                <Typography
+                  data-cy={"token-fiat-balance"}
+                  variant="h5mono"
+                  color="text.secondary"
+                >
+                  <FlowingFiatBalance
+                    balance={balance}
+                    flowRate={flowRate}
+                    balanceTimestamp={balanceTimestamp}
+                    price={tokenPrice}
+                  />
+                </Typography>
+              )} */}
+            </Stack>
+
+            {!isBelowMd && (
+              <TimeUnitFilter
+                activeFilter={graphFilter}
+                onChange={onGraphFilterChange}
+              />
+            )}
+          </Stack>
+        </Card>
+
+        <Stack direction="row" gap={3}>
+          <Paper>
+            <Typography>Cliff amount</Typography>
+            <ListItem>
+              <ListItemIcon>
+                <TokenIcon isSuper tokenSymbol="USDCx" />
+              </ListItemIcon>
+              <ListItemText
+                primary={
+                  <>
+                    <Typography>1 360.00000</Typography>{" "}
+                    <Typography color="text.secondary">TUSDx</Typography>
+                  </>
+                }
+                secondary="$1360.00"
+              />
+            </ListItem>
+          </Paper>
+
+          <Paper></Paper>
+        </Stack>
+      </Stack>
+    </Container>
+  );
 };
 
 VestingScheduleDetailsPage.getLayout = function getLayout(page: ReactElement) {
-  return <VestingScheduleDetailsLayout>{page}</VestingScheduleDetailsLayout>;
+  return <VestingLayout>{page}</VestingLayout>;
 };
 
 export default VestingScheduleDetailsPage;
