@@ -98,7 +98,7 @@ const CreateVestingFormProvider: FC<{
 
   const { data: vestingSchedulerConstants } =
     rpcApi.useGetVestingSchedulerConstantsQuery({
-      chainId: network.id
+      chainId: network.id,
     });
 
   const formSchema = useMemo(
@@ -145,17 +145,26 @@ const CreateVestingFormProvider: FC<{
         );
 
         if (!vestingSchedulerConstants) {
-          throw new Error("Haven't fetched Vestin Scheduler contants.");
+          throw new Error(
+            "Haven't fetched VestingScheduler contract constants. This hopefully never happens. If it does, probably should refresh the application."
+          );
         }
+        const {
+          MIN_VESTING_DURATION_IN_DAYS,
+          MIN_VESTING_DURATION_IN_SECONDS,
+          END_DATE_VALID_BEFORE_IN_SECONDS,
+          START_DATE_VALID_AFTER_IN_SECONDS,
+        } = vestingSchedulerConstants;
 
         const durationFromCliffAndFlowDateToEndDate = Math.floor(
           (endDate.getTime() - cliffAndFlowDate.getTime()) / 1000
         );
         if (
-          durationFromCliffAndFlowDateToEndDate < vestingSchedulerConstants.MIN_VESTING_DURATION_IN_SECONDS
+          durationFromCliffAndFlowDateToEndDate <
+          MIN_VESTING_DURATION_IN_SECONDS
         ) {
           handleHigherOrderValidationError({
-            message: `The vesting end date has to be at least ${vestingSchedulerConstants.MIN_VESTING_DURATION_IN_DAYS} days from the start or the cliff.`,
+            message: `The vesting end date has to be at least ${MIN_VESTING_DURATION_IN_DAYS} days from the start or the cliff.`,
           });
         }
 
@@ -173,7 +182,7 @@ const CreateVestingFormProvider: FC<{
         );
         if (
           secondsFromStartToEnd <
-          vestingSchedulerConstants.START_DATE_VALID_AFTER_IN_SECONDS + vestingSchedulerConstants.END_DATE_VALID_BEFORE_IN_SECONDS
+          START_DATE_VALID_AFTER_IN_SECONDS + END_DATE_VALID_BEFORE_IN_SECONDS
         ) {
           handleHigherOrderValidationError({
             message: `Invalid vesting schedule time frame.`,
