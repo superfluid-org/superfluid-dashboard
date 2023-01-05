@@ -1,13 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import add from "date-fns/fp/add";
-import React, {
-  FC,
-  ReactNode,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { FormProvider, useForm, UseFormSetError } from "react-hook-form";
+import { FC, ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { FormProvider, Resolver, useForm } from "react-hook-form";
 import { date, mixed, number, object, ObjectSchema, string } from "yup";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
@@ -24,9 +18,13 @@ import {
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import { createHandleHigherOrderValidationErrorFunc } from "../../utils/createHandleHigherOrderValidationErrorFunc";
+import {
+  createHigherValidationErrorFunc,
+  useHigherValidation,
+} from "../../utils/higherValidation";
+import { debouncePromiseToLastResult } from "../../utils/debouncePromiseToLastResult";
 
-export type ValidVestingForm = {
+export type SanitizedVestingForm = {
   data: {
     superTokenAddress: string;
     receiverAddress: string;
@@ -65,7 +63,7 @@ export type PartialVestingForm = {
 const CreateVestingFormProvider: FC<{
   children: (isInitialized: boolean) => ReactNode;
 }> = ({ children }) => {
-  const primarySchema = useMemo<ObjectSchema<ValidVestingForm>>(
+  const sanitizedSchema = useMemo<ObjectSchema<SanitizedVestingForm>>(
     () =>
       object({
         data: object({
@@ -106,114 +104,127 @@ const CreateVestingFormProvider: FC<{
     rpcApi.useLazyGetActiveVestingScheduleQuery();
   const { visibleAddress: senderAddress } = useVisibleAddress();
 
+  const higherValidate = useHigherValidation<SanitizedVestingForm>(
+    async (sanitizedForm, handleError) => {
+      const {
+        data: {
+          startDate,
+          cliffAmountEther,
+          totalAmountEther,
+          cliffPeriod,
+          vestingPeriod,
+          receiverAddress,
+          superTokenAddress,
+        },
+      } = sanitizedForm;
+
+      const cliffAndFlowDate = add(
+        {
+          seconds: cliffPeriod.numerator * cliffPeriod.denominator,
+        },
+        startDate
+      );
+
+      const endDate = add(
+        {
+          seconds: vestingPeriod.numerator * vestingPeriod.denominator,
+        },
+        startDate
+      );
+
+      const durationFromCliffAndFlowDateToEndDate = Math.floor(
+        (endDate.getTime() - cliffAndFlowDate.getTime()) / 1000
+      );
+      if (
+        durationFromCliffAndFlowDateToEndDate < MIN_VESTING_DURATION_SECONDS
+      ) {
+        return handleError({
+          message: `The vesting end date has to be at least ${MIN_VESTING_DURATION_DAYS} days from the start or the cliff.`,
+        });
+      }
+
+      const vestingDuration =
+        vestingPeriod.numerator * vestingPeriod.denominator;
+
+      if (vestingDuration > MAX_VESTING_DURATION_SECONDS) {
+        return handleError({
+          message: `The vesting period has to be less than ${MAX_VESTING_DURATION_YEARS} years.`,
+        });
+      }
+
+      const secondsFromStartToEnd = Math.floor(
+        (endDate.getTime() - cliffAndFlowDate.getTime()) / 1000
+      );
+      if (
+        secondsFromStartToEnd <
+        START_DATE_VALID_AFTER_SECONDS + END_DATE_VALID_BEFORE_SECONDS
+      ) {
+        return handleError({
+          message: `Invalid vesting schedule time frame.`,
+        });
+      }
+
+      const cliffAmount = parseEtherOrZero(cliffAmountEther);
+      const totalAmount = parseEtherOrZero(totalAmountEther);
+
+      if (cliffAmount.gte(totalAmount)) {
+        return handleError({
+          message: `Cliff amount has to be less than total amount.`,
+        });
+      }
+
+      if (senderAddress) {
+        if (senderAddress.toLowerCase() === receiverAddress.toLowerCase()) {
+          return handleError({
+            message: `Can not vest to yourself.`,
+          });
+        }
+
+        const { data: vestingSchedule } = await getActiveVestingSchedule({
+          chainId: network.id,
+          superTokenAddress,
+          senderAddress,
+          receiverAddress,
+        });
+
+        if (vestingSchedule) {
+          return handleError({
+            message: `There already exists a vesting schedule between the accounts for the token. To create a new schedule, the active schedule needs to end or be deleted.`,
+          });
+        }
+      }
+
+      return true;
+    },
+    [network, getActiveVestingSchedule, senderAddress]
+  );
+
   const formSchema = useMemo(
     () =>
       object().test(async (values, context) => {
         clearErrors("data");
 
-        const handleHigherOrderValidationError =
-          createHandleHigherOrderValidationErrorFunc(
-            setError,
-            context.createError
-          );
+        const handleHigherValidationError = createHigherValidationErrorFunc(
+          setError,
+          context.createError
+        );
 
         if (network !== networkDefinition.goerli) {
-          handleHigherOrderValidationError({
+          handleHigherValidationError({
             message: `The feature is only available on Goerli.`,
           });
         }
 
-        const {
-          data: {
-            startDate,
-            cliffAmountEther,
-            totalAmountEther,
-            cliffPeriod,
-            vestingPeriod,
-            receiverAddress,
-            superTokenAddress,
-          },
-        } = (await primarySchema.validate(values)) as ValidVestingForm;
+        const sanitizedForm = await sanitizedSchema.validate(values);
 
-        const cliffAndFlowDate = add(
-          {
-            seconds: cliffPeriod.numerator * cliffPeriod.denominator,
-          },
-          startDate
-        );
-
-        const endDate = add(
-          {
-            seconds: vestingPeriod.numerator * vestingPeriod.denominator,
-          },
-          startDate
-        );
-
-        const durationFromCliffAndFlowDateToEndDate = Math.floor(
-          (endDate.getTime() - cliffAndFlowDate.getTime()) / 1000
-        );
-        if (
-          durationFromCliffAndFlowDateToEndDate < MIN_VESTING_DURATION_SECONDS
-        ) {
-          handleHigherOrderValidationError({
-            message: `The vesting end date has to be at least ${MIN_VESTING_DURATION_DAYS} days from the start or the cliff.`,
-          });
-        }
-
-        const vestingDuration =
-          vestingPeriod.numerator * vestingPeriod.denominator;
-
-        if (vestingDuration > MAX_VESTING_DURATION_SECONDS) {
-          handleHigherOrderValidationError({
-            message: `The vesting period has to be less than ${MAX_VESTING_DURATION_YEARS} years.`,
-          });
-        }
-
-        const secondsFromStartToEnd = Math.floor(
-          (endDate.getTime() - cliffAndFlowDate.getTime()) / 1000
-        );
-        if (
-          secondsFromStartToEnd <
-          START_DATE_VALID_AFTER_SECONDS + END_DATE_VALID_BEFORE_SECONDS
-        ) {
-          handleHigherOrderValidationError({
-            message: `Invalid vesting schedule time frame.`,
-          });
-        }
-
-        const cliffAmount = parseEtherOrZero(cliffAmountEther);
-        const totalAmount = parseEtherOrZero(totalAmountEther);
-
-        if (cliffAmount.gte(totalAmount)) {
-          handleHigherOrderValidationError({
-            message: `Cliff amount has to be less than total amount.`,
-          });
-        }
-
-        if (senderAddress) {
-          if (senderAddress.toLowerCase() === receiverAddress.toLowerCase()) {
-            handleHigherOrderValidationError({
-              message: `Can not vest to yourself.`,
-            });
-          }
-
-          const { data: vestingSchedule } = await getActiveVestingSchedule({
-            chainId: network.id,
-            superTokenAddress,
-            senderAddress,
-            receiverAddress,
-          });
-
-          if (vestingSchedule) {
-            handleHigherOrderValidationError({
-              message: `There already exists a vesting schedule between the accounts for the token. To create a new schedule, the active schedule needs to end or be deleted.`,
-            });
-          }
-        }
-
-        return true;
+        return await higherValidate(sanitizedForm, handleHigherValidationError);
       }),
-    [network, getActiveVestingSchedule, senderAddress]
+    [network, sanitizedSchema, higherValidate]
+  );
+
+  const resolver = useCallback<Resolver<PartialVestingForm>>(
+    debouncePromiseToLastResult(yupResolver(formSchema), 250),
+    [formSchema]
   );
 
   const formMethods = useForm<PartialVestingForm>({
@@ -234,18 +245,21 @@ const CreateVestingFormProvider: FC<{
         receiverAddress: null,
       },
     },
-    resolver: yupResolver(formSchema),
+    resolver,
     mode: "onChange",
   });
 
-  const { formState, setValue, trigger, clearErrors, setError, watch } =
-    formMethods;
+  const {
+    formState: { isDirty: isFormDirty },
+    clearErrors,
+    setError,
+  } = formMethods;
 
   useEffect(() => {
-    if (formState.isDirty) {
+    if (isFormDirty) {
       stopAutoSwitchToWalletNetwork();
     }
-  }, [formState.isDirty]);
+  }, [isFormDirty]);
 
   const [isInitialized, setIsInitialized] = useState(false);
 

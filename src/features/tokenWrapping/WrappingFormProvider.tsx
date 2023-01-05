@@ -1,13 +1,22 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { BigNumber } from "ethers";
 import { formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
-import { isString } from "lodash";
 import { useRouter } from "next/router";
-import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import {
+  memo,
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { FormProvider, Resolver, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
 import { object, ObjectSchema, string } from "yup";
-import { createHandleHigherOrderValidationErrorFunc } from "../../utils/createHandleHigherOrderValidationErrorFunc";
+import {
+  createHigherValidationErrorFunc,
+  useHigherValidation,
+} from "../../utils/higherValidation";
 import { dateNowSeconds } from "../../utils/dateUtils";
 import {
   calculateCurrentBalance,
@@ -26,6 +35,8 @@ import {
   SuperTokenUpgradeRestoration,
 } from "../transactionRestoration/transactionRestorations";
 import { useTokenPairsQuery } from "./useTokenPairsQuery";
+import { debouncePromiseToLastResult } from "../../utils/debouncePromiseToLastResult";
+import { isString } from "lodash";
 
 export type WrappingForm = {
   type: RestorationType.Wrap | RestorationType.Unwrap;
@@ -38,7 +49,7 @@ export type WrappingForm = {
   };
 };
 
-export type ValidWrappingForm = {
+export type SanitizedWrappingForm = {
   data: {
     tokenPair: {
       superTokenAddress: string;
@@ -48,14 +59,15 @@ export type ValidWrappingForm = {
   };
 };
 
-const WrappingFormProvider: FC<
-  PropsWithChildren<{
-    restoration:
-      | SuperTokenUpgradeRestoration
-      | SuperTokenDowngradeRestoration
-      | undefined;
-  }>
-> = ({ restoration, children }) => {
+const WrappingFormProvider = memo(function WrappingFormProvider({
+  restoration,
+  children,
+}: PropsWithChildren<{
+  restoration:
+    | SuperTokenUpgradeRestoration
+    | SuperTokenDowngradeRestoration
+    | undefined;
+}>) {
   const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
   const router = useRouter();
   const { token: tokenQueryParam } = router.query;
@@ -67,172 +79,201 @@ const WrappingFormProvider: FC<
     network,
   });
 
-  const formSchema = useMemo(
+  const sanitizedSchema = useMemo<ObjectSchema<SanitizedWrappingForm>>(
     () =>
-      object().test(async (values, context) => {
-        const { type } = values as WrappingForm;
+      object({
+        data: object({
+          tokenPair: object({
+            superTokenAddress: string().required().test(testAddress()),
+            underlyingTokenAddress: string().required().test(testAddress()),
+          }).required(),
+          amountDecimal: string()
+            .required()
+            .test(testEtherAmount({ notNegative: true, notZero: true })),
+        }),
+      }),
+    []
+  );
 
-        const primarySchema: ObjectSchema<ValidWrappingForm> = object({
-          data: object({
-            tokenPair: object({
-              superTokenAddress: string().required().test(testAddress()),
-              underlyingTokenAddress: string().required().test(testAddress()),
-            }).required(),
-            amountDecimal: string()
-              .required()
-              .test(testEtherAmount({ notNegative: true, notZero: true })),
-          }),
-        });
+  const higherValidate = useHigherValidation<
+    SanitizedWrappingForm & {
+      type: RestorationType.Wrap | RestorationType.Unwrap;
+    }
+  >(
+    async (sanitizedForm, handleError) => {
+      const {
+        type,
+        data: {
+          tokenPair: { superTokenAddress, underlyingTokenAddress },
+        },
+      } = sanitizedForm;
 
-        clearErrors("data");
-        await primarySchema.validate(values);
-        const validForm = values as ValidWrappingForm;
+      if (accountAddress) {
+        if (type === RestorationType.Wrap) {
+          const { underlyingToken } =
+            tokenPairsQuery.data.find(
+              (x) =>
+                x.superToken.address.toLowerCase() ===
+                  superTokenAddress.toLowerCase() &&
+                x.underlyingToken.address.toLowerCase() ===
+                  underlyingTokenAddress.toLowerCase()
+            ) ?? {};
 
-        const handleHigherOrderValidationError =
-          createHandleHigherOrderValidationErrorFunc(
-            setError,
-            context.createError
-          );
-
-        const { superTokenAddress, underlyingTokenAddress } =
-          validForm.data.tokenPair;
-
-        if (accountAddress) {
-          if (type === RestorationType.Wrap) {
-            const { underlyingToken } =
-              tokenPairsQuery.data.find(
-                (x) =>
-                  x.superToken.address.toLowerCase() ===
-                    superTokenAddress.toLowerCase() &&
-                  x.underlyingToken.address.toLowerCase() ===
-                    underlyingTokenAddress.toLowerCase()
-              ) ?? {};
-
-            if (!underlyingToken) {
-              console.error(`Couldn't find underlying token for: ${JSON.stringify(
-                validForm.data.tokenPair,
-                null,
-                2
-              )}
+          if (!underlyingToken) {
+            console.error(`Couldn't find underlying token for: ${JSON.stringify(
+              sanitizedForm.data.tokenPair,
+              null,
+              2
+            )}
 The list of tokens searched from had length of: ${tokenPairsQuery.data.length}
 The chain ID was: ${network.id}`);
-              handleHigherOrderValidationError({
-                message:
-                  "Underlying token not found. This should never happen. Please refresh the page or contact support!",
-              });
-              return false;
-            }
-
-            const underlyingBalance = await queryUnderlyingBalance({
-              accountAddress,
-              tokenAddress: underlyingTokenAddress,
-              chainId: network.id,
-            }).unwrap();
-
-            const underlyingBalanceBigNumber = BigNumber.from(
-              underlyingBalance.balance
-            );
-            const wrapAmountBigNumber = parseUnits(
-              validForm.data.amountDecimal,
-              underlyingToken.decimals
-            );
-
-            const isWrappingIntoNegative =
-              underlyingBalanceBigNumber.lt(wrapAmountBigNumber);
-            if (isWrappingIntoNegative) {
-              handleHigherOrderValidationError({
-                message: "You do not have enough balance.",
-              });
-            }
-
-            const isNativeAsset =
-              underlyingTokenAddress === NATIVE_ASSET_ADDRESS;
-            if (isNativeAsset) {
-              const isWrappingIntoZero = BigNumber.from(
-                underlyingBalanceBigNumber
-              ).eq(wrapAmountBigNumber);
-              if (isWrappingIntoZero) {
-                const isGnosisSafe = activeConnector?.id === "safe";
-                if (!isGnosisSafe) {
-                  // Not an issue on Gnosis Safe because gas is taken from another wallet.
-                  handleHigherOrderValidationError({
-                    message:
-                      "You are wrapping out of native asset used for gas. You need to leave some gas tokens for the transaction to succeed.",
-                  });
-                }
-              }
-            }
+            return handleError({
+              message:
+                "Underlying token not found. This should never happen. Please refresh the page or contact support!",
+            });
           }
 
-          if (type === RestorationType.Unwrap) {
-            if (accountAddress) {
-              const realtimeBalance = await queryRealtimeBalance(
-                {
-                  accountAddress,
-                  chainId: network.id,
-                  tokenAddress: validForm.data.tokenPair.superTokenAddress,
-                },
-                true
-              ).unwrap();
+          const underlyingBalance = await queryUnderlyingBalance({
+            accountAddress,
+            tokenAddress: underlyingTokenAddress,
+            chainId: network.id,
+          }).unwrap();
 
-              const flowRateBigNumber = BigNumber.from(
-                realtimeBalance.flowRate
-              );
+          const underlyingBalanceBigNumber = BigNumber.from(
+            underlyingBalance.balance
+          );
+          const wrapAmountBigNumber = parseUnits(
+            sanitizedForm.data.amountDecimal,
+            underlyingToken.decimals
+          );
 
-              const currentBalanceBigNumber = calculateCurrentBalance({
-                flowRateWei: flowRateBigNumber,
-                balanceWei: BigNumber.from(realtimeBalance.balance),
-                balanceTimestamp: realtimeBalance.balanceTimestamp,
-              });
-              const balanceAfterWrappingBigNumber = currentBalanceBigNumber.sub(
-                parseEther(validForm.data.amountDecimal) // Always "ether" when downgrading. No need to worry about decimals for super tokens.
-              );
+          const isWrappingIntoNegative =
+            underlyingBalanceBigNumber.lt(wrapAmountBigNumber);
+          if (isWrappingIntoNegative) {
+            return handleError({
+              message: "You do not have enough balance.",
+            });
+          }
 
-              const amountBigNumber = parseEther(validForm.data.amountDecimal);
-              const isWrappingIntoNegative =
-                currentBalanceBigNumber.lt(amountBigNumber);
-              if (isWrappingIntoNegative) {
-                handleHigherOrderValidationError({
-                  message: "You do not have enough balance.",
+          const isNativeAsset = underlyingTokenAddress === NATIVE_ASSET_ADDRESS;
+          if (isNativeAsset) {
+            const isWrappingIntoZero = BigNumber.from(
+              underlyingBalanceBigNumber
+            ).eq(wrapAmountBigNumber);
+            if (isWrappingIntoZero) {
+              const isGnosisSafe = activeConnector?.id === "safe";
+              if (!isGnosisSafe) {
+                // Not an issue on Gnosis Safe because gas is taken from another wallet.
+                return handleError({
+                  message:
+                    "You are wrapping out of native asset used for gas. You need to leave some gas tokens for the transaction to succeed.",
                 });
-              }
-
-              if (flowRateBigNumber.isNegative()) {
-                const dateWhenBalanceCritical = new Date(
-                  calculateMaybeCriticalAtTimestamp({
-                    balanceUntilUpdatedAtWei: balanceAfterWrappingBigNumber,
-                    updatedAtTimestamp: realtimeBalance.balanceTimestamp,
-                    totalNetFlowRateWei: flowRateBigNumber,
-                  })
-                    .mul(1000)
-                    .toNumber()
-                );
-
-                const minimumStreamTimeInSeconds =
-                  getMinimumStreamTimeInMinutes(network.bufferTimeInMinutes) *
-                  60;
-                const secondsToCritical =
-                  dateWhenBalanceCritical.getTime() / 1000 - dateNowSeconds();
-
-                if (secondsToCritical < minimumStreamTimeInSeconds) {
-                  // NOTE: "secondsToCritical" might be off about 1 minute because of RTK-query cache for the balance query
-                  handleHigherOrderValidationError({
-                    message: `You need to leave enough balance to stream for ${
-                      minimumStreamTimeInSeconds / 3600
-                    } hours.`,
-                  });
-                }
               }
             }
           }
         }
 
-        return true;
+        if (type === RestorationType.Unwrap) {
+          if (accountAddress) {
+            const realtimeBalance = await queryRealtimeBalance(
+              {
+                accountAddress,
+                chainId: network.id,
+                tokenAddress: sanitizedForm.data.tokenPair.superTokenAddress,
+              },
+              true
+            ).unwrap();
+
+            const flowRateBigNumber = BigNumber.from(realtimeBalance.flowRate);
+
+            const currentBalanceBigNumber = calculateCurrentBalance({
+              flowRateWei: flowRateBigNumber,
+              balanceWei: BigNumber.from(realtimeBalance.balance),
+              balanceTimestamp: realtimeBalance.balanceTimestamp,
+            });
+            const balanceAfterWrappingBigNumber = currentBalanceBigNumber.sub(
+              parseEther(sanitizedForm.data.amountDecimal) // Always "ether" when downgrading. No need to worry about decimals for super tokens.
+            );
+
+            const amountBigNumber = parseEther(
+              sanitizedForm.data.amountDecimal
+            );
+            const isWrappingIntoNegative =
+              currentBalanceBigNumber.lt(amountBigNumber);
+            if (isWrappingIntoNegative) {
+              return handleError({
+                message: "You do not have enough balance.",
+              });
+            }
+
+            if (flowRateBigNumber.isNegative()) {
+              const dateWhenBalanceCritical = new Date(
+                calculateMaybeCriticalAtTimestamp({
+                  balanceUntilUpdatedAtWei: balanceAfterWrappingBigNumber,
+                  updatedAtTimestamp: realtimeBalance.balanceTimestamp,
+                  totalNetFlowRateWei: flowRateBigNumber,
+                })
+                  .mul(1000)
+                  .toNumber()
+              );
+
+              const minimumStreamTimeInSeconds =
+                getMinimumStreamTimeInMinutes(network.bufferTimeInMinutes) * 60;
+              const secondsToCritical =
+                dateWhenBalanceCritical.getTime() / 1000 - dateNowSeconds();
+
+              if (secondsToCritical < minimumStreamTimeInSeconds) {
+                // NOTE: "secondsToCritical" might be off about 1 minute because of RTK-query cache for the balance query
+                return handleError({
+                  message: `You need to leave enough balance to stream for ${
+                    minimumStreamTimeInSeconds / 3600
+                  } hours.`,
+                });
+              }
+            }
+          }
+        }
+      }
+
+      return true;
+    },
+    [
+      network,
+      accountAddress,
+      activeConnector,
+      tokenPairsQuery.data,
+      queryUnderlyingBalance,
+      queryRealtimeBalance,
+    ]
+  );
+
+  const formSchema = useMemo(
+    () =>
+      object().test(async (values, context) => {
+        clearErrors("data");
+        const sanitizedForm = await sanitizedSchema.validate(values);
+
+        const handleHigherValidationError = createHigherValidationErrorFunc(
+          setError,
+          context.createError
+        );
+
+        const { type } = values as WrappingForm; // The type handling is weird and smelly...
+        return await higherValidate(
+          { ...sanitizedForm, type },
+          handleHigherValidationError
+        );
       }),
-    [network, accountAddress, tokenPairsQuery.data]
+    [sanitizedSchema, higherValidate]
   );
 
   const networkDefaultTokenPair = getNetworkDefaultTokenPair(network);
+
+  const resolver = useCallback<Resolver<WrappingForm>>(
+    debouncePromiseToLastResult(yupResolver(formSchema), 250),
+    [formSchema]
+  );
+
   const formMethods = useForm<WrappingForm>({
     defaultValues: {
       data: {
@@ -245,11 +286,16 @@ The chain ID was: ${network.id}`);
       },
     },
     mode: "onChange",
-    resolver: yupResolver(formSchema),
+    resolver,
   });
 
-  const { formState, setValue, trigger, clearErrors, setError, watch } =
-    formMethods;
+  const {
+    formState: { isDirty: isFormDirty },
+    setValue,
+    trigger,
+    clearErrors,
+    setError,
+  } = formMethods;
 
   const [hasRestored, setHasRestored] = useState(!restoration);
   useEffect(() => {
@@ -311,13 +357,13 @@ The chain ID was: ${network.id}`);
   }, [tokenQueryParam, tokenPairsQuery.data]);
 
   useEffect(() => {
-    if (formState.isDirty) {
+    if (isFormDirty) {
       stopAutoSwitchToWalletNetwork();
     }
-  }, [formState.isDirty]);
+  }, [isFormDirty]);
 
   useEffect(() => {
-    if (formState.isDirty) {
+    if (isFormDirty) {
       trigger();
     }
   }, [accountAddress]);
@@ -325,6 +371,6 @@ The chain ID was: ${network.id}`);
   return hasRestored ? (
     <FormProvider {...formMethods}>{children}</FormProvider>
   ) : null;
-};
+});
 
 export default WrappingFormProvider;

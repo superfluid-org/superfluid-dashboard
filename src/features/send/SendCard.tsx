@@ -1,5 +1,4 @@
 import { ErrorMessage } from "@hookform/error-message";
-import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import {
   Alert,
   Box,
@@ -52,7 +51,7 @@ import { calculateTotalAmountWei, FlowRateInput } from "./FlowRateInput";
 import { StreamingPreview } from "./SendStreamPreview";
 import {
   PartialStreamingForm,
-  ValidStreamingForm,
+  SanitizedStreamingForm,
 } from "./StreamingFormProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -132,11 +131,16 @@ export default memo(function SendCard() {
   const {
     watch,
     control,
-    formState,
+    formState: {
+      errors: formErrors,
+      isValidating: isFormValidating,
+      isValid: isFormValid,
+    },
     getValues,
     setValue,
     reset: resetFormData,
   } = useFormContext<PartialStreamingForm>();
+
 
   const resetForm = useCallback(() => {
     resetFormData();
@@ -148,13 +152,11 @@ export default memo(function SendCard() {
     receiverAddress,
     tokenAddress,
     flowRateEther,
-    understandLiquidationRisk,
     endTimestamp,
   ] = watch([
     "data.receiverAddress",
     "data.tokenAddress",
     "data.flowRate",
-    "data.understandLiquidationRisk",
     "data.endTimestamp",
   ]);
 
@@ -269,7 +271,7 @@ export default memo(function SendCard() {
             },
           }}
           onTokenSelect={(x) => onChange(x.address)}
-          onBlur={onBlur}
+          // onBlur={onBlur} // TODO(KK): Remove for now. Weirdly triggering validation.
           ButtonProps={{ variant: "input" }}
         />
       )}
@@ -437,7 +439,7 @@ export default memo(function SendCard() {
     <Controller
       control={control}
       name="data.understandLiquidationRisk"
-      render={({ field: { onChange, onBlur } }) => (
+      render={({ field: { value: understandLiquidationRisk, onChange, onBlur } }) => (
         <FormControlLabel
           control={
             <Checkbox
@@ -508,7 +510,7 @@ export default memo(function SendCard() {
     (activeFlow && activeFlow.flowRateWei !== flowRateWei.toString());
 
   const isSendDisabled =
-    !hasAnythingChanged || formState.isValidating || !formState.isValid;
+    !hasAnythingChanged || isFormValidating || !isFormValid;
 
   const [upsertFlow, upsertFlowResult] =
     rpcApi.useUpsertFlowWithSchedulingMutation();
@@ -523,16 +525,10 @@ export default memo(function SendCard() {
           }}
           onClick={async (signer) => {
             if (isSendDisabled) {
-              throw Error(
-                `This should never happen. Form state: ${JSON.stringify(
-                  formState,
-                  null,
-                  2
-                )}`
-              );
+              throw Error("This should never happen.");
             }
 
-            const { data: formData } = getValues() as ValidStreamingForm;
+            const { data: formData } = getValues() as SanitizedStreamingForm;
 
             const flowRateWei = calculateTotalAmountWei({
               amountWei: parseEther(formData.flowRate.amountEther).toString(),
@@ -728,7 +724,7 @@ export default memo(function SendCard() {
           name="data"
           // ErrorMessage has a bug and current solution is to pass in errors via props.
           // TODO: keep eye on this issue: https://github.com/react-hook-form/error-message/issues/91
-          errors={formState.errors}
+          errors={formErrors}
           render={({ message }) =>
             !!message && (
               <Alert severity="error" sx={{ mb: 1 }}>

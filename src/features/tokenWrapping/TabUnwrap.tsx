@@ -30,7 +30,7 @@ import { SwitchWrapModeBtn } from "./SwitchWrapModeBtn";
 import { TokenDialogButton } from "./TokenDialogButton";
 import { useTokenPairQuery } from "./useTokenPairQuery";
 import { WrapInputCard } from "./WrapInputCard";
-import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
+import { SanitizedWrappingForm, WrappingForm } from "./WrappingFormProvider";
 
 interface TabUnwrapProps {
   onSwitchMode: () => void;
@@ -45,7 +45,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
   const {
     watch,
     control,
-    formState,
+    formState: { isValidating: isFormValidating, isValid: isFormValid },
     getValues,
     setValue,
     reset: resetForm,
@@ -77,10 +77,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
 
   const [unwrapTrigger, unwrapResult] = rpcApi.useSuperTokenDowngradeMutation();
   const isDowngradeDisabled =
-    !superToken ||
-    !underlyingToken ||
-    formState.isValidating ||
-    !formState.isValid;
+    !superToken || !underlyingToken || isFormValidating || !isFormValid;
 
   const amountInputRef = useRef<HTMLInputElement>(undefined!);
 
@@ -122,7 +119,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                 inputRef={amountInputRef}
                 value={amount}
                 onChange={onChange}
-                onBlur={onBlur}
+                // onBlur={onBlur} // TODO(KK): Remove for now. Weirdly triggering validation.
                 inputProps={{
                   ...inputPropsForEtherAmount,
                   sx: {
@@ -311,16 +308,10 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
               disabled={isDowngradeDisabled}
               onClick={async (signer) => {
                 if (isDowngradeDisabled) {
-                  throw Error(
-                    `This should never happen. Form state: ${JSON.stringify(
-                      formState,
-                      null,
-                      2
-                    )}`
-                  );
+                  throw Error(`This should never happen.`);
                 }
 
-                const { data: formData } = getValues() as ValidWrappingForm;
+                const { data: formData } = getValues() as SanitizedWrappingForm;
 
                 const restoration: SuperTokenDowngradeRestoration = {
                   type: RestorationType.Unwrap,

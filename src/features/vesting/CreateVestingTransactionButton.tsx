@@ -12,7 +12,7 @@ import {
   TransactionDialogActions,
   TransactionDialogButton,
 } from "../transactionBoundary/TransactionDialog";
-import { ValidVestingForm } from "./CreateVestingFormProvider";
+import { SanitizedVestingForm } from "./CreateVestingFormProvider";
 import { CreateVestingCardView } from "./CreateVestingSection";
 
 export const CreateVestingTransactionButton: FC<{
@@ -21,8 +21,11 @@ export const CreateVestingTransactionButton: FC<{
   const [createVestingSchedule, createVestingScheduleResult] =
     rpcApi.useCreateVestingScheduleMutation();
 
-  const { formState, handleSubmit } = useFormContext<ValidVestingForm>();
-  const isDisabled = !formState.isValid || formState.isValidating;
+  const {
+    formState: { isValid: isFormValid, isValidating: isFormValidating },
+    handleSubmit,
+  } = useFormContext<SanitizedVestingForm>();
+  const isDisabled = !isFormValid || isFormValidating;
 
   return (
     <TransactionBoundary mutationResult={createVestingScheduleResult}>

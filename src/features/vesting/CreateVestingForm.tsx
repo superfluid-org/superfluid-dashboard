@@ -63,10 +63,11 @@ export const CreateVestingForm: FC<{
   const {
     watch,
     control,
-    formState,
-    getValues,
-    setValue,
-    reset: resetFormData,
+    formState: {
+      errors: formErrors,
+      isValid: isFormValid,
+      isValidating: isFormValidating,
+    },
   } = useFormContext<PartialVestingForm>();
 
   const [
@@ -225,7 +226,7 @@ export const CreateVestingForm: FC<{
             ),
           }}
           inputProps={{
-            inputPropsForEtherAmount
+            inputPropsForEtherAmount,
           }}
         />
       )}
@@ -335,7 +336,7 @@ export const CreateVestingForm: FC<{
   const PreviewVestingScheduleButton = (
     <Button
       {...transactionButtonDefaultProps}
-      disabled={!formState.isValid || formState.isValidating}
+      disabled={!isFormValid || isFormValidating}
       onClick={() => setView(CreateVestingCardView.Preview)}
     >
       Preview the Vesting Schedule
@@ -347,7 +348,7 @@ export const CreateVestingForm: FC<{
       name="data"
       // ErrorMessage has a bug and current solution is to pass in errors via props.
       // TODO: keep eye on this issue: https://github.com/react-hook-form/error-message/issues/91
-      errors={formState.errors}
+      errors={formErrors}
       render={({ message }) =>
         !!message && (
           <Alert severity="error" sx={{ mb: 1 }}>

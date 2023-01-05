@@ -39,7 +39,7 @@ import { SwitchWrapModeBtn } from "./SwitchWrapModeBtn";
 import { TokenDialogButton } from "./TokenDialogButton";
 import { useTokenPairQuery } from "./useTokenPairQuery";
 import { WrapInputCard } from "./WrapInputCard";
-import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
+import { SanitizedWrappingForm, WrappingForm } from "./WrappingFormProvider";
 
 const underlyingIbAlluoTokenOverrides = [
   // StIbAlluoEth
@@ -71,7 +71,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
     control,
     reset: resetForm,
     resetField,
-    formState,
+    formState: { isValidating: isFormValidating, isValid: isFormValid },
     getValues,
     setValue,
   } = useFormContext<WrappingForm>();
@@ -160,8 +160,8 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
     !tokenPair ||
     !underlyingToken ||
     !superToken ||
-    formState.isValidating ||
-    !formState.isValid ||
+    isFormValidating ||
+    !isFormValid ||
     isApproveAllowanceVisible ||
     allowanceQuery.isLoading;
 
@@ -234,7 +234,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                 inputRef={amountInputRef}
                 value={amountDecimal}
                 onChange={onChange}
-                onBlur={onBlur}
+                // onBlur={onBlur} // TODO(KK): Remove for now. Weirdly triggering validation.
                 inputProps={{
                   ...inputPropsForEtherAmount,
                   sx: {
@@ -490,16 +490,11 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                 disabled={isWrapButtonDisabled}
                 onClick={async (signer) => {
                   if (isWrapButtonDisabled) {
-                    throw Error(
-                      `This should never happen. Form state: ${JSON.stringify(
-                        formState,
-                        null,
-                        2
-                      )}`
-                    );
+                    throw Error(`This should never happen.`);
                   }
 
-                  const { data: formData } = getValues() as ValidWrappingForm;
+                  const { data: formData } =
+                    getValues() as SanitizedWrappingForm;
 
                   // Use super token's decimals for upgrading, not the underlying's.
                   const amountWei = parseEther(formData.amountDecimal);
