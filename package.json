@@ -11,7 +11,7 @@
     "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest",
     "generate-eth-sdk": "del-cli ./src/eth-sdk/client && del-cli ./src/eth-sdk/abis && eth-sdk -p ./src/eth-sdk",
     "generate-platform-api-template": "npx @rtk-query/codegen-openapi ./src/features/redux/platformApi/platformApiCodegenConfig.ts",
-    "vesting-get-graphql-schema": "get-graphql-schema https://api.studio.thegraph.com/query/14557/vesting-scheduler/0.0.9 > src/vesting-subgraph/schema.graphql",
+    "vesting-get-graphql-schema": "get-graphql-schema https://api.studio.thegraph.com/query/14557/vesting-scheduler/0.0.10 > src/vesting-subgraph/schema.graphql",
     "vesting-graphql-codegen": "graphql-codegen --config ./src/vesting-subgraph/codegen.yaml"
   },
   "dependencies": {
