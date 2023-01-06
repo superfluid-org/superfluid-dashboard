@@ -6,7 +6,7 @@ export type PollQueryVariables = Types.Exact<{
 }>;
 
 
-export type PollQuery = { __typename?: 'Query', events: Array<{ __typename?: 'VestingCliffAndFlowExecutedEvent', order: string } | { __typename?: 'VestingEndExecutedEvent', order: string } | { __typename?: 'VestingScheduleCreatedEvent', order: string } | { __typename?: 'VestingScheduleDeletedEvent', order: string } | { __typename?: 'VestingScheduleUpdatedEvent', order: string }> };
+export type PollQuery = { __typename?: 'Query', events: Array<{ __typename?: 'VestingCliffAndFlowExecutedEvent', order: string } | { __typename?: 'VestingEndExecutedEvent', order: string } | { __typename?: 'VestingEndFailedEvent', order: string } | { __typename?: 'VestingScheduleCreatedEvent', order: string } | { __typename?: 'VestingScheduleDeletedEvent', order: string } | { __typename?: 'VestingScheduleUpdatedEvent', order: string }> };
 
 
 export const PollDocument = `
