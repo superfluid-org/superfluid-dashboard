@@ -285,9 +285,9 @@ export const vestingSchedulerEndpoints = {
           framework.settings.provider
         );
         const [
-          MIN_VESTING_DURATION_IN_DAYS,
-          START_DATE_VALID_AFTER_IN_DAYS,
-          END_DATE_VALID_BEFORE_IN_DAYS,
+          MIN_VESTING_DURATION_IN_SECONDS,
+          START_DATE_VALID_AFTER_IN_SECONDS,
+          END_DATE_VALID_BEFORE_IN_SECONDS,
         ] = await Promise.all([
           vestingScheduler.MIN_VESTING_DURATION(),
           vestingScheduler.START_DATE_VALID_AFTER(),
@@ -295,15 +295,12 @@ export const vestingSchedulerEndpoints = {
         ]);
         return {
           data: {
-            MIN_VESTING_DURATION_IN_DAYS,
-            MIN_VESTING_DURATION_IN_SECONDS:
-              MIN_VESTING_DURATION_IN_DAYS * UnitOfTime.Second,
-            START_DATE_VALID_AFTER_IN_DAYS,
-            START_DATE_VALID_AFTER_IN_SECONDS:
-              START_DATE_VALID_AFTER_IN_DAYS * UnitOfTime.Second,
-            END_DATE_VALID_BEFORE_IN_DAYS,
-            END_DATE_VALID_BEFORE_IN_SECONDS:
-              END_DATE_VALID_BEFORE_IN_DAYS * UnitOfTime.Second,
+            MIN_VESTING_DURATION_IN_SECONDS,
+            MIN_VESTING_DURATION_IN_DAYS: Math.round(MIN_VESTING_DURATION_IN_SECONDS / UnitOfTime.Day),
+            START_DATE_VALID_AFTER_IN_SECONDS,
+            START_DATE_VALID_AFTER_IN_DAYS: Math.round(START_DATE_VALID_AFTER_IN_SECONDS / UnitOfTime.Day),
+            END_DATE_VALID_BEFORE_IN_SECONDS,
+            END_DATE_VALID_BEFORE_IN_DAYS: Math.round(END_DATE_VALID_BEFORE_IN_SECONDS / UnitOfTime.Day)
           },
         };
       },
