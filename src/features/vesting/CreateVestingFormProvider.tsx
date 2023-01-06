@@ -221,7 +221,7 @@ const CreateVestingFormProvider: FC<{
 
         return true;
       }),
-    [network, getActiveVestingSchedule, senderAddress]
+    [network, getActiveVestingSchedule, senderAddress, vestingSchedulerConstants]
   );
 
   const formMethods = useForm<PartialVestingForm>({
