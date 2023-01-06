@@ -10,15 +10,15 @@ const isDocumentReferrerSameAsOrigin = () => {
   }
 };
 
-const useNavigateBack = () => {
+const useNavigateBack = (fallbackPath = "/") => {
   const router = useRouter();
 
   return useCallback(
     () =>
       isDocumentReferrerSameAsOrigin()
         ? void router.back()
-        : void router.push("/"),
-    [router]
+        : void router.push(fallbackPath),
+    [router, fallbackPath]
   );
 };
 

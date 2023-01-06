@@ -11,6 +11,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { fromUnixTime, getUnixTime } from "date-fns";
+import { BigNumber } from "ethers";
 import { isString } from "lodash";
 import { useRouter } from "next/router";
 import { FC, ReactElement, useEffect, useMemo, useState } from "react";
@@ -18,16 +19,58 @@ import TimeUnitFilter, {
   TimeUnitFilterType,
 } from "../../../features/graph/TimeUnitFilter";
 import { Network, networksBySlug } from "../../../features/network/networks";
+import Amount from "../../../features/token/Amount";
 import FlowingBalance from "../../../features/token/FlowingBalance";
 import TokenIcon from "../../../features/token/TokenIcon";
+import FiatAmount from "../../../features/tokenPrice/FiatAmount";
+import useTokenPrice from "../../../features/tokenPrice/useTokenPrice";
 import { BigLoader } from "../../../features/vesting/BigLoader";
 import { useVestingToken } from "../../../features/vesting/useVestingToken";
 import VestingHeader from "../../../features/vesting/VestingHeader";
 import { VestingLayout } from "../../../features/vesting/VestingLayout";
 import useNavigateBack from "../../../hooks/useNavigateBack";
+import { getTimeInSeconds } from "../../../utils/dateUtils";
 import { useGetVestingScheduleQuery } from "../../../vesting-subgraph/getVestingSchedule.generated";
 import Page404 from "../../404";
 import { NextPageWithLayout } from "../../_app";
+
+interface VestingDataCardProps {
+  title: string;
+  tokenSymbol: string;
+  amount?: string;
+  price?: number;
+}
+
+const VestingDataCard: FC<VestingDataCardProps> = ({
+  title,
+  tokenSymbol,
+  amount,
+  price,
+}) => (
+  <Card sx={{ p: 3.5 }}>
+    <Typography variant="h5">{title}</Typography>
+    <Stack direction="row" alignItems="center">
+      <TokenIcon isSuper tokenSymbol={tokenSymbol} />
+      {amount && (
+        <Typography variant="h3mono">
+          <Amount wei={amount} />
+        </Typography>
+      )}{" "}
+      <Typography
+        variant="h6"
+        color="text.secondary"
+        sx={{ lineHeight: "30px" }}
+      >
+        {tokenSymbol}
+      </Typography>
+      {amount && price && (
+        <Typography>
+          <FiatAmount wei={amount} price={price} />
+        </Typography>
+      )}
+    </Stack>
+  </Card>
+);
 
 const VestingScheduleDetailsPage: NextPageWithLayout = () => {
   const router = useRouter();
@@ -76,7 +119,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
   id,
   network,
 }) => {
-  const navigateBack = useNavigateBack();
+  const navigateBack = useNavigateBack("/vesting");
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -93,17 +136,36 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
   );
   const token = tokenQuery.data;
 
+  const tokenPrice = useTokenPrice(network.id, token?.underlyingAddress);
+
   const onGraphFilterChange = (newGraphFilter: TimeUnitFilterType) =>
     setGraphFilter(newGraphFilter);
 
-  const balance = useMemo(() => {
-    if (
-      !vestingSchedule ||
-      fromUnixTime(Number(vestingSchedule.cliffDate)) < new Date()
-    ) {
-      return "0";
-    }
-    return vestingSchedule.cliffAmount;
+  const isVesting = useMemo(
+    () =>
+      vestingSchedule &&
+      (!vestingSchedule.cliffDate ||
+        fromUnixTime(Number(vestingSchedule.cliffDate))) >= new Date(),
+    [vestingSchedule]
+  );
+
+  const balance = useMemo(
+    () =>
+      isVesting && vestingSchedule?.cliffAmount
+        ? vestingSchedule.cliffAmount
+        : "0",
+    [vestingSchedule, isVesting]
+  );
+
+  const totalVesting = useMemo(() => {
+    if (!vestingSchedule) return undefined;
+    const { flowRate, endDate, startDate, cliffDate } = vestingSchedule;
+
+    const cliffAndFlowDate = Number(cliffDate ? startDate : cliffDate);
+
+    return BigNumber.from(flowRate)
+      .mul(Number(endDate) - cliffAndFlowDate)
+      .toString();
   }, [vestingSchedule]);
 
   if (vestingScheduleQuery.isLoading || tokenQuery.isLoading) {
@@ -167,9 +229,9 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
                   <FlowingBalance
                     balance={balance}
                     flowRate={flowRate}
-                    balanceTimestamp={
+                    balanceTimestamp={Number(
                       vestingSchedule.cliffDate || vestingSchedule.startDate
-                    }
+                    )}
                     disableRoundingIndicator
                   />
                 </Typography>
@@ -209,25 +271,18 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
         </Card>
 
         <Stack direction="row" gap={3}>
-          <Paper>
-            <Typography>Cliff amount</Typography>
-            <ListItem>
-              <ListItemIcon>
-                <TokenIcon isSuper tokenSymbol="USDCx" />
-              </ListItemIcon>
-              <ListItemText
-                primary={
-                  <>
-                    <Typography>1 360.00000</Typography>{" "}
-                    <Typography color="text.secondary">TUSDx</Typography>
-                  </>
-                }
-                secondary="$1360.00"
-              />
-            </ListItem>
-          </Paper>
-
-          <Paper></Paper>
+          <VestingDataCard
+            title="Tokens granted"
+            tokenSymbol={token.symbol}
+            amount={totalVesting}
+            price={tokenPrice}
+          />
+          <VestingDataCard
+            title="Cliff amount"
+            tokenSymbol={token.symbol}
+            amount={vestingSchedule.cliffAmount || "0"}
+            price={tokenPrice}
+          />
         </Stack>
       </Stack>
     </Container>
