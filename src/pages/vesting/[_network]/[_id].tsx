@@ -1,4 +1,5 @@
 import {
+  Box,
   Card,
   Container,
   ListItem,
@@ -6,11 +7,13 @@ import {
   ListItemText,
   Paper,
   Stack,
+  Step,
+  Stepper,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { fromUnixTime, getUnixTime } from "date-fns";
+import { format, fromUnixTime, getUnixTime } from "date-fns";
 import { BigNumber } from "ethers";
 import { isString } from "lodash";
 import { useRouter } from "next/router";
@@ -284,6 +287,25 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
             price={tokenPrice}
           />
         </Stack>
+
+        <Box sx={{ display: "grid", gridTemplateColumns: "repeat(1fr, 4)" }}>
+          <Box>
+            <Typography>Vesting Scheduled</Typography>
+            <Typography>{format(new Date(), "MMM do, YYYY hh:mm")}</Typography>
+          </Box>
+          <Box>
+            <Typography>Cliff</Typography>
+            <Typography>{format(new Date(), "MMM do, YYYY hh:mm")}</Typography>
+          </Box>
+          <Box>
+            <Typography>Vesting Starts</Typography>
+            <Typography>{format(new Date(), "MMM do, YYYY hh:mm")}</Typography>
+          </Box>
+          <Box>
+            <Typography>Vesting Ends</Typography>
+            <Typography>{format(new Date(), "MMM do, YYYY hh:mm")}</Typography>
+          </Box>
+        </Box>
       </Stack>
     </Container>
   );

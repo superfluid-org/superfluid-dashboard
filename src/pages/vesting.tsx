@@ -1,9 +1,18 @@
-import { Card, Container, Stack, Typography } from "@mui/material";
-import { ReactElement } from "react";
+import {
+  Box,
+  Card,
+  Container,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/material";
+import { format } from "date-fns";
+import { FC, ReactElement, useMemo } from "react";
 import { ReceivedVestingScheduleTable } from "../features/vesting/ReceivedVestingScheduleTable";
 import { SentVestingScheduleTable } from "../features/vesting/SentVestingScheduleTable";
 import VestingHeader from "../features/vesting/VestingHeader";
 import { VestingLayout } from "../features/vesting/VestingLayout";
+import VestingScheduleProgress from "../features/vesting/VestingScheduleProgress";
 import { NextPageWithLayout } from "./_app";
 
 const VestingPage: NextPageWithLayout = () => (
@@ -25,6 +34,8 @@ const VestingPage: NextPageWithLayout = () => (
         <SentVestingScheduleTable />
       </Card>
     </Stack>
+
+    <VestingScheduleProgress />
   </Container>
 );
 
