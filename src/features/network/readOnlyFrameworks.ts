@@ -14,6 +14,9 @@ const readOnlyFrameworks = networks.map((network) => ({
           chainId: network.id,
           provider: wagmiRpcProvider({ chainId: network.id }),
           customSubgraphQueriesEndpoint: network.subgraphUrl,
+          resolverAddress: "0x1910f44c232f040b63251e5b27970c254a74a1c7", // Similarly get this from the hardhat node, see below
+          // this also should not be hardcoded
+          protocolReleaseVersion: "test"
         }).catch(retry),
       {
         minTimeout: 500,

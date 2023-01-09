@@ -34,6 +34,7 @@ export type Network = Chain & {
 };
 
 export const superfluidRpcUrls = {
+  hardhat: "http://127.0.0.1:8545/",
   goerli: "https://rpc-endpoints.superfluid.dev/eth-goerli",
   gnosis: "https://rpc-endpoints.superfluid.dev/xdai-mainnet",
   polygon: "https://rpc-endpoints.superfluid.dev/polygon-mainnet",
@@ -92,6 +93,7 @@ export const networkDefinition: {
   avalancheC: Network;
   bsc: Network;
   ethereum: Network;
+  hardhat: Network;
 } = {
   goerli: {
     ...chain.goerli,
@@ -437,6 +439,38 @@ export const networkDefinition: {
       },
     },
   },
+  hardhat: {
+    ...chain.hardhat,
+    slugName: "hardhat",
+    v1ShortName: "hh",
+    network: "hardhat",
+    bufferTimeInMinutes: 240,
+    icon: "/icons/network/hardhat.png",
+    color: "#627EEA",
+    rpcUrls: {
+      ...chain.hardhat.rpcUrls,
+      superfluid: superfluidRpcUrls.hardhat,
+    },
+    subgraphUrl: "http://localhost:8000/subgraphs/name/superfluid-test",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://etherscan.io/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://etherscan.io/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.mainnet.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0xf9e94137db29f260b14817d9a3093caab1b2a845", // MAKE SURE TO PASTE THE CORRECT ADDRESS HERE, see below
+        // find it from the hardhat node console, this is how it is done manually but can and should be packaged eventually.
+        // use something like mustache, e.g. {{network}} instead of the hardcoded address above
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+  }
 };
 
 export const networks: Network[] = [
@@ -450,6 +484,7 @@ export const networks: Network[] = [
   networkDefinition.arbitrum,
   networkDefinition.avalancheC,
   networkDefinition.bsc,
+  networkDefinition.hardhat,
 ];
 
 export const getNetworkDefaultTokenPair = memoize(

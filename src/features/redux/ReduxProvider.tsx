@@ -84,6 +84,9 @@ const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
             (retry) =>
               Framework.create({
                 chainId: chainId,
+                resolverAddress: "0x1910f44c232f040b63251e5b27970c254a74a1c7", // Similarly get this from the hardhat node, see below
+                // this also should not be hardcoded
+                protocolReleaseVersion: "test",
                 provider: signer as any,
                 ...(network
                   ? { customSubgraphQueriesEndpoint: network.subgraphUrl }
