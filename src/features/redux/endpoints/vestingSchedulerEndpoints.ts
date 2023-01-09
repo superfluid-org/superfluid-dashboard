@@ -281,6 +281,52 @@ export const vestingSchedulerQueryEndpoints = {
         };
       },
     }),
+    getVestingSchedulerAllowances: builder.query<
+      {
+        tokenAllowance: string;
+        flowOperatorPermissions: number;
+        flowOperatorAllowance: string;
+      },
+      { chainId: number; tokenAddress: string; senderAddress: string }
+    >({
+      providesTags: (_result, _error, arg) => [
+        {
+          type: "GENERAL",
+          id: arg.chainId.toString(),
+        },
+      ],
+      queryFn: async ({ chainId, tokenAddress, senderAddress }) => {
+        const framework = await getFramework(chainId);
+        const superToken = await framework.loadSuperToken(tokenAddress);
+        const { vestingScheduler } = getEthSdk(
+          chainId,
+          framework.settings.provider
+        );
+
+        const tokenAllowance = await superToken.allowance({
+          owner: senderAddress,
+          spender: vestingScheduler.address,
+          providerOrSigner: framework.settings.provider,
+        });
+
+        const {
+          permissions: flowOperatorPermissions,
+          flowRateAllowance: flowOperatorAllowance,
+        } = await superToken.getFlowOperatorData({
+          sender: senderAddress,
+          flowOperator: vestingScheduler.address,
+          providerOrSigner: framework.settings.provider,
+        });
+
+        return {
+          data: {
+            tokenAllowance,
+            flowOperatorPermissions: Number(flowOperatorPermissions),
+            flowOperatorAllowance,
+          },
+        };
+      },
+    }),
     getActiveVestingSchedule: builder.query<
       RpcVestingSchedule | null,
       GetVestingSchedule
