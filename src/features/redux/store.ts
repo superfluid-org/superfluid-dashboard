@@ -8,7 +8,7 @@ import {
   Middleware,
   MiddlewareAPI,
 } from "@reduxjs/toolkit";
-import { retry, setupListeners } from "@reduxjs/toolkit/query";
+import { setupListeners } from "@reduxjs/toolkit/query";
 import {
   allRpcEndpoints,
   allSubgraphEndpoints,
@@ -51,38 +51,22 @@ import { platformApi } from "./platformApi/platformApi";
 import * as Sentry from "@sentry/react";
 import { deserializeError } from "serialize-error";
 
-export const rpcApi = initializeRpcApiSlice((options) => {
-  const enhancedBaseQuery = retry(options.baseQuery, {
-    retryCondition(error, args, extraArgs) {
-      if (extraArgs.baseQueryApi.type === "mutation") {
-        return false; // Let's not retry for mutations for now...
-      }
-      if (extraArgs.attempt === 5) {
-        return false;
-      }
-      return true;
-    },
-  }) as typeof options.baseQuery; // Work-around for weird type error. The retry-enhancer _should_ keep the type compatible.
-  return createApiWithReactHooks({
+export const rpcApi = initializeRpcApiSlice((options) =>
+  createApiWithReactHooks({
     ...options,
-    baseQuery: enhancedBaseQuery,
     refetchOnFocus: true,
     refetchOnReconnect: true,
-  });
-})
+  })
+)
   .injectEndpoints(allRpcEndpoints)
   .injectEndpoints(adHocMulticallEndpoints)
   .injectEndpoints(adHocRpcEndpoints)
   .injectEndpoints(flowSchedulerEndpoints)
   .injectEndpoints(vestingSchedulerEndpoints);
 
-export const subgraphApi = initializeSubgraphApiSlice((options) => {
-  const enhancedBaseQuery = retry(options.baseQuery, {
-    maxRetries: 3,
-  }) as typeof options.baseQuery; // Work-around for weird type error. The retry-enhancer _should_ keep the type compatible.
-  return createApiWithReactHooks({
+export const subgraphApi = initializeSubgraphApiSlice((options) =>
+  createApiWithReactHooks({
     ...options,
-    baseQuery: enhancedBaseQuery,
     extractRehydrationInfo(action, { reducerPath }) {
       if (
         action.type === REHYDRATE &&
@@ -94,8 +78,8 @@ export const subgraphApi = initializeSubgraphApiSlice((options) => {
     },
     refetchOnFocus: true,
     refetchOnReconnect: true,
-  });
-})
+  })
+)
   .injectEndpoints(allSubgraphEndpoints)
   .injectEndpoints(adHocSubgraphEndpoints);
 
