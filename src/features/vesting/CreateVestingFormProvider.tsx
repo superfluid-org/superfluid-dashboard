@@ -151,6 +151,7 @@ const CreateVestingFormProvider: FC<{
         }
         const {
           MIN_VESTING_DURATION_IN_DAYS,
+          MIN_VESTING_DURATION_IN_MINUTES,
           MIN_VESTING_DURATION_IN_SECONDS,
           END_DATE_VALID_BEFORE_IN_SECONDS,
           START_DATE_VALID_AFTER_IN_SECONDS,
@@ -164,7 +165,11 @@ const CreateVestingFormProvider: FC<{
           MIN_VESTING_DURATION_IN_SECONDS
         ) {
           handleHigherOrderValidationError({
-            message: `The vesting end date has to be at least ${MIN_VESTING_DURATION_IN_DAYS} days from the start or the cliff.`,
+            message: `The vesting end date has to be at least ${
+              network.testnet
+                ? `${MIN_VESTING_DURATION_IN_MINUTES} minutes`
+                : `${MIN_VESTING_DURATION_IN_DAYS} days`
+            } from the start or the cliff.`,
           });
         }
 
@@ -221,7 +226,12 @@ const CreateVestingFormProvider: FC<{
 
         return true;
       }),
-    [network, getActiveVestingSchedule, senderAddress, vestingSchedulerConstants]
+    [
+      network,
+      getActiveVestingSchedule,
+      senderAddress,
+      vestingSchedulerConstants,
+    ]
   );
 
   const formMethods = useForm<PartialVestingForm>({

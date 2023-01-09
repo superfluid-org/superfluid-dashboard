@@ -266,6 +266,7 @@ export const vestingSchedulerEndpoints = {
     getVestingSchedulerConstants: builder.query<
       {
         MIN_VESTING_DURATION_IN_DAYS: number;
+        MIN_VESTING_DURATION_IN_MINUTES: number;
         MIN_VESTING_DURATION_IN_SECONDS: number;
         START_DATE_VALID_AFTER_IN_DAYS: number;
         START_DATE_VALID_AFTER_IN_SECONDS: number;
@@ -297,6 +298,7 @@ export const vestingSchedulerEndpoints = {
           data: {
             MIN_VESTING_DURATION_IN_SECONDS,
             MIN_VESTING_DURATION_IN_DAYS: Math.round(MIN_VESTING_DURATION_IN_SECONDS / UnitOfTime.Day),
+            MIN_VESTING_DURATION_IN_MINUTES: Math.round(MIN_VESTING_DURATION_IN_SECONDS / UnitOfTime.Minute),
             START_DATE_VALID_AFTER_IN_SECONDS,
             START_DATE_VALID_AFTER_IN_DAYS: Math.round(START_DATE_VALID_AFTER_IN_SECONDS / UnitOfTime.Day),
             END_DATE_VALID_BEFORE_IN_SECONDS,
