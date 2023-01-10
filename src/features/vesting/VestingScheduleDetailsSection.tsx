@@ -61,7 +61,7 @@ export const VestingScheduleDetails: FC<{
   const canDelete = !deletedAt && !endExecutedAt;
 
   // TODO(KK): get this to Subgraph
-  const cliffAndFlowDate = cliffDate ? startDate : cliffDate;
+  const cliffAndFlowDate = cliffDate ? cliffDate : startDate;
   const totalFlowed = BigNumber.from(flowRate).mul(
     getTimeInSeconds(endDate) - getTimeInSeconds(cliffAndFlowDate)
   );
