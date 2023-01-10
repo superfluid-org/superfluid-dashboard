@@ -293,8 +293,7 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         minWidth: 120,
         flex: 1,
         hide: true,
-        valueGetter: (params) =>
-          `${formatAmount(params.row.amount)} ${params.row.token.symbol}`,
+        valueGetter: (params) => formatAmount(params.row.amount),
       },
     ],
     [currency, mappedAddresses, lowerCaseAddresses]
