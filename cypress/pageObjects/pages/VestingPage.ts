@@ -181,6 +181,7 @@ export class VestingPage extends BasePage {
     }
 
     static clickCreateScheduleButton() {
+        cy.get(LOADING_SKELETONS, {timeout: 45000}).should("not.exist")
         this.click(CREATE_VESTING_SCHEDULE_BUTTON)
     }
 
@@ -233,6 +234,6 @@ export class VestingPage extends BasePage {
         this.containsText(PREVIEW_CLIFF_PERIOD,`${format(staticCliffDate, "LLLL d, yyyy")}`)
         this.containsText(PREVIEW_TOTAL_PERIOD , `${format(staticEndDate, "LLLL d, yyyy")}`)
         this.hasText(PREVIEW_TOTAL_AMOUNT, "4 TDLx")
-        this.hasText(PREVIEW_CLIFF_AMOUNT, "2 TDLx")
+        this.hasText(PREVIEW_CLIFF_AMOUNT, "2.0 TDLx")
     }
 }
