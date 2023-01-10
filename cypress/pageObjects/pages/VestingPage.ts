@@ -1,6 +1,5 @@
 import {BasePage,wordTimeUnitMap} from "../BasePage";
 import { format } from "date-fns";
-import {WrapPage} from "./WrapPage";
 import {SendPage} from "./SendPage";
 
 const NO_CREATED_TITLE = "[data-cy=no-created-schedules-title]"
@@ -53,10 +52,14 @@ const NO_CREATED_DESC_STRING = "Vesting schedules that you have created will app
 const NO_RECEIVED_TITLE_STRING = "No Received Vesting Schedules"
 const NO_RECEIVED_DESC_STRING = "Vesting schedules that you have received will appear here."
 
-//Dates for the constant vesting schedule
-let startDate = new Date(1733994660000 )
-let cliffDate = new Date(1765530660000)
-let endDate = new Date(1797066660000)
+//Dates for the vesting previews etc.
+let staticStartDate = new Date(1733994660000)
+let staticCliffDate = new Date(1765530660000)
+let staticEndDate = new Date(1797066660000)
+let currentTime = new Date()
+let startDate = new Date(currentTime.getTime() + (wordTimeUnitMap["year"] * 1000) )
+let cliffDate = new Date(startDate.getTime() + (wordTimeUnitMap["year"] * 1000))
+let endDate = new Date(startDate.getTime() + 2 * (wordTimeUnitMap["year"] * 1000))
 
 export class VestingPage extends BasePage {
     static validateFirstRowPendingStatus(status: string) {
@@ -159,25 +162,14 @@ export class VestingPage extends BasePage {
 
     static validateVestingSchedulePreview() {
         this.hasText(PREVIEW_RECEIVER,this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"))
-        let currentTime = new Date()
-        let startDate = new Date(currentTime.getTime() + (wordTimeUnitMap["year"] * 1000) )
-        let cliffDate = new Date(startDate.getTime() + (wordTimeUnitMap["year"] * 1000))
-        let endDate = new Date(startDate.getTime() + 2 * (wordTimeUnitMap["year"] * 1000))
-        this.containsText(GRAPH_CLIFF_DATE, `Cliff: ${format(cliffDate, "LLL d, yyyy HH:mm").slice(0,-1)}`);
-        this.containsText(GRAPH_START_DATE,`Start: ${format(startDate, "LLL d, yyyy HH:mm").slice(0,-1)}`)
-        this.containsText(GRAPH_END_DATE,`End: ${format(endDate, "LLL d, yyyy HH:mm").slice(0,-1)}`)
-        this.containsText(PREVIEW_START_DATE , format(startDate,"LLLL d, yyyy"))
-        this.containsText(PREVIEW_TOTAL_PERIOD , `2 year (${format(endDate, "LLLL d, yyyy")})`)
-        this.hasText(PREVIEW_TOTAL_AMOUNT , "2 fTUSDx")
-        this.hasText(PREVIEW_CLIFF_AMOUNT , "1 fTUSDx")
+        this.validateSchedulePreviewDetails(cliffDate,startDate,endDate)
+        this.hasText(PREVIEW_TOTAL_AMOUNT, "2 fTUSDx")
+        this.hasText(PREVIEW_CLIFF_AMOUNT, "1 fTUSDx")
         this.containsText(PREVIEW_CLIFF_PERIOD,`1 year (${format(cliffDate, "LLLL d, yyyy")})`)
+        this.containsText(PREVIEW_TOTAL_PERIOD , `2 year (${format(endDate, "LLLL d, yyyy")})`)
     }
 
     static validateNewlyCreatedSchedule() {
-        let currentTime = new Date()
-        let startDate = new Date(currentTime.getTime() + (wordTimeUnitMap["year"] * 1000) )
-        let cliffDate = new Date(startDate.getTime() + (wordTimeUnitMap["year"] * 1000))
-        let endDate = new Date(startDate.getTime() + 2 * (wordTimeUnitMap["year"] * 1000))
         this.isVisible(FORWARD_BUTTON)
         this.hasText(TABLE_RECEIVER_SENDER , this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"))
         this.hasText(TABLE_TOTAL_AMOUNTS , "2 fTUSDx")
@@ -218,31 +210,28 @@ export class VestingPage extends BasePage {
     }
 
     static validateCreatedVestingSchedule() {
-        let startDate = new Date(1733994660000)
-        let cliffDate = new Date(1765530660000)
-        let endDate = new Date(1797066660000)
         this.isVisible(FORWARD_BUTTON)
         this.hasText(TABLE_RECEIVER_SENDER , this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"))
         this.hasText(TABLE_TOTAL_AMOUNTS , "4 TDLx")
         this.hasText(TABLE_CLIFF_AMOUNT , "2 TDLx")
-        this.hasText(TABLE_CLIFF_DATE, format(cliffDate, "LLL d, yyyy"))
-        cy.get(TABLE_START_END_DATES).first().should("contain.text" , format(startDate, "LLL d, yyyy"))
-        cy.get(TABLE_START_END_DATES).last().should("contain.text", format(endDate,"LLL d, yyyy"))
+        this.hasText(TABLE_CLIFF_DATE, format(staticCliffDate, "LLL d, yyyy"))
+        cy.get(TABLE_START_END_DATES).first().should("contain.text" , format(staticStartDate, "LLL d, yyyy"))
+        cy.get(TABLE_START_END_DATES).last().should("contain.text", format(staticEndDate,"LLL d, yyyy"))
+    }
+
+    static validateSchedulePreviewDetails(cliffDate: Date,startDate:Date ,endDate:Date) {
+        this.containsText(GRAPH_CLIFF_DATE, `Cliff: ${format(cliffDate, "LLL d, yyyy HH:mm").slice(0, -1)}`);
+        this.containsText(GRAPH_START_DATE, `Start: ${format(startDate, "LLL d, yyyy HH:mm").slice(0, -1)}`)
+        this.containsText(GRAPH_END_DATE, `End: ${format(endDate, "LLL d, yyyy HH:mm").slice(0, -1)}`)
+        this.containsText(PREVIEW_START_DATE, format(startDate, "LLLL d, yyyy"))
     }
 
     static validateCreatedVestingScheduleDetailsPage() {
         this.hasText(PREVIEW_RECEIVER,this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"))
-        let currentTime = new Date()
-        let startDate = new Date(currentTime.getTime() + (wordTimeUnitMap["year"] * 1000) )
-        let cliffDate = new Date(startDate.getTime() + (wordTimeUnitMap["year"] * 1000))
-        let endDate = new Date(startDate.getTime() + 2 * (wordTimeUnitMap["year"] * 1000))
-        this.containsText(GRAPH_CLIFF_DATE, `Cliff: ${format(cliffDate, "LLL d, yyyy HH:mm").slice(0,-1)}`);
-        this.containsText(GRAPH_START_DATE,`Start: ${format(startDate, "LLL d, yyyy HH:mm").slice(0,-1)}`)
-        this.containsText(GRAPH_END_DATE,`End: ${format(endDate, "LLL d, yyyy HH:mm").slice(0,-1)}`)
-        this.containsText(PREVIEW_START_DATE , format(startDate,"LLLL d, yyyy"))
-        this.containsText(PREVIEW_TOTAL_PERIOD , `2 year (${format(endDate, "LLLL d, yyyy")})`)
-        this.hasText(PREVIEW_TOTAL_AMOUNT , "2 fTUSDx")
-        this.hasText(PREVIEW_CLIFF_AMOUNT , "1 fTUSDx")
-        this.containsText(PREVIEW_CLIFF_PERIOD,`1 year (${format(cliffDate, "LLLL d, yyyy")})`)
+        this.validateSchedulePreviewDetails(staticCliffDate,staticStartDate,staticEndDate)
+        this.containsText(PREVIEW_CLIFF_PERIOD,`${format(staticCliffDate, "LLLL d, yyyy")}`)
+        this.containsText(PREVIEW_TOTAL_PERIOD , `${format(staticEndDate, "LLLL d, yyyy")}`)
+        this.hasText(PREVIEW_TOTAL_AMOUNT, "4 fTUSDx")
+        this.hasText(PREVIEW_CLIFF_AMOUNT, "2 fTUSDx")
     }
 }
