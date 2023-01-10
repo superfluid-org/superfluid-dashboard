@@ -34,6 +34,7 @@ export const CreateVestingTransactionButton: FC<{
       }) =>
         !createVestingScheduleResult.isSuccess && (
           <TransactionButton
+            dataCy={"create-schedule-tx-button"}
             disabled={isDisabled}
             onClick={async (signer) =>
               handleSubmit(
@@ -100,7 +101,7 @@ export const CreateVestingTransactionButton: FC<{
                   setDialogSuccessActions(
                     <TransactionDialogActions>
                       <Link href="/vesting" passHref>
-                        <TransactionDialogButton color="primary">
+                        <TransactionDialogButton data-cy="ok-button" color="primary">
                           OK
                         </TransactionDialogButton>
                       </Link>

@@ -16,12 +16,14 @@ interface VestingScheduleTableProps {
   network: Network;
   vestingSchedules: Array<VestingSchedule>;
   pendingVestingSchedules?: Array<VestingSchedule & { pendingCreate: PendingVestingSchedule }>;
+  dataCy?:string;
 }
 
 const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
   network,
   vestingSchedules,
   pendingVestingSchedules = [],
+  dataCy,
 }) => {
   const router = useRouter();
 
@@ -29,7 +31,7 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
     router.push(`/vesting/${network.slugName}/${id}`);
 
   return (
-    <Table>
+    <Table data-cy={dataCy}>
       <TableHead>
         <TableRow>
           <TableCell sx={{ pl: 8.5 }}>Receiver</TableCell>

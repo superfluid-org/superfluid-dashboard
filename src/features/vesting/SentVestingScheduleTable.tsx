@@ -52,12 +52,14 @@ export const SentVestingScheduleTable: FC = () => {
         <VestingScheduleLoadingTable />
       ) : hasContent ? (
         <VestingScheduleTable
+          data-cy={"created-table"}
           network={network}
           vestingSchedules={vestingSchedules}
           pendingVestingSchedules={mappedPendingVestingSchedules}
         />
       ) : (
         <NoContentPaper
+          dataCy={"no-created-schedules"}
           title="No Sent Vesting Schedules"
           description="Vesting schedules that you have created will appear here."
         />

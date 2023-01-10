@@ -57,7 +57,7 @@ export class Common extends BasePage {
 
             switch (page.toLowerCase()) {
                 case "dashboard page":
-                    this.visitPage("/", mocked, account, network);
+                    this.visitPage(`/${Cypress.env("vesting")}`, mocked, account, network);
                     break;
                 case "wrap page":
                     this.visitPage("/wrap", mocked, account, network);
@@ -140,7 +140,7 @@ export class Common extends BasePage {
 
         let networkRpc = networksBySlug.get(selectedNetwork)?.rpcUrls.superfluid
 
-        cy.visit("/", {
+        cy.visit(`/${Cypress.env("vesting")}`, {
             onBeforeLoad: (win: any) => {
                 const hdwallet = new HDWalletProvider({
                     privateKeys: [Cypress.env(`TX_ACCOUNT_PRIVATE_KEY${chosenPersona}`)],

@@ -34,11 +34,13 @@ export const ReceivedVestingScheduleTable: FC = () => {
         <VestingScheduleLoadingTable />
       ) : hasContent ? (
         <VestingScheduleTable
+          dataCy={"received-table"}
           network={network}
           vestingSchedules={vestingSchedules}
         />
       ) : (
         <NoContentPaper
+          dataCy={"no-received-schedules"}
           title="No Received Vesting Schedules"
           description="Vesting schedules that you have received will appear here."
         />

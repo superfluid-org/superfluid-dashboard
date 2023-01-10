@@ -171,6 +171,7 @@ export const CreateVestingForm: FC<{
       name="data.totalAmountEther"
       render={({ field: { onChange, onBlur } }) => (
         <TextField
+          data-cy={"total-amount-input"}
           value={totalAmountEther}
           onChange={onChange}
           onBlur={onBlur}
@@ -194,7 +195,7 @@ export const CreateVestingForm: FC<{
         render={({ field: { onChange, onBlur } }) => (
           <DateTimePicker
             renderInput={(props) => (
-              <TextField fullWidth {...props} onBlur={onBlur} />
+              <TextField data-cy={"date-input"} fullWidth {...props} onBlur={onBlur} />
             )}
             value={startDate}
             ampm={false}
@@ -214,6 +215,7 @@ export const CreateVestingForm: FC<{
       name="data.cliffAmountEther"
       render={({ field: { onChange, onBlur } }) => (
         <TextField
+          data-cy={"cliff-amount-input"}
           value={cliffAmountEther}
           onChange={onChange}
           onBlur={onBlur}
@@ -239,6 +241,7 @@ export const CreateVestingForm: FC<{
       render={({ field: { onChange, onBlur, value } }) => (
         <Box sx={{ display: "grid", gridTemplateColumns: "2fr 1fr" }}>
           <TextField
+            data-cy={"cliff-period-input"}
             value={value.numerator}
             onChange={(e) =>
               onChange({
@@ -256,6 +259,7 @@ export const CreateVestingForm: FC<{
             inputMode="numeric"
           />
           <Select
+            data-cy={"cliff-period-unit"}
             value={value.denominator}
             onChange={(e) =>
               onChange({
@@ -293,6 +297,7 @@ export const CreateVestingForm: FC<{
       render={({ field: { onChange, onBlur, value } }) => (
         <Box sx={{ display: "grid", gridTemplateColumns: "2fr 1fr" }}>
           <TextField
+            data-cy={"total-period-input"}
             value={value.numerator}
             onChange={(e) =>
               onChange({
@@ -310,6 +315,7 @@ export const CreateVestingForm: FC<{
             inputMode="numeric"
           />
           <Select
+            data-cy={"total-period-unit"}
             value={value.denominator}
             onChange={(e) =>
               onChange({
@@ -342,6 +348,7 @@ export const CreateVestingForm: FC<{
 
   const PreviewVestingScheduleButton = (
     <Button
+      data-cy={"preview-schedule-button"}
       {...transactionButtonDefaultProps}
       disabled={!formState.isValid || formState.isValidating}
       onClick={() => setView(CreateVestingCardView.Preview)}
