@@ -91,8 +91,12 @@ const INVEST_IN_REALTIME: EcosystemApp[] = [
       description: `A real-time DEX where you can swap and earn tokens every second`,
       icon: "/icons/ecosystem/aqueduct.png",
       chains: [
+        networkDefinition.arbitrum.id,
+        networkDefinition.avalancheC.id,
+        networkDefinition.gnosis.id,
         networkDefinition.optimism.id,
-        networkDefinition.polygon.id,  
+        networkDefinition.polygon.id,
+        networkDefinition.bsc.id,
       ],    
       comingSoon: true,
       colors: {
