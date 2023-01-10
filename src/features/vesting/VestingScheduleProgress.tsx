@@ -1,60 +1,20 @@
 import { Stack, Box, Typography, useTheme } from "@mui/material";
-import { format } from "date-fns";
+import { format, fromUnixTime } from "date-fns";
 import { FC, useMemo } from "react";
+import { VestingSchedule } from "../../vesting-subgraph/schema.generated";
 
-interface VestingProgressItemProps {
+interface VestingCheckpointProps {
   title: string;
   date: Date;
-  progressStart?: Date;
 }
 
-const VestingProgressItem: FC<VestingProgressItemProps> = ({
-  title,
-  date,
-  progressStart,
-}) => {
+const VestingCheckpoint: FC<VestingCheckpointProps> = ({ title, date }) => {
   const theme = useTheme();
-
-  const progress = useMemo(() => {
-    if (!progressStart) return 0;
-
-    const progressMs = Date.now() - progressStart.getTime();
-    const totalMs = date.getTime() - progressStart.getTime();
-    return Math.min(100, (progressMs / totalMs) * 100);
-  }, [date, progressStart]);
-
-  const isActive = !progressStart || progress >= 100;
+  const isActive = useMemo(() => date <= new Date(), [date]);
 
   return (
     <Stack alignItems="center">
       <Stack sx={{ position: "relative", width: "100%", alignItems: "center" }}>
-        {/* Inactive progress */}
-        {progressStart && (
-          <Box
-            sx={{
-              background: theme.palette.divider,
-              width: `calc(100% - 10px)`,
-              height: "2px",
-              position: "absolute",
-              left: "calc(-50% + 5px)",
-              top: "calc(50% - 1px)",
-            }}
-          />
-        )}
-
-        {/* Active progress */}
-        <Box
-          sx={{
-            background: theme.palette.primary.main,
-            width: `${progress}%`,
-            height: "2px",
-            position: "absolute",
-            left: "-50%",
-            top: "calc(50% - 1px)",
-          }}
-        />
-
-        {/* Dot */}
         <Box
           sx={{
             background: isActive
@@ -66,41 +26,107 @@ const VestingProgressItem: FC<VestingProgressItemProps> = ({
           }}
         />
       </Stack>
-      <Typography color="text.secondary">{title}</Typography>
-      <Typography>{format(date, "MMM do, yyyy HH:mm")}</Typography>
+      <Typography variant="h6" color="text.secondary" sx={{ mt: 1 }}>
+        {title}
+      </Typography>
+      <Typography variant="h6">{format(date, "MMM do, yyyy HH:mm")}</Typography>
     </Stack>
   );
 };
 
-interface VestingScheduleProgressProps {}
+interface VestingProgressProps {
+  nth: number;
+  end: Date;
+  start: Date;
+}
 
-const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({}) => {
+const VestingProgress: FC<VestingProgressProps> = ({ nth, start, end }) => {
+  const theme = useTheme();
+
+  const progress = useMemo(() => {
+    if (!start) return 0;
+
+    const progressMs = Date.now() - start.getTime();
+    const totalMs = end.getTime() - start.getTime();
+    return Math.min(100, (progressMs / totalMs) * 100);
+  }, [start, end]);
+
+  return (
+    <Box
+      sx={{
+        position: "relative",
+        gridColumn: `${nth}/${nth + 2}`,
+        bottom: "-5px",
+      }}
+    >
+      <Box
+        sx={{
+          background: theme.palette.divider,
+          width: `calc(100% - 150px)`,
+          height: "2px",
+          position: "absolute",
+          left: "75px",
+          top: "calc(50% - 1px)",
+        }}
+      />
+      <Box
+        sx={{
+          background: theme.palette.primary.main,
+          width: `calc(${progress}% - 150px)`,
+          height: "2px",
+          position: "absolute",
+          left: "75px",
+          top: "calc(50% - 1px)",
+        }}
+      />
+    </Box>
+  );
+};
+
+interface VestingScheduleProgressProps {
+  vestingSchedule: VestingSchedule;
+}
+
+const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
+  vestingSchedule,
+}) => {
+  const {
+    startDate: unixStartDate,
+    cliffDate: unixCliffDate,
+    endDate: unixEndDate,
+  } = vestingSchedule;
+
+  const startDate = useMemo(
+    () => fromUnixTime(Number(unixStartDate)),
+    [unixStartDate]
+  );
+
+  const cliffDate = useMemo(
+    () => fromUnixTime(Number(unixCliffDate)),
+    [unixCliffDate]
+  );
+
+  const endDate = useMemo(
+    () => fromUnixTime(Number(unixEndDate)),
+    [unixEndDate]
+  );
+
   return (
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumns: "repeat(4, 1fr)",
+        gridTemplateColumns: "repeat(4, 150px)",
+        justifyContent: "space-between",
       }}
     >
-      <VestingProgressItem
-        title="Vesting Scheduled"
-        date={new Date("2023-01-06T12:56:49.377Z")}
-      />
-      <VestingProgressItem
-        title="Cliff"
-        date={new Date("2023-01-06T12:57:49.377Z")}
-        progressStart={new Date("2023-01-06T12:56:49.377Z")}
-      />
-      <VestingProgressItem
-        title="Vesting Starts"
-        date={new Date("2023-01-06T12:58:49.377Z")}
-        progressStart={new Date("2023-01-06T12:57:49.377Z")}
-      />
-      <VestingProgressItem
-        title="Vesting Ends"
-        date={new Date("2023-01-06T13:59:49.377Z")}
-        progressStart={new Date("2023-01-06T12:58:49.377Z")}
-      />
+      <VestingProgress nth={1} start={startDate} end={cliffDate} />
+      <VestingProgress nth={2} start={cliffDate} end={cliffDate} />
+      <VestingProgress nth={3} start={cliffDate} end={endDate} />
+
+      <VestingCheckpoint title="Vesting Scheduled" date={startDate} />
+      <VestingCheckpoint title="Cliff" date={cliffDate} />
+      <VestingCheckpoint title="Vesting Starts" date={cliffDate} />
+      <VestingCheckpoint title="Vesting Ends" date={endDate} />
     </Box>
   );
 };

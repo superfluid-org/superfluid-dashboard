@@ -4,6 +4,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TablePagination,
   TableRow,
@@ -73,99 +74,112 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
   );
 
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell colSpan={6}>
-            <Stack direction="row" alignItems="center" gap={1}>
-              <Button
-                variant="textContained"
-                size={isBelowMd ? "small" : "medium"}
-                color={getFilterBtnColor(VestingStatusFilter.All)}
-                onClick={setVestingStatusFilter(VestingStatusFilter.All)}
-              >
-                All
-              </Button>
-              <Button
-                variant="textContained"
-                size={isBelowMd ? "small" : "medium"}
-                color={getFilterBtnColor(VestingStatusFilter.Cliff)}
-                onClick={setVestingStatusFilter(VestingStatusFilter.Cliff)}
-              >
-                Cliff
-              </Button>
-              <Button
-                variant="textContained"
-                size={isBelowMd ? "small" : "medium"}
-                color={getFilterBtnColor(VestingStatusFilter.Vesting)}
-                onClick={setVestingStatusFilter(VestingStatusFilter.Vesting)}
-              >
-                Vesting
-              </Button>
-              <Button
-                variant="textContained"
-                size={isBelowMd ? "small" : "medium"}
-                color={getFilterBtnColor(VestingStatusFilter.Vested)}
-                onClick={setVestingStatusFilter(VestingStatusFilter.Vested)}
-              >
-                Vested
-              </Button>
-            </Stack>
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell
-            colSpan={5}
-            sx={{
-              p: 0,
-              [theme.breakpoints.up("md")]: { border: "none" },
-              [theme.breakpoints.down("md")]: { p: 0 },
-            }}
-          >
-            <Stack
-              direction="row"
-              alignItems="center"
-              gap={2}
-              sx={{ py: 2, px: 4, [theme.breakpoints.down("md")]: { p: 2 } }}
+    <TableContainer
+      sx={{
+        [theme.breakpoints.down("md")]: {
+          mx: -2,
+          width: "auto",
+          borderRadius: 0,
+          border: "none",
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          boxShadow: "none",
+        },
+      }}
+    >
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell
+              colSpan={5}
+              sx={{
+                p: 0,
+                [theme.breakpoints.up("md")]: { border: "none" },
+                [theme.breakpoints.down("md")]: { p: 0 },
+              }}
             >
-              <NetworkIcon network={network} />
-              <Typography
-                data-cy="network-name"
-                variant="h5"
-                color="text.primary"
-                translate="no"
+              <Stack
+                direction="row"
+                alignItems="center"
+                gap={2}
+                sx={{ py: 2, px: 4, [theme.breakpoints.down("md")]: { p: 2 } }}
               >
-                {network.name}
-              </Typography>
-            </Stack>
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell>Asset</TableCell>
-          <TableCell>{incoming ? "From" : "To"}</TableCell>
-          <TableCell>Allocated</TableCell>
-          <TableCell>Vested</TableCell>
-          <TableCell sx={{ pr: 2 }}>Vesting Start / End</TableCell>
-          <TableCell sx={{ pr: 2, pl: 0, width: 0 }}>Status</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {pendingVestingSchedules.map((vestingSchedule) => (
-          <VestingRow
-            key={vestingSchedule.id}
-            network={network}
-            vestingSchedule={vestingSchedule}
-          />
-        ))}
-        {vestingSchedules.map((vestingSchedule) => (
-          <VestingRow
-            key={vestingSchedule.id}
-            network={network}
-            vestingSchedule={vestingSchedule}
-            onClick={openDetails(vestingSchedule.id)}
-          />
-        ))}
-      </TableBody>
+                <NetworkIcon network={network} />
+                <Typography
+                  data-cy="network-name"
+                  variant="h5"
+                  color="text.primary"
+                  translate="no"
+                >
+                  {network.name}
+                </Typography>
+              </Stack>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell colSpan={6}>
+              <Stack direction="row" alignItems="center" gap={1}>
+                <Button
+                  variant="textContained"
+                  size={isBelowMd ? "small" : "medium"}
+                  color={getFilterBtnColor(VestingStatusFilter.All)}
+                  onClick={setVestingStatusFilter(VestingStatusFilter.All)}
+                >
+                  All
+                </Button>
+                <Button
+                  variant="textContained"
+                  size={isBelowMd ? "small" : "medium"}
+                  color={getFilterBtnColor(VestingStatusFilter.Cliff)}
+                  onClick={setVestingStatusFilter(VestingStatusFilter.Cliff)}
+                >
+                  Cliff
+                </Button>
+                <Button
+                  variant="textContained"
+                  size={isBelowMd ? "small" : "medium"}
+                  color={getFilterBtnColor(VestingStatusFilter.Vesting)}
+                  onClick={setVestingStatusFilter(VestingStatusFilter.Vesting)}
+                >
+                  Vesting
+                </Button>
+                <Button
+                  variant="textContained"
+                  size={isBelowMd ? "small" : "medium"}
+                  color={getFilterBtnColor(VestingStatusFilter.Vested)}
+                  onClick={setVestingStatusFilter(VestingStatusFilter.Vested)}
+                >
+                  Vested
+                </Button>
+              </Stack>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Asset</TableCell>
+            <TableCell>{incoming ? "From" : "To"}</TableCell>
+            <TableCell>Allocated</TableCell>
+            <TableCell>Vested</TableCell>
+            <TableCell sx={{ pr: 2 }}>Vesting Start / End</TableCell>
+            <TableCell sx={{ pr: 2, pl: 0, width: 0 }}>Status</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {pendingVestingSchedules.map((vestingSchedule) => (
+            <VestingRow
+              key={vestingSchedule.id}
+              network={network}
+              vestingSchedule={vestingSchedule}
+            />
+          ))}
+          {vestingSchedules.map((vestingSchedule) => (
+            <VestingRow
+              key={vestingSchedule.id}
+              network={network}
+              vestingSchedule={vestingSchedule}
+              onClick={openDetails(vestingSchedule.id)}
+            />
+          ))}
+        </TableBody>
+      </Table>
       {(vestingSchedules.length > 5 ||
         (!isBelowMd && vestingSchedules.length <= 5)) && (
         <TablePagination
@@ -183,7 +197,7 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
           }}
         />
       )}
-    </Table>
+    </TableContainer>
   );
 };
 

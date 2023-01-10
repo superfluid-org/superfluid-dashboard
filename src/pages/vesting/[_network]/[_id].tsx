@@ -31,6 +31,7 @@ import { BigLoader } from "../../../features/vesting/BigLoader";
 import { useVestingToken } from "../../../features/vesting/useVestingToken";
 import VestingHeader from "../../../features/vesting/VestingHeader";
 import { VestingLayout } from "../../../features/vesting/VestingLayout";
+import VestingScheduleProgress from "../../../features/vesting/VestingScheduleProgress";
 import useNavigateBack from "../../../hooks/useNavigateBack";
 import { getTimeInSeconds } from "../../../utils/dateUtils";
 import { useGetVestingScheduleQuery } from "../../../vesting-subgraph/getVestingSchedule.generated";
@@ -50,27 +51,29 @@ const VestingDataCard: FC<VestingDataCardProps> = ({
   amount,
   price,
 }) => (
-  <Card sx={{ p: 3.5 }}>
+  <Card sx={{ p: 3.5, flex: 1 }}>
     <Typography variant="h5">{title}</Typography>
-    <Stack direction="row" alignItems="center">
+    <Stack direction="row" alignItems="center" gap={1.5}>
       <TokenIcon isSuper tokenSymbol={tokenSymbol} />
-      {amount && (
-        <Typography variant="h3mono">
-          <Amount wei={amount} />
+      <Stack direction="row" alignItems="flex-end" gap={0.5}>
+        {amount && (
+          <Typography variant="h3mono">
+            <Amount wei={amount} />
+          </Typography>
+        )}{" "}
+        <Typography
+          variant="h6"
+          color="text.secondary"
+          sx={{ lineHeight: "30px" }}
+        >
+          {tokenSymbol}
         </Typography>
-      )}{" "}
-      <Typography
-        variant="h6"
-        color="text.secondary"
-        sx={{ lineHeight: "30px" }}
-      >
-        {tokenSymbol}
-      </Typography>
-      {amount && price && (
-        <Typography>
-          <FiatAmount wei={amount} price={price} />
-        </Typography>
-      )}
+        {amount && price && (
+          <Typography>
+            <FiatAmount wei={amount} price={price} />
+          </Typography>
+        )}
+      </Stack>
     </Stack>
   </Card>
 );
@@ -144,30 +147,47 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
   const onGraphFilterChange = (newGraphFilter: TimeUnitFilterType) =>
     setGraphFilter(newGraphFilter);
 
-  const isVesting = useMemo(
-    () =>
+  const isVesting = useMemo(() => {
+    const dateNow = new Date();
+
+    return (
       vestingSchedule &&
       (!vestingSchedule.cliffDate ||
-        fromUnixTime(Number(vestingSchedule.cliffDate))) >= new Date(),
-    [vestingSchedule]
-  );
+        fromUnixTime(Number(vestingSchedule.cliffDate)) <= dateNow) &&
+      fromUnixTime(Number(vestingSchedule.endDate)) >= dateNow
+    );
+  }, [vestingSchedule]);
 
-  const balance = useMemo(
-    () =>
-      isVesting && vestingSchedule?.cliffAmount
-        ? vestingSchedule.cliffAmount
-        : "0",
-    [vestingSchedule, isVesting]
-  );
+  const cliffAmount = useMemo(() => {
+    if (!vestingSchedule) return "0";
+    return vestingSchedule.cliffAmount || "0";
+  }, [vestingSchedule]);
+
+  const currentlyVested = useMemo(() => {
+    if (!vestingSchedule) return "0";
+    const { flowRate, endDate, cliffDate, startDate } = vestingSchedule;
+
+    const currentUnix = getUnixTime(new Date());
+    const endDateUnix = Number(endDate);
+    const startDateUnix = Number(cliffDate || startDate);
+    const receivedCliff =
+      cliffDate && startDateUnix <= currentUnix ? cliffAmount : "0";
+
+    return BigNumber.from(flowRate)
+      .mul(Math.min(endDateUnix, currentUnix) - startDateUnix)
+      .add(receivedCliff);
+  }, [vestingSchedule, cliffAmount]);
 
   const totalVesting = useMemo(() => {
     if (!vestingSchedule) return undefined;
-    const { flowRate, endDate, startDate, cliffDate } = vestingSchedule;
+    const { flowRate, endDate, startDate, cliffDate, cliffAmount } =
+      vestingSchedule;
 
-    const cliffAndFlowDate = Number(cliffDate ? startDate : cliffDate);
+    const cliffAndFlowDate = Number(cliffDate || startDate);
 
     return BigNumber.from(flowRate)
       .mul(Number(endDate) - cliffAndFlowDate)
+      .add(cliffAmount || "0")
       .toString();
   }, [vestingSchedule]);
 
@@ -179,8 +199,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
 
   const { symbol } = token;
 
-  const { cliffDate, cliffAmount, endDate, flowRate, startDate } =
-    vestingSchedule;
+  const { flowRate } = vestingSchedule;
 
   return (
     <Container maxWidth="lg">
@@ -229,14 +248,18 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
               </Typography>
               <Stack direction="row" alignItems="flex-end" columnGap={1}>
                 <Typography data-cy={"token-balance"} variant="h3mono">
-                  <FlowingBalance
-                    balance={balance}
-                    flowRate={flowRate}
-                    balanceTimestamp={Number(
-                      vestingSchedule.cliffDate || vestingSchedule.startDate
-                    )}
-                    disableRoundingIndicator
-                  />
+                  {isVesting ? (
+                    <FlowingBalance
+                      balance={cliffAmount}
+                      flowRate={flowRate}
+                      balanceTimestamp={Number(
+                        vestingSchedule.cliffDate || vestingSchedule.startDate
+                      )}
+                      disableRoundingIndicator
+                    />
+                  ) : (
+                    <Amount wei={currentlyVested} />
+                  )}
                 </Typography>
                 <Typography
                   data-cy={"token-symbol"}
@@ -273,7 +296,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
           </Stack>
         </Card>
 
-        <Stack direction="row" gap={3}>
+        <Stack direction="row" alignItems="stretch" gap={3}>
           <VestingDataCard
             title="Tokens granted"
             tokenSymbol={token.symbol}
@@ -288,24 +311,12 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
           />
         </Stack>
 
-        <Box sx={{ display: "grid", gridTemplateColumns: "repeat(1fr, 4)" }}>
-          <Box>
-            <Typography>Vesting Scheduled</Typography>
-            <Typography>{format(new Date(), "MMM do, YYYY hh:mm")}</Typography>
-          </Box>
-          <Box>
-            <Typography>Cliff</Typography>
-            <Typography>{format(new Date(), "MMM do, YYYY hh:mm")}</Typography>
-          </Box>
-          <Box>
-            <Typography>Vesting Starts</Typography>
-            <Typography>{format(new Date(), "MMM do, YYYY hh:mm")}</Typography>
-          </Box>
-          <Box>
-            <Typography>Vesting Ends</Typography>
-            <Typography>{format(new Date(), "MMM do, YYYY hh:mm")}</Typography>
-          </Box>
-        </Box>
+        <Card sx={{ p: 3.5, flex: 1 }}>
+          <Stack gap={2}>
+            <Typography variant="h5">Schedule</Typography>
+            <VestingScheduleProgress vestingSchedule={vestingSchedule} />
+          </Stack>
+        </Card>
       </Stack>
     </Container>
   );

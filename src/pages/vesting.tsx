@@ -34,8 +34,6 @@ const VestingPage: NextPageWithLayout = () => (
         <SentVestingScheduleTable />
       </Card>
     </Stack>
-
-    <VestingScheduleProgress />
   </Container>
 );
 
