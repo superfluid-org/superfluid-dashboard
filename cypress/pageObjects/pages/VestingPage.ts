@@ -185,6 +185,7 @@ export class VestingPage extends BasePage {
     }
 
     static openLastCreatedSchedule() {
+        cy.get(LOADING_SKELETONS, {timeout: 45000}).should("not.exist")
         this.clickFirstVisible(VESTING_ROWS)
     }
 
@@ -231,7 +232,7 @@ export class VestingPage extends BasePage {
         this.validateSchedulePreviewDetails(staticCliffDate,staticStartDate,staticEndDate)
         this.containsText(PREVIEW_CLIFF_PERIOD,`${format(staticCliffDate, "LLLL d, yyyy")}`)
         this.containsText(PREVIEW_TOTAL_PERIOD , `${format(staticEndDate, "LLLL d, yyyy")}`)
-        this.hasText(PREVIEW_TOTAL_AMOUNT, "4 fTUSDx")
-        this.hasText(PREVIEW_CLIFF_AMOUNT, "2 fTUSDx")
+        this.hasText(PREVIEW_TOTAL_AMOUNT, "4 TDLx")
+        this.hasText(PREVIEW_CLIFF_AMOUNT, "2 TDLx")
     }
 }

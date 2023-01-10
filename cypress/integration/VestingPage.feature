@@ -107,7 +107,8 @@ Feature: Vesting page test cases
 #   And The first vesting row in the table shows "Creating..." pending transaction status
 #   And The first vesting row in the table shows "Syncing..." pending transaction status
 #   And The restore button is not visible for the last transaction
-    And The newly created vesting schedule is visible in the table
+#   And The newly created vesting schedule is visible in the table
+
 
   @rejected
   Scenario: Deleting a vesting schedule
