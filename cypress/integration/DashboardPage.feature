@@ -32,8 +32,8 @@ Feature: Dashboard Page test cases
     Then Wrap/Unwrap page is open and the wrap container is visible
     And User clicks on the "dashboard" navigation button
     And User changes the visible networks to "testnet"
-    And User opens the network selection dropdown
     And User waits for balances to load
+    And User opens the network selection dropdown
     And User clicks on the "polygon-mumbai" toggle
     Then "polygon-mumbai" balances are not visible
 

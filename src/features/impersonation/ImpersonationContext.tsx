@@ -32,28 +32,24 @@ export const ImpersonationProvider: FC<PropsWithChildren> = ({ children }) => {
     string | undefined
   >();
 
-  const contextValue = useMemo(
-    () => ({
-      impersonatedAddress,
-      isImpersonated: !!impersonatedAddress,
-      stopImpersonation: () => {
-        removeImpersonatedAddressQueryParam();
-        return setImpersonatedAddress(undefined);
+  const removeImpersonatedAddressQueryParam = useCallback(() => {
+    const { view: viewAddressQueryParam, ...queryWithoutParam } = router.query;
+
+    router.replace(
+      {
+        query: queryWithoutParam,
       },
-      impersonate: (address: string) => {
-        const checksumAddress = getAddress(address);
-        dispatch(
-          impersonated({
-            address: checksumAddress,
-            timestampMs: Date.now(),
-          })
-        );
-        setImpersonatedAddressQueryParam(checksumAddress);
-        return setImpersonatedAddress(checksumAddress);
-      },
-    }),
-    [impersonatedAddress]
-  );
+      undefined,
+      {
+        shallow: true,
+      }
+    );
+  }, [router]);
+
+  const stopImpersonation = useCallback(() => {
+    removeImpersonatedAddressQueryParam();
+    return setImpersonatedAddress(undefined);
+  }, [removeImpersonatedAddressQueryParam]);
 
   const setImpersonatedAddressQueryParam = useCallback(
     (address: Address) => {
@@ -73,18 +69,30 @@ export const ImpersonationProvider: FC<PropsWithChildren> = ({ children }) => {
     [router]
   );
 
-  const removeImpersonatedAddressQueryParam = () => {
-    const { view: viewAddressQueryParam, ...queryWithoutParam } = router.query;
-    router.replace(
-      {
-        query: queryWithoutParam,
-      },
-      undefined,
-      {
-        shallow: true,
-      }
-    );
-  };
+  const impersonate = useCallback(
+    (address: string) => {
+      const checksumAddress = getAddress(address);
+      dispatch(
+        impersonated({
+          address: checksumAddress,
+          timestampMs: Date.now(),
+        })
+      );
+      setImpersonatedAddressQueryParam(checksumAddress);
+      return setImpersonatedAddress(checksumAddress);
+    },
+    [dispatch, setImpersonatedAddressQueryParam]
+  );
+
+  const contextValue = useMemo(
+    () => ({
+      impersonatedAddress,
+      isImpersonated: !!impersonatedAddress,
+      stopImpersonation,
+      impersonate,
+    }),
+    [impersonatedAddress, stopImpersonation, impersonate]
+  );
 
   // Get impersonated address from query string
   useEffect(() => {

@@ -7,6 +7,7 @@ import {
     TokenType,
 } from "./tokenTypes";
 import {BasePage} from "../pageObjects/BasePage";
+import ensureDefined from "../../src/utils/ensureDefined";
 
 // id == chainId
 // name == displayName
@@ -40,6 +41,7 @@ export const superfluidRpcUrls = {
     optimism: "https://rpc-endpoints.superfluid.dev/optimism-mainnet",
     avalancheFuji: "https://rpc-endpoints.superfluid.dev/avalanche-fuji",
     avalancheC: "https://rpc-endpoints.superfluid.dev/avalanche-c",
+    ethereum: "https://rpc-endpoints.superfluid.dev/eth-mainnet",
     bnbSmartChain: "https://bsc-dataseed1.binance.org",
 };
 
@@ -87,6 +89,7 @@ export const networkDefinition: {
     arbitrum: Network;
     avalancheC: Network;
     bsc: Network;
+    ethereum: Network;
 } = {
     goerli: {
         ...chain.goerli,
@@ -363,6 +366,37 @@ avalancheC: {
         },
     },
 },
+    ethereum: {
+        ...chain.mainnet,
+        blockExplorers: ensureDefined(chain.mainnet.blockExplorers),
+        slugName: "ethereum",
+        v1ShortName: "eth",
+        bufferTimeInMinutes: 240,
+        icon: "/icons/network/ethereum.svg",
+        color: "#627EEA",
+        rpcUrls: {
+            ...chain.mainnet.rpcUrls,
+            superfluid: superfluidRpcUrls.ethereum,
+        },
+        subgraphUrl:
+            "https://subgraph.satsuma-prod.com/superfluid/eth-mainnet/api",
+        getLinkForTransaction: (txHash: string): string =>
+            `https://etherscan.io/tx/${txHash}`,
+        getLinkForAddress: (address: string): string =>
+            `https://etherscan.io/address/${address}`,
+        nativeCurrency: {
+            ...ensureDefined(chain.mainnet.nativeCurrency),
+            address: NATIVE_ASSET_ADDRESS,
+            type: TokenType.NativeAssetUnderlyingToken,
+            superToken: {
+                type: TokenType.NativeAssetSuperToken,
+                symbol: "ETHx",
+                address: "0xC22BeA0Be9872d8B7B3933CEc70Ece4D53A900da",
+                name: "Super ETH",
+                decimals: 18,
+            },
+        },
+    },
 bsc: {
     name: "BNB Smart Chain",
         slugName: "bsc",
@@ -402,6 +436,7 @@ bsc: {
         },
     },
 },
+
 };
 
 export const networks: Network[] = [
@@ -414,6 +449,7 @@ export const networks: Network[] = [
     networkDefinition.arbitrum,
     networkDefinition.avalancheC,
     networkDefinition.bsc,
+    networkDefinition.ethereum
 ];
 
 export const getNetworkDefaultTokenPair = memoize(

@@ -19,16 +19,9 @@ import {
   ACL_DELETE_PERMISSION,
 } from "./flowSchedulerEndpoints";
 
-export const MIN_VESTING_DURATION_DAYS = 7;
-export const MIN_VESTING_DURATION_SECONDS =
-  MIN_VESTING_DURATION_DAYS * UnitOfTime.Day;
-
-export const MAX_VESTING_DURATION_YEARS = 10;
-export const MAX_VESTING_DURATION_SECONDS =
-  MAX_VESTING_DURATION_YEARS * UnitOfTime.Year;
-
-export const START_DATE_VALID_AFTER_SECONDS = 3 * UnitOfTime.Day;
-export const END_DATE_VALID_BEFORE_SECONDS = 1 * UnitOfTime.Day;
+export const MAX_VESTING_DURATION_IN_YEARS = 10;
+export const MAX_VESTING_DURATION_IN_SECONDS =
+  MAX_VESTING_DURATION_IN_YEARS * UnitOfTime.Year;
 
 export const MIN_VESTING_START_DATE = add(new Date(), {
   minutes: 15,
@@ -161,11 +154,23 @@ export const vestingSchedulerEndpoints = {
           title: TransactionTitle;
         }[] = [];
 
-        const flowOperatorData = await superToken.getFlowOperatorData({
-          flowOperator: vestingScheduler.address,
-          sender: senderAddress,
-          providerOrSigner: signer,
-        });
+        const [
+          flowOperatorData,
+          START_DATE_VALID_AFTER_IN_DAYS,
+          END_DATE_VALID_BEFORE_IN_DAYS,
+        ] = await Promise.all([
+          superToken.getFlowOperatorData({
+            flowOperator: vestingScheduler.address,
+            sender: senderAddress,
+            providerOrSigner: signer,
+          }),
+          vestingScheduler.START_DATE_VALID_AFTER(),
+          vestingScheduler.END_DATE_VALID_BEFORE(),
+        ]);
+        const START_DATE_VALID_AFTER_IN_SECONDS =
+          START_DATE_VALID_AFTER_IN_DAYS * UnitOfTime.Second;
+        const END_DATE_VALID_BEFORE_IN_SECONDS =
+          END_DATE_VALID_BEFORE_IN_DAYS * UnitOfTime.Second;
 
         const existingPermissions = Number(flowOperatorData.permissions);
         const hasDeletePermission = existingPermissions & ACL_DELETE_PERMISSION;
@@ -175,10 +180,14 @@ export const vestingSchedulerEndpoints = {
           (hasDeletePermission ? 0 : ACL_DELETE_PERMISSION) +
           (hasCreatePermission ? 0 : ACL_CREATE_PERMISSION);
 
+        const newFlowRateAllowance = BigNumber.from(
+          flowOperatorData.flowRateAllowance
+        ).add(BigNumber.from(arg.flowRateWei)); // TODO(KK): Need to handle max flow rate allowance overflow.
+
         subOperations.push({
           operation: await superToken.updateFlowOperatorPermissions({
             flowOperator: vestingScheduler.address,
-            flowRateAllowance: flowOperatorData.flowRateAllowance + arg.flowRateWei,
+            flowRateAllowance: newFlowRateAllowance.toString(),
             permissions: updatedPermissions,
             overrides: arg.overrides,
           }),
@@ -189,8 +198,8 @@ export const vestingSchedulerEndpoints = {
         const maximumNeededAllowance = BigNumber.from(
           arg.cliffTransferAmountWei
         )
-          .add(flowRateBigNumber.mul(START_DATE_VALID_AFTER_SECONDS))
-          .add(flowRateBigNumber.mul(END_DATE_VALID_BEFORE_SECONDS));
+          .add(flowRateBigNumber.mul(START_DATE_VALID_AFTER_IN_SECONDS))
+          .add(flowRateBigNumber.mul(END_DATE_VALID_BEFORE_IN_SECONDS));
 
         const increaseAllowancePromise = SuperToken__factory.connect(
           superToken.address,
@@ -250,6 +259,50 @@ export const vestingSchedulerEndpoints = {
             chainId,
             hash: transactionResponse.hash,
             subTransactionTitles,
+          },
+        };
+      },
+    }),
+    getVestingSchedulerConstants: builder.query<
+      {
+        MIN_VESTING_DURATION_IN_DAYS: number;
+        MIN_VESTING_DURATION_IN_MINUTES: number;
+        MIN_VESTING_DURATION_IN_SECONDS: number;
+        START_DATE_VALID_AFTER_IN_DAYS: number;
+        START_DATE_VALID_AFTER_IN_SECONDS: number;
+        END_DATE_VALID_BEFORE_IN_DAYS: number;
+        END_DATE_VALID_BEFORE_IN_SECONDS: number;
+      },
+      { chainId: number }
+    >({
+      keepUnusedDataFor: 3600,
+      extraOptions: {
+        maxRetries: 10,
+      },
+      queryFn: async ({ chainId }) => {
+        const framework = await getFramework(chainId);
+        const { vestingScheduler } = getEthSdk(
+          chainId,
+          framework.settings.provider
+        );
+        const [
+          MIN_VESTING_DURATION_IN_SECONDS,
+          START_DATE_VALID_AFTER_IN_SECONDS,
+          END_DATE_VALID_BEFORE_IN_SECONDS,
+        ] = await Promise.all([
+          vestingScheduler.MIN_VESTING_DURATION(),
+          vestingScheduler.START_DATE_VALID_AFTER(),
+          vestingScheduler.END_DATE_VALID_BEFORE(),
+        ]);
+        return {
+          data: {
+            MIN_VESTING_DURATION_IN_SECONDS,
+            MIN_VESTING_DURATION_IN_DAYS: Math.round(MIN_VESTING_DURATION_IN_SECONDS / UnitOfTime.Day),
+            MIN_VESTING_DURATION_IN_MINUTES: Math.round(MIN_VESTING_DURATION_IN_SECONDS / UnitOfTime.Minute),
+            START_DATE_VALID_AFTER_IN_SECONDS,
+            START_DATE_VALID_AFTER_IN_DAYS: Math.round(START_DATE_VALID_AFTER_IN_SECONDS / UnitOfTime.Day),
+            END_DATE_VALID_BEFORE_IN_SECONDS,
+            END_DATE_VALID_BEFORE_IN_DAYS: Math.round(END_DATE_VALID_BEFORE_IN_SECONDS / UnitOfTime.Day)
           },
         };
       },

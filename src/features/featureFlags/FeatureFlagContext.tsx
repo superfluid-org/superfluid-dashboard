@@ -1,4 +1,4 @@
-import { isUndefined } from "lodash";
+import { isString, isUndefined } from "lodash";
 import { useRouter } from "next/router";
 import {
   createContext,
@@ -23,7 +23,7 @@ interface FeatureFlagContextValue {
   isMainnetEnabled: boolean;
 }
 
-export const MAINNET_FEATURE_CODE = "724ZX_ENS";
+export const MAINNET_FEATURE_CODES = ["724ZX_ENS", "462T_MINERVA"];
 
 export const FeatureFlagProvider: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
@@ -46,7 +46,10 @@ export const FeatureFlagProvider: FC<PropsWithChildren> = ({ children }) => {
       const enableVesting =
         !isUndefined(enable_experimental_vesting_feature) && !isVestingEnabled;
 
-      const enableMainnet = code === MAINNET_FEATURE_CODE && !isMainnetEnabled;
+      const enableMainnet =
+        isString(code) &&
+        !isMainnetEnabled &&
+        MAINNET_FEATURE_CODES.includes(code);
 
       if (enableVesting) dispatch(enableVestingFeature());
       if (enableMainnet) dispatch(enableMainnetFeature());

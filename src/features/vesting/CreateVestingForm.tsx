@@ -225,7 +225,7 @@ export const CreateVestingForm: FC<{
             ),
           }}
           inputProps={{
-            inputPropsForEtherAmount
+            inputPropsForEtherAmount,
           }}
         />
       )}
@@ -270,7 +270,11 @@ export const CreateVestingForm: FC<{
             }}
           >
             {unitOfTimeList
-              .filter((x) => x >= UnitOfTime.Day && x <= UnitOfTime.Year)
+              .filter(
+                (x) =>
+                  x >= (network.testnet ? UnitOfTime.Minute : UnitOfTime.Day) &&
+                  x <= UnitOfTime.Year
+              )
               .map((unitOfTime) => (
                 <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
                   {timeUnitWordMap[unitOfTime]}(s)
@@ -320,7 +324,11 @@ export const CreateVestingForm: FC<{
             }}
           >
             {unitOfTimeList
-              .filter((x) => x >= UnitOfTime.Day && x <= UnitOfTime.Year)
+              .filter(
+                (x) =>
+                  x >= (network.testnet ? UnitOfTime.Minute : UnitOfTime.Day) &&
+                  x <= UnitOfTime.Year
+              )
               .map((unitOfTime) => (
                 <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
                   {timeUnitWordMap[unitOfTime]}(s)

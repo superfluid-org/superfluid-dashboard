@@ -17,6 +17,7 @@ const SKELETON_ROW = "[data-cy=skeleton-row]"
 const NO_ACTIVITY_TITLE = "[data-cy=no-history-title]"
 const NO_ACTIVITY_TEXT = "[data-cy=no-history-text]"
 const ACTIVITY_FILTER = "[data-cy=activity-filter-button]"
+const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet-button]"
 
 
 type ActivityData = {
@@ -100,7 +101,8 @@ export class ActivityPage extends BasePage {
 
     static validateNoHistoryMessage() {
         this.hasText(NO_ACTIVITY_TITLE, "No Activity History Available")
-        this.hasText(NO_ACTIVITY_TEXT, "Transactions including wrapping tokens and sending streams will appear here.")
+        this.hasText(NO_ACTIVITY_TEXT, "Connect wallet or view the dashboard as any address to see transactions.")
+        this.isVisible(CONNECT_WALLET_BUTTON)
     }
 
     static openFilter() {

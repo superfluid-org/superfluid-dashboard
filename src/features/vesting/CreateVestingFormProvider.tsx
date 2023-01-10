@@ -1,25 +1,15 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import add from "date-fns/fp/add";
-import React, {
-  FC,
-  ReactNode,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { FormProvider, useForm, UseFormSetError } from "react-hook-form";
+import { FC, ReactNode, useEffect, useMemo, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { date, mixed, number, object, ObjectSchema, string } from "yup";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { networkDefinition } from "../network/networks";
 import {
-  END_DATE_VALID_BEFORE_SECONDS,
-  MAX_VESTING_DURATION_SECONDS,
-  MAX_VESTING_DURATION_YEARS,
-  MIN_VESTING_DURATION_DAYS,
-  MIN_VESTING_DURATION_SECONDS,
-  START_DATE_VALID_AFTER_SECONDS,
+  MAX_VESTING_DURATION_IN_SECONDS,
+  MAX_VESTING_DURATION_IN_YEARS,
 } from "../redux/endpoints/vestingSchedulerEndpoints";
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
@@ -106,6 +96,11 @@ const CreateVestingFormProvider: FC<{
     rpcApi.useLazyGetActiveVestingScheduleQuery();
   const { visibleAddress: senderAddress } = useVisibleAddress();
 
+  const { data: vestingSchedulerConstants } =
+    rpcApi.useGetVestingSchedulerConstantsQuery({
+      chainId: network.id,
+    });
+
   const formSchema = useMemo(
     () =>
       object().test(async (values, context) => {
@@ -149,23 +144,41 @@ const CreateVestingFormProvider: FC<{
           startDate
         );
 
+        if (!vestingSchedulerConstants) {
+          throw new Error(
+            "Haven't fetched VestingScheduler contract constants. This hopefully never happens. If it does, probably should refresh the application."
+          );
+        }
+        const {
+          MIN_VESTING_DURATION_IN_DAYS,
+          MIN_VESTING_DURATION_IN_MINUTES,
+          MIN_VESTING_DURATION_IN_SECONDS,
+          END_DATE_VALID_BEFORE_IN_SECONDS,
+          START_DATE_VALID_AFTER_IN_SECONDS,
+        } = vestingSchedulerConstants;
+
         const durationFromCliffAndFlowDateToEndDate = Math.floor(
           (endDate.getTime() - cliffAndFlowDate.getTime()) / 1000
         );
         if (
-          durationFromCliffAndFlowDateToEndDate < MIN_VESTING_DURATION_SECONDS
+          durationFromCliffAndFlowDateToEndDate <
+          MIN_VESTING_DURATION_IN_SECONDS
         ) {
           handleHigherOrderValidationError({
-            message: `The vesting end date has to be at least ${MIN_VESTING_DURATION_DAYS} days from the start or the cliff.`,
+            message: `The vesting end date has to be at least ${
+              network.testnet
+                ? `${MIN_VESTING_DURATION_IN_MINUTES} minutes`
+                : `${MIN_VESTING_DURATION_IN_DAYS} days`
+            } from the start or the cliff.`,
           });
         }
 
         const vestingDuration =
           vestingPeriod.numerator * vestingPeriod.denominator;
 
-        if (vestingDuration > MAX_VESTING_DURATION_SECONDS) {
+        if (vestingDuration > MAX_VESTING_DURATION_IN_SECONDS) {
           handleHigherOrderValidationError({
-            message: `The vesting period has to be less than ${MAX_VESTING_DURATION_YEARS} years.`,
+            message: `The vesting period has to be less than ${MAX_VESTING_DURATION_IN_YEARS} years.`,
           });
         }
 
@@ -174,7 +187,7 @@ const CreateVestingFormProvider: FC<{
         );
         if (
           secondsFromStartToEnd <
-          START_DATE_VALID_AFTER_SECONDS + END_DATE_VALID_BEFORE_SECONDS
+          START_DATE_VALID_AFTER_IN_SECONDS + END_DATE_VALID_BEFORE_IN_SECONDS
         ) {
           handleHigherOrderValidationError({
             message: `Invalid vesting schedule time frame.`,
@@ -213,7 +226,12 @@ const CreateVestingFormProvider: FC<{
 
         return true;
       }),
-    [network, getActiveVestingSchedule, senderAddress]
+    [
+      network,
+      getActiveVestingSchedule,
+      senderAddress,
+      vestingSchedulerConstants,
+    ]
   );
 
   const formMethods = useForm<PartialVestingForm>({

@@ -18,6 +18,7 @@ import groupBy from "lodash/fp/groupBy";
 import orderBy from "lodash/fp/orderBy";
 import { NextPage } from "next";
 import { MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
+import ConnectOrImpersonate from "../components/ConnectOrImpersonate/ConnectOrImpersonate";
 import DatePicker from "../components/DatePicker/DatePicker";
 import OpenIcon from "../components/OpenIcon/OpenIcon";
 import withStaticSEO from "../components/SEO/withStaticSEO";
@@ -293,9 +294,16 @@ const History: NextPage = () => {
               color="text.secondary"
               textAlign="center"
             >
-              Transactions including wrapping tokens and sending streams will
-              appear here.
+              {!visibleAddress
+                ? `Connect wallet or view the dashboard as any address to see transactions.`
+                : `Transactions including wrapping tokens and sending streams will appear here.`}
             </Typography>
+
+            {!visibleAddress && (
+              <Box sx={{ maxWidth: 400, width: "100%", mx: "auto", mt: 4 }}>
+                <ConnectOrImpersonate />
+              </Box>
+            )}
           </Paper>
         )}
 
