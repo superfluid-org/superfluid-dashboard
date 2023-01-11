@@ -62,20 +62,20 @@ const VestingProgress: FC<VestingProgressProps> = ({ nth, start, end }) => {
       <Box
         sx={{
           background: theme.palette.divider,
-          width: `calc(100% - 150px)`,
+          width: `calc(100% - 180px)`,
           height: "2px",
           position: "absolute",
-          left: "75px",
+          left: "90px",
           top: "calc(50% - 1px)",
         }}
       />
       <Box
         sx={{
           background: theme.palette.primary.main,
-          width: `calc(${progress}% - 150px)`,
+          width: `calc(${progress}% - 180px)`,
           height: "2px",
           position: "absolute",
-          left: "75px",
+          left: "90px",
           top: "calc(50% - 1px)",
         }}
       />
@@ -115,7 +115,7 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumns: "repeat(4, 150px)",
+        gridTemplateColumns: "repeat(4, 170px)",
         justifyContent: "space-between",
       }}
     >

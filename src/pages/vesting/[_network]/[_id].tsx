@@ -14,7 +14,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { format, fromUnixTime, getUnixTime } from "date-fns";
-import { BigNumber } from "ethers";
+import { BigNumber, BigNumberish } from "ethers";
 import { isString } from "lodash";
 import { useRouter } from "next/router";
 import { FC, ReactElement, useEffect, useMemo, useState } from "react";
@@ -29,6 +29,7 @@ import FiatAmount from "../../../features/tokenPrice/FiatAmount";
 import useTokenPrice from "../../../features/tokenPrice/useTokenPrice";
 import { BigLoader } from "../../../features/vesting/BigLoader";
 import { useVestingToken } from "../../../features/vesting/useVestingToken";
+import VestingGraph from "../../../features/vesting/VestingGraph";
 import VestingHeader from "../../../features/vesting/VestingHeader";
 import { VestingLayout } from "../../../features/vesting/VestingLayout";
 import VestingScheduleProgress from "../../../features/vesting/VestingScheduleProgress";
@@ -163,7 +164,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
     return vestingSchedule.cliffAmount || "0";
   }, [vestingSchedule]);
 
-  const currentlyVested = useMemo(() => {
+  const currentlyVested: BigNumberish = useMemo(() => {
     if (!vestingSchedule) return "0";
     const { flowRate, endDate, cliffDate, startDate } = vestingSchedule;
 
@@ -173,16 +174,18 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
     const receivedCliff =
       cliffDate && startDateUnix <= currentUnix ? cliffAmount : "0";
 
-    return BigNumber.from(flowRate)
+    const vested = BigNumber.from(flowRate)
       .mul(Math.min(endDateUnix, currentUnix) - startDateUnix)
       .add(receivedCliff);
+
+    return vested.gt("0") ? vested : "0";
   }, [vestingSchedule, cliffAmount]);
 
   const totalVesting = useMemo(() => {
     if (!vestingSchedule) return undefined;
     const { flowRate, endDate, startDate, cliffDate, cliffAmount } =
       vestingSchedule;
-
+    console.log({ cliffDate, startDate });
     const cliffAndFlowDate = Number(cliffDate || startDate);
 
     return BigNumber.from(flowRate)
@@ -294,6 +297,8 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
               />
             )}
           </Stack>
+
+          <VestingGraph vestingSchedule={vestingSchedule} />
         </Card>
 
         <Stack direction="row" alignItems="stretch" gap={3}>

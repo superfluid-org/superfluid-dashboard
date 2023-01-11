@@ -126,7 +126,7 @@ const VestingRow: FC<VestingRowProps> = ({
             transactingText="Creating..."
           />
         ) : (
-          <VestingStatus />
+          <VestingStatus vestingSchedule={vestingSchedule} />
         )}
       </TableCell>
     </TableRow>
