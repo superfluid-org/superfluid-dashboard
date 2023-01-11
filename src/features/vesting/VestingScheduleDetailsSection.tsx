@@ -99,7 +99,7 @@ export const VestingScheduleDetails: FC<{
                   }}
                   BlockiesProps={{ size: 8, scale: 3 }}
                 />
-                <Typography>
+                <Typography data-cy={"preview-receiver"}>
                   <AddressName address={receiverAddress} />
                 </Typography>
               </Stack>
@@ -107,7 +107,7 @@ export const VestingScheduleDetails: FC<{
           </Stack>
           <Stack>
             <Typography color="text.secondary">Start Date</Typography>
-            <Typography color="text.primary">
+            <Typography data-cy={"preview-start-date"} color="text.primary">
               {format("LLLL d, yyyy HH:mm", startDate)}
             </Typography>
           </Stack>
@@ -120,7 +120,7 @@ export const VestingScheduleDetails: FC<{
             </Typography>
             <Stack direction="row" alignItems="center" gap={1}>
               <TokenIcon isSuper tokenSymbol={token.symbol} size={28} />
-              <Typography>
+              <Typography data-cy={"preview-cliff-amount"}>
                 {cliffAmountEther} {token.symbol}
               </Typography>
             </Stack>
@@ -130,7 +130,7 @@ export const VestingScheduleDetails: FC<{
             <Typography color="text.secondary">
               {VestingFormLabels.CliffPeriod}
             </Typography>
-            <Typography color="text.primary">
+            <Typography data-cy={"preview-cliff-period"} color="text.primary">
               {format("LLLL d, yyyy HH:mm", cliffDate)}
             </Typography>
           </Stack>
@@ -143,7 +143,7 @@ export const VestingScheduleDetails: FC<{
             </Typography>
             <Stack direction="row" alignItems="center" gap={1}>
               <TokenIcon isSuper tokenSymbol={token.symbol} size={28} />
-              <Typography>
+              <Typography data-cy={"preview-total-amount"}>
                 <Amount wei={totalAmount} /> {token.symbol}
               </Typography>
             </Stack>
@@ -151,7 +151,7 @@ export const VestingScheduleDetails: FC<{
 
           <Stack>
             <Typography color="text.secondary">End Date</Typography>
-            <Typography color="text.primary">
+            <Typography data-cy="preview-total-period" color="text.primary">
               {format("LLLL d, yyyy HH:mm", endDate)}
             </Typography>
           </Stack>
