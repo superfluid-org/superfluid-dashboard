@@ -121,3 +121,6 @@ Given(/^User disconnects their wallet from the dashboard$/,  () => {
 Given(/^User chooses to connect the mock wallet$/,  () => {
     Common.clickMockWallet()
 });
+Given(/^HDWallet transactions are rejected$/, function () {
+    Common.rejectTransactions()
+});

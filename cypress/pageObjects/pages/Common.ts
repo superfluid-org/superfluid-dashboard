@@ -182,6 +182,11 @@ export class Common extends BasePage {
         this.changeNetwork(selectedNetwork)
     }
 
+    static rejectTransactions() {
+        cy.log("Cypress will reject HDWalletProvider Transactions!")
+        Cypress.env("rejected" , true)
+    }
+
     static clickConnectWallet() {
         this.clickFirstVisible("[data-cy=connect-wallet-button]");
     }

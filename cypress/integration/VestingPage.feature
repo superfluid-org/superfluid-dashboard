@@ -91,9 +91,9 @@ Feature: Vesting page test cases
     And User inputs "4" "year" as the total vesting period
     Then "There already exists a vesting schedule between the accounts for the token. To create a new schedule, the active schedule needs to end or be deleted." error is shown in the form
 
-  @rejected
   Scenario: Creating a vesting schedule
-    Given Transactional account john is connected to the dashboard on goerli
+    Given HDWallet transactions are rejected
+    And Transactional account john is connected to the dashboard on goerli
     And User clicks on the "vesting" navigation button
     Then No received vesting schedules message is shown
     #And User deletes the vesting schedule if necessary
@@ -109,9 +109,8 @@ Feature: Vesting page test cases
 #   And The restore button is not visible for the last transaction
 #   And The newly created vesting schedule is visible in the table
 
-
-  @rejected
   Scenario: Deleting a vesting schedule
+    Given HDWallet transactions are rejected
     Given Transactional account john is connected to the dashboard on goerli
     And User clicks on the "vesting" navigation button
     And User opens the last vesting schedule they have created
