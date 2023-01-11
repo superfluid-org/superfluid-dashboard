@@ -574,11 +574,9 @@ export type Task = {
   executionAt?: Maybe<Scalars['BigInt']>;
   expirationAt?: Maybe<Scalars['BigInt']>;
   failedAt?: Maybe<Scalars['BigInt']>;
-  id: Scalars['String'];
-  receiver: Scalars['Bytes'];
-  sender: Scalars['Bytes'];
-  superToken: Scalars['Bytes'];
+  id: Scalars['ID'];
   type: TaskType;
+  vestingSchedule: VestingSchedule;
 };
 
 export enum TaskType {
@@ -621,48 +619,39 @@ export type Task_Filter = {
   failedAt_lte?: InputMaybe<Scalars['BigInt']>;
   failedAt_not?: InputMaybe<Scalars['BigInt']>;
   failedAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  id?: InputMaybe<Scalars['String']>;
-  id_contains?: InputMaybe<Scalars['String']>;
-  id_contains_nocase?: InputMaybe<Scalars['String']>;
-  id_ends_with?: InputMaybe<Scalars['String']>;
-  id_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  id_gt?: InputMaybe<Scalars['String']>;
-  id_gte?: InputMaybe<Scalars['String']>;
-  id_in?: InputMaybe<Array<Scalars['String']>>;
-  id_lt?: InputMaybe<Scalars['String']>;
-  id_lte?: InputMaybe<Scalars['String']>;
-  id_not?: InputMaybe<Scalars['String']>;
-  id_not_contains?: InputMaybe<Scalars['String']>;
-  id_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  id_not_ends_with?: InputMaybe<Scalars['String']>;
-  id_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  id_not_in?: InputMaybe<Array<Scalars['String']>>;
-  id_not_starts_with?: InputMaybe<Scalars['String']>;
-  id_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  id_starts_with?: InputMaybe<Scalars['String']>;
-  id_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  receiver?: InputMaybe<Scalars['Bytes']>;
-  receiver_contains?: InputMaybe<Scalars['Bytes']>;
-  receiver_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  receiver_not?: InputMaybe<Scalars['Bytes']>;
-  receiver_not_contains?: InputMaybe<Scalars['Bytes']>;
-  receiver_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  sender?: InputMaybe<Scalars['Bytes']>;
-  sender_contains?: InputMaybe<Scalars['Bytes']>;
-  sender_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  sender_not?: InputMaybe<Scalars['Bytes']>;
-  sender_not_contains?: InputMaybe<Scalars['Bytes']>;
-  sender_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  superToken?: InputMaybe<Scalars['Bytes']>;
-  superToken_contains?: InputMaybe<Scalars['Bytes']>;
-  superToken_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  superToken_not?: InputMaybe<Scalars['Bytes']>;
-  superToken_not_contains?: InputMaybe<Scalars['Bytes']>;
-  superToken_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  id?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
   type?: InputMaybe<TaskType>;
   type_in?: InputMaybe<Array<TaskType>>;
   type_not?: InputMaybe<TaskType>;
   type_not_in?: InputMaybe<Array<TaskType>>;
+  vestingSchedule?: InputMaybe<Scalars['String']>;
+  vestingSchedule_?: InputMaybe<VestingSchedule_Filter>;
+  vestingSchedule_contains?: InputMaybe<Scalars['String']>;
+  vestingSchedule_contains_nocase?: InputMaybe<Scalars['String']>;
+  vestingSchedule_ends_with?: InputMaybe<Scalars['String']>;
+  vestingSchedule_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  vestingSchedule_gt?: InputMaybe<Scalars['String']>;
+  vestingSchedule_gte?: InputMaybe<Scalars['String']>;
+  vestingSchedule_in?: InputMaybe<Array<Scalars['String']>>;
+  vestingSchedule_lt?: InputMaybe<Scalars['String']>;
+  vestingSchedule_lte?: InputMaybe<Scalars['String']>;
+  vestingSchedule_not?: InputMaybe<Scalars['String']>;
+  vestingSchedule_not_contains?: InputMaybe<Scalars['String']>;
+  vestingSchedule_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  vestingSchedule_not_ends_with?: InputMaybe<Scalars['String']>;
+  vestingSchedule_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  vestingSchedule_not_in?: InputMaybe<Array<Scalars['String']>>;
+  vestingSchedule_not_starts_with?: InputMaybe<Scalars['String']>;
+  vestingSchedule_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  vestingSchedule_starts_with?: InputMaybe<Scalars['String']>;
+  vestingSchedule_starts_with_nocase?: InputMaybe<Scalars['String']>;
 };
 
 export enum Task_OrderBy {
@@ -671,15 +660,14 @@ export enum Task_OrderBy {
   ExpirationAt = 'expirationAt',
   FailedAt = 'failedAt',
   Id = 'id',
-  Receiver = 'receiver',
-  Sender = 'sender',
-  SuperToken = 'superToken',
-  Type = 'type'
+  Type = 'type',
+  VestingSchedule = 'vestingSchedule'
 }
 
 export type TokenSenderReceiverCursor = {
   __typename?: 'TokenSenderReceiverCursor';
-  currentTask?: Maybe<Task>;
+  currentCliffAndFlowTask?: Maybe<Task>;
+  currentEndVestingTask?: Maybe<Task>;
   currentVestingSchedule?: Maybe<VestingSchedule>;
   id: Scalars['String'];
 };
@@ -687,27 +675,48 @@ export type TokenSenderReceiverCursor = {
 export type TokenSenderReceiverCursor_Filter = {
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
-  currentTask?: InputMaybe<Scalars['String']>;
-  currentTask_?: InputMaybe<Task_Filter>;
-  currentTask_contains?: InputMaybe<Scalars['String']>;
-  currentTask_contains_nocase?: InputMaybe<Scalars['String']>;
-  currentTask_ends_with?: InputMaybe<Scalars['String']>;
-  currentTask_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  currentTask_gt?: InputMaybe<Scalars['String']>;
-  currentTask_gte?: InputMaybe<Scalars['String']>;
-  currentTask_in?: InputMaybe<Array<Scalars['String']>>;
-  currentTask_lt?: InputMaybe<Scalars['String']>;
-  currentTask_lte?: InputMaybe<Scalars['String']>;
-  currentTask_not?: InputMaybe<Scalars['String']>;
-  currentTask_not_contains?: InputMaybe<Scalars['String']>;
-  currentTask_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  currentTask_not_ends_with?: InputMaybe<Scalars['String']>;
-  currentTask_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  currentTask_not_in?: InputMaybe<Array<Scalars['String']>>;
-  currentTask_not_starts_with?: InputMaybe<Scalars['String']>;
-  currentTask_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  currentTask_starts_with?: InputMaybe<Scalars['String']>;
-  currentTask_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  currentCliffAndFlowTask?: InputMaybe<Scalars['String']>;
+  currentCliffAndFlowTask_?: InputMaybe<Task_Filter>;
+  currentCliffAndFlowTask_contains?: InputMaybe<Scalars['String']>;
+  currentCliffAndFlowTask_contains_nocase?: InputMaybe<Scalars['String']>;
+  currentCliffAndFlowTask_ends_with?: InputMaybe<Scalars['String']>;
+  currentCliffAndFlowTask_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  currentCliffAndFlowTask_gt?: InputMaybe<Scalars['String']>;
+  currentCliffAndFlowTask_gte?: InputMaybe<Scalars['String']>;
+  currentCliffAndFlowTask_in?: InputMaybe<Array<Scalars['String']>>;
+  currentCliffAndFlowTask_lt?: InputMaybe<Scalars['String']>;
+  currentCliffAndFlowTask_lte?: InputMaybe<Scalars['String']>;
+  currentCliffAndFlowTask_not?: InputMaybe<Scalars['String']>;
+  currentCliffAndFlowTask_not_contains?: InputMaybe<Scalars['String']>;
+  currentCliffAndFlowTask_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  currentCliffAndFlowTask_not_ends_with?: InputMaybe<Scalars['String']>;
+  currentCliffAndFlowTask_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  currentCliffAndFlowTask_not_in?: InputMaybe<Array<Scalars['String']>>;
+  currentCliffAndFlowTask_not_starts_with?: InputMaybe<Scalars['String']>;
+  currentCliffAndFlowTask_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  currentCliffAndFlowTask_starts_with?: InputMaybe<Scalars['String']>;
+  currentCliffAndFlowTask_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  currentEndVestingTask?: InputMaybe<Scalars['String']>;
+  currentEndVestingTask_?: InputMaybe<Task_Filter>;
+  currentEndVestingTask_contains?: InputMaybe<Scalars['String']>;
+  currentEndVestingTask_contains_nocase?: InputMaybe<Scalars['String']>;
+  currentEndVestingTask_ends_with?: InputMaybe<Scalars['String']>;
+  currentEndVestingTask_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  currentEndVestingTask_gt?: InputMaybe<Scalars['String']>;
+  currentEndVestingTask_gte?: InputMaybe<Scalars['String']>;
+  currentEndVestingTask_in?: InputMaybe<Array<Scalars['String']>>;
+  currentEndVestingTask_lt?: InputMaybe<Scalars['String']>;
+  currentEndVestingTask_lte?: InputMaybe<Scalars['String']>;
+  currentEndVestingTask_not?: InputMaybe<Scalars['String']>;
+  currentEndVestingTask_not_contains?: InputMaybe<Scalars['String']>;
+  currentEndVestingTask_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  currentEndVestingTask_not_ends_with?: InputMaybe<Scalars['String']>;
+  currentEndVestingTask_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  currentEndVestingTask_not_in?: InputMaybe<Array<Scalars['String']>>;
+  currentEndVestingTask_not_starts_with?: InputMaybe<Scalars['String']>;
+  currentEndVestingTask_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  currentEndVestingTask_starts_with?: InputMaybe<Scalars['String']>;
+  currentEndVestingTask_starts_with_nocase?: InputMaybe<Scalars['String']>;
   currentVestingSchedule?: InputMaybe<Scalars['String']>;
   currentVestingSchedule_?: InputMaybe<VestingSchedule_Filter>;
   currentVestingSchedule_contains?: InputMaybe<Scalars['String']>;
@@ -752,7 +761,8 @@ export type TokenSenderReceiverCursor_Filter = {
 };
 
 export enum TokenSenderReceiverCursor_OrderBy {
-  CurrentTask = 'currentTask',
+  CurrentCliffAndFlowTask = 'currentCliffAndFlowTask',
+  CurrentEndVestingTask = 'currentEndVestingTask',
   CurrentVestingSchedule = 'currentVestingSchedule',
   Id = 'id'
 }
@@ -1253,6 +1263,16 @@ export type VestingSchedule = {
   sender: Scalars['Bytes'];
   startDate: Scalars['BigInt'];
   superToken: Scalars['Bytes'];
+  tasks: Array<Task>;
+};
+
+
+export type VestingScheduleTasksArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Task_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<Task_Filter>;
 };
 
 export type VestingScheduleCreatedEvent = Event & {
@@ -1843,6 +1863,7 @@ export type VestingSchedule_Filter = {
   superToken_not?: InputMaybe<Scalars['Bytes']>;
   superToken_not_contains?: InputMaybe<Scalars['Bytes']>;
   superToken_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  tasks_?: InputMaybe<Task_Filter>;
 };
 
 export enum VestingSchedule_OrderBy {
@@ -1858,7 +1879,8 @@ export enum VestingSchedule_OrderBy {
   Receiver = 'receiver',
   Sender = 'sender',
   StartDate = 'startDate',
-  SuperToken = 'superToken'
+  SuperToken = 'superToken',
+  Tasks = 'tasks'
 }
 
 export type _Block_ = {

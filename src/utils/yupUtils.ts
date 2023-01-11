@@ -1,6 +1,6 @@
 import { BigNumber } from "ethers";
 import { isAddress, parseEther } from "ethers/lib/utils";
-import { AnyObject, TestFunction } from "yup";
+import { AnyObject, TestContext, TestFunction } from "yup";
 import { NATIVE_ASSET_ADDRESS } from "../features/redux/endpoints/tokenTypes";
 
 interface IsEtherAmountOptions {
@@ -8,16 +8,23 @@ interface IsEtherAmountOptions {
   notZero?: boolean;
 }
 
-export const testAddress: () => TestFunction<string, AnyObject> =
-  () => (value, context) => {
-    if (!isAddress(value) && value !== NATIVE_ASSET_ADDRESS) {
-      throw context.createError({
-        message: "Not an address.",
-      });
-    }
+export const testAddresses: () => TestFunction<string[], AnyObject> =
+  () => (value, context) =>
+    !value.some((address) => !validateAddress(address, context));
 
-    return true;
-  };
+export const testAddress: () => TestFunction<string, AnyObject> =
+  () => (value, context) =>
+    validateAddress(value, context);
+
+const validateAddress = (address: string, context: TestContext) => {
+  if (!isAddress(address) && address !== NATIVE_ASSET_ADDRESS) {
+    throw context.createError({
+      message: "Not an address.",
+    });
+  }
+
+  return true;
+};
 
 export const testEtherAmount: (
   options: IsEtherAmountOptions

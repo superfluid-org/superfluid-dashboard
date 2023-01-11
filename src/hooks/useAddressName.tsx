@@ -4,7 +4,7 @@ import { ensApi } from "../features/ens/ensApi.slice";
 import { useAppSelector } from "../features/redux/store";
 import { getAddress } from "../utils/memoizedEthersUtils";
 
-interface AddressNameResult {
+export interface AddressNameResult {
   addressChecksummed: string;
   name: string | "";
   ensName?: string;
