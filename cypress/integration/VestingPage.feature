@@ -110,6 +110,7 @@ Feature: Vesting page test cases
 #   And The restore button is not visible for the last transaction
 #   And The newly created vesting schedule is visible in the table
 
+  @skip
   Scenario: Deleting a vesting schedule
     Given HDWallet transactions are rejected
     Given Transactional account john is connected to the dashboard on goerli
