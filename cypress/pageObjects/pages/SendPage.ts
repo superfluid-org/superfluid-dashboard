@@ -9,7 +9,7 @@ const FLOW_RATE_INPUT = "[data-cy=flow-rate-input]";
 const TIME_UNIT_SELECTION_BUTTON = "[data-cy=time-unit-selection-button]";
 const AMOUNT_PER_SECOND = "[data-cy=preview-per-second]";
 const ADDRESS_DIALOG_INPUT = "[data-cy=address-dialog-input]";
-const CLOSE_DIALOG_BUTTON = "[data-testid=CloseIcon]";
+const CLOSE_DIALOG_BUTTON = "[data-testid=CloseRoundedIcon]";
 const ENS_ENTRIES = "[data-cy=ens-entry]";
 const ENS_ENTRY_NAMES = "[data-cy=ens-entry] h6";
 const ENS_ENTRY_ADDRESS = "[data-cy=ens-entry] p";

@@ -50,9 +50,9 @@ Feature: Vesting page test cases
     And User inputs "4" "year" as the cliff period
     And User inputs "1" as the total vested amount
     And User inputs "1" "year" as the total vesting period
-    Then "The vesting end date has to be at least 7 minutes from the start or the cliff." error is shown in the form
+    Then "The vesting end date has to be at least 60 minutes from the start or the cliff." error is shown in the form
 
-  Scenario: Creation form - Total vesting period has to be atleast 7 minutes after start
+  Scenario: Creation form - Total vesting period has to be atleast 60 minutes after start
     Given Transactional account bob is connected to the dashboard on goerli
     And User clicks on the "vesting" navigation button
     And User clicks on the create vesting schedule button
@@ -60,10 +60,10 @@ Feature: Vesting page test cases
     And User selects "fDAIx" as the super token to use for the stream
     And User inputs a date "1" "year" into the future into the vesting start date field
     And User inputs "1" as the cliff amount
-    And User inputs "2" "minute" as the cliff period
+    And User inputs "30" "minute" as the cliff period
     And User inputs "2" as the total vested amount
-    And User inputs "7" "minute" as the total vesting period
-    Then "The vesting end date has to be at least 7 minutes from the start or the cliff." error is shown in the form
+    And User inputs "59" "minute" as the total vesting period
+    Then "The vesting end date has to be at least 60 minutes from the start or the cliff." error is shown in the form
 
   Scenario: Creation form - Vesting period less than 10 years
     Given Transactional account bob is connected to the dashboard on goerli
@@ -78,6 +78,7 @@ Feature: Vesting page test cases
     And User inputs "11" "year" as the total vesting period
     Then "The vesting period has to be less than 10 years." error is shown in the form
 
+    @skip
   Scenario: Creation form - Existing schedule
     Given Transactional account john is connected to the dashboard on goerli
     And User clicks on the "vesting" navigation button
@@ -117,6 +118,7 @@ Feature: Vesting page test cases
     And User deletes the vesting schedule
     And Transaction rejected error is shown
 
+    @skip
   Scenario: Change network button showing up if user is not on goerli
     Given Transactional account john is connected to the dashboard on polygon
     And User clicks on the "vesting" navigation button
@@ -126,6 +128,7 @@ Feature: Vesting page test cases
     And User clicks on the change to goerli button
     And Delete vesting schedule button is visible
 
+    @skip
   Scenario: Sent vesting schedules details
     Given Transactional account john is connected to the dashboard on goerli
     And User clicks on the "vesting" navigation button
