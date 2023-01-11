@@ -9,6 +9,7 @@ import {
   MiddlewareAPI,
 } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
+import * as Sentry from "@sentry/react";
 import {
   allRpcEndpoints,
   allSubgraphEndpoints,
@@ -29,7 +30,9 @@ import {
   REHYDRATE,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import { deserializeError } from "serialize-error";
 import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApiEnhancements";
+import accountingApi from "../accounting/accountingApi.slice";
 import { addressBookSlice } from "../addressBook/addressBook.slice";
 import { customTokensSlice } from "../customTokens/customTokens.slice";
 import { ensApi } from "../ens/ensApi.slice";
@@ -48,8 +51,6 @@ import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
 import { flowSchedulerEndpoints } from "./endpoints/flowSchedulerEndpoints";
 import { vestingSchedulerEndpoints } from "./endpoints/vestingSchedulerEndpoints";
 import { platformApi } from "./platformApi/platformApi";
-import * as Sentry from "@sentry/react";
-import { deserializeError } from "serialize-error";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({
@@ -172,6 +173,7 @@ export const reduxStore = configureStore({
     [platformApi.reducerPath]: platformApi.reducer,
     [faucetApi.reducerPath]: faucetApi.reducer,
     [tokenPriceApi.reducerPath]: tokenPriceApi.reducer,
+    [accountingApi.reducerPath]: accountingApi.reducer,
     [vestingSubgraphApi.reducerPath]: vestingSubgraphApi.reducer,
 
     // Persisted slices
@@ -207,7 +209,8 @@ export const reduxStore = configureStore({
       .concat(gasApi.middleware)
       .concat(platformApi.middleware)
       .concat(faucetApi.middleware)
-      .concat(tokenPriceApi.middleware),
+      .concat(tokenPriceApi.middleware)
+      .concat(accountingApi.middleware),
 });
 
 export const reduxPersistor = persistStore(reduxStore);

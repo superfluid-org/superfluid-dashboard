@@ -50,7 +50,7 @@ export const useAddressPendingVestingSchedules = (
 export const mapPendingToVestingSchedule = (
   address: Address,
   pendingVestingSchedule: PendingVestingSchedule
-): VestingSchedule & { pendingCreate: PendingVestingSchedule } => {
+): Omit<VestingSchedule, "tasks"> & { pendingCreate: PendingVestingSchedule } => {
   const {
     cliffDateTimestamp,
     cliffTransferAmountWei,
