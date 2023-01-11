@@ -124,7 +124,7 @@ export const networkDefinition: {
     },
     flowSchedulerContractAddress: "0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca",
     vestingSchedulerContractAddress:
-      "0xD2542C725291aE9b7f088B73525F9Bc1e4B4f21C",
+      "0x2A6dD60Dbb8CE65813842eEe1688b21CA30D6ffd",
     platformUrl: config.platformApi.goerli,
   },
   gnosis: {
@@ -145,7 +145,8 @@ export const networkDefinition: {
       superfluid: superfluidRpcUrls.gnosis,
       default: "https://rpc.gnosischain.com/",
     },
-    subgraphUrl: "https://subgraph.satsuma-prod.com/c5br3jaVlJI6/superfluid/xdai/api",
+    subgraphUrl:
+      "https://subgraph.satsuma-prod.com/c5br3jaVlJI6/superfluid/xdai/api",
     getLinkForTransaction: (txHash: string): string =>
       `https://blockscout.com/xdai/mainnet/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -419,7 +420,8 @@ export const networkDefinition: {
       ...chain.mainnet.rpcUrls,
       superfluid: superfluidRpcUrls.ethereum,
     },
-    subgraphUrl: "https://subgraph.satsuma-prod.com/c5br3jaVlJI6/superfluid/eth-mainnet/api",
+    subgraphUrl:
+      "https://subgraph.satsuma-prod.com/c5br3jaVlJI6/superfluid/eth-mainnet/api",
     getLinkForTransaction: (txHash: string): string =>
       `https://etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
