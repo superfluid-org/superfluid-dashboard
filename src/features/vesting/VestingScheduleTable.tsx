@@ -7,9 +7,9 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/router";
 import { FC } from "react";
-import { VestingSchedule } from "../../vesting-subgraph/schema.generated";
 import { Network } from "../network/networks";
 import { PendingVestingSchedule } from "../pendingUpdates/PendingVestingSchedule";
+import { VestingSchedule } from "./types";
 import VestingRow from "./VestingRow";
 
 interface VestingScheduleTableProps {

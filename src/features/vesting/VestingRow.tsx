@@ -12,7 +12,6 @@ import { BigNumber } from "ethers";
 import { FC, useMemo } from "react";
 import AddressName from "../../components/AddressName/AddressName";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
-import { VestingSchedule } from "../../vesting-subgraph/schema.generated";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { Network } from "../network/networks";
 import { PendingProgress } from "../pendingUpdates/PendingProgress";
@@ -21,6 +20,7 @@ import { usePendingVestingScheduleDelete } from "../pendingUpdates/PendingVestin
 import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import { VestingSchedule } from "./types";
 import { useVestingToken } from "./useVestingToken";
 
 interface VestingRowProps {
