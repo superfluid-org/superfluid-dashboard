@@ -1,4 +1,4 @@
-import DateRangeIcon from "@mui/icons-material/DateRange";
+import DateRangeRoundedIcon from "@mui/icons-material/DateRangeRounded";
 import {
   Box,
   Button,
@@ -210,7 +210,7 @@ const History: NextPage = () => {
               variant="outlined"
               color="secondary"
               size="large"
-              startIcon={<DateRangeIcon />}
+              startIcon={<DateRangeRoundedIcon />}
               onClick={openDatePicker}
               translate="no"
               sx={{

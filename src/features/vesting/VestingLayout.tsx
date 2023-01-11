@@ -26,7 +26,7 @@ const VestingHeader = () => {
         </Typography>
       </Box>
       <NextLink href="/vesting/create" passHref>
-        <Button color="primary" variant="contained" endIcon={<AddIcon />}>
+        <Button data-cy="create-schedule-button" color="primary" variant="contained" endIcon={<AddIcon />}>
           Create Vesting Schedule
         </Button>
       </NextLink>

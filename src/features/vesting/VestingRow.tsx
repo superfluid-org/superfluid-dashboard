@@ -12,7 +12,6 @@ import { BigNumber } from "ethers";
 import { FC, useMemo } from "react";
 import AddressName from "../../components/AddressName/AddressName";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
-import { VestingSchedule } from "../../vesting-subgraph/schema.generated";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { Network } from "../network/networks";
 import { PendingProgress } from "../pendingUpdates/PendingProgress";
@@ -21,6 +20,7 @@ import { usePendingVestingScheduleDelete } from "../pendingUpdates/PendingVestin
 import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import { VestingSchedule } from "./types";
 import { useVestingToken } from "./useVestingToken";
 
 interface VestingRowProps {
@@ -69,6 +69,7 @@ const VestingRow: FC<VestingRowProps> = ({
 
   return (
     <TableRow
+      data-cy={"vesting-row"}
       hover={!!onClick}
       onClick={onClick}
       sx={{ cursor: onClick ? "pointer" : "initial" }}
@@ -84,7 +85,7 @@ const VestingRow: FC<VestingRowProps> = ({
             BlockiesProps={{ size: 8, scale: 3 }}
           />
           <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
-            <Typography variant="h7">
+            <Typography data-cy={"receiver-sender"} variant="h7">
               <AddressName address={isOutgoing ? receiver : sender} />
             </Typography>
           </AddressCopyTooltip>
@@ -98,6 +99,7 @@ const VestingRow: FC<VestingRowProps> = ({
             isLoading={tokenQuery.isLoading}
           />
           <ListItemText
+            data-cy={"total-vesting-amount"}
             primary={
               <>
                 <Amount wei={totalAmount} /> {tokenQuery.data?.symbol}
@@ -108,6 +110,7 @@ const VestingRow: FC<VestingRowProps> = ({
       </TableCell>
       <TableCell>
         <ListItemText
+          data-cy={"cliff-amount-and-date"}
           primary={
             <>
               <Amount wei={cliffAmount} /> {tokenQuery.data?.symbol}
@@ -118,6 +121,7 @@ const VestingRow: FC<VestingRowProps> = ({
       </TableCell>
       <TableCell sx={{ pr: 2 }}>
         <ListItemText
+          data-cy={"start-end-dates"}
           primary={format(fromUnixTime(Number(startDate)), "LLL d, yyyy")}
           secondary={format(fromUnixTime(Number(endDate)), "LLL d, yyyy")}
           primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}

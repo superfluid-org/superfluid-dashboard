@@ -1,3 +1,4 @@
+import AssessmentRoundedIcon from "@mui/icons-material/AssessmentRounded";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import QrCodeRoundedIcon from "@mui/icons-material/QrCodeRounded";
@@ -119,14 +120,33 @@ const MoreNavigationItem: FC = () => {
         </Link>
 
         <Link href="/?showFaucet=true">
-          <ListItemButton data-cy={"more-faucet-btn"} href="" onClick={closeMoreMenu}>
+          <ListItemButton
+            data-cy={"more-faucet-btn"}
+            href=""
+            onClick={closeMoreMenu}
+          >
             <ListItemIcon>
               <ShowerRoundedIcon sx={{ color: theme.palette.text.primary }} />
             </ListItemIcon>
             <ListItemText>Testnet Faucet</ListItemText>
           </ListItemButton>
         </Link>
-        <ListItemButton data-cy={"more-access-code-btn"} onClick={openAccessCodeDialog}>
+
+        <Link href="/accounting">
+          <ListItemButton href="" onClick={closeMoreMenu}>
+            <ListItemIcon>
+              <AssessmentRoundedIcon
+                sx={{ color: theme.palette.text.primary }}
+              />
+            </ListItemIcon>
+            <ListItemText>Export Stream Data</ListItemText>
+          </ListItemButton>
+        </Link>
+
+        <ListItemButton
+          data-cy={"more-access-code-btn"}
+          onClick={openAccessCodeDialog}
+        >
           <ListItemIcon>
             <QrCodeRoundedIcon sx={{ color: theme.palette.text.primary }} />
           </ListItemIcon>
