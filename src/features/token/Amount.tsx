@@ -20,6 +20,29 @@ interface AmountProps {
   children?: ReactNode;
 }
 
+export function formatAmount(
+  wei: BigNumberish,
+  decimals?: number,
+  decimalPlaces?: number,
+  disableRounding?: boolean,
+  roundingIndicator?: "..." | "~"
+) {
+  const decimal = new Decimal(utils.formatUnits(wei, decimals));
+  const decimalPlacesToRoundTo =
+    decimalPlaces ?? getDecimalPlacesToRoundTo(decimal);
+  const decimalPlacesToDisplay = decimalPlaces ?? undefined; // "undefined" means that trailing zeroes will be removed by `toFixed`
+  const decimalRounded = disableRounding
+    ? decimal
+    : decimal.toDP(decimalPlacesToRoundTo);
+  const isRounded = !decimal.equals(decimalRounded);
+
+  return `${
+    isRounded && roundingIndicator === "~" ? "~" : ""
+  }${decimalRounded.toFixed(decimalPlacesToDisplay)}${
+    isRounded && roundingIndicator === "..." ? "..." : ""
+  }`;
+}
+
 // NOTE: Previously known as "EtherFormatted" & "Ether"
 export default memo<AmountProps>(function Amount({
   wei,
@@ -29,17 +52,17 @@ export default memo<AmountProps>(function Amount({
   children,
   ...props
 }) {
-  const decimal = new Decimal(utils.formatUnits(wei, decimals));
-  const decimalPlacesToRoundTo = props.decimalPlaces ?? getDecimalPlacesToRoundTo(decimal);
-  const decimalPlacesToDisplay = props.decimalPlaces ?? undefined; // "undefined" means that trailing zeroes will be removed by `toFixed`
-  const decimalRounded = disableRounding ? decimal : decimal.toDP(decimalPlacesToRoundTo);
-  const isRounded = !decimal.equals(decimalRounded);
+  const formattedAmount = formatAmount(
+    wei,
+    decimals,
+    props.decimalPlaces,
+    disableRounding,
+    roundingIndicator
+  );
 
   return (
     <>
-      {isRounded && roundingIndicator === "~" && "~"}
-      {decimalRounded.toFixed(decimalPlacesToDisplay)}
-      {isRounded && roundingIndicator === "..." && "..."}
+      {formattedAmount}
       {children}
     </>
   );

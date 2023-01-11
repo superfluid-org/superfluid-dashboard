@@ -7,6 +7,7 @@ import { Network } from "../network/networks";
 import { useConnectButton } from "../wallet/ConnectButtonProvider";
 
 export interface ConnectionBoundaryContextValue {
+  allowImpersonation: boolean;
   isImpersonated: boolean;
   stopImpersonation: () => void;
   isConnecting: boolean;
@@ -29,10 +30,12 @@ type FunctionChildType = (arg: ConnectionBoundaryContextValue) => ReactNode;
 interface ConnectionBoundaryProps {
   children: ReactNode | FunctionChildType;
   expectedNetwork?: Network;
+  allowImpersonation?: boolean;
 }
 
 const ConnectionBoundary: FC<ConnectionBoundaryProps> = ({
   children,
+  allowImpersonation = false,
   ...props
 }) => {
   const { isImpersonated, stopImpersonation } = useImpersonation();
@@ -44,20 +47,33 @@ const ConnectionBoundary: FC<ConnectionBoundaryProps> = ({
   const { network } = useExpectedNetwork();
   const expectedNetwork = props.expectedNetwork ?? network;
 
+  const isCorrectNetwork = useMemo(() => {
+    if (allowImpersonation && isImpersonated) return true;
+
+    if (props.expectedNetwork) {
+      return props.expectedNetwork.id === activeChain?.id;
+    }
+
+    return network.id === activeChain?.id;
+  }, [props.expectedNetwork, network, activeChain, allowImpersonation]);
+
   const contextValue = useMemo<ConnectionBoundaryContextValue>(
     () => ({
+      allowImpersonation,
       isImpersonated,
       stopImpersonation,
       isConnected,
       isConnecting: isConnecting || isAutoConnecting,
       connectWallet: () => openConnectModal(),
-      isCorrectNetwork: expectedNetwork.id === activeChain?.id,
+      isCorrectNetwork: isCorrectNetwork,
       switchNetwork: switchNetwork
         ? () => void switchNetwork(expectedNetwork.id)
         : undefined,
       expectedNetwork,
     }),
     [
+      isCorrectNetwork,
+      allowImpersonation,
       isImpersonated,
       stopImpersonation,
       isConnected,

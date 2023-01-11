@@ -8,6 +8,16 @@ export enum UnitOfTime {
     Year = 31536000
 }
 
+export const wordTimeUnitMap: Record<string, UnitOfTime> = {
+    "second": UnitOfTime.Second,
+    "minute": UnitOfTime.Minute,
+    "hour": UnitOfTime.Hour,
+    "day": UnitOfTime.Day,
+    "week": UnitOfTime.Week,
+    "month": UnitOfTime.Month,
+    "year": UnitOfTime.Year,
+};
+
 export class BasePage {
 
     static ensureDefined<T>(value: T | undefined | null): T {
@@ -41,8 +51,8 @@ export class BasePage {
         cy.get(selector).scrollIntoView().click();
     }
 
-    static type(selector: string, text: string) {
-        cy.get(selector).filter(":visible").type(text);
+    static type(selector: string, text: string | number) {
+        cy.get(selector).filter(":visible").type(text.toString());
     }
 
     static hasText(

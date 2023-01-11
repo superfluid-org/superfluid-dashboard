@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import { getUnixTime } from "date-fns";
 import { FC, useMemo } from "react";
-import { VestingSchedule } from "../../vesting-subgraph/schema.generated";
+import { VestingSchedule } from "./types";
 
 enum VestingStatusType {
   Cliff = "Cliff",

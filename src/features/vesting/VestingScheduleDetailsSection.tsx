@@ -54,16 +54,15 @@ export const VestingScheduleDetails: FC<{
     flowRate,
     deletedAt,
     endExecutedAt,
+    cliffAndFlowDate
   } = vestingSchedule;
   const cliffDate = new Date(Number(vestingSchedule.cliffDate) * 1000);
   const startDate = new Date(Number(vestingSchedule.startDate) * 1000);
   const endDate = new Date(Number(vestingSchedule.endDate) * 1000);
   const canDelete = !deletedAt && !endExecutedAt;
 
-  // TODO(KK): get this to Subgraph
-  const cliffAndFlowDate = cliffDate ? startDate : cliffDate;
   const totalFlowed = BigNumber.from(flowRate).mul(
-    getTimeInSeconds(endDate) - getTimeInSeconds(cliffAndFlowDate)
+    getTimeInSeconds(endDate) - Number(cliffAndFlowDate)
   );
   const totalAmount = BigNumber.from(cliffAmount).add(totalFlowed);
 
@@ -100,7 +99,7 @@ export const VestingScheduleDetails: FC<{
                   }}
                   BlockiesProps={{ size: 8, scale: 3 }}
                 />
-                <Typography>
+                <Typography data-cy={"preview-receiver"}>
                   <AddressName address={receiverAddress} />
                 </Typography>
               </Stack>
@@ -108,7 +107,7 @@ export const VestingScheduleDetails: FC<{
           </Stack>
           <Stack>
             <Typography color="text.secondary">Start Date</Typography>
-            <Typography color="text.primary">
+            <Typography data-cy={"preview-start-date"} color="text.primary">
               {format("LLLL d, yyyy HH:mm", startDate)}
             </Typography>
           </Stack>
@@ -121,7 +120,7 @@ export const VestingScheduleDetails: FC<{
             </Typography>
             <Stack direction="row" alignItems="center" gap={1}>
               <TokenIcon isSuper tokenSymbol={token.symbol} size={28} />
-              <Typography>
+              <Typography data-cy={"preview-cliff-amount"}>
                 {cliffAmountEther} {token.symbol}
               </Typography>
             </Stack>
@@ -131,7 +130,7 @@ export const VestingScheduleDetails: FC<{
             <Typography color="text.secondary">
               {VestingFormLabels.CliffPeriod}
             </Typography>
-            <Typography color="text.primary">
+            <Typography data-cy={"preview-cliff-period"} color="text.primary">
               {format("LLLL d, yyyy HH:mm", cliffDate)}
             </Typography>
           </Stack>
@@ -144,7 +143,7 @@ export const VestingScheduleDetails: FC<{
             </Typography>
             <Stack direction="row" alignItems="center" gap={1}>
               <TokenIcon isSuper tokenSymbol={token.symbol} size={28} />
-              <Typography>
+              <Typography data-cy={"preview-total-amount"}>
                 <Amount wei={totalAmount} /> {token.symbol}
               </Typography>
             </Stack>
@@ -152,7 +151,7 @@ export const VestingScheduleDetails: FC<{
 
           <Stack>
             <Typography color="text.secondary">End Date</Typography>
-            <Typography color="text.primary">
+            <Typography data-cy="preview-total-period" color="text.primary">
               {format("LLLL d, yyyy HH:mm", endDate)}
             </Typography>
           </Stack>

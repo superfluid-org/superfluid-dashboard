@@ -27,6 +27,7 @@ const VestingHeader: FC<VestingHeaderProps> = ({ onBack, children }) => {
       </Stack>
       <NextLink href="/vesting/create" passHref>
         <Button
+          data-cy="create-schedule-button"
           color="primary"
           variant="contained"
           endIcon={<AddRoundedIcon />}

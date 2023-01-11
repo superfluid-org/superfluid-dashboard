@@ -14,10 +14,10 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/router";
 import { FC, useCallback, useState } from "react";
-import { VestingSchedule } from "../../vesting-subgraph/schema.generated";
 import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
 import { PendingVestingSchedule } from "../pendingUpdates/PendingVestingSchedule";
+import { VestingSchedule } from "./types";
 import VestingRow from "./VestingRow";
 
 enum VestingStatusFilter {
@@ -34,6 +34,7 @@ interface VestingScheduleTableProps {
     VestingSchedule & { pendingCreate: PendingVestingSchedule }
   >;
   incoming?: boolean;
+  dataCy?: string;
 }
 
 const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
@@ -41,6 +42,7 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
   vestingSchedules,
   pendingVestingSchedules = [],
   incoming = false,
+  dataCy,
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -75,6 +77,7 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
 
   return (
     <TableContainer
+      data-cy={dataCy}
       sx={{
         [theme.breakpoints.down("md")]: {
           mx: -2,

@@ -12,5 +12,6 @@ query getVestingSchedule($id: ID!) {
     endExecutedAt
     deletedAt
     cliffAndFlowExecutedAt
+    cliffAndFlowDate
   }
 }
