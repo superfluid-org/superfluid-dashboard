@@ -54,16 +54,15 @@ export const VestingScheduleDetails: FC<{
     flowRate,
     deletedAt,
     endExecutedAt,
+    cliffAndFlowDate
   } = vestingSchedule;
   const cliffDate = new Date(Number(vestingSchedule.cliffDate) * 1000);
   const startDate = new Date(Number(vestingSchedule.startDate) * 1000);
   const endDate = new Date(Number(vestingSchedule.endDate) * 1000);
   const canDelete = !deletedAt && !endExecutedAt;
 
-  // TODO(KK): get this to Subgraph
-  const cliffAndFlowDate = cliffDate ? cliffDate : startDate;
   const totalFlowed = BigNumber.from(flowRate).mul(
-    getTimeInSeconds(endDate) - getTimeInSeconds(cliffAndFlowDate)
+    getTimeInSeconds(endDate) - Number(cliffAndFlowDate)
   );
   const totalAmount = BigNumber.from(cliffAmount).add(totalFlowed);
 

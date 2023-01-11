@@ -72,5 +72,6 @@ export const mapPendingToVestingSchedule = (
     sender: address,
     startDate: startDateTimestamp.toString(),
     superToken: superTokenAddress,
+    cliffAndFlowDate: cliffDateTimestamp ? cliffDateTimestamp.toString() : startDateTimestamp.toString()
   };
 };

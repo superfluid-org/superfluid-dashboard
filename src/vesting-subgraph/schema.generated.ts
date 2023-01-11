@@ -152,6 +152,8 @@ export type Query = {
   _meta?: Maybe<_Meta_>;
   event?: Maybe<Event>;
   events: Array<Event>;
+  task?: Maybe<Task>;
+  tasks: Array<Task>;
   tokenSenderReceiverCursor?: Maybe<TokenSenderReceiverCursor>;
   tokenSenderReceiverCursors: Array<TokenSenderReceiverCursor>;
   vestingCliffAndFlowExecutedEvent?: Maybe<VestingCliffAndFlowExecutedEvent>;
@@ -191,6 +193,24 @@ export type QueryEventsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<Event_Filter>;
+};
+
+
+export type QueryTaskArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryTasksArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Task_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<Task_Filter>;
 };
 
 
@@ -343,6 +363,8 @@ export type Subscription = {
   _meta?: Maybe<_Meta_>;
   event?: Maybe<Event>;
   events: Array<Event>;
+  task?: Maybe<Task>;
+  tasks: Array<Task>;
   tokenSenderReceiverCursor?: Maybe<TokenSenderReceiverCursor>;
   tokenSenderReceiverCursors: Array<TokenSenderReceiverCursor>;
   vestingCliffAndFlowExecutedEvent?: Maybe<VestingCliffAndFlowExecutedEvent>;
@@ -382,6 +404,24 @@ export type SubscriptionEventsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<Event_Filter>;
+};
+
+
+export type SubscriptionTaskArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionTasksArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Task_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<Task_Filter>;
 };
 
 
@@ -528,8 +568,118 @@ export type SubscriptionVestingSchedulesArgs = {
   where?: InputMaybe<VestingSchedule_Filter>;
 };
 
+export type Task = {
+  __typename?: 'Task';
+  cancelledAt?: Maybe<Scalars['BigInt']>;
+  executionAt?: Maybe<Scalars['BigInt']>;
+  expirationAt?: Maybe<Scalars['BigInt']>;
+  failedAt?: Maybe<Scalars['BigInt']>;
+  id: Scalars['String'];
+  receiver: Scalars['Bytes'];
+  sender: Scalars['Bytes'];
+  superToken: Scalars['Bytes'];
+  type: TaskType;
+};
+
+export enum TaskType {
+  ExecuteCliffAndFlow = 'ExecuteCliffAndFlow',
+  ExecuteEndVesting = 'ExecuteEndVesting'
+}
+
+export type Task_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  cancelledAt?: InputMaybe<Scalars['BigInt']>;
+  cancelledAt_gt?: InputMaybe<Scalars['BigInt']>;
+  cancelledAt_gte?: InputMaybe<Scalars['BigInt']>;
+  cancelledAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  cancelledAt_lt?: InputMaybe<Scalars['BigInt']>;
+  cancelledAt_lte?: InputMaybe<Scalars['BigInt']>;
+  cancelledAt_not?: InputMaybe<Scalars['BigInt']>;
+  cancelledAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  executionAt?: InputMaybe<Scalars['BigInt']>;
+  executionAt_gt?: InputMaybe<Scalars['BigInt']>;
+  executionAt_gte?: InputMaybe<Scalars['BigInt']>;
+  executionAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  executionAt_lt?: InputMaybe<Scalars['BigInt']>;
+  executionAt_lte?: InputMaybe<Scalars['BigInt']>;
+  executionAt_not?: InputMaybe<Scalars['BigInt']>;
+  executionAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  expirationAt?: InputMaybe<Scalars['BigInt']>;
+  expirationAt_gt?: InputMaybe<Scalars['BigInt']>;
+  expirationAt_gte?: InputMaybe<Scalars['BigInt']>;
+  expirationAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  expirationAt_lt?: InputMaybe<Scalars['BigInt']>;
+  expirationAt_lte?: InputMaybe<Scalars['BigInt']>;
+  expirationAt_not?: InputMaybe<Scalars['BigInt']>;
+  expirationAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  failedAt?: InputMaybe<Scalars['BigInt']>;
+  failedAt_gt?: InputMaybe<Scalars['BigInt']>;
+  failedAt_gte?: InputMaybe<Scalars['BigInt']>;
+  failedAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  failedAt_lt?: InputMaybe<Scalars['BigInt']>;
+  failedAt_lte?: InputMaybe<Scalars['BigInt']>;
+  failedAt_not?: InputMaybe<Scalars['BigInt']>;
+  failedAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  id?: InputMaybe<Scalars['String']>;
+  id_contains?: InputMaybe<Scalars['String']>;
+  id_contains_nocase?: InputMaybe<Scalars['String']>;
+  id_ends_with?: InputMaybe<Scalars['String']>;
+  id_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  id_gt?: InputMaybe<Scalars['String']>;
+  id_gte?: InputMaybe<Scalars['String']>;
+  id_in?: InputMaybe<Array<Scalars['String']>>;
+  id_lt?: InputMaybe<Scalars['String']>;
+  id_lte?: InputMaybe<Scalars['String']>;
+  id_not?: InputMaybe<Scalars['String']>;
+  id_not_contains?: InputMaybe<Scalars['String']>;
+  id_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  id_not_ends_with?: InputMaybe<Scalars['String']>;
+  id_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  id_not_in?: InputMaybe<Array<Scalars['String']>>;
+  id_not_starts_with?: InputMaybe<Scalars['String']>;
+  id_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  id_starts_with?: InputMaybe<Scalars['String']>;
+  id_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  receiver?: InputMaybe<Scalars['Bytes']>;
+  receiver_contains?: InputMaybe<Scalars['Bytes']>;
+  receiver_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  receiver_not?: InputMaybe<Scalars['Bytes']>;
+  receiver_not_contains?: InputMaybe<Scalars['Bytes']>;
+  receiver_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sender?: InputMaybe<Scalars['Bytes']>;
+  sender_contains?: InputMaybe<Scalars['Bytes']>;
+  sender_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sender_not?: InputMaybe<Scalars['Bytes']>;
+  sender_not_contains?: InputMaybe<Scalars['Bytes']>;
+  sender_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  superToken?: InputMaybe<Scalars['Bytes']>;
+  superToken_contains?: InputMaybe<Scalars['Bytes']>;
+  superToken_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  superToken_not?: InputMaybe<Scalars['Bytes']>;
+  superToken_not_contains?: InputMaybe<Scalars['Bytes']>;
+  superToken_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  type?: InputMaybe<TaskType>;
+  type_in?: InputMaybe<Array<TaskType>>;
+  type_not?: InputMaybe<TaskType>;
+  type_not_in?: InputMaybe<Array<TaskType>>;
+};
+
+export enum Task_OrderBy {
+  CancelledAt = 'cancelledAt',
+  ExecutionAt = 'executionAt',
+  ExpirationAt = 'expirationAt',
+  FailedAt = 'failedAt',
+  Id = 'id',
+  Receiver = 'receiver',
+  Sender = 'sender',
+  SuperToken = 'superToken',
+  Type = 'type'
+}
+
 export type TokenSenderReceiverCursor = {
   __typename?: 'TokenSenderReceiverCursor';
+  currentTask?: Maybe<Task>;
   currentVestingSchedule?: Maybe<VestingSchedule>;
   id: Scalars['String'];
 };
@@ -537,6 +687,27 @@ export type TokenSenderReceiverCursor = {
 export type TokenSenderReceiverCursor_Filter = {
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  currentTask?: InputMaybe<Scalars['String']>;
+  currentTask_?: InputMaybe<Task_Filter>;
+  currentTask_contains?: InputMaybe<Scalars['String']>;
+  currentTask_contains_nocase?: InputMaybe<Scalars['String']>;
+  currentTask_ends_with?: InputMaybe<Scalars['String']>;
+  currentTask_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  currentTask_gt?: InputMaybe<Scalars['String']>;
+  currentTask_gte?: InputMaybe<Scalars['String']>;
+  currentTask_in?: InputMaybe<Array<Scalars['String']>>;
+  currentTask_lt?: InputMaybe<Scalars['String']>;
+  currentTask_lte?: InputMaybe<Scalars['String']>;
+  currentTask_not?: InputMaybe<Scalars['String']>;
+  currentTask_not_contains?: InputMaybe<Scalars['String']>;
+  currentTask_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  currentTask_not_ends_with?: InputMaybe<Scalars['String']>;
+  currentTask_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  currentTask_not_in?: InputMaybe<Array<Scalars['String']>>;
+  currentTask_not_starts_with?: InputMaybe<Scalars['String']>;
+  currentTask_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  currentTask_starts_with?: InputMaybe<Scalars['String']>;
+  currentTask_starts_with_nocase?: InputMaybe<Scalars['String']>;
   currentVestingSchedule?: InputMaybe<Scalars['String']>;
   currentVestingSchedule_?: InputMaybe<VestingSchedule_Filter>;
   currentVestingSchedule_contains?: InputMaybe<Scalars['String']>;
@@ -581,6 +752,7 @@ export type TokenSenderReceiverCursor_Filter = {
 };
 
 export enum TokenSenderReceiverCursor_OrderBy {
+  CurrentTask = 'currentTask',
   CurrentVestingSchedule = 'currentVestingSchedule',
   Id = 'id'
 }
@@ -1069,6 +1241,7 @@ export enum VestingEndFailedEvent_OrderBy {
 export type VestingSchedule = {
   __typename?: 'VestingSchedule';
   cliffAmount: Scalars['BigInt'];
+  cliffAndFlowDate: Scalars['BigInt'];
   cliffAndFlowExecutedAt?: Maybe<Scalars['BigInt']>;
   cliffDate: Scalars['BigInt'];
   deletedAt?: Maybe<Scalars['BigInt']>;
@@ -1076,7 +1249,6 @@ export type VestingSchedule = {
   endExecutedAt?: Maybe<Scalars['BigInt']>;
   flowRate: Scalars['BigInt'];
   id: Scalars['String'];
-  nextExecutionAt?: Maybe<Scalars['BigInt']>;
   receiver: Scalars['Bytes'];
   sender: Scalars['Bytes'];
   startDate: Scalars['BigInt'];
@@ -1569,6 +1741,14 @@ export type VestingSchedule_Filter = {
   cliffAmount_lte?: InputMaybe<Scalars['BigInt']>;
   cliffAmount_not?: InputMaybe<Scalars['BigInt']>;
   cliffAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  cliffAndFlowDate?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowDate_gt?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowDate_gte?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  cliffAndFlowDate_lt?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowDate_lte?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowDate_not?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   cliffAndFlowExecutedAt?: InputMaybe<Scalars['BigInt']>;
   cliffAndFlowExecutedAt_gt?: InputMaybe<Scalars['BigInt']>;
   cliffAndFlowExecutedAt_gte?: InputMaybe<Scalars['BigInt']>;
@@ -1637,14 +1817,6 @@ export type VestingSchedule_Filter = {
   id_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
   id_starts_with?: InputMaybe<Scalars['String']>;
   id_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  nextExecutionAt?: InputMaybe<Scalars['BigInt']>;
-  nextExecutionAt_gt?: InputMaybe<Scalars['BigInt']>;
-  nextExecutionAt_gte?: InputMaybe<Scalars['BigInt']>;
-  nextExecutionAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  nextExecutionAt_lt?: InputMaybe<Scalars['BigInt']>;
-  nextExecutionAt_lte?: InputMaybe<Scalars['BigInt']>;
-  nextExecutionAt_not?: InputMaybe<Scalars['BigInt']>;
-  nextExecutionAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   receiver?: InputMaybe<Scalars['Bytes']>;
   receiver_contains?: InputMaybe<Scalars['Bytes']>;
   receiver_in?: InputMaybe<Array<Scalars['Bytes']>>;
@@ -1675,6 +1847,7 @@ export type VestingSchedule_Filter = {
 
 export enum VestingSchedule_OrderBy {
   CliffAmount = 'cliffAmount',
+  CliffAndFlowDate = 'cliffAndFlowDate',
   CliffAndFlowExecutedAt = 'cliffAndFlowExecutedAt',
   CliffDate = 'cliffDate',
   DeletedAt = 'deletedAt',
@@ -1682,7 +1855,6 @@ export enum VestingSchedule_OrderBy {
   EndExecutedAt = 'endExecutedAt',
   FlowRate = 'flowRate',
   Id = 'id',
-  NextExecutionAt = 'nextExecutionAt',
   Receiver = 'receiver',
   Sender = 'sender',
   StartDate = 'startDate',
