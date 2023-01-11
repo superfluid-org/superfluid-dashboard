@@ -104,6 +104,9 @@ const VestingRow: FC<VestingRowProps> = ({
       <TableCell data-cy={"total-vesting-amount"}>
         <Amount wei={totalAmount} /> {tokenQuery.data?.symbol}
       </TableCell>
+      <TableCell>
+        <Amount wei={totalAmount} /> {tokenQuery.data?.symbol}
+      </TableCell>
       <TableCell sx={{ pr: 2 }}>
         <ListItemText
           data-cy={"start-end-dates"}

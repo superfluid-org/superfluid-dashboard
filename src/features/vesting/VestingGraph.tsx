@@ -92,17 +92,12 @@ const VestingGraph: FC<VestingGraphProps> = ({
   const theme = useTheme();
 
   const datasets = useMemo(() => {
-    const dateNowUnix = getUnixTime(new Date());
+    const dateNow = Date.now();
 
     const mappedDataPoints = mapVestingGraphDataPoints(vestingSchedule);
 
-    const vestedDataPoints = mappedDataPoints.filter(
-      ({ x }) => x <= dateNowUnix
-    );
-
-    const notVestedDataPoints = mappedDataPoints.filter(
-      ({ x }) => x > dateNowUnix
-    );
+    const vestedDataPoints = mappedDataPoints.filter(({ x }) => x <= dateNow);
+    const notVestedDataPoints = mappedDataPoints.filter(({ x }) => x > dateNow);
 
     return [
       vestedDataPoints, // Used for the green (vested) line.
@@ -110,16 +105,16 @@ const VestingGraph: FC<VestingGraphProps> = ({
     ];
   }, [vestingSchedule]);
 
-  const datasetConfigCb = useCallback(
-    (ctx: CanvasRenderingContext2D) => {
-      return buildDefaultDatasetConf(ctx, theme.palette.primary.main, height);
-    },
-    [height, theme]
-  );
-
   const datasetsConfigCallbacks = useMemo(
-    () => [datasetConfigCb, datasetConfigCb],
-    [datasetConfigCb]
+    () => [
+      (ctx: CanvasRenderingContext2D) =>
+        buildDefaultDatasetConf(ctx, theme.palette.primary.main, height),
+      (ctx: CanvasRenderingContext2D) => ({
+        ...buildDefaultDatasetConf(ctx, theme.palette.secondary.main, height),
+        borderDash: [6, 6],
+      }),
+    ],
+    [height, theme]
   );
 
   return (
