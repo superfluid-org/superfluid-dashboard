@@ -151,3 +151,6 @@ Then(/^User closes the access code dialog$/, function () {
 Given(/^User opens the dashboard network selection dropdown$/, function () {
     Common.openDashboardNetworkSelectionDropdown()
 });
+Given(/^HDWallet transactions are rejected$/, function () {
+    Common.rejectTransactions()
+});

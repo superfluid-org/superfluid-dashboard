@@ -6,7 +6,7 @@ export type GetVestingSchedulesQueryVariables = Types.Exact<{
 }>;
 
 
-export type GetVestingSchedulesQuery = { __typename?: 'Query', vestingSchedules: Array<{ __typename?: 'VestingSchedule', id: string, cliffDate: string, cliffAmount: string, endDate: string, flowRate: string, receiver: string, sender: string, startDate: string, superToken: string }> };
+export type GetVestingSchedulesQuery = { __typename?: 'Query', vestingSchedules: Array<{ __typename?: 'VestingSchedule', id: string, cliffDate: string, cliffAndFlowDate: string, cliffAmount: string, endDate: string, flowRate: string, receiver: string, sender: string, startDate: string, superToken: string }> };
 
 
 export const GetVestingSchedulesDocument = `
@@ -14,6 +14,7 @@ export const GetVestingSchedulesDocument = `
   vestingSchedules(where: $where) {
     id
     cliffDate
+    cliffAndFlowDate
     cliffAmount
     endDate
     flowRate

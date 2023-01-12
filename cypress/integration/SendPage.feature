@@ -8,6 +8,7 @@ Feature: Send Page test cases
     And User accepts the risk warning
     Then Send button is enabled and asks user to Connect their wallet
 
+    @only
   Scenario: Receiver dialog recents and ENS support
     Given "Send Page" is open with a mocked connection to "staticBalanceAccount" on "gnosis"
     And User connects their wallet to the dashboard

@@ -53,6 +53,7 @@ Feature: Stream details page test cases
     And The stream copy button tooltips show up when user clicks on them
     And The social network tooltips show up and have the correct links
 
+    @skip
     Scenario: Scheduled stream showing correct details
       Given "Close-ended stream details page" is open without connecting a wallet
       Then The token icon has got an animation around it

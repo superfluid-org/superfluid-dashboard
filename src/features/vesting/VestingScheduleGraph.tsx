@@ -105,6 +105,7 @@ export const VestingScheduleGraph: FC<VestingScheduleGraphProps> = ({
         />
       </svg>
       <Typography
+        data-cy={"graph-cliff-date"}
         variant="body2"
         color="text.disabled"
         sx={{
@@ -118,10 +119,10 @@ export const VestingScheduleGraph: FC<VestingScheduleGraphProps> = ({
         Cliff: {format(cliffDate, "LLL d, yyyy HH:mm")}
       </Typography>
       <Stack direction="row" justifyContent="space-between" sx={{ mx: 0.75 }}>
-        <Typography variant="body2" color="text.disabled">
+        <Typography data-cy={"graph-start-date"} variant="body2" color="text.disabled">
           Start: {format(startDate, "LLL d, yyyy HH:mm")}
         </Typography>
-        <Typography variant="body2" color="text.disabled">
+        <Typography data-cy={"graph-end-date"} variant="body2" color="text.disabled">
           End: {format(endDate, "LLL d, yyyy HH:mm")}
         </Typography>
       </Stack>

@@ -7,3 +7,8 @@ Before({ tags: "@rejected" }, function () {
     cy.log("Cypress will reject HDWalletProvider Transactions!")
     Cypress.env("rejected" , true)
 });
+
+//Enable hidden vesting feature
+Before({ tags: "@vesting" }, function () {
+    Cypress.env("vesting" , "?enable_experimental_vesting_feature")
+});

@@ -81,7 +81,7 @@ export const CreateVestingPreview: FC<{
                   }}
                   BlockiesProps={{ size: 8, scale: 3 }}
                 />
-                <Typography>
+                <Typography data-cy={"preview-receiver"}>
                   <AddressName address={receiverAddress} />
                 </Typography>
               </Stack>
@@ -91,7 +91,7 @@ export const CreateVestingPreview: FC<{
             <Typography color="text.secondary">
               {VestingFormLabels.VestingStartDate}
             </Typography>
-            <Typography color="text.primary">
+            <Typography data-cy="preview-start-date" color="text.primary">
               {format("LLLL d, yyyy", startDate)}
             </Typography>
           </Stack>
@@ -104,7 +104,7 @@ export const CreateVestingPreview: FC<{
             </Typography>
             <Stack direction="row" alignItems="center" gap={1}>
               <TokenIcon isSuper tokenSymbol={token.symbol} size={28} />
-              <Typography>
+              <Typography data-cy={"preview-cliff-amount"}>
                 {cliffAmountEther} {token.symbol}
               </Typography>
             </Stack>
@@ -114,7 +114,7 @@ export const CreateVestingPreview: FC<{
             <Typography color="text.secondary">
               {VestingFormLabels.CliffPeriod}
             </Typography>
-            <Typography color="text.primary">
+            <Typography data-cy="preview-cliff-period" color="text.primary">
               {cliffPeriod.numerator} {timeUnitWordMap[cliffPeriod.denominator]}{" "}
               ({format("LLLL d, yyyy", cliffDate)})
             </Typography>
@@ -128,7 +128,7 @@ export const CreateVestingPreview: FC<{
             </Typography>
             <Stack direction="row" alignItems="center" gap={1}>
               <TokenIcon isSuper tokenSymbol={token.symbol} size={28} />
-              <Typography>
+              <Typography data-cy={"preview-total-amount"}>
                 {totalAmountEther} {token.symbol}
               </Typography>
             </Stack>
@@ -138,7 +138,7 @@ export const CreateVestingPreview: FC<{
             <Typography color="text.secondary">
               {VestingFormLabels.TotalVestingPeriod}
             </Typography>
-            <Typography color="text.primary">
+            <Typography data-cy="preview-total-period" color="text.primary">
               {vestingPeriod.numerator}{" "}
               {timeUnitWordMap[vestingPeriod.denominator]} (
               {format("LLLL d, yyyy", endDate)})

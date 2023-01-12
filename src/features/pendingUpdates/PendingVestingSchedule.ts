@@ -50,7 +50,7 @@ export const useAddressPendingVestingSchedules = (
 export const mapPendingToVestingSchedule = (
   address: Address,
   pendingVestingSchedule: PendingVestingSchedule
-): VestingSchedule & { pendingCreate: PendingVestingSchedule } => {
+): Omit<VestingSchedule, "tasks"> & { pendingCreate: PendingVestingSchedule } => {
   const {
     cliffDateTimestamp,
     cliffTransferAmountWei,
@@ -72,5 +72,6 @@ export const mapPendingToVestingSchedule = (
     sender: address,
     startDate: startDateTimestamp.toString(),
     superToken: superTokenAddress,
+    cliffAndFlowDate: cliffDateTimestamp ? cliffDateTimestamp.toString() : startDateTimestamp.toString()
   };
 };

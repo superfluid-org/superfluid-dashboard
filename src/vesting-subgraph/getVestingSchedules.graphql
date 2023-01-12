@@ -2,6 +2,7 @@ query getVestingSchedules($where: VestingSchedule_filter) {
   vestingSchedules(where: $where) {
     id
     cliffDate
+    cliffAndFlowDate
     cliffAmount
     endDate
     flowRate

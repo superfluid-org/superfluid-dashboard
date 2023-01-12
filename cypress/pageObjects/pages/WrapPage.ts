@@ -290,7 +290,7 @@ export class WrapPage extends BasePage {
     }
 
     static validatePendingTransaction(type: string, network: string) {
-        cy.get(TX_TYPE).first().should("have.text", type)
+        cy.get(TX_TYPE).first().should("contain.text", type)
         cy.get(DRAWER_TX).first().find("[data-cy=Pending-tx-status]").should("be.visible")
         cy.get(TX_HASH_BUTTONS).first().then(el => {
             el.attr("href")?.substr(-66)

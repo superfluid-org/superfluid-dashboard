@@ -73,6 +73,7 @@ export const DeleteVestingTransactionButton: FC<{
         isButtonVisible && (
           <TransactionButton
             {...TransactionButtonProps}
+            dataCy={"delete-schedule-button"}
             ButtonProps={{
               variant: "outlined",
               color: "error",
@@ -98,7 +99,7 @@ export const DeleteVestingTransactionButton: FC<{
               setDialogSuccessActions(
                 <TransactionDialogActions>
                   <Link href="/vesting" passHref>
-                    <TransactionDialogButton color="primary">
+                    <TransactionDialogButton data-cy={"ok-button"} color="primary">
                       OK
                     </TransactionDialogButton>
                   </Link>
