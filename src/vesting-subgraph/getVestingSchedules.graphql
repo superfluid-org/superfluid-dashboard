@@ -11,5 +11,6 @@ query getVestingSchedules($where: VestingSchedule_filter) {
     sender
     startDate
     superToken
+    createdAt
   }
 }

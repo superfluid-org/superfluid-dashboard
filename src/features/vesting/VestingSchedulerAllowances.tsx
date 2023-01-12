@@ -2,8 +2,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Box,
-  Card,
   Paper,
   Stack,
   Table,
@@ -21,16 +19,11 @@ import { FC } from "react";
 import { useGetVestingSchedulesQuery } from "../../vesting-subgraph/getVestingSchedules.generated";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { Network } from "../network/networks";
-import {
-  ACL_CREATE_PERMISSION,
-  ACL_DELETE_PERMISSION,
-} from "../redux/endpoints/flowSchedulerEndpoints";
 import { rpcApi, subgraphApi } from "../redux/store";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import DangerousRoundedIcon from "@mui/icons-material/DangerousRounded";
-import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import TokenIcon from "../token/TokenIcon";
 import Amount from "../token/Amount";
 import { flowOperatorPermissionsToString } from "../../utils/flowOperatorPermissionsToString";
@@ -158,6 +151,7 @@ export const VestingSchedulerAllowances: FC = () => {
                       requiredFlowOperatorAllowance,
                     }) => (
                       <VestingSchedulerAllowanceRow
+                        key={tokenAddress}
                         network={network}
                         tokenAddress={tokenAddress}
                         senderAddress={senderAddress}

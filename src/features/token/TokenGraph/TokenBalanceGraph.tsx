@@ -20,19 +20,10 @@ import {
   DEFAULT_LINE_CHART_OPTIONS,
 } from "../../../utils/chartUtils";
 import { dateNowSeconds, getDatesBetween } from "../../../utils/dateUtils";
+import { TimeUnitFilterType } from "../../graph/TimeUnitFilter";
 import { Network } from "../../network/networks";
 import { TokenBalance } from "../../redux/endpoints/adHocSubgraphEndpoints";
 import { rpcApi, subgraphApi } from "../../redux/store";
-
-export enum GraphType {
-  Day,
-  Week,
-  Month,
-  Quarter,
-  Year,
-  YTD,
-  All,
-}
 
 interface DataPoint {
   x: number;
@@ -43,7 +34,7 @@ interface DataPoint {
 type MappedData = Array<DataPoint>;
 
 interface TokenBalanceGraphProps {
-  graphType: GraphType;
+  timeUnitFilter: TimeUnitFilterType;
   network: Network;
   account: Address;
   token: Address;
@@ -52,7 +43,7 @@ interface TokenBalanceGraphProps {
 }
 
 const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
-  graphType,
+  timeUnitFilter,
   network,
   account,
   token,
@@ -134,28 +125,28 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
   );
 
   const graphStartDate = useMemo(() => {
-    switch (graphType) {
-      case GraphType.Day:
+    switch (timeUnitFilter) {
+      case TimeUnitFilterType.Day:
         return sub(currentDate, {
           days: 1,
         });
-      case GraphType.Week:
+      case TimeUnitFilterType.Week:
         return sub(currentDate, {
           days: 7,
         });
-      case GraphType.Month:
+      case TimeUnitFilterType.Month:
         return sub(currentDate, {
           months: 1,
         });
-      case GraphType.Quarter:
+      case TimeUnitFilterType.Quarter:
         return sub(currentDate, {
           months: 3,
         });
-      case GraphType.Year:
+      case TimeUnitFilterType.Year:
         return sub(currentDate, {
           years: 1,
         });
-      case GraphType.YTD:
+      case TimeUnitFilterType.YTD:
         return startOfYear(currentDate);
       default: {
         const smallestDate =
@@ -165,15 +156,14 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
         return add(new Date(smallestDate * 1000), { days: -1 });
       }
     }
-  }, [tokenBalances, graphType, currentDate]);
+  }, [tokenBalances, timeUnitFilter, currentDate]);
 
   const graphData = useMemo(
     () => {
       if (tokenBalances.length === 0) return [];
 
       const smallestDate =
-        minBy("timestamp", tokenBalances)?.timestamp ||
-        dateNowSeconds();
+        minBy("timestamp", tokenBalances)?.timestamp || dateNowSeconds();
 
       return mapDatesWithData(
         tokenBalances,
@@ -191,7 +181,11 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
     () => {
       if (!realTimeBalanceQuery.data) return [];
 
-      const { balance, balanceTimestamp: balanceTimestamp, flowRate } = realTimeBalanceQuery.data;
+      const {
+        balance,
+        balanceTimestamp: balanceTimestamp,
+        flowRate,
+      } = realTimeBalanceQuery.data;
       const balanceBigNumber = BigNumber.from(balance);
 
       return getDatesBetween(
@@ -302,8 +296,8 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
 
   return (
     <Box
-        data-cy={"token-graph"}
-        sx={{
+      data-cy={"token-graph"}
+      sx={{
         height,
         maxWidth: "100%",
         [theme.breakpoints.up("md")]: {

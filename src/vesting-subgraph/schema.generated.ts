@@ -571,6 +571,7 @@ export type SubscriptionVestingSchedulesArgs = {
 export type Task = {
   __typename?: 'Task';
   cancelledAt?: Maybe<Scalars['BigInt']>;
+  executed: Scalars['Boolean'];
   executionAt?: Maybe<Scalars['BigInt']>;
   expirationAt?: Maybe<Scalars['BigInt']>;
   failedAt?: Maybe<Scalars['BigInt']>;
@@ -595,6 +596,10 @@ export type Task_Filter = {
   cancelledAt_lte?: InputMaybe<Scalars['BigInt']>;
   cancelledAt_not?: InputMaybe<Scalars['BigInt']>;
   cancelledAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  executed?: InputMaybe<Scalars['Boolean']>;
+  executed_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  executed_not?: InputMaybe<Scalars['Boolean']>;
+  executed_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
   executionAt?: InputMaybe<Scalars['BigInt']>;
   executionAt_gt?: InputMaybe<Scalars['BigInt']>;
   executionAt_gte?: InputMaybe<Scalars['BigInt']>;
@@ -656,6 +661,7 @@ export type Task_Filter = {
 
 export enum Task_OrderBy {
   CancelledAt = 'cancelledAt',
+  Executed = 'executed',
   ExecutionAt = 'executionAt',
   ExpirationAt = 'expirationAt',
   FailedAt = 'failedAt',
@@ -1254,9 +1260,11 @@ export type VestingSchedule = {
   cliffAndFlowDate: Scalars['BigInt'];
   cliffAndFlowExecutedAt?: Maybe<Scalars['BigInt']>;
   cliffDate: Scalars['BigInt'];
+  createdAt: Scalars['BigInt'];
   deletedAt?: Maybe<Scalars['BigInt']>;
   endDate: Scalars['BigInt'];
   endExecutedAt?: Maybe<Scalars['BigInt']>;
+  events: Array<Event>;
   flowRate: Scalars['BigInt'];
   id: Scalars['String'];
   receiver: Scalars['Bytes'];
@@ -1264,6 +1272,15 @@ export type VestingSchedule = {
   startDate: Scalars['BigInt'];
   superToken: Scalars['Bytes'];
   tasks: Array<Task>;
+};
+
+
+export type VestingScheduleEventsArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Event_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<Event_Filter>;
 };
 
 
@@ -1785,6 +1802,14 @@ export type VestingSchedule_Filter = {
   cliffDate_lte?: InputMaybe<Scalars['BigInt']>;
   cliffDate_not?: InputMaybe<Scalars['BigInt']>;
   cliffDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  createdAt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_gt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_gte?: InputMaybe<Scalars['BigInt']>;
+  createdAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  createdAt_lt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_lte?: InputMaybe<Scalars['BigInt']>;
+  createdAt_not?: InputMaybe<Scalars['BigInt']>;
+  createdAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   deletedAt?: InputMaybe<Scalars['BigInt']>;
   deletedAt_gt?: InputMaybe<Scalars['BigInt']>;
   deletedAt_gte?: InputMaybe<Scalars['BigInt']>;
@@ -1809,6 +1834,13 @@ export type VestingSchedule_Filter = {
   endExecutedAt_lte?: InputMaybe<Scalars['BigInt']>;
   endExecutedAt_not?: InputMaybe<Scalars['BigInt']>;
   endExecutedAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  events?: InputMaybe<Array<Scalars['String']>>;
+  events_?: InputMaybe<Event_Filter>;
+  events_contains?: InputMaybe<Array<Scalars['String']>>;
+  events_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
+  events_not?: InputMaybe<Array<Scalars['String']>>;
+  events_not_contains?: InputMaybe<Array<Scalars['String']>>;
+  events_not_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
   flowRate?: InputMaybe<Scalars['BigInt']>;
   flowRate_gt?: InputMaybe<Scalars['BigInt']>;
   flowRate_gte?: InputMaybe<Scalars['BigInt']>;
@@ -1871,9 +1903,11 @@ export enum VestingSchedule_OrderBy {
   CliffAndFlowDate = 'cliffAndFlowDate',
   CliffAndFlowExecutedAt = 'cliffAndFlowExecutedAt',
   CliffDate = 'cliffDate',
+  CreatedAt = 'createdAt',
   DeletedAt = 'deletedAt',
   EndDate = 'endDate',
   EndExecutedAt = 'endExecutedAt',
+  Events = 'events',
   FlowRate = 'flowRate',
   Id = 'id',
   Receiver = 'receiver',

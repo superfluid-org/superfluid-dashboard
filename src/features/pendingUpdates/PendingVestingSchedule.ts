@@ -4,7 +4,7 @@ import { pendingUpdateSelectors } from "./pendingUpdate.slice";
 import { useAppSelector } from "../redux/store";
 import { CreateVestingSchedule } from "../redux/endpoints/vestingSchedulerEndpoints";
 import { Address } from "@superfluid-finance/sdk-core";
-import { VestingSchedule } from "../../vesting-subgraph/schema.generated";
+import { VestingSchedule } from "../vesting/types";
 
 export interface PendingVestingSchedule
   extends PendingUpdate,
@@ -50,7 +50,7 @@ export const useAddressPendingVestingSchedules = (
 export const mapPendingToVestingSchedule = (
   address: Address,
   pendingVestingSchedule: PendingVestingSchedule
-): Omit<VestingSchedule, "tasks"> & { pendingCreate: PendingVestingSchedule } => {
+): VestingSchedule & { pendingCreate: PendingVestingSchedule } => {
   const {
     cliffDateTimestamp,
     cliffTransferAmountWei,
@@ -72,6 +72,7 @@ export const mapPendingToVestingSchedule = (
     sender: address,
     startDate: startDateTimestamp.toString(),
     superToken: superTokenAddress,
-    cliffAndFlowDate: cliffDateTimestamp ? cliffDateTimestamp.toString() : startDateTimestamp.toString()
+    cliffAndFlowDate: cliffDateTimestamp ? cliffDateTimestamp.toString() : startDateTimestamp.toString(),
+    createdAt: pendingVestingSchedule.timestamp.toString()
   };
 };

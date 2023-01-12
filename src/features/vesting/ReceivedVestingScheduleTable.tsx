@@ -34,6 +34,7 @@ export const ReceivedVestingScheduleTable: FC = () => {
         <VestingScheduleLoadingTable />
       ) : hasContent ? (
         <VestingScheduleTable
+          incoming
           dataCy={"received-table"}
           network={network}
           vestingSchedules={vestingSchedules}

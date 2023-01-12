@@ -1,5 +1,5 @@
 import AddIcon from "@mui/icons-material/Add";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import RemoveIcon from "@mui/icons-material/Remove";
 import {
   Chip,
@@ -20,11 +20,7 @@ import { useHasFlag } from "../flags/flagsHooks";
 import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
-import {
-  isSuper,
-  isWrappable,
-  SuperTokenMinimal,
-} from "../redux/endpoints/tokenTypes";
+import { isWrappable } from "../redux/endpoints/tokenTypes";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import AddToWalletButton from "../wallet/AddToWalletButton";
 import TokenIcon from "./TokenIcon";
@@ -97,7 +93,7 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
     <Stack gap={3}>
       <Stack direction="row" alignItems="center" gap={2}>
         <IconButton color="inherit" onClick={onBack}>
-          <ArrowBackIcon />
+          <ArrowBackRoundedIcon />
         </IconButton>
 
         {!isBelowMd && (
