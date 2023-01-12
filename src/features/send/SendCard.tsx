@@ -488,7 +488,7 @@ export default memo(function SendCard() {
   }, [network, flowRateEther, tokenBufferQuery.data]);
 
   const BufferAlert = (
-    <Alert severity="error">
+    <Alert data-cy="buffer-warning"severity="error">
       If you do not cancel this stream before your balance reaches zero,{" "}
       <b>
         you will lose your{" "}
