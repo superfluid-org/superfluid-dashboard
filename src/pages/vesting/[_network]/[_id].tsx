@@ -1,19 +1,12 @@
 import {
-  Box,
   Card,
   Container,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Paper,
   Stack,
-  Step,
-  Stepper,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { format, fromUnixTime, getUnixTime } from "date-fns";
+import { fromUnixTime, getUnixTime } from "date-fns";
 import { BigNumber, BigNumberish } from "ethers";
 import { isString } from "lodash";
 import { useRouter } from "next/router";
@@ -34,7 +27,6 @@ import VestingHeader from "../../../features/vesting/VestingHeader";
 import { VestingLayout } from "../../../features/vesting/VestingLayout";
 import VestingScheduleProgress from "../../../features/vesting/VestingScheduleProgress";
 import useNavigateBack from "../../../hooks/useNavigateBack";
-import { getTimeInSeconds } from "../../../utils/dateUtils";
 import { useGetVestingScheduleQuery } from "../../../vesting-subgraph/getVestingSchedule.generated";
 import Page404 from "../../404";
 import { NextPageWithLayout } from "../../_app";

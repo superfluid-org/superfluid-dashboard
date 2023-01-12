@@ -1,13 +1,13 @@
-import { Box, useTheme } from "@mui/material";
+import { useTheme } from "@mui/material";
 import { fromUnixTime, getUnixTime } from "date-fns";
 import { BigNumber } from "ethers";
-import { formatEther, parseEther } from "ethers/lib/utils";
-import { FC, useCallback, useMemo } from "react";
+import { formatEther } from "ethers/lib/utils";
+import { FC, useMemo } from "react";
 import LineChart, { DataPoint } from "../../components/Chart/LineChart";
 import { buildDefaultDatasetConf } from "../../utils/chartUtils";
 import { getDatesBetween } from "../../utils/dateUtils";
-import { VestingSchedule } from "../../vesting-subgraph/schema.generated";
 import { UnitOfTime } from "../send/FlowRateInput";
+import { VestingSchedule } from "./types";
 
 function getFrequency(startDate: Date, endDate: Date): UnitOfTime {
   const diffSeconds = getUnixTime(endDate) - getUnixTime(startDate);

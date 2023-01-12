@@ -1,3 +1,3 @@
 import { VestingSchedule as SubgraphVestingSchedule } from "../../vesting-subgraph/schema.generated";
 
-export type VestingSchedule = Omit<SubgraphVestingSchedule, "tasks">
+export type VestingSchedule = Omit<SubgraphVestingSchedule, "tasks" | "events">
