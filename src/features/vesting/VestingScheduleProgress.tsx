@@ -1,7 +1,7 @@
 import { Stack, Box, Typography, useTheme } from "@mui/material";
 import { format, fromUnixTime } from "date-fns";
 import { FC, useMemo } from "react";
-import { VestingSchedule } from "../../vesting-subgraph/schema.generated";
+import { VestingSchedule } from "./types";
 
 interface VestingCheckpointProps {
   title: string;

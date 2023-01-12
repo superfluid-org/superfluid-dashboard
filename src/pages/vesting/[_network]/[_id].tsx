@@ -1,19 +1,12 @@
 import {
-  Box,
   Card,
   Container,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Paper,
   Stack,
-  Step,
-  Stepper,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { format, fromUnixTime, getUnixTime } from "date-fns";
+import { fromUnixTime, getUnixTime } from "date-fns";
 import { BigNumber, BigNumberish } from "ethers";
 import { isString } from "lodash";
 import { useRouter } from "next/router";
@@ -26,6 +19,7 @@ import Amount from "../../../features/token/Amount";
 import FlowingBalance from "../../../features/token/FlowingBalance";
 import TokenIcon from "../../../features/token/TokenIcon";
 import FiatAmount from "../../../features/tokenPrice/FiatAmount";
+import FlowingFiatBalance from "../../../features/tokenPrice/FlowingFiatBalance";
 import useTokenPrice from "../../../features/tokenPrice/useTokenPrice";
 import { BigLoader } from "../../../features/vesting/BigLoader";
 import { useVestingToken } from "../../../features/vesting/useVestingToken";
@@ -34,7 +28,6 @@ import VestingHeader from "../../../features/vesting/VestingHeader";
 import { VestingLayout } from "../../../features/vesting/VestingLayout";
 import VestingScheduleProgress from "../../../features/vesting/VestingScheduleProgress";
 import useNavigateBack from "../../../hooks/useNavigateBack";
-import { getTimeInSeconds } from "../../../utils/dateUtils";
 import { useGetVestingScheduleQuery } from "../../../vesting-subgraph/getVestingSchedule.generated";
 import Page404 from "../../404";
 import { NextPageWithLayout } from "../../_app";
@@ -274,20 +267,22 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
                 </Typography>
               </Stack>
 
-              {/* {tokenPrice && (
+              {tokenPrice && (
                 <Typography
                   data-cy={"token-fiat-balance"}
                   variant="h5mono"
                   color="text.secondary"
                 >
                   <FlowingFiatBalance
-                    balance={balance}
+                    balance={cliffAmount}
                     flowRate={flowRate}
-                    balanceTimestamp={balanceTimestamp}
+                    balanceTimestamp={Number(
+                      vestingSchedule.cliffDate || vestingSchedule.startDate
+                    )}
                     price={tokenPrice}
                   />
                 </Typography>
-              )} */}
+              )}
             </Stack>
 
             {!isBelowMd && (

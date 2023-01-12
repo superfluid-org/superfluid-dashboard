@@ -6,8 +6,8 @@ import { FC, useCallback, useMemo } from "react";
 import LineChart, { DataPoint } from "../../components/Chart/LineChart";
 import { buildDefaultDatasetConf } from "../../utils/chartUtils";
 import { getDatesBetween } from "../../utils/dateUtils";
-import { VestingSchedule } from "../../vesting-subgraph/schema.generated";
 import { UnitOfTime } from "../send/FlowRateInput";
+import { VestingSchedule } from "./types";
 
 function getFrequency(startDate: Date, endDate: Date): UnitOfTime {
   const diffSeconds = getUnixTime(endDate) - getUnixTime(startDate);
@@ -33,7 +33,7 @@ function mapVestingGraphDataPoints(vestingSchedule: VestingSchedule) {
     endDate: endDateUnix,
     cliffDate: cliffDateUnix,
     flowRate,
-    cliffAmount,
+    cliffAmount = "0",
   } = vestingSchedule;
 
   const startDate = fromUnixTime(Number(startDateUnix));
@@ -45,6 +45,9 @@ function mapVestingGraphDataPoints(vestingSchedule: VestingSchedule) {
     getFrequency(startDate, endDate)
   );
 
+  // If there is no cliff then we are not going to add a separate data point for that.
+  let cliffAdded = cliffAmount === "0";
+
   return dates.reduce((mappedData: DataPoint[], date: Date) => {
     const dateUnix = getUnixTime(date);
 
@@ -55,18 +58,30 @@ function mapVestingGraphDataPoints(vestingSchedule: VestingSchedule) {
         BigNumber.from(flowRate).toNumber()
       );
 
-      const vestedCliffAmount = secondsStreamed > 0 ? cliffAmount : "0";
+      const etherAmount = formatEther(amountStreamed.add(cliffAmount));
 
-      const etherAmount = formatEther(amountStreamed.add(vestedCliffAmount));
+      const newDataPoint = {
+        x: date.getTime(),
+        y: Number(etherAmount),
+        ether: etherAmount,
+      };
 
-      return [
-        ...mappedData,
-        {
-          x: date.getTime(),
-          y: Number(etherAmount),
-          ether: etherAmount,
-        },
-      ];
+      if (!cliffAdded) {
+        cliffAdded = true;
+        const cliffAmountEther = formatEther(cliffAmount);
+
+        return [
+          ...mappedData,
+          {
+            x: fromUnixTime(Number(cliffDateUnix)).getTime(),
+            y: Number(cliffAmountEther),
+            ether: cliffAmountEther,
+          },
+          newDataPoint,
+        ];
+      }
+
+      return [...mappedData, newDataPoint];
     }
 
     return [
@@ -99,9 +114,11 @@ const VestingGraph: FC<VestingGraphProps> = ({
     const vestedDataPoints = mappedDataPoints.filter(({ x }) => x <= dateNow);
     const notVestedDataPoints = mappedDataPoints.filter(({ x }) => x > dateNow);
 
+    const lastVested = vestedDataPoints[vestedDataPoints.length - 1];
+
     return [
       vestedDataPoints, // Used for the green (vested) line.
-      notVestedDataPoints, // Used for the gray (not vested) line.
+      [...(lastVested ? [lastVested] : []), ...notVestedDataPoints], // Used for the gray (not vested) line.
     ];
   }, [vestingSchedule]);
 
