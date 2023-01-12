@@ -1,4 +1,19 @@
-import { Card } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Card,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { BigNumber } from "ethers";
 import { groupBy, uniq } from "lodash";
@@ -10,8 +25,17 @@ import {
   ACL_CREATE_PERMISSION,
   ACL_DELETE_PERMISSION,
 } from "../redux/endpoints/flowSchedulerEndpoints";
-import { rpcApi } from "../redux/store";
+import { rpcApi, subgraphApi } from "../redux/store";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import DangerousRoundedIcon from "@mui/icons-material/DangerousRounded";
+import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
+import TokenIcon from "../token/TokenIcon";
+import Amount from "../token/Amount";
+import { flowOperatorPermissionsToString } from "../../utils/flowOperatorPermissionsToString";
+import Link from "../common/Link";
+import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 
 export const VestingSchedulerAllowances: FC = () => {
   const { network } = useExpectedNetwork();
@@ -87,33 +111,72 @@ export const VestingSchedulerAllowances: FC = () => {
     }
   );
 
+  const contractAddressLink = network.getLinkForAddress(
+    network.flowSchedulerContractAddress!
+  );
+
   return (
-    <Card>
-      <ul></ul>
-      Vesting Contract: {network.vestingSchedulerContractAddress}
-      {senderAddress &&
-        tokenSummaries.map(
-          ({
-            tokenAddress,
-            recommendedTokenAllowance,
-            requiredFlowOperatorPermissions,
-            requiredFlowOperatorAllowance,
-          }) => (
-            <li key={tokenAddress}>
-              <VestingSchedulerAllowanceRow
-                network={network}
-                tokenAddress={tokenAddress}
-                senderAddress={senderAddress}
-                recommendedTokenAllowance={recommendedTokenAllowance}
-                requiredFlowOperatorPermissions={
-                  requiredFlowOperatorPermissions
-                }
-                requiredFlowOperatorAllowance={requiredFlowOperatorAllowance}
-              />
-            </li>
-          )
-        )}
-    </Card>
+    <>
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreRoundedIcon />}
+          aria-controls="allowances-and-permissions-content"
+          id="allowances-and-permissions-header"
+        >
+          <Stack direction="row" spacing={1} alignItems="center">
+            {/* <CheckCircleRoundedIcon sx={{ color: "primary.main" }} /> */}
+            <Typography variant="h6">
+              Smart Contract, Allowances and Permissions{" "}
+              <Typography variant="caption">(Advanced)</Typography>
+            </Typography>
+          </Stack>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+            <Link href={contractAddressLink}>
+              View Contract on Blockchain Explorer
+            </Link>
+            <LaunchRoundedIcon />
+          </Stack>
+          <TableContainer component={Paper} elevation={0}>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Token</TableCell>
+                  <TableCell>Token Allowance</TableCell>
+                  <TableCell>Flow Operator Permissions</TableCell>
+                  <TableCell>Flow Operator Allowance</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {senderAddress &&
+                  tokenSummaries.map(
+                    ({
+                      tokenAddress,
+                      recommendedTokenAllowance,
+                      requiredFlowOperatorPermissions,
+                      requiredFlowOperatorAllowance,
+                    }) => (
+                      <VestingSchedulerAllowanceRow
+                        network={network}
+                        tokenAddress={tokenAddress}
+                        senderAddress={senderAddress}
+                        recommendedTokenAllowance={recommendedTokenAllowance}
+                        requiredFlowOperatorPermissions={
+                          requiredFlowOperatorPermissions
+                        }
+                        requiredFlowOperatorAllowance={
+                          requiredFlowOperatorAllowance
+                        }
+                      />
+                    )
+                  )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </AccordionDetails>
+      </Accordion>
+    </>
   );
 };
 
@@ -139,6 +202,11 @@ export const VestingSchedulerAllowanceRow: FC<{
       senderAddress: senderAddress,
     });
 
+  const tokenQuery = subgraphApi.useTokenQuery({
+    chainId: network.id,
+    id: tokenAddress,
+  });
+
   if (!vestingSchedulerAllowancesQuery.data) return <>Loading...</>;
 
   const { tokenAllowance, flowOperatorPermissions, flowOperatorAllowance } =
@@ -150,34 +218,52 @@ export const VestingSchedulerAllowanceRow: FC<{
   );
 
   const existingPermissions = Number(flowOperatorPermissions);
-  const hasDeletePermission = existingPermissions & ACL_DELETE_PERMISSION;
-  const hasCreatePermission = existingPermissions & ACL_CREATE_PERMISSION;
+  const permissionsString =
+    flowOperatorPermissionsToString(existingPermissions);
 
   return (
-    <pre>
-      tokenAddress: {tokenAddress}
-      <br />
-      <br />
-      recommendedTokenAllowance: {recommendedTokenAllowance.toString()}
-      <br />
-      tokenAllowance: {tokenAllowance.toString()}
-      <br />
-      isEnoughTokenAllowance: {isEnoughTokenAllowance.toString()}
-      <br />
-      <br />
-      requiredFlowOperatorPermissions:{" "}
-      {requiredFlowOperatorPermissions.toString()}
-      <br />
-      isEnoughFlowOperatorPermissions:{" "}
-      {(!!(hasDeletePermission && hasCreatePermission)).toString()}
-      <br />
-      <br />
-      requiredFlowOperatorAllowance: {requiredFlowOperatorAllowance.toString()}
-      <br />
-      flowOperatorAllowance: {flowOperatorAllowance.toString()}
-      <br />
-      isEnoughFlowOperatorAllowance: {isEnoughFlowOperatorAllowance.toString()}
-      <br />
-    </pre>
+    <TableRow>
+      <TableCell>
+        <TokenIcon
+          isSuper
+          tokenSymbol={tokenQuery.data?.symbol}
+          isLoading={tokenQuery.isLoading}
+        />
+      </TableCell>
+      <TableCell>
+        <Stack direction="row" spacing={1} alignItems="center">
+          {isEnoughTokenAllowance ? (
+            <CheckCircleRoundedIcon sx={{ color: "primary.main" }} />
+          ) : (
+            <DangerousRoundedIcon sx={{ color: "warning.main" }} />
+          )}
+          <span>
+            <Amount wei={tokenAllowance} /> {tokenQuery.data?.symbol}
+          </span>
+        </Stack>
+      </TableCell>
+      <TableCell>
+        <Stack direction="row" spacing={1} alignItems="center">
+          {isEnoughTokenAllowance ? (
+            <CheckCircleRoundedIcon sx={{ color: "primary.main" }} />
+          ) : (
+            <DangerousRoundedIcon sx={{ color: "warning.main" }} />
+          )}
+          <span>{permissionsString}</span>
+        </Stack>
+      </TableCell>
+      <TableCell>
+        <Stack direction="row" spacing={1} alignItems="center">
+          {isEnoughFlowOperatorAllowance ? (
+            <CheckCircleRoundedIcon sx={{ color: "primary.main" }} />
+          ) : (
+            <DangerousRoundedIcon sx={{ color: "warning.main" }} />
+          )}
+          <span>
+            <Amount wei={flowOperatorAllowance} /> {tokenQuery.data?.symbol}
+          </span>
+        </Stack>
+      </TableCell>
+    </TableRow>
   );
 };
