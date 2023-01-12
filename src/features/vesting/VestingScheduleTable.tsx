@@ -12,8 +12,10 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { getUnixTime } from "date-fns";
 import { useRouter } from "next/router";
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
+import { EmptyRow } from "../common/EmptyRow";
 import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
 import { PendingVestingSchedule } from "../pendingUpdates/PendingVestingSchedule";
@@ -73,6 +75,39 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
     (type: VestingStatusFilter) =>
       type === statusFilter ? "primary" : "secondary",
     [statusFilter]
+  );
+
+  const filteredVestingSchedules = useMemo(() => {
+    const dateNowUnix = getUnixTime(new Date());
+
+    // TODO: (MÕ) - Move this logic to a separate func getVestingScheduleStatus to reuse it
+    switch (statusFilter) {
+      case VestingStatusFilter.Cliff:
+        return vestingSchedules.filter(
+          (vestingSchedule) =>
+            vestingSchedule.cliffDate &&
+            Number(vestingSchedule.cliffDate) > dateNowUnix
+        );
+      case VestingStatusFilter.Vesting:
+        return vestingSchedules.filter(
+          (vestingSchedule) =>
+            Number(vestingSchedule.cliffDate || vestingSchedule.startDate) <=
+              dateNowUnix && Number(vestingSchedule.endDate) > dateNowUnix
+        );
+      case VestingStatusFilter.Vested:
+        return vestingSchedules.filter(
+          (vestingSchedule) => Number(vestingSchedule.endDate) <= dateNowUnix
+        );
+      default:
+        return vestingSchedules;
+    }
+  }, [statusFilter, vestingSchedules]);
+
+  const hasContent = useMemo(
+    () =>
+      filteredVestingSchedules.length !== 0 ||
+      pendingVestingSchedules.length !== 0,
+    [filteredVestingSchedules, pendingVestingSchedules]
   );
 
   return (
@@ -166,36 +201,43 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {pendingVestingSchedules.map((vestingSchedule) => (
-            <VestingRow
-              key={vestingSchedule.id}
-              network={network}
-              vestingSchedule={vestingSchedule}
-            />
-          ))}
-          {vestingSchedules.map((vestingSchedule) => (
-            <VestingRow
-              key={vestingSchedule.id}
-              network={network}
-              vestingSchedule={vestingSchedule}
-              onClick={openDetails(vestingSchedule.id)}
-            />
-          ))}
+          {hasContent ? (
+            <>
+              {pendingVestingSchedules.map((vestingSchedule) => (
+                <VestingRow
+                  key={vestingSchedule.id}
+                  network={network}
+                  vestingSchedule={vestingSchedule}
+                />
+              ))}
+              {filteredVestingSchedules.map((vestingSchedule) => (
+                <VestingRow
+                  key={vestingSchedule.id}
+                  network={network}
+                  vestingSchedule={vestingSchedule}
+                  onClick={openDetails(vestingSchedule.id)}
+                />
+              ))}
+            </>
+          ) : (
+            <EmptyRow span={6} />
+          )}
         </TableBody>
       </Table>
-      {(vestingSchedules.length > 5 ||
-        (!isBelowMd && vestingSchedules.length <= 5)) && (
+      {(filteredVestingSchedules.length > 5 ||
+        (!isBelowMd && filteredVestingSchedules.length <= 5)) && (
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={vestingSchedules.length}
+          count={filteredVestingSchedules.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           sx={{
             "> *": {
-              visibility: vestingSchedules.length <= 5 ? "hidden" : "visible",
+              visibility:
+                filteredVestingSchedules.length <= 5 ? "hidden" : "visible",
             },
           }}
         />

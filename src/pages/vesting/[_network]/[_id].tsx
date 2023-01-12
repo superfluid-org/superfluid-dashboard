@@ -19,6 +19,7 @@ import Amount from "../../../features/token/Amount";
 import FlowingBalance from "../../../features/token/FlowingBalance";
 import TokenIcon from "../../../features/token/TokenIcon";
 import FiatAmount from "../../../features/tokenPrice/FiatAmount";
+import FlowingFiatBalance from "../../../features/tokenPrice/FlowingFiatBalance";
 import useTokenPrice from "../../../features/tokenPrice/useTokenPrice";
 import { BigLoader } from "../../../features/vesting/BigLoader";
 import { useVestingToken } from "../../../features/vesting/useVestingToken";
@@ -266,20 +267,22 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
                 </Typography>
               </Stack>
 
-              {/* {tokenPrice && (
+              {tokenPrice && (
                 <Typography
                   data-cy={"token-fiat-balance"}
                   variant="h5mono"
                   color="text.secondary"
                 >
                   <FlowingFiatBalance
-                    balance={balance}
+                    balance={cliffAmount}
                     flowRate={flowRate}
-                    balanceTimestamp={balanceTimestamp}
+                    balanceTimestamp={Number(
+                      vestingSchedule.cliffDate || vestingSchedule.startDate
+                    )}
                     price={tokenPrice}
                   />
                 </Typography>
-              )} */}
+              )}
             </Stack>
 
             {!isBelowMd && (
