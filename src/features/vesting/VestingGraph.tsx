@@ -54,9 +54,7 @@ function mapVestingGraphDataPoints(vestingSchedule: VestingSchedule) {
     const secondsStreamed = dateUnix - Number(cliffDateUnix || startDateUnix);
 
     if (secondsStreamed > 0) {
-      const amountStreamed = BigNumber.from(secondsStreamed).mul(
-        BigNumber.from(flowRate).toNumber()
-      );
+      const amountStreamed = BigNumber.from(secondsStreamed).mul(flowRate);
 
       const etherAmount = formatEther(amountStreamed.add(cliffAmount));
 

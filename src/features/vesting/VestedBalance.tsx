@@ -1,6 +1,6 @@
 import { getUnixTime } from "date-fns";
 import { BigNumber } from "ethers";
-import { FC, useMemo } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import FlowingBalance from "../token/FlowingBalance";
 import { VestingSchedule } from "./types";
 
@@ -17,7 +17,32 @@ const VestedBalance: FC<VestedBalanceProps> = ({ vestingSchedule }) => {
     flowRate,
   } = vestingSchedule;
 
-  const unixNow = useMemo(() => getUnixTime(new Date()), []);
+  const [unixNow, setUnixNow] = useState(getUnixTime(new Date()));
+
+  useEffect(() => {
+    let timeout: number | null = null;
+
+    const untilStart = Number(cliffDateUnix || startDateUnix) - unixNow;
+    const untilEnd = Number(endDateUnix) - unixNow;
+
+    console.log({ untilStart, untilEnd });
+
+    if (untilStart > 0) {
+      timeout = window.setTimeout(
+        () => setUnixNow(getUnixTime(new Date())),
+        untilStart
+      );
+    } else if (untilEnd > 0) {
+      timeout = window.setTimeout(
+        () => setUnixNow(getUnixTime(new Date())),
+        untilEnd
+      );
+    }
+
+    return () => {
+      if (timeout !== null) window.clearTimeout(timeout);
+    };
+  }, [unixNow, startDateUnix, cliffDateUnix, endDateUnix]);
 
   const currentFlowRate = useMemo(
     () =>

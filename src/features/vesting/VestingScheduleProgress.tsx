@@ -48,7 +48,7 @@ const VestingProgress: FC<VestingProgressProps> = ({ nth, start, end }) => {
 
     const progressMs = Date.now() - start.getTime();
     const totalMs = end.getTime() - start.getTime();
-    return Math.min(100, (progressMs / totalMs) * 100);
+    return Math.min(1, progressMs / totalMs);
   }, [start, end]);
 
   return (
@@ -72,7 +72,7 @@ const VestingProgress: FC<VestingProgressProps> = ({ nth, start, end }) => {
       <Box
         sx={{
           background: theme.palette.primary.main,
-          width: `calc(${progress}% - 180px)`,
+          width: `calc(calc(100% - 180px) * ${progress})`,
           height: "2px",
           position: "absolute",
           left: "90px",
