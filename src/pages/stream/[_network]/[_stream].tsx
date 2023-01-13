@@ -57,6 +57,10 @@ import {
 } from "../../../utils/tokenUtils";
 import Page404 from "../../404";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
+import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApiEnhancements";
+import { useGetVestingScheduleQuery } from "../../../vesting-subgraph/getVestingSchedule.generated";
+import { useGetVestingSchedulesQuery } from "../../../vesting-subgraph/getVestingSchedules.generated";
+import { getTimeInSeconds } from "../../../utils/dateUtils";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -329,10 +333,12 @@ const StreamPageContent: FC<{
     tokenAddress
   );
 
-  const scheduledStreamQuery = useScheduledStream({
-    chainId: network.id,
-    id: streamId,
-  });
+  const { data: scheduledStream, ...scheduledStreamQuery } = useScheduledStream(
+    {
+      chainId: network.id,
+      id: streamId,
+    }
+  );
 
   const tokenSnapshotQuery = subgraphApi.useAccountTokenSnapshotQuery({
     chainId: network.id,
@@ -392,14 +398,14 @@ const StreamPageContent: FC<{
 
   const bufferSize = useMemo(() => {
     if (
-      !scheduledStreamQuery.data ||
+      !scheduledStream ||
       !tokenBufferQuery.data ||
-      scheduledStreamQuery.data.currentFlowRate === "0"
+      scheduledStream.currentFlowRate === "0"
     )
       return null;
 
     const { currentFlowRate, createdAtTimestamp, streamedUntilUpdatedAt } =
-      scheduledStreamQuery.data;
+      scheduledStream;
 
     return calculateBuffer(
       BigNumber.from(streamedUntilUpdatedAt),
@@ -408,13 +414,12 @@ const StreamPageContent: FC<{
       network.bufferTimeInMinutes,
       BigNumber.from(tokenBufferQuery.data)
     );
-  }, [scheduledStreamQuery.data, tokenBufferQuery.data, network]);
+  }, [scheduledStream, tokenBufferQuery.data, network]);
 
   const totalToBeStreamedIfScheduled = useMemo(() => {
-    if (!scheduledStreamQuery.data) return null;
+    if (!scheduledStream) return null;
 
-    const { currentFlowRate, startDate, endDateScheduled } =
-      scheduledStreamQuery.data;
+    const { currentFlowRate, startDate, endDateScheduled } = scheduledStream;
 
     if (!endDateScheduled) return null;
 
@@ -423,7 +428,24 @@ const StreamPageContent: FC<{
         BigNumber.from(Math.floor(startDate.getTime() / 1000))
       )
     );
-  }, [scheduledStreamQuery.data]);
+  }, [scheduledStream]);
+
+  // TODO(KK): Network is not yet handled.
+  const vestingScheduleQuery = useGetVestingSchedulesQuery(
+    scheduledStream
+      ? {
+          where: {
+            superToken: scheduledStream.token.toLowerCase(),
+            sender: scheduledStream.sender.toLowerCase(),
+            receiver: scheduledStream.receiver.toLowerCase(),
+            cliffAndFlowDate: getTimeInSeconds(
+              scheduledStream.startDate
+            ).toString(),
+          },
+        }
+      : skipToken
+  );
+  const vestingSchedule = vestingScheduleQuery.data?.vestingSchedules?.[0]; // TODO(KK): Does this work?
 
   if (scheduledStreamQuery.isLoading || tokenSnapshotQuery.isLoading) {
     return (
@@ -433,7 +455,7 @@ const StreamPageContent: FC<{
     );
   }
 
-  if (!scheduledStreamQuery.data || !tokenSnapshotQuery.data) {
+  if (!scheduledStream || !tokenSnapshotQuery.data) {
     return <Page404 />;
   }
 
@@ -449,7 +471,7 @@ const StreamPageContent: FC<{
     startDateScheduled,
     endDate,
     endDateScheduled,
-  } = scheduledStreamQuery.data;
+  } = scheduledStream;
 
   const isActive = currentFlowRate !== "0";
   const isOutgoing = accountAddress?.toLowerCase() === sender.toLowerCase();
@@ -500,14 +522,14 @@ const StreamPageContent: FC<{
                   <>
                     {isOutgoing && (
                       <ModifyStreamButton
-                        stream={scheduledStreamQuery.data}
+                        stream={scheduledStream}
                         network={network}
                       />
                     )}
                     {isActive && (
                       <CancelStreamButton
                         data-cy={"cancel-button"}
-                        stream={scheduledStreamQuery.data}
+                        stream={scheduledStream}
                         network={network}
                       />
                     )}
