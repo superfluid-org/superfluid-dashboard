@@ -121,7 +121,7 @@ export const networkDefinition: {
         name: "Super ETH",
         decimals: 18,
       },
-    },
+    }, 
     flowSchedulerContractAddress: "0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca",
     vestingSchedulerContractAddress:
       "0x2A6dD60Dbb8CE65813842eEe1688b21CA30D6ffd",

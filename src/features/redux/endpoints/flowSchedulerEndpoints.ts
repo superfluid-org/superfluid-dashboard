@@ -48,7 +48,7 @@ export const flowSchedulerEndpoints = {
         const flowSchedule = await flowScheduler.getFlowSchedule(
           superTokenAddress,
           senderAddress,
-          receiverAddress,
+          receiverAddress
         );
 
         return { data: flowSchedule.endDate };

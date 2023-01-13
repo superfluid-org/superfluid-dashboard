@@ -49,7 +49,7 @@ import { adHocMulticallEndpoints } from "./endpoints/adHocMulticallEndpoints";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
 import { flowSchedulerEndpoints } from "./endpoints/flowSchedulerEndpoints";
-import { vestingSchedulerEndpoints } from "./endpoints/vestingSchedulerEndpoints";
+import { vestingSchedulerMutationEndpoints, vestingSchedulerQueryEndpoints } from "./endpoints/vestingSchedulerEndpoints";
 import { platformApi } from "./platformApi/platformApi";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
@@ -63,7 +63,8 @@ export const rpcApi = initializeRpcApiSlice((options) =>
   .injectEndpoints(adHocMulticallEndpoints)
   .injectEndpoints(adHocRpcEndpoints)
   .injectEndpoints(flowSchedulerEndpoints)
-  .injectEndpoints(vestingSchedulerEndpoints);
+  .injectEndpoints(vestingSchedulerMutationEndpoints)
+  .injectEndpoints(vestingSchedulerQueryEndpoints);
 
 export const subgraphApi = initializeSubgraphApiSlice((options) =>
   createApiWithReactHooks({

@@ -19,6 +19,7 @@ import VestingHeader from "../features/vesting/VestingHeader";
 import { VestingLayout } from "../features/vesting/VestingLayout";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { NextPageWithLayout } from "./_app";
+import { VestingSchedulerAllowances } from "../features/vesting/VestingSchedulerAllowances";
 
 const VestingNotSupportedCard = () => {
   const theme = useTheme();
@@ -82,6 +83,9 @@ const VestingPage: NextPageWithLayout = () => {
               <Typography variant="h6">Sent Vesting Schedules</Typography>
               <Card sx={{ p: 0 }}>
                 <SentVestingScheduleTable />
+              </Card>
+              <Card sx={{ p: 0 }}>
+                <VestingSchedulerAllowances />
               </Card>
             </Stack>
           ) : (
