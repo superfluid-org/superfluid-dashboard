@@ -103,18 +103,21 @@ const VestingRow: FC<VestingRowProps> = ({
         </Stack>
       </TableCell>
       <TableCell data-cy={"total-vesting-amount"}>
-        <Amount wei={totalAmount} /> {tokenQuery.data?.symbol}
+        <Typography variant="body1mono">
+          <Amount wei={totalAmount} /> {tokenQuery.data?.symbol}
+        </Typography>
       </TableCell>
       <TableCell>
-        <VestedBalance vestingSchedule={vestingSchedule} />{" "}
-        {tokenQuery.data?.symbol}
-        {/* <Amount wei={totalAmount} /> {tokenQuery.data?.symbol} */}
+        <Typography variant="body1mono">
+          <VestedBalance vestingSchedule={vestingSchedule} />{" "}
+          {tokenQuery.data?.symbol}
+        </Typography>
       </TableCell>
       <TableCell sx={{ pr: 2 }}>
         <ListItemText
           data-cy={"start-end-dates"}
-          primary={format(fromUnixTime(Number(startDate)), "LLL d, yyyy")}
-          secondary={format(fromUnixTime(Number(endDate)), "LLL d, yyyy")}
+          primary={format(fromUnixTime(Number(startDate)), "LLL d, yyyy HH:mm")}
+          secondary={format(fromUnixTime(Number(endDate)), "LLL d, yyyy HH:mm")}
           primaryTypographyProps={{ variant: "body2" }}
           secondaryTypographyProps={{ color: "text.primary" }}
         />
