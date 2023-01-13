@@ -91,10 +91,16 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
   vestingSchedule,
 }) => {
   const {
+    createdAt: unixCreatedAt,
     startDate: unixStartDate,
     cliffDate: unixCliffDate,
     endDate: unixEndDate,
   } = vestingSchedule;
+
+  const createdAt = useMemo(
+    () => fromUnixTime(Number(unixCreatedAt)),
+    [unixCreatedAt]
+  );
 
   const startDate = useMemo(
     () => fromUnixTime(Number(unixStartDate)),
@@ -119,13 +125,13 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
         justifyContent: "space-between",
       }}
     >
-      <VestingProgress nth={1} start={startDate} end={cliffDate} />
-      <VestingProgress nth={2} start={cliffDate} end={cliffDate} />
+      <VestingProgress nth={1} start={createdAt} end={startDate} />
+      <VestingProgress nth={2} start={startDate} end={cliffDate} />
       <VestingProgress nth={3} start={cliffDate} end={endDate} />
 
-      <VestingCheckpoint title="Vesting Scheduled" date={startDate} />
+      <VestingCheckpoint title="Vesting Scheduled" date={createdAt} />
+      <VestingCheckpoint title="Vesting Starts" date={startDate} />
       <VestingCheckpoint title="Cliff" date={cliffDate} />
-      <VestingCheckpoint title="Vesting Starts" date={cliffDate} />
       <VestingCheckpoint title="Vesting Ends" date={endDate} />
     </Box>
   );
