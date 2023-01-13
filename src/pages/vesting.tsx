@@ -20,10 +20,12 @@ import { VestingLayout } from "../features/vesting/VestingLayout";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { NextPageWithLayout } from "./_app";
 import { VestingSchedulerAllowances } from "../features/vesting/VestingSchedulerAllowances";
+import { useFeatureFlags } from "../features/featureFlags/FeatureFlagContext";
 
 const VestingNotSupportedCard = () => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const { isMainnetEnabled } = useFeatureFlags();
 
   return (
     <Paper
@@ -42,8 +44,11 @@ const VestingNotSupportedCard = () => {
       </Typography>
       <Typography color="text.secondary" textAlign="center">
         Change your network to{" "}
-        <NetworkSwitchLink network={networkDefinition.polygon} />
-        , <NetworkSwitchLink network={networkDefinition.ethereum} /> or{" "}
+        <NetworkSwitchLink
+          network={networkDefinition.ethereum}
+          disabled={!isMainnetEnabled}
+        />
+        , <NetworkSwitchLink network={networkDefinition.polygon} /> or{" "}
         <NetworkSwitchLink network={networkDefinition.goerli} />.
       </Typography>
     </Paper>

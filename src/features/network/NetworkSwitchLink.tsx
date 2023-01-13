@@ -6,9 +6,13 @@ import { Network } from "./networks";
 
 interface NetworkSwitchLinkProps {
   network: Network;
+  disabled?: boolean;
 }
 
-const NetworkSwitchLink: FC<NetworkSwitchLinkProps> = ({ network }) => {
+const NetworkSwitchLink: FC<NetworkSwitchLinkProps> = ({
+  network,
+  disabled = false,
+}) => {
   const { setExpectedNetwork } = useExpectedNetwork();
   const { address: accountAddress } = useAccount();
   const { switchNetwork } = useSwitchNetwork();
@@ -22,7 +26,13 @@ const NetworkSwitchLink: FC<NetworkSwitchLinkProps> = ({ network }) => {
   }, [network, accountAddress, setExpectedNetwork, switchNetwork]);
 
   return (
-    <Link component="button" variant="body1" onClick={networkSwitchClicked}>
+    <Link
+      component="button"
+      sx={{ verticalAlign: "inherit" }}
+      variant="body1"
+      disabled={disabled}
+      onClick={networkSwitchClicked}
+    >
       {network.name}
     </Link>
   );

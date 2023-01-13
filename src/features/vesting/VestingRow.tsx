@@ -109,8 +109,10 @@ const VestingRow: FC<VestingRowProps> = ({
       </TableCell>
       <TableCell>
         <Typography variant="body1mono">
-          <VestedBalance vestingSchedule={vestingSchedule} />{" "}
-          {tokenQuery.data?.symbol}
+          <VestedBalance vestingSchedule={vestingSchedule}>
+            {" "}
+            {tokenQuery.data?.symbol}
+          </VestedBalance>
         </Typography>
       </TableCell>
       <TableCell sx={{ pr: 2 }}>

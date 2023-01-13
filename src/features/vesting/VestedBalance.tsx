@@ -1,14 +1,17 @@
 import { BigNumber } from "ethers";
-import { FC, useMemo } from "react";
+import { FC, PropsWithChildren, useMemo } from "react";
 import FlowingBalance from "../token/FlowingBalance";
 import { VestingSchedule } from "./types";
 import useUnixDateWithVestingTriggers from "./useUnixDateWithVestingTriggers";
 
-interface VestedBalanceProps {
+interface VestedBalanceProps extends PropsWithChildren {
   vestingSchedule: VestingSchedule;
 }
 
-const VestedBalance: FC<VestedBalanceProps> = ({ vestingSchedule }) => {
+const VestedBalance: FC<VestedBalanceProps> = ({
+  children,
+  vestingSchedule,
+}) => {
   const {
     startDate: startDateUnix,
     cliffDate: cliffDateUnix,
@@ -55,12 +58,15 @@ const VestedBalance: FC<VestedBalanceProps> = ({ vestingSchedule }) => {
   ]);
 
   return (
-    <FlowingBalance
-      balance={currentBalance}
-      flowRate={currentFlowRate}
-      balanceTimestamp={unixNow}
-      disableRoundingIndicator
-    />
+    <>
+      <FlowingBalance
+        balance={currentBalance}
+        flowRate={currentFlowRate}
+        balanceTimestamp={unixNow}
+        disableRoundingIndicator
+      />
+      {children}
+    </>
   );
 };
 

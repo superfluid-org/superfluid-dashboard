@@ -8,8 +8,7 @@ import {
   useTheme,
 } from "@mui/material";
 import Chip from "@mui/material/Chip";
-import { fromUnixTime, getUnixTime } from "date-fns";
-import { BigNumber, BigNumberish } from "ethers";
+import { BigNumber } from "ethers";
 import { isString } from "lodash";
 import { useRouter } from "next/router";
 import { FC, ReactElement, useEffect, useMemo, useState } from "react";
@@ -19,7 +18,6 @@ import TimeUnitFilter, {
 import NetworkIcon from "../../../features/network/NetworkIcon";
 import { Network, networksBySlug } from "../../../features/network/networks";
 import Amount from "../../../features/token/Amount";
-import FlowingBalance from "../../../features/token/FlowingBalance";
 import TokenIcon from "../../../features/token/TokenIcon";
 import FiatAmount from "../../../features/tokenPrice/FiatAmount";
 import FlowingFiatBalance from "../../../features/tokenPrice/FlowingFiatBalance";
@@ -164,44 +162,16 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
   const onGraphFilterChange = (newGraphFilter: TimeUnitFilterType) =>
     setGraphFilter(newGraphFilter);
 
-  const isVesting = useMemo(() => {
-    const dateNow = new Date();
-
-    return (
-      vestingSchedule &&
-      (!vestingSchedule.cliffDate ||
-        fromUnixTime(Number(vestingSchedule.cliffDate)) <= dateNow) &&
-      fromUnixTime(Number(vestingSchedule.endDate)) >= dateNow
-    );
-  }, [vestingSchedule]);
-
   const cliffAmount = useMemo(() => {
     if (!vestingSchedule) return "0";
     return vestingSchedule.cliffAmount || "0";
   }, [vestingSchedule]);
 
-  const currentlyVested: BigNumberish = useMemo(() => {
-    if (!vestingSchedule) return "0";
-    const { flowRate, endDate, cliffDate, startDate } = vestingSchedule;
-
-    const currentUnix = getUnixTime(new Date());
-    const endDateUnix = Number(endDate);
-    const startDateUnix = Number(cliffDate || startDate);
-    const receivedCliff =
-      cliffDate && startDateUnix <= currentUnix ? cliffAmount : "0";
-
-    const vested = BigNumber.from(flowRate)
-      .mul(Math.min(endDateUnix, currentUnix) - startDateUnix)
-      .add(receivedCliff);
-
-    return vested.gt("0") ? vested : "0";
-  }, [vestingSchedule, cliffAmount]);
-
   const totalVesting = useMemo(() => {
     if (!vestingSchedule) return undefined;
     const { flowRate, endDate, startDate, cliffDate, cliffAmount } =
       vestingSchedule;
-    console.log({ cliffDate, startDate });
+
     const cliffAndFlowDate = Number(cliffDate || startDate);
 
     return BigNumber.from(flowRate)

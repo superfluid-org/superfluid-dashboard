@@ -2,8 +2,9 @@ import { useTheme } from "@mui/material";
 import { fromUnixTime, getUnixTime } from "date-fns";
 import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils";
-import { FC, useMemo } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import LineChart, { DataPoint } from "../../components/Chart/LineChart";
+import useTimer from "../../hooks/useTimer";
 import { buildDefaultDatasetConf } from "../../utils/chartUtils";
 import { getDatesBetween } from "../../utils/dateUtils";
 import { UnitOfTime } from "../send/FlowRateInput";
@@ -104,13 +105,16 @@ const VestingGraph: FC<VestingGraphProps> = ({
 }) => {
   const theme = useTheme();
 
-  const datasets = useMemo(() => {
-    const dateNow = Date.now();
+  const dateNow = useTimer(UnitOfTime.Minute);
 
+  const datasets = useMemo(() => {
+    const dateNowMs = dateNow.getTime();
     const mappedDataPoints = mapVestingGraphDataPoints(vestingSchedule);
 
-    const vestedDataPoints = mappedDataPoints.filter(({ x }) => x <= dateNow);
-    const notVestedDataPoints = mappedDataPoints.filter(({ x }) => x > dateNow);
+    const vestedDataPoints = mappedDataPoints.filter(({ x }) => x <= dateNowMs);
+    const notVestedDataPoints = mappedDataPoints.filter(
+      ({ x }) => x > dateNowMs
+    );
 
     const lastVested = vestedDataPoints[vestedDataPoints.length - 1];
 
@@ -118,7 +122,7 @@ const VestingGraph: FC<VestingGraphProps> = ({
       vestedDataPoints, // Used for the green (vested) line.
       [...(lastVested ? [lastVested] : []), ...notVestedDataPoints], // Used for the gray (not vested) line.
     ];
-  }, [vestingSchedule]);
+  }, [vestingSchedule, dateNow]);
 
   const datasetsConfigCallbacks = useMemo(
     () => [

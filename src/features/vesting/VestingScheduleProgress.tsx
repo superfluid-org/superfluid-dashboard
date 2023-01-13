@@ -1,6 +1,8 @@
 import { Stack, Box, Typography, useTheme } from "@mui/material";
 import { format, fromUnixTime } from "date-fns";
 import { FC, useMemo } from "react";
+import useTimer from "../../hooks/useTimer";
+import { UnitOfTime } from "../send/FlowRateInput";
 import { VestingSchedule } from "./types";
 
 interface VestingCheckpointProps {
@@ -38,18 +40,25 @@ interface VestingProgressProps {
   nth: number;
   end: Date;
   start: Date;
+  dateNow: Date;
 }
 
-const VestingProgress: FC<VestingProgressProps> = ({ nth, start, end }) => {
+const VestingProgress: FC<VestingProgressProps> = ({
+  nth,
+  start,
+  end,
+  dateNow,
+}) => {
   const theme = useTheme();
 
   const progress = useMemo(() => {
     if (!start) return 0;
+    const dateNowMs = dateNow.getTime();
 
-    const progressMs = Date.now() - start.getTime();
+    const progressMs = dateNowMs - start.getTime();
     const totalMs = end.getTime() - start.getTime();
     return Math.min(1, progressMs / totalMs);
-  }, [start, end]);
+  }, [start, end, dateNow]);
 
   return (
     <Box
@@ -97,6 +106,8 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
     endDate: unixEndDate,
   } = vestingSchedule;
 
+  const dateNow = useTimer(UnitOfTime.Minute);
+
   const createdAt = useMemo(
     () => fromUnixTime(Number(unixCreatedAt)),
     [unixCreatedAt]
@@ -125,9 +136,24 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
         justifyContent: "space-between",
       }}
     >
-      <VestingProgress nth={1} start={createdAt} end={startDate} />
-      <VestingProgress nth={2} start={startDate} end={cliffDate} />
-      <VestingProgress nth={3} start={cliffDate} end={endDate} />
+      <VestingProgress
+        nth={1}
+        start={createdAt}
+        end={startDate}
+        dateNow={dateNow}
+      />
+      <VestingProgress
+        nth={2}
+        start={startDate}
+        end={cliffDate}
+        dateNow={dateNow}
+      />
+      <VestingProgress
+        nth={3}
+        start={cliffDate}
+        end={endDate}
+        dateNow={dateNow}
+      />
 
       <VestingCheckpoint title="Vesting Scheduled" date={createdAt} />
       <VestingCheckpoint title="Vesting Starts" date={startDate} />
