@@ -10,8 +10,9 @@ import {
 import Chip from "@mui/material/Chip";
 import { BigNumber } from "ethers";
 import { isString } from "lodash";
+import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { FC, ReactElement, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import TimeUnitFilter, {
   TimeUnitFilterType,
 } from "../../../features/graph/TimeUnitFilter";
@@ -27,12 +28,10 @@ import { useVestingToken } from "../../../features/vesting/useVestingToken";
 import VestedBalance from "../../../features/vesting/VestedBalance";
 import VestingGraph from "../../../features/vesting/VestingGraph";
 import VestingHeader from "../../../features/vesting/VestingHeader";
-import { VestingLayout } from "../../../features/vesting/VestingLayout";
 import VestingScheduleProgress from "../../../features/vesting/VestingScheduleProgress";
 import useNavigateBack from "../../../hooks/useNavigateBack";
 import { useGetVestingScheduleQuery } from "../../../vesting-subgraph/getVestingSchedule.generated";
 import Page404 from "../../404";
-import { NextPageWithLayout } from "../../_app";
 
 interface VestingLegendItemProps {
   title: string;
@@ -93,7 +92,7 @@ const VestingDataCard: FC<VestingDataCardProps> = ({
   </Card>
 );
 
-const VestingScheduleDetailsPage: NextPageWithLayout = () => {
+const VestingScheduleDetailsPage: NextPage = () => {
   const router = useRouter();
 
   const [routeHandled, setRouteHandled] = useState(false);
@@ -319,10 +318,6 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
       </Stack>
     </Container>
   );
-};
-
-VestingScheduleDetailsPage.getLayout = function getLayout(page: ReactElement) {
-  return <VestingLayout>{page}</VestingLayout>;
 };
 
 export default VestingScheduleDetailsPage;

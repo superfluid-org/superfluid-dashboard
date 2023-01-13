@@ -8,19 +8,18 @@ import {
   useTheme,
 } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { ReactElement, useMemo } from "react";
+import { NextPage } from "next";
+import { useMemo } from "react";
 import ConnectOrImpersonate from "../components/ConnectOrImpersonate/ConnectOrImpersonate";
+import { useFeatureFlags } from "../features/featureFlags/FeatureFlagContext";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import { networkDefinition } from "../features/network/networks";
 import NetworkSwitchLink from "../features/network/NetworkSwitchLink";
 import { ReceivedVestingScheduleTable } from "../features/vesting/ReceivedVestingScheduleTable";
 import { SentVestingScheduleTable } from "../features/vesting/SentVestingScheduleTable";
 import VestingHeader from "../features/vesting/VestingHeader";
-import { VestingLayout } from "../features/vesting/VestingLayout";
-import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
-import { NextPageWithLayout } from "./_app";
 import { VestingSchedulerAllowances } from "../features/vesting/VestingSchedulerAllowances";
-import { useFeatureFlags } from "../features/featureFlags/FeatureFlagContext";
+import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 
 const VestingNotSupportedCard = () => {
   const theme = useTheme();
@@ -57,7 +56,7 @@ const VestingNotSupportedCard = () => {
 
 const VESTING_SUPPORTED_NETWORKS = [networkDefinition.goerli.id];
 
-const VestingPage: NextPageWithLayout = () => {
+const VestingPage: NextPage = () => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { visibleAddress } = useVisibleAddress();
@@ -125,10 +124,6 @@ const VestingPage: NextPageWithLayout = () => {
       )}
     </Container>
   );
-};
-
-VestingPage.getLayout = function getLayout(page: ReactElement) {
-  return <VestingLayout>{page}</VestingLayout>;
 };
 
 export default VestingPage;

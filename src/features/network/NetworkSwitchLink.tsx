@@ -28,8 +28,12 @@ const NetworkSwitchLink: FC<NetworkSwitchLinkProps> = ({
   return (
     <Link
       component="button"
-      sx={{ verticalAlign: "inherit" }}
       variant="body1"
+      sx={{
+        verticalAlign: "inherit",
+        ...(disabled ? { cursor: "initial" } : {}),
+      }}
+      color={disabled ? "disabled" : "primary"}
       disabled={disabled}
       onClick={networkSwitchClicked}
     >

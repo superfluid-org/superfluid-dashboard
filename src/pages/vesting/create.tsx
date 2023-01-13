@@ -1,15 +1,13 @@
 import { Box, Card, Container, useTheme } from "@mui/material";
-import { ReactElement } from "react";
+import { NextPage } from "next";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import NetworkBadge from "../../features/network/NetworkBadge";
 import ConnectionBoundary from "../../features/transactionBoundary/ConnectionBoundary";
+import { BigLoader } from "../../features/vesting/BigLoader";
 import CreateVestingFormProvider from "../../features/vesting/CreateVestingFormProvider";
 import { CreateVestingSection } from "../../features/vesting/CreateVestingSection";
-import { BigLoader } from "../../features/vesting/BigLoader";
-import { VestingLayout } from "../../features/vesting/VestingLayout";
-import { NextPageWithLayout } from "../_app";
 
-const CreateVestingSchedulePage: NextPageWithLayout = () => {
+const CreateVestingSchedulePage: NextPage = () => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
 
@@ -62,10 +60,6 @@ const CreateVestingSchedulePage: NextPageWithLayout = () => {
       </Box>
     </Container>
   );
-};
-
-CreateVestingSchedulePage.getLayout = function getLayout(page: ReactElement) {
-  return <VestingLayout>{page}</VestingLayout>;
 };
 
 export default CreateVestingSchedulePage;
