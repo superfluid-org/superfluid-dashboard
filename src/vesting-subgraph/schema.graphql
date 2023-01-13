@@ -159,6 +159,10 @@ input Event_filter {
   timestamp_not_in: [BigInt!]
   transactionHash: Bytes
   transactionHash_not: Bytes
+  transactionHash_gt: Bytes
+  transactionHash_lt: Bytes
+  transactionHash_gte: Bytes
+  transactionHash_lte: Bytes
   transactionHash_in: [Bytes!]
   transactionHash_not_in: [Bytes!]
   transactionHash_contains: Bytes
@@ -1304,6 +1308,10 @@ input VestingCliffAndFlowExecutedEvent_filter {
   timestamp_not_in: [BigInt!]
   transactionHash: Bytes
   transactionHash_not: Bytes
+  transactionHash_gt: Bytes
+  transactionHash_lt: Bytes
+  transactionHash_gte: Bytes
+  transactionHash_lte: Bytes
   transactionHash_in: [Bytes!]
   transactionHash_not_in: [Bytes!]
   transactionHash_contains: Bytes
@@ -1318,18 +1326,30 @@ input VestingCliffAndFlowExecutedEvent_filter {
   gasPrice_not_in: [BigInt!]
   superToken: Bytes
   superToken_not: Bytes
+  superToken_gt: Bytes
+  superToken_lt: Bytes
+  superToken_gte: Bytes
+  superToken_lte: Bytes
   superToken_in: [Bytes!]
   superToken_not_in: [Bytes!]
   superToken_contains: Bytes
   superToken_not_contains: Bytes
   sender: Bytes
   sender_not: Bytes
+  sender_gt: Bytes
+  sender_lt: Bytes
+  sender_gte: Bytes
+  sender_lte: Bytes
   sender_in: [Bytes!]
   sender_not_in: [Bytes!]
   sender_contains: Bytes
   sender_not_contains: Bytes
   receiver: Bytes
   receiver_not: Bytes
+  receiver_gt: Bytes
+  receiver_lt: Bytes
+  receiver_gte: Bytes
+  receiver_lte: Bytes
   receiver_in: [Bytes!]
   receiver_not_in: [Bytes!]
   receiver_contains: Bytes
@@ -1482,6 +1502,10 @@ input VestingEndExecutedEvent_filter {
   timestamp_not_in: [BigInt!]
   transactionHash: Bytes
   transactionHash_not: Bytes
+  transactionHash_gt: Bytes
+  transactionHash_lt: Bytes
+  transactionHash_gte: Bytes
+  transactionHash_lte: Bytes
   transactionHash_in: [Bytes!]
   transactionHash_not_in: [Bytes!]
   transactionHash_contains: Bytes
@@ -1496,18 +1520,30 @@ input VestingEndExecutedEvent_filter {
   gasPrice_not_in: [BigInt!]
   superToken: Bytes
   superToken_not: Bytes
+  superToken_gt: Bytes
+  superToken_lt: Bytes
+  superToken_gte: Bytes
+  superToken_lte: Bytes
   superToken_in: [Bytes!]
   superToken_not_in: [Bytes!]
   superToken_contains: Bytes
   superToken_not_contains: Bytes
   sender: Bytes
   sender_not: Bytes
+  sender_gt: Bytes
+  sender_lt: Bytes
+  sender_gte: Bytes
+  sender_lte: Bytes
   sender_in: [Bytes!]
   sender_not_in: [Bytes!]
   sender_contains: Bytes
   sender_not_contains: Bytes
   receiver: Bytes
   receiver_not: Bytes
+  receiver_gt: Bytes
+  receiver_lt: Bytes
+  receiver_gte: Bytes
+  receiver_lte: Bytes
   receiver_in: [Bytes!]
   receiver_not_in: [Bytes!]
   receiver_contains: Bytes
@@ -1645,6 +1681,10 @@ input VestingEndFailedEvent_filter {
   timestamp_not_in: [BigInt!]
   transactionHash: Bytes
   transactionHash_not: Bytes
+  transactionHash_gt: Bytes
+  transactionHash_lt: Bytes
+  transactionHash_gte: Bytes
+  transactionHash_lte: Bytes
   transactionHash_in: [Bytes!]
   transactionHash_not_in: [Bytes!]
   transactionHash_contains: Bytes
@@ -1659,18 +1699,30 @@ input VestingEndFailedEvent_filter {
   gasPrice_not_in: [BigInt!]
   superToken: Bytes
   superToken_not: Bytes
+  superToken_gt: Bytes
+  superToken_lt: Bytes
+  superToken_gte: Bytes
+  superToken_lte: Bytes
   superToken_in: [Bytes!]
   superToken_not_in: [Bytes!]
   superToken_contains: Bytes
   superToken_not_contains: Bytes
   sender: Bytes
   sender_not: Bytes
+  sender_gt: Bytes
+  sender_lt: Bytes
+  sender_gte: Bytes
+  sender_lte: Bytes
   sender_in: [Bytes!]
   sender_not_in: [Bytes!]
   sender_contains: Bytes
   sender_not_contains: Bytes
   receiver: Bytes
   receiver_not: Bytes
+  receiver_gt: Bytes
+  receiver_lt: Bytes
+  receiver_gte: Bytes
+  receiver_lte: Bytes
   receiver_in: [Bytes!]
   receiver_not_in: [Bytes!]
   receiver_contains: Bytes
@@ -1754,18 +1806,30 @@ input VestingSchedule_filter {
   createdAt_not_in: [BigInt!]
   superToken: Bytes
   superToken_not: Bytes
+  superToken_gt: Bytes
+  superToken_lt: Bytes
+  superToken_gte: Bytes
+  superToken_lte: Bytes
   superToken_in: [Bytes!]
   superToken_not_in: [Bytes!]
   superToken_contains: Bytes
   superToken_not_contains: Bytes
   sender: Bytes
   sender_not: Bytes
+  sender_gt: Bytes
+  sender_lt: Bytes
+  sender_gte: Bytes
+  sender_lte: Bytes
   sender_in: [Bytes!]
   sender_not_in: [Bytes!]
   sender_contains: Bytes
   sender_not_contains: Bytes
   receiver: Bytes
   receiver_not: Bytes
+  receiver_gt: Bytes
+  receiver_lt: Bytes
+  receiver_gte: Bytes
+  receiver_lte: Bytes
   receiver_in: [Bytes!]
   receiver_not_in: [Bytes!]
   receiver_contains: Bytes
@@ -1968,6 +2032,10 @@ input VestingScheduleCreatedEvent_filter {
   timestamp_not_in: [BigInt!]
   transactionHash: Bytes
   transactionHash_not: Bytes
+  transactionHash_gt: Bytes
+  transactionHash_lt: Bytes
+  transactionHash_gte: Bytes
+  transactionHash_lte: Bytes
   transactionHash_in: [Bytes!]
   transactionHash_not_in: [Bytes!]
   transactionHash_contains: Bytes
@@ -1982,18 +2050,30 @@ input VestingScheduleCreatedEvent_filter {
   gasPrice_not_in: [BigInt!]
   superToken: Bytes
   superToken_not: Bytes
+  superToken_gt: Bytes
+  superToken_lt: Bytes
+  superToken_gte: Bytes
+  superToken_lte: Bytes
   superToken_in: [Bytes!]
   superToken_not_in: [Bytes!]
   superToken_contains: Bytes
   superToken_not_contains: Bytes
   sender: Bytes
   sender_not: Bytes
+  sender_gt: Bytes
+  sender_lt: Bytes
+  sender_gte: Bytes
+  sender_lte: Bytes
   sender_in: [Bytes!]
   sender_not_in: [Bytes!]
   sender_contains: Bytes
   sender_not_contains: Bytes
   receiver: Bytes
   receiver_not: Bytes
+  receiver_gt: Bytes
+  receiver_lt: Bytes
+  receiver_gte: Bytes
+  receiver_lte: Bytes
   receiver_in: [Bytes!]
   receiver_not_in: [Bytes!]
   receiver_contains: Bytes
@@ -2152,6 +2232,10 @@ input VestingScheduleDeletedEvent_filter {
   timestamp_not_in: [BigInt!]
   transactionHash: Bytes
   transactionHash_not: Bytes
+  transactionHash_gt: Bytes
+  transactionHash_lt: Bytes
+  transactionHash_gte: Bytes
+  transactionHash_lte: Bytes
   transactionHash_in: [Bytes!]
   transactionHash_not_in: [Bytes!]
   transactionHash_contains: Bytes
@@ -2166,18 +2250,30 @@ input VestingScheduleDeletedEvent_filter {
   gasPrice_not_in: [BigInt!]
   superToken: Bytes
   superToken_not: Bytes
+  superToken_gt: Bytes
+  superToken_lt: Bytes
+  superToken_gte: Bytes
+  superToken_lte: Bytes
   superToken_in: [Bytes!]
   superToken_not_in: [Bytes!]
   superToken_contains: Bytes
   superToken_not_contains: Bytes
   sender: Bytes
   sender_not: Bytes
+  sender_gt: Bytes
+  sender_lt: Bytes
+  sender_gte: Bytes
+  sender_lte: Bytes
   sender_in: [Bytes!]
   sender_not_in: [Bytes!]
   sender_contains: Bytes
   sender_not_contains: Bytes
   receiver: Bytes
   receiver_not: Bytes
+  receiver_gt: Bytes
+  receiver_lt: Bytes
+  receiver_gte: Bytes
+  receiver_lte: Bytes
   receiver_in: [Bytes!]
   receiver_not_in: [Bytes!]
   receiver_contains: Bytes
@@ -2293,6 +2389,10 @@ input VestingScheduleUpdatedEvent_filter {
   timestamp_not_in: [BigInt!]
   transactionHash: Bytes
   transactionHash_not: Bytes
+  transactionHash_gt: Bytes
+  transactionHash_lt: Bytes
+  transactionHash_gte: Bytes
+  transactionHash_lte: Bytes
   transactionHash_in: [Bytes!]
   transactionHash_not_in: [Bytes!]
   transactionHash_contains: Bytes
@@ -2307,18 +2407,30 @@ input VestingScheduleUpdatedEvent_filter {
   gasPrice_not_in: [BigInt!]
   superToken: Bytes
   superToken_not: Bytes
+  superToken_gt: Bytes
+  superToken_lt: Bytes
+  superToken_gte: Bytes
+  superToken_lte: Bytes
   superToken_in: [Bytes!]
   superToken_not_in: [Bytes!]
   superToken_contains: Bytes
   superToken_not_contains: Bytes
   sender: Bytes
   sender_not: Bytes
+  sender_gt: Bytes
+  sender_lt: Bytes
+  sender_gte: Bytes
+  sender_lte: Bytes
   sender_in: [Bytes!]
   sender_not_in: [Bytes!]
   sender_contains: Bytes
   sender_not_contains: Bytes
   receiver: Bytes
   receiver_not: Bytes
+  receiver_gt: Bytes
+  receiver_lt: Bytes
+  receiver_gte: Bytes
+  receiver_lte: Bytes
   receiver_in: [Bytes!]
   receiver_not_in: [Bytes!]
   receiver_contains: Bytes
