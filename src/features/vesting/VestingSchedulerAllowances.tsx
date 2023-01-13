@@ -105,7 +105,7 @@ export const VestingSchedulerAllowances: FC = () => {
   );
 
   const contractAddressLink = network.getLinkForAddress(
-    network.flowSchedulerContractAddress!
+    network.vestingSchedulerContractAddress!
   );
 
   return (
