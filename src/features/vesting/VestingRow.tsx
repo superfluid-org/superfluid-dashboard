@@ -22,6 +22,7 @@ import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { VestingSchedule } from "./types";
 import { useVestingToken } from "./useVestingToken";
+import VestedBalance from "./VestedBalance";
 import VestingStatus from "./VestingStatus";
 
 interface VestingRowProps {
@@ -105,7 +106,9 @@ const VestingRow: FC<VestingRowProps> = ({
         <Amount wei={totalAmount} /> {tokenQuery.data?.symbol}
       </TableCell>
       <TableCell>
-        <Amount wei={totalAmount} /> {tokenQuery.data?.symbol}
+        <VestedBalance vestingSchedule={vestingSchedule} />{" "}
+        {tokenQuery.data?.symbol}
+        {/* <Amount wei={totalAmount} /> {tokenQuery.data?.symbol} */}
       </TableCell>
       <TableCell sx={{ pr: 2 }}>
         <ListItemText

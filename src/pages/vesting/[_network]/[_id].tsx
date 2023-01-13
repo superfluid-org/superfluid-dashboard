@@ -1,4 +1,5 @@
 import {
+  Box,
   Card,
   Container,
   Stack,
@@ -6,6 +7,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import Chip from "@mui/material/Chip";
 import { fromUnixTime, getUnixTime } from "date-fns";
 import { BigNumber, BigNumberish } from "ethers";
 import { isString } from "lodash";
@@ -14,6 +16,7 @@ import { FC, ReactElement, useEffect, useMemo, useState } from "react";
 import TimeUnitFilter, {
   TimeUnitFilterType,
 } from "../../../features/graph/TimeUnitFilter";
+import NetworkIcon from "../../../features/network/NetworkIcon";
 import { Network, networksBySlug } from "../../../features/network/networks";
 import Amount from "../../../features/token/Amount";
 import FlowingBalance from "../../../features/token/FlowingBalance";
@@ -23,6 +26,7 @@ import FlowingFiatBalance from "../../../features/tokenPrice/FlowingFiatBalance"
 import useTokenPrice from "../../../features/tokenPrice/useTokenPrice";
 import { BigLoader } from "../../../features/vesting/BigLoader";
 import { useVestingToken } from "../../../features/vesting/useVestingToken";
+import VestedBalance from "../../../features/vesting/VestedBalance";
 import VestingGraph from "../../../features/vesting/VestingGraph";
 import VestingHeader from "../../../features/vesting/VestingHeader";
 import { VestingLayout } from "../../../features/vesting/VestingLayout";
@@ -31,6 +35,25 @@ import useNavigateBack from "../../../hooks/useNavigateBack";
 import { useGetVestingScheduleQuery } from "../../../vesting-subgraph/getVestingSchedule.generated";
 import Page404 from "../../404";
 import { NextPageWithLayout } from "../../_app";
+
+interface VestingLegendItemProps {
+  title: string;
+  color: string;
+}
+
+const VestingLegendItem: FC<VestingLegendItemProps> = ({ title, color }) => (
+  <Stack direction="row" gap={0.5} alignItems="center">
+    <Box
+      sx={{
+        width: "10px",
+        height: "10px",
+        borderRadius: "50%",
+        background: color,
+      }}
+    />
+    <Typography>{title}</Typography>
+  </Stack>
+);
 
 interface VestingDataCardProps {
   title: string;
@@ -194,18 +217,23 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
   if (!vestingSchedule || !token) return <Page404 />;
 
   const { symbol } = token;
-
   const { flowRate } = vestingSchedule;
 
   return (
     <Container maxWidth="lg">
       <VestingHeader onBack={navigateBack}>
-        <>
-          <TokenIcon isSuper tokenSymbol="USDCx" />
+        <Stack direction="row" alignItems="center" gap={2}>
+          <TokenIcon isSuper tokenSymbol={symbol} />
           <Typography component="h1" variant="h4">
-            Vesting
+            Vesting {symbol}
           </Typography>
-        </>
+          <Chip
+            size="small"
+            label={network.name}
+            translate="no"
+            avatar={<NetworkIcon network={network} size={18} fontSize={14} />}
+          />
+        </Stack>
       </VestingHeader>
 
       <Stack gap={3}>
@@ -244,18 +272,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
               </Typography>
               <Stack direction="row" alignItems="flex-end" columnGap={1}>
                 <Typography data-cy={"token-balance"} variant="h3mono">
-                  {isVesting ? (
-                    <FlowingBalance
-                      balance={cliffAmount}
-                      flowRate={flowRate}
-                      balanceTimestamp={Number(
-                        vestingSchedule.cliffDate || vestingSchedule.startDate
-                      )}
-                      disableRoundingIndicator
-                    />
-                  ) : (
-                    <Amount wei={currentlyVested} />
-                  )}
+                  <VestedBalance vestingSchedule={vestingSchedule} />
                 </Typography>
                 <Typography
                   data-cy={"token-symbol"}
@@ -286,10 +303,22 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
             </Stack>
 
             {!isBelowMd && (
-              <TimeUnitFilter
-                activeFilter={graphFilter}
-                onChange={onGraphFilterChange}
-              />
+              <Stack alignItems="end" gap={2}>
+                <TimeUnitFilter
+                  activeFilter={graphFilter}
+                  onChange={onGraphFilterChange}
+                />
+                <Stack direction="row" gap={2}>
+                  <VestingLegendItem
+                    title="Vested"
+                    color={theme.palette.primary.main}
+                  />
+                  <VestingLegendItem
+                    title="Not Vested"
+                    color={theme.palette.text.disabled}
+                  />
+                </Stack>
+              </Stack>
             )}
           </Stack>
 
