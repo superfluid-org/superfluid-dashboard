@@ -327,13 +327,13 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
 
         <Stack direction="row" alignItems="stretch" gap={3}>
           <VestingDataCard
-            title="Tokens granted"
+            title="Tokens Allocated"
             tokenSymbol={token.symbol}
             amount={totalVesting}
             price={tokenPrice}
           />
           <VestingDataCard
-            title="Cliff amount"
+            title="Cliff Amount"
             tokenSymbol={token.symbol}
             amount={vestingSchedule.cliffAmount || "0"}
             price={tokenPrice}
