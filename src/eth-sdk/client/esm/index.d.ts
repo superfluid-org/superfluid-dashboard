@@ -6,3 +6,7 @@ export declare function getGoerliSdk(defaultSignerOrProvider: Signer | providers
     flowScheduler: types.goerli.FlowScheduler;
     vestingScheduler: types.goerli.VestingScheduler;
 };
+export declare type PolygonSdk = ReturnType<typeof getPolygonSdk>;
+export declare function getPolygonSdk(defaultSignerOrProvider: Signer | providers.Provider): {
+    vestingScheduler: types.polygon.VestingScheduler;
+};

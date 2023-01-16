@@ -3,10 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getGoerliSdk = exports.getContract = void 0;
+exports.getPolygonSdk = exports.getGoerliSdk = exports.getContract = void 0;
 const ethers_1 = require("ethers");
 const flowScheduler_json_1 = __importDefault(require("../../abis/goerli/flowScheduler.json"));
 const vestingScheduler_json_1 = __importDefault(require("../../abis/goerli/vestingScheduler.json"));
+const vestingScheduler_json_2 = __importDefault(require("../../abis/polygon/vestingScheduler.json"));
 function getContract(address, abi, defaultSignerOrProvider) {
     return new ethers_1.Contract(address, abi, defaultSignerOrProvider);
 }
@@ -18,3 +19,9 @@ function getGoerliSdk(defaultSignerOrProvider) {
     };
 }
 exports.getGoerliSdk = getGoerliSdk;
+function getPolygonSdk(defaultSignerOrProvider) {
+    return {
+        "vestingScheduler": getContract('0xcFE6382B33F2AdaFbE46e6A26A88E0182ae32b0c', vestingScheduler_json_2.default, defaultSignerOrProvider),
+    };
+}
+exports.getPolygonSdk = getPolygonSdk;

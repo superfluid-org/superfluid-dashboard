@@ -84,14 +84,16 @@ export const networkDefinition: {
     platformUrl: string;
   };
   gnosis: Network;
-  polygon: Network;
+  polygon: Network & {
+    vestingSchedulerContractAddress: `0x${string}`;
+  };
   polygonMumbai: Network;
   avalancheFuji: Network;
   optimism: Network;
   arbitrum: Network;
   avalancheC: Network;
   bsc: Network;
-  ethereum: Network;
+  ethereum: Network
 } = {
   goerli: {
     ...chain.goerli,
@@ -121,7 +123,7 @@ export const networkDefinition: {
         name: "Super ETH",
         decimals: 18,
       },
-    }, 
+    },
     flowSchedulerContractAddress: "0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca",
     vestingSchedulerContractAddress:
       "0x2A6dD60Dbb8CE65813842eEe1688b21CA30D6ffd",
@@ -196,6 +198,7 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
+    vestingSchedulerContractAddress: "0xcFE6382B33F2AdaFbE46e6A26A88E0182ae32b0c"
   },
   polygonMumbai: {
     ...chain.polygonMumbai,
@@ -437,7 +440,7 @@ export const networkDefinition: {
         name: "Super ETH",
         decimals: 18,
       },
-    },
+    }
   },
 };
 
