@@ -2,6 +2,8 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
+  IconButton,
   Paper,
   Stack,
   Table,
@@ -10,6 +12,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
@@ -29,6 +32,13 @@ import Amount from "../token/Amount";
 import { flowOperatorPermissionsToString } from "../../utils/flowOperatorPermissionsToString";
 import Link from "../common/Link";
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
+import TooltipIcon from "../common/TooltipIcon";
+import { unitOfTimeList } from "../send/FlowRateInput";
+import AddressName from "../../components/AddressName/AddressName";
+import shortenHex from "../../utils/shortenHex";
+import AddressCopyTooltip from "../common/AddressCopyTooltip";
+import { getAddress } from "../../utils/memoizedEthersUtils";
+import { CopyIconBtn } from "../common/CopyIconBtn";
 
 export const VestingSchedulerAllowances: FC = () => {
   const { network } = useExpectedNetwork();
@@ -104,10 +114,6 @@ export const VestingSchedulerAllowances: FC = () => {
     }
   );
 
-  const contractAddressLink = network.getLinkForAddress(
-    network.vestingSchedulerContractAddress!
-  );
-
   return (
     <>
       <Accordion>
@@ -119,26 +125,69 @@ export const VestingSchedulerAllowances: FC = () => {
           <Stack direction="row" spacing={1} alignItems="center">
             {/* <CheckCircleRoundedIcon sx={{ color: "primary.main" }} /> */}
             <Typography variant="h6">
-              Smart Contract, Allowances and Permissions{" "}
+              Vesting Contract, Allowances and Permissions{" "}
               <Typography variant="caption">(Advanced)</Typography>
             </Typography>
           </Stack>
         </AccordionSummary>
         <AccordionDetails>
-          <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-            <Link href={contractAddressLink}>
-              View Contract on Blockchain Explorer
-            </Link>
-            <LaunchRoundedIcon />
-          </Stack>
+          {network.vestingSchedulerContractAddress && (
+            <Stack
+              direction="row"
+              alignItems="center"
+              spacing={1}
+              sx={{ mb: 1 }}
+            >
+              <Typography>Vesting Contract:</Typography>
+              <Typography>
+                {getAddress(network.vestingSchedulerContractAddress)}
+              </Typography>
+              <CopyIconBtn
+                copyText={getAddress(network.vestingSchedulerContractAddress)}
+                description="Copy address to clipboard"
+              />
+              <Tooltip
+                title="View on blockchain explorer"
+                arrow
+                placement="top"
+              >
+                <Link
+                  passHref
+                  href={network.getLinkForAddress(
+                    network.vestingSchedulerContractAddress
+                  )}
+                  target="_blank"
+                >
+                  <IconButton href="" target="_blank">
+                    <LaunchRoundedIcon />
+                  </IconButton>
+                </Link>
+              </Tooltip>
+            </Stack>
+          )}
           <TableContainer component={Paper} elevation={0}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
                   <TableCell>Token</TableCell>
-                  <TableCell>Token Allowance</TableCell>
-                  <TableCell>Flow Operator Permissions</TableCell>
-                  <TableCell>Flow Operator Allowance</TableCell>
+                  <TableCell>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Typography>Token Allowance</Typography>
+                      <TooltipIcon title="The token allowance needed by the contract for cliff & compensation transfers." />
+                    </Stack>
+                  </TableCell>
+                  <TableCell>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Typography>Flow Operator Permissions</Typography>
+                      <TooltipIcon title="The flow operator permissions needed by the contract for creating & deletion of Superfluid flows." />
+                    </Stack>
+                  </TableCell>
+                  <TableCell>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Typography>Flow Operator Allowance</Typography>
+                      <TooltipIcon title="The flow operator allowance needed by the contract for creating Superfluid flows." />
+                    </Stack>
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -254,7 +303,7 @@ export const VestingSchedulerAllowanceRow: FC<{
             <DangerousRoundedIcon sx={{ color: "warning.main" }} />
           )}
           <span>
-            <Amount wei={flowOperatorAllowance} /> {tokenQuery.data?.symbol}
+            <Amount wei={flowOperatorAllowance} /> {tokenQuery.data?.symbol}/sec
           </span>
         </Stack>
       </TableCell>
