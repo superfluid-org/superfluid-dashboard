@@ -29,6 +29,8 @@ import Amount from "../token/Amount";
 import { flowOperatorPermissionsToString } from "../../utils/flowOperatorPermissionsToString";
 import Link from "../common/Link";
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
+import TooltipIcon from "../common/TooltipIcon";
+import { unitOfTimeList } from "../send/FlowRateInput";
 
 export const VestingSchedulerAllowances: FC = () => {
   const { network } = useExpectedNetwork();
@@ -125,7 +127,7 @@ export const VestingSchedulerAllowances: FC = () => {
           </Stack>
         </AccordionSummary>
         <AccordionDetails>
-          <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
             <Link href={contractAddressLink}>
               View Contract on Blockchain Explorer
             </Link>
@@ -136,9 +138,24 @@ export const VestingSchedulerAllowances: FC = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>Token</TableCell>
-                  <TableCell>Token Allowance</TableCell>
-                  <TableCell>Flow Operator Permissions</TableCell>
-                  <TableCell>Flow Operator Allowance</TableCell>
+                  <TableCell>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Typography>Token Allowance</Typography>
+                      <TooltipIcon title="The token allowance needed by the contract for cliff & compensation transfers." />
+                    </Stack>
+                  </TableCell>
+                  <TableCell>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Typography>Flow Operator Permissions</Typography>
+                      <TooltipIcon title="The flow operator permissions needed by the contract for creating & deletion of Superfluid flows." />
+                    </Stack>
+                  </TableCell>
+                  <TableCell>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Typography>Flow Operator Allowance</Typography>
+                      <TooltipIcon title="The flow operator allowance needed by the contract for creating Superfluid flows." />
+                    </Stack>
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -254,7 +271,7 @@ export const VestingSchedulerAllowanceRow: FC<{
             <DangerousRoundedIcon sx={{ color: "warning.main" }} />
           )}
           <span>
-            <Amount wei={flowOperatorAllowance} /> {tokenQuery.data?.symbol}
+            <Amount wei={flowOperatorAllowance} /> {tokenQuery.data?.symbol}/sec
           </span>
         </Stack>
       </TableCell>
