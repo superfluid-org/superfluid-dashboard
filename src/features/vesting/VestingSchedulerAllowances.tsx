@@ -3,7 +3,9 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  Collapse,
   IconButton,
+  ListItemText,
   Paper,
   Stack,
   Table,
@@ -18,13 +20,12 @@ import {
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { BigNumber } from "ethers";
 import { groupBy, uniq } from "lodash";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { useGetVestingSchedulesQuery } from "../../vesting-subgraph/getVestingSchedules.generated";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { Network } from "../network/networks";
 import { rpcApi, subgraphApi } from "../redux/store";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import DangerousRoundedIcon from "@mui/icons-material/DangerousRounded";
 import TokenIcon from "../token/TokenIcon";
@@ -39,6 +40,8 @@ import shortenHex from "../../utils/shortenHex";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { getAddress } from "../../utils/memoizedEthersUtils";
 import { CopyIconBtn } from "../common/CopyIconBtn";
+import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
+import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
 
 export const VestingSchedulerAllowances: FC = () => {
   const { network } = useExpectedNetwork();
@@ -188,6 +191,7 @@ export const VestingSchedulerAllowances: FC = () => {
                       <TooltipIcon title="The flow operator allowance needed by the contract for creating Superfluid flows." />
                     </Stack>
                   </TableCell>
+                  <TableCell></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -250,6 +254,8 @@ export const VestingSchedulerAllowanceRow: FC<{
     id: tokenAddress,
   });
 
+  const [isExpanded, setIsExpanded] = useState(false);
+
   if (!vestingSchedulerAllowancesQuery.data) return <>Loading...</>;
 
   const { tokenAllowance, flowOperatorPermissions, flowOperatorAllowance } =
@@ -263,50 +269,115 @@ export const VestingSchedulerAllowanceRow: FC<{
   const existingPermissions = Number(flowOperatorPermissions);
   const permissionsString =
     flowOperatorPermissionsToString(existingPermissions);
+  const requiredPermissionsString = flowOperatorPermissionsToString(
+    requiredFlowOperatorPermissions
+  );
+  const isEnoughFlowOperatorPermissions =
+    existingPermissions & requiredFlowOperatorPermissions;
 
   return (
-    <TableRow>
-      <TableCell>
-        <TokenIcon
-          isSuper
-          tokenSymbol={tokenQuery.data?.symbol}
-          isLoading={tokenQuery.isLoading}
-        />
-      </TableCell>
-      <TableCell>
-        <Stack direction="row" spacing={1} alignItems="center">
-          {isEnoughTokenAllowance ? (
-            <CheckCircleRoundedIcon sx={{ color: "primary.main" }} />
-          ) : (
-            <DangerousRoundedIcon sx={{ color: "warning.main" }} />
-          )}
-          <span>
-            <Amount wei={tokenAllowance} /> {tokenQuery.data?.symbol}
-          </span>
-        </Stack>
-      </TableCell>
-      <TableCell>
-        <Stack direction="row" spacing={1} alignItems="center">
-          {isEnoughTokenAllowance ? (
-            <CheckCircleRoundedIcon sx={{ color: "primary.main" }} />
-          ) : (
-            <DangerousRoundedIcon sx={{ color: "warning.main" }} />
-          )}
-          <span>{permissionsString}</span>
-        </Stack>
-      </TableCell>
-      <TableCell>
-        <Stack direction="row" spacing={1} alignItems="center">
-          {isEnoughFlowOperatorAllowance ? (
-            <CheckCircleRoundedIcon sx={{ color: "primary.main" }} />
-          ) : (
-            <DangerousRoundedIcon sx={{ color: "warning.main" }} />
-          )}
-          <span>
-            <Amount wei={flowOperatorAllowance} /> {tokenQuery.data?.symbol}/sec
-          </span>
-        </Stack>
-      </TableCell>
-    </TableRow>
+    <>
+      <TableRow>
+        <TableCell>
+          <Stack direction="row" alignItems="center" gap={1.5}>
+            <TokenIcon
+              isSuper
+              tokenSymbol={tokenQuery.data?.symbol}
+              isLoading={tokenQuery.isLoading}
+            />
+            <ListItemText primary={tokenQuery.data?.symbol} />
+          </Stack>
+        </TableCell>
+        <TableCell>
+          <Stack direction="column" spacing={1} alignItems="center">
+            {isEnoughTokenAllowance ? (
+              <CheckCircleRoundedIcon sx={{ color: "primary.main" }} />
+            ) : (
+              <DangerousRoundedIcon sx={{ color: "warning.main" }} />
+            )}
+          </Stack>
+        </TableCell>
+        <TableCell>
+          <Stack direction="column" spacing={1} alignItems="center">
+            {isEnoughFlowOperatorPermissions ? (
+              <CheckCircleRoundedIcon sx={{ color: "primary.main" }} />
+            ) : (
+              <DangerousRoundedIcon sx={{ color: "warning.main" }} />
+            )}
+          </Stack>
+        </TableCell>
+        <TableCell>
+          <Stack direction="column" spacing={1} alignItems="center">
+            {isEnoughFlowOperatorAllowance ? (
+              <CheckCircleRoundedIcon sx={{ color: "primary.main" }} />
+            ) : (
+              <DangerousRoundedIcon sx={{ color: "warning.main" }} />
+            )}
+          </Stack>
+        </TableCell>
+        <TableCell>
+          <IconButton onClick={() => setIsExpanded(!isExpanded)}>
+            {isExpanded ? <ExpandLessRoundedIcon /> : <ExpandMoreRoundedIcon />}
+          </IconButton>
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell></TableCell>
+        <TableCell>
+          <Collapse in={isExpanded}>
+            <ListItemText
+              primary="Current"
+              secondary={
+                <span>
+                  <Amount wei={tokenAllowance} /> {tokenQuery.data?.symbol}
+                </span>
+              }
+            />
+            <ListItemText
+              primary="Recommended"
+              secondary={
+                <span>
+                  <Amount wei={recommendedTokenAllowance} />{" "}
+                  {tokenQuery.data?.symbol}
+                </span>
+              }
+            />
+          </Collapse>
+        </TableCell>
+        <TableCell>
+          <Collapse in={isExpanded}>
+            <ListItemText primary="Current" secondary={permissionsString} />
+            <ListItemText
+              primary="Recommended"
+              secondary={requiredPermissionsString}
+            />
+          </Collapse>
+        </TableCell>
+        <TableCell>
+          <Collapse in={isExpanded}>
+            <ListItemText
+              primary="Current"
+              secondary={
+                <span>
+                  <Amount wei={flowOperatorAllowance} />{" "}
+                  {tokenQuery.data?.symbol}
+                  /sec
+                </span>
+              }
+            />
+            <ListItemText
+              primary="Recommended"
+              secondary={
+                <span>
+                  <Amount wei={requiredFlowOperatorAllowance} />{" "}
+                  {tokenQuery.data?.symbol}/sec
+                </span>
+              }
+            />
+          </Collapse>
+        </TableCell>
+        <TableCell></TableCell>
+      </TableRow>
+    </>
   );
 };
