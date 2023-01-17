@@ -2,7 +2,7 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC, useMemo } from "react";
 import NoContentPaper from "../../components/NoContent/NoContentPaper";
 import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
-import { networkDefinition } from "../network/networks";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   mapPendingToVestingSchedule,
   useAddressPendingVestingSchedules,
@@ -12,8 +12,8 @@ import VestingScheduleLoadingTable from "./VestingScheduleLoadingTable";
 import VestingScheduleTable from "./VestingScheduleTable";
 
 export const SentVestingScheduleTable: FC = () => {
-  const network = networkDefinition.goerli;
   const { visibleAddress } = useVisibleAddress();
+  const { network } = useExpectedNetwork();
 
   const vestingSchedulesQuery = vestingSubgraphApi.useGetVestingSchedulesQuery(
     visibleAddress

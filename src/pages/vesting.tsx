@@ -13,7 +13,7 @@ import { useMemo } from "react";
 import ConnectOrImpersonate from "../components/ConnectOrImpersonate/ConnectOrImpersonate";
 import { useFeatureFlags } from "../features/featureFlags/FeatureFlagContext";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
-import { networkDefinition } from "../features/network/networks";
+import { networkDefinition, networks } from "../features/network/networks";
 import NetworkSwitchLink from "../features/network/NetworkSwitchLink";
 import { ReceivedVestingScheduleTable } from "../features/vesting/ReceivedVestingScheduleTable";
 import { SentVestingScheduleTable } from "../features/vesting/SentVestingScheduleTable";
@@ -54,7 +54,9 @@ const VestingNotSupportedCard = () => {
   );
 };
 
-const VESTING_SUPPORTED_NETWORKS = [networkDefinition.goerli.id];
+const VESTING_SUPPORTED_NETWORKS = networks
+  .filter((network) => network.vestingContractAddress)
+  .map((network) => network.id);
 
 const VestingPage: NextPage = () => {
   const theme = useTheme();
