@@ -28,7 +28,7 @@ import { useVestingToken } from "../../../features/vesting/useVestingToken";
 import VestedBalance from "../../../features/vesting/VestedBalance";
 import VestingGraph from "../../../features/vesting/VestingGraph";
 import VestingHeader from "../../../features/vesting/VestingHeader";
-import VestingScheduleProgress from "../../../features/vesting/VestingScheduleProgress";
+import VestingScheduleProgress from "../../../features/vesting/VestingScheduleProgress/VestingScheduleProgress";
 import useNavigateBack from "../../../hooks/useNavigateBack";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import Page404 from "../../404";

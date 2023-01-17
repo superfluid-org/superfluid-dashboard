@@ -1,52 +1,54 @@
-import { FC, useMemo } from "react";
+import { ErrorMessage } from "@hookform/error-message";
 import {
   Alert,
   Box,
   Button,
+  FormControlLabel,
   FormGroup,
   FormLabel,
   MenuItem,
   Select,
   Stack,
+  Switch,
   TextField,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { Controller, useFormContext } from "react-hook-form";
-import { PartialVestingForm } from "./CreateVestingFormProvider";
-import AddressSearch from "../send/AddressSearch";
-import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
-import { subgraphApi } from "../redux/store";
-import { skipToken } from "@reduxjs/toolkit/query";
-import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
-import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import {
-  UnitOfTime,
-  timeUnitWordMap,
-  unitOfTimeList,
-} from "../send/FlowRateInput";
-import { transactionButtonDefaultProps } from "../transactionBoundary/TransactionButton";
-import { ErrorMessage } from "@hookform/error-message";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { FC, useCallback, useMemo, useState } from "react";
+import { Controller, useFormContext } from "react-hook-form";
+import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import TooltipIcon from "../common/TooltipIcon";
-import { CreateVestingCardView, VestingToken } from "./CreateVestingSection";
-import { DeleteVestingTransactionButton } from "./DeleteVestingTransactionButton";
+import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
+import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 import {
   MAX_VESTING_START_DATE,
   MIN_VESTING_START_DATE,
 } from "../redux/endpoints/vestingSchedulerEndpoints";
-import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
+import { subgraphApi } from "../redux/store";
+import AddressSearch from "../send/AddressSearch";
+import {
+  timeUnitWordMap,
+  UnitOfTime,
+  unitOfTimeList,
+} from "../send/FlowRateInput";
+import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
+import { transactionButtonDefaultProps } from "../transactionBoundary/TransactionButton";
+import { PartialVestingForm } from "./CreateVestingFormProvider";
+import { CreateVestingCardView, VestingToken } from "./CreateVestingSection";
 
 export enum VestingFormLabels {
   Receiver = "Receiver",
+  Network = "Network",
   CliffPeriod = "Cliff Period",
   CliffAmount = "Cliff Amount",
   VestingStartDate = "Vesting Start Date",
-  Token = "Token",
+  SuperToken = "Super Token",
   TotalVestingPeriod = "Total Vesting Period",
   TotalVestedAmount = "Total Vested Amount",
 }
@@ -60,32 +62,41 @@ export const CreateVestingForm: FC<{
 
   const { network } = useExpectedNetwork();
 
-  const {
-    watch,
-    control,
-    formState,
-    getValues,
-    setValue,
-    reset: resetFormData,
-  } = useFormContext<PartialVestingForm>();
+  const { watch, control, formState, setValue, trigger } =
+    useFormContext<PartialVestingForm>();
 
   const [
-    superTokenAddress,
     receiverAddress,
     totalAmountEther,
     startDate,
     cliffAmountEther,
-    vestingPeriod,
-    cliffPeriod,
+    cliffEnabled,
   ] = watch([
-    "data.superTokenAddress",
     "data.receiverAddress",
     "data.totalAmountEther",
     "data.startDate",
     "data.cliffAmountEther",
-    "data.vestingPeriod",
-    "data.cliffPeriod",
+    "data.cliffEnabled",
   ]);
+
+  const onCliffEnabledChanged = (_event: any, checked: boolean) => {
+    setValue("data.cliffEnabled", checked);
+
+    if (!cliffEnabled) {
+      setValue("data.cliffAmountEther", "");
+      setValue("data.cliffPeriod", {
+        numerator: "",
+        denominator: UnitOfTime.Year,
+      });
+      trigger([
+        "data.cliffAmountEther",
+        "data.cliffPeriod",
+        "data.cliffEnabled",
+      ]);
+    } else {
+      trigger("data.cliffEnabled");
+    }
+  };
 
   const ReceiverController = (
     <Controller
@@ -195,7 +206,12 @@ export const CreateVestingForm: FC<{
         render={({ field: { onChange, onBlur } }) => (
           <DateTimePicker
             renderInput={(props) => (
-              <TextField data-cy={"date-input"} fullWidth {...props} onBlur={onBlur} />
+              <TextField
+                data-cy={"date-input"}
+                fullWidth
+                {...props}
+                onBlur={onBlur}
+              />
             )}
             value={startDate}
             ampm={false}
@@ -346,6 +362,26 @@ export const CreateVestingForm: FC<{
     />
   );
 
+  const CliffEnabledController = (
+    <Controller
+      control={control}
+      name="data.cliffEnabled"
+      render={({ field: { value } }) => (
+        <FormControlLabel
+          control={
+            <Switch
+              value={value}
+              onChange={onCliffEnabledChanged}
+              defaultChecked={value}
+            />
+          }
+          label="Add Cliff"
+          sx={{ mr: 1 }}
+        />
+      )}
+    />
+  );
+
   const PreviewVestingScheduleButton = (
     <Button
       data-cy={"preview-schedule-button"}
@@ -353,7 +389,7 @@ export const CreateVestingForm: FC<{
       disabled={!formState.isValid || formState.isValidating}
       onClick={() => setView(CreateVestingCardView.Preview)}
     >
-      Preview the Vesting Schedule
+      Preview Vesting Schedule
     </Button>
   );
 
@@ -392,38 +428,12 @@ export const CreateVestingForm: FC<{
 
         <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
           <FormGroup>
-            <FormLabel>{VestingFormLabels.Token}</FormLabel>
+            <FormLabel>{VestingFormLabels.SuperToken}</FormLabel>
             {TokenController}
           </FormGroup>
           <FormGroup>
             <FormLabel>{VestingFormLabels.VestingStartDate}</FormLabel>
             {StartDateController}
-          </FormGroup>
-        </Box>
-
-        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
-          <FormGroup>
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-            >
-              <FormLabel>{VestingFormLabels.CliffAmount}</FormLabel>
-              <TooltipIcon title="Set the amount to be vested at the cliff" />
-            </Stack>
-            {CliffAmountController}
-          </FormGroup>
-
-          <FormGroup>
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-            >
-              <FormLabel>{VestingFormLabels.CliffPeriod}</FormLabel>
-              <TooltipIcon title="Set the time until the cliff from the start date" />
-            </Stack>
-            {CliffPeriodController}
           </FormGroup>
         </Box>
 
@@ -452,6 +462,39 @@ export const CreateVestingForm: FC<{
             {VestingPeriodController}
           </FormGroup>
         </Box>
+
+        <Stack direction="row" alignItems="center">
+          {CliffEnabledController}
+          <TooltipIcon title="Set the cliff date and amount to be granted." />
+        </Stack>
+
+        {cliffEnabled && (
+          <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+            <FormGroup>
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+              >
+                <FormLabel>{VestingFormLabels.CliffAmount}</FormLabel>
+                <TooltipIcon title="Set the amount to be vested at the cliff" />
+              </Stack>
+              {CliffAmountController}
+            </FormGroup>
+
+            <FormGroup>
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+              >
+                <FormLabel>{VestingFormLabels.CliffPeriod}</FormLabel>
+                <TooltipIcon title="Set the time until the cliff from the start date" />
+              </Stack>
+              {CliffPeriodController}
+            </FormGroup>
+          </Box>
+        )}
       </Stack>
 
       <Stack gap={1}>{PreviewVestingScheduleButton}</Stack>

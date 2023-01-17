@@ -47,13 +47,15 @@ export const CreateVestingTransactionButton: FC<{
                     superTokenAddress,
                     totalAmountEther,
                     vestingPeriod,
+                    cliffEnabled,
                   },
                 }) => {
                   const startDateTimestamp = getTimeInSeconds(startDate);
 
-                  const cliffDateTimestamp =
-                    startDateTimestamp +
-                    cliffPeriod.numerator * cliffPeriod.denominator;
+                  const cliffDateTimestamp = cliffEnabled
+                    ? startDateTimestamp +
+                      (cliffPeriod.numerator || 0) * cliffPeriod.denominator
+                    : 0;
 
                   const endDateTimestamp =
                     startDateTimestamp +
@@ -61,8 +63,9 @@ export const CreateVestingTransactionButton: FC<{
 
                   const timeToFlow = endDateTimestamp - cliffDateTimestamp;
 
-                  const cliffTransferAmount =
-                    parseEtherOrZero(cliffAmountEther);
+                  const cliffTransferAmount = parseEtherOrZero(
+                    cliffAmountEther || "0"
+                  );
                   const totalAmount = parseEtherOrZero(totalAmountEther);
                   const streamedAmount = totalAmount.sub(cliffTransferAmount);
                   const flowRate =
@@ -101,7 +104,10 @@ export const CreateVestingTransactionButton: FC<{
                   setDialogSuccessActions(
                     <TransactionDialogActions>
                       <Link href="/vesting" passHref>
-                        <TransactionDialogButton data-cy="ok-button" color="primary">
+                        <TransactionDialogButton
+                          data-cy="ok-button"
+                          color="primary"
+                        >
                           OK
                         </TransactionDialogButton>
                       </Link>

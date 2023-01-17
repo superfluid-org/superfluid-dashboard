@@ -7,7 +7,7 @@ const useTimer = (interval: UnitOfTime) => {
   useEffect(() => {
     const intervalKey = window.setInterval(() => {
       setDateNow(new Date());
-    }, interval);
+    }, interval * 1000);
 
     return () => {
       if (!!intervalKey) window.clearInterval(intervalKey);
