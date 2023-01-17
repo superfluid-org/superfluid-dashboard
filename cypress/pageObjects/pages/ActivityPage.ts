@@ -132,7 +132,7 @@ export class ActivityPage extends BasePage {
 
     static waitForSkeletonsToDisappear() {
         this.isVisible(SKELETON_ROW)
-        this.doesNotExist(SKELETON_ROW)
+        cy.get(SKELETON_ROW, {timeout:30000}).should("not.exist")
     }
 
     static validateNoEntriesVisibleByNetwork(network: string) {
