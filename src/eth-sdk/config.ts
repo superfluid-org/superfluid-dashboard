@@ -13,8 +13,8 @@ const ethSdkConfig = defineConfig({
         ...(!isUndefined(network.flowSchedulerContractAddress)
           ? { flowScheduler: network.flowSchedulerContractAddress }
           : {}),
-        ...(!isUndefined(network.vestingSchedulerContractAddress)
-          ? { vestingScheduler: network.vestingSchedulerContractAddress }
+        ...(!isUndefined(network.vestingContractAddress)
+          ? { vestingScheduler: network.vestingContractAddress }
           : {}),
       };
 

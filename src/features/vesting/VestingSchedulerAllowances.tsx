@@ -130,7 +130,7 @@ export const VestingSchedulerAllowances: FC = () => {
           </Stack>
         </AccordionSummary>
         <AccordionDetails>
-          {network.vestingSchedulerContractAddress && (
+          {network.vestingContractAddress && (
             <Stack
               direction="row"
               alignItems="center"
@@ -139,10 +139,10 @@ export const VestingSchedulerAllowances: FC = () => {
             >
               <Typography>Vesting Contract:</Typography>
               <Typography>
-                {getAddress(network.vestingSchedulerContractAddress)}
+                {getAddress(network.vestingContractAddress)}
               </Typography>
               <CopyIconBtn
-                copyText={getAddress(network.vestingSchedulerContractAddress)}
+                copyText={getAddress(network.vestingContractAddress)}
                 description="Copy address to clipboard"
               />
               <Tooltip
@@ -153,7 +153,7 @@ export const VestingSchedulerAllowances: FC = () => {
                 <Link
                   passHref
                   href={network.getLinkForAddress(
-                    network.vestingSchedulerContractAddress
+                    network.vestingContractAddress
                   )}
                   target="_blank"
                 >

@@ -29,7 +29,8 @@ export type Network = Chain & {
     } & TokenMinimal;
   };
   flowSchedulerContractAddress?: `0x${string}`;
-  vestingSchedulerContractAddress?: `0x${string}`;
+  vestingContractAddress: `0x${string}` | undefined;
+  vestingSubgraphUrl: `https://${string}` | undefined;
   platformUrl?: string;
 };
 
@@ -44,6 +45,28 @@ export const superfluidRpcUrls = {
   avalancheC: "https://rpc-endpoints.superfluid.dev/avalanche-c",
   bnbSmartChain: "https://rpc-endpoints.superfluid.dev/bsc-mainnet",
   ethereum: "https://rpc-endpoints.superfluid.dev/eth-mainnet",
+};
+
+export const vestingSubraphUrls: Record<string, `https://${string}`> = {
+  gnosis: "https://thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-gnosis",
+  goerli: "https://thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-goerli",
+  polygon: "https://thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-polygon",
+  arbitrum: "https://thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-arbitrum",
+  optimism: "https://thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-optimism",
+  avalancheC: "https://thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-avalanche",
+  bnbSmartChain: "https://thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-bsc",
+  ethereum: "https://thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-eth-mainnet",
+};
+
+export const vestingContractAddresses: Record<string, `0x${string}`> = {
+  gnosis: "0x0170FFCC75d178d426EBad5b1a31451d00Ddbd0D",
+  goerli: "0x2A6dD60Dbb8CE65813842eEe1688b21CA30D6ffd",
+  polygon: "0xcFE6382B33F2AdaFbE46e6A26A88E0182ae32b0c",
+  arbitrum: "0x55c8fc400833eEa791087cF343Ff2409A39DeBcC",
+  optimism: "0x65377d4dfE9c01639A41952B5083D58964782892",
+  avalancheC: "0x3fA8B653F9abf91428800C0ba0F8D145a71F97A1",
+  bnbSmartChain: "0x9B91c27f78376383003C6A12Ad12B341d016C5b9",
+  ethereum: "0x39D5cBBa9adEBc25085a3918d36D5325546C001B",
 };
 
 const blockExplorers = {
@@ -80,13 +103,10 @@ const blockExplorers = {
 export const networkDefinition: {
   goerli: Network & {
     flowSchedulerContractAddress: `0x${string}`;
-    vestingSchedulerContractAddress: `0x${string}`;
     platformUrl: string;
   };
   gnosis: Network;
-  polygon: Network & {
-    vestingSchedulerContractAddress: `0x${string}`;
-  };
+  polygon: Network;
   polygonMumbai: Network;
   avalancheFuji: Network;
   optimism: Network;
@@ -125,8 +145,8 @@ export const networkDefinition: {
       },
     },
     flowSchedulerContractAddress: "0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca",
-    vestingSchedulerContractAddress:
-      "0x2A6dD60Dbb8CE65813842eEe1688b21CA30D6ffd",
+    vestingContractAddress: vestingContractAddresses.goerli,
+    vestingSubgraphUrl: vestingSubraphUrls.goerli,
     platformUrl: config.platformApi.goerli,
   },
   gnosis: {
@@ -167,6 +187,8 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
+    vestingContractAddress: vestingContractAddresses.gnosis,
+    vestingSubgraphUrl: vestingSubraphUrls.gnosis,
   },
   polygon: {
     ...chain.polygon,
@@ -198,7 +220,8 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
-    vestingSchedulerContractAddress: "0xcFE6382B33F2AdaFbE46e6A26A88E0182ae32b0c"
+    vestingContractAddress: vestingContractAddresses.polygon,
+    vestingSubgraphUrl: vestingSubraphUrls.polygon,
   },
   polygonMumbai: {
     ...chain.polygonMumbai,
@@ -229,6 +252,8 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
+    vestingContractAddress: undefined,
+    vestingSubgraphUrl: undefined,
   },
   avalancheFuji: {
     name: "Fuji (C-Chain)",
@@ -268,6 +293,8 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
+    vestingContractAddress: undefined,
+    vestingSubgraphUrl: undefined,
   },
   optimism: {
     ...chain.optimism,
@@ -299,6 +326,8 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
+    vestingContractAddress: vestingContractAddresses.optimism,
+    vestingSubgraphUrl: vestingSubraphUrls.optimism,
   },
   arbitrum: {
     ...chain.arbitrum,
@@ -330,6 +359,8 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
+    vestingContractAddress: vestingContractAddresses.arbitrum,
+    vestingSubgraphUrl: vestingSubraphUrls.arbitrum,
   },
   avalancheC: {
     name: "Avalanche C",
@@ -371,6 +402,8 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
+    vestingContractAddress: vestingContractAddresses.avalancheC,
+    vestingSubgraphUrl: vestingSubraphUrls.avalancheC,
   },
   bsc: {
     name: "BNB Smart Chain",
@@ -410,6 +443,8 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
+    vestingContractAddress: vestingContractAddresses.bsc,
+    vestingSubgraphUrl: vestingSubraphUrls.bsc,
   },
   ethereum: {
     ...chain.mainnet,
@@ -440,7 +475,9 @@ export const networkDefinition: {
         name: "Super ETH",
         decimals: 18,
       },
-    }
+    },
+    vestingContractAddress: vestingContractAddresses.ethereum,
+    vestingSubgraphUrl: vestingSubraphUrls.ethereum,
   },
 };
 
