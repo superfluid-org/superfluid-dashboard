@@ -3,9 +3,7 @@ import { FC } from "react";
 import NoContentPaper from "../../components/NoContent/NoContentPaper";
 import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { networkDefinition } from "../network/networks";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import VestingScheduleLoadingTable from "./VestingScheduleLoadingTable";
 import VestingScheduleTable from "./VestingScheduleTable";
 
 export const ReceivedVestingScheduleTable: FC = () => {
@@ -34,11 +32,10 @@ export const ReceivedVestingScheduleTable: FC = () => {
 
   return (
     <>
-      {isLoading ? (
-        <VestingScheduleLoadingTable />
-      ) : hasContent ? (
+      {isLoading || hasContent ? (
         <VestingScheduleTable
           incoming
+          isLoading={isLoading}
           dataCy={"received-table"}
           network={network}
           vestingSchedules={vestingSchedules}

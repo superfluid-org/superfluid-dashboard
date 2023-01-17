@@ -1,6 +1,7 @@
 import { Chip, Stack, Typography } from "@mui/material";
 import { Token } from "@superfluid-finance/sdk-core";
 import { FC } from "react";
+import { useAccount } from "wagmi";
 import useNavigateBack from "../../hooks/useNavigateBack";
 import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
@@ -21,12 +22,13 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
   vestingSchedule,
   token,
 }) => {
+  const { address: accountAddress } = useAccount();
   const navigateBack = useNavigateBack("/vesting");
 
   const { deletedAt, endExecutedAt, superToken, sender, receiver } =
     vestingSchedule;
 
-  const canDelete = !deletedAt && !endExecutedAt;
+  const canDelete = !!accountAddress && !deletedAt && !endExecutedAt;
 
   return (
     <VestingHeader

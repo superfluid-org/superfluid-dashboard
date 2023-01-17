@@ -8,7 +8,6 @@ import {
   useAddressPendingVestingSchedules,
 } from "../pendingUpdates/PendingVestingSchedule";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import VestingScheduleLoadingTable from "./VestingScheduleLoadingTable";
 import VestingScheduleTable from "./VestingScheduleTable";
 
 export const SentVestingScheduleTable: FC = () => {
@@ -45,20 +44,24 @@ export const SentVestingScheduleTable: FC = () => {
     [pendingVestingSchedules, visibleAddress]
   );
 
-  const { vestingSchedules, isLoading } = vestingSchedulesQuery;
-  const hasContent =
-    vestingSchedules.length > 0 || mappedPendingVestingSchedules.length > 0;
+  const mappedVestingSchedules = useMemo(() => {
+    return [
+      ...mappedPendingVestingSchedules,
+      ...(vestingSchedulesQuery.vestingSchedules || []),
+    ];
+  }, [mappedPendingVestingSchedules, vestingSchedulesQuery.vestingSchedules]);
+
+  const { isLoading } = vestingSchedulesQuery;
+  const hasContent = mappedVestingSchedules.length > 0;
 
   return (
     <>
-      {isLoading ? (
-        <VestingScheduleLoadingTable />
-      ) : hasContent ? (
+      {isLoading || hasContent ? (
         <VestingScheduleTable
           data-cy={"created-table"}
+          isLoading={isLoading}
           network={network}
-          vestingSchedules={vestingSchedules}
-          pendingVestingSchedules={mappedPendingVestingSchedules}
+          vestingSchedules={mappedVestingSchedules}
         />
       ) : (
         <NoContentPaper
