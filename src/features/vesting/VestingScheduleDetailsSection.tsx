@@ -67,7 +67,7 @@ export const VestingScheduleDetails: FC<{
   );
   const totalAmount = BigNumber.from(cliffAmount).add(totalFlowed);
 
-  const cliffAmountEther = formatEther(cliffAmount);
+  const cliffAmountEther = formatEther(cliffAmount || "0");
   const totalAmountEther = formatEther(totalAmount);
 
   const urlToShare = `${config.appUrl}/vesting/${network.slugName}/${id}`;
@@ -76,7 +76,7 @@ export const VestingScheduleDetails: FC<{
     <Stack gap={3}>
       <Box sx={{ my: 2 }}>
         <VestingScheduleGraph
-          cliffAmount={cliffAmount}
+          cliffAmount={cliffAmount || "0"}
           cliffDate={cliffDate}
           endDate={endDate}
           startDate={startDate}

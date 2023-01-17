@@ -34,7 +34,7 @@ function mapVestingGraphDataPoints(vestingSchedule: VestingSchedule) {
     endDate: endDateUnix,
     cliffDate: cliffDateUnix,
     flowRate,
-    cliffAmount = "0",
+    cliffAmount,
   } = vestingSchedule;
 
   const startDate = fromUnixTime(Number(startDateUnix));
@@ -61,7 +61,7 @@ function mapVestingGraphDataPoints(vestingSchedule: VestingSchedule) {
     if (secondsStreamed > 0) {
       const amountStreamed = BigNumber.from(secondsStreamed).mul(flowRate);
 
-      const etherAmount = formatEther(amountStreamed.add(cliffAmount));
+      const etherAmount = formatEther(amountStreamed.add(cliffAmount || "0"));
 
       const newDataPoint = {
         x: date.getTime(),
@@ -71,7 +71,7 @@ function mapVestingGraphDataPoints(vestingSchedule: VestingSchedule) {
 
       if (!cliffAdded) {
         cliffAdded = true;
-        const cliffAmountEther = formatEther(cliffAmount);
+        const cliffAmountEther = formatEther(cliffAmount || "0");
 
         return [
           ...mappedData,

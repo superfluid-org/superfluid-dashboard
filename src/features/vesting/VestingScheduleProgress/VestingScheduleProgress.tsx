@@ -74,7 +74,6 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
     createdAt: unixCreatedAt,
     startDate: unixStartDate,
     cliffDate: unixCliffDate,
-    cliffAndFlowDate: cliffAndFlowDateUnix,
     endDate: unixEndDate,
   } = vestingSchedule;
 
@@ -91,7 +90,7 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
   );
 
   const cliffDate = useMemo(
-    () => (unixCliffDate !== "0" ? fromUnixTime(Number(unixCliffDate)) : null),
+    () => (unixCliffDate ? fromUnixTime(Number(unixCliffDate)) : null),
     [unixCliffDate]
   );
 
