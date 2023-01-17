@@ -2582,7 +2582,7 @@ const vestingTransforms = [];
 const additionalTypeDefs = [] as any[];
 const vestingHandler = new GraphqlHandler({
               name: "vesting",
-              config: {"endpoint":"{context.url:https://api.studio.thegraph.com/query/14557/vesting-scheduler/v0.0.18}"},
+              config: {"endpoint":"{context.url:https://api.studio.thegraph.com/query/14557/vesting-scheduler/v0.0.18}","retry":5},
               baseDir,
               cache,
               pubsub,
@@ -2680,6 +2680,8 @@ export type GetVestingScheduleQuery = { vestingSchedule?: Maybe<Pick<VestingSche
 
 export type GetVestingSchedulesQueryVariables = Exact<{
   where?: InputMaybe<VestingSchedule_Filter>;
+  orderBy?: InputMaybe<VestingSchedule_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
 }>;
 
 
@@ -2714,8 +2716,13 @@ export const GetVestingScheduleDocument = gql`
 }
     ` as unknown as DocumentNode<GetVestingScheduleQuery, GetVestingScheduleQueryVariables>;
 export const GetVestingSchedulesDocument = gql`
-    query getVestingSchedules($where: VestingSchedule_filter) {
-  vestingSchedules(where: $where) {
+    query getVestingSchedules($where: VestingSchedule_filter = {}, $orderBy: VestingSchedule_orderBy = id, $orderDirection: OrderDirection = asc) {
+  vestingSchedules(
+    first: 1000
+    where: $where
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+  ) {
     id
     cliffDate
     cliffAndFlowExecutedAt

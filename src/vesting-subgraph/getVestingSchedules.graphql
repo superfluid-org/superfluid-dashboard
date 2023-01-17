@@ -1,5 +1,14 @@
-query getVestingSchedules($where: VestingSchedule_filter) {
-  vestingSchedules(where: $where) {
+query getVestingSchedules(
+  $where: VestingSchedule_filter = {}
+  $orderBy: VestingSchedule_orderBy = id
+  $orderDirection: OrderDirection = asc
+) {
+  vestingSchedules(
+    first: 1000
+    where: $where
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+  ) {
     id
     cliffDate
     cliffAndFlowExecutedAt

@@ -60,7 +60,7 @@ export const DeleteVestingTransactionButton: FC<{
     chainId: network.id,
     superTokenAddress,
     receiverAddress,
-    senderAddress,
+    senderAddress,  
   });
   const isButtonVisible = !!activeVestingSchedule && !isBeingDeleted;
 

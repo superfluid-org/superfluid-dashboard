@@ -3,6 +3,7 @@ sources:
     handler:
       graphql:
         endpoint: '{context.url:https://api.studio.thegraph.com/query/14557/vesting-scheduler/v0.0.18}'
+        retry: 5
 documents:
   - './*.graphql'
 codegen:
