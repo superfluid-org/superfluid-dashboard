@@ -13,30 +13,29 @@ const VestedBalance: FC<VestedBalanceProps> = ({
   vestingSchedule,
 }) => {
   const {
-    startDate: startDateUnix,
-    cliffDate: cliffDateUnix,
+    cliffAndFlowDate: cliffAndFlowDateUnix,
     endDate: endDateUnix,
     cliffAmount,
     flowRate,
+    startDate,
+    cliffDate,
   } = vestingSchedule;
 
   const unixNow = useUnixDateWithVestingTriggers(
-    startDateUnix,
-    endDateUnix,
-    cliffDateUnix
+    cliffAndFlowDateUnix,
+    endDateUnix
   );
 
   const currentFlowRate = useMemo(
     () =>
-      unixNow > Number(cliffDateUnix || startDateUnix) &&
-      unixNow < Number(endDateUnix)
+      unixNow > Number(cliffAndFlowDateUnix) && unixNow < Number(endDateUnix)
         ? flowRate
         : "0",
-    [cliffDateUnix, startDateUnix, endDateUnix, unixNow, flowRate]
+    [cliffAndFlowDateUnix, endDateUnix, unixNow, flowRate]
   );
 
   const currentBalance = useMemo(() => {
-    const streamStartUnix = Number(cliffDateUnix || startDateUnix);
+    const streamStartUnix = Number(cliffAndFlowDateUnix);
     const streamedSeconds = Math.min(
       unixNow - streamStartUnix,
       Number(endDateUnix) - streamStartUnix
@@ -48,14 +47,7 @@ const VestedBalance: FC<VestedBalanceProps> = ({
       .mul(streamedSeconds)
       .add(cliffAmount || "0")
       .toString();
-  }, [
-    cliffDateUnix,
-    startDateUnix,
-    endDateUnix,
-    unixNow,
-    cliffAmount,
-    flowRate,
-  ]);
+  }, [cliffAndFlowDateUnix, endDateUnix, unixNow, cliffAmount, flowRate]);
 
   return (
     <>

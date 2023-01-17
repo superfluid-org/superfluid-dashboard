@@ -40,6 +40,10 @@ function mapVestingGraphDataPoints(vestingSchedule: VestingSchedule) {
   const startDate = fromUnixTime(Number(startDateUnix));
   const endDate = fromUnixTime(Number(endDateUnix));
 
+  const cliffAndFlowDateUnix = Number(
+    cliffDateUnix !== "0" ? cliffDateUnix : startDateUnix
+  );
+
   const dates = getDatesBetween(
     startDate,
     endDate,
@@ -52,7 +56,7 @@ function mapVestingGraphDataPoints(vestingSchedule: VestingSchedule) {
   return dates.reduce((mappedData: DataPoint[], date: Date) => {
     const dateUnix = getUnixTime(date);
 
-    const secondsStreamed = dateUnix - Number(cliffDateUnix || startDateUnix);
+    const secondsStreamed = dateUnix - cliffAndFlowDateUnix;
 
     if (secondsStreamed > 0) {
       const amountStreamed = BigNumber.from(secondsStreamed).mul(flowRate);

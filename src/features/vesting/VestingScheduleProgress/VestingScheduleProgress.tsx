@@ -1,40 +1,10 @@
-import { Stack, Box, Typography, useTheme } from "@mui/material";
-import { format, fromUnixTime } from "date-fns";
-import { FC, useMemo } from "react";
-import useTimer from "../../hooks/useTimer";
-import { UnitOfTime } from "../send/FlowRateInput";
-import { VestingSchedule } from "./types";
-
-interface VestingCheckpointProps {
-  title: string;
-  date: Date;
-}
-
-const VestingCheckpoint: FC<VestingCheckpointProps> = ({ title, date }) => {
-  const theme = useTheme();
-  const isActive = useMemo(() => date <= new Date(), [date]);
-
-  return (
-    <Stack alignItems="center">
-      <Stack sx={{ position: "relative", width: "100%", alignItems: "center" }}>
-        <Box
-          sx={{
-            background: isActive
-              ? theme.palette.primary.main
-              : theme.palette.divider,
-            width: "10px",
-            height: "10px",
-            borderRadius: "50%",
-          }}
-        />
-      </Stack>
-      <Typography variant="h6" color="text.secondary" sx={{ mt: 1 }}>
-        {title}
-      </Typography>
-      <Typography variant="h6">{format(date, "MMM do, yyyy HH:mm")}</Typography>
-    </Stack>
-  );
-};
+import { Box, useTheme } from "@mui/material";
+import { fromUnixTime } from "date-fns";
+import { FC, memo, useMemo } from "react";
+import useTimer from "../../../hooks/useTimer";
+import { UnitOfTime } from "../../send/FlowRateInput";
+import { VestingSchedule } from "../types";
+import VestingScheduleProgressCheckpoint from "./VestingScheduleProgressCheckpoint";
 
 interface VestingProgressProps {
   nth: number;
@@ -57,7 +27,8 @@ const VestingProgress: FC<VestingProgressProps> = ({
 
     const progressMs = dateNowMs - start.getTime();
     const totalMs = end.getTime() - start.getTime();
-    return Math.min(1, progressMs / totalMs);
+
+    return Math.max(Math.min(1, progressMs / totalMs), 0);
   }, [start, end, dateNow]);
 
   return (
@@ -103,6 +74,7 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
     createdAt: unixCreatedAt,
     startDate: unixStartDate,
     cliffDate: unixCliffDate,
+    cliffAndFlowDate: cliffAndFlowDateUnix,
     endDate: unixEndDate,
   } = vestingSchedule;
 
@@ -119,7 +91,7 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
   );
 
   const cliffDate = useMemo(
-    () => fromUnixTime(Number(unixCliffDate)),
+    () => (unixCliffDate !== "0" ? fromUnixTime(Number(unixCliffDate)) : null),
     [unixCliffDate]
   );
 
@@ -128,11 +100,13 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
     [unixEndDate]
   );
 
+  const cliffAndFlowDate = cliffDate || startDate;
+
   return (
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumns: "repeat(4, 170px)",
+        gridTemplateColumns: `repeat(${cliffDate ? 4 : 3}, 170px)`,
         justifyContent: "space-between",
       }}
     >
@@ -142,25 +116,45 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
         end={startDate}
         dateNow={dateNow}
       />
+      {cliffDate && (
+        <VestingProgress
+          nth={2}
+          start={startDate}
+          end={cliffDate}
+          dateNow={dateNow}
+        />
+      )}
       <VestingProgress
-        nth={2}
-        start={startDate}
-        end={cliffDate}
-        dateNow={dateNow}
-      />
-      <VestingProgress
-        nth={3}
-        start={cliffDate}
+        nth={cliffDate ? 3 : 2}
+        start={cliffAndFlowDate}
         end={endDate}
         dateNow={dateNow}
       />
 
-      <VestingCheckpoint title="Vesting Scheduled" date={createdAt} />
-      <VestingCheckpoint title="Vesting Starts" date={startDate} />
-      <VestingCheckpoint title="Cliff" date={cliffDate} />
-      <VestingCheckpoint title="Vesting Ends" date={endDate} />
+      <VestingScheduleProgressCheckpoint
+        title="Vesting Scheduled"
+        targetDate={createdAt}
+        dateNow={dateNow}
+      />
+      <VestingScheduleProgressCheckpoint
+        title="Vesting Starts"
+        targetDate={startDate}
+        dateNow={dateNow}
+      />
+      {cliffDate && (
+        <VestingScheduleProgressCheckpoint
+          title="Cliff"
+          targetDate={cliffDate}
+          dateNow={dateNow}
+        />
+      )}
+      <VestingScheduleProgressCheckpoint
+        title="Vesting Ends"
+        targetDate={endDate}
+        dateNow={dateNow}
+      />
     </Box>
   );
 };
 
-export default VestingScheduleProgress;
+export default memo(VestingScheduleProgress);
