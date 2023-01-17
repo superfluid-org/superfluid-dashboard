@@ -435,7 +435,7 @@ const StreamPageContent: FC<{
             superToken: scheduledStream.token.toLowerCase(),
             sender: scheduledStream.sender.toLowerCase(),
             receiver: scheduledStream.receiver.toLowerCase(),
-            cliffAndFlowDate: getTimeInSeconds(
+            cliffAndFlowExecutedAt: getTimeInSeconds(
               scheduledStream.startDate
             ).toString(),
           },

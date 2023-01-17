@@ -7,7 +7,6 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import Chip from "@mui/material/Chip";
 import { BigNumber } from "ethers";
 import { isString } from "lodash";
 import { NextPage } from "next";
@@ -16,7 +15,6 @@ import { FC, useEffect, useMemo, useState } from "react";
 import TimeUnitFilter, {
   TimeUnitFilterType,
 } from "../../../features/graph/TimeUnitFilter";
-import NetworkIcon from "../../../features/network/NetworkIcon";
 import { Network, networksBySlug } from "../../../features/network/networks";
 import Amount from "../../../features/token/Amount";
 import TokenIcon from "../../../features/token/TokenIcon";
@@ -26,10 +24,10 @@ import useTokenPrice from "../../../features/tokenPrice/useTokenPrice";
 import { BigLoader } from "../../../features/vesting/BigLoader";
 import { useVestingToken } from "../../../features/vesting/useVestingToken";
 import VestedBalance from "../../../features/vesting/VestedBalance";
+import VestingDetailsHeader from "../../../features/vesting/VestingDetailsHeader";
 import VestingGraph from "../../../features/vesting/VestingGraph";
-import VestingHeader from "../../../features/vesting/VestingHeader";
 import VestingScheduleProgress from "../../../features/vesting/VestingScheduleProgress/VestingScheduleProgress";
-import useNavigateBack from "../../../hooks/useNavigateBack";
+import config from "../../../utils/config";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import Page404 from "../../404";
 
@@ -139,7 +137,6 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
   id,
   network,
 }) => {
-  const navigateBack = useNavigateBack("/vesting");
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -189,22 +186,15 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
   const { symbol } = token;
   const { flowRate } = vestingSchedule;
 
+  const urlToShare = `${config.appUrl}/vesting/${network.slugName}/${id}`;
+
   return (
     <Container maxWidth="lg">
-      <VestingHeader onBack={navigateBack}>
-        <Stack direction="row" alignItems="center" gap={2}>
-          <TokenIcon isSuper tokenSymbol={symbol} />
-          <Typography component="h1" variant="h4">
-            Vesting {symbol}
-          </Typography>
-          <Chip
-            size="small"
-            label={network.name}
-            translate="no"
-            avatar={<NetworkIcon network={network} size={18} fontSize={14} />}
-          />
-        </Stack>
-      </VestingHeader>
+      <VestingDetailsHeader
+        network={network}
+        vestingSchedule={vestingSchedule}
+        token={token}
+      />
 
       <Stack gap={3}>
         <Card
@@ -316,6 +306,13 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
             <VestingScheduleProgress vestingSchedule={vestingSchedule} />
           </Stack>
         </Card>
+
+        {/* <SharingSection
+          url={urlToShare}
+          twitterText="Start vesting with Superfluid!"
+          telegramText="Start vesting with Superfluid!"
+          twitterHashtags="Superfluid,Vesting"
+        /> */}
       </Stack>
     </Container>
   );

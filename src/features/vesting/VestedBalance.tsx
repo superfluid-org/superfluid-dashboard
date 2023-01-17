@@ -17,8 +17,6 @@ const VestedBalance: FC<VestedBalanceProps> = ({
     endDate: endDateUnix,
     cliffAmount,
     flowRate,
-    startDate,
-    cliffDate,
   } = vestingSchedule;
 
   const unixNow = useUnixDateWithVestingTriggers(
