@@ -1,5 +1,8 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
-import { networkDefinition } from "../features/network/networks";
+import {
+  findNetworkByChainId,
+  networkDefinition,
+} from "../features/network/networks";
 import {
   getBuiltGraphSDK,
   GetVestingScheduleQuery,
@@ -11,9 +14,10 @@ import {
 } from "./.graphclient";
 
 const tryGetBuiltGraphSdkForNetwork = (chainId: number) => {
-  if (chainId === networkDefinition.goerli.id) {
+  const network = findNetworkByChainId(chainId);
+  if (network?.subgraphUrl) {
     return getBuiltGraphSDK({
-      url: "https://api.studio.thegraph.com/query/14557/vesting-scheduler/v0.0.18",
+      url: network.subgraphUrl,
     });
   }
 };
