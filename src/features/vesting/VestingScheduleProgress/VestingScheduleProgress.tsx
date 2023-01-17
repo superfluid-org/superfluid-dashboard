@@ -70,8 +70,6 @@ interface VestingScheduleProgressProps {
 const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
   vestingSchedule,
 }) => {
-  console.log({ vestingSchedule });
-
   const {
     createdAt: unixCreatedAt,
     startDate: unixStartDate,

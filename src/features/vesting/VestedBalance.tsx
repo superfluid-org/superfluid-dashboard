@@ -25,7 +25,7 @@ const VestedBalance: FC<VestedBalanceProps> = ({
     cliffAndFlowDateUnix,
     endDateUnix
   );
-  console.log({ cliffAndFlowDateUnix, startDate, cliffDate });
+
   const currentFlowRate = useMemo(
     () =>
       unixNow > Number(cliffAndFlowDateUnix) && unixNow < Number(endDateUnix)
