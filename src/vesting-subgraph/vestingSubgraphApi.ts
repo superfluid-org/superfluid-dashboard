@@ -17,7 +17,7 @@ const tryGetBuiltGraphSdkForNetwork = (chainId: number) => {
   const network = findNetworkByChainId(chainId);
   if (network?.subgraphUrl) {
     return getBuiltGraphSDK({
-      url: network.subgraphUrl,
+      url: network.vestingSubgraphUrl,
     });
   }
 };
