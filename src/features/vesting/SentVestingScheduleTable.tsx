@@ -20,6 +20,8 @@ export const SentVestingScheduleTable: FC = () => {
       ? {
           chainId: network.id,
           where: { sender: visibleAddress?.toLowerCase(), deletedAt: null },
+          orderBy: "createdAt",
+          orderDirection: "desc",
         }
       : skipToken,
     {

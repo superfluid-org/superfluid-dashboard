@@ -16,6 +16,8 @@ export const ReceivedVestingScheduleTable: FC = () => {
       ? {
           chainId: networkDefinition.goerli.id,
           where: { receiver: visibleAddress?.toLowerCase(), deletedAt: null },
+          orderBy: "createdAt",
+          orderDirection: "desc",
         }
       : skipToken,
     {

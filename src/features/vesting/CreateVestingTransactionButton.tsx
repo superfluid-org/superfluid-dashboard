@@ -57,11 +57,15 @@ export const CreateVestingTransactionButton: FC<{
                       (cliffPeriod.numerator || 0) * cliffPeriod.denominator
                     : 0;
 
+                  const cliffAndFlowTimestamp = cliffEnabled
+                    ? cliffDateTimestamp
+                    : startDateTimestamp;
+
                   const endDateTimestamp =
                     startDateTimestamp +
                     vestingPeriod.numerator * vestingPeriod.denominator;
 
-                  const timeToFlow = endDateTimestamp - cliffDateTimestamp;
+                  const timeToFlow = endDateTimestamp - cliffAndFlowTimestamp;
 
                   const cliffTransferAmount = parseEtherOrZero(
                     cliffAmountEther || "0"
