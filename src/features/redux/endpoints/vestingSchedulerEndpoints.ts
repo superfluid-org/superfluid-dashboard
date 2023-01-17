@@ -12,7 +12,7 @@ import {
 } from "@superfluid-finance/sdk-redux";
 import add from "date-fns/add";
 import { BigNumber } from "ethers";
-import { getEthSdk } from "../../../eth-sdk/getEthSdk";
+import { getVestingScheduler } from "../../../eth-sdk/getEthSdk";
 import { UnitOfTime } from "../../send/FlowRateInput";
 import {
   ACL_CREATE_PERMISSION,
@@ -75,7 +75,7 @@ export const vestingSchedulerMutationEndpoints = {
         },
         { dispatch }
       ) => {
-        const { vestingScheduler } = getEthSdk(chainId, signer);
+        const vestingScheduler = getVestingScheduler(chainId, signer);
         const signerAddress = await signer.getAddress();
 
         const transactionResponse =
@@ -105,7 +105,7 @@ export const vestingSchedulerMutationEndpoints = {
         { chainId, signer, superTokenAddress, senderAddress, ...arg },
         { dispatch }
       ) => {
-        const { vestingScheduler } = getEthSdk(chainId, signer);
+        const vestingScheduler = getVestingScheduler(chainId, signer);
 
         const framework = await getFramework(chainId);
         const superToken = await framework.loadSuperToken(superTokenAddress);
@@ -247,7 +247,7 @@ export const vestingSchedulerQueryEndpoints = {
       },
       queryFn: async ({ chainId }) => {
         const framework = await getFramework(chainId);
-        const { vestingScheduler } = getEthSdk(
+        const vestingScheduler = getVestingScheduler(
           chainId,
           framework.settings.provider
         );
@@ -298,7 +298,7 @@ export const vestingSchedulerQueryEndpoints = {
       queryFn: async ({ chainId, tokenAddress, senderAddress }) => {
         const framework = await getFramework(chainId);
         const superToken = await framework.loadSuperToken(tokenAddress);
-        const { vestingScheduler } = getEthSdk(
+        const vestingScheduler = getVestingScheduler(
           chainId,
           framework.settings.provider
         );
@@ -344,7 +344,7 @@ export const vestingSchedulerQueryEndpoints = {
         receiverAddress,
       }) => {
         const framework = await getFramework(chainId);
-        const { vestingScheduler } = getEthSdk(
+        const vestingScheduler = getVestingScheduler(
           chainId,
           framework.settings.provider
         );

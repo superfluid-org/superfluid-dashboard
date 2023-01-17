@@ -9,9 +9,9 @@ import {
   TransactionInfo,
   TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
+import { getFlowScheduler } from "../../../eth-sdk/getEthSdk";
 import { findNetworkByChainId } from "../../network/networks";
 import { rpcApi } from "../store";
-import { getEthSdk } from "../../../eth-sdk/getEthSdk";
 
 export const ACL_CREATE_PERMISSION = 1;
 export const ACL_UPDATE_PERMISSION = 2;
@@ -40,7 +40,7 @@ export const flowSchedulerEndpoints = {
         receiverAddress,
       }) => {
         const framework = await getFramework(chainId);
-        const { flowScheduler } = getEthSdk(
+        const flowScheduler = getFlowScheduler(
           chainId,
           framework.settings.provider
         );
@@ -91,7 +91,7 @@ export const flowSchedulerEndpoints = {
 
         const network = findNetworkByChainId(chainId);
         if (network?.flowSchedulerContractAddress) {
-          const { flowScheduler } = getEthSdk(chainId, arg.signer);
+          const flowScheduler = getFlowScheduler(chainId, arg.signer);
           const existingEndTimestamp = await dispatch(
             rpcApi.endpoints.scheduledEndDate.initiate(
               {

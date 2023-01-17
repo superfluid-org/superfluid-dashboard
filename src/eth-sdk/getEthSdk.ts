@@ -1,24 +1,28 @@
 import { providers, Signer } from "ethers";
 import { networkDefinition } from "../features/network/networks";
 import { getGoerliSdk, getPolygonSdk } from "./client";
-import { configuredNetworks } from "./config";
 
-export const getEthSdk = (
+export const getFlowScheduler = (
   chainId: number,
   providerOrSigner: providers.Provider | Signer
 ) => {
-  if (chainId === networkDefinition.polygon.id) {
-    return getPolygonSdk(providerOrSigner);
-  }
-
   if (chainId === networkDefinition.goerli.id) {
-    return getGoerliSdk(providerOrSigner);
+    return getGoerliSdk(providerOrSigner).flowScheduler;
   }
 
-  if (configuredNetworks.some((x) => x.chainId === chainId)) {
-    throw new Error(
-      "Network has Eth-SDK but it's not handled. Please add it to the function ASAP!"
-    );
+  throw new Error("FlowScheduler not available for network.");
+};
+
+export const getVestingScheduler = (
+  chainId: number,
+  providerOrSigner: providers.Provider | Signer
+) => {
+  if (chainId === networkDefinition.goerli.id) {
+    return getGoerliSdk(providerOrSigner).vestingScheduler;
+  }
+
+  if (chainId === networkDefinition.polygon.id) {
+    return getPolygonSdk(providerOrSigner).vestingScheduler;
   }
 
   throw new Error("Eth-SDK not available for network.");

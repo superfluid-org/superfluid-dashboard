@@ -6,8 +6,6 @@ import {
 import { isUndefined } from "lodash";
 import { networkDefinition } from "../features/network/networks";
 
-export const configuredNetworks: { chainId: number; symbol: string }[] = [];
-
 const ethSdkConfig = defineConfig({
   contracts: Object.entries(networkDefinition).reduce(
     (previousValue, [networkName, network]) => {
@@ -26,7 +24,6 @@ const ethSdkConfig = defineConfig({
           throw new Error(
             "Eth-Sdk does not have pre-defined support for this network. You have to handle it somehow... https://github.com/dethcrypto/eth-sdk"
           );
-        configuredNetworks.push({ chainId: network.id, symbol: networkSymbol });
         previousValue[networkSymbol] = networkContracts;
       }
 
