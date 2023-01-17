@@ -79,7 +79,7 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
               </span>
             </Typography>
             {/* // TODO(KK): wrong font! */}
-            <Stack sx={{ my: 2 }}>{loadingInfo}</Stack>
+            <Stack data-cy={"transaction-type-message"} sx={{ my: 2 }}>{loadingInfo}</Stack>
           </Stack>
         </TransactionDialogContent>
       </>

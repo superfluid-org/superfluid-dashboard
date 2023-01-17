@@ -182,3 +182,16 @@ Given(/^User tries to start or modify the stream and the first transaction dialo
 Given(/^User tries to cancel the stream and the first transaction dialogs are visible on "([^"]*)"$/, function (network:string) {
     SendPage.cancelStreamAndVerifyApprovalDialogs(network)
 });
+
+Given(/^User inputs all the details to schedule the stream to close after (\d+) minutes$/, (minutes: number) => {
+    SendPage.inputStreamScheduleDateInFuture(minutes)
+});
+Given(/^User schedules the stream and the transaction dialogs are visible for "([^"]*)"$/, (network: string) => {
+    SendPage.scheduleStreamAndVerifyDialogs(network)
+});
+Then(/^The scheduling date is restored correctly$/,  () => {
+    SendPage.validateRestoredScheduledDate()
+});
+Given(/^User modifies the scheduled stream and the transaction dialogs are visible for "([^"]*)"$/, (network: string) => {
+    SendPage.modifyScheduledStreamAndVerifyDialogs(network)
+});

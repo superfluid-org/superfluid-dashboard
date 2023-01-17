@@ -26,6 +26,8 @@ const STREAM_ROWS = "[data-cy=stream-row]"
 const ALL_BALANCE_ROWS = "[data-cy*=-cell]"
 const MODIFY_STREAM_BUTTON = "[data-cy=modify-stream-tooltip]"
 const SWITCH_NETWORK_BUTTON = "[data-cy=switch-network-tooltip]"
+const INFINITY_ICON = "[data-testid=AllInclusiveIcon]"
+const TIMER_ICON = "[data-testid=TimerOutlinedIcon]"
 
 export class DashboardPage extends BasePage {
     static checkIfDashboardConnectIsVisible() {
@@ -290,5 +292,14 @@ export class DashboardPage extends BasePage {
 
     static validateAmountOfStreamRows(amount: number) {
         this.hasLength(STREAM_ROWS, amount)
+    }
+
+    static validateScheduledStreamRowInDashboardPage() {
+        let assertableRowSelector = `[data-cy=goerli${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=fDAIx-cell]`
+        cy.get(`${assertableRowSelector} ${INFLOW_VALUES}`).first().should("have.text" ,"+0/mo" )
+        cy.get(`${assertableRowSelector} ${OUTFLOW_VALUES}`).first().should("have.text" ,"-2/mo" )
+        cy.get(`${assertableRowSelector} ${NET_FLOW_VALUES}`).first().should("have.text" ,"-2/mo" )
+        cy.get(`${assertableRowSelector}`).first().find(INFINITY_ICON).should("not.exist")
+        cy.get(`${assertableRowSelector}`).first().find(TIMER_ICON).should("be.visible")
     }
 }

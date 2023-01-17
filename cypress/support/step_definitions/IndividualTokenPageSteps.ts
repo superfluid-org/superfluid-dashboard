@@ -103,3 +103,6 @@ Then(/^Only the "([^"]*)" transfers are shown for "([^"]*)" on "([^"]*)" for "([
 Given(/^Add to wallet button is visible$/, function () {
     IndividualTokenPage.addToWalletbuttonIsVisible()
 });
+Given(/^Scheduled stream details are shown correctly in the token page table$/, function () {
+    IndividualTokenPage.validateScheduledStreamRow()
+});

@@ -61,3 +61,56 @@ Feature: Stream transactional test cases
     And The amount sent for the last stream in the table is not flowing
     And The netflow and incomming/outgoing amounts in the dashboard page for "fDAIx" on "goerli" are "-"
     And The first row in the table shows "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" "receiving" an "ongoing" stream of "0" token per month since "now"
+
+  #Enable once a final version of close ended stream contract is done
+  #Uncomment steps to actually do the tx instead of rejecting it
+  @numTestsKeptInMemory(0)  @rejected
+  Scenario: Scheduling a stream closing
+    Given Transactional account bob is connected to the dashboard on goerli
+    And User clicks on the "send" navigation button
+    And User inputs all the details to send "1" "fDAIx" per "month" to "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"
+#   And User cancels the stream if necessary
+    And User inputs all the details to schedule the stream to close after 15 minutes
+    And User schedules the stream and the transaction dialogs are visible for "goerli"
+#    And User opens the transaction drawer
+#    And The transaction drawer shows a succeeded "Send Closed-Ended Stream" transaction on "goerli"
+#    And The restore button is visible for the last transaction
+#    And User restores the last transaction
+#    And The scheduling date is restored correctly
+#    Then All the details to send "1" "fDAIx" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" on "goerli" are set in the fields
+
+  #Enable once a final version of close ended stream contract is done
+  #Uncomment steps to actually do the tx instead of rejecting it
+  @numTestsKeptInMemory(0) @rejected
+  Scenario: Modifying stream scheduling time
+    Given Transactional account bob is connected to the dashboard on goerli
+    And User clicks on the "send" navigation button
+    And User inputs all the details to send "1" "fDAIx" per "month" to "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"
+#   And User starts or cancels the stream if necessary
+    And User inputs all the details to schedule the stream to close after 60 minutes
+    And User modifies the scheduled stream and the transaction dialogs are visible for "goerli"
+    And Transaction rejected error is shown
+#    And User opens the transaction drawer
+#    And The transaction drawer shows a succeeded "Modify Stream" transaction on "goerli"
+#    And The restore button is visible for the last transaction
+#    And User restores the last transaction
+#    And The scheduling date is restored correctly
+#    Then All the details to send "2" "fDAIx" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" on "goerli" are set in the fields
+
+  #Enable once a final version of close ended stream contract is done
+  #Uncomment steps to actually do the tx instead of rejecting it
+  @numTestsKeptInMemory(0) @rejected
+  Scenario: Cancelling a scheduled stream
+    Given Transactional account bob is connected to the dashboard on goerli
+    And User clicks on the "send" navigation button
+    And User inputs all the details to send "2" "fDAIx" per "month" to "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"
+#    And User starts the stream if necessary
+    And User cancels the stream and the transaction dialogs are visible for "goerli"
+    And Transaction rejected error is shown
+#    And User clicks the OK button
+#    And User opens the transaction drawer
+#    And User clicks on the "dashboard" navigation button
+#    And The transaction drawer shows a pending "Cancel Stream" transaction on "goerli"
+#    And The restore button is not visible for the last transaction
+#    And The transaction drawer shows a succeeded "Cancel Stream" transaction on "goerli"
+#    And The restore button is not visible for the last transaction

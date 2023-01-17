@@ -383,7 +383,7 @@ export default memo(function SendCard() {
         render={({ field: { onChange, onBlur } }) => (
           <DateTimePicker
             renderInput={(props) => (
-              <TextField fullWidth {...props} onBlur={onBlur} />
+              <TextField data-cy={"date-input"} fullWidth {...props} onBlur={onBlur} />
             )}
             value={endDate}
             minDateTime={MIN_VISIBLE_END_DATE}
@@ -408,6 +408,7 @@ export default memo(function SendCard() {
 
   const TotalStreamedController = (
     <TextField
+      data-cy={"scheduling-token-amount-input"}
       value={totalStreamedEther}
       onChange={(event) => {
         setTotalStreamedEther(event.target.value);
@@ -779,9 +780,10 @@ export default memo(function SendCard() {
         {doesNetworkSupportFlowScheduler && (
           <>
             <FormControlLabel
+              data-cy={"scheduling-toggle"}
               control={StreamSchedulingController}
               label={
-                <Stack direction="row" alignItems="center" gap={0.75}>
+                <Stack data-cy={"scheduling-tooltip"} direction="row" alignItems="center" gap={0.75}>
                   Stream Scheduling
                   <TooltipIcon title="Experimental feature to automatically cancel the stream on specified end date. Only available on Goerli." />
                 </Stack>

@@ -16,6 +16,7 @@ const TOOLTIPS = "[role=tooltip]";
 const RECEIVING_ICON = "[data-testid=ArrowBackIcon]"
 const SENDING_ICON = "[data-testid=ArrowForwardIcon]"
 const INFINITY_ICON = "[data-testid=AllInclusiveIcon]"
+const TIMER_ICON = "[data-testid=TimerOutlinedIcon]"
 const PENDING_MESSAGE = "[data-cy=pending-message]"
 const DISTRIBUTIONS_TAB = "[data-cy=distribution-tab]"
 const STREAMS_TAB = "[data-cy=streams-tab]"
@@ -292,5 +293,12 @@ export class IndividualTokenPage extends BasePage {
 
     static addToWalletbuttonIsVisible() {
         this.isVisible(ADD_TO_WALLET_BUTTON)
+    }
+
+    static validateScheduledStreamRow() {
+        cy.get(`${STREAM_ROWS} ${SENDER_RECEIVER_ADDRESSES}`).first().should("have.text" ,this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"))
+        cy.get(`${STREAM_ROWS} ${STREAM_FLOW_RATES}`).first().should("have.text" ,"-2/mo" )
+        cy.get(STREAM_ROWS).first().find(INFINITY_ICON).should("not.exist")
+        cy.get(STREAM_ROWS).first().find(TIMER_ICON).should("be.visible")
     }
 }

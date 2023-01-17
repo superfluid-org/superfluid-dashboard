@@ -55,6 +55,13 @@ Feature: Token page test cases
     And User opens the distributions tab
     Then No data row is shown
 
+  @skip
+  #Enable once a final version of close ended stream contract is done
+  Scenario: Close ended stream shown correctly in the tables
+    Given Transactional account bob is connected to the dashboard on goerli
+    And User opens "goerli" "fDAIx" individual token page
+    And Scheduled stream details are shown correctly in the token page table
+
   @mocked
   Scenario: Streams table no data message
     Given "Dashboard Page" is open without connecting a wallet

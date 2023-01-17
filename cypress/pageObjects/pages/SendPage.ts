@@ -1,6 +1,8 @@
-import {BasePage, UnitOfTime} from "../BasePage";
+import {BasePage} from "../BasePage";
+import {UnitOfTime} from "../../../src/features/send/FlowRateInput";
 import {WrapPage} from "./WrapPage";
 import {networksBySlug} from "../../superData/networks";
+import {VestingPage} from "./VestingPage";
 
 const SEND_BUTTON = "[data-cy=send-transaction-button]";
 const RECEIVER_BUTTON = "[data-cy=address-button]";
@@ -9,7 +11,7 @@ const FLOW_RATE_INPUT = "[data-cy=flow-rate-input]";
 const TIME_UNIT_SELECTION_BUTTON = "[data-cy=time-unit-selection-button]";
 const AMOUNT_PER_SECOND = "[data-cy=preview-per-second]";
 const ADDRESS_DIALOG_INPUT = "[data-cy=address-dialog-input]";
-const CLOSE_DIALOG_BUTTON = "[data-testid=CloseRoundedIcon]";
+const CLOSE_DIALOG_BUTTON = "[data-testid=CloseIcon]";
 const ENS_ENTRIES = "[data-cy=ens-entry]";
 const ENS_ENTRY_NAMES = "[data-cy=ens-entry] h6";
 const ENS_ENTRY_ADDRESS = "[data-cy=ens-entry] p";
@@ -51,7 +53,14 @@ const ALL_BUTTONS = "[data-cy=send-card] [data-cy*=button]"
 const PREVIEW_BUFFER_LOSS = "[data-cy=buffer-loss]"
 const TX_DRAWER_BUTTON = "[data-cy=tx-drawer-button]"
 const OK_BUTTON = "[data-cy=ok-button]"
+const RECENTS_LOADING = "[data-cy=recents-loading]"
 const RECEIVER_DIALOG = "[data-cy=receiver-dialog]"
+const SCHEDULING_TOGGLE = "[data-cy=scheduling-toggle] span"
+const SCHEDULING_TOOLTIP = "[data-cy=scheduling-tooltip] svg"
+const SCHEDULING_END_DATE = "[data-cy=scheduling-end-date-input] input"
+const SCHEDULING_TOKEN_AMOUNT = "[data-cy=scheduling-token-amount-input] input"
+const TRANSACTION_TYPE_MESSAGE = "[data-cy=transaction-type-message]"
+const TRANSACTION_SUBTITLES = "[data-cy=transaction-subtitles] span"
 
 export class SendPage extends BasePage {
     static searchForTokenInTokenList(token: string) {
@@ -478,9 +487,57 @@ export class SendPage extends BasePage {
     }
 
     static verifyDialogAfterBroadcastingCancelledStream() {
-        cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
-        this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
-        this.isVisible(OK_BUTTON)
-        this.doesNotExist(`${CANCEL_STREAM_BUTTON} ${LOADING_SPINNER}`)
+        if(!Cypress.env("rejected")) {
+            cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
+            this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
+            this.isVisible(OK_BUTTON)
+            this.doesNotExist(`${CANCEL_STREAM_BUTTON} ${LOADING_SPINNER}`)
+        }
+    }
+
+    static inputStreamScheduleDateInFuture(minutes: number) {
+        this.clickFirstVisible(SCHEDULING_TOGGLE)
+        VestingPage.inputFutureDateInDateField(minutes, "minute")
+    }
+
+    static sendStreamAndValidateCommonElements(network:string , message?:string) {
+        this.isNotDisabled(SEND_BUTTON)
+        this.click(SEND_BUTTON)
+        this.isVisible(LOADING_SPINNER)
+        this.exists(`${SEND_BUTTON} ${LOADING_SPINNER}`)
+        this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
+        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
+        if(message) {
+            this.hasText(TRANSACTION_TYPE_MESSAGE,message)
+        }
+    }
+
+    static scheduleStreamAndVerifyDialogs(network: string) {
+        this.sendStreamAndValidateCommonElements(network,"You are sending a closed-ended stream.")
+        this.validateTxBroadcastedAndSendMoreStreamsDialog()
+    }
+
+    static validateTxBroadcastedAndSendMoreStreamsDialog() {
+        if(!Cypress.env("rejected")) {
+            cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
+            this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
+            this.isVisible(SEND_MORE_STREAMS_BUTTON)
+            this.doesNotExist(`${SEND_BUTTON} ${LOADING_SPINNER}`)
+            this.click(SEND_MORE_STREAMS_BUTTON)
+        }
+    }
+
+    static validateRestoredScheduledDate() {
+        this.isVisible(SCHEDULING_END_DATE)
+        cy.get("@scheduledTime").then(date => {
+            cy.get(SCHEDULING_END_DATE).then( el => {
+                cy.wrap(el.val()!.toString().replace(/(\/)|(:)|( )/g ,"")).should("eq",date)
+            })
+        })
+    }
+
+    static modifyScheduledStreamAndVerifyDialogs(network: string) {
+        this.sendStreamAndValidateCommonElements(network,"You are modifying a closed-ended stream.")
+        this.validateTxBroadcastedAndSendMoreStreamsDialog()
     }
 }

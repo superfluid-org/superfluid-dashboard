@@ -14,7 +14,7 @@ Then(/^"([^"]*)" error is shown in the form$/, function (error:string) {
     VestingPage.validateFormError(error)
 });
 Given(/^User inputs a date "(\d+)" "([^"]*)" into the future into the vesting start date field$/, function (amount:number,timeUnit:string) {
-    VestingPage.inputFutureDateInVestingStartDateField(amount,timeUnit)
+    VestingPage.inputFutureDateInDateField(amount,timeUnit)
 });
 Given(/^User inputs "(\d+)" as the cliff amount$/, function (amount:number) {
     VestingPage.inputCliffAmount(amount)
@@ -29,7 +29,7 @@ Given(/^User inputs "(\d+)" "([^"]*)" as the total vesting period$/, function (a
     VestingPage.inputTotalVestingPeriod(amount,timeUnit)
 });
 Given(/^User inputs valid vesting schedule details in the form and proceeds to the preview$/, function () {
-    VestingPage.inputFutureDateInVestingStartDateField(1,"year")
+    VestingPage.inputFutureDateInDateField(1,"year")
     VestingPage.inputCliffAmount(1)
     VestingPage.inputCliffPeriod(1,"year")
     VestingPage.inputTotalVestedAmount(2)

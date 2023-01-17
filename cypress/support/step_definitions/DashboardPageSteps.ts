@@ -107,3 +107,6 @@ Given(/^The netflow and incomming\/outgoing amounts in the dashboard page for "(
 Given(/^There are (\d+) stream rows visible$/, (amount: number) => {
     DashboardPage.validateAmountOfStreamRows(amount)
 });
+Given(/^Scheduled stream details are shown correctly in the dashboard page table$/, function () {
+    DashboardPage.validateScheduledStreamRowInDashboardPage()
+});

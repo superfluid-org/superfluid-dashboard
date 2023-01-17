@@ -92,7 +92,7 @@ export class VestingPage extends BasePage {
         this.isDisabled(PREVIEW_SCHEDULE_BUTTON)
     }
 
-    static inputFutureDateInVestingStartDateField(amount: number, timeUnit: string) {
+    static inputFutureDateInDateField(amount: number, timeUnit: string) {
             const currentDate = new Date();
             let newDate: Date;
 
@@ -109,6 +109,7 @@ export class VestingPage extends BasePage {
             const hours = `0${newDate.getHours()}`.slice(-2);
             const minutes = `0${newDate.getMinutes()}`.slice(-2);
             const finalFutureDate = `${month}/${day}/${year} ${hours}:${minutes}`;
+            cy.wrap(finalFutureDate).as("scheduledTime")
             this.type(DATE_INPUT,finalFutureDate)
     }
 
