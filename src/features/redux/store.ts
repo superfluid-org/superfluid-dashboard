@@ -31,7 +31,7 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { deserializeError } from "serialize-error";
-import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApiEnhancements";
+import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
 import accountingApi from "../accounting/accountingApi.slice";
 import { addressBookSlice } from "../addressBook/addressBook.slice";
 import { customTokensSlice } from "../customTokens/customTokens.slice";
@@ -49,7 +49,10 @@ import { adHocMulticallEndpoints } from "./endpoints/adHocMulticallEndpoints";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
 import { flowSchedulerEndpoints } from "./endpoints/flowSchedulerEndpoints";
-import { vestingSchedulerMutationEndpoints, vestingSchedulerQueryEndpoints } from "./endpoints/vestingSchedulerEndpoints";
+import {
+  vestingSchedulerMutationEndpoints,
+  vestingSchedulerQueryEndpoints,
+} from "./endpoints/vestingSchedulerEndpoints";
 import { platformApi } from "./platformApi/platformApi";
 
 export const rpcApi = initializeRpcApiSlice((options) =>

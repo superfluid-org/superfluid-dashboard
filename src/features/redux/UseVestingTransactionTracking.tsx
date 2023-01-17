@@ -4,21 +4,20 @@ import {
   useAppDispatch,
   RootState,
 } from "./store";
-import { useLazyPollQuery } from "../../vesting-subgraph/poll.generated";
 import { useEffect } from "react";
 import { transactionTrackerSelectors } from "@superfluid-finance/sdk-redux";
 import { networkDefinition } from "../network/networks";
 import promiseRetry from "promise-retry";
-import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApiEnhancements";
 import {
   pendingUpdateSelectors,
   pendingUpdateSlice,
 } from "../pendingUpdates/pendingUpdate.slice";
+import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
 
 // WARNING: This shouldn't be set up more than once in the app.
 export const useVestingTransactionTracking = () => {
   const dispatch = useAppDispatch();
-  const [pollQuery] = useLazyPollQuery();
+  const [pollQuery] = vestingSubgraphApi.useLazyPollQuery();
 
   // # Cache invalidation for vesting:
   useEffect(
@@ -41,6 +40,7 @@ export const useVestingTransactionTracking = () => {
             promiseRetry(
               (retry, _number) =>
                 pollQuery({
+                  chainId: trackedTransaction.chainId,
                   block: {
                     number: blockTransactionSucceededIn,
                   },

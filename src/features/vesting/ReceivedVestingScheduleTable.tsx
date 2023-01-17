@@ -1,7 +1,7 @@
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
 import NoContentPaper from "../../components/NoContent/NoContentPaper";
-import { useGetVestingSchedulesQuery } from "../../vesting-subgraph/getVestingSchedules.generated";
+import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
 import { networkDefinition } from "../network/networks";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import VestingScheduleLoadingTable from "./VestingScheduleLoadingTable";
@@ -11,9 +11,10 @@ export const ReceivedVestingScheduleTable: FC = () => {
   const { visibleAddress } = useVisibleAddress();
   const network = networkDefinition.goerli;
 
-  const vestingSchedulesQuery = useGetVestingSchedulesQuery(
+  const vestingSchedulesQuery = vestingSubgraphApi.useGetVestingSchedulesQuery(
     visibleAddress
       ? {
+          chainId: networkDefinition.goerli.id,
           where: { receiver: visibleAddress?.toLowerCase(), deletedAt: null },
         }
       : skipToken,

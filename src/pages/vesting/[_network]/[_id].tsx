@@ -30,7 +30,7 @@ import VestingGraph from "../../../features/vesting/VestingGraph";
 import VestingHeader from "../../../features/vesting/VestingHeader";
 import VestingScheduleProgress from "../../../features/vesting/VestingScheduleProgress";
 import useNavigateBack from "../../../hooks/useNavigateBack";
-import { useGetVestingScheduleQuery } from "../../../vesting-subgraph/getVestingSchedule.generated";
+import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import Page404 from "../../404";
 
 interface VestingLegendItemProps {
@@ -145,7 +145,8 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
 
   const [graphFilter, setGraphFilter] = useState(TimeUnitFilterType.All);
 
-  const vestingScheduleQuery = useGetVestingScheduleQuery({
+  const vestingScheduleQuery = vestingSubgraphApi.useGetVestingScheduleQuery({
+    chainId: network.id,
     id,
   });
   const vestingSchedule = vestingScheduleQuery.data?.vestingSchedule;

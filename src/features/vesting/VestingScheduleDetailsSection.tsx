@@ -8,7 +8,6 @@ import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import Page404 from "../../pages/404";
 import config from "../../utils/config";
 import { getTimeInSeconds } from "../../utils/dateUtils";
-import { useGetVestingScheduleQuery } from "../../vesting-subgraph/getVestingSchedule.generated";
 import { Network } from "../network/networks";
 import SharingSection from "../socialSharing/SharingSection";
 import TokenIcon from "../token/TokenIcon";
@@ -20,12 +19,14 @@ import { useVestingToken } from "./useVestingToken";
 import { VestingScheduleGraph } from "./VestingScheduleGraph";
 import Amount from "../token/Amount";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
+import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
 
 export const VestingScheduleDetails: FC<{
   network: Network;
   id: string;
 }> = ({ network, id }) => {
-  const vestingScheduleQuery = useGetVestingScheduleQuery({
+  const vestingScheduleQuery = vestingSubgraphApi.useGetVestingScheduleQuery({
+    chainId: network.id,
     id,
   });
 
@@ -54,7 +55,7 @@ export const VestingScheduleDetails: FC<{
     flowRate,
     deletedAt,
     endExecutedAt,
-    cliffAndFlowDate
+    cliffAndFlowDate,
   } = vestingSchedule;
   const cliffDate = new Date(Number(vestingSchedule.cliffDate) * 1000);
   const startDate = new Date(Number(vestingSchedule.startDate) * 1000);

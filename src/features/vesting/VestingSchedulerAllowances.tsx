@@ -2,7 +2,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Box,
   Collapse,
   IconButton,
   ListItemText,
@@ -21,7 +20,6 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { BigNumber } from "ethers";
 import { groupBy, uniq } from "lodash";
 import { FC, useState } from "react";
-import { useGetVestingSchedulesQuery } from "../../vesting-subgraph/getVestingSchedules.generated";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { Network } from "../network/networks";
 import { rpcApi, subgraphApi } from "../redux/store";
@@ -34,14 +32,11 @@ import { flowOperatorPermissionsToString } from "../../utils/flowOperatorPermiss
 import Link from "../common/Link";
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 import TooltipIcon from "../common/TooltipIcon";
-import { unitOfTimeList } from "../send/FlowRateInput";
-import AddressName from "../../components/AddressName/AddressName";
-import shortenHex from "../../utils/shortenHex";
-import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { getAddress } from "../../utils/memoizedEthersUtils";
 import { CopyIconBtn } from "../common/CopyIconBtn";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
+import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
 
 export const VestingSchedulerAllowances: FC = () => {
   const { network } = useExpectedNetwork();
@@ -52,9 +47,10 @@ export const VestingSchedulerAllowances: FC = () => {
       chainId: network.id,
     });
 
-  const vestingSchedulesQuery = useGetVestingSchedulesQuery(
+  const vestingSchedulesQuery = vestingSubgraphApi.useGetVestingSchedulesQuery(
     senderAddress
       ? {
+          chainId: network.id,
           where: { sender: senderAddress?.toLowerCase(), deletedAt: null }, // TODO(KK): Should show allowance for tokens with finished vesting?
         }
       : skipToken,

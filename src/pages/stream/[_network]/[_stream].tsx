@@ -57,10 +57,8 @@ import {
 } from "../../../utils/tokenUtils";
 import Page404 from "../../404";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
-import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApiEnhancements";
-import { useGetVestingScheduleQuery } from "../../../vesting-subgraph/getVestingSchedule.generated";
-import { useGetVestingSchedulesQuery } from "../../../vesting-subgraph/getVestingSchedules.generated";
 import { getTimeInSeconds } from "../../../utils/dateUtils";
+import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -431,9 +429,10 @@ const StreamPageContent: FC<{
   }, [scheduledStream]);
 
   // TODO(KK): Network is not yet handled.
-  const vestingScheduleQuery = useGetVestingSchedulesQuery(
+  const vestingScheduleQuery = vestingSubgraphApi.useGetVestingSchedulesQuery(
     scheduledStream
       ? {
+          chainId: network.id,
           where: {
             superToken: scheduledStream.token.toLowerCase(),
             sender: scheduledStream.sender.toLowerCase(),

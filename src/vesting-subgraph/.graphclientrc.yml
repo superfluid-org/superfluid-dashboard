@@ -1,0 +1,13 @@
+sources:
+  - name: vesting
+    handler:
+      graphql:
+        endpoint: '{context.url:https://api.studio.thegraph.com/query/14557/vesting-scheduler/v0.0.18}'
+documents:
+  - './*.graphql'
+codegen:
+  namingConvention: change-case-all#pascalCase
+  scalars:
+    BigInt: string
+    Bytes: string
+    BigDecimal: string
