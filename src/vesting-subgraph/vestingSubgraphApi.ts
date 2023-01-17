@@ -10,13 +10,12 @@ import {
   PollQueryVariables,
 } from "./.graphclient";
 
-const getBuiltGraphSdkForNetwork = (chainId: number) => {
+const tryGetBuiltGraphSdkForNetwork = (chainId: number) => {
   if (chainId === networkDefinition.goerli.id) {
     return getBuiltGraphSDK({
       url: "https://api.studio.thegraph.com/query/14557/vesting-scheduler/v0.0.18",
     });
   }
-  throw new Error("Graph-SDK not found!");
 };
 
 export const vestingSubgraphApi = createApi({
@@ -31,9 +30,11 @@ export const vestingSubgraphApi = createApi({
       { chainId: number } & GetVestingScheduleQueryVariables
     >({
       queryFn: async ({ chainId, ...variables }) => {
-        const sdk = getBuiltGraphSdkForNetwork(chainId);
+        const sdk = tryGetBuiltGraphSdkForNetwork(chainId);
         return {
-          data: await sdk.getVestingSchedule(variables),
+          data: sdk
+            ? await sdk.getVestingSchedule(variables)
+            : { vestingSchedule: null },
         };
       },
       providesTags: (_result, _error, arg) => [
@@ -48,9 +49,11 @@ export const vestingSubgraphApi = createApi({
       { chainId: number } & GetVestingSchedulesQueryVariables
     >({
       queryFn: async ({ chainId, ...variables }) => {
-        const sdk = getBuiltGraphSdkForNetwork(chainId);
+        const sdk = tryGetBuiltGraphSdkForNetwork(chainId);
         return {
-          data: await sdk.getVestingSchedules(variables),
+          data: sdk
+            ? await sdk.getVestingSchedules(variables)
+            : { vestingSchedules: [] },
         };
       },
       providesTags: (_result, _error, arg) => [
@@ -62,7 +65,10 @@ export const vestingSubgraphApi = createApi({
     }),
     poll: build.query<PollQuery, { chainId: number } & PollQueryVariables>({
       queryFn: async ({ chainId, ...variables }) => {
-        const sdk = getBuiltGraphSdkForNetwork(chainId);
+        const sdk = tryGetBuiltGraphSdkForNetwork(chainId);
+        if (!sdk) {
+          throw new Error("GraphSDK not available for network.");
+        }
         return {
           data: await sdk.poll(variables),
         };
