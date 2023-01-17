@@ -1318,9 +1318,9 @@ export type VestingSchedule = {
   receiver: Scalars['Bytes'];
   startDate: Scalars['BigInt'];
   endDate: Scalars['BigInt'];
-  cliffDate: Scalars['BigInt'];
+  cliffDate?: Maybe<Scalars['BigInt']>;
   cliffAndFlowDate: Scalars['BigInt'];
-  cliffAmount: Scalars['BigInt'];
+  cliffAmount?: Maybe<Scalars['BigInt']>;
   flowRate: Scalars['BigInt'];
   deletedAt?: Maybe<Scalars['BigInt']>;
   cliffAndFlowExecutedAt?: Maybe<Scalars['BigInt']>;

@@ -1339,9 +1339,9 @@ export type VestingSchedule = {
   receiver: Scalars['Bytes'];
   startDate: Scalars['BigInt'];
   endDate: Scalars['BigInt'];
-  cliffDate: Scalars['BigInt'];
+  cliffDate?: Maybe<Scalars['BigInt']>;
   cliffAndFlowDate: Scalars['BigInt'];
-  cliffAmount: Scalars['BigInt'];
+  cliffAmount?: Maybe<Scalars['BigInt']>;
   flowRate: Scalars['BigInt'];
   deletedAt?: Maybe<Scalars['BigInt']>;
   cliffAndFlowExecutedAt?: Maybe<Scalars['BigInt']>;
@@ -2430,9 +2430,9 @@ export type VestingScheduleResolvers<ContextType = MeshContext, ParentType exten
   receiver?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   startDate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   endDate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  cliffDate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  cliffDate?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   cliffAndFlowDate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  cliffAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  cliffAmount?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   flowRate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   deletedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   cliffAndFlowExecutedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
@@ -2582,7 +2582,7 @@ const vestingTransforms = [];
 const additionalTypeDefs = [] as any[];
 const vestingHandler = new GraphqlHandler({
               name: "vesting",
-              config: {"endpoint":"{context.url:https://api.studio.thegraph.com/query/14557/vesting-scheduler/v0.0.18}","retry":5},
+              config: {"endpoint":"{context.url:https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-goerli}","retry":5},
               baseDir,
               cache,
               pubsub,

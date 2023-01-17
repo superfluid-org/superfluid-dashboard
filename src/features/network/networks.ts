@@ -48,14 +48,14 @@ export const superfluidRpcUrls = {
 };
 
 export const vestingSubraphUrls: Record<string, `https://${string}`> = {
-  gnosis: "https://thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-gnosis",
-  goerli: "https://thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-goerli",
-  polygon: "https://thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-polygon",
-  arbitrum: "https://thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-arbitrum",
-  optimism: "https://thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-optimism",
-  avalancheC: "https://thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-avalanche",
-  bnbSmartChain: "https://thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-bsc",
-  ethereum: "https://thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-eth-mainnet",
+  gnosis: "https://api.thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-gnosis",
+  goerli: "https://api.thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-goerli",
+  polygon: "https://api.thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-polygon",
+  arbitrum: "https://api.thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-arbitrum",
+  optimism: "https://api.thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-optimism",
+  avalancheC: "https://api.thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-avalanche",
+  bnbSmartChain: "https://api.thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-bsc",
+  ethereum: "https://api.thegraph.com/hosted-service/subgraph/superfluid-finance/automation-v1-eth-mainnet",
 };
 
 export const vestingContractAddresses: Record<string, `0x${string}`> = {

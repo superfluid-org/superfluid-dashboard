@@ -1433,9 +1433,9 @@ type VestingSchedule {
   receiver: Bytes!
   startDate: BigInt!
   endDate: BigInt!
-  cliffDate: BigInt!
+  cliffDate: BigInt
   cliffAndFlowDate: BigInt!
-  cliffAmount: BigInt!
+  cliffAmount: BigInt
   flowRate: BigInt!
   deletedAt: BigInt
   cliffAndFlowExecutedAt: BigInt
