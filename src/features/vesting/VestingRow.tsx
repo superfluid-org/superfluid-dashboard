@@ -46,6 +46,7 @@ const VestingRow: FC<VestingRowProps> = ({
     endDate,
     startDate,
     pendingCreate,
+    cliffAndFlowDate,
   } = vestingSchedule;
 
   const pendingDelete = usePendingVestingScheduleDelete({
@@ -60,12 +61,11 @@ const VestingRow: FC<VestingRowProps> = ({
   const tokenQuery = useVestingToken(network, superToken);
 
   const totalAmount = useMemo(() => {
-    return BigNumber.from(endDate)
-      .sub(BigNumber.from(cliffDate))
+    return BigNumber.from(Number(endDate) - Number(cliffAndFlowDate))
       .mul(BigNumber.from(flowRate))
-      .add(BigNumber.from(cliffAmount))
+      .add(BigNumber.from(cliffAmount || "0"))
       .toString();
-  }, [flowRate, endDate, cliffDate, cliffAmount]);
+  }, [flowRate, endDate, cliffAndFlowDate, cliffAmount]);
 
   const isOutgoing = sender.toLowerCase() === visibleAddress?.toLowerCase();
 

@@ -187,9 +187,7 @@ const CancelledIndicator: FC<CancelledIndicatorProps> = ({
           {format(updatedAtTimestamp * 1000, "d MMMM yyyy")}
         </span>{" "}
         <span>at</span>{" "}
-        <span translate="no">
-          {format(updatedAtTimestamp * 1000, "h:mm aaa")}
-        </span>
+        <span translate="no">{format(updatedAtTimestamp * 1000, "HH:mm")}</span>
       </Typography>
     </Stack>
   );
