@@ -24,6 +24,7 @@ import { useRouter } from "next/router";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import AddressName from "../../../components/AddressName/AddressName";
 import AddressAvatar from "../../../components/Avatar/AddressAvatar";
+import ActivityTable from "../../../features/activityHistory/ActivityTable";
 import AddressCopyTooltip from "../../../features/common/AddressCopyTooltip";
 import TimeUnitFilter, {
   TimeUnitFilterType,
@@ -43,6 +44,7 @@ import VestingGraph from "../../../features/vesting/VestingGraph";
 import VestingScheduleProgress from "../../../features/vesting/VestingScheduleProgress/VestingScheduleProgress";
 import VestingStatus from "../../../features/vesting/VestingStatus";
 import { useVisibleAddress } from "../../../features/wallet/VisibleAddressContext";
+import { mapActivitiesFromEvents } from "../../../utils/activityUtils";
 import config from "../../../utils/config";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import Page404 from "../../404";
@@ -167,6 +169,36 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
   });
 
   const vestingSchedule = vestingScheduleQuery.data?.vestingSchedule;
+
+  const { activities, ...vestingEventsQuery } = subgraphApi.useEventsQuery(
+    vestingSchedule
+      ? {
+          chainId: network.id,
+          filter: {
+            addresses_contains_nocase: [
+              vestingSchedule.superToken,
+              vestingSchedule.sender,
+              vestingSchedule.receiver,
+            ],
+            timestamp_gte:
+              vestingSchedule.cliffAndFlowExecutedAt ||
+              vestingSchedule.startDate,
+            timestamp_lte:
+              vestingSchedule.endExecutedAt || vestingSchedule.endDate,
+          },
+          order: {
+            orderBy: "order",
+            orderDirection: "desc",
+          },
+        }
+      : skipToken,
+    {
+      selectFromResult: (result) => ({
+        ...result,
+        activities: mapActivitiesFromEvents(result.data?.items || [], network),
+      }),
+    }
+  );
 
   const tokenQuery = useVestingToken(network, vestingSchedule?.superToken);
 
@@ -438,6 +470,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
           </TableContainer>
         )}
 
+        {activities.length > 0 && <ActivityTable activities={activities} />}
         {/* <SharingSection
           url={urlToShare}
           twitterText="Start vesting with Superfluid!"

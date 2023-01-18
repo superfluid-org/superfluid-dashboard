@@ -39,7 +39,7 @@ const ActivityTable: FC<ActivitiesTableProps> = ({ activities }) => {
                 width: "30%",
               },
               "&:nth-of-type(4)": {
-                width: "140px",
+                width: "170px",
               },
             },
           },
