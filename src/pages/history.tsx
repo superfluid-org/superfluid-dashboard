@@ -23,6 +23,7 @@ import DatePicker from "../components/DatePicker/DatePicker";
 import OpenIcon from "../components/OpenIcon/OpenIcon";
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import ActivityRow from "../features/activityHistory/ActivityRow";
+import ActivityTable from "../features/activityHistory/ActivityTable";
 import ActivityTypeFilter, {
   ActivityType,
   ActivityTypeFilters,
@@ -315,50 +316,7 @@ const History: NextPage = () => {
                 <Typography variant="h6" sx={{ mb: 2 }}>
                   {format(new Date(dateKey), "MMMM d, yyyy")}
                 </Typography>
-                <TableContainer
-                  sx={{
-                    [theme.breakpoints.down("md")]: {
-                      borderLeft: 0,
-                      borderRight: 0,
-                      borderRadius: 0,
-                      boxShadow: "none",
-                      mx: -2,
-                      width: "auto",
-                    },
-                  }}
-                >
-                  <Table
-                    sx={{
-                      // TODO: Make all table layouts fixed
-                      [theme.breakpoints.up("md")]: {
-                        tableLayout: "fixed",
-                        td: {
-                          "&:nth-of-type(1)": {
-                            width: "30%",
-                          },
-                          "&:nth-of-type(2)": {
-                            width: "30%",
-                          },
-                          "&:nth-of-type(3)": {
-                            width: "30%",
-                          },
-                          "&:nth-of-type(4)": {
-                            width: "140px",
-                          },
-                        },
-                      },
-                    }}
-                  >
-                    <TableBody>
-                      {activities.map((activity) => (
-                        <ActivityRow
-                          key={activity.keyEvent.id}
-                          activity={activity}
-                        />
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+                <ActivityTable activities={activities} />
               </Box>
             )
           )}

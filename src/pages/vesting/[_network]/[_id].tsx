@@ -437,6 +437,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
             </Table>
           </TableContainer>
         )}
+
         {/* <SharingSection
           url={urlToShare}
           twitterText="Start vesting with Superfluid!"
