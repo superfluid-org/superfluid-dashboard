@@ -88,24 +88,20 @@ const VestingDataCard: FC<VestingDataCardProps> = ({
       <TokenIcon isSuper tokenSymbol={tokenSymbol} />
       <Stack direction="row" alignItems="flex-end" gap={0.5}>
         {amount && (
-          <Typography variant="h3mono">
+          <Typography variant="h3mono" sx={{ lineHeight: "36px" }}>
             <Amount wei={amount} />
           </Typography>
         )}{" "}
-        <Typography
-          variant="h6"
-          color="text.secondary"
-          sx={{ lineHeight: "30px" }}
-        >
+        <Typography variant="h6" color="text.secondary">
           {tokenSymbol}
         </Typography>
-        {amount && price && (
-          <Typography>
-            <FiatAmount wei={amount} price={price} />
-          </Typography>
-        )}
       </Stack>
     </Stack>
+    {amount && price && (
+      <Typography variant="h6" color="text.secondary" sx={{ ml: 6 }}>
+        <FiatAmount wei={amount} price={price} />
+      </Typography>
+    )}
   </Card>
 );
 
@@ -309,36 +305,41 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
               >
                 Vested so far
               </Typography>
-              <Stack direction="row" alignItems="flex-end" columnGap={1}>
-                <Typography data-cy={"token-balance"} variant="h3mono">
-                  <VestedBalance vestingSchedule={vestingSchedule} />
-                </Typography>
-                <Typography
-                  data-cy={"token-symbol"}
-                  variant="h5mono"
-                  color="text.secondary"
-                  sx={{ lineHeight: "30px" }}
-                >
-                  {symbol}
-                </Typography>
-              </Stack>
+              <Box>
+                <Stack direction="row" alignItems="flex-end" columnGap={1}>
+                  <Typography
+                    data-cy={"token-balance"}
+                    variant="h3mono"
+                    sx={{ lineHeight: "36px" }}
+                  >
+                    <VestedBalance vestingSchedule={vestingSchedule} />
+                  </Typography>
+                  <Typography
+                    data-cy={"token-symbol"}
+                    variant="h5mono"
+                    color="text.secondary"
+                  >
+                    {symbol}
+                  </Typography>
+                </Stack>
 
-              {tokenPrice && (
-                <Typography
-                  data-cy={"token-fiat-balance"}
-                  variant="h5mono"
-                  color="text.secondary"
-                >
-                  <FlowingFiatBalance
-                    balance={cliffAmount}
-                    flowRate={flowRate}
-                    balanceTimestamp={Number(
-                      vestingSchedule.cliffDate || vestingSchedule.startDate
-                    )}
-                    price={tokenPrice}
-                  />
-                </Typography>
-              )}
+                {tokenPrice && (
+                  <Typography
+                    data-cy={"token-fiat-balance"}
+                    variant="h5mono"
+                    color="text.secondary"
+                  >
+                    <FlowingFiatBalance
+                      balance={cliffAmount}
+                      flowRate={flowRate}
+                      balanceTimestamp={Number(
+                        vestingSchedule.cliffDate || vestingSchedule.startDate
+                      )}
+                      price={tokenPrice}
+                    />
+                  </Typography>
+                )}
+              </Box>
             </Stack>
 
             {!isBelowMd && (
