@@ -1,2 +1,2 @@
 export * as goerli from "./goerli";
-export * as polygon from "./polygon";
+export * as mainnet from "./mainnet";

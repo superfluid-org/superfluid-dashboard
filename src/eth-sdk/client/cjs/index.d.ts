@@ -4,9 +4,8 @@ export declare function getContract(address: string, abi: object, defaultSignerO
 export declare type GoerliSdk = ReturnType<typeof getGoerliSdk>;
 export declare function getGoerliSdk(defaultSignerOrProvider: Signer | providers.Provider): {
     flowScheduler: types.goerli.FlowScheduler;
-    vestingScheduler: types.goerli.VestingScheduler;
 };
-export declare type PolygonSdk = ReturnType<typeof getPolygonSdk>;
-export declare function getPolygonSdk(defaultSignerOrProvider: Signer | providers.Provider): {
-    vestingScheduler: types.polygon.VestingScheduler;
+export declare type MainnetSdk = ReturnType<typeof getMainnetSdk>;
+export declare function getMainnetSdk(defaultSignerOrProvider: Signer | providers.Provider): {
+    vestingScheduler: types.mainnet.VestingScheduler;
 };

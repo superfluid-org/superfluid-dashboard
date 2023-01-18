@@ -1,29 +1,42 @@
 import { providers, Signer } from "ethers";
-import { networkDefinition } from "../features/network/networks";
-import { getGoerliSdk, getPolygonSdk } from "./client";
+import { findNetworkByChainId } from "../features/network/networks";
+import { FlowScheduler__factory } from "./client/esm/types/factories/goerli";
+import { VestingScheduler__factory } from "./client/esm/types/factories/mainnet";
 
 export const getFlowScheduler = (
   chainId: number,
   providerOrSigner: providers.Provider | Signer
 ) => {
-  if (chainId === networkDefinition.goerli.id) {
-    return getGoerliSdk(providerOrSigner).flowScheduler;
+  const network = findNetworkByChainId(chainId);
+  const networkFlowSchedulerAddress = network?.vestingContractAddress;
+  const doesNetworkSupportFlowScheduler = !!networkFlowSchedulerAddress;
+  if (!doesNetworkSupportFlowScheduler) {
+    throw new Error(
+      `Flow Scheduler not available for network [${chainId}:${network?.name}].`
+    );
   }
 
-  throw new Error("FlowScheduler not available for network.");
+  return FlowScheduler__factory.connect(
+    networkFlowSchedulerAddress,
+    providerOrSigner
+  );
 };
 
 export const getVestingScheduler = (
   chainId: number,
   providerOrSigner: providers.Provider | Signer
 ) => {
-  if (chainId === networkDefinition.goerli.id) {
-    return getGoerliSdk(providerOrSigner).vestingScheduler;
+  const network = findNetworkByChainId(chainId);
+  const networkVestingSchedulerAddress = network?.vestingContractAddress;
+  const doesNetworkSupportVestingScheduler = networkVestingSchedulerAddress;
+  if (!doesNetworkSupportVestingScheduler) {
+    throw new Error(
+      `Vesting Scheduler not available for network [${chainId}:${network?.name}].`
+    );
   }
 
-  if (chainId === networkDefinition.polygon.id) {
-    return getPolygonSdk(providerOrSigner).vestingScheduler;
-  }
-
-  throw new Error("Eth-SDK not available for network.");
+  return VestingScheduler__factory.connect(
+    networkVestingSchedulerAddress,
+    providerOrSigner
+  );
 };

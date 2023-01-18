@@ -135,9 +135,9 @@ const CreateVestingFormProvider: FC<{
             context.createError
           );
 
-        if (network !== networkDefinition.goerli) {
+        if (!network.vestingContractAddress) {
           handleHigherOrderValidationError({
-            message: `The feature is only available on Goerli.`,
+            message: `The feature is not available on this network.`,
           });
         }
 
