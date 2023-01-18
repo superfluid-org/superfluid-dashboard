@@ -7,15 +7,29 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import ListItemText from "@mui/material/ListItemText";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import { skipToken } from "@reduxjs/toolkit/dist/query/react";
+import { format, fromUnixTime } from "date-fns";
 import { BigNumber } from "ethers";
 import { isString } from "lodash";
 import { NextPage } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import AddressName from "../../../components/AddressName/AddressName";
+import AddressAvatar from "../../../components/Avatar/AddressAvatar";
+import AddressCopyTooltip from "../../../features/common/AddressCopyTooltip";
 import TimeUnitFilter, {
   TimeUnitFilterType,
 } from "../../../features/graph/TimeUnitFilter";
 import { Network, networksBySlug } from "../../../features/network/networks";
+import { subgraphApi } from "../../../features/redux/store";
 import Amount from "../../../features/token/Amount";
 import TokenIcon from "../../../features/token/TokenIcon";
 import FiatAmount from "../../../features/tokenPrice/FiatAmount";
@@ -27,9 +41,12 @@ import VestedBalance from "../../../features/vesting/VestedBalance";
 import VestingDetailsHeader from "../../../features/vesting/VestingDetailsHeader";
 import VestingGraph from "../../../features/vesting/VestingGraph";
 import VestingScheduleProgress from "../../../features/vesting/VestingScheduleProgress/VestingScheduleProgress";
+import VestingStatus from "../../../features/vesting/VestingStatus";
+import { useVisibleAddress } from "../../../features/wallet/VisibleAddressContext";
 import config from "../../../utils/config";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import Page404 from "../../404";
+import { getStreamPagePath } from "../../stream/[_network]/[_stream]";
 
 interface VestingLegendItemProps {
   title: string;
@@ -139,6 +156,8 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const { visibleAddress = "" } = useVisibleAddress();
+  const router = useRouter();
 
   const [graphFilter, setGraphFilter] = useState(TimeUnitFilterType.All);
 
@@ -146,18 +165,44 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
     chainId: network.id,
     id,
   });
+
   const vestingSchedule = vestingScheduleQuery.data?.vestingSchedule;
 
-  const tokenQuery = useVestingToken(
-    network,
-    vestingScheduleQuery?.data?.vestingSchedule?.superToken
-  );
+  const tokenQuery = useVestingToken(network, vestingSchedule?.superToken);
+
   const token = tokenQuery.data;
 
   const tokenPrice = useTokenPrice(network.id, token?.underlyingAddress);
 
+  const vestingStreamQuery = subgraphApi.useStreamsQuery(
+    vestingSchedule
+      ? {
+          chainId: network.id,
+          filter: {
+            token: vestingSchedule.superToken.toLowerCase(),
+            sender: vestingSchedule.sender.toLowerCase(),
+            receiver: vestingSchedule.receiver.toLowerCase(),
+            createdAtTimestamp: vestingSchedule.cliffAndFlowExecutedAt,
+          },
+        }
+      : skipToken
+  );
+
+  const vestingStream = vestingStreamQuery.data?.data?.[0];
+
   const onGraphFilterChange = (newGraphFilter: TimeUnitFilterType) =>
     setGraphFilter(newGraphFilter);
+
+  const openStreamDetails = useCallback(() => {
+    if (!vestingStream) return;
+
+    router.push(
+      getStreamPagePath({
+        network: network.slugName,
+        stream: vestingStream.id,
+      })
+    );
+  }, [router, network, vestingStream]);
 
   const cliffAmount = useMemo(() => {
     if (!vestingSchedule) return "0";
@@ -184,9 +229,11 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
   if (!vestingSchedule || !token) return <Page404 />;
 
   const { symbol } = token;
-  const { flowRate } = vestingSchedule;
+  const { flowRate, receiver, sender, startDate, endDate } = vestingSchedule;
 
-  const urlToShare = `${config.appUrl}/vesting/${network.slugName}/${id}`;
+  const incoming = visibleAddress.toLowerCase() === receiver.toLowerCase();
+
+  // const urlToShare = `${config.appUrl}/vesting/${network.slugName}/${id}`;
 
   return (
     <Container maxWidth="lg">
@@ -307,6 +354,89 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
           </Stack>
         </Card>
 
+        {vestingStream && (
+          <TableContainer
+            sx={{
+              [theme.breakpoints.down("md")]: {
+                mx: -2,
+                width: "auto",
+                borderRadius: 0,
+                border: "none",
+                borderBottom: `1px solid ${theme.palette.divider}`,
+                boxShadow: "none",
+              },
+            }}
+          >
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>{incoming ? "From" : "To"}</TableCell>
+                  <TableCell>Allocated</TableCell>
+                  <TableCell>Vested</TableCell>
+                  <TableCell>Vesting Start/End</TableCell>
+                  <TableCell>Status</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow
+                  hover
+                  onClick={openStreamDetails}
+                  sx={{ cursor: "pointer" }}
+                >
+                  <TableCell>
+                    <Stack direction="row" alignItems="center" gap={1.5}>
+                      <AddressAvatar
+                        address={incoming ? sender : receiver}
+                        AvatarProps={{
+                          sx: {
+                            width: "24px",
+                            height: "24px",
+                            borderRadius: "5px",
+                          },
+                        }}
+                        BlockiesProps={{ size: 8, scale: 3 }}
+                      />
+                      <AddressCopyTooltip
+                        address={incoming ? sender : receiver}
+                      >
+                        <Typography data-cy={"receiver-sender"} variant="h7">
+                          <AddressName address={incoming ? sender : receiver} />
+                        </Typography>
+                      </AddressCopyTooltip>
+                    </Stack>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body1mono">
+                      {totalVesting && <Amount wei={totalVesting} />}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body1mono">
+                      <VestedBalance vestingSchedule={vestingSchedule} />
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <ListItemText
+                      primary={format(
+                        fromUnixTime(Number(startDate)),
+                        "LLL d, yyyy HH:mm"
+                      )}
+                      secondary={format(
+                        fromUnixTime(Number(endDate)),
+                        "LLL d, yyyy HH:mm"
+                      )}
+                      primaryTypographyProps={{ variant: "body2" }}
+                      secondaryTypographyProps={{ color: "text.primary" }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <VestingStatus vestingSchedule={vestingSchedule} />
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
         {/* <SharingSection
           url={urlToShare}
           twitterText="Start vesting with Superfluid!"
