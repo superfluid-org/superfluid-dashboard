@@ -299,8 +299,8 @@ export default memo(function SendCard() {
     />
   );
 
-  const doesNetworkSupportFlowScheduler =
-    !!network.flowSchedulerContractAddress;
+  const doesNetworkSupportFlowScheduler = false;
+    // !!network.flowSchedulerContractAddress; // TODO(KK): Uncomment this to enable 
 
   const [streamScheduling, setStreamScheduling] = useState<boolean>(
     !!endTimestamp
