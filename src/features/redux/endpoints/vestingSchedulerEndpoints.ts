@@ -117,8 +117,8 @@ export const vestingSchedulerMutationEndpoints = {
 
         const [
           flowOperatorData,
-          START_DATE_VALID_AFTER_IN_DAYS,
-          END_DATE_VALID_BEFORE_IN_DAYS,
+          START_DATE_VALID_AFTER_IN_SECONDS,
+          END_DATE_VALID_BEFORE_IN_SECONDS,
         ] = await Promise.all([
           superToken.getFlowOperatorData({
             flowOperator: vestingScheduler.address,
@@ -128,10 +128,6 @@ export const vestingSchedulerMutationEndpoints = {
           vestingScheduler.START_DATE_VALID_AFTER(),
           vestingScheduler.END_DATE_VALID_BEFORE(),
         ]);
-        const START_DATE_VALID_AFTER_IN_SECONDS =
-          START_DATE_VALID_AFTER_IN_DAYS * UnitOfTime.Second;
-        const END_DATE_VALID_BEFORE_IN_SECONDS =
-          END_DATE_VALID_BEFORE_IN_DAYS * UnitOfTime.Second;
 
         const existingPermissions = Number(flowOperatorData.permissions);
         const hasDeletePermission = existingPermissions & ACL_DELETE_PERMISSION;
