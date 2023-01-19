@@ -75,47 +75,73 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
     return [...mappedPendingVestingSchedules, ...(sentVestingSchedules || [])];
   }, [mappedPendingVestingSchedules, sentVestingSchedules]);
 
+  const vestingSchedulesLoading =
+    receivedSchedulesLoading || sentSchedulesLoading;
+
   return (
     <Stack gap={2}>
-      <Typography variant="h6">
-        {receivedSchedulesLoading ? <Skeleton /> : "Received Vesting Schedules"}
-      </Typography>
-      <Card sx={{ p: 0, mb: 3 }}>
-        {receivedSchedulesLoading || receivedVestingSchedules.length > 0 ? (
-          <VestingScheduleTable
-            dataCy={"received-table"}
-            isLoading={receivedSchedulesLoading}
-            network={network}
-            vestingSchedules={receivedVestingSchedules}
-          />
-        ) : (
-          <NoContentPaper
-            dataCy={"no-received-schedules"}
-            title="No Received Vesting Schedules"
-            description="Vesting schedules that you have received will appear here."
-          />
-        )}
-      </Card>
+      <Stack
+        gap={2}
+        direction={
+          receivedVestingSchedules.length === 0 &&
+          mappedSentVestingSchedules.length > 0
+            ? "column-reverse"
+            : "column"
+        }
+      >
+        <Stack gap={2} direction="column">
+          <Typography variant="h6">
+            {vestingSchedulesLoading ? (
+              <Skeleton width="200px" />
+            ) : (
+              "Received Vesting Schedules"
+            )}
+          </Typography>
+          <Card sx={{ p: 0, mb: 3 }}>
+            {vestingSchedulesLoading || receivedVestingSchedules.length > 0 ? (
+              <VestingScheduleTable
+                dataCy={"received-table"}
+                isLoading={vestingSchedulesLoading}
+                network={network}
+                vestingSchedules={receivedVestingSchedules}
+              />
+            ) : (
+              <NoContentPaper
+                dataCy={"no-received-schedules"}
+                title="No Received Vesting Schedules"
+                description="Vesting schedules that you have received will appear here."
+              />
+            )}
+          </Card>
+        </Stack>
 
-      <Typography variant="h6">
-        {sentSchedulesLoading ? <Skeleton /> : "Sent Vesting Schedules"}
-      </Typography>
-      <Card sx={{ p: 0 }}>
-        {sentSchedulesLoading || mappedSentVestingSchedules.length > 0 ? (
-          <VestingScheduleTable
-            data-cy={"created-table"}
-            isLoading={sentSchedulesLoading}
-            network={network}
-            vestingSchedules={mappedSentVestingSchedules}
-          />
-        ) : (
-          <NoContentPaper
-            dataCy={"no-created-schedules"}
-            title="No Sent Vesting Schedules"
-            description="Vesting schedules that you have created will appear here."
-          />
-        )}
-      </Card>
+        <Stack gap={2} direction="column">
+          <Typography variant="h6">
+            {vestingSchedulesLoading ? (
+              <Skeleton width="200px" />
+            ) : (
+              "Sent Vesting Schedules"
+            )}
+          </Typography>
+          <Card sx={{ p: 0 }}>
+            {vestingSchedulesLoading ||
+            mappedSentVestingSchedules.length > 0 ? (
+              <VestingScheduleTable
+                data-cy={"created-table"}
+                isLoading={vestingSchedulesLoading}
+                network={network}
+                vestingSchedules={mappedSentVestingSchedules}
+              />
+            ) : (
+              <NoContentPaper
+                dataCy={"no-created-schedules"}
+                title="No Sent Vesting Schedules"
+                description="Vesting schedules that you have created will appear here."
+              />
+            )}
+          </Card>
+        </Stack>
+      </Stack>
       <Card sx={{ p: 0 }}>
         <VestingSchedulerAllowances />
       </Card>
