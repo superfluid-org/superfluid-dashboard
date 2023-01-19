@@ -68,11 +68,30 @@ export const INVEST_IN_REALTIME = [
             secondary: "#254D5A",
         },
     },
+    {
+        name: "aqueduct",
+        href: "https://aqueductfinance.vercel.app/",
+        description: `A real-time DEX where you can swap and earn tokens every second`,
+        icon: "/icons/ecosystem/aqueduct.png",
+        chains: [
+            networkDefinition.arbitrum.id,
+            networkDefinition.avalancheC.id,
+            networkDefinition.gnosis.id,
+            networkDefinition.optimism.id,
+            networkDefinition.polygon.id,
+            networkDefinition.bsc.id,
+        ],
+        comingSoon: true,
+        colors: {
+            primary: "#1F4276",
+            secondary: "#0460CE",
+        },
+    },
 ];
 
 export const BRIDGE_AND_EXCHANGE = [
     {
-        name: "Li.Fi",
+        name: "LI.FI",
         href: "https://app.superfluid.finance/bridge",
         icon: "/icons/ecosystem/li-fi.svg",
         description: `Advanced bridge aggregation with DEX connectivity`,
