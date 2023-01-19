@@ -53,7 +53,10 @@ const LineChart: FC<LineChartProps> = ({
         "plugins.tooltip.callbacks",
         {
           title: (context: Array<TooltipItem<"line">>) =>
-            format(new Date((context[0]?.raw as DataPoint).x), "MMMM do, yyyy"),
+            format(
+              new Date((context[0]?.raw as DataPoint).x),
+              "MMMM do, yyyy HH:mm"
+            ),
           label: (context: TooltipItem<"line">) =>
             (context.raw as DataPoint).ether,
         },

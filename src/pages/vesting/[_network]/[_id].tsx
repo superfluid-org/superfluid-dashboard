@@ -15,6 +15,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { skipToken } from "@reduxjs/toolkit/dist/query/react";
+import { FlowUpdatedEvent, TransferEvent } from "@superfluid-finance/sdk-core";
 import { format, fromUnixTime } from "date-fns";
 import { BigNumber } from "ethers";
 import { isString } from "lodash";
@@ -44,7 +45,10 @@ import VestingGraph from "../../../features/vesting/VestingGraph";
 import VestingScheduleProgress from "../../../features/vesting/VestingScheduleProgress/VestingScheduleProgress";
 import VestingStatus from "../../../features/vesting/VestingStatus";
 import { useVisibleAddress } from "../../../features/wallet/VisibleAddressContext";
-import { mapActivitiesFromEvents } from "../../../utils/activityUtils";
+import {
+  Activity,
+  mapActivitiesFromEvents,
+} from "../../../utils/activityUtils";
 import config from "../../../utils/config";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import Page404 from "../../404";
@@ -104,6 +108,11 @@ const VestingDataCard: FC<VestingDataCardProps> = ({
     )}
   </Card>
 );
+
+export type VestingActivities = (
+  | Activity<FlowUpdatedEvent>
+  | Activity<TransferEvent>
+)[];
 
 const VestingScheduleDetailsPage: NextPage = () => {
   const router = useRouter();
@@ -171,6 +180,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
       ? {
           chainId: network.id,
           filter: {
+            name_in: ["FlowUpdated", "Transfer"],
             addresses_contains_nocase: [
               vestingSchedule.superToken,
               vestingSchedule.sender,
@@ -191,7 +201,10 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
     {
       selectFromResult: (result) => ({
         ...result,
-        activities: mapActivitiesFromEvents(result.data?.items || [], network),
+        activities: mapActivitiesFromEvents(
+          result.data?.items || [],
+          network
+        ) as VestingActivities,
       }),
     }
   );
@@ -354,7 +367,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
                     color={theme.palette.primary.main}
                   />
                   <VestingLegendItem
-                    title="Not Vested"
+                    title="Expected"
                     color={theme.palette.text.disabled}
                   />
                 </Stack>
@@ -362,7 +375,10 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
             )}
           </Stack>
 
-          <VestingGraph vestingSchedule={vestingSchedule} />
+          <VestingGraph
+            vestingSchedule={vestingSchedule}
+            vestingActivities={activities}
+          />
         </Card>
 
         <Stack direction="row" alignItems="stretch" gap={3}>

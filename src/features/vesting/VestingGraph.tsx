@@ -1,12 +1,20 @@
 import { useTheme } from "@mui/material";
-import { fromUnixTime, getUnixTime } from "date-fns";
-import { BigNumber } from "ethers";
+import {
+  FlowUpdatedEvent,
+  Stream,
+  TransferEvent,
+} from "@superfluid-finance/sdk-core";
+import { add, fromUnixTime, getUnixTime, isSameDay, min } from "date-fns";
+import { BigNumber, ethers } from "ethers";
 import { formatEther } from "ethers/lib/utils";
-import { FC, useEffect, useMemo, useState } from "react";
-import LineChart, { DataPoint } from "../../components/Chart/LineChart";
+import { orderBy, sortBy } from "lodash/fp";
+import { FC, useMemo } from "react";
+import LineChart from "../../components/Chart/LineChart";
 import useTimer from "../../hooks/useTimer";
+import { VestingActivities } from "../../pages/vesting/[_network]/[_id]";
+import { Activities, Activity } from "../../utils/activityUtils";
 import { buildDefaultDatasetConf } from "../../utils/chartUtils";
-import { getDatesBetween } from "../../utils/dateUtils";
+import { dateNowSeconds, getDatesBetween } from "../../utils/dateUtils";
 import { UnitOfTime } from "../send/FlowRateInput";
 import { VestingSchedule } from "./types";
 
@@ -28,7 +36,158 @@ function getFrequency(startDate: Date, endDate: Date): UnitOfTime {
   return normalizedFrequency as UnitOfTime;
 }
 
-function mapVestingGraphDataPoints(vestingSchedule: VestingSchedule) {
+interface DataPoint {
+  x: number;
+  y: number;
+  ether: string;
+}
+
+type MappedData = Array<DataPoint>;
+
+interface TokenBalance {
+  balance: string;
+  totalNetFlowRate: string;
+  timestamp: number;
+}
+
+function mapVestingActualDataPoints(
+  vestingActivities: VestingActivities,
+  vestingSchedule: VestingSchedule,
+  dateNow: Date
+) {
+  const startDate = fromUnixTime(Number(vestingSchedule.startDate));
+  const vestingEndDate = fromUnixTime(Number(vestingSchedule.endDate));
+
+  const endDate = vestingSchedule.endExecutedAt
+    ? min([fromUnixTime(Number(vestingSchedule.endExecutedAt)), dateNow])
+    : dateNow;
+
+  const frequency = getFrequency(startDate, vestingEndDate);
+
+  const dates = getDatesBetween(startDate, endDate, frequency);
+
+  const mappedTokenBalances = sortBy(
+    (activity) => activity.keyEvent.timestamp,
+    vestingActivities
+  )
+    .reduce((tokenBalances, activity) => {
+      const lastBalance =
+        tokenBalances.length > 0
+          ? tokenBalances[tokenBalances.length - 1]
+          : ({
+              balance: "0",
+              totalNetFlowRate: "0",
+              timestamp: Number(vestingSchedule.startDate),
+            } as TokenBalance);
+
+      const secondsElapsed =
+        activity.keyEvent.timestamp - lastBalance.timestamp;
+
+      const amountFlowed = BigNumber.from(lastBalance.totalNetFlowRate).mul(
+        secondsElapsed
+      );
+
+      const newBalance = BigNumber.from(lastBalance.balance).add(amountFlowed);
+
+      if (activity.keyEvent.name === "FlowUpdated") {
+        return [
+          ...tokenBalances,
+          {
+            balance: newBalance.toString(),
+            totalNetFlowRate: activity.keyEvent.flowRate,
+            timestamp: activity.keyEvent.timestamp,
+          },
+        ];
+      } else if (activity.keyEvent.name === "Transfer") {
+        const newerBalance = newBalance.add(activity.keyEvent.value);
+
+        return [
+          ...tokenBalances,
+          {
+            balance: lastBalance.balance,
+            totalNetFlowRate: lastBalance.totalNetFlowRate,
+            timestamp: activity.keyEvent.timestamp - 1,
+          },
+          {
+            balance: newerBalance.toString(),
+            totalNetFlowRate: lastBalance.totalNetFlowRate,
+            timestamp: activity.keyEvent.timestamp,
+          },
+        ];
+      }
+
+      return tokenBalances;
+    }, [] as TokenBalance[])
+    .reverse();
+
+  const initialTokenBalance = {
+    balance: "0",
+    totalNetFlowRate: "0",
+    timestamp: Number(vestingSchedule.startDate),
+  } as TokenBalance;
+
+  return mapTokenBalancesToDataPoints(
+    dates,
+    mappedTokenBalances,
+    frequency,
+    initialTokenBalance
+  );
+}
+
+const isSameFrequency = (date1: number, date2: number, frequency: UnitOfTime) =>
+  date1 <= date2 && date2 <= date1 + frequency;
+
+function mapTokenBalancesToDataPoints(
+  dates: Date[],
+  tokenBalances: TokenBalance[],
+  frequency: UnitOfTime,
+  initialTokenBalance: TokenBalance
+) {
+  return dates.reduce<{
+    data: MappedData;
+    lastTokenBalance: TokenBalance;
+  }>(
+    ({ data, lastTokenBalance }, date) => {
+      const currentTokenBalance =
+        tokenBalances.find(({ timestamp }) =>
+          isSameFrequency(getUnixTime(date), timestamp, frequency)
+        ) || lastTokenBalance;
+
+      const { balance, totalNetFlowRate, timestamp } = currentTokenBalance;
+
+      const flowingBalance =
+        totalNetFlowRate !== "0"
+          ? BigNumber.from(totalNetFlowRate).mul(
+              BigNumber.from(Math.floor(date.getTime() / 1000) - timestamp)
+            )
+          : BigNumber.from(0);
+
+      const wei = BigNumber.from(balance).add(flowingBalance);
+
+      const pointValue = ethers.utils.formatEther(
+        wei.gt(BigNumber.from(0)) ? wei : BigNumber.from(0)
+      );
+
+      return {
+        data: [
+          ...data,
+          {
+            x: date.getTime(),
+            y: Number(pointValue),
+            ether: pointValue,
+          },
+        ],
+        lastTokenBalance: currentTokenBalance,
+      };
+    },
+    {
+      data: [],
+      lastTokenBalance: initialTokenBalance,
+    }
+  ).data;
+}
+
+function mapVestingExpectedDataPoints(vestingSchedule: VestingSchedule) {
   const {
     startDate: startDateUnix,
     endDate: endDateUnix,
@@ -100,11 +259,13 @@ function mapVestingGraphDataPoints(vestingSchedule: VestingSchedule) {
 
 interface VestingGraphProps {
   vestingSchedule: VestingSchedule;
+  vestingActivities: VestingActivities;
   height?: number;
 }
 
 const VestingGraph: FC<VestingGraphProps> = ({
   vestingSchedule,
+  vestingActivities,
   height = 180,
 }) => {
   const theme = useTheme();
@@ -112,21 +273,15 @@ const VestingGraph: FC<VestingGraphProps> = ({
   const dateNow = useTimer(UnitOfTime.Minute);
 
   const datasets = useMemo(() => {
-    const dateNowMs = dateNow.getTime();
-    const mappedDataPoints = mapVestingGraphDataPoints(vestingSchedule);
-
-    const vestedDataPoints = mappedDataPoints.filter(({ x }) => x <= dateNowMs);
-    const notVestedDataPoints = mappedDataPoints.filter(
-      ({ x }) => x > dateNowMs
+    const actualDataPoints = mapVestingActualDataPoints(
+      vestingActivities,
+      vestingSchedule,
+      dateNow
     );
+    const expectedDataPoints = mapVestingExpectedDataPoints(vestingSchedule);
 
-    const lastVested = vestedDataPoints[vestedDataPoints.length - 1];
-
-    return [
-      vestedDataPoints, // Used for the green (vested) line.
-      [...(lastVested ? [lastVested] : []), ...notVestedDataPoints], // Used for the gray (not vested) line.
-    ];
-  }, [vestingSchedule, dateNow]);
+    return [actualDataPoints, expectedDataPoints];
+  }, [vestingSchedule, vestingActivities, dateNow]);
 
   const datasetsConfigCallbacks = useMemo(
     () => [
