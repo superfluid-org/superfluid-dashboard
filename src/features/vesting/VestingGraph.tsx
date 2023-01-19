@@ -65,7 +65,7 @@ function mapVestingActualDataPoints(
   const frequency = getFrequency(startDate, vestingEndDate);
 
   const dates = getDatesBetween(startDate, endDate, frequency);
-  console.log({ startDate, endDate });
+
   const mappedTokenBalances = sortBy(
     (activity) => activity.keyEvent.timestamp,
     vestingActivities
