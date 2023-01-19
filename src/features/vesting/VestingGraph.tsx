@@ -60,65 +60,62 @@ function mapVestingActualDataPoints(
 
   const endDate = vestingSchedule.endExecutedAt
     ? min([fromUnixTime(Number(vestingSchedule.endExecutedAt)), dateNow])
-    : dateNow;
+    : min([fromUnixTime(Number(vestingSchedule.endDate)), dateNow]);
 
   const frequency = getFrequency(startDate, vestingEndDate);
 
   const dates = getDatesBetween(startDate, endDate, frequency);
-
+  console.log({ startDate, endDate });
   const mappedTokenBalances = sortBy(
     (activity) => activity.keyEvent.timestamp,
     vestingActivities
-  )
-    .reduce((tokenBalances, activity) => {
-      const lastBalance =
-        tokenBalances.length > 0
-          ? tokenBalances[tokenBalances.length - 1]
-          : ({
-              balance: "0",
-              totalNetFlowRate: "0",
-              timestamp: Number(vestingSchedule.startDate),
-            } as TokenBalance);
+  ).reduce((tokenBalances, activity) => {
+    const lastBalance =
+      tokenBalances.length > 0
+        ? tokenBalances[tokenBalances.length - 1]
+        : ({
+            balance: "0",
+            totalNetFlowRate: "0",
+            timestamp: Number(vestingSchedule.startDate),
+          } as TokenBalance);
 
-      const secondsElapsed =
-        activity.keyEvent.timestamp - lastBalance.timestamp;
+    const secondsElapsed = activity.keyEvent.timestamp - lastBalance.timestamp;
 
-      const amountFlowed = BigNumber.from(lastBalance.totalNetFlowRate).mul(
-        secondsElapsed
-      );
+    const amountFlowed = BigNumber.from(lastBalance.totalNetFlowRate).mul(
+      secondsElapsed
+    );
 
-      const newBalance = BigNumber.from(lastBalance.balance).add(amountFlowed);
+    const newBalance = BigNumber.from(lastBalance.balance).add(amountFlowed);
 
-      if (activity.keyEvent.name === "FlowUpdated") {
-        return [
-          ...tokenBalances,
-          {
-            balance: newBalance.toString(),
-            totalNetFlowRate: activity.keyEvent.flowRate,
-            timestamp: activity.keyEvent.timestamp,
-          },
-        ];
-      } else if (activity.keyEvent.name === "Transfer") {
-        const newerBalance = newBalance.add(activity.keyEvent.value);
+    if (activity.keyEvent.name === "FlowUpdated") {
+      return [
+        ...tokenBalances,
+        {
+          balance: newBalance.toString(),
+          totalNetFlowRate: activity.keyEvent.flowRate,
+          timestamp: activity.keyEvent.timestamp,
+        },
+      ];
+    } else if (activity.keyEvent.name === "Transfer") {
+      const newerBalance = newBalance.add(activity.keyEvent.value);
 
-        return [
-          ...tokenBalances,
-          {
-            balance: lastBalance.balance,
-            totalNetFlowRate: lastBalance.totalNetFlowRate,
-            timestamp: activity.keyEvent.timestamp - 1,
-          },
-          {
-            balance: newerBalance.toString(),
-            totalNetFlowRate: lastBalance.totalNetFlowRate,
-            timestamp: activity.keyEvent.timestamp,
-          },
-        ];
-      }
+      return [
+        ...tokenBalances,
+        {
+          balance: lastBalance.balance,
+          totalNetFlowRate: lastBalance.totalNetFlowRate,
+          timestamp: activity.keyEvent.timestamp - 1,
+        },
+        {
+          balance: newerBalance.toString(),
+          totalNetFlowRate: lastBalance.totalNetFlowRate,
+          timestamp: activity.keyEvent.timestamp,
+        },
+      ];
+    }
 
-      return tokenBalances;
-    }, [] as TokenBalance[])
-    .reverse();
+    return tokenBalances;
+  }, [] as TokenBalance[]);
 
   const initialTokenBalance = {
     balance: "0",
@@ -148,36 +145,20 @@ function mapTokenBalancesToDataPoints(
     lastTokenBalance: TokenBalance;
   }>(
     ({ data, lastTokenBalance }, date) => {
-      const currentTokenBalance =
-        tokenBalances.find(({ timestamp }) =>
-          isSameFrequency(getUnixTime(date), timestamp, frequency)
-        ) || lastTokenBalance;
+      const foundTokenBalances = tokenBalances.filter(({ timestamp }) =>
+        isSameFrequency(getUnixTime(date), timestamp, frequency)
+      );
 
-      const { balance, totalNetFlowRate, timestamp } = currentTokenBalance;
+      const currentTokenBalances =
+        foundTokenBalances.length > 0 ? foundTokenBalances : [lastTokenBalance];
 
-      const flowingBalance =
-        totalNetFlowRate !== "0"
-          ? BigNumber.from(totalNetFlowRate).mul(
-              BigNumber.from(Math.floor(date.getTime() / 1000) - timestamp)
-            )
-          : BigNumber.from(0);
-
-      const wei = BigNumber.from(balance).add(flowingBalance);
-
-      const pointValue = ethers.utils.formatEther(
-        wei.gt(BigNumber.from(0)) ? wei : BigNumber.from(0)
+      const mappedDataPoints = currentTokenBalances.map((tokenBalance) =>
+        mapFrequencyTokenBalanceToDataPoints(date, tokenBalance)
       );
 
       return {
-        data: [
-          ...data,
-          {
-            x: date.getTime(),
-            y: Number(pointValue),
-            ether: pointValue,
-          },
-        ],
-        lastTokenBalance: currentTokenBalance,
+        data: [...data, ...mappedDataPoints],
+        lastTokenBalance: currentTokenBalances[currentTokenBalances.length - 1],
       };
     },
     {
@@ -185,6 +166,31 @@ function mapTokenBalancesToDataPoints(
       lastTokenBalance: initialTokenBalance,
     }
   ).data;
+}
+
+function mapFrequencyTokenBalanceToDataPoints(
+  date: Date,
+  tokenBalance: TokenBalance
+) {
+  const { balance, totalNetFlowRate, timestamp } = tokenBalance;
+
+  const flowingBalance =
+    totalNetFlowRate !== "0"
+      ? BigNumber.from(totalNetFlowRate).mul(
+          BigNumber.from(Math.floor(date.getTime() / 1000) - timestamp)
+        )
+      : BigNumber.from(0);
+
+  const wei = BigNumber.from(balance).add(flowingBalance);
+
+  const pointValue = ethers.utils.formatEther(
+    wei.gt(BigNumber.from(0)) ? wei : BigNumber.from(0)
+  );
+  return {
+    x: date.getTime(),
+    y: Number(pointValue),
+    ether: pointValue,
+  };
 }
 
 function mapVestingExpectedDataPoints(vestingSchedule: VestingSchedule) {
