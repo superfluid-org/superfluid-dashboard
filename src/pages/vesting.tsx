@@ -1,12 +1,4 @@
-import {
-  Box,
-  Card,
-  Container,
-  Paper,
-  Stack,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Box, Container, Paper, Typography, useTheme } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { NextPage } from "next";
 import { useMemo } from "react";
@@ -15,10 +7,8 @@ import { useFeatureFlags } from "../features/featureFlags/FeatureFlagContext";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import { networkDefinition, networks } from "../features/network/networks";
 import NetworkSwitchLink from "../features/network/NetworkSwitchLink";
-import { ReceivedVestingScheduleTable } from "../features/vesting/ReceivedVestingScheduleTable";
-import { SentVestingScheduleTable } from "../features/vesting/SentVestingScheduleTable";
 import VestingHeader from "../features/vesting/VestingHeader";
-import { VestingSchedulerAllowances } from "../features/vesting/VestingSchedulerAllowances";
+import VestingScheduleTables from "../features/vesting/VestingScheduleTables";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 
 const VestingNotSupportedCard = () => {
@@ -80,20 +70,7 @@ const VestingPage: NextPage = () => {
       {visibleAddress && (
         <>
           {networkSupported ? (
-            <Stack gap={2}>
-              <Typography variant="h6">Received Vesting Schedules</Typography>
-              <Card sx={{ p: 0, mb: 3 }}>
-                <ReceivedVestingScheduleTable />
-              </Card>
-
-              <Typography variant="h6">Sent Vesting Schedules</Typography>
-              <Card sx={{ p: 0 }}>
-                <SentVestingScheduleTable />
-              </Card>
-              <Card sx={{ p: 0 }}>
-                <VestingSchedulerAllowances />
-              </Card>
-            </Stack>
+            <VestingScheduleTables />
           ) : (
             <VestingNotSupportedCard />
           )}
