@@ -38,7 +38,7 @@ const VestingStatus: FC<VestingStatusProps> = ({ vestingSchedule }) => {
       Number(cliffAndFlowExecutedAt) < dateNow
     ) {
       return VestingStatusType.Vesting;
-    } else if (Number(startDate) < dateNow) {
+    } else if (Number(startDate) < dateNow && cliffDate) {
       return VestingStatusType.Cliff;
     }
 
