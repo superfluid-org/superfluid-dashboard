@@ -8,8 +8,9 @@ enum VestingStatusType {
   Cliff = "Cliff",
   Vesting = "Vesting",
   Vested = "Vested",
-  Failed = "Failed",
+  Failed = "Failed", // TODO
   Deleted = "Deleted",
+  Partial = "Partial", // TODO
 }
 
 interface VestingStatusProps {
