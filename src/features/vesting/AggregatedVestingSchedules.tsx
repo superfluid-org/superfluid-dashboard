@@ -1,19 +1,18 @@
 import { Box, Paper, Stack, Typography } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import { Address } from "@superfluid-finance/sdk-core";
-import { BigNumber } from "ethers";
 import groupBy from "lodash/fp/groupBy";
-import { FC, useEffect, useMemo, useState } from "react";
-import { VestingActivities } from "../../pages/vesting/[_network]/[_id]";
-import { mapActivitiesFromEvents } from "../../utils/activityUtils";
-import { TokenBalance } from "../../utils/chartUtils";
+import { FC, useMemo } from "react";
 import {
+  aggregateTokenBalances,
   calculateVestingSchedulesAllocated,
-  mapVestingActivitiesToTokenBalances,
+  vestingScheduleToTokenBalance,
 } from "../../utils/vestingUtils";
 import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
-import { subgraphApi } from "../redux/store";
+import Amount from "../token/Amount";
+import FlowingBalance from "../token/FlowingBalance";
+import FiatAmount from "../tokenPrice/FiatAmount";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import { VestingSchedule } from "./types";
 import { useVestingToken } from "./useVestingToken";
@@ -34,61 +33,20 @@ const VestingTokenAggregationRow: FC<VestingTokenAggregationRowProps> = ({
   const token = tokenQuery.data;
   const tokenPrice = useTokenPrice(network.id, token?.underlyingAddress);
 
-  //   const [vestingScheduleActivities, setVestingScheduleActivities] = useState();
-
-  //   const [eventsQueryTrigger] = subgraphApi.useLazyEventsQuery();
-
-  //   useEffect(() => {
-  //     Promise.all(
-  //       vestingSchedules.map((vestingSchedule) =>
-  //         eventsQueryTrigger(
-  //           {
-  //             chainId: network.id,
-  //             filter: {
-  //               name_in: ["FlowUpdated", "Transfer"],
-  //               addresses_contains_nocase: [
-  //                 vestingSchedule.superToken,
-  //                 vestingSchedule.sender,
-  //                 vestingSchedule.receiver,
-  //               ],
-  //               timestamp_gte:
-  //                 vestingSchedule.cliffAndFlowExecutedAt ||
-  //                 vestingSchedule.startDate,
-  //               timestamp_lte:
-  //                 vestingSchedule.endExecutedAt || vestingSchedule.endDate,
-  //             },
-  //             order: {
-  //               orderBy: "order",
-  //               orderDirection: "desc",
-  //             },
-  //           },
-  //           true
-  //         ).then((result) =>
-  //           mapVestingActivitiesToTokenBalances(
-  //             mapActivitiesFromEvents(
-  //               result.data?.items || [],
-  //               network
-  //             ) as VestingActivities,
-  //             vestingSchedule
-  //           ).pop()
-  //         )
-  //       )
-  //     ).then((responses: (TokenBalance | undefined)[]) => {
-  //       console.log({ responses });
-  //     });
-  //   }, [vestingSchedules, network, eventsQueryTrigger]);
-
   const allocated = useMemo(
     () => calculateVestingSchedulesAllocated(vestingSchedules).toString(),
     [vestingSchedules]
   );
 
-  //   TODO:
-  //   const currentlyVested = useMemo(() => {
-  //     mapVestingActivitiesToTokenBalances();
-
-  //     return "0";
-  //   }, []);
+  const aggregatedTokenBalance = useMemo(
+    () =>
+      aggregateTokenBalances(
+        vestingSchedules.map((vestingSchedule) =>
+          vestingScheduleToTokenBalance(vestingSchedule)
+        )
+      ),
+    [vestingSchedules]
+  );
 
   return (
     <>
@@ -98,17 +56,25 @@ const VestingTokenAggregationRow: FC<VestingTokenAggregationRowProps> = ({
           <VestingDataCardContent
             title="Total Tokens Allocated"
             tokenSymbol={token?.symbol || ""}
-            amount={allocated}
-            price={tokenPrice}
+            tokenAmount={<Amount wei={allocated} />}
+            fiatAmount={
+              tokenPrice && <FiatAmount wei={allocated} price={tokenPrice} />
+            }
           />
         </Box>
         <Divider orientation="vertical" />
         <Box sx={{ px: 4, py: 2.5 }}>
           <VestingDataCardContent
-            title="Cliff Not Amount"
-            tokenSymbol={""}
-            amount={""}
-            price={0}
+            title="Total Vested"
+            tokenSymbol={token?.symbol || ""}
+            tokenAmount={
+              <FlowingBalance
+                balance={aggregatedTokenBalance.balance}
+                flowRate={aggregatedTokenBalance.totalNetFlowRate}
+                balanceTimestamp={aggregatedTokenBalance.timestamp}
+              />
+            }
+            fiatAmount={tokenPrice && <FiatAmount price={tokenPrice} wei="0" />}
           />
         </Box>
       </Box>

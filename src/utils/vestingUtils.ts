@@ -1,7 +1,8 @@
 import { fromUnixTime, getUnixTime, min } from "date-fns";
 import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils";
-import { orderBy } from "lodash";
+import orderBy from "lodash/fp/orderBy";
+import maxBy from "lodash/fp/maxBy";
 import { DataPoint } from "../components/Chart/LineChart";
 import { UnitOfTime } from "../features/send/FlowRateInput";
 import { VestingSchedule } from "../features/vesting/types";
@@ -15,9 +16,9 @@ export function mapVestingActivitiesToTokenBalances(
 ) {
   console.log({ vestingSchedule, vestingActivities });
   return orderBy(
-    vestingActivities,
     (activity) => activity.keyEvent.timestamp,
-    "asc"
+    "asc",
+    vestingActivities
   ).reduce(
     (tokenBalances, activity) => {
       const lastBalance = tokenBalances[tokenBalances.length - 1];
@@ -189,5 +190,93 @@ export function calculateVestingSchedulesAllocated(
     (total, vestingSchedule) =>
       total.add(calculateVestingScheduleAllocated(vestingSchedule)),
     BigNumber.from(0)
+  );
+}
+
+export function vestingScheduleToTokenBalance(
+  vestingSchedule: VestingSchedule
+): TokenBalance {
+  const {
+    flowRate,
+    cliffAmount,
+    endExecutedAt,
+    cliffAndFlowExecutedAt,
+    endDate,
+    cliffAndFlowDate,
+  } = vestingSchedule;
+
+  if (endExecutedAt) {
+    const secondsStreamed =
+      Number(Math.max(Number(endExecutedAt), Number(endDate))) -
+      Number(cliffAndFlowDate);
+    const balance = BigNumber.from(secondsStreamed)
+      .mul(flowRate)
+      .add(cliffAmount || 0)
+      .toString();
+
+    return {
+      balance,
+      totalNetFlowRate: "0",
+      timestamp: Number(endExecutedAt),
+    } as TokenBalance;
+  } else if (cliffAndFlowExecutedAt) {
+    return {
+      balance: cliffAmount || "0",
+      totalNetFlowRate: flowRate,
+      timestamp: Number(cliffAndFlowDate),
+    };
+  }
+
+  return {
+    balance: "0",
+    totalNetFlowRate: "0",
+    timestamp: getUnixTime(new Date()),
+  };
+}
+
+export function aggregateTokenBalances(
+  tokenBalances: TokenBalance[]
+): TokenBalance {
+  const latestBalance = maxBy("timestamp", tokenBalances);
+
+  const maxTimestamp = latestBalance
+    ? Number(latestBalance.timestamp)
+    : getUnixTime(new Date());
+
+  return tokenBalances.reduce(
+    (aggregatedBalance, tokenBalance) => {
+      const syncedTokenBalance = getBalanceAtTimestamp(
+        tokenBalance,
+        aggregatedBalance.timestamp
+      );
+
+      const newBalance = BigNumber.from(aggregatedBalance.balance)
+        .add(tokenBalance.balance)
+        .add(syncedTokenBalance);
+
+      const newFlowRate = BigNumber.from(
+        aggregatedBalance.totalNetFlowRate
+      ).add(tokenBalance.totalNetFlowRate);
+
+      return {
+        ...aggregatedBalance,
+        balance: newBalance.toString(),
+        totalNetFlowRate: newFlowRate.toString(),
+      };
+    },
+    {
+      timestamp: maxTimestamp,
+      totalNetFlowRate: "0",
+      balance: "0",
+    } as TokenBalance
+  );
+}
+
+export function getBalanceAtTimestamp(
+  tokenBalance: TokenBalance,
+  unixTimestamp: number
+) {
+  return BigNumber.from(unixTimestamp - tokenBalance.timestamp).mul(
+    tokenBalance.totalNetFlowRate
   );
 }

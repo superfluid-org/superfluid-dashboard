@@ -7,24 +7,24 @@ import FiatAmount from "../tokenPrice/FiatAmount";
 interface VestingDataCardProps {
   title: string;
   tokenSymbol: string;
-  amount?: string;
-  price?: number;
+  tokenAmount: any;
+  fiatAmount?: any;
 }
 
 export const VestingDataCardContent: FC<VestingDataCardProps> = ({
   title,
   tokenSymbol,
-  amount,
-  price,
+  tokenAmount,
+  fiatAmount,
 }) => (
   <Stack>
     <Typography variant="h5">{title}</Typography>
     <Stack direction="row" alignItems="center" gap={1.5}>
       <TokenIcon isSuper tokenSymbol={tokenSymbol} />
       <Stack direction="row" alignItems="flex-end" gap={0.5}>
-        {amount && (
+        {tokenAmount && (
           <Typography variant="h3mono" sx={{ lineHeight: "36px" }}>
-            <Amount wei={amount} />
+            {tokenAmount}
           </Typography>
         )}{" "}
         <Typography variant="h6" color="text.secondary">
@@ -32,9 +32,9 @@ export const VestingDataCardContent: FC<VestingDataCardProps> = ({
         </Typography>
       </Stack>
     </Stack>
-    {amount && price && (
+    {fiatAmount && (
       <Typography variant="h6" color="text.secondary" sx={{ ml: 6 }}>
-        <FiatAmount wei={amount} price={price} />
+        {fiatAmount}
       </Typography>
     )}
   </Stack>

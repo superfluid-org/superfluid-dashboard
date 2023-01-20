@@ -20,6 +20,8 @@ import TimeUnitFilter, {
 } from "../../../features/graph/TimeUnitFilter";
 import { Network, networksBySlug } from "../../../features/network/networks";
 import { subgraphApi } from "../../../features/redux/store";
+import Amount from "../../../features/token/Amount";
+import FiatAmount from "../../../features/tokenPrice/FiatAmount";
 import FlowingFiatBalance from "../../../features/tokenPrice/FlowingFiatBalance";
 import useTokenPrice from "../../../features/tokenPrice/useTokenPrice";
 import { BigLoader } from "../../../features/vesting/BigLoader";
@@ -294,14 +296,20 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
           <VestingDataCard
             title="Tokens Allocated"
             tokenSymbol={token.symbol}
-            amount={totalVesting}
-            price={tokenPrice}
+            tokenAmount={<Amount wei={totalVesting || "0"} />}
+            fiatAmount={
+              tokenPrice && (
+                <FiatAmount wei={totalVesting || "0"} price={tokenPrice} />
+              )
+            }
           />
           <VestingDataCard
             title="Cliff Amount"
             tokenSymbol={token.symbol}
-            amount={vestingSchedule.cliffAmount || "0"}
-            price={tokenPrice}
+            tokenAmount={<Amount wei={vestingSchedule.cliffAmount || "0"} />}
+            fiatAmount={
+              tokenPrice && <FiatAmount wei={totalVesting} price={tokenPrice} />
+            }
           />
         </Stack>
 
