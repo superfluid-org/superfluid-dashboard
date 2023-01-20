@@ -5,9 +5,6 @@ import {
   Container,
   Paper,
   Stack,
-  Table,
-  TableBody,
-  TableContainer,
   Typography,
   useMediaQuery,
   useTheme,
@@ -22,7 +19,6 @@ import ConnectOrImpersonate from "../components/ConnectOrImpersonate/ConnectOrIm
 import DatePicker from "../components/DatePicker/DatePicker";
 import OpenIcon from "../components/OpenIcon/OpenIcon";
 import withStaticSEO from "../components/SEO/withStaticSEO";
-import ActivityRow from "../features/activityHistory/ActivityRow";
 import ActivityTable from "../features/activityHistory/ActivityTable";
 import ActivityTypeFilter, {
   ActivityType,
