@@ -43,7 +43,7 @@ const VestingStatus: FC<VestingStatusProps> = ({ vestingSchedule }) => {
     }
 
     return VestingStatusType.Scheduled;
-  }, [startDate, cliffDate, endDate]);
+  }, [startDate, cliffDate, cliffAndFlowExecutedAt, deletedAt, endExecutedAt]);
 
   const color = useMemo(() => {
     switch (status) {
