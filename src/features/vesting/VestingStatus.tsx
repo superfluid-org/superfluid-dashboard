@@ -31,12 +31,9 @@ const VestingStatus: FC<VestingStatusProps> = ({ vestingSchedule }) => {
 
     if (deletedAt) {
       return VestingStatusType.Deleted;
-    } else if (endExecutedAt && Number(endExecutedAt) < dateNow) {
+    } else if (endExecutedAt) {
       return VestingStatusType.Vested;
-    } else if (
-      cliffAndFlowExecutedAt &&
-      Number(cliffAndFlowExecutedAt) < dateNow
-    ) {
+    } else if (cliffAndFlowExecutedAt) {
       return VestingStatusType.Vesting;
     } else if (Number(startDate) < dateNow && cliffDate) {
       return VestingStatusType.Cliff;
