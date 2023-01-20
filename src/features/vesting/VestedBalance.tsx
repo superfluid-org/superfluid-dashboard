@@ -1,8 +1,8 @@
+import { getUnixTime } from "date-fns";
 import { BigNumber } from "ethers";
 import { FC, PropsWithChildren, useMemo } from "react";
 import FlowingBalance from "../token/FlowingBalance";
 import { VestingSchedule } from "./types";
-import useUnixDateWithVestingTriggers from "./useUnixDateWithVestingTriggers";
 
 interface VestedBalanceProps extends PropsWithChildren {
   vestingSchedule: VestingSchedule;
@@ -13,46 +13,64 @@ const VestedBalance: FC<VestedBalanceProps> = ({
   vestingSchedule,
 }) => {
   const {
-    cliffAndFlowDate: cliffAndFlowDateUnix,
-    endDate: endDateUnix,
+    cliffAndFlowDate,
+    endDate,
+    cliffAndFlowExecutedAt,
+    endExecutedAt,
     cliffAmount,
     flowRate,
   } = vestingSchedule;
 
-  const unixNow = useUnixDateWithVestingTriggers(
-    cliffAndFlowDateUnix,
-    endDateUnix
-  );
+  const balanceAtLastEvent = useMemo(() => {
+    if (endExecutedAt) {
+      const secondsStreamed =
+        Number(Math.max(Number(endExecutedAt), Number(endDate))) -
+        Number(cliffAndFlowDate);
 
-  const currentFlowRate = useMemo(
-    () =>
-      unixNow > Number(cliffAndFlowDateUnix) && unixNow < Number(endDateUnix)
-        ? flowRate
-        : "0",
-    [cliffAndFlowDateUnix, endDateUnix, unixNow, flowRate]
-  );
+      return BigNumber.from(secondsStreamed)
+        .mul(flowRate)
+        .add(cliffAmount || 0)
+        .toString();
+    } else if (cliffAndFlowExecutedAt) {
+      return BigNumber.from(cliffAmount || 0).toString();
+    }
 
-  const currentBalance = useMemo(() => {
-    const streamStartUnix = Number(cliffAndFlowDateUnix);
-    const streamedSeconds = Math.min(
-      unixNow - streamStartUnix,
-      Number(endDateUnix) - streamStartUnix
+    return "0";
+  }, [
+    cliffAmount,
+    flowRate,
+    cliffAndFlowDate,
+    cliffAndFlowExecutedAt,
+    endDate,
+    endExecutedAt,
+  ]);
+
+  const lastEventTimestamp = useMemo(() => {
+    // Fallback is pretty random because we are showing static zero balance anyway.
+    if (endExecutedAt) {
+      return Number(endExecutedAt);
+    } else if (cliffAndFlowExecutedAt) {
+      return Number(cliffAndFlowDate);
+    }
+
+    return getUnixTime(new Date());
+  }, [endExecutedAt, cliffAndFlowExecutedAt, cliffAndFlowDate]);
+
+  const currentFlowRate = useMemo(() => {
+    console.log(
+      cliffAndFlowExecutedAt,
+      endExecutedAt,
+      cliffAndFlowExecutedAt && !endExecutedAt ? flowRate : "0"
     );
-
-    if (streamedSeconds < 0) return "0";
-
-    return BigNumber.from(flowRate)
-      .mul(streamedSeconds)
-      .add(cliffAmount || "0")
-      .toString();
-  }, [cliffAndFlowDateUnix, endDateUnix, unixNow, cliffAmount, flowRate]);
+    return cliffAndFlowExecutedAt && !endExecutedAt ? flowRate : "0";
+  }, [cliffAndFlowExecutedAt, endExecutedAt, flowRate]);
 
   return (
     <>
       <FlowingBalance
-        balance={currentBalance}
+        balance={balanceAtLastEvent}
         flowRate={currentFlowRate}
-        balanceTimestamp={unixNow}
+        balanceTimestamp={lastEventTimestamp}
         disableRoundingIndicator
       />
       {children}

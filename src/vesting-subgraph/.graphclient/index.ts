@@ -2685,7 +2685,7 @@ export type GetVestingSchedulesQueryVariables = Exact<{
 }>;
 
 
-export type GetVestingSchedulesQuery = { vestingSchedules: Array<Pick<VestingSchedule, 'id' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'flowRate' | 'receiver' | 'sender' | 'startDate' | 'superToken' | 'createdAt'>> };
+export type GetVestingSchedulesQuery = { vestingSchedules: Array<Pick<VestingSchedule, 'id' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'flowRate' | 'receiver' | 'sender' | 'startDate' | 'superToken' | 'endExecutedAt' | 'createdAt'>> };
 
 export type PollQueryVariables = Exact<{
   block: Block_Height;
@@ -2734,6 +2734,7 @@ export const GetVestingSchedulesDocument = gql`
     sender
     startDate
     superToken
+    endExecutedAt
     createdAt
   }
 }

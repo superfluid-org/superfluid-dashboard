@@ -9,6 +9,7 @@ import {
   useAddressPendingVestingSchedules,
 } from "../pendingUpdates/PendingVestingSchedule";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import AggregatedVestingSchedules from "./AggregatedVestingSchedules";
 import { VestingSchedulerAllowances } from "./VestingSchedulerAllowances";
 import VestingScheduleTable from "./VestingScheduleTable";
 
@@ -123,23 +124,30 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
               "Sent Vesting Schedules"
             )}
           </Typography>
-          <Card sx={{ p: 0 }}>
-            {vestingSchedulesLoading ||
-            mappedSentVestingSchedules.length > 0 ? (
-              <VestingScheduleTable
-                data-cy={"created-table"}
-                isLoading={vestingSchedulesLoading}
-                network={network}
+          {vestingSchedulesLoading || mappedSentVestingSchedules.length > 0 ? (
+            <>
+              <AggregatedVestingSchedules
                 vestingSchedules={mappedSentVestingSchedules}
+                network={network}
               />
-            ) : (
+              <Card sx={{ p: 0 }}>
+                <VestingScheduleTable
+                  data-cy={"created-table"}
+                  isLoading={vestingSchedulesLoading}
+                  network={network}
+                  vestingSchedules={mappedSentVestingSchedules}
+                />
+              </Card>
+            </>
+          ) : (
+            <Card sx={{ p: 0 }}>
               <NoContentPaper
                 dataCy={"no-created-schedules"}
                 title="No Sent Vesting Schedules"
                 description="Vesting schedules that you have created will appear here."
               />
-            )}
-          </Card>
+            </Card>
+          )}
         </Stack>
       </Stack>
       <Card sx={{ p: 0 }}>

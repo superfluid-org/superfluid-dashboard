@@ -4,9 +4,12 @@ import { FC, useMemo } from "react";
 import { VestingSchedule } from "./types";
 
 enum VestingStatusType {
+  Scheduled = "Scheduled",
   Cliff = "Cliff",
   Vesting = "Vesting",
   Vested = "Vested",
+  Failed = "Failed",
+  Deleted = "Deleted",
 }
 
 interface VestingStatusProps {
@@ -14,18 +17,32 @@ interface VestingStatusProps {
 }
 
 const VestingStatus: FC<VestingStatusProps> = ({ vestingSchedule }) => {
-  const { startDate, cliffDate, endDate } = vestingSchedule;
+  const {
+    startDate,
+    cliffDate,
+    endDate,
+    cliffAndFlowExecutedAt,
+    endExecutedAt,
+    deletedAt,
+  } = vestingSchedule;
 
   const status = useMemo(() => {
     const dateNow = getUnixTime(new Date());
 
-    if (Number(endDate) < dateNow) {
+    if (deletedAt) {
+      return VestingStatusType.Deleted;
+    } else if (endExecutedAt && Number(endExecutedAt) < dateNow) {
       return VestingStatusType.Vested;
-    } else if (Number(cliffDate || startDate) < dateNow) {
+    } else if (
+      cliffAndFlowExecutedAt &&
+      Number(cliffAndFlowExecutedAt) < dateNow
+    ) {
       return VestingStatusType.Vesting;
-    } else {
+    } else if (Number(startDate) < dateNow) {
       return VestingStatusType.Cliff;
     }
+
+    return VestingStatusType.Scheduled;
   }, [startDate, cliffDate, endDate]);
 
   const color = useMemo(() => {

@@ -15,6 +15,7 @@ import minBy from "lodash/fp/minBy";
 import set from "lodash/fp/set";
 import mutateSet from "lodash/set";
 import { FC, useCallback, useEffect, useMemo, useRef } from "react";
+import { DataPoint } from "../../../components/Chart/LineChart";
 import {
   buildDefaultDatasetConf,
   DEFAULT_LINE_CHART_OPTIONS,
@@ -24,14 +25,6 @@ import { TimeUnitFilterType } from "../../graph/TimeUnitFilter";
 import { Network } from "../../network/networks";
 import { TokenBalance } from "../../redux/endpoints/adHocSubgraphEndpoints";
 import { rpcApi, subgraphApi } from "../../redux/store";
-
-interface DataPoint {
-  x: number;
-  y: number;
-  ether: string;
-}
-
-type MappedData = Array<DataPoint>;
 
 interface TokenBalanceGraphProps {
   timeUnitFilter: TimeUnitFilterType;
@@ -74,9 +67,9 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
   );
 
   const mapDatesWithData = useCallback(
-    (tokenBalances: Array<TokenBalance>, dates: Array<Date>): MappedData =>
+    (tokenBalances: Array<TokenBalance>, dates: Array<Date>): DataPoint[] =>
       dates.reduce<{
-        data: MappedData;
+        data: DataPoint[];
         lastTokenBalance: TokenBalance;
       }>(
         ({ data, lastTokenBalance }, date) => {

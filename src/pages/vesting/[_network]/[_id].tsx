@@ -20,14 +20,12 @@ import TimeUnitFilter, {
 } from "../../../features/graph/TimeUnitFilter";
 import { Network, networksBySlug } from "../../../features/network/networks";
 import { subgraphApi } from "../../../features/redux/store";
-import Amount from "../../../features/token/Amount";
-import TokenIcon from "../../../features/token/TokenIcon";
-import FiatAmount from "../../../features/tokenPrice/FiatAmount";
 import FlowingFiatBalance from "../../../features/tokenPrice/FlowingFiatBalance";
 import useTokenPrice from "../../../features/tokenPrice/useTokenPrice";
 import { BigLoader } from "../../../features/vesting/BigLoader";
 import { useVestingToken } from "../../../features/vesting/useVestingToken";
 import VestedBalance from "../../../features/vesting/VestedBalance";
+import VestingDataCard from "../../../features/vesting/VestingDataCard";
 import VestingDetailsHeader from "../../../features/vesting/VestingDetailsHeader";
 import VestingGraph from "../../../features/vesting/VestingGraph";
 import VestingScheduleProgress from "../../../features/vesting/VestingScheduleProgress/VestingScheduleProgress";
@@ -55,42 +53,6 @@ const VestingLegendItem: FC<VestingLegendItemProps> = ({ title, color }) => (
     />
     <Typography>{title}</Typography>
   </Stack>
-);
-
-interface VestingDataCardProps {
-  title: string;
-  tokenSymbol: string;
-  amount?: string;
-  price?: number;
-}
-
-const VestingDataCard: FC<VestingDataCardProps> = ({
-  title,
-  tokenSymbol,
-  amount,
-  price,
-}) => (
-  <Card sx={{ p: 3.5, flex: 1 }}>
-    <Typography variant="h5">{title}</Typography>
-    <Stack direction="row" alignItems="center" gap={1.5}>
-      <TokenIcon isSuper tokenSymbol={tokenSymbol} />
-      <Stack direction="row" alignItems="flex-end" gap={0.5}>
-        {amount && (
-          <Typography variant="h3mono" sx={{ lineHeight: "36px" }}>
-            <Amount wei={amount} />
-          </Typography>
-        )}{" "}
-        <Typography variant="h6" color="text.secondary">
-          {tokenSymbol}
-        </Typography>
-      </Stack>
-    </Stack>
-    {amount && price && (
-      <Typography variant="h6" color="text.secondary" sx={{ ml: 6 }}>
-        <FiatAmount wei={amount} price={price} />
-      </Typography>
-    )}
-  </Card>
 );
 
 export type VestingActivities = (
