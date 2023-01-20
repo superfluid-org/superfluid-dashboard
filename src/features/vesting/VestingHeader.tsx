@@ -3,6 +3,7 @@ import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import { Button, IconButton, Stack, Typography } from "@mui/material";
 import NextLink from "next/link";
 import { FC, memo, PropsWithChildren, ReactElement } from "react";
+import { useAccount } from "wagmi";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 
 interface VestingHeaderProps extends PropsWithChildren {
@@ -15,6 +16,8 @@ const VestingHeader: FC<VestingHeaderProps> = ({
   actions,
   children,
 }) => {
+  const { address: accountAddress } = useAccount();
+
   return (
     <Stack
       direction="row"
@@ -32,16 +35,18 @@ const VestingHeader: FC<VestingHeaderProps> = ({
         {children}
       </Stack>
       <Stack direction="row" alignItems="center" gap={1}>
-        <NextLink href="/vesting/create" passHref>
-          <Button
-            data-cy="create-schedule-button"
-            color="primary"
-            variant="contained"
-            endIcon={<AddRoundedIcon />}
-          >
-            Create Vesting Schedule
-          </Button>
-        </NextLink>
+        {accountAddress && (
+          <NextLink href="/vesting/create" passHref>
+            <Button
+              data-cy="create-schedule-button"
+              color="primary"
+              variant="contained"
+              endIcon={<AddRoundedIcon />}
+            >
+              Create Vesting Schedule
+            </Button>
+          </NextLink>
+        )}
         {actions}
       </Stack>
     </Stack>
