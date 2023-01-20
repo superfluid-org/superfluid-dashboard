@@ -8,7 +8,7 @@ enum VestingStatusType {
   Cliff = "Cliff",
   Vesting = "Vesting",
   Vested = "Vested",
-  Failed = "Failed", // TODO
+  Failed = "Failed",
   Deleted = "Deleted",
   Partial = "Partial", // TODO
 }

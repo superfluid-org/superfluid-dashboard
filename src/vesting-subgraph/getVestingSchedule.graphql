@@ -14,5 +14,7 @@ query getVestingSchedule($id: ID!) {
     cliffAndFlowExecutedAt
     cliffAndFlowDate
     createdAt
+    didEarlyEndyCompensationFail
+    earlyEndCompensation
   }
 }

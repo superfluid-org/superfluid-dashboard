@@ -1320,8 +1320,10 @@ export type VestingSchedule = {
   endDate: Scalars['BigInt'];
   cliffDate?: Maybe<Scalars['BigInt']>;
   cliffAndFlowDate: Scalars['BigInt'];
-  cliffAmount?: Maybe<Scalars['BigInt']>;
+  cliffAmount: Scalars['BigInt'];
   flowRate: Scalars['BigInt'];
+  didEarlyEndyCompensationFail?: Maybe<Scalars['Boolean']>;
+  earlyEndCompensation?: Maybe<Scalars['BigInt']>;
   deletedAt?: Maybe<Scalars['BigInt']>;
   cliffAndFlowExecutedAt?: Maybe<Scalars['BigInt']>;
   endExecutedAt?: Maybe<Scalars['BigInt']>;
@@ -1980,6 +1982,18 @@ export type VestingSchedule_filter = {
   flowRate_lte?: InputMaybe<Scalars['BigInt']>;
   flowRate_in?: InputMaybe<Array<Scalars['BigInt']>>;
   flowRate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  didEarlyEndyCompensationFail?: InputMaybe<Scalars['Boolean']>;
+  didEarlyEndyCompensationFail_not?: InputMaybe<Scalars['Boolean']>;
+  didEarlyEndyCompensationFail_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  didEarlyEndyCompensationFail_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  earlyEndCompensation?: InputMaybe<Scalars['BigInt']>;
+  earlyEndCompensation_not?: InputMaybe<Scalars['BigInt']>;
+  earlyEndCompensation_gt?: InputMaybe<Scalars['BigInt']>;
+  earlyEndCompensation_lt?: InputMaybe<Scalars['BigInt']>;
+  earlyEndCompensation_gte?: InputMaybe<Scalars['BigInt']>;
+  earlyEndCompensation_lte?: InputMaybe<Scalars['BigInt']>;
+  earlyEndCompensation_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  earlyEndCompensation_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   deletedAt?: InputMaybe<Scalars['BigInt']>;
   deletedAt_not?: InputMaybe<Scalars['BigInt']>;
   deletedAt_gt?: InputMaybe<Scalars['BigInt']>;
@@ -2028,6 +2042,8 @@ export type VestingSchedule_orderBy =
   | 'cliffAndFlowDate'
   | 'cliffAmount'
   | 'flowRate'
+  | 'didEarlyEndyCompensationFail'
+  | 'earlyEndCompensation'
   | 'deletedAt'
   | 'cliffAndFlowExecutedAt'
   | 'endExecutedAt'

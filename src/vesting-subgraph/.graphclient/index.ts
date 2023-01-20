@@ -1341,8 +1341,10 @@ export type VestingSchedule = {
   endDate: Scalars['BigInt'];
   cliffDate?: Maybe<Scalars['BigInt']>;
   cliffAndFlowDate: Scalars['BigInt'];
-  cliffAmount?: Maybe<Scalars['BigInt']>;
+  cliffAmount: Scalars['BigInt'];
   flowRate: Scalars['BigInt'];
+  didEarlyEndyCompensationFail?: Maybe<Scalars['Boolean']>;
+  earlyEndCompensation?: Maybe<Scalars['BigInt']>;
   deletedAt?: Maybe<Scalars['BigInt']>;
   cliffAndFlowExecutedAt?: Maybe<Scalars['BigInt']>;
   endExecutedAt?: Maybe<Scalars['BigInt']>;
@@ -2001,6 +2003,18 @@ export type VestingSchedule_Filter = {
   flowRate_lte?: InputMaybe<Scalars['BigInt']>;
   flowRate_in?: InputMaybe<Array<Scalars['BigInt']>>;
   flowRate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  didEarlyEndyCompensationFail?: InputMaybe<Scalars['Boolean']>;
+  didEarlyEndyCompensationFail_not?: InputMaybe<Scalars['Boolean']>;
+  didEarlyEndyCompensationFail_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  didEarlyEndyCompensationFail_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  earlyEndCompensation?: InputMaybe<Scalars['BigInt']>;
+  earlyEndCompensation_not?: InputMaybe<Scalars['BigInt']>;
+  earlyEndCompensation_gt?: InputMaybe<Scalars['BigInt']>;
+  earlyEndCompensation_lt?: InputMaybe<Scalars['BigInt']>;
+  earlyEndCompensation_gte?: InputMaybe<Scalars['BigInt']>;
+  earlyEndCompensation_lte?: InputMaybe<Scalars['BigInt']>;
+  earlyEndCompensation_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  earlyEndCompensation_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   deletedAt?: InputMaybe<Scalars['BigInt']>;
   deletedAt_not?: InputMaybe<Scalars['BigInt']>;
   deletedAt_gt?: InputMaybe<Scalars['BigInt']>;
@@ -2049,6 +2063,8 @@ export type VestingSchedule_OrderBy =
   | 'cliffAndFlowDate'
   | 'cliffAmount'
   | 'flowRate'
+  | 'didEarlyEndyCompensationFail'
+  | 'earlyEndCompensation'
   | 'deletedAt'
   | 'cliffAndFlowExecutedAt'
   | 'endExecutedAt'
@@ -2432,8 +2448,10 @@ export type VestingScheduleResolvers<ContextType = MeshContext, ParentType exten
   endDate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   cliffDate?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   cliffAndFlowDate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  cliffAmount?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  cliffAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   flowRate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  didEarlyEndyCompensationFail?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  earlyEndCompensation?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   deletedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   cliffAndFlowExecutedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   endExecutedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
@@ -2676,7 +2694,7 @@ export type GetVestingScheduleQueryVariables = Exact<{
 }>;
 
 
-export type GetVestingScheduleQuery = { vestingSchedule?: Maybe<Pick<VestingSchedule, 'id' | 'cliffDate' | 'cliffAmount' | 'endDate' | 'flowRate' | 'receiver' | 'sender' | 'startDate' | 'superToken' | 'endExecutedAt' | 'deletedAt' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowDate' | 'createdAt'>> };
+export type GetVestingScheduleQuery = { vestingSchedule?: Maybe<Pick<VestingSchedule, 'id' | 'cliffDate' | 'cliffAmount' | 'endDate' | 'flowRate' | 'receiver' | 'sender' | 'startDate' | 'superToken' | 'endExecutedAt' | 'deletedAt' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowDate' | 'createdAt' | 'didEarlyEndyCompensationFail' | 'earlyEndCompensation'>> };
 
 export type GetVestingSchedulesQueryVariables = Exact<{
   where?: InputMaybe<VestingSchedule_Filter>;
@@ -2685,7 +2703,7 @@ export type GetVestingSchedulesQueryVariables = Exact<{
 }>;
 
 
-export type GetVestingSchedulesQuery = { vestingSchedules: Array<Pick<VestingSchedule, 'id' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'flowRate' | 'receiver' | 'sender' | 'startDate' | 'superToken' | 'endExecutedAt' | 'createdAt'>> };
+export type GetVestingSchedulesQuery = { vestingSchedules: Array<Pick<VestingSchedule, 'id' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'flowRate' | 'receiver' | 'sender' | 'startDate' | 'superToken' | 'endExecutedAt' | 'createdAt' | 'didEarlyEndyCompensationFail' | 'earlyEndCompensation'>> };
 
 export type PollQueryVariables = Exact<{
   block: Block_Height;
@@ -2712,6 +2730,8 @@ export const GetVestingScheduleDocument = gql`
     cliffAndFlowExecutedAt
     cliffAndFlowDate
     createdAt
+    didEarlyEndyCompensationFail
+    earlyEndCompensation
   }
 }
     ` as unknown as DocumentNode<GetVestingScheduleQuery, GetVestingScheduleQueryVariables>;
@@ -2736,6 +2756,8 @@ export const GetVestingSchedulesDocument = gql`
     superToken
     endExecutedAt
     createdAt
+    didEarlyEndyCompensationFail
+    earlyEndCompensation
   }
 }
     ` as unknown as DocumentNode<GetVestingSchedulesQuery, GetVestingSchedulesQueryVariables>;

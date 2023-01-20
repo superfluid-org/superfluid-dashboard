@@ -22,5 +22,7 @@ query getVestingSchedules(
     superToken
     endExecutedAt
     createdAt
+    didEarlyEndyCompensationFail
+    earlyEndCompensation
   }
 }
