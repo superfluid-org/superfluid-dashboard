@@ -10,7 +10,7 @@ import {
 import { skipToken } from "@reduxjs/toolkit/dist/query/react";
 import { FlowUpdatedEvent, TransferEvent } from "@superfluid-finance/sdk-core";
 import { BigNumber } from "ethers";
-import { isString } from "lodash";
+import { isString, orderBy } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { FC, useEffect, useMemo, useState } from "react";
@@ -136,18 +136,15 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
             timestamp_lte:
               vestingSchedule.endExecutedAt || vestingSchedule.endDate,
           },
-          order: {
-            orderBy: "order",
-            orderDirection: "desc",
-          },
         }
       : skipToken,
     {
       selectFromResult: (result) => ({
         ...result,
-        activities: mapActivitiesFromEvents(
-          result.data?.items || [],
-          network
+        activities: orderBy(
+          mapActivitiesFromEvents(result.data?.items || [], network),
+          (activity) => activity.keyEvent.order,
+          "desc"
         ) as VestingActivities,
       }),
     }

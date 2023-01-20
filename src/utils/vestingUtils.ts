@@ -1,7 +1,7 @@
 import { fromUnixTime, getUnixTime, min } from "date-fns";
 import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils";
-import sortBy from "lodash/fp/sortBy";
+import { orderBy } from "lodash";
 import { DataPoint } from "../components/Chart/LineChart";
 import { UnitOfTime } from "../features/send/FlowRateInput";
 import { VestingSchedule } from "../features/vesting/types";
@@ -14,9 +14,10 @@ export function mapVestingActivitiesToTokenBalances(
   vestingSchedule: VestingSchedule
 ) {
   console.log({ vestingSchedule, vestingActivities });
-  return sortBy(
+  return orderBy(
+    vestingActivities,
     (activity) => activity.keyEvent.timestamp,
-    vestingActivities
+    "asc"
   ).reduce(
     (tokenBalances, activity) => {
       const lastBalance = tokenBalances[tokenBalances.length - 1];
