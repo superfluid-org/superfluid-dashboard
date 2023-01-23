@@ -14,7 +14,6 @@ export function mapVestingActivitiesToTokenBalances(
   vestingActivities: VestingActivities,
   vestingSchedule: VestingSchedule
 ) {
-  console.log({ vestingSchedule, vestingActivities });
   return orderBy(
     (activity) => activity.keyEvent.timestamp,
     "asc",
@@ -178,9 +177,7 @@ export function calculateVestingScheduleAllocated(
 ): BigNumber {
   const { cliffAmount, cliffAndFlowDate, flowRate, endDate } = vestingSchedule;
   const secondsVesting = Number(endDate) - Number(cliffAndFlowDate);
-  return BigNumber.from(secondsVesting)
-    .mul(flowRate)
-    .add(cliffAmount);
+  return BigNumber.from(secondsVesting).mul(flowRate).add(cliffAmount);
 }
 
 export function calculateVestingSchedulesAllocated(
@@ -237,7 +234,7 @@ export function vestingScheduleToTokenBalance(
 export function aggregateTokenBalances(
   tokenBalances: TokenBalance[]
 ): TokenBalance {
-  const latestBalance = maxBy(x => x.timestamp, tokenBalances);
+  const latestBalance = maxBy((x) => x.timestamp, tokenBalances);
 
   const maxTimestamp = latestBalance
     ? Number(latestBalance.timestamp)

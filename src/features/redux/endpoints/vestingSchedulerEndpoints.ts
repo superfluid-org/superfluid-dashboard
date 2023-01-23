@@ -152,19 +152,29 @@ export const vestingSchedulerMutationEndpoints = {
         });
 
         const flowRateBigNumber = BigNumber.from(arg.flowRateWei);
-        const maximumNeededAllowance = BigNumber.from(
+        const maximumNeededTransferAllowance = BigNumber.from(
           arg.cliffTransferAmountWei
         )
           .add(flowRateBigNumber.mul(START_DATE_VALID_AFTER_IN_SECONDS))
           .add(flowRateBigNumber.mul(END_DATE_VALID_BEFORE_IN_SECONDS));
 
-        const increaseAllowancePromise = SuperToken__factory.connect(
+        const superTokenContract = SuperToken__factory.connect(
           superToken.address,
           signer
-        ).populateTransaction.increaseAllowance(
-          vestingScheduler.address,
-          maximumNeededAllowance
         );
+
+        const existingTransferAllowance = await superTokenContract.allowance(
+          senderAddress,
+          vestingScheduler.address
+        );
+        const newTransferAllowance = existingTransferAllowance.add(
+          maximumNeededTransferAllowance
+        );
+        const increaseAllowancePromise =
+          superTokenContract.populateTransaction.approve(
+            vestingScheduler.address,
+            newTransferAllowance
+          );
 
         subOperations.push({
           operation: new Operation(increaseAllowancePromise, "ERC20_APPROVE"),
