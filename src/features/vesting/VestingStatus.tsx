@@ -27,24 +27,22 @@ const VestingStatus: FC<VestingStatusProps> = ({ vestingSchedule }) => {
     endExecutedAt,
     deletedAt,
   } = vestingSchedule;
-  const startUnix = Number(startDate);
+  const cliffUnix = Number(cliffDate);
 
   const status = useMemo(() => {
     const nowUnix = getUnixTime(new Date());
 
     if (deletedAt) {
       return VestingStatusType.Deleted;
-    } else if (nowUnix < startUnix) {
-      return VestingStatusType.Scheduled;
     } else if (endExecutedAt) {
       return VestingStatusType.Vested;
     } else if (cliffAndFlowExecutedAt) {
       return VestingStatusType.Vesting;
-    } else if (cliffDate) {
+    } else if (nowUnix > cliffUnix) {
       return VestingStatusType.Cliff;
     }
 
-    return VestingStatusType.Unknown;
+    return VestingStatusType.Scheduled;
   }, [startDate, cliffDate, cliffAndFlowExecutedAt, deletedAt, endExecutedAt]);
 
   const color = useMemo(() => {
