@@ -2667,6 +2667,12 @@ const merger = new(BareMerger as any)({
     get documents() {
       return [
       {
+        document: PollDocument,
+        get rawSDL() {
+          return printWithCache(PollDocument);
+        },
+        location: 'PollDocument.graphql'
+      },{
         document: GetVestingScheduleDocument,
         get rawSDL() {
           return printWithCache(GetVestingScheduleDocument);
@@ -2678,12 +2684,6 @@ const merger = new(BareMerger as any)({
           return printWithCache(GetVestingSchedulesDocument);
         },
         location: 'GetVestingSchedulesDocument.graphql'
-      },{
-        document: PollDocument,
-        get rawSDL() {
-          return printWithCache(PollDocument);
-        },
-        location: 'PollDocument.graphql'
       }
     ];
     },
@@ -2722,12 +2722,19 @@ export function getBuiltGraphSDK<TGlobalContext = any, TOperationContext = any>(
   const sdkRequester$ = getBuiltGraphClient().then(({ sdkRequesterFactory }) => sdkRequesterFactory(globalContext));
   return getSdk<TOperationContext, TGlobalContext>((...args) => sdkRequester$.then(sdkRequester => sdkRequester(...args)));
 }
+export type PollQueryVariables = Exact<{
+  block: Block_Height;
+}>;
+
+
+export type PollQuery = { events: Array<Pick<VestingCliffAndFlowExecutedEvent, 'order'> | Pick<VestingEndExecutedEvent, 'order'> | Pick<VestingEndFailedEvent, 'order'> | Pick<VestingScheduleCreatedEvent, 'order'> | Pick<VestingScheduleDeletedEvent, 'order'> | Pick<VestingScheduleUpdatedEvent, 'order'>> };
+
 export type GetVestingScheduleQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type GetVestingScheduleQuery = { vestingSchedule?: Maybe<Pick<VestingSchedule, 'id' | 'cliffDate' | 'cliffAmount' | 'endDate' | 'flowRate' | 'receiver' | 'sender' | 'startDate' | 'superToken' | 'endExecutedAt' | 'deletedAt' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowDate' | 'createdAt' | 'didEarlyEndyCompensationFail' | 'earlyEndCompensation'>> };
+export type GetVestingScheduleQuery = { vestingSchedule?: Maybe<Pick<VestingSchedule, 'id' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'flowRate' | 'receiver' | 'sender' | 'startDate' | 'superToken' | 'endExecutedAt' | 'createdAt' | 'didEarlyEndyCompensationFail' | 'earlyEndCompensation' | 'deletedAt'>> };
 
 export type GetVestingSchedulesQueryVariables = Exact<{
   where?: InputMaybe<VestingSchedule_Filter>;
@@ -2736,38 +2743,44 @@ export type GetVestingSchedulesQueryVariables = Exact<{
 }>;
 
 
-export type GetVestingSchedulesQuery = { vestingSchedules: Array<Pick<VestingSchedule, 'id' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'flowRate' | 'receiver' | 'sender' | 'startDate' | 'superToken' | 'endExecutedAt' | 'createdAt' | 'didEarlyEndyCompensationFail' | 'earlyEndCompensation'>> };
+export type GetVestingSchedulesQuery = { vestingSchedules: Array<Pick<VestingSchedule, 'id' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'flowRate' | 'receiver' | 'sender' | 'startDate' | 'superToken' | 'endExecutedAt' | 'createdAt' | 'didEarlyEndyCompensationFail' | 'earlyEndCompensation' | 'deletedAt'>> };
 
-export type PollQueryVariables = Exact<{
-  block: Block_Height;
-}>;
+export type VestingSchedulePartFragment = Pick<VestingSchedule, 'id' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'flowRate' | 'receiver' | 'sender' | 'startDate' | 'superToken' | 'endExecutedAt' | 'createdAt' | 'didEarlyEndyCompensationFail' | 'earlyEndCompensation' | 'deletedAt'>;
 
-
-export type PollQuery = { events: Array<Pick<VestingCliffAndFlowExecutedEvent, 'order'> | Pick<VestingEndExecutedEvent, 'order'> | Pick<VestingEndFailedEvent, 'order'> | Pick<VestingScheduleCreatedEvent, 'order'> | Pick<VestingScheduleDeletedEvent, 'order'> | Pick<VestingScheduleUpdatedEvent, 'order'>> };
-
-
+export const VestingSchedulePartFragmentDoc = gql`
+    fragment VestingSchedulePart on VestingSchedule {
+  id
+  cliffDate
+  cliffAndFlowExecutedAt
+  cliffAndFlowDate
+  cliffAmount
+  endDate
+  flowRate
+  receiver
+  sender
+  startDate
+  superToken
+  endExecutedAt
+  createdAt
+  didEarlyEndyCompensationFail
+  earlyEndCompensation
+  deletedAt
+}
+    ` as unknown as DocumentNode<VestingSchedulePartFragment, unknown>;
+export const PollDocument = gql`
+    query poll($block: Block_height!) {
+  events(block: $block, first: 1) {
+    order
+  }
+}
+    ` as unknown as DocumentNode<PollQuery, PollQueryVariables>;
 export const GetVestingScheduleDocument = gql`
     query getVestingSchedule($id: ID!) {
   vestingSchedule(id: $id) {
-    id
-    cliffDate
-    cliffAmount
-    endDate
-    flowRate
-    receiver
-    sender
-    startDate
-    superToken
-    endExecutedAt
-    deletedAt
-    cliffAndFlowExecutedAt
-    cliffAndFlowDate
-    createdAt
-    didEarlyEndyCompensationFail
-    earlyEndCompensation
+    ...VestingSchedulePart
   }
 }
-    ` as unknown as DocumentNode<GetVestingScheduleQuery, GetVestingScheduleQueryVariables>;
+    ${VestingSchedulePartFragmentDoc}` as unknown as DocumentNode<GetVestingScheduleQuery, GetVestingScheduleQueryVariables>;
 export const GetVestingSchedulesDocument = gql`
     query getVestingSchedules($where: VestingSchedule_filter = {}, $orderBy: VestingSchedule_orderBy = id, $orderDirection: OrderDirection = asc) {
   vestingSchedules(
@@ -2776,31 +2789,10 @@ export const GetVestingSchedulesDocument = gql`
     orderBy: $orderBy
     orderDirection: $orderDirection
   ) {
-    id
-    cliffDate
-    cliffAndFlowExecutedAt
-    cliffAndFlowDate
-    cliffAmount
-    endDate
-    flowRate
-    receiver
-    sender
-    startDate
-    superToken
-    endExecutedAt
-    createdAt
-    didEarlyEndyCompensationFail
-    earlyEndCompensation
+    ...VestingSchedulePart
   }
 }
-    ` as unknown as DocumentNode<GetVestingSchedulesQuery, GetVestingSchedulesQueryVariables>;
-export const PollDocument = gql`
-    query poll($block: Block_height!) {
-  events(block: $block, first: 1) {
-    order
-  }
-}
-    ` as unknown as DocumentNode<PollQuery, PollQueryVariables>;
+    ${VestingSchedulePartFragmentDoc}` as unknown as DocumentNode<GetVestingSchedulesQuery, GetVestingSchedulesQueryVariables>;
 
 
 
@@ -2808,14 +2800,14 @@ export const PollDocument = gql`
 export type Requester<C = {}, E = unknown> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R> | AsyncIterable<R>
 export function getSdk<C, E>(requester: Requester<C, E>) {
   return {
+    poll(variables: PollQueryVariables, options?: C): Promise<PollQuery> {
+      return requester<PollQuery, PollQueryVariables>(PollDocument, variables, options) as Promise<PollQuery>;
+    },
     getVestingSchedule(variables: GetVestingScheduleQueryVariables, options?: C): Promise<GetVestingScheduleQuery> {
       return requester<GetVestingScheduleQuery, GetVestingScheduleQueryVariables>(GetVestingScheduleDocument, variables, options) as Promise<GetVestingScheduleQuery>;
     },
     getVestingSchedules(variables?: GetVestingSchedulesQueryVariables, options?: C): Promise<GetVestingSchedulesQuery> {
       return requester<GetVestingSchedulesQuery, GetVestingSchedulesQueryVariables>(GetVestingSchedulesDocument, variables, options) as Promise<GetVestingSchedulesQuery>;
-    },
-    poll(variables: PollQueryVariables, options?: C): Promise<PollQuery> {
-      return requester<PollQuery, PollQueryVariables>(PollDocument, variables, options) as Promise<PollQuery>;
     }
   };
 }

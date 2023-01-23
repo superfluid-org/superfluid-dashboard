@@ -1,3 +1,3 @@
-import { VestingSchedule as SubgraphVestingSchedule } from "../../vesting-subgraph/.graphclient/index";
+import { GetVestingScheduleQuery } from "../../vesting-subgraph/.graphclient";
 
-export type VestingSchedule = Omit<SubgraphVestingSchedule, "tasks" | "events">
+export type VestingSchedule = NonNullable<Required<GetVestingScheduleQuery>["vestingSchedule"]>
