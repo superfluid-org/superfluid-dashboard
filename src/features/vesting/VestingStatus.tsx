@@ -6,11 +6,12 @@ import { VestingSchedule } from "./types";
 enum VestingStatusType {
   Scheduled = "Scheduled",
   Cliff = "Cliff",
-  Vesting = "Vesting",
-  Vested = "Vested",
+  Vesting = "Vesting", // Needs execution.
+  Vested = "Vested", // Needs execution.
   Failed = "Failed",
   Deleted = "Deleted",
   Partial = "Partial", // TODO
+  Unknown = "Unknown", // Should never happen.
 }
 
 interface VestingStatusProps {
@@ -26,21 +27,24 @@ const VestingStatus: FC<VestingStatusProps> = ({ vestingSchedule }) => {
     endExecutedAt,
     deletedAt,
   } = vestingSchedule;
+  const startUnix = Number(startDate);
 
   const status = useMemo(() => {
-    const dateNow = getUnixTime(new Date());
+    const nowUnix = getUnixTime(new Date());
 
     if (deletedAt) {
       return VestingStatusType.Deleted;
+    } else if (nowUnix < startUnix) {
+      return VestingStatusType.Scheduled;
     } else if (endExecutedAt) {
       return VestingStatusType.Vested;
     } else if (cliffAndFlowExecutedAt) {
       return VestingStatusType.Vesting;
-    } else if (Number(startDate) < dateNow && cliffDate) {
+    } else if (cliffDate) {
       return VestingStatusType.Cliff;
     }
 
-    return VestingStatusType.Scheduled;
+    return VestingStatusType.Unknown;
   }, [startDate, cliffDate, cliffAndFlowExecutedAt, deletedAt, endExecutedAt]);
 
   const color = useMemo(() => {

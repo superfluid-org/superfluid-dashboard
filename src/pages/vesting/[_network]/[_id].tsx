@@ -134,9 +134,9 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
             ],
             timestamp_gte:
               vestingSchedule.cliffAndFlowExecutedAt ||
-              vestingSchedule.startDate,
+              vestingSchedule.startDate, // TODO(KK): Probably safe to always look from "start date"?
             timestamp_lte:
-              vestingSchedule.endExecutedAt || vestingSchedule.endDate,
+              vestingSchedule.endExecutedAt || vestingSchedule.endDate, // TODO(KK): Use now over "end date"?
           },
         }
       : skipToken,
@@ -161,21 +161,18 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
   const onGraphFilterChange = (newGraphFilter: TimeUnitFilterType) =>
     setGraphFilter(newGraphFilter);
 
-  const cliffAmount = useMemo(() => {
-    if (!vestingSchedule) return "0";
-    return vestingSchedule.cliffAmount || "0";
-  }, [vestingSchedule]);
-
-  const totalVesting = useMemo(() => {
+  const expectedVestedBalance = useMemo(() => {
     if (!vestingSchedule) return undefined;
-    const { flowRate, endDate, startDate, cliffDate, cliffAmount } =
+
+    const { flowRate, endDate, cliffAmount, cliffAndFlowDate } =
       vestingSchedule;
 
-    const cliffAndFlowDate = Number(cliffDate || startDate);
+    const endUnix = Number(endDate);
+    const cliffAndFlowUnix = Number(cliffAndFlowDate);
 
     return BigNumber.from(flowRate)
-      .mul(Number(endDate) - cliffAndFlowDate)
-      .add(cliffAmount || "0")
+      .mul(endUnix - cliffAndFlowUnix)
+      .add(cliffAmount)
       .toString();
   }, [vestingSchedule]);
 
@@ -254,10 +251,10 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
                     color="text.secondary"
                   >
                     <FlowingFiatBalance
-                      balance={cliffAmount}
+                      balance={vestingSchedule.cliffAmount}
                       flowRate={vestingSchedule.flowRate}
                       balanceTimestamp={Number(
-                        vestingSchedule.cliffDate || vestingSchedule.startDate
+                        vestingSchedule.cliffAndFlowDate
                       )}
                       price={tokenPrice}
                     />
@@ -296,19 +293,24 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
           <VestingDataCard
             title="Tokens Allocated"
             tokenSymbol={token.symbol}
-            tokenAmount={<Amount wei={totalVesting || "0"} />}
+            tokenAmount={<Amount wei={expectedVestedBalance || "0"} />}
             fiatAmount={
               tokenPrice && (
-                <FiatAmount wei={totalVesting || "0"} price={tokenPrice} />
+                <FiatAmount
+                  wei={expectedVestedBalance || "0"}
+                  price={tokenPrice}
+                />
               )
             }
           />
           <VestingDataCard
             title="Cliff Amount"
             tokenSymbol={token.symbol}
-            tokenAmount={<Amount wei={vestingSchedule.cliffAmount || "0"} />}
+            tokenAmount={<Amount wei={vestingSchedule.cliffAmount} />}
             fiatAmount={
-              tokenPrice && <FiatAmount wei={totalVesting} price={tokenPrice} />
+              tokenPrice && (
+                <FiatAmount wei={expectedVestedBalance} price={tokenPrice} />
+              )
             }
           />
         </Stack>

@@ -218,7 +218,7 @@ export function vestingScheduleToTokenBalance(
       balance,
       totalNetFlowRate: "0",
       timestamp: Number(endExecutedAt),
-    } as TokenBalance;
+    };
   } else if (cliffAndFlowExecutedAt) {
     return {
       balance: cliffAmount || "0",
