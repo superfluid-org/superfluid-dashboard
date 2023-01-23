@@ -21,19 +21,21 @@ query getVestingSchedules(
 
 fragment VestingSchedulePart on VestingSchedule {
   id
+  superToken
+  sender
+  receiver
+  flowRate
+  createdAt
+  deletedAt
+  startDate
   cliffDate
   cliffAndFlowExecutedAt
   cliffAndFlowDate
   cliffAmount
   endDate
-  flowRate
-  receiver
-  sender
-  startDate
-  superToken
+  endDateValidAt
   endExecutedAt
-  createdAt
+  failedAt
   didEarlyEndyCompensationFail
   earlyEndCompensation
-  deletedAt
 }

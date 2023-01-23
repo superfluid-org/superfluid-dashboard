@@ -2734,7 +2734,7 @@ export type GetVestingScheduleQueryVariables = Exact<{
 }>;
 
 
-export type GetVestingScheduleQuery = { vestingSchedule?: Maybe<Pick<VestingSchedule, 'id' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'flowRate' | 'receiver' | 'sender' | 'startDate' | 'superToken' | 'endExecutedAt' | 'createdAt' | 'didEarlyEndyCompensationFail' | 'earlyEndCompensation' | 'deletedAt'>> };
+export type GetVestingScheduleQuery = { vestingSchedule?: Maybe<Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndyCompensationFail' | 'earlyEndCompensation'>> };
 
 export type GetVestingSchedulesQueryVariables = Exact<{
   where?: InputMaybe<VestingSchedule_Filter>;
@@ -2743,28 +2743,30 @@ export type GetVestingSchedulesQueryVariables = Exact<{
 }>;
 
 
-export type GetVestingSchedulesQuery = { vestingSchedules: Array<Pick<VestingSchedule, 'id' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'flowRate' | 'receiver' | 'sender' | 'startDate' | 'superToken' | 'endExecutedAt' | 'createdAt' | 'didEarlyEndyCompensationFail' | 'earlyEndCompensation' | 'deletedAt'>> };
+export type GetVestingSchedulesQuery = { vestingSchedules: Array<Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndyCompensationFail' | 'earlyEndCompensation'>> };
 
-export type VestingSchedulePartFragment = Pick<VestingSchedule, 'id' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'flowRate' | 'receiver' | 'sender' | 'startDate' | 'superToken' | 'endExecutedAt' | 'createdAt' | 'didEarlyEndyCompensationFail' | 'earlyEndCompensation' | 'deletedAt'>;
+export type VestingSchedulePartFragment = Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndyCompensationFail' | 'earlyEndCompensation'>;
 
 export const VestingSchedulePartFragmentDoc = gql`
     fragment VestingSchedulePart on VestingSchedule {
   id
+  superToken
+  sender
+  receiver
+  flowRate
+  createdAt
+  deletedAt
+  startDate
   cliffDate
   cliffAndFlowExecutedAt
   cliffAndFlowDate
   cliffAmount
   endDate
-  flowRate
-  receiver
-  sender
-  startDate
-  superToken
+  endDateValidAt
   endExecutedAt
-  createdAt
+  failedAt
   didEarlyEndyCompensationFail
   earlyEndCompensation
-  deletedAt
 }
     ` as unknown as DocumentNode<VestingSchedulePartFragment, unknown>;
 export const PollDocument = gql`

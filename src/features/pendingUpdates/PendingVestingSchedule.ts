@@ -64,15 +64,21 @@ export const mapPendingToVestingSchedule = (
   return {
     pendingCreate: pendingVestingSchedule,
     id: `${receiverAddress}-${superTokenAddress}-${startDateTimestamp}`,
+    superToken: superTokenAddress,
+    sender: address,
+    receiver: receiverAddress,
+    flowRate: flowRateWei,
+    createdAt: pendingVestingSchedule.timestamp.toString(),
+    startDate: startDateTimestamp.toString(),
     cliffDate: cliffDateTimestamp.toString(),
     cliffAmount: cliffTransferAmountWei,
+    endDateValidAt: endDateTimestamp.toString(),
     endDate: endDateTimestamp.toString(),
-    flowRate: flowRateWei,
-    receiver: receiverAddress,
-    sender: address,
-    startDate: startDateTimestamp.toString(),
-    superToken: superTokenAddress,
-    cliffAndFlowDate: cliffDateTimestamp ? cliffDateTimestamp.toString() : startDateTimestamp.toString(),
-    createdAt: pendingVestingSchedule.timestamp.toString()
+    cliffAndFlowDate: cliffDateTimestamp
+      ? cliffDateTimestamp.toString()
+      : startDateTimestamp.toString(),
+    didEarlyEndyCompensationFail: false,
+    earlyEndCompensation: "0",
+    failedAt: null,
   };
 };
