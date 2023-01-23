@@ -4,14 +4,12 @@ import { FC, useMemo } from "react";
 import { VestingSchedule } from "./types";
 
 enum VestingStatusType {
-  Scheduled = "Scheduled",
-  Cliff = "Cliff",
-  Vesting = "Vesting", // Needs execution.
-  Vested = "Vested", // Needs execution.
-  Failed = "Failed",
+  ScheduledStart = "Scheduled",
+  CliffPeriod = "Cliff",
+  CliffAndFlowExecuted = "Vesting", // Needs execution.
+  EndExecuted = "Vested", // Needs execution.
+  EndFailed = "Failed",
   Deleted = "Deleted",
-  Partial = "Partial", // TODO
-  Unknown = "Unknown", // Should never happen.
 }
 
 interface VestingStatusProps {
@@ -27,7 +25,6 @@ const VestingStatus: FC<VestingStatusProps> = ({ vestingSchedule }) => {
     endExecutedAt,
     deletedAt,
   } = vestingSchedule;
-  const cliffUnix = Number(cliffDate);
 
   const status = useMemo(() => {
     const nowUnix = getUnixTime(new Date());
@@ -35,23 +32,28 @@ const VestingStatus: FC<VestingStatusProps> = ({ vestingSchedule }) => {
     if (deletedAt) {
       return VestingStatusType.Deleted;
     } else if (endExecutedAt) {
-      return VestingStatusType.Vested;
+      return VestingStatusType.EndExecuted;
     } else if (cliffAndFlowExecutedAt) {
-      return VestingStatusType.Vesting;
-    } else if (nowUnix > cliffUnix) {
-      return VestingStatusType.Cliff;
+      return VestingStatusType.CliffAndFlowExecuted;
+    } 
+    
+    if (cliffDate) {
+      const cliffUnix = Number(cliffDate);
+      if (nowUnix > cliffUnix) {
+        return VestingStatusType.CliffPeriod;
+      }
     }
 
-    return VestingStatusType.Scheduled;
+    return VestingStatusType.ScheduledStart;
   }, [startDate, cliffDate, cliffAndFlowExecutedAt, deletedAt, endExecutedAt]);
 
   const color = useMemo(() => {
     switch (status) {
-      case VestingStatusType.Vested:
+      case VestingStatusType.EndExecuted:
         return "initial";
-      case VestingStatusType.Vesting:
+      case VestingStatusType.CliffAndFlowExecuted:
         return "primary";
-      case VestingStatusType.Cliff:
+      case VestingStatusType.CliffPeriod:
         return "warning.main";
     }
   }, [status]);

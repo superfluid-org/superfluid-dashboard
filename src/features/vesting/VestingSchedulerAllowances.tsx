@@ -47,11 +47,12 @@ export const VestingSchedulerAllowances: FC = () => {
       chainId: network.id,
     });
 
+  // TODO(KK): This query could be optimized.
   const vestingSchedulesQuery = vestingSubgraphApi.useGetVestingSchedulesQuery(
     senderAddress
       ? {
           chainId: network.id,
-          where: { sender: senderAddress?.toLowerCase(), deletedAt: null }, // TODO(KK): Should show allowance for tokens with finished vesting?
+          where: { sender: senderAddress?.toLowerCase() },
         }
       : skipToken,
     {
