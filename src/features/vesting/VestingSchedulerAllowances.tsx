@@ -88,7 +88,7 @@ export const VestingSchedulerAllowances: FC = () => {
             return previousValue.add(endDateValidBeforeAllowance);
           } else {
             return previousValue
-              .add(vestingSchedule.cliffAmount || "0")
+              .add(vestingSchedule.cliffAmount)
               .add(startDateValidAfterAllowance)
               .add(endDateValidBeforeAllowance);
           }

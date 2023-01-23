@@ -136,7 +136,7 @@ export function mapVestingExpectedDataPoints(
     if (secondsStreamed > 0) {
       const amountStreamed = BigNumber.from(secondsStreamed).mul(flowRate);
 
-      const etherAmount = formatEther(amountStreamed.add(cliffAmount || "0"));
+      const etherAmount = formatEther(amountStreamed.add(cliffAmount));
 
       const newDataPoint = {
         x: date.getTime(),
@@ -146,7 +146,7 @@ export function mapVestingExpectedDataPoints(
 
       if (!cliffAdded) {
         cliffAdded = true;
-        const cliffAmountEther = formatEther(cliffAmount || "0");
+        const cliffAmountEther = formatEther(cliffAmount);
 
         return [
           ...mappedData,
@@ -180,7 +180,7 @@ export function calculateVestingScheduleAllocated(
   const secondsVesting = Number(endDate) - Number(cliffAndFlowDate);
   return BigNumber.from(secondsVesting)
     .mul(flowRate)
-    .add(cliffAmount || "0");
+    .add(cliffAmount);
 }
 
 export function calculateVestingSchedulesAllocated(
@@ -221,7 +221,7 @@ export function vestingScheduleToTokenBalance(
     };
   } else if (cliffAndFlowExecutedAt) {
     return {
-      balance: cliffAmount || "0",
+      balance: cliffAmount,
       totalNetFlowRate: flowRate,
       timestamp: Number(cliffAndFlowDate),
     };

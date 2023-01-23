@@ -63,7 +63,7 @@ const VestingRow: FC<VestingRowProps> = ({
   const totalAmount = useMemo(() => {
     return BigNumber.from(Number(endDate) - Number(cliffAndFlowDate))
       .mul(BigNumber.from(flowRate))
-      .add(BigNumber.from(cliffAmount || "0"))
+      .add(BigNumber.from(cliffAmount))
       .toString();
   }, [flowRate, endDate, cliffAndFlowDate, cliffAmount]);
 
