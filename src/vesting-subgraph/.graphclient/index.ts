@@ -1345,7 +1345,10 @@ export type VestingSchedule = {
   flowRate: Scalars['BigInt'];
   didEarlyEndyCompensationFail?: Maybe<Scalars['Boolean']>;
   earlyEndCompensation?: Maybe<Scalars['BigInt']>;
+  cliffAndFlowExpirationAt: Scalars['BigInt'];
+  endDateValidAt: Scalars['BigInt'];
   deletedAt?: Maybe<Scalars['BigInt']>;
+  failedAt?: Maybe<Scalars['BigInt']>;
   cliffAndFlowExecutedAt?: Maybe<Scalars['BigInt']>;
   endExecutedAt?: Maybe<Scalars['BigInt']>;
   tasks: Array<Task>;
@@ -2015,6 +2018,22 @@ export type VestingSchedule_Filter = {
   earlyEndCompensation_lte?: InputMaybe<Scalars['BigInt']>;
   earlyEndCompensation_in?: InputMaybe<Array<Scalars['BigInt']>>;
   earlyEndCompensation_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  cliffAndFlowExpirationAt?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowExpirationAt_not?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowExpirationAt_gt?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowExpirationAt_lt?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowExpirationAt_gte?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowExpirationAt_lte?: InputMaybe<Scalars['BigInt']>;
+  cliffAndFlowExpirationAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  cliffAndFlowExpirationAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  endDateValidAt?: InputMaybe<Scalars['BigInt']>;
+  endDateValidAt_not?: InputMaybe<Scalars['BigInt']>;
+  endDateValidAt_gt?: InputMaybe<Scalars['BigInt']>;
+  endDateValidAt_lt?: InputMaybe<Scalars['BigInt']>;
+  endDateValidAt_gte?: InputMaybe<Scalars['BigInt']>;
+  endDateValidAt_lte?: InputMaybe<Scalars['BigInt']>;
+  endDateValidAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  endDateValidAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   deletedAt?: InputMaybe<Scalars['BigInt']>;
   deletedAt_not?: InputMaybe<Scalars['BigInt']>;
   deletedAt_gt?: InputMaybe<Scalars['BigInt']>;
@@ -2023,6 +2042,14 @@ export type VestingSchedule_Filter = {
   deletedAt_lte?: InputMaybe<Scalars['BigInt']>;
   deletedAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
   deletedAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  failedAt?: InputMaybe<Scalars['BigInt']>;
+  failedAt_not?: InputMaybe<Scalars['BigInt']>;
+  failedAt_gt?: InputMaybe<Scalars['BigInt']>;
+  failedAt_lt?: InputMaybe<Scalars['BigInt']>;
+  failedAt_gte?: InputMaybe<Scalars['BigInt']>;
+  failedAt_lte?: InputMaybe<Scalars['BigInt']>;
+  failedAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  failedAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   cliffAndFlowExecutedAt?: InputMaybe<Scalars['BigInt']>;
   cliffAndFlowExecutedAt_not?: InputMaybe<Scalars['BigInt']>;
   cliffAndFlowExecutedAt_gt?: InputMaybe<Scalars['BigInt']>;
@@ -2065,7 +2092,10 @@ export type VestingSchedule_OrderBy =
   | 'flowRate'
   | 'didEarlyEndyCompensationFail'
   | 'earlyEndCompensation'
+  | 'cliffAndFlowExpirationAt'
+  | 'endDateValidAt'
   | 'deletedAt'
+  | 'failedAt'
   | 'cliffAndFlowExecutedAt'
   | 'endExecutedAt'
   | 'tasks'
@@ -2452,7 +2482,10 @@ export type VestingScheduleResolvers<ContextType = MeshContext, ParentType exten
   flowRate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   didEarlyEndyCompensationFail?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   earlyEndCompensation?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  cliffAndFlowExpirationAt?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  endDateValidAt?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   deletedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  failedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   cliffAndFlowExecutedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   endExecutedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   tasks?: Resolver<Array<ResolversTypes['Task']>, ParentType, ContextType, RequireFields<VestingScheduleTasksArgs, 'skip' | 'first'>>;

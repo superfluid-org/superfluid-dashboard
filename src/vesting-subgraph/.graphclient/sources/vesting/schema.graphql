@@ -1439,7 +1439,10 @@ type VestingSchedule {
   flowRate: BigInt!
   didEarlyEndyCompensationFail: Boolean
   earlyEndCompensation: BigInt
+  cliffAndFlowExpirationAt: BigInt!
+  endDateValidAt: BigInt!
   deletedAt: BigInt
+  failedAt: BigInt
   cliffAndFlowExecutedAt: BigInt
   endExecutedAt: BigInt
   tasks(skip: Int = 0, first: Int = 100, orderBy: Task_orderBy, orderDirection: OrderDirection, where: Task_filter): [Task!]!
@@ -2094,6 +2097,22 @@ input VestingSchedule_filter {
   earlyEndCompensation_lte: BigInt
   earlyEndCompensation_in: [BigInt!]
   earlyEndCompensation_not_in: [BigInt!]
+  cliffAndFlowExpirationAt: BigInt
+  cliffAndFlowExpirationAt_not: BigInt
+  cliffAndFlowExpirationAt_gt: BigInt
+  cliffAndFlowExpirationAt_lt: BigInt
+  cliffAndFlowExpirationAt_gte: BigInt
+  cliffAndFlowExpirationAt_lte: BigInt
+  cliffAndFlowExpirationAt_in: [BigInt!]
+  cliffAndFlowExpirationAt_not_in: [BigInt!]
+  endDateValidAt: BigInt
+  endDateValidAt_not: BigInt
+  endDateValidAt_gt: BigInt
+  endDateValidAt_lt: BigInt
+  endDateValidAt_gte: BigInt
+  endDateValidAt_lte: BigInt
+  endDateValidAt_in: [BigInt!]
+  endDateValidAt_not_in: [BigInt!]
   deletedAt: BigInt
   deletedAt_not: BigInt
   deletedAt_gt: BigInt
@@ -2102,6 +2121,14 @@ input VestingSchedule_filter {
   deletedAt_lte: BigInt
   deletedAt_in: [BigInt!]
   deletedAt_not_in: [BigInt!]
+  failedAt: BigInt
+  failedAt_not: BigInt
+  failedAt_gt: BigInt
+  failedAt_lt: BigInt
+  failedAt_gte: BigInt
+  failedAt_lte: BigInt
+  failedAt_in: [BigInt!]
+  failedAt_not_in: [BigInt!]
   cliffAndFlowExecutedAt: BigInt
   cliffAndFlowExecutedAt_not: BigInt
   cliffAndFlowExecutedAt_gt: BigInt
@@ -2144,7 +2171,10 @@ enum VestingSchedule_orderBy {
   flowRate
   didEarlyEndyCompensationFail
   earlyEndCompensation
+  cliffAndFlowExpirationAt
+  endDateValidAt
   deletedAt
+  failedAt
   cliffAndFlowExecutedAt
   endExecutedAt
   tasks
