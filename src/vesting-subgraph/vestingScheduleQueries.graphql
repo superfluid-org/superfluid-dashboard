@@ -36,6 +36,6 @@ fragment VestingSchedulePart on VestingSchedule {
   endDateValidAt
   endExecutedAt
   failedAt
-  didEarlyEndyCompensationFail
+  didEarlyEndCompensationFail
   earlyEndCompensation
 }

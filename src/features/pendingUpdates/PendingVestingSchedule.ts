@@ -77,7 +77,7 @@ export const mapPendingToVestingSchedule = (
     cliffAndFlowDate: cliffDateTimestamp
       ? cliffDateTimestamp.toString()
       : startDateTimestamp.toString(),
-    didEarlyEndyCompensationFail: false,
+    didEarlyEndCompensationFail: false,
     earlyEndCompensation: "0",
     failedAt: null,
   };

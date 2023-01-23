@@ -1437,7 +1437,7 @@ type VestingSchedule {
   cliffAndFlowDate: BigInt!
   cliffAmount: BigInt!
   flowRate: BigInt!
-  didEarlyEndyCompensationFail: Boolean
+  didEarlyEndCompensationFail: Boolean
   earlyEndCompensation: BigInt
   cliffAndFlowExpirationAt: BigInt!
   endDateValidAt: BigInt!
@@ -2085,10 +2085,10 @@ input VestingSchedule_filter {
   flowRate_lte: BigInt
   flowRate_in: [BigInt!]
   flowRate_not_in: [BigInt!]
-  didEarlyEndyCompensationFail: Boolean
-  didEarlyEndyCompensationFail_not: Boolean
-  didEarlyEndyCompensationFail_in: [Boolean!]
-  didEarlyEndyCompensationFail_not_in: [Boolean!]
+  didEarlyEndCompensationFail: Boolean
+  didEarlyEndCompensationFail_not: Boolean
+  didEarlyEndCompensationFail_in: [Boolean!]
+  didEarlyEndCompensationFail_not_in: [Boolean!]
   earlyEndCompensation: BigInt
   earlyEndCompensation_not: BigInt
   earlyEndCompensation_gt: BigInt
@@ -2169,7 +2169,7 @@ enum VestingSchedule_orderBy {
   cliffAndFlowDate
   cliffAmount
   flowRate
-  didEarlyEndyCompensationFail
+  didEarlyEndCompensationFail
   earlyEndCompensation
   cliffAndFlowExpirationAt
   endDateValidAt

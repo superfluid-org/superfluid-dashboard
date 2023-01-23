@@ -17923,7 +17923,7 @@ const schemaAST = {
           "kind": "FieldDefinition",
           "name": {
             "kind": "Name",
-            "value": "didEarlyEndyCompensationFail"
+            "value": "didEarlyEndCompensationFail"
           },
           "arguments": [],
           "type": {
@@ -27937,7 +27937,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "didEarlyEndyCompensationFail"
+            "value": "didEarlyEndCompensationFail"
           },
           "type": {
             "kind": "NamedType",
@@ -27952,7 +27952,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "didEarlyEndyCompensationFail_not"
+            "value": "didEarlyEndCompensationFail_not"
           },
           "type": {
             "kind": "NamedType",
@@ -27967,7 +27967,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "didEarlyEndyCompensationFail_in"
+            "value": "didEarlyEndCompensationFail_in"
           },
           "type": {
             "kind": "ListType",
@@ -27988,7 +27988,7 @@ const schemaAST = {
           "kind": "InputValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "didEarlyEndyCompensationFail_not_in"
+            "value": "didEarlyEndCompensationFail_not_in"
           },
           "type": {
             "kind": "ListType",
@@ -29207,7 +29207,7 @@ const schemaAST = {
           "kind": "EnumValueDefinition",
           "name": {
             "kind": "Name",
-            "value": "didEarlyEndyCompensationFail"
+            "value": "didEarlyEndCompensationFail"
           },
           "directives": []
         },
