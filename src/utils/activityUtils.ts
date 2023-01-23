@@ -70,7 +70,7 @@ export const mapActivitiesFromEvents = (
   events: Array<AllEvents>,
   network: Network
 ) =>
-  Object.values(groupBy("transactionHash", events)).reduce<Array<Activities>>(
+  Object.values(groupBy(x => x.transactionHash, events)).reduce<Array<Activities>>(
     (mappedActivities, activities) =>
       mappedActivities.concat(
         mapTransactionActivityRecursive(activities.reverse(), network)

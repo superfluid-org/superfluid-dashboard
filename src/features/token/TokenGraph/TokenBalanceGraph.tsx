@@ -143,7 +143,7 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
         return startOfYear(currentDate);
       default: {
         const smallestDate =
-          minBy("timestamp", tokenBalances)?.timestamp ||
+          minBy(x => x.timestamp, tokenBalances)?.timestamp ||
           Math.floor(Date.now() / 1000);
 
         return add(new Date(smallestDate * 1000), { days: -1 });
@@ -156,7 +156,7 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
       if (tokenBalances.length === 0) return [];
 
       const smallestDate =
-        minBy("timestamp", tokenBalances)?.timestamp || dateNowSeconds();
+        minBy(x => x.timestamp, tokenBalances)?.timestamp || dateNowSeconds();
 
       return mapDatesWithData(
         tokenBalances,

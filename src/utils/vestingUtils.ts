@@ -237,7 +237,7 @@ export function vestingScheduleToTokenBalance(
 export function aggregateTokenBalances(
   tokenBalances: TokenBalance[]
 ): TokenBalance {
-  const latestBalance = maxBy("timestamp", tokenBalances);
+  const latestBalance = maxBy(x => x.timestamp, tokenBalances);
 
   const maxTimestamp = latestBalance
     ? Number(latestBalance.timestamp)
