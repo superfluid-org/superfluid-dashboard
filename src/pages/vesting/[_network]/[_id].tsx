@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query/react";
 import { FlowUpdatedEvent, TransferEvent } from "@superfluid-finance/sdk-core";
-import { BigNumber } from "ethers";
 import { isString, orderBy } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -35,6 +34,7 @@ import {
   Activity,
   mapActivitiesFromEvents,
 } from "../../../utils/activityUtils";
+import { calculateVestingScheduleAllocated } from "../../../utils/vestingUtils";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import Page404 from "../../404";
 
@@ -163,17 +163,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
 
   const expectedVestedBalance = useMemo(() => {
     if (!vestingSchedule) return undefined;
-
-    const { flowRate, endDate, cliffAmount, cliffAndFlowDate } =
-      vestingSchedule;
-
-    const endUnix = Number(endDate);
-    const cliffAndFlowUnix = Number(cliffAndFlowDate);
-
-    return BigNumber.from(flowRate)
-      .mul(endUnix - cliffAndFlowUnix)
-      .add(cliffAmount)
-      .toString();
+    return calculateVestingScheduleAllocated(vestingSchedule).toString();
   }, [vestingSchedule]);
 
   if (vestingScheduleQuery.isLoading || tokenQuery.isLoading) {

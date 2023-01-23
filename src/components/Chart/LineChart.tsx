@@ -1,13 +1,14 @@
 import { useTheme } from "@mui/material";
 import Box from "@mui/material/Box";
-import Chart, { ChartDataset, TooltipItem } from "chart.js/auto";
+import Chart, { ChartDataset, ChartOptions, TooltipItem } from "chart.js/auto";
 import { format } from "date-fns";
+import { maxBy, minBy } from "lodash";
+import flatten from "lodash/fp/flatten";
+import merge from "lodash/fp/merge";
 import set from "lodash/fp/set";
+import mutateSet from "lodash/set";
 import { FC, useEffect, useRef } from "react";
 import { DEFAULT_LINE_CHART_OPTIONS } from "../../utils/chartUtils";
-import mutateSet from "lodash/set";
-import { maxBy, minBy } from "lodash";
-import { flatten } from "lodash/fp";
 
 export interface DataPoint {
   x: number;
@@ -23,12 +24,14 @@ interface LineChartProps {
   datasets: DataPoint[][];
   datasetsConfigCallbacks: DatasetConfigCallback[];
   height: number;
+  options?: Partial<ChartOptions<"line">>;
 }
 
 const LineChart: FC<LineChartProps> = ({
   datasets,
   datasetsConfigCallbacks,
   height,
+  options = {},
 }) => {
   const theme = useTheme();
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -43,25 +46,29 @@ const LineChart: FC<LineChartProps> = ({
       ...cb(canvasContext),
     }));
 
+    const defaultDatasetsOptions = set(
+      "plugins.tooltip.callbacks",
+      {
+        title: (context: Array<TooltipItem<"line">>) =>
+          format(
+            new Date((context[0]?.raw as DataPoint).x),
+            "MMMM do, yyyy HH:mm"
+          ),
+        label: (context: TooltipItem<"line">) =>
+          (context.raw as DataPoint).ether,
+      },
+      DEFAULT_LINE_CHART_OPTIONS
+    );
+
+    const datasetsOptions = merge(defaultDatasetsOptions, options);
+
     const chart = new Chart(canvasContext, {
       type: "line",
       data: {
         labels: [],
         datasets: initialDatasetsConfig,
       },
-      options: set(
-        "plugins.tooltip.callbacks",
-        {
-          title: (context: Array<TooltipItem<"line">>) =>
-            format(
-              new Date((context[0]?.raw as DataPoint).x),
-              "MMMM do, yyyy HH:mm"
-            ),
-          label: (context: TooltipItem<"line">) =>
-            (context.raw as DataPoint).ether,
-        },
-        DEFAULT_LINE_CHART_OPTIONS
-      ),
+      options: datasetsOptions,
     });
 
     chartRef.current = chart;
@@ -69,7 +76,7 @@ const LineChart: FC<LineChartProps> = ({
     return () => {
       chart.destroy();
     };
-  }, [datasetsConfigCallbacks, height, theme]);
+  }, [datasetsConfigCallbacks, options, height, theme]);
 
   useEffect(() => {
     const currentChart = chartRef.current;
@@ -90,6 +97,7 @@ const LineChart: FC<LineChartProps> = ({
     mutateSet(currentChart.options, "scales.x.max", maxXAxisValue + spacing);
 
     currentChart.update();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chartRef, datasets]);
 

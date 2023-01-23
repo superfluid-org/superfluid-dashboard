@@ -1,4 +1,4 @@
-import { fromUnixTime, getUnixTime, min } from "date-fns";
+import { fromUnixTime, getUnixTime, max, min } from "date-fns";
 import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils";
 import orderBy from "lodash/fp/orderBy";
@@ -42,11 +42,10 @@ export function mapVestingActivitiesToTokenBalances(
         ];
       } else if (activity.keyEvent.name === "Transfer") {
         const newerBalance = newBalance.add(activity.keyEvent.value);
-
         return [
           ...tokenBalances,
           {
-            balance: lastBalance.balance,
+            balance: newBalance.toString(),
             totalNetFlowRate: lastBalance.totalNetFlowRate,
             timestamp: activity.keyEvent.timestamp - 1,
           },
@@ -78,9 +77,14 @@ export function mapVestingActualDataPoints(
 ) {
   const startDate = fromUnixTime(Number(vestingSchedule.startDate));
 
-  const endDate = vestingSchedule.endExecutedAt
-    ? min([fromUnixTime(Number(vestingSchedule.endExecutedAt)), dateNow])
-    : min([fromUnixTime(Number(vestingSchedule.endDate)), dateNow]);
+  const expectedEndDate = min([
+    fromUnixTime(
+      Number(vestingSchedule.endExecutedAt || vestingSchedule.endDate)
+    ),
+    dateNow,
+  ]);
+
+  const endDate = max([expectedEndDate, startDate]);
 
   const dates = getDatesBetween(startDate, endDate, frequency);
 

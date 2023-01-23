@@ -1,17 +1,19 @@
 import { useTheme } from "@mui/material";
+import { ChartOptions } from "chart.js";
+import { fromUnixTime } from "date-fns";
+import { formatEther } from "ethers/lib/utils";
 import { FC, useMemo } from "react";
 import LineChart from "../../components/Chart/LineChart";
-import useTimer from "../../hooks/useTimer";
 import { VestingActivities } from "../../pages/vesting/[_network]/[_id]";
 import {
   buildDefaultDatasetConf,
   estimateFrequencyByTimestamp,
 } from "../../utils/chartUtils";
 import {
+  calculateVestingScheduleAllocated,
   mapVestingActualDataPoints,
   mapVestingExpectedDataPoints,
 } from "../../utils/vestingUtils";
-import { UnitOfTime } from "../send/FlowRateInput";
 import { VestingSchedule } from "./types";
 
 interface VestingGraphProps {
@@ -27,9 +29,30 @@ const VestingGraph: FC<VestingGraphProps> = ({
 }) => {
   const theme = useTheme();
 
-  const dateNow = useTimer(UnitOfTime.Minute);
+  const options = useMemo(() => {
+    const { startDate, endDate } = vestingSchedule;
+
+    const totalVesting = Number(
+      formatEther(calculateVestingScheduleAllocated(vestingSchedule).toString())
+    );
+
+    return {
+      scales: {
+        x: {
+          suggestedMin: fromUnixTime(Number(startDate)).getTime(),
+          suggestedMax: fromUnixTime(Number(endDate)).getTime(),
+        },
+        y: {
+          suggestedMin: 0,
+          suggestedMax: totalVesting,
+        },
+      },
+    } as ChartOptions<"line">;
+  }, [vestingSchedule]);
 
   const datasets = useMemo(() => {
+    const dateNow = new Date();
+
     const frequency = estimateFrequencyByTimestamp(
       vestingSchedule.startDate,
       vestingSchedule.endDate
@@ -41,13 +64,14 @@ const VestingGraph: FC<VestingGraphProps> = ({
       dateNow,
       frequency
     );
+
     const expectedDataPoints = mapVestingExpectedDataPoints(
       vestingSchedule,
       frequency
     );
 
     return [actualDataPoints, expectedDataPoints];
-  }, [vestingSchedule, vestingActivities, dateNow]);
+  }, [vestingSchedule, vestingActivities]);
 
   const datasetsConfigCallbacks = useMemo(
     () => [
@@ -65,6 +89,7 @@ const VestingGraph: FC<VestingGraphProps> = ({
     <LineChart
       height={height}
       datasets={datasets}
+      options={options}
       datasetsConfigCallbacks={datasetsConfigCallbacks}
     />
   );
