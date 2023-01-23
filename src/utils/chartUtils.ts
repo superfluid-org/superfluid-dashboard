@@ -20,13 +20,13 @@ export const DEFAULT_LINE_CHART_OPTIONS: ChartOptions<"line"> = {
     },
   },
   scales: {
-    y: {
-      display: false,
-      grace: 0,
-    },
     x: {
       display: false,
       type: "logarithmic",
+    },
+    y: {
+      display: false,
+      grace: 0,
     },
   },
 };
