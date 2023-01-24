@@ -1,46 +1,73 @@
 import { useTheme } from "@mui/material";
 import { ChartOptions } from "chart.js";
-import { fromUnixTime } from "date-fns";
+import { fromUnixTime, getUnixTime, max, min } from "date-fns";
 import { formatEther } from "ethers/lib/utils";
-import { FC, useMemo } from "react";
-import LineChart from "../../components/Chart/LineChart";
+import { FC, useCallback, useMemo } from "react";
+import LineChart, { DataPoint } from "../../components/Chart/LineChart";
 import { VestingActivities } from "../../pages/vesting/[_network]/[_id]";
 import {
   buildDefaultDatasetConf,
   estimateFrequencyByTimestamp,
+  getFilteredEndDate,
+  getFilteredStartDate,
 } from "../../utils/chartUtils";
 import {
   calculateVestingScheduleAllocated,
   mapVestingActualDataPoints,
   mapVestingExpectedDataPoints,
 } from "../../utils/vestingUtils";
+import { TimeUnitFilterType } from "../graph/TimeUnitFilter";
 import { VestingSchedule } from "./types";
 
 interface VestingGraphProps {
   vestingSchedule: VestingSchedule;
   vestingActivities: VestingActivities;
+  filter?: TimeUnitFilterType;
   height?: number;
 }
 
 const VestingGraph: FC<VestingGraphProps> = ({
   vestingSchedule,
   vestingActivities,
+  filter = TimeUnitFilterType.All,
   height = 180,
 }) => {
   const theme = useTheme();
 
   const options = useMemo(() => {
-    const { startDate, endDate } = vestingSchedule;
+    const {
+      startDate: startDateUnix,
+      endDate: endDateUnix,
+      endExecutedAt: endExecutedAtUnix,
+    } = vestingSchedule;
 
     const totalVesting = Number(
       formatEther(calculateVestingScheduleAllocated(vestingSchedule).toString())
     );
 
+    const currentDate = new Date();
+
+    const endExecutedAt = fromUnixTime(Number(endExecutedAtUnix));
+    const endDate = fromUnixTime(Number(endDateUnix));
+    const maxDate = max([endDate, endExecutedAt]);
+
+    const minDate = fromUnixTime(Number(startDateUnix));
+
+    const startDateWithMinimum = max([
+      minDate,
+      getFilteredStartDate(filter, min([currentDate, maxDate]), minDate),
+    ]);
+
+    const endDateWithMaximum = min([
+      maxDate,
+      getFilteredEndDate(filter, max([currentDate, minDate]), maxDate),
+    ]);
+
     return {
       scales: {
         x: {
-          suggestedMin: fromUnixTime(Number(startDate)).getTime(),
-          suggestedMax: fromUnixTime(Number(endDate)).getTime(),
+          min: startDateWithMinimum.getTime(),
+          max: endDateWithMaximum.getTime(),
         },
         y: {
           suggestedMin: 0,
@@ -48,7 +75,7 @@ const VestingGraph: FC<VestingGraphProps> = ({
         },
       },
     } as ChartOptions<"line">;
-  }, [vestingSchedule]);
+  }, [vestingSchedule, filter]);
 
   const datasets = useMemo(() => {
     const dateNow = new Date();

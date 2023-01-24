@@ -76,7 +76,10 @@ const LineChart: FC<LineChartProps> = ({
     return () => {
       chart.destroy();
     };
-  }, [datasetsConfigCallbacks, options, height, theme]);
+
+    // We do not want options to rebuild the chart
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [datasetsConfigCallbacks, height, theme]);
 
   useEffect(() => {
     const currentChart = chartRef.current;
@@ -87,19 +90,33 @@ const LineChart: FC<LineChartProps> = ({
       mutateSet(currentChart.data.datasets, [index, "data"], dataset);
     });
 
-    const allData = flatten(datasets);
-    const minXAxisValue = minBy(allData, (dataPoint) => dataPoint.x)?.x || 0;
-    const maxXAxisValue = maxBy(allData, (dataPoint) => dataPoint.x)?.x || 0;
+    console.log();
+    // const allData = flatten(datasets);
+    // const minXAxisValue = minBy(allData, (dataPoint) => dataPoint.x)?.x || 0;
+    // const maxXAxisValue = maxBy(allData, (dataPoint) => dataPoint.x)?.x || 0;
 
-    const spacing = (maxXAxisValue - minXAxisValue) / 100; // 1% of the y axis will be spacing or else clipping will occur.
+    // const spacing = (maxXAxisValue - minXAxisValue) / 100; // 1% of the y axis will be spacing or else clipping will occur.
 
-    mutateSet(currentChart.options, "scales.x.min", minXAxisValue + spacing);
-    mutateSet(currentChart.options, "scales.x.max", maxXAxisValue + spacing);
+    // mutateSet(currentChart.options, "scales.x.min", minXAxisValue + spacing);
+    // mutateSet(currentChart.options, "scales.x.max", maxXAxisValue + spacing);
 
     currentChart.update();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chartRef, datasets]);
+
+  useEffect(() => {
+    const currentChart = chartRef.current;
+
+    if (!currentChart) return;
+
+    const newOptions = merge(currentChart.options, options);
+    mutateSet(currentChart, "options", newOptions);
+
+    currentChart.update();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chartRef, options]);
 
   return (
     <Box

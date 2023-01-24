@@ -19,6 +19,7 @@ import { DataPoint } from "../../../components/Chart/LineChart";
 import {
   buildDefaultDatasetConf,
   DEFAULT_LINE_CHART_OPTIONS,
+  getFilteredStartDate,
 } from "../../../utils/chartUtils";
 import { dateNowSeconds, getDatesBetween } from "../../../utils/dateUtils";
 import { TimeUnitFilterType } from "../../graph/TimeUnitFilter";
@@ -118,37 +119,13 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
   );
 
   const graphStartDate = useMemo(() => {
-    switch (timeUnitFilter) {
-      case TimeUnitFilterType.Day:
-        return sub(currentDate, {
-          days: 1,
-        });
-      case TimeUnitFilterType.Week:
-        return sub(currentDate, {
-          days: 7,
-        });
-      case TimeUnitFilterType.Month:
-        return sub(currentDate, {
-          months: 1,
-        });
-      case TimeUnitFilterType.Quarter:
-        return sub(currentDate, {
-          months: 3,
-        });
-      case TimeUnitFilterType.Year:
-        return sub(currentDate, {
-          years: 1,
-        });
-      case TimeUnitFilterType.YTD:
-        return startOfYear(currentDate);
-      default: {
-        const smallestDate =
-          minBy(x => x.timestamp, tokenBalances)?.timestamp ||
-          Math.floor(Date.now() / 1000);
+    const smallestDate =
+      minBy((x) => x.timestamp, tokenBalances)?.timestamp ||
+      Math.floor(Date.now() / 1000);
 
-        return add(new Date(smallestDate * 1000), { days: -1 });
-      }
-    }
+    const defaultValue = add(new Date(smallestDate * 1000), { days: -1 });
+
+    return getFilteredStartDate(timeUnitFilter, currentDate, defaultValue);
   }, [tokenBalances, timeUnitFilter, currentDate]);
 
   const graphData = useMemo(
@@ -156,7 +133,7 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
       if (tokenBalances.length === 0) return [];
 
       const smallestDate =
-        minBy(x => x.timestamp, tokenBalances)?.timestamp || dateNowSeconds();
+        minBy((x) => x.timestamp, tokenBalances)?.timestamp || dateNowSeconds();
 
       return mapDatesWithData(
         tokenBalances,
