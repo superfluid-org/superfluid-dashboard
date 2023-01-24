@@ -10,6 +10,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableCellProps,
   TableContainer,
   TableHead,
   TableRow,
@@ -272,9 +273,18 @@ export const VestingSchedulerAllowanceRow: FC<{
   const isEnoughFlowOperatorPermissions =
     existingPermissions & requiredFlowOperatorPermissions;
 
+  const collapsibleTableCellProps: TableCellProps = {
+    sx: {
+      pt: 0,
+      pb: 0
+    },
+  };
+
   return (
     <>
-      <TableRow>
+      <TableRow sx={{
+        border: "none"
+      }}>
         <TableCell>
           <Stack direction="row" alignItems="center" gap={1.5}>
             <TokenIcon
@@ -319,8 +329,8 @@ export const VestingSchedulerAllowanceRow: FC<{
         </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell></TableCell>
-        <TableCell>
+        <TableCell {...collapsibleTableCellProps}></TableCell>
+        <TableCell {...collapsibleTableCellProps}>
           <Collapse in={isExpanded}>
             <ListItemText
               primary="Current"
@@ -341,7 +351,7 @@ export const VestingSchedulerAllowanceRow: FC<{
             />
           </Collapse>
         </TableCell>
-        <TableCell>
+        <TableCell {...collapsibleTableCellProps}>
           <Collapse in={isExpanded}>
             <ListItemText primary="Current" secondary={permissionsString} />
             <ListItemText
@@ -350,7 +360,7 @@ export const VestingSchedulerAllowanceRow: FC<{
             />
           </Collapse>
         </TableCell>
-        <TableCell>
+        <TableCell {...collapsibleTableCellProps}>
           <Collapse in={isExpanded}>
             <ListItemText
               primary="Current"
@@ -373,7 +383,7 @@ export const VestingSchedulerAllowanceRow: FC<{
             />
           </Collapse>
         </TableCell>
-        <TableCell></TableCell>
+        <TableCell {...collapsibleTableCellProps}></TableCell>
       </TableRow>
     </>
   );

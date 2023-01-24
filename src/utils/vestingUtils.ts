@@ -212,7 +212,7 @@ export function vestingScheduleToTokenBalance(
       Number(cliffAndFlowDate);
     const balance = BigNumber.from(secondsStreamed)
       .mul(flowRate)
-      .add(cliffAmount || 0)
+      .add(cliffAmount)
       .toString();
 
     return {
