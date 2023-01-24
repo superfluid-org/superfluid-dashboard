@@ -1,13 +1,11 @@
 import {
   Paper,
-  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { BigNumber } from "ethers";
@@ -24,22 +22,6 @@ import VestingSchedulerAllowanceRow from "./VestingSchedulerAllowanceRow";
 const VestingSchedulerAllowancesTable: FC = () => {
   const { network } = useExpectedNetwork();
   const { visibleAddress: senderAddress } = useVisibleAddress();
-
-  const { isPlatformWhitelisted } = platformApi.useIsAccountWhitelistedQuery(
-    senderAddress && network?.platformUrl
-      ? {
-          chainId: network.id,
-          baseUrl: network.platformUrl,
-          account: senderAddress?.toLowerCase(),
-        }
-      : skipToken,
-    {
-      selectFromResult: (queryResult) => ({
-        ...queryResult,
-        isPlatformWhitelisted: !!queryResult.data,
-      }),
-    }
-  );
 
   const { data: vestingSchedulerConstants } =
     rpcApi.useGetVestingSchedulerConstantsQuery({
@@ -115,46 +97,49 @@ const VestingSchedulerAllowancesTable: FC = () => {
 
   return (
     <TableContainer component={Paper} elevation={0}>
-      <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-        <Typography>Execution:</Typography>
-        <Typography>{isPlatformWhitelisted ? "Superfluid" : "User"}</Typography>
-      </Stack>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <Table sx={{ minWidth: 650 }}>
         <TableHead>
           <TableRow>
             <TableCell>Token</TableCell>
-            <TableCell>
-              <Stack direction="row" alignItems="center" spacing={1}>
-                <Typography>Token Allowance</Typography>
-                <TooltipIcon title="The token allowance needed by the contract for cliff & compensation transfers." />
-              </Stack>
+            <TableCell width="250px">
+              Token Allowance
+              <TooltipIcon
+                IconProps={{ sx: { ml: 0.5 } }}
+                title="The token allowance needed by the contract for cliff & compensation transfers."
+              />
             </TableCell>
-            <TableCell>
-              <Stack direction="row" alignItems="center" spacing={1}>
-                <Typography>Flow Operator Permissions</Typography>
-                <TooltipIcon title="The flow operator permissions needed by the contract for creating & deletion of Superfluid flows." />
-              </Stack>
+            <TableCell width="260px">
+              Flow Operator Permissions
+              <TooltipIcon
+                IconProps={{ sx: { ml: 0.5 } }}
+                title="The flow operator permissions needed by the contract for creating & deletion of Superfluid flows."
+              />
             </TableCell>
-            <TableCell>
-              <Stack direction="row" alignItems="center" spacing={1}>
-                <Typography>Flow Operator Allowance</Typography>
-                <TooltipIcon title="The flow operator allowance needed by the contract for creating Superfluid flows." />
-              </Stack>
+            <TableCell width="250px">
+              Flow Operator Allowance
+              <TooltipIcon
+                IconProps={{ sx: { ml: 0.5 } }}
+                title="The flow operator allowance needed by the contract for creating Superfluid flows."
+              />
             </TableCell>
-            <TableCell></TableCell>
+            <TableCell width="60px" />
           </TableRow>
         </TableHead>
         <TableBody>
           {senderAddress &&
             tokenSummaries.map(
-              ({
-                tokenAddress,
-                recommendedTokenAllowance,
-                requiredFlowOperatorPermissions,
-                requiredFlowOperatorAllowance,
-              }) => (
+              (
+                {
+                  tokenAddress,
+                  recommendedTokenAllowance,
+                  requiredFlowOperatorPermissions,
+                  requiredFlowOperatorAllowance,
+                },
+                index
+              ) => (
                 <VestingSchedulerAllowanceRow
                   key={tokenAddress}
+                  isLast={index === tokenSummaries.length - 1}
                   network={network}
                   tokenAddress={tokenAddress}
                   senderAddress={senderAddress}
