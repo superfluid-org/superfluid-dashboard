@@ -276,6 +276,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
           <VestingGraph
             vestingSchedule={vestingSchedule}
             vestingActivities={activities}
+            filter={graphFilter}
           />
         </Card>
 

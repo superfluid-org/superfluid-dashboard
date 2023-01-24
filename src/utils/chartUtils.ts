@@ -1,8 +1,16 @@
 import { alpha } from "@mui/material";
 import { ChartDataset, ChartOptions } from "chart.js";
-import { fromUnixTime, getUnixTime } from "date-fns";
+import {
+  add,
+  endOfYear,
+  fromUnixTime,
+  getUnixTime,
+  startOfYear,
+  sub,
+} from "date-fns";
 import { BigNumber, ethers } from "ethers";
 import { DataPoint } from "../components/Chart/LineChart";
+import { TimeUnitFilterType } from "../features/graph/TimeUnitFilter";
 import { UnitOfTime } from "../features/send/FlowRateInput";
 
 export const DEFAULT_LINE_CHART_OPTIONS: ChartOptions<"line"> = {
@@ -156,4 +164,75 @@ export function mapFrequencyTokenBalanceToDataPoints(
     y: Number(pointValue),
     ether: pointValue,
   };
+}
+
+export function getFilteredStartDate(
+  filter: TimeUnitFilterType,
+  currentDate: Date,
+  defaultValue: Date
+) {
+  switch (filter) {
+    case TimeUnitFilterType.Day:
+      return sub(currentDate, {
+        days: 1,
+      });
+    case TimeUnitFilterType.Week:
+      return sub(currentDate, {
+        days: 7,
+      });
+    case TimeUnitFilterType.Month:
+      return sub(currentDate, {
+        months: 1,
+      });
+    case TimeUnitFilterType.Quarter:
+      return sub(currentDate, {
+        months: 3,
+      });
+    case TimeUnitFilterType.Year:
+      return sub(currentDate, {
+        years: 1,
+      });
+    case TimeUnitFilterType.YTD:
+      return startOfYear(currentDate);
+    default: {
+      return defaultValue;
+    }
+  }
+}
+
+export function getFilteredEndDate(
+  filter: TimeUnitFilterType,
+  currentDate: Date,
+  defaultValue: Date
+) {
+  switch (filter) {
+    case TimeUnitFilterType.Day:
+      return add(currentDate, {
+        days: 1,
+      });
+    case TimeUnitFilterType.Week:
+      return add(currentDate, {
+        days: 7,
+      });
+    case TimeUnitFilterType.Month:
+      return add(currentDate, {
+        months: 1,
+      });
+    case TimeUnitFilterType.Quarter:
+      return add(currentDate, {
+        months: 3,
+      });
+    case TimeUnitFilterType.Year:
+      return add(currentDate, {
+        years: 1,
+      });
+    case TimeUnitFilterType.YTD: {
+      const currentTime = currentDate.getTime();
+      const diff = currentTime - startOfYear(currentDate).getTime();
+      return new Date(currentTime + 2 * diff);
+    }
+    default: {
+      return defaultValue;
+    }
+  }
 }
