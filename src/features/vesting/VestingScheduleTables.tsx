@@ -25,6 +25,7 @@ import VestingSchedulerAllowancesTable from "./VestingSchedulesAllowancesTable/V
 import VestingScheduleTable from "./VestingScheduleTable";
 import Link from "../common/Link";
 import TooltipIcon from "../common/TooltipIcon";
+import { platformApi } from "../redux/platformApi/platformApi";
 
 interface VestingScheduleTablesProps {}
 
@@ -68,6 +69,22 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
       selectFromResult: (result) => ({
         ...result,
         vestingSchedules: result.data?.vestingSchedules ?? [],
+      }),
+    }
+  );
+
+  const { isPlatformWhitelisted } = platformApi.useIsAccountWhitelistedQuery(
+    visibleAddress && network?.platformUrl
+      ? {
+          chainId: network.id,
+          baseUrl: network.platformUrl,
+          account: visibleAddress?.toLowerCase(),
+        }
+      : skipToken,
+    {
+      selectFromResult: (queryResult) => ({
+        ...queryResult,
+        isPlatformWhitelisted: !!queryResult.data,
       }),
     }
   );
@@ -162,49 +179,53 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
         {vestingSchedulesLoading ? (
           <Skeleton width="200px" />
         ) : (
-          <Stack direction="row" gap={1}>
-            <Typography variant="h6">Allowances and Permissions</Typography>
-            {network.vestingContractAddress && (
-              <TooltipIcon
-                TooltipProps={{ sx: { maxWidth: "auto" } }}
-                title={
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    spacing={1}
-                    sx={{ mb: 1 }}
-                  >
-                    <Typography>
-                      Contract: {getAddress(network.vestingContractAddress)}
-                    </Typography>
-                    <CopyIconBtn
-                      copyText={getAddress(network.vestingContractAddress)}
-                      description="Copy address to clipboard"
-                    />
-                    <Tooltip
-                      title="View on blockchain explorer"
-                      arrow
-                      placement="top"
-                    >
-                      <Link
-                        passHref
-                        href={network.getLinkForAddress(
-                          network.vestingContractAddress
-                        )}
-                        target="_blank"
-                      >
-                        <IconButton href="" target="_blank">
-                          <LaunchRoundedIcon />
-                        </IconButton>
-                      </Link>
-                    </Tooltip>
-                  </Stack>
-                }
-              />
-            )}
-          </Stack>
+          <Typography variant="h6">Allowances and Permissions</Typography>
         )}
+
         <VestingSchedulerAllowancesTable />
+
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          spacing={1}
+        >
+          <Typography variant="body1" color="secondary">
+            Transaction executed by:{" "}
+            {isPlatformWhitelisted ? "Superfluid" : "User"}
+          </Typography>
+
+          {network.vestingContractAddress && (
+            <Stack direction="row" alignItems="center">
+              <Typography variant="body1" color="secondary">
+                Contract address
+              </Typography>
+
+              <CopyIconBtn
+                TooltipProps={{ placement: "top" }}
+                copyText={getAddress(network.vestingContractAddress)}
+                description="Copy address to clipboard"
+              />
+              <Tooltip
+                title="View on blockchain explorer"
+                arrow
+                placement="top"
+              >
+                <Link
+                  passHref
+                  href={network.getLinkForAddress(
+                    network.vestingContractAddress
+                  )}
+                  target="_blank"
+                >
+                  <IconButton href="" target="_blank">
+                    <LaunchRoundedIcon color="inherit" />
+                  </IconButton>
+                </Link>
+              </Tooltip>
+            </Stack>
+          )}
+        </Stack>
       </Stack>
     </Stack>
   );

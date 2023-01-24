@@ -18,8 +18,13 @@ import { rpcApi, subgraphApi } from "../../redux/store";
 import Amount from "../../token/Amount";
 import TokenIcon from "../../token/TokenIcon";
 import { Network } from "../../network/networks";
+import Table from "@mui/material/Table";
+import { useTheme } from "@mui/material/styles";
+import { Skeleton } from "@mui/lab";
+import VestingSchedulerAllowanceDetailsTable from "./VestingSchedulerAllowanceDetailsTable";
 
 interface VestingSchedulerAllowanceRowProps {
+  isLast: boolean;
   network: Network;
   tokenAddress: string;
   senderAddress: string;
@@ -29,6 +34,7 @@ interface VestingSchedulerAllowanceRowProps {
 }
 
 const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
+  isLast,
   network,
   tokenAddress,
   senderAddress,
@@ -36,6 +42,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   requiredFlowOperatorPermissions,
   requiredFlowOperatorAllowance,
 }) => {
+  const theme = useTheme();
   const vestingSchedulerAllowancesQuery =
     rpcApi.useGetVestingSchedulerAllowancesQuery({
       chainId: network.id,
@@ -50,6 +57,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
 
   const [isExpanded, setIsExpanded] = useState(false);
 
+  // TODO: Return skeleton table
   if (!vestingSchedulerAllowancesQuery.data) return <>Loading...</>;
 
   const { tokenAllowance, flowOperatorPermissions, flowOperatorAllowance } =
@@ -61,27 +69,22 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   );
 
   const existingPermissions = Number(flowOperatorPermissions);
-  const permissionsString =
-    flowOperatorPermissionsToString(existingPermissions);
-  const requiredPermissionsString = flowOperatorPermissionsToString(
-    requiredFlowOperatorPermissions
-  );
+
   const isEnoughFlowOperatorPermissions =
     existingPermissions & requiredFlowOperatorPermissions;
-
-  const collapsibleTableCellProps: TableCellProps = {
-    sx: {
-      pt: 0,
-      pb: 0,
-    },
-  };
 
   return (
     <>
       <TableRow
-        sx={{
-          border: "none",
-        }}
+        sx={
+          isLast && !isExpanded
+            ? {
+                ".MuiTableCell-root": {
+                  border: "none",
+                },
+              }
+            : {}
+        }
       >
         <TableCell>
           <Stack direction="row" alignItems="center" gap={1.5}>
@@ -96,27 +99,27 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
         <TableCell>
           <Stack direction="column" spacing={1} alignItems="center">
             {isEnoughTokenAllowance ? (
-              <CheckCircleRoundedIcon sx={{ color: "primary.main" }} />
+              <CheckCircleRoundedIcon color="primary" />
             ) : (
-              <DangerousRoundedIcon sx={{ color: "warning.main" }} />
+              <DangerousRoundedIcon color="error" />
             )}
           </Stack>
         </TableCell>
         <TableCell>
           <Stack direction="column" spacing={1} alignItems="center">
             {isEnoughFlowOperatorPermissions ? (
-              <CheckCircleRoundedIcon sx={{ color: "primary.main" }} />
+              <CheckCircleRoundedIcon color="primary" />
             ) : (
-              <DangerousRoundedIcon sx={{ color: "warning.main" }} />
+              <DangerousRoundedIcon color="error" />
             )}
           </Stack>
         </TableCell>
         <TableCell>
           <Stack direction="column" spacing={1} alignItems="center">
             {isEnoughFlowOperatorAllowance ? (
-              <CheckCircleRoundedIcon sx={{ color: "primary.main" }} />
+              <CheckCircleRoundedIcon color="primary" />
             ) : (
-              <DangerousRoundedIcon sx={{ color: "warning.main" }} />
+              <DangerousRoundedIcon color="error" />
             )}
           </Stack>
         </TableCell>
@@ -126,62 +129,31 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
           </IconButton>
         </TableCell>
       </TableRow>
-      <TableRow>
-        <TableCell {...collapsibleTableCellProps}></TableCell>
-        <TableCell {...collapsibleTableCellProps}>
-          <Collapse in={isExpanded}>
-            <ListItemText
-              primary="Current"
-              secondary={
-                <span>
-                  <Amount wei={tokenAllowance} /> {tokenQuery.data?.symbol}
-                </span>
-              }
-            />
-            <ListItemText
-              primary="Recommended"
-              secondary={
-                <span>
-                  <Amount wei={recommendedTokenAllowance} />{" "}
-                  {tokenQuery.data?.symbol}
-                </span>
-              }
-            />
-          </Collapse>
-        </TableCell>
-        <TableCell {...collapsibleTableCellProps}>
-          <Collapse in={isExpanded}>
-            <ListItemText primary="Current" secondary={permissionsString} />
-            <ListItemText
-              primary="Recommended"
-              secondary={requiredPermissionsString}
+      <TableRow sx={isLast ? { ".MuiTableCell-root": { border: "none" } } : {}}>
+        <TableCell
+          colSpan={5}
+          sx={{
+            border: "none",
+            minHeight: 0,
+            p: 0,
+          }}
+        >
+          <Collapse
+            in={isExpanded}
+            timeout={theme.transitions.duration.standard}
+            unmountOnExit
+          >
+            <VestingSchedulerAllowanceDetailsTable
+              tokenSymbol={tokenQuery.data?.symbol || ""}
+              tokenAllowance={tokenAllowance}
+              flowOperatorAllowance={flowOperatorAllowance}
+              recommendedTokenAllowance={recommendedTokenAllowance}
+              requiredFlowOperatorAllowance={requiredFlowOperatorAllowance}
+              existingPermissions={existingPermissions}
+              requiredFlowOperatorPermissions={requiredFlowOperatorPermissions}
             />
           </Collapse>
         </TableCell>
-        <TableCell {...collapsibleTableCellProps}>
-          <Collapse in={isExpanded}>
-            <ListItemText
-              primary="Current"
-              secondary={
-                <span>
-                  <Amount wei={flowOperatorAllowance} />{" "}
-                  {tokenQuery.data?.symbol}
-                  /sec
-                </span>
-              }
-            />
-            <ListItemText
-              primary="Recommended"
-              secondary={
-                <span>
-                  <Amount wei={requiredFlowOperatorAllowance} />{" "}
-                  {tokenQuery.data?.symbol}/sec
-                </span>
-              }
-            />
-          </Collapse>
-        </TableCell>
-        <TableCell {...collapsibleTableCellProps}></TableCell>
       </TableRow>
     </>
   );
