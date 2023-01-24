@@ -24,7 +24,6 @@ import AggregatedVestingSchedules from "./AggregatedVestingSchedules";
 import VestingSchedulerAllowancesTable from "./VestingSchedulesAllowancesTable/VestingSchedulerAllowancesTable";
 import VestingScheduleTable from "./VestingScheduleTable";
 import Link from "../common/Link";
-import TooltipIcon from "../common/TooltipIcon";
 import { platformApi } from "../redux/platformApi/platformApi";
 
 interface VestingScheduleTablesProps {}
@@ -40,7 +39,7 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
     visibleAddress
       ? {
           chainId: network.id,
-          where: { receiver: visibleAddress?.toLowerCase(), deletedAt: null },
+          where: { receiver: visibleAddress?.toLowerCase() },
           orderBy: "createdAt",
           orderDirection: "desc",
         }
@@ -60,7 +59,7 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
     visibleAddress
       ? {
           chainId: network.id,
-          where: { sender: visibleAddress?.toLowerCase(), deletedAt: null },
+          where: { sender: visibleAddress?.toLowerCase() },
           orderBy: "createdAt",
           orderDirection: "desc",
         }

@@ -90,8 +90,6 @@ const VestingStatus: FC<VestingStatusProps> = ({ vestingSchedule }) => {
         return "primary";
       case VestingStatusType.CliffPeriod:
         return "warning.main";
-      default:
-        return "initial";
     }
   }, [status]);
 

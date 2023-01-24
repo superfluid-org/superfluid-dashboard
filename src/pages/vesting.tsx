@@ -45,7 +45,7 @@ const VestingNotSupportedCard = () => {
 };
 
 const VESTING_SUPPORTED_NETWORKS = networks
-  .filter((network) => network.vestingContractAddress)
+  .filter((network) => network.platformUrl) // The vesting contract might be deployed to more networks but we check for the existence of the Platform.
   .map((network) => network.id);
 
 const VestingPage: NextPage = () => {
