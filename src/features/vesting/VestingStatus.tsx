@@ -12,7 +12,7 @@ enum VestingStatusType {
   EndFailed = "Stream Cancel Error",
   EndOverflowed = "Stream Overflow Error",
   EndCompensationFailed = "Transfer Error",
-  DeletedDraft = "Deleted",
+  DeletedBeforeStart = "Deleted",
   DeletedAfterStart = "Deleted",
 }
 
@@ -46,7 +46,7 @@ const VestingStatus: FC<VestingStatusProps> = ({ vestingSchedule }) => {
         return VestingStatusType.DeletedAfterStart;
       }
 
-      return VestingStatusType.DeletedDraft;
+      return VestingStatusType.DeletedBeforeStart;
     }
 
     if (failedAt) {
