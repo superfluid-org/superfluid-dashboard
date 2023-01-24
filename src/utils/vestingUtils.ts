@@ -204,15 +204,17 @@ export function vestingScheduleToTokenBalance(
     cliffAndFlowExecutedAt,
     endDate,
     cliffAndFlowDate,
+    didEarlyEndCompensationFail,
+    earlyEndCompensation,
   } = vestingSchedule;
 
   if (endExecutedAt) {
     const secondsStreamed =
-      Number(Math.max(Number(endExecutedAt), Number(endDate))) -
-      Number(cliffAndFlowDate);
+      Number(Math.max(Number(endExecutedAt))) - Number(cliffAndFlowDate);
     const balance = BigNumber.from(secondsStreamed)
       .mul(flowRate)
       .add(cliffAmount)
+      .add(didEarlyEndCompensationFail ? "0" : earlyEndCompensation ?? "0")
       .toString();
 
     return {
