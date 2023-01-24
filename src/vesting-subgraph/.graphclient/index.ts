@@ -2734,7 +2734,7 @@ export type GetVestingScheduleQueryVariables = Exact<{
 }>;
 
 
-export type GetVestingScheduleQuery = { vestingSchedule?: Maybe<Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation'>> };
+export type GetVestingScheduleQuery = { vestingSchedule?: Maybe<Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation'>> };
 
 export type GetVestingSchedulesQueryVariables = Exact<{
   where?: InputMaybe<VestingSchedule_Filter>;
@@ -2743,9 +2743,9 @@ export type GetVestingSchedulesQueryVariables = Exact<{
 }>;
 
 
-export type GetVestingSchedulesQuery = { vestingSchedules: Array<Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation'>> };
+export type GetVestingSchedulesQuery = { vestingSchedules: Array<Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation'>> };
 
-export type VestingSchedulePartFragment = Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation'>;
+export type VestingSchedulePartFragment = Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation'>;
 
 export const VestingSchedulePartFragmentDoc = gql`
     fragment VestingSchedulePart on VestingSchedule {
@@ -2759,6 +2759,7 @@ export const VestingSchedulePartFragmentDoc = gql`
   startDate
   cliffDate
   cliffAndFlowExecutedAt
+  cliffAndFlowExpirationAt
   cliffAndFlowDate
   cliffAmount
   endDate

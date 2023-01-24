@@ -30,6 +30,7 @@ fragment VestingSchedulePart on VestingSchedule {
   startDate
   cliffDate
   cliffAndFlowExecutedAt
+  cliffAndFlowExpirationAt
   cliffAndFlowDate
   cliffAmount
   endDate

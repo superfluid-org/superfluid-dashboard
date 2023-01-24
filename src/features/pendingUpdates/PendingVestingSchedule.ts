@@ -60,6 +60,9 @@ export const mapPendingToVestingSchedule = (
     superTokenAddress,
     flowRateWei,
   } = pendingVestingSchedule;
+  const cliffAndFlowDate = cliffDateTimestamp
+    ? cliffDateTimestamp
+    : startDateTimestamp;
 
   return {
     pendingCreate: pendingVestingSchedule,
@@ -74,9 +77,8 @@ export const mapPendingToVestingSchedule = (
     cliffAmount: cliffTransferAmountWei,
     endDateValidAt: endDateTimestamp.toString(),
     endDate: endDateTimestamp.toString(),
-    cliffAndFlowDate: cliffDateTimestamp
-      ? cliffDateTimestamp.toString()
-      : startDateTimestamp.toString(),
+    cliffAndFlowDate: cliffAndFlowDate.toString(),
+    cliffAndFlowExpirationAt: cliffAndFlowDate.toString(),
     didEarlyEndCompensationFail: false,
     earlyEndCompensation: "0",
     failedAt: null,

@@ -6,10 +6,14 @@ import { VestingSchedule } from "./types";
 enum VestingStatusType {
   ScheduledStart = "Scheduled",
   CliffPeriod = "Cliff",
-  CliffAndFlowExecuted = "Vesting", // Needs execution.
-  EndExecuted = "Vested", // Needs execution.
-  EndFailed = "Failed",
-  Deleted = "Deleted",
+  CliffAndFlowExecuted = "Vesting",
+  CliffAndFlowExpired = "Send Stream Error",
+  EndExecuted = "Vested",
+  EndFailed = "Stream Cancel Error",
+  EndOverflowed = "Stream Overflow Error",
+  EndCompensationFailed = "Transfer Error",
+  DeletedDraft = "Deleted",
+  DeletedAfterStart = "Deleted",
 }
 
 interface VestingStatusProps {
@@ -17,35 +21,66 @@ interface VestingStatusProps {
 }
 
 const VestingStatus: FC<VestingStatusProps> = ({ vestingSchedule }) => {
-  const {
-    startDate,
-    cliffDate,
-    endDate,
-    cliffAndFlowExecutedAt,
-    endExecutedAt,
-    deletedAt,
-  } = vestingSchedule;
-
   const status = useMemo(() => {
+    const {
+      failedAt,
+      endDate,
+      cliffAndFlowExecutedAt,
+      endExecutedAt,
+      didEarlyEndCompensationFail,
+    } = vestingSchedule;
+    const deletedAt = vestingSchedule.deletedAt
+      ? Number(vestingSchedule.deletedAt)
+      : undefined;
+    const startDate = Number(vestingSchedule.startDate);
+    const cliffAndFlowExpirationAt = Number(
+      vestingSchedule.cliffAndFlowExpirationAt
+    );
+    const cliffDate = vestingSchedule.cliffDate
+      ? Number(vestingSchedule.cliffDate)
+      : undefined;
     const nowUnix = getUnixTime(new Date());
 
     if (deletedAt) {
-      return VestingStatusType.Deleted;
-    } else if (endExecutedAt) {
+      if (deletedAt > startDate) {
+        return VestingStatusType.DeletedAfterStart;
+      }
+
+      return VestingStatusType.DeletedDraft;
+    }
+
+    if (failedAt) {
+      return VestingStatusType.EndFailed;
+    }
+
+    if (didEarlyEndCompensationFail) {
+      return VestingStatusType.EndCompensationFailed;
+    }
+
+    if (endExecutedAt) {
+      if (endExecutedAt > endDate) {
+        return VestingStatusType.EndOverflowed;
+      }
+
       return VestingStatusType.EndExecuted;
-    } else if (cliffAndFlowExecutedAt) {
+    }
+
+    if (cliffAndFlowExecutedAt) {
       return VestingStatusType.CliffAndFlowExecuted;
-    } 
-    
+    }
+
+    if (nowUnix > cliffAndFlowExpirationAt) {
+      return VestingStatusType.CliffAndFlowExpired;
+    }
+
     if (cliffDate) {
-      const cliffUnix = Number(cliffDate);
-      if (nowUnix > cliffUnix) {
+      if (nowUnix > cliffDate) {
         return VestingStatusType.CliffPeriod;
       }
     }
 
     return VestingStatusType.ScheduledStart;
-  }, [startDate, cliffDate, cliffAndFlowExecutedAt, deletedAt, endExecutedAt]);
+  }, [vestingSchedule]);
 
   const color = useMemo(() => {
     switch (status) {
@@ -55,6 +90,8 @@ const VestingStatus: FC<VestingStatusProps> = ({ vestingSchedule }) => {
         return "primary";
       case VestingStatusType.CliffPeriod:
         return "warning.main";
+      default:
+        return "initial";
     }
   }, [status]);
 
