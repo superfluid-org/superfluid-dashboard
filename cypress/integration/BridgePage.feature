@@ -62,3 +62,10 @@ Feature: Bridge page test cases (Li-Fi widget)
     And Lifi widget settings are visible
     And User clicks on the back button
     Then LiFi bridge inputs are visible
+
+  Scenario: Only Superfluid supported networks are shown in the Bridge page
+    Given Transactional account bob is connected to the dashboard on ethereum
+    And User clicks on the "bridge" navigation button
+    And User opens the token selection in the bridge page
+    Then Only Superfluid supported networks are shown as available options
+    And Ethereum mainnet is shown in the network list
