@@ -18,20 +18,22 @@ export const useScheduledStream = (
   const isSkip = arg === skipToken;
   const network = isSkip ? undefined : findNetworkByChainId(arg.chainId);
 
-  const { schedulings } = platformApi.useListSubscriptionsQuery(
-    stream && network?.platformUrl
-      ? {
-          account: getAddress(stream.sender),
-          chainId: network.id,
-          baseUrl: network.platformUrl,
-        }
-      : skipToken,
-    {
-      selectFromResult: (x) => ({
-        schedulings: x.currentData?.data ?? [],
-      }),
-    }
-  );
+  const { schedulings } = { schedulings: [] };
+  // TODO(KK): Un-comment and handle when bringing back stream scheduling.
+  // platformApi.useListSubscriptionsQuery(
+  //   stream && network?.platformUrl
+  //     ? {
+  //         account: getAddress(stream.sender),
+  //         chainId: network.id,
+  //         baseUrl: network.platformUrl,
+  //       }
+  //     : skipToken,
+  //   {
+  //     selectFromResult: (x) => ({
+  //       schedulings: x.currentData?.data ?? [],
+  //     }),
+  //   }
+  // );
 
   const isStreamActive = stream && stream.currentFlowRate !== "0";
   const streamScheduling = isStreamActive
