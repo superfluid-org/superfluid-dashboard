@@ -1,8 +1,19 @@
-import { Card, Skeleton, Stack, Typography } from "@mui/material";
+import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
+import {
+  Card,
+  IconButton,
+  Paper,
+  Skeleton,
+  Stack,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC, useMemo } from "react";
 import NoContentPaper from "../../components/NoContent/NoContentPaper";
+import { getAddress } from "../../utils/memoizedEthersUtils";
 import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
+import { CopyIconBtn } from "../common/CopyIconBtn";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   mapPendingToVestingSchedule,
@@ -10,8 +21,10 @@ import {
 } from "../pendingUpdates/PendingVestingSchedule";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import AggregatedVestingSchedules from "./AggregatedVestingSchedules";
-import { VestingSchedulerAllowances } from "./VestingSchedulerAllowances";
+import VestingSchedulerAllowancesTable from "./VestingSchedulesAllowancesTable/VestingSchedulerAllowancesTable";
 import VestingScheduleTable from "./VestingScheduleTable";
+import Link from "../common/Link";
+import TooltipIcon from "../common/TooltipIcon";
 
 interface VestingScheduleTablesProps {}
 
@@ -80,79 +93,119 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
     receivedSchedulesLoading || sentSchedulesLoading;
 
   return (
-    <Stack gap={2}>
-      <Stack
-        gap={2}
-        direction={
-          receivedVestingSchedules.length === 0 &&
-          mappedSentVestingSchedules.length > 0
-            ? "column-reverse"
-            : "column"
-        }
-      >
-        <Stack gap={2} direction="column">
-          <Typography variant="h6">
-            {vestingSchedulesLoading ? (
-              <Skeleton width="200px" />
-            ) : (
-              "Received Vesting Schedules"
-            )}
-          </Typography>
-          <Card sx={{ p: 0, mb: 3 }}>
-            {vestingSchedulesLoading || receivedVestingSchedules.length > 0 ? (
-              <VestingScheduleTable
-                dataCy={"received-table"}
-                isLoading={vestingSchedulesLoading}
-                network={network}
-                vestingSchedules={receivedVestingSchedules}
-              />
-            ) : (
-              <NoContentPaper
-                dataCy={"no-received-schedules"}
-                title="No Received Vesting Schedules"
-                description="Vesting schedules that you have received will appear here."
-              />
-            )}
-          </Card>
-        </Stack>
-
-        <Stack gap={2} direction="column">
-          <Typography variant="h6">
-            {vestingSchedulesLoading ? (
-              <Skeleton width="200px" />
-            ) : (
-              "Sent Vesting Schedules"
-            )}
-          </Typography>
-          {vestingSchedulesLoading || mappedSentVestingSchedules.length > 0 ? (
-            <>
-              <AggregatedVestingSchedules
-                vestingSchedules={mappedSentVestingSchedules}
-                network={network}
-              />
-              <Card sx={{ p: 0 }}>
-                <VestingScheduleTable
-                  data-cy={"created-table"}
-                  isLoading={vestingSchedulesLoading}
-                  network={network}
-                  vestingSchedules={mappedSentVestingSchedules}
-                />
-              </Card>
-            </>
+    <Stack
+      gap={2}
+      direction={
+        receivedVestingSchedules.length === 0 &&
+        mappedSentVestingSchedules.length > 0
+          ? "column-reverse"
+          : "column"
+      }
+    >
+      <Stack gap={2} direction="column">
+        <Typography variant="h6">
+          {vestingSchedulesLoading ? (
+            <Skeleton width="200px" />
           ) : (
-            <Card sx={{ p: 0 }}>
-              <NoContentPaper
-                dataCy={"no-created-schedules"}
-                title="No Sent Vesting Schedules"
-                description="Vesting schedules that you have created will appear here."
-              />
-            </Card>
+            "Received Vesting Schedules"
           )}
-        </Stack>
+        </Typography>
+        <Card sx={{ p: 0, mb: 3 }}>
+          {vestingSchedulesLoading || receivedVestingSchedules.length > 0 ? (
+            <VestingScheduleTable
+              dataCy={"received-table"}
+              isLoading={vestingSchedulesLoading}
+              network={network}
+              vestingSchedules={receivedVestingSchedules}
+            />
+          ) : (
+            <NoContentPaper
+              dataCy={"no-received-schedules"}
+              title="No Received Vesting Schedules"
+              description="Vesting schedules that you have received will appear here."
+            />
+          )}
+        </Card>
       </Stack>
-      <Card sx={{ p: 0 }}>
-        <VestingSchedulerAllowances />
-      </Card>
+
+      <Stack gap={2} direction="column">
+        <Typography variant="h6">
+          {vestingSchedulesLoading ? (
+            <Skeleton width="200px" />
+          ) : (
+            "Sent Vesting Schedules"
+          )}
+        </Typography>
+        {vestingSchedulesLoading || mappedSentVestingSchedules.length > 0 ? (
+          <>
+            <AggregatedVestingSchedules
+              vestingSchedules={mappedSentVestingSchedules}
+              network={network}
+            />
+            <VestingScheduleTable
+              data-cy={"created-table"}
+              isLoading={vestingSchedulesLoading}
+              network={network}
+              vestingSchedules={mappedSentVestingSchedules}
+            />
+          </>
+        ) : (
+          <Paper>
+            <NoContentPaper
+              dataCy={"no-created-schedules"}
+              title="No Sent Vesting Schedules"
+              description="Vesting schedules that you have created will appear here."
+            />
+          </Paper>
+        )}
+
+        {vestingSchedulesLoading ? (
+          <Skeleton width="200px" />
+        ) : (
+          <Stack direction="row" gap={1}>
+            <Typography variant="h6">Allowances and Permissions</Typography>
+            {network.vestingContractAddress && (
+              <TooltipIcon
+                TooltipProps={{ sx: { maxWidth: "auto" } }}
+                title={
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    spacing={1}
+                    sx={{ mb: 1 }}
+                  >
+                    <Typography>
+                      Contract: {getAddress(network.vestingContractAddress)}
+                    </Typography>
+                    <CopyIconBtn
+                      copyText={getAddress(network.vestingContractAddress)}
+                      description="Copy address to clipboard"
+                    />
+                    <Tooltip
+                      title="View on blockchain explorer"
+                      arrow
+                      placement="top"
+                    >
+                      <Link
+                        passHref
+                        href={network.getLinkForAddress(
+                          network.vestingContractAddress
+                        )}
+                        target="_blank"
+                      >
+                        <IconButton href="" target="_blank">
+                          <LaunchRoundedIcon />
+                        </IconButton>
+                      </Link>
+                    </Tooltip>
+                  </Stack>
+                }
+              />
+            )}
+          </Stack>
+        )}
+        <VestingSchedulerAllowancesTable />
+      </Stack>
     </Stack>
   );
 };
