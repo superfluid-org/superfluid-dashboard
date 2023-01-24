@@ -38,10 +38,27 @@ import { CopyIconBtn } from "../common/CopyIconBtn";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
 import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
+import { platformApi } from "../redux/platformApi/platformApi";
 
 export const VestingSchedulerAllowances: FC = () => {
   const { network } = useExpectedNetwork();
   const { visibleAddress: senderAddress } = useVisibleAddress();
+
+  const { isPlatformWhitelisted } = platformApi.useIsAccountWhitelistedQuery(
+    senderAddress && network?.platformUrl
+      ? {
+          chainId: network.id,
+          baseUrl: network.platformUrl,
+          account: senderAddress?.toLowerCase(),
+        }
+      : skipToken,
+    {
+      selectFromResult: (queryResult) => ({
+        ...queryResult,
+        isPlatformWhitelisted: !!queryResult.data,
+      }),
+    }
+  );
 
   const { data: vestingSchedulerConstants } =
     rpcApi.useGetVestingSchedulerConstantsQuery({
@@ -166,6 +183,17 @@ export const VestingSchedulerAllowances: FC = () => {
               </Tooltip>
             </Stack>
           )}
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={1}
+            sx={{ mb: 1 }}
+          >
+            <Typography>Execution:</Typography>
+            <Typography>
+              { isPlatformWhitelisted ? "Superfluid" : "User"}
+            </Typography>
+          </Stack>
           <TableContainer component={Paper} elevation={0}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
@@ -276,15 +304,17 @@ export const VestingSchedulerAllowanceRow: FC<{
   const collapsibleTableCellProps: TableCellProps = {
     sx: {
       pt: 0,
-      pb: 0
+      pb: 0,
     },
   };
 
   return (
     <>
-      <TableRow sx={{
-        border: "none"
-      }}>
+      <TableRow
+        sx={{
+          border: "none",
+        }}
+      >
         <TableCell>
           <Stack direction="row" alignItems="center" gap={1.5}>
             <TokenIcon

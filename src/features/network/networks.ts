@@ -1,6 +1,5 @@
 import memoize from "lodash/memoize";
 import { chain, Chain } from "wagmi";
-import config from "../../utils/config";
 import ensureDefined from "../../utils/ensureDefined";
 import {
   NATIVE_ASSET_ADDRESS,
@@ -31,7 +30,7 @@ export type Network = Chain & {
   flowSchedulerContractAddress?: `0x${string}`;
   vestingContractAddress: `0x${string}` | undefined;
   vestingSubgraphUrl: `https://${string}` | undefined;
-  platformUrl?: string;
+  platformUrl: string | undefined;
 };
 
 export const superfluidRpcUrls = {
@@ -45,6 +44,13 @@ export const superfluidRpcUrls = {
   avalancheC: "https://rpc-endpoints.superfluid.dev/avalanche-c",
   bnbSmartChain: "https://rpc-endpoints.superfluid.dev/bsc-mainnet",
   ethereum: "https://rpc-endpoints.superfluid.dev/eth-mainnet",
+};
+
+export const superfluidPlatformUrls = {
+  goerli: "https://prod-goerli-platform-service.dev.superfluid.dev",
+  polygon: "https://prod-polygon-mainnet-platform-service.dev.superfluid.dev",
+  bnbSmartChain: "https://prod-bsc-mainnet-platform-service.dev.superfluid.dev",
+  ethereum: "https://prod-eth-mainnet-platform-service.dev.superfluid.dev",
 };
 
 export const vestingSubraphUrls: Record<string, `https://${string}`> = {
@@ -157,7 +163,7 @@ export const networkDefinition: {
     flowSchedulerContractAddress: "0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca",
     vestingContractAddress: vestingContractAddresses.goerli,
     vestingSubgraphUrl: vestingSubraphUrls.goerli,
-    platformUrl: config.platformApi.goerli,
+    platformUrl: superfluidPlatformUrls.goerli,
   },
   gnosis: {
     name: "Gnosis Chain",
@@ -199,6 +205,7 @@ export const networkDefinition: {
     },
     vestingContractAddress: vestingContractAddresses.gnosis,
     vestingSubgraphUrl: vestingSubraphUrls.gnosis,
+    platformUrl: undefined,
   },
   polygon: {
     ...chain.polygon,
@@ -232,6 +239,7 @@ export const networkDefinition: {
     },
     vestingContractAddress: vestingContractAddresses.polygon,
     vestingSubgraphUrl: vestingSubraphUrls.polygon,
+    platformUrl: superfluidPlatformUrls.polygon,
   },
   polygonMumbai: {
     ...chain.polygonMumbai,
@@ -264,6 +272,7 @@ export const networkDefinition: {
     },
     vestingContractAddress: undefined,
     vestingSubgraphUrl: undefined,
+    platformUrl: undefined,
   },
   avalancheFuji: {
     name: "Fuji (C-Chain)",
@@ -305,6 +314,7 @@ export const networkDefinition: {
     },
     vestingContractAddress: undefined,
     vestingSubgraphUrl: undefined,
+    platformUrl: undefined,
   },
   optimism: {
     ...chain.optimism,
@@ -338,6 +348,7 @@ export const networkDefinition: {
     },
     vestingContractAddress: vestingContractAddresses.optimism,
     vestingSubgraphUrl: vestingSubraphUrls.optimism,
+    platformUrl: undefined,
   },
   arbitrum: {
     ...chain.arbitrum,
@@ -371,6 +382,7 @@ export const networkDefinition: {
     },
     vestingContractAddress: vestingContractAddresses.arbitrum,
     vestingSubgraphUrl: vestingSubraphUrls.arbitrum,
+    platformUrl: undefined,
   },
   avalancheC: {
     name: "Avalanche C",
@@ -414,6 +426,7 @@ export const networkDefinition: {
     },
     vestingContractAddress: vestingContractAddresses.avalancheC,
     vestingSubgraphUrl: vestingSubraphUrls.avalancheC,
+    platformUrl: undefined,
   },
   bsc: {
     name: "BNB Smart Chain",
@@ -455,6 +468,7 @@ export const networkDefinition: {
     },
     vestingContractAddress: vestingContractAddresses.bsc,
     vestingSubgraphUrl: vestingSubraphUrls.bsc,
+    platformUrl: superfluidPlatformUrls.bnbSmartChain,
   },
   ethereum: {
     ...chain.mainnet,
@@ -488,6 +502,7 @@ export const networkDefinition: {
     },
     vestingContractAddress: vestingContractAddresses.ethereum,
     vestingSubgraphUrl: vestingSubraphUrls.ethereum,
+    platformUrl: superfluidPlatformUrls.ethereum,
   },
 };
 

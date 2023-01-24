@@ -3,11 +3,8 @@ import { Stream } from "@superfluid-finance/sdk-core";
 import { StreamQuery } from "@superfluid-finance/sdk-redux";
 import { findNetworkByChainId } from "../features/network/networks";
 import { PendingOutgoingStream } from "../features/pendingUpdates/PendingOutgoingStream";
-import { platformApi } from "../features/redux/platformApi/platformApi";
-import { Subscription } from "../features/redux/platformApi/platformApiTemplate";
 import { subgraphApi } from "../features/redux/store";
 import { StreamScheduling } from "../features/streamsTable/StreamScheduling";
-import { getAddress } from "../utils/memoizedEthersUtils";
 
 export const useScheduledStream = (
   arg: Omit<StreamQuery, "block"> | SkipToken
@@ -53,7 +50,7 @@ export const useScheduledStream = (
 
 export const mapStreamScheduling = <T extends Stream | PendingOutgoingStream>(
   stream: T,
-  streamScheduling?: Subscription
+  streamScheduling?: any // TODO(KK): Handle when bringing back stream scheduling
 ): T & StreamScheduling => {
   const isStreamActive = stream.currentFlowRate !== "0";
   const startDateScheduled = undefined;
@@ -81,7 +78,7 @@ export const isActiveStreamSchedulingOrder = (
     token: string;
     receiver: string;
   },
-  subscription: Subscription
+  subscription: any // TODO(KK): Handle when bringing back stream scheduling
 ) =>
   subscription.type === "SCHEDULED_FLOW_CREATE" &&
   subscription.is_subscribed &&

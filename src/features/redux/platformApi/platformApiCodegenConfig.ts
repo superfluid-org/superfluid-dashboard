@@ -6,7 +6,7 @@ const config: ConfigFile = {
   apiImport: 'platformApiTemplateEmpty',
   outputFile: './platformApiTemplate.ts',
   exportName: 'platformApiTemplate',
-  filterEndpoints: ["listSubscriptions"],
+  filterEndpoints: ["isAccountWhitelisted"],
   hooks: false
 }
 
