@@ -79,7 +79,7 @@ export function mapVestingActualDataPoints(
 
   const expectedEndDate = min([
     fromUnixTime(
-      Number(vestingSchedule.endExecutedAt || vestingSchedule.endDate)
+      vestingSchedule.endExecutedAt ?? vestingSchedule.endDate
     ),
     dateNow,
   ]);
@@ -96,7 +96,7 @@ export function mapVestingActualDataPoints(
   const initialTokenBalance = {
     balance: "0",
     totalNetFlowRate: "0",
-    timestamp: Number(vestingSchedule.startDate),
+    timestamp: vestingSchedule.startDate,
   } as TokenBalance;
 
   return mapTokenBalancesToDataPoints(
@@ -112,21 +112,14 @@ export function mapVestingExpectedDataPoints(
   frequency: UnitOfTime
 ) {
   const {
-    startDate: startDateUnix,
-    endDate: endDateUnix,
-    cliffDate: cliffDateUnix,
+    startDate,
+    endDate,
+    cliffDate,
+    cliffAndFlowDate,
     flowRate,
     cliffAmount,
   } = vestingSchedule;
-
-  const startDate = fromUnixTime(Number(startDateUnix));
-  const endDate = fromUnixTime(Number(endDateUnix));
-
-  const cliffAndFlowDateUnix = Number(
-    cliffDateUnix !== "0" ? cliffDateUnix : startDateUnix
-  );
-
-  const dates = getDatesBetween(startDate, endDate, frequency);
+  const dates = getDatesBetween(fromUnixTime(startDate), fromUnixTime(endDate), frequency);
 
   // If there is no cliff then we are not going to add a separate data point for that.
   let cliffAdded = cliffAmount === "0";
@@ -134,7 +127,7 @@ export function mapVestingExpectedDataPoints(
   return dates.reduce((mappedData: DataPoint[], date: Date) => {
     const dateUnix = getUnixTime(date);
 
-    const secondsStreamed = dateUnix - cliffAndFlowDateUnix;
+    const secondsStreamed = dateUnix - cliffAndFlowDate;
 
     if (secondsStreamed > 0) {
       const amountStreamed = BigNumber.from(secondsStreamed).mul(flowRate);
@@ -147,14 +140,14 @@ export function mapVestingExpectedDataPoints(
         ether: etherAmount,
       };
 
-      if (!cliffAdded) {
+      if (!cliffAdded && cliffDate) {
         cliffAdded = true;
         const cliffAmountEther = formatEther(cliffAmount);
 
         return [
           ...mappedData,
           {
-            x: fromUnixTime(Number(cliffDateUnix)).getTime(),
+            x: fromUnixTime(cliffDate).getTime(),
             y: Number(cliffAmountEther),
             ether: cliffAmountEther,
           },
@@ -180,7 +173,7 @@ export function calculateVestingScheduleAllocated(
   vestingSchedule: VestingSchedule
 ): BigNumber {
   const { cliffAmount, cliffAndFlowDate, flowRate, endDate } = vestingSchedule;
-  const secondsVesting = Number(endDate) - Number(cliffAndFlowDate);
+  const secondsVesting = endDate - cliffAndFlowDate;
   return BigNumber.from(secondsVesting).mul(flowRate).add(cliffAmount);
 }
 
@@ -210,7 +203,7 @@ export function vestingScheduleToTokenBalance(
 
   if (endExecutedAt) {
     const secondsStreamed =
-      Number(Math.max(Number(endExecutedAt))) - Number(cliffAndFlowDate);
+      Number(Math.max(endExecutedAt)) - cliffAndFlowDate;
     const balance = BigNumber.from(secondsStreamed)
       .mul(flowRate)
       .add(cliffAmount)
@@ -220,13 +213,13 @@ export function vestingScheduleToTokenBalance(
     return {
       balance,
       totalNetFlowRate: "0",
-      timestamp: Number(endExecutedAt),
+      timestamp: endExecutedAt,
     };
   } else if (cliffAndFlowExecutedAt) {
     return {
       balance: cliffAmount,
       totalNetFlowRate: flowRate,
-      timestamp: Number(cliffAndFlowDate),
+      timestamp: cliffAndFlowDate,
     };
   }
 
@@ -243,7 +236,7 @@ export function aggregateTokenBalances(
   const latestBalance = maxBy((x) => x.timestamp, tokenBalances);
 
   const maxTimestamp = latestBalance
-    ? Number(latestBalance.timestamp)
+    ? latestBalance.timestamp
     : getUnixTime(new Date());
 
   return tokenBalances.reduce(

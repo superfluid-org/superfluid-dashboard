@@ -47,11 +47,11 @@ const VestingGraph: FC<VestingGraphProps> = ({
 
     const currentDate = new Date();
 
-    const endExecutedAt = fromUnixTime(Number(endExecutedAtUnix));
-    const endDate = fromUnixTime(Number(endDateUnix));
+    const endExecutedAt = fromUnixTime(endExecutedAtUnix ?? 0);
+    const endDate = fromUnixTime(endDateUnix);
     const maxDate = max([endDate, endExecutedAt]);
 
-    const minDate = fromUnixTime(Number(startDateUnix));
+    const minDate = fromUnixTime(startDateUnix);
 
     const startDateWithMinimum = max([
       minDate,

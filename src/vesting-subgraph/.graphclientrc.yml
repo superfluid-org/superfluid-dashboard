@@ -12,3 +12,4 @@ codegen:
     BigInt: string
     Bytes: string
     BigDecimal: string
+  maybeValue: T | undefined

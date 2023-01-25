@@ -1,13 +1,14 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import {
   findNetworkByChainId,
-  networkDefinition,
 } from "../features/network/networks";
 import {
+  mapSubgraphVestingSchedule,
+  VestingSchedule,
+} from "../features/vesting/types";
+import {
   getBuiltGraphSDK,
-  GetVestingScheduleQuery,
   GetVestingScheduleQueryVariables,
-  GetVestingSchedulesQuery,
   GetVestingSchedulesQueryVariables,
   PollQuery,
   PollQueryVariables,
@@ -30,15 +31,20 @@ export const vestingSubgraphApi = createApi({
   refetchOnReconnect: true,
   endpoints: (build) => ({
     getVestingSchedule: build.query<
-      GetVestingScheduleQuery,
+      { vestingSchedule: VestingSchedule | null },
       { chainId: number } & GetVestingScheduleQueryVariables
     >({
       queryFn: async ({ chainId, ...variables }) => {
         const sdk = tryGetBuiltGraphSdkForNetwork(chainId);
+        const subgraphVestingSchedule = sdk
+          ? (await sdk.getVestingSchedule(variables)).vestingSchedule
+          : null;
         return {
-          data: sdk
-            ? await sdk.getVestingSchedule(variables)
-            : { vestingSchedule: null },
+          data: {
+            vestingSchedule: subgraphVestingSchedule
+              ? mapSubgraphVestingSchedule(subgraphVestingSchedule)
+              : null,
+          },
         };
       },
       providesTags: (_result, _error, arg) => [
@@ -49,15 +55,20 @@ export const vestingSubgraphApi = createApi({
       ],
     }),
     getVestingSchedules: build.query<
-      GetVestingSchedulesQuery,
+      { vestingSchedules: VestingSchedule[] },
       { chainId: number } & GetVestingSchedulesQueryVariables
     >({
       queryFn: async ({ chainId, ...variables }) => {
         const sdk = tryGetBuiltGraphSdkForNetwork(chainId);
+        const subgraphVestingSchedules = sdk
+          ? (await sdk.getVestingSchedules(variables)).vestingSchedules
+          : [];
         return {
-          data: sdk
-            ? await sdk.getVestingSchedules(variables)
-            : { vestingSchedules: [] },
+          data: {
+            vestingSchedules: subgraphVestingSchedules.map(
+              mapSubgraphVestingSchedule
+            ),
+          },
         };
       },
       providesTags: (_result, _error, arg) => [

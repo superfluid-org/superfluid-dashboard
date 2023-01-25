@@ -133,10 +133,11 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
               vestingSchedule.receiver,
             ],
             timestamp_gte:
-              vestingSchedule.cliffAndFlowExecutedAt ||
-              vestingSchedule.startDate, // TODO(KK): Probably safe to always look from "start date"?
+              vestingSchedule.cliffAndFlowExecutedAt?.toString() ??
+              vestingSchedule.startDate.toString(), // TODO(KK): Probably safe to always look from "start date"?
             timestamp_lte:
-              vestingSchedule.endExecutedAt || vestingSchedule.endDate, // TODO(KK): Use now over "end date"?
+              vestingSchedule.endExecutedAt?.toString() ??
+              vestingSchedule.endDate.toString(), // TODO(KK): Use now over "end date"?
           },
         }
       : skipToken,
@@ -243,9 +244,9 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
                     <FlowingFiatBalance
                       balance={vestingSchedule.cliffAmount}
                       flowRate={vestingSchedule.flowRate}
-                      balanceTimestamp={Number(
+                      balanceTimestamp={
                         vestingSchedule.cliffAndFlowDate
-                      )}
+                      }
                       price={tokenPrice}
                     />
                   </Typography>

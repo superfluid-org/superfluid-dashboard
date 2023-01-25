@@ -80,22 +80,22 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
   const dateNow = useTimer(UnitOfTime.Minute);
 
   const createdAt = useMemo(
-    () => fromUnixTime(Number(unixCreatedAt)),
+    () => fromUnixTime(unixCreatedAt),
     [unixCreatedAt]
   );
 
   const startDate = useMemo(
-    () => fromUnixTime(Number(unixStartDate)),
+    () => fromUnixTime(unixStartDate),
     [unixStartDate]
   );
 
   const cliffDate = useMemo(
-    () => (unixCliffDate ? fromUnixTime(Number(unixCliffDate)) : null),
+    () => (unixCliffDate ? fromUnixTime(unixCliffDate) : null),
     [unixCliffDate]
   );
 
   const endDate = useMemo(
-    () => fromUnixTime(Number(unixEndDate)),
+    () => fromUnixTime(unixEndDate),
     [unixEndDate]
   );
 

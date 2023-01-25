@@ -1,20 +1,7 @@
 import { Typography } from "@mui/material";
 import { getUnixTime } from "date-fns";
 import { FC, useMemo } from "react";
-import { VestingSchedule } from "./types";
-
-enum VestingStatusType {
-  ScheduledStart = "Scheduled",
-  CliffPeriod = "Cliff",
-  CliffAndFlowExecuted = "Vesting",
-  CliffAndFlowExpired = "Send Stream Error",
-  EndExecuted = "Vested",
-  EndFailed = "Stream Cancel Error",
-  EndOverflowed = "Stream Overflow Error",
-  EndCompensationFailed = "Transfer Error",
-  DeletedBeforeStart = "Deleted",
-  DeletedAfterStart = "Deleted",
-}
+import { VestingSchedule, VestingStatusType } from "./types";
 
 interface VestingStatusProps {
   vestingSchedule: VestingSchedule;
@@ -23,22 +10,16 @@ interface VestingStatusProps {
 const VestingStatus: FC<VestingStatusProps> = ({ vestingSchedule }) => {
   const status = useMemo(() => {
     const {
+      deletedAt,
       failedAt,
+      startDate,
       endDate,
+      cliffDate,
       cliffAndFlowExecutedAt,
+      cliffAndFlowExpirationAt,
       endExecutedAt,
       didEarlyEndCompensationFail,
     } = vestingSchedule;
-    const deletedAt = vestingSchedule.deletedAt
-      ? Number(vestingSchedule.deletedAt)
-      : undefined;
-    const startDate = Number(vestingSchedule.startDate);
-    const cliffAndFlowExpirationAt = Number(
-      vestingSchedule.cliffAndFlowExpirationAt
-    );
-    const cliffDate = vestingSchedule.cliffDate
-      ? Number(vestingSchedule.cliffDate)
-      : undefined;
     const nowUnix = getUnixTime(new Date());
 
     if (deletedAt) {

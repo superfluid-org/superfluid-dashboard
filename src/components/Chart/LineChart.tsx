@@ -90,7 +90,6 @@ const LineChart: FC<LineChartProps> = ({
       mutateSet(currentChart.data.datasets, [index, "data"], dataset);
     });
 
-    console.log();
     // const allData = flatten(datasets);
     // const minXAxisValue = minBy(allData, (dataPoint) => dataPoint.x)?.x || 0;
     // const maxXAxisValue = maxBy(allData, (dataPoint) => dataPoint.x)?.x || 0;

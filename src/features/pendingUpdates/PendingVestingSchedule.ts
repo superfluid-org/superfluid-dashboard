@@ -4,7 +4,7 @@ import { pendingUpdateSelectors } from "./pendingUpdate.slice";
 import { useAppSelector } from "../redux/store";
 import { CreateVestingSchedule } from "../redux/endpoints/vestingSchedulerEndpoints";
 import { Address } from "@superfluid-finance/sdk-core";
-import { VestingSchedule } from "../vesting/types";
+import { VestingSchedule, VestingStatusType } from "../vesting/types";
 
 export interface PendingVestingSchedule
   extends PendingUpdate,
@@ -71,16 +71,17 @@ export const mapPendingToVestingSchedule = (
     sender: address,
     receiver: receiverAddress,
     flowRate: flowRateWei,
-    createdAt: pendingVestingSchedule.timestamp.toString(),
-    startDate: startDateTimestamp.toString(),
-    cliffDate: cliffDateTimestamp.toString(),
+    createdAt: pendingVestingSchedule.timestamp,
+    startDate: startDateTimestamp,
+    cliffDate: cliffDateTimestamp,
     cliffAmount: cliffTransferAmountWei,
-    endDateValidAt: endDateTimestamp.toString(),
-    endDate: endDateTimestamp.toString(),
-    cliffAndFlowDate: cliffAndFlowDate.toString(),
-    cliffAndFlowExpirationAt: cliffAndFlowDate.toString(),
+    endDateValidAt: endDateTimestamp,
+    endDate: endDateTimestamp,
+    cliffAndFlowDate: cliffAndFlowDate,
+    cliffAndFlowExpirationAt: cliffAndFlowDate,
     didEarlyEndCompensationFail: false,
     earlyEndCompensation: "0",
-    failedAt: null,
+    failedAt: undefined,
+    status: VestingStatusType.ScheduledStart
   };
 };

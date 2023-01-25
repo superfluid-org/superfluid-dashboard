@@ -61,7 +61,7 @@ const VestingRow: FC<VestingRowProps> = ({
   const tokenQuery = useVestingToken(network, superToken);
 
   const totalAmount = useMemo(() => {
-    return BigNumber.from(Number(endDate) - Number(cliffAndFlowDate))
+    return BigNumber.from(endDate - cliffAndFlowDate)
       .mul(BigNumber.from(flowRate))
       .add(BigNumber.from(cliffAmount))
       .toString();
@@ -118,8 +118,8 @@ const VestingRow: FC<VestingRowProps> = ({
       <TableCell sx={{ pr: 2 }}>
         <ListItemText
           data-cy={"start-end-dates"}
-          primary={format(fromUnixTime(Number(startDate)), "LLL d, yyyy HH:mm")}
-          secondary={format(fromUnixTime(Number(endDate)), "LLL d, yyyy HH:mm")}
+          primary={format(fromUnixTime(startDate), "LLL d, yyyy HH:mm")}
+          secondary={format(fromUnixTime(endDate), "LLL d, yyyy HH:mm")}
           primaryTypographyProps={{ variant: "body2" }}
           secondaryTypographyProps={{ color: "text.primary" }}
         />

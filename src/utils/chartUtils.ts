@@ -67,12 +67,12 @@ export const buildDefaultDatasetConf = (
 });
 
 export function estimateFrequencyByTimestamp(
-  startUnix: string,
-  endUnix: string
+  startUnix: number,
+  endUnix: number
 ): UnitOfTime {
   return estimateFrequency(
-    fromUnixTime(Number(startUnix)),
-    fromUnixTime(Number(endUnix))
+    fromUnixTime(startUnix),
+    fromUnixTime(endUnix)
   );
 }
 
