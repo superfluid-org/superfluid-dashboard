@@ -2,7 +2,7 @@ import { getUnixTime } from "date-fns";
 import { GetVestingScheduleQuery } from "../../vesting-subgraph/.graphclient";
 
 interface VestingStatus {
-  name: string;
+  title: string;
   isFinished: boolean;
   isCliff: boolean;
   isStreaming: boolean;
@@ -12,7 +12,7 @@ interface VestingStatus {
 
 export const vestingStatuses: Record<string, VestingStatus> = {
   ScheduledStart: {
-    name: "Scheduled",
+    title: "Scheduled",
     isFinished: false,
     isCliff: false,
     isStreaming: false,
@@ -20,7 +20,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     isDeleted: false,
   },
   CliffPeriod: {
-    name: "Cliff",
+    title: "Cliff",
     isFinished: false,
     isCliff: true,
     isStreaming: false,
@@ -28,7 +28,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     isDeleted: false,
   },
   CliffAndFlowExecuted: {
-    name: "Vesting",
+    title: "Vesting",
     isFinished: false,
     isCliff: false,
     isStreaming: true,
@@ -36,7 +36,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     isDeleted: true,
   },
   CliffAndFlowExpired: {
-    name: "Send Stream Error",
+    title: "Send Stream Error",
     isFinished: false,
     isCliff: false,
     isStreaming: true,
@@ -44,7 +44,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     isDeleted: false,
   },
   EndExecuted: {
-    name: "Vested",
+    title: "Vested",
     isFinished: true,
     isCliff: false,
     isStreaming: false,
@@ -52,7 +52,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     isDeleted: false,
   },
   EndFailed: {
-    name: "Stream Cancel Error",
+    title: "Stream Cancel Error",
     isFinished: true,
     isCliff: false,
     isStreaming: false,
@@ -60,7 +60,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     isDeleted: false,
   },
   EndOverflowed: {
-    name: "Stream Overflow Error",
+    title: "Stream Overflow Error",
     isFinished: true,
     isCliff: false,
     isStreaming: false,
@@ -68,7 +68,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     isDeleted: false,
   },
   EndCompensationFailed: {
-    name: "Transfer Error",
+    title: "Transfer Error",
     isFinished: true,
     isCliff: false,
     isStreaming: false,
@@ -76,7 +76,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     isDeleted: false,
   },
   DeletedBeforeStart: {
-    name: "Deleted",
+    title: "Deleted",
     isFinished: true,
     isCliff: false,
     isStreaming: false,
@@ -84,7 +84,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     isDeleted: true,
   },
   DeletedAfterStart: {
-    name: "Deleted",
+    title: "Deleted",
     isFinished: true,
     isCliff: false,
     isStreaming: false,

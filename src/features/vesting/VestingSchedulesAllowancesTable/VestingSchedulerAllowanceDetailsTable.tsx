@@ -58,7 +58,7 @@ const VestingSchedulerAllowanceDetailsTable: FC<
           <ListItemText primary="Current" secondary={permissionsString} />
           <ListItemText
             primary="Recommended"
-            secondary={requiredPermissionsString}
+            secondary={requiredPermissionsString ?? " "}
           />
         </TableCell>
         <TableCell width="350px">

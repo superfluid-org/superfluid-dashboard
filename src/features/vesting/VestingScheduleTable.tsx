@@ -13,7 +13,6 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { getUnixTime } from "date-fns";
 import { useRouter } from "next/router";
 import { FC, useMemo, useState } from "react";
 import NetworkHeadingRow from "../../components/Table/NetworkHeadingRow";
