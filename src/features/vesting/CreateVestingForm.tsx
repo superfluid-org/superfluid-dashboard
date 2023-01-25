@@ -71,32 +71,37 @@ export const CreateVestingForm: FC<{
     startDate,
     cliffAmountEther,
     cliffEnabled,
+    vestingPeriod,
   ] = watch([
     "data.receiverAddress",
     "data.totalAmountEther",
     "data.startDate",
     "data.cliffAmountEther",
     "data.cliffEnabled",
+    "data.vestingPeriod",
   ]);
 
-  const onCliffEnabledChanged = (_event: any, checked: boolean) => {
-    setValue("data.cliffEnabled", checked);
+  const onCliffEnabledChanged = useCallback(
+    (_event: any, checked: boolean) => {
+      setValue("data.cliffEnabled", checked);
 
-    if (!cliffEnabled) {
-      setValue("data.cliffAmountEther", "");
-      setValue("data.cliffPeriod", {
-        numerator: "",
-        denominator: UnitOfTime.Year,
-      });
-      trigger([
-        "data.cliffAmountEther",
-        "data.cliffPeriod",
-        "data.cliffEnabled",
-      ]);
-    } else {
-      trigger("data.cliffEnabled");
-    }
-  };
+      if (!cliffEnabled) {
+        setValue("data.cliffAmountEther", "");
+        setValue("data.cliffPeriod", {
+          numerator: "",
+          denominator: vestingPeriod.denominator,
+        });
+        trigger([
+          "data.cliffAmountEther",
+          "data.cliffPeriod",
+          "data.cliffEnabled",
+        ]);
+      } else {
+        trigger("data.cliffEnabled");
+      }
+    },
+    [cliffEnabled, vestingPeriod.denominator, setValue, trigger]
+  );
 
   const ReceiverController = (
     <Controller
@@ -272,6 +277,7 @@ export const CreateVestingForm: FC<{
                 borderBottomRightRadius: 0,
               },
             }}
+            type="number"
             inputMode="numeric"
           />
           <Select
@@ -310,55 +316,59 @@ export const CreateVestingForm: FC<{
     <Controller
       control={control}
       name="data.vestingPeriod"
-      render={({ field: { onChange, onBlur, value } }) => (
-        <Box sx={{ display: "grid", gridTemplateColumns: "2fr 1fr" }}>
-          <TextField
-            data-cy={"total-period-input"}
-            value={value.numerator}
-            onChange={(e) =>
-              onChange({
-                numerator: e.target.value,
-                denominator: value.denominator,
-              })
-            }
-            onBlur={onBlur}
-            InputProps={{
-              sx: {
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-              },
-            }}
-            inputMode="numeric"
-          />
-          <Select
-            data-cy={"total-period-unit"}
-            value={value.denominator}
-            onChange={(e) =>
-              onChange({
-                numerator: value.numerator,
-                denominator: e.target.value,
-              })
-            }
-            onBlur={onBlur}
-            sx={{
-              borderTopLeftRadius: 0,
-              borderBottomLeftRadius: 0,
-            }}
-          >
-            {unitOfTimeList
-              .filter(
-                (x) =>
-                  x >= (network.testnet ? UnitOfTime.Minute : UnitOfTime.Day) &&
-                  x <= UnitOfTime.Year
-              )
-              .map((unitOfTime) => (
-                <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
-                  {timeUnitWordMap[unitOfTime]}(s)
-                </MenuItem>
-              ))}
-          </Select>
-        </Box>
-      )}
+      render={({ field: { onChange, onBlur, value } }) => {
+        return (
+          <Box sx={{ display: "grid", gridTemplateColumns: "2fr 1fr" }}>
+            <TextField
+              data-cy={"total-period-input"}
+              value={value.numerator}
+              onChange={(e) => {
+                onChange({
+                  numerator: e.target.value,
+                  denominator: value.denominator,
+                });
+              }}
+              onBlur={onBlur}
+              InputProps={{
+                sx: {
+                  borderTopRightRadius: 0,
+                  borderBottomRightRadius: 0,
+                },
+              }}
+              type="number"
+              inputMode="numeric"
+            />
+            <Select
+              data-cy={"total-period-unit"}
+              value={value.denominator}
+              onChange={(e) =>
+                onChange({
+                  numerator: value.numerator,
+                  denominator: e.target.value,
+                })
+              }
+              onBlur={onBlur}
+              sx={{
+                borderTopLeftRadius: 0,
+                borderBottomLeftRadius: 0,
+              }}
+            >
+              {unitOfTimeList
+                .filter(
+                  (x) =>
+                    x >=
+                      (network.testnet ? UnitOfTime.Minute : UnitOfTime.Day) &&
+                    x <= UnitOfTime.Year
+                )
+                .map((unitOfTime) => (
+                  <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
+                    {timeUnitWordMap[unitOfTime]}(s)
+                  </MenuItem>
+                ))}
+            </Select>
+          </Box>
+        );
+      }}
     />
   );
 
