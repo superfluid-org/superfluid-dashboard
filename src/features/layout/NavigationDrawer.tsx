@@ -24,6 +24,7 @@ import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { FC, memo, useCallback } from "react";
 import Link from "../common/Link";
+import { useFeatureFlags } from "../featureFlags/FeatureFlagContext";
 import AppSettingsBtn from "../settings/AppSettingsBtn";
 import ConnectWallet from "../wallet/ConnectWallet";
 import { useLayoutContext } from "./LayoutContext";
@@ -68,6 +69,7 @@ export default memo(function NavigationDrawer() {
   const isBelowLg = useMediaQuery(theme.breakpoints.down("lg"));
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { navigationDrawerOpen, setNavigationDrawerOpen } = useLayoutContext();
+  const { isVestingEnabled } = useFeatureFlags();
 
   const closeNavigationDrawer = useCallback(() => {
     if (isBelowLg) setNavigationDrawerOpen(false);
@@ -207,18 +209,20 @@ export default memo(function NavigationDrawer() {
           icon={AppsRoundedIcon}
         />
 
-        <NavigationItem
-          id="nav-vesting"
-          title="Vesting"
-          href="/vesting"
-          onClick={closeNavigationDrawer}
-          active={isActiveRoute(
-            "/vesting",
-            "/vesting/create",
-            "/vesting/[_network]/[_id]"
-          )}
-          icon={LockClockRoundedIcon}
-        />
+        {isVestingEnabled && (
+          <NavigationItem
+            id="nav-vesting"
+            title="Vesting"
+            href="/vesting"
+            onClick={closeNavigationDrawer}
+            active={isActiveRoute(
+              "/vesting",
+              "/vesting/create",
+              "/vesting/[_network]/[_id]"
+            )}
+            icon={LockClockRoundedIcon}
+          />
+        )}
       </Stack>
 
       <Stack justifyContent="flex-end" sx={{ flex: 1 }}>

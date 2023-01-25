@@ -1,15 +1,17 @@
 import { Box, Container, Paper, Typography, useTheme } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { NextPage } from "next";
-import { useMemo } from "react";
+import { ReactElement, useMemo } from "react";
 import ConnectOrImpersonate from "../components/ConnectOrImpersonate/ConnectOrImpersonate";
+import withStaticSEO from "../components/SEO/withStaticSEO";
 import { useFeatureFlags } from "../features/featureFlags/FeatureFlagContext";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import { networkDefinition, networks } from "../features/network/networks";
 import NetworkSwitchLink from "../features/network/NetworkSwitchLink";
 import VestingHeader from "../features/vesting/VestingHeader";
+import VestingLayout from "../features/vesting/VestingLayout";
 import VestingScheduleTables from "../features/vesting/VestingScheduleTables";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
+import { NextPageWithLayout } from "./_app";
 
 const VestingNotSupportedCard = () => {
   const theme = useTheme();
@@ -48,9 +50,10 @@ const VESTING_SUPPORTED_NETWORKS = networks
   .filter((network) => network.platformUrl) // The vesting contract might be deployed to more networks but we check for the existence of the Platform.
   .map((network) => network.id);
 
-const VestingPage: NextPage = () => {
+const VestingPage: NextPageWithLayout = () => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
   const { visibleAddress } = useVisibleAddress();
   const { network } = useExpectedNetwork();
 
@@ -90,7 +93,7 @@ const VestingPage: NextPage = () => {
           }}
         >
           <Typography variant={isBelowMd ? "h5" : "h4"} textAlign="center">
-            No Vesting Schedule Available
+            No Vesting Schedules Available
           </Typography>
           <Typography color="text.secondary" textAlign="center">
             Received and Sent Vesting Schedules will appear here.
@@ -105,4 +108,8 @@ const VestingPage: NextPage = () => {
   );
 };
 
-export default VestingPage;
+VestingPage.getLayout = function getLayout(page: ReactElement) {
+  return <VestingLayout>{page}</VestingLayout>;
+};
+
+export default withStaticSEO({ title: "Vesting | Superfluid" }, VestingPage);

@@ -116,6 +116,15 @@ enum TokenDetailsTabs {
   Transfers = "transfers",
 }
 
+const GraphTimeUnitFilters = [
+  TimeUnitFilterType.Week,
+  TimeUnitFilterType.Month,
+  TimeUnitFilterType.Quarter,
+  TimeUnitFilterType.Year,
+  TimeUnitFilterType.YTD,
+  TimeUnitFilterType.All,
+];
+
 const TokenPageContent: FC<{
   network: Network;
   tokenAddress: string;
@@ -282,6 +291,7 @@ const TokenPageContent: FC<{
                 <TimeUnitFilter
                   activeFilter={graphFilter}
                   onChange={onGraphFilterChange}
+                  options={GraphTimeUnitFilters}
                 />
               )}
 
@@ -344,6 +354,7 @@ const TokenPageContent: FC<{
               <TimeUnitFilter
                 activeFilter={graphFilter}
                 onChange={onGraphFilterChange}
+                options={GraphTimeUnitFilters}
               />
             ) : (
               <Box />

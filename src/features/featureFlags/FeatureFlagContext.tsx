@@ -11,9 +11,8 @@ import {
 import {
   enableMainnetFeature,
   enableVestingFeature,
-  Flag,
 } from "../flags/flags.slice";
-import { useHasFlag } from "../flags/flagsHooks";
+import { useMainnetEnabled, useVestingEnabled } from "../flags/flagsHooks";
 import { useAppDispatch } from "../redux/store";
 
 const FeatureFlagContext = createContext<FeatureFlagContextValue>(null!);
@@ -29,18 +28,14 @@ export const MAINNET_FEATURE_CODES = [
   "916G_TOKENOPS",
 ];
 
+// TODO: (M) IMO we do not need a separate provider for this, just a features selector hook for flags feature.
+// We could just create a HOC component to manage "code" query params.
 export const FeatureFlagProvider: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const isVestingEnabled = useHasFlag({
-    id: Flag.VestingFeature,
-    type: Flag.VestingFeature,
-  });
-
-  const isMainnetEnabled = useHasFlag({
-    type: Flag.MainnetFeature,
-  });
+  const isVestingEnabled = useVestingEnabled();
+  const isMainnetEnabled = useMainnetEnabled();
 
   useEffect(() => {
     if (router.isReady) {
