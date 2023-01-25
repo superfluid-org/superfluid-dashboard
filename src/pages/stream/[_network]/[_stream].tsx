@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Address } from "@superfluid-finance/sdk-core";
-import { format } from "date-fns";
+import { format, fromUnixTime } from "date-fns";
 import { BigNumber } from "ethers";
 import { isString } from "lodash";
 import { NextPage } from "next";
@@ -733,25 +733,54 @@ const StreamPageContent: FC<{
                 },
               }}
             >
-              <OverviewItem
-                dataCy={"start-date"}
-                label="Start Date:"
-                value={format(startDate.getTime(), "d MMM. yyyy H:mm")}
-              />
-
-              <OverviewItem
-                dataCy={"buffer"}
-                label="Buffer:"
-                value={
-                  bufferSize ? (
-                    <>
-                      <Amount wei={bufferSize} /> {tokenSymbol}
-                    </>
-                  ) : (
-                    "-"
-                  )
-                }
-              />
+              {vestingSchedule ? (
+                <OverviewItem
+                  label="Cliff Date"
+                  value={
+                    vestingSchedule.cliffDate
+                      ? format(
+                          fromUnixTime(Number(vestingSchedule.cliffDate)),
+                          "LLL d, yyyy HH:mm"
+                        )
+                      : "-"
+                  }
+                />
+              ) : (
+                <OverviewItem
+                  dataCy={"start-date"}
+                  label="Start Date:"
+                  value={format(startDate.getTime(), "d MMM. yyyy H:mm")}
+                />
+              )}
+              {vestingSchedule ? (
+                <OverviewItem
+                  label="Cliff Amount"
+                  value={
+                    vestingSchedule.cliffDate ? (
+                      <>
+                        <Amount wei={vestingSchedule.cliffAmount} />{" "}
+                        {tokenSymbol}
+                      </>
+                    ) : (
+                      "-"
+                    )
+                  }
+                />
+              ) : (
+                <OverviewItem
+                  dataCy={"buffer"}
+                  label="Buffer:"
+                  value={
+                    bufferSize ? (
+                      <>
+                        <Amount wei={bufferSize} /> {tokenSymbol}
+                      </>
+                    ) : (
+                      "-"
+                    )
+                  }
+                />
+              )}
               {!endDate && updatedAtTimestamp > createdAtTimestamp && (
                 <OverviewItem
                   label={`Updated Date:`}
@@ -759,7 +788,15 @@ const StreamPageContent: FC<{
                 />
               )}
 
-              {endDateScheduled ? (
+              {vestingSchedule ? (
+                <OverviewItem
+                  label="Vesting Start Date:"
+                  value={format(
+                    fromUnixTime(Number(vestingSchedule.startDate)),
+                    "LLL d, yyyy HH:mm"
+                  )}
+                />
+              ) : endDateScheduled ? (
                 <OverviewItem
                   label={`End Date:`}
                   value={
@@ -791,15 +828,25 @@ const StreamPageContent: FC<{
                   </Stack>
                 }
               />
-              <OverviewItem
-                dataCy={"projected-liquidation"}
-                label="Projected Liquidation:"
-                value={
-                  isActive && liquidationDate
-                    ? format(liquidationDate, "d MMM. yyyy H:mm")
-                    : "-"
-                }
-              />
+              {vestingSchedule ? (
+                <OverviewItem
+                  label="Vesting End Date:"
+                  value={format(
+                    fromUnixTime(Number(vestingSchedule.endDate)),
+                    "LLL d, yyyy HH:mm"
+                  )}
+                />
+              ) : (
+                <OverviewItem
+                  dataCy={"projected-liquidation"}
+                  label="Projected Liquidation:"
+                  value={
+                    isActive && liquidationDate
+                      ? format(liquidationDate, "d MMM. yyyy H:mm")
+                      : "-"
+                  }
+                />
+              )}
               <OverviewItem
                 dataCy={"tx-hash"}
                 label="Transaction Hash:"
