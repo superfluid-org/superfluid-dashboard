@@ -43,13 +43,13 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
     spacing={1}
   >
     <Typography variant="body1" color="secondary">
-      Transaction executed by: {whitelisted ? "Superfluid" : "User"}
+      {whitelisted ? "Vesting schedules are automated by Superfluid Finance." : "Vesting schedule automation is user responsibility."}
     </Typography>
 
     {network.vestingContractAddress && (
       <Stack direction="row" alignItems="center" gap={0.5}>
         <Typography variant="body1" color="secondary">
-          Contract address
+          Vesting Smart Contract
         </Typography>
         <Stack direction="row" alignItems="center">
           <CopyIconBtn
