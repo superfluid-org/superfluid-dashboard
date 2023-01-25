@@ -70,12 +70,14 @@ enum VestingStatusFilter {
   Cliff,
   Vesting,
   Vested,
+  Deleted,
 }
 const StatusFilterOptions = [
   { title: "All", value: VestingStatusFilter.All },
   { title: "Cliff", value: VestingStatusFilter.Cliff },
   { title: "Vesting", value: VestingStatusFilter.Vesting },
   { title: "Vested", value: VestingStatusFilter.Vested },
+  { title: "Deleted", value: VestingStatusFilter.Deleted },
 ];
 
 interface PendingCreateVestingSchedule extends VestingSchedule {
@@ -125,28 +127,29 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
   };
 
   const filteredVestingSchedules = useMemo(() => {
-    const dateNowUnix = getUnixTime(new Date());
-
-    // TODO: (MÕ) - Move this logic to a separate func getVestingScheduleStatus to reuse it
     switch (statusFilter) {
       case VestingStatusFilter.Cliff:
         return vestingSchedules.filter(
-          (vestingSchedule) =>
-            vestingSchedule.cliffDate &&
-            Number(vestingSchedule.cliffDate) > dateNowUnix
+          (vestingSchedule) => vestingSchedule.status.isCliff
         );
       case VestingStatusFilter.Vesting:
         return vestingSchedules.filter(
-          (vestingSchedule) =>
-            Number(vestingSchedule.cliffDate || vestingSchedule.startDate) <=
-              dateNowUnix && Number(vestingSchedule.endDate) > dateNowUnix
+          (vestingSchedule) => vestingSchedule.status.isStreaming
         );
       case VestingStatusFilter.Vested:
         return vestingSchedules.filter(
-          (vestingSchedule) => Number(vestingSchedule.endDate) <= dateNowUnix
+          (vestingSchedule) =>
+            vestingSchedule.status.isFinished &&
+            !vestingSchedule.status.isDeleted
+        );
+      case VestingStatusFilter.Deleted:
+        return vestingSchedules.filter(
+          (vestingSchedule) => vestingSchedule.status.isDeleted
         );
       default:
-        return vestingSchedules;
+        return vestingSchedules.filter(
+          (vestingSchedule) => !vestingSchedule.status.isDeleted
+        );
     }
   }, [statusFilter, vestingSchedules]);
 

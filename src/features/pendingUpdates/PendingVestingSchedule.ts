@@ -4,7 +4,7 @@ import { pendingUpdateSelectors } from "./pendingUpdate.slice";
 import { useAppSelector } from "../redux/store";
 import { CreateVestingSchedule } from "../redux/endpoints/vestingSchedulerEndpoints";
 import { Address } from "@superfluid-finance/sdk-core";
-import { VestingSchedule, VestingStatusType } from "../vesting/types";
+import { VestingSchedule, vestingStatuses } from "../vesting/types";
 
 export interface PendingVestingSchedule
   extends PendingUpdate,
@@ -82,6 +82,6 @@ export const mapPendingToVestingSchedule = (
     didEarlyEndCompensationFail: false,
     earlyEndCompensation: "0",
     failedAt: undefined,
-    status: VestingStatusType.ScheduledStart
+    status: vestingStatuses.ScheduledStart
   };
 };

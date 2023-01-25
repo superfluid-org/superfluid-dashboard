@@ -1,19 +1,97 @@
 import { getUnixTime } from "date-fns";
-import { BigNumber } from "ethers";
 import { GetVestingScheduleQuery } from "../../vesting-subgraph/.graphclient";
 
-export enum VestingStatusType {
-  ScheduledStart = "Scheduled",
-  CliffPeriod = "Cliff",
-  CliffAndFlowExecuted = "Vesting",
-  CliffAndFlowExpired = "Send Stream Error",
-  EndExecuted = "Vested",
-  EndFailed = "Stream Cancel Error",
-  EndOverflowed = "Stream Overflow Error",
-  EndCompensationFailed = "Transfer Error",
-  DeletedBeforeStart = "Deleted",
-  DeletedAfterStart = "Deleted",
+interface VestingStatus {
+  name: string;
+  isFinished: boolean;
+  isCliff: boolean;
+  isStreaming: boolean;
+  isError: boolean;
+  isDeleted: boolean;
 }
+
+export const vestingStatuses: Record<string, VestingStatus> = {
+  ScheduledStart: {
+    name: "Scheduled",
+    isFinished: false,
+    isCliff: false,
+    isStreaming: false,
+    isError: false,
+    isDeleted: false,
+  },
+  CliffPeriod: {
+    name: "Cliff",
+    isFinished: false,
+    isCliff: true,
+    isStreaming: false,
+    isError: false,
+    isDeleted: false,
+  },
+  CliffAndFlowExecuted: {
+    name: "Vesting",
+    isFinished: false,
+    isCliff: false,
+    isStreaming: true,
+    isError: false,
+    isDeleted: true,
+  },
+  CliffAndFlowExpired: {
+    name: "Send Stream Error",
+    isFinished: false,
+    isCliff: false,
+    isStreaming: true,
+    isError: true,
+    isDeleted: false,
+  },
+  EndExecuted: {
+    name: "Vested",
+    isFinished: true,
+    isCliff: false,
+    isStreaming: false,
+    isError: false,
+    isDeleted: false,
+  },
+  EndFailed: {
+    name: "Stream Cancel Error",
+    isFinished: true,
+    isCliff: false,
+    isStreaming: false,
+    isError: true,
+    isDeleted: false,
+  },
+  EndOverflowed: {
+    name: "Stream Overflow Error",
+    isFinished: true,
+    isCliff: false,
+    isStreaming: false,
+    isError: false,
+    isDeleted: false,
+  },
+  EndCompensationFailed: {
+    name: "Transfer Error",
+    isFinished: true,
+    isCliff: false,
+    isStreaming: false,
+    isError: true,
+    isDeleted: false,
+  },
+  DeletedBeforeStart: {
+    name: "Deleted",
+    isFinished: true,
+    isCliff: false,
+    isStreaming: false,
+    isError: false,
+    isDeleted: true,
+  },
+  DeletedAfterStart: {
+    name: "Deleted",
+    isFinished: true,
+    isCliff: false,
+    isStreaming: false,
+    isError: false,
+    isDeleted: true,
+  },
+};
 
 export interface VestingSchedule {
   id: string;
@@ -35,7 +113,7 @@ export interface VestingSchedule {
   failedAt?: number;
   didEarlyEndCompensationFail?: boolean;
   earlyEndCompensation?: string;
-  status: VestingStatusType;
+  status: VestingStatus;
 }
 
 export type SubgraphVestingSchedule = NonNullable<
@@ -93,41 +171,41 @@ const getVestingStatus = (vestingSchedule: Omit<VestingSchedule, "status">) => {
 
   if (deletedAt) {
     if (deletedAt > startDate) {
-      return VestingStatusType.DeletedAfterStart;
+      return vestingStatuses.DeletedAfterStart;
     }
 
-    return VestingStatusType.DeletedBeforeStart;
+    return vestingStatuses.DeletedBeforeStart;
   }
 
   if (failedAt) {
-    return VestingStatusType.EndFailed;
+    return vestingStatuses.EndFailed;
   }
 
   if (didEarlyEndCompensationFail) {
-    return VestingStatusType.EndCompensationFailed;
+    return vestingStatuses.EndCompensationFailed;
   }
 
   if (endExecutedAt) {
     if (endExecutedAt > endDate) {
-      return VestingStatusType.EndOverflowed;
+      return vestingStatuses.EndOverflowed;
     }
 
-    return VestingStatusType.EndExecuted;
+    return vestingStatuses.EndExecuted;
   }
 
   if (cliffAndFlowExecutedAt) {
-    return VestingStatusType.CliffAndFlowExecuted;
+    return vestingStatuses.CliffAndFlowExecuted;
   }
 
   if (nowUnix > cliffAndFlowExpirationAt) {
-    return VestingStatusType.CliffAndFlowExpired;
+    return vestingStatuses.CliffAndFlowExpired;
   }
 
   if (cliffDate) {
     if (nowUnix > cliffDate) {
-      return VestingStatusType.CliffPeriod;
+      return vestingStatuses.CliffPeriod;
     }
   }
 
-  return VestingStatusType.ScheduledStart;
+  return vestingStatuses.ScheduledStart;
 };
