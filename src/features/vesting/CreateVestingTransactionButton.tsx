@@ -54,16 +54,21 @@ export const CreateVestingTransactionButton: FC<{
 
                   const cliffDateTimestamp = cliffEnabled
                     ? startDateTimestamp +
-                      (cliffPeriod.numerator || 0) * cliffPeriod.denominator
+                      Math.round(
+                        (cliffPeriod.numerator || 0) * cliffPeriod.denominator
+                      )
                     : 0;
 
                   const cliffAndFlowTimestamp = cliffEnabled
                     ? cliffDateTimestamp
                     : startDateTimestamp;
 
+                  // Has to be rounded because of decimals
                   const endDateTimestamp =
                     startDateTimestamp +
-                    vestingPeriod.numerator * vestingPeriod.denominator;
+                    Math.round(
+                      vestingPeriod.numerator * vestingPeriod.denominator
+                    );
 
                   const timeToFlow = endDateTimestamp - cliffAndFlowTimestamp;
 
@@ -86,6 +91,18 @@ export const CreateVestingTransactionButton: FC<{
                   );
 
                   setView(CreateVestingCardView.Approving);
+                  console.log({
+                    chainId: network.id,
+                    superTokenAddress,
+                    receiverAddress,
+                    senderAddress: await signer.getAddress(),
+                    startDateTimestamp,
+                    cliffDateTimestamp,
+                    endDateTimestamp,
+                    flowRateWei: flowRate.toString(),
+                    cliffTransferAmountWei: cliffTransferAmount.toString(),
+                    overrides: await getOverrides(),
+                  });
                   createVestingSchedule({
                     chainId: network.id,
                     signer,
