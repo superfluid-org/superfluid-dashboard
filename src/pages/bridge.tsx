@@ -11,6 +11,7 @@ import { ELEVATION1_BG } from "../features/theme/theme";
 import { useConnectButton } from "../features/wallet/ConnectButtonProvider";
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
+import { useAvailableNetworks } from "../features/network/AvailableNetworksContext";
 
 const LiFiWidgetDynamic = dynamic(
   () => import("@lifi/widget").then((module) => module.LiFiWidget) as any,
@@ -27,6 +28,7 @@ const Bridge: NextPage = () => {
   const { disconnectAsync } = useDisconnect();
   const { switchNetworkAsync } = useSwitchNetwork();
   const { openConnectModal } = useConnectButton();
+  const { availableNetworks } = useAvailableNetworks();
 
   useEffect(() => {
     stopAutoSwitchToWalletNetwork(); // We don't know when the Li.Fi widget form is filled and we don't want to automatically switch the expected network because that would re-render the Li.Fi widget.
@@ -68,6 +70,9 @@ const Bridge: NextPage = () => {
         backgroundImage: ELEVATION1_BG,
         boxShadow: theme.shadows[1],
       },
+      chains: {
+        allow: availableNetworks.map((x) => x.id),
+      },
       disableAppearance: true,
       theme: theme,
       // Uncomment for testnets
@@ -79,6 +84,7 @@ const Bridge: NextPage = () => {
       theme,
       signer,
       featuredTokens,
+      availableNetworks,
       // fetchSigner,
       // openConnectModal,
       // switchNetworkAsync,

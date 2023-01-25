@@ -56,3 +56,12 @@ Given(/^User opens the lifi widget settings$/,  () => {
 Given(/^Lifi widget settings are visible$/,  () => {
     BridgePage.verifyLifiSettingsFields()
 });
+Given(/^User opens the token selection in the bridge page$/, function () {
+    BridgePage.openTokenSelection()
+});
+Then(/^Only Superfluid supported networks are shown as available options$/, function () {
+    BridgePage.validateOnlySupportedNetworksShown()
+});
+Then(/^Ethereum mainnet is shown in the network list$/, function () {
+    BridgePage.validateMainnetVisibleInNetworksList()
+});
