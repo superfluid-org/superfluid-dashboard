@@ -1,5 +1,3 @@
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import {
   ListItemText,
   Stack,
@@ -78,16 +76,6 @@ const VestingRow: FC<VestingRowProps> = ({
     >
       <TableCell>
         <Stack direction="row" alignItems="center" gap={1.5}>
-          <TokenIcon
-            isSuper
-            tokenSymbol={tokenQuery.data?.symbol}
-            isLoading={tokenQuery.isLoading}
-          />
-          <ListItemText primary={tokenQuery.data?.symbol} />
-        </Stack>
-      </TableCell>
-      <TableCell>
-        <Stack direction="row" alignItems="center" gap={1.5}>
           <AddressAvatar
             address={isOutgoing ? receiver : sender}
             AvatarProps={{
@@ -103,9 +91,17 @@ const VestingRow: FC<VestingRowProps> = ({
         </Stack>
       </TableCell>
       <TableCell data-cy={"total-vesting-amount"}>
-        <Typography variant="body1mono">
-          <Amount wei={totalAmount} /> {tokenQuery.data?.symbol}
-        </Typography>
+        <Stack direction="row" alignItems="center" gap={1}>
+          <TokenIcon
+            isSuper
+            size={26}
+            tokenSymbol={tokenQuery.data?.symbol}
+            isLoading={tokenQuery.isLoading}
+          />
+          <Typography variant="body1mono">
+            <Amount wei={totalAmount} /> {tokenQuery.data?.symbol}
+          </Typography>
+        </Stack>
       </TableCell>
       <TableCell>
         <Typography variant="body1mono">

@@ -1,5 +1,4 @@
 import {
-  Button,
   ListItemText,
   Skeleton,
   Stack,
@@ -16,11 +15,10 @@ import {
 } from "@mui/material";
 import { getUnixTime } from "date-fns";
 import { useRouter } from "next/router";
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import NetworkHeadingRow from "../../components/Table/NetworkHeadingRow";
 import TableFilterRow from "../../components/Table/TableFilterRow";
 import { EmptyRow } from "../common/EmptyRow";
-import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
 import { PendingVestingSchedule } from "../pendingUpdates/PendingVestingSchedule";
 import { VestingSchedule } from "./types";
@@ -175,8 +173,7 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
             onChange={onVestingStatusFilterChange}
           />
           <TableRow>
-            <TableCell>Asset</TableCell>
-            <TableCell>{incoming ? "From" : "To"}</TableCell>
+            <TableCell>{incoming ? "Sender" : "Receiver"}</TableCell>
             <TableCell>Allocated</TableCell>
             <TableCell>Vested</TableCell>
             <TableCell sx={{ pr: 2 }}>Vesting Start / End</TableCell>
