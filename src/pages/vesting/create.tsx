@@ -1,13 +1,16 @@
 import { Box, Card, Container, useTheme } from "@mui/material";
-import { NextPage } from "next";
+import { ReactElement } from "react";
+import withStaticSEO from "../../components/SEO/withStaticSEO";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import NetworkBadge from "../../features/network/NetworkBadge";
 import ConnectionBoundary from "../../features/transactionBoundary/ConnectionBoundary";
 import { BigLoader } from "../../features/vesting/BigLoader";
 import CreateVestingFormProvider from "../../features/vesting/CreateVestingFormProvider";
 import { CreateVestingSection } from "../../features/vesting/CreateVestingSection";
+import VestingLayout from "../../features/vesting/VestingLayout";
+import { NextPageWithLayout } from "../_app";
 
-const CreateVestingSchedulePage: NextPage = () => {
+const CreateVestingSchedulePage: NextPageWithLayout = () => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
 
@@ -62,4 +65,11 @@ const CreateVestingSchedulePage: NextPage = () => {
   );
 };
 
-export default CreateVestingSchedulePage;
+CreateVestingSchedulePage.getLayout = (page: ReactElement) => (
+  <VestingLayout>{page}</VestingLayout>
+);
+
+export default withStaticSEO(
+  { title: "Create Vesting Schedule | Superfluid" },
+  CreateVestingSchedulePage
+);

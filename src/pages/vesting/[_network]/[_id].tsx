@@ -12,7 +12,8 @@ import { FlowUpdatedEvent, TransferEvent } from "@superfluid-finance/sdk-core";
 import { isString, orderBy } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, ReactElement, useEffect, useMemo, useState } from "react";
+import withStaticSEO from "../../../components/SEO/withStaticSEO";
 import ActivityTable from "../../../features/activityHistory/ActivityTable";
 import TimeUnitFilter, {
   TimeUnitFilterType,
@@ -29,6 +30,7 @@ import VestedBalance from "../../../features/vesting/VestedBalance";
 import VestingDataCard from "../../../features/vesting/VestingDataCard";
 import VestingDetailsHeader from "../../../features/vesting/VestingDetailsHeader";
 import VestingGraph from "../../../features/vesting/VestingGraph";
+import VestingLayout from "../../../features/vesting/VestingLayout";
 import VestingScheduleProgress from "../../../features/vesting/VestingScheduleProgress/VestingScheduleProgress";
 import {
   Activity,
@@ -37,6 +39,7 @@ import {
 import { calculateVestingScheduleAllocated } from "../../../utils/vestingUtils";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import Page404 from "../../404";
+import { NextPageWithLayout } from "../../_app";
 
 interface VestingLegendItemProps {
   title: string;
@@ -62,7 +65,7 @@ export type VestingActivities = (
   | Activity<TransferEvent>
 )[];
 
-const VestingScheduleDetailsPage: NextPage = () => {
+const VestingScheduleDetailsPage: NextPageWithLayout = () => {
   const router = useRouter();
 
   const [routeHandled, setRouteHandled] = useState(false);
@@ -244,9 +247,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
                     <FlowingFiatBalance
                       balance={vestingSchedule.cliffAmount}
                       flowRate={vestingSchedule.flowRate}
-                      balanceTimestamp={
-                        vestingSchedule.cliffAndFlowDate
-                      }
+                      balanceTimestamp={vestingSchedule.cliffAndFlowDate}
                       price={tokenPrice}
                     />
                   </Typography>
@@ -326,4 +327,11 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
   );
 };
 
-export default VestingScheduleDetailsPage;
+VestingScheduleDetailsPage.getLayout = (page: ReactElement) => (
+  <VestingLayout>{page}</VestingLayout>
+);
+
+export default withStaticSEO(
+  { title: "Vesting Schedule | Superfluid" },
+  VestingScheduleDetailsPage
+);
