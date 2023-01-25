@@ -15,5 +15,9 @@ export const flowOperatorPermissionsToString = (permissions: number) => {
     ...(hasDeletePermission ? ["Delete"] : []),
   ];
 
+  if (!permissionNames.length) {
+    return "–";
+  }
+
   return permissionNames.join(", ");
 };
