@@ -77,12 +77,14 @@ export function mapVestingActualDataPoints(
 ) {
   const startDate = fromUnixTime(Number(vestingSchedule.startDate));
 
-  const expectedEndDate = min([
-    fromUnixTime(
-      vestingSchedule.endExecutedAt ?? vestingSchedule.endDate
-    ),
-    dateNow,
-  ]);
+  // If endExecutedAt is after the estimated end date then we will extend the graph until endExecutedAt.
+  const absoluteMaxDate =
+    vestingSchedule.endExecutedAt &&
+    vestingSchedule.endExecutedAt > vestingSchedule.endDate
+      ? fromUnixTime(vestingSchedule.endExecutedAt)
+      : fromUnixTime(vestingSchedule.endDate);
+
+  const expectedEndDate = min([absoluteMaxDate, dateNow]);
 
   const endDate = max([expectedEndDate, startDate]);
 
@@ -119,7 +121,11 @@ export function mapVestingExpectedDataPoints(
     flowRate,
     cliffAmount,
   } = vestingSchedule;
-  const dates = getDatesBetween(fromUnixTime(startDate), fromUnixTime(endDate), frequency);
+  const dates = getDatesBetween(
+    fromUnixTime(startDate),
+    fromUnixTime(endDate),
+    frequency
+  );
 
   // If there is no cliff then we are not going to add a separate data point for that.
   let cliffAdded = cliffAmount === "0";
@@ -202,8 +208,7 @@ export function vestingScheduleToTokenBalance(
   } = vestingSchedule;
 
   if (endExecutedAt) {
-    const secondsStreamed =
-      Number(Math.max(endExecutedAt)) - cliffAndFlowDate;
+    const secondsStreamed = Number(Math.max(endExecutedAt)) - cliffAndFlowDate;
     const balance = BigNumber.from(secondsStreamed)
       .mul(flowRate)
       .add(cliffAmount)
