@@ -75,6 +75,7 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
     startDate: unixStartDate,
     cliffDate: unixCliffDate,
     endDate: unixEndDate,
+    cliffAndFlowDate: unixCliffAndFlowDate,
   } = vestingSchedule;
 
   const dateNow = useTimer(UnitOfTime.Minute);
@@ -99,13 +100,16 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
     [unixEndDate]
   );
 
-  const cliffAndFlowDate = cliffDate || startDate;
+  const cliffAndFlowDate = useMemo(
+    () => fromUnixTime(Number(unixCliffAndFlowDate)),
+    [unixCliffAndFlowDate]
+  );
 
   return (
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumns: `repeat(${cliffDate ? 4 : 3}, 170px)`,
+        gridTemplateColumns: `repeat(${cliffDate ? 5 : 3}, 170px)`,
         justifyContent: "space-between",
       }}
     >
@@ -116,15 +120,24 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
         dateNow={dateNow}
       />
       {cliffDate && (
-        <VestingProgress
-          nth={2}
-          start={startDate}
-          end={cliffDate}
-          dateNow={dateNow}
-        />
+        <>
+          <VestingProgress
+            nth={2}
+            start={startDate}
+            end={cliffDate}
+            dateNow={dateNow}
+          />
+          <VestingProgress
+            nth={3}
+            start={cliffDate}
+            end={cliffDate}
+            dateNow={dateNow}
+          />
+        </>
       )}
+
       <VestingProgress
-        nth={cliffDate ? 3 : 2}
+        nth={cliffDate ? 4 : 2}
         start={cliffAndFlowDate}
         end={endDate}
         dateNow={dateNow}
@@ -135,18 +148,28 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
         targetDate={createdAt}
         dateNow={dateNow}
       />
+
+      {cliffDate && (
+        <>
+          <VestingScheduleProgressCheckpoint
+            title="Cliff Starts"
+            targetDate={startDate}
+            dateNow={dateNow}
+          />
+          <VestingScheduleProgressCheckpoint
+            title="Cliff Ends"
+            targetDate={cliffDate}
+            dateNow={dateNow}
+          />
+        </>
+      )}
+
       <VestingScheduleProgressCheckpoint
         title="Vesting Starts"
-        targetDate={startDate}
+        targetDate={cliffAndFlowDate}
         dateNow={dateNow}
       />
-      {cliffDate && (
-        <VestingScheduleProgressCheckpoint
-          title="Cliff"
-          targetDate={cliffDate}
-          dateNow={dateNow}
-        />
-      )}
+
       <VestingScheduleProgressCheckpoint
         title="Vesting Ends"
         targetDate={endDate}
