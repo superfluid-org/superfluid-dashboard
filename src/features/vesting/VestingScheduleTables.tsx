@@ -179,6 +179,7 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
         <Card sx={{ p: 0 }}>
           {vestingSchedulesLoading || receivedVestingSchedules.length > 0 ? (
             <VestingScheduleTable
+              incoming
               dataCy={"received-table"}
               isLoading={vestingSchedulesLoading}
               network={network}

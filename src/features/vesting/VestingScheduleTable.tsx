@@ -17,6 +17,8 @@ import {
 import { getUnixTime } from "date-fns";
 import { useRouter } from "next/router";
 import { FC, useCallback, useMemo, useState } from "react";
+import NetworkHeadingRow from "../../components/Table/NetworkHeadingRow";
+import TableFilterRow from "../../components/Table/TableFilterRow";
 import { EmptyRow } from "../common/EmptyRow";
 import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
@@ -71,10 +73,17 @@ enum VestingStatusFilter {
   Vesting,
   Vested,
 }
+const StatusFilterOptions = [
+  { title: "All", value: VestingStatusFilter.All },
+  { title: "Cliff", value: VestingStatusFilter.Cliff },
+  { title: "Vesting", value: VestingStatusFilter.Vesting },
+  { title: "Vested", value: VestingStatusFilter.Vested },
+];
 
 interface PendingCreateVestingSchedule extends VestingSchedule {
   pendingCreate: PendingVestingSchedule;
 }
+
 type VestingSchedules = Array<VestingSchedule | PendingCreateVestingSchedule>;
 
 interface VestingScheduleTableProps {
@@ -103,9 +112,9 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
   const openDetails = (id: string) => () =>
     router.push(`/vesting/${network.slugName}/${id}`);
 
-  const setVestingStatusFilter = (type: VestingStatusFilter) => () => {
+  const onVestingStatusFilterChange = (newFilter: VestingStatusFilter) => {
     setPage(0);
-    setStatusFilter(type);
+    setStatusFilter(newFilter);
   };
 
   const handleChangePage = (_e: unknown, newPage: number) => setPage(newPage);
@@ -116,12 +125,6 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
-  const getFilterBtnColor = useCallback(
-    (type: VestingStatusFilter) =>
-      type === statusFilter ? "primary" : "secondary",
-    [statusFilter]
-  );
 
   const filteredVestingSchedules = useMemo(() => {
     const dateNowUnix = getUnixTime(new Date());
@@ -165,71 +168,12 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
     >
       <Table>
         <TableHead>
-          <TableRow>
-            <TableCell
-              colSpan={5}
-              sx={{
-                p: 0,
-                [theme.breakpoints.up("md")]: { border: "none" },
-                [theme.breakpoints.down("md")]: { p: 0 },
-              }}
-            >
-              <Stack
-                direction="row"
-                alignItems="center"
-                gap={2}
-                sx={{ py: 2, px: 4, [theme.breakpoints.down("md")]: { p: 2 } }}
-              >
-                <NetworkIcon network={network} />
-                <Typography
-                  data-cy="network-name"
-                  variant="h5"
-                  color="text.primary"
-                  translate="no"
-                >
-                  {network.name}
-                </Typography>
-              </Stack>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell colSpan={6}>
-              <Stack direction="row" alignItems="center" gap={1}>
-                <Button
-                  variant="textContained"
-                  size={isBelowMd ? "small" : "medium"}
-                  color={getFilterBtnColor(VestingStatusFilter.All)}
-                  onClick={setVestingStatusFilter(VestingStatusFilter.All)}
-                >
-                  All
-                </Button>
-                <Button
-                  variant="textContained"
-                  size={isBelowMd ? "small" : "medium"}
-                  color={getFilterBtnColor(VestingStatusFilter.Cliff)}
-                  onClick={setVestingStatusFilter(VestingStatusFilter.Cliff)}
-                >
-                  Cliff
-                </Button>
-                <Button
-                  variant="textContained"
-                  size={isBelowMd ? "small" : "medium"}
-                  color={getFilterBtnColor(VestingStatusFilter.Vesting)}
-                  onClick={setVestingStatusFilter(VestingStatusFilter.Vesting)}
-                >
-                  Vesting
-                </Button>
-                <Button
-                  variant="textContained"
-                  size={isBelowMd ? "small" : "medium"}
-                  color={getFilterBtnColor(VestingStatusFilter.Vested)}
-                  onClick={setVestingStatusFilter(VestingStatusFilter.Vested)}
-                >
-                  Vested
-                </Button>
-              </Stack>
-            </TableCell>
-          </TableRow>
+          {incoming && <NetworkHeadingRow colSpan={6} network={network} />}
+          <TableFilterRow
+            value={statusFilter}
+            options={StatusFilterOptions}
+            onChange={onVestingStatusFilterChange}
+          />
           <TableRow>
             <TableCell>Asset</TableCell>
             <TableCell>{incoming ? "From" : "To"}</TableCell>
