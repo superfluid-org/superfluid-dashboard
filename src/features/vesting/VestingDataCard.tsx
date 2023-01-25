@@ -1,8 +1,6 @@
-import { Card, Typography, Stack } from "@mui/material";
+import { Card, Stack, Typography } from "@mui/material";
 import { FC } from "react";
-import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
-import FiatAmount from "../tokenPrice/FiatAmount";
 
 interface VestingDataCardProps {
   title: string;
@@ -20,7 +18,7 @@ export const VestingDataCardContent: FC<VestingDataCardProps> = ({
   <Stack>
     <Typography variant="h5">{title}</Typography>
     <Stack direction="row" alignItems="center" gap={1.5}>
-      <TokenIcon isSuper tokenSymbol={tokenSymbol} />
+      <TokenIcon isSuper tokenSymbol={tokenSymbol} size={32} />
       <Stack direction="row" alignItems="flex-end" gap={0.5}>
         {tokenAmount && (
           <Typography variant="h3mono" sx={{ lineHeight: "36px" }}>

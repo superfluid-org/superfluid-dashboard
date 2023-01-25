@@ -1,4 +1,9 @@
-import { IconButton, Tooltip, TooltipProps } from "@mui/material";
+import {
+  IconButton,
+  IconButtonProps,
+  Tooltip,
+  TooltipProps,
+} from "@mui/material";
 import { FC, useState } from "react";
 import copyToClipboard from "../../utils/copyToClipboard";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
@@ -7,12 +12,14 @@ interface CopyIconBtnProps {
   copyText: string;
   description?: string;
   TooltipProps?: Partial<TooltipProps>;
+  IconButtonProps?: Partial<IconButtonProps>;
 }
 
 export const CopyIconBtn: FC<CopyIconBtnProps> = ({
   copyText,
   description = "Copy to clipboard",
-  TooltipProps,
+  TooltipProps = {},
+  IconButtonProps = {},
 }) => {
   const [isCopied, setIsCopied] = useState(false);
 
@@ -32,7 +39,7 @@ export const CopyIconBtn: FC<CopyIconBtnProps> = ({
 
   return (
     <Tooltip title={isCopied ? "Copied!" : description} {...TooltipProps}>
-      <IconButton onClick={handleCopyClick}>
+      <IconButton onClick={handleCopyClick} {...IconButtonProps}>
         <ContentCopyRoundedIcon />
       </IconButton>
     </Tooltip>

@@ -36,7 +36,7 @@ const VestingSchedulerAllowanceDetailsTable: FC<
     <Table sx={{ width: "100%" }}>
       <TableBody>
         <TableCell></TableCell>
-        <TableCell width="250px">
+        <TableCell width="220px">
           <ListItemText
             primary="Current"
             secondary={

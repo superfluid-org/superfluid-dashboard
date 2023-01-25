@@ -101,7 +101,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
         <TableHead>
           <TableRow>
             <TableCell>Token</TableCell>
-            <TableCell width="250px">
+            <TableCell width="220px">
               Token Allowance
               <TooltipIcon
                 IconProps={{ sx: { ml: 0.5 } }}
