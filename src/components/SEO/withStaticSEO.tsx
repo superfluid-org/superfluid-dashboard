@@ -1,5 +1,4 @@
 import { NextPage } from "next";
-import React, { FC } from "react";
 import { NextPageWithLayout } from "../../pages/_app";
 import { SEOProps } from "./SEO";
 import StaticSEO from "./StaticSEO";

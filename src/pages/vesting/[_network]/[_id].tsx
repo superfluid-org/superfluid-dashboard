@@ -10,7 +10,6 @@ import {
 import { skipToken } from "@reduxjs/toolkit/dist/query/react";
 import { FlowUpdatedEvent, TransferEvent } from "@superfluid-finance/sdk-core";
 import { isString, orderBy } from "lodash";
-import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { FC, ReactElement, useEffect, useMemo, useState } from "react";
 import withStaticSEO from "../../../components/SEO/withStaticSEO";

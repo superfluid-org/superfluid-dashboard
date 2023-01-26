@@ -33,7 +33,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     isCliff: false,
     isStreaming: true,
     isError: false,
-    isDeleted: true,
+    isDeleted: false,
   },
   CliffAndFlowExpired: {
     title: "Send Stream Error",
