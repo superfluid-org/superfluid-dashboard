@@ -43,7 +43,9 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
     spacing={1}
   >
     <Typography variant="body1" color="secondary">
-      {whitelisted ? "Vesting schedules are automated by Superfluid Finance." : "Vesting schedule automation is user responsibility."}
+      {whitelisted
+        ? "Vesting schedules are automated by Superfluid Finance."
+        : "Vesting schedule automation is user responsibility."}
     </Typography>
 
     {network.vestingContractAddress && (
@@ -218,13 +220,11 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
               />
             </Stack>
           ) : (
-            <Paper>
-              <NoContentPaper
-                dataCy={"no-created-schedules"}
-                title="No Sent Vesting Schedules"
-                description="Vesting schedules that you have created will appear here."
-              />
-            </Paper>
+            <NoContentPaper
+              dataCy={"no-created-schedules"}
+              title="No Sent Vesting Schedules"
+              description="Vesting schedules that you have created will appear here."
+            />
           )}
         </Stack>
 

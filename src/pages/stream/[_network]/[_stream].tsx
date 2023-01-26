@@ -426,7 +426,6 @@ const StreamPageContent: FC<{
     );
   }, [scheduledStream]);
 
-  // TODO(KK): Network is not yet handled.
   const vestingScheduleQuery = vestingSubgraphApi.useGetVestingSchedulesQuery(
     scheduledStream
       ? {

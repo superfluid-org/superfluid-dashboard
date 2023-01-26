@@ -46,7 +46,7 @@ const VestingSchedulerAllowanceDetailsTable: FC<
             }
           />
           <ListItemText
-            primary="Recommended"
+            primary="Required"
             secondary={
               <>
                 <Amount wei={recommendedTokenAllowance} /> {tokenSymbol}
@@ -57,7 +57,7 @@ const VestingSchedulerAllowanceDetailsTable: FC<
         <TableCell width="260px">
           <ListItemText primary="Current" secondary={permissionsString} />
           <ListItemText
-            primary="Recommended"
+            primary="Required"
             secondary={requiredPermissionsString}
           />
         </TableCell>
@@ -72,7 +72,7 @@ const VestingSchedulerAllowanceDetailsTable: FC<
             }
           />
           <ListItemText
-            primary="Recommended"
+            primary="Required"
             secondary={
               <>
                 <Amount wei={requiredFlowOperatorAllowance} /> {tokenSymbol}/sec

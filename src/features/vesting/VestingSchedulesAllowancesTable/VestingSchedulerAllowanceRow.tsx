@@ -1,22 +1,66 @@
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import DangerousRoundedIcon from "@mui/icons-material/DangerousRounded";
-import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
+import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
+import { Skeleton } from "@mui/lab";
 import {
-  TableRow,
-  TableCell,
-  Stack,
-  ListItemText,
-  IconButton,
   Collapse,
+  IconButton,
+  ListItemText,
+  Stack,
+  TableCell,
+  TableRow,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { BigNumber } from "ethers";
 import { FC, useState } from "react";
+import { Network } from "../../network/networks";
 import { rpcApi, subgraphApi } from "../../redux/store";
 import TokenIcon from "../../token/TokenIcon";
-import { Network } from "../../network/networks";
-import { useTheme } from "@mui/material/styles";
 import VestingSchedulerAllowanceDetailsTable from "./VestingSchedulerAllowanceDetailsTable";
+
+export const VestingSchedulerAllowanceRowSkeleton = () => (
+  <TableRow>
+    <TableCell>
+      <Stack direction="row" alignItems="center" gap={1}>
+        <Skeleton variant="circular" width={36} height={36} />
+        <Skeleton width={70} />
+      </Stack>
+    </TableCell>
+    <TableCell align="center">
+      <Skeleton
+        variant="circular"
+        width={24}
+        height={24}
+        sx={{ display: "inline-block" }}
+      />
+    </TableCell>
+    <TableCell align="center">
+      <Skeleton
+        variant="circular"
+        width={24}
+        height={24}
+        sx={{ display: "inline-block" }}
+      />
+    </TableCell>
+    <TableCell align="center">
+      <Skeleton
+        variant="circular"
+        width={24}
+        height={24}
+        sx={{ display: "inline-block" }}
+      />
+    </TableCell>
+    <TableCell align="center">
+      <Skeleton
+        variant="circular"
+        width={24}
+        height={24}
+        sx={{ display: "inline-block" }}
+      />
+    </TableCell>
+  </TableRow>
+);
 
 interface VestingSchedulerAllowanceRowProps {
   isLast: boolean;
