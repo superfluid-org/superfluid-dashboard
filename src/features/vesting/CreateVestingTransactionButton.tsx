@@ -91,18 +91,7 @@ export const CreateVestingTransactionButton: FC<{
                   );
 
                   setView(CreateVestingCardView.Approving);
-                  console.log({
-                    chainId: network.id,
-                    superTokenAddress,
-                    receiverAddress,
-                    senderAddress: await signer.getAddress(),
-                    startDateTimestamp,
-                    cliffDateTimestamp,
-                    endDateTimestamp,
-                    flowRateWei: flowRate.toString(),
-                    cliffTransferAmountWei: cliffTransferAmount.toString(),
-                    overrides: await getOverrides(),
-                  });
+
                   createVestingSchedule({
                     chainId: network.id,
                     signer,

@@ -13,6 +13,7 @@ import { Network } from "../network/networks";
 import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
 import FiatAmount from "../tokenPrice/FiatAmount";
+import FlowingFiatBalance from "../tokenPrice/FlowingFiatBalance";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import { VestingSchedule } from "./types";
 import { useVestingToken } from "./useVestingToken";
@@ -30,8 +31,8 @@ const VestingTokenAggregationRow: FC<VestingTokenAggregationRowProps> = ({
   network,
 }) => {
   const tokenQuery = useVestingToken(network, tokenAddress);
+  const tokenPrice = useTokenPrice(network.id, tokenAddress);
   const token = tokenQuery.data;
-  const tokenPrice = useTokenPrice(network.id, token?.underlyingAddress);
 
   const allocated = useMemo(
     () => calculateVestingSchedulesAllocated(vestingSchedules).toString(),
@@ -74,7 +75,16 @@ const VestingTokenAggregationRow: FC<VestingTokenAggregationRowProps> = ({
                 balanceTimestamp={aggregatedTokenBalance.timestamp}
               />
             }
-            fiatAmount={tokenPrice && <FiatAmount price={tokenPrice} wei="0" />}
+            fiatAmount={
+              tokenPrice && (
+                <FlowingFiatBalance
+                  balance={aggregatedTokenBalance.balance}
+                  flowRate={aggregatedTokenBalance.totalNetFlowRate}
+                  balanceTimestamp={aggregatedTokenBalance.timestamp}
+                  price={tokenPrice}
+                />
+              )
+            }
           />
         </Box>
       </Box>

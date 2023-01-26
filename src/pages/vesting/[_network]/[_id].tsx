@@ -156,10 +156,9 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
   );
 
   const tokenQuery = useVestingToken(network, vestingSchedule?.superToken);
+  const tokenPrice = useTokenPrice(network.id, vestingSchedule?.superToken);
 
   const token = tokenQuery.data;
-
-  const tokenPrice = useTokenPrice(network.id, token?.underlyingAddress);
 
   const onGraphFilterChange = (newGraphFilter: TimeUnitFilterType) =>
     setGraphFilter(newGraphFilter);
@@ -175,6 +174,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
 
   if (!vestingSchedule || !token) return <Page404 />;
 
+  console.log({ tokenPrice });
   // const urlToShare = `${config.appUrl}/vesting/${network.slugName}/${id}`;
 
   return (
@@ -301,7 +301,10 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
             tokenAmount={<Amount wei={vestingSchedule.cliffAmount} />}
             fiatAmount={
               tokenPrice && (
-                <FiatAmount wei={expectedVestedBalance} price={tokenPrice} />
+                <FiatAmount
+                  wei={vestingSchedule.cliffAmount}
+                  price={tokenPrice}
+                />
               )
             }
           />
