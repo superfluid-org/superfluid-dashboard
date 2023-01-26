@@ -10,14 +10,17 @@ import {
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { BigNumber } from "ethers";
 import { groupBy, uniq } from "lodash";
-import { FC } from "react";
+import { FC, useMemo } from "react";
+import NoContentPaper from "../../../components/NoContent/NoContentPaper";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import TooltipIcon from "../../common/TooltipIcon";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { platformApi } from "../../redux/platformApi/platformApi";
 import { rpcApi } from "../../redux/store";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
-import VestingSchedulerAllowanceRow from "./VestingSchedulerAllowanceRow";
+import VestingSchedulerAllowanceRow, {
+  VestingSchedulerAllowanceRowSkeleton,
+} from "./VestingSchedulerAllowanceRow";
 
 const VestingSchedulerAllowancesTable: FC = () => {
   const { network } = useExpectedNetwork();
@@ -44,17 +47,15 @@ const VestingSchedulerAllowancesTable: FC = () => {
     }
   );
 
-  const vestingSchedulesGroupedByToken = groupBy(
-    vestingSchedulesQuery.data,
-    (x) => x.superToken
-  );
+  const tokenSummaries = useMemo(() => {
+    if (!vestingSchedulerConstants || !vestingSchedulesQuery.data) return [];
 
-  if (!vestingSchedulerConstants) {
-    return <>Loading...</>;
-  }
+    const vestingSchedulesGroupedByToken = groupBy(
+      vestingSchedulesQuery.data,
+      (x) => x.superToken
+    );
 
-  const tokenSummaries = Object.entries(vestingSchedulesGroupedByToken).map(
-    (entry) => {
+    return Object.entries(vestingSchedulesGroupedByToken).map((entry) => {
       const [tokenAddress, group] = entry;
 
       const recommendedTokenAllowance = group.reduce(
@@ -92,8 +93,20 @@ const VestingSchedulerAllowancesTable: FC = () => {
         requiredFlowOperatorPermissions: 5, // Create not needed after cliffAndFlows are executed
         requiredFlowOperatorAllowance,
       };
-    }
-  );
+    });
+  }, [vestingSchedulesQuery.data, vestingSchedulerConstants]);
+
+  const isLoading =
+    !vestingSchedulerConstants || vestingSchedulesQuery.isLoading;
+
+  if ((!isLoading && tokenSummaries.length === 0) || !senderAddress) {
+    return (
+      <NoContentPaper
+        title="No Allowances Data"
+        description="Allowances and permissions that you have given will appear here."
+      />
+    );
+  }
 
   return (
     <TableContainer component={Paper} elevation={0}>
@@ -126,7 +139,12 @@ const VestingSchedulerAllowancesTable: FC = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {senderAddress &&
+          {isLoading ? (
+            <>
+              <VestingSchedulerAllowanceRowSkeleton />
+              <VestingSchedulerAllowanceRowSkeleton />
+            </>
+          ) : (
             tokenSummaries.map(
               (
                 {
@@ -150,7 +168,8 @@ const VestingSchedulerAllowancesTable: FC = () => {
                   requiredFlowOperatorAllowance={requiredFlowOperatorAllowance}
                 />
               )
-            )}
+            )
+          )}
         </TableBody>
       </Table>
     </TableContainer>
