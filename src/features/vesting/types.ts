@@ -36,7 +36,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     isDeleted: false,
   },
   CliffAndFlowExpired: {
-    title: "Send Stream Error",
+    title: "Stream Error",
     isFinished: false,
     isCliff: false,
     isStreaming: true,
@@ -52,7 +52,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     isDeleted: false,
   },
   EndFailed: {
-    title: "Stream Cancel Error",
+    title: "Cancel Error",
     isFinished: true,
     isCliff: false,
     isStreaming: false,
@@ -60,7 +60,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     isDeleted: false,
   },
   EndOverflowed: {
-    title: "Stream Overflow Error",
+    title: "Overflow Error",
     isFinished: true,
     isCliff: false,
     isStreaming: false,

@@ -3,7 +3,6 @@ import DangerousRoundedIcon from "@mui/icons-material/DangerousRounded";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
 import {
-  TableCellProps,
   TableRow,
   TableCell,
   Stack,
@@ -13,14 +12,10 @@ import {
 } from "@mui/material";
 import { BigNumber } from "ethers";
 import { FC, useState } from "react";
-import { flowOperatorPermissionsToString } from "../../../utils/flowOperatorPermissionsToString";
 import { rpcApi, subgraphApi } from "../../redux/store";
-import Amount from "../../token/Amount";
 import TokenIcon from "../../token/TokenIcon";
 import { Network } from "../../network/networks";
-import Table from "@mui/material/Table";
 import { useTheme } from "@mui/material/styles";
-import { Skeleton } from "@mui/lab";
 import VestingSchedulerAllowanceDetailsTable from "./VestingSchedulerAllowanceDetailsTable";
 
 interface VestingSchedulerAllowanceRowProps {
