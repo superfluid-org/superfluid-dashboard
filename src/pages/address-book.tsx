@@ -458,6 +458,7 @@ const AddressBook: NextPage = () => {
 
         {filteredEntries.length > 0 && (
           <TableContainer
+            component={Paper}
             sx={{
               [theme.breakpoints.down("md")]: {
                 borderLeft: 0,

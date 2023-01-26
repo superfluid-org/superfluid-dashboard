@@ -316,6 +316,7 @@ const History: NextPage = () => {
                   {format(new Date(dateKey), "MMMM d, yyyy")}
                 </Typography>
                 <TableContainer
+                  component={Paper}
                   sx={{
                     [theme.breakpoints.down("md")]: {
                       borderLeft: 0,
