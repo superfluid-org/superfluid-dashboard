@@ -13,10 +13,67 @@ import VestingScheduleTables from "../features/vesting/VestingScheduleTables";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { NextPageWithLayout } from "./_app";
 
+const VESTING_SUPPORTED_NETWORKS = networks
+  .filter((network) => network.platformUrl)
+  .sort((n1, n2) => (!n1.testnet && n2.testnet ? -1 : 1)); // The vesting contract might be deployed to more networks but we check for the existence of the Platform.
+
+const VESTING_SUPPORTED_NETWORK_IDS = VESTING_SUPPORTED_NETWORKS.map(
+  (network) => network.id
+);
+
 const VestingNotSupportedCard = () => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { isMainnetEnabled } = useFeatureFlags();
+
+  const NetworkLinks = useMemo(
+    () =>
+      VESTING_SUPPORTED_NETWORKS.map((network, index) => {
+        if (VESTING_SUPPORTED_NETWORK_IDS.length - 1 === index) {
+          return (
+            <NetworkSwitchLink
+              key={network.id}
+              network={network}
+              disabled={
+                network.id === networkDefinition.ethereum.id &&
+                !isMainnetEnabled
+              }
+            />
+          );
+        }
+
+        if (VESTING_SUPPORTED_NETWORK_IDS.length - 2 === index) {
+          return (
+            <>
+              <NetworkSwitchLink
+                key={network.id}
+                network={network}
+                disabled={
+                  network.id === networkDefinition.ethereum.id &&
+                  !isMainnetEnabled
+                }
+              />
+              {" or "}
+            </>
+          );
+        }
+
+        return (
+          <>
+            <NetworkSwitchLink
+              key={network.id}
+              network={network}
+              disabled={
+                network.id === networkDefinition.ethereum.id &&
+                !isMainnetEnabled
+              }
+            />
+            {", "}
+          </>
+        );
+      }),
+    []
+  );
 
   return (
     <Paper
@@ -34,21 +91,11 @@ const VestingNotSupportedCard = () => {
         This network is not supported.
       </Typography>
       <Typography color="text.secondary" textAlign="center">
-        Change your network to{" "}
-        <NetworkSwitchLink
-          network={networkDefinition.ethereum}
-          disabled={!isMainnetEnabled}
-        />
-        , <NetworkSwitchLink network={networkDefinition.polygon} /> or{" "}
-        <NetworkSwitchLink network={networkDefinition.goerli} />.
+        Change your network to {NetworkLinks}
       </Typography>
     </Paper>
   );
 };
-
-const VESTING_SUPPORTED_NETWORKS = networks
-  .filter((network) => network.platformUrl) // The vesting contract might be deployed to more networks but we check for the existence of the Platform.
-  .map((network) => network.id);
 
 const VestingPage: NextPageWithLayout = () => {
   const theme = useTheme();
@@ -58,7 +105,7 @@ const VestingPage: NextPageWithLayout = () => {
   const { network } = useExpectedNetwork();
 
   const networkSupported = useMemo(
-    () => VESTING_SUPPORTED_NETWORKS.includes(network.id),
+    () => VESTING_SUPPORTED_NETWORK_IDS.includes(network.id),
     [network]
   );
 
