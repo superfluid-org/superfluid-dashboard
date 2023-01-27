@@ -44,16 +44,16 @@ export const superfluidRpcUrls = {
   avalancheC: "https://rpc-endpoints.superfluid.dev/avalanche-c",
   bnbSmartChain: "https://rpc-endpoints.superfluid.dev/bsc-mainnet",
   ethereum: "https://rpc-endpoints.superfluid.dev/eth-mainnet",
-};
+} as const;
 
 export const superfluidPlatformUrls = {
   goerli: "https://prod-goerli-platform-service.dev.superfluid.dev",
   polygon: "https://prod-polygon-mainnet-platform-service.dev.superfluid.dev",
   bnbSmartChain: "https://prod-bsc-mainnet-platform-service.dev.superfluid.dev",
   ethereum: "https://prod-eth-mainnet-platform-service.dev.superfluid.dev",
-};
+} as const;
 
-export const vestingSubraphUrls: Record<string, `https://${string}`> = {
+export const vestingSubraphUrls = {
   gnosis:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-gnosis",
   goerli:
@@ -70,9 +70,9 @@ export const vestingSubraphUrls: Record<string, `https://${string}`> = {
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-bsc",
   ethereum:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-eth-mainnet",
-};
+} as const;
 
-export const vestingContractAddresses: Record<string, `0x${string}`> = {
+export const vestingContractAddresses = {
   gnosis: "0x0170FFCC75d178d426EBad5b1a31451d00Ddbd0D",
   goerli: "0x2A6dD60Dbb8CE65813842eEe1688b21CA30D6ffd",
   polygon: "0xcFE6382B33F2AdaFbE46e6A26A88E0182ae32b0c",
@@ -81,7 +81,7 @@ export const vestingContractAddresses: Record<string, `0x${string}`> = {
   avalancheC: "0x3fA8B653F9abf91428800C0ba0F8D145a71F97A1",
   bnbSmartChain: "0x9B91c27f78376383003C6A12Ad12B341d016C5b9",
   ethereum: "0x39D5cBBa9adEBc25085a3918d36D5325546C001B",
-};
+} as const;
 
 const blockExplorers = {
   blockscout: {
@@ -466,8 +466,8 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
-    vestingContractAddress: vestingContractAddresses.bsc,
-    vestingSubgraphUrl: vestingSubraphUrls.bsc,
+    vestingContractAddress: vestingContractAddresses.bnbSmartChain,
+    vestingSubgraphUrl: vestingSubraphUrls.bnbSmartChain,
     platformUrl: superfluidPlatformUrls.bnbSmartChain,
   },
   ethereum: {

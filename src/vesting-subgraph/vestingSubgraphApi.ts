@@ -1,7 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
-import {
-  findNetworkByChainId,
-} from "../features/network/networks";
+import { findNetworkByChainId } from "../features/network/networks";
 import {
   mapSubgraphVestingSchedule,
   VestingSchedule,
@@ -16,7 +14,7 @@ import {
 
 const tryGetBuiltGraphSdkForNetwork = (chainId: number) => {
   const network = findNetworkByChainId(chainId);
-  if (network?.subgraphUrl) {
+  if (network?.vestingSubgraphUrl) {
     return getBuiltGraphSDK({
       url: network.vestingSubgraphUrl,
     });
