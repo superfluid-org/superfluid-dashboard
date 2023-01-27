@@ -19,17 +19,14 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { FC, useCallback, useMemo, useState } from "react";
+import { add } from "date-fns";
+import { FC, useCallback, useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import TooltipIcon from "../common/TooltipIcon";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
-import {
-  MAX_VESTING_START_DATE,
-  MIN_VESTING_START_DATE,
-} from "../redux/endpoints/vestingSchedulerEndpoints";
 import { subgraphApi } from "../redux/store";
 import AddressSearch from "../send/AddressSearch";
 import {
@@ -64,6 +61,22 @@ export const CreateVestingForm: FC<{
 
   const { watch, control, formState, setValue, trigger } =
     useFormContext<PartialVestingForm>();
+
+  const minVestingStartDate = useMemo(
+    () =>
+      add(new Date(), {
+        minutes: 15,
+      }),
+    []
+  );
+
+  const maxVestingStartDate = useMemo(
+    () =>
+      add(new Date(), {
+        years: 1,
+      }),
+    []
+  );
 
   const [
     receiverAddress,
@@ -222,8 +235,8 @@ export const CreateVestingForm: FC<{
             ampm={false}
             onChange={onChange}
             disablePast
-            minDateTime={MIN_VESTING_START_DATE}
-            maxDateTime={MAX_VESTING_START_DATE}
+            minDateTime={minVestingStartDate}
+            maxDateTime={maxVestingStartDate}
           />
         )}
       />
