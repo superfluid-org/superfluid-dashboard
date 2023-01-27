@@ -6,33 +6,33 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { FC, useCallback } from "react";
+import { Key, useCallback } from "react";
 
-interface TableFilterOption {
+interface TableFilterOption<T extends Key> {
   title: string;
-  value: any;
+  value: T;
 }
 
-interface TableFilterRowProps {
-  value: any;
-  options: TableFilterOption[];
-  onChange: (newValue: any) => void;
+interface TableFilterRowProps<T extends Key> {
+  value: T;
+  options: TableFilterOption<T>[];
+  onChange: (newValue: T) => void;
 }
 
-const TableFilterRow: FC<TableFilterRowProps> = ({
+function TableFilterRow<T extends Key>({
   value,
   options,
   onChange,
-}) => {
+}: TableFilterRowProps<T>) {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const getFilterBtnColor = useCallback(
-    (type: any) => (type === value ? "primary" : "secondary"),
+    (type: string | number) => (type === value ? "primary" : "secondary"),
     [value]
   );
 
-  const onFilterClick = (newValue: any) => () => onChange(newValue);
+  const onFilterClick = (newValue: T) => () => onChange(newValue);
 
   return (
     <TableRow>
@@ -53,6 +53,6 @@ const TableFilterRow: FC<TableFilterRowProps> = ({
       </TableCell>
     </TableRow>
   );
-};
+}
 
 export default TableFilterRow;
