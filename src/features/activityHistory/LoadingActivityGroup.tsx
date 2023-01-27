@@ -3,6 +3,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Paper,
   Skeleton,
   Stack,
   Table,
@@ -124,6 +125,7 @@ const LoadingActivityGroup: FC<LoadingActivityGroupProps> = ({}) => {
         <Skeleton width="120px" />
       </Typography>
       <TableContainer
+        component={Paper}
         sx={{
           [theme.breakpoints.down("md")]: {
             mx: -2,

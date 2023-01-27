@@ -1,4 +1,10 @@
-import { TableContainer, Table, TableBody, useTheme } from "@mui/material";
+import {
+  TableContainer,
+  Table,
+  TableBody,
+  useTheme,
+  Paper,
+} from "@mui/material";
 import { FC } from "react";
 import { Activities } from "../../utils/activityUtils";
 import ActivityRow from "./ActivityRow";
@@ -12,6 +18,7 @@ const ActivityTable: FC<ActivitiesTableProps> = ({ activities }) => {
 
   return (
     <TableContainer
+      component={Paper}
       sx={{
         [theme.breakpoints.down("md")]: {
           borderLeft: 0,
