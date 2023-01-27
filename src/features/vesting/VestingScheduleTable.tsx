@@ -1,5 +1,6 @@
 import {
   ListItemText,
+  Paper,
   Skeleton,
   Stack,
   Table,
@@ -155,6 +156,7 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
   return (
     <TableContainer
       data-cy={dataCy}
+      component={Paper}
       sx={{
         [theme.breakpoints.down("md")]: {
           mx: -2,

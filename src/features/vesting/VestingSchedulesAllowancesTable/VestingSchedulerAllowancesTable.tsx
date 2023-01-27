@@ -109,7 +109,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
   }
 
   return (
-    <TableContainer component={Paper} elevation={0}>
+    <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }}>
         <TableHead>
           <TableRow>
