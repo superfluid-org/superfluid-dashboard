@@ -299,8 +299,8 @@ export default memo(function SendCard() {
     />
   );
 
-  const doesNetworkSupportFlowScheduler =
-    !!network.flowSchedulerContractAddress;
+  const doesNetworkSupportFlowScheduler = false;
+    // !!network.flowSchedulerContractAddress; // TODO(KK): Uncomment this to enable 
 
   const [streamScheduling, setStreamScheduling] = useState<boolean>(
     !!endTimestamp
@@ -489,7 +489,7 @@ export default memo(function SendCard() {
   }, [network, flowRateEther, tokenBufferQuery.data]);
 
   const BufferAlert = (
-    <Alert severity="error">
+    <Alert data-cy="buffer-warning"severity="error">
       If you do not cancel this stream before your balance reaches zero,{" "}
       <b>
         you will lose your{" "}

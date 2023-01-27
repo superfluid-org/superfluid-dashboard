@@ -1,4 +1,5 @@
 import {
+  Paper,
   Skeleton,
   Stack,
   Table,
@@ -62,6 +63,7 @@ const TokenSnapshotLoadingTable = () => {
 
   return (
     <TableContainer
+      component={Paper}
       sx={{
         [theme.breakpoints.down("md")]: {
           mx: -2,

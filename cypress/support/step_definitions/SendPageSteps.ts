@@ -195,3 +195,9 @@ Then(/^The scheduling date is restored correctly$/,  () => {
 Given(/^User modifies the scheduled stream and the transaction dialogs are visible for "([^"]*)"$/, (network: string) => {
     SendPage.modifyScheduledStreamAndVerifyDialogs(network)
 });
+Then(/^The start stream button is disabled$/, function () {
+    SendPage.validateDisabledSendButton()
+});
+Then(/^The preview buffer amount shown and warning sections shows (\d+) tokens are needed for the buffer$/, function () {
+    SendPage.validateEthereumMainnetMinimumDeposit()
+});
