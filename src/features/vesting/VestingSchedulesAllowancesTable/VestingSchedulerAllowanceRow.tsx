@@ -96,8 +96,9 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
 
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // TODO: Return skeleton table
-  if (!vestingSchedulerAllowancesQuery.data) return <>Loading...</>;
+  if (!vestingSchedulerAllowancesQuery.data) {
+    return <VestingSchedulerAllowanceRowSkeleton />;
+  }
 
   const { tokenAllowance, flowOperatorPermissions, flowOperatorAllowance } =
     vestingSchedulerAllowancesQuery.data;

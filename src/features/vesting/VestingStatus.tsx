@@ -7,19 +7,21 @@ interface VestingStatusProps {
 }
 
 const VestingStatus: FC<VestingStatusProps> = ({ vestingSchedule }) => {
+  const { status } = vestingSchedule;
+
   const color = useMemo(() => {
-    if (vestingSchedule.status.isCliff) {
+    if (status.isCliff) {
       return "warning.main";
     }
 
-    if (vestingSchedule.status.isStreaming && !vestingSchedule.status.isError) {
+    if (status.isStreaming && !status.isError) {
       return "primary";
     }
 
-    if (vestingSchedule.status.isFinished) {
+    if (status.isFinished) {
       return "initial";
     }
-  }, [vestingSchedule]);
+  }, [status]);
 
   return (
     <Typography variant="h6" component="span" color={color}>

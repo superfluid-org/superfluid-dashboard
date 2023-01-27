@@ -2,8 +2,6 @@ import { useTheme } from "@mui/material";
 import Box from "@mui/material/Box";
 import Chart, { ChartDataset, ChartOptions, TooltipItem } from "chart.js/auto";
 import { format } from "date-fns";
-import { maxBy, minBy } from "lodash";
-import flatten from "lodash/fp/flatten";
 import merge from "lodash/fp/merge";
 import set from "lodash/fp/set";
 import mutateSet from "lodash/set";
@@ -77,7 +75,7 @@ const LineChart: FC<LineChartProps> = ({
       chart.destroy();
     };
 
-    // We do not want options to rebuild the chart
+    // We do not want options to destroy and rebuild the chart. We are updating it below instead.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [datasetsConfigCallbacks, height, theme]);
 
@@ -90,18 +88,7 @@ const LineChart: FC<LineChartProps> = ({
       mutateSet(currentChart.data.datasets, [index, "data"], dataset);
     });
 
-    // const allData = flatten(datasets);
-    // const minXAxisValue = minBy(allData, (dataPoint) => dataPoint.x)?.x || 0;
-    // const maxXAxisValue = maxBy(allData, (dataPoint) => dataPoint.x)?.x || 0;
-
-    // const spacing = (maxXAxisValue - minXAxisValue) / 100; // 1% of the y axis will be spacing or else clipping will occur.
-
-    // mutateSet(currentChart.options, "scales.x.min", minXAxisValue + spacing);
-    // mutateSet(currentChart.options, "scales.x.max", maxXAxisValue + spacing);
-
     currentChart.update();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chartRef, datasets]);
 
   useEffect(() => {
@@ -113,8 +100,6 @@ const LineChart: FC<LineChartProps> = ({
     mutateSet(currentChart, "options", newOptions);
 
     currentChart.update();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chartRef, options]);
 
   return (

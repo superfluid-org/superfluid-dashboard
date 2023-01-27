@@ -10,13 +10,13 @@ import { FC, useCallback } from "react";
 
 interface TableFilterOption {
   title: string;
-  value: any;
+  value: unknown;
 }
 
 interface TableFilterRowProps {
-  value: any;
+  value: unknown;
   options: TableFilterOption[];
-  onChange: (newValue: any) => void;
+  onChange: (newValue: unknown) => void;
 }
 
 const TableFilterRow: FC<TableFilterRowProps> = ({
@@ -28,11 +28,11 @@ const TableFilterRow: FC<TableFilterRowProps> = ({
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const getFilterBtnColor = useCallback(
-    (type: any) => (type === value ? "primary" : "secondary"),
+    (type: unknown) => (type === value ? "primary" : "secondary"),
     [value]
   );
 
-  const onFilterClick = (newValue: any) => () => onChange(newValue);
+  const onFilterClick = (newValue: unknown) => () => onChange(newValue);
 
   return (
     <TableRow>
@@ -40,7 +40,7 @@ const TableFilterRow: FC<TableFilterRowProps> = ({
         <Stack direction="row" alignItems="center" gap={1}>
           {options.map((option) => (
             <Button
-              key={option.value}
+              key={option.value as string}
               variant="textContained"
               size={isBelowMd ? "small" : "medium"}
               color={getFilterBtnColor(option.value)}
