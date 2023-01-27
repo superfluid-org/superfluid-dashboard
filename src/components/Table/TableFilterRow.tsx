@@ -28,7 +28,7 @@ function TableFilterRow<T extends Key>({
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const getFilterBtnColor = useCallback(
-    (type: string | number) => (type === value ? "primary" : "secondary"),
+    (type: T) => (type === value ? "primary" : "secondary"),
     [value]
   );
 

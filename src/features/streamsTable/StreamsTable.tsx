@@ -1,6 +1,7 @@
 import {
   alpha,
   Button,
+  Paper,
   Stack,
   Table,
   TableBody,
@@ -185,6 +186,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
 
   return (
     <TableContainer
+      component={Paper}
       sx={
         subTable
           ? {

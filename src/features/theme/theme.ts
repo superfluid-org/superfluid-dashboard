@@ -453,7 +453,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         styleOverrides: {
           root: {
             borderRadius: "12px",
-            border: getModeStyle("none", "1px solid"),
+            border: "1px solid",
             borderColor: theme.palette.other.outline,
           },
           rounded: {
@@ -1080,16 +1080,6 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             [theme.breakpoints.down("md")]: {
               paddingRight: theme.spacing(2),
             },
-          },
-        },
-      },
-      MuiTableContainer: {
-        styleOverrides: {
-          root: {
-            borderRadius: "20px",
-            border: "1px solid",
-            borderColor: theme.palette.other.outline,
-            boxShadow: theme.shadows[1],
           },
         },
       },

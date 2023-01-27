@@ -1,4 +1,5 @@
 import {
+  Paper,
   Table,
   TableBody,
   TableCell,
@@ -141,6 +142,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
   return (
     <TableContainer
       data-cy={network.slugName + "-token-snapshot-table"}
+      component={Paper}
       sx={{
         [theme.breakpoints.down("md")]: {
           mx: -2,
