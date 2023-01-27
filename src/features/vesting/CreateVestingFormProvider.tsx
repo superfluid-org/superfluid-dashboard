@@ -15,7 +15,10 @@ import { createHandleHigherOrderValidationErrorFunc } from "../../utils/createHa
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { networkDefinition } from "../network/networks";
+import {
+  networkDefinition,
+  vestingSupportedNetworks,
+} from "../network/networks";
 import {
   MAX_VESTING_DURATION_IN_SECONDS,
   MAX_VESTING_DURATION_IN_YEARS,
@@ -135,7 +138,11 @@ const CreateVestingFormProvider: FC<{
             context.createError
           );
 
-        if (!network.vestingContractAddress) {
+        const networkSupported = !!vestingSupportedNetworks.some(
+          (supportedNetwork) => supportedNetwork.id === network.id
+        );
+
+        if (!networkSupported) {
           handleHigherOrderValidationError({
             message: `The feature is not available on this network.`,
           });

@@ -544,6 +544,11 @@ export const testNetworks = networks.filter((network) => network.testnet);
 export const networkIDs = networks.map((network) => network.id);
 export const mainNetworkIDs = mainNetworks.map((network) => network.id);
 
+// The vesting contract might be deployed to more networks but we check for the existence of the Platform.;
+export const vestingSupportedNetworks = networks
+  .filter((network) => network.platformUrl)
+  .sort((n1, n2) => (!n1.testnet && n2.testnet ? -1 : 1));
+
 export const findNetworkByChainId = memoize((chainId: number) =>
   networks.find((network) => network.id === chainId)
 );

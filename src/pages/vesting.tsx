@@ -5,7 +5,11 @@ import ConnectOrImpersonate from "../components/ConnectOrImpersonate/ConnectOrIm
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import { useFeatureFlags } from "../features/featureFlags/FeatureFlagContext";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
-import { networkDefinition, networks } from "../features/network/networks";
+import {
+  networkDefinition,
+  networks,
+  vestingSupportedNetworks,
+} from "../features/network/networks";
 import NetworkSwitchLink from "../features/network/NetworkSwitchLink";
 import VestingHeader from "../features/vesting/VestingHeader";
 import VestingLayout from "../features/vesting/VestingLayout";
@@ -13,11 +17,7 @@ import VestingScheduleTables from "../features/vesting/VestingScheduleTables";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { NextPageWithLayout } from "./_app";
 
-const VESTING_SUPPORTED_NETWORKS = networks
-  .filter((network) => network.platformUrl)
-  .sort((n1, n2) => (!n1.testnet && n2.testnet ? -1 : 1)); // The vesting contract might be deployed to more networks but we check for the existence of the Platform.
-
-const VESTING_SUPPORTED_NETWORK_IDS = VESTING_SUPPORTED_NETWORKS.map(
+const VESTING_SUPPORTED_NETWORK_IDS = vestingSupportedNetworks.map(
   (network) => network.id
 );
 
@@ -28,7 +28,7 @@ const VestingNotSupportedCard = () => {
 
   const NetworkLinks = useMemo(
     () =>
-      VESTING_SUPPORTED_NETWORKS.map((network, index) => {
+      vestingSupportedNetworks.map((network, index) => {
         if (VESTING_SUPPORTED_NETWORK_IDS.length - 1 === index) {
           return (
             <NetworkSwitchLink
