@@ -8,6 +8,7 @@ import {
   ListItemIcon,
   ListItemText,
   Popover,
+  Typography,
   useTheme,
 } from "@mui/material";
 import Image from "next/image";
@@ -36,7 +37,7 @@ const MenuItemImage: FC<MenuItemImageProps> = ({ src, alt }) => (
 const MoreNavigationItem: FC = () => {
   const theme = useTheme();
 
-  const { setAccessCodeDialogOpen } = useLayoutContext();
+  const { setAccessCodeDialogContent } = useLayoutContext();
   const [moreMenuAnchor, setMoreMenuAnchor] = useState<HTMLElement | null>(
     null
   );
@@ -46,9 +47,42 @@ const MoreNavigationItem: FC = () => {
 
   const closeMoreMenu = () => setMoreMenuAnchor(null);
 
-  const openAccessCodeDialog = () => {
+  const openMainnetAccessCodeDialog = () => {
     closeMoreMenu();
-    setAccessCodeDialogOpen(true);
+    setAccessCodeDialogContent({
+      title: "Access Ethereum Mainnet",
+      description: (
+        <>
+          <Typography>
+            Enter your access code to unlock Ethereum Mainnet.
+          </Typography>
+          <Typography>
+            Apply for the access code{" "}
+            <Link
+              href="https://use.superfluid.finance/ethmainnet"
+              target="_blank"
+            >
+              here
+            </Link>
+            .
+          </Typography>
+        </>
+      ),
+    });
+  };
+
+  const openVestingAccessCodeDialog = () => {
+    closeMoreMenu();
+    setAccessCodeDialogContent({
+      title: "Access Vesting",
+      description: (
+        <Typography>
+          Unlock Vesting by entering your unique access code. With this feature,
+          you&apos;ll be able to set up vesting schedules and track your vesting
+          assets.
+        </Typography>
+      ),
+    });
   };
 
   return (
@@ -143,12 +177,22 @@ const MoreNavigationItem: FC = () => {
 
         <ListItemButton
           data-cy={"more-access-code-btn"}
-          onClick={openAccessCodeDialog}
+          onClick={openMainnetAccessCodeDialog}
         >
           <ListItemIcon>
             <QrCodeRoundedIcon sx={{ color: theme.palette.text.primary }} />
           </ListItemIcon>
-          <ListItemText>Access Code</ListItemText>
+          <ListItemText>Access Ethereum Mainnet</ListItemText>
+        </ListItemButton>
+
+        <ListItemButton
+          data-cy={"more-access-code-btn"}
+          onClick={openVestingAccessCodeDialog}
+        >
+          <ListItemIcon>
+            <QrCodeRoundedIcon sx={{ color: theme.palette.text.primary }} />
+          </ListItemIcon>
+          <ListItemText>Access Vesting</ListItemText>
         </ListItemButton>
       </Popover>
     </>

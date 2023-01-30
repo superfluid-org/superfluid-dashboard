@@ -2,20 +2,30 @@ import { useMediaQuery, useTheme } from "@mui/material";
 import { useRouter } from "next/router";
 import {
   createContext,
+  Dispatch,
   FC,
   PropsWithChildren,
+  ReactElement,
+  SetStateAction,
   useContext,
   useEffect,
   useState,
 } from "react";
+
+interface AccessCodeDialogContent {
+  title: string | ReactElement;
+  description: string | ReactElement;
+}
 
 const LayoutContext = createContext<{
   transactionDrawerOpen: boolean;
   setTransactionDrawerOpen: (open: boolean) => void;
   navigationDrawerOpen: boolean;
   setNavigationDrawerOpen: (open: boolean) => void;
-  accessCodeDialogOpen: boolean;
-  setAccessCodeDialogOpen: (open: boolean) => void;
+  accessCodeDialogContent: AccessCodeDialogContent | null;
+  setAccessCodeDialogContent: Dispatch<
+    SetStateAction<AccessCodeDialogContent | null>
+  >;
   previousRouterPath: string | null;
 }>(undefined!);
 
@@ -46,7 +56,8 @@ export const LayoutContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [navigationDrawerOpen, setNavigationDrawerOpen] = useState(
     !isSmallScreen
   );
-  const [accessCodeDialogOpen, setAccessCodeDialogOpen] = useState(false);
+  const [accessCodeDialogContent, setAccessCodeDialogContent] =
+    useState<AccessCodeDialogContent | null>(null);
 
   useEffect(() => {
     setNavigationDrawerOpen(!isSmallScreen);
@@ -60,8 +71,8 @@ export const LayoutContextProvider: FC<PropsWithChildren> = ({ children }) => {
         navigationDrawerOpen,
         setNavigationDrawerOpen,
         previousRouterPath,
-        accessCodeDialogOpen,
-        setAccessCodeDialogOpen,
+        accessCodeDialogContent,
+        setAccessCodeDialogContent,
       }}
     >
       {children}

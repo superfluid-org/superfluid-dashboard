@@ -54,11 +54,11 @@ const Layout: FC<PropsWithChildren> = ({ children }) => {
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const {
     transactionDrawerOpen,
-    accessCodeDialogOpen,
-    setAccessCodeDialogOpen,
+    accessCodeDialogContent,
+    setAccessCodeDialogContent,
   } = useLayoutContext();
 
-  const closeAccessCodeDialog = () => setAccessCodeDialogOpen(false);
+  const closeAccessCodeDialog = () => setAccessCodeDialogContent(null);
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", scrollY: "auto" }}>
@@ -71,8 +71,12 @@ const Layout: FC<PropsWithChildren> = ({ children }) => {
         {children}
       </Main>
       <TransactionDrawer />
-      {accessCodeDialogOpen && (
-        <AccessCodeDialog onClose={closeAccessCodeDialog} />
+      {accessCodeDialogContent && (
+        <AccessCodeDialog
+          title={accessCodeDialogContent.title}
+          description={accessCodeDialogContent.description}
+          onClose={closeAccessCodeDialog}
+        />
       )}
     </Box>
   );
