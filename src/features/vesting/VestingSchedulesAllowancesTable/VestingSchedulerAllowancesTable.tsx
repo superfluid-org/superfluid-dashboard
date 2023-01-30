@@ -15,7 +15,6 @@ import NoContentPaper from "../../../components/NoContent/NoContentPaper";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import TooltipIcon from "../../common/TooltipIcon";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
-import { platformApi } from "../../redux/platformApi/platformApi";
 import { rpcApi } from "../../redux/store";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import VestingSchedulerAllowanceRow, {

@@ -44,8 +44,8 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
   >
     <Typography variant="body1" color="secondary">
       {whitelisted
-        ? "Vesting schedules are automated by Superfluid Finance."
-        : "Vesting schedule automation is user responsibility."}
+        ? "Keepers arranged by Superfluid."
+        : "Keeper arrangements are user responsibility."}
     </Typography>
 
     {network.vestingContractAddress && (
