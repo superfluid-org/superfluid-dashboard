@@ -16,3 +16,27 @@ Feature: Common element test cases
     And The navigation drawer shows that "ongoingStreamAccount" is "Connected"
     And User changes their network to "optimism"
     And The navigation drawer shows that "ongoingStreamAccount" is "Wrong network"
+
+  Scenario: Using access code to see ethereum mainnet
+    Given "Dashboard page" is open without connecting a wallet
+    And User opens the dashboard network selection dropdown
+    Then Ethereum mainnet is not available in the network selection dropdown
+    And User closes the dropdown
+    And User opens the navigation more menu
+    And User opens the access code menu
+    And User types "724ZX_ENS" in the access code menu
+    And User submits the access code
+    Then Access code window is not visible
+    And User opens the dashboard network selection dropdown
+    And Ethereum mainnet is visible in the network selection dropdown
+
+  Scenario: Submitting wrong access codes
+    Given "Dashboard page" is open without connecting a wallet
+    And User opens the navigation more menu
+    And User opens the access code menu
+    And User types "Testing" in the access code menu
+    And User submits the access code
+    Then Invalid Access Code error is shown
+    And User closes the access code dialog
+    And User opens the dashboard network selection dropdown
+    Then Ethereum mainnet is not available in the network selection dropdown

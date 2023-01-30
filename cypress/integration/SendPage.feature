@@ -77,6 +77,13 @@ Feature: Send Page test cases
     And User accepts the risk warning
     And Change network button is visible with a message asking user to switch to "polygon"
 
+   Scenario: Ethereum mainnet uses minimum deposit instead of 4 hours of flow
+     Given Transactional account john is connected to the dashboard on ethereum
+     And User clicks on the "send" navigation button
+     And User fills all stream inputs "with" a wallet connected
+     Then The start stream button is disabled
+     And The preview buffer amount shown and warning sections shows 69 tokens are needed for the buffer
+
   @skip @MikkSaidHeWillTakeAlook
   Scenario: Tokens getting sorted by amount in the token selection screen
     Given "Dashboard Page" is open without connecting a wallet

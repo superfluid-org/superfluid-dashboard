@@ -182,3 +182,9 @@ Given(/^User tries to start or modify the stream and the first transaction dialo
 Given(/^User tries to cancel the stream and the first transaction dialogs are visible on "([^"]*)"$/, function (network:string) {
     SendPage.cancelStreamAndVerifyApprovalDialogs(network)
 });
+Then(/^The start stream button is disabled$/, function () {
+    SendPage.validateDisabledSendButton()
+});
+Then(/^The preview buffer amount shown and warning sections shows (\d+) tokens are needed for the buffer$/, function () {
+    SendPage.validateEthereumMainnetMinimumDeposit()
+});

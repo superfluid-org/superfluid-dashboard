@@ -41,6 +41,10 @@ const NAVIGATION_MORE_BUTTON = "[data-cy=nav-more-button]"
 const ACCESS_CODE_BUTTON = "[data-cy=more-access-code-btn]"
 const ACCESS_CODE_INPUT = "[data-cy=access-code-input]"
 const ACCESS_CODE_SUBMIT = "[data-cy=submit-access-code]"
+const CLOSE_BUTTON = "[data-testid=CloseRoundedIcon]"
+const ACCESS_CODE_DIALOG = "[data-cy=access-code-dialog]"
+const ACCESS_CODE_ERROR = "[data-cy=access-code-error]"
+const ACCESS_CODE_MESSAGE = "[data-cy=access-code-error-msg]"
 
 export class Common extends BasePage {
     static clickNavBarButton(button: string) {
@@ -328,5 +332,46 @@ export class Common extends BasePage {
 
     static transactionRejectedErrorIsShown() {
         cy.get(TX_ERROR,{timeout:45000}).should("have.text","Transaction Rejected")
+    }
+
+    static validateNoEthereumMainnetShownInDropdown() {
+        this.doesNotExist("[data-cy=ethereum-button]")
+    }
+
+    static openNavigationMoreMenu() {
+        this.click(NAVIGATION_MORE_BUTTON)
+    }
+
+    static openAccessCodeMenu() {
+        this.click(ACCESS_CODE_BUTTON)
+    }
+
+    static inputAccessCode(code:string) {
+        this.type(ACCESS_CODE_INPUT,code)
+    }
+
+    static submitAccessCode() {
+        this.click(ACCESS_CODE_SUBMIT)
+    }
+
+    static validateAccessCodeWindowNotExisting() {
+        this.doesNotExist(ACCESS_CODE_DIALOG)
+    }
+
+    static validateEthMainnetVisibleInNetworkSelection() {
+        this.isVisible("[data-cy=ethereum-button]")
+    }
+
+    static validateInvalidAccessCodeError() {
+        this.isVisible(ACCESS_CODE_ERROR)
+        this.hasText(ACCESS_CODE_MESSAGE,"Invalid Access Code!")
+    }
+
+    static closeAccessCodeDialog() {
+        this.click(CLOSE_BUTTON)
+    }
+
+    static openDashboardNetworkSelectionDropdown() {
+        this.click(TOP_BAR_NETWORK_BUTTON)
     }
 }

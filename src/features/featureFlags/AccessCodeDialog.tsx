@@ -44,6 +44,7 @@ const AccessCodeDialog: FC<AccessCodeDialogProps> = ({ onClose }) => {
 
   return (
     <ResponsiveDialog
+      data-cy={"access-code-dialog"}
       open
       onClose={onClose}
       PaperProps={{ sx: { borderRadius: "20px", maxWidth: 520 } }}
@@ -81,8 +82,8 @@ const AccessCodeDialog: FC<AccessCodeDialogProps> = ({ onClose }) => {
       <DialogContent sx={{ px: 4, pb: 4 }}>
         <Stack gap={2}>
           {isInvalidCode && (
-            <Alert severity="error">
-              <AlertTitle>Invalid Access Code!</AlertTitle>
+            <Alert data-cy="access-code-error" severity="error">
+              <AlertTitle data-cy={"access-code-error-msg"}>Invalid Access Code!</AlertTitle>
             </Alert>
           )}
           <TextField

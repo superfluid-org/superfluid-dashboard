@@ -121,6 +121,36 @@ Given(/^User disconnects their wallet from the dashboard$/,  () => {
 Given(/^User chooses to connect the mock wallet$/,  () => {
     Common.clickMockWallet()
 });
+Then(/^Ethereum mainnet is not available in the network selection dropdown$/, function () {
+    Common.validateNoEthereumMainnetShownInDropdown()
+});
+Then(/^User opens the navigation more menu$/, function () {
+    Common.openNavigationMoreMenu()
+});
+Then(/^User opens the access code menu$/, function () {
+    Common.openAccessCodeMenu()
+});
+Then(/^User types "([^"]*)" in the access code menu$/, function (code:string) {
+    Common.inputAccessCode(code)
+});
+Then(/^User submits the access code$/, function () {
+    Common.submitAccessCode()
+});
+Then(/^Access code window is not visible$/, function () {
+    Common.validateAccessCodeWindowNotExisting()
+});
+Then(/^Ethereum mainnet is visible in the network selection dropdown$/, function () {
+    Common.validateEthMainnetVisibleInNetworkSelection()
+});
+Then(/^Invalid Access Code error is shown$/, function () {
+    Common.validateInvalidAccessCodeError()
+});
+Then(/^User closes the access code dialog$/, function () {
+    Common.closeAccessCodeDialog()
+});
+Given(/^User opens the dashboard network selection dropdown$/, function () {
+    Common.openDashboardNetworkSelectionDropdown()
+});
 Given(/^HDWallet transactions are rejected$/, function () {
     Common.rejectTransactions()
 });
