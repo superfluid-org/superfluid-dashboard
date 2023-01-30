@@ -35,6 +35,7 @@ import {
   Activity,
   mapActivitiesFromEvents,
 } from "../../../utils/activityUtils";
+import { dateNowSeconds } from "../../../utils/dateUtils";
 import { calculateVestingScheduleAllocated } from "../../../utils/vestingUtils";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import Page404 from "../../404";
@@ -122,6 +123,76 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
   });
 
   const vestingSchedule = vestingScheduleQuery.data?.vestingSchedule;
+  const now = dateNowSeconds();
+
+  // Extreme edge-case: Handle a situation where stream is manually cancelled after the vesting ends.
+  const { lastVestingStreamPeriod } = subgraphApi.useStreamPeriodsQuery(
+    vestingSchedule && now > vestingSchedule.endDate
+      ? {
+          chainId: network.id,
+          order: {
+            orderBy: "startedAtTimestamp",
+            orderDirection: "desc",
+          },
+          filter: {
+            token: vestingSchedule.superToken,
+            sender: vestingSchedule.sender,
+            receiver: vestingSchedule.receiver,
+            startedAtTimestamp_lte: vestingSchedule.endDate.toString(),
+          },
+          pagination: {
+            take: 1,
+          },
+        }
+      : skipToken,
+    {
+      selectFromResult: ({ data }) => ({
+        lastVestingStreamPeriod: data?.items?.[0] ?? null,
+      }),
+    }
+  );
+
+  // Extreme edge-case: Handle a situation where stream was flowing already before vesting started.
+  const { beforeVestingStreamPeriod } = subgraphApi.useStreamPeriodsQuery(
+    vestingSchedule && now > vestingSchedule.endDate
+      ? {
+          chainId: network.id,
+          order: {
+            orderBy: "startedAtTimestamp",
+            orderDirection: "desc",
+          },
+          filter: {
+            token: vestingSchedule.superToken,
+            sender: vestingSchedule.sender,
+            receiver: vestingSchedule.receiver,
+            startedAtTimestamp_lt: vestingSchedule.startDate.toString(),
+          },
+          pagination: {
+            take: 1,
+          },
+        }
+      : skipToken,
+    {
+      selectFromResult: ({ data }) => {
+        const possiblyTooEarlyStreamPeriod = data?.items?.[0] ?? null;
+        if (vestingSchedule && possiblyTooEarlyStreamPeriod) {
+          const isStillFlowing =
+            !possiblyTooEarlyStreamPeriod.stoppedAtTimestamp;
+          const stoppedAfterVestingStart =
+            vestingSchedule.startDate <
+            (possiblyTooEarlyStreamPeriod?.stoppedAtTimestamp ?? 0);
+          if (isStillFlowing || stoppedAfterVestingStart) {
+            return {
+              beforeVestingStreamPeriod: possiblyTooEarlyStreamPeriod,
+            };
+          }
+        }
+        return {
+          beforeVestingStreamPeriod: null,
+        };
+      },
+    }
+  );
 
   const { activities, ...vestingEventsQuery } = subgraphApi.useEventsQuery(
     vestingSchedule
@@ -134,12 +205,15 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
               vestingSchedule.sender,
               vestingSchedule.receiver,
             ],
-            timestamp_gte:
-              vestingSchedule.cliffAndFlowExecutedAt?.toString() ??
-              vestingSchedule.startDate.toString(), // TODO(KK): Probably safe to always look from "start date"?
+            timestamp_gte: beforeVestingStreamPeriod
+              ? beforeVestingStreamPeriod.startedAtTimestamp.toString()
+              : vestingSchedule.startDate.toString(),
             timestamp_lte:
               vestingSchedule.endExecutedAt?.toString() ??
-              vestingSchedule.endDate.toString(), // TODO(KK): Use now over "end date"?
+              (lastVestingStreamPeriod
+                ? lastVestingStreamPeriod.stoppedAtTimestamp?.toString() ??
+                  dateNowSeconds.toString()
+                : vestingSchedule.endDate.toString()),
           },
         }
       : skipToken,
@@ -174,7 +248,6 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
 
   if (!vestingSchedule || !token) return <Page404 />;
 
-  console.log({ tokenPrice });
   // const urlToShare = `${config.appUrl}/vesting/${network.slugName}/${id}`;
 
   return (

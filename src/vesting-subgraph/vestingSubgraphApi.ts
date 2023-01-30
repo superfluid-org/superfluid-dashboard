@@ -1,3 +1,4 @@
+import { miniSerializeError } from "@reduxjs/toolkit";
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { findNetworkByChainId } from "../features/network/networks";
 import {
@@ -82,9 +83,16 @@ export const vestingSubgraphApi = createApi({
         if (!sdk) {
           throw new Error("GraphSDK not available for network.");
         }
-        return {
-          data: await sdk.poll(variables),
-        };
+        try {
+          return {
+            data: await sdk.poll(variables),
+          };
+        } catch (e) {
+          return {
+            data: undefined,
+            error: miniSerializeError(e),
+          };
+        }
       },
     }),
   }),
