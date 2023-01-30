@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
+import PrimaryLink from "../common/Link";
 import { FC, MouseEvent, useState } from "react";
 import { useLayoutContext } from "./LayoutContext";
 
@@ -58,12 +59,12 @@ const MoreNavigationItem: FC = () => {
           </Typography>
           <Typography>
             Apply for the access code{" "}
-            <Link
+            <PrimaryLink
               href="https://use.superfluid.finance/ethmainnet"
               target="_blank"
             >
               here
-            </Link>
+            </PrimaryLink>
             .
           </Typography>
         </>
@@ -185,10 +186,7 @@ const MoreNavigationItem: FC = () => {
           <ListItemText>Access Ethereum Mainnet</ListItemText>
         </ListItemButton>
 
-        <ListItemButton
-          data-cy={"more-access-code-btn"}
-          onClick={openVestingAccessCodeDialog}
-        >
+        <ListItemButton onClick={openVestingAccessCodeDialog}>
           <ListItemIcon>
             <QrCodeRoundedIcon sx={{ color: theme.palette.text.primary }} />
           </ListItemIcon>
