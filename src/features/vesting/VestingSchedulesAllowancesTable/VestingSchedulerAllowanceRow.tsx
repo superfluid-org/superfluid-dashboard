@@ -2,11 +2,11 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import DangerousRoundedIcon from "@mui/icons-material/DangerousRounded";
 import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
-import { Skeleton } from "@mui/lab";
 import {
   Collapse,
   IconButton,
   ListItemText,
+  Skeleton,
   Stack,
   TableCell,
   TableRow,
