@@ -89,7 +89,6 @@ export const vestingSubgraphApi = createApi({
           };
         } catch (e) {
           return {
-            data: undefined,
             error: miniSerializeError(e),
           };
         }
