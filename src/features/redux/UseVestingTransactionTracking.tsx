@@ -59,6 +59,7 @@ export const useVestingTransactionTracking = () => {
                 state.pendingUpdates,
                 payload.id
               );
+              console.warn("Pending update not found.");
               if (pendingUpdate?.relevantSubgraph === "Vesting") {
                 dispatch(pendingUpdateSlice.actions.removeOne(payload.id));
                 dispatch(

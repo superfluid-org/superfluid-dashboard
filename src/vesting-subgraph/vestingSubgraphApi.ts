@@ -1,5 +1,6 @@
 import { miniSerializeError } from "@reduxjs/toolkit";
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
+import { getSerializeQueryArgs } from "@superfluid-finance/sdk-redux";
 import { findNetworkByChainId } from "../features/network/networks";
 import {
   mapSubgraphVestingSchedule,
@@ -28,6 +29,8 @@ export const vestingSubgraphApi = createApi({
   tagTypes: ["GENERAL", "SPECIFIC"], // TODO(KK): Make SDK be able to invalidate another slice!
   refetchOnFocus: true,
   refetchOnReconnect: true,
+  keepUnusedDataFor: 180,
+  serializeQueryArgs: getSerializeQueryArgs(),
   endpoints: (build) => ({
     getVestingSchedule: build.query<
       { vestingSchedule: VestingSchedule | null },
