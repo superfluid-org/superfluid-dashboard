@@ -13,7 +13,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { FC, MouseEvent, useState } from "react";
-import AccessCodeDialog from "../featureFlags/AccessCodeDialog";
+import { useLayoutContext } from "./LayoutContext";
 
 interface MenuItemImageProps {
   src: string;
@@ -36,7 +36,7 @@ const MenuItemImage: FC<MenuItemImageProps> = ({ src, alt }) => (
 const MoreNavigationItem: FC = () => {
   const theme = useTheme();
 
-  const [showAccessCodeDialog, setShowAccessCodeDialog] = useState(false);
+  const { setAccessCodeDialogOpen } = useLayoutContext();
   const [moreMenuAnchor, setMoreMenuAnchor] = useState<HTMLElement | null>(
     null
   );
@@ -48,10 +48,8 @@ const MoreNavigationItem: FC = () => {
 
   const openAccessCodeDialog = () => {
     closeMoreMenu();
-    setShowAccessCodeDialog(true);
+    setAccessCodeDialogOpen(true);
   };
-
-  const closeAccessCodeDialog = () => setShowAccessCodeDialog(false);
 
   return (
     <>
@@ -153,10 +151,6 @@ const MoreNavigationItem: FC = () => {
           <ListItemText>Access Code</ListItemText>
         </ListItemButton>
       </Popover>
-
-      {showAccessCodeDialog && (
-        <AccessCodeDialog onClose={closeAccessCodeDialog} />
-      )}
     </>
   );
 };

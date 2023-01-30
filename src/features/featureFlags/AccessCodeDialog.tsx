@@ -10,12 +10,18 @@ import {
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { ChangeEvent, FC, SyntheticEvent, useState } from "react";
+import { ChangeEvent, FC, useState } from "react";
 import { useDispatch } from "react-redux";
 import Link from "../common/Link";
 import ResponsiveDialog from "../common/ResponsiveDialog";
-import { enableMainnetFeature } from "../flags/flags.slice";
-import { MAINNET_FEATURE_CODES } from "./FeatureFlagContext";
+import {
+  enableMainnetFeature,
+  enableVestingFeature,
+} from "../flags/flags.slice";
+import {
+  MAINNET_FEATURE_CODES,
+  VESTING_FEATURE_CODES,
+} from "./FeatureFlagContext";
 
 interface AccessCodeDialogProps {
   onClose: () => void;
@@ -36,6 +42,9 @@ const AccessCodeDialog: FC<AccessCodeDialogProps> = ({ onClose }) => {
   const submitCode = () => {
     if (MAINNET_FEATURE_CODES.includes(featureCode)) {
       dispatch(enableMainnetFeature());
+      onClose();
+    } else if (VESTING_FEATURE_CODES.includes(featureCode)) {
+      dispatch(enableVestingFeature());
       onClose();
     } else {
       setIsInvalidCode(true);
@@ -91,6 +100,7 @@ const AccessCodeDialog: FC<AccessCodeDialogProps> = ({ onClose }) => {
             placeholder="Enter Access Code"
             variant="outlined"
             onChange={onFeatureCodeChange}
+            autoComplete="off"
           />
           <Button
             data-cy={"submit-access-code"}

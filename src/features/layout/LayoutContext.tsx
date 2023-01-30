@@ -14,6 +14,8 @@ const LayoutContext = createContext<{
   setTransactionDrawerOpen: (open: boolean) => void;
   navigationDrawerOpen: boolean;
   setNavigationDrawerOpen: (open: boolean) => void;
+  accessCodeDialogOpen: boolean;
+  setAccessCodeDialogOpen: (open: boolean) => void;
   previousRouterPath: string | null;
 }>(undefined!);
 
@@ -44,6 +46,7 @@ export const LayoutContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [navigationDrawerOpen, setNavigationDrawerOpen] = useState(
     !isSmallScreen
   );
+  const [accessCodeDialogOpen, setAccessCodeDialogOpen] = useState(false);
 
   useEffect(() => {
     setNavigationDrawerOpen(!isSmallScreen);
@@ -57,6 +60,8 @@ export const LayoutContextProvider: FC<PropsWithChildren> = ({ children }) => {
         navigationDrawerOpen,
         setNavigationDrawerOpen,
         previousRouterPath,
+        accessCodeDialogOpen,
+        setAccessCodeDialogOpen,
       }}
     >
       {children}

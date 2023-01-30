@@ -22,6 +22,8 @@ interface FeatureFlagContextValue {
   isMainnetEnabled: boolean;
 }
 
+export const VESTING_FEATURE_CODES = ["98S_VEST"];
+
 export const MAINNET_FEATURE_CODES = [
   "724ZX_ENS",
   "462T_MINERVA",
@@ -39,30 +41,29 @@ export const FeatureFlagProvider: FC<PropsWithChildren> = ({ children }) => {
 
   useEffect(() => {
     if (router.isReady) {
-      const { enable_experimental_vesting_feature, code, ...query } =
-        router.query;
+      const { code, ...query } = router.query;
 
-      const enableVesting =
-        !isUndefined(enable_experimental_vesting_feature) && !isVestingEnabled;
+      if (isString(code)) {
+        const enableVesting =
+          !isVestingEnabled && VESTING_FEATURE_CODES.includes(code);
 
-      const enableMainnet =
-        isString(code) &&
-        !isMainnetEnabled &&
-        MAINNET_FEATURE_CODES.includes(code);
+        const enableMainnet =
+          !isMainnetEnabled && MAINNET_FEATURE_CODES.includes(code);
 
-      if (enableVesting) dispatch(enableVestingFeature());
-      if (enableMainnet) dispatch(enableMainnetFeature());
+        if (enableVesting) dispatch(enableVestingFeature());
+        if (enableMainnet) dispatch(enableMainnetFeature());
 
-      if (enableVesting || enableMainnet) {
-        router.replace(
-          {
-            query,
-          },
-          undefined,
-          {
-            shallow: true,
-          }
-        );
+        if (enableVesting || enableMainnet) {
+          router.replace(
+            {
+              query,
+            },
+            undefined,
+            {
+              shallow: true,
+            }
+          );
+        }
       }
     }
   }, [router.isReady]);
