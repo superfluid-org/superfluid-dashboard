@@ -64,7 +64,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     isFinished: true,
     isCliff: false,
     isStreaming: false,
-    isError: false,
+    isError: true,
     isDeleted: false,
   },
   EndCompensationFailed: {

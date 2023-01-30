@@ -181,7 +181,9 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
             <TableCell>Allocated</TableCell>
             <TableCell>Vested</TableCell>
             <TableCell sx={{ pr: 2 }}>Vesting Start / End</TableCell>
-            <TableCell sx={{ pr: 2, pl: 0, width: 0 }}>Status</TableCell>
+            <TableCell width="140px" sx={{ pr: 2, pl: 0 }}>
+              Status
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
