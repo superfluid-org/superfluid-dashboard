@@ -3358,7 +3358,7 @@
   version "1.1.0"
   resolved "git+https://github.com/superfluid-finance/metadata.git#69f9e0dc756f5e55164e9a270b8c0c61c0284aae"
 
-"@superfluid-finance/sdk-core@0.6.1":
+"@superfluid-finance/sdk-core@^0.6.1":
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-core/-/sdk-core-0.6.1.tgz#1d23930e2b8526badcab0da5bf872c7d0b4624df"
   integrity sha512-JjfzXeHdRKPrEo8JPPY+ayU9Cb3kt5uOOICUdoTumkyuDgED1ZKZLjQtGvXigooFTLmSaeszA0HAMjWuFFA6wA==
@@ -3371,10 +3371,10 @@
     lodash "^4.17.21"
     tsify "^5.0.4"
 
-"@superfluid-finance/sdk-redux@^0.4.1-dev.e038cad.0":
-  version "0.4.1-dev.e038cad.0"
-  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-redux/-/sdk-redux-0.4.1-dev.e038cad.0.tgz#3cbb0211d04d1f8a94a61c20c285ed9d3df6a4f7"
-  integrity sha512-gT2qnJlZZA0UqHJOVV/IqtwGaIubhPqqpBqtJ1tuB5OMbwn3q/kMdlmJPEUMihHeSZFS/fZxkcej9Kgl9lH/DQ==
+"@superfluid-finance/sdk-redux@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-redux/-/sdk-redux-0.4.0.tgz#252f03687372043a8d253339fb92e15a81bde02a"
+  integrity sha512-BRFuU5LW2EJABIFs2oIszqZdE1/aCOkkSAXXlf0qoHw2r2X70srVtuqu7N7h8GvngkM3LQE4Xex5siFcciNidA==
   dependencies:
     graphql-request "^5.0.0"
     lodash "^4.17.21"
