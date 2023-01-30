@@ -10,6 +10,10 @@ const VestingStatus: FC<VestingStatusProps> = ({ vestingSchedule }) => {
   const { status } = vestingSchedule;
 
   const color = useMemo(() => {
+    if (status.isError) {
+      return "error.main";
+    }
+
     if (status.isCliff) {
       return "warning.main";
     }
@@ -24,7 +28,7 @@ const VestingStatus: FC<VestingStatusProps> = ({ vestingSchedule }) => {
   }, [status]);
 
   return (
-    <Typography variant="h6" component="span" color={color}>
+    <Typography variant="h7" component="span" color={color}>
       {vestingSchedule.status.title}
     </Typography>
   );
