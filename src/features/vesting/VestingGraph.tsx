@@ -1,9 +1,9 @@
 import { useTheme } from "@mui/material";
 import { ChartOptions } from "chart.js";
-import { fromUnixTime, getUnixTime, max, min } from "date-fns";
+import { fromUnixTime, max, min } from "date-fns";
 import { formatEther } from "ethers/lib/utils";
-import { FC, useCallback, useMemo } from "react";
-import LineChart, { DataPoint } from "../../components/Chart/LineChart";
+import { FC, useMemo } from "react";
+import LineChart from "../../components/Chart/LineChart";
 import { VestingActivities } from "../../pages/vesting/[_network]/[_id]";
 import {
   buildDefaultDatasetConf,

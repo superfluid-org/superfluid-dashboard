@@ -9,11 +9,22 @@ import { VestingSchedule } from "../features/vesting/types";
 import { VestingActivities } from "../pages/vesting/[_network]/[_id]";
 import { TokenBalance, mapTokenBalancesToDataPoints } from "./chartUtils";
 import { getDatesBetween } from "./dateUtils";
+import { Activity } from "./activityUtils";
+import { FlowUpdatedEvent } from "@superfluid-finance/sdk-core";
 
 export function mapVestingActivitiesToTokenBalances(
   vestingActivities: VestingActivities,
   vestingSchedule: VestingSchedule
 ) {
+  const lastFlowState = maxBy(
+    (activity) => activity.keyEvent.timestamp,
+    vestingActivities
+      .filter((activity) => activity.keyEvent.name === "FlowUpdated")
+      .filter(
+        (activity) => activity.keyEvent.timestamp <= vestingSchedule.startDate
+      )
+  );
+
   return orderBy(
     (activity) => activity.keyEvent.timestamp,
     "asc",
@@ -62,7 +73,9 @@ export function mapVestingActivitiesToTokenBalances(
     [
       {
         balance: "0",
-        totalNetFlowRate: "0",
+        totalNetFlowRate:
+          (lastFlowState as Activity<FlowUpdatedEvent>)?.keyEvent.flowRate ||
+          "0",
         timestamp: Number(vestingSchedule.startDate),
       } as TokenBalance,
     ] as TokenBalance[]
