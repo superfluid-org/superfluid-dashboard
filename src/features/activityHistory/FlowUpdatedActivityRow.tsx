@@ -41,7 +41,7 @@ interface FlowUpdatedActivityRowProps extends Activity<FlowUpdatedEvent> {
   dateFormat?: string;
 }
 
-const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
+const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
   keyEvent,
   network,
   dateFormat = "HH:mm",
