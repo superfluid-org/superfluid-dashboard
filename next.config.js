@@ -53,8 +53,29 @@ const moduleExports = {
   swcMinify: false, // Recommended by next-transpile-modules... BUT Chart.js has problems with it so it needs to be turned off: https://github.com/chartjs/Chart.js/issues/10673
   productionBrowserSourceMaps: false, // Sentry will override this to `true`...
   sentry: {
-    hideSourceMaps: true // If this not specified then Sentry will expose the production source maps. 
-  }
+    hideSourceMaps: true, // If this not specified then Sentry will expose the production source maps.
+  },
+  // Modularize imports to prevent compilation of unused modules.
+  // More info here: https://nextjs.org/docs/advanced-features/compiler
+  experimental: {
+    modularizeImports: {
+      lodash: {
+        transform: "lodash/{{member}}",
+      },
+      "date-fns": {
+        transform: "date-fns/{{member}}",
+      },
+      "@mui/material": {
+        transform: "@mui/material/{{member}}",
+      },
+      "@mui/lab": {
+        transform: "@mui/lab/{{member}}",
+      },
+      "@mui/icons-material/?(((\\w*)?/?)*)": {
+        transform: "@mui/icons-material/{{ matches.[1] }}/{{member}}",
+      },
+    },
+  },
 };
 
 module.exports = withTM(withSentryIfNecessary(moduleExports));
