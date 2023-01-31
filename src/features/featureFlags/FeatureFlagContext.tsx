@@ -11,9 +11,8 @@ import {
 import {
   enableMainnetFeature,
   enableVestingFeature,
-  Flag,
 } from "../flags/flags.slice";
-import { useHasFlag } from "../flags/flagsHooks";
+import { useMainnetEnabled, useVestingEnabled } from "../flags/flagsHooks";
 import { useAppDispatch } from "../redux/store";
 
 const FeatureFlagContext = createContext<FeatureFlagContextValue>(null!);
@@ -23,51 +22,48 @@ interface FeatureFlagContextValue {
   isMainnetEnabled: boolean;
 }
 
+export const VESTING_FEATURE_CODES = ["98S_VEST"];
+
 export const MAINNET_FEATURE_CODES = [
   "724ZX_ENS",
   "462T_MINERVA",
   "916G_TOKENOPS",
 ];
 
+// TODO: (M) IMO we do not need a separate provider for this, just a features selector hook for flags feature.
+// We could just create a HOC component to manage "code" query params.
 export const FeatureFlagProvider: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const isVestingEnabled = useHasFlag({
-    id: Flag.VestingFeature,
-    type: Flag.VestingFeature,
-  });
-
-  const isMainnetEnabled = useHasFlag({
-    type: Flag.MainnetFeature,
-  });
+  const isVestingEnabled = useVestingEnabled();
+  const isMainnetEnabled = useMainnetEnabled();
 
   useEffect(() => {
     if (router.isReady) {
-      const { enable_experimental_vesting_feature, code, ...query } =
-        router.query;
+      const { code, ...query } = router.query;
 
-      const enableVesting =
-        !isUndefined(enable_experimental_vesting_feature) && !isVestingEnabled;
+      if (isString(code)) {
+        const enableVesting =
+          !isVestingEnabled && VESTING_FEATURE_CODES.includes(code);
 
-      const enableMainnet =
-        isString(code) &&
-        !isMainnetEnabled &&
-        MAINNET_FEATURE_CODES.includes(code);
+        const enableMainnet =
+          !isMainnetEnabled && MAINNET_FEATURE_CODES.includes(code);
 
-      if (enableVesting) dispatch(enableVestingFeature());
-      if (enableMainnet) dispatch(enableMainnetFeature());
+        if (enableVesting) dispatch(enableVestingFeature());
+        if (enableMainnet) dispatch(enableMainnetFeature());
 
-      if (enableVesting || enableMainnet) {
-        router.replace(
-          {
-            query,
-          },
-          undefined,
-          {
-            shallow: true,
-          }
-        );
+        if (enableVesting || enableMainnet) {
+          router.replace(
+            {
+              query,
+            },
+            undefined,
+            {
+              shallow: true,
+            }
+          );
+        }
       }
     }
   }, [router.isReady]);

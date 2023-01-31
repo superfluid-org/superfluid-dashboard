@@ -1,24 +1,17 @@
 import { useRouter } from "next/router";
 import { useCallback } from "react";
+import { useLayoutContext } from "../features/layout/LayoutContext";
 
-const isDocumentReferrerSameAsOrigin = () => {
-  try {
-    const referrer = new URL(document.referrer);
-    return referrer.origin === location.origin;
-  } catch (invalid_url_error) {
-    return false;
-  }
-};
-
-const useNavigateBack = () => {
+const useNavigateBack = (fallbackPath = "/") => {
   const router = useRouter();
+  const { previousRouterPath } = useLayoutContext();
 
   return useCallback(
     () =>
-      isDocumentReferrerSameAsOrigin()
-        ? void router.back()
-        : void router.push("/"),
-    [router]
+      previousRouterPath
+        ? void router.push(previousRouterPath)
+        : void router.push(fallbackPath),
+    [router, previousRouterPath, fallbackPath]
   );
 };
 

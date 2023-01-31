@@ -1,5 +1,3 @@
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import {
   ListItemText,
   Stack,
@@ -22,6 +20,8 @@ import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { VestingSchedule } from "./types";
 import { useVestingToken } from "./useVestingToken";
+import VestedBalance from "./VestedBalance";
+import VestingStatus from "./VestingStatus";
 
 interface VestingRowProps {
   network: Network;
@@ -44,6 +44,7 @@ const VestingRow: FC<VestingRowProps> = ({
     endDate,
     startDate,
     pendingCreate,
+    cliffAndFlowDate,
   } = vestingSchedule;
 
   const pendingDelete = usePendingVestingScheduleDelete({
@@ -58,12 +59,11 @@ const VestingRow: FC<VestingRowProps> = ({
   const tokenQuery = useVestingToken(network, superToken);
 
   const totalAmount = useMemo(() => {
-    return BigNumber.from(endDate)
-      .sub(BigNumber.from(cliffDate))
+    return BigNumber.from(endDate - cliffAndFlowDate)
       .mul(BigNumber.from(flowRate))
       .add(BigNumber.from(cliffAmount))
       .toString();
-  }, [flowRate, endDate, cliffDate, cliffAmount]);
+  }, [flowRate, endDate, cliffAndFlowDate, cliffAmount]);
 
   const isOutgoing = sender.toLowerCase() === visibleAddress?.toLowerCase();
 
@@ -76,7 +76,6 @@ const VestingRow: FC<VestingRowProps> = ({
     >
       <TableCell>
         <Stack direction="row" alignItems="center" gap={1.5}>
-          {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
           <AddressAvatar
             address={isOutgoing ? receiver : sender}
             AvatarProps={{
@@ -91,43 +90,37 @@ const VestingRow: FC<VestingRowProps> = ({
           </AddressCopyTooltip>
         </Stack>
       </TableCell>
-      <TableCell sx={{ py: 0.5 }}>
-        <Stack direction="row" alignItems="center" gap={1.5}>
+      <TableCell data-cy={"total-vesting-amount"}>
+        <Stack direction="row" alignItems="center" gap={1}>
           <TokenIcon
             isSuper
+            size={26}
             tokenSymbol={tokenQuery.data?.symbol}
             isLoading={tokenQuery.isLoading}
           />
-          <ListItemText
-            data-cy={"total-vesting-amount"}
-            primary={
-              <>
-                <Amount wei={totalAmount} /> {tokenQuery.data?.symbol}
-              </>
-            }
-          />
+          <Typography variant="body1mono">
+            <Amount wei={totalAmount} /> {tokenQuery.data?.symbol}
+          </Typography>
         </Stack>
       </TableCell>
       <TableCell>
-        <ListItemText
-          data-cy={"cliff-amount-and-date"}
-          primary={
-            <>
-              <Amount wei={cliffAmount} /> {tokenQuery.data?.symbol}
-            </>
-          }
-          secondary={format(fromUnixTime(Number(cliffDate)), "LLL d, yyyy")}
-        />
+        <Typography variant="body1mono">
+          <VestedBalance vestingSchedule={vestingSchedule}>
+            {" "}
+            {tokenQuery.data?.symbol}
+          </VestedBalance>
+        </Typography>
       </TableCell>
       <TableCell sx={{ pr: 2 }}>
         <ListItemText
           data-cy={"start-end-dates"}
-          primary={format(fromUnixTime(Number(startDate)), "LLL d, yyyy")}
-          secondary={format(fromUnixTime(Number(endDate)), "LLL d, yyyy")}
-          primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
+          primary={format(fromUnixTime(startDate), "LLL d, yyyy HH:mm")}
+          secondary={format(fromUnixTime(endDate), "LLL d, yyyy HH:mm")}
+          primaryTypographyProps={{ variant: "body2" }}
+          secondaryTypographyProps={{ color: "text.primary" }}
         />
       </TableCell>
-      <TableCell sx={{ pl: 0, pr: 2 }}>
+      <TableCell sx={{ pl: 0 }}>
         {pendingDelete ? (
           <PendingProgress
             pendingUpdate={pendingDelete}
@@ -138,7 +131,9 @@ const VestingRow: FC<VestingRowProps> = ({
             pendingUpdate={pendingDelete}
             transactingText="Creating..."
           />
-        ) : null}
+        ) : (
+          <VestingStatus vestingSchedule={vestingSchedule} />
+        )}
       </TableCell>
     </TableRow>
   );

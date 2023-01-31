@@ -20,4 +20,8 @@ export interface PendingUpdate {
    * RPC is updated before Subgraph. We can show already show that the update succeeded in the UI.
    */
   hasTransactionSucceeded?: true;
+  /**
+   * Quick solution for knowing which Subgraph to wait for before deleting the pending update entry.
+   */
+  relevantSubgraph: "Protocol" | "Vesting";
 }

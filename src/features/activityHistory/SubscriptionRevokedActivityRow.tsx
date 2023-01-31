@@ -23,11 +23,14 @@ import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
 
-const SubscriptionRevokedActivityRow: FC<SubscriptionRevokedActivity> = ({
-  keyEvent,
-  subscriptionRevokedEvent,
-  network,
-}) => {
+interface SubscriptionRevokedActivityRowProps
+  extends SubscriptionRevokedActivity {
+  dateFormat?: string;
+}
+
+const SubscriptionRevokedActivityRow: FC<
+  SubscriptionRevokedActivityRowProps
+> = ({ keyEvent, subscriptionRevokedEvent, network, dateFormat = "HH:mm" }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { visibleAddress } = useVisibleAddress();
@@ -48,7 +51,7 @@ const SubscriptionRevokedActivityRow: FC<SubscriptionRevokedActivity> = ({
           <ActivityIcon icon={NotInterestedRoundedIcon} />
           <ListItemText
             primary="Subscription Rejected"
-            secondary={format(timestamp * 1000, "HH:mm")}
+            secondary={format(timestamp * 1000, dateFormat)}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
               translate: "yes",

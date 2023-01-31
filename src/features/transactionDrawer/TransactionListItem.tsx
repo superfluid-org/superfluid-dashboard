@@ -55,7 +55,7 @@ const getDisplayTransactionTitle = (transactionTitle: TransactionTitle) => {
     case "Update Stream":
       return "Update Flow Rate"
     case "Close Stream":
-      return "Cancel Stream";
+      return "Cancel Stream"; 
     case "Create Index":
     case "Distribute Index":
     case "Update Index Subscription Units":

@@ -25,10 +25,18 @@ import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
 
-const SubscriptionApprovedActivityRow: FC<SubscriptionApprovedActivity> = ({
+interface SubscriptionApprovedActivityRowProps
+  extends SubscriptionApprovedActivity {
+  dateFormat?: string;
+}
+
+const SubscriptionApprovedActivityRow: FC<
+  SubscriptionApprovedActivityRowProps
+> = ({
   keyEvent,
   subscriptionApprovedEvent,
   network,
+  dateFormat = "HH:mm",
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -84,7 +92,7 @@ const SubscriptionApprovedActivityRow: FC<SubscriptionApprovedActivity> = ({
           <ActivityIcon icon={CheckRoundedIcon} />
           <ListItemText
             primary="Subscription Approved"
-            secondary={format(timestamp * 1000, "HH:mm")}
+            secondary={format(timestamp * 1000, dateFormat)}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
               translate: "yes",

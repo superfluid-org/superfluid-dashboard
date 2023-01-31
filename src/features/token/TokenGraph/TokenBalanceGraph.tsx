@@ -15,35 +15,20 @@ import minBy from "lodash/fp/minBy";
 import set from "lodash/fp/set";
 import mutateSet from "lodash/set";
 import { FC, useCallback, useEffect, useMemo, useRef } from "react";
+import { DataPoint } from "../../../components/Chart/LineChart";
 import {
   buildDefaultDatasetConf,
   DEFAULT_LINE_CHART_OPTIONS,
+  getFilteredStartDate,
 } from "../../../utils/chartUtils";
 import { dateNowSeconds, getDatesBetween } from "../../../utils/dateUtils";
+import { TimeUnitFilterType } from "../../graph/TimeUnitFilter";
 import { Network } from "../../network/networks";
 import { TokenBalance } from "../../redux/endpoints/adHocSubgraphEndpoints";
 import { rpcApi, subgraphApi } from "../../redux/store";
 
-export enum GraphType {
-  Day,
-  Week,
-  Month,
-  Quarter,
-  Year,
-  YTD,
-  All,
-}
-
-interface DataPoint {
-  x: number;
-  y: number;
-  ether: string;
-}
-
-type MappedData = Array<DataPoint>;
-
 interface TokenBalanceGraphProps {
-  graphType: GraphType;
+  timeUnitFilter: TimeUnitFilterType;
   network: Network;
   account: Address;
   token: Address;
@@ -52,7 +37,7 @@ interface TokenBalanceGraphProps {
 }
 
 const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
-  graphType,
+  timeUnitFilter,
   network,
   account,
   token,
@@ -83,9 +68,9 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
   );
 
   const mapDatesWithData = useCallback(
-    (tokenBalances: Array<TokenBalance>, dates: Array<Date>): MappedData =>
+    (tokenBalances: Array<TokenBalance>, dates: Array<Date>): DataPoint[] =>
       dates.reduce<{
-        data: MappedData;
+        data: DataPoint[];
         lastTokenBalance: TokenBalance;
       }>(
         ({ data, lastTokenBalance }, date) => {
@@ -134,46 +119,21 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
   );
 
   const graphStartDate = useMemo(() => {
-    switch (graphType) {
-      case GraphType.Day:
-        return sub(currentDate, {
-          days: 1,
-        });
-      case GraphType.Week:
-        return sub(currentDate, {
-          days: 7,
-        });
-      case GraphType.Month:
-        return sub(currentDate, {
-          months: 1,
-        });
-      case GraphType.Quarter:
-        return sub(currentDate, {
-          months: 3,
-        });
-      case GraphType.Year:
-        return sub(currentDate, {
-          years: 1,
-        });
-      case GraphType.YTD:
-        return startOfYear(currentDate);
-      default: {
-        const smallestDate =
-          minBy("timestamp", tokenBalances)?.timestamp ||
-          Math.floor(Date.now() / 1000);
+    const smallestDate =
+      minBy((x) => x.timestamp, tokenBalances)?.timestamp ||
+      Math.floor(Date.now() / 1000);
 
-        return add(new Date(smallestDate * 1000), { days: -1 });
-      }
-    }
-  }, [tokenBalances, graphType, currentDate]);
+    const defaultValue = add(new Date(smallestDate * 1000), { days: -1 });
+
+    return getFilteredStartDate(timeUnitFilter, currentDate, defaultValue);
+  }, [tokenBalances, timeUnitFilter, currentDate]);
 
   const graphData = useMemo(
     () => {
       if (tokenBalances.length === 0) return [];
 
       const smallestDate =
-        minBy("timestamp", tokenBalances)?.timestamp ||
-        dateNowSeconds();
+        minBy((x) => x.timestamp, tokenBalances)?.timestamp || dateNowSeconds();
 
       return mapDatesWithData(
         tokenBalances,
@@ -191,7 +151,11 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
     () => {
       if (!realTimeBalanceQuery.data) return [];
 
-      const { balance, balanceTimestamp: balanceTimestamp, flowRate } = realTimeBalanceQuery.data;
+      const {
+        balance,
+        balanceTimestamp: balanceTimestamp,
+        flowRate,
+      } = realTimeBalanceQuery.data;
       const balanceBigNumber = BigNumber.from(balance);
 
       return getDatesBetween(
@@ -302,8 +266,8 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
 
   return (
     <Box
-        data-cy={"token-graph"}
-        sx={{
+      data-cy={"token-graph"}
+      sx={{
         height,
         maxWidth: "100%",
         [theme.breakpoints.up("md")]: {

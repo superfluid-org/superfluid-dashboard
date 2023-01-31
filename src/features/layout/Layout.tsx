@@ -6,7 +6,8 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { FC, PropsWithChildren } from "react";
+import { FC, PropsWithChildren, useCallback } from "react";
+import AccessCodeDialog from "../featureFlags/AccessCodeDialog";
 import TransactionDrawer, {
   transactionDrawerWidth,
 } from "../transactionDrawer/TransactionDrawer";
@@ -51,7 +52,13 @@ const Main = styled("main")<{
 const Layout: FC<PropsWithChildren> = ({ children }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-  const { transactionDrawerOpen } = useLayoutContext();
+  const {
+    transactionDrawerOpen,
+    accessCodeDialogContent,
+    setAccessCodeDialogContent,
+  } = useLayoutContext();
+
+  const closeAccessCodeDialog = () => setAccessCodeDialogContent(null);
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", scrollY: "auto" }}>
@@ -64,6 +71,13 @@ const Layout: FC<PropsWithChildren> = ({ children }) => {
         {children}
       </Main>
       <TransactionDrawer />
+      {accessCodeDialogContent && (
+        <AccessCodeDialog
+          title={accessCodeDialogContent.title}
+          description={accessCodeDialogContent.description}
+          onClose={closeAccessCodeDialog}
+        />
+      )}
     </Box>
   );
 };

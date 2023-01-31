@@ -20,3 +20,14 @@ export const useHasFlag = (search?: FlagSearch) => {
     [accountFlags, search]
   );
 };
+
+export const useVestingEnabled = () =>
+  useHasFlag({
+    id: Flag.VestingFeature,
+    type: Flag.VestingFeature,
+  });
+
+export const useMainnetEnabled = () =>
+  useHasFlag({
+    type: Flag.MainnetFeature,
+  });

@@ -14,11 +14,6 @@ const config = {
       process.env.NEXT_PUBLIC_FAUCET_API ||
       "https://967h1q725d.execute-api.eu-west-2.amazonaws.com",
   },
-  platformApi: {
-    goerli:
-      process.env.NEXT_PUBLIC_PLATFORM_GOERLI ||
-      "https://prod-goerli-platform-service.dev.superfluid.dev",
-  },
   accountingApi:
     process.env.NEXT_PUBLIC_ACCOUNTING_API ||
     "https://accounting.superfluid.dev/v1",

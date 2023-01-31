@@ -16,7 +16,15 @@ import NetworkBadge from "../network/NetworkBadge";
 import TokenIcon from "../token/TokenIcon";
 import ActivityIcon from "./ActivityIcon";
 
-const DefaultActivityRow: FC<Activity> = ({ keyEvent, network }) => {
+interface DefaultActivityRowProps extends Activity {
+  dateFormat?: string;
+}
+
+const DefaultActivityRow: FC<DefaultActivityRowProps> = ({
+  keyEvent,
+  network,
+  dateFormat = "HH:mm",
+}) => {
   const { name, timestamp, transactionHash } = keyEvent;
   return (
     <TableRow>
@@ -25,7 +33,7 @@ const DefaultActivityRow: FC<Activity> = ({ keyEvent, network }) => {
           <ActivityIcon icon={ArrowForwardIcon} />
           <ListItemText
             primary={`FIX: ${name}`}
-            secondary={format(timestamp * 1000, "HH:mm")}
+            secondary={format(timestamp * 1000, dateFormat)}
             primaryTypographyProps={{
               variant: "h6",
             }}

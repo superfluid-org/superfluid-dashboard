@@ -21,6 +21,7 @@ import {
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import Link from "next/link";
 import { Typography } from "@mui/material";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 
 export const DeleteVestingTransactionButton: FC<{
   superTokenAddress: string;
@@ -75,8 +76,11 @@ export const DeleteVestingTransactionButton: FC<{
             {...TransactionButtonProps}
             dataCy={"delete-schedule-button"}
             ButtonProps={{
-              variant: "outlined",
+              variant: "textContained",
               color: "error",
+              size: "medium",
+              fullWidth: false,
+              startIcon: <CloseRoundedIcon />,
             }}
             onClick={async (signer) => {
               setDialogLoadingInfo(
@@ -99,7 +103,10 @@ export const DeleteVestingTransactionButton: FC<{
               setDialogSuccessActions(
                 <TransactionDialogActions>
                   <Link href="/vesting" passHref>
-                    <TransactionDialogButton data-cy={"ok-button"} color="primary">
+                    <TransactionDialogButton
+                      data-cy={"ok-button"}
+                      color="primary"
+                    >
                       OK
                     </TransactionDialogButton>
                   </Link>
@@ -107,7 +114,7 @@ export const DeleteVestingTransactionButton: FC<{
               );
             }}
           >
-            Delete Vesting Schedule
+            Delete
           </TransactionButton>
         )
       }

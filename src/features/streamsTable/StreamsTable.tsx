@@ -102,20 +102,22 @@ const StreamsTable: FC<StreamsTableProps> = ({
     },
   });
 
-  const { schedulings } = platformApi.useListSubscriptionsQuery(
-    visibleAddress && network.platformUrl
-      ? {
-          account: getAddress(visibleAddress),
-          chainId: network.id,
-          baseUrl: network.platformUrl,
-        }
-      : skipToken,
-    {
-      selectFromResult: (x) => ({
-        schedulings: x.data?.data ?? [],
-      }),
-    }
-  );
+  const { schedulings } = { schedulings: [] };
+  // TODO(KK): Un-comment and handle when bringing back stream scheduling.
+  // platformApi.useListSubscriptionsQuery(
+  //   visibleAddress && network.platformUrl
+  //     ? {
+  //         account: getAddress(visibleAddress),
+  //         chainId: network.id,
+  //         baseUrl: network.platformUrl,
+  //       }
+  //     : skipToken,
+  //   {
+  //     selectFromResult: (x) => ({
+  //       schedulings: x.data?.data ?? [],
+  //     }),
+  //   }
+  // );
 
   const pendingOutgoingStreams =
     useAddressPendingOutgoingStreams(visibleAddress);

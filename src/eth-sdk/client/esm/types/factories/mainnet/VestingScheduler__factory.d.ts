@@ -1,6 +1,6 @@
 import { Signer } from "ethers";
 import type { Provider } from "@ethersproject/providers";
-import type { VestingScheduler, VestingSchedulerInterface } from "../../goerli/VestingScheduler";
+import type { VestingScheduler, VestingSchedulerInterface } from "../../mainnet/VestingScheduler";
 export declare class VestingScheduler__factory {
     static readonly abi: ({
         inputs: {

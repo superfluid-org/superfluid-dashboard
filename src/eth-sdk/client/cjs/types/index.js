@@ -27,5 +27,5 @@ exports.VestingScheduler__factory = exports.FlowScheduler__factory = exports.fac
 exports.factories = __importStar(require("./factories"));
 var FlowScheduler__factory_1 = require("./factories/goerli/FlowScheduler__factory");
 Object.defineProperty(exports, "FlowScheduler__factory", { enumerable: true, get: function () { return FlowScheduler__factory_1.FlowScheduler__factory; } });
-var VestingScheduler__factory_1 = require("./factories/goerli/VestingScheduler__factory");
+var VestingScheduler__factory_1 = require("./factories/mainnet/VestingScheduler__factory");
 Object.defineProperty(exports, "VestingScheduler__factory", { enumerable: true, get: function () { return VestingScheduler__factory_1.VestingScheduler__factory; } });

@@ -2,11 +2,23 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import add from "date-fns/fp/add";
 import { FC, ReactNode, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { date, mixed, number, object, ObjectSchema, string } from "yup";
+import {
+  boolean,
+  date,
+  mixed,
+  number,
+  object,
+  ObjectSchema,
+  string,
+} from "yup";
+import { createHandleHigherOrderValidationErrorFunc } from "../../utils/createHandleHigherOrderValidationErrorFunc";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { networkDefinition } from "../network/networks";
+import {
+  networkDefinition,
+  vestingSupportedNetworks,
+} from "../network/networks";
 import {
   MAX_VESTING_DURATION_IN_SECONDS,
   MAX_VESTING_DURATION_IN_YEARS,
@@ -14,7 +26,6 @@ import {
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import { createHandleHigherOrderValidationErrorFunc } from "../../utils/createHandleHigherOrderValidationErrorFunc";
 
 export type ValidVestingForm = {
   data: {
@@ -26,9 +37,10 @@ export type ValidVestingForm = {
       numerator: number;
       denominator: UnitOfTime;
     };
-    cliffAmountEther: string;
+    cliffEnabled: boolean;
+    cliffAmountEther?: string;
     cliffPeriod: {
-      numerator: number;
+      numerator?: number;
       denominator: UnitOfTime;
     };
   };
@@ -44,9 +56,10 @@ export type PartialVestingForm = {
       numerator: number | "";
       denominator: UnitOfTime;
     };
-    cliffAmountEther: string | "";
+    cliffEnabled: boolean;
+    cliffAmountEther?: string;
     cliffPeriod: {
-      numerator: number | "";
+      numerator?: number | "";
       denominator: UnitOfTime;
     };
   };
@@ -74,14 +87,27 @@ const CreateVestingFormProvider: FC<{
               .required()
               .test((x) => Object.values(UnitOfTime).includes(x as UnitOfTime)),
           }).required(),
-          cliffAmountEther: string()
-            .required()
-            .test(testEtherAmount({ notNegative: true, notZero: true })),
+          cliffEnabled: boolean().required(),
+          cliffAmountEther: string().when("$cliffEnabled", {
+            is: true,
+            then: (schema) =>
+              schema.required().test(
+                testEtherAmount({
+                  notNegative: true,
+                  notZero: true,
+                })
+              ),
+            otherwise: (schema) => schema,
+          }),
           cliffPeriod: object({
             numerator: number()
-              .positive()
-              .max(Number.MAX_SAFE_INTEGER)
-              .required(),
+              .transform((value) => (isNaN(value) ? undefined : value))
+              .when("$cliffEnabled", {
+                is: true,
+                then: (schema) =>
+                  schema.positive().max(Number.MAX_SAFE_INTEGER).required(),
+                otherwise: (schema) => schema.optional(),
+              }),
             denominator: mixed<UnitOfTime>()
               .required()
               .test((x) => Object.values(UnitOfTime).includes(x as UnitOfTime)),
@@ -112,27 +138,36 @@ const CreateVestingFormProvider: FC<{
             context.createError
           );
 
-        if (network !== networkDefinition.goerli) {
+        const networkSupported = !!vestingSupportedNetworks.some(
+          (supportedNetwork) => supportedNetwork.id === network.id
+        );
+
+        if (!networkSupported) {
           handleHigherOrderValidationError({
-            message: `The feature is only available on Goerli.`,
+            message: `The feature is not available on this network.`,
           });
         }
 
         const {
           data: {
             startDate,
-            cliffAmountEther,
             totalAmountEther,
-            cliffPeriod,
             vestingPeriod,
             receiverAddress,
             superTokenAddress,
+            cliffPeriod,
+            cliffAmountEther,
+            cliffEnabled,
           },
-        } = (await primarySchema.validate(values)) as ValidVestingForm;
+        } = (await primarySchema.validate(values, {
+          context: {
+            cliffEnabled: (values as PartialVestingForm).data.cliffEnabled,
+          },
+        })) as ValidVestingForm;
 
         const cliffAndFlowDate = add(
           {
-            seconds: cliffPeriod.numerator * cliffPeriod.denominator,
+            seconds: (cliffPeriod.numerator || 0) * cliffPeriod.denominator,
           },
           startDate
         );
@@ -160,6 +195,7 @@ const CreateVestingFormProvider: FC<{
         const durationFromCliffAndFlowDateToEndDate = Math.floor(
           (endDate.getTime() - cliffAndFlowDate.getTime()) / 1000
         );
+
         if (
           durationFromCliffAndFlowDateToEndDate <
           MIN_VESTING_DURATION_IN_SECONDS
@@ -194,7 +230,7 @@ const CreateVestingFormProvider: FC<{
           });
         }
 
-        const cliffAmount = parseEtherOrZero(cliffAmountEther);
+        const cliffAmount = parseEtherOrZero(cliffAmountEther || "0");
         const totalAmount = parseEtherOrZero(totalAmountEther);
 
         if (cliffAmount.gte(totalAmount)) {
@@ -239,31 +275,29 @@ const CreateVestingFormProvider: FC<{
       data: {
         superTokenAddress: null,
         totalAmountEther: "",
-        cliffAmountEther: "",
         cliffPeriod: {
           numerator: "",
           denominator: UnitOfTime.Year,
         },
         startDate: null,
+        cliffAmountEther: "",
         vestingPeriod: {
           numerator: "",
           denominator: UnitOfTime.Year,
         },
         receiverAddress: null,
+        cliffEnabled: false,
       },
     },
     resolver: yupResolver(formSchema),
     mode: "onChange",
   });
 
-  const { formState, setValue, trigger, clearErrors, setError, watch } =
-    formMethods;
+  const { formState, clearErrors, setError } = formMethods;
 
   useEffect(() => {
-    if (formState.isDirty) {
-      stopAutoSwitchToWalletNetwork();
-    }
-  }, [formState.isDirty]);
+    if (formState.isDirty) stopAutoSwitchToWalletNetwork();
+  }, [formState.isDirty, stopAutoSwitchToWalletNetwork]);
 
   const [isInitialized, setIsInitialized] = useState(false);
 

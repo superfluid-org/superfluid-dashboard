@@ -1,21 +1,18 @@
-import {
-  alpha,
-  SvgIconProps,
-  Tooltip,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import { FC } from "react";
 import InfoIcon from "@mui/icons-material/Info";
+import { SvgIconProps, Tooltip, useMediaQuery, useTheme } from "@mui/material";
+import { TooltipProps } from "@mui/material/Tooltip";
+import { FC, ReactNode } from "react";
 
 interface TooltipIconProps {
-  title: string;
+  title: ReactNode;
   IconProps?: Partial<SvgIconProps>;
+  TooltipProps?: Partial<TooltipProps>;
 }
 
 const TooltipIcon: FC<TooltipIconProps> = ({
   title,
   IconProps = { sx: {} },
+  TooltipProps = {},
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -26,6 +23,7 @@ const TooltipIcon: FC<TooltipIconProps> = ({
       title={title}
       enterTouchDelay={isBelowMd ? 0 : 700}
       placement="top"
+      {...TooltipProps}
     >
       <InfoIcon
         fontSize="small"
