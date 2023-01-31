@@ -13,7 +13,6 @@ import {
   RealtimeBalance,
 } from "./balanceFetcher";
 import { Overrides, Signer } from "ethers";
-import { Address } from "wagmi";
 
 declare module "@superfluid-finance/sdk-redux" {
   interface TransactionTitleOverrides {
