@@ -11,9 +11,13 @@ import ActivityRow from "./ActivityRow";
 
 interface ActivitiesTableProps {
   activities: Activities[];
+  dateFormat?: string;
 }
 
-const ActivityTable: FC<ActivitiesTableProps> = ({ activities }) => {
+const ActivityTable: FC<ActivitiesTableProps> = ({
+  activities,
+  dateFormat = "HH:mm",
+}) => {
   const theme = useTheme();
 
   return (
@@ -54,7 +58,11 @@ const ActivityTable: FC<ActivitiesTableProps> = ({ activities }) => {
       >
         <TableBody>
           {activities.map((activity) => (
-            <ActivityRow key={activity.keyEvent.id} activity={activity} />
+            <ActivityRow
+              key={activity.keyEvent.id}
+              activity={activity}
+              dateFormat={dateFormat}
+            />
           ))}
         </TableBody>
       </Table>

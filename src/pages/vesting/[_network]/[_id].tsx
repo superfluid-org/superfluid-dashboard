@@ -390,7 +390,12 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
           </Stack>
         </Card>
 
-        {activities.length > 0 && <ActivityTable activities={activities} />}
+        {activities.length > 0 && (
+          <ActivityTable
+            activities={activities}
+            dateFormat="d MMM yyyy HH:mm"
+          />
+        )}
         {/* <SharingSection
           url={urlToShare}
           twitterText="Start vesting with Superfluid!"

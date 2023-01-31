@@ -37,9 +37,14 @@ import useTokenPrice from "../tokenPrice/useTokenPrice";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
 
+interface FlowUpdatedActivityRowProps extends Activity<FlowUpdatedEvent> {
+  dateFormat?: string;
+}
+
 const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
   keyEvent,
   network,
+  dateFormat = "HH:mm",
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -120,7 +125,7 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
           <ListItemText
             data-cy={"activity"}
             primary={title}
-            secondary={format(timestamp * 1000, "HH:mm")}
+            secondary={format(timestamp * 1000, dateFormat)}
             primaryTypographyProps={{
               translate: "yes",
               variant: isBelowMd ? "h7" : "h6",

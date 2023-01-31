@@ -25,10 +25,15 @@ import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
 
-const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
+interface LiquidatedActivityRowProps extends AgreementLiquidatedActivity {
+  dateFormat?: string;
+}
+
+const LiquidatedActivityRow: FC<LiquidatedActivityRowProps> = ({
   keyEvent,
   flowUpdatedEvent,
   network,
+  dateFormat = "HH:mm",
 }) => {
   const { token, timestamp, transactionHash } = keyEvent;
   const { sender = "", receiver = "" } = flowUpdatedEvent || {};
@@ -59,7 +64,7 @@ const LiquidatedActivityRow: FC<AgreementLiquidatedActivity> = ({
           <ListItemText
             data-cy={"activity"}
             primary={"Liquidated"}
-            secondary={format(timestamp * 1000, "HH:mm")}
+            secondary={format(timestamp * 1000, dateFormat)}
             primaryTypographyProps={{
               translate: "yes",
               variant: isBelowMd ? "h7" : "h6",

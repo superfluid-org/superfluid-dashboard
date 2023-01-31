@@ -25,10 +25,15 @@ import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
 
-const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivity> = ({
+interface IndexUnitsUpdatedActivityRowProps extends IndexUnitsUpdatedActivity {
+  dateFormat?: string;
+}
+
+const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivityRowProps> = ({
   keyEvent,
   subscriptionUnitsUpdatedEvent,
   network,
+  dateFormat = "HH:mm",
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -93,7 +98,7 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivity> = ({
           <ActivityIcon icon={PercentRoundedIcon} />
           <ListItemText
             primary="Subscription Updated"
-            secondary={format(timestamp * 1000, "HH:mm")}
+            secondary={format(timestamp * 1000, dateFormat)}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
             }}

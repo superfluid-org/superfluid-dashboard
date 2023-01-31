@@ -22,10 +22,15 @@ import FiatAmount from "../tokenPrice/FiatAmount";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import ActivityIcon from "./ActivityIcon";
 
-const MintActivityRow: FC<MintedActivity> = ({
+interface MintActivityRowProps extends MintedActivity {
+  dateFormat?: string;
+}
+
+const MintActivityRow: FC<MintActivityRowProps> = ({
   keyEvent,
   transferEvent,
   network,
+  dateFormat = "HH:mm",
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -86,7 +91,7 @@ const MintActivityRow: FC<MintedActivity> = ({
           <ListItemText
             data-cy={"activity"}
             primary={"Wrap"}
-            secondary={format(timestamp * 1000, "HH:mm")}
+            secondary={format(timestamp * 1000, dateFormat)}
             primaryTypographyProps={{
               translate: "yes",
               variant: isBelowMd ? "h7" : "h6",
