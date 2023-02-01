@@ -3,6 +3,7 @@ import Divider from "@mui/material/Divider";
 import { Address } from "@superfluid-finance/sdk-core";
 import groupBy from "lodash/fp/groupBy";
 import { FC, useMemo } from "react";
+import { TokenBalance } from "../../utils/chartUtils";
 import {
   aggregateTokenBalances,
   calculateVestingSchedulesAllocated,
@@ -42,9 +43,12 @@ const VestingTokenAggregationRow: FC<VestingTokenAggregationRowProps> = ({
   const aggregatedTokenBalance = useMemo(
     () =>
       aggregateTokenBalances(
-        vestingSchedules.map((vestingSchedule) =>
-          vestingScheduleToTokenBalance(vestingSchedule)
-        )
+        vestingSchedules.reduce((allSchedules, vestingSchedule) => {
+          const tokenBalance = vestingScheduleToTokenBalance(vestingSchedule);
+
+          if (!tokenBalance) return allSchedules;
+          return [...allSchedules, tokenBalance];
+        }, [] as TokenBalance[])
       ),
     [vestingSchedules]
   );
