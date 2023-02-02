@@ -1,6 +1,7 @@
 import {BasePage,wordTimeUnitMap} from "../BasePage";
 import { format } from "date-fns";
 import {SendPage} from "./SendPage";
+import {Common} from "./Common";
 
 const NO_CREATED_TITLE = "[data-cy=no-created-schedules-title]"
 const NO_CREATED_DESC = "[data-cy=no-created-schedules-description]"
@@ -39,12 +40,22 @@ const PREVIEW_CLIFF_PERIOD = "[data-cy=preview-cliff-period]"
 const PREVIEW_TOTAL_AMOUNT = "[data-cy=preview-total-amount]"
 const PREVIEW_TOTAL_PERIOD = "[data-cy=preview-total-period]"
 const APPROVAL_MESSAGE = "[data-cy=approval-message]"
-const TABLE_TOTAL_AMOUNTS = "[data-cy=total-vesting-amount]"
-const TABLE_CLIFF_AMOUNT = "[data-cy=cliff-amount-and-date] h6"
-const TABLE_CLIFF_DATE = "[data-cy=cliff-amount-and-date] p"
+const TABLE_ALLOCATED_AMOUNT = "[data-cy=allocated-amount]"
+const VESTED_AMOUNT = "[data-cy=vested-amount]"
 const TABLE_START_END_DATES = "[data-cy=start-end-dates]"
+const TABLE_VESTING_STATUS = "[data-cy=vesting-status]"
 const TABLE_RECEIVER_SENDER = "[data-cy=receiver-sender]"
 const PENDING_MESSAGE = "[data-cy=pending-message]"
+const NOT_SUPPORTED_NETWORK_MSG = "[data-cy=not-supported-network-msg]"
+const MAINNET_NETWORK_LINK = "[data-cy=ethereum-link]"
+const CLIFF_TOGGLE = "[data-cy=cliff-toggle]"
+const DETAILS_SCHEDULED_DATE = "[data-cy=vesting-scheduled-date]"
+const DETAILS_CLIFF_START = "[data-cy=cliff-start-date]"
+const DETAILS_CLIFF_END = "[data-cy=cliff-end-date]"
+const DETAILS_VESTING_START = "[data-cy=vesting-start-date]"
+const DETAILS_VESTING_END = "[data-cy=vesting-end-date]"
+const DETAILS_VESTED_SO_FAR_AMOUNT = "[data-cy=balance]"
+const DETAILS_VESTED_TOKEN_SYMBOL = "[data-cy=token-symbol]"
 
 //Strings
 const NO_CREATED_TITLE_STRING = "No Sent Vesting Schedules"
@@ -53,9 +64,8 @@ const NO_RECEIVED_TITLE_STRING = "No Received Vesting Schedules"
 const NO_RECEIVED_DESC_STRING = "Vesting schedules that you have received will appear here."
 
 //Dates for the vesting previews etc.
-let staticStartDate = new Date(1733994660000)
-let staticCliffDate = new Date(1765530660000)
-let staticEndDate = new Date(1797066660000)
+let staticStartDate = new Date(1706695200000)
+let staticEndDate = new Date(2022055200000)
 let currentTime = new Date()
 let startDate = new Date(currentTime.getTime() + (wordTimeUnitMap["year"] * 1000) )
 let cliffDate = new Date(startDate.getTime() + (wordTimeUnitMap["year"] * 1000))
@@ -172,9 +182,8 @@ export class VestingPage extends BasePage {
     static validateNewlyCreatedSchedule() {
         this.isVisible(FORWARD_BUTTON)
         this.hasText(TABLE_RECEIVER_SENDER , this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"))
-        this.hasText(TABLE_TOTAL_AMOUNTS , "2 fTUSDx")
-        this.hasText(TABLE_CLIFF_AMOUNT , "1 fTUSDx")
-        this.hasText(TABLE_CLIFF_DATE, format(cliffDate, "LLL d, yyyy"))
+        this.hasText(TABLE_ALLOCATED_AMOUNT , "2 fTUSDx")
+        this.hasText(VESTED_AMOUNT , "1 fTUSDx")
         cy.get(TABLE_START_END_DATES).first().should("contain.text" , format(startDate, "LLL d, yyyy"))
         cy.get(TABLE_START_END_DATES).last().should("contain.text", format(endDate,"LLL d, yyyy"))
         this.doesNotExist(PENDING_MESSAGE)
@@ -212,11 +221,10 @@ export class VestingPage extends BasePage {
     }
 
     static validateCreatedVestingSchedule() {
-        this.isVisible(FORWARD_BUTTON)
-        this.hasText(TABLE_RECEIVER_SENDER , this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"))
-        this.hasText(TABLE_TOTAL_AMOUNTS , "4 TDLx")
-        this.hasText(TABLE_CLIFF_AMOUNT , "2 TDLx")
-        this.hasText(TABLE_CLIFF_DATE, format(staticCliffDate, "LLL d, yyyy"))
+        cy.get(TABLE_VESTING_STATUS).first().should("have.text","Scheduled")
+        cy.get(TABLE_RECEIVER_SENDER).first().should("have.text",this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"))
+        cy.get(TABLE_ALLOCATED_AMOUNT).first().should("have.text","100 fUSDCx")
+        cy.get(VESTED_AMOUNT).first().should("have.text","0  fUSDCx")
         cy.get(TABLE_START_END_DATES).first().should("contain.text" , format(staticStartDate, "LLL d, yyyy"))
         cy.get(TABLE_START_END_DATES).last().should("contain.text", format(staticEndDate,"LLL d, yyyy"))
     }
@@ -229,11 +237,62 @@ export class VestingPage extends BasePage {
     }
 
     static validateCreatedVestingScheduleDetailsPage() {
-        this.hasText(PREVIEW_RECEIVER,this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"))
-        this.validateSchedulePreviewDetails(staticCliffDate,staticStartDate,staticEndDate)
-        this.containsText(PREVIEW_CLIFF_PERIOD,`${format(staticCliffDate, "LLLL d, yyyy")}`)
-        this.containsText(PREVIEW_TOTAL_PERIOD , `${format(staticEndDate, "LLLL d, yyyy")}`)
-        this.hasText(PREVIEW_TOTAL_AMOUNT, "4 TDLx")
-        this.hasText(PREVIEW_CLIFF_AMOUNT, "2.0 TDLx")
+        this.hasText(DETAILS_VESTED_SO_FAR_AMOUNT, "0 ")
+        this.hasText(DETAILS_VESTED_TOKEN_SYMBOL, "fUSDCx")
+        this.hasText("[data-cy=fUSDCx-cliff-amount]", "50 fUSDCx")
+        this.hasText("[data-cy=fUSDCx-allocated]", "100 fUSDCx")
+        cy.fixture("vestingData").then(data => {
+            let schedule = data.goerli.fUSDCx.schedule
+            this.hasText(DETAILS_SCHEDULED_DATE ,format((schedule.createdAt * 1000), "MMM do, yyyy HH:mm") )
+            this.hasText(DETAILS_CLIFF_START,format((schedule.startDate * 1000), "MMM do, yyyy HH:mm") )
+            this.hasText(DETAILS_CLIFF_END,format((schedule.cliffDate * 1000), "MMM do, yyyy HH:mm") )
+            this.hasText(DETAILS_VESTING_START,format((schedule.cliffDate * 1000), "MMM do, yyyy HH:mm") )
+            this.hasText(DETAILS_VESTING_END,format((schedule.endDate * 1000), "MMM do, yyyy HH:mm") )
+        })
+    }
+
+    static validateNotSupportedNetworkScreen() {
+        const supportedNetworks = ["ethereum","polygon","bsc","goerli"]
+        this.hasText(NOT_SUPPORTED_NETWORK_MSG,"This network is not supported.")
+        supportedNetworks.forEach(network => {
+            this.isVisible(`[data-cy=${network}-link]` )
+        })
+    }
+
+    static validateDisabledMainnetNetworkLink() {
+        this.isDisabled(MAINNET_NETWORK_LINK)
+    }
+
+    static validateEnabledMainnetNetworkLink() {
+        this.isNotDisabled(MAINNET_NETWORK_LINK)
+    }
+
+    static validateTokenPermissionIcons(token: string, color: string) {
+        let rgbValue = color === "green" ? "rgb(16, 187, 53)" : "rgb(210, 37, 37)"
+        cy.get(`[data-cy=${token}-allowance-status]`).should("have.css","color" , rgbValue)
+        cy.get(`[data-cy=${token}-permission-status]`).should("have.css","color" , rgbValue)
+        cy.get(`[data-cy=${token}-flow-allowance-status]`).should("have.css","color" , rgbValue)
+    }
+
+    static openTokenPermissionRow(token: string) {
+        this.click(`[data-cy=${token}-row] [data-testid=ExpandMoreRoundedIcon]`)
+    }
+
+    static validateTokenPermissionsData(token: string) {
+        cy.fixture("vestingData").then(data => {
+            let selectedToken = data.goerli[token]
+            this.hasText(`[data-cy=${token}-current-allowance] p` , `${selectedToken.currentAllowances.tokenAllowance} ${token}`)
+            this.hasText(`[data-cy=${token}-recommended-allowance] p` , `${selectedToken.recommendedAllowances.tokenAllowance} ${token}`)
+            this.hasText(`[data-cy=${token}-current-permissions] p` , selectedToken.currentAllowances.operatorPermissions)
+            this.hasText(`[data-cy=${token}-recommended-permissions] p` , selectedToken.recommendedAllowances.operatorPermissions)
+            this.hasText(`[data-cy=${token}-current-flow-allowance] p` , `${selectedToken.currentAllowances.flowAllowance} ${token}/sec`)
+            this.hasText(`[data-cy=${token}-recommended-flow-allowance] p` , `${selectedToken.recommendedAllowances.flowAllowance} ${token}/sec`)
+        })
+    }
+
+    static clickCliffToggle() {
+        this.click(CLIFF_TOGGLE)
+        //Workaround for a race condition which leaves the preview button enabled after inputing cliff amounts too fast
+        Common.wait(1)
     }
 }

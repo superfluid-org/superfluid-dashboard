@@ -116,7 +116,8 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   return (
     <>
       <TableRow
-        sx={
+          data-cy={`${tokenQuery.data?.symbol}-row`}
+          sx={
           isLast && !isExpanded
             ? {
                 ".MuiTableCell-root": {
@@ -139,27 +140,27 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
         <TableCell>
           <Stack direction="column" spacing={1} alignItems="center">
             {isEnoughTokenAllowance ? (
-              <CheckCircleRoundedIcon color="primary" />
+              <CheckCircleRoundedIcon data-cy={`${tokenQuery.data?.symbol}-allowance-status`} color="primary" />
             ) : (
-              <DangerousRoundedIcon color="error" />
+              <DangerousRoundedIcon data-cy={`${tokenQuery.data?.symbol}-allowance-status`} color="error" />
             )}
           </Stack>
         </TableCell>
         <TableCell>
           <Stack direction="column" spacing={1} alignItems="center">
             {isEnoughFlowOperatorPermissions ? (
-              <CheckCircleRoundedIcon color="primary" />
+              <CheckCircleRoundedIcon data-cy={`${tokenQuery.data?.symbol}-permission-status`} color="primary" />
             ) : (
-              <DangerousRoundedIcon color="error" />
+              <DangerousRoundedIcon data-cy={`${tokenQuery.data?.symbol}-permission-status`} color="error" />
             )}
           </Stack>
         </TableCell>
         <TableCell>
           <Stack direction="column" spacing={1} alignItems="center">
             {isEnoughFlowOperatorAllowance ? (
-              <CheckCircleRoundedIcon color="primary" />
+              <CheckCircleRoundedIcon data-cy={`${tokenQuery.data?.symbol}-flow-allowance-status`} color="primary" />
             ) : (
-              <DangerousRoundedIcon color="error" />
+              <DangerousRoundedIcon data-cy={`${tokenQuery.data?.symbol}-flow-allowance-status`} color="error" />
             )}
           </Stack>
         </TableCell>

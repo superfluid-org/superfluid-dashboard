@@ -40,6 +40,7 @@ const VestingProgress: FC<VestingProgressProps> = ({
       }}
     >
       <Box
+        data-cy={"total-progress-line"}
         sx={{
           background: theme.palette.divider,
           width: `calc(100% - 180px)`,
@@ -50,6 +51,7 @@ const VestingProgress: FC<VestingProgressProps> = ({
         }}
       />
       <Box
+        data-cy={"actual-progress-line"}
         sx={{
           background: theme.palette.primary.main,
           width: `calc(calc(100% - 180px) * ${progress})`,
@@ -147,6 +149,7 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
         title="Vesting Scheduled"
         targetDate={createdAt}
         dateNow={dateNow}
+        dataCy={"vesting-scheduled"}
       />
 
       {cliffDate && (
@@ -155,11 +158,13 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
             title="Cliff Starts"
             targetDate={startDate}
             dateNow={dateNow}
+            dataCy={"cliff-start"}
           />
           <VestingScheduleProgressCheckpoint
             title="Cliff Ends"
             targetDate={cliffDate}
             dateNow={dateNow}
+            dataCy={"cliff-end"}
           />
         </>
       )}
@@ -168,12 +173,14 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
         title="Vesting Starts"
         targetDate={cliffAndFlowDate}
         dateNow={dateNow}
+        dataCy={"vesting-start"}
       />
 
       <VestingScheduleProgressCheckpoint
         title="Vesting Ends"
         targetDate={endDate}
         dateNow={dateNow}
+        dataCy={"vesting-end"}
       />
     </Box>
   );

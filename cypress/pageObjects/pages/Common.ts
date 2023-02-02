@@ -45,6 +45,7 @@ const CLOSE_BUTTON = "[data-testid=CloseRoundedIcon]"
 const ACCESS_CODE_DIALOG = "[data-cy=access-code-dialog]"
 const ACCESS_CODE_ERROR = "[data-cy=access-code-error]"
 const ACCESS_CODE_MESSAGE = "[data-cy=access-code-error-msg]"
+const VESTING_ACCESS_CODE_BUTTON = "[data-cy=more-vesting-code-btn]"
 
 export class Common extends BasePage {
     static clickNavBarButton(button: string) {
@@ -61,7 +62,7 @@ export class Common extends BasePage {
 
             switch (page.toLowerCase()) {
                 case "dashboard page":
-                    this.visitPage(`/${Cypress.env("vesting")}`, mocked, account, network);
+                    this.visitPage(`/`, mocked, account, network);
                     break;
                 case "wrap page":
                     this.visitPage("/wrap", mocked, account, network);
@@ -144,7 +145,7 @@ export class Common extends BasePage {
 
         let networkRpc = networksBySlug.get(selectedNetwork)?.rpcUrls.superfluid
 
-        cy.visit(`/${Cypress.env("vesting")}`, {
+        cy.visit(`/`, {
             onBeforeLoad: (win: any) => {
                 const hdwallet = new HDWalletProvider({
                     privateKeys: [Cypress.env(`TX_ACCOUNT_PRIVATE_KEY${chosenPersona}`)],
@@ -175,6 +176,12 @@ export class Common extends BasePage {
             this.click(NAVIGATION_MORE_BUTTON)
             this.click(ACCESS_CODE_BUTTON)
             this.type(ACCESS_CODE_INPUT ,"724ZX_ENS")
+            this.click(ACCESS_CODE_SUBMIT)
+        }
+        if(Cypress.env("vesting")) {
+            this.click(NAVIGATION_MORE_BUTTON)
+            this.click(VESTING_ACCESS_CODE_BUTTON)
+            this.type(ACCESS_CODE_INPUT ,"98S_VEST")
             this.click(ACCESS_CODE_SUBMIT)
         }
         this.changeNetwork(selectedNetwork)
