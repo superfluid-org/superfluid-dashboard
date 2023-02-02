@@ -1,5 +1,3 @@
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import {
   ListItemText,
   Stack,
@@ -12,7 +10,6 @@ import { BigNumber } from "ethers";
 import { FC, useMemo } from "react";
 import AddressName from "../../components/AddressName/AddressName";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
-import { VestingSchedule } from "../../vesting-subgraph/schema.generated";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { Network } from "../network/networks";
 import { PendingProgress } from "../pendingUpdates/PendingProgress";
@@ -21,7 +18,10 @@ import { usePendingVestingScheduleDelete } from "../pendingUpdates/PendingVestin
 import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import { VestingSchedule } from "./types";
 import { useVestingToken } from "./useVestingToken";
+import VestedBalance from "./VestedBalance";
+import VestingStatus from "./VestingStatus";
 
 interface VestingRowProps {
   network: Network;
@@ -44,6 +44,7 @@ const VestingRow: FC<VestingRowProps> = ({
     endDate,
     startDate,
     pendingCreate,
+    cliffAndFlowDate,
   } = vestingSchedule;
 
   const pendingDelete = usePendingVestingScheduleDelete({
@@ -58,24 +59,23 @@ const VestingRow: FC<VestingRowProps> = ({
   const tokenQuery = useVestingToken(network, superToken);
 
   const totalAmount = useMemo(() => {
-    return BigNumber.from(endDate)
-      .sub(BigNumber.from(cliffDate))
+    return BigNumber.from(endDate - cliffAndFlowDate)
       .mul(BigNumber.from(flowRate))
       .add(BigNumber.from(cliffAmount))
       .toString();
-  }, [flowRate, endDate, cliffDate, cliffAmount]);
+  }, [flowRate, endDate, cliffAndFlowDate, cliffAmount]);
 
   const isOutgoing = sender.toLowerCase() === visibleAddress?.toLowerCase();
 
   return (
     <TableRow
+      data-cy={"vesting-row"}
       hover={!!onClick}
       onClick={onClick}
       sx={{ cursor: onClick ? "pointer" : "initial" }}
     >
       <TableCell>
         <Stack direction="row" alignItems="center" gap={1.5}>
-          {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
           <AddressAvatar
             address={isOutgoing ? receiver : sender}
             AvatarProps={{
@@ -84,46 +84,43 @@ const VestingRow: FC<VestingRowProps> = ({
             BlockiesProps={{ size: 8, scale: 3 }}
           />
           <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
-            <Typography variant="h7">
+            <Typography data-cy={"receiver-sender"} variant="h7">
               <AddressName address={isOutgoing ? receiver : sender} />
             </Typography>
           </AddressCopyTooltip>
         </Stack>
       </TableCell>
-      <TableCell sx={{ py: 0.5 }}>
-        <Stack direction="row" alignItems="center" gap={1.5}>
+      <TableCell data-cy={"total-vesting-amount"}>
+        <Stack direction="row" alignItems="center" gap={1}>
           <TokenIcon
             isSuper
+            size={26}
             tokenSymbol={tokenQuery.data?.symbol}
             isLoading={tokenQuery.isLoading}
           />
-          <ListItemText
-            primary={
-              <>
-                <Amount wei={totalAmount} /> {tokenQuery.data?.symbol}
-              </>
-            }
-          />
+          <Typography variant="body1mono">
+            <Amount wei={totalAmount} /> {tokenQuery.data?.symbol}
+          </Typography>
         </Stack>
       </TableCell>
       <TableCell>
-        <ListItemText
-          primary={
-            <>
-              <Amount wei={cliffAmount} /> {tokenQuery.data?.symbol}
-            </>
-          }
-          secondary={format(fromUnixTime(Number(cliffDate)), "LLL d, yyyy")}
-        />
+        <Typography variant="body1mono">
+          <VestedBalance vestingSchedule={vestingSchedule}>
+            {" "}
+            {tokenQuery.data?.symbol}
+          </VestedBalance>
+        </Typography>
       </TableCell>
       <TableCell sx={{ pr: 2 }}>
         <ListItemText
-          primary={format(fromUnixTime(Number(startDate)), "LLL d, yyyy")}
-          secondary={format(fromUnixTime(Number(endDate)), "LLL d, yyyy")}
-          primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
+          data-cy={"start-end-dates"}
+          primary={format(fromUnixTime(startDate), "LLL d, yyyy HH:mm")}
+          secondary={format(fromUnixTime(endDate), "LLL d, yyyy HH:mm")}
+          primaryTypographyProps={{ variant: "body2" }}
+          secondaryTypographyProps={{ color: "text.primary" }}
         />
       </TableCell>
-      <TableCell sx={{ pl: 0, pr: 2 }}>
+      <TableCell sx={{ pl: 0 }}>
         {pendingDelete ? (
           <PendingProgress
             pendingUpdate={pendingDelete}
@@ -134,7 +131,9 @@ const VestingRow: FC<VestingRowProps> = ({
             pendingUpdate={pendingDelete}
             transactingText="Creating..."
           />
-        ) : null}
+        ) : (
+          <VestingStatus vestingSchedule={vestingSchedule} />
+        )}
       </TableCell>
     </TableRow>
   );

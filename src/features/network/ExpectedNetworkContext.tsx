@@ -4,14 +4,14 @@ import {
   createContext,
   FC,
   PropsWithChildren,
-  ReactNode,
   useContext,
   useEffect,
   useMemo,
   useState,
 } from "react";
 import { useNetwork } from "wagmi";
-import { Network, networksByChainId, networksBySlug } from "./networks";
+import { useAvailableNetworks } from "./AvailableNetworksContext";
+import { Network } from "./networks";
 
 /**
  * "Expected" points to expected wallet network.
@@ -36,26 +36,35 @@ const ExpectedNetworkContext = createContext<ExpectedNetworkContextValue>(
 export const ExpectedNetworkProvider: FC<PropsWithChildren> = ({
   children,
 }) => {
-  const [network, setNetwork] = useState<Network>(networksByChainId.get(137)!);
+  const { availableNetworksByChainId, availableNetworksBySlug } =
+    useAvailableNetworks();
+
+  const [network, setNetwork] = useState<Network>(
+    availableNetworksByChainId.get(137)!
+  );
   const [autoSwitchStop, setAutoSwitchStop] = useState(false);
 
   const contextValue: ExpectedNetworkContextValue = useMemo(
     () => ({
       network,
       setExpectedNetwork: (chainId: number) => {
-        setNetwork(networksByChainId.get(chainId)!), setAutoSwitchStop(false);
+        setNetwork(availableNetworksByChainId.get(chainId)!),
+          setAutoSwitchStop(false);
       },
       stopAutoSwitchToWalletNetwork: () => setAutoSwitchStop(true),
       isAutoSwitchStopped: autoSwitchStop,
     }),
-    [network, autoSwitchStop, setAutoSwitchStop]
+    [network, autoSwitchStop, setAutoSwitchStop, availableNetworksByChainId]
   );
 
   const router = useRouter();
 
   // When user navigates to a new page then enable automatic switching to user wallet's network again.
   useEffect(() => {
-    const onRouteChange = (_fullPath: string, { shallow }: { shallow: boolean }) => {
+    const onRouteChange = (
+      _fullPath: string,
+      { shallow }: { shallow: boolean }
+    ) => {
       if (!shallow) {
         setAutoSwitchStop(false);
       }
@@ -72,14 +81,14 @@ export const ExpectedNetworkProvider: FC<PropsWithChildren> = ({
     }
 
     if (activeChain && activeChain.id !== network.id) {
-      const networkFromWallet = networksByChainId.get(activeChain.id);
+      const networkFromWallet = availableNetworksByChainId.get(activeChain.id);
       if (networkFromWallet) {
         // setTestnetMode(!!activeChain.testnet);
         setNetwork(networkFromWallet);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeChain]);
+  }, [activeChain, availableNetworksByChainId]);
 
   // # Set network based on the URL querystring.
   const { network: networkQueryParam, _network: networkPathParam } =
@@ -87,7 +96,7 @@ export const ExpectedNetworkProvider: FC<PropsWithChildren> = ({
 
   useEffect(() => {
     if (isString(networkQueryParam)) {
-      const networkFromQuery = networksBySlug.get(networkQueryParam);
+      const networkFromQuery = availableNetworksBySlug.get(networkQueryParam);
       if (networkFromQuery) {
         setNetwork(networkFromQuery);
       }
@@ -97,7 +106,7 @@ export const ExpectedNetworkProvider: FC<PropsWithChildren> = ({
         .then(() => void setAutoSwitchStop(true));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [networkQueryParam]);
+  }, [networkQueryParam, availableNetworksBySlug]);
 
   return (
     <ExpectedNetworkContext.Provider value={contextValue}>

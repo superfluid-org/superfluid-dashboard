@@ -23,6 +23,7 @@ export default defineConfig({
     e2e: {
         specPattern: "**/*.feature",
         env: {
+            "vesting": "",
             "TAGS": "not @ignore",
             "codeCoverage": {
                 "url": "http://localhost:3000/__coverage__"

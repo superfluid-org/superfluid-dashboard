@@ -201,5 +201,24 @@ export const adHocRpcEndpoints = {
         });
       },
     }),
+    tokenBuffer: builder.query<string, { chainId: number; token: string }>({
+      queryFn: async (arg) => {
+        const framework = await getFramework(arg.chainId);
+        const minBuffer = await framework.governance.getMinimumDeposit({
+          token: arg.token,
+          providerOrSigner: framework.settings.provider,
+        });
+
+        return {
+          data: minBuffer,
+        };
+      },
+      providesTags: (_result, _error, arg) => [
+        {
+          type: "GENERAL",
+          id: arg.chainId, // TODO(KK): Could be made more specific.
+        },
+      ],
+    }),
   }),
 };

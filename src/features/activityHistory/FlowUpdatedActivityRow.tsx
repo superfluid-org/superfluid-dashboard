@@ -13,29 +13,38 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
 import { FlowUpdatedEvent, FlowUpdateType } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { FC, memo, useMemo } from "react";
-import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
+import AddressAvatar from "../../components/Avatar/AddressAvatar";
+import { getStreamPagePath } from "../../pages/stream/[_network]/[_stream]";
 import { Activity } from "../../utils/activityUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
+import Link from "../common/Link";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
 import { subgraphApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
 import Amount from "../token/Amount";
+import FlowingBalance from "../token/FlowingBalance";
 import TokenIcon from "../token/TokenIcon";
+import FiatAmount from "../tokenPrice/FiatAmount";
+import FlowingFiatBalance from "../tokenPrice/FlowingFiatBalance";
+import useTokenPrice from "../tokenPrice/useTokenPrice";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
-import useTokenPrice from "../tokenPrice/useTokenPrice";
-import FiatAmount from "../tokenPrice/FiatAmount";
-import { formatEther } from "ethers/lib/utils";
 
-const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
+interface FlowUpdatedActivityRowProps extends Activity<FlowUpdatedEvent> {
+  dateFormat?: string;
+}
+
+const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
   keyEvent,
   network,
+  dateFormat = "HH:mm",
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -49,7 +58,25 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
     timestamp,
     token,
     transactionHash,
+    id,
   } = keyEvent;
+
+  const { stream, ...streamsQuery } = subgraphApi.useStreamsQuery(
+    {
+      chainId: network.id,
+      filter: {
+        flowUpdatedEvents_: {
+          id,
+        },
+      },
+    },
+    {
+      selectFromResult: (result) => ({
+        ...result,
+        stream: result.data?.data?.[0],
+      }),
+    }
+  );
 
   const tokenQuery = subgraphApi.useTokenQuery({
     chainId: network.id,
@@ -88,6 +115,8 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
     [flowRate]
   );
 
+  const isStreamLastEvent = stream && stream.updatedAtTimestamp === timestamp;
+
   return (
     <TableRow data-cy={`${network.slugName}-row`}>
       <TableCell>
@@ -96,7 +125,7 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
           <ListItemText
             data-cy={"activity"}
             primary={title}
-            secondary={format(timestamp * 1000, "HH:mm")}
+            secondary={format(timestamp * 1000, dateFormat)}
             primaryTypographyProps={{
               translate: "yes",
               variant: isBelowMd ? "h7" : "h6",
@@ -125,19 +154,41 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
                 data-cy={"amount"}
                 primary={
                   <>
-                    <Amount wei={weiAmountMonthly}>
-                      {" "}
-                      {tokenQuery.data ? `${tokenQuery.data.symbol}/mo` : "/mo"}
-                    </Amount>
+                    {isStreamLastEvent ? (
+                      <>
+                        <FlowingBalance
+                          balance={stream.streamedUntilUpdatedAt}
+                          flowRate={stream.currentFlowRate}
+                          balanceTimestamp={stream.updatedAtTimestamp}
+                        />
+                        {` `}
+                        {tokenQuery.data?.symbol}
+                      </>
+                    ) : (
+                      <Amount wei={weiAmountMonthly}>
+                        {" "}
+                        {tokenQuery.data
+                          ? `${tokenQuery.data.symbol}/mo`
+                          : "/mo"}
+                      </Amount>
+                    )}
                   </>
                 }
                 secondary={
-                  tokenPrice && (
+                  tokenPrice &&
+                  (isStreamLastEvent ? (
+                    <FlowingFiatBalance
+                      balance={stream.streamedUntilUpdatedAt}
+                      flowRate={stream.currentFlowRate}
+                      balanceTimestamp={stream.updatedAtTimestamp}
+                      price={tokenPrice}
+                    />
+                  ) : (
                     <FiatAmount price={tokenPrice} wei={weiAmountMonthly}>
                       {" "}
                       /mo
                     </FiatAmount>
-                  )
+                  ))
                 }
                 primaryTypographyProps={{
                   variant: "h6mono",
@@ -177,7 +228,24 @@ const FlowUpdatedActivityRow: FC<Activity<FlowUpdatedEvent>> = ({
             </ListItem>
           </TableCell>
           <TableCell sx={{ position: "relative" }}>
-            <TxHashLink txHash={transactionHash} network={network} />
+            <Stack direction="row" alignItems="center" gap={0.5}>
+              <TxHashLink txHash={transactionHash} network={network} />
+
+              {stream && (
+                <Link
+                  href={getStreamPagePath({
+                    network: network.slugName,
+                    stream: stream.id,
+                  })}
+                  passHref
+                >
+                  <IconButton>
+                    <ArrowForwardRoundedIcon color="inherit" />
+                  </IconButton>
+                </Link>
+              )}
+            </Stack>
+
             <NetworkBadge
               network={network}
               sx={{ position: "absolute", top: "0px", right: "16px" }}

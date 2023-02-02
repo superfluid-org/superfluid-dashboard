@@ -34,7 +34,7 @@ Feature: Wrap page test cases
     And User inputs "0.5" into the wrap field
     And Change network button is visible with a message asking user to switch to "gnosis"
     And User switches to unwrap tab
-    And User inputs "1" into the unwrap field
+    And User inputs "0.8" into the unwrap field
     And Change network button is visible with a message asking user to switch to "gnosis"
 
 

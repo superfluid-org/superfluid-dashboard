@@ -1,5 +1,6 @@
 import {
   Button,
+  Paper,
   Stack,
   Table,
   TableBody,
@@ -99,6 +100,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
 
   return (
     <TableContainer
+      component={Paper}
       sx={{
         [theme.breakpoints.down("md")]: {
           mx: -2,

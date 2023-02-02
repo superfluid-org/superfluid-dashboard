@@ -22,10 +22,15 @@ import FiatAmount from "../tokenPrice/FiatAmount";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import ActivityIcon from "./ActivityIcon";
 
-const BurnActivity: FC<BurnedActivity> = ({
+interface BurnActivityProps extends BurnedActivity {
+  dateFormat?: string;
+}
+
+const BurnActivity: FC<BurnActivityProps> = ({
   keyEvent,
   transferEvent,
   network,
+  dateFormat = "HH:mm",
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -86,7 +91,7 @@ const BurnActivity: FC<BurnedActivity> = ({
           <ListItemText
             data-cy={"activity"}
             primary={"Unwrap"}
-            secondary={format(timestamp * 1000, "HH:mm")}
+            secondary={format(timestamp * 1000, dateFormat)}
             primaryTypographyProps={{
               translate: "yes",
               variant: isBelowMd ? "h7" : "h6",

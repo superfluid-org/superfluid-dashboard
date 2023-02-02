@@ -16,8 +16,9 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Address } from "@superfluid-finance/sdk-core";
-import { format } from "date-fns";
+import { format, fromUnixTime } from "date-fns";
 import { BigNumber } from "ethers";
 import { isString } from "lodash";
 import { NextPage } from "next";
@@ -34,7 +35,7 @@ import Minigame from "../../../features/minigame/MinigameContainer";
 import { useMinigame } from "../../../features/minigame/MinigameContext";
 import NetworkIcon from "../../../features/network/NetworkIcon";
 import { Network, networksBySlug } from "../../../features/network/networks";
-import { subgraphApi } from "../../../features/redux/store";
+import { rpcApi, subgraphApi } from "../../../features/redux/store";
 import { UnitOfTime } from "../../../features/send/FlowRateInput";
 import SharingSection from "../../../features/socialSharing/SharingSection";
 import CancelStreamButton from "../../../features/streamsTable/CancelStreamButton/CancelStreamButton";
@@ -55,6 +56,9 @@ import {
   calculateMaybeCriticalAtTimestamp,
 } from "../../../utils/tokenUtils";
 import Page404 from "../../404";
+import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
+import { getTimeInSeconds } from "../../../utils/dateUtils";
+import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -183,9 +187,7 @@ const CancelledIndicator: FC<CancelledIndicatorProps> = ({
           {format(updatedAtTimestamp * 1000, "d MMMM yyyy")}
         </span>{" "}
         <span>at</span>{" "}
-        <span translate="no">
-          {format(updatedAtTimestamp * 1000, "h:mm aaa")}
-        </span>
+        <span translate="no">{format(updatedAtTimestamp * 1000, "HH:mm")}</span>
       </Typography>
     </Stack>
   );
@@ -327,10 +329,12 @@ const StreamPageContent: FC<{
     tokenAddress
   );
 
-  const scheduledStreamQuery = useScheduledStream({
-    chainId: network.id,
-    id: streamId,
-  });
+  const { data: scheduledStream, ...scheduledStreamQuery } = useScheduledStream(
+    {
+      chainId: network.id,
+      id: streamId,
+    }
+  );
 
   const tokenSnapshotQuery = subgraphApi.useAccountTokenSnapshotQuery({
     chainId: network.id,
@@ -384,23 +388,60 @@ const StreamPageContent: FC<{
     stream: txIdOrSubgraphId,
   })}`;
 
+  const tokenBufferQuery = rpcApi.useTokenBufferQuery(
+    tokenAddress ? { chainId: network.id, token: tokenAddress } : skipToken
+  );
+
   const bufferSize = useMemo(() => {
     if (
-      !scheduledStreamQuery.data ||
-      scheduledStreamQuery.data.currentFlowRate === "0"
+      !scheduledStream ||
+      !tokenBufferQuery.data ||
+      scheduledStream.currentFlowRate === "0"
     )
       return null;
 
     const { currentFlowRate, createdAtTimestamp, streamedUntilUpdatedAt } =
-      scheduledStreamQuery.data;
+      scheduledStream;
 
     return calculateBuffer(
       BigNumber.from(streamedUntilUpdatedAt),
       BigNumber.from(currentFlowRate),
       createdAtTimestamp,
-      network.bufferTimeInMinutes
+      network.bufferTimeInMinutes,
+      BigNumber.from(tokenBufferQuery.data)
     );
-  }, [scheduledStreamQuery.data, network]);
+  }, [scheduledStream, tokenBufferQuery.data, network]);
+
+  const totalToBeStreamedIfScheduled = useMemo(() => {
+    if (!scheduledStream) return null;
+
+    const { currentFlowRate, startDate, endDateScheduled } = scheduledStream;
+
+    if (!endDateScheduled) return null;
+
+    return BigNumber.from(currentFlowRate).mul(
+      BigNumber.from(Math.floor(endDateScheduled.getTime() / 1000)).sub(
+        BigNumber.from(Math.floor(startDate.getTime() / 1000))
+      )
+    );
+  }, [scheduledStream]);
+
+  const vestingScheduleQuery = vestingSubgraphApi.useGetVestingSchedulesQuery(
+    scheduledStream
+      ? {
+          chainId: network.id,
+          where: {
+            superToken: scheduledStream.token.toLowerCase(),
+            sender: scheduledStream.sender.toLowerCase(),
+            receiver: scheduledStream.receiver.toLowerCase(),
+            cliffAndFlowExecutedAt: getTimeInSeconds(
+              scheduledStream.startDate
+            ).toString(),
+          },
+        }
+      : skipToken
+  );
+  const vestingSchedule = vestingScheduleQuery.data?.vestingSchedules?.[0]; // TODO(KK): Does this work?
 
   if (scheduledStreamQuery.isLoading || tokenSnapshotQuery.isLoading) {
     return (
@@ -410,7 +451,7 @@ const StreamPageContent: FC<{
     );
   }
 
-  if (!scheduledStreamQuery.data || !tokenSnapshotQuery.data) {
+  if (!scheduledStream || !tokenSnapshotQuery.data) {
     return <Page404 />;
   }
 
@@ -426,7 +467,7 @@ const StreamPageContent: FC<{
     startDateScheduled,
     endDate,
     endDateScheduled,
-  } = scheduledStreamQuery.data;
+  } = scheduledStream;
 
   const isActive = currentFlowRate !== "0";
   const isOutgoing = accountAddress?.toLowerCase() === sender.toLowerCase();
@@ -477,14 +518,14 @@ const StreamPageContent: FC<{
                   <>
                     {isOutgoing && (
                       <ModifyStreamButton
-                        stream={scheduledStreamQuery.data}
+                        stream={scheduledStream}
                         network={network}
                       />
                     )}
                     {isActive && (
                       <CancelStreamButton
                         data-cy={"cancel-button"}
-                        stream={scheduledStreamQuery.data}
+                        stream={scheduledStream}
                         network={network}
                       />
                     )}
@@ -606,41 +647,73 @@ const StreamPageContent: FC<{
 
               <StreamAccountCard address={sender} network={network} />
 
-              <Box
-                sx={{
-                  mx: -0.25,
-                  height: isBelowMd ? 24 : 48,
-                  zIndex: isAllowedToPlay ? 1 : -1,
-                  cursor: isAllowedToPlay ? "pointer" : "auto",
-                }}
-                onClick={onPlay}
-              >
-                <Image
-                  unoptimized
-                  src="/gifs/stream-loop.gif"
-                  width={isBelowMd ? 46 : 92}
-                  height={isBelowMd ? 24 : 48}
-                  layout="fixed"
-                  alt="Superfluid stream"
+              {isActive ? (
+                <Box
+                  sx={{
+                    mx: -0.25,
+                    height: isBelowMd ? 24 : 48,
+                    zIndex: isAllowedToPlay ? 1 : -1,
+                    cursor: isAllowedToPlay ? "pointer" : "auto",
+                  }}
+                  onClick={onPlay}
+                >
+                  <Image
+                    unoptimized
+                    src="/gifs/stream-loop.gif"
+                    width={isBelowMd ? 46 : 92}
+                    height={isBelowMd ? 24 : 48}
+                    layout="fixed"
+                    alt="Superfluid stream"
+                  />
+                </Box>
+              ) : (
+                <CancelRoundedIcon
+                  color="error"
+                  sx={{ justifySelf: "center", width: "32px", height: "32px" }}
                 />
-              </Box>
+              )}
 
               <StreamAccountCard address={receiver} network={network} />
             </Stack>
 
             {currentFlowRate !== "0" && (
-              <Stack direction="row" alignItems="center" gap={0.5}>
-                <Typography data-cy={"amount-per-month"} variant="h6">
-                  <Amount
-                    wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
-                  >
-                    {` ${tokenSymbol}`}
-                  </Amount>
-                </Typography>
+              <Stack alignItems="center" gap={1}>
+                {totalToBeStreamedIfScheduled && (
+                  <Stack direction="row" alignItems="center" gap={0.5}>
+                    <Typography
+                      variant="h6"
+                      color="text.secondary"
+                      translate="yes"
+                    >
+                      Total scheduled amount
+                    </Typography>
 
-                <Typography variant="h6" color="text.secondary" translate="yes">
-                  per month
-                </Typography>
+                    <Typography data-cy={"scheduled-amount"} variant="h6">
+                      <Amount
+                        wei={totalToBeStreamedIfScheduled}
+                      >{` ${tokenSymbol}`}</Amount>
+                    </Typography>
+                  </Stack>
+                )}
+                <Stack direction="row" alignItems="center" gap={0.5}>
+                  <Typography data-cy={"amount-per-month"} variant="h6">
+                    <Amount
+                      wei={BigNumber.from(currentFlowRate).mul(
+                        UnitOfTime.Month
+                      )}
+                    >
+                      {` ${tokenSymbol}`}
+                    </Amount>
+                  </Typography>
+
+                  <Typography
+                    variant="h6"
+                    color="text.secondary"
+                    translate="yes"
+                  >
+                    per month
+                  </Typography>
+                </Stack>
               </Stack>
             )}
 
@@ -659,25 +732,54 @@ const StreamPageContent: FC<{
                 },
               }}
             >
-              <OverviewItem
-                dataCy={"start-date"}
-                label="Start Date:"
-                value={format(startDate.getTime(), "d MMM. yyyy H:mm")}
-              />
-
-              <OverviewItem
-                dataCy={"buffer"}
-                label="Buffer:"
-                value={
-                  bufferSize ? (
-                    <>
-                      <Amount wei={bufferSize} /> {tokenSymbol}
-                    </>
-                  ) : (
-                    "-"
-                  )
-                }
-              />
+              {vestingSchedule ? (
+                <OverviewItem
+                  label="Cliff Date"
+                  value={
+                    vestingSchedule.cliffDate
+                      ? format(
+                          fromUnixTime(Number(vestingSchedule.cliffDate)),
+                          "LLL d, yyyy HH:mm"
+                        )
+                      : "-"
+                  }
+                />
+              ) : (
+                <OverviewItem
+                  dataCy={"start-date"}
+                  label="Start Date:"
+                  value={format(startDate.getTime(), "d MMM. yyyy H:mm")}
+                />
+              )}
+              {vestingSchedule ? (
+                <OverviewItem
+                  label="Cliff Amount"
+                  value={
+                    vestingSchedule.cliffDate ? (
+                      <>
+                        <Amount wei={vestingSchedule.cliffAmount} />{" "}
+                        {tokenSymbol}
+                      </>
+                    ) : (
+                      "-"
+                    )
+                  }
+                />
+              ) : (
+                <OverviewItem
+                  dataCy={"buffer"}
+                  label="Buffer:"
+                  value={
+                    bufferSize ? (
+                      <>
+                        <Amount wei={bufferSize} /> {tokenSymbol}
+                      </>
+                    ) : (
+                      "-"
+                    )
+                  }
+                />
+              )}
               {!endDate && updatedAtTimestamp > createdAtTimestamp && (
                 <OverviewItem
                   label={`Updated Date:`}
@@ -685,7 +787,15 @@ const StreamPageContent: FC<{
                 />
               )}
 
-              {endDateScheduled ? (
+              {vestingSchedule ? (
+                <OverviewItem
+                  label="Vesting Start Date:"
+                  value={format(
+                    fromUnixTime(Number(vestingSchedule.startDate)),
+                    "LLL d, yyyy HH:mm"
+                  )}
+                />
+              ) : endDateScheduled ? (
                 <OverviewItem
                   label={`End Date:`}
                   value={
@@ -717,15 +827,25 @@ const StreamPageContent: FC<{
                   </Stack>
                 }
               />
-              <OverviewItem
-                dataCy={"projected-liquidation"}
-                label="Projected Liquidation:"
-                value={
-                  isActive && liquidationDate
-                    ? format(liquidationDate, "d MMM. yyyy H:mm")
-                    : "-"
-                }
-              />
+              {vestingSchedule ? (
+                <OverviewItem
+                  label="Vesting End Date:"
+                  value={format(
+                    fromUnixTime(Number(vestingSchedule.endDate)),
+                    "LLL d, yyyy HH:mm"
+                  )}
+                />
+              ) : (
+                <OverviewItem
+                  dataCy={"projected-liquidation"}
+                  label="Projected Liquidation:"
+                  value={
+                    isActive && liquidationDate
+                      ? format(liquidationDate, "d MMM. yyyy H:mm")
+                      : "-"
+                  }
+                />
+              )}
               <OverviewItem
                 dataCy={"tx-hash"}
                 label="Transaction Hash:"

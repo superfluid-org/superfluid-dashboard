@@ -6,12 +6,13 @@ const FROM_TO_SEARCH_BAR = `${LIFI_WIDGET_CONTAINER} input`
 const TOKEN_LIST_NAMES = `${LIFI_WIDGET_CONTAINER} [class*=MuiListItem] span`
 const SWAP_ROUTE_AMOUNT = `${LIFI_WIDGET_CONTAINER} [class*=MuiBox-root] text`
 const LIFI_BUTTONS = `${LIFI_WIDGET_CONTAINER} [class*=MuiBox] button`
-const WARNING_TEXT = "[data-testid=WarningAmberIcon] + div > p"
+const WARNING_TEXT = "[data-testid=WarningAmberRoundedIcon] + div > p"
 const FROM_AMOUNT = "[name=fromAmount]"
 const LOADING_SKELETONS = "[class*=MuiSkeleton]"
 const FROM_TO_HEADERS = `${LIFI_WIDGET_CONTAINER} [class*=MuiCardHeader-avatar]`
-const HISTORY_BUTTON = "[data-testid=HistoryIcon]"
+const HISTORY_BUTTON = "[data-testid=ReceiptLongRoundedIcon]"
 const SETTINGS_BUTTON = "[data-testid=SettingsOutlinedIcon]"
+const NETWORK_BUTTONS = "[aria-label] > .MuiAvatar-root > .MuiAvatar-img"
 
 export class BridgePage extends BasePage {
 
@@ -41,14 +42,15 @@ export class BridgePage extends BasePage {
     static validateSwapRoute(){
             cy.get("@ToNetwork").then( network => {
                 cy.get("@ToToken").then(token => {
-                cy.get("@swapAmount").then( (amount) => {
-                    cy.get(SWAP_ROUTE_AMOUNT).should("have.text",amount)
+                cy.get("@swapAmount").then(amount => {
+                    cy.get(SWAP_ROUTE_AMOUNT).first().then(el => {
+                        expect(parseFloat(el.text())).to.be.closeTo(parseFloat(amount.toString()) , 0.1)
+                    })
                     cy.get(SWAP_ROUTE_AMOUNT).parent().parent().find("img").first().should("have.attr","alt",token)
                     cy.get(SWAP_ROUTE_AMOUNT).parent().parent().find("img").last().should("have.attr","alt",network)
                 })
-             })
-            }
-        )
+            })
+        })
     }
 
     static validateYouPayTokenIcons() {
@@ -65,7 +67,7 @@ export class BridgePage extends BasePage {
     }
 
     static validateReviewSwapButtonWithoutBalance() {
-        cy.get(LIFI_BUTTONS).contains("Review swap").should("be.visible").and("be.disabled")
+        cy.get(LIFI_BUTTONS).contains("Review swap").should("be.visible").and("be.enabled")
     }
 
     static validateNotEnoughFundsError() {
@@ -114,4 +116,20 @@ export class BridgePage extends BasePage {
         cy.contains("Show destination wallet").should("be.visible")
         cy.contains("Advanced preferences").should("be.visible")
     }
+
+    static openTokenSelection() {
+        cy.contains("From").click()
+    }
+
+    static validateOnlySupportedNetworksShown() {
+        let supportedNetworks = ["Ethereum","Polygon","BSC","Gnosis","Avalanche","Arbitrum","Optimism"]
+        cy.get(NETWORK_BUTTONS).parent().parent().each(button => {
+            expect(supportedNetworks).to.include(button.attr("aria-label"))
+        })
+    }
+
+    static validateMainnetVisibleInNetworksList() {
+        cy.get(NETWORK_BUTTONS).parent().parent().should("have.attr","aria-label","Ethereum").and("be.visible")
+    }
+
 }

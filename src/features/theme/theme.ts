@@ -1,7 +1,15 @@
-import { alpha, createTheme, Theme, ThemeOptions } from "@mui/material/styles";
+import {
+  alpha,
+  createTheme,
+  darken,
+  lighten,
+  Theme,
+  ThemeOptions,
+} from "@mui/material/styles";
 import { deepmerge } from "@mui/utils";
 import React from "react";
 import { FONT_FACES } from "./fonts";
+import type {} from "@mui/x-data-grid/themeAugmentation";
 
 // TODO: Move to separate declaration file to make theme file cleaner?
 
@@ -279,10 +287,12 @@ const getDesignTokens = (theme: Theme): ThemeOptions => {
         fontSize: pxToRem(14),
         fontWeight: 400,
         letterSpacing: 0.17,
+        lineHeight: 1.429,
       },
       body2mono: {
         fontSize: pxToRem(14),
         fontWeight: 400,
+        lineHeight: 1.429,
         whiteSpace: "pre",
         fontVariantNumeric: "tabular-nums",
       },
@@ -443,7 +453,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         styleOverrides: {
           root: {
             borderRadius: "12px",
-            border: getModeStyle("none", "1px solid"),
+            border: "1px solid",
             borderColor: theme.palette.other.outline,
           },
           rounded: {
@@ -559,6 +569,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
               easing: theme.transitions.easing.easeInOut,
               duration: theme.transitions.duration.short,
             }),
+          },
+        },
+      },
+      MuiFormHelperText: {
+        styleOverrides: {
+          root: {
+            marginLeft: "10px",
           },
         },
       },
@@ -747,13 +764,15 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             props: { variant: "input" },
             style: {
               border: "1px solid",
+              fontWeight: 400,
+              fontSize: "16px",
               color: theme.palette.text.primary,
               borderColor: theme.palette.other.outline,
               background: theme.palette.background.paper,
               backgroundImage: getModeStyle("none", ELEVATION1_BG),
               justifyContent: "flex-start",
               textAlign: "left",
-              minHeight: 54,
+              minHeight: 56,
               ".MuiButton-endIcon": {
                 marginLeft: "auto",
               },
@@ -883,6 +902,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         styleOverrides: {
           root: {
             borderRadius: "12px",
+            border: "none",
+          },
+          outlined: {
+            border: "1px solid",
           },
           message: {
             overflow: "visible",
@@ -922,7 +945,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         styleOverrides: {
           root: {
             color: theme.palette.text.primary,
-            backgroundColor: alpha(theme.palette.text.primary, 0.04),
+            backgroundColor: getModeStyle(
+              lighten(theme.palette.text.primary, 0.96),
+              darken(theme.palette.text.primary, 0.96)
+            ),
             ...theme.typography.body2,
             lineHeight: "48px",
           },
@@ -1061,16 +1087,6 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         },
       },
-      MuiTableContainer: {
-        styleOverrides: {
-          root: {
-            borderRadius: "20px",
-            border: "1px solid",
-            borderColor: theme.palette.other.outline,
-            boxShadow: theme.shadows[1],
-          },
-        },
-      },
       MuiTable: {
         variants: [
           {
@@ -1188,6 +1204,32 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             "&:last-child": {
               paddingBottom: "0px",
             },
+          },
+        },
+      },
+      MuiDataGrid: {
+        styleOverrides: {
+          cell: {
+            ":focus": {
+              outline: "none",
+            },
+            ":focus-within": {
+              outline: "none",
+            },
+          },
+          columnHeader: {
+            ":focus": {
+              outline: "none",
+            },
+            ":focus-within": {
+              outline: "none",
+            },
+          },
+          columnHeaderDraggableContainer: {
+            zIndex: 1,
+          },
+          columnSeparator: {
+            zIndex: 0,
           },
         },
       },

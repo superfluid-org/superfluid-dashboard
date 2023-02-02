@@ -1,23 +1,20 @@
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import ShowerRoundedIcon from "@mui/icons-material/ShowerRounded";
-import SupportRoundedIcon from "@mui/icons-material/SupportRounded";
+import AssessmentRoundedIcon from "@mui/icons-material/AssessmentRounded";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
-import ElderlyRoundedIcon from "@mui/icons-material/ElderlyRounded";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import QrCodeRoundedIcon from "@mui/icons-material/QrCodeRounded";
+import ShowerRoundedIcon from "@mui/icons-material/ShowerRounded";
 import {
-  Box,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Menu,
-  Modal,
   Popover,
-  useMediaQuery,
+  Typography,
   useTheme,
 } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
+import PrimaryLink from "../common/Link";
 import { FC, MouseEvent, useState } from "react";
-import OnboardingCards from "../onboarding/OnboardingCards";
 import { useLayoutContext } from "./LayoutContext";
 
 interface MenuItemImageProps {
@@ -38,12 +35,10 @@ const MenuItemImage: FC<MenuItemImageProps> = ({ src, alt }) => (
   </ListItemIcon>
 );
 
-const MoreNavigationItem: FC = ({}) => {
+const MoreNavigationItem: FC = () => {
   const theme = useTheme();
-  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { setNavigationDrawerOpen } = useLayoutContext();
-  const [showOnboardingModal, setShowOnboardingModal] = useState(false);
+  const { setAccessCodeDialogContent } = useLayoutContext();
   const [moreMenuAnchor, setMoreMenuAnchor] = useState<HTMLElement | null>(
     null
   );
@@ -53,23 +48,48 @@ const MoreNavigationItem: FC = ({}) => {
 
   const closeMoreMenu = () => setMoreMenuAnchor(null);
 
-  const openOnboardingModal = () => {
-    setShowOnboardingModal(true);
+  const openMainnetAccessCodeDialog = () => {
     closeMoreMenu();
+    setAccessCodeDialogContent({
+      title: "Access Ethereum Mainnet",
+      description: (
+        <>
+          <Typography>
+            Enter your access code to unlock Ethereum Mainnet.
+          </Typography>
+          <Typography>
+            Apply for the access code{" "}
+            <PrimaryLink
+              href="https://use.superfluid.finance/ethmainnet"
+              target="_blank"
+            >
+              here
+            </PrimaryLink>
+            .
+          </Typography>
+        </>
+      ),
+    });
   };
 
-  const closeOnboardingModal = () => {
-    setShowOnboardingModal(false);
-  };
-
-  const onOnboardingItemClicked = () => {
-    closeOnboardingModal();
-    setNavigationDrawerOpen(false);
+  const openVestingAccessCodeDialog = () => {
+    closeMoreMenu();
+    setAccessCodeDialogContent({
+      title: "Access Vesting",
+      description: (
+        <Typography>
+          Unlock Vesting by entering your unique access code. With this feature,
+          you&apos;ll be able to set up vesting schedules and track your vesting
+          assets.
+        </Typography>
+      ),
+    });
   };
 
   return (
     <>
       <ListItemButton
+        data-cy={"nav-more-button"}
         sx={{ borderRadius: "10px" }}
         onClick={openMoreMenu}
         selected={!!moreMenuAnchor}
@@ -92,7 +112,7 @@ const MoreNavigationItem: FC = ({}) => {
         }}
       >
         <Link href="https://www.superfluid.finance" target="_blank" passHref>
-          <ListItemButton href="" target="_blank">
+          <ListItemButton data-cy={"more-website-btn"} href="" target="_blank">
             <MenuItemImage
               src={
                 theme.palette.mode === "dark"
@@ -106,7 +126,7 @@ const MoreNavigationItem: FC = ({}) => {
         </Link>
 
         <Link href="https://v1.superfluid.finance" target="_blank" passHref>
-          <ListItemButton href="" target="_blank">
+          <ListItemButton data-cy={"more-v1-btn"} href="" target="_blank">
             <ListItemIcon>
               <GridViewRoundedIcon sx={{ color: theme.palette.text.primary }} />
             </ListItemIcon>
@@ -115,7 +135,7 @@ const MoreNavigationItem: FC = ({}) => {
         </Link>
 
         <Link href="https://discord.gg/XsK7nahanQ" target="_blank" passHref>
-          <ListItemButton href="" target="_blank">
+          <ListItemButton data-cy={"more-discord-btn"} href="" target="_blank">
             <MenuItemImage src="/icons/social/discord.svg" alt="Discord logo" />
             <ListItemText>Discord</ListItemText>
           </ListItemButton>
@@ -126,47 +146,53 @@ const MoreNavigationItem: FC = ({}) => {
           target="_blank"
           passHref
         >
-          <ListItemButton href="" target="_blank">
+          <ListItemButton data-cy={"more-twitter-btn"} href="" target="_blank">
             <MenuItemImage src="/icons/social/twitter.svg" alt="Twitter logo" />
             <ListItemText>Twitter</ListItemText>
           </ListItemButton>
         </Link>
 
         <Link href="/?showFaucet=true">
-          <ListItemButton href="" onClick={closeMoreMenu}>
+          <ListItemButton
+            data-cy={"more-faucet-btn"}
+            href=""
+            onClick={closeMoreMenu}
+          >
             <ListItemIcon>
               <ShowerRoundedIcon sx={{ color: theme.palette.text.primary }} />
             </ListItemIcon>
-            <ListItemText>Faucet</ListItemText>
+            <ListItemText>Testnet Faucet</ListItemText>
           </ListItemButton>
         </Link>
 
-        <ListItemButton onClick={openOnboardingModal}>
+        <Link href="/accounting">
+          <ListItemButton href="" onClick={closeMoreMenu}>
+            <ListItemIcon>
+              <AssessmentRoundedIcon
+                sx={{ color: theme.palette.text.primary }}
+              />
+            </ListItemIcon>
+            <ListItemText>Export Stream Data</ListItemText>
+          </ListItemButton>
+        </Link>
+
+        <ListItemButton
+          data-cy={"more-access-code-btn"}
+          onClick={openMainnetAccessCodeDialog}
+        >
           <ListItemIcon>
-            <SupportRoundedIcon color="primary" />
+            <QrCodeRoundedIcon sx={{ color: theme.palette.text.primary }} />
           </ListItemIcon>
-          <ListItemText>Getting Started</ListItemText>
+          <ListItemText>Access Ethereum Mainnet</ListItemText>
+        </ListItemButton>
+
+        <ListItemButton onClick={openVestingAccessCodeDialog}>
+          <ListItemIcon>
+            <QrCodeRoundedIcon sx={{ color: theme.palette.text.primary }} />
+          </ListItemIcon>
+          <ListItemText>Access Vesting</ListItemText>
         </ListItemButton>
       </Popover>
-
-      <Modal open={showOnboardingModal} onClose={closeOnboardingModal}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "40%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            [theme.breakpoints.down("md")]: {
-              top: "50%",
-            },
-          }}
-        >
-          <OnboardingCards
-            vertical={isBelowMd}
-            onClick={onOnboardingItemClicked}
-          />
-        </Box>
-      </Modal>
     </>
   );
 };

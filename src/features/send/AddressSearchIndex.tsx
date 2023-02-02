@@ -14,10 +14,19 @@ import {
 } from "../../components/AddressSearchDialog/AddressSearchDialog";
 import { subgraphApi } from "../redux/store";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { Address } from "@superfluid-finance/sdk-core";
+
+interface AddressSearchIndexProps {
+  addresses?: Address[];
+  onSelectAddress: AddressSearchDialogProps["onSelectAddress"];
+  disabledAddresses?: Address[];
+}
 
 export default memo(function AddressSearchIndex({
+  addresses = [],
   onSelectAddress,
-}: Pick<AddressSearchDialogProps, "onSelectAddress">) {
+  disabledAddresses = [],
+}: AddressSearchIndexProps) {
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
 
@@ -63,9 +72,11 @@ export default memo(function AddressSearchIndex({
         recents.map((address) => (
           <AddressListItem
             dataCy={"recents-entry"}
+            selected={addresses.includes(address)}
             key={address}
             address={address}
             onClick={() => onSelectAddress(address)}
+            disabled={disabledAddresses.includes(address)}
           />
         ))}
     </List>

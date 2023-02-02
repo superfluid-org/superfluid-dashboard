@@ -29,9 +29,14 @@ import useTokenPrice from "../tokenPrice/useTokenPrice";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
 
-const TransferActivityRow: FC<Activity<TransferEvent>> = ({
+interface TransferActivityRowProps extends Activity<TransferEvent> {
+  dateFormat?: string;
+}
+
+const TransferActivityRow: FC<TransferActivityRowProps> = ({
   keyEvent,
   network,
+  dateFormat = "HH:mm",
 }) => {
   const { from, to, token, value, timestamp, transactionHash } = keyEvent;
 
@@ -63,7 +68,7 @@ const TransferActivityRow: FC<Activity<TransferEvent>> = ({
           <ListItemText
             data-cy={"activity"}
             primary={isOutgoing ? "Send Transfer" : "Receive Transfer"}
-            secondary={format(timestamp * 1000, "HH:mm")}
+            secondary={format(timestamp * 1000, dateFormat)}
             primaryTypographyProps={{
               translate: "yes",
               variant: isBelowMd ? "h7" : "h6",

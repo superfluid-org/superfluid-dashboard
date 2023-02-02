@@ -38,5 +38,25 @@
         "txHash": "0x384bec1faf849929dcce6b293f7bee432f2a299cc9afc6750179dc96dd81b8ff"
       }
     ]
+  },
+  "accountWithLotsOfData": {
+    "goerli": [
+      {
+        "flowRate": 3858024691358,
+        "startedAtUnix": 1672822152000,
+        "sender": "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2",
+        "receiver": "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40",
+        "scheduledAmount": "242.7",
+        "startDate": "4 Jan. 2023 8:49",
+        "endDate": "1 Jan. 2025 8:43",
+        "amountPerMonth": "10",
+        "projectedLiquidation": "30 Oct. 2061 18:25",
+        "buffer": "0.013889",
+        "v2Link": "/stream/goerli/0xedb0c10d1f2642d8644f427a92875b5d5fb98acd2a21980728a096c7f67de48a-117",
+        "token": "TDLx",
+        "networkName": "Goerli",
+        "txHash": "0xedb0c10d1f2642d8644f427a92875b5d5fb98acd2a21980728a096c7f67de48a"
+      }
+    ]
   }
 }

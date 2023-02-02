@@ -25,11 +25,13 @@ export const addressBookSlice = createSlice({
       state: EntityState<AddressBookEntry>,
       { payload }: { payload: AddressBookEntry }
     ) =>
-      adapter.addOne(state, {
-        ...payload,
-        address: getAddress(payload.address),
-      }),
-
+      adapter.setAll(state, [
+        {
+          ...payload,
+          address: getAddress(payload.address),
+        },
+        ...adapterSelectors.selectAll(state),
+      ]),
     addAddressBookEntries: (
       state: EntityState<AddressBookEntry>,
       { payload }: { payload: Array<AddressBookEntry> }
@@ -75,7 +77,28 @@ const searchAddressBookEntries = createSelector(
       )
 );
 
+const selectByAddresses = createSelector(
+  [selectSelf, (_items: RootState, addresses: string[]) => addresses],
+  (
+    state: EntityState<AddressBookEntry>,
+    addresses: string[]
+  ): AddressBookEntry[] => {
+    const sanitizedAddresses = addresses.map((address) =>
+      address.toLowerCase()
+    );
+
+    return adapterSelectors
+      .selectAll(state)
+      .filter((addressBookEntry) =>
+        sanitizedAddresses.includes(
+          (addressBookEntry?.address || "").toLowerCase()
+        )
+      );
+  }
+);
+
 export const addressBookSelectors = {
   ...adapterSelectors,
   searchAddressBookEntries,
+  selectByAddresses,
 };

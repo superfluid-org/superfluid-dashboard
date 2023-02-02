@@ -3,18 +3,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getGoerliSdk = exports.getContract = void 0;
+exports.getMainnetSdk = exports.getGoerliSdk = exports.getContract = void 0;
 const ethers_1 = require("ethers");
-const streamScheduler_json_1 = __importDefault(require("../../abis/goerli/streamScheduler.json"));
-const vestingScheduler_json_1 = __importDefault(require("../../abis/goerli/vestingScheduler.json"));
+const flowScheduler_json_1 = __importDefault(require("../../abis/goerli/flowScheduler.json"));
+const vestingScheduler_json_1 = __importDefault(require("../../abis/mainnet/vestingScheduler.json"));
 function getContract(address, abi, defaultSignerOrProvider) {
     return new ethers_1.Contract(address, abi, defaultSignerOrProvider);
 }
 exports.getContract = getContract;
 function getGoerliSdk(defaultSignerOrProvider) {
     return {
-        "streamScheduler": getContract('0x7D37D9494a09E47e58B1F535386Ca4D9D175f23e', streamScheduler_json_1.default, defaultSignerOrProvider),
-        "vestingScheduler": getContract('0x6f54e4744b13879482b5a487e832b23e566661b5', vestingScheduler_json_1.default, defaultSignerOrProvider),
+        "flowScheduler": getContract('0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca', flowScheduler_json_1.default, defaultSignerOrProvider),
     };
 }
 exports.getGoerliSdk = getGoerliSdk;
+function getMainnetSdk(defaultSignerOrProvider) {
+    return {
+        "vestingScheduler": getContract('0x39D5cBBa9adEBc25085a3918d36D5325546C001B', vestingScheduler_json_1.default, defaultSignerOrProvider),
+    };
+}
+exports.getMainnetSdk = getMainnetSdk;

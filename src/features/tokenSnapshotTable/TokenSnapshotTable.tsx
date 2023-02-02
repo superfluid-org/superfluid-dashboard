@@ -1,26 +1,24 @@
-import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import {
-  Stack,
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
+import { sumBy } from "lodash";
 import { FC, memo, useEffect, useMemo } from "react";
+import NetworkHeadingRow from "../../components/Table/NetworkHeadingRow";
 import { tokenSnapshotsDefaultSort } from "../../utils/tokenUtils";
 import { useMinigame } from "../minigame/MinigameContext";
-import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
 import TokenSnapshotRow from "./TokenSnapshotRow";
 import { FetchingStatus } from "./TokenSnapshotTables";
-import { sumBy } from "lodash";
 
 interface TokenSnapshotTableProps {
   address: Address;
@@ -144,6 +142,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
   return (
     <TableContainer
       data-cy={network.slugName + "-token-snapshot-table"}
+      component={Paper}
       sx={{
         [theme.breakpoints.down("md")]: {
           mx: -2,
@@ -157,42 +156,14 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
     >
       <Table>
         <TableHead>
-          <TableRow>
-            <TableCell
-              colSpan={5}
-              sx={{
-                p: 0,
-                [theme.breakpoints.up("md")]: { border: "none" },
-                [theme.breakpoints.down("md")]: { p: 0 },
-              }}
-            >
-              <Stack
-                direction="row"
-                alignItems="center"
-                gap={2}
-                sx={{ py: 2, px: 4, [theme.breakpoints.down("md")]: { p: 2 } }}
-              >
-                <NetworkIcon network={network} />
-                <Typography
-                  data-cy="network-name"
-                  variant="h5"
-                  color="text.primary"
-                  translate="no"
-                >
-                  {network.name}
-                </Typography>
-              </Stack>
-            </TableCell>
-          </TableRow>
+          <NetworkHeadingRow colSpan={5} network={network} />
           {!isBelowMd && (
             <TableRow>
               <TableCell width="200">Asset</TableCell>
               <TableCell>Balance</TableCell>
               <TableCell width="300">Net Flow</TableCell>
               <TableCell width="300">Inflow/Outflow</TableCell>
-              <TableCell width="120" align="center">
-                <KeyboardDoubleArrowDownIcon />
-              </TableCell>
+              <TableCell width="120" align="center"></TableCell>
             </TableRow>
           )}
         </TableHead>

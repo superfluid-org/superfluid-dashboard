@@ -1,4 +1,4 @@
-import PersonSearchIcon from "@mui/icons-material/PersonSearch";
+import PersonSearchRoundedIcon from "@mui/icons-material/PersonSearchRounded";
 import {
   Box,
   Button,
@@ -25,15 +25,12 @@ import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 const ConnectView: FC = () => {
   const theme = useTheme();
   const { impersonate } = useImpersonation();
+
   const [addressSearchOpen, setAddressSearchOpen] = useState(false);
-  const openAddressSearchDialog = useCallback(
-    () => setAddressSearchOpen(true),
-    [setAddressSearchOpen]
-  );
-  const closeAddressSearchDialog = useCallback(
-    () => setAddressSearchOpen(false),
-    [setAddressSearchOpen]
-  );
+
+  const openAddressSearchDialog = () => setAddressSearchOpen(true);
+  const closeAddressSearchDialog = () => setAddressSearchOpen(false);
+
   const onImpersonate = useCallback(
     (address: string) => impersonate(address),
     [impersonate]
@@ -82,7 +79,7 @@ const ConnectView: FC = () => {
               variant="outlined"
               color="secondary"
               size="xl"
-              startIcon={<PersonSearchIcon />}
+              startIcon={<PersonSearchRoundedIcon />}
               onClick={openAddressSearchDialog}
             >
               View the dashboard as any address

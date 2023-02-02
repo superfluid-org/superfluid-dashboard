@@ -9,7 +9,7 @@ import { PendingUpdate } from "./PendingUpdate";
 import { PendingVestingSchedule } from "./PendingVestingSchedule";
 import { PendingVestingScheduleDeletion as PendingVestingScheduleDelete } from "./PendingVestingScheduleDelete";
 
-const adapter = createEntityAdapter<PendingUpdate>({
+export const pendingUpdateAdapter = createEntityAdapter<PendingUpdate>({
   selectId: (x) => x.id,
   sortComparer: (a, b) => {
     if (a.timestamp > b.timestamp) {
@@ -24,8 +24,10 @@ const adapter = createEntityAdapter<PendingUpdate>({
 
 export const pendingUpdateSlice = createSlice({
   name: "pendingUpdates",
-  initialState: adapter.getInitialState(),
-  reducers: {},
+  initialState: pendingUpdateAdapter.getInitialState(),
+  reducers: {
+    removeOne: pendingUpdateAdapter.removeOne
+  },
   extraReducers(builder) {
     builder.addMatcher(
       rpcApi.endpoints.flowDelete.matchFulfilled,
@@ -43,8 +45,9 @@ export const pendingUpdateSlice = createSlice({
             tokenAddress: superTokenAddress,
             pendingType: "FlowDelete",
             timestamp: dateNowSeconds(),
+            relevantSubgraph: "Protocol",
           };
-          adapter.addOne(state, pendingUpdate);
+          pendingUpdateAdapter.addOne(state, pendingUpdate);
         }
       }
     );
@@ -73,8 +76,9 @@ export const pendingUpdateSlice = createSlice({
             token: superTokenAddress,
             streamedUntilUpdatedAt: "0",
             currentFlowRate: flowRateWei,
+            relevantSubgraph: "Protocol",
           };
-          adapter.addOne(state, pendingUpdate);
+          pendingUpdateAdapter.addOne(state, pendingUpdate);
         }
       }
     );
@@ -109,8 +113,9 @@ export const pendingUpdateSlice = createSlice({
               token: superTokenAddress,
               streamedUntilUpdatedAt: "0",
               currentFlowRate: flowRateWei,
+              relevantSubgraph: "Protocol",
             };
-            adapter.addOne(state, pendingUpdate);
+            pendingUpdateAdapter.addOne(state, pendingUpdate);
           }
         }
       }
@@ -130,8 +135,9 @@ export const pendingUpdateSlice = createSlice({
           publisherAddress,
           superTokenAddress,
           timestamp: dateNowSeconds(),
+          relevantSubgraph: "Protocol",
         };
-        adapter.addOne(state, pendingUpdate);
+        pendingUpdateAdapter.addOne(state, pendingUpdate);
       }
     );
     builder.addMatcher(
@@ -149,8 +155,9 @@ export const pendingUpdateSlice = createSlice({
           publisherAddress,
           superTokenAddress,
           timestamp: dateNowSeconds(),
+          relevantSubgraph: "Protocol",
         };
-        adapter.addOne(state, pendingUpdate);
+        pendingUpdateAdapter.addOne(state, pendingUpdate);
       }
     );
     builder.addMatcher(
@@ -167,44 +174,43 @@ export const pendingUpdateSlice = createSlice({
           endDateTimestamp,
           flowRateWei,
         } = action.meta.arg.originalArgs;
-          const pendingUpdate: PendingVestingSchedule = {
-            chainId,
-            transactionHash,
-            senderAddress,
-            receiverAddress,
-            id: transactionHash,
-            superTokenAddress,
-            pendingType: "VestingScheduleCreate",
-            timestamp: dateNowSeconds(),
-            cliffDateTimestamp,
-            cliffTransferAmountWei,
-            startDateTimestamp,
-            endDateTimestamp,
-            flowRateWei,
-          };
-          adapter.addOne(state, pendingUpdate);
+        const pendingUpdate: PendingVestingSchedule = {
+          chainId,
+          transactionHash,
+          senderAddress,
+          receiverAddress,
+          id: transactionHash,
+          superTokenAddress,
+          pendingType: "VestingScheduleCreate",
+          timestamp: dateNowSeconds(),
+          cliffDateTimestamp,
+          cliffTransferAmountWei,
+          startDateTimestamp,
+          endDateTimestamp,
+          flowRateWei,
+          relevantSubgraph: "Vesting",
+        };
+        pendingUpdateAdapter.addOne(state, pendingUpdate);
       }
     );
     builder.addMatcher(
       rpcApi.endpoints.deleteVestingSchedule.matchFulfilled,
       (state, action) => {
         const { chainId, hash: transactionHash } = action.payload;
-        const {
+        const { senderAddress, superTokenAddress, receiverAddress } =
+          action.meta.arg.originalArgs;
+        const pendingUpdate: PendingVestingScheduleDelete = {
+          chainId,
+          transactionHash,
           senderAddress,
-          superTokenAddress,
           receiverAddress,
-        } = action.meta.arg.originalArgs;
-          const pendingUpdate: PendingVestingScheduleDelete = {
-            chainId,
-            transactionHash,
-            senderAddress,
-            receiverAddress,
-            id: transactionHash,
-            superTokenAddress,
-            pendingType: "VestingScheduleDelete",
-            timestamp: dateNowSeconds(),
-          };
-          adapter.addOne(state, pendingUpdate);
+          id: transactionHash,
+          superTokenAddress,
+          pendingType: "VestingScheduleDelete",
+          timestamp: dateNowSeconds(),
+          relevantSubgraph: "Vesting",
+        };
+        pendingUpdateAdapter.addOne(state, pendingUpdate);
       }
     );
     builder.addMatcher(
@@ -213,7 +219,7 @@ export const pendingUpdateSlice = createSlice({
         const transactionStatus = action.payload.changes.status;
         if (transactionStatus === "Succeeded") {
           const transactionId = action.payload.id;
-          adapter.updateOne(state, {
+          pendingUpdateAdapter.updateOne(state, {
             id: transactionId,
             changes: {
               hasTransactionSucceeded: true,
@@ -228,18 +234,22 @@ export const pendingUpdateSlice = createSlice({
         const transactionStatus = action.payload.changes.status;
         const isSubgraphInSync = action.payload.changes.isSubgraphInSync;
 
+        const entry = pendingUpdateAdapter
+          .getSelectors()
+          .selectById(state, action.payload.id);
+
         // Delete the pending update when Subgraph is synced or the transaction fails.
         if (
-          isSubgraphInSync ||
+          (entry?.relevantSubgraph === "Protocol" && isSubgraphInSync) ||
           transactionStatus === "Failed" ||
           transactionStatus === "Unknown"
         ) {
           const transactionId = action.payload.id;
-          adapter.removeOne(state, transactionId);
+          pendingUpdateAdapter.removeOne(state, transactionId);
         }
       }
     );
   },
 });
 
-export const pendingUpdateSelectors = adapter.getSelectors();
+export const pendingUpdateSelectors = pendingUpdateAdapter.getSelectors();

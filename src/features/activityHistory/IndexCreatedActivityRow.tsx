@@ -19,9 +19,14 @@ import { subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
 import ActivityIcon from "./ActivityIcon";
 
-const IndexCreatedActivityRow: FC<Activity<IndexCreatedEvent>> = ({
+interface IndexCreatedActivityRowProps extends Activity<IndexCreatedEvent> {
+  dateFormat?: string;
+}
+
+const IndexCreatedActivityRow: FC<IndexCreatedActivityRowProps> = ({
   keyEvent,
   network,
+  dateFormat = "HH:mm",
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -40,7 +45,7 @@ const IndexCreatedActivityRow: FC<Activity<IndexCreatedEvent>> = ({
           <ActivityIcon icon={AddRoundedIcon} />
           <ListItemText
             primary="Index Created"
-            secondary={format(timestamp * 1000, "HH:mm")}
+            secondary={format(timestamp * 1000, dateFormat)}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
               translate: "yes",

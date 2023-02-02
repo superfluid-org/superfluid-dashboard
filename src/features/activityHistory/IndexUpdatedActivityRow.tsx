@@ -22,9 +22,14 @@ import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
 
-const IndexUpdatedActivityRow: FC<Activity<IndexUpdatedEvent>> = ({
+interface IndexUpdatedActivityRowProps extends Activity<IndexUpdatedEvent> {
+  dateFormat?: string;
+}
+
+const IndexUpdatedActivityRow: FC<IndexUpdatedActivityRowProps> = ({
   keyEvent,
   network,
+  dateFormat = "HH:mm",
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -80,7 +85,7 @@ const IndexUpdatedActivityRow: FC<Activity<IndexUpdatedEvent>> = ({
           />
           <ListItemText
             primary="Send Distribution"
-            secondary={format(timestamp * 1000, "HH:mm")}
+            secondary={format(timestamp * 1000, dateFormat)}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
               translate: "yes",

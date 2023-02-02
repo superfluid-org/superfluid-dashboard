@@ -1,13 +1,10 @@
-import DateRangeIcon from "@mui/icons-material/DateRange";
+import DateRangeRoundedIcon from "@mui/icons-material/DateRangeRounded";
 import {
   Box,
   Button,
   Container,
   Paper,
   Stack,
-  Table,
-  TableBody,
-  TableContainer,
   Typography,
   useMediaQuery,
   useTheme,
@@ -18,10 +15,11 @@ import groupBy from "lodash/fp/groupBy";
 import orderBy from "lodash/fp/orderBy";
 import { NextPage } from "next";
 import { MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
+import ConnectOrImpersonate from "../components/ConnectOrImpersonate/ConnectOrImpersonate";
 import DatePicker from "../components/DatePicker/DatePicker";
 import OpenIcon from "../components/OpenIcon/OpenIcon";
 import withStaticSEO from "../components/SEO/withStaticSEO";
-import ActivityRow from "../features/activityHistory/ActivityRow";
+import ActivityTable from "../features/activityHistory/ActivityTable";
 import ActivityTypeFilter, {
   ActivityType,
   ActivityTypeFilters,
@@ -209,7 +207,7 @@ const History: NextPage = () => {
               variant="outlined"
               color="secondary"
               size="large"
-              startIcon={<DateRangeIcon />}
+              startIcon={<DateRangeRoundedIcon />}
               onClick={openDatePicker}
               translate="no"
               sx={{
@@ -293,9 +291,16 @@ const History: NextPage = () => {
               color="text.secondary"
               textAlign="center"
             >
-              Transactions including wrapping tokens and sending streams will
-              appear here.
+              {!visibleAddress
+                ? `Connect wallet or view the dashboard as any address to see transactions.`
+                : `Transactions including wrapping tokens and sending streams will appear here.`}
             </Typography>
+
+            {!visibleAddress && (
+              <Box sx={{ maxWidth: 400, width: "100%", mx: "auto", mt: 4 }}>
+                <ConnectOrImpersonate />
+              </Box>
+            )}
           </Paper>
         )}
 
@@ -307,50 +312,7 @@ const History: NextPage = () => {
                 <Typography variant="h6" sx={{ mb: 2 }}>
                   {format(new Date(dateKey), "MMMM d, yyyy")}
                 </Typography>
-                <TableContainer
-                  sx={{
-                    [theme.breakpoints.down("md")]: {
-                      borderLeft: 0,
-                      borderRight: 0,
-                      borderRadius: 0,
-                      boxShadow: "none",
-                      mx: -2,
-                      width: "auto",
-                    },
-                  }}
-                >
-                  <Table
-                    sx={{
-                      // TODO: Make all table layouts fixed
-                      [theme.breakpoints.up("md")]: {
-                        tableLayout: "fixed",
-                        td: {
-                          "&:nth-of-type(1)": {
-                            width: "30%",
-                          },
-                          "&:nth-of-type(2)": {
-                            width: "30%",
-                          },
-                          "&:nth-of-type(3)": {
-                            width: "30%",
-                          },
-                          "&:nth-of-type(4)": {
-                            width: "140px",
-                          },
-                        },
-                      },
-                    }}
-                  >
-                    <TableBody>
-                      {activities.map((activity) => (
-                        <ActivityRow
-                          key={activity.keyEvent.id}
-                          activity={activity}
-                        />
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+                <ActivityTable activities={activities} />
               </Box>
             )
           )}

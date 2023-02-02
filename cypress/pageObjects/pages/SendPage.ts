@@ -1,5 +1,4 @@
-import {BasePage} from "../BasePage";
-import {UnitOfTime} from "../BasePage";
+import {BasePage, UnitOfTime} from "../BasePage";
 import {WrapPage} from "./WrapPage";
 import {networksBySlug} from "../../superData/networks";
 
@@ -10,12 +9,12 @@ const FLOW_RATE_INPUT = "[data-cy=flow-rate-input]";
 const TIME_UNIT_SELECTION_BUTTON = "[data-cy=time-unit-selection-button]";
 const AMOUNT_PER_SECOND = "[data-cy=preview-per-second]";
 const ADDRESS_DIALOG_INPUT = "[data-cy=address-dialog-input]";
-const CLOSE_DIALOG_BUTTON = "[data-testid=CloseIcon]";
+const CLOSE_DIALOG_BUTTON = "[data-testid=CloseRoundedIcon]";
 const ENS_ENTRIES = "[data-cy=ens-entry]";
-const ENS_ENTRY_NAMES = "[data-cy=ens-entry] span";
+const ENS_ENTRY_NAMES = "[data-cy=ens-entry] h6";
 const ENS_ENTRY_ADDRESS = "[data-cy=ens-entry] p";
 const RECENT_ENTRIES = "[data-cy=recents-entry]";
-const RECENT_ENTRIES_ADDRESS = "[data-cy=recents-entry] span";
+const RECENT_ENTRIES_ADDRESS = "[data-cy=recents-entry] h6";
 const RECEIVER_CLEAR_BUTTON = "[data-testid=CloseIcon]";
 const TOKEN_SEARCH_INPUT = "[data-cy=token-search-input]";
 const TOKEN_SEARCH_RESULTS = "[data-cy$=list-item]";
@@ -26,6 +25,7 @@ const PREVIEW_FLOW_RATE = "[data-cy=preview-flow-rate]";
 const PREVIEW_RECEIVER = "[data-cy=preview-receiver]";
 const PREVIEW_ENDS_ON = "[data-cy=preview-ends-on]";
 const PREVIEW_UPFRONT_BUFFER = "[data-cy=preview-upfront-buffer]";
+const BUFFER_WARNING_AMOUNT = "[data-cy=buffer-warning] span"
 const PROTECT_YOUR_BUFFER_ERROR = "[data-cy=protect-your-buffer-error]";
 const RISK_CHECKBOX = "[data-cy=risk-checkbox]";
 const ADDRESS_BUTTON_TEXT = "[data-cy=address-button]";
@@ -61,17 +61,18 @@ export class SendPage extends BasePage {
 
     static validateSendPagePreviewBalance() {
         cy.fixture("networkSpecificData").then((networkSpecificData) => {
+            let selectedValues = networkSpecificData.polygon.staticBalanceAccount.tokenValues[0]
+                .balance
+
             this.hasText(
                 PREVIEW_BALANCE,
-                parseFloat(
-                    networkSpecificData.polygon.staticBalanceAccount.tokenValues[0]
-                        .balance
-                ).toFixed(18)
+                `${selectedValues} `
             );
         });
     }
 
     static clickBalancePreviewWrapButton() {
+        this.doesNotExist(TOKEN_SEARCH_INPUT)
         this.click(BALANCE_WRAP_BUTTON);
     }
 
@@ -175,7 +176,7 @@ export class SendPage extends BasePage {
     }
 
     static clearReceiverField() {
-        this.click(RECEIVER_CLEAR_BUTTON);
+        this.clickFirstVisible(RECEIVER_CLEAR_BUTTON);
         this.hasText(RECEIVER_BUTTON, "Public Address or ENS");
     }
 
@@ -231,9 +232,10 @@ export class SendPage extends BasePage {
                         specificToken + TOKEN_SELECT_NAME,
                         values.tokenName
                     );
+                    let assertableBalance = Number.isInteger(parseFloat(values.balance)) ? values.balance : parseFloat(values.balance).toFixed(4)
                     this.scrollToAndhasText(
                         specificToken + TOKEN_SELECT_BALANCE,
-                        values.balance
+                        `${assertableBalance} `
                     );
                 }
             );
@@ -262,7 +264,7 @@ export class SendPage extends BasePage {
     }
 
     static validateBalanceAndNoWrapButtonForNativeToken() {
-        this.hasText(PREVIEW_BALANCE, "0");
+        this.hasText(PREVIEW_BALANCE, "0 ");
         this.doesNotExist(BALANCE_WRAP_BUTTON);
     }
 
@@ -315,37 +317,41 @@ export class SendPage extends BasePage {
     }
 
     static inputStreamDetails(amount: string, token: string, timeUnit: any, address: string) {
+            cy.fixture("rejectedCaseTokens").then(tokens => {
+                let selectedToken;
+                if(token.startsWith("Token")) {
+                    selectedToken = token.endsWith("x") ? `${tokens[Cypress.env("network")][token.slice(0, -1)]}x`: tokens[Cypress.env("network")][token]
+                } else {
+                    selectedToken = token
+                }
         this.click(RECEIVER_BUTTON);
         cy.get(RECENT_ENTRIES,{timeout:30000}).should("be.visible")
         this.type(ADDRESS_DIALOG_INPUT, address);
         this.click(SELECT_TOKEN_BUTTON);
-        cy.get(`[data-cy=${token}-list-item]`, {timeout: 60000}).click()
+        cy.get(`[data-cy="${selectedToken}-list-item"]`, {timeout: 60000}).click()
         this.type(FLOW_RATE_INPUT, amount);
         this.click(TIME_UNIT_SELECTION_BUTTON)
         this.click(`[data-value=${UnitOfTime[timeUnit[0].toUpperCase() + timeUnit.substring(1)]!}]`)
         this.click(RISK_CHECKBOX)
-    }
+        this.isVisible(PREVIEW_UPFRONT_BUFFER)
+        })
+   }
 
     static overrideNextGasPrice() {
-        cy.window().then((win) => {
+        if(!Cypress.env("rejected")) {
+                cy.window().then((win) => {
             // @ts-ignore
-            win.mockSigner.getGasPrice().then((gas) => {
+                win.mockSigner.getGasPrice().then((gas) => {
                 // @ts-ignore
-                win.superfluid_dashboard.advanced.nextGasOverrides.gasPrice = gas._hex.toString() * 2
+                    win.superfluid_dashboard.advanced.nextGasOverrides.gasPrice = gas._hex.toString() * 2
                 // @ts-ignore
                 win.superfluid_dashboard.advanced.nextGasOverrides.gasLimit = "1000000"
+                })
             })
-        })
+        }
     }
 
-    static startStreamAndCheckDialogs(network: string) {
-        this.overrideNextGasPrice()
-        cy.get(SEND_BUTTON).should("not.have.attr", "disabled" , {timeout:30000});
-        this.click(SEND_BUTTON)
-        this.isVisible(LOADING_SPINNER)
-        this.exists(`${SEND_BUTTON} ${LOADING_SPINNER}`)
-        this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
-        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
+    static checkNewStreamBrodcastedDialogs() {
         cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
         this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
         this.isVisible(SEND_MORE_STREAMS_BUTTON)
@@ -423,14 +429,20 @@ export class SendPage extends BasePage {
         })
     }
 
-    static modifyStreamAndValidateDialogs(network: string) {
+    static startOrModifyStreamAndValidateTxApprovalDialog(network:string) {
+        let selectedNetwork = network === "selected network" ? Cypress.env("network") : network
         this.overrideNextGasPrice()
-        cy.get(SEND_BUTTON).should("not.have.attr", "disabled" , {timeout:30000});
+        this.isVisible(PREVIEW_UPFRONT_BUFFER)
+        this.isNotDisabled(SEND_BUTTON)
+        cy.get(SEND_BUTTON).should("be.enabled")
         this.click(SEND_BUTTON)
         this.isVisible(LOADING_SPINNER)
         this.exists(`${SEND_BUTTON} ${LOADING_SPINNER}`)
         this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
-        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
+        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(selectedNetwork)?.name})`)
+    }
+
+    static validateBroadcastedDialogsAfterModifyingStream() {
         cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
         this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
         this.isVisible(GO_TO_TOKENS_PAGE_BUTTON)
@@ -455,17 +467,32 @@ export class SendPage extends BasePage {
         })
     }
 
-    static cancelStreamAndVerifyDialogs(network: string) {
+    static cancelStreamAndVerifyApprovalDialogs(network:string) {
+        let selectedNetwork = network === "selected network" ? Cypress.env("network") : network
         this.overrideNextGasPrice()
-        cy.get(CANCEL_STREAM_BUTTON).should("not.have.attr", "disabled" , {timeout:30000});
+        cy.get(CANCEL_STREAM_BUTTON, {timeout:30000}).should("not.have.attr", "disabled");
         this.click(CANCEL_STREAM_BUTTON)
         this.isVisible(LOADING_SPINNER)
         this.exists(`${CANCEL_STREAM_BUTTON} ${LOADING_SPINNER}`)
         this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...")
-        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`)
+        this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(selectedNetwork)?.name})`)
+    }
+
+    static verifyDialogAfterBroadcastingCancelledStream() {
         cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
         this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
         this.isVisible(OK_BUTTON)
         this.doesNotExist(`${CANCEL_STREAM_BUTTON} ${LOADING_SPINNER}`)
+    }
+
+    static validateDisabledSendButton() {
+        this.isDisabled(SEND_BUTTON)
+    }
+
+    static validateEthereumMainnetMinimumDeposit() {
+        cy.get("@lastChosenToken").then(token => {
+            this.hasText(PREVIEW_UPFRONT_BUFFER , `69 ${token}`)
+            this.hasText(BUFFER_WARNING_AMOUNT , `69 ${token}`)
+        })
     }
 }

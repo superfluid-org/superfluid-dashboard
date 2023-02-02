@@ -1,5 +1,6 @@
 import {
   Button,
+  Paper,
   Stack,
   Table,
   TableBody,
@@ -121,6 +122,7 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
 
   return (
     <TableContainer
+      component={Paper}
       sx={{
         [theme.breakpoints.down("md")]: {
           mx: -2,

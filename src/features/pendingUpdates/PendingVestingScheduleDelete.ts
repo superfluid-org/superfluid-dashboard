@@ -3,7 +3,6 @@ import { PendingUpdate } from "./PendingUpdate";
 import { pendingUpdateSelectors } from "./pendingUpdate.slice";
 import { useAppSelector } from "../redux/store";
 import { DeleteVestingSchedule } from "../redux/endpoints/vestingSchedulerEndpoints";
-import { string } from "yup";
 
 export interface PendingVestingScheduleDeletion
   extends PendingUpdate,

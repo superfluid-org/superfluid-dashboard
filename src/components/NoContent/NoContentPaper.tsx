@@ -4,9 +4,10 @@ import { FC } from "react";
 interface NoContentPaperProps {
   title: string;
   description: string;
+  dataCy?: string;
 }
 
-const NoContentPaper: FC<NoContentPaperProps> = ({ title, description }) => {
+const NoContentPaper: FC<NoContentPaperProps> = ({ title, description ,dataCy}) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -22,10 +23,10 @@ const NoContentPaper: FC<NoContentPaperProps> = ({ title, description }) => {
         },
       }}
     >
-      <Typography variant={isBelowMd ? "h5" : "h4"} textAlign="center">
+      <Typography data-cy={`${dataCy}-title`} variant={isBelowMd ? "h5" : "h4"} textAlign="center">
         {title}
       </Typography>
-      <Typography color="text.secondary" textAlign="center">
+      <Typography data-cy={`${dataCy}-description`} color="text.secondary" textAlign="center">
         {description}
       </Typography>
     </Paper>

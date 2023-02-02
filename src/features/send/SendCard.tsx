@@ -78,7 +78,9 @@ import { useAnalytics } from "../analytics/useAnalytics";
 const MIN_VISIBLE_END_DATE = add(new Date(), {
   minutes: 5,
 });
-const MAX_VISIBLE_END_DATE = new Date(2022, 11, 31, 23, 59);
+const MAX_VISIBLE_END_DATE = add(new Date(), {
+  years: 2,
+});
 
 const getStreamedTotal = ({
   endTimestamp,
@@ -299,8 +301,8 @@ export default memo(function SendCard() {
     />
   );
 
-  const doesNetworkSupportStreamScheduler =
-    !!network.streamSchedulerContractAddress;
+  const doesNetworkSupportFlowScheduler = false;
+    // !!network.flowSchedulerContractAddress; // TODO(KK): Uncomment this to enable
 
   const [streamScheduling, setStreamScheduling] = useState<boolean>(
     !!endTimestamp
@@ -464,19 +466,31 @@ export default memo(function SendCard() {
     }
   }, [setShowBufferAlert, receiverAddress, tokenAddress, flowRateEther.amountEther]);
 
+  const tokenBufferQuery = rpcApi.useTokenBufferQuery(
+    tokenAddress ? { chainId: network.id, token: tokenAddress } : skipToken
+  );
+
   const bufferAmount = useMemo(() => {
-    if (!flowRateEther.amountEther || !flowRateEther.unitOfTime) {
+    if (
+      !flowRateEther.amountEther ||
+      !flowRateEther.unitOfTime ||
+      !tokenBufferQuery.data
+    ) {
       return undefined;
     }
 
-    return calculateBufferAmount(network, {
-      amountWei: parseEtherOrZero(flowRateEther.amountEther).toString(),
-      unitOfTime: flowRateEther.unitOfTime,
-    });
-  }, [network, flowRateEther]);
+    return calculateBufferAmount(
+      network,
+      {
+        amountWei: parseEtherOrZero(flowRateEther.amountEther).toString(),
+        unitOfTime: flowRateEther.unitOfTime,
+      },
+      tokenBufferQuery.data
+    );
+  }, [network, flowRateEther, tokenBufferQuery.data]);
 
   const BufferAlert = (
-    <Alert severity="error">
+    <Alert data-cy="buffer-warning"severity="error">
       If you do not cancel this stream before your balance reaches zero,{" "}
       <b>
         you will lose your{" "}
@@ -777,7 +791,7 @@ export default memo(function SendCard() {
             {FlowRateController}
           </Box>
         </Box>
-        {doesNetworkSupportStreamScheduler && (
+        {doesNetworkSupportFlowScheduler && (
           <>
             <FormControlLabel
               control={StreamSchedulingController}

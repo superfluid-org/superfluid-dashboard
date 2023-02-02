@@ -1,2 +1,1 @@
-export { StreamScheduler__factory } from "./StreamScheduler__factory";
-export { VestingScheduler__factory } from "./VestingScheduler__factory";
+export { FlowScheduler__factory } from "./FlowScheduler__factory";

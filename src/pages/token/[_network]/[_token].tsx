@@ -24,6 +24,9 @@ import { FC, PropsWithChildren, useEffect, useState } from "react";
 import SEO from "../../../components/SEO/SEO";
 import withStaticSEO from "../../../components/SEO/withStaticSEO";
 import { useAutoConnect } from "../../../features/autoConnect/AutoConnect";
+import TimeUnitFilter, {
+  TimeUnitFilterType,
+} from "../../../features/graph/TimeUnitFilter";
 import SubscriptionsTable from "../../../features/index/SubscriptionsTable";
 import NetworkIcon from "../../../features/network/NetworkIcon";
 import { Network, networksBySlug } from "../../../features/network/networks";
@@ -32,10 +35,7 @@ import { UnitOfTime } from "../../../features/send/FlowRateInput";
 import StreamsTable from "../../../features/streamsTable/StreamsTable";
 import Amount from "../../../features/token/Amount";
 import FlowingBalance from "../../../features/token/FlowingBalance";
-import TokenBalanceGraph, {
-  GraphType,
-} from "../../../features/token/TokenGraph/TokenBalanceGraph";
-import TokenGraphFilter from "../../../features/token/TokenGraph/TokenGraphFilter";
+import TokenBalanceGraph from "../../../features/token/TokenGraph/TokenBalanceGraph";
 import TokenToolbar from "../../../features/token/TokenToolbar";
 import FlowingFiatBalance from "../../../features/tokenPrice/FlowingFiatBalance";
 import useTokenPrice from "../../../features/tokenPrice/useTokenPrice";
@@ -116,6 +116,15 @@ enum TokenDetailsTabs {
   Transfers = "transfers",
 }
 
+const GraphTimeUnitFilters = [
+  TimeUnitFilterType.Week,
+  TimeUnitFilterType.Month,
+  TimeUnitFilterType.Quarter,
+  TimeUnitFilterType.Year,
+  TimeUnitFilterType.YTD,
+  TimeUnitFilterType.All,
+];
+
 const TokenPageContent: FC<{
   network: Network;
   tokenAddress: string;
@@ -125,7 +134,7 @@ const TokenPageContent: FC<{
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const [activeTab, setActiveTab] = useState(TokenDetailsTabs.Streams);
-  const [graphType, setGraphType] = useState(GraphType.All);
+  const [graphFilter, setGraphFilter] = useState(TimeUnitFilterType.All);
   const [showForecast, setShowForecast] = useState(true);
   const navigateBack = useNavigateBack();
 
@@ -161,8 +170,8 @@ const TokenPageContent: FC<{
   const onTabChange = (_e: unknown, newTab: TokenDetailsTabs) =>
     setActiveTab(newTab);
 
-  const onGraphTypeChange = (newGraphType: GraphType) =>
-    setGraphType(newGraphType);
+  const onGraphFilterChange = (newGraphFilter: TimeUnitFilterType) =>
+    setGraphFilter(newGraphFilter);
 
   const {
     tokenSymbol,
@@ -279,9 +288,10 @@ const TokenPageContent: FC<{
               justifyContent="space-between"
             >
               {!isBelowMd && (
-                <TokenGraphFilter
-                  activeType={graphType}
-                  onChange={onGraphTypeChange}
+                <TimeUnitFilter
+                  activeFilter={graphFilter}
+                  onChange={onGraphFilterChange}
+                  options={GraphTimeUnitFilters}
                 />
               )}
 
@@ -325,7 +335,7 @@ const TokenPageContent: FC<{
 
           {accountAddress && tokenAddress && (
             <TokenBalanceGraph
-              graphType={graphType}
+              timeUnitFilter={graphFilter}
               network={network}
               account={accountAddress}
               token={tokenAddress}
@@ -341,9 +351,10 @@ const TokenPageContent: FC<{
             sx={{ mt: 2 }}
           >
             {isBelowMd ? (
-              <TokenGraphFilter
-                activeType={graphType}
-                onChange={onGraphTypeChange}
+              <TimeUnitFilter
+                activeFilter={graphFilter}
+                onChange={onGraphFilterChange}
+                options={GraphTimeUnitFilters}
               />
             ) : (
               <Box />
