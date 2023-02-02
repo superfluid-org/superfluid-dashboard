@@ -106,6 +106,22 @@ const INVEST_IN_REALTIME: EcosystemApp[] = [
   },
 ];
 
+const PLAY_WEB3_GAMES: EcosystemApp[] = [
+  {
+    name: "Planet IX",
+    href: "https://planetix.com",
+    icon: "/icons/ecosystem/planetix.svg",
+    description: `NFT-based Strategy Game`,
+    chains: [
+      networkDefinition.polygon.id,
+    ],
+    colors: {
+      primary: "#FF6647",
+      secondary: "#FFFFFF",
+    },
+  },
+];
+
 const BRIDGE_AND_EXCHANGE: EcosystemApp[] = [
   {
     name: "LI.FI",
@@ -403,6 +419,10 @@ const ECOSYSTEM_SECTIONS: SectionConf[] = [
   {
     title: "Invest in Real-Time",
     apps: INVEST_IN_REALTIME,
+  },
+  {
+    title: "Play Web3 Games",
+    apps: PLAY_WEB3_GAMES,
   },
   {
     title: "Bridge & Exchange",
