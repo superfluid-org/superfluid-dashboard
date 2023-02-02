@@ -110,7 +110,7 @@ const PLAY_WEB3_GAMES: EcosystemApp[] = [
   {
     name: "Planet IX",
     href: "https://planetix.com",
-    icon: "/icons/ecosystem/planetix.svg",
+    icon: "/icons/ecosystem/planetix.png",
     description: `NFT-based Strategy Game`,
     chains: [
       networkDefinition.polygon.id,
