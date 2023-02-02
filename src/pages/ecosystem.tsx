@@ -117,7 +117,7 @@ const PLAY_WEB3_GAMES: EcosystemApp[] = [
     ],
     colors: {
       primary: "#FF6647",
-      secondary: "#FFFFFF",
+      secondary: "#000000",
     },
   },
 ];
