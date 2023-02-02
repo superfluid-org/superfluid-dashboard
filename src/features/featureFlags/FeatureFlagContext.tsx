@@ -22,7 +22,12 @@ interface FeatureFlagContextValue {
   isMainnetEnabled: boolean;
 }
 
-export const VESTING_FEATURE_CODES = ["98S_VEST"];
+export const VESTING_FEATURE_CODES = [
+  "98S_VEST",
+  "V923_TokenOps",
+  "V754_Seliqui",
+  "V910_Bertrand",
+];
 
 export const MAINNET_FEATURE_CODES = [
   "724ZX_ENS",
