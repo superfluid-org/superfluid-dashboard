@@ -89,15 +89,17 @@ export default function MyApp(props: AppPropsWithLayout) {
                                   <TransactionRestorationContextProvider>
                                     <LayoutContextProvider>
                                       <AnalyticsProvider>
-                                      <IntercomProvider>
-                                        <MonitorContext />
-                                        <Layout>
-                                          <MinigameProvider>{getLayout(
-                                            <Component {...pageProps} />)}
-                                          </MinigameProvider>
-                                        </Layout>
-                                      </IntercomProvider>
-                                    </AnalyticsProvider>
+                                        <IntercomProvider>
+                                          <MonitorContext />
+                                          <Layout>
+                                            <MinigameProvider>
+                                              {getLayout(
+                                                <Component {...pageProps} />
+                                              )}
+                                            </MinigameProvider>
+                                          </Layout>
+                                        </IntercomProvider>
+                                      </AnalyticsProvider>
                                     </LayoutContextProvider>
                                   </TransactionRestorationContextProvider>
                                 </VisibleAddressProvider>

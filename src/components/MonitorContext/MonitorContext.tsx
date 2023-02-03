@@ -17,6 +17,7 @@ import {
 } from "../../features/redux/store";
 import config from "../../utils/config";
 import { IsCypress, SSR } from "../../utils/SSRUtils";
+import { useAccount, useNetwork } from "wagmi";
 
 const SENTRY_WALLET_CONTEXT = "Connected Wallet";
 const SENTRY_WALLET_TAG = "wallet";
@@ -87,43 +88,41 @@ const MonitorContext: FC = () => {
         track("Wallet Disconnected", wallet).then(() => reset());
       }
     } else {
-      if (wallet.networkId != prevWallet.networkId) {
-        track("Wallet Network Changed", wallet);
-      }
-      if (wallet.account != prevWallet.account) {
-        track("Wallet Account Changed", wallet)
-          .then(() => reset()) // Reset before not to associate next identification with previous wallet address.
-          .then(() => identify(wallet.account));
+      if (wallet.isConnected && prevWallet.isConnected) {
+        if (wallet.networkId != prevWallet.networkId) {
+          track("Wallet Network Changed", wallet);
+        }
+        if (wallet.account != prevWallet.account) {
+          track("Wallet Account Changed", wallet)
+            .then(() => reset()) // Reset before not to associate next identification with previous wallet address.
+            .then(() => identify(wallet.account));
+        }
       }
     }
 
     setPreviousInstanceDetails(instanceDetails);
   }, [instanceDetails]);
 
+  const { connector: activeConnector, isConnected } = useAccount();
+  const { chain: activeChain } = useNetwork();
+
   useEffect(() => {
-    Sentry.setContext("App Instance", instanceDetails.appInstance);
+    if (isConnected && activeConnector) {
+      Sentry.setTag(SENTRY_WALLET_TAG, activeConnector.id);
+      Sentry.setContext(SENTRY_WALLET_CONTEXT, {
+        id: activeConnector.id,
+        ...(activeChain
+          ? {
+              "network-id": activeChain.id,
+              "network-name": activeChain.name,
+            }
+          : {}),
+      });
+    } else {
+      Sentry.setTag(SENTRY_WALLET_TAG, null);
+      Sentry.setContext(SENTRY_WALLET_CONTEXT, null);
+    }
   }, [instanceDetails]);
-
-  // const { connector: activeConnector, isConnected } = useAccount();
-  // const { chain: activeChain } = useNetwork();
-
-  // useEffect(() => {
-  //   if (isConnected && activeConnector) {
-  //     Sentry.setTag(SENTRY_WALLET_TAG, activeConnector.id);
-  //     Sentry.setContext(SENTRY_WALLET_CONTEXT, {
-  //       id: activeConnector.id,
-  //       ...(activeChain
-  //         ? {
-  //             "network-id": activeChain.id,
-  //             "network-name": activeChain.name,
-  //           }
-  //         : {}),
-  //     });
-  //   } else {
-  //     Sentry.setTag(SENTRY_WALLET_TAG, null);
-  //     Sentry.setContext(SENTRY_WALLET_CONTEXT, null);
-  //   }
-  // }, [isConnected, activeConnector, activeChain]);
 
   const { getVisitorId } = useIntercom();
 

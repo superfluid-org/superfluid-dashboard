@@ -38,9 +38,6 @@ export type AppInstanceDetails = {
       network?: string;
       networkId?: number;
     };
-    layout: {
-      isTransactionDrawerOpen: boolean;
-    };
   };
 };
 
@@ -96,9 +93,6 @@ const useAppInstanceDetails = () => {
               }
             : {}),
         },
-        layout: {
-          isTransactionDrawerOpen: transactionDrawerOpen,
-        },
       },
     }),
     deps
@@ -147,6 +141,7 @@ export const useAnalytics = () => {
   }
 
   const txAnalytics = useCallback(
+    // "Primary Args" are meant as the main serializable arguments passed to the mutation.
     (txName: string, primaryArgs: unknown) => {
       const ensureSafeSerializationOfArgs = (): Record<string, unknown> => {
         try {
