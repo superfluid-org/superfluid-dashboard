@@ -59,7 +59,7 @@ export class Common extends BasePage {
         network?: string
     ) {
         cy.fixture("streamData").then(streamData => {
-
+            cy.fixture("vestingData").then(vestingData => {
             switch (page.toLowerCase()) {
                 case "dashboard page":
                     this.visitPage(`/`, mocked, account, network);
@@ -97,9 +97,16 @@ export class Common extends BasePage {
                 case "close-ended stream details page":
                     this.visitPage(streamData["accountWithLotsOfData"]["goerli"][0].v2Link, mocked, account, network);
                     break;
+                case "vesting details page":
+                    this.visitPage(`/vesting/goerli/${vestingData.goerli.fUSDCx.schedule.id}`)
+                    break;
+                case "vesting stream details page":
+                    this.visitPage(`/stream/polygon/${vestingData.polygon.USDCx.vestingStream.id}`)
+                    break;
                 default:
                     throw new Error(`Hmm, you haven't set up the link for : ${page}`);
             }
+            })
         })
         if (Cypress.env("dev")) {
             //The nextjs error is annoying when developing test cases in dev mode

@@ -3,19 +3,16 @@ Feature: Vesting page test cases
 
   Scenario: No vesting schedule messages
     Given Transactional account bob is connected to the dashboard on goerli
-    And User clicks on the "vesting" navigation button
     Then No received vesting schedules message is shown
     And No created vesting schedules message is shown
 
   Scenario: Vesting only available on supported networks
     Given Transactional account bob is connected to the dashboard on polygon-mumbai
-    And User clicks on the "vesting" navigation button
     And User clicks on the create vesting schedule button
     Then "The feature is not available on this network." error is shown in the form
 
   Scenario: Creation form - Cannot vest to yourself
     Given Transactional account bob is connected to the dashboard on goerli
-    And User clicks on the "vesting" navigation button
     And User clicks on the create vesting schedule button
     And User searches for "0x9B6157d44134b21D934468B8bf709294cB298aa7" as a receiver
     And User selects "fDAIx" as the super token to use for the stream
@@ -29,7 +26,6 @@ Feature: Vesting page test cases
 
   Scenario: Creation form - Cliff amount has to be less than total amount
     Given Transactional account bob is connected to the dashboard on goerli
-    And User clicks on the "vesting" navigation button
     And User clicks on the create vesting schedule button
     And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
     And User selects "fDAIx" as the super token to use for the stream
@@ -43,7 +39,6 @@ Feature: Vesting page test cases
 
   Scenario: Creation form - Cliff amount period has to be before total vesting period
     Given Transactional account bob is connected to the dashboard on goerli
-    And User clicks on the "vesting" navigation button
     And User clicks on the create vesting schedule button
     And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
     And User selects "fTUSDx" as the super token to use for the stream
@@ -57,7 +52,6 @@ Feature: Vesting page test cases
 
   Scenario: Creation form - Total vesting period has to be atleast 60 minutes after start
     Given Transactional account bob is connected to the dashboard on goerli
-    And User clicks on the "vesting" navigation button
     And User clicks on the create vesting schedule button
     And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
     And User selects "fTUSDx" as the super token to use for the stream
@@ -71,21 +65,16 @@ Feature: Vesting page test cases
 
   Scenario: Creation form - Vesting period less than 10 years
     Given Transactional account bob is connected to the dashboard on goerli
-    And User clicks on the "vesting" navigation button
     And User clicks on the create vesting schedule button
     And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
     And User selects "fTUSDx" as the super token to use for the stream
     And User inputs a date "1" "year" into the future into the vesting start date field
-    And User clicks on the cliff date toggle
-    And User inputs "1" as the cliff amount
-    And User inputs "2" "minute" as the cliff period
     And User inputs "2" as the total vested amount
     And User inputs "11" "year" as the total vesting period
     Then "The vesting period has to be less than 10 years." error is shown in the form
 
   Scenario: Creation form - Existing schedule
     Given Transactional account john is connected to the dashboard on goerli
-    And User clicks on the "vesting" navigation button
     And User clicks on the create vesting schedule button
     And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
     And User selects "fUSDCx" as the super token to use for the stream
@@ -100,7 +89,6 @@ Feature: Vesting page test cases
   Scenario: Creating a vesting schedule with a cliff
     Given HDWallet transactions are rejected
     And Transactional account john is connected to the dashboard on goerli
-    And User clicks on the "vesting" navigation button
     Then No received vesting schedules message is shown
     #And User deletes the vesting schedule if necessary
     And User clicks on the create vesting schedule button
@@ -118,15 +106,12 @@ Feature: Vesting page test cases
   Scenario: Deleting a vesting schedule
     Given HDWallet transactions are rejected
     Given Transactional account john is connected to the dashboard on goerli
-    And User clicks on the "vesting" navigation button
     And User opens the last vesting schedule they have created
     And User deletes the vesting schedule
     And Transaction rejected error is shown
 
-
   Scenario: Change network button showing up if user is not on goerli
     Given Transactional account john is connected to the dashboard on goerli
-    And User clicks on the "vesting" navigation button
     And User opens the last vesting schedule they have created
     And Delete vesting schedule button is visible
     And User changes their network to "polygon"
@@ -137,14 +122,12 @@ Feature: Vesting page test cases
 
   Scenario: Sent vesting schedules details
     Given Transactional account john is connected to the dashboard on goerli
-    And User clicks on the "vesting" navigation button
     And The created vesting schedule is shown correctly in the table
     And User opens the last vesting schedule they have created
     And Vesting details page is shown correctly for the created schedule
 
   Scenario: Vesting schedules only available on Mainnet,Polygon,BNB and Goerli
     Given Transactional account john is connected to the dashboard on polygon-mumbai
-    And User clicks on the "vesting" navigation button
     Then User sees network not supported screen in the vesting page
     And Mainnet network link is disabled
 
@@ -164,7 +147,6 @@ Feature: Vesting page test cases
 
   Scenario: Allowance table statuses
     Given Transactional account john is connected to the dashboard on goerli
-    And User clicks on the "vesting" navigation button
     And "fUSDCx" permissions icons are all "green"
     And User opens "fUSDCx" permission table row
     Then All current and recommended permissions are correctly showed for "fUSDCx"
@@ -172,21 +154,38 @@ Feature: Vesting page test cases
     And User opens "fDAIx" permission table row
     Then All current and recommended permissions are correctly showed for "fDAIx"
 
-    @only
-  Scenario Outline: Vesting schedule statuses
-      Given Vesting schedule status is mocked to <status>
-      Given Transactional account john is connected to the dashboard on goerli
-      And User clicks on the "vesting" navigation button
-      Then The first vesting row in the table shows <status>
-      Examples:
-      |status|
-      |  Vesting    |
-      |  Cliff    |
-      | Stream Error          |
-      | Vested   |
-      |  Cancel Error        |
-    |Overflow Error        |
-      | Transfer Error                     |
-      | Deleted                               |
+  @mocked
+  Scenario Outline: Vesting schedule statuses - <status>
+    Given Vesting schedule status is mocked to <status>
+    Given Transactional account john is connected to the dashboard on goerli
+    Then The first vesting row in the table shows <status>
+    Examples:
+      | status         |
+      | Transfer Error |
+      | Overflow Error |
+      | Vested         |
+      | Cliff          |
+      | Vesting        |
+      | Deleted        |
+      | Stream Error   |
+      | Cancel Error   |
+      | Scheduled      |
 
-  Scenario: Schedule progress bar showing correctly for a scheduled vesting
+
+  @mocked
+  Scenario Outline: Schedule progress bar showing correctly for a scheduled vesting
+    Given Vesting schedule progress is mocked to <state>
+    Given Transactional account john is connected to the dashboard on goerli
+    And User opens the last vesting schedule they have created
+    Then The schedule bar is correctly shown when it is in <state>
+    Examples:
+      | state           |
+      | Scheduled       |
+      | Cliff Started   |
+      | Cliff ended     |
+      | Vesting started |
+      | Vesting ended   |
+
+  Scenario: Vesting schedule aggregate stats
+    Given Transactional account john is connected to the dashboard on polygon
+    Then Total stats for the sent vesting schedules are shown correctly

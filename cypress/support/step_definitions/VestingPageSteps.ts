@@ -97,3 +97,18 @@ Then(/^All current and recommended permissions are correctly showed for "([^"]*)
 Given(/^User clicks on the cliff date toggle$/, function () {
     VestingPage.clickCliffToggle()
 });
+Given(/^Vesting schedule status is mocked to (.*)$/, function (status:string) {
+    VestingPage.mockScheduleToStatus(status)
+});
+Then(/^The first vesting row in the table shows (.*)$/, function (status:string) {
+    VestingPage.validateVestingRowStatus(status)
+});
+Then(/^The schedule bar is correctly shown when it is in (.*)$/, function (status:string) {
+    VestingPage.validateScheduleBar(status)
+});
+Given(/^Vesting schedule progress is mocked to (.*)$/, function (status:string) {
+    VestingPage.mockProgressTo(status)
+});
+Then(/^Total stats for the sent vesting schedules are shown correctly$/, function () {
+    VestingPage.validateAggregateStats()
+});
