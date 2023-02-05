@@ -10,13 +10,14 @@ const TIME_UNIT_SELECTION_BUTTON = "[data-cy=time-unit-selection-button]";
 const AMOUNT_PER_SECOND = "[data-cy=preview-per-second]";
 const ADDRESS_DIALOG_INPUT = "[data-cy=address-dialog-input]";
 const CLOSE_DIALOG_BUTTON = "[data-testid=CloseRoundedIcon]";
+const OTHER_CLOSE_DIALOG_BUTTON = "[data-testid=CloseIcon]"
 const ENS_ENTRIES = "[data-cy=ens-entry]";
 const ENS_ENTRY_NAMES = "[data-cy=ens-entry] h6";
 const ENS_ENTRY_ADDRESS = "[data-cy=ens-entry] p";
 const RECENT_ENTRIES = "[data-cy=recents-entry]";
 const RECENT_ENTRIES_ADDRESS = "[data-cy=recents-entry] h6";
 const RECEIVER_CLEAR_BUTTON = "[data-testid=CloseIcon]";
-const TOKEN_SEARCH_INPUT = "[data-cy=token-search-input]";
+const TOKEN_SEARCH_INPUT = "[data-cy=token-search-input] input";
 const TOKEN_SEARCH_RESULTS = "[data-cy$=list-item]";
 const RESULTS_WRAP_BUTTONS = "[data-cy=wrap-button]";
 const STREAM_ENDS_ON = "[data-cy=preview-ends-on]";
@@ -113,7 +114,7 @@ export class SendPage extends BasePage {
                 cy.get(TOKEN_SEARCH_RESULTS).then(el => {
                     this.hasLength(PREVIEW_BALANCE, el.length)
                 })
-                this.click(`${DIALOG} ${CLOSE_DIALOG_BUTTON}`)
+                this.click(`${DIALOG} ${OTHER_CLOSE_DIALOG_BUTTON}`)
                 this.click(SELECT_TOKEN_BUTTON)
             } else {
                 //this.doesNotExist(PREVIEW_BALANCE)
