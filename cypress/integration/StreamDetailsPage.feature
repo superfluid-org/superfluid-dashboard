@@ -60,7 +60,6 @@ Feature: Stream details page test cases
       And The streamed amount is flowing
       And Close-ended stream data is shown correctly
 
-      @only
   Scenario: Vesting stream details page
     Given "Vesting stream details page" is open without connecting a wallet
     Then The token icon has got an animation around it
