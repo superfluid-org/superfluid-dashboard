@@ -186,7 +186,10 @@ const MoreNavigationItem: FC = () => {
           <ListItemText>Access Ethereum Mainnet</ListItemText>
         </ListItemButton>
 
-        <ListItemButton onClick={openVestingAccessCodeDialog}>
+        <ListItemButton
+            data-cy={"more-vesting-code-btn"}
+            onClick={openVestingAccessCodeDialog}
+        >
           <ListItemIcon>
             <QrCodeRoundedIcon sx={{ color: theme.palette.text.primary }} />
           </ListItemIcon>

@@ -6,16 +6,17 @@ interface VestingScheduleProgressCheckpointProps {
   title: string;
   targetDate: Date;
   dateNow: Date;
+  dataCy?: string;
 }
 
 const VestingScheduleProgressCheckpoint: FC<
   VestingScheduleProgressCheckpointProps
-> = ({ title, targetDate, dateNow }) => {
+> = ({ title, targetDate, dateNow,dataCy }) => {
   const theme = useTheme();
   const isActive = useMemo(() => targetDate <= dateNow, [targetDate, dateNow]);
 
   return (
-    <Stack alignItems="center">
+    <Stack data-cy={dataCy} alignItems="center">
       <Stack sx={{ position: "relative", width: "100%", alignItems: "center" }}>
         <Box
           sx={{
@@ -28,10 +29,10 @@ const VestingScheduleProgressCheckpoint: FC<
           }}
         />
       </Stack>
-      <Typography variant="h6" color="text.secondary" sx={{ mt: 1 }}>
+      <Typography data-cy={`${dataCy}-title`} variant="h6" color="text.secondary" sx={{ mt: 1 }}>
         {title}
       </Typography>
-      <Typography variant="h6">
+      <Typography data-cy={`${dataCy}-date`} variant="h6">
         {format(targetDate, "MMM do, yyyy HH:mm")}
       </Typography>
     </Stack>

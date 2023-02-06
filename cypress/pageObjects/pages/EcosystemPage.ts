@@ -8,6 +8,7 @@ import {
     INVEST_IN_REALTIME,
     BRIDGE_AND_EXCHANGE,
     ON_OFFRAMP,
+    PLAY_WEB3_GAMES,
 } from "../../superData/ecosystem";
 
 const APP_NAMES = "[data-cy=app-name]"
@@ -55,6 +56,10 @@ export class EcosystemPage extends BasePage {
             case "on-off ramps":
                 testableApps = ON_OFFRAMP;
                 sectionTitle = "On/Offramp"
+                break;
+            case "web3 games":
+                testableApps = PLAY_WEB3_GAMES;
+                sectionTitle = "Play Web3 Games"
                 break;
             default:
                 throw new Error("Invalid value for 'apps' check the test step");

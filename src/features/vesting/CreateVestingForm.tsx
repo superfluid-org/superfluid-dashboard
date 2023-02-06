@@ -391,6 +391,7 @@ export const CreateVestingForm: FC<{
       name="data.cliffEnabled"
       render={({ field: { value } }) => (
         <FormControlLabel
+          data-cy={"cliff-toggle"}
           control={<Switch checked={value} onChange={onCliffEnabledChanged} />}
           label="Add Cliff"
           sx={{ mr: 1 }}

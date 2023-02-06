@@ -5,13 +5,18 @@ import LIFI from "@lifi/sdk";
 import { Container, useTheme } from "@mui/material";
 import { NextPage } from "next";
 import { useEffect, useMemo } from "react";
-import { useDisconnect, useSigner, useSwitchNetwork } from "wagmi";
+import {
+  useDisconnect,
+  useSigner,
+  useSwitchNetwork,
+} from "wagmi";
 import useFeaturedTokens from "../features/bridge/useFeaturedTokens";
 import { ELEVATION1_BG } from "../features/theme/theme";
 import { useConnectButton } from "../features/wallet/ConnectButtonProvider";
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import { useAvailableNetworks } from "../features/network/AvailableNetworksContext";
+import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 
 const LiFiWidgetDynamic = dynamic(
   () => import("@lifi/widget").then((module) => module.LiFiWidget) as any,
@@ -24,20 +29,19 @@ const Bridge: NextPage = () => {
   const theme = useTheme();
 
   const { stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
+  useEffect(() => {
+    stopAutoSwitchToWalletNetwork(); // We don't know when the Li.Fi widget form is filled and we don't want to automatically switch the expected network because that would re-render the Li.Fi widget.
+  }, []);
+
   const { data: signer, refetch: fetchSigner } = useSigner();
+  const { isEOA } = useVisibleAddress();
   const { disconnectAsync } = useDisconnect();
   const { switchNetworkAsync } = useSwitchNetwork();
   const { openConnectModal } = useConnectButton();
   const { availableNetworks } = useAvailableNetworks();
 
-  useEffect(() => {
-    stopAutoSwitchToWalletNetwork(); // We don't know when the Li.Fi widget form is filled and we don't want to automatically switch the expected network because that would re-render the Li.Fi widget.
-  }, []);
-
   const lifi = useMemo(() => new LIFI(), []);
-
   const featuredTokens = useFeaturedTokens(lifi);
-
   const widgetConfig: WidgetConfig = useMemo(
     () => ({
       walletManagement: {
@@ -75,6 +79,7 @@ const Bridge: NextPage = () => {
       },
       disableAppearance: true,
       theme: theme,
+      requiredUI: isEOA ? [] : ["toAddress"], // Force to fill in receiver address when smart contract wallet.
       // Uncomment for testnets
       // sdkConfig: {
       //   apiUrl: "https://staging.li.quest/v1/"
@@ -85,6 +90,7 @@ const Bridge: NextPage = () => {
       signer,
       featuredTokens,
       availableNetworks,
+      isEOA,
       // fetchSigner,
       // openConnectModal,
       // switchNetworkAsync,

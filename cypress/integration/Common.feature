@@ -40,3 +40,7 @@ Feature: Common element test cases
     And User closes the access code dialog
     And User opens the dashboard network selection dropdown
     Then Ethereum mainnet is not available in the network selection dropdown
+
+  Scenario: Vesting schedule details page not available without vesting code
+    Given "Vesting details page" is open without connecting a wallet
+    Then 404 page is shown

@@ -49,3 +49,6 @@ Given(/^User clicks on the back button$/, () => {
 Then(/^Close\-ended stream data is shown correctly$/, function () {
     StreamDetailsPage.validateCloseEndedStreamData()
 });
+Then(/^Vesting stream data is shown correctly$/, function () {
+    StreamDetailsPage.validateVestingStreamDetails()
+});

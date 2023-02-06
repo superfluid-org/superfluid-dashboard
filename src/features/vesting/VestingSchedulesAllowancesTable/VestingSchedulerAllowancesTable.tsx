@@ -113,21 +113,21 @@ const VestingSchedulerAllowancesTable: FC = () => {
         <TableHead>
           <TableRow>
             <TableCell>Token</TableCell>
-            <TableCell width="220px">
+            <TableCell data-cy="allowance-cell" width="220px">
               Token Allowance
               <TooltipIcon
                 IconProps={{ sx: { ml: 0.5 } }}
                 title="The token allowance needed by the contract for cliff & compensation transfers."
               />
             </TableCell>
-            <TableCell width="260px">
+            <TableCell data-cy="operator-permissions-cell" width="260px">
               Flow Operator Permissions
               <TooltipIcon
                 IconProps={{ sx: { ml: 0.5 } }}
                 title="The flow operator permissions needed by the contract for creating & deletion of Superfluid flows."
               />
             </TableCell>
-            <TableCell width="250px">
+            <TableCell data-cy="flow-allowance-cell" width="250px">
               Flow Operator Allowance
               <TooltipIcon
                 IconProps={{ sx: { ml: 0.5 } }}

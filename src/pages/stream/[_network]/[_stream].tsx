@@ -734,6 +734,7 @@ const StreamPageContent: FC<{
             >
               {vestingSchedule ? (
                 <OverviewItem
+                  dataCy={"cliff-date"}
                   label="Cliff Date"
                   value={
                     vestingSchedule.cliffDate
@@ -753,6 +754,7 @@ const StreamPageContent: FC<{
               )}
               {vestingSchedule ? (
                 <OverviewItem
+                  dataCy={"cliff-amount"}
                   label="Cliff Amount"
                   value={
                     vestingSchedule.cliffDate ? (
@@ -789,6 +791,7 @@ const StreamPageContent: FC<{
 
               {vestingSchedule ? (
                 <OverviewItem
+                  dataCy={"vesting-start-date"}
                   label="Vesting Start Date:"
                   value={format(
                     fromUnixTime(Number(vestingSchedule.startDate)),
@@ -829,6 +832,7 @@ const StreamPageContent: FC<{
               />
               {vestingSchedule ? (
                 <OverviewItem
+                  dataCy={"vesting-end-date"}
                   label="Vesting End Date:"
                   value={format(
                     fromUnixTime(Number(vestingSchedule.endDate)),

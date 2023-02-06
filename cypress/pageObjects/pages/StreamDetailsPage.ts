@@ -1,4 +1,5 @@
 import {BasePage} from "../BasePage";
+import {format, fromUnixTime} from "date-fns";
 
 const ANIMATION = "[data-cy=animation]"
 const SENT_SO_FAR = "[data-cy=balance]"
@@ -23,6 +24,10 @@ const TELEGRAM_BUTTON = "[data-cy=telegram-button]"
 const BACK_BUTTON = "[data-testid=ArrowBackIcon]"
 const TIMER_ICON = "[data-testid=TimerOutlinedIcon]"
 const TOTAL_SCHEDULED_AMOUNT = "[data-cy=scheduled-amount]"
+const CLIFF_DATE = "[data-cy=cliff-date]"
+const VESTING_START_DATE = "[data-cy=vesting-start-date]"
+const VESTING_END_DATE = "[data-cy=vesting-end-date]"
+const CLIFF_AMOUNT = "[data-cy=cliff-amount]"
 
 const polygonExplorerLink = "https://polygonscan.com"
 
@@ -254,6 +259,29 @@ export class StreamDetailsPage extends BasePage {
                     1e21
                 ).toString().substring(0, 6)
             );
+        })
+    }
+
+    static validateVestingStreamDetails() {
+        cy.fixture("vestingData").then(data => {
+            let schedule = data.polygon.USDCx.schedule
+            let stream = data.polygon.USDCx.vestingStream;
+            this.hasText(CLIFF_DATE, format(
+                fromUnixTime(Number(schedule.cliffDate)),
+                "LLL d, yyyy HH:mm"
+            ))
+            this.hasText(VESTING_START_DATE, format(
+                fromUnixTime(Number(schedule.startDate)),
+                "LLL d, yyyy HH:mm"
+            ))
+            this.hasText(VESTING_END_DATE, format(
+                fromUnixTime(Number(schedule.endDate)),
+                "LLL d, yyyy HH:mm"
+            ))
+            this.hasText(CLIFF_AMOUNT, `${parseFloat(schedule.cliffAmount) / 1e18} ${stream.token.symbol}`)
+            this.hasText(NETWORK_NAME, stream.networkName)
+            this.hasText(TX_HASH, BasePage.shortenHex(stream.txHash))
+            this.hasText(AMOUNT_PER_MONTH, `${stream.amountPerMonth} ${stream.token.symbol}`)
         })
     }
 }

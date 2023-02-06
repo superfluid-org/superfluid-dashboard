@@ -3,6 +3,7 @@ import Divider from "@mui/material/Divider";
 import { Address } from "@superfluid-finance/sdk-core";
 import groupBy from "lodash/fp/groupBy";
 import { FC, useMemo } from "react";
+import { TokenBalance } from "../../utils/chartUtils";
 import {
   aggregateTokenBalances,
   calculateVestingSchedulesAllocated,
@@ -42,9 +43,12 @@ const VestingTokenAggregationRow: FC<VestingTokenAggregationRowProps> = ({
   const aggregatedTokenBalance = useMemo(
     () =>
       aggregateTokenBalances(
-        vestingSchedules.map((vestingSchedule) =>
-          vestingScheduleToTokenBalance(vestingSchedule)
-        )
+        vestingSchedules.reduce((allSchedules, vestingSchedule) => {
+          const tokenBalance = vestingScheduleToTokenBalance(vestingSchedule);
+
+          if (!tokenBalance) return allSchedules;
+          return [...allSchedules, tokenBalance];
+        }, [] as TokenBalance[])
       ),
     [vestingSchedules]
   );
@@ -61,6 +65,7 @@ const VestingTokenAggregationRow: FC<VestingTokenAggregationRowProps> = ({
             fiatAmount={
               tokenPrice && <FiatAmount wei={allocated} price={tokenPrice} />
             }
+            dataCy={`${token?.symbol}-total-allocated`}
           />
         </Box>
         <Divider orientation="vertical" />
@@ -75,15 +80,16 @@ const VestingTokenAggregationRow: FC<VestingTokenAggregationRowProps> = ({
                 balanceTimestamp={aggregatedTokenBalance.timestamp}
               />
             }
+            dataCy={`${token?.symbol}-total-vested`}
             fiatAmount={
-              tokenPrice && (
-                <FlowingFiatBalance
-                  balance={aggregatedTokenBalance.balance}
-                  flowRate={aggregatedTokenBalance.totalNetFlowRate}
-                  balanceTimestamp={aggregatedTokenBalance.timestamp}
-                  price={tokenPrice}
-                />
-              )
+                tokenPrice && (
+                    <FlowingFiatBalance
+                        balance={aggregatedTokenBalance.balance}
+                        flowRate={aggregatedTokenBalance.totalNetFlowRate}
+                        balanceTimestamp={aggregatedTokenBalance.timestamp}
+                        price={tokenPrice}
+                    />
+                )
             }
           />
         </Box>

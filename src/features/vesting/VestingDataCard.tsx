@@ -7,6 +7,7 @@ interface VestingDataCardProps {
   tokenSymbol: string;
   tokenAmount: any;
   fiatAmount?: any;
+  dataCy?: string;
 }
 
 export const VestingDataCardContent: FC<VestingDataCardProps> = ({
@@ -14,12 +15,13 @@ export const VestingDataCardContent: FC<VestingDataCardProps> = ({
   tokenSymbol,
   tokenAmount,
   fiatAmount,
+  dataCy,
 }) => (
   <Stack>
     <Typography variant="h5">{title}</Typography>
     <Stack direction="row" alignItems="center" gap={1.5}>
       <TokenIcon isSuper tokenSymbol={tokenSymbol} size={32} />
-      <Stack direction="row" alignItems="flex-end" gap={0.5}>
+      <Stack data-cy={dataCy} direction="row" alignItems="flex-end" gap={0.5}>
         {tokenAmount && (
           <Typography variant="h3mono" sx={{ lineHeight: "36px" }}>
             {tokenAmount}
@@ -31,7 +33,7 @@ export const VestingDataCardContent: FC<VestingDataCardProps> = ({
       </Stack>
     </Stack>
     {fiatAmount && (
-      <Typography variant="h6" color="text.secondary" sx={{ ml: 6 }}>
+      <Typography data-cy={`${dataCy}-fiat`} variant="h6" color="text.secondary" sx={{ ml: 6 }}>
         {fiatAmount}
       </Typography>
     )}

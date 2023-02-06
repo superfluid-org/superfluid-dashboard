@@ -10,7 +10,5 @@ Feature: Ecosystem page tests
     And Projects that are "have integrated superfluid" are shown
     And Projects that are "built on superfluid" are shown
     And Projects that are "supporting super tokens" are shown
-
-
-
+    And Projects that are "web3 games" are shown
     And Add an app button is visible
