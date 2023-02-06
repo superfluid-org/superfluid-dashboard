@@ -3,7 +3,6 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import { FC, useEffect, useRef } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { useAccount } from "wagmi";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import {

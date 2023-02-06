@@ -9,7 +9,6 @@ import {
   BeforeSendFunc,
   removeBeforeSend,
 } from "../../../sentry.client.config";
-import { supportId, useAnalytics } from "../../features/analytics/useAnalytics";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import {
   listenerMiddleware,
@@ -18,6 +17,8 @@ import {
 import config from "../../utils/config";
 import { IsCypress, SSR } from "../../utils/SSRUtils";
 import { useAccount, useNetwork } from "wagmi";
+import { supportId } from "../../features/analytics/useAppInstanceDetails";
+import { useAnalytics } from "../../features/analytics/useAnalytics";
 
 const SENTRY_WALLET_CONTEXT = "Connected Wallet";
 const SENTRY_WALLET_TAG = "wallet";
@@ -27,7 +28,6 @@ const SENTRY_EXPECTED_NETWORK_TAG = "network";
 const SENTRY_EXPECTED_NETWORK_TESTNET_TAG = "network.testnet";
 
 const SENTRY_SUPPORT_ID_TAG = "support-id";
-
 Sentry.setTag(SENTRY_SUPPORT_ID_TAG, supportId);
 
 const MonitorContext: FC = () => {

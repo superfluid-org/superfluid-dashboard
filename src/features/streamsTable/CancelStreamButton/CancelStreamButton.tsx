@@ -42,8 +42,6 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
   });
   const { txAnalytics } = useAnalytics();
 
-  flowDeleteMutation.endpointName;
-
   const deleteStream = async (signer: Signer) => {
     const primaryArgs = {
       chainId: network.id,

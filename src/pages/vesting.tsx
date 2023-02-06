@@ -72,7 +72,7 @@ const VestingNotSupportedCard = () => {
           </>
         );
       }),
-    []
+    [isMainnetEnabled]
   );
 
   return (

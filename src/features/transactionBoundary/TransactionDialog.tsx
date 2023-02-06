@@ -21,7 +21,7 @@ import { useTransactionBoundary } from "./TransactionBoundary";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import React from "react";
 import { useConnectionBoundary } from "./ConnectionBoundary";
-import { supportId } from "../analytics/useAnalytics";
+import { supportId } from "../analytics/useAppInstanceDetails";
 
 interface TransactionDialogProps {
   children: ReactNode;

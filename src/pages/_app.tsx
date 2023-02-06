@@ -5,7 +5,7 @@ import Head from "next/head";
 import { ReactElement, ReactNode, useEffect } from "react";
 import { hotjar } from "react-hotjar";
 import MonitorContext from "../components/MonitorContext/MonitorContext";
-import { AnalyticsProvider } from "../features/analytics/useAnalytics";
+import { AnalyticsProvider } from "../features/analytics/AnalyticsProvider";
 import { AutoConnectProvider } from "../features/autoConnect/AutoConnect";
 import { FeatureFlagProvider } from "../features/featureFlags/FeatureFlagContext";
 import { ImpersonationProvider } from "../features/impersonation/ImpersonationContext";
