@@ -1,4 +1,16 @@
-const config = Object.freeze({
+const segmentWriteKeyForDeployPreview =
+  process.env.NEXT_PUBLIC_SEGMENT_WRITE_KEY_FOR_DEPLOY_PREVIEW ||
+  "axUnL2Cp3F4qstRzkmmstaeNBdMfoo56";
+
+const segmentWriteKeyForProduction =
+  process.env.NEXT_PUBLIC_SEGMENT_WRITE_KEY_FOR_PRODUCTION ||
+  "U00hhAgEO5bL8vb5OdhFYsIYTDwI04ei"; // This will be exposed client-side anyways.
+
+const netlifyContext = process.env.NEXT_PUBLIC_NETLIFY_CONTEXT;
+const isProduction = netlifyContext === "production";
+const isDeployPreview = netlifyContext === "deploy-preview";
+
+const config = {
   appUrl: (process.env.NEXT_PUBLIC_APP_URL || "").trim(),
   intercom: {
     appId: process.env.NEXT_PUBLIC_INTERCOM_APP_ID || "",
@@ -22,9 +34,11 @@ const config = Object.freeze({
       process.env.NEXT_PUBLIC_PLATFORM_GOERLI ||
       "https://prod-goerli-platform-service.dev.superfluid.dev",
   },
-  segmentWriteKey:
-    process.env.NEXT_PUBLIC_SEGMENT_WRITE_KEY ||
-    "axUnL2Cp3F4qstRzkmmstaeNBdMfoo56",
-});
+  segmentWriteKey: isProduction
+    ? segmentWriteKeyForDeployPreview
+    : isDeployPreview
+    ? segmentWriteKeyForProduction
+    : undefined,
+};
 
 export default Object.freeze(config);

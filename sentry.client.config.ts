@@ -9,22 +9,8 @@ import { IsCypress } from "./src/utils/SSRUtils";
 const SENTRY_DSN = process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN;
 const SENTRY_ENVIRONMENT =
   process.env.SENTRY_ENVIRONMENT || process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT;
+
 const isProduction = SENTRY_ENVIRONMENT === "production";
-
-export type BeforeSendFunc = (
-  event: SentryEvent,
-  hint: EventHint
-) => PromiseLike<SentryEvent | null> | SentryEvent | null;
-
-const beforeSendCallbacks: BeforeSendFunc[] = [];
-
-export const addBeforeSend = (callback: BeforeSendFunc) => {
-  beforeSendCallbacks.push(callback);
-};
-
-export const removeBeforeSend = (callback: BeforeSendFunc) => {
-  beforeSendCallbacks.splice(beforeSendCallbacks.indexOf(callback), 1);
-};
 
 if (!IsCypress && SENTRY_DSN) {
   Sentry.init({
@@ -61,3 +47,21 @@ if (!IsCypress && SENTRY_DSN) {
 } else {
   console.warn("Sentry not initialized on the client.");
 }
+
+/**
+ * Necessary to enable logging Sentry errors to Segment.
+ */
+export type BeforeSendFunc = (
+  event: SentryEvent,
+  hint: EventHint
+) => PromiseLike<SentryEvent | null> | SentryEvent | null;
+
+const beforeSendCallbacks: BeforeSendFunc[] = [];
+
+export const addBeforeSend = (callback: BeforeSendFunc) => {
+  beforeSendCallbacks.push(callback);
+};
+
+export const removeBeforeSend = (callback: BeforeSendFunc) => {
+  beforeSendCallbacks.splice(beforeSendCallbacks.indexOf(callback), 1);
+};
