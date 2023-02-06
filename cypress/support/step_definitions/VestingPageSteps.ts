@@ -29,7 +29,7 @@ Given(/^User inputs "(\d+)" "([^"]*)" as the total vesting period$/, function (a
     VestingPage.inputTotalVestingPeriod(amount,timeUnit)
 });
 Given(/^User inputs valid vesting schedule details in the form and proceeds to the preview$/, function () {
-    VestingPage.inputFutureDateInVestingStartDateField(1,"year")
+    VestingPage.inputFutureDateInDateField(1,"year")
     VestingPage.clickCliffToggle()
     VestingPage.inputCliffAmount(1)
     VestingPage.inputCliffPeriod(1,"year")
