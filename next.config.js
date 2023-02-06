@@ -65,15 +65,9 @@ const moduleExports = {
       "date-fns": {
         transform: "date-fns/{{member}}",
       },
-      "@mui/material": {
-        transform: "@mui/material/{{member}}",
-      },
-      "@mui/lab": {
-        transform: "@mui/lab/{{member}}",
-      },
-      "@mui/icons-material/?(((\\w*)?/?)*)": {
-        transform: "@mui/icons-material/{{ matches.[1] }}/{{member}}",
-      },
+      '@mui/icons-material': {
+        transform: '@mui/icons-material/{{member}}'
+      }
     },
   },
 };
