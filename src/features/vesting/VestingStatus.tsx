@@ -28,7 +28,7 @@ const VestingStatus: FC<VestingStatusProps> = ({ vestingSchedule }) => {
   }, [status]);
 
   return (
-    <Typography variant="h7" component="span" color={color}>
+    <Typography data-cy={"vesting-status"} variant="h7" component="span" color={color}>
       {vestingSchedule.status.title}
     </Typography>
   );

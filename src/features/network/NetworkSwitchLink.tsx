@@ -27,6 +27,7 @@ const NetworkSwitchLink: FC<NetworkSwitchLinkProps> = ({
 
   return (
     <Link
+      data-cy={`${network.slugName}-link`}
       component="button"
       variant="body1"
       sx={{

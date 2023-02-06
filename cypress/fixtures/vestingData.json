@@ -1,0 +1,98 @@
+{
+  "goerli": {
+    "fUSDCx": {
+      "schedule": {
+        "id": "0xb5445433c1f650d836220f76e400871ff89f4a82f133ce79c4793e3d4b33a3a9-87",
+        "superToken": "0x8ae68021f6170e5a766be613cea0d75236ecca9a",
+        "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+        "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+        "flowRate": "317097919837",
+        "createdAt": "1675204248",
+        "deletedAt": null,
+        "startDate": "1706695200",
+        "cliffDate": "1864375200",
+        "cliffAndFlowExecutedAt": null,
+        "cliffAndFlowExpirationAt": "1864377000",
+        "cliffAndFlowDate": "1864375200",
+        "cliffAmount": "50000000000000000000",
+        "endDate": "2022055200",
+        "endDateValidAt": "2022054600",
+        "endExecutedAt": null,
+        "failedAt": null,
+        "didEarlyEndCompensationFail": null,
+        "earlyEndCompensation": null
+      },
+      "currentAllowances": {
+        "tokenAllowance": "50",
+        "operatorPermissions": "Create, Delete",
+        "flowAllowance": "0.000000317098"
+      },
+      "recommendedAllowances": {
+        "tokenAllowance": "50",
+        "operatorPermissions": "Create, Delete",
+        "flowAllowance": "0.000000317098"
+      }
+    },
+    "fDAIx": {
+      "currentAllowances": {
+        "tokenAllowance": "0",
+        "operatorPermissions": "–",
+        "flowAllowance": "0"
+      },
+      "recommendedAllowances": {
+        "tokenAllowance": "50",
+        "operatorPermissions": "Create, Delete",
+        "flowAllowance": "0.000000317098"
+      }
+    }
+  },
+  "polygon": {
+    "USDCx": {
+      "schedule": {
+        "totalAllocated": "0.1",
+        "id": "0x589f6127ddecdf3edf4bc6ca00e5832dceced78c8348ab03824a0a7c8a35fec9-106",
+        "superToken": "0xcaa7349cea390f89641fe306d93591f87595dc1f",
+        "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+        "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+        "flowRate": "285388909",
+        "createdAt": "1675542944",
+        "deletedAt": null,
+        "startDate": "1675544400",
+        "cliffDate": "1675545264",
+        "cliffAndFlowExecutedAt": "1675545293",
+        "cliffAndFlowExpirationAt": "1675804464",
+        "cliffAndFlowDate": "1675545264",
+        "cliffAmount": "10000000000000000",
+        "endDate": "1990904400",
+        "endDateValidAt": "1990818000",
+        "endExecutedAt": null,
+        "failedAt": null,
+        "didEarlyEndCompensationFail": null,
+        "earlyEndCompensation": null
+      },
+      "vestingStream": {
+        "createdAtBlockNumber": "38914627",
+        "startedAtUnix": 1675545293000,
+        "flowRate": 285388909,
+        "txHash": "0xf3a3d14f555b997f8a40606a601f6f47a5c5c40830680b0ceb319b2d45c5e4c6",
+        "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0xcaa7349cea390f89641fe306d93591f87595dc1f-0.0",
+        "receiver": {
+          "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2"
+        },
+        "sender": {
+          "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9"
+        },
+        "streamedUntilUpdatedAt": "0",
+        "token": {
+          "id": "0xcaa7349cea390f89641fe306d93591f87595dc1f",
+          "symbol": "USDCx"
+        },
+        "updatedAtBlockNumber": "38914627",
+        "updatedAtTimestamp": "1675545293",
+        "deposit": "4110283702272",
+        "networkName": "Polygon",
+        "amountPerMonth": "0.00073973"
+      }
+    }
+  }
+}

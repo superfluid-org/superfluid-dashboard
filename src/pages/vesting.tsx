@@ -87,7 +87,7 @@ const VestingNotSupportedCard = () => {
         },
       }}
     >
-      <Typography variant={isBelowMd ? "h5" : "h4"} textAlign="center">
+      <Typography data-cy={"not-supported-network-msg"} variant={isBelowMd ? "h5" : "h4"} textAlign="center">
         This network is not supported.
       </Typography>
       <Typography color="text.secondary" textAlign="center">

@@ -38,6 +38,7 @@ const VestingSchedulerAllowanceDetailsTable: FC<
         <TableCell></TableCell>
         <TableCell width="220px">
           <ListItemText
+            data-cy={`${tokenSymbol}-current-allowance`}
             primary="Current"
             secondary={
               <>
@@ -46,6 +47,7 @@ const VestingSchedulerAllowanceDetailsTable: FC<
             }
           />
           <ListItemText
+            data-cy={`${tokenSymbol}-recommended-allowance`}
             primary="Required"
             secondary={
               <>
@@ -55,14 +57,20 @@ const VestingSchedulerAllowanceDetailsTable: FC<
           />
         </TableCell>
         <TableCell width="260px">
-          <ListItemText primary="Current" secondary={permissionsString} />
           <ListItemText
+              primary="Current"
+              data-cy={`${tokenSymbol}-current-permissions`}
+              secondary={permissionsString}
+          />
+          <ListItemText
+            data-cy={`${tokenSymbol}-recommended-permissions`}
             primary="Required"
             secondary={requiredPermissionsString}
           />
         </TableCell>
         <TableCell width="350px">
           <ListItemText
+            data-cy={`${tokenSymbol}-current-flow-allowance`}
             primary="Current"
             secondary={
               <>
@@ -72,6 +80,7 @@ const VestingSchedulerAllowanceDetailsTable: FC<
             }
           />
           <ListItemText
+            data-cy={`${tokenSymbol}-recommended-flow-allowance`}
             primary="Required"
             secondary={
               <>

@@ -30,6 +30,7 @@ Given(/^User inputs "(\d+)" "([^"]*)" as the total vesting period$/, function (a
 });
 Given(/^User inputs valid vesting schedule details in the form and proceeds to the preview$/, function () {
     VestingPage.inputFutureDateInVestingStartDateField(1,"year")
+    VestingPage.clickCliffToggle()
     VestingPage.inputCliffAmount(1)
     VestingPage.inputCliffPeriod(1,"year")
     VestingPage.inputTotalVestedAmount(2)
@@ -74,4 +75,40 @@ Given(/^The created vesting schedule is shown correctly in the table$/, function
 });
 Given(/^Vesting details page is shown correctly for the created schedule$/, function () {
     VestingPage.validateCreatedVestingScheduleDetailsPage()
+});
+Then(/^User sees network not supported screen in the vesting page$/, function () {
+    VestingPage.validateNotSupportedNetworkScreen()
+});
+Then(/^Mainnet network link is disabled$/, function () {
+    VestingPage.validateDisabledMainnetNetworkLink()
+});
+Then(/^Mainnet network link is enabled$/, function () {
+    VestingPage.validateEnabledMainnetNetworkLink()
+});
+Given(/^"([^"]*)" permissions icons are all "([^"]*)"$/, function (token:string,color:string) {
+    VestingPage.validateTokenPermissionIcons(token,color)
+});
+Given(/^User opens "([^"]*)" permission table row$/, function (token:string) {
+    VestingPage.openTokenPermissionRow(token)
+});
+Then(/^All current and recommended permissions are correctly showed for "([^"]*)"$/, function (token:string) {
+    VestingPage.validateTokenPermissionsData(token)
+});
+Given(/^User clicks on the cliff date toggle$/, function () {
+    VestingPage.clickCliffToggle()
+});
+Given(/^Vesting schedule status is mocked to (.*)$/, function (status:string) {
+    VestingPage.mockScheduleToStatus(status)
+});
+Then(/^The first vesting row in the table shows (.*)$/, function (status:string) {
+    VestingPage.validateVestingRowStatus(status)
+});
+Then(/^The schedule bar is correctly shown when it is in (.*)$/, function (status:string) {
+    VestingPage.validateScheduleBar(status)
+});
+Given(/^Vesting schedule progress is mocked to (.*)$/, function (status:string) {
+    VestingPage.mockProgressTo(status)
+});
+Then(/^Total stats for the sent vesting schedules are shown correctly$/, function () {
+    VestingPage.validateAggregateStats()
 });

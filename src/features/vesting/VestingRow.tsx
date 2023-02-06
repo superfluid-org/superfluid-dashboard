@@ -90,7 +90,7 @@ const VestingRow: FC<VestingRowProps> = ({
           </AddressCopyTooltip>
         </Stack>
       </TableCell>
-      <TableCell data-cy={"total-vesting-amount"}>
+      <TableCell data-cy={"allocated-amount"}>
         <Stack direction="row" alignItems="center" gap={1}>
           <TokenIcon
             isSuper
@@ -103,7 +103,7 @@ const VestingRow: FC<VestingRowProps> = ({
           </Typography>
         </Stack>
       </TableCell>
-      <TableCell>
+      <TableCell data-cy={"vested-amount"}>
         <Typography variant="body1mono">
           <VestedBalance vestingSchedule={vestingSchedule}>
             {" "}

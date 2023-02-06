@@ -1,6 +1,7 @@
 import {BasePage,wordTimeUnitMap} from "../BasePage";
 import { format } from "date-fns";
 import {SendPage} from "./SendPage";
+import {Common} from "./Common";
 
 const NO_CREATED_TITLE = "[data-cy=no-created-schedules-title]"
 const NO_CREATED_DESC = "[data-cy=no-created-schedules-description]"
@@ -39,12 +40,28 @@ const PREVIEW_CLIFF_PERIOD = "[data-cy=preview-cliff-period]"
 const PREVIEW_TOTAL_AMOUNT = "[data-cy=preview-total-amount]"
 const PREVIEW_TOTAL_PERIOD = "[data-cy=preview-total-period]"
 const APPROVAL_MESSAGE = "[data-cy=approval-message]"
-const TABLE_TOTAL_AMOUNTS = "[data-cy=total-vesting-amount]"
-const TABLE_CLIFF_AMOUNT = "[data-cy=cliff-amount-and-date] h6"
-const TABLE_CLIFF_DATE = "[data-cy=cliff-amount-and-date] p"
+const TABLE_ALLOCATED_AMOUNT = "[data-cy=allocated-amount]"
+const VESTED_AMOUNT = "[data-cy=vested-amount]"
 const TABLE_START_END_DATES = "[data-cy=start-end-dates]"
+const TABLE_VESTING_STATUS = "[data-cy=vesting-status]"
 const TABLE_RECEIVER_SENDER = "[data-cy=receiver-sender]"
 const PENDING_MESSAGE = "[data-cy=pending-message]"
+const NOT_SUPPORTED_NETWORK_MSG = "[data-cy=not-supported-network-msg]"
+const MAINNET_NETWORK_LINK = "[data-cy=ethereum-link]"
+const CLIFF_TOGGLE = "[data-cy=cliff-toggle]"
+const DETAILS_SCHEDULED_DATE = "[data-cy=vesting-scheduled-date]"
+const DETAILS_CLIFF_START = "[data-cy=cliff-start-date]"
+const DETAILS_CLIFF_END = "[data-cy=cliff-end-date]"
+const DETAILS_VESTING_START = "[data-cy=vesting-start-date]"
+const DETAILS_VESTING_END = "[data-cy=vesting-end-date]"
+const DETAILS_VESTED_SO_FAR_AMOUNT = "[data-cy=balance]"
+const DETAILS_VESTED_TOKEN_SYMBOL = "[data-cy=token-symbol]"
+const SCHEDULE_VESTING_SCHEDULED = "[data-cy=vesting-scheduled]"
+const SCHEDULE_CLIFF_START = "[data-cy=cliff-start]"
+const SCHEDULE_CLIFF_END = "[data-cy=cliff-end]"
+const SCHEDULE_VESTING_START = "[data-cy=vesting-start]"
+const SCHEDULE_VESTING_END = "[data-cy=vesting-end]"
+
 
 //Strings
 const NO_CREATED_TITLE_STRING = "No Sent Vesting Schedules"
@@ -53,15 +70,15 @@ const NO_RECEIVED_TITLE_STRING = "No Received Vesting Schedules"
 const NO_RECEIVED_DESC_STRING = "Vesting schedules that you have received will appear here."
 
 //Dates for the vesting previews etc.
-let staticStartDate = new Date(1733994660000)
-let staticCliffDate = new Date(1765530660000)
-let staticEndDate = new Date(1797066660000)
+let staticStartDate = new Date(1706695200000)
+let staticEndDate = new Date(2022055200000)
 let currentTime = new Date()
 let startDate = new Date(currentTime.getTime() + (wordTimeUnitMap["year"] * 1000) )
 let cliffDate = new Date(startDate.getTime() + (wordTimeUnitMap["year"] * 1000))
 let endDate = new Date(startDate.getTime() + 2 * (wordTimeUnitMap["year"] * 1000))
 
 export class VestingPage extends BasePage {
+
     static validateFirstRowPendingStatus(status: string) {
         cy.get(VESTING_ROWS).first().find(PENDING_MESSAGE,{timeout: 60000}).should("have.text" , status)
     }
@@ -172,9 +189,8 @@ export class VestingPage extends BasePage {
     static validateNewlyCreatedSchedule() {
         this.isVisible(FORWARD_BUTTON)
         this.hasText(TABLE_RECEIVER_SENDER , this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"))
-        this.hasText(TABLE_TOTAL_AMOUNTS , "2 fTUSDx")
-        this.hasText(TABLE_CLIFF_AMOUNT , "1 fTUSDx")
-        this.hasText(TABLE_CLIFF_DATE, format(cliffDate, "LLL d, yyyy"))
+        this.hasText(TABLE_ALLOCATED_AMOUNT , "2 fTUSDx")
+        this.hasText(VESTED_AMOUNT , "1 fTUSDx")
         cy.get(TABLE_START_END_DATES).first().should("contain.text" , format(startDate, "LLL d, yyyy"))
         cy.get(TABLE_START_END_DATES).last().should("contain.text", format(endDate,"LLL d, yyyy"))
         this.doesNotExist(PENDING_MESSAGE)
@@ -212,11 +228,10 @@ export class VestingPage extends BasePage {
     }
 
     static validateCreatedVestingSchedule() {
-        this.isVisible(FORWARD_BUTTON)
-        this.hasText(TABLE_RECEIVER_SENDER , this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"))
-        this.hasText(TABLE_TOTAL_AMOUNTS , "4 TDLx")
-        this.hasText(TABLE_CLIFF_AMOUNT , "2 TDLx")
-        this.hasText(TABLE_CLIFF_DATE, format(staticCliffDate, "LLL d, yyyy"))
+        cy.get(TABLE_VESTING_STATUS).first().should("have.text","Scheduled")
+        cy.get(TABLE_RECEIVER_SENDER).first().should("have.text",this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"))
+        cy.get(TABLE_ALLOCATED_AMOUNT).first().should("have.text","100 fUSDCx")
+        cy.get(VESTED_AMOUNT).first().should("have.text","0  fUSDCx")
         cy.get(TABLE_START_END_DATES).first().should("contain.text" , format(staticStartDate, "LLL d, yyyy"))
         cy.get(TABLE_START_END_DATES).last().should("contain.text", format(staticEndDate,"LLL d, yyyy"))
     }
@@ -229,11 +244,275 @@ export class VestingPage extends BasePage {
     }
 
     static validateCreatedVestingScheduleDetailsPage() {
-        this.hasText(PREVIEW_RECEIVER,this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"))
-        this.validateSchedulePreviewDetails(staticCliffDate,staticStartDate,staticEndDate)
-        this.containsText(PREVIEW_CLIFF_PERIOD,`${format(staticCliffDate, "LLLL d, yyyy")}`)
-        this.containsText(PREVIEW_TOTAL_PERIOD , `${format(staticEndDate, "LLLL d, yyyy")}`)
-        this.hasText(PREVIEW_TOTAL_AMOUNT, "4 TDLx")
-        this.hasText(PREVIEW_CLIFF_AMOUNT, "2.0 TDLx")
+        this.hasText(DETAILS_VESTED_SO_FAR_AMOUNT, "0 ")
+        this.hasText(DETAILS_VESTED_TOKEN_SYMBOL, "fUSDCx")
+        this.hasText("[data-cy=fUSDCx-cliff-amount]", "50 fUSDCx")
+        this.hasText("[data-cy=fUSDCx-allocated]", "100 fUSDCx")
+        cy.fixture("vestingData").then(data => {
+            let schedule = data.goerli.fUSDCx.schedule
+            this.hasText(DETAILS_SCHEDULED_DATE ,format((schedule.createdAt * 1000), "MMM do, yyyy HH:mm") )
+            this.hasText(DETAILS_CLIFF_START,format((schedule.startDate * 1000), "MMM do, yyyy HH:mm") )
+            this.hasText(DETAILS_CLIFF_END,format((schedule.cliffDate * 1000), "MMM do, yyyy HH:mm") )
+            this.hasText(DETAILS_VESTING_START,format((schedule.cliffDate * 1000), "MMM do, yyyy HH:mm") )
+            this.hasText(DETAILS_VESTING_END,format((schedule.endDate * 1000), "MMM do, yyyy HH:mm") )
+        })
+    }
+
+    static validateNotSupportedNetworkScreen() {
+        const supportedNetworks = ["ethereum","polygon","bsc","goerli"]
+        this.hasText(NOT_SUPPORTED_NETWORK_MSG,"This network is not supported.")
+        supportedNetworks.forEach(network => {
+            this.isVisible(`[data-cy=${network}-link]` )
+        })
+    }
+
+    static validateDisabledMainnetNetworkLink() {
+        this.isDisabled(MAINNET_NETWORK_LINK)
+    }
+
+    static validateEnabledMainnetNetworkLink() {
+        this.isNotDisabled(MAINNET_NETWORK_LINK)
+    }
+
+    static validateTokenPermissionIcons(token: string, color: string) {
+        let rgbValue = color === "green" ? "rgb(16, 187, 53)" : "rgb(210, 37, 37)"
+        cy.get(`[data-cy=${token}-allowance-status]`).should("have.css","color" , rgbValue)
+        cy.get(`[data-cy=${token}-permission-status]`).should("have.css","color" , rgbValue)
+        cy.get(`[data-cy=${token}-flow-allowance-status]`).should("have.css","color" , rgbValue)
+    }
+
+    static openTokenPermissionRow(token: string) {
+        this.click(`[data-cy=${token}-row] [data-testid=ExpandMoreRoundedIcon]`)
+    }
+
+    static validateTokenPermissionsData(token: string) {
+        cy.fixture("vestingData").then(data => {
+            let selectedToken = data.goerli[token]
+            this.hasText(`[data-cy=${token}-current-allowance] p`, `${selectedToken.currentAllowances.tokenAllowance} ${token}`)
+            this.hasText(`[data-cy=${token}-recommended-allowance] p`, `${selectedToken.recommendedAllowances.tokenAllowance} ${token}`)
+            this.hasText(`[data-cy=${token}-current-permissions] p`, selectedToken.currentAllowances.operatorPermissions)
+            this.hasText(`[data-cy=${token}-recommended-permissions] p`, selectedToken.recommendedAllowances.operatorPermissions)
+            this.hasText(`[data-cy=${token}-current-flow-allowance] p`, `${selectedToken.currentAllowances.flowAllowance} ${token}/sec`)
+            this.hasText(`[data-cy=${token}-recommended-flow-allowance] p`, `${selectedToken.recommendedAllowances.flowAllowance} ${token}/sec`)
+        })
+    }
+
+    static clickCliffToggle() {
+        this.click(CLIFF_TOGGLE)
+        //Workaround for a race condition which leaves the preview button enabled after inputting cliff amounts too fast
+        Common.wait(2)
+    }
+
+    static mockScheduleToStatus(status: string) {
+        let today = BasePage.getDayTimestamp(0)
+        let yesterday = BasePage.getDayTimestamp(-1)
+
+        cy.intercept("POST", "**automation-v1**", (req => {
+            req.continue((res) => {
+                if (req.body.variables._0_where.sender) {
+                    let schedule = res.body.data._0_vestingSchedules[0]
+                    switch (status) {
+                        case "Cancel Error":
+                            schedule.failedAt = today
+                            schedule.endDateValidAt = yesterday
+                            break;
+                        case "Scheduled":
+                            //Scheduled in a few years, no need to modify the response
+                            break;
+                        case "Vesting":
+                            schedule.cliffAndFlowExecutedAt = today
+                            break;
+                        case "Vested":
+                            schedule.endDate = yesterday
+                            schedule.endExecutedAt = yesterday
+                            break;
+                        case "Cliff":
+                            schedule.cliffDate = yesterday
+                            break;
+                        case "Stream Error":
+                            schedule.cliffAndFlowExpirationAt = yesterday
+                            break;
+                        case "Overflow Error":
+                            schedule.endDate = yesterday
+                            schedule.endExecutedAt = yesterday + 1
+                            break;
+                        case "Deleted":
+                            schedule.deletedAt = yesterday
+                            break;
+                        case "Transfer Error":
+                            schedule.didEarlyEndCompensationFail = true
+                            break;
+                    }
+                }
+            })
+        }))
+    }
+
+    static validateVestingRowStatus(status: string) {
+        if (status === "Deleted") {
+            cy.contains("Deleted").click()
+        }
+        cy.get(TABLE_VESTING_STATUS).first().should("have.text", status)
+    }
+
+    static validateScheduleBarElements(greenOnes: string[], greyOnes: string[], barPercentage: number) {
+        greenOnes.forEach((greenOne, i) => {
+            cy.get(`${greenOne} div div`).should("have.css", "background", "rgb(16, 187, 53) none repeat scroll 0% 0% / auto padding-box border-box")
+            if (greyOnes.length === 0 && i === greenOnes.length - 1) {
+                return;
+            }
+            cy.get("[data-cy=total-progress-line]").eq(i).then(el => {
+                let expectedWidth = i === (greenOnes.length - 1) ? (el.width() / 100 * barPercentage) : el.width()
+                console.log(greyOnes[0])
+                cy.get("[data-cy=actual-progress-line]").eq(i).invoke("width").should("be.closeTo", expectedWidth, 1)
+                cy.get("[data-cy=actual-progress-line]").eq(i).should("be.visible")
+
+            })
+        })
+        greyOnes.forEach((greyOne, i) => {
+            if (greyOne) {
+                cy.get(`${greyOne} div div`).should("have.css", "background", "rgba(0, 0, 0, 0.12) none repeat scroll 0% 0% / auto padding-box border-box")
+            }
+        })
+    }
+
+    static validateScheduleBar(status: string) {
+
+        switch (status) {
+            case "Scheduled":
+                this.validateScheduleBarElements([SCHEDULE_VESTING_SCHEDULED], [SCHEDULE_CLIFF_START, SCHEDULE_CLIFF_END, SCHEDULE_VESTING_END, SCHEDULE_VESTING_START], 50)
+                break;
+            case "Cliff Started":
+                this.validateScheduleBarElements([SCHEDULE_VESTING_SCHEDULED, SCHEDULE_CLIFF_START], [SCHEDULE_CLIFF_END, SCHEDULE_VESTING_END, SCHEDULE_VESTING_START], 50)
+                break;
+            case "Cliff ended":
+                //Cliff ended and vesting starts are always at the same time, even mocking it to different times doesn't change the green bar to be in the middle between the points
+                this.validateScheduleBarElements([SCHEDULE_VESTING_SCHEDULED, SCHEDULE_CLIFF_START, SCHEDULE_CLIFF_END], [SCHEDULE_VESTING_END, SCHEDULE_VESTING_START], 100)
+                break;
+            case "Vesting started":
+                this.validateScheduleBarElements([SCHEDULE_VESTING_SCHEDULED, SCHEDULE_CLIFF_START, SCHEDULE_CLIFF_END, SCHEDULE_VESTING_START], [SCHEDULE_VESTING_END], 50)
+                break;
+            case "Vesting ended":
+                this.validateScheduleBarElements([SCHEDULE_VESTING_SCHEDULED, SCHEDULE_CLIFF_START, SCHEDULE_CLIFF_END, SCHEDULE_VESTING_START, SCHEDULE_VESTING_END], [] , 100)
+                break;
+            default:
+                throw new Error(`Unknown schedule bar state: ${status}`)
+        }
+
+    }
+
+    static mockProgressTo(status: string) {
+        let today = BasePage.getDayTimestamp(0)
+        let yesterday = BasePage.getDayTimestamp(-1)
+
+        cy.intercept("POST", "**automation-v1**", (req => {
+            req.continue((res) => {
+                if (req.body.variables._0_id) {
+                    let schedule = res.body.data._0_vestingSchedule
+                    switch (status) {
+                        case "Scheduled":
+                            schedule.cliffAndFlowDate = this.getDayTimestamp(2)
+                            schedule.cliffAndFlowExecutedAt = null
+                            schedule.cliffAndFlowExpirationAt = this.getDayTimestamp(2) + 1000
+                            schedule.cliffDate = this.getDayTimestamp(2)
+                            schedule.createdAt = this.getDayTimestamp(-1)
+                            schedule.earlyEndCompensation = null
+                            schedule.endDate = this.getDayTimestamp(3)
+                            schedule.endDateValidAt = this.getDayTimestamp(3) + 1000
+                            schedule.endExecutedAt = null
+                            schedule.failedAt = null
+                            schedule.startDate = this.getDayTimestamp(1)
+                            break;
+                        case "Cliff Started":
+                            //Vesting scheduled
+                            schedule.createdAt = this.getDayTimestamp(-2)
+                            //Cliff starts
+                            schedule.startDate = this.getDayTimestamp(-1)
+                            //Cliff Ends
+                            schedule.cliffDate = this.getDayTimestamp(1)
+                            //Vesting starts
+                            schedule.cliffAndFlowDate = this.getDayTimestamp(2)
+                            schedule.cliffAndFlowExecutedAt = null
+                            schedule.cliffAndFlowExpirationAt = this.getDayTimestamp(2) + 1000
+                            //Vesting ends
+                            schedule.endDate = this.getDayTimestamp(3)
+                            schedule.endDateValidAt = this.getDayTimestamp(3) + 1000
+                            schedule.endExecutedAt = null
+                            //Error states
+                            schedule.earlyEndCompensation = null
+                            schedule.failedAt = null
+                            break;
+                        case "Cliff ended":
+                            //Vesting scheduled
+                            schedule.createdAt = this.getDayTimestamp(-3)
+                            //Cliff starts
+                            schedule.startDate = this.getDayTimestamp(-2)
+                            //Cliff Ends
+                            schedule.cliffDate = this.getDayTimestamp(-1)
+                            //Vesting starts
+                            schedule.cliffAndFlowDate = this.getDayTimestamp(1)
+                            schedule.cliffAndFlowExecutedAt = this.getDayTimestamp(1)
+                            schedule.cliffAndFlowExpirationAt = this.getDayTimestamp(1) + 1000
+                            //Vesting ends
+                            schedule.endDate = this.getDayTimestamp(2)
+                            schedule.endDateValidAt = this.getDayTimestamp(2) + 1000
+                            schedule.endExecutedAt = null
+                            //Error states
+                            schedule.earlyEndCompensation = null
+                            schedule.failedAt = null
+                            break;
+                        case "Vesting started":
+                            //Vesting scheduled
+                            schedule.createdAt = this.getDayTimestamp(-3)
+                            //Cliff starts
+                            schedule.startDate = this.getDayTimestamp(-2)
+                            //Cliff Ends
+                            schedule.cliffDate = this.getDayTimestamp(-1)
+                            //Vesting starts
+                            schedule.cliffAndFlowDate = this.getDayTimestamp(-1)
+                            schedule.cliffAndFlowExecutedAt = this.getDayTimestamp(-1)
+                            schedule.cliffAndFlowExpirationAt = this.getDayTimestamp(-1) + 1000
+                            //Vesting ends
+                            schedule.endDate = this.getDayTimestamp(1)
+                            schedule.endDateValidAt = this.getDayTimestamp(1) + 1000
+                            schedule.endExecutedAt = null
+                            //Error states
+                            schedule.earlyEndCompensation = null
+                            schedule.failedAt = null
+                            break;
+                        case "Vesting ended":
+                            //Vesting scheduled
+                            schedule.createdAt = this.getDayTimestamp(-4)
+                            //Cliff starts
+                            schedule.startDate = this.getDayTimestamp(-3)
+                            //Cliff Ends
+                            schedule.cliffDate = this.getDayTimestamp(-2)
+                            //Vesting starts
+                            schedule.cliffAndFlowDate = this.getDayTimestamp(-2)
+                            schedule.cliffAndFlowExecutedAt = this.getDayTimestamp(-2)
+                            schedule.cliffAndFlowExpirationAt = this.getDayTimestamp(-2) + 1000
+                            //Vesting ends
+                            schedule.endDate = this.getDayTimestamp(-1)
+                            schedule.endDateValidAt = this.getDayTimestamp(-1) + 1000
+                            schedule.endExecutedAt = this.getDayTimestamp(-1)
+                            //Error states
+                            schedule.earlyEndCompensation = null
+                            schedule.failedAt = null
+                            break;
+
+                    }
+                }
+            })
+        }))
+    }
+
+    static validateAggregateStats() {
+        cy.fixture("vestingData").then(data => {
+            let schedule = data.polygon.USDCx.schedule
+            let stream = data.polygon.USDCx.vestingStream
+            let totalVestedAmount = (schedule.cliffAmount / 1e18 + (((Date.now() - stream.startedAtUnix) * stream.flowRate) / 1e21)).toString().substring(0, 8)
+            this.hasText(`[data-cy=${stream.token.symbol}-total-allocated]` , `${schedule.totalAllocated} ${stream.token.symbol}`)
+            this.containsText(`[data-cy=${stream.token.symbol}-total-vested]` , totalVestedAmount )
+        })
     }
 }

@@ -208,17 +208,19 @@ export function calculateVestingSchedulesAllocated(
 
 export function vestingScheduleToTokenBalance(
   vestingSchedule: VestingSchedule
-): TokenBalance {
+): TokenBalance | null {
   const {
     flowRate,
     cliffAmount,
     endExecutedAt,
     cliffAndFlowExecutedAt,
-    endDate,
     cliffAndFlowDate,
     didEarlyEndCompensationFail,
     earlyEndCompensation,
+    failedAt,
   } = vestingSchedule;
+
+  if (failedAt) return null;
 
   if (endExecutedAt) {
     const secondsStreamed = Number(Math.max(endExecutedAt)) - cliffAndFlowDate;
