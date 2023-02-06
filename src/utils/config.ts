@@ -35,9 +35,9 @@ const config = {
       "https://prod-goerli-platform-service.dev.superfluid.dev",
   },
   segmentWriteKey: isProduction
-    ? segmentWriteKeyForDeployPreview
-    : isDeployPreview
     ? segmentWriteKeyForProduction
+    : isDeployPreview
+    ? segmentWriteKeyForDeployPreview
     : undefined,
 };
 
