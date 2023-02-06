@@ -24,7 +24,7 @@
     "@hookform/error-message": "^2.0.0",
     "@hookform/resolvers": "^2.9.10",
     "@lifi/sdk": "^1.7.2",
-    "@lifi/widget": "^1.29.4",
+    "@lifi/widget": "^1.31.0",
     "@mui/icons-material": "^5.11.0",
     "@mui/lab": "^5.0.0-alpha.117",
     "@mui/material": "^5.11.6",
