@@ -1,0 +1,2216 @@
+schema {
+  query: Query
+  subscription: Subscription
+}
+
+"Marks the GraphQL type as indexable entity.  Each type that should be an entity is required to be annotated with this directive."
+directive @entity on OBJECT
+
+"Defined a Subgraph ID for an object type"
+directive @subgraphId(id: String!) on OBJECT
+
+"creates a virtual field on the entity that may be queried but cannot be set manually through the mappings API."
+directive @derivedFrom(field: String!) on FIELD_DEFINITION
+
+scalar BigDecimal
+
+scalar BigInt
+
+input BlockChangedFilter {
+  number_gte: Int!
+}
+
+input Block_height {
+  hash: Bytes
+  number: Int
+  number_gte: Int
+}
+
+scalar Bytes
+
+"""
+Event: An interface which is shared by all
+event entities and contains basic transaction
+data.
+
+"""
+interface Event {
+  id: ID!
+  blockNumber: BigInt!
+  logIndex: BigInt!
+  order: BigInt!
+  name: String!
+  """
+  Holds the addresses for accounts that were impacted by the event.
+  
+  """
+  addresses: [Bytes!]!
+  timestamp: BigInt!
+  transactionHash: Bytes!
+  gasPrice: BigInt!
+}
+
+input Event_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  blockNumber: BigInt
+  blockNumber_not: BigInt
+  blockNumber_gt: BigInt
+  blockNumber_lt: BigInt
+  blockNumber_gte: BigInt
+  blockNumber_lte: BigInt
+  blockNumber_in: [BigInt!]
+  blockNumber_not_in: [BigInt!]
+  logIndex: BigInt
+  logIndex_not: BigInt
+  logIndex_gt: BigInt
+  logIndex_lt: BigInt
+  logIndex_gte: BigInt
+  logIndex_lte: BigInt
+  logIndex_in: [BigInt!]
+  logIndex_not_in: [BigInt!]
+  order: BigInt
+  order_not: BigInt
+  order_gt: BigInt
+  order_lt: BigInt
+  order_gte: BigInt
+  order_lte: BigInt
+  order_in: [BigInt!]
+  order_not_in: [BigInt!]
+  name: String
+  name_not: String
+  name_gt: String
+  name_lt: String
+  name_gte: String
+  name_lte: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_contains: String
+  name_contains_nocase: String
+  name_not_contains: String
+  name_not_contains_nocase: String
+  name_starts_with: String
+  name_starts_with_nocase: String
+  name_not_starts_with: String
+  name_not_starts_with_nocase: String
+  name_ends_with: String
+  name_ends_with_nocase: String
+  name_not_ends_with: String
+  name_not_ends_with_nocase: String
+  addresses: [Bytes!]
+  addresses_not: [Bytes!]
+  addresses_contains: [Bytes!]
+  addresses_contains_nocase: [Bytes!]
+  addresses_not_contains: [Bytes!]
+  addresses_not_contains_nocase: [Bytes!]
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  transactionHash: Bytes
+  transactionHash_not: Bytes
+  transactionHash_gt: Bytes
+  transactionHash_lt: Bytes
+  transactionHash_gte: Bytes
+  transactionHash_lte: Bytes
+  transactionHash_in: [Bytes!]
+  transactionHash_not_in: [Bytes!]
+  transactionHash_contains: Bytes
+  transactionHash_not_contains: Bytes
+  gasPrice: BigInt
+  gasPrice_not: BigInt
+  gasPrice_gt: BigInt
+  gasPrice_lt: BigInt
+  gasPrice_gte: BigInt
+  gasPrice_lte: BigInt
+  gasPrice_in: [BigInt!]
+  gasPrice_not_in: [BigInt!]
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+}
+
+enum Event_orderBy {
+  id
+  blockNumber
+  logIndex
+  order
+  name
+  addresses
+  timestamp
+  transactionHash
+  gasPrice
+}
+
+"""Defines the order direction, either ascending or descending"""
+enum OrderDirection {
+  asc
+  desc
+}
+
+type Query {
+  vestingCliffAndFlowExecutedEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): VestingCliffAndFlowExecutedEvent
+  vestingCliffAndFlowExecutedEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: VestingCliffAndFlowExecutedEvent_orderBy
+    orderDirection: OrderDirection
+    where: VestingCliffAndFlowExecutedEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [VestingCliffAndFlowExecutedEvent!]!
+  vestingEndExecutedEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): VestingEndExecutedEvent
+  vestingEndExecutedEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: VestingEndExecutedEvent_orderBy
+    orderDirection: OrderDirection
+    where: VestingEndExecutedEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [VestingEndExecutedEvent!]!
+  vestingEndFailedEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): VestingEndFailedEvent
+  vestingEndFailedEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: VestingEndFailedEvent_orderBy
+    orderDirection: OrderDirection
+    where: VestingEndFailedEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [VestingEndFailedEvent!]!
+  vestingScheduleCreatedEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): VestingScheduleCreatedEvent
+  vestingScheduleCreatedEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: VestingScheduleCreatedEvent_orderBy
+    orderDirection: OrderDirection
+    where: VestingScheduleCreatedEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [VestingScheduleCreatedEvent!]!
+  vestingScheduleDeletedEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): VestingScheduleDeletedEvent
+  vestingScheduleDeletedEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: VestingScheduleDeletedEvent_orderBy
+    orderDirection: OrderDirection
+    where: VestingScheduleDeletedEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [VestingScheduleDeletedEvent!]!
+  vestingScheduleUpdatedEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): VestingScheduleUpdatedEvent
+  vestingScheduleUpdatedEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: VestingScheduleUpdatedEvent_orderBy
+    orderDirection: OrderDirection
+    where: VestingScheduleUpdatedEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [VestingScheduleUpdatedEvent!]!
+  vestingSchedule(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): VestingSchedule
+  vestingSchedules(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: VestingSchedule_orderBy
+    orderDirection: OrderDirection
+    where: VestingSchedule_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [VestingSchedule!]!
+  tokenSenderReceiverCursor(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): TokenSenderReceiverCursor
+  tokenSenderReceiverCursors(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TokenSenderReceiverCursor_orderBy
+    orderDirection: OrderDirection
+    where: TokenSenderReceiverCursor_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [TokenSenderReceiverCursor!]!
+  task(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Task
+  tasks(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Task_orderBy
+    orderDirection: OrderDirection
+    where: Task_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Task!]!
+  event(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Event
+  events(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Event_orderBy
+    orderDirection: OrderDirection
+    where: Event_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Event!]!
+  """Access to subgraph metadata"""
+  _meta(block: Block_height): _Meta_
+}
+
+type Subscription {
+  vestingCliffAndFlowExecutedEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): VestingCliffAndFlowExecutedEvent
+  vestingCliffAndFlowExecutedEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: VestingCliffAndFlowExecutedEvent_orderBy
+    orderDirection: OrderDirection
+    where: VestingCliffAndFlowExecutedEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [VestingCliffAndFlowExecutedEvent!]!
+  vestingEndExecutedEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): VestingEndExecutedEvent
+  vestingEndExecutedEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: VestingEndExecutedEvent_orderBy
+    orderDirection: OrderDirection
+    where: VestingEndExecutedEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [VestingEndExecutedEvent!]!
+  vestingEndFailedEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): VestingEndFailedEvent
+  vestingEndFailedEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: VestingEndFailedEvent_orderBy
+    orderDirection: OrderDirection
+    where: VestingEndFailedEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [VestingEndFailedEvent!]!
+  vestingScheduleCreatedEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): VestingScheduleCreatedEvent
+  vestingScheduleCreatedEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: VestingScheduleCreatedEvent_orderBy
+    orderDirection: OrderDirection
+    where: VestingScheduleCreatedEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [VestingScheduleCreatedEvent!]!
+  vestingScheduleDeletedEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): VestingScheduleDeletedEvent
+  vestingScheduleDeletedEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: VestingScheduleDeletedEvent_orderBy
+    orderDirection: OrderDirection
+    where: VestingScheduleDeletedEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [VestingScheduleDeletedEvent!]!
+  vestingScheduleUpdatedEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): VestingScheduleUpdatedEvent
+  vestingScheduleUpdatedEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: VestingScheduleUpdatedEvent_orderBy
+    orderDirection: OrderDirection
+    where: VestingScheduleUpdatedEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [VestingScheduleUpdatedEvent!]!
+  vestingSchedule(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): VestingSchedule
+  vestingSchedules(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: VestingSchedule_orderBy
+    orderDirection: OrderDirection
+    where: VestingSchedule_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [VestingSchedule!]!
+  tokenSenderReceiverCursor(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): TokenSenderReceiverCursor
+  tokenSenderReceiverCursors(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TokenSenderReceiverCursor_orderBy
+    orderDirection: OrderDirection
+    where: TokenSenderReceiverCursor_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [TokenSenderReceiverCursor!]!
+  task(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Task
+  tasks(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Task_orderBy
+    orderDirection: OrderDirection
+    where: Task_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Task!]!
+  event(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Event
+  events(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Event_orderBy
+    orderDirection: OrderDirection
+    where: Event_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Event!]!
+  """Access to subgraph metadata"""
+  _meta(block: Block_height): _Meta_
+}
+
+type Task {
+  id: ID!
+  type: TaskType!
+  executed: Boolean!
+  executionAt: BigInt
+  expirationAt: BigInt
+  cancelledAt: BigInt
+  failedAt: BigInt
+  vestingSchedule: VestingSchedule!
+}
+
+enum TaskType {
+  ExecuteCliffAndFlow
+  ExecuteEndVesting
+}
+
+input Task_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  type: TaskType
+  type_not: TaskType
+  type_in: [TaskType!]
+  type_not_in: [TaskType!]
+  executed: Boolean
+  executed_not: Boolean
+  executed_in: [Boolean!]
+  executed_not_in: [Boolean!]
+  executionAt: BigInt
+  executionAt_not: BigInt
+  executionAt_gt: BigInt
+  executionAt_lt: BigInt
+  executionAt_gte: BigInt
+  executionAt_lte: BigInt
+  executionAt_in: [BigInt!]
+  executionAt_not_in: [BigInt!]
+  expirationAt: BigInt
+  expirationAt_not: BigInt
+  expirationAt_gt: BigInt
+  expirationAt_lt: BigInt
+  expirationAt_gte: BigInt
+  expirationAt_lte: BigInt
+  expirationAt_in: [BigInt!]
+  expirationAt_not_in: [BigInt!]
+  cancelledAt: BigInt
+  cancelledAt_not: BigInt
+  cancelledAt_gt: BigInt
+  cancelledAt_lt: BigInt
+  cancelledAt_gte: BigInt
+  cancelledAt_lte: BigInt
+  cancelledAt_in: [BigInt!]
+  cancelledAt_not_in: [BigInt!]
+  failedAt: BigInt
+  failedAt_not: BigInt
+  failedAt_gt: BigInt
+  failedAt_lt: BigInt
+  failedAt_gte: BigInt
+  failedAt_lte: BigInt
+  failedAt_in: [BigInt!]
+  failedAt_not_in: [BigInt!]
+  vestingSchedule: String
+  vestingSchedule_not: String
+  vestingSchedule_gt: String
+  vestingSchedule_lt: String
+  vestingSchedule_gte: String
+  vestingSchedule_lte: String
+  vestingSchedule_in: [String!]
+  vestingSchedule_not_in: [String!]
+  vestingSchedule_contains: String
+  vestingSchedule_contains_nocase: String
+  vestingSchedule_not_contains: String
+  vestingSchedule_not_contains_nocase: String
+  vestingSchedule_starts_with: String
+  vestingSchedule_starts_with_nocase: String
+  vestingSchedule_not_starts_with: String
+  vestingSchedule_not_starts_with_nocase: String
+  vestingSchedule_ends_with: String
+  vestingSchedule_ends_with_nocase: String
+  vestingSchedule_not_ends_with: String
+  vestingSchedule_not_ends_with_nocase: String
+  vestingSchedule_: VestingSchedule_filter
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+}
+
+enum Task_orderBy {
+  id
+  type
+  executed
+  executionAt
+  expirationAt
+  cancelledAt
+  failedAt
+  vestingSchedule
+}
+
+type TokenSenderReceiverCursor {
+  id: String!
+  currentVestingSchedule: VestingSchedule
+  currentCliffAndFlowTask: Task
+  currentEndVestingTask: Task
+}
+
+input TokenSenderReceiverCursor_filter {
+  id: String
+  id_not: String
+  id_gt: String
+  id_lt: String
+  id_gte: String
+  id_lte: String
+  id_in: [String!]
+  id_not_in: [String!]
+  id_contains: String
+  id_contains_nocase: String
+  id_not_contains: String
+  id_not_contains_nocase: String
+  id_starts_with: String
+  id_starts_with_nocase: String
+  id_not_starts_with: String
+  id_not_starts_with_nocase: String
+  id_ends_with: String
+  id_ends_with_nocase: String
+  id_not_ends_with: String
+  id_not_ends_with_nocase: String
+  currentVestingSchedule: String
+  currentVestingSchedule_not: String
+  currentVestingSchedule_gt: String
+  currentVestingSchedule_lt: String
+  currentVestingSchedule_gte: String
+  currentVestingSchedule_lte: String
+  currentVestingSchedule_in: [String!]
+  currentVestingSchedule_not_in: [String!]
+  currentVestingSchedule_contains: String
+  currentVestingSchedule_contains_nocase: String
+  currentVestingSchedule_not_contains: String
+  currentVestingSchedule_not_contains_nocase: String
+  currentVestingSchedule_starts_with: String
+  currentVestingSchedule_starts_with_nocase: String
+  currentVestingSchedule_not_starts_with: String
+  currentVestingSchedule_not_starts_with_nocase: String
+  currentVestingSchedule_ends_with: String
+  currentVestingSchedule_ends_with_nocase: String
+  currentVestingSchedule_not_ends_with: String
+  currentVestingSchedule_not_ends_with_nocase: String
+  currentVestingSchedule_: VestingSchedule_filter
+  currentCliffAndFlowTask: String
+  currentCliffAndFlowTask_not: String
+  currentCliffAndFlowTask_gt: String
+  currentCliffAndFlowTask_lt: String
+  currentCliffAndFlowTask_gte: String
+  currentCliffAndFlowTask_lte: String
+  currentCliffAndFlowTask_in: [String!]
+  currentCliffAndFlowTask_not_in: [String!]
+  currentCliffAndFlowTask_contains: String
+  currentCliffAndFlowTask_contains_nocase: String
+  currentCliffAndFlowTask_not_contains: String
+  currentCliffAndFlowTask_not_contains_nocase: String
+  currentCliffAndFlowTask_starts_with: String
+  currentCliffAndFlowTask_starts_with_nocase: String
+  currentCliffAndFlowTask_not_starts_with: String
+  currentCliffAndFlowTask_not_starts_with_nocase: String
+  currentCliffAndFlowTask_ends_with: String
+  currentCliffAndFlowTask_ends_with_nocase: String
+  currentCliffAndFlowTask_not_ends_with: String
+  currentCliffAndFlowTask_not_ends_with_nocase: String
+  currentCliffAndFlowTask_: Task_filter
+  currentEndVestingTask: String
+  currentEndVestingTask_not: String
+  currentEndVestingTask_gt: String
+  currentEndVestingTask_lt: String
+  currentEndVestingTask_gte: String
+  currentEndVestingTask_lte: String
+  currentEndVestingTask_in: [String!]
+  currentEndVestingTask_not_in: [String!]
+  currentEndVestingTask_contains: String
+  currentEndVestingTask_contains_nocase: String
+  currentEndVestingTask_not_contains: String
+  currentEndVestingTask_not_contains_nocase: String
+  currentEndVestingTask_starts_with: String
+  currentEndVestingTask_starts_with_nocase: String
+  currentEndVestingTask_not_starts_with: String
+  currentEndVestingTask_not_starts_with_nocase: String
+  currentEndVestingTask_ends_with: String
+  currentEndVestingTask_ends_with_nocase: String
+  currentEndVestingTask_not_ends_with: String
+  currentEndVestingTask_not_ends_with_nocase: String
+  currentEndVestingTask_: Task_filter
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+}
+
+enum TokenSenderReceiverCursor_orderBy {
+  id
+  currentVestingSchedule
+  currentCliffAndFlowTask
+  currentEndVestingTask
+}
+
+type VestingCliffAndFlowExecutedEvent implements Event {
+  id: ID!
+  blockNumber: BigInt!
+  logIndex: BigInt!
+  order: BigInt!
+  name: String!
+  """
+  Holds the addresses for sender and receiver.
+  
+  """
+  addresses: [Bytes!]!
+  timestamp: BigInt!
+  transactionHash: Bytes!
+  gasPrice: BigInt!
+  superToken: Bytes!
+  sender: Bytes!
+  receiver: Bytes!
+  cliffAndFlowDate: BigInt!
+  flowRate: BigInt!
+  cliffAmount: BigInt!
+  flowDelayCompensation: BigInt!
+}
+
+input VestingCliffAndFlowExecutedEvent_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  blockNumber: BigInt
+  blockNumber_not: BigInt
+  blockNumber_gt: BigInt
+  blockNumber_lt: BigInt
+  blockNumber_gte: BigInt
+  blockNumber_lte: BigInt
+  blockNumber_in: [BigInt!]
+  blockNumber_not_in: [BigInt!]
+  logIndex: BigInt
+  logIndex_not: BigInt
+  logIndex_gt: BigInt
+  logIndex_lt: BigInt
+  logIndex_gte: BigInt
+  logIndex_lte: BigInt
+  logIndex_in: [BigInt!]
+  logIndex_not_in: [BigInt!]
+  order: BigInt
+  order_not: BigInt
+  order_gt: BigInt
+  order_lt: BigInt
+  order_gte: BigInt
+  order_lte: BigInt
+  order_in: [BigInt!]
+  order_not_in: [BigInt!]
+  name: String
+  name_not: String
+  name_gt: String
+  name_lt: String
+  name_gte: String
+  name_lte: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_contains: String
+  name_contains_nocase: String
+  name_not_contains: String
+  name_not_contains_nocase: String
+  name_starts_with: String
+  name_starts_with_nocase: String
+  name_not_starts_with: String
+  name_not_starts_with_nocase: String
+  name_ends_with: String
+  name_ends_with_nocase: String
+  name_not_ends_with: String
+  name_not_ends_with_nocase: String
+  addresses: [Bytes!]
+  addresses_not: [Bytes!]
+  addresses_contains: [Bytes!]
+  addresses_contains_nocase: [Bytes!]
+  addresses_not_contains: [Bytes!]
+  addresses_not_contains_nocase: [Bytes!]
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  transactionHash: Bytes
+  transactionHash_not: Bytes
+  transactionHash_gt: Bytes
+  transactionHash_lt: Bytes
+  transactionHash_gte: Bytes
+  transactionHash_lte: Bytes
+  transactionHash_in: [Bytes!]
+  transactionHash_not_in: [Bytes!]
+  transactionHash_contains: Bytes
+  transactionHash_not_contains: Bytes
+  gasPrice: BigInt
+  gasPrice_not: BigInt
+  gasPrice_gt: BigInt
+  gasPrice_lt: BigInt
+  gasPrice_gte: BigInt
+  gasPrice_lte: BigInt
+  gasPrice_in: [BigInt!]
+  gasPrice_not_in: [BigInt!]
+  superToken: Bytes
+  superToken_not: Bytes
+  superToken_gt: Bytes
+  superToken_lt: Bytes
+  superToken_gte: Bytes
+  superToken_lte: Bytes
+  superToken_in: [Bytes!]
+  superToken_not_in: [Bytes!]
+  superToken_contains: Bytes
+  superToken_not_contains: Bytes
+  sender: Bytes
+  sender_not: Bytes
+  sender_gt: Bytes
+  sender_lt: Bytes
+  sender_gte: Bytes
+  sender_lte: Bytes
+  sender_in: [Bytes!]
+  sender_not_in: [Bytes!]
+  sender_contains: Bytes
+  sender_not_contains: Bytes
+  receiver: Bytes
+  receiver_not: Bytes
+  receiver_gt: Bytes
+  receiver_lt: Bytes
+  receiver_gte: Bytes
+  receiver_lte: Bytes
+  receiver_in: [Bytes!]
+  receiver_not_in: [Bytes!]
+  receiver_contains: Bytes
+  receiver_not_contains: Bytes
+  cliffAndFlowDate: BigInt
+  cliffAndFlowDate_not: BigInt
+  cliffAndFlowDate_gt: BigInt
+  cliffAndFlowDate_lt: BigInt
+  cliffAndFlowDate_gte: BigInt
+  cliffAndFlowDate_lte: BigInt
+  cliffAndFlowDate_in: [BigInt!]
+  cliffAndFlowDate_not_in: [BigInt!]
+  flowRate: BigInt
+  flowRate_not: BigInt
+  flowRate_gt: BigInt
+  flowRate_lt: BigInt
+  flowRate_gte: BigInt
+  flowRate_lte: BigInt
+  flowRate_in: [BigInt!]
+  flowRate_not_in: [BigInt!]
+  cliffAmount: BigInt
+  cliffAmount_not: BigInt
+  cliffAmount_gt: BigInt
+  cliffAmount_lt: BigInt
+  cliffAmount_gte: BigInt
+  cliffAmount_lte: BigInt
+  cliffAmount_in: [BigInt!]
+  cliffAmount_not_in: [BigInt!]
+  flowDelayCompensation: BigInt
+  flowDelayCompensation_not: BigInt
+  flowDelayCompensation_gt: BigInt
+  flowDelayCompensation_lt: BigInt
+  flowDelayCompensation_gte: BigInt
+  flowDelayCompensation_lte: BigInt
+  flowDelayCompensation_in: [BigInt!]
+  flowDelayCompensation_not_in: [BigInt!]
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+}
+
+enum VestingCliffAndFlowExecutedEvent_orderBy {
+  id
+  blockNumber
+  logIndex
+  order
+  name
+  addresses
+  timestamp
+  transactionHash
+  gasPrice
+  superToken
+  sender
+  receiver
+  cliffAndFlowDate
+  flowRate
+  cliffAmount
+  flowDelayCompensation
+}
+
+type VestingEndExecutedEvent implements Event {
+  id: ID!
+  blockNumber: BigInt!
+  logIndex: BigInt!
+  order: BigInt!
+  name: String!
+  """
+  Holds the addresses for sender and receiver.
+  
+  """
+  addresses: [Bytes!]!
+  timestamp: BigInt!
+  transactionHash: Bytes!
+  gasPrice: BigInt!
+  superToken: Bytes!
+  sender: Bytes!
+  receiver: Bytes!
+  endDate: BigInt!
+  earlyEndCompensation: BigInt!
+  didCompensationFail: Boolean!
+}
+
+input VestingEndExecutedEvent_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  blockNumber: BigInt
+  blockNumber_not: BigInt
+  blockNumber_gt: BigInt
+  blockNumber_lt: BigInt
+  blockNumber_gte: BigInt
+  blockNumber_lte: BigInt
+  blockNumber_in: [BigInt!]
+  blockNumber_not_in: [BigInt!]
+  logIndex: BigInt
+  logIndex_not: BigInt
+  logIndex_gt: BigInt
+  logIndex_lt: BigInt
+  logIndex_gte: BigInt
+  logIndex_lte: BigInt
+  logIndex_in: [BigInt!]
+  logIndex_not_in: [BigInt!]
+  order: BigInt
+  order_not: BigInt
+  order_gt: BigInt
+  order_lt: BigInt
+  order_gte: BigInt
+  order_lte: BigInt
+  order_in: [BigInt!]
+  order_not_in: [BigInt!]
+  name: String
+  name_not: String
+  name_gt: String
+  name_lt: String
+  name_gte: String
+  name_lte: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_contains: String
+  name_contains_nocase: String
+  name_not_contains: String
+  name_not_contains_nocase: String
+  name_starts_with: String
+  name_starts_with_nocase: String
+  name_not_starts_with: String
+  name_not_starts_with_nocase: String
+  name_ends_with: String
+  name_ends_with_nocase: String
+  name_not_ends_with: String
+  name_not_ends_with_nocase: String
+  addresses: [Bytes!]
+  addresses_not: [Bytes!]
+  addresses_contains: [Bytes!]
+  addresses_contains_nocase: [Bytes!]
+  addresses_not_contains: [Bytes!]
+  addresses_not_contains_nocase: [Bytes!]
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  transactionHash: Bytes
+  transactionHash_not: Bytes
+  transactionHash_gt: Bytes
+  transactionHash_lt: Bytes
+  transactionHash_gte: Bytes
+  transactionHash_lte: Bytes
+  transactionHash_in: [Bytes!]
+  transactionHash_not_in: [Bytes!]
+  transactionHash_contains: Bytes
+  transactionHash_not_contains: Bytes
+  gasPrice: BigInt
+  gasPrice_not: BigInt
+  gasPrice_gt: BigInt
+  gasPrice_lt: BigInt
+  gasPrice_gte: BigInt
+  gasPrice_lte: BigInt
+  gasPrice_in: [BigInt!]
+  gasPrice_not_in: [BigInt!]
+  superToken: Bytes
+  superToken_not: Bytes
+  superToken_gt: Bytes
+  superToken_lt: Bytes
+  superToken_gte: Bytes
+  superToken_lte: Bytes
+  superToken_in: [Bytes!]
+  superToken_not_in: [Bytes!]
+  superToken_contains: Bytes
+  superToken_not_contains: Bytes
+  sender: Bytes
+  sender_not: Bytes
+  sender_gt: Bytes
+  sender_lt: Bytes
+  sender_gte: Bytes
+  sender_lte: Bytes
+  sender_in: [Bytes!]
+  sender_not_in: [Bytes!]
+  sender_contains: Bytes
+  sender_not_contains: Bytes
+  receiver: Bytes
+  receiver_not: Bytes
+  receiver_gt: Bytes
+  receiver_lt: Bytes
+  receiver_gte: Bytes
+  receiver_lte: Bytes
+  receiver_in: [Bytes!]
+  receiver_not_in: [Bytes!]
+  receiver_contains: Bytes
+  receiver_not_contains: Bytes
+  endDate: BigInt
+  endDate_not: BigInt
+  endDate_gt: BigInt
+  endDate_lt: BigInt
+  endDate_gte: BigInt
+  endDate_lte: BigInt
+  endDate_in: [BigInt!]
+  endDate_not_in: [BigInt!]
+  earlyEndCompensation: BigInt
+  earlyEndCompensation_not: BigInt
+  earlyEndCompensation_gt: BigInt
+  earlyEndCompensation_lt: BigInt
+  earlyEndCompensation_gte: BigInt
+  earlyEndCompensation_lte: BigInt
+  earlyEndCompensation_in: [BigInt!]
+  earlyEndCompensation_not_in: [BigInt!]
+  didCompensationFail: Boolean
+  didCompensationFail_not: Boolean
+  didCompensationFail_in: [Boolean!]
+  didCompensationFail_not_in: [Boolean!]
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+}
+
+enum VestingEndExecutedEvent_orderBy {
+  id
+  blockNumber
+  logIndex
+  order
+  name
+  addresses
+  timestamp
+  transactionHash
+  gasPrice
+  superToken
+  sender
+  receiver
+  endDate
+  earlyEndCompensation
+  didCompensationFail
+}
+
+type VestingEndFailedEvent implements Event {
+  id: ID!
+  blockNumber: BigInt!
+  logIndex: BigInt!
+  order: BigInt!
+  name: String!
+  """
+  Holds the addresses for sender and receiver.
+  
+  """
+  addresses: [Bytes!]!
+  timestamp: BigInt!
+  transactionHash: Bytes!
+  gasPrice: BigInt!
+  superToken: Bytes!
+  sender: Bytes!
+  receiver: Bytes!
+  endDate: BigInt!
+}
+
+input VestingEndFailedEvent_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  blockNumber: BigInt
+  blockNumber_not: BigInt
+  blockNumber_gt: BigInt
+  blockNumber_lt: BigInt
+  blockNumber_gte: BigInt
+  blockNumber_lte: BigInt
+  blockNumber_in: [BigInt!]
+  blockNumber_not_in: [BigInt!]
+  logIndex: BigInt
+  logIndex_not: BigInt
+  logIndex_gt: BigInt
+  logIndex_lt: BigInt
+  logIndex_gte: BigInt
+  logIndex_lte: BigInt
+  logIndex_in: [BigInt!]
+  logIndex_not_in: [BigInt!]
+  order: BigInt
+  order_not: BigInt
+  order_gt: BigInt
+  order_lt: BigInt
+  order_gte: BigInt
+  order_lte: BigInt
+  order_in: [BigInt!]
+  order_not_in: [BigInt!]
+  name: String
+  name_not: String
+  name_gt: String
+  name_lt: String
+  name_gte: String
+  name_lte: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_contains: String
+  name_contains_nocase: String
+  name_not_contains: String
+  name_not_contains_nocase: String
+  name_starts_with: String
+  name_starts_with_nocase: String
+  name_not_starts_with: String
+  name_not_starts_with_nocase: String
+  name_ends_with: String
+  name_ends_with_nocase: String
+  name_not_ends_with: String
+  name_not_ends_with_nocase: String
+  addresses: [Bytes!]
+  addresses_not: [Bytes!]
+  addresses_contains: [Bytes!]
+  addresses_contains_nocase: [Bytes!]
+  addresses_not_contains: [Bytes!]
+  addresses_not_contains_nocase: [Bytes!]
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  transactionHash: Bytes
+  transactionHash_not: Bytes
+  transactionHash_gt: Bytes
+  transactionHash_lt: Bytes
+  transactionHash_gte: Bytes
+  transactionHash_lte: Bytes
+  transactionHash_in: [Bytes!]
+  transactionHash_not_in: [Bytes!]
+  transactionHash_contains: Bytes
+  transactionHash_not_contains: Bytes
+  gasPrice: BigInt
+  gasPrice_not: BigInt
+  gasPrice_gt: BigInt
+  gasPrice_lt: BigInt
+  gasPrice_gte: BigInt
+  gasPrice_lte: BigInt
+  gasPrice_in: [BigInt!]
+  gasPrice_not_in: [BigInt!]
+  superToken: Bytes
+  superToken_not: Bytes
+  superToken_gt: Bytes
+  superToken_lt: Bytes
+  superToken_gte: Bytes
+  superToken_lte: Bytes
+  superToken_in: [Bytes!]
+  superToken_not_in: [Bytes!]
+  superToken_contains: Bytes
+  superToken_not_contains: Bytes
+  sender: Bytes
+  sender_not: Bytes
+  sender_gt: Bytes
+  sender_lt: Bytes
+  sender_gte: Bytes
+  sender_lte: Bytes
+  sender_in: [Bytes!]
+  sender_not_in: [Bytes!]
+  sender_contains: Bytes
+  sender_not_contains: Bytes
+  receiver: Bytes
+  receiver_not: Bytes
+  receiver_gt: Bytes
+  receiver_lt: Bytes
+  receiver_gte: Bytes
+  receiver_lte: Bytes
+  receiver_in: [Bytes!]
+  receiver_not_in: [Bytes!]
+  receiver_contains: Bytes
+  receiver_not_contains: Bytes
+  endDate: BigInt
+  endDate_not: BigInt
+  endDate_gt: BigInt
+  endDate_lt: BigInt
+  endDate_gte: BigInt
+  endDate_lte: BigInt
+  endDate_in: [BigInt!]
+  endDate_not_in: [BigInt!]
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+}
+
+enum VestingEndFailedEvent_orderBy {
+  id
+  blockNumber
+  logIndex
+  order
+  name
+  addresses
+  timestamp
+  transactionHash
+  gasPrice
+  superToken
+  sender
+  receiver
+  endDate
+}
+
+type VestingSchedule {
+  id: String!
+  createdAt: BigInt!
+  superToken: Bytes!
+  sender: Bytes!
+  receiver: Bytes!
+  startDate: BigInt!
+  endDate: BigInt!
+  cliffDate: BigInt
+  cliffAndFlowDate: BigInt!
+  cliffAmount: BigInt!
+  flowRate: BigInt!
+  didEarlyEndCompensationFail: Boolean
+  earlyEndCompensation: BigInt
+  cliffAndFlowExpirationAt: BigInt!
+  endDateValidAt: BigInt!
+  deletedAt: BigInt
+  failedAt: BigInt
+  cliffAndFlowExecutedAt: BigInt
+  endExecutedAt: BigInt
+  tasks(skip: Int = 0, first: Int = 100, orderBy: Task_orderBy, orderDirection: OrderDirection, where: Task_filter): [Task!]!
+  events(skip: Int = 0, first: Int = 100, orderBy: Event_orderBy, orderDirection: OrderDirection, where: Event_filter): [Event!]!
+}
+
+type VestingScheduleCreatedEvent implements Event {
+  id: ID!
+  blockNumber: BigInt!
+  logIndex: BigInt!
+  order: BigInt!
+  name: String!
+  """
+  Holds the addresses for sender and receiver.
+  
+  """
+  addresses: [Bytes!]!
+  timestamp: BigInt!
+  transactionHash: Bytes!
+  gasPrice: BigInt!
+  superToken: Bytes!
+  sender: Bytes!
+  receiver: Bytes!
+  startDate: BigInt!
+  cliffDate: BigInt!
+  flowRate: BigInt!
+  endDate: BigInt!
+  cliffAmount: BigInt!
+}
+
+input VestingScheduleCreatedEvent_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  blockNumber: BigInt
+  blockNumber_not: BigInt
+  blockNumber_gt: BigInt
+  blockNumber_lt: BigInt
+  blockNumber_gte: BigInt
+  blockNumber_lte: BigInt
+  blockNumber_in: [BigInt!]
+  blockNumber_not_in: [BigInt!]
+  logIndex: BigInt
+  logIndex_not: BigInt
+  logIndex_gt: BigInt
+  logIndex_lt: BigInt
+  logIndex_gte: BigInt
+  logIndex_lte: BigInt
+  logIndex_in: [BigInt!]
+  logIndex_not_in: [BigInt!]
+  order: BigInt
+  order_not: BigInt
+  order_gt: BigInt
+  order_lt: BigInt
+  order_gte: BigInt
+  order_lte: BigInt
+  order_in: [BigInt!]
+  order_not_in: [BigInt!]
+  name: String
+  name_not: String
+  name_gt: String
+  name_lt: String
+  name_gte: String
+  name_lte: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_contains: String
+  name_contains_nocase: String
+  name_not_contains: String
+  name_not_contains_nocase: String
+  name_starts_with: String
+  name_starts_with_nocase: String
+  name_not_starts_with: String
+  name_not_starts_with_nocase: String
+  name_ends_with: String
+  name_ends_with_nocase: String
+  name_not_ends_with: String
+  name_not_ends_with_nocase: String
+  addresses: [Bytes!]
+  addresses_not: [Bytes!]
+  addresses_contains: [Bytes!]
+  addresses_contains_nocase: [Bytes!]
+  addresses_not_contains: [Bytes!]
+  addresses_not_contains_nocase: [Bytes!]
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  transactionHash: Bytes
+  transactionHash_not: Bytes
+  transactionHash_gt: Bytes
+  transactionHash_lt: Bytes
+  transactionHash_gte: Bytes
+  transactionHash_lte: Bytes
+  transactionHash_in: [Bytes!]
+  transactionHash_not_in: [Bytes!]
+  transactionHash_contains: Bytes
+  transactionHash_not_contains: Bytes
+  gasPrice: BigInt
+  gasPrice_not: BigInt
+  gasPrice_gt: BigInt
+  gasPrice_lt: BigInt
+  gasPrice_gte: BigInt
+  gasPrice_lte: BigInt
+  gasPrice_in: [BigInt!]
+  gasPrice_not_in: [BigInt!]
+  superToken: Bytes
+  superToken_not: Bytes
+  superToken_gt: Bytes
+  superToken_lt: Bytes
+  superToken_gte: Bytes
+  superToken_lte: Bytes
+  superToken_in: [Bytes!]
+  superToken_not_in: [Bytes!]
+  superToken_contains: Bytes
+  superToken_not_contains: Bytes
+  sender: Bytes
+  sender_not: Bytes
+  sender_gt: Bytes
+  sender_lt: Bytes
+  sender_gte: Bytes
+  sender_lte: Bytes
+  sender_in: [Bytes!]
+  sender_not_in: [Bytes!]
+  sender_contains: Bytes
+  sender_not_contains: Bytes
+  receiver: Bytes
+  receiver_not: Bytes
+  receiver_gt: Bytes
+  receiver_lt: Bytes
+  receiver_gte: Bytes
+  receiver_lte: Bytes
+  receiver_in: [Bytes!]
+  receiver_not_in: [Bytes!]
+  receiver_contains: Bytes
+  receiver_not_contains: Bytes
+  startDate: BigInt
+  startDate_not: BigInt
+  startDate_gt: BigInt
+  startDate_lt: BigInt
+  startDate_gte: BigInt
+  startDate_lte: BigInt
+  startDate_in: [BigInt!]
+  startDate_not_in: [BigInt!]
+  cliffDate: BigInt
+  cliffDate_not: BigInt
+  cliffDate_gt: BigInt
+  cliffDate_lt: BigInt
+  cliffDate_gte: BigInt
+  cliffDate_lte: BigInt
+  cliffDate_in: [BigInt!]
+  cliffDate_not_in: [BigInt!]
+  flowRate: BigInt
+  flowRate_not: BigInt
+  flowRate_gt: BigInt
+  flowRate_lt: BigInt
+  flowRate_gte: BigInt
+  flowRate_lte: BigInt
+  flowRate_in: [BigInt!]
+  flowRate_not_in: [BigInt!]
+  endDate: BigInt
+  endDate_not: BigInt
+  endDate_gt: BigInt
+  endDate_lt: BigInt
+  endDate_gte: BigInt
+  endDate_lte: BigInt
+  endDate_in: [BigInt!]
+  endDate_not_in: [BigInt!]
+  cliffAmount: BigInt
+  cliffAmount_not: BigInt
+  cliffAmount_gt: BigInt
+  cliffAmount_lt: BigInt
+  cliffAmount_gte: BigInt
+  cliffAmount_lte: BigInt
+  cliffAmount_in: [BigInt!]
+  cliffAmount_not_in: [BigInt!]
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+}
+
+enum VestingScheduleCreatedEvent_orderBy {
+  id
+  blockNumber
+  logIndex
+  order
+  name
+  addresses
+  timestamp
+  transactionHash
+  gasPrice
+  superToken
+  sender
+  receiver
+  startDate
+  cliffDate
+  flowRate
+  endDate
+  cliffAmount
+}
+
+type VestingScheduleDeletedEvent implements Event {
+  id: ID!
+  blockNumber: BigInt!
+  logIndex: BigInt!
+  order: BigInt!
+  name: String!
+  """
+  Holds the addresses for sender and receiver.
+  
+  """
+  addresses: [Bytes!]!
+  timestamp: BigInt!
+  transactionHash: Bytes!
+  gasPrice: BigInt!
+  superToken: Bytes!
+  sender: Bytes!
+  receiver: Bytes!
+}
+
+input VestingScheduleDeletedEvent_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  blockNumber: BigInt
+  blockNumber_not: BigInt
+  blockNumber_gt: BigInt
+  blockNumber_lt: BigInt
+  blockNumber_gte: BigInt
+  blockNumber_lte: BigInt
+  blockNumber_in: [BigInt!]
+  blockNumber_not_in: [BigInt!]
+  logIndex: BigInt
+  logIndex_not: BigInt
+  logIndex_gt: BigInt
+  logIndex_lt: BigInt
+  logIndex_gte: BigInt
+  logIndex_lte: BigInt
+  logIndex_in: [BigInt!]
+  logIndex_not_in: [BigInt!]
+  order: BigInt
+  order_not: BigInt
+  order_gt: BigInt
+  order_lt: BigInt
+  order_gte: BigInt
+  order_lte: BigInt
+  order_in: [BigInt!]
+  order_not_in: [BigInt!]
+  name: String
+  name_not: String
+  name_gt: String
+  name_lt: String
+  name_gte: String
+  name_lte: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_contains: String
+  name_contains_nocase: String
+  name_not_contains: String
+  name_not_contains_nocase: String
+  name_starts_with: String
+  name_starts_with_nocase: String
+  name_not_starts_with: String
+  name_not_starts_with_nocase: String
+  name_ends_with: String
+  name_ends_with_nocase: String
+  name_not_ends_with: String
+  name_not_ends_with_nocase: String
+  addresses: [Bytes!]
+  addresses_not: [Bytes!]
+  addresses_contains: [Bytes!]
+  addresses_contains_nocase: [Bytes!]
+  addresses_not_contains: [Bytes!]
+  addresses_not_contains_nocase: [Bytes!]
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  transactionHash: Bytes
+  transactionHash_not: Bytes
+  transactionHash_gt: Bytes
+  transactionHash_lt: Bytes
+  transactionHash_gte: Bytes
+  transactionHash_lte: Bytes
+  transactionHash_in: [Bytes!]
+  transactionHash_not_in: [Bytes!]
+  transactionHash_contains: Bytes
+  transactionHash_not_contains: Bytes
+  gasPrice: BigInt
+  gasPrice_not: BigInt
+  gasPrice_gt: BigInt
+  gasPrice_lt: BigInt
+  gasPrice_gte: BigInt
+  gasPrice_lte: BigInt
+  gasPrice_in: [BigInt!]
+  gasPrice_not_in: [BigInt!]
+  superToken: Bytes
+  superToken_not: Bytes
+  superToken_gt: Bytes
+  superToken_lt: Bytes
+  superToken_gte: Bytes
+  superToken_lte: Bytes
+  superToken_in: [Bytes!]
+  superToken_not_in: [Bytes!]
+  superToken_contains: Bytes
+  superToken_not_contains: Bytes
+  sender: Bytes
+  sender_not: Bytes
+  sender_gt: Bytes
+  sender_lt: Bytes
+  sender_gte: Bytes
+  sender_lte: Bytes
+  sender_in: [Bytes!]
+  sender_not_in: [Bytes!]
+  sender_contains: Bytes
+  sender_not_contains: Bytes
+  receiver: Bytes
+  receiver_not: Bytes
+  receiver_gt: Bytes
+  receiver_lt: Bytes
+  receiver_gte: Bytes
+  receiver_lte: Bytes
+  receiver_in: [Bytes!]
+  receiver_not_in: [Bytes!]
+  receiver_contains: Bytes
+  receiver_not_contains: Bytes
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+}
+
+enum VestingScheduleDeletedEvent_orderBy {
+  id
+  blockNumber
+  logIndex
+  order
+  name
+  addresses
+  timestamp
+  transactionHash
+  gasPrice
+  superToken
+  sender
+  receiver
+}
+
+type VestingScheduleUpdatedEvent implements Event {
+  id: ID!
+  blockNumber: BigInt!
+  logIndex: BigInt!
+  order: BigInt!
+  name: String!
+  """
+  Holds the addresses for sender and receiver.
+  
+  """
+  addresses: [Bytes!]!
+  timestamp: BigInt!
+  transactionHash: Bytes!
+  gasPrice: BigInt!
+  superToken: Bytes!
+  sender: Bytes!
+  receiver: Bytes!
+  oldEndDate: BigInt!
+  endDate: BigInt!
+}
+
+input VestingScheduleUpdatedEvent_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  blockNumber: BigInt
+  blockNumber_not: BigInt
+  blockNumber_gt: BigInt
+  blockNumber_lt: BigInt
+  blockNumber_gte: BigInt
+  blockNumber_lte: BigInt
+  blockNumber_in: [BigInt!]
+  blockNumber_not_in: [BigInt!]
+  logIndex: BigInt
+  logIndex_not: BigInt
+  logIndex_gt: BigInt
+  logIndex_lt: BigInt
+  logIndex_gte: BigInt
+  logIndex_lte: BigInt
+  logIndex_in: [BigInt!]
+  logIndex_not_in: [BigInt!]
+  order: BigInt
+  order_not: BigInt
+  order_gt: BigInt
+  order_lt: BigInt
+  order_gte: BigInt
+  order_lte: BigInt
+  order_in: [BigInt!]
+  order_not_in: [BigInt!]
+  name: String
+  name_not: String
+  name_gt: String
+  name_lt: String
+  name_gte: String
+  name_lte: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_contains: String
+  name_contains_nocase: String
+  name_not_contains: String
+  name_not_contains_nocase: String
+  name_starts_with: String
+  name_starts_with_nocase: String
+  name_not_starts_with: String
+  name_not_starts_with_nocase: String
+  name_ends_with: String
+  name_ends_with_nocase: String
+  name_not_ends_with: String
+  name_not_ends_with_nocase: String
+  addresses: [Bytes!]
+  addresses_not: [Bytes!]
+  addresses_contains: [Bytes!]
+  addresses_contains_nocase: [Bytes!]
+  addresses_not_contains: [Bytes!]
+  addresses_not_contains_nocase: [Bytes!]
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  transactionHash: Bytes
+  transactionHash_not: Bytes
+  transactionHash_gt: Bytes
+  transactionHash_lt: Bytes
+  transactionHash_gte: Bytes
+  transactionHash_lte: Bytes
+  transactionHash_in: [Bytes!]
+  transactionHash_not_in: [Bytes!]
+  transactionHash_contains: Bytes
+  transactionHash_not_contains: Bytes
+  gasPrice: BigInt
+  gasPrice_not: BigInt
+  gasPrice_gt: BigInt
+  gasPrice_lt: BigInt
+  gasPrice_gte: BigInt
+  gasPrice_lte: BigInt
+  gasPrice_in: [BigInt!]
+  gasPrice_not_in: [BigInt!]
+  superToken: Bytes
+  superToken_not: Bytes
+  superToken_gt: Bytes
+  superToken_lt: Bytes
+  superToken_gte: Bytes
+  superToken_lte: Bytes
+  superToken_in: [Bytes!]
+  superToken_not_in: [Bytes!]
+  superToken_contains: Bytes
+  superToken_not_contains: Bytes
+  sender: Bytes
+  sender_not: Bytes
+  sender_gt: Bytes
+  sender_lt: Bytes
+  sender_gte: Bytes
+  sender_lte: Bytes
+  sender_in: [Bytes!]
+  sender_not_in: [Bytes!]
+  sender_contains: Bytes
+  sender_not_contains: Bytes
+  receiver: Bytes
+  receiver_not: Bytes
+  receiver_gt: Bytes
+  receiver_lt: Bytes
+  receiver_gte: Bytes
+  receiver_lte: Bytes
+  receiver_in: [Bytes!]
+  receiver_not_in: [Bytes!]
+  receiver_contains: Bytes
+  receiver_not_contains: Bytes
+  oldEndDate: BigInt
+  oldEndDate_not: BigInt
+  oldEndDate_gt: BigInt
+  oldEndDate_lt: BigInt
+  oldEndDate_gte: BigInt
+  oldEndDate_lte: BigInt
+  oldEndDate_in: [BigInt!]
+  oldEndDate_not_in: [BigInt!]
+  endDate: BigInt
+  endDate_not: BigInt
+  endDate_gt: BigInt
+  endDate_lt: BigInt
+  endDate_gte: BigInt
+  endDate_lte: BigInt
+  endDate_in: [BigInt!]
+  endDate_not_in: [BigInt!]
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+}
+
+enum VestingScheduleUpdatedEvent_orderBy {
+  id
+  blockNumber
+  logIndex
+  order
+  name
+  addresses
+  timestamp
+  transactionHash
+  gasPrice
+  superToken
+  sender
+  receiver
+  oldEndDate
+  endDate
+}
+
+input VestingSchedule_filter {
+  id: String
+  id_not: String
+  id_gt: String
+  id_lt: String
+  id_gte: String
+  id_lte: String
+  id_in: [String!]
+  id_not_in: [String!]
+  id_contains: String
+  id_contains_nocase: String
+  id_not_contains: String
+  id_not_contains_nocase: String
+  id_starts_with: String
+  id_starts_with_nocase: String
+  id_not_starts_with: String
+  id_not_starts_with_nocase: String
+  id_ends_with: String
+  id_ends_with_nocase: String
+  id_not_ends_with: String
+  id_not_ends_with_nocase: String
+  createdAt: BigInt
+  createdAt_not: BigInt
+  createdAt_gt: BigInt
+  createdAt_lt: BigInt
+  createdAt_gte: BigInt
+  createdAt_lte: BigInt
+  createdAt_in: [BigInt!]
+  createdAt_not_in: [BigInt!]
+  superToken: Bytes
+  superToken_not: Bytes
+  superToken_gt: Bytes
+  superToken_lt: Bytes
+  superToken_gte: Bytes
+  superToken_lte: Bytes
+  superToken_in: [Bytes!]
+  superToken_not_in: [Bytes!]
+  superToken_contains: Bytes
+  superToken_not_contains: Bytes
+  sender: Bytes
+  sender_not: Bytes
+  sender_gt: Bytes
+  sender_lt: Bytes
+  sender_gte: Bytes
+  sender_lte: Bytes
+  sender_in: [Bytes!]
+  sender_not_in: [Bytes!]
+  sender_contains: Bytes
+  sender_not_contains: Bytes
+  receiver: Bytes
+  receiver_not: Bytes
+  receiver_gt: Bytes
+  receiver_lt: Bytes
+  receiver_gte: Bytes
+  receiver_lte: Bytes
+  receiver_in: [Bytes!]
+  receiver_not_in: [Bytes!]
+  receiver_contains: Bytes
+  receiver_not_contains: Bytes
+  startDate: BigInt
+  startDate_not: BigInt
+  startDate_gt: BigInt
+  startDate_lt: BigInt
+  startDate_gte: BigInt
+  startDate_lte: BigInt
+  startDate_in: [BigInt!]
+  startDate_not_in: [BigInt!]
+  endDate: BigInt
+  endDate_not: BigInt
+  endDate_gt: BigInt
+  endDate_lt: BigInt
+  endDate_gte: BigInt
+  endDate_lte: BigInt
+  endDate_in: [BigInt!]
+  endDate_not_in: [BigInt!]
+  cliffDate: BigInt
+  cliffDate_not: BigInt
+  cliffDate_gt: BigInt
+  cliffDate_lt: BigInt
+  cliffDate_gte: BigInt
+  cliffDate_lte: BigInt
+  cliffDate_in: [BigInt!]
+  cliffDate_not_in: [BigInt!]
+  cliffAndFlowDate: BigInt
+  cliffAndFlowDate_not: BigInt
+  cliffAndFlowDate_gt: BigInt
+  cliffAndFlowDate_lt: BigInt
+  cliffAndFlowDate_gte: BigInt
+  cliffAndFlowDate_lte: BigInt
+  cliffAndFlowDate_in: [BigInt!]
+  cliffAndFlowDate_not_in: [BigInt!]
+  cliffAmount: BigInt
+  cliffAmount_not: BigInt
+  cliffAmount_gt: BigInt
+  cliffAmount_lt: BigInt
+  cliffAmount_gte: BigInt
+  cliffAmount_lte: BigInt
+  cliffAmount_in: [BigInt!]
+  cliffAmount_not_in: [BigInt!]
+  flowRate: BigInt
+  flowRate_not: BigInt
+  flowRate_gt: BigInt
+  flowRate_lt: BigInt
+  flowRate_gte: BigInt
+  flowRate_lte: BigInt
+  flowRate_in: [BigInt!]
+  flowRate_not_in: [BigInt!]
+  didEarlyEndCompensationFail: Boolean
+  didEarlyEndCompensationFail_not: Boolean
+  didEarlyEndCompensationFail_in: [Boolean!]
+  didEarlyEndCompensationFail_not_in: [Boolean!]
+  earlyEndCompensation: BigInt
+  earlyEndCompensation_not: BigInt
+  earlyEndCompensation_gt: BigInt
+  earlyEndCompensation_lt: BigInt
+  earlyEndCompensation_gte: BigInt
+  earlyEndCompensation_lte: BigInt
+  earlyEndCompensation_in: [BigInt!]
+  earlyEndCompensation_not_in: [BigInt!]
+  cliffAndFlowExpirationAt: BigInt
+  cliffAndFlowExpirationAt_not: BigInt
+  cliffAndFlowExpirationAt_gt: BigInt
+  cliffAndFlowExpirationAt_lt: BigInt
+  cliffAndFlowExpirationAt_gte: BigInt
+  cliffAndFlowExpirationAt_lte: BigInt
+  cliffAndFlowExpirationAt_in: [BigInt!]
+  cliffAndFlowExpirationAt_not_in: [BigInt!]
+  endDateValidAt: BigInt
+  endDateValidAt_not: BigInt
+  endDateValidAt_gt: BigInt
+  endDateValidAt_lt: BigInt
+  endDateValidAt_gte: BigInt
+  endDateValidAt_lte: BigInt
+  endDateValidAt_in: [BigInt!]
+  endDateValidAt_not_in: [BigInt!]
+  deletedAt: BigInt
+  deletedAt_not: BigInt
+  deletedAt_gt: BigInt
+  deletedAt_lt: BigInt
+  deletedAt_gte: BigInt
+  deletedAt_lte: BigInt
+  deletedAt_in: [BigInt!]
+  deletedAt_not_in: [BigInt!]
+  failedAt: BigInt
+  failedAt_not: BigInt
+  failedAt_gt: BigInt
+  failedAt_lt: BigInt
+  failedAt_gte: BigInt
+  failedAt_lte: BigInt
+  failedAt_in: [BigInt!]
+  failedAt_not_in: [BigInt!]
+  cliffAndFlowExecutedAt: BigInt
+  cliffAndFlowExecutedAt_not: BigInt
+  cliffAndFlowExecutedAt_gt: BigInt
+  cliffAndFlowExecutedAt_lt: BigInt
+  cliffAndFlowExecutedAt_gte: BigInt
+  cliffAndFlowExecutedAt_lte: BigInt
+  cliffAndFlowExecutedAt_in: [BigInt!]
+  cliffAndFlowExecutedAt_not_in: [BigInt!]
+  endExecutedAt: BigInt
+  endExecutedAt_not: BigInt
+  endExecutedAt_gt: BigInt
+  endExecutedAt_lt: BigInt
+  endExecutedAt_gte: BigInt
+  endExecutedAt_lte: BigInt
+  endExecutedAt_in: [BigInt!]
+  endExecutedAt_not_in: [BigInt!]
+  tasks_: Task_filter
+  events: [String!]
+  events_not: [String!]
+  events_contains: [String!]
+  events_contains_nocase: [String!]
+  events_not_contains: [String!]
+  events_not_contains_nocase: [String!]
+  events_: Event_filter
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+}
+
+enum VestingSchedule_orderBy {
+  id
+  createdAt
+  superToken
+  sender
+  receiver
+  startDate
+  endDate
+  cliffDate
+  cliffAndFlowDate
+  cliffAmount
+  flowRate
+  didEarlyEndCompensationFail
+  earlyEndCompensation
+  cliffAndFlowExpirationAt
+  endDateValidAt
+  deletedAt
+  failedAt
+  cliffAndFlowExecutedAt
+  endExecutedAt
+  tasks
+  events
+}
+
+type _Block_ {
+  """The hash of the block"""
+  hash: Bytes
+  """The block number"""
+  number: Int!
+  """Integer representation of the timestamp stored in blocks for the chain"""
+  timestamp: Int
+}
+
+"""The type for the top-level _meta field"""
+type _Meta_ {
+  """
+  Information about a specific subgraph block. The hash of the block
+  will be null if the _meta field has a block constraint that asks for
+  a block number. It will be filled if the _meta field has no block constraint
+  and therefore asks for the latest  block
+  
+  """
+  block: _Block_!
+  """The deployment ID"""
+  deployment: String!
+  """If `true`, the subgraph encountered indexing errors at some past block"""
+  hasIndexingErrors: Boolean!
+}
+
+enum _SubgraphErrorPolicy_ {
+  """Data will be returned even if the subgraph has indexing errors"""
+  allow
+  """
+  If the subgraph has indexing errors, data will be omitted. The default.
+  """
+  deny
+}

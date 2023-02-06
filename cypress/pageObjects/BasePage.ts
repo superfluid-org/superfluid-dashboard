@@ -57,7 +57,7 @@ export class BasePage {
 
     static hasText(
         selector: string,
-        text?: JQuery<HTMLElement> | string | string[]
+        text?: JQuery<HTMLElement> | string | string[] | number
     ) {
         cy.get(selector).filter(":visible").should("have.text", text);
     }
@@ -146,6 +146,12 @@ export class BasePage {
 
     static getShortenedHashAddress(hash: string, chars = 6) {
         return `${hash.slice(0, chars)}...`;
+    }
+
+    static getDayTimestamp(days:number) {
+        let today = new Date()
+        let timestamp = today.setDate(today.getDate() + days)
+        return (timestamp.valueOf() / 1000).toFixed()
     }
 
 }

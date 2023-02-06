@@ -47,22 +47,34 @@ export const CreateVestingTransactionButton: FC<{
                     superTokenAddress,
                     totalAmountEther,
                     vestingPeriod,
+                    cliffEnabled,
                   },
                 }) => {
                   const startDateTimestamp = getTimeInSeconds(startDate);
 
-                  const cliffDateTimestamp =
-                    startDateTimestamp +
-                    cliffPeriod.numerator * cliffPeriod.denominator;
+                  const cliffDateTimestamp = cliffEnabled
+                    ? startDateTimestamp +
+                      Math.round(
+                        (cliffPeriod.numerator || 0) * cliffPeriod.denominator
+                      )
+                    : 0;
 
+                  const cliffAndFlowTimestamp = cliffEnabled
+                    ? cliffDateTimestamp
+                    : startDateTimestamp;
+
+                  // Has to be rounded because of decimals
                   const endDateTimestamp =
                     startDateTimestamp +
-                    vestingPeriod.numerator * vestingPeriod.denominator;
+                    Math.round(
+                      vestingPeriod.numerator * vestingPeriod.denominator
+                    );
 
-                  const timeToFlow = endDateTimestamp - cliffDateTimestamp;
+                  const timeToFlow = endDateTimestamp - cliffAndFlowTimestamp;
 
-                  const cliffTransferAmount =
-                    parseEtherOrZero(cliffAmountEther);
+                  const cliffTransferAmount = parseEtherOrZero(
+                    cliffAmountEther || "0"
+                  );
                   const totalAmount = parseEtherOrZero(totalAmountEther);
                   const streamedAmount = totalAmount.sub(cliffTransferAmount);
                   const flowRate =
@@ -79,6 +91,7 @@ export const CreateVestingTransactionButton: FC<{
                   );
 
                   setView(CreateVestingCardView.Approving);
+
                   createVestingSchedule({
                     chainId: network.id,
                     signer,
@@ -101,7 +114,10 @@ export const CreateVestingTransactionButton: FC<{
                   setDialogSuccessActions(
                     <TransactionDialogActions>
                       <Link href="/vesting" passHref>
-                        <TransactionDialogButton data-cy="ok-button" color="primary">
+                        <TransactionDialogButton
+                          data-cy="ok-button"
+                          color="primary"
+                        >
                           OK
                         </TransactionDialogButton>
                       </Link>

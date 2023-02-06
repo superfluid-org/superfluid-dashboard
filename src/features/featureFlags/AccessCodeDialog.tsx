@@ -10,20 +10,34 @@ import {
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { ChangeEvent, FC, SyntheticEvent, useState } from "react";
+import { useRouter } from "next/router";
+import { ChangeEvent, FC, ReactElement, useState } from "react";
 import { useDispatch } from "react-redux";
 import Link from "../common/Link";
 import ResponsiveDialog from "../common/ResponsiveDialog";
-import { enableMainnetFeature } from "../flags/flags.slice";
-import { MAINNET_FEATURE_CODES } from "./FeatureFlagContext";
+import {
+  enableMainnetFeature,
+  enableVestingFeature,
+} from "../flags/flags.slice";
+import {
+  MAINNET_FEATURE_CODES,
+  VESTING_FEATURE_CODES,
+} from "./FeatureFlagContext";
 
 interface AccessCodeDialogProps {
+  title: string | ReactElement;
+  description: string | ReactElement;
   onClose: () => void;
 }
 
-const AccessCodeDialog: FC<AccessCodeDialogProps> = ({ onClose }) => {
+const AccessCodeDialog: FC<AccessCodeDialogProps> = ({
+  title,
+  description,
+  onClose,
+}) => {
   const theme = useTheme();
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const [featureCode, setFeatureCode] = useState("");
   const [isInvalidCode, setIsInvalidCode] = useState(false);
@@ -37,6 +51,10 @@ const AccessCodeDialog: FC<AccessCodeDialogProps> = ({ onClose }) => {
     if (MAINNET_FEATURE_CODES.includes(featureCode)) {
       dispatch(enableMainnetFeature());
       onClose();
+    } else if (VESTING_FEATURE_CODES.includes(featureCode)) {
+      dispatch(enableVestingFeature());
+      onClose();
+      router.push("/vesting");
     } else {
       setIsInvalidCode(true);
     }
@@ -52,7 +70,7 @@ const AccessCodeDialog: FC<AccessCodeDialogProps> = ({ onClose }) => {
       <DialogTitle sx={{ p: 4 }}>
         <Stack direction="row" alignItems="center">
           <Typography variant="h4" sx={{ mb: 3 }}>
-            Access Code
+            {title}
           </Typography>
           <IconButton
             onClick={onClose}
@@ -65,25 +83,15 @@ const AccessCodeDialog: FC<AccessCodeDialogProps> = ({ onClose }) => {
             <CloseRoundedIcon />
           </IconButton>
         </Stack>
-        <Typography>
-          Enter your access code to unlock Ethereum Mainnet.
-        </Typography>
-        <Typography>
-          Apply for the access code{" "}
-          <Link
-            href="https://use.superfluid.finance/ethmainnet"
-            target="_blank"
-          >
-            here
-          </Link>
-          .
-        </Typography>
+        {description}
       </DialogTitle>
       <DialogContent sx={{ px: 4, pb: 4 }}>
         <Stack gap={2}>
           {isInvalidCode && (
             <Alert data-cy="access-code-error" severity="error">
-              <AlertTitle data-cy={"access-code-error-msg"}>Invalid Access Code!</AlertTitle>
+              <AlertTitle data-cy={"access-code-error-msg"}>
+                Invalid Access Code!
+              </AlertTitle>
             </Alert>
           )}
           <TextField
@@ -92,6 +100,7 @@ const AccessCodeDialog: FC<AccessCodeDialogProps> = ({ onClose }) => {
             placeholder="Enter Access Code"
             variant="outlined"
             onChange={onFeatureCodeChange}
+            autoComplete="off"
           />
           <Button
             data-cy={"submit-access-code"}

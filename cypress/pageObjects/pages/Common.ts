@@ -45,6 +45,7 @@ const CLOSE_BUTTON = "[data-testid=CloseRoundedIcon]"
 const ACCESS_CODE_DIALOG = "[data-cy=access-code-dialog]"
 const ACCESS_CODE_ERROR = "[data-cy=access-code-error]"
 const ACCESS_CODE_MESSAGE = "[data-cy=access-code-error-msg]"
+const VESTING_ACCESS_CODE_BUTTON = "[data-cy=more-vesting-code-btn]"
 
 export class Common extends BasePage {
     static clickNavBarButton(button: string) {
@@ -58,10 +59,10 @@ export class Common extends BasePage {
         network?: string
     ) {
         cy.fixture("streamData").then(streamData => {
-
+            cy.fixture("vestingData").then(vestingData => {
             switch (page.toLowerCase()) {
                 case "dashboard page":
-                    this.visitPage(`/${Cypress.env("vesting")}`, mocked, account, network);
+                    this.visitPage(`/`, mocked, account, network);
                     break;
                 case "wrap page":
                     this.visitPage("/wrap", mocked, account, network);
@@ -96,9 +97,16 @@ export class Common extends BasePage {
                 case "close-ended stream details page":
                     this.visitPage(streamData["accountWithLotsOfData"]["goerli"][0].v2Link, mocked, account, network);
                     break;
+                case "vesting details page":
+                    this.visitPage(`/vesting/goerli/${vestingData.goerli.fUSDCx.schedule.id}`)
+                    break;
+                case "vesting stream details page":
+                    this.visitPage(`/stream/polygon/${vestingData.polygon.USDCx.vestingStream.id}`)
+                    break;
                 default:
                     throw new Error(`Hmm, you haven't set up the link for : ${page}`);
             }
+            })
         })
         if (Cypress.env("dev")) {
             //The nextjs error is annoying when developing test cases in dev mode
@@ -144,7 +152,7 @@ export class Common extends BasePage {
 
         let networkRpc = networksBySlug.get(selectedNetwork)?.rpcUrls.superfluid
 
-        cy.visit(`/${Cypress.env("vesting")}`, {
+        cy.visit(`/`, {
             onBeforeLoad: (win: any) => {
                 const hdwallet = new HDWalletProvider({
                     privateKeys: [Cypress.env(`TX_ACCOUNT_PRIVATE_KEY${chosenPersona}`)],
@@ -175,6 +183,12 @@ export class Common extends BasePage {
             this.click(NAVIGATION_MORE_BUTTON)
             this.click(ACCESS_CODE_BUTTON)
             this.type(ACCESS_CODE_INPUT ,"724ZX_ENS")
+            this.click(ACCESS_CODE_SUBMIT)
+        }
+        if(Cypress.env("vesting")) {
+            this.click(NAVIGATION_MORE_BUTTON)
+            this.click(VESTING_ACCESS_CODE_BUTTON)
+            this.type(ACCESS_CODE_INPUT ,"98S_VEST")
             this.click(ACCESS_CODE_SUBMIT)
         }
         this.changeNetwork(selectedNetwork)

@@ -902,6 +902,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         styleOverrides: {
           root: {
             borderRadius: "12px",
+            border: "none",
+          },
+          outlined: {
+            border: "1px solid",
           },
           message: {
             overflow: "visible",

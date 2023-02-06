@@ -24,9 +24,13 @@ import TransferActivityRow from "./TransferActivityRow";
 
 interface ActivityRowProps {
   activity: Activities;
+  dateFormat?: string;
 }
 
-const ActivityRow: FC<ActivityRowProps> = ({ activity }) => {
+const ActivityRow: FC<ActivityRowProps> = ({
+  activity,
+  dateFormat = "HH:mm",
+}) => {
   const { keyEvent, network } = activity;
 
   switch (keyEvent.name) {
@@ -39,6 +43,7 @@ const ActivityRow: FC<ActivityRowProps> = ({ activity }) => {
           transferEvent={transferEvent}
           tokenUpgradedEvent={tokenUpgradedEvent}
           network={network}
+          dateFormat={dateFormat}
         />
       );
     }
@@ -53,12 +58,19 @@ const ActivityRow: FC<ActivityRowProps> = ({ activity }) => {
           transferEvent={transferEvent}
           tokenDowngradedEvent={tokenDowngradedEvent}
           network={network}
+          dateFormat={dateFormat}
         />
       );
     }
 
     case "FlowUpdated":
-      return <FlowUpdatedActivityRow keyEvent={keyEvent} network={network} />;
+      return (
+        <FlowUpdatedActivityRow
+          keyEvent={keyEvent}
+          network={network}
+          dateFormat={dateFormat}
+        />
+      );
 
     case "AgreementLiquidatedBy":
     case "AgreementLiquidatedV2": {
@@ -69,15 +81,28 @@ const ActivityRow: FC<ActivityRowProps> = ({ activity }) => {
           keyEvent={keyEvent}
           flowUpdatedEvent={flowUpdatedEvent}
           network={network}
+          dateFormat={dateFormat}
         />
       );
     }
 
     case "IndexCreated":
-      return <IndexCreatedActivityRow keyEvent={keyEvent} network={network} />;
+      return (
+        <IndexCreatedActivityRow
+          keyEvent={keyEvent}
+          network={network}
+          dateFormat={dateFormat}
+        />
+      );
 
     case "IndexUpdated":
-      return <IndexUpdatedActivityRow keyEvent={keyEvent} network={network} />;
+      return (
+        <IndexUpdatedActivityRow
+          keyEvent={keyEvent}
+          network={network}
+          dateFormat={dateFormat}
+        />
+      );
 
     case "IndexSubscribed": {
       const { subscriptionApprovedEvent } =
@@ -88,6 +113,7 @@ const ActivityRow: FC<ActivityRowProps> = ({ activity }) => {
           keyEvent={keyEvent}
           subscriptionApprovedEvent={subscriptionApprovedEvent}
           network={network}
+          dateFormat={dateFormat}
         />
       );
     }
@@ -101,6 +127,7 @@ const ActivityRow: FC<ActivityRowProps> = ({ activity }) => {
           keyEvent={keyEvent}
           subscriptionRevokedEvent={subscriptionRevokedEvent}
           network={network}
+          dateFormat={dateFormat}
         />
       );
     }
@@ -114,6 +141,7 @@ const ActivityRow: FC<ActivityRowProps> = ({ activity }) => {
           keyEvent={keyEvent}
           subscriptionDistributionClaimed={subscriptionDistributionClaimed}
           network={network}
+          dateFormat={dateFormat}
         />
       );
     }
@@ -127,15 +155,28 @@ const ActivityRow: FC<ActivityRowProps> = ({ activity }) => {
           keyEvent={keyEvent}
           subscriptionUnitsUpdatedEvent={subscriptionUnitsUpdatedEvent}
           network={network}
+          dateFormat={dateFormat}
         />
       );
     }
 
     case "Transfer":
-      return <TransferActivityRow keyEvent={keyEvent} network={network} />;
+      return (
+        <TransferActivityRow
+          keyEvent={keyEvent}
+          network={network}
+          dateFormat={dateFormat}
+        />
+      );
 
     default:
-      return <DefaultActivityRow keyEvent={keyEvent} network={network} />;
+      return (
+        <DefaultActivityRow
+          keyEvent={keyEvent}
+          network={network}
+          dateFormat={dateFormat}
+        />
+      );
   }
 };
 

@@ -1,4 +1,4 @@
-query poll($block: Block_height) {
+query poll($block: Block_height!) {
   events(block: $block, first: 1) {
     order
   }

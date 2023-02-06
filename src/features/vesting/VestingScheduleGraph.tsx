@@ -2,17 +2,12 @@ import { Stack, Typography } from "@mui/material";
 import { format } from "date-fns";
 import Decimal from "decimal.js";
 import { BigNumber, BigNumberish } from "ethers";
-import {
-  FC,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { FC, useEffect, useRef, useState } from "react";
 
 export interface VestingScheduleGraphProps {
   startDate: Date;
   endDate: Date;
-  cliffDate: Date;
+  cliffDate?: Date;
   cliffAmount: BigNumberish;
   totalAmount: BigNumberish;
 }
@@ -30,7 +25,9 @@ export const VestingScheduleGraph: FC<VestingScheduleGraphProps> = ({
   const [cliffLabelX, setCliffLabelX] = useState(0);
 
   const totalSeconds = endDate.getTime() - startDate.getTime();
-  const cliffSeconds = cliffDate.getTime() - startDate.getTime();
+  const cliffSeconds = cliffDate
+    ? cliffDate.getTime() - startDate.getTime()
+    : 0;
   const cliffRatio = cliffSeconds / totalSeconds;
 
   const amountPercentage = new Decimal(BigNumber.from(cliffAmount).toString())
@@ -74,28 +71,31 @@ export const VestingScheduleGraph: FC<VestingScheduleGraphProps> = ({
           </linearGradient>
         </defs>
 
-        <line
-          ref={cliffRef}
-          x1={194 * cliffRatio}
-          y1={96 - 96 * amountPercentage}
-          x2={194 * cliffRatio}
-          y2="3"
-          stroke="#12141E61"
-          strokeWidth="3"
-          strokeDasharray="6"
-          vectorEffect="non-scaling-stroke"
-        />
+        {cliffDate && (
+          <line
+            ref={cliffRef}
+            x1={194 * cliffRatio}
+            y1={96 - 96 * amountPercentage}
+            x2={194 * cliffRatio}
+            y2="3"
+            stroke="#12141E61"
+            strokeWidth="3"
+            strokeDasharray="6"
+            vectorEffect="non-scaling-stroke"
+          />
+        )}
 
         <path
-          d={`M 3 97 H ${194 * cliffRatio} V ${
-            96 - 96 * amountPercentage
-          } L 197 3`}
+          d={`M 3 97 ${
+            cliffDate
+              ? `H ${194 * cliffRatio} V ${96 - 96 * amountPercentage} `
+              : ""
+          }L 197 3`}
           stroke="#10BB35"
           strokeWidth="3"
           strokeLinecap="round"
           vectorEffect="non-scaling-stroke"
         />
-
         <path
           d={`M ${194 * cliffRatio} 98 V ${
             96 - 96 * amountPercentage
@@ -104,25 +104,35 @@ export const VestingScheduleGraph: FC<VestingScheduleGraphProps> = ({
           fill="url(#vesting-graph-gradient)"
         />
       </svg>
-      <Typography
-        data-cy={"graph-cliff-date"}
-        variant="body2"
-        color="text.disabled"
-        sx={{
-          position: "absolute",
-          top: 0,
-          ...(cliffLabelX > 45
-            ? { right: `calc(${100 - cliffLabelX}% + 8px)` }
-            : { left: `calc(${cliffLabelX}% + 8px)` }),
-        }}
-      >
-        Cliff: {format(cliffDate, "LLL d, yyyy HH:mm")}
-      </Typography>
+      {cliffDate && (
+        <Typography
+          data-cy={"graph-cliff-date"}
+          variant="body2"
+          color="text.disabled"
+          sx={{
+            position: "absolute",
+            top: 0,
+            ...(cliffLabelX > 45
+              ? { right: `calc(${100 - cliffLabelX}% + 8px)` }
+              : { left: `calc(${cliffLabelX}% + 8px)` }),
+          }}
+        >
+          Cliff: {format(cliffDate, "LLL d, yyyy HH:mm")}
+        </Typography>
+      )}
       <Stack direction="row" justifyContent="space-between" sx={{ mx: 0.75 }}>
-        <Typography data-cy={"graph-start-date"} variant="body2" color="text.disabled">
+        <Typography
+          data-cy={"graph-start-date"}
+          variant="body2"
+          color="text.disabled"
+        >
           Start: {format(startDate, "LLL d, yyyy HH:mm")}
         </Typography>
-        <Typography data-cy={"graph-end-date"} variant="body2" color="text.disabled">
+        <Typography
+          data-cy={"graph-end-date"}
+          variant="body2"
+          color="text.disabled"
+        >
           End: {format(endDate, "LLL d, yyyy HH:mm")}
         </Typography>
       </Stack>

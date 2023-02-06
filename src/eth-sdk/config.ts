@@ -1,13 +1,45 @@
 import { defineConfig } from "@dethcrypto/eth-sdk";
 import { networkDefinition } from "../features/network/networks";
 
-export default defineConfig({
+const ethSdkConfig = defineConfig({
   contracts: {
     goerli: {
-      flowScheduler: networkDefinition.goerli.flowSchedulerContractAddress,
-      vestingScheduler:
-        networkDefinition.goerli.vestingSchedulerContractAddress,
+      flowScheduler: networkDefinition.goerli.flowSchedulerContractAddress, // Goerli used as source of truth for the ABI of Flow Scheduler. 
+    },
+    mainnet: {
+      vestingScheduler: networkDefinition.ethereum.vestingContractAddress // Mainnet used as source of truth for the ABI of Vesting Scheduler. 
     }
   },
   outputPath: "./src/eth-sdk/client",
 });
+
+export default ethSdkConfig;
+
+// For historical purposes: a solutions for `contracts` which generates the SDK for every network.
+// Object.entries(networkDefinition).reduce(
+//   (previousValue, [networkName, network]) => {
+//     const networkContracts = {
+//       ...(!isUndefined(network.flowSchedulerContractAddress)
+//         ? { flowScheduler: network.flowSchedulerContractAddress }
+//         : {}),
+//       ...(!isUndefined(network.vestingContractAddress)
+//         ? { vestingScheduler: network.vestingContractAddress }
+//         : {}),
+//     };
+
+//     if (Object.keys(networkContracts).length) {
+//       const networkSymbol = networkIDtoSymbol[network.id as NetworkID];
+//       if (!networkSymbol)
+//         throw new Error(
+//           "Eth-Sdk does not have pre-defined support for this network. You have to handle it somehow... https://github.com/dethcrypto/eth-sdk"
+//         );
+//       previousValue[networkSymbol] = networkContracts;
+//     }
+
+//     return previousValue;
+//   },
+//   {} as Record<
+//     string,
+//     { flowScheduler?: `0x${string}`; vestingScheduler?: `0x${string}` }
+//   >
+// )

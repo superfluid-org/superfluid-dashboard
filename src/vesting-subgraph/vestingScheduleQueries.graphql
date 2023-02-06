@@ -1,0 +1,42 @@
+query getVestingSchedule($id: ID!) {
+  vestingSchedule(id: $id) {
+    ...VestingSchedulePart
+  }
+}
+
+query getVestingSchedules(
+  $where: VestingSchedule_filter = {}
+  $orderBy: VestingSchedule_orderBy = id
+  $orderDirection: OrderDirection = asc
+) {
+  vestingSchedules(
+    first: 1000
+    where: $where
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+  ) {
+    ...VestingSchedulePart
+  }
+}
+
+fragment VestingSchedulePart on VestingSchedule {
+  id
+  superToken
+  sender
+  receiver
+  flowRate
+  createdAt
+  deletedAt
+  startDate
+  cliffDate
+  cliffAndFlowExecutedAt
+  cliffAndFlowExpirationAt
+  cliffAndFlowDate
+  cliffAmount
+  endDate
+  endDateValidAt
+  endExecutedAt
+  failedAt
+  didEarlyEndCompensationFail
+  earlyEndCompensation
+}

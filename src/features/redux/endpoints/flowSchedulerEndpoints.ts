@@ -9,9 +9,9 @@ import {
   TransactionInfo,
   TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
+import { getFlowScheduler } from "../../../eth-sdk/getEthSdk";
 import { findNetworkByChainId } from "../../network/networks";
 import { rpcApi } from "../store";
-import { getEthSdk } from "../../../eth-sdk/getEthSdk";
 
 export const ACL_CREATE_PERMISSION = 1;
 export const ACL_UPDATE_PERMISSION = 2;
@@ -40,7 +40,7 @@ export const flowSchedulerEndpoints = {
         receiverAddress,
       }) => {
         const framework = await getFramework(chainId);
-        const { flowScheduler } = getEthSdk(
+        const flowScheduler = getFlowScheduler(
           chainId,
           framework.settings.provider
         );
@@ -48,7 +48,7 @@ export const flowSchedulerEndpoints = {
         const flowSchedule = await flowScheduler.getFlowSchedule(
           superTokenAddress,
           senderAddress,
-          receiverAddress,
+          receiverAddress
         );
 
         return { data: flowSchedule.endDate };
@@ -89,86 +89,87 @@ export const flowSchedulerEndpoints = {
           title: TransactionTitle;
         }[] = [];
 
-        const network = findNetworkByChainId(chainId);
-        if (network?.flowSchedulerContractAddress) {
-          const { flowScheduler } = getEthSdk(chainId, arg.signer);
-          const existingEndTimestamp = await dispatch(
-            rpcApi.endpoints.scheduledEndDate.initiate(
-              {
-                chainId,
-                superTokenAddress: arg.superTokenAddress,
-                senderAddress: arg.senderAddress,
-                receiverAddress: arg.receiverAddress,
-              },
-              {
-                subscribe: false,
-              }
-            )
-          ).unwrap();
+        // const network = findNetworkByChainId(chainId);
+        // TODO(KK): Uncomment & implement again when stream scheduling is handled.
+        // if (network?.flowSchedulerContractAddress) {
+        //   const flowScheduler = getFlowScheduler(chainId, arg.signer);
+        //   const existingEndTimestamp = await dispatch(
+        //     rpcApi.endpoints.scheduledEndDate.initiate(
+        //       {
+        //         chainId,
+        //         superTokenAddress: arg.superTokenAddress,
+        //         senderAddress: arg.senderAddress,
+        //         receiverAddress: arg.receiverAddress,
+        //       },
+        //       {
+        //         subscribe: false,
+        //       }
+        //     )
+        //   ).unwrap();
 
-          if (arg.endTimestamp) {
-            const flowOperatorData = await superToken.getFlowOperatorData({
-              flowOperator: network.flowSchedulerContractAddress,
-              sender: arg.senderAddress,
-              providerOrSigner: arg.signer,
-            });
+        //   if (arg.endTimestamp) {
+        //     const flowOperatorData = await superToken.getFlowOperatorData({
+        //       flowOperator: network.flowSchedulerContractAddress,
+        //       sender: arg.senderAddress,
+        //       providerOrSigner: arg.signer,
+        //     });
 
-            const permissions = Number(flowOperatorData.permissions);
-            const hasDeletePermission = permissions & ACL_DELETE_PERMISSION;
-            if (!hasDeletePermission) {
-              subOperations.push({
-                operation: await superToken.updateFlowOperatorPermissions({
-                  flowOperator: network.flowSchedulerContractAddress,
-                  flowRateAllowance: flowOperatorData.flowRateAllowance,
-                  permissions: permissions + ACL_DELETE_PERMISSION,
-                  userData: userData,
-                  overrides: arg.overrides,
-                }),
-                title: "Approve Scheduler for End Date",
-              });
-            }
+        //     const permissions = Number(flowOperatorData.permissions);
+        //     const hasDeletePermission = permissions & ACL_DELETE_PERMISSION;
+        //     if (!hasDeletePermission) {
+        //       subOperations.push({
+        //         operation: await superToken.updateFlowOperatorPermissions({
+        //           flowOperator: network.flowSchedulerContractAddress,
+        //           flowRateAllowance: flowOperatorData.flowRateAllowance,
+        //           permissions: permissions + ACL_DELETE_PERMISSION,
+        //           userData: userData,
+        //           overrides: arg.overrides,
+        //         }),
+        //         title: "Approve Scheduler for End Date",
+        //       });
+        //     }
 
-            if (arg.endTimestamp !== existingEndTimestamp) {
-              const streamOrder =
-                await flowScheduler.populateTransaction.createFlowSchedule(
-                  arg.superTokenAddress,
-                  arg.receiverAddress,
-                  0, // startDate
-                  0, // startDuration
-                  0, // flowRate
-                  0, // startAmount
-                  arg.endTimestamp,
-                  userData,
-                  "0x",
-                  arg.overrides ?? {}
-                );
+        //     if (arg.endTimestamp !== existingEndTimestamp) {
+        //       const streamOrder =
+        //         await flowScheduler.populateTransaction.createFlowSchedule(
+        //           arg.superTokenAddress,
+        //           arg.receiverAddress,
+        //           0, // startDate
+        //           0, // startDuration
+        //           0, // flowRate
+        //           0, // startAmount
+        //           arg.endTimestamp,
+        //           userData,
+        //           "0x",
+        //           arg.overrides ?? {}
+        //         );
 
-              subOperations.push({
-                operation: await framework.host.callAppAction(
-                  network.flowSchedulerContractAddress,
-                  streamOrder.data!
-                ),
-                title: "Schedule Stream End Date",
-              });
-            }
-          } else {
-            if (existingEndTimestamp) {
-              const streamOrder =
-                await flowScheduler.populateTransaction.deleteFlowSchedule(
-                  arg.superTokenAddress,
-                  arg.receiverAddress,
-                  "0x"
-                );
-              subOperations.push({
-                operation: await framework.host.callAppAction(
-                  network.flowSchedulerContractAddress,
-                  streamOrder.data!
-                ),
-                title: "Remove Stream End Date",
-              });
-            }
-          }
-        }
+        //       subOperations.push({
+        //         operation: await framework.host.callAppAction(
+        //           network.flowSchedulerContractAddress,
+        //           streamOrder.data!
+        //         ),
+        //         title: "Schedule Stream End Date",
+        //       });
+        //     }
+        //   } else {
+        //     if (existingEndTimestamp) {
+        //       const streamOrder =
+        //         await flowScheduler.populateTransaction.deleteFlowSchedule(
+        //           arg.superTokenAddress,
+        //           arg.receiverAddress,
+        //           "0x"
+        //         );
+        //       subOperations.push({
+        //         operation: await framework.host.callAppAction(
+        //           network.flowSchedulerContractAddress,
+        //           streamOrder.data!
+        //         ),
+        //         title: "Remove Stream End Date",
+        //       });
+        //     }
+        //   }
+        // }
 
         const flowArg = {
           userData,

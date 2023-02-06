@@ -24,10 +24,16 @@ import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
 
-const IndexDistributionClaimedRow: FC<IndexDistributionClaimedActivity> = ({
+interface IndexDistributionClaimedRowProps
+  extends IndexDistributionClaimedActivity {
+  dateFormat?: string;
+}
+
+const IndexDistributionClaimedRow: FC<IndexDistributionClaimedRowProps> = ({
   keyEvent,
   subscriptionDistributionClaimed,
   network,
+  dateFormat = "HH:mm",
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -56,7 +62,7 @@ const IndexDistributionClaimedRow: FC<IndexDistributionClaimedActivity> = ({
           />
           <ListItemText
             primary="Distribution Claimed"
-            secondary={format(timestamp * 1000, "HH:mm")}
+            secondary={format(timestamp * 1000, dateFormat)}
             primaryTypographyProps={{
               variant: isBelowMd ? "h7" : "h6",
               translate: "yes",

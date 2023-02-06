@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { NextPage } from "next";
 import Link from "next/link";
+import { Fragment } from "react";
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import { EcosystemApp } from "../features/ecosystem/EcosystemItem";
 import EcosystemSection from "../features/ecosystem/EcosystemSection";
@@ -51,9 +52,7 @@ const AUTOMATE_CRYPTO_VESTING: EcosystemApp[] = [
     href: `https://www.tokenops.xyz/`,
     icon: "/icons/ecosystem/tokenops.svg",
     description: `Create, track, and automate token vesting schedules`,
-    chains: [
-      networkDefinition.polygon.id,
-    ],
+    chains: [networkDefinition.polygon.id],
     colors: {
       primary: "#2D6DEC",
       secondary: "#8F98F4",
@@ -85,23 +84,37 @@ const INVEST_IN_REALTIME: EcosystemApp[] = [
       secondary: "#254D5A",
     },
   },
-    {
-      name: "aqueduct",
-      href: "https://aqueductfinance.vercel.app/",
-      description: `A real-time DEX where you can swap and earn tokens every second`,
-      icon: "/icons/ecosystem/aqueduct.png",
-      chains: [
-        networkDefinition.arbitrum.id,
-        networkDefinition.avalancheC.id,
-        networkDefinition.gnosis.id,
-        networkDefinition.optimism.id,
-        networkDefinition.polygon.id,
-        networkDefinition.bsc.id,
-      ],    
-      comingSoon: true,
-      colors: {
-        primary: "#1F4276",
-        secondary: "#0460CE",
+  {
+    name: "aqueduct",
+    href: "https://aqueductfinance.vercel.app/",
+    description: `A real-time DEX where you can swap and earn tokens every second`,
+    icon: "/icons/ecosystem/aqueduct.png",
+    chains: [
+      networkDefinition.arbitrum.id,
+      networkDefinition.avalancheC.id,
+      networkDefinition.gnosis.id,
+      networkDefinition.optimism.id,
+      networkDefinition.polygon.id,
+      networkDefinition.bsc.id,
+    ],
+    comingSoon: true,
+    colors: {
+      primary: "#1F4276",
+      secondary: "#0460CE",
+    },
+  },
+];
+
+const PLAY_WEB3_GAMES: EcosystemApp[] = [
+  {
+    name: "Planet IX",
+    href: "https://planetix.com",
+    icon: "/icons/ecosystem/planetix.png",
+    description: `NFT-based strategy game`,
+    chains: [networkDefinition.polygon.id],
+    colors: {
+      primary: "#FF6647",
+      secondary: "#000000",
     },
   },
 ];
@@ -304,9 +317,7 @@ const OTHER_APPS_BUILT_ON_SUPERFLUID: EcosystemApp[] = [
     href: "https://www.geoweb.network/",
     icon: "/icons/ecosystem/geoweb.svg",
     description: `AR layer anchoring digital content to physical locations`,
-    chains: [
-      networkDefinition.optimism.id,
-    ],
+    chains: [networkDefinition.optimism.id],
     colors: {
       primary: "#4B5588",
       secondary: "#2FC1C1",
@@ -405,6 +416,10 @@ const ECOSYSTEM_SECTIONS: SectionConf[] = [
     apps: INVEST_IN_REALTIME,
   },
   {
+    title: "Play Web3 Games",
+    apps: PLAY_WEB3_GAMES,
+  },
+  {
     title: "Bridge & Exchange",
     apps: BRIDGE_AND_EXCHANGE,
   },
@@ -466,10 +481,10 @@ const Ecosystem: NextPage = () => {
         </Stack>
 
         {ECOSYSTEM_SECTIONS.map((section) => (
-          <>
+          <Fragment key={section.title}>
             <Divider />
             <EcosystemSection title={section.title} apps={section.apps} />
-          </>
+          </Fragment>
         ))}
       </Stack>
     </Container>

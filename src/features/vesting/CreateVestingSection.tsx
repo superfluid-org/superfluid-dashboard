@@ -104,7 +104,13 @@ export const CreateVestingSection: FC<PropsWithChildren> = () => {
       {(view === CreateVestingCardView.Preview ||
         view === CreateVestingCardView.Approving ||
         view === CreateVestingCardView.Success) &&
-        token && <CreateVestingPreview token={token} setView={setView} />}
+        token && (
+          <CreateVestingPreview
+            token={token}
+            network={network}
+            setView={setView}
+          />
+        )}
     </>
   );
 };

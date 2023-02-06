@@ -28,7 +28,7 @@
         "totalAmountStreamed": "0.00009722 ",
         "startDate": "13 Aug. 2021 11:04",
         "endDate": "13 Aug. 2021 11:07",
-        "cancelledMessage": "Cancelled on 13 August 2021 at 11:07 am",
+        "cancelledMessage": "Cancelled on 13 August 2021 at 11:07",
         "projectedLiquidation": "-",
         "buffer": "-",
         "v2Link": "/stream/polygon/0x384bec1faf849929dcce6b293f7bee432f2a299cc9afc6750179dc96dd81b8ff-211",

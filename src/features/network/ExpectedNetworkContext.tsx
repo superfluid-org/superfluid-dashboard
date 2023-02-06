@@ -4,7 +4,6 @@ import {
   createContext,
   FC,
   PropsWithChildren,
-  ReactNode,
   useContext,
   useEffect,
   useMemo,
@@ -12,7 +11,7 @@ import {
 } from "react";
 import { useNetwork } from "wagmi";
 import { useAvailableNetworks } from "./AvailableNetworksContext";
-import { Network, networksByChainId, networksBySlug } from "./networks";
+import { Network } from "./networks";
 
 /**
  * "Expected" points to expected wallet network.

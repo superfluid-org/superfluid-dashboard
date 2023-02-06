@@ -297,6 +297,23 @@ export const OTHER_APPS_BUILT_ON_SUPERFLUID = [
     },
 ];
 
+export const PLAY_WEB3_GAMES = [
+    {
+        name: "Planet IX",
+        href: "https://planetix.com",
+        icon: "/icons/ecosystem/planetix.png",
+        description: `NFT-based strategy game`,
+        chains: [
+            networkDefinition.polygon.id,
+        ],
+        colors: {
+            primary: "#FF6647",
+            secondary: "#000000",
+        },
+    },
+];
+
+
 export const SUPPORTS_SUPER_TOKENS = [
     {
         name: "Minerva",
