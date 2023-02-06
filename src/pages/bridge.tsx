@@ -40,10 +40,6 @@ const Bridge: NextPage = () => {
   const { openConnectModal } = useConnectButton();
   const { availableNetworks } = useAvailableNetworks();
 
-  console.log({
-    isEOA
-  })
-
   const lifi = useMemo(() => new LIFI(), []);
   const featuredTokens = useFeaturedTokens(lifi);
   const widgetConfig: WidgetConfig = useMemo(
