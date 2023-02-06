@@ -3,6 +3,7 @@ import { useCallback, useContext } from "react";
 import { serialize } from "wagmi";
 import * as Sentry from "@sentry/react";
 import { AnalyticsContext } from "./AnalyticsProvider";
+import { AnalyticsTransactionNames } from "./AnalyticsTxNames";
 
 export const useAnalytics = () => {
     const { analyticsBrowser, instanceDetails } = useContext(AnalyticsContext);
@@ -12,7 +13,7 @@ export const useAnalytics = () => {
   
     const txAnalytics = useCallback(
       // "Primary Args" are meant as the main serializable arguments passed to the mutation.
-      (txName: string, primaryArgs: unknown) => {
+      (txName: AnalyticsTransactionNames, primaryArgs: unknown) => {
         const ensureSafeSerializationOfArgs = (): Record<string, unknown> => {
           try {
             return JSON.parse(serialize(primaryArgs));
