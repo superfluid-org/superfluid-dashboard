@@ -9,6 +9,6 @@ Before({ tags: "@rejected" }, function () {
 });
 
 //Enable hidden vesting feature
-Before({ tags: "@vesting" }, function () {
+Before({ tags: "@vesting and not @NoCode" }, function () {
     Cypress.env("vesting" , true)
 });

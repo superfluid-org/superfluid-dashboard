@@ -61,7 +61,9 @@ const SCHEDULE_CLIFF_START = "[data-cy=cliff-start]"
 const SCHEDULE_CLIFF_END = "[data-cy=cliff-end]"
 const SCHEDULE_VESTING_START = "[data-cy=vesting-start]"
 const SCHEDULE_VESTING_END = "[data-cy=vesting-end]"
-
+const ACCESS_CODE_BUTTON = "[data-cy=vesting-code-button]"
+const TRY_GOERLI_BUTTON = "[data-cy=try-on-goerli-button]"
+const VESTING_FORM_LINK = "[data-cy=vesting-form-link]"
 
 //Strings
 const NO_CREATED_TITLE_STRING = "No Sent Vesting Schedules"
@@ -514,5 +516,28 @@ export class VestingPage extends BasePage {
             this.hasText(`[data-cy=${stream.token.symbol}-total-allocated]` , `${schedule.totalAllocated} ${stream.token.symbol}`)
             this.containsText(`[data-cy=${stream.token.symbol}-total-vested]` , totalVestedAmount )
         })
+    }
+
+    static validateNoCodeUnlockScreen() {
+        cy.contains("Unlock Vesting with Superfluid").should("be.visible")
+        cy.contains("Provide your Access Code or try out Vesting Schedule on Goerli Testnet.").should("be.visible")
+        this.hasAttributeWithValue(VESTING_FORM_LINK,"href","https://use.superfluid.finance/vesting")
+        this.isVisible(ACCESS_CODE_BUTTON)
+        this.isVisible(TRY_GOERLI_BUTTON)
+    }
+
+    static clickOnTryOnGoerliButton() {
+        this.click(TRY_GOERLI_BUTTON)
+    }
+
+    static clickInputAccessCodeButton() {
+        this.click(ACCESS_CODE_BUTTON)
+    }
+
+    static validateVestingFormIsVisible() {
+        this.isVisible(CLIFF_TOGGLE)
+        this.isVisible(TOTAL_AMOUNT_INPUT)
+        this.isVisible(TOTAL_PERIOD_INPUT)
+        this.isVisible(PREVIEW_SCHEDULE_BUTTON)
     }
 }

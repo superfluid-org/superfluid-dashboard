@@ -172,19 +172,20 @@ const UnlockVestingCard = () => {
         alignItems="stretch"
       >
         <Button
+          data-cy={"vesting-code-button"}
           variant="contained"
           size="large"
           onClick={openVestingAccessCodeDialog}
         >
           Enter Access Code
         </Button>
-        <Button variant="outlined" size="large" onClick={switchToGoerli}>
+        <Button data-cy={"try-on-goerli-button"} variant="outlined" size="large" onClick={switchToGoerli}>
           Try out on Goerli Testnet
         </Button>
       </Stack>
       <Typography variant="body1" color="text.secondary">
         Want to Vest tokens? Apply for the access code{" "}
-        <Link href="https://use.superfluid.finance/vesting" target="_blank">
+        <Link data-cy="vesting-form-link" href="https://use.superfluid.finance/vesting" target="_blank">
           here
         </Link>
         .
