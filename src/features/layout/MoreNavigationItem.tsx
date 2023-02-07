@@ -13,8 +13,8 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
-import PrimaryLink from "../common/Link";
 import { FC, MouseEvent, useState } from "react";
+import PrimaryLink from "../common/Link";
 import { useLayoutContext } from "./LayoutContext";
 
 interface MenuItemImageProps {
@@ -68,20 +68,6 @@ const MoreNavigationItem: FC = () => {
             .
           </Typography>
         </>
-      ),
-    });
-  };
-
-  const openVestingAccessCodeDialog = () => {
-    closeMoreMenu();
-    setAccessCodeDialogContent({
-      title: "Access Vesting",
-      description: (
-        <Typography>
-          Unlock Vesting by entering your unique access code. With this feature,
-          you&apos;ll be able to set up vesting schedules and track your vesting
-          assets.
-        </Typography>
       ),
     });
   };
@@ -184,16 +170,6 @@ const MoreNavigationItem: FC = () => {
             <QrCodeRoundedIcon sx={{ color: theme.palette.text.primary }} />
           </ListItemIcon>
           <ListItemText>Access Ethereum Mainnet</ListItemText>
-        </ListItemButton>
-
-        <ListItemButton
-            data-cy={"more-vesting-code-btn"}
-            onClick={openVestingAccessCodeDialog}
-        >
-          <ListItemIcon>
-            <QrCodeRoundedIcon sx={{ color: theme.palette.text.primary }} />
-          </ListItemIcon>
-          <ListItemText>Access Vesting</ListItemText>
         </ListItemButton>
       </Popover>
     </>
