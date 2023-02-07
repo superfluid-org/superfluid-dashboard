@@ -37,6 +37,10 @@ export const DEFAULT_LINE_CHART_OPTIONS: ChartOptions<"line"> = {
       grace: 0,
     },
   },
+  animation: {
+    duration: 500,
+    easing: "easeInOutCubic",
+  },
 };
 
 export const createCTXGradient = (
@@ -70,10 +74,7 @@ export function estimateFrequencyByTimestamp(
   startUnix: number,
   endUnix: number
 ): UnitOfTime {
-  return estimateFrequency(
-    fromUnixTime(startUnix),
-    fromUnixTime(endUnix)
-  );
+  return estimateFrequency(fromUnixTime(startUnix), fromUnixTime(endUnix));
 }
 
 export function estimateFrequency(startDate: Date, endDate: Date): UnitOfTime {
