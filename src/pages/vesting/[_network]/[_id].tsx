@@ -409,10 +409,6 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
   );
 };
 
-VestingScheduleDetailsPage.getLayout = (page: ReactElement) => (
-  <VestingLayout>{page}</VestingLayout>
-);
-
 export default withStaticSEO(
   { title: "Vesting Schedule | Superfluid" },
   VestingScheduleDetailsPage

@@ -1,27 +1,25 @@
-import { FC, PropsWithChildren, useMemo } from "react";
-import { useFeatureFlags } from "../featureFlags/FeatureFlagContext";
-import Page404 from "../../pages/404";
-import ReduxPersistGate from "../redux/ReduxPersistGate";
-import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import Card from "@mui/material/Card";
-import Typography from "@mui/material/Typography";
+import { Box, Container, useTheme } from "@mui/material";
 import Button from "@mui/material/Button";
-import Link from "../common/Link";
-import { Container, useTheme } from "@mui/material";
-import VestingHeader from "./VestingHeader";
-import Box from "@mui/material/Box/Box";
-import Stack from "@mui/material/Stack";
-import { useLayoutContext } from "../layout/LayoutContext";
-import { useSwitchNetwork } from "wagmi";
-import ConnectOrImpersonate from "../../components/ConnectOrImpersonate/ConnectOrImpersonate";
+import Card from "@mui/material/Card";
 import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import NetworkSwitchLink from "../network/NetworkSwitchLink";
+import { FC, Fragment, PropsWithChildren, useCallback, useMemo } from "react";
+import { useAccount, useSwitchNetwork } from "wagmi";
+import ConnectOrImpersonate from "../../components/ConnectOrImpersonate/ConnectOrImpersonate";
+import Link from "../common/Link";
+import { useFeatureFlags } from "../featureFlags/FeatureFlagContext";
+import { useLayoutContext } from "../layout/LayoutContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   networkDefinition,
   vestingSupportedNetworks,
 } from "../network/networks";
+import NetworkSwitchLink from "../network/NetworkSwitchLink";
+import ReduxPersistGate from "../redux/ReduxPersistGate";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import VestingHeader from "./VestingHeader";
 
 const VESTING_SUPPORTED_NETWORK_IDS = vestingSupportedNetworks.map(
   (network) => network.id
@@ -50,9 +48,8 @@ const VestingNotSupportedCard = () => {
 
         if (VESTING_SUPPORTED_NETWORK_IDS.length - 2 === index) {
           return (
-            <>
+            <Fragment key={network.id}>
               <NetworkSwitchLink
-                key={network.id}
                 network={network}
                 disabled={
                   network.id === networkDefinition.ethereum.id &&
@@ -60,14 +57,13 @@ const VestingNotSupportedCard = () => {
                 }
               />
               {" or "}
-            </>
+            </Fragment>
           );
         }
 
         return (
-          <>
+          <Fragment key={network.id}>
             <NetworkSwitchLink
-              key={network.id}
               network={network}
               disabled={
                 network.id === networkDefinition.ethereum.id &&
@@ -75,7 +71,7 @@ const VestingNotSupportedCard = () => {
               }
             />
             {", "}
-          </>
+          </Fragment>
         );
       }),
     [isMainnetEnabled]
@@ -139,7 +135,9 @@ const NotConnectedCard = () => {
 
 const UnlockVestingCard = () => {
   const { setAccessCodeDialogContent } = useLayoutContext();
+  const { setExpectedNetwork } = useExpectedNetwork();
   const { switchNetwork } = useSwitchNetwork();
+  const { address: accountAddress } = useAccount();
 
   const openVestingAccessCodeDialog = () => {
     setAccessCodeDialogContent({
@@ -153,6 +151,14 @@ const UnlockVestingCard = () => {
       ),
     });
   };
+
+  const switchToGoerli = useCallback(() => {
+    setExpectedNetwork(networkDefinition.goerli.id);
+
+    if (accountAddress && switchNetwork) {
+      switchNetwork(networkDefinition.goerli.id);
+    }
+  }, [setExpectedNetwork, switchNetwork, accountAddress]);
 
   return (
     <Card component={Stack} sx={{ p: 3, pt: 8 }} alignItems="center">
@@ -172,7 +178,7 @@ const UnlockVestingCard = () => {
         >
           Enter Access Code
         </Button>
-        <Button variant="outlined" size="large">
+        <Button variant="outlined" size="large" onClick={switchToGoerli}>
           Try out on Goerli Testnet
         </Button>
       </Stack>
@@ -187,9 +193,7 @@ const UnlockVestingCard = () => {
   );
 };
 
-interface VestingLayoutProps extends PropsWithChildren {}
-
-const VestingLayout: FC<VestingLayoutProps> = ({ children }) => {
+const VestingLayout: FC<PropsWithChildren> = ({ children }) => {
   const { isVestingEnabled } = useFeatureFlags();
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
@@ -225,7 +229,7 @@ const VestingLayout: FC<VestingLayoutProps> = ({ children }) => {
     );
   }
 
-  if (networkSupported) {
+  if (!networkSupported) {
     return (
       <Container maxWidth="lg">
         <VestingHeader hideCreate>
