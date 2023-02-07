@@ -6,7 +6,6 @@ Feature: Vesting page test cases
     Then No received vesting schedules message is shown
     And No created vesting schedules message is shown
 
-
   Scenario: Vesting only available on supported networks
     Given Transactional account bob is connected to the dashboard on goerli
     And User clicks on the create vesting schedule button
@@ -173,7 +172,6 @@ Feature: Vesting page test cases
       | Stream Error   |
       | Cancel Error   |
       | Scheduled      |
-
 
   @mocked
   Scenario Outline: Schedule progress bar showing correctly for a scheduled vesting
