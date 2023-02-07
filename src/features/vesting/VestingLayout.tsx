@@ -184,7 +184,7 @@ const UnlockVestingCard = () => {
       </Stack>
       <Typography variant="body1" color="text.secondary">
         Want to Vest tokens? Apply for the access code{" "}
-        <Link href="superfluid.finance" target="_blank">
+        <Link href="https://use.superfluid.finance/vesting" target="_blank">
           here
         </Link>
         .
