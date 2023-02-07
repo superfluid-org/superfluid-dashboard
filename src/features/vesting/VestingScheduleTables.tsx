@@ -159,6 +159,13 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
     return [...mappedPendingVestingSchedules, ...(sentVestingSchedules || [])];
   }, [mappedPendingVestingSchedules, sentVestingSchedules]);
 
+  const notDeletedSentVestingSchedules = useMemo(
+    () =>
+      mappedSentVestingSchedules.filter(
+        (vestingSchedule) => !vestingSchedule.status.isDeleted
+      ),
+    [mappedSentVestingSchedules]
+  );
   const vestingSchedulesLoading =
     receivedSchedulesLoading || sentSchedulesLoading;
 
@@ -209,7 +216,7 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
           {vestingSchedulesLoading || mappedSentVestingSchedules.length > 0 ? (
             <Stack gap={3.5}>
               <AggregatedVestingSchedules
-                vestingSchedules={mappedSentVestingSchedules}
+                vestingSchedules={notDeletedSentVestingSchedules}
                 network={network}
               />
               <VestingScheduleTable
