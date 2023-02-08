@@ -1,30 +1,14 @@
 import { Skeleton } from "@mui/lab";
-import { Box, useTheme } from "@mui/material";
+import { useTheme } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import Chart, { ChartOptions, TooltipItem } from "chart.js/auto";
-import {
-  add,
-  differenceInDays,
-  endOfDay,
-  format,
-  fromUnixTime,
-  getUnixTime,
-  isSameDay,
-  max,
-  min,
-  startOfYear,
-  sub,
-} from "date-fns";
+import { ChartOptions } from "chart.js/auto";
+import { fromUnixTime, getUnixTime, isSameDay, max, sub } from "date-fns";
 import { BigNumber, ethers } from "ethers";
-import { maxBy } from "lodash/fp";
 import minBy from "lodash/fp/minBy";
-import set from "lodash/fp/set";
-import mutateSet from "lodash/set";
-import { FC, useCallback, useEffect, useMemo, useRef } from "react";
+import { FC, useMemo } from "react";
 import LineChart, { DataPoint } from "../../../components/Chart/LineChart";
 import {
   buildDefaultDatasetConf,
-  DEFAULT_LINE_CHART_OPTIONS,
   estimateFrequencyByTimestamp,
   getFilteredStartDate,
 } from "../../../utils/chartUtils";
@@ -179,7 +163,7 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
       endDate: fromUnixTime(endDateUnix),
       frequency,
     };
-  }, [tokenBalances, showForecast, filter]);
+  }, [tokenBalances, showForecast]);
 
   const datasets = useMemo(
     () => {
@@ -248,7 +232,7 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
         borderDash: [6, 6],
       }),
     ],
-    [height, theme]
+    [height, theme.palette.primary.main, theme.palette.secondary.main]
   );
 
   if (accountTokenBalanceHistoryQuery.isLoading) {
