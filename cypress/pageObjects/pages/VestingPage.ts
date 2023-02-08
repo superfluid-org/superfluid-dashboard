@@ -107,7 +107,7 @@ export class VestingPage extends BasePage {
     }
 
     static validateFormError(error: string) {
-        this.hasText(FORM_ERROR,error)
+        cy.get(FORM_ERROR).first().should("have.text",error)
         this.isDisabled(PREVIEW_SCHEDULE_BUTTON)
     }
 

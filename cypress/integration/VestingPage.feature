@@ -1,3 +1,4 @@
+@numTestsKeptInMemory(0)
 @vesting
 Feature: Vesting page test cases
 
