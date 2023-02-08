@@ -518,8 +518,8 @@ export const CreateVestingForm: FC<{
         <Alert severity="warning">
           {cliffEnabled ? (
             <>
-              <AlertTitle>Don’t forget to top up for the cliff!</AlertTitle>
-              <Typography>
+              <AlertTitle data-cy={"top-up-alert-title"}>Don’t forget to top up for the cliff!</AlertTitle>
+              <Typography data-cy={"top-up-alert-text"}>
                 The auto-top up it will not take account of the vesting cliff.
                 Remember to top up your Super Token balance for the cliff amount
                 and the first week of a vesting stream.
@@ -527,10 +527,10 @@ export const CreateVestingForm: FC<{
             </>
           ) : (
             <>
-              <AlertTitle>
+              <AlertTitle data-cy={"top-up-alert-title"}>
                 Don’t forget to top up for the vesting schedule!
               </AlertTitle>
-              <Typography>
+              <Typography data-cy={"top-up-alert-text"}>
                 Remember to top up your Super Token balance for the cliff amount
                 and vesting stream.
               </Typography>

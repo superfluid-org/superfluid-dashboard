@@ -40,6 +40,13 @@ Feature: Vesting page test cases
     And User inputs "4" "year" as the total vesting period
     Then "Cliff amount has to be less than total amount." error is shown in the form
 
+  Scenario: Creation form - Top-up warning message
+    Given Transactional account bob is connected to the dashboard on goerli
+    And User clicks on the create vesting schedule button
+    Then The top-up warning message without cliff is shown
+    And User clicks on the cliff date toggle
+    Then The top-up warning message when cliff is enabled is shown
+
   Scenario: Creation form - Cliff amount period has to be before total vesting period
     Given Transactional account bob is connected to the dashboard on goerli
     And User clicks on the create vesting schedule button

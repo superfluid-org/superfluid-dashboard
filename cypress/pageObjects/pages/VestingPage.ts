@@ -64,6 +64,8 @@ const SCHEDULE_VESTING_END = "[data-cy=vesting-end]"
 const ACCESS_CODE_BUTTON = "[data-cy=vesting-code-button]"
 const TRY_GOERLI_BUTTON = "[data-cy=try-on-goerli-button]"
 const VESTING_FORM_LINK = "[data-cy=vesting-form-link]"
+const TOPUP_WARNING_TITLE = "[data-cy=top-up-alert-title]"
+const TOPUP_WARNING_TEXT = "[data-cy=top-up-alert-text]"
 
 //Strings
 const NO_CREATED_TITLE_STRING = "No Sent Vesting Schedules"
@@ -516,6 +518,9 @@ export class VestingPage extends BasePage {
             this.hasText(`[data-cy=${stream.token.symbol}-total-allocated]` , `${schedule.totalAllocated} ${stream.token.symbol}`)
             this.containsText(`[data-cy=${stream.token.symbol}-total-vested]` , totalVestedAmount )
         })
+        //Make sure deleted schedules don't get shown in the aggregate stats
+        cy.get("[data-cy=DAIx-total-allocated]").should("not.exist")
+        cy.get("[data-cy=DAIx-total-vested]").should("not.exist")
     }
 
     static validateNoCodeUnlockScreen() {
@@ -539,5 +544,15 @@ export class VestingPage extends BasePage {
         this.isVisible(TOTAL_AMOUNT_INPUT)
         this.isVisible(TOTAL_PERIOD_INPUT)
         this.isVisible(PREVIEW_SCHEDULE_BUTTON)
+    }
+
+    static validateTopUpMessageWithoutCliff() {
+        this.hasText(TOPUP_WARNING_TITLE,"Don’t forget to top up for the vesting schedule!")
+        this.hasText(TOPUP_WARNING_TEXT,"Remember to top up your Super Token balance for the cliff amount and vesting stream.")
+    }
+
+    static validateTopUpMessageWithCliff() {
+        this.hasText(TOPUP_WARNING_TITLE, "Don’t forget to top up for the cliff!")
+        this.hasText(TOPUP_WARNING_TEXT, "The auto-top up it will not take account of the vesting cliff. Remember to top up your Super Token balance for the cliff amount and the first week of a vesting stream.")
     }
 }
