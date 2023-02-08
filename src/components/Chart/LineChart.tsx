@@ -69,11 +69,9 @@ const LineChart: FC<LineChartProps> = ({
       options: datasetsOptions,
     });
 
-    console.log("Created new chart");
     chartRef.current = chart;
 
     return () => {
-      console.log("Destroying chart");
       chart.destroy();
     };
 
@@ -108,7 +106,6 @@ const LineChart: FC<LineChartProps> = ({
     currentChart.update();
   }, [chartRef, options]);
 
-  console.log("Rerendering line chart", { chartRef, options });
   return (
     <Box
       sx={{
