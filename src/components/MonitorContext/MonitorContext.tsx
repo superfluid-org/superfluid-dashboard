@@ -45,16 +45,9 @@ const MonitorContext: FC = () => {
     });
   }, [network]);
 
-  const { reset, identify, page, track, instanceDetails } = useAnalytics();
+  const { identify, page, track, instanceDetails } = useAnalytics();
   const [previousInstanceDetails, setPreviousInstanceDetails] =
     useState(instanceDetails);
-
-  const initialResetRef = useRef(false);
-  if (!initialResetRef.current) {
-    // When application starts up, reset the identity. Identify only on concrete wallet connections.
-    initialResetRef.current = true;
-    reset();
-  }
 
   useEffect(
     () =>
@@ -85,7 +78,7 @@ const MonitorContext: FC = () => {
       if (wallet.isConnected) {
         track("Wallet Connected", wallet).then(() => identify(wallet.account));
       } else {
-        track("Wallet Disconnected", wallet).then(() => reset());
+        track("Wallet Disconnected", wallet); // We could reset the identity here but we don't...
       }
     } else {
       if (wallet.isConnected && prevWallet.isConnected) {
@@ -93,9 +86,9 @@ const MonitorContext: FC = () => {
           track("Wallet Network Changed", wallet);
         }
         if (wallet.account != prevWallet.account) {
-          track("Wallet Account Changed", wallet)
-            .then(() => reset()) // Reset before not to associate next identification with previous wallet address.
-            .then(() => identify(wallet.account));
+          track("Wallet Account Changed", wallet).then(() =>
+            identify(wallet.account)
+          );
         }
       }
     }
