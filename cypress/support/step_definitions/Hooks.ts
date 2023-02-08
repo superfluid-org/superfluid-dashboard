@@ -12,3 +12,7 @@ Before({ tags: "@rejected" }, function () {
 Before({ tags: "@vesting and not @NoCode" }, function () {
     Cypress.env("vesting" , true)
 });
+
+Before({ tags: "@NoCode" }, function () {
+    Cypress.env("vesting" , false)
+});

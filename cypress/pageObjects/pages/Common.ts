@@ -345,6 +345,11 @@ export class Common extends BasePage {
     }
 
     static transactionRejectedErrorIsShown() {
+        Cypress.once("uncaught:exception" , err =>  {
+            if(err.message.includes("user rejected transaction")) {
+                return false
+            }
+        })
         cy.get(TX_ERROR,{timeout:45000}).should("have.text","Transaction Rejected")
     }
 
