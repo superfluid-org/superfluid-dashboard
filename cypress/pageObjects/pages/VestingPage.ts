@@ -241,9 +241,9 @@ export class VestingPage extends BasePage {
     }
 
     static validateSchedulePreviewDetails(cliffDate: Date,startDate:Date ,endDate:Date) {
-        this.containsText(GRAPH_CLIFF_DATE, `Cliff: ${format(cliffDate, "LLL d, yyyy HH:mm").slice(0, -1)}`);
-        this.containsText(GRAPH_START_DATE, `Start: ${format(startDate, "LLL d, yyyy HH:mm").slice(0, -1)}`)
-        this.containsText(GRAPH_END_DATE, `End: ${format(endDate, "LLL d, yyyy HH:mm").slice(0, -1)}`)
+        this.containsText(GRAPH_CLIFF_DATE, `Cliff: ${format(cliffDate, "LLL d, yyyy HH:mm").slice(0, -2)}`);
+        this.containsText(GRAPH_START_DATE, `Start: ${format(startDate, "LLL d, yyyy HH:mm").slice(0, -2)}`)
+        this.containsText(GRAPH_END_DATE, `End: ${format(endDate, "LLL d, yyyy HH:mm").slice(0, -2)}`)
         this.containsText(PREVIEW_START_DATE, format(startDate, "LLLL d, yyyy"))
     }
 
