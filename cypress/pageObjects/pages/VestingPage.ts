@@ -114,7 +114,6 @@ export class VestingPage extends BasePage {
     }
 
     static inputFutureDateInVestingStartDateField(amount: number, timeUnit: string) {
-            const currentDate = new Date();
             let newDate: Date;
 
             const unitOfTime = wordTimeUnitMap[timeUnit];
@@ -122,7 +121,7 @@ export class VestingPage extends BasePage {
                 throw new Error(`Invalid time unit: ${timeUnit}`);
             }
 
-            newDate = new Date(currentDate.getTime() + amount * (unitOfTime * 1000));
+            newDate = new Date(currentTime.getTime() + amount * (unitOfTime * 1000));
 
             const month = `0${newDate.getMonth() + 1}`.slice(-2);
             const day = `0${newDate.getDate()}`.slice(-2);
@@ -241,8 +240,9 @@ export class VestingPage extends BasePage {
     }
 
     static validateSchedulePreviewDetails(cliffDate: Date,startDate:Date ,endDate:Date) {
-        this.containsText(GRAPH_CLIFF_DATE, `Cliff: ${format(cliffDate, "LLL d, yyyy HH:mm").slice(0, -2)}`);
-        this.containsText(GRAPH_START_DATE, `Start: ${format(startDate, "LLL d, yyyy HH:mm").slice(0, -2)}`)
+        cy.get(GRAPH_CLIFF_DATE)
+        this.containsText(GRAPH_CLIFF_DATE, `Cliff: ${format(cliffDate, "LLL d, yyyy HH:mm")}`);
+        this.containsText(GRAPH_START_DATE, `Start: ${format(startDate, "LLL d, yyyy HH:mm")}`)
         this.containsText(GRAPH_END_DATE, `End: ${format(endDate, "LLL d, yyyy HH:mm").slice(0, -2)}`)
         this.containsText(PREVIEW_START_DATE, format(startDate, "LLLL d, yyyy"))
     }
