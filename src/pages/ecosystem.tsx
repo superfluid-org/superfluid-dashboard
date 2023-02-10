@@ -178,6 +178,20 @@ const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
     },
   },
   {
+    name: "Push Protocol",
+    href: "https://app.push.org/#/channels?channel=0xa947E9cFc724f05D83b995e53572c4bcCB00D7Aa",
+    icon: "/icons/ecosystem/push.png",
+    description: `Connecting creative communities with NFT-based memberships`,
+    chains: [
+      networkDefinition.ethereum.id,
+      networkDefinition.polygon.id,
+    ],
+    colors: {
+      primary: "#DD44B9",
+      secondary: "#8E71F3",
+    },
+  },
+  {
     name: "Unlock Protocol",
     href: "https://unlock-protocol.com/",
     icon: "/icons/ecosystem/unlock.svg",
