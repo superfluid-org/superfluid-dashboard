@@ -167,6 +167,7 @@ const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
     icon: "/icons/ecosystem/gnosis-safe.svg",
     description: `Multi-sig and smart contract wallet for storing digital assets safely`,
     chains: [
+      networkDefinition.ethereum.id,
       networkDefinition.arbitrum.id,
       networkDefinition.gnosis.id,
       networkDefinition.optimism.id,
@@ -181,7 +182,7 @@ const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
     name: "Push Protocol",
     href: "https://app.push.org/#/channels?channel=0xa947E9cFc724f05D83b995e53572c4bcCB00D7Aa",
     icon: "/icons/ecosystem/push.png",
-    description: `Connecting creative communities with NFT-based memberships`,
+    description: `Cross-chain notifications and messaging for dapps, wallets, and services`,
     chains: [
       networkDefinition.ethereum.id,
       networkDefinition.polygon.id,
