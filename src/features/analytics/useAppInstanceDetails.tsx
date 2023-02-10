@@ -18,18 +18,26 @@ export type AppInstanceDetails = {
       slug: string;
       isTestnet: boolean;
     };
-    wallet: {
-      isConnected: boolean;
-      address?: string;
-      connector?: string;
-      connectorId?: string;
-      network?: string;
-      networkId?: number;
-    };
+    wallet: UnconnectedWalletDetails | ConnectedWalletDetails;
   };
 };
 
-export type WalletDetails = AppInstanceDetails["appInstance"]["wallet"];
+export type UnconnectedWalletDetails = {
+  isConnected: false;
+  address?: undefined;
+  connector?: undefined;
+  connectorId?: undefined;
+  network?: undefined;
+  networkId?: undefined;
+};
+export type ConnectedWalletDetails = {
+  isConnected: boolean;
+  address: string;
+  connector: string;
+  connectorId: string;
+  network?: string;
+  networkId?: number;
+};
 
 export const useAppInstanceDetails = () => {
   const { chain: activeChain } = useNetwork();
@@ -52,8 +60,8 @@ export const useAppInstanceDetails = () => {
     transactionDrawerOpen,
   ];
 
-  return useMemo<AppInstanceDetails>(
-    () => ({
+  return useMemo<AppInstanceDetails>(() => {
+    return {
       appInstance: {
         supportId: supportId,
         expectedNetwork: {
@@ -62,10 +70,10 @@ export const useAppInstanceDetails = () => {
           slug: expectedNetwork.slugName,
           isTestnet: !!expectedNetwork.testnet,
         },
-        wallet: {
-          isConnected,
-          ...(isConnected && activeConnector
+        wallet:
+          isConnected && activeConnector && activeAccountAddress
             ? {
+                isConnected: true,
                 isReconnected: isAutoConnectedRef.current,
                 address: activeAccountAddress,
                 connector: activeConnector.name,
@@ -77,10 +85,8 @@ export const useAppInstanceDetails = () => {
                     }
                   : {}),
               }
-            : {}),
-        },
+            : { isConnected: false },
       },
-    }),
-    deps
-  );
+    };
+  }, deps);
 };

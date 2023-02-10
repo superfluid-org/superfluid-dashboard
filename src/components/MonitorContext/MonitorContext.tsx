@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/browser";
 import { useRouter } from "next/router";
 import promiseRetry from "promise-retry";
-import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { hotjar } from "react-hotjar";
 import { useIntercom } from "react-use-intercom";
 import {

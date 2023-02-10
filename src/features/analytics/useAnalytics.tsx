@@ -4,7 +4,7 @@ import { serialize } from "wagmi";
 import * as Sentry from "@sentry/react";
 import { AnalyticsContext } from "./AnalyticsProvider";
 import { AnalyticsTransactionNames } from "./AnalyticsTxNames";
-import { AppInstanceDetails, WalletDetails } from "./useAppInstanceDetails";
+import { ConnectedWalletDetails } from "./useAppInstanceDetails";
 
 export const useAnalytics = () => {
   const { analyticsBrowser, instanceDetails } = useContext(AnalyticsContext);
@@ -55,7 +55,7 @@ export const useAnalytics = () => {
   );
 
   const identify = useCallback(
-    (wallet: WalletDetails) =>
+    (wallet: ConnectedWalletDetails) =>
       analyticsBrowser.identify(wallet.address, {
         walletAddress: wallet.address,
       }),
