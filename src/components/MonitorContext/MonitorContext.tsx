@@ -76,7 +76,7 @@ const MonitorContext: FC = () => {
 
     if (wallet.isConnected !== prevWallet.isConnected) {
       if (wallet.isConnected) {
-        track("Wallet Connected", wallet).then(() => identify(wallet.account));
+        track("Wallet Connected", wallet).then(() => identify(wallet.account, { walletAccount: wallet.account }));
       } else {
         track("Wallet Disconnected", wallet).then(() => reset());
       }
@@ -88,7 +88,7 @@ const MonitorContext: FC = () => {
         if (wallet.account != prevWallet.account) {
           track("Wallet Account Changed", wallet)
             .then(() => reset()) // Reset before not to associate next identification with previous wallet address.
-            .then(() => identify(wallet.account));
+            .then(() => identify(wallet.account, { walletAccount: wallet.account }));
         }
       }
     }
