@@ -3,8 +3,10 @@ import { Stream } from "@superfluid-finance/sdk-core";
 import { StreamQuery } from "@superfluid-finance/sdk-redux";
 import { findNetworkByChainId } from "../features/network/networks";
 import { PendingOutgoingStream } from "../features/pendingUpdates/PendingOutgoingStream";
-import { subgraphApi } from "../features/redux/store";
+import { platformApi } from "../features/redux/platformApi/platformApi";
+import { rpcApi, subgraphApi } from "../features/redux/store";
 import { StreamScheduling } from "../features/streamsTable/StreamScheduling";
+import { getAddress } from "../utils/memoizedEthersUtils";
 
 export const useScheduledStream = (
   arg: Omit<StreamQuery, "block"> | SkipToken
@@ -17,7 +19,20 @@ export const useScheduledStream = (
 
   const { schedulings } = { schedulings: [] };
   // TODO(KK): Un-comment and handle when bringing back stream scheduling.
-  // platformApi.useListSubscriptionsQuery(
+
+  const scheduleResponse = rpcApi.useScheduledDatesQuery(
+    stream && network?.flowSchedulerContractAddress
+      ? {
+          chainId: network.id,
+          receiverAddress: stream.receiver,
+          senderAddress: stream.sender,
+          superTokenAddress: stream.token,
+        }
+      : skipToken
+  );
+
+  console.log({ scheduleResponse });
+  // const subscriptionsResponse = platformApi.useListSubscriptionsQuery(
   //   stream && network?.platformUrl
   //     ? {
   //         account: getAddress(stream.sender),
@@ -26,8 +41,8 @@ export const useScheduledStream = (
   //       }
   //     : skipToken,
   //   {
-  //     selectFromResult: (x) => ({
-  //       schedulings: x.currentData?.data ?? [],
+  //     selectFromResult: (response) => ({
+  //       schedulings: response.currentData?.data ?? [],
   //     }),
   //   }
   // );

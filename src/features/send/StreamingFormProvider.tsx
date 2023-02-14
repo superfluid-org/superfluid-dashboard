@@ -23,10 +23,9 @@ export type ValidStreamingForm = {
       unitOfTime: UnitOfTime;
     };
     understandLiquidationRisk: boolean;
-    /**
-     * In seconds.
-     */
-    endTimestamp: number | null;
+
+    startTimestamp: number | null; // Unix timestamp
+    endTimestamp: number | null; // Unix timestamp
   };
 };
 
@@ -39,6 +38,7 @@ const defaultFormValues = {
     receiverAddress: null,
     tokenAddress: null,
     understandLiquidationRisk: false,
+    startTimestamp: null,
     endTimestamp: null,
   },
 };
@@ -51,6 +51,7 @@ export type PartialStreamingForm = {
       | ValidStreamingForm["data"]["flowRate"]
       | typeof defaultFormValues.data.flowRate;
     understandLiquidationRisk: boolean;
+    startTimestamp: number | null;
     endTimestamp: number | null;
   };
 };
@@ -87,6 +88,7 @@ const StreamingFormProvider: FC<
                 ),
             }),
             understandLiquidationRisk: bool().required(),
+            startTimestamp: number().default(null).nullable(),
             endTimestamp: number().default(null).nullable(),
           }),
         });
@@ -233,6 +235,9 @@ const StreamingFormProvider: FC<
           understandLiquidationRisk:
             initialFormValues.understandLiquidationRisk ??
             defaultFormValues.data.understandLiquidationRisk,
+          startTimestamp:
+            initialFormValues.startTimestamp ??
+            defaultFormValues.data.startTimestamp,
           endTimestamp:
             initialFormValues.endTimestamp ??
             defaultFormValues.data.endTimestamp,

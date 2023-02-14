@@ -8,7 +8,7 @@ export const getFlowScheduler = (
   providerOrSigner: providers.Provider | Signer
 ) => {
   const network = findNetworkByChainId(chainId);
-  const networkFlowSchedulerAddress = network?.vestingContractAddress;
+  const networkFlowSchedulerAddress = network?.flowSchedulerContractAddress;
   const doesNetworkSupportFlowScheduler = !!networkFlowSchedulerAddress;
   if (!doesNetworkSupportFlowScheduler) {
     throw new Error(

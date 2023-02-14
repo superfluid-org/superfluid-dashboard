@@ -18,16 +18,34 @@ declare module "@superfluid-finance/sdk-redux" {
   interface TransactionTitleOverrides {
     "Approve Allowance": true;
     "Claim Tokens": true;
-    "Approve Scheduler for End Date": true; // Give Stream Scheduler contract delete permission.
-    "Approve Vesting Scheduler": true; // Give Stream Scheduler contract delete & update permission.
-    "Schedule Stream End Date": true;
-    "Remove Stream End Date": true;
-    "Send Closed-Ended Stream": true;
     "Modify Stream": true;
+    // Vesting scheduler
+    "Approve Vesting Scheduler": true; // Give Stream Scheduler contract delete & update permission.
     "Create Vesting Schedule": true;
     "Delete Vesting Schedule": true;
+    // Scheduled streams
+    "Send Scheduled Stream": true;
+    "Update Scheduler Permissions": true; // Give Stream Scheduler contract create & delete permissions.
+    "Create Schedule Order": true;
+    "Modify Schedule Order": true;
+    "Delete Schedule Order": true;
   }
 }
+
+// declare module "@superfluid-finance/sdk-redux" {
+//   interface TransactionTitleOverrides {
+//     "Approve Allowance": true;
+//     "Claim Tokens": true;
+//     "Approve Scheduler for End Date": true; // Give Stream Scheduler contract delete permission.
+//     "Approve Vesting Scheduler": true; // Give Stream Scheduler contract delete & update permission.
+//     "Schedule Stream End Date": true;
+//     "Remove Stream End Date": true;
+//     "Send Closed-Ended Stream": true;
+//     "Modify Stream": true;
+//     "Create Vesting Schedule": true;
+//     "Delete Vesting Schedule": true;
+//   }
+// }
 
 export interface Web3FlowInfo {
   updatedAtTimestamp: number;

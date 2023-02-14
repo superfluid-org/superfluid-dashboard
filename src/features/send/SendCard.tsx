@@ -1,5 +1,5 @@
 import { ErrorMessage } from "@hookform/error-message";
-import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
+import AddRounded from "@mui/icons-material/AddRounded";
 import {
   Alert,
   Box,
@@ -11,7 +11,6 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
-  Grid,
   IconButton,
   Stack,
   Switch,
@@ -21,18 +20,27 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Token } from "@superfluid-finance/sdk-core";
+import { add, fromUnixTime, getUnixTime } from "date-fns";
+import Decimal from "decimal.js";
+import { BigNumber, BigNumberish } from "ethers";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import Link from "next/link";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
+import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
+import { dateNowSeconds, getTimeInSeconds } from "../../utils/dateUtils";
+import { getDecimalPlacesToRoundTo } from "../../utils/DecimalUtils";
 import {
   calculateBufferAmount,
   parseEtherOrZero,
 } from "../../utils/tokenUtils";
+import { useAnalytics } from "../analytics/useAnalytics";
 import TooltipIcon from "../common/TooltipIcon";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -41,11 +49,21 @@ import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { isWrappable, SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import Amount from "../token/Amount";
+import TokenIcon from "../token/TokenIcon";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
+import {
+  TransactionDialogActions,
+  TransactionDialogButton,
+} from "../transactionBoundary/TransactionDialog";
+import {
+  ModifyStreamRestoration,
+  RestorationType,
+  SendStreamRestoration,
+} from "../transactionRestoration/transactionRestorations";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import AddressSearch from "./AddressSearch";
 import { calculateTotalAmountWei, FlowRateInput } from "./FlowRateInput";
@@ -54,26 +72,6 @@ import {
   PartialStreamingForm,
   ValidStreamingForm,
 } from "./StreamingFormProvider";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { dateNowSeconds, getTimeInSeconds } from "../../utils/dateUtils";
-import { BigNumber, BigNumberish } from "ethers";
-import TokenIcon from "../token/TokenIcon";
-import Decimal from "decimal.js";
-import { getDecimalPlacesToRoundTo } from "../../utils/DecimalUtils";
-import {
-  TransactionDialogActions,
-  TransactionDialogButton,
-} from "../transactionBoundary/TransactionDialog";
-import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
-import {
-  ModifyStreamRestoration,
-  RestorationType,
-  SendStreamRestoration,
-} from "../transactionRestoration/transactionRestorations";
-import { add } from "date-fns";
-import AddRounded from "@mui/icons-material/AddRounded";
-import { useAnalytics } from "../analytics/useAnalytics";
 
 const MIN_VISIBLE_END_DATE = add(new Date(), {
   minutes: 5,
@@ -82,46 +80,49 @@ const MAX_VISIBLE_END_DATE = add(new Date(), {
   years: 2,
 });
 
-const getStreamedTotal = ({
-  endTimestamp,
-  flowRateWei,
-}: {
-  endTimestamp: number | null;
-  flowRateWei: BigNumberish;
-}): BigNumber | undefined => {
-  const now = dateNowSeconds();
-  if (endTimestamp && endTimestamp > now) {
-    return BigNumber.from(flowRateWei).mul(endTimestamp - now);
-  } else {
-    return undefined;
+function getStreamedTotal(
+  startTimestamp = getUnixTime(new Date()),
+  endTimestamp: number | null,
+  flowRateWei: BigNumberish
+): BigNumber | undefined {
+  if (endTimestamp && endTimestamp > startTimestamp) {
+    return BigNumber.from(flowRateWei).mul(endTimestamp - startTimestamp);
   }
-};
 
-const getStreamedTotalEtherRoundedString = (arg: {
-  endTimestamp: number | null;
-  flowRateWei: BigNumberish;
-}): string => {
-  const bigNumber = getStreamedTotal(arg);
-  if (!bigNumber || bigNumber?.isZero()) {
-    return "";
-  } else {
-    const decimal = new Decimal(formatEther(bigNumber));
-    const decimalPlacesToRoundTo = getDecimalPlacesToRoundTo(decimal);
-    return decimal.toDP(decimalPlacesToRoundTo).toFixed();
-  }
-};
+  return undefined;
+}
 
-const getEndTimestamp = ({
-  amountEthers,
-  flowRateWei,
-}: {
-  amountEthers: string;
-  flowRateWei: BigNumberish;
-}): number | null => {
+function getStreamedTotalEtherRoundedString(
+  startTimestamp: number | null,
+  endTimestamp: number | null,
+  flowRateWei: BigNumberish
+): string {
+  const bigNumber = getStreamedTotal(
+    startTimestamp || getUnixTime(new Date()),
+    endTimestamp,
+    flowRateWei
+  );
+
+  if (!bigNumber || bigNumber?.isZero()) return "";
+
+  const decimal = new Decimal(formatEther(bigNumber));
+  const decimalPlacesToRoundTo = getDecimalPlacesToRoundTo(decimal);
+  return decimal.toDP(decimalPlacesToRoundTo).toFixed();
+}
+
+function getEndTimestamp(
+  startTimestamp: number | null,
+  amountEthers: string,
+  flowRateWei: BigNumberish
+): number | null {
   const amountWei = parseEtherOrZero(amountEthers);
   if (amountWei.isZero()) return null;
-  return amountWei.div(flowRateWei).add(dateNowSeconds()).toNumber();
-};
+
+  return amountWei
+    .div(flowRateWei)
+    .add(startTimestamp || dateNowSeconds())
+    .toNumber();
+}
 
 export default memo(function SendCard() {
   const theme = useTheme();
@@ -151,12 +152,14 @@ export default memo(function SendCard() {
     tokenAddress,
     flowRateEther,
     understandLiquidationRisk,
+    startTimestamp,
     endTimestamp,
   ] = watch([
     "data.receiverAddress",
     "data.tokenAddress",
     "data.flowRate",
     "data.understandLiquidationRisk",
+    "data.startTimestamp",
     "data.endTimestamp",
   ]);
 
@@ -301,11 +304,12 @@ export default memo(function SendCard() {
     />
   );
 
-  const doesNetworkSupportFlowScheduler = false;
+  const doesNetworkSupportFlowScheduler =
+    !!network.flowSchedulerContractAddress;
   // !!network.flowSchedulerContractAddress; // TODO(KK): Uncomment this to enable
 
   const [streamScheduling, setStreamScheduling] = useState<boolean>(
-    !!endTimestamp
+    !!endTimestamp || !!startTimestamp
   );
 
   const StreamSchedulingController = (
@@ -313,6 +317,7 @@ export default memo(function SendCard() {
       checked={streamScheduling}
       onChange={(_event, value) => {
         if (!value) {
+          setValue("data.startTimestamp", null);
           setValue("data.endTimestamp", null);
         }
         setStreamScheduling(value);
@@ -320,7 +325,7 @@ export default memo(function SendCard() {
     />
   );
 
-  const { data: existingEndTimestamp } = rpcApi.useScheduledEndDateQuery(
+  const scheduledDatesResponse = rpcApi.useScheduledDatesQuery(
     shouldSearchForActiveFlow && activeFlow
       ? {
           chainId: network.id,
@@ -330,33 +335,54 @@ export default memo(function SendCard() {
         }
       : skipToken
   );
+  const { startDate: existingStartTimestamp, endDate: existingEndTimestamp } =
+    scheduledDatesResponse.data || {};
 
   const existingEndDate = existingEndTimestamp
-    ? new Date(existingEndTimestamp * 1000)
+    ? fromUnixTime(existingEndTimestamp)
+    : null;
+
+  const existingStartDate = existingStartTimestamp
+    ? fromUnixTime(existingStartTimestamp)
     : null;
 
   const endDate = useMemo<Date | null>(
-    () => (endTimestamp ? new Date(endTimestamp * 1000) : null),
+    () => (endTimestamp ? fromUnixTime(endTimestamp) : null),
     [endTimestamp]
+  );
+
+  const startDate = useMemo<Date | null>(
+    () => (startTimestamp ? fromUnixTime(startTimestamp) : null),
+    [startTimestamp]
   );
 
   const [totalStreamedEther, setTotalStreamedEther] = useState<string>("");
 
   useEffect(() => {
     if (!endTimestamp) {
-      if (existingEndTimestamp) {
+      if (existingStartTimestamp || existingEndTimestamp) {
         // Hide old schedule orders. It will be automatically deleted.
-        if (existingEndTimestamp > dateNowSeconds()) {
-          setStreamScheduling(true);
+        setStreamScheduling(true);
+
+        if (
+          existingStartTimestamp &&
+          existingStartTimestamp > dateNowSeconds()
+        ) {
+          setValue("data.startTimestamp", existingStartTimestamp);
+        }
+
+        if (existingEndTimestamp && existingEndTimestamp > dateNowSeconds()) {
           setValue("data.endTimestamp", existingEndTimestamp);
-          if (flowRateEther) {
-            setTotalStreamedEther(
-              getStreamedTotalEtherRoundedString({
-                endTimestamp: existingEndTimestamp,
-                flowRateWei: flowRateWei,
-              })
-            );
-          }
+        }
+
+        if (flowRateEther) {
+          setTotalStreamedEther(
+            getStreamedTotalEtherRoundedString(
+              existingStartTimestamp || startTimestamp,
+              existingEndTimestamp || endTimestamp,
+              flowRateWei
+            )
+          );
         }
       } else {
         setStreamScheduling(false);
@@ -364,18 +390,48 @@ export default memo(function SendCard() {
         setTotalStreamedEther("");
       }
     }
-  }, [existingEndTimestamp]);
+  }, [existingStartTimestamp, existingEndTimestamp]);
 
   useEffect(() => {
     if (endTimestamp && flowRateWei) {
       setTotalStreamedEther(
-        getStreamedTotalEtherRoundedString({
+        getStreamedTotalEtherRoundedString(
+          startTimestamp,
           endTimestamp,
-          flowRateWei,
-        })
+          flowRateWei
+        )
       );
     }
-  }, [endTimestamp, flowRateWei]);
+  }, [startTimestamp, endTimestamp, flowRateWei]);
+
+  const StartDateController = (
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <Controller
+        control={control}
+        name="data.startTimestamp"
+        render={({ field: { onChange, onBlur } }) => (
+          <DateTimePicker
+            renderInput={(props) => (
+              <TextField
+                fullWidth
+                autoComplete="off"
+                {...props}
+                onBlur={onBlur}
+              />
+            )}
+            value={startDate}
+            minDateTime={MIN_VISIBLE_END_DATE}
+            maxDateTime={endDate || MAX_VISIBLE_END_DATE}
+            ampm={false}
+            onChange={(date: Date | null) =>
+              onChange(date ? getUnixTime(date) : null)
+            }
+            disablePast
+          />
+        )}
+      />
+    </LocalizationProvider>
+  );
 
   const EndDateController = (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -385,21 +441,27 @@ export default memo(function SendCard() {
         render={({ field: { onChange, onBlur } }) => (
           <DateTimePicker
             renderInput={(props) => (
-              <TextField fullWidth {...props} onBlur={onBlur} />
+              <TextField
+                fullWidth
+                autoComplete="off"
+                {...props}
+                onBlur={onBlur}
+              />
             )}
             value={endDate}
-            minDateTime={MIN_VISIBLE_END_DATE}
+            minDateTime={startDate || MIN_VISIBLE_END_DATE}
             maxDateTime={MAX_VISIBLE_END_DATE}
             ampm={false}
             onChange={(date: Date | null) => {
               const endTimestamp = date ? getTimeInSeconds(date) : null;
               onChange(endTimestamp);
-              setTotalStreamedEther(
-                getStreamedTotalEtherRoundedString({
-                  endTimestamp,
-                  flowRateWei,
-                })
-              );
+              // This is already handled in useEffect
+              // setTotalStreamedEther(
+              //   getStreamedTotalEtherRoundedString({
+              //     endTimestamp,
+              //     flowRateWei,
+              //   })
+              // );
             }}
             disablePast
           />
@@ -411,14 +473,12 @@ export default memo(function SendCard() {
   const TotalStreamedController = (
     <TextField
       value={totalStreamedEther}
+      autoComplete="off"
       onChange={(event) => {
         setTotalStreamedEther(event.target.value);
         setValue(
           "data.endTimestamp",
-          getEndTimestamp({
-            flowRateWei,
-            amountEthers: event.target.value,
-          })
+          getEndTimestamp(startTimestamp, event.target.value, flowRateWei)
         );
       }}
       InputProps={{
@@ -514,6 +574,7 @@ export default memo(function SendCard() {
 
   const [upsertFlow, upsertFlowResult] =
     rpcApi.useUpsertFlowWithSchedulingMutation();
+
   const SendTransactionBoundary = (
     <TransactionBoundary mutationResult={upsertFlowResult}>
       {({ closeDialog, setDialogSuccessActions, setDialogLoadingInfo }) => (
@@ -555,6 +616,9 @@ export default memo(function SendCard() {
               chainId: network.id,
               tokenAddress: formData.tokenAddress,
               receiverAddress: formData.receiverAddress,
+              ...(formData.startTimestamp
+                ? { startTimestamp: formData.startTimestamp }
+                : {}),
               ...(formData.endTimestamp
                 ? { endTimestamp: formData.endTimestamp }
                 : {}),
@@ -567,9 +631,8 @@ export default memo(function SendCard() {
               superTokenAddress: formData.tokenAddress,
               flowRateWei,
               userDataBytes: undefined,
-              endTimestamp: endDate
-                ? Math.round(endDate.getTime() / 1000)
-                : null,
+              startTimestamp: formData.startTimestamp,
+              endTimestamp: formData.endTimestamp,
             };
             upsertFlow({
               ...primaryArgs,
@@ -803,21 +866,40 @@ export default memo(function SendCard() {
               }
             />
             <Collapse in={streamScheduling}>
-              <Grid container spacing={1}>
-                <Grid item component={FormGroup} xs={6}>
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    sx={{ mr: 0.75 }}
-                    flex={1}
-                  >
-                    <FormLabel>End Date</FormLabel>
-                    <TooltipIcon title="The date when stream scheduler tries to cancel the stream." />
+              <Stack spacing={2.5}>
+                <Stack
+                  sx={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}
+                  gap={2.5}
+                >
+                  <Stack>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      sx={{ mr: 0.75 }}
+                      flex={1}
+                    >
+                      <FormLabel>Start Date</FormLabel>
+                      <TooltipIcon title="The date when stream scheduler tries to start the stream." />
+                    </Stack>
+                    {StartDateController}
                   </Stack>
-                  {EndDateController}
-                </Grid>
-                <Grid item component={FormGroup} xs={6}>
+                  <Stack>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      sx={{ mr: 0.75 }}
+                      flex={1}
+                    >
+                      <FormLabel>End Date</FormLabel>
+                      <TooltipIcon title="The date when stream scheduler tries to cancel the stream." />
+                    </Stack>
+                    {EndDateController}
+                  </Stack>
+                </Stack>
+
+                <Stack>
                   <Stack
                     direction="row"
                     alignItems="center"
@@ -829,11 +911,12 @@ export default memo(function SendCard() {
                     <TooltipIcon title="The approximate amount that will be streamed until the scheduler cancels the stream." />
                   </Stack>
                   {TotalStreamedController}
-                </Grid>
-              </Grid>
+                </Stack>
+              </Stack>
             </Collapse>
           </>
         )}
+
         {tokenAddress && visibleAddress && (
           <>
             <Stack
@@ -880,6 +963,8 @@ export default memo(function SendCard() {
             token={token}
             flowRateEther={flowRateEther}
             existingStream={activeFlow ?? null}
+            newStartDate={startDate}
+            oldStartDate={existingStartDate}
             newEndDate={endDate}
             oldEndDate={existingEndDate}
           />

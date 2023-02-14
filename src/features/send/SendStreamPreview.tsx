@@ -102,20 +102,26 @@ const PreviewItem: FC<PropsWithChildren<PreviewItemProps>> = ({
   );
 };
 
-export const StreamingPreview: FC<{
+interface StreamingPreviewProps {
   receiver: string;
   token: SuperTokenMinimal;
   flowRateEther: FlowRateEther;
   existingStream: {
     flowRateWei: string;
   } | null;
+  newStartDate: Date | null;
+  oldStartDate: Date | null;
   newEndDate: Date | null;
   oldEndDate: Date | null;
-}> = ({
+}
+
+export const StreamingPreview: FC<StreamingPreviewProps> = ({
   receiver,
   token,
   flowRateEther,
   existingStream,
+  newStartDate,
+  oldStartDate,
   newEndDate,
   oldEndDate,
 }) => {
@@ -171,29 +177,17 @@ export const StreamingPreview: FC<{
 
   const calculateBufferInfo = useCalculateBufferInfo();
 
-  const newEndDateString = useMemo(() => {
-    return newEndDate ? (
-      <Stack direction="row" alignItems="center" gap={0.5}>
-        <TimerOutlined />
-        {format(newEndDate, "P")} at {format(newEndDate, "p")}
-      </Stack>
-    ) : (
-      <Stack direction="row" alignItems="center" gap={0.5}>
-        <AllInclusiveIcon />
-        Never
-      </Stack>
-    );
-  }, [newEndDate]);
-
-  const oldEndDateString = useMemo(() => {
-    return oldEndDate ? (
-      <>
-        {format(oldEndDate, "P")} at {format(oldEndDate, "p")}
-      </>
-    ) : (
-      "Never"
-    );
-  }, [oldEndDate]);
+  const oldEndDateString = useMemo(
+    () =>
+      oldEndDate ? (
+        <>
+          {format(oldEndDate, "P")} at {format(oldEndDate, "p")}
+        </>
+      ) : (
+        "Never"
+      ),
+    [oldEndDate]
+  );
 
   const tokenBufferQuery = rpcApi.useTokenBufferQuery(
     token.address ? { chainId: network.id, token: token.address } : skipToken
@@ -320,6 +314,16 @@ export const StreamingPreview: FC<{
           {newAmountPerSecond} {token.symbol}
         </PreviewItem>
 
+        {/* TODO: Handle start date if modifying stream */}
+        {newStartDate && (
+          <PreviewItem dataCy="preview-starts-on" label="Start date">
+            <Stack direction="row" alignItems="center" gap={0.5}>
+              <TimerOutlined />
+              {format(newStartDate, "P")} at {format(newStartDate, "p")}
+            </Stack>
+          </PreviewItem>
+        )}
+
         <PreviewItem
           dataCy="preview-ends-on"
           label="End date"
@@ -327,7 +331,19 @@ export const StreamingPreview: FC<{
             existingFlow && oldEndDate != newEndDate && oldEndDateString
           }
         >
-          {newEndDateString}
+          <Stack direction="row" alignItems="center" gap={0.5}>
+            {newEndDate ? (
+              <>
+                <TimerOutlined />
+                {format(newEndDate, "P")} at {format(newEndDate, "p")}
+              </>
+            ) : (
+              <>
+                <AllInclusiveIcon />
+                Never
+              </>
+            )}
+          </Stack>
         </PreviewItem>
 
         {newBufferAmount && (

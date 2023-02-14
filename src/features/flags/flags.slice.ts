@@ -16,6 +16,7 @@ export enum Flag {
   TokenAdded = "token-added",
   VestingFeature = "vesting-feature",
   MainnetFeature = "mainnet-feature",
+  FlowSchedulerFeature = "flow-scheduler-feature",
 }
 
 interface BaseFlag<T> {
@@ -41,6 +42,9 @@ interface VestingFeatureFlag extends BaseFlag<Flag.VestingFeature> {
 }
 
 interface MainnetFeatureFlag extends BaseFlag<Flag.MainnetFeature> {}
+
+interface FlowSchedulerFeatureFlag
+  extends BaseFlag<Flag.FlowSchedulerFeature> {}
 
 type FlagType =
   | TestTokensReceivedFlag
