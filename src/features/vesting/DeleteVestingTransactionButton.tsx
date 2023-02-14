@@ -1,8 +1,6 @@
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
-import {
-  usePendingVestingScheduleDelete,
-} from "../pendingUpdates/PendingVestingScheduleDelete";
+import { usePendingVestingScheduleDelete } from "../pendingUpdates/PendingVestingScheduleDelete";
 import { rpcApi } from "../redux/store";
 import { useConnectionBoundary } from "../transactionBoundary/ConnectionBoundary";
 import {
@@ -46,7 +44,7 @@ export const DeleteVestingTransactionButton: FC<{
   const isSender =
     senderAddress.toLowerCase() === visibleAddress?.toLowerCase();
 
-  const { currentData: activeVestingSchedule } =
+  const { data: activeVestingSchedule } =
     rpcApi.useGetActiveVestingScheduleQuery(
       isSender
         ? {
@@ -57,6 +55,18 @@ export const DeleteVestingTransactionButton: FC<{
           }
         : skipToken
     );
+
+  const { data: activeFlow } = rpcApi.useGetActiveFlowQuery(
+    isSender && activeVestingSchedule
+      ? {
+          chainId: network.id,
+          tokenAddress: superTokenAddress,
+          receiverAddress,
+          senderAddress,
+        }
+      : skipToken
+  );
+  const shouldDeleteActiveFlow = !!activeFlow; // (KK): A bit naive.
 
   const isBeingDeleted = !!usePendingVestingScheduleDelete({
     chainId: network.id,
@@ -101,6 +111,7 @@ export const DeleteVestingTransactionButton: FC<{
                 signer,
                 overrides: await getOverrides(),
                 waitForConfirmation: false,
+                deleteFlow: shouldDeleteActiveFlow,
               })
                 .unwrap()
                 .then(...txAnalytics("Delete Vesting Schedule", primaryArgs));
