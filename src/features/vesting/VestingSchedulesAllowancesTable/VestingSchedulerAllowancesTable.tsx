@@ -55,8 +55,8 @@ const VestingSchedulerAllowancesTable: FC = () => {
     );
 
     return Object.entries(vestingSchedulesGroupedByToken).map((entry) => {
-      const [tokenAddress] = entry;
-      const activeVestingSchedules = entry[1].filter(
+      const [tokenAddress, allGroupVestingSchedules] = entry;
+      const activeVestingSchedules = allGroupVestingSchedules.filter(
         (x) => !x.status.isFinished
       );
 
