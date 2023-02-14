@@ -21,8 +21,8 @@ import { MeshStore, FsStoreStorageAdapter } from '@graphql-mesh/store';
 import { path as pathModule } from '@graphql-mesh/cross-helpers';
 import { ImportFn } from '@graphql-mesh/types';
 import type { SchedulingTypes } from './sources/scheduling/types';
-export type Maybe<T> = T | undefined;
-export type InputMaybe<T> = T | undefined;
+export type Maybe<T> = T | null | undefined;
+export type InputMaybe<T> = T | null | undefined;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
@@ -2313,7 +2313,13 @@ export type GetTasksQueryVariables = Exact<{
 }>;
 
 
-export type GetTasksQuery = { tasks: Array<Pick<CreateTask, 'superToken' | 'startDateMaxDelay' | 'startDate' | 'startAmount' | 'sender' | 'receiver' | 'id' | 'flowRate' | 'expirationAt' | 'executionAt' | 'executedAt' | 'cancelledAt'> | Pick<DeleteTask, 'id' | 'cancelledAt' | 'executedAt' | 'executionAt' | 'expirationAt' | 'receiver' | 'sender' | 'superToken'>> };
+export type GetTasksQuery = { tasks: Array<(
+    { __typename: 'CreateTask' }
+    & Pick<CreateTask, 'superToken' | 'startDateMaxDelay' | 'startDate' | 'startAmount' | 'sender' | 'receiver' | 'id' | 'flowRate' | 'expirationAt' | 'executionAt' | 'executedAt' | 'cancelledAt'>
+  ) | (
+    { __typename: 'DeleteTask' }
+    & Pick<DeleteTask, 'id' | 'cancelledAt' | 'executedAt' | 'executionAt' | 'expirationAt' | 'receiver' | 'sender' | 'superToken'>
+  )> };
 
 
 export const PollDocument = gql`
@@ -2331,6 +2337,7 @@ export const GetTasksDocument = gql`
     orderDirection: $orderDirection
     where: $where
   ) {
+    __typename
     ... on CreateTask {
       superToken
       startDateMaxDelay

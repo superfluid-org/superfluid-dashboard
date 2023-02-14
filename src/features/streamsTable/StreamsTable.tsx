@@ -15,19 +15,16 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Address, Stream } from "@superfluid-finance/sdk-core";
+import { endOfToday, getUnixTime } from "date-fns";
 import { FC, memo, useCallback, useMemo, useState } from "react";
-import {
-  isActiveStreamSchedulingOrder,
-  mapStreamScheduling,
-} from "../../hooks/streamSchedulingHooks";
-import { getAddress } from "../../utils/memoizedEthersUtils";
+import { mapStreamScheduling } from "../../hooks/streamSchedulingHooks";
+import { schedulingSubgraphApi } from "../../scheduling-subgraph/schedulingSubgraphApi";
 import { EmptyRow } from "../common/EmptyRow";
 import { Network } from "../network/networks";
 import {
   PendingOutgoingStream,
   useAddressPendingOutgoingStreams,
 } from "../pendingUpdates/PendingOutgoingStream";
-import { platformApi } from "../redux/platformApi/platformApi";
 import { subgraphApi } from "../redux/store";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import StreamRow, { StreamRowLoading } from "./StreamRow";
@@ -102,23 +99,35 @@ const StreamsTable: FC<StreamsTableProps> = ({
     },
   });
 
-  const { schedulings } = { schedulings: [] };
-  // TODO(KK): Un-comment and handle when bringing back stream scheduling.
+  const { activeTasks } = schedulingSubgraphApi.useGetTasksQuery(
+    visibleAddress && network.flowSchedulerSubgraphUrl
+      ? {
+          chainId: network.id,
+          where: {
+            or: [
+              {
+                sender: visibleAddress.toLowerCase(),
+              },
+              { receiver: visibleAddress.toLowerCase() },
+            ],
+            cancelledAt: null,
+            executedAt: null,
+            expirationAt_gte: getUnixTime(endOfToday()).toString(),
+          },
+        }
+      : skipToken,
+    {
+      selectFromResult: (response) => {
+        const unixNow = getUnixTime(new Date());
 
-  // platformApi.useListSubscriptionsQuery(
-  //   visibleAddress && network.platformUrl
-  //     ? {
-  //         account: getAddress(visibleAddress),
-  //         chainId: network.id,
-  //         baseUrl: network.platformUrl,
-  //       }
-  //     : skipToken,
-  //   {
-  //     selectFromResult: (x) => ({
-  //       schedulings: x.data?.data ?? [],
-  //     }),
-  //   }
-  // );
+        return {
+          activeTasks: (response.data?.tasks ?? []).filter(
+            (task) => !task.expirationAt || Number(task.expirationAt) > unixNow
+          ),
+        };
+      },
+    }
+  );
 
   const pendingOutgoingStreams =
     useAddressPendingOutgoingStreams(visibleAddress);
@@ -126,7 +135,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
   const outgoingStreams = useMemo<(Stream | PendingOutgoingStream)[]>(() => {
     const queriedOutgoingStreams = outgoingStreamsQuery.data?.items ?? [];
     return [...queriedOutgoingStreams, ...pendingOutgoingStreams];
-  }, [outgoingStreamsQuery.data, pendingOutgoingStreams, schedulings]);
+  }, [outgoingStreamsQuery.data, pendingOutgoingStreams]);
 
   const streams = useMemo<StreamType[]>(() => {
     return [
@@ -153,13 +162,29 @@ const StreamsTable: FC<StreamsTableProps> = ({
       .map((stream) => {
         const isStreamActive = stream.currentFlowRate !== "0";
 
-        const streamScheduling = isStreamActive
-          ? schedulings.find((x) => isActiveStreamSchedulingOrder(stream, x))
-          : undefined;
+        const streamRelatedTasks = isStreamActive
+          ? activeTasks.filter(
+              (task) =>
+                task.sender === stream.sender &&
+                task.receiver === stream.receiver &&
+                task.superToken === stream.token
+            )
+          : [];
 
-        return mapStreamScheduling(stream, streamScheduling);
+        const createTask = streamRelatedTasks.find(
+          (task) => task.__typename === "CreateTask"
+        );
+        const deleteTask = streamRelatedTasks.find(
+          (task) => task.__typename === "DeleteTask"
+        );
+
+        return mapStreamScheduling(
+          stream,
+          createTask?.executionAt ? Number(createTask.executionAt) : null,
+          deleteTask?.executionAt ? Number(deleteTask.executionAt) : null
+        );
       });
-  }, [incomingStreamsQuery.data, outgoingStreams, streamsFilter]);
+  }, [incomingStreamsQuery.data, outgoingStreams, streamsFilter, activeTasks]);
 
   const handleChangePage = (_e: unknown, newPage: number) => setPage(newPage);
 

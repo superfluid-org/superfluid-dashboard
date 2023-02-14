@@ -3,10 +3,8 @@ import { Stream } from "@superfluid-finance/sdk-core";
 import { StreamQuery } from "@superfluid-finance/sdk-redux";
 import { findNetworkByChainId } from "../features/network/networks";
 import { PendingOutgoingStream } from "../features/pendingUpdates/PendingOutgoingStream";
-import { platformApi } from "../features/redux/platformApi/platformApi";
 import { rpcApi, subgraphApi } from "../features/redux/store";
 import { StreamScheduling } from "../features/streamsTable/StreamScheduling";
-import { getAddress } from "../utils/memoizedEthersUtils";
 
 export const useScheduledStream = (
   arg: Omit<StreamQuery, "block"> | SkipToken
@@ -16,9 +14,6 @@ export const useScheduledStream = (
 
   const isSkip = arg === skipToken;
   const network = isSkip ? undefined : findNetworkByChainId(arg.chainId);
-
-  const { schedulings } = { schedulings: [] };
-  // TODO(KK): Un-comment and handle when bringing back stream scheduling.
 
   const scheduleResponse = rpcApi.useScheduledDatesQuery(
     stream && network?.flowSchedulerContractAddress
@@ -31,32 +26,25 @@ export const useScheduledStream = (
       : skipToken
   );
 
-  // const subscriptionsResponse = platformApi.useListSubscriptionsQuery(
-  //   stream && network?.platformUrl
-  //     ? {
-  //         account: getAddress(stream.sender),
-  //         chainId: network.id,
-  //         baseUrl: network.platformUrl,
-  //       }
-  //     : skipToken,
-  //   {
-  //     selectFromResult: (response) => ({
-  //       schedulings: response.currentData?.data ?? [],
-  //     }),
-  //   }
-  // );
-
   const isStreamActive = stream && stream.currentFlowRate !== "0";
-  const streamScheduling = isStreamActive
-    ? schedulings.find((x) => isActiveStreamSchedulingOrder(stream, x))
-    : undefined;
+  const streamScheduling = isStreamActive ? scheduleResponse.data : undefined;
 
   return subgraphApi.useStreamQuery(arg, {
     selectFromResult: (x) => ({
       ...x,
-      data: x.data ? mapStreamScheduling(x.data, streamScheduling) : x.data,
+      data: x.data
+        ? mapStreamScheduling(
+            x.data,
+            streamScheduling?.startDate,
+            streamScheduling?.endDate
+          )
+        : x.data,
       currentData: x.currentData
-        ? mapStreamScheduling(x.currentData, streamScheduling)
+        ? mapStreamScheduling(
+            x.currentData,
+            streamScheduling?.startDate,
+            streamScheduling?.endDate
+          )
         : x.currentData,
     }),
   });
@@ -64,14 +52,16 @@ export const useScheduledStream = (
 
 export const mapStreamScheduling = <T extends Stream | PendingOutgoingStream>(
   stream: T,
-  streamScheduling?: any // TODO(KK): Handle when bringing back stream scheduling
+  startDate?: number | null,
+  endDate?: number | null
 ): T & StreamScheduling => {
   const isStreamActive = stream.currentFlowRate !== "0";
-  const startDateScheduled = undefined;
+
   const endDateScheduled =
-    isStreamActive && streamScheduling?.meta_data?.end_date
-      ? new Date(streamScheduling.meta_data.end_date)
-      : undefined;
+    isStreamActive && endDate ? new Date(endDate) : undefined;
+
+  const startDateScheduled =
+    isStreamActive && startDate ? new Date(startDate) : undefined;
 
   return {
     ...stream,
@@ -85,18 +75,3 @@ export const mapStreamScheduling = <T extends Stream | PendingOutgoingStream>(
     startDate: startDateScheduled ?? new Date(stream.createdAtTimestamp * 1000),
   };
 };
-
-export const isActiveStreamSchedulingOrder = (
-  stream: {
-    sender: string;
-    token: string;
-    receiver: string;
-  },
-  subscription: any // TODO(KK): Handle when bringing back stream scheduling
-) =>
-  subscription.type === "SCHEDULED_FLOW_CREATE" &&
-  subscription.is_subscribed &&
-  subscription.account?.toLowerCase() === stream.sender.toLowerCase() &&
-  subscription.meta_data?.token?.toLowerCase() === stream.token.toLowerCase() &&
-  subscription.meta_data?.receiver?.toLowerCase() ===
-    stream.receiver.toLowerCase();

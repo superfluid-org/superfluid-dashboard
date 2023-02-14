@@ -5,6 +5,7 @@ query getTasks($where: Task_filter = {}, $orderBy: Task_orderBy = id, $orderDire
     orderDirection: $orderDirection
     where: $where
   ) {
+    __typename
     ... on CreateTask {
       superToken
       startDateMaxDelay

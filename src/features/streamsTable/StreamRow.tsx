@@ -1,6 +1,6 @@
+import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import TimerOutlined from "@mui/icons-material/TimerOutlined";
 import {
   Box,
@@ -20,8 +20,8 @@ import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { useRouter } from "next/router";
 import { FC, memo } from "react";
-import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
+import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import { getStreamPagePath } from "../../pages/stream/[_network]/[_stream]";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { Network } from "../network/networks";
@@ -29,7 +29,6 @@ import { PendingOutgoingStream } from "../pendingUpdates/PendingOutgoingStream";
 import { UnitOfTime } from "../send/FlowRateInput";
 import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
-import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import CancelStreamButton from "./CancelStreamButton/CancelStreamButton";
 import ModifyStreamButton from "./ModifyStreamButton";
@@ -98,7 +97,6 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
     receiver,
     currentFlowRate,
     streamedUntilUpdatedAt,
-    createdAtTimestamp,
     updatedAtTimestamp,
   } = stream;
 
