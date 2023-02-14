@@ -30,18 +30,18 @@ const VestingNotSupportedCard = () => {
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { isMainnetEnabled } = useFeatureFlags();
 
-  const NetworkLinks = useMemo(
+  const NetworkSwitchLinks = useMemo(
     () =>
       vestingSupportedNetworks.map((network, index) => {
+        const isNetworkDisabled =
+          network.id === networkDefinition.ethereum.id && !isMainnetEnabled;
+
         if (VESTING_SUPPORTED_NETWORK_IDS.length - 1 === index) {
           return (
             <NetworkSwitchLink
               key={network.id}
               network={network}
-              disabled={
-                network.id === networkDefinition.ethereum.id &&
-                !isMainnetEnabled
-              }
+              disabled={isNetworkDisabled}
             />
           );
         }
@@ -51,10 +51,7 @@ const VestingNotSupportedCard = () => {
             <Fragment key={network.id}>
               <NetworkSwitchLink
                 network={network}
-                disabled={
-                  network.id === networkDefinition.ethereum.id &&
-                  !isMainnetEnabled
-                }
+                disabled={isNetworkDisabled}
               />
               {" or "}
             </Fragment>
@@ -63,13 +60,7 @@ const VestingNotSupportedCard = () => {
 
         return (
           <Fragment key={network.id}>
-            <NetworkSwitchLink
-              network={network}
-              disabled={
-                network.id === networkDefinition.ethereum.id &&
-                !isMainnetEnabled
-              }
-            />
+            <NetworkSwitchLink network={network} disabled={isNetworkDisabled} />
             {", "}
           </Fragment>
         );
@@ -97,7 +88,7 @@ const VestingNotSupportedCard = () => {
         This network is not supported.
       </Typography>
       <Typography color="text.secondary" textAlign="center">
-        Change your network to {NetworkLinks}
+        Change your network to {NetworkSwitchLinks}
       </Typography>
     </Paper>
   );
@@ -179,13 +170,22 @@ const UnlockVestingCard = () => {
         >
           Enter Access Code
         </Button>
-        <Button data-cy={"try-on-goerli-button"} variant="outlined" size="large" onClick={switchToGoerli}>
+        <Button
+          data-cy={"try-on-goerli-button"}
+          variant="outlined"
+          size="large"
+          onClick={switchToGoerli}
+        >
           Try out on Goerli Testnet
         </Button>
       </Stack>
       <Typography variant="body1" color="text.secondary">
         Want to Vest tokens? Apply for the access code{" "}
-        <Link data-cy="vesting-form-link" href="https://use.superfluid.finance/vesting" target="_blank">
+        <Link
+          data-cy="vesting-form-link"
+          href="https://use.superfluid.finance/vesting"
+          target="_blank"
+        >
           here
         </Link>
         .
