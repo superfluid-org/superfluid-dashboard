@@ -9,7 +9,6 @@ import {
   TransactionInfo,
   TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
-import { addMinutes, getUnixTime } from "date-fns";
 import { BigNumber } from "ethers";
 import { getVestingScheduler } from "../../../eth-sdk/getEthSdk";
 import { UnitOfTime } from "../../send/FlowRateInput";
@@ -52,7 +51,7 @@ interface RpcVestingSchedule {
 export const vestingSchedulerMutationEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
     deleteVestingSchedule: builder.mutation<
-      TransactionInfo & { subTransactionTitles?: TransactionTitle[] },
+      TransactionInfo & { subTransactionTitles: TransactionTitle[] },
       DeleteVestingSchedule
     >({
       queryFn: async (
@@ -113,16 +112,26 @@ export const vestingSchedulerMutationEndpoints = {
         const transactionResponse = await executable.exec(signer);
         const subTransactionTitles = batchedOperations.map((x) => x.title);
 
-        return registerNewTransactionAndReturnQueryFnResult({
+        await registerNewTransaction({
           transactionResponse,
           chainId,
           dispatch,
           signer: signerAddress,
           title: "Delete Vesting Schedule",
-          extraData: transactionExtraData,
+          extraData: {
+            subTransactionTitles,
+            ...(transactionExtraData ?? {}),
+          },
           waitForConfirmation: !!waitForConfirmation,
-          ...(subTransactionTitles.length > 1 ? { subTransactionTitles } : {}),
         });
+
+        return {
+          data: {
+            chainId,
+            hash: transactionResponse.hash,
+            subTransactionTitles,
+          },
+        };
       },
     }),
     createVestingSchedule: builder.mutation<
