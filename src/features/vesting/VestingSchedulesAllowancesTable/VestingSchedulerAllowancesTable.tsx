@@ -15,6 +15,7 @@ import NoContentPaper from "../../../components/NoContent/NoContentPaper";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import TooltipIcon from "../../common/TooltipIcon";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
+import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION } from "../../redux/endpoints/flowSchedulerEndpoints";
 import { rpcApi } from "../../redux/store";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import VestingSchedulerAllowanceRow, {
@@ -94,8 +95,8 @@ const VestingSchedulerAllowancesTable: FC = () => {
         activeVestingSchedules.length === 0
           ? 0 // None
           : activeVestingSchedules.some((x) => !x.cliffAndFlowExecutedAt) // Create not needed after cliffAndFlows are executed
-          ? 5 // Create or Delete
-          : 4; // Delete
+          ? ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION
+          : ACL_DELETE_PERMISSION;
 
       return {
         tokenAddress,
