@@ -55,9 +55,12 @@ const VestingSchedulerAllowancesTable: FC = () => {
     );
 
     return Object.entries(vestingSchedulesGroupedByToken).map((entry) => {
-      const [tokenAddress, group] = entry;
+      const [tokenAddress] = entry;
+      const activeVestingSchedules = entry[1].filter(
+        (x) => !x.status.isFinished
+      );
 
-      const recommendedTokenAllowance = group.reduce(
+      const recommendedTokenAllowance = activeVestingSchedules.reduce(
         (previousValue, vestingSchedule) => {
           const startDateValidAfterAllowance = BigNumber.from(
             vestingSchedule.flowRate
@@ -78,7 +81,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
         BigNumber.from("0")
       );
 
-      const requiredFlowOperatorAllowance = group
+      const requiredFlowOperatorAllowance = activeVestingSchedules
         .filter((x) => !x.cliffAndFlowExecutedAt)
         .reduce(
           (previousValue, vestingSchedule) =>
@@ -86,10 +89,18 @@ const VestingSchedulerAllowancesTable: FC = () => {
           BigNumber.from("0")
         );
 
+      // https://docs.superfluid.finance/superfluid/developers/constant-flow-agreement-cfa/cfa-access-control-list-acl/acl-features
+      const requiredFlowOperatorPermissions =
+        activeVestingSchedules.length === 0
+          ? 0 // None
+          : activeVestingSchedules.some((x) => !x.cliffAndFlowExecutedAt)
+          ? 5 // Create or Delete
+          : 4; // Delete
+
       return {
         tokenAddress,
         recommendedTokenAllowance,
-        requiredFlowOperatorPermissions: 5, // Create not needed after cliffAndFlows are executed
+        requiredFlowOperatorPermissions, // Create not needed after cliffAndFlows are executed
         requiredFlowOperatorAllowance,
       };
     });
