@@ -48,9 +48,9 @@ export const superfluidRpcUrls = {
 
 export const superfluidPlatformUrls = {
   goerli: "https://prod-goerli-platform-service.dev.superfluid.dev",
-  polygon: "https://prod-polygon-mainnet-platform-service.dev.superfluid.dev",
-  bnbSmartChain: "https://prod-bsc-mainnet-platform-service.dev.superfluid.dev",
-  ethereum: "https://prod-eth-mainnet-platform-service.dev.superfluid.dev",
+  polygon: "https://prod-polygon-mainnet-platform-service.prod.superfluid.dev",
+  bnbSmartChain: "https://prod-bsc-mainnet-platform-service.prod.superfluid.dev",
+  ethereum: "https://prod-eth-mainnet-platform-service.prod.superfluid.dev",
 } as const;
 
 export const vestingSubraphUrls = {
