@@ -335,7 +335,7 @@ const TokenPageContent: FC<{
 
           {accountAddress && tokenAddress && (
             <TokenBalanceGraph
-              timeUnitFilter={graphFilter}
+              filter={graphFilter}
               network={network}
               account={accountAddress}
               token={tokenAddress}

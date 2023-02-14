@@ -1,6 +1,7 @@
 import { ErrorMessage } from "@hookform/error-message";
 import {
   Alert,
+  AlertTitle,
   Box,
   Button,
   FormControlLabel,
@@ -513,6 +514,29 @@ export const CreateVestingForm: FC<{
             </FormGroup>
           </Box>
         )}
+
+        <Alert severity="warning">
+          {cliffEnabled ? (
+            <>
+              <AlertTitle data-cy={"top-up-alert-title"}>Don’t forget to top up for the cliff!</AlertTitle>
+              <Typography data-cy={"top-up-alert-text"}>
+                The auto-top up it will not take account of the vesting cliff.
+                Remember to top up your Super Token balance for the cliff amount
+                and the first week of a vesting stream.
+              </Typography>
+            </>
+          ) : (
+            <>
+              <AlertTitle data-cy={"top-up-alert-title"}>
+                Don’t forget to top up for the vesting schedule!
+              </AlertTitle>
+              <Typography data-cy={"top-up-alert-text"}>
+                Remember to top up your Super Token balance for the cliff amount
+                and vesting stream.
+              </Typography>
+            </>
+          )}
+        </Alert>
       </Stack>
 
       <Stack gap={1}>{PreviewVestingScheduleButton}</Stack>

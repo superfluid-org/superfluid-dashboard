@@ -124,3 +124,9 @@ Then(/^User clicks on the input access code button$/, function () {
 Given(/^Vesting creation form is visible$/, function () {
     VestingPage.validateVestingFormIsVisible()
 });
+Then(/^The top\-up warning message without cliff is shown$/, function () {
+    VestingPage.validateTopUpMessageWithoutCliff()
+});
+Then(/^The top\-up warning message when cliff is enabled is shown$/, function () {
+    VestingPage.validateTopUpMessageWithCliff()
+});

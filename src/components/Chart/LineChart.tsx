@@ -39,8 +39,8 @@ const LineChart: FC<LineChartProps> = ({
     const canvasContext = canvasRef.current?.getContext("2d");
     if (!canvasContext) return;
 
-    const initialDatasetsConfig = datasetsConfigCallbacks.map((cb) => ({
-      data: [],
+    const initialDatasetsConfig = datasetsConfigCallbacks.map((cb, index) => ({
+      data: datasets[index] || [],
       ...cb(canvasContext),
     }));
 
@@ -76,8 +76,12 @@ const LineChart: FC<LineChartProps> = ({
     };
 
     // We do not want options to destroy and rebuild the chart. We are updating it below instead.
+    // Also disabling datasets as dep because we want to update them separately down without creating new chart.
+    // TODO: (M) This should be more clear and split up. Chart should be ideally created only once.
+    // datasetsConfigCallbacks could be moved to a separate useEffect although we should use their initial value.
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [datasetsConfigCallbacks, height, theme]);
+  }, [datasetsConfigCallbacks, height]);
 
   useEffect(() => {
     const currentChart = chartRef.current;

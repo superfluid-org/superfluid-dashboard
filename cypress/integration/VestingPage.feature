@@ -1,3 +1,4 @@
+@numTestsKeptInMemory(0)
 @vesting
 Feature: Vesting page test cases
 
@@ -38,6 +39,13 @@ Feature: Vesting page test cases
     And User inputs "1" as the total vested amount
     And User inputs "4" "year" as the total vesting period
     Then "Cliff amount has to be less than total amount." error is shown in the form
+
+  Scenario: Creation form - Top-up warning message
+    Given Transactional account bob is connected to the dashboard on goerli
+    And User clicks on the create vesting schedule button
+    Then The top-up warning message without cliff is shown
+    And User clicks on the cliff date toggle
+    Then The top-up warning message when cliff is enabled is shown
 
   Scenario: Creation form - Cliff amount period has to be before total vesting period
     Given Transactional account bob is connected to the dashboard on goerli
@@ -195,7 +203,15 @@ Feature: Vesting page test cases
     Given "Vesting details page" is open without connecting a wallet
     And Vesting details page is shown correctly for the created schedule
 
-    @NoCode
+  Scenario: Token approval shown correctly when the schedule has ended
+    Given "Dashboard Page" is open without connecting a wallet
+    Given User uses view mode to look at "accountWithLotsOfData"
+    And User clicks on the "vesting" navigation button
+    And "StIbAlluoUSD" permissions icons are all "green"
+    And User opens "StIbAlluoUSD" permission table row
+    Then All current and recommended permissions are correctly showed for "fDAIx"
+
+  @NoCode
   Scenario: Vesting schedule available on goerli without code
     Given Transactional account john is connected to the dashboard on goerli
       And User clicks on the "vesting" navigation button

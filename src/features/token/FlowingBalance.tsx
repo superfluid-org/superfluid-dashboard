@@ -1,14 +1,8 @@
-import { memo, ReactElement, useEffect, useMemo, useState } from "react";
-import { BigNumberish, BigNumber, utils } from "ethers";
 import { Box } from "@mui/material";
+import { memo, ReactElement } from "react";
 import Amount from "./Amount";
-import { useStateWithDep } from "../../useStateWithDep";
-import Decimal from "decimal.js";
-import useFlowingBalance from "./useFlowingBalance";
 import useEtherSignificantFlowingDecimal from "./useEtherSignificantFlowingDecimal";
-
-// Keep it below a second.
-const ANIMATION_MINIMUM_STEP_TIME = 75;
+import useFlowingBalance from "./useFlowingBalance";
 
 export interface FlowingBalanceProps {
   balance: string;
