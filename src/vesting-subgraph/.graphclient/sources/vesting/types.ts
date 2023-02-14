@@ -140,6 +140,8 @@ export type Event_filter = {
   gasPrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<Event_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<Event_filter>>>;
 };
 
 export type Event_orderBy =
@@ -665,6 +667,8 @@ export type Task_filter = {
   vestingSchedule_?: InputMaybe<VestingSchedule_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<Task_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<Task_filter>>>;
 };
 
 export type Task_orderBy =
@@ -770,6 +774,8 @@ export type TokenSenderReceiverCursor_filter = {
   currentEndVestingTask_?: InputMaybe<Task_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<TokenSenderReceiverCursor_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<TokenSenderReceiverCursor_filter>>>;
 };
 
 export type TokenSenderReceiverCursor_orderBy =
@@ -950,6 +956,8 @@ export type VestingCliffAndFlowExecutedEvent_filter = {
   flowDelayCompensation_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<VestingCliffAndFlowExecutedEvent_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<VestingCliffAndFlowExecutedEvent_filter>>>;
 };
 
 export type VestingCliffAndFlowExecutedEvent_orderBy =
@@ -1129,6 +1137,8 @@ export type VestingEndExecutedEvent_filter = {
   didCompensationFail_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<VestingEndExecutedEvent_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<VestingEndExecutedEvent_filter>>>;
 };
 
 export type VestingEndExecutedEvent_orderBy =
@@ -1293,6 +1303,8 @@ export type VestingEndFailedEvent_filter = {
   endDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<VestingEndFailedEvent_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<VestingEndFailedEvent_filter>>>;
 };
 
 export type VestingEndFailedEvent_orderBy =
@@ -1533,6 +1545,8 @@ export type VestingScheduleCreatedEvent_filter = {
   cliffAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<VestingScheduleCreatedEvent_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<VestingScheduleCreatedEvent_filter>>>;
 };
 
 export type VestingScheduleCreatedEvent_orderBy =
@@ -1690,6 +1704,8 @@ export type VestingScheduleDeletedEvent_filter = {
   receiver_not_contains?: InputMaybe<Scalars['Bytes']>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<VestingScheduleDeletedEvent_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<VestingScheduleDeletedEvent_filter>>>;
 };
 
 export type VestingScheduleDeletedEvent_orderBy =
@@ -1860,6 +1876,8 @@ export type VestingScheduleUpdatedEvent_filter = {
   endDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<VestingScheduleUpdatedEvent_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<VestingScheduleUpdatedEvent_filter>>>;
 };
 
 export type VestingScheduleUpdatedEvent_orderBy =
@@ -2055,6 +2073,8 @@ export type VestingSchedule_filter = {
   events_?: InputMaybe<Event_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<VestingSchedule_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<VestingSchedule_filter>>>;
 };
 
 export type VestingSchedule_orderBy =

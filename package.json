@@ -11,7 +11,8 @@
     "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest",
     "generate-eth-sdk": "del-cli ./src/eth-sdk/client && del-cli ./src/eth-sdk/abis && eth-sdk -p ./src/eth-sdk",
     "generate-platform-api-template": "npx @rtk-query/codegen-openapi ./src/features/redux/platformApi/platformApiCodegenConfig.ts",
-    "vesting-graphql-codegen": "graphclient build --dir ./src/vesting-subgraph"
+    "vesting-graphql-codegen": "graphclient build --dir ./src/vesting-subgraph",
+    "scheduling-graphql-codegen": "graphclient build --dir ./src/scheduling-subgraph"
   },
   "dependencies": {
     "@date-io/date-fns": "^2.16.0",

@@ -1,8 +1,8 @@
 sources:
-  - name: vesting
+  - name: scheduling
     handler:
       graphql:
-        endpoint: '{context.url:https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-eth-goerli}'
+        endpoint: '{context.url:https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-eth-goerli}'
         retry: 5
 documents:
   - './*.graphql'

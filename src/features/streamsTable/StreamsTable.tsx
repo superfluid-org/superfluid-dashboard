@@ -104,6 +104,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
 
   const { schedulings } = { schedulings: [] };
   // TODO(KK): Un-comment and handle when bringing back stream scheduling.
+
   // platformApi.useListSubscriptionsQuery(
   //   visibleAddress && network.platformUrl
   //     ? {

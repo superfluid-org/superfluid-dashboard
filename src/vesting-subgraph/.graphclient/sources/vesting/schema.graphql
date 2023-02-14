@@ -137,6 +137,8 @@ input Event_filter {
   gasPrice_not_in: [BigInt!]
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
+  and: [Event_filter]
+  or: [Event_filter]
 }
 
 enum Event_orderBy {
@@ -775,6 +777,8 @@ input Task_filter {
   vestingSchedule_: VestingSchedule_filter
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
+  and: [Task_filter]
+  or: [Task_filter]
 }
 
 enum Task_orderBy {
@@ -881,6 +885,8 @@ input TokenSenderReceiverCursor_filter {
   currentEndVestingTask_: Task_filter
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
+  and: [TokenSenderReceiverCursor_filter]
+  or: [TokenSenderReceiverCursor_filter]
 }
 
 enum TokenSenderReceiverCursor_orderBy {
@@ -1062,6 +1068,8 @@ input VestingCliffAndFlowExecutedEvent_filter {
   flowDelayCompensation_not_in: [BigInt!]
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
+  and: [VestingCliffAndFlowExecutedEvent_filter]
+  or: [VestingCliffAndFlowExecutedEvent_filter]
 }
 
 enum VestingCliffAndFlowExecutedEvent_orderBy {
@@ -1242,6 +1250,8 @@ input VestingEndExecutedEvent_filter {
   didCompensationFail_not_in: [Boolean!]
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
+  and: [VestingEndExecutedEvent_filter]
+  or: [VestingEndExecutedEvent_filter]
 }
 
 enum VestingEndExecutedEvent_orderBy {
@@ -1407,6 +1417,8 @@ input VestingEndFailedEvent_filter {
   endDate_not_in: [BigInt!]
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
+  and: [VestingEndFailedEvent_filter]
+  or: [VestingEndFailedEvent_filter]
 }
 
 enum VestingEndFailedEvent_orderBy {
@@ -1630,6 +1642,8 @@ input VestingScheduleCreatedEvent_filter {
   cliffAmount_not_in: [BigInt!]
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
+  and: [VestingScheduleCreatedEvent_filter]
+  or: [VestingScheduleCreatedEvent_filter]
 }
 
 enum VestingScheduleCreatedEvent_orderBy {
@@ -1788,6 +1802,8 @@ input VestingScheduleDeletedEvent_filter {
   receiver_not_contains: Bytes
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
+  and: [VestingScheduleDeletedEvent_filter]
+  or: [VestingScheduleDeletedEvent_filter]
 }
 
 enum VestingScheduleDeletedEvent_orderBy {
@@ -1959,6 +1975,8 @@ input VestingScheduleUpdatedEvent_filter {
   endDate_not_in: [BigInt!]
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
+  and: [VestingScheduleUpdatedEvent_filter]
+  or: [VestingScheduleUpdatedEvent_filter]
 }
 
 enum VestingScheduleUpdatedEvent_orderBy {
@@ -2155,6 +2173,8 @@ input VestingSchedule_filter {
   events_: Event_filter
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
+  and: [VestingSchedule_filter]
+  or: [VestingSchedule_filter]
 }
 
 enum VestingSchedule_orderBy {

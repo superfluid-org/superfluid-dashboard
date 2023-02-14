@@ -31,7 +31,6 @@ export const useScheduledStream = (
       : skipToken
   );
 
-  console.log({ scheduleResponse });
   // const subscriptionsResponse = platformApi.useListSubscriptionsQuery(
   //   stream && network?.platformUrl
   //     ? {

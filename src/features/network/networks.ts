@@ -28,6 +28,7 @@ export type Network = Chain & {
     } & TokenMinimal;
   };
   flowSchedulerContractAddress?: `0x${string}`;
+  flowSchedulerSubgraphUrl?: `https://${string}` | undefined;
   vestingContractAddress: `0x${string}` | undefined;
   vestingSubgraphUrl: `https://${string}` | undefined;
   platformUrl: string | undefined;
@@ -161,6 +162,8 @@ export const networkDefinition: {
       },
     },
     flowSchedulerContractAddress: "0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca",
+    flowSchedulerSubgraphUrl:
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-eth-goerli",
     vestingContractAddress: vestingContractAddresses.goerli,
     vestingSubgraphUrl: vestingSubraphUrls.goerli,
     platformUrl: superfluidPlatformUrls.goerli,
