@@ -66,7 +66,6 @@ export const DeleteVestingTransactionButton: FC<{
         }
       : skipToken
   );
-  const shouldDeleteActiveFlow = !!activeFlow; // (KK): A bit naive.
 
   const isBeingDeleted = !!usePendingVestingScheduleDelete({
     chainId: network.id,
@@ -94,9 +93,14 @@ export const DeleteVestingTransactionButton: FC<{
               startIcon: <CloseRoundedIcon />,
             }}
             onClick={async (signer) => {
+              const shouldDeleteActiveFlow =
+                !!activeVestingSchedule && !!activeFlow; // (KK): A bit naive.
+
               setDialogLoadingInfo(
                 <Typography variant="h5" color="text.secondary" translate="yes">
-                  You are deleting a vesting schedule.
+                  {shouldDeleteActiveFlow
+                    ? "You are canceling a stream and deleting a vesting schedule."
+                    : "You are deleting a vesting schedule."}
                 </Typography>
               );
 
@@ -105,13 +109,13 @@ export const DeleteVestingTransactionButton: FC<{
                 superTokenAddress: superTokenAddress,
                 senderAddress: await signer.getAddress(),
                 receiverAddress: receiverAddress,
+                deleteFlow: shouldDeleteActiveFlow,
               };
               deleteVestingSchedule({
                 ...primaryArgs,
                 signer,
                 overrides: await getOverrides(),
                 waitForConfirmation: false,
-                deleteFlow: shouldDeleteActiveFlow,
               })
                 .unwrap()
                 .then(...txAnalytics("Delete Vesting Schedule", primaryArgs));
