@@ -93,14 +93,14 @@ const VestingSchedulerAllowancesTable: FC = () => {
       const requiredFlowOperatorPermissions =
         activeVestingSchedules.length === 0
           ? 0 // None
-          : activeVestingSchedules.some((x) => !x.cliffAndFlowExecutedAt)
+          : activeVestingSchedules.some((x) => !x.cliffAndFlowExecutedAt) // Create not needed after cliffAndFlows are executed
           ? 5 // Create or Delete
           : 4; // Delete
 
       return {
         tokenAddress,
         recommendedTokenAllowance,
-        requiredFlowOperatorPermissions, // Create not needed after cliffAndFlows are executed
+        requiredFlowOperatorPermissions,
         requiredFlowOperatorAllowance,
       };
     });
