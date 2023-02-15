@@ -29,30 +29,6 @@ export const schedulingSubgraphApi = createApi({
   keepUnusedDataFor: 180,
   serializeQueryArgs: getSerializeQueryArgs(),
   endpoints: (build) => ({
-    // getVestingSchedule: build.query<
-    //   { vestingSchedule: VestingSchedule | null },
-    //   { chainId: number } & GetVestingScheduleQueryVariables
-    // >({
-    //   queryFn: async ({ chainId, ...variables }) => {
-    //     const sdk = tryGetBuiltGraphSdkForNetwork(chainId);
-    //     const subgraphVestingSchedule = sdk
-    //       ? (await sdk.getVestingSchedule(variables)).vestingSchedule
-    //       : null;
-    //     return {
-    //       data: {
-    //         vestingSchedule: subgraphVestingSchedule
-    //           ? mapSubgraphVestingSchedule(subgraphVestingSchedule)
-    //           : null,
-    //       },
-    //     };
-    //   },
-    //   providesTags: (_result, _error, arg) => [
-    //     {
-    //       type: "GENERAL",
-    //       id: arg.chainId,
-    //     },
-    //   ],
-    // }),
     getTasks: build.query<
       GetTasksQuery,
       { chainId: number } & GetTasksQueryVariables

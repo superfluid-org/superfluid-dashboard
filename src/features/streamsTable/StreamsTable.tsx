@@ -107,12 +107,17 @@ const StreamsTable: FC<StreamsTableProps> = ({
             or: [
               {
                 sender: visibleAddress.toLowerCase(),
+                cancelledAt: null,
+                executedAt: null,
+                expirationAt_gte: getUnixTime(endOfToday()).toString(),
               },
-              { receiver: visibleAddress.toLowerCase() },
+              {
+                receiver: visibleAddress.toLowerCase(),
+                cancelledAt: null,
+                executedAt: null,
+                expirationAt_gte: getUnixTime(endOfToday()).toString(),
+              },
             ],
-            cancelledAt: null,
-            executedAt: null,
-            expirationAt_gte: getUnixTime(endOfToday()).toString(),
           },
         }
       : skipToken,

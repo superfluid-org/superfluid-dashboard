@@ -9,6 +9,7 @@ import {
   TransactionInfo,
   TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
+import { BigNumber } from "ethers";
 import { getFlowScheduler } from "../../../eth-sdk/getEthSdk";
 import { findNetworkByChainId } from "../../network/networks";
 import { UnitOfTime } from "../../send/FlowRateInput";
@@ -143,11 +144,18 @@ export const flowSchedulerEndpoints = {
 
             const hasNeededPermissions = permissions & neededPermissions;
 
-            if (!hasNeededPermissions) {
+            const doesNeedAllowance = !activeExistingFlow && arg.startTimestamp;
+            const neededAllowance = doesNeedAllowance
+              ? BigNumber.from(flowOperatorData.flowRateAllowance)
+                  .add(BigNumber.from(arg.flowRateWei))
+                  .toString()
+              : flowOperatorData.flowRateAllowance;
+
+            if (!hasNeededPermissions || doesNeedAllowance) {
               subOperations.push({
                 operation: await superToken.updateFlowOperatorPermissions({
                   flowOperator: network.flowSchedulerContractAddress,
-                  flowRateAllowance: flowOperatorData.flowRateAllowance,
+                  flowRateAllowance: neededAllowance,
                   permissions: permissions | neededPermissions,
                   userData: userData,
                   overrides: arg.overrides,
@@ -165,8 +173,8 @@ export const flowSchedulerEndpoints = {
                   arg.superTokenAddress,
                   arg.receiverAddress,
                   arg.startTimestamp || 0,
-                  UnitOfTime.Minute * 5, // startDuration
-                  0, // flowRate
+                  arg.startTimestamp ? UnitOfTime.Minute * 5 : 0, // startDuration
+                  arg.startTimestamp ? arg.flowRateWei : 0, // flowRate
                   0, // startAmount
                   arg.endTimestamp || 0,
                   userData,
