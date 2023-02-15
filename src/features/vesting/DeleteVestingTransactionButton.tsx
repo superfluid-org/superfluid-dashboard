@@ -94,7 +94,7 @@ export const DeleteVestingTransactionButton: FC<{
             }}
             onClick={async (signer) => {
               const shouldDeleteActiveFlow =
-                !!activeVestingSchedule && !!activeFlow; // (KK): A bit naive.
+                !!activeVestingSchedule && !!activeFlow;
 
               setDialogLoadingInfo(
                 <Typography variant="h5" color="text.secondary" translate="yes">
