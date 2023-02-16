@@ -103,6 +103,9 @@ export class Common extends BasePage {
                 case "vesting stream details page":
                     this.visitPage(`/stream/polygon/${vestingData.polygon.USDCx.vestingStream.id}`)
                     break;
+                case "accounting export page":
+                    this.visitPage(`/accounting`)
+                    break;
                 default:
                     throw new Error(`Hmm, you haven't set up the link for : ${page}`);
             }

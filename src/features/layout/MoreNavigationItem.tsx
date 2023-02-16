@@ -166,7 +166,7 @@ const MoreNavigationItem: FC = () => {
         </Link>
 
         <Link href="/accounting">
-          <ListItemButton href="" onClick={closeMoreMenu}>
+          <ListItemButton data-cy={"more-export-btn"} href="" onClick={closeMoreMenu}>
             <ListItemIcon>
               <AssessmentRoundedIcon
                 sx={{ color: theme.palette.text.primary }}
