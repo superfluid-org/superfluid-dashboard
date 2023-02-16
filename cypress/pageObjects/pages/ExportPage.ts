@@ -90,6 +90,8 @@ export class ExportPage extends BasePage {
 
     static validateAPIResultsFor(period: string) {
         cy.intercept("GET", EXPORTING_ENDPOINT, (req) => {
+            req.query.start = "1672524000"
+            req.query.end = "1675202399"
             expect(req.query.priceGranularity).to.eq(GranularityWordMap[period].toString())
             expect(req.query.virtualization).to.eq(GranularityWordMap[period].toString())
             req.continue((res) => {
@@ -107,6 +109,10 @@ export class ExportPage extends BasePage {
     }
 
     static clickExportPreview() {
+        cy.intercept("GET",EXPORTING_ENDPOINT, req => {
+            req.query.start = "1672524000"
+            req.query.end = "1675202399"
+        })
         this.click(EXPORT_PREVIEW)
     }
 
@@ -114,6 +120,8 @@ export class ExportPage extends BasePage {
         switch (type) {
             case "multiple accounts":
                 cy.intercept("GET", EXPORTING_ENDPOINT, (req) => {
+                    req.query.start = "1672524000"
+                    req.query.end = "1675202399"
                     expect(req.query.addresses).to.eq(`${TESTING_ACCOUNT1},${TESTING_ACCOUNT2}`)
                 }).as("exportRequest")
                 this.clickExportPreview()
@@ -126,6 +134,8 @@ export class ExportPage extends BasePage {
                 break;
             case "counterparty":
                 cy.intercept("GET", EXPORTING_ENDPOINT, (req) => {
+                    req.query.start = "1672524000"
+                    req.query.end = "1675202399"
                     expect(req.query.counterparties).to.eq(TESTING_ACCOUNT1)
                 }).as("exportRequest")
                 this.clickExportPreview()
@@ -141,8 +151,10 @@ export class ExportPage extends BasePage {
                 break;
             case "custom dates":
                 cy.intercept("GET", EXPORTING_ENDPOINT, (req) => {
-                    expect(req.query.start).to.eq("1640988000") //Jan 2022
-                    expect(req.query.end).to.eq("1646085599")//Feb 2022
+                    expect(req.query.start).to.eq("1640977200") //Jan 2022 in UTC
+                    expect(req.query.end).to.eq("1646078399")//Feb 2022 in UTC
+                    req.query.start = "1640988000" //Jan 2022 in Elvijs Time
+                    req.query.end = "1646085599"//Feb 2022 in Elvijs Time
                 }).as("exportRequest")
                 this.clickExportPreview()
                 cy.wait("@exportRequest").then(req => {
