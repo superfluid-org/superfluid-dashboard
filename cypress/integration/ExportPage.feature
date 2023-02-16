@@ -82,3 +82,12 @@ Feature: Export Stream Data page test cases
     And User clicks on the export preview button
     And User adds a custom filter for "tokenSymbol" to "contains" "DAIx"
     Then The export preview table only shows "tokenSymbol" rows with "DAIx"
+
+    @only
+  Scenario: Exporting and validating CSV
+    And User searches for "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" as the accountable account
+    And User selects "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" from the search section
+    And User clicks the OK button
+    And User clicks on the export preview button
+    And User exports the CSV
+    Then CSV contains the correct data

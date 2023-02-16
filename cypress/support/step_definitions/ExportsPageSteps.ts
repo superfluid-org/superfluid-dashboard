@@ -89,3 +89,9 @@ Given(/^User searches for "([^"]*)" as the counterparty account$/, function (add
 Given(/^User changes the export end date with date picker to "([^"]*)" "([^"]*)"$/, function (month:string,year:string) {
     ExportPage.changeEndDateWithUI(month,year)
 });
+Given(/^User exports the CSV$/, function () {
+    ExportPage.clickExportCSVButton()
+});
+Then(/^CSV contains the correct data$/, function () {
+    ExportPage.validateDownloadedCSV()
+});

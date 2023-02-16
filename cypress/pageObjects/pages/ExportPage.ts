@@ -19,6 +19,12 @@ const COLUMN_CHECKBOXES = ".MuiDataGrid-panelWrapper input.PrivateSwitchBase-inp
 const DATE_PICKER_YEAR_BUTTONS = ".PrivatePickersYear-yearButton"
 const DATE_PICKER_MONTH_BUTTONS = ".PrivatePickersMonth-root"
 const DATE_PICKER_ICONS = "[data-testid=CalendarIcon]"
+const EXPORT_CSV ="[data-cy=export-csv-button]"
+const AMOUNT_CELLS = ".MuiDataGrid-cell[data-field=amount]"
+const COUNTERPARTY_CELLS = ".MuiDataGrid-cell[data-field=counterparty]"
+const DATE_CELLS = ".MuiDataGrid-cell[data-field=date]"
+const FILTER_SELECT_FIELDS = ".MuiFormControl-root .MuiInputBase-root select"
+const FILTER_INPUT_FIELDS = ".MuiFormControl-root .MuiInputBase-root input"
 
 const EXPORTING_ENDPOINT = "https://accounting.superfluid.dev/v1/stream-periods**"
 const TESTING_ACCOUNT1 = "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"
@@ -97,7 +103,7 @@ export class ExportPage extends BasePage {
                 expect(JSON.parse(req.response?.body)).to.deep.eq(data[period])
             })
         })
-        this.isVisible(`.MuiDataGrid-cell[data-field=amount]`)
+        this.isVisible(AMOUNT_CELLS)
     }
 
     static clickExportPreview() {
@@ -116,7 +122,7 @@ export class ExportPage extends BasePage {
                         expect(JSON.parse(req.response?.body)).to.deep.eq(data[type])
                     })
                 })
-                this.isVisible(`.MuiDataGrid-cell[data-field=amount]`)
+                this.isVisible(AMOUNT_CELLS)
                 break;
             case "counterparty":
                 cy.intercept("GET", EXPORTING_ENDPOINT, (req) => {
@@ -128,10 +134,10 @@ export class ExportPage extends BasePage {
                         expect(JSON.parse(req.response?.body)).to.deep.eq(data[type])
                     })
                 })
-                cy.get(".MuiDataGrid-cell[data-field=counterparty]").each(row => {
+                cy.get(COUNTERPARTY_CELLS).each(row => {
                     expect(row).to.have.text(TESTING_ACCOUNT1)
                 })
-                this.isVisible(`.MuiDataGrid-cell[data-field=amount]`)
+                this.isVisible(AMOUNT_CELLS)
                 break;
             case "custom dates":
                 cy.intercept("GET", EXPORTING_ENDPOINT, (req) => {
@@ -144,7 +150,7 @@ export class ExportPage extends BasePage {
                         expect(JSON.parse(req.response?.body)).to.deep.eq(data[type])
                     })
                 })
-                cy.get(".MuiDataGrid-cell[data-field=date]").each(row => {
+                cy.get(DATE_CELLS).each(row => {
                     expect(row).to.contain.text("2022/01/")
                 })
                 break;
@@ -176,7 +182,7 @@ export class ExportPage extends BasePage {
     }
 
     static enableAllPreviewColumns() {
-        this.isVisible(`.MuiDataGrid-cell[data-field=amount]`)
+        this.isVisible(AMOUNT_CELLS)
         //Cypress too fast ,waiting for request or data to show up doesn't help,
         //Checkboxes get magically disabled without waiting,
         //Force clicking because mouse events not triggering the three dots to appear
@@ -226,9 +232,9 @@ export class ExportPage extends BasePage {
         cy.get(HEADER_TRIPLE_DOTS).first().click({force: true})
         this.clickFirstVisible(HEADER_TRIPLE_DOTS)
         cy.get(FILTER_OPTIONS).contains("Filter").click()
-        cy.get(".MuiFormControl-root .MuiInputBase-root select").eq(1).select(column)
-        cy.get(".MuiFormControl-root .MuiInputBase-root select").last().select(operator)
-        cy.get(".MuiFormControl-root .MuiInputBase-root input").type(value)
+        cy.get(FILTER_SELECT_FIELDS).eq(1).select(column)
+        cy.get(FILTER_SELECT_FIELDS).last().select(operator)
+        cy.get(FILTER_INPUT_FIELDS).type(value)
     }
 
     static validateFilteredRows(column: string, value: string) {
@@ -256,5 +262,18 @@ export class ExportPage extends BasePage {
         cy.get(DATE_PICKER_ICONS).last().click()
         cy.get(DATE_PICKER_YEAR_BUTTONS).contains(year).click()
         cy.get(DATE_PICKER_MONTH_BUTTONS).contains(month).click()
+    }
+
+    static clickExportCSVButton() {
+        this.isVisible(AMOUNT_CELLS)
+        this.click(EXPORT_CSV)
+    }
+
+    static validateDownloadedCSV() {
+        cy.fixture("streamPeriodExportExample.csv").then(csv => {
+            cy.readFile("cypress/downloads/Stream periods export.csv").then(downloadedCSV => {
+                expect(csv).to.eq(downloadedCSV)
+            })
+        })
     }
 }
