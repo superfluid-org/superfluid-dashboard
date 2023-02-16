@@ -51,6 +51,11 @@ export const superfluidPlatformUrls = {
   polygon: "https://prod-polygon-mainnet-platform-service.dev.superfluid.dev",
   bnbSmartChain: "https://prod-bsc-mainnet-platform-service.dev.superfluid.dev",
   ethereum: "https://prod-eth-mainnet-platform-service.dev.superfluid.dev",
+  avalanche: "https://prod-avalanche-c-platform-service.prod.superfluid.dev/",
+  arbitrum: "https://prod-arbitrum-one-platform-service.prod.superfluid.dev/",
+  optimism:
+    "https://prod-optimism-mainnet-platform-service.prod.superfluid.dev/",
+  gnosis: "https://prod-xdai-mainnet-platform-service.prod.superfluid.dev/",
 } as const;
 
 export const vestingSubraphUrls = {
@@ -205,7 +210,7 @@ export const networkDefinition: {
     },
     vestingContractAddress: vestingContractAddresses.gnosis,
     vestingSubgraphUrl: vestingSubraphUrls.gnosis,
-    platformUrl: undefined,
+    platformUrl: superfluidPlatformUrls.gnosis,
   },
   polygon: {
     ...chain.polygon,
@@ -348,7 +353,7 @@ export const networkDefinition: {
     },
     vestingContractAddress: vestingContractAddresses.optimism,
     vestingSubgraphUrl: vestingSubraphUrls.optimism,
-    platformUrl: undefined,
+    platformUrl: superfluidPlatformUrls.optimism,
   },
   arbitrum: {
     ...chain.arbitrum,
@@ -382,7 +387,7 @@ export const networkDefinition: {
     },
     vestingContractAddress: vestingContractAddresses.arbitrum,
     vestingSubgraphUrl: vestingSubraphUrls.arbitrum,
-    platformUrl: undefined,
+    platformUrl: superfluidPlatformUrls.arbitrum,
   },
   avalancheC: {
     name: "Avalanche C",
@@ -426,7 +431,7 @@ export const networkDefinition: {
     },
     vestingContractAddress: vestingContractAddresses.avalancheC,
     vestingSubgraphUrl: vestingSubraphUrls.avalancheC,
-    platformUrl: undefined,
+    platformUrl: superfluidPlatformUrls.avalanche,
   },
   bsc: {
     name: "BNB Smart Chain",
