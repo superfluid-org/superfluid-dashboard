@@ -70,9 +70,9 @@ jobs:
         with:
           node-version: 16.x
 
-      uses: szenius/set-timezone@v1.0
-      with:
-        timezoneLinux: "Europe/Riga"
+      - uses: szenius/set-timezone@v1.0
+        with:
+          timezoneLinux: "Europe/Riga"
 
       - name: Cypress tests
         uses: cypress-io/github-action@v4
