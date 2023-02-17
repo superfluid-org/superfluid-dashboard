@@ -109,10 +109,6 @@ export class ExportPage extends BasePage {
     }
 
     static clickExportPreview() {
-        cy.intercept("GET",EXPORTING_ENDPOINT, req => {
-            req.query.start = "1672524000"
-            req.query.end = "1675202399"
-        })
         this.click(EXPORT_PREVIEW)
     }
 
@@ -120,8 +116,6 @@ export class ExportPage extends BasePage {
         switch (type) {
             case "multiple accounts":
                 cy.intercept("GET", EXPORTING_ENDPOINT, (req) => {
-                    req.query.start = "1672524000"
-                    req.query.end = "1675202399"
                     expect(req.query.addresses).to.eq(`${TESTING_ACCOUNT1},${TESTING_ACCOUNT2}`)
                 }).as("exportRequest")
                 this.clickExportPreview()
@@ -134,8 +128,6 @@ export class ExportPage extends BasePage {
                 break;
             case "counterparty":
                 cy.intercept("GET", EXPORTING_ENDPOINT, (req) => {
-                    req.query.start = "1672524000"
-                    req.query.end = "1675202399"
                     expect(req.query.counterparties).to.eq(TESTING_ACCOUNT1)
                 }).as("exportRequest")
                 this.clickExportPreview()
@@ -151,10 +143,8 @@ export class ExportPage extends BasePage {
                 break;
             case "custom dates":
                 cy.intercept("GET", EXPORTING_ENDPOINT, (req) => {
-                    expect(req.query.start).to.eq("1640995200") //Jan 1 2022 in UTC
-                    expect(req.query.end).to.eq("1646092799")//Feb 28 2022 in UTC
-                    req.query.start = "1640988000" //Jan 2022 in Elvijs Time
-                    req.query.end = "1646085599"//Feb 2022 in Elvijs Time
+                     expect(req.query.start).to.eq("1640995200")
+                     expect(req.query.end).to.eq("1646092799")
                 }).as("exportRequest")
                 this.click(EXPORT_PREVIEW)
                 cy.wait("@exportRequest").then(req => {
@@ -207,7 +197,7 @@ export class ExportPage extends BasePage {
                 cy.wrap(checkbox).click()
             }
             cy.get(`.MuiDataGrid-cell[data-field=${checkbox.attr("name")}]`).first().scrollIntoView()
-            cy.get(`.MuiDataGrid-cell[data-field=${checkbox.attr("name")}]`).should("be.visible").and("have.length", 10)
+            cy.get(`.MuiDataGrid-cell[data-field=${checkbox.attr("name")}]`).should("be.visible").and("have.length", 8)
         })
     }
 
@@ -250,7 +240,7 @@ export class ExportPage extends BasePage {
     }
 
     static validateFilteredRows(column: string, value: string) {
-        cy.get(`.MuiDataGrid-cell[data-field=${column}]`).should("have.length.below", 10)
+        cy.get(`.MuiDataGrid-cell[data-field=${column}]`).should("have.length.below", 8)
         cy.get(`.MuiDataGrid-cell[data-field=${column}]`).each(row => {
             cy.wrap(row).should("contain.text", value)
         })
