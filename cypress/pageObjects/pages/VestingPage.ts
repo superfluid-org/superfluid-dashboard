@@ -405,7 +405,7 @@ export class VestingPage extends BasePage {
         let today = BasePage.getDayTimestamp(0)
         let yesterday = BasePage.getDayTimestamp(-1)
 
-        cy.intercept("POST", "**automation-v1**", (req => {
+        cy.intercept("POST", "**vesting-v1**", (req => {
             req.continue((res) => {
                 if (req.body.variables._0_id) {
                     let schedule = res.body.data._0_vestingSchedule
