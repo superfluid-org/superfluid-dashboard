@@ -74,7 +74,7 @@ export const vestingSubraphUrls = {
 
 export const vestingContractAddresses = {
   gnosis: "0x0170FFCC75d178d426EBad5b1a31451d00Ddbd0D",
-  goerli: "0x2A6dD60Dbb8CE65813842eEe1688b21CA30D6ffd",
+  goerli: "0xF9240F930d847F70ad900aBEE8949F25649Bf24a",
   polygon: "0xcFE6382B33F2AdaFbE46e6A26A88E0182ae32b0c",
   arbitrum: "0x55c8fc400833eEa791087cF343Ff2409A39DeBcC",
   optimism: "0x65377d4dfE9c01639A41952B5083D58964782892",
