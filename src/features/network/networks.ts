@@ -49,27 +49,28 @@ export const superfluidRpcUrls = {
 export const superfluidPlatformUrls = {
   goerli: "https://prod-goerli-platform-service.dev.superfluid.dev",
   polygon: "https://prod-polygon-mainnet-platform-service.prod.superfluid.dev",
-  bnbSmartChain: "https://prod-bsc-mainnet-platform-service.prod.superfluid.dev",
+  bnbSmartChain:
+    "https://prod-bsc-mainnet-platform-service.prod.superfluid.dev",
   ethereum: "https://prod-eth-mainnet-platform-service.prod.superfluid.dev",
 } as const;
 
 export const vestingSubraphUrls = {
   gnosis:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-gnosis",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-xdai-mainnet",
   goerli:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-goerli",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-eth-goerli",
   polygon:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-polygon",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-polygon-mainnet",
   arbitrum:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-arbitrum",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-arbitrum-one",
   optimism:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-optimism",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-optimism-mainnet",
   avalancheC:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-avalanche",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-avalanche-c",
   bnbSmartChain:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-bsc",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-bsc-mainnet",
   ethereum:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-eth-mainnet",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-eth-mainnet",
 } as const;
 
 export const vestingContractAddresses = {
