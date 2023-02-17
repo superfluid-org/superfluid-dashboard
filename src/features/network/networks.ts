@@ -54,7 +54,7 @@ export const superfluidPlatformUrls = {
   ethereum: "https://prod-eth-mainnet-platform-service.prod.superfluid.dev",
 } as const;
 
-export const vestingSubraphUrls = {
+export const vestingSubgraphUrls = {
   gnosis:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-xdai-mainnet",
   goerli:
@@ -163,7 +163,7 @@ export const networkDefinition: {
     },
     flowSchedulerContractAddress: "0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca",
     vestingContractAddress: vestingContractAddresses.goerli,
-    vestingSubgraphUrl: vestingSubraphUrls.goerli,
+    vestingSubgraphUrl: vestingSubgraphUrls.goerli,
     platformUrl: superfluidPlatformUrls.goerli,
   },
   gnosis: {
@@ -205,7 +205,7 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.gnosis,
-    vestingSubgraphUrl: vestingSubraphUrls.gnosis,
+    vestingSubgraphUrl: vestingSubgraphUrls.gnosis,
     platformUrl: undefined,
   },
   polygon: {
@@ -239,7 +239,7 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.polygon,
-    vestingSubgraphUrl: vestingSubraphUrls.polygon,
+    vestingSubgraphUrl: vestingSubgraphUrls.polygon,
     platformUrl: superfluidPlatformUrls.polygon,
   },
   polygonMumbai: {
@@ -348,7 +348,7 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.optimism,
-    vestingSubgraphUrl: vestingSubraphUrls.optimism,
+    vestingSubgraphUrl: vestingSubgraphUrls.optimism,
     platformUrl: undefined,
   },
   arbitrum: {
@@ -382,7 +382,7 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.arbitrum,
-    vestingSubgraphUrl: vestingSubraphUrls.arbitrum,
+    vestingSubgraphUrl: vestingSubgraphUrls.arbitrum,
     platformUrl: undefined,
   },
   avalancheC: {
@@ -426,7 +426,7 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.avalancheC,
-    vestingSubgraphUrl: vestingSubraphUrls.avalancheC,
+    vestingSubgraphUrl: vestingSubgraphUrls.avalancheC,
     platformUrl: undefined,
   },
   bsc: {
@@ -468,7 +468,7 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.bnbSmartChain,
-    vestingSubgraphUrl: vestingSubraphUrls.bnbSmartChain,
+    vestingSubgraphUrl: vestingSubgraphUrls.bnbSmartChain,
     platformUrl: superfluidPlatformUrls.bnbSmartChain,
   },
   ethereum: {
@@ -502,7 +502,7 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.ethereum,
-    vestingSubgraphUrl: vestingSubraphUrls.ethereum,
+    vestingSubgraphUrl: vestingSubgraphUrls.ethereum,
     platformUrl: superfluidPlatformUrls.ethereum,
   },
 };
