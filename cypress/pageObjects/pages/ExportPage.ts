@@ -151,12 +151,12 @@ export class ExportPage extends BasePage {
                 break;
             case "custom dates":
                 cy.intercept("GET", EXPORTING_ENDPOINT, (req) => {
-                    expect(req.query.start).to.eq("1640995200") //Jan 2022 in UTC
-                    expect(req.query.end).to.eq("1646078401")//Feb 2022 in UTC
+                    expect(req.query.start).to.eq("1640995200") //Jan 1 2022 in UTC
+                    expect(req.query.end).to.eq("1646092799")//Feb 28 2022 in UTC
                     req.query.start = "1640988000" //Jan 2022 in Elvijs Time
                     req.query.end = "1646085599"//Feb 2022 in Elvijs Time
                 }).as("exportRequest")
-                this.clickExportPreview()
+                this.click(EXPORT_PREVIEW)
                 cy.wait("@exportRequest").then(req => {
                     cy.fixture("exportData.json").then(data => {
                         expect(JSON.parse(req.response?.body)).to.deep.eq(data[type])
