@@ -28,8 +28,9 @@ import TimeUnitFilter, {
   TimeUnitFilterType,
 } from "../../../features/graph/TimeUnitFilter";
 import SubscriptionsTable from "../../../features/index/SubscriptionsTable";
+import { useAvailableNetworks } from "../../../features/network/AvailableNetworksContext";
 import NetworkIcon from "../../../features/network/NetworkIcon";
-import { Network, networksBySlug } from "../../../features/network/networks";
+import { Network } from "../../../features/network/networks";
 import { rpcApi, subgraphApi } from "../../../features/redux/store";
 import { UnitOfTime } from "../../../features/send/FlowRateInput";
 import StreamsTable from "../../../features/streamsTable/StreamsTable";
@@ -72,14 +73,11 @@ const TokenPage: NextPage = () => {
   const { visibleAddress } = useVisibleAddress();
   const { isAutoConnecting } = useAutoConnect();
   const [routeHandled, setRouteHandled] = useState(false);
+  const { tryFindNetwork } = useAvailableNetworks();
 
   useEffect(() => {
     if (router.isReady) {
-      setNetwork(
-        networksBySlug.get(
-          isString(router.query._network) ? router.query._network : ""
-        )
-      );
+      setNetwork(tryFindNetwork(router.query._network));
       setTokenAddress(
         isString(router.query._token) ? router.query._token : undefined
       );

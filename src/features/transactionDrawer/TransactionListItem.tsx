@@ -22,7 +22,6 @@ import Link from "next/link";
 import { FC, useState } from "react";
 import shortenHex from "../../utils/shortenHex";
 import NetworkBadge from "../network/NetworkBadge";
-import { findNetworkByChainId } from "../network/networks";
 import {
   TransactionListItemAvatar,
   TransactionListSubItemAvatar,
@@ -30,6 +29,7 @@ import {
 import { TransactionListItemRestoreButton } from "./TransactionListItemRestoreButton";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
+import { useAvailableNetworks } from "../network/AvailableNetworksContext";
 
 export const getTransactionStatusColor = (status: TransactionStatus) => {
   switch (status) {
@@ -53,9 +53,9 @@ const getDisplayTransactionTitle = (transactionTitle: TransactionTitle) => {
     case "Create Stream":
       return "Send Stream";
     case "Update Stream":
-      return "Update Flow Rate"
+      return "Update Flow Rate";
     case "Close Stream":
-      return "Cancel Stream"; 
+      return "Cancel Stream";
     case "Create Index":
     case "Distribute Index":
     case "Update Index Subscription Units":
@@ -73,7 +73,8 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
   transaction,
 }) => {
   const theme = useTheme();
-  const network = findNetworkByChainId(transaction.chainId);
+  const { tryFindNetwork } = useAvailableNetworks();
+  const network = tryFindNetwork(transaction.chainId);
 
   const subTransactionTitles: TransactionTitle[] =
     (transaction.extraData.subTransactionTitles as TransactionTitle[]) ?? [];

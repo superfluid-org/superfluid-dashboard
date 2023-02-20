@@ -1,5 +1,5 @@
 import { providers, Signer } from "ethers";
-import { findNetworkByChainId } from "../features/network/networks";
+import { networks } from "../features/network/networks";
 import { FlowScheduler__factory } from "./client/esm/types/factories/goerli";
 import { VestingScheduler__factory } from "./client/esm/types/factories/mainnet";
 
@@ -7,7 +7,11 @@ export const getFlowScheduler = (
   chainId: number,
   providerOrSigner: providers.Provider | Signer
 ) => {
-  const network = findNetworkByChainId(chainId);
+  const network = networks.find((x) => x.id === chainId);
+  if (!network) {
+    throw new Error("Network not found. Shouldn't ever happen...");
+  }
+
   const networkFlowSchedulerAddress = network?.vestingContractAddress;
   const doesNetworkSupportFlowScheduler = !!networkFlowSchedulerAddress;
   if (!doesNetworkSupportFlowScheduler) {
@@ -26,7 +30,11 @@ export const getVestingScheduler = (
   chainId: number,
   providerOrSigner: providers.Provider | Signer
 ) => {
-  const network = findNetworkByChainId(chainId);
+  const network = networks.find((x) => x.id === chainId);
+  if (!network) {
+    throw new Error("Network not found. Shouldn't ever happen...");
+  }
+
   const networkVestingSchedulerAddress = network?.vestingContractAddress;
   const doesNetworkSupportVestingScheduler = networkVestingSchedulerAddress;
   if (!doesNetworkSupportVestingScheduler) {

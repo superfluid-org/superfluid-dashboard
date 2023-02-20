@@ -13,8 +13,9 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { FC, useMemo } from "react";
+import { useAvailableNetworks } from "../network/AvailableNetworksContext";
 import NetworkIcon from "../network/NetworkIcon";
-import { Network, networksByChainId } from "../network/networks";
+import { Network } from "../network/networks";
 
 export interface EcosystemApp {
   name: string;
@@ -36,11 +37,12 @@ interface EcosystemItemProps {
 const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const { tryFindNetwork } = useAvailableNetworks();
 
   const networks = useMemo(
     () =>
       app.chains.reduce((allNetworks, chainId) => {
-        const network = networksByChainId.get(chainId);
+        const network = tryFindNetwork(chainId);
         if (!network) return allNetworks;
         return allNetworks.concat([network]);
       }, [] as Array<Network>),

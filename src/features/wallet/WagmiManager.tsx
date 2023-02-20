@@ -8,7 +8,7 @@ import {
 import { createClient as createWagmiClient, WagmiConfig } from "wagmi";
 import "@rainbow-me/rainbowkit/styles.css";
 import { useTheme } from "@mui/material";
-import { networks, networksByChainId } from "../network/networks";
+import { networks } from "../network/networks";
 import { getAppWallets } from "./getAppWallets";
 import { configureChains } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
@@ -19,7 +19,7 @@ export const { chains: wagmiChains, provider: wagmiRpcProvider } =
   configureChains(networks, [
     jsonRpcProvider({
       rpc: (chain) => ({
-        http: networksByChainId.get(chain.id)!.rpcUrls.superfluid,
+        http: networks.find((x) => x.id === chain.id)!.rpcUrls.superfluid,
       }),
     }),
   ]);

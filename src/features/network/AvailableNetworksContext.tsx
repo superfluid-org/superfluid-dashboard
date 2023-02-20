@@ -1,7 +1,9 @@
+import { isString } from "lodash";
 import {
   createContext,
   FC,
   PropsWithChildren,
+  useCallback,
   useContext,
   useMemo,
 } from "react";
@@ -14,6 +16,7 @@ interface AvailableNetworksContextValue {
   availableTestNetworks: Network[];
   availableNetworksByChainId: Map<number, Network>;
   availableNetworksBySlug: Map<string, Network>;
+  tryFindNetwork: (value: unknown) => Network | undefined;
 }
 
 const AvailableNetworksContext = createContext<AvailableNetworksContextValue>(
@@ -34,9 +37,8 @@ export const AvailableNetworksProvider: FC<PropsWithChildren> = ({
     [isMainnetEnabled]
   );
 
-  const contextValue = useMemo<AvailableNetworksContextValue>(
+  const availableNetworksFiltered = useMemo(
     () => ({
-      availableNetworks,
       availableMainNetworks: availableNetworks.filter(
         (network) => !network.testnet
       ),
@@ -50,7 +52,42 @@ export const AvailableNetworksProvider: FC<PropsWithChildren> = ({
         networks.map((network) => [network.slugName, network])
       ),
     }),
-    [availableNetworks]
+    availableNetworks
+  );
+
+  const tryFindNetwork = useCallback(
+    (value: unknown): Network | undefined => {
+      const asNumber = Number(value);
+      if (isFinite(asNumber)) {
+        return availableNetworksFiltered.availableNetworksByChainId.get(
+          asNumber
+        );
+      }
+
+      if (isString(value)) {
+        const bySlug =
+          availableNetworksFiltered.availableNetworksBySlug.get(value);
+        if (bySlug) {
+          return bySlug;
+        }
+
+        const byV1ShortName = networks.find((x) => x.v1ShortName === value);
+        if (byV1ShortName) {
+          return byV1ShortName;
+        }
+      }
+      return undefined;
+    },
+    [availableNetworksFiltered]
+  );
+
+  const contextValue = useMemo<AvailableNetworksContextValue>(
+    () => ({
+      availableNetworks,
+      ...availableNetworksFiltered,
+      tryFindNetwork: tryFindNetwork,
+    }),
+    [availableNetworks, availableNetworksFiltered, tryFindNetwork]
   );
 
   return (

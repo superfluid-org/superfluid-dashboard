@@ -11,7 +11,7 @@ import { parseV1AddressBookEntries } from "../../utils/addressBookUtils";
 import { parseV1CustomTokens } from "../../utils/customTokenUtils";
 import { addAddressBookEntries } from "../addressBook/addressBook.slice";
 import { addCustomTokens } from "../customTokens/customTokens.slice";
-import { networks, networksByChainId } from "../network/networks";
+import { networks } from "../network/networks";
 import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import { reduxStore, useAppDispatch } from "./store";
 import { useVestingTransactionTracking } from "./UseVestingTransactionTracking";
@@ -77,25 +77,27 @@ const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
       initializeReadonlyFrameworks(); // Re-initialize to override the old signer framework if it was present.
 
       signer.getChainId().then((chainId) => {
-        const network = networksByChainId.get(chainId);
+        const network = networks.find((x) => x.id === Number(chainId));
 
-        setFrameworkForSdkRedux(chainId, () =>
-          promiseRetry<Framework>(
-            (retry) =>
-              Framework.create({
-                chainId: chainId,
-                provider: signer as any,
-                ...(network
-                  ? { customSubgraphQueriesEndpoint: network.subgraphUrl }
-                  : {}),
-              }).catch(retry),
-            {
-              minTimeout: 500,
-              maxTimeout: 2000,
-              retries: 10,
-            }
-          )
-        );
+        if (network) {
+          setFrameworkForSdkRedux(chainId, () =>
+            promiseRetry<Framework>(
+              (retry) =>
+                Framework.create({
+                  chainId: chainId,
+                  provider: signer as any,
+                  ...(network
+                    ? { customSubgraphQueriesEndpoint: network.subgraphUrl }
+                    : {}),
+                }).catch(retry),
+              {
+                minTimeout: 500,
+                maxTimeout: 2000,
+                retries: 10,
+              }
+            )
+          );
+        }
       });
 
       signer.getAddress().then((address) => {

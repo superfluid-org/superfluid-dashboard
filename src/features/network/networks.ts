@@ -1,3 +1,4 @@
+import { isNumber, isString } from "lodash";
 import memoize from "lodash/memoize";
 import { chain, Chain } from "wagmi";
 import ensureDefined from "../../utils/ensureDefined";
@@ -533,23 +534,7 @@ export const getNetworkDefaultTokenPair = memoize(
   })
 );
 
-export const networksByName = new Map(
-  networks.map((x) => [x.slugName.toLowerCase(), x])
-);
-
-export const networksByChainId = new Map(networks.map((x) => [x.id, x]));
-export const networksBySlug = new Map(networks.map((x) => [x.slugName, x]));
-
-export const mainNetworks = networks.filter((network) => !network.testnet);
-export const testNetworks = networks.filter((network) => network.testnet);
-export const networkIDs = networks.map((network) => network.id);
-export const mainNetworkIDs = mainNetworks.map((network) => network.id);
-
 // The vesting contract might be deployed to more networks but we check for the existence of the Platform.;
 export const vestingSupportedNetworks = networks
   .filter((network) => network.platformUrl)
   .sort((n1, n2) => (!n1.testnet && n2.testnet ? -1 : 1));
-
-export const findNetworkByChainId = memoize((chainId: number) =>
-  networks.find((network) => network.id === chainId)
-);
