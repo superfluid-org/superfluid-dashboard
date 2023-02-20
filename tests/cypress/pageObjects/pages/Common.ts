@@ -169,8 +169,8 @@ export class Common extends BasePage {
                 // Inspired by: https://github.com/MetaMask/web3-provider-engine/blob/e835b80bf09e76d92b785d797f89baa43ae3fd60/subproviders/hooked-wallet.js#L326
                     for (const provider of hdwallet.engine._providers) {
                         if (provider.checkApproval) {
-                          provider.checkApproval = function(type, didApprove, cb) {
-                              cb(new Error('User denied '+type+' signature.') )
+                          provider.checkApproval = function(type: string, didApprove: any, cb: (arg0: Error) => void) {
+                              cb(new Error(`User denied ${type} signature.`) )
                           }
                         }
                     }

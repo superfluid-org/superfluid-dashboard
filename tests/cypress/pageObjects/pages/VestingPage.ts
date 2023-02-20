@@ -362,6 +362,7 @@ export class VestingPage extends BasePage {
                 return;
             }
             cy.get("[data-cy=total-progress-line]").eq(i).then(el => {
+                // @ts-ignore
                 let expectedWidth = i === (greenOnes.length - 1) ? (el.width() / 100 * barPercentage) : el.width()
                 console.log(greyOnes[0])
                 cy.get("[data-cy=actual-progress-line]").eq(i).invoke("width").should("be.closeTo", expectedWidth, 1)
