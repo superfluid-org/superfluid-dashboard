@@ -3,13 +3,13 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import { FC, useEffect, useRef } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { useAccount } from "wagmi";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import {
   calculateCurrentBalance,
   parseAmountOrZero,
 } from "../../utils/tokenUtils";
+import { useAnalytics } from "../analytics/useAnalytics";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi, subgraphApi } from "../redux/store";
@@ -41,6 +41,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
   const getTransactionOverrides = useGetTransactionOverrides();
+  const { txAnalytics } = useAnalytics();
 
   const {
     watch,
@@ -342,18 +343,22 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                   />
                 );
 
-                unwrapTrigger({
-                  signer,
+                const primaryArgs = {
                   chainId: network.id,
                   amountWei: parseEther(formData.amountDecimal).toString(),
                   superTokenAddress: formData.tokenPair.superTokenAddress,
-                  waitForConfirmation: true,
+                };
+                unwrapTrigger({
+                  ...primaryArgs,
                   transactionExtraData: {
                     restoration,
                   },
+                  signer,
                   overrides,
+                  waitForConfirmation: false,
                 })
                   .unwrap()
+                  .then(...txAnalytics("Unwrap", primaryArgs))
                   .then(() => resetForm())
                   .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
               }}

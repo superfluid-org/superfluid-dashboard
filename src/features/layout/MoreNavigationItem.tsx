@@ -166,7 +166,7 @@ const MoreNavigationItem: FC = () => {
         </Link>
 
         <Link href="/accounting">
-          <ListItemButton href="" onClick={closeMoreMenu}>
+          <ListItemButton data-cy={"more-export-btn"} href="" onClick={closeMoreMenu}>
             <ListItemIcon>
               <AssessmentRoundedIcon
                 sx={{ color: theme.palette.text.primary }}
@@ -186,7 +186,10 @@ const MoreNavigationItem: FC = () => {
           <ListItemText>Access Ethereum Mainnet</ListItemText>
         </ListItemButton>
 
-        <ListItemButton onClick={openVestingAccessCodeDialog}>
+        <ListItemButton
+            data-cy={"more-vesting-code-btn"}
+            onClick={openVestingAccessCodeDialog}
+        >
           <ListItemIcon>
             <QrCodeRoundedIcon sx={{ color: theme.palette.text.primary }} />
           </ListItemIcon>

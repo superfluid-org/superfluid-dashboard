@@ -3,6 +3,7 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import withStaticSEO from "../components/SEO/withStaticSEO";
+import { useAnalytics } from "../features/analytics/useAnalytics";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import WrapCard from "../features/tokenWrapping/WrapCard";
 import WrappingFormProvider from "../features/tokenWrapping/WrappingFormProvider";
@@ -19,8 +20,8 @@ const Wrap: NextPage = () => {
   const { network } = useExpectedNetwork();
   const { upgrade, downgrade } = router.query;
   const [tabValue, setTabValue] = useState<
-    "upgrade" | "downgrade" | undefined
-  >();
+    "upgrade" | "downgrade"
+  >("upgrade");
 
   useEffect(() => {
     const newTabValue = downgrade !== undefined ? "downgrade" : "upgrade"; // Default is "upgrade".

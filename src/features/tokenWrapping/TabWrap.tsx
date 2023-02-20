@@ -8,6 +8,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import { parseAmountOrZero } from "../../utils/tokenUtils";
+import { useAnalytics } from "../analytics/useAnalytics";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useLayoutContext } from "../layout/LayoutContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -65,6 +66,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
   const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useLayoutContext();
   const getTransactionOverrides = useGetTransactionOverrides();
+  const { txAnalytics } = useAnalytics();
 
   const {
     watch,
@@ -457,17 +459,21 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                       tokenAddress: tokenPair.underlyingTokenAddress,
                     };
 
-                    approveTrigger({
-                      signer,
+                    const primaryArgs = {
                       chainId: network.id,
                       amountWei: approveAllowanceAmountWei.toString(),
                       superTokenAddress: tokenPair.superTokenAddress,
+                    };
+                    approveTrigger({
+                      ...primaryArgs,
                       transactionExtraData: {
                         restoration,
                       },
+                      signer,
                       overrides: await getTransactionOverrides(network),
                     })
                       .unwrap()
+                      .then(...txAnalytics("Approve Allowance", primaryArgs))
                       .then(() => setTransactionDrawerOpen(true))
                       .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
                   }}
@@ -535,18 +541,22 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                     />
                   );
 
-                  wrapTrigger({
-                    signer,
+                  const primaryArgs = {
                     chainId: network.id,
                     amountWei: amountWei.toString(),
                     superTokenAddress: formData.tokenPair.superTokenAddress,
-                    waitForConfirmation: true,
+                  };
+                  wrapTrigger({
+                    ...primaryArgs,
                     transactionExtraData: {
                       restoration,
                     },
+                    signer,
                     overrides,
+                    waitForConfirmation: false,
                   })
                     .unwrap()
+                    .then(...txAnalytics("Wrap", primaryArgs))
                     .then(() => resetForm())
                     .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
 

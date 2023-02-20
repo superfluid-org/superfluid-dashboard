@@ -10,5 +10,5 @@ Before({ tags: "@rejected" }, function () {
 
 //Enable hidden vesting feature
 Before({ tags: "@vesting" }, function () {
-    Cypress.env("vesting" , "?enable_experimental_vesting_feature")
+    Cypress.env("vesting" , true)
 });

@@ -357,6 +357,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
         <Stack direction="row" alignItems="stretch" gap={3}>
           <VestingDataCard
             title="Tokens Allocated"
+            dataCy={`${token.symbol}-allocated`}
             tokenSymbol={token.symbol}
             tokenAmount={<Amount wei={expectedVestedBalance || "0"} />}
             fiatAmount={
@@ -370,6 +371,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
           />
           <VestingDataCard
             title="Cliff Amount"
+            dataCy={`${token.symbol}-cliff-amount`}
             tokenSymbol={token.symbol}
             tokenAmount={<Amount wei={vestingSchedule.cliffAmount} />}
             fiatAmount={

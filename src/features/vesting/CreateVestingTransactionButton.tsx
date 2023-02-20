@@ -5,6 +5,7 @@ import { FC } from "react";
 import { useFormContext } from "react-hook-form";
 import { getTimeInSeconds } from "../../utils/dateUtils";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
+import { useAnalytics } from "../analytics/useAnalytics";
 import { rpcApi } from "../redux/store";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
@@ -18,6 +19,7 @@ import { CreateVestingCardView } from "./CreateVestingSection";
 export const CreateVestingTransactionButton: FC<{
   setView: (value: CreateVestingCardView) => void;
 }> = ({ setView }) => {
+  const { txAnalytics } = useAnalytics();
   const [createVestingSchedule, createVestingScheduleResult] =
     rpcApi.useCreateVestingScheduleMutation();
 
@@ -92,22 +94,27 @@ export const CreateVestingTransactionButton: FC<{
 
                   setView(CreateVestingCardView.Approving);
 
-                  createVestingSchedule({
+                  const primaryArgs = {
                     chainId: network.id,
-                    signer,
                     superTokenAddress,
-                    receiverAddress,
                     senderAddress: await signer.getAddress(),
+                    receiverAddress,
                     startDateTimestamp,
                     cliffDateTimestamp,
                     endDateTimestamp,
                     flowRateWei: flowRate.toString(),
                     cliffTransferAmountWei: cliffTransferAmount.toString(),
+                  };
+                  createVestingSchedule({
+                    ...primaryArgs,
+                    signer,
                     overrides: await getOverrides(),
-                    transactionExtraData: undefined,
                     waitForConfirmation: false,
                   })
                     .unwrap()
+                    .then(
+                      ...txAnalytics("Create Vesting Schedule", primaryArgs)
+                    )
                     .then(() => setView(CreateVestingCardView.Success))
                     .catch(() => setView(CreateVestingCardView.Preview)); // Error is already logged and handled in the middleware & UI.
 

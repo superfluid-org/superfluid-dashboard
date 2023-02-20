@@ -15,6 +15,7 @@ import NoContentPaper from "../../../components/NoContent/NoContentPaper";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import TooltipIcon from "../../common/TooltipIcon";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
+import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION } from "../../redux/endpoints/flowSchedulerEndpoints";
 import { rpcApi } from "../../redux/store";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import VestingSchedulerAllowanceRow, {
@@ -55,9 +56,12 @@ const VestingSchedulerAllowancesTable: FC = () => {
     );
 
     return Object.entries(vestingSchedulesGroupedByToken).map((entry) => {
-      const [tokenAddress, group] = entry;
+      const [tokenAddress, allGroupVestingSchedules] = entry;
+      const activeVestingSchedules = allGroupVestingSchedules.filter(
+        (x) => !x.status.isFinished
+      );
 
-      const recommendedTokenAllowance = group.reduce(
+      const recommendedTokenAllowance = activeVestingSchedules.reduce(
         (previousValue, vestingSchedule) => {
           const startDateValidAfterAllowance = BigNumber.from(
             vestingSchedule.flowRate
@@ -78,7 +82,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
         BigNumber.from("0")
       );
 
-      const requiredFlowOperatorAllowance = group
+      const requiredFlowOperatorAllowance = activeVestingSchedules
         .filter((x) => !x.cliffAndFlowExecutedAt)
         .reduce(
           (previousValue, vestingSchedule) =>
@@ -86,10 +90,18 @@ const VestingSchedulerAllowancesTable: FC = () => {
           BigNumber.from("0")
         );
 
+      // https://docs.superfluid.finance/superfluid/developers/constant-flow-agreement-cfa/cfa-access-control-list-acl/acl-features
+      const requiredFlowOperatorPermissions =
+        activeVestingSchedules.length === 0
+          ? 0 // None
+          : activeVestingSchedules.some((x) => !x.cliffAndFlowExecutedAt) // Create not needed after cliffAndFlows are executed
+          ? ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION
+          : ACL_DELETE_PERMISSION;
+
       return {
         tokenAddress,
         recommendedTokenAllowance,
-        requiredFlowOperatorPermissions: 5, // Create not needed after cliffAndFlows are executed
+        requiredFlowOperatorPermissions,
         requiredFlowOperatorAllowance,
       };
     });
@@ -113,21 +125,21 @@ const VestingSchedulerAllowancesTable: FC = () => {
         <TableHead>
           <TableRow>
             <TableCell>Token</TableCell>
-            <TableCell width="220px">
+            <TableCell data-cy="allowance-cell" width="220px">
               Token Allowance
               <TooltipIcon
                 IconProps={{ sx: { ml: 0.5 } }}
                 title="The token allowance needed by the contract for cliff & compensation transfers."
               />
             </TableCell>
-            <TableCell width="260px">
+            <TableCell data-cy="operator-permissions-cell" width="260px">
               Flow Operator Permissions
               <TooltipIcon
                 IconProps={{ sx: { ml: 0.5 } }}
                 title="The flow operator permissions needed by the contract for creating & deletion of Superfluid flows."
               />
             </TableCell>
-            <TableCell width="250px">
+            <TableCell data-cy="flow-allowance-cell" width="250px">
               Flow Operator Allowance
               <TooltipIcon
                 IconProps={{ sx: { ml: 0.5 } }}

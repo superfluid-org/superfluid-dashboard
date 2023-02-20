@@ -23,7 +23,7 @@ interface GetFlowScheduledEndDate extends BaseQuery<number | null> {
   receiverAddress: string;
 }
 
-interface UpsertFlowWithScheduling
+export interface UpsertFlowWithScheduling
   extends FlowCreateMutation,
     FlowUpdateMutation {
   senderAddress: string;

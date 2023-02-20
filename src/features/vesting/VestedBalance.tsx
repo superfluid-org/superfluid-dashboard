@@ -11,10 +11,14 @@ const VestedBalance: FC<VestedBalanceProps> = ({
   children,
   vestingSchedule,
 }) => {
-  const { balance, timestamp, totalNetFlowRate } = useMemo(
+  const tokenBalance = useMemo(
     () => vestingScheduleToTokenBalance(vestingSchedule),
     [vestingSchedule]
   );
+
+  if (!tokenBalance) return <>-</>;
+
+  const { balance, timestamp, totalNetFlowRate } = tokenBalance;
 
   return (
     <>

@@ -9,7 +9,7 @@ const { withSentryConfig } = require("@sentry/nextjs");
 const withTM = require("next-transpile-modules")(["@lifi/widget"]);
 
 const SENTRY_ENVIRONMENT =
-  process.env.SENTRY_ENVIRONMENT || process.env.CONTEXT; // https://docs.netlify.com/configure-builds/environment-variables/#build-metadata
+  process.env.SENTRY_ENVIRONMENT || process.env.CONTEXT;
 
 function withSentryIfNecessary(nextConfig) {
   const SENTRY_AUTH_TOKEN = process.env.SENTRY_AUTH_TOKEN;
@@ -49,15 +49,28 @@ const moduleExports = {
   env: {
     NEXT_PUBLIC_APP_URL: process.env.URL,
     NEXT_PUBLIC_SENTRY_ENVIRONMENT: SENTRY_ENVIRONMENT,
+    NEXT_PUBLIC_NETLIFY_CONTEXT: process.env.CONTEXT, // https://docs.netlify.com/configure-builds/environment-variables/#build-metadata
   },
   swcMinify: false, // Recommended by next-transpile-modules... BUT Chart.js has problems with it so it needs to be turned off: https://github.com/chartjs/Chart.js/issues/10673
   productionBrowserSourceMaps: false, // Sentry will override this to `true`...
   sentry: {
-    hideSourceMaps: true // If this not specified then Sentry will expose the production source maps. 
+    hideSourceMaps: true, // If this not specified then Sentry will expose the production source maps.
   },
+  // Modularize imports to prevent compilation of unused modules.
+  // More info here: https://nextjs.org/docs/advanced-features/compiler
   experimental: {
-    esmExternals: "loose"
-  }
+    modularizeImports: {
+      lodash: {
+        transform: "lodash/{{member}}",
+      },
+      "date-fns": {
+        transform: "date-fns/{{member}}",
+      },
+      "@mui/icons-material": {
+        transform: "@mui/icons-material/{{member}}",
+      },
+    },
+  },
 };
 
 module.exports = withTM(withSentryIfNecessary(moduleExports));

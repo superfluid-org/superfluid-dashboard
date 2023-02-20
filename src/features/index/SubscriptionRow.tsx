@@ -29,6 +29,7 @@ import Amount from "../token/Amount";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { PendingProgress } from "../pendingUpdates/PendingProgress";
+import { useAnalytics } from "../analytics/useAnalytics";
 
 export const SubscriptionLoadingRow = () => {
   const theme = useTheme();
@@ -102,6 +103,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const { txAnalytics } = useAnalytics();
 
   const {
     indexValueCurrent,
@@ -284,18 +286,29 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                                 );
 
                                 // TODO(KK): Make the operation take subscriber as input. Don't just rely on the wallet's signer -- better to have explicit data flowing
-                                approveSubscription({
-                                  signer,
+                                const primaryArgs = {
                                   chainId: expectedNetwork.id,
                                   indexId: subscription.indexId,
                                   publisherAddress: subscription.publisher,
                                   superTokenAddress: subscription.token,
                                   userDataBytes: undefined,
-                                  waitForConfirmation: false,
+                                };
+                                approveSubscription({
+                                  ...primaryArgs,
+                                  signer,
                                   overrides: await getTransactionOverrides(
                                     network
                                   ),
-                                });
+                                  waitForConfirmation: false,
+                                })
+                                  .unwrap()
+                                  .then(
+                                    ...txAnalytics(
+                                      "Approve IDA Subscription",
+                                      primaryArgs
+                                    )
+                                  )
+                                  .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
                               }}
                             >
                               <CheckCircleRoundedIcon />
@@ -361,18 +374,29 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                                 );
 
                                 // TODO(KK): Make the operation take subscriber as input. Don't just rely on the wallet's signer -- better to have explicit data flowing
-                                revokeSubscription({
-                                  signer,
+                                const primaryArgs = {
                                   chainId: expectedNetwork.id,
                                   indexId: subscription.indexId,
                                   publisherAddress: subscription.publisher,
                                   superTokenAddress: subscription.token,
                                   userDataBytes: undefined,
-                                  waitForConfirmation: false,
+                                };
+                                revokeSubscription({
+                                  ...primaryArgs,
+                                  signer,
                                   overrides: await getTransactionOverrides(
                                     network
                                   ),
-                                });
+                                  waitForConfirmation: false,
+                                })
+                                  .unwrap()
+                                  .then(
+                                    ...txAnalytics(
+                                      "Revoke IDA Subscription",
+                                      primaryArgs
+                                    )
+                                  )
+                                  .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
                               }}
                             >
                               <CancelRoundedIcon />

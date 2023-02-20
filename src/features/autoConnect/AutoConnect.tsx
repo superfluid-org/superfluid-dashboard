@@ -1,55 +1,57 @@
 import {
   createContext,
   FC,
+  MutableRefObject,
   PropsWithChildren,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
-import { useConnect } from "wagmi";
-import { wagmiClient } from "../wallet/WagmiManager";
+import { useAccount, useClient } from "wagmi";
 
 interface AutoConnectContextValue {
   isAutoConnecting: boolean;
   /**
    * Whether a connector was found and connected to.
+   * NOTE: Ref is used because of weird race conditions.
    */
-  didAutoConnect: boolean;
+  isAutoConnectedRef: MutableRefObject<boolean>;
 }
 
 const AutoConnectContext = createContext<AutoConnectContextValue>(null!);
 
 export const AutoConnectProvider: FC<PropsWithChildren> = ({ children }) => {
-  const { connectAsync, connectors } = useConnect();
+  const wagmiClient = useClient();
   const [isAutoConnecting, setIsAutoConnecting] = useState(true);
-  const [didAutoConnect, setDidAutoConnect] = useState(true);
+  const isAutoConnectedRef = useRef(true); // Assume auto-connected because of weird race conditions.
+  useAccount({
+    onDisconnect: () => {
+      return (isAutoConnectedRef.current = false);
+    },
+  });
 
   useEffect(() => {
-    const doAsync = async (): Promise<{ didAutoConnect: boolean }> => {
-      const gnosisSafeConnector = connectors.find(
+    const doAsync = async (): Promise<void> => {
+      const gnosisSafeConnector = wagmiClient.connectors.find(
         (c) => c.id === "safe" && c.ready
       );
       if (gnosisSafeConnector) {
-        await connectAsync({
-          connector: gnosisSafeConnector,
-        });
-        return { didAutoConnect: true };
+        await gnosisSafeConnector.connect();
+        isAutoConnectedRef.current = true;
       } else {
-        const autoConnectedProvider = await wagmiClient.autoConnect();
-        return { didAutoConnect: !!autoConnectedProvider };
+        const provider = await wagmiClient.autoConnect();
+        isAutoConnectedRef.current = !!provider;
       }
     };
-
-    doAsync()
-      .then((x) => setDidAutoConnect(x.didAutoConnect))
-      .finally(() => setIsAutoConnecting(false));
-  }, [connectAsync, connectors]);
+    doAsync().finally(() => void setIsAutoConnecting(false));
+  }, [wagmiClient]);
 
   return (
     <AutoConnectContext.Provider
       value={{
         isAutoConnecting,
-        didAutoConnect,
+        isAutoConnectedRef,
       }}
     >
       {children}

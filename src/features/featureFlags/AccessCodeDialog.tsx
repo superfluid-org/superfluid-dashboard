@@ -48,16 +48,23 @@ const AccessCodeDialog: FC<AccessCodeDialogProps> = ({
   };
 
   const submitCode = () => {
-    if (MAINNET_FEATURE_CODES.includes(featureCode)) {
+    const enableMainnet = MAINNET_FEATURE_CODES.includes(featureCode);
+    const enableVesting = VESTING_FEATURE_CODES.includes(featureCode);
+
+    if (enableMainnet) {
       dispatch(enableMainnetFeature());
-      onClose();
-    } else if (VESTING_FEATURE_CODES.includes(featureCode)) {
-      dispatch(enableVestingFeature());
-      onClose();
-      router.push("/vesting");
-    } else {
-      setIsInvalidCode(true);
     }
+
+    if (enableVesting) {
+      dispatch(enableVestingFeature());
+      router.push("/vesting");
+    }
+
+    if (enableMainnet || enableVesting) {
+      return onClose();
+    }
+
+    setIsInvalidCode(true);
   };
 
   return (

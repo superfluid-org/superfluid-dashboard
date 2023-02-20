@@ -20,8 +20,8 @@ import { FC, PropsWithChildren, ReactNode } from "react";
 import { useTransactionBoundary } from "./TransactionBoundary";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import React from "react";
-import { supportId } from "../../components/MonitorContext/MonitorContext";
 import { useConnectionBoundary } from "./ConnectionBoundary";
+import { supportId } from "../analytics/useAppInstanceDetails";
 
 interface TransactionDialogProps {
   children: ReactNode;

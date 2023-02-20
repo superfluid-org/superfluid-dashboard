@@ -73,6 +73,7 @@ import {
 } from "../transactionRestoration/transactionRestorations";
 import { add } from "date-fns";
 import AddRounded from "@mui/icons-material/AddRounded";
+import { useAnalytics } from "../analytics/useAnalytics";
 
 const MIN_VISIBLE_END_DATE = add(new Date(), {
   minutes: 5,
@@ -128,6 +129,7 @@ export default memo(function SendCard() {
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
   const getTransactionOverrides = useGetTransactionOverrides();
+  const { txAnalytics } = useAnalytics();
 
   const {
     watch,
@@ -300,7 +302,7 @@ export default memo(function SendCard() {
   );
 
   const doesNetworkSupportFlowScheduler = false;
-    // !!network.flowSchedulerContractAddress; // TODO(KK): Uncomment this to enable 
+  // !!network.flowSchedulerContractAddress; // TODO(KK): Uncomment this to enable
 
   const [streamScheduling, setStreamScheduling] = useState<boolean>(
     !!endTimestamp
@@ -488,7 +490,7 @@ export default memo(function SendCard() {
   }, [network, flowRateEther, tokenBufferQuery.data]);
 
   const BufferAlert = (
-    <Alert data-cy="buffer-warning"severity="error">
+    <Alert data-cy="buffer-warning" severity="error">
       If you do not cancel this stream before your balance reaches zero,{" "}
       <b>
         you will lose your{" "}
@@ -558,25 +560,34 @@ export default memo(function SendCard() {
                 : {}),
             };
 
-            upsertFlow({
-              signer,
-              flowRateWei,
+            const primaryArgs = {
               chainId: network.id,
               senderAddress: await signer.getAddress(),
               receiverAddress: formData.receiverAddress,
               superTokenAddress: formData.tokenAddress,
+              flowRateWei,
               userDataBytes: undefined,
               endTimestamp: endDate
                 ? Math.round(endDate.getTime() / 1000)
                 : null,
-              waitForConfirmation: false,
-              overrides: await getTransactionOverrides(network),
+            };
+            upsertFlow({
+              ...primaryArgs,
               transactionExtraData: {
                 restoration: transactionRestoration,
               },
+              signer,
+              overrides: await getTransactionOverrides(network),
+              waitForConfirmation: false,
             })
               .unwrap()
-              .then(() => resetForm())
+              .then(
+                ...txAnalytics(
+                  activeFlow ? "Send Stream" : "Modify Stream",
+                  primaryArgs
+                )
+              )
+              .then(() => void resetForm())
               .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
 
             setDialogLoadingInfo(
@@ -666,17 +677,21 @@ export default memo(function SendCard() {
                 </Typography>
               );
 
-              flowDeleteTrigger({
-                signer,
-                receiverAddress,
+              const primaryArgs = {
+                chainId: network.id,
                 superTokenAddress,
                 senderAddress,
-                chainId: network.id,
+                receiverAddress,
                 userDataBytes: undefined,
+              };
+              flowDeleteTrigger({
+                ...primaryArgs,
+                signer,
                 waitForConfirmation: false,
                 overrides: await getTransactionOverrides(network),
               })
                 .unwrap()
+                .then(...txAnalytics("Cancel Stream", primaryArgs))
                 .then(() => resetForm())
                 .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
             }}

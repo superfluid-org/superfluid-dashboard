@@ -90,7 +90,7 @@ export default memo(function MultiAddressSearch({
       {addresses.length > 0 && (
         <List>
           {addresses.map((address) => (
-            <ListItemButton key={address} sx={{ px: 1 }}>
+            <ListItemButton data-cy="selected-address" key={address} sx={{ px: 1 }}>
               <ListItemAvatar>
                 <AddressAvatar
                   address={address}
@@ -106,7 +106,7 @@ export default memo(function MultiAddressSearch({
                 }
                 primaryTypographyProps={{ variant: "h7" }}
               />
-              <IconButton onClick={removeAddress(address)} size="small">
+              <IconButton data-cy="remove-address-btn" onClick={removeAddress(address)} size="small">
                 <CloseRoundedIcon />
               </IconButton>
             </ListItemButton>

@@ -52,7 +52,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
         <Typography variant="body1" color="secondary">
           Vesting Smart Contract
         </Typography>
-        <Stack direction="row" alignItems="center">
+        <Stack data-cy="vesting-contract-buttons" direction="row" alignItems="center">
           <CopyIconBtn
             TooltipProps={{ placement: "top" }}
             copyText={getAddress(network.vestingContractAddress)}

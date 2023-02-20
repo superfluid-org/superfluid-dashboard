@@ -1,13 +1,24 @@
 import * as Sentry from "@sentry/browser";
-import { customAlphabet } from "nanoid";
+import { useRouter } from "next/router";
 import promiseRetry from "promise-retry";
-import { FC, useEffect } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { hotjar } from "react-hotjar";
 import { useIntercom } from "react-use-intercom";
-import { useAccount, useNetwork } from "wagmi";
+import {
+  addBeforeSend,
+  BeforeSendFunc,
+  removeBeforeSend,
+} from "../../../sentry.client.config";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
+import {
+  listenerMiddleware,
+  transactionTracker,
+} from "../../features/redux/store";
 import config from "../../utils/config";
 import { IsCypress, SSR } from "../../utils/SSRUtils";
+import { useAccount, useNetwork } from "wagmi";
+import { supportId } from "../../features/analytics/useAppInstanceDetails";
+import { useAnalytics } from "../../features/analytics/useAnalytics";
 
 const SENTRY_WALLET_CONTEXT = "Connected Wallet";
 const SENTRY_WALLET_TAG = "wallet";
@@ -17,10 +28,6 @@ const SENTRY_EXPECTED_NETWORK_TAG = "network";
 const SENTRY_EXPECTED_NETWORK_TESTNET_TAG = "network.testnet";
 
 const SENTRY_SUPPORT_ID_TAG = "support-id";
-
-export const supportId = customAlphabet("6789BCDFGHJKLMNPQRTWbcdfghjkmnpqrtwz")(
-  8
-); // Alphabet: "nolookalikesSafe"
 Sentry.setTag(SENTRY_SUPPORT_ID_TAG, supportId);
 
 const MonitorContext: FC = () => {
@@ -37,6 +44,57 @@ const MonitorContext: FC = () => {
       testnet: testnet,
     });
   }, [network]);
+
+  const { reset, identify, page, track, instanceDetails } = useAnalytics();
+  const [previousInstanceDetails, setPreviousInstanceDetails] =
+    useState(instanceDetails);
+
+  useEffect(
+    () =>
+      listenerMiddleware.startListening({
+        actionCreator: transactionTracker.actions.updateTransaction,
+        effect: ({ payload }) => {
+          if (payload.changes.status) {
+            track(`Transaction Marked ${payload.changes.status}`); // Succeeded, Failure, Unknown etc
+          }
+        },
+      }),
+    []
+  );
+
+  useEffect(() => {
+    if (instanceDetails === previousInstanceDetails) {
+      return;
+    }
+
+    const {
+      appInstance: { wallet },
+    } = instanceDetails;
+    const {
+      appInstance: { wallet: prevWallet },
+    } = previousInstanceDetails;
+
+    if (wallet.isConnected !== prevWallet.isConnected) {
+      if (wallet.isConnected) {
+        track("Wallet Connected", wallet).then(() => identify(wallet));
+      } else {
+        track("Wallet Disconnected", wallet).then(() => reset());
+      }
+    } else {
+      if (wallet.isConnected && prevWallet.isConnected) {
+        if (wallet.networkId != prevWallet.networkId) {
+          track("Wallet Network Changed", wallet);
+        }
+        if (wallet.address != prevWallet.address) {
+          track("Wallet Account Changed", wallet)
+            .then(() => reset()) // Reset before not to associate next identification with previous wallet address.
+            .then(() => identify(wallet));
+        }
+      }
+    }
+
+    setPreviousInstanceDetails(instanceDetails);
+  }, [instanceDetails]);
 
   const { connector: activeConnector, isConnected } = useAccount();
   const { chain: activeChain } = useNetwork();
@@ -57,7 +115,7 @@ const MonitorContext: FC = () => {
       Sentry.setTag(SENTRY_WALLET_TAG, null);
       Sentry.setContext(SENTRY_WALLET_CONTEXT, null);
     }
-  }, [isConnected, activeConnector, activeChain]);
+  }, [instanceDetails]);
 
   const { getVisitorId } = useIntercom();
 
@@ -86,6 +144,34 @@ const MonitorContext: FC = () => {
       );
     }
   }, [getVisitorId]);
+
+  const onRouteChangeComplete = useCallback(
+    (_fullUrl: string, { shallow }: { shallow: boolean }) =>
+      shallow ? void 0 : page(),
+    []
+  );
+
+  const router = useRouter();
+  useEffect(() => {
+    router.events.on("routeChangeComplete", onRouteChangeComplete);
+    return () =>
+      router.events.off("routeChangeComplete", onRouteChangeComplete);
+  }, []);
+
+  useEffect(() => {
+    const onSentryEvent: BeforeSendFunc = (event) => {
+      if (event.exception) {
+        track("Error Logged", {
+          eventId: event.event_id,
+        });
+      }
+      return event;
+    };
+
+    addBeforeSend(onSentryEvent);
+
+    return () => removeBeforeSend(onSentryEvent);
+  }, [track]);
 
   return null;
 };

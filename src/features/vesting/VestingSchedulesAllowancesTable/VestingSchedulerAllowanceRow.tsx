@@ -68,7 +68,7 @@ interface VestingSchedulerAllowanceRowProps {
   tokenAddress: string;
   senderAddress: string;
   recommendedTokenAllowance: BigNumber;
-  requiredFlowOperatorPermissions: number; // 5 (Create or Delete) https://docs.superfluid.finance/superfluid/developers/constant-flow-agreement-cfa/cfa-access-control-list-acl/acl-features
+  requiredFlowOperatorPermissions: number; // Usually 5 (Create or Delete) https://docs.superfluid.finance/superfluid/developers/constant-flow-agreement-cfa/cfa-access-control-list-acl/acl-features
   requiredFlowOperatorAllowance: BigNumber;
 }
 
@@ -111,11 +111,13 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   const existingPermissions = Number(flowOperatorPermissions);
 
   const isEnoughFlowOperatorPermissions =
+    requiredFlowOperatorPermissions === 0 ||
     existingPermissions & requiredFlowOperatorPermissions;
 
   return (
     <>
       <TableRow
+        data-cy={`${tokenQuery.data?.symbol}-row`}
         sx={
           isLast && !isExpanded
             ? {
@@ -139,27 +141,45 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
         <TableCell>
           <Stack direction="column" spacing={1} alignItems="center">
             {isEnoughTokenAllowance ? (
-              <CheckCircleRoundedIcon color="primary" />
+              <CheckCircleRoundedIcon
+                data-cy={`${tokenQuery.data?.symbol}-allowance-status`}
+                color="primary"
+              />
             ) : (
-              <DangerousRoundedIcon color="error" />
+              <DangerousRoundedIcon
+                data-cy={`${tokenQuery.data?.symbol}-allowance-status`}
+                color="error"
+              />
             )}
           </Stack>
         </TableCell>
         <TableCell>
           <Stack direction="column" spacing={1} alignItems="center">
             {isEnoughFlowOperatorPermissions ? (
-              <CheckCircleRoundedIcon color="primary" />
+              <CheckCircleRoundedIcon
+                data-cy={`${tokenQuery.data?.symbol}-permission-status`}
+                color="primary"
+              />
             ) : (
-              <DangerousRoundedIcon color="error" />
+              <DangerousRoundedIcon
+                data-cy={`${tokenQuery.data?.symbol}-permission-status`}
+                color="error"
+              />
             )}
           </Stack>
         </TableCell>
         <TableCell>
           <Stack direction="column" spacing={1} alignItems="center">
             {isEnoughFlowOperatorAllowance ? (
-              <CheckCircleRoundedIcon color="primary" />
+              <CheckCircleRoundedIcon
+                data-cy={`${tokenQuery.data?.symbol}-flow-allowance-status`}
+                color="primary"
+              />
             ) : (
-              <DangerousRoundedIcon color="error" />
+              <DangerousRoundedIcon
+                data-cy={`${tokenQuery.data?.symbol}-flow-allowance-status`}
+                color="error"
+              />
             )}
           </Stack>
         </TableCell>

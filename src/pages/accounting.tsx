@@ -83,6 +83,7 @@ const Accounting: NextPage = () => {
                 </Typography>
               </Stack>
               <Button
+                data-cy={"export-csv-button"}
                 variant="contained"
                 color="primary"
                 onClick={exportData}

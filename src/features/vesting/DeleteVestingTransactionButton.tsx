@@ -1,9 +1,6 @@
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
-import {
-  useAddressPendingVestingScheduleDeletes,
-  usePendingVestingScheduleDelete,
-} from "../pendingUpdates/PendingVestingScheduleDelete";
+import { usePendingVestingScheduleDelete } from "../pendingUpdates/PendingVestingScheduleDelete";
 import { rpcApi } from "../redux/store";
 import { useConnectionBoundary } from "../transactionBoundary/ConnectionBoundary";
 import {
@@ -22,6 +19,7 @@ import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import Link from "next/link";
 import { Typography } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import { useAnalytics } from "../analytics/useAnalytics";
 
 export const DeleteVestingTransactionButton: FC<{
   superTokenAddress: string;
@@ -36,6 +34,7 @@ export const DeleteVestingTransactionButton: FC<{
   TransactionBoundaryProps,
   TransactionButtonProps,
 }) => {
+  const { txAnalytics } = useAnalytics();
   const [deleteVestingSchedule, deleteVestingScheduleResult] =
     rpcApi.useDeleteVestingScheduleMutation();
 
@@ -45,7 +44,7 @@ export const DeleteVestingTransactionButton: FC<{
   const isSender =
     senderAddress.toLowerCase() === visibleAddress?.toLowerCase();
 
-  const { currentData: activeVestingSchedule } =
+  const { data: activeVestingSchedule } =
     rpcApi.useGetActiveVestingScheduleQuery(
       isSender
         ? {
@@ -56,6 +55,17 @@ export const DeleteVestingTransactionButton: FC<{
           }
         : skipToken
     );
+
+  const { data: activeFlow } = rpcApi.useGetActiveFlowQuery(
+    isSender && activeVestingSchedule
+      ? {
+          chainId: network.id,
+          tokenAddress: superTokenAddress,
+          receiverAddress,
+          senderAddress,
+        }
+      : skipToken
+  );
 
   const isBeingDeleted = !!usePendingVestingScheduleDelete({
     chainId: network.id,
@@ -83,22 +93,32 @@ export const DeleteVestingTransactionButton: FC<{
               startIcon: <CloseRoundedIcon />,
             }}
             onClick={async (signer) => {
+              const shouldDeleteActiveFlow =
+                !!activeVestingSchedule && !!activeFlow;
+
               setDialogLoadingInfo(
                 <Typography variant="h5" color="text.secondary" translate="yes">
-                  You are deleting a vesting schedule.
+                  {shouldDeleteActiveFlow
+                    ? "You are canceling a stream and deleting a vesting schedule."
+                    : "You are deleting a vesting schedule."}
                 </Typography>
               );
 
-              deleteVestingSchedule({
-                signer,
+              const primaryArgs = {
                 chainId: network.id,
                 superTokenAddress: superTokenAddress,
                 senderAddress: await signer.getAddress(),
                 receiverAddress: receiverAddress,
-                transactionExtraData: undefined,
+                deleteFlow: shouldDeleteActiveFlow,
+              };
+              deleteVestingSchedule({
+                ...primaryArgs,
+                signer,
                 overrides: await getOverrides(),
                 waitForConfirmation: false,
-              });
+              })
+                .unwrap()
+                .then(...txAnalytics("Delete Vesting Schedule", primaryArgs));
 
               setDialogSuccessActions(
                 <TransactionDialogActions>
