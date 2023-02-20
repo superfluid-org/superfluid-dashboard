@@ -9,6 +9,7 @@ import {
 } from "react";
 import { useFeatureFlags } from "../featureFlags/FeatureFlagContext";
 import { Network, networkDefinition, networks } from "./networks";
+import sfMeta from "@superfluid-finance/metadata";
 
 interface AvailableNetworksContextValue {
   availableNetworks: Network[];
@@ -74,6 +75,13 @@ export const AvailableNetworksProvider: FC<PropsWithChildren> = ({
         const byV1ShortName = networks.find((x) => x.v1ShortName === value);
         if (byV1ShortName) {
           return byV1ShortName;
+        }
+
+        const byMetadata_chainId =
+          sfMeta.getNetworkByName(value)?.chainId ??
+          sfMeta.getNetworkByShortName(value)?.chainId;
+        if (byMetadata_chainId) {
+          return networks.find((x) => x.id === byMetadata_chainId);
         }
       }
       return undefined;
