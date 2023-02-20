@@ -1,5 +1,6 @@
 import memoize from "lodash/memoize";
-import { chain, Chain } from "wagmi";
+import * as chain from "wagmi/chains";
+import { Chain } from "wagmi/chains";
 import ensureDefined from "../../utils/ensureDefined";
 import {
   NATIVE_ASSET_ADDRESS,
@@ -19,7 +20,7 @@ export type Network = Chain & {
   icon?: string;
   color: string;
   bufferTimeInMinutes: number; // Hard-code'ing this per network is actually incorrect approach. It's token-based and can be governed.
-  rpcUrls: Chain["rpcUrls"] & { superfluid: string };
+  rpcUrls: Chain["rpcUrls"] & { superfluid: { http: readonly string[] } };
   nativeCurrency: Chain["nativeCurrency"] & {
     type: TokenType.NativeAssetUnderlyingToken;
     address: typeof NATIVE_ASSET_ADDRESS;
@@ -140,7 +141,7 @@ export const networkDefinition: {
     color: "#9064ff",
     rpcUrls: {
       ...chain.goerli.rpcUrls,
-      superfluid: superfluidRpcUrls.goerli,
+      superfluid: { http: [superfluidRpcUrls.goerli] },
     },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli",
@@ -180,8 +181,9 @@ export const networkDefinition: {
     icon: "/icons/network/gnosis.svg",
     color: "#04795b",
     rpcUrls: {
-      superfluid: superfluidRpcUrls.gnosis,
-      default: "https://rpc.gnosischain.com/",
+      superfluid: { http: [superfluidRpcUrls.gnosis] },
+      default: { http: ["https://rpc.gnosischain.com/"] },
+      public: { http: ["https://rpc.gnosischain.com/"] },
     },
     subgraphUrl:
       "https://subgraph.satsuma-prod.com/c5br3jaVlJI6/superfluid/xdai/api",
@@ -217,7 +219,7 @@ export const networkDefinition: {
     color: "#7c3fe4",
     rpcUrls: {
       ...chain.polygon.rpcUrls,
-      superfluid: superfluidRpcUrls.polygon,
+      superfluid: { http: [superfluidRpcUrls.polygon] },
     },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-matic",
@@ -250,7 +252,7 @@ export const networkDefinition: {
     color: "#3099f2",
     rpcUrls: {
       ...chain.polygonMumbai.rpcUrls,
-      superfluid: superfluidRpcUrls.polygonMumbai,
+      superfluid: { http: [superfluidRpcUrls.polygonMumbai] },
     },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-mumbai",
@@ -284,8 +286,9 @@ export const networkDefinition: {
     bufferTimeInMinutes: 60,
     color: "#2b374b",
     rpcUrls: {
-      superfluid: superfluidRpcUrls.avalancheFuji,
-      default: "https://api.avax-test.network/ext/C/rpc",
+      superfluid: { http: [superfluidRpcUrls.avalancheFuji] },
+      default: { http: ["https://api.avax-test.network/ext/C/rpc"] },
+      public: { http: ["https://api.avax-test.network/ext/C/rpc"] },
     },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-avalanche-fuji",
@@ -326,7 +329,7 @@ export const networkDefinition: {
     color: "#ff0320",
     rpcUrls: {
       ...chain.optimism.rpcUrls,
-      superfluid: superfluidRpcUrls.optimism,
+      superfluid: { http: [superfluidRpcUrls.optimism] },
     },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-mainnet",
@@ -360,7 +363,7 @@ export const networkDefinition: {
     color: "#2b374b",
     rpcUrls: {
       ...chain.arbitrum.rpcUrls,
-      superfluid: superfluidRpcUrls.arbitrum,
+      superfluid: { http: [superfluidRpcUrls.arbitrum] },
     },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-one",
@@ -395,8 +398,9 @@ export const networkDefinition: {
     icon: "/icons/network/avalanche.svg",
     color: "#e84142",
     rpcUrls: {
-      superfluid: superfluidRpcUrls.avalancheC,
-      default: "https://api.avax.network/ext/bc/C/rpc",
+      superfluid: { http: [superfluidRpcUrls.avalancheC] },
+      default: { http: ["https://api.avax.network/ext/bc/C/rpc"] },
+      public: { http: ["https://api.avax.network/ext/bc/C/rpc"] },
     },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-avalanche-c",
@@ -439,8 +443,9 @@ export const networkDefinition: {
     icon: "/icons/network/bnb.svg",
     color: "#F0B90B",
     rpcUrls: {
-      superfluid: superfluidRpcUrls.bnbSmartChain,
-      default: "https://bsc-dataseed1.binance.org",
+      superfluid: { http: [superfluidRpcUrls.bnbSmartChain] },
+      default: { http: ["https://bsc-dataseed1.binance.org"] },
+      public: { http: ["https://bsc-dataseed1.binance.org"] },
     },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-bsc-mainnet",
@@ -480,7 +485,7 @@ export const networkDefinition: {
     color: "#627EEA",
     rpcUrls: {
       ...chain.mainnet.rpcUrls,
-      superfluid: superfluidRpcUrls.ethereum,
+      superfluid: { http: [superfluidRpcUrls.ethereum] },
     },
     subgraphUrl:
       "https://subgraph.satsuma-prod.com/c5br3jaVlJI6/superfluid/eth-mainnet/api",

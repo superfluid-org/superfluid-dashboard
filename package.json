@@ -20,7 +20,6 @@
     "@emotion/server": "^11.10.0",
     "@emotion/styled": "^11.10.5",
     "@ethersproject/networks": "^5.7.1",
-    "@gnosis.pm/safe-apps-wagmi": "^1.1.0",
     "@hookform/error-message": "^2.0.0",
     "@hookform/resolvers": "^2.9.10",
     "@lifi/sdk": "^1.7.2",
@@ -30,7 +29,7 @@
     "@mui/material": "^5.11.6",
     "@mui/x-data-grid": "^5.17.20",
     "@mui/x-date-pickers": "^5.0.15",
-    "@rainbow-me/rainbowkit": "^0.7.4",
+    "@rainbow-me/rainbowkit": "^0.8.1",
     "@reduxjs/toolkit": "^1.9.0",
     "@rtk-query/graphql-request-base-query": "^2.2.0",
     "@sentry/nextjs": "^7.20.0",
@@ -61,7 +60,7 @@
     "react-use-intercom": "^2.0.0",
     "redux-persist": "^6.0.0",
     "serialize-error": "^8.1.0",
-    "wagmi": "^0.7.9",
+    "wagmi": "^0.11.6",
     "yup": "^1.0.0-beta.7"
   },
   "devDependencies": {

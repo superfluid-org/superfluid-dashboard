@@ -54,6 +54,9 @@ const moduleExports = {
   productionBrowserSourceMaps: false, // Sentry will override this to `true`...
   sentry: {
     hideSourceMaps: true // If this not specified then Sentry will expose the production source maps. 
+  },
+  experimental: {
+    esmExternals: "loose"
   }
 };
 
