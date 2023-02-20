@@ -7,7 +7,6 @@ import {
     TokenType,
 } from "./tokenTypes";
 import {BasePage} from "../pageObjects/BasePage";
-import ensureDefined from "../../src/utils/ensureDefined";
 
 // id == chainId
 // name == displayName
@@ -368,7 +367,7 @@ avalancheC: {
 },
     ethereum: {
         ...chain.mainnet,
-        blockExplorers: ensureDefined(chain.mainnet.blockExplorers),
+        blockExplorers: BasePage.ensureDefined(chain.mainnet.blockExplorers),
         slugName: "ethereum",
         v1ShortName: "eth",
         bufferTimeInMinutes: 240,
@@ -385,7 +384,7 @@ avalancheC: {
         getLinkForAddress: (address: string): string =>
             `https://etherscan.io/address/${address}`,
         nativeCurrency: {
-            ...ensureDefined(chain.mainnet.nativeCurrency),
+            ...BasePage.ensureDefined(chain.mainnet.nativeCurrency),
             address: NATIVE_ASSET_ADDRESS,
             type: TokenType.NativeAssetUnderlyingToken,
             superToken: {
