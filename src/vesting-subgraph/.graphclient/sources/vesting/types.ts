@@ -583,8 +583,8 @@ export type Subscription_metaArgs = {
 export type Task = {
   id: Scalars['ID'];
   type: TaskType;
-  executed: Scalars['Boolean'];
-  executionAt?: Maybe<Scalars['BigInt']>;
+  executedAt?: Maybe<Scalars['BigInt']>;
+  executionAt: Scalars['BigInt'];
   expirationAt?: Maybe<Scalars['BigInt']>;
   cancelledAt?: Maybe<Scalars['BigInt']>;
   failedAt?: Maybe<Scalars['BigInt']>;
@@ -608,10 +608,14 @@ export type Task_filter = {
   type_not?: InputMaybe<TaskType>;
   type_in?: InputMaybe<Array<TaskType>>;
   type_not_in?: InputMaybe<Array<TaskType>>;
-  executed?: InputMaybe<Scalars['Boolean']>;
-  executed_not?: InputMaybe<Scalars['Boolean']>;
-  executed_in?: InputMaybe<Array<Scalars['Boolean']>>;
-  executed_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  executedAt?: InputMaybe<Scalars['BigInt']>;
+  executedAt_not?: InputMaybe<Scalars['BigInt']>;
+  executedAt_gt?: InputMaybe<Scalars['BigInt']>;
+  executedAt_lt?: InputMaybe<Scalars['BigInt']>;
+  executedAt_gte?: InputMaybe<Scalars['BigInt']>;
+  executedAt_lte?: InputMaybe<Scalars['BigInt']>;
+  executedAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  executedAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   executionAt?: InputMaybe<Scalars['BigInt']>;
   executionAt_not?: InputMaybe<Scalars['BigInt']>;
   executionAt_gt?: InputMaybe<Scalars['BigInt']>;
@@ -674,7 +678,7 @@ export type Task_filter = {
 export type Task_orderBy =
   | 'id'
   | 'type'
-  | 'executed'
+  | 'executedAt'
   | 'executionAt'
   | 'expirationAt'
   | 'cancelledAt'
@@ -822,7 +826,7 @@ export type TokenSenderReceiverCursor_orderBy =
   | 'currentCliffAndFlowTask'
   | 'currentCliffAndFlowTask__id'
   | 'currentCliffAndFlowTask__type'
-  | 'currentCliffAndFlowTask__executed'
+  | 'currentCliffAndFlowTask__executedAt'
   | 'currentCliffAndFlowTask__executionAt'
   | 'currentCliffAndFlowTask__expirationAt'
   | 'currentCliffAndFlowTask__cancelledAt'
@@ -830,7 +834,7 @@ export type TokenSenderReceiverCursor_orderBy =
   | 'currentEndVestingTask'
   | 'currentEndVestingTask__id'
   | 'currentEndVestingTask__type'
-  | 'currentEndVestingTask__executed'
+  | 'currentEndVestingTask__executedAt'
   | 'currentEndVestingTask__executionAt'
   | 'currentEndVestingTask__expirationAt'
   | 'currentEndVestingTask__cancelledAt'

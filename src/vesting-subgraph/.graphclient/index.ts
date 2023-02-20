@@ -604,8 +604,8 @@ export type Subscription_MetaArgs = {
 export type Task = {
   id: Scalars['ID'];
   type: TaskType;
-  executed: Scalars['Boolean'];
-  executionAt?: Maybe<Scalars['BigInt']>;
+  executedAt?: Maybe<Scalars['BigInt']>;
+  executionAt: Scalars['BigInt'];
   expirationAt?: Maybe<Scalars['BigInt']>;
   cancelledAt?: Maybe<Scalars['BigInt']>;
   failedAt?: Maybe<Scalars['BigInt']>;
@@ -629,10 +629,14 @@ export type Task_Filter = {
   type_not?: InputMaybe<TaskType>;
   type_in?: InputMaybe<Array<TaskType>>;
   type_not_in?: InputMaybe<Array<TaskType>>;
-  executed?: InputMaybe<Scalars['Boolean']>;
-  executed_not?: InputMaybe<Scalars['Boolean']>;
-  executed_in?: InputMaybe<Array<Scalars['Boolean']>>;
-  executed_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  executedAt?: InputMaybe<Scalars['BigInt']>;
+  executedAt_not?: InputMaybe<Scalars['BigInt']>;
+  executedAt_gt?: InputMaybe<Scalars['BigInt']>;
+  executedAt_lt?: InputMaybe<Scalars['BigInt']>;
+  executedAt_gte?: InputMaybe<Scalars['BigInt']>;
+  executedAt_lte?: InputMaybe<Scalars['BigInt']>;
+  executedAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  executedAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   executionAt?: InputMaybe<Scalars['BigInt']>;
   executionAt_not?: InputMaybe<Scalars['BigInt']>;
   executionAt_gt?: InputMaybe<Scalars['BigInt']>;
@@ -695,7 +699,7 @@ export type Task_Filter = {
 export type Task_OrderBy =
   | 'id'
   | 'type'
-  | 'executed'
+  | 'executedAt'
   | 'executionAt'
   | 'expirationAt'
   | 'cancelledAt'
@@ -843,7 +847,7 @@ export type TokenSenderReceiverCursor_OrderBy =
   | 'currentCliffAndFlowTask'
   | 'currentCliffAndFlowTask__id'
   | 'currentCliffAndFlowTask__type'
-  | 'currentCliffAndFlowTask__executed'
+  | 'currentCliffAndFlowTask__executedAt'
   | 'currentCliffAndFlowTask__executionAt'
   | 'currentCliffAndFlowTask__expirationAt'
   | 'currentCliffAndFlowTask__cancelledAt'
@@ -851,7 +855,7 @@ export type TokenSenderReceiverCursor_OrderBy =
   | 'currentEndVestingTask'
   | 'currentEndVestingTask__id'
   | 'currentEndVestingTask__type'
-  | 'currentEndVestingTask__executed'
+  | 'currentEndVestingTask__executedAt'
   | 'currentEndVestingTask__executionAt'
   | 'currentEndVestingTask__expirationAt'
   | 'currentEndVestingTask__cancelledAt'
@@ -2467,8 +2471,8 @@ export type SubscriptionResolvers<ContextType = MeshContext, ParentType extends 
 export type TaskResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Task'] = ResolversParentTypes['Task']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['TaskType'], ParentType, ContextType>;
-  executed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  executionAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  executedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  executionAt?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   expirationAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   cancelledAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   failedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
@@ -2663,7 +2667,8 @@ export type DirectiveResolvers<ContextType = MeshContext> = ResolversObject<{
 export type MeshContext = VestingTypes.Context & BaseMeshContext;
 
 
-const baseDir = pathModule.join(typeof __dirname === 'string' ? __dirname : '/', '..');
+import { fileURLToPath } from '@graphql-mesh/utils';
+const baseDir = pathModule.join(pathModule.dirname(fileURLToPath(import.meta.url)), '..');
 
 const importFn: ImportFn = <T>(moduleId: string) => {
   const relativeModuleId = (pathModule.isAbsolute(moduleId) ? pathModule.relative(baseDir, moduleId) : moduleId).split('\\').join('/').replace(baseDir + '/', '');
@@ -2705,7 +2710,7 @@ const vestingTransforms = [];
 const additionalTypeDefs = [] as any[];
 const vestingHandler = new GraphqlHandler({
               name: "vesting",
-              config: {"endpoint":"{context.url:https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-goerli}","retry":5},
+              config: {"endpoint":"{context.url:https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-polygon-mainnet}","retry":5},
               baseDir,
               cache,
               pubsub,

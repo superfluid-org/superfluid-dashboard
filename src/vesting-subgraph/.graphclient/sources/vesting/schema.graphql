@@ -692,8 +692,8 @@ type Subscription {
 type Task {
   id: ID!
   type: TaskType!
-  executed: Boolean!
-  executionAt: BigInt
+  executedAt: BigInt
+  executionAt: BigInt!
   expirationAt: BigInt
   cancelledAt: BigInt
   failedAt: BigInt
@@ -718,10 +718,14 @@ input Task_filter {
   type_not: TaskType
   type_in: [TaskType!]
   type_not_in: [TaskType!]
-  executed: Boolean
-  executed_not: Boolean
-  executed_in: [Boolean!]
-  executed_not_in: [Boolean!]
+  executedAt: BigInt
+  executedAt_not: BigInt
+  executedAt_gt: BigInt
+  executedAt_lt: BigInt
+  executedAt_gte: BigInt
+  executedAt_lte: BigInt
+  executedAt_in: [BigInt!]
+  executedAt_not_in: [BigInt!]
   executionAt: BigInt
   executionAt_not: BigInt
   executionAt_gt: BigInt
@@ -784,7 +788,7 @@ input Task_filter {
 enum Task_orderBy {
   id
   type
-  executed
+  executedAt
   executionAt
   expirationAt
   cancelledAt
@@ -933,7 +937,7 @@ enum TokenSenderReceiverCursor_orderBy {
   currentCliffAndFlowTask
   currentCliffAndFlowTask__id
   currentCliffAndFlowTask__type
-  currentCliffAndFlowTask__executed
+  currentCliffAndFlowTask__executedAt
   currentCliffAndFlowTask__executionAt
   currentCliffAndFlowTask__expirationAt
   currentCliffAndFlowTask__cancelledAt
@@ -941,7 +945,7 @@ enum TokenSenderReceiverCursor_orderBy {
   currentEndVestingTask
   currentEndVestingTask__id
   currentEndVestingTask__type
-  currentEndVestingTask__executed
+  currentEndVestingTask__executedAt
   currentEndVestingTask__executionAt
   currentEndVestingTask__expirationAt
   currentEndVestingTask__cancelledAt
