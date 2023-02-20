@@ -25,6 +25,7 @@ jobs:
         id: cypress
         uses: cypress-io/github-action@v4
         with:
+          working-directory: tests
           parallel: false
           spec: cypress/integration/${{ matrix.container }}.feature
           record: false
