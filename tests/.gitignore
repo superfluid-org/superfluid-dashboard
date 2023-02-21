@@ -1,0 +1,7 @@
+# Code coverage and Cypress tests
+.nyc_output
+coverage
+cypress/screenshots
+cypress/videos
+cypress/downloads
+cypress.env.json
