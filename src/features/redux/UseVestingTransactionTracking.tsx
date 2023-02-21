@@ -6,7 +6,7 @@ import {
 } from "./store";
 import { useEffect } from "react";
 import { transactionTrackerSelectors } from "@superfluid-finance/sdk-redux";
-import { findNetworkByChainId, networkDefinition } from "../network/networks";
+import { allNetworks, tryFindNetwork } from "../network/networks";
 import promiseRetry from "promise-retry";
 import {
   pendingUpdateSelectors,
@@ -31,9 +31,9 @@ export const useVestingTransactionTracking = () => {
             state,
             payload.id
           )!;
-          const network = findNetworkByChainId(trackedTransaction.chainId)!;
+          const network = tryFindNetwork(allNetworks, trackedTransaction.chainId);
 
-          if (network.vestingContractAddress && blockTransactionSucceededIn) {
+          if (network && network.vestingContractAddress && blockTransactionSucceededIn) {
             // Poll Subgraph for all the events for this block and then invalidate Subgraph cache based on that.
             promiseRetry(
               (retry, _number) =>

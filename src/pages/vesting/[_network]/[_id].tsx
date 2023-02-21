@@ -17,7 +17,11 @@ import ActivityTable from "../../../features/activityHistory/ActivityTable";
 import TimeUnitFilter, {
   TimeUnitFilterType,
 } from "../../../features/graph/TimeUnitFilter";
-import { Network, networksBySlug } from "../../../features/network/networks";
+import {
+  Network,
+  allNetworks,
+  tryFindNetwork,
+} from "../../../features/network/networks";
 import { subgraphApi } from "../../../features/redux/store";
 import Amount from "../../../features/token/Amount";
 import FiatAmount from "../../../features/tokenPrice/FiatAmount";
@@ -76,11 +80,7 @@ const VestingScheduleDetailsPage: NextPageWithLayout = () => {
 
   useEffect(() => {
     if (router.isReady) {
-      setNetwork(
-        networksBySlug.get(
-          isString(router.query._network) ? router.query._network : ""
-        )
-      );
+      setNetwork(tryFindNetwork(allNetworks, router.query._network));
       setVestingScheduleId(
         isString(router.query._id) ? router.query._id : undefined
       );

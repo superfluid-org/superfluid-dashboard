@@ -17,7 +17,7 @@ import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { useAvailableNetworks } from "./AvailableNetworksContext";
 import { useExpectedNetwork } from "./ExpectedNetworkContext";
 import NetworkIcon from "./NetworkIcon";
-import { Network, testNetworks } from "./networks";
+import { Network } from "./networks";
 
 interface NetworkItemProps {
   network: Network;
@@ -44,7 +44,7 @@ export default memo(function SelectNetwork() {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { availableMainNetworks } = useAvailableNetworks();
+  const { availableMainNetworks, availableTestNetworks } = useAvailableNetworks();
 
   const { address: accountAddress } = useAccount();
   const { switchNetwork } = useSwitchNetwork();
@@ -129,7 +129,7 @@ export default memo(function SelectNetwork() {
         </Collapse>
 
         <Collapse in={showTestnets} timeout="auto" unmountOnExit>
-          {testNetworks.map((network) => (
+          {availableTestNetworks.map((network) => (
             <NetworkItem
               key={network.id}
               onClick={onNetworkSelected(network.id)}

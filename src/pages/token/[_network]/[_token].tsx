@@ -29,7 +29,11 @@ import TimeUnitFilter, {
 } from "../../../features/graph/TimeUnitFilter";
 import SubscriptionsTable from "../../../features/index/SubscriptionsTable";
 import NetworkIcon from "../../../features/network/NetworkIcon";
-import { Network, networksBySlug } from "../../../features/network/networks";
+import {
+  Network,
+  allNetworks,
+  tryFindNetwork,
+} from "../../../features/network/networks";
 import { rpcApi, subgraphApi } from "../../../features/redux/store";
 import { UnitOfTime } from "../../../features/send/FlowRateInput";
 import StreamsTable from "../../../features/streamsTable/StreamsTable";
@@ -75,11 +79,7 @@ const TokenPage: NextPage = () => {
 
   useEffect(() => {
     if (router.isReady) {
-      setNetwork(
-        networksBySlug.get(
-          isString(router.query._network) ? router.query._network : ""
-        )
-      );
+      setNetwork(tryFindNetwork(allNetworks, router.query._network));
       setTokenAddress(
         isString(router.query._token) ? router.query._token : undefined
       );

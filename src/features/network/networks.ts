@@ -1,3 +1,4 @@
+import { isNumber, isString } from "lodash";
 import memoize from "lodash/memoize";
 import { chain, Chain } from "wagmi";
 import ensureDefined from "../../utils/ensureDefined";
@@ -7,6 +8,7 @@ import {
   TokenMinimal,
   TokenType,
 } from "../redux/endpoints/tokenTypes";
+import sfMeta from "@superfluid-finance/metadata";
 
 // id == chainId
 // name == displayName
@@ -507,7 +509,7 @@ export const networkDefinition: {
   },
 };
 
-export const networks: Network[] = [
+export const allNetworks: Network[] = [
   networkDefinition.ethereum,
   networkDefinition.goerli,
   networkDefinition.gnosis,
@@ -519,6 +521,54 @@ export const networks: Network[] = [
   networkDefinition.avalancheC,
   networkDefinition.bsc,
 ];
+export const mainNetworks = allNetworks.filter(x => !x.testnet);
+export const testNetworks = allNetworks.filter(x => x.testnet);
+
+export const tryFindNetwork = (
+  networks: Network[],
+  value: unknown
+): Network | undefined => {
+  const asNumber = Number(value);
+  if (isFinite(asNumber)) {
+    return networks.find((x) => x.id === asNumber);
+  }
+
+  if (isString(value)) {
+    const valueAsLowerCase = value.toLowerCase();
+
+    const bySlug = networks.find((x) => x.slugName === valueAsLowerCase);
+    if (bySlug) {
+      return bySlug;
+    }
+
+    const byV1ShortName = networks.find(
+      (x) => x.v1ShortName === valueAsLowerCase
+    );
+    if (byV1ShortName) {
+      return byV1ShortName;
+    }
+
+    const byMetadata_chainId =
+      sfMeta.getNetworkByName(valueAsLowerCase)?.chainId ??
+      sfMeta.getNetworkByShortName(valueAsLowerCase)?.chainId;
+    if (byMetadata_chainId) {
+      return networks.find((x) => x.id === byMetadata_chainId);
+    }
+  }
+
+  return undefined;
+};
+
+export const findNetworkOrThrow = (
+  networks: Network[],
+  value: unknown
+): Network => {
+  const network = tryFindNetwork(networks, value);
+  if (!network) {
+    throw new Error("Network not found. This should never happen.");
+  }
+  return network;
+}
 
 export const getNetworkDefaultTokenPair = memoize(
   (network: Network): SuperTokenPair => ({
@@ -533,23 +583,7 @@ export const getNetworkDefaultTokenPair = memoize(
   })
 );
 
-export const networksByName = new Map(
-  networks.map((x) => [x.slugName.toLowerCase(), x])
-);
-
-export const networksByChainId = new Map(networks.map((x) => [x.id, x]));
-export const networksBySlug = new Map(networks.map((x) => [x.slugName, x]));
-
-export const mainNetworks = networks.filter((network) => !network.testnet);
-export const testNetworks = networks.filter((network) => network.testnet);
-export const networkIDs = networks.map((network) => network.id);
-export const mainNetworkIDs = mainNetworks.map((network) => network.id);
-
 // The vesting contract might be deployed to more networks but we check for the existence of the Platform.;
-export const vestingSupportedNetworks = networks
+export const vestingSupportedNetworks = allNetworks
   .filter((network) => network.platformUrl)
   .sort((n1, n2) => (!n1.testnet && n2.testnet ? -1 : 1));
-
-export const findNetworkByChainId = memoize((chainId: number) =>
-  networks.find((network) => network.id === chainId)
-);

@@ -1,7 +1,4 @@
-import {
-  initiateOldPendingTransactionsTrackingThunk,
-  setFrameworkForSdkRedux,
-} from "@superfluid-finance/sdk-redux";
+import { initiateOldPendingTransactionsTrackingThunk } from "@superfluid-finance/sdk-redux";
 import { FC, PropsWithChildren, useCallback, useEffect } from "react";
 import { Provider } from "react-redux";
 import { useAccount, useSigner } from "wagmi";
@@ -9,24 +6,14 @@ import { parseV1AddressBookEntries } from "../../utils/addressBookUtils";
 import { parseV1CustomTokens } from "../../utils/customTokenUtils";
 import { addAddressBookEntries } from "../addressBook/addressBook.slice";
 import { addCustomTokens } from "../customTokens/customTokens.slice";
-import { networks } from "../network/networks";
-import readOnlyFrameworks from "../network/readOnlyFrameworks";
+import { allNetworks } from "../network/networks";
 import { reduxStore, useAppDispatch } from "./store";
 import { useVestingTransactionTracking } from "./UseVestingTransactionTracking";
-
 
 const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
   const { connector: activeConnector } = useAccount();
   const { data: signer } = useSigner();
   const dispatch = useAppDispatch();
-
-  const initializeReadonlyFrameworks = useCallback(
-    () =>
-      readOnlyFrameworks.forEach((x) =>
-        setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
-      ),
-    []
-  );
 
   /**
    * TODO: We might want to remove importV1AddressBook and importV1CustomTokens in the future.
@@ -64,10 +51,9 @@ const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
   }, [dispatch]);
 
   useEffect(() => {
-    initializeReadonlyFrameworks();
     importV1AddressBook();
     importV1CustomTokens();
-  }, [initializeReadonlyFrameworks, importV1AddressBook, importV1CustomTokens]);
+  }, [importV1AddressBook, importV1CustomTokens]);
 
   useEffect(() => {
     // TODO(KK): There is a weird state in wagmi on full refreshes where signer is present but not the connector.
@@ -75,7 +61,7 @@ const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
       signer.getAddress().then((address) => {
         dispatch(
           initiateOldPendingTransactionsTrackingThunk({
-            chainIds: networks.map((x) => x.id),
+            chainIds: allNetworks.map((x) => x.id),
             signerAddress: address,
           }) as any
         ); // TODO(weird version mismatch):
