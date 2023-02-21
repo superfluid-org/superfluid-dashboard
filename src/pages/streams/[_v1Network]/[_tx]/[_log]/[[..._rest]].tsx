@@ -3,7 +3,7 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import withStaticSEO from "../../../../../components/SEO/withStaticSEO";
-import { networks } from "../../../../../features/network/networks";
+import { allNetworks } from "../../../../../features/network/networks";
 import { subgraphApi } from "../../../../../features/redux/store";
 import config from "../../../../../utils/config";
 import Page404 from "../../../../404";
@@ -19,7 +19,7 @@ const V1StreamPage: NextPage = () => {
   useEffect(() => {
     if (router.isReady) {
       const { _v1Network, _tx, _log } = router.query;
-      const network = networks.find(
+      const network = allNetworks.find(
         (x) => x.v1ShortName === (isString(_v1Network) ? _v1Network : "")
       );
 

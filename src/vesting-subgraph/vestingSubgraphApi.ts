@@ -1,7 +1,7 @@
 import { miniSerializeError } from "@reduxjs/toolkit";
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getSerializeQueryArgs } from "@superfluid-finance/sdk-redux";
-import { networks } from "../features/network/networks";
+import { allNetworks } from "../features/network/networks";
 import {
   mapSubgraphVestingSchedule,
   VestingSchedule,
@@ -15,7 +15,7 @@ import {
 } from "./.graphclient";
 
 const tryGetBuiltGraphSdkForNetwork = (chainId: number) => {
-  const network = networks.find((x) => x.id === chainId);
+  const network = allNetworks.find((x) => x.id === chainId);
   if (network?.vestingSubgraphUrl) {
     return getBuiltGraphSDK({
       url: network.vestingSubgraphUrl,

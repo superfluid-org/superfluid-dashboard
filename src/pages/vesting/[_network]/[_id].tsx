@@ -19,7 +19,7 @@ import TimeUnitFilter, {
 } from "../../../features/graph/TimeUnitFilter";
 import {
   Network,
-  networks,
+  allNetworks,
   tryFindNetwork,
 } from "../../../features/network/networks";
 import { subgraphApi } from "../../../features/redux/store";
@@ -80,7 +80,7 @@ const VestingScheduleDetailsPage: NextPageWithLayout = () => {
 
   useEffect(() => {
     if (router.isReady) {
-      setNetwork(tryFindNetwork(networks, router.query._network));
+      setNetwork(tryFindNetwork(allNetworks, router.query._network));
       setVestingScheduleId(
         isString(router.query._id) ? router.query._id : undefined
       );

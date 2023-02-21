@@ -29,7 +29,7 @@ import {
 import { TransactionListItemRestoreButton } from "./TransactionListItemRestoreButton";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
-import { networks, tryFindNetwork } from "../network/networks";
+import { allNetworks, tryFindNetwork } from "../network/networks";
 
 export const getTransactionStatusColor = (status: TransactionStatus) => {
   switch (status) {
@@ -73,7 +73,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
   transaction,
 }) => {
   const theme = useTheme();
-  const network = tryFindNetwork(networks, transaction.chainId);
+  const network = tryFindNetwork(allNetworks, transaction.chainId);
 
   const subTransactionTitles: TransactionTitle[] =
     (transaction.extraData.subTransactionTitles as TransactionTitle[]) ?? [];

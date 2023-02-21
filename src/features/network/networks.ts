@@ -509,7 +509,7 @@ export const networkDefinition: {
   },
 };
 
-export const networks: Network[] = [
+export const allNetworks: Network[] = [
   networkDefinition.ethereum,
   networkDefinition.goerli,
   networkDefinition.gnosis,
@@ -521,8 +521,8 @@ export const networks: Network[] = [
   networkDefinition.avalancheC,
   networkDefinition.bsc,
 ];
-export const mainNetworks = networks.filter(x => !x.testnet);
-export const testNetworks = networks.filter(x => x.testnet);
+export const mainNetworks = allNetworks.filter(x => !x.testnet);
+export const testNetworks = allNetworks.filter(x => x.testnet);
 
 export const tryFindNetwork = (
   networks: Network[],
@@ -573,6 +573,6 @@ export const getNetworkDefaultTokenPair = memoize(
 );
 
 // The vesting contract might be deployed to more networks but we check for the existence of the Platform.;
-export const vestingSupportedNetworks = networks
+export const vestingSupportedNetworks = allNetworks
   .filter((network) => network.platformUrl)
   .sort((n1, n2) => (!n1.testnet && n2.testnet ? -1 : 1));

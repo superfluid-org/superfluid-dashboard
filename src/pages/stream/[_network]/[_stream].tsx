@@ -36,7 +36,7 @@ import { useMinigame } from "../../../features/minigame/MinigameContext";
 import NetworkIcon from "../../../features/network/NetworkIcon";
 import {
   Network,
-  networks,
+  allNetworks,
   tryFindNetwork,
 } from "../../../features/network/networks";
 import { rpcApi, subgraphApi } from "../../../features/redux/store";
@@ -232,7 +232,7 @@ const StreamPage: NextPage = () => {
 
   useEffect(() => {
     if (router.isReady) {
-      const network = tryFindNetwork(networks, router.query._network);
+      const network = tryFindNetwork(allNetworks, router.query._network);
       setNetwork(network);
 
       if (network && isString(router.query._stream)) {

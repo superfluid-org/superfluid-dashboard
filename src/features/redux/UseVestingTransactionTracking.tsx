@@ -6,7 +6,7 @@ import {
 } from "./store";
 import { useEffect } from "react";
 import { transactionTrackerSelectors } from "@superfluid-finance/sdk-redux";
-import { networks } from "../network/networks";
+import { allNetworks } from "../network/networks";
 import promiseRetry from "promise-retry";
 import {
   pendingUpdateSelectors,
@@ -31,7 +31,7 @@ export const useVestingTransactionTracking = () => {
             state,
             payload.id
           )!;
-          const network = networks.find(x => x.id === trackedTransaction.chainId);
+          const network = allNetworks.find(x => x.id === trackedTransaction.chainId);
 
           if (network && network.vestingContractAddress && blockTransactionSucceededIn) {
             // Poll Subgraph for all the events for this block and then invalidate Subgraph cache based on that.

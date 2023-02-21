@@ -31,7 +31,7 @@ import SubscriptionsTable from "../../../features/index/SubscriptionsTable";
 import NetworkIcon from "../../../features/network/NetworkIcon";
 import {
   Network,
-  networks,
+  allNetworks,
   tryFindNetwork,
 } from "../../../features/network/networks";
 import { rpcApi, subgraphApi } from "../../../features/redux/store";
@@ -79,7 +79,7 @@ const TokenPage: NextPage = () => {
 
   useEffect(() => {
     if (router.isReady) {
-      setNetwork(tryFindNetwork(networks, router.query._network));
+      setNetwork(tryFindNetwork(allNetworks, router.query._network));
       setTokenAddress(
         isString(router.query._token) ? router.query._token : undefined
       );
