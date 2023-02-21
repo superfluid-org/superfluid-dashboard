@@ -16,7 +16,7 @@ import { useAppSelector } from "../redux/store";
 import { useActiveNetworks } from "./ActiveNetworksContext";
 import { useAvailableNetworks } from "./AvailableNetworksContext";
 import NetworkIcon from "./NetworkIcon";
-import { Network, networks } from "./networks";
+import { Network, allNetworks } from "./networks";
 
 interface NetworkItemProps {
   network: Network;

@@ -7,7 +7,7 @@ import { ethers } from "ethers";
 import { gql } from "graphql-request";
 import { uniq } from "lodash";
 import { dateNowSeconds } from "../../../utils/dateUtils";
-import { Network, networks, networksByChainId } from "../../network/networks";
+import { Network, allNetworks, findNetworkOrThrow } from "../../network/networks";
 import {
   NATIVE_ASSET_ADDRESS,
   SuperTokenMinimal,
@@ -43,7 +43,7 @@ type NativeAssetSuperTokenSubgraphResult = {
 };
 
 const nativeAssetSuperTokenSymbols = uniq(
-  networks.map((x) => x.nativeCurrency.superToken.symbol)
+  allNetworks.map((x) => x.nativeCurrency.superToken.symbol)
 );
 
 export const adHocSubgraphEndpoints = {
@@ -178,7 +178,7 @@ export const adHocSubgraphEndpoints = {
           }
         );
 
-        const network = networksByChainId.get(arg.chainId)!;
+        const network = findNetworkOrThrow(allNetworks, arg.chainId);
         const networkNativeAssetSuperTokenAddress =
           network.nativeCurrency.superToken.address.toLowerCase();
 
@@ -285,7 +285,8 @@ export const adHocSubgraphEndpoints = {
           nativeAssetSuperTokens,
         } = subgraphResult;
 
-        const network = networksByChainId.get(arg.chainId)!;
+        const network = findNetworkOrThrow(allNetworks, arg.chainId);
+        
         const nativeAssetSuperTokenPairs: SuperTokenPair[] =
           nativeAssetSuperTokens.map((x) => ({
             superToken: {

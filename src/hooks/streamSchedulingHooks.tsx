@@ -1,7 +1,7 @@
 import { skipToken, SkipToken } from "@reduxjs/toolkit/dist/query";
 import { Stream } from "@superfluid-finance/sdk-core";
 import { StreamQuery } from "@superfluid-finance/sdk-redux";
-import { findNetworkByChainId } from "../features/network/networks";
+import { allNetworks, tryFindNetwork } from "../features/network/networks";
 import { PendingOutgoingStream } from "../features/pendingUpdates/PendingOutgoingStream";
 import { subgraphApi } from "../features/redux/store";
 import { StreamScheduling } from "../features/streamsTable/StreamScheduling";
@@ -13,7 +13,7 @@ export const useScheduledStream = (
   const stream = streamQuery.data;
 
   const isSkip = arg === skipToken;
-  const network = isSkip ? undefined : findNetworkByChainId(arg.chainId);
+  const network = isSkip ? undefined : tryFindNetwork(allNetworks, arg.chainId);
 
   const { schedulings } = { schedulings: [] };
   // TODO(KK): Un-comment and handle when bringing back stream scheduling.
