@@ -1,6 +1,5 @@
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 import {
-  Card,
   IconButton,
   Skeleton,
   Stack,
@@ -52,7 +51,11 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
         <Typography variant="body1" color="secondary">
           Vesting Smart Contract
         </Typography>
-        <Stack data-cy="vesting-contract-buttons" direction="row" alignItems="center">
+        <Stack
+          data-cy="vesting-contract-buttons"
+          direction="row"
+          alignItems="center"
+        >
           <CopyIconBtn
             TooltipProps={{ placement: "top" }}
             copyText={getAddress(network.vestingContractAddress)}
@@ -156,6 +159,13 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
     return [...mappedPendingVestingSchedules, ...(sentVestingSchedules || [])];
   }, [mappedPendingVestingSchedules, sentVestingSchedules]);
 
+  const notDeletedSentVestingSchedules = useMemo(
+    () =>
+      mappedSentVestingSchedules.filter(
+        (vestingSchedule) => !vestingSchedule.status.isDeleted
+      ),
+    [mappedSentVestingSchedules]
+  );
   const vestingSchedulesLoading =
     receivedSchedulesLoading || sentSchedulesLoading;
 
@@ -177,23 +187,21 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
             "Received Vesting Schedules"
           )}
         </Typography>
-        <Card sx={{ p: 0 }}>
-          {vestingSchedulesLoading || receivedVestingSchedules.length > 0 ? (
-            <VestingScheduleTable
-              incoming
-              dataCy={"received-table"}
-              isLoading={vestingSchedulesLoading}
-              network={network}
-              vestingSchedules={receivedVestingSchedules}
-            />
-          ) : (
-            <NoContentPaper
-              dataCy={"no-received-schedules"}
-              title="No Received Vesting Schedules"
-              description="Vesting schedules that you have received will appear here."
-            />
-          )}
-        </Card>
+        {vestingSchedulesLoading || receivedVestingSchedules.length > 0 ? (
+          <VestingScheduleTable
+            incoming
+            dataCy={"received-table"}
+            isLoading={vestingSchedulesLoading}
+            network={network}
+            vestingSchedules={receivedVestingSchedules}
+          />
+        ) : (
+          <NoContentPaper
+            dataCy={"no-received-schedules"}
+            title="No Received Vesting Schedules"
+            description="Vesting schedules that you have received will appear here."
+          />
+        )}
       </Stack>
 
       <Stack gap={3.5}>
@@ -208,7 +216,7 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
           {vestingSchedulesLoading || mappedSentVestingSchedules.length > 0 ? (
             <Stack gap={3.5}>
               <AggregatedVestingSchedules
-                vestingSchedules={mappedSentVestingSchedules}
+                vestingSchedules={notDeletedSentVestingSchedules}
                 network={network}
               />
               <VestingScheduleTable

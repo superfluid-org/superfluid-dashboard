@@ -190,7 +190,7 @@ export class Common extends BasePage {
         }
         if(Cypress.env("vesting")) {
             this.click(NAVIGATION_MORE_BUTTON)
-            this.click(VESTING_ACCESS_CODE_BUTTON)
+            this.click(ACCESS_CODE_BUTTON)
             this.type(ACCESS_CODE_INPUT ,"98S_VEST")
             this.click(ACCESS_CODE_SUBMIT)
         }
@@ -348,6 +348,11 @@ export class Common extends BasePage {
     }
 
     static transactionRejectedErrorIsShown() {
+        Cypress.once("uncaught:exception" , err =>  {
+            if(err.message.includes("user rejected transaction")) {
+                return false
+            }
+        })
         cy.get(TX_ERROR,{timeout:45000}).should("have.text","Transaction Rejected")
     }
 

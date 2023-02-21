@@ -61,7 +61,11 @@ const SCHEDULE_CLIFF_START = "[data-cy=cliff-start]"
 const SCHEDULE_CLIFF_END = "[data-cy=cliff-end]"
 const SCHEDULE_VESTING_START = "[data-cy=vesting-start]"
 const SCHEDULE_VESTING_END = "[data-cy=vesting-end]"
-
+const ACCESS_CODE_BUTTON = "[data-cy=vesting-code-button]"
+const TRY_GOERLI_BUTTON = "[data-cy=try-on-goerli-button]"
+const VESTING_FORM_LINK = "[data-cy=vesting-form-link]"
+const TOPUP_WARNING_TITLE = "[data-cy=top-up-alert-title]"
+const TOPUP_WARNING_TEXT = "[data-cy=top-up-alert-text]"
 
 //Strings
 const NO_CREATED_TITLE_STRING = "No Sent Vesting Schedules"
@@ -105,12 +109,11 @@ export class VestingPage extends BasePage {
     }
 
     static validateFormError(error: string) {
-        this.hasText(FORM_ERROR,error)
+        cy.get(FORM_ERROR).first().should("have.text",error)
         this.isDisabled(PREVIEW_SCHEDULE_BUTTON)
     }
 
     static inputFutureDateInVestingStartDateField(amount: number, timeUnit: string) {
-            const currentDate = new Date();
             let newDate: Date;
 
             const unitOfTime = wordTimeUnitMap[timeUnit];
@@ -118,7 +121,7 @@ export class VestingPage extends BasePage {
                 throw new Error(`Invalid time unit: ${timeUnit}`);
             }
 
-            newDate = new Date(currentDate.getTime() + amount * (unitOfTime * 1000));
+            newDate = new Date(currentTime.getTime() + amount * (unitOfTime * 1000));
 
             const month = `0${newDate.getMonth() + 1}`.slice(-2);
             const day = `0${newDate.getDate()}`.slice(-2);
@@ -237,9 +240,10 @@ export class VestingPage extends BasePage {
     }
 
     static validateSchedulePreviewDetails(cliffDate: Date,startDate:Date ,endDate:Date) {
-        this.containsText(GRAPH_CLIFF_DATE, `Cliff: ${format(cliffDate, "LLL d, yyyy HH:mm").slice(0, -1)}`);
-        this.containsText(GRAPH_START_DATE, `Start: ${format(startDate, "LLL d, yyyy HH:mm").slice(0, -1)}`)
-        this.containsText(GRAPH_END_DATE, `End: ${format(endDate, "LLL d, yyyy HH:mm").slice(0, -1)}`)
+        cy.get(GRAPH_CLIFF_DATE)
+        this.containsText(GRAPH_CLIFF_DATE, `Cliff: ${format(cliffDate, "LLL d, yyyy HH:mm")}`);
+        this.containsText(GRAPH_START_DATE, `Start: ${format(startDate, "LLL d, yyyy HH:mm")}`)
+        this.containsText(GRAPH_END_DATE, `End: ${format(endDate, "LLL d, yyyy HH:mm").slice(0, -2)}`)
         this.containsText(PREVIEW_START_DATE, format(startDate, "LLLL d, yyyy"))
     }
 
@@ -276,7 +280,7 @@ export class VestingPage extends BasePage {
 
     static validateTokenPermissionIcons(token: string, color: string) {
         let rgbValue = color === "green" ? "rgb(16, 187, 53)" : "rgb(210, 37, 37)"
-        cy.get(`[data-cy=${token}-allowance-status]`).should("have.css","color" , rgbValue)
+        cy.get(`[data-cy=${token}-allowance-status]`, {timeout:30000}).should("have.css","color" , rgbValue)
         cy.get(`[data-cy=${token}-permission-status]`).should("have.css","color" , rgbValue)
         cy.get(`[data-cy=${token}-flow-allowance-status]`).should("have.css","color" , rgbValue)
     }
@@ -514,5 +518,41 @@ export class VestingPage extends BasePage {
             this.hasText(`[data-cy=${stream.token.symbol}-total-allocated]` , `${schedule.totalAllocated} ${stream.token.symbol}`)
             this.containsText(`[data-cy=${stream.token.symbol}-total-vested]` , totalVestedAmount )
         })
+        //Make sure deleted schedules don't get shown in the aggregate stats
+        cy.get("[data-cy=DAIx-total-allocated]").should("not.exist")
+        cy.get("[data-cy=DAIx-total-vested]").should("not.exist")
+    }
+
+    static validateNoCodeUnlockScreen() {
+        cy.contains("Unlock Vesting with Superfluid").should("be.visible")
+        cy.contains("Provide your Access Code or try out Vesting Schedule on Goerli Testnet.").should("be.visible")
+        this.hasAttributeWithValue(VESTING_FORM_LINK,"href","https://use.superfluid.finance/vesting")
+        this.isVisible(ACCESS_CODE_BUTTON)
+        this.isVisible(TRY_GOERLI_BUTTON)
+    }
+
+    static clickOnTryOnGoerliButton() {
+        this.click(TRY_GOERLI_BUTTON)
+    }
+
+    static clickInputAccessCodeButton() {
+        this.click(ACCESS_CODE_BUTTON)
+    }
+
+    static validateVestingFormIsVisible() {
+        this.isVisible(CLIFF_TOGGLE)
+        this.isVisible(TOTAL_AMOUNT_INPUT)
+        this.isVisible(TOTAL_PERIOD_INPUT)
+        this.isVisible(PREVIEW_SCHEDULE_BUTTON)
+    }
+
+    static validateTopUpMessageWithoutCliff() {
+        this.hasText(TOPUP_WARNING_TITLE,"Don’t forget to top up for the vesting schedule!")
+        this.hasText(TOPUP_WARNING_TEXT,"Remember to top up your Super Token balance for the cliff amount and vesting stream.")
+    }
+
+    static validateTopUpMessageWithCliff() {
+        this.hasText(TOPUP_WARNING_TITLE, "Don’t forget to top up for the cliff!")
+        this.hasText(TOPUP_WARNING_TEXT, "The auto-top up it will not take account of the vesting cliff. Remember to top up your Super Token balance for the cliff amount and the first week of a vesting stream.")
     }
 }

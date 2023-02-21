@@ -11,7 +11,7 @@ import { skipToken } from "@reduxjs/toolkit/dist/query/react";
 import { FlowUpdatedEvent, TransferEvent } from "@superfluid-finance/sdk-core";
 import { isString, orderBy } from "lodash";
 import { useRouter } from "next/router";
-import { FC, ReactElement, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import withStaticSEO from "../../../components/SEO/withStaticSEO";
 import ActivityTable from "../../../features/activityHistory/ActivityTable";
 import TimeUnitFilter, {
@@ -30,7 +30,6 @@ import VestedBalance from "../../../features/vesting/VestedBalance";
 import VestingDataCard from "../../../features/vesting/VestingDataCard";
 import VestingDetailsHeader from "../../../features/vesting/VestingDetailsHeader";
 import VestingGraph from "../../../features/vesting/VestingGraph";
-import VestingLayout from "../../../features/vesting/VestingLayout";
 import VestingScheduleProgress from "../../../features/vesting/VestingScheduleProgress/VestingScheduleProgress";
 import {
   Activity,
@@ -406,10 +405,6 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
     </Container>
   );
 };
-
-VestingScheduleDetailsPage.getLayout = (page: ReactElement) => (
-  <VestingLayout>{page}</VestingLayout>
-);
 
 export default withStaticSEO(
   { title: "Vesting Schedule | Superfluid" },

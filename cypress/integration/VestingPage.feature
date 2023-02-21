@@ -1,3 +1,4 @@
+@numTestsKeptInMemory(0)
 @vesting
 @numTestsKeptInMemory(0)
 Feature: Vesting page test cases
@@ -8,9 +9,11 @@ Feature: Vesting page test cases
     And No created vesting schedules message is shown
 
   Scenario: Vesting only available on supported networks
-    Given Transactional account bob is connected to the dashboard on polygon-mumbai
+    Given Transactional account bob is connected to the dashboard on goerli
     And User clicks on the create vesting schedule button
-    Then "The feature is not available on this network." error is shown in the form
+    And Vesting creation form is visible
+    And User changes their network to "polygon-mumbai"
+    Then User sees network not supported screen in the vesting page
 
   Scenario: Creation form - Cannot vest to yourself
     Given Transactional account bob is connected to the dashboard on goerli
@@ -37,6 +40,13 @@ Feature: Vesting page test cases
     And User inputs "1" as the total vested amount
     And User inputs "4" "year" as the total vesting period
     Then "Cliff amount has to be less than total amount." error is shown in the form
+
+  Scenario: Creation form - Top-up warning message
+    Given Transactional account bob is connected to the dashboard on goerli
+    And User clicks on the create vesting schedule button
+    Then The top-up warning message without cliff is shown
+    And User clicks on the cliff date toggle
+    Then The top-up warning message when cliff is enabled is shown
 
   Scenario: Creation form - Cliff amount period has to be before total vesting period
     Given Transactional account bob is connected to the dashboard on goerli
@@ -121,7 +131,7 @@ Feature: Vesting page test cases
     And User clicks on the change to goerli button
     And Delete vesting schedule button is visible
 
-  Scenario: Sent vesting schedules details
+  Scenario: Sent vesting schedules details with code input
     Given Transactional account john is connected to the dashboard on goerli
     And The created vesting schedule is shown correctly in the table
     And User opens the last vesting schedule they have created
@@ -172,7 +182,6 @@ Feature: Vesting page test cases
       | Cancel Error   |
       | Scheduled      |
 
-
   @mocked
   Scenario Outline: Schedule progress bar showing correctly for a scheduled vesting
     Given Vesting schedule progress is mocked to <state>
@@ -189,4 +198,47 @@ Feature: Vesting page test cases
 
   Scenario: Vesting schedule aggregate stats
     Given Transactional account john is connected to the dashboard on polygon
+    Then Total stats for the sent vesting schedules are shown correctly
+
+  Scenario: Vesting schedule details page available without vesting code
+    Given "Vesting details page" is open without connecting a wallet
+    And Vesting details page is shown correctly for the created schedule
+
+  Scenario: Token approval shown correctly when the schedule has ended
+    Given "Dashboard Page" is open without connecting a wallet
+    Given User uses view mode to look at "accountWithLotsOfData"
+    And User clicks on the "vesting" navigation button
+    And User clicks on the input access code button
+    And User types "98S_VEST" in the access code menu
+    And User submits the access code
+    And "StIbAlluoUSD" permissions icons are all "green"
+    And User opens "StIbAlluoUSD" permission table row
+    Then All current and recommended permissions are correctly showed for "StIbAlluoUSD"
+
+  @NoCode
+  Scenario: Vesting schedule available on goerli without code
+    Given Transactional account john is connected to the dashboard on goerli
+      And User clicks on the "vesting" navigation button
+      And The created vesting schedule is shown correctly in the table
+      And User opens the last vesting schedule they have created
+      And Vesting details page is shown correctly for the created schedule
+
+    @NoCode
+   Scenario: Vesting schedule unlock message - Try out on goerli testnet button
+      Given Transactional account john is connected to the dashboard on polygon
+      And User clicks on the "vesting" navigation button
+      Then Unlock Vesting with Superfluid screen is visible
+      And User tries out vesting on Goerli testnet
+      And The created vesting schedule is shown correctly in the table
+      And User opens the last vesting schedule they have created
+      And Vesting details page is shown correctly for the created schedule
+
+      @NoCode
+  Scenario: Vesting schedule unlock message - Enter access code
+    Given Transactional account john is connected to the dashboard on polygon
+    And User clicks on the "vesting" navigation button
+    Then Unlock Vesting with Superfluid screen is visible
+    And User clicks on the input access code button
+    And User types "98S_VEST" in the access code menu
+    And User submits the access code
     Then Total stats for the sent vesting schedules are shown correctly
