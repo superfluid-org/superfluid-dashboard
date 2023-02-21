@@ -1,4 +1,4 @@
-import { isNumber, isString } from "lodash";
+import { isString } from "lodash";
 import memoize from "lodash/memoize";
 import { chain, Chain } from "wagmi";
 import ensureDefined from "../../utils/ensureDefined";

@@ -1,4 +1,4 @@
-import { initiateOldPendingTransactionsTrackingThunk } from "@superfluid-finance/sdk-redux";
+import { initiateOldPendingTransactionsTrackingThunk, setFrameworkForSdkRedux } from "@superfluid-finance/sdk-redux";
 import { FC, PropsWithChildren, useCallback, useEffect } from "react";
 import { Provider } from "react-redux";
 import { useAccount, useSigner } from "wagmi";
@@ -7,8 +7,14 @@ import { parseV1CustomTokens } from "../../utils/customTokenUtils";
 import { addAddressBookEntries } from "../addressBook/addressBook.slice";
 import { addCustomTokens } from "../customTokens/customTokens.slice";
 import { allNetworks } from "../network/networks";
+import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import { reduxStore, useAppDispatch } from "./store";
 import { useVestingTransactionTracking } from "./UseVestingTransactionTracking";
+
+// Initialize SDK-core Frameworks for SDK-redux.
+readOnlyFrameworks.forEach(
+  (x) => void setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
+);
 
 const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
   const { connector: activeConnector } = useAccount();

@@ -1,5 +1,4 @@
 import { Framework } from "@superfluid-finance/sdk-core";
-import { setFrameworkForSdkRedux } from "@superfluid-finance/sdk-redux";
 import promiseRetry from "promise-retry";
 import { wagmiRpcProvider } from "../wallet/WagmiManager";
 import { allNetworks } from "./networks";
@@ -21,9 +20,5 @@ const readOnlyFrameworks = allNetworks.map((network) => ({
       }
     ),
 }));
-
-readOnlyFrameworks.forEach(
-  (x) => void setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
-);
 
 export default readOnlyFrameworks;
