@@ -211,7 +211,7 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.gnosis,
-    vestingSubgraphUrl: vestingSubraphUrls.gnosis,
+    vestingSubgraphUrl: vestingSubgraphUrls.gnosis,
     platformUrl: superfluidPlatformUrls.gnosis,
   },
   polygon: {
@@ -354,7 +354,7 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.optimism,
-    vestingSubgraphUrl: vestingSubraphUrls.optimism,
+    vestingSubgraphUrl: vestingSubgraphUrls.optimism,
     platformUrl: superfluidPlatformUrls.optimism,
   },
   arbitrum: {
@@ -388,7 +388,7 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.arbitrum,
-    vestingSubgraphUrl: vestingSubraphUrls.arbitrum,
+    vestingSubgraphUrl: vestingSubgraphUrls.arbitrum,
     platformUrl: superfluidPlatformUrls.arbitrum,
   },
   avalancheC: {
@@ -432,7 +432,7 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.avalancheC,
-    vestingSubgraphUrl: vestingSubraphUrls.avalancheC,
+    vestingSubgraphUrl: vestingSubgraphUrls.avalancheC,
     platformUrl: superfluidPlatformUrls.avalanche,
   },
   bsc: {
@@ -525,8 +525,8 @@ export const allNetworks: Network[] = [
   networkDefinition.avalancheC,
   networkDefinition.bsc,
 ];
-export const mainNetworks = allNetworks.filter(x => !x.testnet);
-export const testNetworks = allNetworks.filter(x => x.testnet);
+export const mainNetworks = allNetworks.filter((x) => !x.testnet);
+export const testNetworks = allNetworks.filter((x) => x.testnet);
 
 export const tryFindNetwork = (
   networks: Network[],
@@ -572,7 +572,7 @@ export const findNetworkOrThrow = (
     throw new Error("Network not found. This should never happen.");
   }
   return network;
-}
+};
 
 export const getNetworkDefaultTokenPair = memoize(
   (network: Network): SuperTokenPair => ({
