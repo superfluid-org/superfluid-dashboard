@@ -548,11 +548,11 @@ export class VestingPage extends BasePage {
 
     static validateTopUpMessageWithoutCliff() {
         this.hasText(TOPUP_WARNING_TITLE,"Don’t forget to top up for the vesting schedule!")
-        this.hasText(TOPUP_WARNING_TEXT,"Remember to top up your Super Token balance for the cliff amount and vesting stream.")
+        this.hasText(TOPUP_WARNING_TEXT,"Remember to top up your Super Token balance in time for the vesting stream.")
     }
 
     static validateTopUpMessageWithCliff() {
-        this.hasText(TOPUP_WARNING_TITLE, "Don’t forget to top up for the cliff!")
-        this.hasText(TOPUP_WARNING_TEXT, "The auto-top up it will not take account of the vesting cliff. Remember to top up your Super Token balance for the cliff amount and the first week of a vesting stream.")
+        this.hasText(TOPUP_WARNING_TITLE, "Don’t forget to top up for the vesting schedule!")
+        this.hasText(TOPUP_WARNING_TEXT, "Remember to top up your Super Token balance in time for the cliff amount and vesting stream.")
     }
 }
