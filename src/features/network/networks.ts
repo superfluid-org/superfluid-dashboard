@@ -559,6 +559,17 @@ export const tryFindNetwork = (
   return undefined;
 };
 
+export const findNetworkOrThrow = (
+  networks: Network[],
+  value: unknown
+): Network => {
+  const network = tryFindNetwork(networks, value);
+  if (!network) {
+    throw new Error("Network not found. This should never happen.");
+  }
+  return network;
+}
+
 export const getNetworkDefaultTokenPair = memoize(
   (network: Network): SuperTokenPair => ({
     superToken: { ...network.nativeCurrency.superToken, decimals: 18 },

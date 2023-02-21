@@ -11,7 +11,7 @@ import { parseV1AddressBookEntries } from "../../utils/addressBookUtils";
 import { parseV1CustomTokens } from "../../utils/customTokenUtils";
 import { addAddressBookEntries } from "../addressBook/addressBook.slice";
 import { addCustomTokens } from "../customTokens/customTokens.slice";
-import { allNetworks } from "../network/networks";
+import { allNetworks, tryFindNetwork } from "../network/networks";
 import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import { reduxStore, useAppDispatch } from "./store";
 import { useVestingTransactionTracking } from "./UseVestingTransactionTracking";
@@ -77,8 +77,7 @@ const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
       initializeReadonlyFrameworks(); // Re-initialize to override the old signer framework if it was present.
 
       signer.getChainId().then((chainId) => {
-        const network = allNetworks.find((x) => x.id === Number(chainId));
-
+        const network = tryFindNetwork(allNetworks, chainId);
         if (network) {
           setFrameworkForSdkRedux(chainId, () =>
             promiseRetry<Framework>(
