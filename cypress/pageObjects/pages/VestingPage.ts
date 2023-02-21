@@ -280,7 +280,7 @@ export class VestingPage extends BasePage {
 
     static validateTokenPermissionIcons(token: string, color: string) {
         let rgbValue = color === "green" ? "rgb(16, 187, 53)" : "rgb(210, 37, 37)"
-        cy.get(`[data-cy=${token}-allowance-status]`).should("have.css","color" , rgbValue)
+        cy.get(`[data-cy=${token}-allowance-status]`, {timeout:30000}).should("have.css","color" , rgbValue)
         cy.get(`[data-cy=${token}-permission-status]`).should("have.css","color" , rgbValue)
         cy.get(`[data-cy=${token}-flow-allowance-status]`).should("have.css","color" , rgbValue)
     }

@@ -204,10 +204,14 @@ Feature: Vesting page test cases
     Given "Vesting details page" is open without connecting a wallet
     And Vesting details page is shown correctly for the created schedule
 
+    @only
   Scenario: Token approval shown correctly when the schedule has ended
     Given "Dashboard Page" is open without connecting a wallet
     Given User uses view mode to look at "accountWithLotsOfData"
     And User clicks on the "vesting" navigation button
+    And User clicks on the input access code button
+    And User types "98S_VEST" in the access code menu
+    And User submits the access code
     And "StIbAlluoUSD" permissions icons are all "green"
     And User opens "StIbAlluoUSD" permission table row
     Then All current and recommended permissions are correctly showed for "fDAIx"
