@@ -74,8 +74,8 @@ const NO_RECEIVED_TITLE_STRING = "No Received Vesting Schedules"
 const NO_RECEIVED_DESC_STRING = "Vesting schedules that you have received will appear here."
 
 //Dates for the vesting previews etc.
-let staticStartDate = new Date(1706695200000)
-let staticEndDate = new Date(2022055200000)
+let staticStartDate = new Date(1676642460000)
+let staticEndDate = new Date(1992002460000)
 let currentTime = new Date()
 let startDate = new Date(currentTime.getTime() + (wordTimeUnitMap["year"] * 1000) )
 let cliffDate = new Date(startDate.getTime() + (wordTimeUnitMap["year"] * 1000))
@@ -311,7 +311,7 @@ export class VestingPage extends BasePage {
         let today = BasePage.getDayTimestamp(0)
         let yesterday = BasePage.getDayTimestamp(-1)
 
-        cy.intercept("POST", "**automation-v1**", (req => {
+        cy.intercept("POST", "**vesting-v1**", (req => {
             req.continue((res) => {
                 if (req.body.variables._0_where.sender) {
                     let schedule = res.body.data._0_vestingSchedules[0]
@@ -409,7 +409,7 @@ export class VestingPage extends BasePage {
         let today = BasePage.getDayTimestamp(0)
         let yesterday = BasePage.getDayTimestamp(-1)
 
-        cy.intercept("POST", "**automation-v1**", (req => {
+        cy.intercept("POST", "**vesting-v1**", (req => {
             req.continue((res) => {
                 if (req.body.variables._0_id) {
                     let schedule = res.body.data._0_vestingSchedule

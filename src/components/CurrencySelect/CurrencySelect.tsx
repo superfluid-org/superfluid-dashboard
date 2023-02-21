@@ -36,6 +36,7 @@ const CurrencySelect: FC<CurrencySelectProps> = ({
   return (
     <>
       <Button
+        data-cy={"currency-button"}
         variant="input"
         onClick={handleOpen}
         startIcon={

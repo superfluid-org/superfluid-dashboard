@@ -33,8 +33,9 @@ export interface CreateVestingSchedule extends BaseSuperTokenMutation {
 
 export interface DeleteVestingSchedule extends BaseSuperTokenMutation {
   chainId: number;
-  senderAddress: string; // This will be discarded. It's used for getting the "signer" from other parts of Redux. TODO(KK): Handle with a better transaction response.
+  senderAddress: string;
   receiverAddress: string;
+  deleteFlow: boolean;
 }
 
 interface GetVestingSchedule extends BaseQuery<RpcVestingSchedule | null> {
@@ -50,7 +51,7 @@ interface RpcVestingSchedule {
 export const vestingSchedulerMutationEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
     deleteVestingSchedule: builder.mutation<
-      TransactionInfo,
+      TransactionInfo & { subTransactionTitles: TransactionTitle[] },
       DeleteVestingSchedule
     >({
       queryFn: async (
@@ -58,37 +59,83 @@ export const vestingSchedulerMutationEndpoints = {
           chainId,
           signer,
           superTokenAddress,
+          senderAddress,
           receiverAddress,
           overrides,
           waitForConfirmation,
           transactionExtraData,
+          deleteFlow,
         },
         { dispatch }
       ) => {
         const vestingScheduler = getVestingScheduler(chainId, signer);
         const signerAddress = await signer.getAddress();
+        const framework = await getFramework(chainId);
 
-        const transactionResponse =
-          await vestingScheduler.deleteVestingSchedule(
+        const batchedOperations: {
+          operation: Operation;
+          title: TransactionTitle;
+        }[] = [];
+
+        if (deleteFlow) {
+          const superToken = await framework.loadSuperToken(superTokenAddress);
+          const deleteFlow = superToken.deleteFlow({
+            sender: senderAddress,
+            receiver: receiverAddress,
+          });
+          batchedOperations.push({
+            operation: deleteFlow,
+            title: "Close Stream",
+          });
+        }
+
+        const deleteVestingSchedule =
+          await vestingScheduler.populateTransaction.deleteVestingSchedule(
             superTokenAddress,
             receiverAddress,
             [],
             overrides
           );
+        batchedOperations.push({
+          operation: await framework.host.callAppAction(
+            vestingScheduler.address,
+            deleteVestingSchedule.data!
+          ),
+          title: "Delete Vesting Schedule",
+        });
 
-        return registerNewTransactionAndReturnQueryFnResult({
+        const executable =
+          batchedOperations.length === 1
+            ? batchedOperations[0].operation
+            : framework.batchCall(batchedOperations.map((x) => x.operation));
+
+        const transactionResponse = await executable.exec(signer);
+        const subTransactionTitles = batchedOperations.map((x) => x.title);
+
+        await registerNewTransaction({
           transactionResponse,
           chainId,
           dispatch,
           signer: signerAddress,
           title: "Delete Vesting Schedule",
-          extraData: transactionExtraData,
+          extraData: {
+            subTransactionTitles,
+            ...(transactionExtraData ?? {}),
+          },
           waitForConfirmation: !!waitForConfirmation,
         });
+
+        return {
+          data: {
+            chainId,
+            hash: transactionResponse.hash,
+            subTransactionTitles,
+          },
+        };
       },
     }),
     createVestingSchedule: builder.mutation<
-      TransactionInfo,
+      TransactionInfo & { subTransactionTitles: TransactionTitle[] },
       CreateVestingSchedule
     >({
       queryFn: async (

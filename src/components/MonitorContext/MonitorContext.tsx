@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/browser";
 import { useRouter } from "next/router";
 import promiseRetry from "promise-retry";
-import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { hotjar } from "react-hotjar";
 import { useIntercom } from "react-use-intercom";
 import {
@@ -49,13 +49,6 @@ const MonitorContext: FC = () => {
   const [previousInstanceDetails, setPreviousInstanceDetails] =
     useState(instanceDetails);
 
-  const initialResetRef = useRef(false);
-  if (!initialResetRef.current) {
-    // When application starts up, reset the identity. Identify only on concrete wallet connections.
-    initialResetRef.current = true;
-    reset();
-  }
-
   useEffect(
     () =>
       listenerMiddleware.startListening({
@@ -83,7 +76,7 @@ const MonitorContext: FC = () => {
 
     if (wallet.isConnected !== prevWallet.isConnected) {
       if (wallet.isConnected) {
-        track("Wallet Connected", wallet).then(() => identify(wallet.account));
+        track("Wallet Connected", wallet).then(() => identify(wallet));
       } else {
         track("Wallet Disconnected", wallet).then(() => reset());
       }
@@ -92,10 +85,10 @@ const MonitorContext: FC = () => {
         if (wallet.networkId != prevWallet.networkId) {
           track("Wallet Network Changed", wallet);
         }
-        if (wallet.account != prevWallet.account) {
+        if (wallet.address != prevWallet.address) {
           track("Wallet Account Changed", wallet)
             .then(() => reset()) // Reset before not to associate next identification with previous wallet address.
-            .then(() => identify(wallet.account));
+            .then(() => identify(wallet));
         }
       }
     }
