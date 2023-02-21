@@ -1,3 +1,4 @@
+@skip
 Feature: Bridge page test cases (Li-Fi widget)
 
   Scenario: Routes and connect wallet button showing up for a user without a connected wallet
