@@ -2,7 +2,7 @@ sources:
   - name: vesting
     handler:
       graphql:
-        endpoint: '{context.url:https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-goerli}'
+        endpoint: '{context.url:https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-polygon-mainnet}'
         retry: 5
 documents:
   - './*.graphql'

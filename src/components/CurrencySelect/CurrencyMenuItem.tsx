@@ -12,6 +12,7 @@ interface CurrencyMenuItemProps {
 const CurrencyMenuItem: FC<CurrencyMenuItemProps> = ({ currency, onClick }) => {
   return (
     <Button
+      data-cy={`${currency.code}-button`}
       variant="text"
       color="inherit"
       // Fixed min-width because popover could not calculate it's width and location without this

@@ -15,6 +15,7 @@ import NoContentPaper from "../../../components/NoContent/NoContentPaper";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import TooltipIcon from "../../common/TooltipIcon";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
+import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION } from "../../redux/endpoints/flowSchedulerEndpoints";
 import { rpcApi } from "../../redux/store";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import VestingSchedulerAllowanceRow, {
@@ -55,9 +56,12 @@ const VestingSchedulerAllowancesTable: FC = () => {
     );
 
     return Object.entries(vestingSchedulesGroupedByToken).map((entry) => {
-      const [tokenAddress, group] = entry;
+      const [tokenAddress, allGroupVestingSchedules] = entry;
+      const activeVestingSchedules = allGroupVestingSchedules.filter(
+        (x) => !x.status.isFinished
+      );
 
-      const recommendedTokenAllowance = group.reduce(
+      const recommendedTokenAllowance = activeVestingSchedules.reduce(
         (previousValue, vestingSchedule) => {
           const startDateValidAfterAllowance = BigNumber.from(
             vestingSchedule.flowRate
@@ -78,7 +82,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
         BigNumber.from("0")
       );
 
-      const requiredFlowOperatorAllowance = group
+      const requiredFlowOperatorAllowance = activeVestingSchedules
         .filter((x) => !x.cliffAndFlowExecutedAt)
         .reduce(
           (previousValue, vestingSchedule) =>
@@ -86,10 +90,18 @@ const VestingSchedulerAllowancesTable: FC = () => {
           BigNumber.from("0")
         );
 
+      // https://docs.superfluid.finance/superfluid/developers/constant-flow-agreement-cfa/cfa-access-control-list-acl/acl-features
+      const requiredFlowOperatorPermissions =
+        activeVestingSchedules.length === 0
+          ? 0 // None
+          : activeVestingSchedules.some((x) => !x.cliffAndFlowExecutedAt) // Create not needed after cliffAndFlows are executed
+          ? ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION
+          : ACL_DELETE_PERMISSION;
+
       return {
         tokenAddress,
         recommendedTokenAllowance,
-        requiredFlowOperatorPermissions: 5, // Create not needed after cliffAndFlows are executed
+        requiredFlowOperatorPermissions,
         requiredFlowOperatorAllowance,
       };
     });

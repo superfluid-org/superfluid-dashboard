@@ -1,5 +1,5 @@
-@numTestsKeptInMemory(0)
 @vesting
+@numTestsKeptInMemory(0)
 Feature: Vesting page test cases
 
   Scenario: No vesting schedule messages
@@ -58,9 +58,9 @@ Feature: Vesting page test cases
     And User inputs "4" "year" as the cliff period
     And User inputs "1" as the total vested amount
     And User inputs "1" "year" as the total vesting period
-    Then "The vesting end date has to be at least 60 minutes from the start or the cliff." error is shown in the form
+    Then "The vesting end date has to be at least 120 minutes from the start or the cliff." error is shown in the form
 
-  Scenario: Creation form - Total vesting period has to be atleast 60 minutes after start
+  Scenario: Creation form - Total vesting period has to be atleast 120 minutes after start
     Given Transactional account bob is connected to the dashboard on goerli
     And User clicks on the create vesting schedule button
     And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
@@ -71,7 +71,7 @@ Feature: Vesting page test cases
     And User inputs "30" "minute" as the cliff period
     And User inputs "2" as the total vested amount
     And User inputs "59" "minute" as the total vesting period
-    Then "The vesting end date has to be at least 60 minutes from the start or the cliff." error is shown in the form
+    Then "The vesting end date has to be at least 120 minutes from the start or the cliff." error is shown in the form
 
   Scenario: Creation form - Vesting period less than 10 years
     Given Transactional account bob is connected to the dashboard on goerli
@@ -207,9 +207,12 @@ Feature: Vesting page test cases
     Given "Dashboard Page" is open without connecting a wallet
     Given User uses view mode to look at "accountWithLotsOfData"
     And User clicks on the "vesting" navigation button
+    And User clicks on the input access code button
+    And User types "98S_VEST" in the access code menu
+    And User submits the access code
     And "StIbAlluoUSD" permissions icons are all "green"
     And User opens "StIbAlluoUSD" permission table row
-    Then All current and recommended permissions are correctly showed for "fDAIx"
+    Then All current and recommended permissions are correctly showed for "StIbAlluoUSD"
 
   @NoCode
   Scenario: Vesting schedule available on goerli without code

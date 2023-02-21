@@ -1,8 +1,6 @@
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
-import {
-  usePendingVestingScheduleDelete,
-} from "../pendingUpdates/PendingVestingScheduleDelete";
+import { usePendingVestingScheduleDelete } from "../pendingUpdates/PendingVestingScheduleDelete";
 import { rpcApi } from "../redux/store";
 import { useConnectionBoundary } from "../transactionBoundary/ConnectionBoundary";
 import {
@@ -46,7 +44,7 @@ export const DeleteVestingTransactionButton: FC<{
   const isSender =
     senderAddress.toLowerCase() === visibleAddress?.toLowerCase();
 
-  const { currentData: activeVestingSchedule } =
+  const { data: activeVestingSchedule } =
     rpcApi.useGetActiveVestingScheduleQuery(
       isSender
         ? {
@@ -57,6 +55,17 @@ export const DeleteVestingTransactionButton: FC<{
           }
         : skipToken
     );
+
+  const { data: activeFlow } = rpcApi.useGetActiveFlowQuery(
+    isSender && activeVestingSchedule
+      ? {
+          chainId: network.id,
+          tokenAddress: superTokenAddress,
+          receiverAddress,
+          senderAddress,
+        }
+      : skipToken
+  );
 
   const isBeingDeleted = !!usePendingVestingScheduleDelete({
     chainId: network.id,
@@ -84,9 +93,14 @@ export const DeleteVestingTransactionButton: FC<{
               startIcon: <CloseRoundedIcon />,
             }}
             onClick={async (signer) => {
+              const shouldDeleteActiveFlow =
+                !!activeVestingSchedule && !!activeFlow;
+
               setDialogLoadingInfo(
                 <Typography variant="h5" color="text.secondary" translate="yes">
-                  You are deleting a vesting schedule.
+                  {shouldDeleteActiveFlow
+                    ? "You are canceling a stream and deleting a vesting schedule."
+                    : "You are deleting a vesting schedule."}
                 </Typography>
               );
 
@@ -95,6 +109,7 @@ export const DeleteVestingTransactionButton: FC<{
                 superTokenAddress: superTokenAddress,
                 senderAddress: await signer.getAddress(),
                 receiverAddress: receiverAddress,
+                deleteFlow: shouldDeleteActiveFlow,
               };
               deleteVestingSchedule({
                 ...primaryArgs,

@@ -58,28 +58,28 @@ export const superfluidPlatformUrls = {
   gnosis: "https://prod-xdai-mainnet-platform-service.prod.superfluid.dev/",
 } as const;
 
-export const vestingSubraphUrls = {
+export const vestingSubgraphUrls = {
   gnosis:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-gnosis",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-xdai-mainnet",
   goerli:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-goerli",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-eth-goerli",
   polygon:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-polygon",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-polygon-mainnet",
   arbitrum:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-arbitrum",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-arbitrum-one",
   optimism:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-optimism",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-optimism-mainnet",
   avalancheC:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-avalanche",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-avalanche-c",
   bnbSmartChain:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-bsc",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-bsc-mainnet",
   ethereum:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-eth-mainnet",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-eth-mainnet",
 } as const;
 
 export const vestingContractAddresses = {
   gnosis: "0x0170FFCC75d178d426EBad5b1a31451d00Ddbd0D",
-  goerli: "0x2A6dD60Dbb8CE65813842eEe1688b21CA30D6ffd",
+  goerli: "0xF9240F930d847F70ad900aBEE8949F25649Bf24a",
   polygon: "0xcFE6382B33F2AdaFbE46e6A26A88E0182ae32b0c",
   arbitrum: "0x55c8fc400833eEa791087cF343Ff2409A39DeBcC",
   optimism: "0x65377d4dfE9c01639A41952B5083D58964782892",
@@ -167,7 +167,7 @@ export const networkDefinition: {
     },
     flowSchedulerContractAddress: "0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca",
     vestingContractAddress: vestingContractAddresses.goerli,
-    vestingSubgraphUrl: vestingSubraphUrls.goerli,
+    vestingSubgraphUrl: vestingSubgraphUrls.goerli,
     platformUrl: superfluidPlatformUrls.goerli,
   },
   gnosis: {
@@ -243,7 +243,7 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.polygon,
-    vestingSubgraphUrl: vestingSubraphUrls.polygon,
+    vestingSubgraphUrl: vestingSubgraphUrls.polygon,
     platformUrl: superfluidPlatformUrls.polygon,
   },
   polygonMumbai: {
@@ -472,7 +472,7 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.bnbSmartChain,
-    vestingSubgraphUrl: vestingSubraphUrls.bnbSmartChain,
+    vestingSubgraphUrl: vestingSubgraphUrls.bnbSmartChain,
     platformUrl: superfluidPlatformUrls.bnbSmartChain,
   },
   ethereum: {
@@ -506,7 +506,7 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.ethereum,
-    vestingSubgraphUrl: vestingSubraphUrls.ethereum,
+    vestingSubgraphUrl: vestingSubgraphUrls.ethereum,
     platformUrl: superfluidPlatformUrls.ethereum,
   },
 };

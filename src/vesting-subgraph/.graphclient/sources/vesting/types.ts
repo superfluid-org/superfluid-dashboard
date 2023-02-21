@@ -140,6 +140,8 @@ export type Event_filter = {
   gasPrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<Event_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<Event_filter>>>;
 };
 
 export type Event_orderBy =
@@ -581,8 +583,8 @@ export type Subscription_metaArgs = {
 export type Task = {
   id: Scalars['ID'];
   type: TaskType;
-  executed: Scalars['Boolean'];
-  executionAt?: Maybe<Scalars['BigInt']>;
+  executedAt?: Maybe<Scalars['BigInt']>;
+  executionAt: Scalars['BigInt'];
   expirationAt?: Maybe<Scalars['BigInt']>;
   cancelledAt?: Maybe<Scalars['BigInt']>;
   failedAt?: Maybe<Scalars['BigInt']>;
@@ -606,10 +608,14 @@ export type Task_filter = {
   type_not?: InputMaybe<TaskType>;
   type_in?: InputMaybe<Array<TaskType>>;
   type_not_in?: InputMaybe<Array<TaskType>>;
-  executed?: InputMaybe<Scalars['Boolean']>;
-  executed_not?: InputMaybe<Scalars['Boolean']>;
-  executed_in?: InputMaybe<Array<Scalars['Boolean']>>;
-  executed_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  executedAt?: InputMaybe<Scalars['BigInt']>;
+  executedAt_not?: InputMaybe<Scalars['BigInt']>;
+  executedAt_gt?: InputMaybe<Scalars['BigInt']>;
+  executedAt_lt?: InputMaybe<Scalars['BigInt']>;
+  executedAt_gte?: InputMaybe<Scalars['BigInt']>;
+  executedAt_lte?: InputMaybe<Scalars['BigInt']>;
+  executedAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  executedAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   executionAt?: InputMaybe<Scalars['BigInt']>;
   executionAt_not?: InputMaybe<Scalars['BigInt']>;
   executionAt_gt?: InputMaybe<Scalars['BigInt']>;
@@ -665,17 +671,38 @@ export type Task_filter = {
   vestingSchedule_?: InputMaybe<VestingSchedule_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<Task_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<Task_filter>>>;
 };
 
 export type Task_orderBy =
   | 'id'
   | 'type'
-  | 'executed'
+  | 'executedAt'
   | 'executionAt'
   | 'expirationAt'
   | 'cancelledAt'
   | 'failedAt'
-  | 'vestingSchedule';
+  | 'vestingSchedule'
+  | 'vestingSchedule__id'
+  | 'vestingSchedule__createdAt'
+  | 'vestingSchedule__superToken'
+  | 'vestingSchedule__sender'
+  | 'vestingSchedule__receiver'
+  | 'vestingSchedule__startDate'
+  | 'vestingSchedule__endDate'
+  | 'vestingSchedule__cliffDate'
+  | 'vestingSchedule__cliffAndFlowDate'
+  | 'vestingSchedule__cliffAmount'
+  | 'vestingSchedule__flowRate'
+  | 'vestingSchedule__didEarlyEndCompensationFail'
+  | 'vestingSchedule__earlyEndCompensation'
+  | 'vestingSchedule__cliffAndFlowExpirationAt'
+  | 'vestingSchedule__endDateValidAt'
+  | 'vestingSchedule__deletedAt'
+  | 'vestingSchedule__failedAt'
+  | 'vestingSchedule__cliffAndFlowExecutedAt'
+  | 'vestingSchedule__endExecutedAt';
 
 export type TokenSenderReceiverCursor = {
   id: Scalars['String'];
@@ -770,13 +797,48 @@ export type TokenSenderReceiverCursor_filter = {
   currentEndVestingTask_?: InputMaybe<Task_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<TokenSenderReceiverCursor_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<TokenSenderReceiverCursor_filter>>>;
 };
 
 export type TokenSenderReceiverCursor_orderBy =
   | 'id'
   | 'currentVestingSchedule'
+  | 'currentVestingSchedule__id'
+  | 'currentVestingSchedule__createdAt'
+  | 'currentVestingSchedule__superToken'
+  | 'currentVestingSchedule__sender'
+  | 'currentVestingSchedule__receiver'
+  | 'currentVestingSchedule__startDate'
+  | 'currentVestingSchedule__endDate'
+  | 'currentVestingSchedule__cliffDate'
+  | 'currentVestingSchedule__cliffAndFlowDate'
+  | 'currentVestingSchedule__cliffAmount'
+  | 'currentVestingSchedule__flowRate'
+  | 'currentVestingSchedule__didEarlyEndCompensationFail'
+  | 'currentVestingSchedule__earlyEndCompensation'
+  | 'currentVestingSchedule__cliffAndFlowExpirationAt'
+  | 'currentVestingSchedule__endDateValidAt'
+  | 'currentVestingSchedule__deletedAt'
+  | 'currentVestingSchedule__failedAt'
+  | 'currentVestingSchedule__cliffAndFlowExecutedAt'
+  | 'currentVestingSchedule__endExecutedAt'
   | 'currentCliffAndFlowTask'
-  | 'currentEndVestingTask';
+  | 'currentCliffAndFlowTask__id'
+  | 'currentCliffAndFlowTask__type'
+  | 'currentCliffAndFlowTask__executedAt'
+  | 'currentCliffAndFlowTask__executionAt'
+  | 'currentCliffAndFlowTask__expirationAt'
+  | 'currentCliffAndFlowTask__cancelledAt'
+  | 'currentCliffAndFlowTask__failedAt'
+  | 'currentEndVestingTask'
+  | 'currentEndVestingTask__id'
+  | 'currentEndVestingTask__type'
+  | 'currentEndVestingTask__executedAt'
+  | 'currentEndVestingTask__executionAt'
+  | 'currentEndVestingTask__expirationAt'
+  | 'currentEndVestingTask__cancelledAt'
+  | 'currentEndVestingTask__failedAt';
 
 export type VestingCliffAndFlowExecutedEvent = Event & {
   id: Scalars['ID'];
@@ -950,6 +1012,8 @@ export type VestingCliffAndFlowExecutedEvent_filter = {
   flowDelayCompensation_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<VestingCliffAndFlowExecutedEvent_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<VestingCliffAndFlowExecutedEvent_filter>>>;
 };
 
 export type VestingCliffAndFlowExecutedEvent_orderBy =
@@ -1129,6 +1193,8 @@ export type VestingEndExecutedEvent_filter = {
   didCompensationFail_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<VestingEndExecutedEvent_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<VestingEndExecutedEvent_filter>>>;
 };
 
 export type VestingEndExecutedEvent_orderBy =
@@ -1293,6 +1359,8 @@ export type VestingEndFailedEvent_filter = {
   endDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<VestingEndFailedEvent_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<VestingEndFailedEvent_filter>>>;
 };
 
 export type VestingEndFailedEvent_orderBy =
@@ -1533,6 +1601,8 @@ export type VestingScheduleCreatedEvent_filter = {
   cliffAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<VestingScheduleCreatedEvent_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<VestingScheduleCreatedEvent_filter>>>;
 };
 
 export type VestingScheduleCreatedEvent_orderBy =
@@ -1690,6 +1760,8 @@ export type VestingScheduleDeletedEvent_filter = {
   receiver_not_contains?: InputMaybe<Scalars['Bytes']>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<VestingScheduleDeletedEvent_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<VestingScheduleDeletedEvent_filter>>>;
 };
 
 export type VestingScheduleDeletedEvent_orderBy =
@@ -1860,6 +1932,8 @@ export type VestingScheduleUpdatedEvent_filter = {
   endDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<VestingScheduleUpdatedEvent_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<VestingScheduleUpdatedEvent_filter>>>;
 };
 
 export type VestingScheduleUpdatedEvent_orderBy =
@@ -2055,6 +2129,8 @@ export type VestingSchedule_filter = {
   events_?: InputMaybe<Event_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<VestingSchedule_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<VestingSchedule_filter>>>;
 };
 
 export type VestingSchedule_orderBy =
