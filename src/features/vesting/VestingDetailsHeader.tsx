@@ -50,9 +50,6 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
         <Typography component="h1" variant="h4">
           Vesting {token.symbol}
         </Typography>
-        <Typography variant="subtitle1">
-          Read more here: https://www.superfluid.finance/vesting
-        </Typography>
         <Chip
           size="small"
           label={network.name}
