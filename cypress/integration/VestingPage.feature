@@ -213,7 +213,7 @@ Feature: Vesting page test cases
     And User submits the access code
     And "StIbAlluoUSD" permissions icons are all "green"
     And User opens "StIbAlluoUSD" permission table row
-    Then All current and recommended permissions are correctly showed for "fDAIx"
+    Then All current and recommended permissions are correctly showed for "StIbAlluoUSD"
 
   @NoCode
   Scenario: Vesting schedule available on goerli without code
