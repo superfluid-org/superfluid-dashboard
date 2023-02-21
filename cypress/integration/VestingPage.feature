@@ -204,7 +204,6 @@ Feature: Vesting page test cases
     Given "Vesting details page" is open without connecting a wallet
     And Vesting details page is shown correctly for the created schedule
 
-    @only
   Scenario: Token approval shown correctly when the schedule has ended
     Given "Dashboard Page" is open without connecting a wallet
     Given User uses view mode to look at "accountWithLotsOfData"
