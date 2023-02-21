@@ -13,6 +13,7 @@ import { useTheme } from "@mui/material/styles";
 import { useRouter } from "next/router";
 import { ChangeEvent, FC, ReactElement, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useAnalytics } from "../analytics/useAnalytics";
 import Link from "../common/Link";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import {
@@ -38,6 +39,7 @@ const AccessCodeDialog: FC<AccessCodeDialogProps> = ({
   const theme = useTheme();
   const dispatch = useDispatch();
   const router = useRouter();
+  const { track } = useAnalytics();
 
   const [featureCode, setFeatureCode] = useState("");
   const [isInvalidCode, setIsInvalidCode] = useState(false);
@@ -61,9 +63,15 @@ const AccessCodeDialog: FC<AccessCodeDialogProps> = ({
     }
 
     if (enableMainnet || enableVesting) {
+      track("Valid Access Code Entered", {
+        code: featureCode,
+      });
       return onClose();
     }
 
+    track("Invalid Access Code Entered", {
+      code: featureCode,
+    });
     setIsInvalidCode(true);
   };
 
