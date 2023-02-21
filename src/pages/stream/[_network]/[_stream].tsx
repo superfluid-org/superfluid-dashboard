@@ -34,7 +34,11 @@ import withStaticSEO from "../../../components/SEO/withStaticSEO";
 import Minigame from "../../../features/minigame/MinigameContainer";
 import { useMinigame } from "../../../features/minigame/MinigameContext";
 import NetworkIcon from "../../../features/network/NetworkIcon";
-import { Network } from "../../../features/network/networks";
+import {
+  Network,
+  networks,
+  tryFindNetwork,
+} from "../../../features/network/networks";
 import { rpcApi, subgraphApi } from "../../../features/redux/store";
 import { UnitOfTime } from "../../../features/send/FlowRateInput";
 import SharingSection from "../../../features/socialSharing/SharingSection";
@@ -59,7 +63,6 @@ import Page404 from "../../404";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import { getTimeInSeconds } from "../../../utils/dateUtils";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
-import { useAvailableNetworks } from "../../../features/network/AvailableNetworksContext";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -226,11 +229,10 @@ const StreamPage: NextPage = () => {
   const [network, setNetwork] = useState<Network | undefined>();
   const [streamId, setStreamId] = useState<string | undefined>();
   const [queryStreams, streamTxQuery] = subgraphApi.useLazyStreamsQuery();
-  const { tryFindNetwork } = useAvailableNetworks();
 
   useEffect(() => {
     if (router.isReady) {
-      const network = tryFindNetwork(router.query._network);
+      const network = tryFindNetwork(networks, router.query._network);
       setNetwork(network);
 
       if (network && isString(router.query._stream)) {

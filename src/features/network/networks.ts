@@ -8,6 +8,7 @@ import {
   TokenMinimal,
   TokenType,
 } from "../redux/endpoints/tokenTypes";
+import sfMeta from "@superfluid-finance/metadata";
 
 // id == chainId
 // name == displayName
@@ -520,6 +521,43 @@ export const networks: Network[] = [
   networkDefinition.avalancheC,
   networkDefinition.bsc,
 ];
+export const mainNetworks = networks.filter(x => !x.testnet);
+export const testNetworks = networks.filter(x => x.testnet);
+
+export const tryFindNetwork = (
+  networks: Network[],
+  value: unknown
+): Network | undefined => {
+  const asNumber = Number(value);
+  if (isFinite(asNumber)) {
+    return networks.find((x) => x.id === asNumber);
+  }
+
+  if (isString(value)) {
+    const valueAsLowerCase = value.toLowerCase();
+
+    const bySlug = networks.find((x) => x.slugName === valueAsLowerCase);
+    if (bySlug) {
+      return bySlug;
+    }
+
+    const byV1ShortName = networks.find(
+      (x) => x.v1ShortName === valueAsLowerCase
+    );
+    if (byV1ShortName) {
+      return byV1ShortName;
+    }
+
+    const byMetadata_chainId =
+      sfMeta.getNetworkByName(valueAsLowerCase)?.chainId ??
+      sfMeta.getNetworkByShortName(valueAsLowerCase)?.chainId;
+    if (byMetadata_chainId) {
+      return networks.find((x) => x.id === byMetadata_chainId);
+    }
+  }
+
+  return undefined;
+};
 
 export const getNetworkDefaultTokenPair = memoize(
   (network: Network): SuperTokenPair => ({
