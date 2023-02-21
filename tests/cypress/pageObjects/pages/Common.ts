@@ -170,11 +170,12 @@ export class Common extends BasePage {
                     for (const provider of hdwallet.engine._providers) {
                         if (provider.checkApproval) {
                           provider.checkApproval = function(type, didApprove, cb) {
-                              cb(new Error('User denied '+type+' signature.') )
+                              cb(new Error(`User denied ${type} signature.`) )
                           }
                         }
                     }
                 }
+                // @ts-ignore
                 win.mockSigner = new ethers.providers.Web3Provider(hdwallet).getSigner();
             },
         });
