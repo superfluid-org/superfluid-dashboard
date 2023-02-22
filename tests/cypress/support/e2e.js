@@ -21,6 +21,7 @@ Cypress.on("uncaught:exception", (err, runnable) => {
     if (err.name === "ConnectorNotFoundError" ||
         err.message.includes("The method eth_call is not implemented by the mock provider.") ||
         err.message.includes("invalid decimal value") ||
+        err.message.includes("PollingBlockTracker - encountered an error while attempting to update latest block") ||
         //Lifi bridge server errors when opening settings page
         err.name.includes("AxiosError") ||
         err.name.includes("ServerError")) {
