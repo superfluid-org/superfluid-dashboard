@@ -213,11 +213,13 @@ export class Common extends BasePage {
     this.changeNetwork(selectedNetwork);
     this.clickConnectWallet();
     this.clickMockWallet();
-    //Workaround for the connection issue after mainnet branch was merged
-    let workaroundNetwork =
-      selectedNetwork === "goerli" ? "polygon-mumbai" : "goerli";
-    this.changeNetwork(workaroundNetwork);
-    this.changeNetwork(selectedNetwork);
+    if(!Cypress.env("workaround")) {
+      //Workaround for the connection issue after mainnet branch was merged
+      let workaroundNetwork =
+          selectedNetwork === "goerli" ? "polygon-mumbai" : "goerli";
+      this.changeNetwork(workaroundNetwork);
+      this.changeNetwork(selectedNetwork);
+    }
   }
 
   static rejectTransactions() {

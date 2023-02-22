@@ -66,13 +66,12 @@ Feature: Send Page test cases
     And User accepts the risk warning
     Then The stop viewing as an address button is visible
 
-  @skip
+  @workaround
   Scenario: Wrong network warnings in the send page
     Given "Send Page" is open with "ongoingStreamAccount" connected on "gnosis"
-    And User changes their network to "polygon"
     And User fills all stream inputs "with" a wallet connected
     And User accepts the risk warning
-    And Change network button is visible with a message asking user to switch to "polygon"
+    And Change network button is visible with a message asking user to switch to "gnosis"
 
    Scenario: Ethereum mainnet uses minimum deposit instead of 4 hours of flow
      Given Transactional account john is connected to the dashboard on ethereum

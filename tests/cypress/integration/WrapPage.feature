@@ -27,15 +27,13 @@ Feature: Wrap page test cases
     Then The "USDC" balance is shown correctly on "polygon"
 
 
-  @skip
   Scenario: Wrong network warnings in the wrap page
     Given "Wrap Page" is open with "staticBalanceAccount" connected on "polygon"
-    And User changes their network to "gnosis"
     And User inputs "0.5" into the wrap field
-    And Change network button is visible with a message asking user to switch to "gnosis"
+    And Change network button is visible with a message asking user to switch to "polygon"
     And User switches to unwrap tab
     And User inputs "0.8" into the unwrap field
-    And Change network button is visible with a message asking user to switch to "gnosis"
+    And Change network button is visible with a message asking user to switch to "polygon"
 
 
   Scenario: View mode warnings in wrap page

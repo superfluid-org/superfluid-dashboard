@@ -9,12 +9,14 @@ Feature: Common element test cases
     And User clicks on the "send" navigation button
     Then Send page is open and the send container is visible
 
+   @workaround
   Scenario: Wallet connection status in the navigation drawer
     Given "Dashboard Page" is open with "ongoingStreamAccount" connected on "polygon"
-    And The navigation drawer shows that "ongoingStreamAccount" is "Connected"
-    And User changes their network to "optimism"
-#    HDWallet automaticly switches the network :(
-#    And The navigation drawer shows that "ongoingStreamAccount" is "Wrong network"
+     And The navigation drawer shows that "ongoingStreamAccount" is "Wrong network"
+     #These steps are a workaround to HDWalletProvider,it should be the other way around
+     And User changes their network to "optimism"
+     And User changes their network to "polygon"
+     And The navigation drawer shows that "ongoingStreamAccount" is "Connected"
 
   Scenario: Using access code to see ethereum mainnet
     Given "Dashboard page" is open without connecting a wallet
