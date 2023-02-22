@@ -49,7 +49,7 @@ export const AvailableNetworksProvider: FC<PropsWithChildren> = ({
         allNetworks.map((network) => [network.slugName, network])
       ),
     }),
-    availableNetworks
+    [availableNetworks]
   );
 
   const contextValue = useMemo<AvailableNetworksContextValue>(

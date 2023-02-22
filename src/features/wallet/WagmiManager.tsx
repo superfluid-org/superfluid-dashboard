@@ -19,7 +19,7 @@ export const { chains: wagmiChains, provider: wagmiRpcProvider } =
   configureChains(allNetworks, [
     jsonRpcProvider({
       rpc: (chain) => ({
-        http: findNetworkOrThrow(allNetworks, chain.id).rpcUrls.superfluid,
+        http: findNetworkOrThrow(allNetworks, chain.id).rpcUrls.superfluid.http[0],
       }),
     }),
   ]);

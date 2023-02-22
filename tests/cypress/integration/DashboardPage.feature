@@ -6,16 +6,14 @@ Feature: Dashboard Page test cases
 
   @broken @skip
   Scenario: Dashboard page showing correct wallet balances for account with no streams
-    Given "Dashboard Page" is open with a mocked connection to "staticBalanceAccount" on "polygon"
+    Given "Dashboard Page" is open with "staticBalanceAccount" connected on "polygon"
     And User connects their wallet to the dashboard
     And Correct "mainnet" wallet balances are shown for the "staticBalanceAccount"
     And User changes the visible networks to "testnet"
     Then Correct "testnet" wallet balances are shown for the "staticBalanceAccount"
 
   Scenario: Enabling and disabling specific networks
-    Given "Dashboard Page" is open with a mocked connection to "staticBalanceAccount" on "polygon"
-    And User connects their wallet to the dashboard
-    And User waits for balances to load
+    Given "Dashboard Page" is open with "staticBalanceAccount" connected on "polygon"
     And User opens the network selection dropdown
     And User clicks on the "gnosis" toggle
     Then "gnosis" balances are not visible
@@ -32,23 +30,16 @@ Feature: Dashboard Page test cases
     Then Wrap/Unwrap page is open and the wrap container is visible
     And User clicks on the "dashboard" navigation button
     And User changes the visible networks to "testnet"
-    And User waits for balances to load
     And User opens the network selection dropdown
     And User clicks on the "polygon-mumbai" toggle
     Then "polygon-mumbai" balances are not visible
 
   Scenario: Flow values ,cancel buttons and wrong network warning for an account with ongoing streams
-    Given "Dashboard Page" is open with a mocked connection to "ongoingStreamAccount" on "polygon"
-    And User connects their wallet to the dashboard
-    And User waits for balances to load
+    Given "Dashboard Page" is open with "ongoingStreamAccount" connected on "gnosis"
     And User clicks on "gnosis" "xDAIx" row
     And "gnosis" "xDAIx" flow rates are shown with the correct values
     Then "gnosis" streams are shown with the correct values in dashboard page
-      # Broken due to mocked provider
-#    And User clicks on the first visible cancel button
-#    Then The cancel stream popup button is visible
-#    And User clicks away from the cancel stream button
-#    Then The cancel stream button is not visible
+    And Cancel and Edit buttons are visible
     And User clicks on "optimism" "DAIx" row
     And Cancel button is disabled on all streams on "optimism"
     And User hovers on the first "optimism" stream cancel button

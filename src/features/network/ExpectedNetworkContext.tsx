@@ -1,9 +1,9 @@
-import { isString } from "lodash";
 import { useRouter } from "next/router";
 import {
   createContext,
   FC,
   PropsWithChildren,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -11,7 +11,7 @@ import {
 } from "react";
 import { useNetwork } from "wagmi";
 import { useAvailableNetworks } from "./AvailableNetworksContext";
-import { Network } from "./networks";
+import { findNetworkOrThrow, Network, tryFindNetwork } from "./networks";
 
 /**
  * "Expected" points to expected wallet network.
@@ -36,25 +36,29 @@ const ExpectedNetworkContext = createContext<ExpectedNetworkContextValue>(
 export const ExpectedNetworkProvider: FC<PropsWithChildren> = ({
   children,
 }) => {
-  const { availableNetworksByChainId, availableNetworksBySlug } =
-    useAvailableNetworks();
+  const { availableNetworks } = useAvailableNetworks();
 
   const [network, setNetwork] = useState<Network>(
-    availableNetworksByChainId.get(137)!
+    findNetworkOrThrow(availableNetworks, 137)
   );
   const [autoSwitchStop, setAutoSwitchStop] = useState(false);
+
+  const stopAutoSwitchToWalletNetwork = useCallback(
+    () => setAutoSwitchStop(true),
+    []
+  );
 
   const contextValue: ExpectedNetworkContextValue = useMemo(
     () => ({
       network,
       setExpectedNetwork: (chainId: number) => {
-        setNetwork(availableNetworksByChainId.get(chainId)!),
-          setAutoSwitchStop(false);
+        setNetwork(findNetworkOrThrow(availableNetworks, chainId));
+        setAutoSwitchStop(false);
       },
-      stopAutoSwitchToWalletNetwork: () => setAutoSwitchStop(true),
+      stopAutoSwitchToWalletNetwork,
       isAutoSwitchStopped: autoSwitchStop,
     }),
-    [network, autoSwitchStop, setAutoSwitchStop, availableNetworksByChainId]
+    [network, autoSwitchStop, availableNetworks, stopAutoSwitchToWalletNetwork]
   );
 
   const router = useRouter();
@@ -71,7 +75,49 @@ export const ExpectedNetworkProvider: FC<PropsWithChildren> = ({
     };
     router.events.on("routeChangeStart", onRouteChange);
     return () => router.events.off("routeChangeStart", onRouteChange);
-  }, []);
+  }, [router.events]);
+
+  const { network: networkQueryParam, _network: networkPathParam } =
+    router.query;
+
+  // # Set network from path on app load.
+  useEffect(() => {
+    if (router.isReady && networkPathParam) {
+      const networkFromRouter = tryFindNetwork(
+        availableNetworks,
+        networkPathParam
+      );
+
+      if (networkFromRouter) {
+        setNetwork(networkFromRouter);
+        stopAutoSwitchToWalletNetwork();
+      }
+    }
+    // This should only run once or twice on app load.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.isReady]);
+
+  // # Set network from query string.
+  useEffect(() => {
+    if (router.isReady) {
+      const networkFromRouter = tryFindNetwork(
+        availableNetworks,
+        networkQueryParam
+      );
+
+      if (networkFromRouter) {
+        setNetwork(networkFromRouter);
+
+        // Clear away the query param after usage.
+        const { network, ...networkQueryParamRemoved } = router.query;
+        router
+          .replace({ query: networkQueryParamRemoved }, undefined, {
+            shallow: true,
+          })
+          .then(() => void stopAutoSwitchToWalletNetwork());
+      }
+    }
+  }, [router.isReady, networkQueryParam]);
 
   const { chain: activeChain } = useNetwork();
 
@@ -81,32 +127,16 @@ export const ExpectedNetworkProvider: FC<PropsWithChildren> = ({
     }
 
     if (activeChain && activeChain.id !== network.id) {
-      const networkFromWallet = availableNetworksByChainId.get(activeChain.id);
+      const networkFromWallet = tryFindNetwork(
+        availableNetworks,
+        activeChain.id
+      );
       if (networkFromWallet) {
-        // setTestnetMode(!!activeChain.testnet);
         setNetwork(networkFromWallet);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeChain, availableNetworksByChainId]);
-
-  // # Set network based on the URL querystring.
-  const { network: networkQueryParam, _network: networkPathParam } =
-    router.query;
-
-  useEffect(() => {
-    if (isString(networkQueryParam)) {
-      const networkFromQuery = availableNetworksBySlug.get(networkQueryParam);
-      if (networkFromQuery) {
-        setNetwork(networkFromQuery);
-      }
-      const { network, ...networkQueryParamRemoved } = router.query;
-      router
-        .replace({ query: networkQueryParamRemoved })
-        .then(() => void setAutoSwitchStop(true));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [networkQueryParam, availableNetworksBySlug]);
+  }, [activeChain, availableNetworks]);
 
   return (
     <ExpectedNetworkContext.Provider value={contextValue}>

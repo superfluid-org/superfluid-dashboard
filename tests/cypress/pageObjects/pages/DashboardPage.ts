@@ -17,6 +17,7 @@ const NET_FLOW_FIAT = "[data-cy=net-flow-value] span:last-child"
 const INFLOW_VALUES = "[data-cy=inflow]";
 const OUTFLOW_VALUES = "[data-cy=outflow]";
 const CANCEL_BUTTONS = "[data-cy=cancel-button]";
+const EDIT_BUTTONS = "[data-testid=EditRoundedIcon]"
 const CANCEL_STREAM_BUTTON = "[data-cy=cancel-stream-button]";
 const TOOLTIPS = "[role=tooltip]";
 const ROWS_PER_PAGE_ARROW = "[data-testid=ArrowDropDownIcon]";
@@ -290,5 +291,10 @@ export class DashboardPage extends BasePage {
 
     static validateAmountOfStreamRows(amount: number) {
         this.hasLength(STREAM_ROWS, amount)
+    }
+
+    static validateCancelAndEditButtonsAreVisible() {
+        this.isVisible(CANCEL_BUTTONS)
+        this.isVisible(EDIT_BUTTONS)
     }
 }

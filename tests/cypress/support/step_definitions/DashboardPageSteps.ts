@@ -107,3 +107,6 @@ Given(/^The netflow and incomming\/outgoing amounts in the dashboard page for "(
 Given(/^There are (\d+) stream rows visible$/, (amount: number) => {
     DashboardPage.validateAmountOfStreamRows(amount)
 });
+Then(/^Cancel and Edit buttons are visible$/, function () {
+    DashboardPage.validateCancelAndEditButtonsAreVisible()
+});
