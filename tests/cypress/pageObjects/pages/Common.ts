@@ -4,7 +4,6 @@ import { ethers } from "ethers";
 import HDWalletProvider from "@truffle/hdwallet-provider";
 import {MockProvider} from "@rsksmart/mock-web3-provider";
 
-
 const NAVIGATION_BUTTON_PREFIX = "[data-cy=nav-";
 const TOP_BAR_NETWORK_BUTTON = "[data-cy=top-bar-network-button]";
 const CONNECTED_WALLET = "[data-cy=wallet-connection-status] h6";
@@ -210,7 +209,10 @@ export class Common extends BasePage {
       this.click(ACCESS_CODE_SUBMIT);
     }
     this.changeNetwork(selectedNetwork);
-
+    let workaroundNetwork =
+        selectedNetwork === "goerli" ? "polygon-mumbai" : "goerli";
+    this.changeNetwork(workaroundNetwork);
+    this.changeNetwork(selectedNetwork);
   }
 
   static rejectTransactions() {
