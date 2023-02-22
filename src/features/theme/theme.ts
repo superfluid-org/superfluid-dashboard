@@ -1087,6 +1087,13 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         },
       },
+      MuiTableContainer: {
+        styleOverrides: {
+          root: {
+            transition: "initial",
+          },
+        },
+      },
       MuiTable: {
         variants: [
           {

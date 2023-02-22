@@ -7,12 +7,11 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useNetwork } from "wagmi";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { useAvailableNetworks } from "./AvailableNetworksContext";
 import { useExpectedNetwork } from "./ExpectedNetworkContext";
 import { hideNetwork, unhideNetwork } from "./networkPreferences.slice";
-import { Network, networks, networksByChainId } from "./networks";
+import { Network } from "./networks";
 
 interface ActiveNetworksContextValue {
   testnetMode: boolean;

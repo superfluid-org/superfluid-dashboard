@@ -692,8 +692,8 @@ type Subscription {
 type Task {
   id: ID!
   type: TaskType!
-  executed: Boolean!
-  executionAt: BigInt
+  executedAt: BigInt
+  executionAt: BigInt!
   expirationAt: BigInt
   cancelledAt: BigInt
   failedAt: BigInt
@@ -718,10 +718,14 @@ input Task_filter {
   type_not: TaskType
   type_in: [TaskType!]
   type_not_in: [TaskType!]
-  executed: Boolean
-  executed_not: Boolean
-  executed_in: [Boolean!]
-  executed_not_in: [Boolean!]
+  executedAt: BigInt
+  executedAt_not: BigInt
+  executedAt_gt: BigInt
+  executedAt_lt: BigInt
+  executedAt_gte: BigInt
+  executedAt_lte: BigInt
+  executedAt_in: [BigInt!]
+  executedAt_not_in: [BigInt!]
   executionAt: BigInt
   executionAt_not: BigInt
   executionAt_gt: BigInt
@@ -784,12 +788,31 @@ input Task_filter {
 enum Task_orderBy {
   id
   type
-  executed
+  executedAt
   executionAt
   expirationAt
   cancelledAt
   failedAt
   vestingSchedule
+  vestingSchedule__id
+  vestingSchedule__createdAt
+  vestingSchedule__superToken
+  vestingSchedule__sender
+  vestingSchedule__receiver
+  vestingSchedule__startDate
+  vestingSchedule__endDate
+  vestingSchedule__cliffDate
+  vestingSchedule__cliffAndFlowDate
+  vestingSchedule__cliffAmount
+  vestingSchedule__flowRate
+  vestingSchedule__didEarlyEndCompensationFail
+  vestingSchedule__earlyEndCompensation
+  vestingSchedule__cliffAndFlowExpirationAt
+  vestingSchedule__endDateValidAt
+  vestingSchedule__deletedAt
+  vestingSchedule__failedAt
+  vestingSchedule__cliffAndFlowExecutedAt
+  vestingSchedule__endExecutedAt
 }
 
 type TokenSenderReceiverCursor {
@@ -892,8 +915,41 @@ input TokenSenderReceiverCursor_filter {
 enum TokenSenderReceiverCursor_orderBy {
   id
   currentVestingSchedule
+  currentVestingSchedule__id
+  currentVestingSchedule__createdAt
+  currentVestingSchedule__superToken
+  currentVestingSchedule__sender
+  currentVestingSchedule__receiver
+  currentVestingSchedule__startDate
+  currentVestingSchedule__endDate
+  currentVestingSchedule__cliffDate
+  currentVestingSchedule__cliffAndFlowDate
+  currentVestingSchedule__cliffAmount
+  currentVestingSchedule__flowRate
+  currentVestingSchedule__didEarlyEndCompensationFail
+  currentVestingSchedule__earlyEndCompensation
+  currentVestingSchedule__cliffAndFlowExpirationAt
+  currentVestingSchedule__endDateValidAt
+  currentVestingSchedule__deletedAt
+  currentVestingSchedule__failedAt
+  currentVestingSchedule__cliffAndFlowExecutedAt
+  currentVestingSchedule__endExecutedAt
   currentCliffAndFlowTask
+  currentCliffAndFlowTask__id
+  currentCliffAndFlowTask__type
+  currentCliffAndFlowTask__executedAt
+  currentCliffAndFlowTask__executionAt
+  currentCliffAndFlowTask__expirationAt
+  currentCliffAndFlowTask__cancelledAt
+  currentCliffAndFlowTask__failedAt
   currentEndVestingTask
+  currentEndVestingTask__id
+  currentEndVestingTask__type
+  currentEndVestingTask__executedAt
+  currentEndVestingTask__executionAt
+  currentEndVestingTask__expirationAt
+  currentEndVestingTask__cancelledAt
+  currentEndVestingTask__failedAt
 }
 
 type VestingCliffAndFlowExecutedEvent implements Event {

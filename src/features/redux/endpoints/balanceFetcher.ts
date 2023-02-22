@@ -2,7 +2,7 @@ import { getFramework } from "@superfluid-finance/sdk-redux";
 import { ContractCallContext, Multicall } from "ethereum-multicall";
 import { BigNumber, ethers } from "ethers";
 import promiseRetry from "promise-retry";
-import { networks } from "../../network/networks";
+import { allNetworks } from "../../network/networks";
 import { NATIVE_ASSET_ADDRESS } from "./tokenTypes";
 
 const multicallContractAddress = "0xcA11bde05977b3631167028862bE2a173976CA11";
@@ -35,7 +35,7 @@ const mutableNetworkStates: Record<
     > | null;
   }
 > = Object.fromEntries(
-  networks.map((x) => [x.id, { nextFetching: null, queryBatch: [] }])
+  allNetworks.map((x) => [x.id, { nextFetching: null, queryBatch: [] }])
 );
 
 const createFetching = (

@@ -17,7 +17,10 @@ import AddressName from "../../components/AddressName/AddressName";
 import useAddressNames from "../../hooks/useAddressNames";
 import { currenciesByCode } from "../../utils/currencyUtils";
 import Link from "../common/Link";
-import { findNetworkByChainId, mainNetworkIDs } from "../network/networks";
+import {
+  mainNetworks,
+  tryFindNetwork,
+} from "../network/networks";
 import { formatAmount } from "../token/Amount";
 import accountingApi, {
   AccountingStreamPeriod,
@@ -77,7 +80,7 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
     formState.isValid
       ? {
           addresses,
-          chains: mainNetworkIDs,
+          chains: mainNetworks.map((x) => x.id),
           start: getUnixTime(startDate),
           end: getUnixTime(endDate),
           priceGranularity: priceGranularity,
@@ -208,7 +211,8 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         headerName: "Network",
         minWidth: 100,
         flex: 1,
-        valueGetter: (params) => findNetworkByChainId(params.row.chainId)?.name,
+        valueGetter: (params) =>
+          tryFindNetwork(mainNetworks, params.row.chainId)?.name,
       },
       {
         field: "transaction",
@@ -216,12 +220,12 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         maxWidth: 100,
         flex: 1,
         valueGetter: (params: GridValueGetterParams) => {
-          const network = findNetworkByChainId(params.row.chainId);
+          const network = tryFindNetwork(mainNetworks, params.row.chainId);
           if (!network) return "";
           return network.getLinkForTransaction(params.row.startedAtEvent);
         },
         renderCell: (params) => {
-          const network = findNetworkByChainId(params.row.chainId);
+          const network = tryFindNetwork(mainNetworks, params.row.chainId);
           if (!network) return "";
           const linkUrl = network.getLinkForTransaction(
             params.row.startedAtEvent

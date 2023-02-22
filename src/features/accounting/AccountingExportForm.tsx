@@ -175,7 +175,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
           <Stack flex={1}>
             <FormLabel>Date Range</FormLabel>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <Stack direction="row" gap={1}>
+              <Stack data-cy="date-ranges" direction="row" gap={1}>
                 <Controller
                   control={control}
                   name="data.startDate"
@@ -226,6 +226,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
               name="data.priceGranularity"
               render={({ field: { value, onChange } }) => (
                 <Select
+                  data-cy={"price-granularity"}
                   value={value}
                   onChange={(e) =>
                     onChange(Number(e.target.value) as UnitOfTime)
@@ -259,7 +260,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
               control={control}
               name="data.virtualizationPeriod"
               render={({ field: { value, onChange } }) => (
-                <Select value={value} onChange={onChange}>
+                <Select data-cy={"accounting-period"} value={value} onChange={onChange}>
                   {GranularityOptions.map((unitOfTime) => (
                     <MenuItem
                       key={unitOfTime}
@@ -297,6 +298,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
         </Stack>
 
         <Button
+          data-cy={"export-preview-button"}
           variant="contained"
           size="xl"
           onClick={submitAccountingForm}

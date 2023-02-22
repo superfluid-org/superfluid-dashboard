@@ -604,8 +604,8 @@ export type Subscription_MetaArgs = {
 export type Task = {
   id: Scalars['ID'];
   type: TaskType;
-  executed: Scalars['Boolean'];
-  executionAt?: Maybe<Scalars['BigInt']>;
+  executedAt?: Maybe<Scalars['BigInt']>;
+  executionAt: Scalars['BigInt'];
   expirationAt?: Maybe<Scalars['BigInt']>;
   cancelledAt?: Maybe<Scalars['BigInt']>;
   failedAt?: Maybe<Scalars['BigInt']>;
@@ -629,10 +629,14 @@ export type Task_Filter = {
   type_not?: InputMaybe<TaskType>;
   type_in?: InputMaybe<Array<TaskType>>;
   type_not_in?: InputMaybe<Array<TaskType>>;
-  executed?: InputMaybe<Scalars['Boolean']>;
-  executed_not?: InputMaybe<Scalars['Boolean']>;
-  executed_in?: InputMaybe<Array<Scalars['Boolean']>>;
-  executed_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  executedAt?: InputMaybe<Scalars['BigInt']>;
+  executedAt_not?: InputMaybe<Scalars['BigInt']>;
+  executedAt_gt?: InputMaybe<Scalars['BigInt']>;
+  executedAt_lt?: InputMaybe<Scalars['BigInt']>;
+  executedAt_gte?: InputMaybe<Scalars['BigInt']>;
+  executedAt_lte?: InputMaybe<Scalars['BigInt']>;
+  executedAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  executedAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   executionAt?: InputMaybe<Scalars['BigInt']>;
   executionAt_not?: InputMaybe<Scalars['BigInt']>;
   executionAt_gt?: InputMaybe<Scalars['BigInt']>;
@@ -695,12 +699,31 @@ export type Task_Filter = {
 export type Task_OrderBy =
   | 'id'
   | 'type'
-  | 'executed'
+  | 'executedAt'
   | 'executionAt'
   | 'expirationAt'
   | 'cancelledAt'
   | 'failedAt'
-  | 'vestingSchedule';
+  | 'vestingSchedule'
+  | 'vestingSchedule__id'
+  | 'vestingSchedule__createdAt'
+  | 'vestingSchedule__superToken'
+  | 'vestingSchedule__sender'
+  | 'vestingSchedule__receiver'
+  | 'vestingSchedule__startDate'
+  | 'vestingSchedule__endDate'
+  | 'vestingSchedule__cliffDate'
+  | 'vestingSchedule__cliffAndFlowDate'
+  | 'vestingSchedule__cliffAmount'
+  | 'vestingSchedule__flowRate'
+  | 'vestingSchedule__didEarlyEndCompensationFail'
+  | 'vestingSchedule__earlyEndCompensation'
+  | 'vestingSchedule__cliffAndFlowExpirationAt'
+  | 'vestingSchedule__endDateValidAt'
+  | 'vestingSchedule__deletedAt'
+  | 'vestingSchedule__failedAt'
+  | 'vestingSchedule__cliffAndFlowExecutedAt'
+  | 'vestingSchedule__endExecutedAt';
 
 export type TokenSenderReceiverCursor = {
   id: Scalars['String'];
@@ -802,8 +825,41 @@ export type TokenSenderReceiverCursor_Filter = {
 export type TokenSenderReceiverCursor_OrderBy =
   | 'id'
   | 'currentVestingSchedule'
+  | 'currentVestingSchedule__id'
+  | 'currentVestingSchedule__createdAt'
+  | 'currentVestingSchedule__superToken'
+  | 'currentVestingSchedule__sender'
+  | 'currentVestingSchedule__receiver'
+  | 'currentVestingSchedule__startDate'
+  | 'currentVestingSchedule__endDate'
+  | 'currentVestingSchedule__cliffDate'
+  | 'currentVestingSchedule__cliffAndFlowDate'
+  | 'currentVestingSchedule__cliffAmount'
+  | 'currentVestingSchedule__flowRate'
+  | 'currentVestingSchedule__didEarlyEndCompensationFail'
+  | 'currentVestingSchedule__earlyEndCompensation'
+  | 'currentVestingSchedule__cliffAndFlowExpirationAt'
+  | 'currentVestingSchedule__endDateValidAt'
+  | 'currentVestingSchedule__deletedAt'
+  | 'currentVestingSchedule__failedAt'
+  | 'currentVestingSchedule__cliffAndFlowExecutedAt'
+  | 'currentVestingSchedule__endExecutedAt'
   | 'currentCliffAndFlowTask'
-  | 'currentEndVestingTask';
+  | 'currentCliffAndFlowTask__id'
+  | 'currentCliffAndFlowTask__type'
+  | 'currentCliffAndFlowTask__executedAt'
+  | 'currentCliffAndFlowTask__executionAt'
+  | 'currentCliffAndFlowTask__expirationAt'
+  | 'currentCliffAndFlowTask__cancelledAt'
+  | 'currentCliffAndFlowTask__failedAt'
+  | 'currentEndVestingTask'
+  | 'currentEndVestingTask__id'
+  | 'currentEndVestingTask__type'
+  | 'currentEndVestingTask__executedAt'
+  | 'currentEndVestingTask__executionAt'
+  | 'currentEndVestingTask__expirationAt'
+  | 'currentEndVestingTask__cancelledAt'
+  | 'currentEndVestingTask__failedAt';
 
 export type VestingCliffAndFlowExecutedEvent = Event & {
   id: Scalars['ID'];
@@ -2415,8 +2471,8 @@ export type SubscriptionResolvers<ContextType = MeshContext, ParentType extends 
 export type TaskResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Task'] = ResolversParentTypes['Task']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['TaskType'], ParentType, ContextType>;
-  executed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  executionAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  executedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  executionAt?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   expirationAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   cancelledAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   failedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
@@ -2653,7 +2709,7 @@ const vestingTransforms = [];
 const additionalTypeDefs = [] as any[];
 const vestingHandler = new GraphqlHandler({
               name: "vesting",
-              config: {"endpoint":"{context.url:https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-eth-goerli}","retry":5},
+              config: {"endpoint":"{context.url:https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-polygon-mainnet}","retry":5},
               baseDir,
               cache,
               pubsub,

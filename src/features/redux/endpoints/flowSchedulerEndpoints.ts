@@ -11,7 +11,7 @@ import {
 } from "@superfluid-finance/sdk-redux";
 import { BigNumber } from "ethers";
 import { getFlowScheduler } from "../../../eth-sdk/getEthSdk";
-import { findNetworkByChainId } from "../../network/networks";
+import { allNetworks, tryFindNetwork } from "../../network/networks";
 import { UnitOfTime } from "../../send/FlowRateInput";
 import { rpcApi } from "../store";
 
@@ -105,7 +105,7 @@ export const flowSchedulerEndpoints = {
           title: TransactionTitle;
         }[] = [];
 
-        const network = findNetworkByChainId(chainId);
+        const network = tryFindNetwork(allNetworks, chainId);
         // TODO(KK): Uncomment & implement again when stream scheduling is handled.
         if (network?.flowSchedulerContractAddress) {
           const flowScheduler = getFlowScheduler(chainId, arg.signer);

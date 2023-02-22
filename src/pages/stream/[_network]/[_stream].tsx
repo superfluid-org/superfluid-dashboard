@@ -34,7 +34,11 @@ import withStaticSEO from "../../../components/SEO/withStaticSEO";
 import Minigame from "../../../features/minigame/MinigameContainer";
 import { useMinigame } from "../../../features/minigame/MinigameContext";
 import NetworkIcon from "../../../features/network/NetworkIcon";
-import { Network, networksBySlug } from "../../../features/network/networks";
+import {
+  Network,
+  allNetworks,
+  tryFindNetwork,
+} from "../../../features/network/networks";
 import { rpcApi, subgraphApi } from "../../../features/redux/store";
 import { UnitOfTime } from "../../../features/send/FlowRateInput";
 import SharingSection from "../../../features/socialSharing/SharingSection";
@@ -228,9 +232,7 @@ const StreamPage: NextPage = () => {
 
   useEffect(() => {
     if (router.isReady) {
-      const network = networksBySlug.get(
-        isString(router.query._network) ? router.query._network : ""
-      );
+      const network = tryFindNetwork(allNetworks, router.query._network);
       setNetwork(network);
 
       if (network && isString(router.query._stream)) {

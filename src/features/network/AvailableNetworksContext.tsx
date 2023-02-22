@@ -6,7 +6,7 @@ import {
   useMemo,
 } from "react";
 import { useFeatureFlags } from "../featureFlags/FeatureFlagContext";
-import { Network, networkDefinition, networks } from "./networks";
+import { Network, networkDefinition, allNetworks } from "./networks";
 
 interface AvailableNetworksContextValue {
   availableNetworks: Network[];
@@ -27,16 +27,15 @@ export const AvailableNetworksProvider: FC<PropsWithChildren> = ({
 
   const availableNetworks = useMemo(
     () =>
-      networks.filter(
+      allNetworks.filter(
         (network) =>
           !(network.id === networkDefinition.ethereum.id && !isMainnetEnabled)
       ),
     [isMainnetEnabled]
   );
 
-  const contextValue = useMemo<AvailableNetworksContextValue>(
+  const availableNetworksFiltered = useMemo(
     () => ({
-      availableNetworks,
       availableMainNetworks: availableNetworks.filter(
         (network) => !network.testnet
       ),
@@ -47,10 +46,18 @@ export const AvailableNetworksProvider: FC<PropsWithChildren> = ({
         availableNetworks.map((network) => [network.id, network])
       ),
       availableNetworksBySlug: new Map(
-        networks.map((network) => [network.slugName, network])
+        allNetworks.map((network) => [network.slugName, network])
       ),
     }),
-    [availableNetworks]
+    availableNetworks
+  );
+
+  const contextValue = useMemo<AvailableNetworksContextValue>(
+    () => ({
+      availableNetworks,
+      ...availableNetworksFiltered,
+    }),
+    [availableNetworks, availableNetworksFiltered]
   );
 
   return (

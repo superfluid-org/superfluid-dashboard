@@ -12,7 +12,7 @@ interface VestingSchedulerAllowanceDetailsTableProps {
   recommendedTokenAllowance: BigNumber;
   requiredFlowOperatorAllowance: BigNumber;
   existingPermissions: number;
-  requiredFlowOperatorPermissions: number; // 5 (Create or Delete) https://docs.superfluid.finance/superfluid/developers/constant-flow-agreement-cfa/cfa-access-control-list-acl/acl-features
+  requiredFlowOperatorPermissions: number; // Usually 5 (Create or Delete): https://docs.superfluid.finance/superfluid/developers/constant-flow-agreement-cfa/cfa-access-control-list-acl/acl-features
 }
 
 const VestingSchedulerAllowanceDetailsTable: FC<

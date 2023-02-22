@@ -1,3 +1,4 @@
+import { isNumber, isString } from "lodash";
 import memoize from "lodash/memoize";
 import { chain, Chain } from "wagmi";
 import ensureDefined from "../../utils/ensureDefined";
@@ -7,6 +8,7 @@ import {
   TokenMinimal,
   TokenType,
 } from "../redux/endpoints/tokenTypes";
+import sfMeta from "@superfluid-finance/metadata";
 
 // id == chainId
 // name == displayName
@@ -49,33 +51,34 @@ export const superfluidRpcUrls = {
 
 export const superfluidPlatformUrls = {
   goerli: "https://prod-goerli-platform-service.dev.superfluid.dev",
-  polygon: "https://prod-polygon-mainnet-platform-service.dev.superfluid.dev",
-  bnbSmartChain: "https://prod-bsc-mainnet-platform-service.dev.superfluid.dev",
-  ethereum: "https://prod-eth-mainnet-platform-service.dev.superfluid.dev",
+  polygon: "https://prod-polygon-mainnet-platform-service.prod.superfluid.dev",
+  bnbSmartChain:
+    "https://prod-bsc-mainnet-platform-service.prod.superfluid.dev",
+  ethereum: "https://prod-eth-mainnet-platform-service.prod.superfluid.dev",
 } as const;
 
-export const vestingSubraphUrls = {
+export const vestingSubgraphUrls = {
   gnosis:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-gnosis",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-xdai-mainnet",
   goerli:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-goerli",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-eth-goerli",
   polygon:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-polygon",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-polygon-mainnet",
   arbitrum:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-arbitrum",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-arbitrum-one",
   optimism:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-optimism",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-optimism-mainnet",
   avalancheC:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-avalanche",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-avalanche-c",
   bnbSmartChain:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-bsc",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-bsc-mainnet",
   ethereum:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/automation-v1-eth-mainnet",
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-eth-mainnet",
 } as const;
 
 export const vestingContractAddresses = {
   gnosis: "0x0170FFCC75d178d426EBad5b1a31451d00Ddbd0D",
-  goerli: "0x2A6dD60Dbb8CE65813842eEe1688b21CA30D6ffd",
+  goerli: "0xF9240F930d847F70ad900aBEE8949F25649Bf24a",
   polygon: "0xcFE6382B33F2AdaFbE46e6A26A88E0182ae32b0c",
   arbitrum: "0x55c8fc400833eEa791087cF343Ff2409A39DeBcC",
   optimism: "0x65377d4dfE9c01639A41952B5083D58964782892",
@@ -165,7 +168,7 @@ export const networkDefinition: {
     flowSchedulerSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-eth-goerli",
     vestingContractAddress: vestingContractAddresses.goerli,
-    vestingSubgraphUrl: vestingSubraphUrls.goerli,
+    vestingSubgraphUrl: vestingSubgraphUrls.goerli,
     platformUrl: superfluidPlatformUrls.goerli,
   },
   gnosis: {
@@ -207,7 +210,7 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.gnosis,
-    vestingSubgraphUrl: vestingSubraphUrls.gnosis,
+    vestingSubgraphUrl: vestingSubgraphUrls.gnosis,
     platformUrl: undefined,
   },
   polygon: {
@@ -241,7 +244,7 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.polygon,
-    vestingSubgraphUrl: vestingSubraphUrls.polygon,
+    vestingSubgraphUrl: vestingSubgraphUrls.polygon,
     platformUrl: superfluidPlatformUrls.polygon,
   },
   polygonMumbai: {
@@ -350,7 +353,7 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.optimism,
-    vestingSubgraphUrl: vestingSubraphUrls.optimism,
+    vestingSubgraphUrl: vestingSubgraphUrls.optimism,
     platformUrl: undefined,
   },
   arbitrum: {
@@ -384,7 +387,7 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.arbitrum,
-    vestingSubgraphUrl: vestingSubraphUrls.arbitrum,
+    vestingSubgraphUrl: vestingSubgraphUrls.arbitrum,
     platformUrl: undefined,
   },
   avalancheC: {
@@ -428,7 +431,7 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.avalancheC,
-    vestingSubgraphUrl: vestingSubraphUrls.avalancheC,
+    vestingSubgraphUrl: vestingSubgraphUrls.avalancheC,
     platformUrl: undefined,
   },
   bsc: {
@@ -470,7 +473,7 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.bnbSmartChain,
-    vestingSubgraphUrl: vestingSubraphUrls.bnbSmartChain,
+    vestingSubgraphUrl: vestingSubgraphUrls.bnbSmartChain,
     platformUrl: superfluidPlatformUrls.bnbSmartChain,
   },
   ethereum: {
@@ -504,12 +507,12 @@ export const networkDefinition: {
       },
     },
     vestingContractAddress: vestingContractAddresses.ethereum,
-    vestingSubgraphUrl: vestingSubraphUrls.ethereum,
+    vestingSubgraphUrl: vestingSubgraphUrls.ethereum,
     platformUrl: superfluidPlatformUrls.ethereum,
   },
 };
 
-export const networks: Network[] = [
+export const allNetworks: Network[] = [
   networkDefinition.ethereum,
   networkDefinition.goerli,
   networkDefinition.gnosis,
@@ -521,6 +524,54 @@ export const networks: Network[] = [
   networkDefinition.avalancheC,
   networkDefinition.bsc,
 ];
+export const mainNetworks = allNetworks.filter((x) => !x.testnet);
+export const testNetworks = allNetworks.filter((x) => x.testnet);
+
+export const tryFindNetwork = (
+  networks: Network[],
+  value: unknown
+): Network | undefined => {
+  const asNumber = Number(value);
+  if (isFinite(asNumber)) {
+    return networks.find((x) => x.id === asNumber);
+  }
+
+  if (isString(value)) {
+    const valueAsLowerCase = value.toLowerCase();
+
+    const bySlug = networks.find((x) => x.slugName === valueAsLowerCase);
+    if (bySlug) {
+      return bySlug;
+    }
+
+    const byV1ShortName = networks.find(
+      (x) => x.v1ShortName === valueAsLowerCase
+    );
+    if (byV1ShortName) {
+      return byV1ShortName;
+    }
+
+    const byMetadata_chainId =
+      sfMeta.getNetworkByName(valueAsLowerCase)?.chainId ??
+      sfMeta.getNetworkByShortName(valueAsLowerCase)?.chainId;
+    if (byMetadata_chainId) {
+      return networks.find((x) => x.id === byMetadata_chainId);
+    }
+  }
+
+  return undefined;
+};
+
+export const findNetworkOrThrow = (
+  networks: Network[],
+  value: unknown
+): Network => {
+  const network = tryFindNetwork(networks, value);
+  if (!network) {
+    throw new Error("Network not found. This should never happen.");
+  }
+  return network;
+};
 
 export const getNetworkDefaultTokenPair = memoize(
   (network: Network): SuperTokenPair => ({
@@ -535,23 +586,7 @@ export const getNetworkDefaultTokenPair = memoize(
   })
 );
 
-export const networksByName = new Map(
-  networks.map((x) => [x.slugName.toLowerCase(), x])
-);
-
-export const networksByChainId = new Map(networks.map((x) => [x.id, x]));
-export const networksBySlug = new Map(networks.map((x) => [x.slugName, x]));
-
-export const mainNetworks = networks.filter((network) => !network.testnet);
-export const testNetworks = networks.filter((network) => network.testnet);
-export const networkIDs = networks.map((network) => network.id);
-export const mainNetworkIDs = mainNetworks.map((network) => network.id);
-
 // The vesting contract might be deployed to more networks but we check for the existence of the Platform.;
-export const vestingSupportedNetworks = networks
+export const vestingSupportedNetworks = allNetworks
   .filter((network) => network.platformUrl)
   .sort((n1, n2) => (!n1.testnet && n2.testnet ? -1 : 1));
-
-export const findNetworkByChainId = memoize((chainId: number) =>
-  networks.find((network) => network.id === chainId)
-);

@@ -11,13 +11,17 @@ import { skipToken } from "@reduxjs/toolkit/dist/query/react";
 import { FlowUpdatedEvent, TransferEvent } from "@superfluid-finance/sdk-core";
 import { isString, orderBy } from "lodash";
 import { useRouter } from "next/router";
-import { FC, ReactElement, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import withStaticSEO from "../../../components/SEO/withStaticSEO";
 import ActivityTable from "../../../features/activityHistory/ActivityTable";
 import TimeUnitFilter, {
   TimeUnitFilterType,
 } from "../../../features/graph/TimeUnitFilter";
-import { Network, networksBySlug } from "../../../features/network/networks";
+import {
+  Network,
+  allNetworks,
+  tryFindNetwork,
+} from "../../../features/network/networks";
 import { subgraphApi } from "../../../features/redux/store";
 import Amount from "../../../features/token/Amount";
 import FiatAmount from "../../../features/tokenPrice/FiatAmount";
@@ -29,7 +33,6 @@ import VestedBalance from "../../../features/vesting/VestedBalance";
 import VestingDataCard from "../../../features/vesting/VestingDataCard";
 import VestingDetailsHeader from "../../../features/vesting/VestingDetailsHeader";
 import VestingGraph from "../../../features/vesting/VestingGraph";
-import VestingLayout from "../../../features/vesting/VestingLayout";
 import VestingScheduleProgress from "../../../features/vesting/VestingScheduleProgress/VestingScheduleProgress";
 import {
   Activity,
@@ -77,11 +80,7 @@ const VestingScheduleDetailsPage: NextPageWithLayout = () => {
 
   useEffect(() => {
     if (router.isReady) {
-      setNetwork(
-        networksBySlug.get(
-          isString(router.query._network) ? router.query._network : ""
-        )
-      );
+      setNetwork(tryFindNetwork(allNetworks, router.query._network));
       setVestingScheduleId(
         isString(router.query._id) ? router.query._id : undefined
       );
@@ -408,10 +407,6 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
     </Container>
   );
 };
-
-VestingScheduleDetailsPage.getLayout = (page: ReactElement) => (
-  <VestingLayout>{page}</VestingLayout>
-);
 
 export default withStaticSEO(
   { title: "Vesting Schedule | Superfluid" },

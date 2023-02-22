@@ -253,6 +253,7 @@ export default memo(function AddressSearchDialog({
               <>
                 <ListSubheader sx={{ px: 3 }}>Search</ListSubheader>
                 <AddressListItem
+                  dataCy={"search-entry"}
                   key={checksummedSearchedAddress}
                   selected={addresses.includes(checksummedSearchedAddress)}
                   disabled={disabledAddresses.includes(
@@ -310,6 +311,7 @@ export default memo(function AddressSearchDialog({
               <ListSubheader sx={{ px: 3 }}>Selected</ListSubheader>
               {addresses.map((address) => (
                 <AddressListItem
+                  dataCy={"list-selected-address"}
                   key={`${address}-selected`}
                   selected
                   showRemove
@@ -320,7 +322,7 @@ export default memo(function AddressSearchDialog({
             </List>
           </DialogContent>
           <DialogActions sx={{ p: 3 }}>
-            <Button variant="contained" size="xl" onClick={onClose}>
+            <Button data-cy={"ok-button"} variant="contained" size="xl" onClick={onClose}>
               Ok
             </Button>
           </DialogActions>

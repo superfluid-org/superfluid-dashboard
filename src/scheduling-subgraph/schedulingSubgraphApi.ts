@@ -1,8 +1,7 @@
 import { miniSerializeError } from "@reduxjs/toolkit";
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getSerializeQueryArgs } from "@superfluid-finance/sdk-redux";
-import { findNetworkByChainId } from "../features/network/networks";
-import { Task } from "../vesting-subgraph/.graphclient";
+import { allNetworks, tryFindNetwork } from "../features/network/networks";
 import {
   getBuiltGraphSDK,
   GetTasksQuery,
@@ -12,7 +11,7 @@ import {
 } from "./.graphclient";
 
 const tryGetBuiltGraphSdkForNetwork = (chainId: number) => {
-  const network = findNetworkByChainId(chainId);
+  const network = tryFindNetwork(allNetworks, chainId);
   if (network?.flowSchedulerSubgraphUrl) {
     return getBuiltGraphSDK({
       url: network.flowSchedulerSubgraphUrl,
