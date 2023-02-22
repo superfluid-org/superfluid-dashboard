@@ -66,9 +66,11 @@ Feature: Send Page test cases
     And User accepts the risk warning
     Then The stop viewing as an address button is visible
 
-  @workaround
   Scenario: Wrong network warnings in the send page
-    Given "Send Page" is open with "ongoingStreamAccount" connected on "gnosis"
+    Given Dashboard is open with a mocked connection to "ongoingStreamAccount" on "polygon"
+    And User connects their wallet to the dashboard
+    And User changes their network to "gnosis"
+    And User clicks on the "send" navigation button
     And User fills all stream inputs "with" a wallet connected
     And User accepts the risk warning
     And Change network button is visible with a message asking user to switch to "gnosis"

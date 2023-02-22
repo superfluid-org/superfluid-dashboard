@@ -154,3 +154,6 @@ Given(/^User opens the dashboard network selection dropdown$/, function () {
 Given(/^HDWallet transactions are rejected$/, function () {
     Common.rejectTransactions()
 });
+Given(/^Dashboard is open with a mocked connection to "([^"]*)" on "([^"]*)"$/, function (account:string,network:string) {
+    Common.mockConnectionTo(account,network)
+});

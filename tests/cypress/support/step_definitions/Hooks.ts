@@ -13,14 +13,6 @@ Before({ tags: "@vesting and not @NoCode" }, function () {
     Cypress.env("vesting" , true)
 });
 
-Before({ tags: "@workaround" }, function () {
-    Cypress.env("workaround" , true)
-});
-
-After({ tags: "@workaround" }, function () {
-    Cypress.env("workaround" , false)
-});
-
 Before({ tags: "@NoCode" }, function () {
     Cypress.env("vesting" , false)
 });

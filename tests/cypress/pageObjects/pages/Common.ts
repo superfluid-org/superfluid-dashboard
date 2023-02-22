@@ -2,9 +2,8 @@ import { BasePage } from "../BasePage";
 import { networksBySlug, superfluidRpcUrls } from "../../superData/networks";
 import { ethers } from "ethers";
 import HDWalletProvider from "@truffle/hdwallet-provider";
+import {MockProvider} from "@rsksmart/mock-web3-provider";
 
-// @ts-ignore - web3-provider-engine doesn't have declaration files for these subproviders
-import HookedWalletSubprovider from "web3-provider-engine/subproviders/hooked-wallet";
 
 const NAVIGATION_BUTTON_PREFIX = "[data-cy=nav-";
 const TOP_BAR_NETWORK_BUTTON = "[data-cy=top-bar-network-button]";
@@ -211,15 +210,7 @@ export class Common extends BasePage {
       this.click(ACCESS_CODE_SUBMIT);
     }
     this.changeNetwork(selectedNetwork);
-    this.clickConnectWallet();
-    this.clickMockWallet();
-    if(!Cypress.env("workaround")) {
-      //Workaround for the connection issue after mainnet branch was merged
-      let workaroundNetwork =
-          selectedNetwork === "goerli" ? "polygon-mumbai" : "goerli";
-      this.changeNetwork(workaroundNetwork);
-      this.changeNetwork(selectedNetwork);
-    }
+
   }
 
   static rejectTransactions() {
@@ -422,4 +413,25 @@ export class Common extends BasePage {
   static openDashboardNetworkSelectionDropdown() {
     this.click(TOP_BAR_NETWORK_BUTTON);
   }
+
+  static mockConnectionTo(account: string, network: string) {
+      let usedAccountPrivateKey =
+          account === "staticBalanceAccount"
+              ? Cypress.env("STATIC_BALANCE_ACCOUNT_PRIVATE_KEY")
+              : Cypress.env("ONGOING_STREAM_ACCOUNT_PRIVATE_KEY");
+        cy.fixture("commonData").then((commonData) => {
+          cy.visit("/", {
+            onBeforeLoad: (win) => {
+              // @ts-ignore
+              win.ethereum = new MockProvider({
+                address: commonData[account],
+                privateKey: usedAccountPrivateKey,
+                networkVersion: networksBySlug.get(network)?.id,
+                debug: false,
+                answerEnable: true,
+              });
+            },
+          });
+        });
+    }
 }
