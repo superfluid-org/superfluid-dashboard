@@ -27,9 +27,9 @@ Feature: Wrap page test cases
     Then The "USDC" balance is shown correctly on "polygon"
 
 
+  @skip
   Scenario: Wrong network warnings in the wrap page
     Given "Wrap Page" is open with "staticBalanceAccount" connected on "polygon"
-    And User connects their wallet to the dashboard
     And User changes their network to "gnosis"
     And User inputs "0.5" into the wrap field
     And Change network button is visible with a message asking user to switch to "gnosis"

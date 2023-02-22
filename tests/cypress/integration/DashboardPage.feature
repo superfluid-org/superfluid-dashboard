@@ -14,7 +14,6 @@ Feature: Dashboard Page test cases
 
   Scenario: Enabling and disabling specific networks
     Given "Dashboard Page" is open with "staticBalanceAccount" connected on "polygon"
-    And User connects their wallet to the dashboard
     And User waits for balances to load
     And User opens the network selection dropdown
     And User clicks on the "gnosis" toggle
@@ -39,7 +38,6 @@ Feature: Dashboard Page test cases
 
   Scenario: Flow values ,cancel buttons and wrong network warning for an account with ongoing streams
     Given "Dashboard Page" is open with "ongoingStreamAccount" connected on "polygon"
-    And User connects their wallet to the dashboard
     And User waits for balances to load
     And User clicks on "gnosis" "xDAIx" row
     And "gnosis" "xDAIx" flow rates are shown with the correct values

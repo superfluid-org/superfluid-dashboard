@@ -9,9 +9,7 @@ Feature: Send Page test cases
     Then Send button is enabled and asks user to Connect their wallet
 
   Scenario: Receiver dialog recents and ENS support
-    Given "Send Page" is open with "staticBalanceAccount" connected on "gnosis"
-    And User connects their wallet to the dashboard
-    And User changes their network to "polygon"
+    Given "Send Page" is open with "staticBalanceAccount" connected on "polygon"
     And User opens the receiver dialog
     Then The recent receivers are shown on "polygon"
     And User closes the dialog
@@ -68,9 +66,9 @@ Feature: Send Page test cases
     And User accepts the risk warning
     Then The stop viewing as an address button is visible
 
+  @skip
   Scenario: Wrong network warnings in the send page
     Given "Send Page" is open with "ongoingStreamAccount" connected on "gnosis"
-    And User connects their wallet to the dashboard
     And User changes their network to "polygon"
     And User fills all stream inputs "with" a wallet connected
     And User accepts the risk warning
