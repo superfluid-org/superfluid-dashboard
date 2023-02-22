@@ -9,7 +9,7 @@ Feature: Common element test cases
     And User clicks on the "send" navigation button
     Then Send page is open and the send container is visible
 
-   @workaround
+  @workaround
   Scenario: Wallet connection status in the navigation drawer
     Given "Dashboard Page" is open with "ongoingStreamAccount" connected on "polygon"
      And The navigation drawer shows that "ongoingStreamAccount" is "Wrong network"

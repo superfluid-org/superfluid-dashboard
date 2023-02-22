@@ -27,6 +27,7 @@ Feature: Wrap page test cases
     Then The "USDC" balance is shown correctly on "polygon"
 
 
+  @workaround
   Scenario: Wrong network warnings in the wrap page
     Given "Wrap Page" is open with "staticBalanceAccount" connected on "polygon"
     And User inputs "0.5" into the wrap field
