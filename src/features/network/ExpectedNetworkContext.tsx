@@ -77,36 +77,47 @@ export const ExpectedNetworkProvider: FC<PropsWithChildren> = ({
     return () => router.events.off("routeChangeStart", onRouteChange);
   }, [router.events]);
 
-  // # Set network from router on app load.
-  useEffect(() => {
-    if (router.isReady) {
-      const { network: networkQueryParam, _network: networkPathParam } =
-        router.query;
+  const { network: networkQueryParam, _network: networkPathParam } =
+    router.query;
 
-      const networkIdentifierFromRouter = networkQueryParam ?? networkPathParam; // Query param has priority over path.
+  // # Set network from path on app load.
+  useEffect(() => {
+    if (router.isReady && networkPathParam) {
       const networkFromRouter = tryFindNetwork(
         availableNetworks,
-        networkIdentifierFromRouter
+        networkPathParam
       );
 
       if (networkFromRouter) {
         setNetwork(networkFromRouter);
         stopAutoSwitchToWalletNetwork();
-
-        // Clear away the query param after usage.
-        if (networkQueryParam) {
-          const { network, ...networkQueryParamRemoved } = router.query;
-          router
-            .replace({ query: networkQueryParamRemoved }, undefined, {
-              shallow: true,
-            })
-            .then(() => void stopAutoSwitchToWalletNetwork());
-        }
       }
     }
     // This should only run once or twice on app load.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady]);
+
+  // # Set network from query string.
+  useEffect(() => {
+    if (router.isReady) {
+      const networkFromRouter = tryFindNetwork(
+        availableNetworks,
+        networkQueryParam
+      );
+
+      if (networkFromRouter) {
+        setNetwork(networkFromRouter);
+
+        // Clear away the query param after usage.
+        const { network, ...networkQueryParamRemoved } = router.query;
+        router
+          .replace({ query: networkQueryParamRemoved }, undefined, {
+            shallow: true,
+          })
+          .then(() => void stopAutoSwitchToWalletNetwork());
+      }
+    }
+  }, [router.isReady, networkQueryParam]);
 
   const { chain: activeChain } = useNetwork();
 
