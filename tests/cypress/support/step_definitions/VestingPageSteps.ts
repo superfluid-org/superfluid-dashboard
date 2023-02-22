@@ -112,3 +112,21 @@ Given(/^Vesting schedule progress is mocked to (.*)$/, function (status:string) 
 Then(/^Total stats for the sent vesting schedules are shown correctly$/, function () {
     VestingPage.validateAggregateStats()
 });
+Then(/^Unlock Vesting with Superfluid screen is visible$/, function () {
+    VestingPage.validateNoCodeUnlockScreen()
+});
+Then(/^User tries out vesting on Goerli testnet$/, function () {
+    VestingPage.clickOnTryOnGoerliButton()
+});
+Then(/^User clicks on the input access code button$/, function () {
+    VestingPage.clickInputAccessCodeButton()
+});
+Given(/^Vesting creation form is visible$/, function () {
+    VestingPage.validateVestingFormIsVisible()
+});
+Then(/^The top\-up warning message without cliff is shown$/, function () {
+    VestingPage.validateTopUpMessageWithoutCliff()
+});
+Then(/^The top\-up warning message when cliff is enabled is shown$/, function () {
+    VestingPage.validateTopUpMessageWithCliff()
+});

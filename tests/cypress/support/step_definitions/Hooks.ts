@@ -1,4 +1,4 @@
-import {Before} from "@badeball/cypress-cucumber-preprocessor";
+import {After, Before} from "@badeball/cypress-cucumber-preprocessor";
 
 Before({ tags: "@rejected" }, function () {
     //Don't add rejected cases together with transactional ones , as the before hook will change the env value and it should
@@ -9,6 +9,18 @@ Before({ tags: "@rejected" }, function () {
 });
 
 //Enable hidden vesting feature
-Before({ tags: "@vesting" }, function () {
+Before({ tags: "@vesting and not @NoCode" }, function () {
     Cypress.env("vesting" , true)
+});
+
+Before({ tags: "@workaround" }, function () {
+    Cypress.env("workaround" , true)
+});
+
+After({ tags: "@workaround" }, function () {
+    Cypress.env("workaround" , false)
+});
+
+Before({ tags: "@NoCode" }, function () {
+    Cypress.env("vesting" , false)
 });

@@ -1,4 +1,20 @@
 import { add, Duration } from "date-fns";
+import {
+  endOfDay,
+  endOfHour,
+  endOfMinute,
+  endOfMonth,
+  endOfSecond,
+  endOfWeek,
+  endOfYear,
+  startOfDay,
+  startOfHour,
+  startOfMinute,
+  startOfMonth,
+  startOfSecond,
+  startOfWeek,
+  startOfYear,
+} from "date-fns/fp";
 import { UnitOfTime } from "../features/send/FlowRateInput";
 
 export function getDatesBetween(
@@ -12,7 +28,10 @@ export function getDatesBetween(
 
   while (currentDate < endDate) {
     datesBetween.push(currentDate);
-    currentDate = add(new Date(currentDate), duration);
+    currentDate = getUnitPeriodStart(
+      add(new Date(currentDate), duration),
+      frequency
+    );
   }
 
   datesBetween.push(endDate);
@@ -36,6 +55,25 @@ function getDurationByUnit(unit: UnitOfTime): Duration {
       return { months: 1 };
     case UnitOfTime.Year:
       return { years: 1 };
+  }
+}
+
+function getUnitPeriodStart(date: Date, unit: UnitOfTime): Date {
+  switch (unit) {
+    case UnitOfTime.Second:
+      return startOfSecond(date);
+    case UnitOfTime.Minute:
+      return startOfMinute(date);
+    case UnitOfTime.Hour:
+      return startOfHour(date);
+    case UnitOfTime.Day:
+      return startOfDay(date);
+    case UnitOfTime.Week:
+      return startOfWeek(date);
+    case UnitOfTime.Month:
+      return startOfMonth(date);
+    case UnitOfTime.Year:
+      return startOfYear(date);
   }
 }
 

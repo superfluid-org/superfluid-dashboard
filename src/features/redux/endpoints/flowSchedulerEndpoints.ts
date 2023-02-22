@@ -10,7 +10,6 @@ import {
   TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
 import { getFlowScheduler } from "../../../eth-sdk/getEthSdk";
-import { findNetworkByChainId } from "../../network/networks";
 import { rpcApi } from "../store";
 
 export const ACL_CREATE_PERMISSION = 1;

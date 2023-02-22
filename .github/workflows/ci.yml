@@ -42,6 +42,7 @@ jobs:
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
+          working-directory: tests
           parallel: true
           record: true
           env: TAGS="not @rejected",STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=9793263ec38f85238966c17c809bb96695a80d5693f8fd1132f3cb2292b32a31
@@ -73,6 +74,7 @@ jobs:
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
+          working-directory: tests
           parallel: false
           record: true
           env: network=${{ matrix.network }},TAGS=@rejected,STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=${{ secrets.TX_ACCOUNT_PRIVATE_KEY4 }}

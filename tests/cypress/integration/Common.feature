@@ -9,13 +9,14 @@ Feature: Common element test cases
     And User clicks on the "send" navigation button
     Then Send page is open and the send container is visible
 
+  @workaround
   Scenario: Wallet connection status in the navigation drawer
-    Given "Dashboard Page" is open with a mocked connection to "ongoingStreamAccount" on "polygon"
-    And The navigation drawer shows connect wallet button
-    And User connects their wallet to the dashboard
-    And The navigation drawer shows that "ongoingStreamAccount" is "Connected"
-    And User changes their network to "optimism"
-    And The navigation drawer shows that "ongoingStreamAccount" is "Wrong network"
+    Given "Dashboard Page" is open with "ongoingStreamAccount" connected on "polygon"
+     And The navigation drawer shows that "ongoingStreamAccount" is "Wrong network"
+     #These steps are a workaround to HDWalletProvider,it should be the other way around
+     And User changes their network to "optimism"
+     And User changes their network to "polygon"
+     And The navigation drawer shows that "ongoingStreamAccount" is "Connected"
 
   Scenario: Using access code to see ethereum mainnet
     Given "Dashboard page" is open without connecting a wallet
@@ -40,7 +41,3 @@ Feature: Common element test cases
     And User closes the access code dialog
     And User opens the dashboard network selection dropdown
     Then Ethereum mainnet is not available in the network selection dropdown
-
-  Scenario: Vesting schedule details page not available without vesting code
-    Given "Vesting details page" is open without connecting a wallet
-    Then 404 page is shown

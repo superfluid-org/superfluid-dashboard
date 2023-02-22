@@ -3,7 +3,6 @@ import {
   Stack,
   Paper,
   Typography,
-  IconButton,
   Chip,
   Box,
   useTheme,
@@ -14,7 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FC, useMemo } from "react";
 import NetworkIcon from "../network/NetworkIcon";
-import { Network, networksByChainId } from "../network/networks";
+import { Network, tryFindNetwork, allNetworks } from "../network/networks";
 
 export interface EcosystemApp {
   name: string;
@@ -37,12 +36,12 @@ const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const networks = useMemo(
+  const availableOnNetworks = useMemo(
     () =>
-      app.chains.reduce((allNetworks, chainId) => {
-        const network = networksByChainId.get(chainId);
-        if (!network) return allNetworks;
-        return allNetworks.concat([network]);
+      app.chains.reduce((accumulator, chainId) => {
+        const network = tryFindNetwork(allNetworks, chainId);
+        if (!network) return accumulator;
+        return accumulator.concat([network]);
       }, [] as Array<Network>),
     [app]
   );
@@ -120,12 +119,12 @@ const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
             )}
 
             <Stack direction="row" alignItems="center" sx={{ px: 0.25 }}>
-              {networks.map((network, index) => (
+              {availableOnNetworks.map((network, index) => (
                 <NetworkIcon
                   key={network.id}
                   network={network}
                   size={20}
-                  sx={{ mx: -0.25, zIndex: networks.length - index }}
+                  sx={{ mx: -0.25, zIndex: availableOnNetworks.length - index }}
                 />
               ))}
             </Stack>

@@ -44,6 +44,18 @@
         "operatorPermissions": "Create, Delete",
         "flowAllowance": "0.000000317098"
       }
+    },
+    "StIbAlluoUSD": {
+      "currentAllowances": {
+        "tokenAllowance": "0.003737",
+        "operatorPermissions": "Create, Delete",
+        "flowAllowance": "0"
+      },
+      "recommendedAllowances": {
+        "tokenAllowance": "0",
+        "operatorPermissions": "–",
+        "flowAllowance": "0"
+      }
     }
   },
   "polygon": {

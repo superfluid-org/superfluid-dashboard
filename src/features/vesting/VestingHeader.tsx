@@ -9,11 +9,13 @@ import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 interface VestingHeaderProps extends PropsWithChildren {
   onBack?: () => void;
   actions?: any;
+  hideCreate?: boolean;
 }
 
 const VestingHeader: FC<VestingHeaderProps> = ({
   onBack,
   actions,
+  hideCreate = false,
   children,
 }) => {
   const { address: accountAddress } = useAccount();
@@ -35,7 +37,7 @@ const VestingHeader: FC<VestingHeaderProps> = ({
         {children}
       </Stack>
       <Stack direction="row" alignItems="center" gap={1}>
-        {accountAddress && (
+        {accountAddress && !hideCreate && (
           <NextLink href="/vesting/create" passHref>
             <Button
               data-cy="create-schedule-button"
