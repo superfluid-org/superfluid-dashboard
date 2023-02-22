@@ -9,7 +9,7 @@ Feature: Send Page test cases
     Then Send button is enabled and asks user to Connect their wallet
 
   Scenario: Receiver dialog recents and ENS support
-    Given "Send Page" is open with a mocked connection to "staticBalanceAccount" on "gnosis"
+    Given "Send Page" is open with "staticBalanceAccount" connected on "gnosis"
     And User connects their wallet to the dashboard
     And User changes their network to "polygon"
     And User opens the receiver dialog
@@ -27,7 +27,7 @@ Feature: Send Page test cases
 
   @skip
   Scenario: Super token selection , balances and wrap buttons
-    Given "Send Page" is open with a mocked connection to "staticBalanceAccount" on "gnosis"
+    Given "Send Page" is open with "staticBalanceAccount" connected on "gnosis"
     And User connects their wallet to the dashboard
     And User changes their network to "polygon"
     And User opens the token selection screen
@@ -49,7 +49,7 @@ Feature: Send Page test cases
     Then Token balance is shown correctly in the send stream page without a wrap button next to it
 
   Scenario: Searching for a token in the token selection screen
-    Given "Send Page" is open with a mocked connection to "staticBalanceAccount" on "polygon"
+    Given "Send Page" is open with "staticBalanceAccount" connected on "polygon"
     And User opens the token selection screen
     And User searches for "MATIC" in the select token search field
     Then The "MATIC" is only shown as a token search result
@@ -69,7 +69,7 @@ Feature: Send Page test cases
     Then The stop viewing as an address button is visible
 
   Scenario: Wrong network warnings in the send page
-    Given "Send Page" is open with a mocked connection to "ongoingStreamAccount" on "gnosis"
+    Given "Send Page" is open with "ongoingStreamAccount" connected on "gnosis"
     And User connects their wallet to the dashboard
     And User changes their network to "polygon"
     And User fills all stream inputs "with" a wallet connected

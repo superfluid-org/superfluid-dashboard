@@ -32,9 +32,9 @@ Given(/^User clicks on the connect wallet button$/, () => {
     Common.clickConnectWallet();
 });
 
-Given(/^"([^"]*)" is open with a mocked connection to "([^"]*)" on "([^"]*)"$/,
+Given(/^"([^"]*)" is open with "([^"]*)" connected on "([^"]*)"$/,
     (page: string, account: string, network: string) => {
-        Common.openPage(page, true, account, network);
+        Common.openPage(page,  account, network);
     });
 
 Given(/^User connects their wallet to the dashboard$/, () => {
@@ -97,7 +97,7 @@ Then(/^404 page is shown$/, () => {
     Common.errorPageIsVisible()
 });
 Given(/^Transactional account ([^"]*) is connected to the dashboard on ([^"]*)$/, (persona:string,network: string) => {
-    Common.openDashboardWithConnectedTxAccount(persona,network)
+    Common.openDashboardWithConnectedTxAccount("/",persona,network)
 });
 Given(/^User restores the last transaction$/, () => {
     Common.restoreLastTx()

@@ -9,7 +9,6 @@
     "@badeball/cypress-cucumber-preprocessor": "^15.1.4",
     "@cypress/browserify-preprocessor": "^3.0.2",
     "@cypress/webpack-preprocessor": "^5.17.0",
-    "@rsksmart/mock-web3-provider": "^1.0.0",
     "@truffle/hdwallet-provider": "^2.1.7",
     "@wagmi/chains": "^0.2.8",
     "babel-loader": "^9.1.2",

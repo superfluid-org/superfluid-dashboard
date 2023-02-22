@@ -6,14 +6,14 @@ Feature: Dashboard Page test cases
 
   @broken @skip
   Scenario: Dashboard page showing correct wallet balances for account with no streams
-    Given "Dashboard Page" is open with a mocked connection to "staticBalanceAccount" on "polygon"
+    Given "Dashboard Page" is open with "staticBalanceAccount" connected on "polygon"
     And User connects their wallet to the dashboard
     And Correct "mainnet" wallet balances are shown for the "staticBalanceAccount"
     And User changes the visible networks to "testnet"
     Then Correct "testnet" wallet balances are shown for the "staticBalanceAccount"
 
   Scenario: Enabling and disabling specific networks
-    Given "Dashboard Page" is open with a mocked connection to "staticBalanceAccount" on "polygon"
+    Given "Dashboard Page" is open with "staticBalanceAccount" connected on "polygon"
     And User connects their wallet to the dashboard
     And User waits for balances to load
     And User opens the network selection dropdown
@@ -38,7 +38,7 @@ Feature: Dashboard Page test cases
     Then "polygon-mumbai" balances are not visible
 
   Scenario: Flow values ,cancel buttons and wrong network warning for an account with ongoing streams
-    Given "Dashboard Page" is open with a mocked connection to "ongoingStreamAccount" on "polygon"
+    Given "Dashboard Page" is open with "ongoingStreamAccount" connected on "polygon"
     And User connects their wallet to the dashboard
     And User waits for balances to load
     And User clicks on "gnosis" "xDAIx" row

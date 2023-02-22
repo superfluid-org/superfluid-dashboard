@@ -1,7 +1,5 @@
 import { BasePage } from "../BasePage";
 import { networksBySlug, superfluidRpcUrls } from "../../superData/networks";
-// @ts-ignore
-import { MockProvider } from "@rsksmart/mock-web3-provider";
 import { ethers } from "ethers";
 import HDWalletProvider from "@truffle/hdwallet-provider";
 
@@ -54,7 +52,6 @@ export class Common extends BasePage {
 
   static openPage(
     page: string,
-    mocked: boolean = false,
     account?: string,
     network?: string
   ) {
@@ -62,30 +59,29 @@ export class Common extends BasePage {
       cy.fixture("vestingData").then((vestingData) => {
         switch (page.toLowerCase()) {
           case "dashboard page":
-            this.visitPage(`/`, mocked, account, network);
+            this.visitPage(`/`, account, network);
             break;
           case "wrap page":
-            this.visitPage("/wrap", mocked, account, network);
+            this.visitPage("/wrap", account, network);
             break;
           case "send page":
-            this.visitPage("/send", mocked, account, network);
+            this.visitPage("/send", account, network);
             break;
           case "ecosystem page":
-            this.visitPage("/ecosystem", mocked, account, network);
+            this.visitPage("/ecosystem", account, network);
             break;
           case "address book page":
-            this.visitPage("/address-book", mocked, account, network);
+            this.visitPage("/address-book", account, network);
             break;
           case "activity history page":
-            this.visitPage("/history", mocked, account, network);
+            this.visitPage("/history", account, network);
             break;
           case "bridge page":
-            this.visitPage("/bridge", mocked, account, network);
+            this.visitPage("/bridge", account, network);
             break;
           case "ended stream details page":
             this.visitPage(
               streamData["staticBalanceAccount"]["polygon"][0].v2Link,
-              mocked,
               account,
               network
             );
@@ -93,7 +89,6 @@ export class Common extends BasePage {
           case "ongoing stream details page":
             this.visitPage(
               streamData["ongoingStreamAccount"]["polygon"][0].v2Link,
-              mocked,
               account,
               network
             );
@@ -101,7 +96,6 @@ export class Common extends BasePage {
           case "invalid stream details page":
             this.visitPage(
               "/stream/polygon/testing-testing-testing",
-              mocked,
               account,
               network
             );
@@ -109,7 +103,6 @@ export class Common extends BasePage {
           case "v1 ended stream details page":
             this.visitPage(
               streamData["staticBalanceAccount"]["polygon"][0].v1Link,
-              mocked,
               account,
               network
             );
@@ -117,7 +110,6 @@ export class Common extends BasePage {
           case "close-ended stream details page":
             this.visitPage(
               streamData["accountWithLotsOfData"]["goerli"][0].v2Link,
-              mocked,
               account,
               network
             );
@@ -148,47 +140,38 @@ export class Common extends BasePage {
 
   static visitPage(
     page: string,
-    mocked: boolean = false,
     account?: string,
     network?: string
   ) {
-    let usedAccountPrivateKey =
-      account === "staticBalanceAccount"
-        ? Cypress.env("STATIC_BALANCE_ACCOUNT_PRIVATE_KEY")
-        : Cypress.env("ONGOING_STREAM_ACCOUNT_PRIVATE_KEY");
-    if (mocked && account && network) {
-      cy.fixture("commonData").then((commonData) => {
-        cy.visit(page, {
-          onBeforeLoad: (win) => {
-            win["ethereum"] = new MockProvider({
-              address: commonData[account],
-              privateKey: usedAccountPrivateKey,
-              networkVersion: networksBySlug.get(network)?.id,
-              debug: false,
-              answerEnable: true,
-            });
-          },
-        });
-      });
+    if (account && network) {
+      this.openDashboardWithConnectedTxAccount(page,account,network)
     } else {
       cy.visit(page);
     }
   }
 
-  static openDashboardWithConnectedTxAccount(persona: string, network: string) {
+  static openDashboardWithConnectedTxAccount(page : string, persona: string, network: string) {
+    let usedAccountPrivateKey;
+    let personas = ["alice", "bob", "dan", "john"];
     let selectedNetwork =
       network === "selected network" ? Cypress.env("network") : network;
-    let personas = ["alice", "bob", "dan", "john"];
-    let chosenPersona = personas.findIndex((el) => el === persona) + 1;
+    if(personas.includes(persona)) {
+      let chosenPersona = personas.findIndex((el) => el === persona) + 1;
+      usedAccountPrivateKey = Cypress.env(`TX_ACCOUNT_PRIVATE_KEY${chosenPersona}`)
+    } else {
+      usedAccountPrivateKey = persona === "staticBalanceAccount"
+          ? Cypress.env("STATIC_BALANCE_ACCOUNT_PRIVATE_KEY")
+          : Cypress.env("ONGOING_STREAM_ACCOUNT_PRIVATE_KEY");
+    }
 
     let chainId = networksBySlug.get(selectedNetwork)?.id;
 
     let networkRpc = networksBySlug.get(selectedNetwork)?.superfluidRpcUrl;
 
-    cy.visit(`/`, {
+    cy.visit(page, {
       onBeforeLoad: (win: any) => {
         const hdwallet = new HDWalletProvider({
-          privateKeys: [Cypress.env(`TX_ACCOUNT_PRIVATE_KEY${chosenPersona}`)],
+          privateKeys: [usedAccountPrivateKey],
           url: networkRpc,
           chainId: chainId,
           pollingInterval: 1000,
