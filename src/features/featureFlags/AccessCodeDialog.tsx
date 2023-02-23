@@ -51,6 +51,17 @@ const AccessCodeDialog: FC<AccessCodeDialogProps> = ({
   const submitCode = () => {
     const enableMainnet = MAINNET_FEATURE_CODES.includes(featureCode);
     const enableVesting = VESTING_FEATURE_CODES.includes(featureCode);
+    const isValidAccessCode = enableMainnet || enableVesting;
+
+    if (isValidAccessCode) {
+      track("Valid Access Code Entered", {
+        code: featureCode,
+      });
+    } else {
+      track("Invalid Access Code Entered", {
+        code: featureCode,
+      });
+    }
 
     if (enableMainnet) {
       dispatch(enableMainnetFeature());
@@ -61,17 +72,11 @@ const AccessCodeDialog: FC<AccessCodeDialogProps> = ({
       router.push("/vesting");
     }
 
-    if (enableMainnet || enableVesting) {
-      track("Valid Access Code Entered", {
-        code: featureCode,
-      });
+    if (isValidAccessCode) {
       return onClose();
+    } else {
+      setIsInvalidCode(true);
     }
-
-    track("Invalid Access Code Entered", {
-      code: featureCode,
-    });
-    setIsInvalidCode(true);
   };
 
   return (
