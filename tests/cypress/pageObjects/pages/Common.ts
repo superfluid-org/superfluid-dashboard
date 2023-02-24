@@ -199,7 +199,7 @@ export class Common extends BasePage {
     if (selectedNetwork === "ethereum") {
       this.click(NAVIGATION_MORE_BUTTON);
       this.click(ACCESS_CODE_BUTTON);
-      this.type(ACCESS_CODE_INPUT, "724ZX_ENS");
+      this.type(ACCESS_CODE_INPUT, "AHR2_MAINNET");
       this.click(ACCESS_CODE_SUBMIT);
     }
     if (Cypress.env("vesting")) {
