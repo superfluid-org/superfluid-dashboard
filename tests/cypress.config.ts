@@ -74,6 +74,7 @@ export default defineConfig({
     viewportWidth: 1450,
     defaultCommandTimeout: 10000,
     slowTestThreshold: 30000,
+    chromeWebSecurity: false,
     video: false,
     retries: {
       runMode: 2,

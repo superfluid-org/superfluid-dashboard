@@ -42,6 +42,7 @@ jobs:
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
+          browser: chrome
           working-directory: tests
           parallel: true
           record: true
@@ -74,6 +75,7 @@ jobs:
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
+          browser: chrome
           working-directory: tests
           parallel: false
           record: true
