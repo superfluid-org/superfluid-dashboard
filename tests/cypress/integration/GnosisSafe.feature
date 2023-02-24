@@ -1,3 +1,4 @@
+@Gnosis
 Feature: Gnosis safe test cases
 
   Scenario Outline: Gnosis safe connecting to dashboard on <network>
