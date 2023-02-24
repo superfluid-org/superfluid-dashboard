@@ -26,7 +26,8 @@
   },
   "cypress-cucumber-preprocessor": {
     "nonGlobalStepDefinitions": false,
-    "omitFiltered": true
+    "omitFiltered": true,
+    "filterSpecs": true
   },
   "devDependencies": {
     "cypress-iframe": "^1.0.1"
