@@ -28,9 +28,11 @@ export const VESTING_FEATURE_CODES = [
   "V754_Seliqui",
   "V910_Bertrand",
   "162VM_Aragon",
+  "7L5G_Ricochet",
 ];
 
 export const MAINNET_FEATURE_CODES = [
+  "AHR2_MAINNET",
   "724ZX_ENS",
   "462T_MINERVA",
   "916G_TOKENOPS",
