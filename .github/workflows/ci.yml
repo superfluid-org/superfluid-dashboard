@@ -42,7 +42,6 @@ jobs:
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
-          ci-build-id: 'test'
           working-directory: tests
           parallel: true
           record: true
@@ -75,7 +74,6 @@ jobs:
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
-          ci-build-id: 'test'
           working-directory: tests
           parallel: false
           record: true
@@ -111,7 +109,6 @@ jobs:
           record: true
           config: chromeWebSecurity=false
           env: TAGS=@Gnosis
-          ci-build-id: 'test'
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
           CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
