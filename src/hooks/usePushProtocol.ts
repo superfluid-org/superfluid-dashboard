@@ -21,12 +21,9 @@ export const usePushProtocol = () => {
   const { chain } = useNetwork();
   const { switchNetworkAsync } = useSwitchNetwork();
 
-  const { data: notifications } = pushApi.endpoints.getNotifications.useQuery(
-    address!
-  );
-
+  const { data: notifications } = pushApi.useGetNotificationsQuery(address!);
   const { data: isSubscribed, refetch: refetchIsSubscribed } =
-    pushApi.endpoints.isSubscribed.useQuery(address!);
+    pushApi.useIsSubscribedQuery();
 
   const toggleSubscribe = useCallback(async () => {
     const originalChainId = chain?.id;
