@@ -17,6 +17,18 @@ const GNOSIS_SAFE_WALLET_OPTION = "[data-testid=rk-wallet-option-gnosis-safe]"
 const SUPERFLUID_IFRAME = 'iframe[title="Superfluid Dashboard"]'
 const LOADING_SPINNER = ".MuiCircularProgress-root"
 const GNOSIS_WARNING_CHECKBOX = ".PrivateSwitchBase-input"
+const CUSTOM_APP_URL_FIELD = "input[name=appUrl]"
+const CUSTOM_APP_TITLE = "[class*=customAppContainer] h2"
+const CUSTOM_APP_DESCRIPTION = "[class*=customAppContainer] p"
+const CUSTOM_APP_ERROR_ELEMENT = "[class*=customAppPlaceholderContainer]"
+const CUSTOM_APP_WARNING_CHECKBOX = "input[name=riskAcknowledgement]"
+const CUSTOM_APP_ADD_BUTTON = "[role=dialog] [type=submit]"
+const ADDED_CUSTOM_APP_TITLE = "[class*=safeAppsContainer] a[rel=noreferrer] div h5"
+const ADDED_CUSTOM_APP_DESCRIPTION = "[class*=safeAppsContainer] a[rel=noreferrer] div p"
+//Strings
+const APP_TITLE = "Superfluid Dashboard"
+const APP_DESCRIPTION = "Manage your Superfluid Protocol tokens"
+const GNOSIS_SAFE_BASEURL = "https://app.safe.global/"
 
 const GnosisSafePrefixByNetworkSlug = {
     "gnosis": "gno:",
@@ -43,7 +55,7 @@ const GnosisSafeAddressesPerNetwork = {
 export class GnosisSafe extends BasePage {
     static openSafeOnNetwork(network: string) {
         cy.wrap(network).as("selectedNetwork")
-        cy.visit(`https://app.safe.global/${GnosisSafePrefixByNetworkSlug[network]}${GnosisSafeAddressesPerNetwork[network]}/apps?appUrl=${Cypress.config("baseUrl")}`)
+        cy.visit(`${GNOSIS_SAFE_BASEURL}${GnosisSafePrefixByNetworkSlug[network]}${GnosisSafeAddressesPerNetwork[network]}/apps?appUrl=${Cypress.config("baseUrl")}`)
 
     }
 
@@ -87,5 +99,29 @@ export class GnosisSafe extends BasePage {
             getBody().find(WALLET_CONNECTION_STATUS).should("have.text", "Connected")
             getBody().find(TOP_BAR_NETWORK_BUTTON).should("contain.text", networksBySlug.get(network).name)
         })
+    }
+
+    static openCustomAppPage(network) {
+        cy.visit(`${GNOSIS_SAFE_BASEURL}${GnosisSafePrefixByNetworkSlug[network]}${GnosisSafeAddressesPerNetwork[network]}/apps/custom`)
+        Cypress.config("baseUrl","https://app.superfluid.finance")
+        cy.get(GNOSIS_BUTTONS).contains("Accept all").click()
+    }
+
+    static addCustomSuperfluidApp() {
+        cy.get(GNOSIS_BUTTONS).contains("Add custom app").click()
+        cy.get(CUSTOM_APP_URL_FIELD).type(Cypress.config("baseUrl"))
+    }
+
+    static validateSuperfluidManifestAndAddApp() {
+        this.doesNotExist(CUSTOM_APP_ERROR_ELEMENT)
+        this.hasText(CUSTOM_APP_TITLE,APP_TITLE)
+        this.hasText(CUSTOM_APP_DESCRIPTION,APP_DESCRIPTION)
+        this.click(CUSTOM_APP_WARNING_CHECKBOX)
+        this.click(CUSTOM_APP_ADD_BUTTON)
+    }
+
+    static validateCustomAppExistsInGnosisSafe() {
+        this.hasText(ADDED_CUSTOM_APP_TITLE , APP_TITLE)
+        this.hasText(ADDED_CUSTOM_APP_DESCRIPTION,APP_DESCRIPTION)
     }
 }
