@@ -98,20 +98,20 @@
     "ongoingStreamsAccount": {
       "tokenValues": {
         "token": "xDAIx",
-        "netFlowRate": "-0.01/mo",
-        "inFlow": "+0.01/mo",
+        "netFlowRate": "-0.02/mo",
+        "inFlow": "+0/mo",
         "outFlow": "-0.02/mo",
         "tokenAddress": "0x59988e47a3503aafaa0368b9def095c818fdca01",
         "streams": [
           {
-            "fromTo": "0xcb86...42D8",
-            "flowRate": "+0.01/mo",
-            "endDate": "2 Jul. 2021"
-          },
-          {
             "fromTo": "0x618a...DE40",
             "flowRate": "-0.02/mo",
             "endDate": "2 Jul. 2021"
+          },
+          {
+            "fromTo": "0xcb86...42D8",
+            "flowRate": "-",
+            "endDate": "2 Jul. 202122 Feb. 2023"
           }
         ]
       }

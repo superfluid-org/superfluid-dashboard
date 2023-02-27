@@ -29,7 +29,7 @@ if (!IsCypress && SENTRY_DSN) {
       return breadcrumb;
     },
     async beforeSend(event, hint) {
-      let eventModified = event;
+      let eventModified = event as SentryEvent;
 
       for (const callback of beforeSendCallbacks) {
         eventModified = (await callback(eventModified, hint)) ?? eventModified;

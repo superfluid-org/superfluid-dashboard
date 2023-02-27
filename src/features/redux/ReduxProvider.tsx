@@ -1,9 +1,4 @@
-import { Framework } from "@superfluid-finance/sdk-core";
-import {
-  initiateOldPendingTransactionsTrackingThunk,
-  setFrameworkForSdkRedux,
-} from "@superfluid-finance/sdk-redux";
-import promiseRetry from "promise-retry";
+import { initiateOldPendingTransactionsTrackingThunk, setFrameworkForSdkRedux } from "@superfluid-finance/sdk-redux";
 import { FC, PropsWithChildren, useCallback, useEffect } from "react";
 import { Provider } from "react-redux";
 import { useAccount, useSigner } from "wagmi";
@@ -11,24 +6,20 @@ import { parseV1AddressBookEntries } from "../../utils/addressBookUtils";
 import { parseV1CustomTokens } from "../../utils/customTokenUtils";
 import { addAddressBookEntries } from "../addressBook/addressBook.slice";
 import { addCustomTokens } from "../customTokens/customTokens.slice";
-import { allNetworks, tryFindNetwork } from "../network/networks";
+import { allNetworks } from "../network/networks";
 import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import { reduxStore, useAppDispatch } from "./store";
 import { useVestingTransactionTracking } from "./UseVestingTransactionTracking";
+
+// Initialize SDK-core Frameworks for SDK-redux.
+readOnlyFrameworks.forEach(
+  (x) => void setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
+);
 
 const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
   const { connector: activeConnector } = useAccount();
   const { data: signer } = useSigner();
   const dispatch = useAppDispatch();
-
-  const initializeReadonlyFrameworks = useCallback(
-    () =>
-      // TODO(KK): Use wagmi's providers. Wagmi might be better at creating providers and then we don't create double providers.
-      readOnlyFrameworks.forEach((x) =>
-        setFrameworkForSdkRedux(x.chainId, x.frameworkGetter)
-      ),
-    []
-  );
 
   /**
    * TODO: We might want to remove importV1AddressBook and importV1CustomTokens in the future.
@@ -66,39 +57,13 @@ const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
   }, [dispatch]);
 
   useEffect(() => {
-    initializeReadonlyFrameworks();
     importV1AddressBook();
     importV1CustomTokens();
-  }, [initializeReadonlyFrameworks, importV1AddressBook, importV1CustomTokens]);
+  }, [importV1AddressBook, importV1CustomTokens]);
 
   useEffect(() => {
     // TODO(KK): There is a weird state in wagmi on full refreshes where signer is present but not the connector.
     if (signer && activeConnector) {
-      initializeReadonlyFrameworks(); // Re-initialize to override the old signer framework if it was present.
-
-      signer.getChainId().then((chainId) => {
-        const network = tryFindNetwork(allNetworks, chainId);
-        if (network) {
-          setFrameworkForSdkRedux(chainId, () =>
-            promiseRetry<Framework>(
-              (retry) =>
-                Framework.create({
-                  chainId: chainId,
-                  provider: signer as any,
-                  ...(network
-                    ? { customSubgraphQueriesEndpoint: network.subgraphUrl }
-                    : {}),
-                }).catch(retry),
-              {
-                minTimeout: 500,
-                maxTimeout: 2000,
-                retries: 10,
-              }
-            )
-          );
-        }
-      });
-
       signer.getAddress().then((address) => {
         dispatch(
           initiateOldPendingTransactionsTrackingThunk({
