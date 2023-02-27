@@ -41,6 +41,7 @@ import { flagsSlice } from "../flags/flags.slice";
 import gasApi from "../gas/gasApi.slice";
 import { impersonationSlice } from "../impersonation/impersonation.slice";
 import { networkPreferencesSlice } from "../network/networkPreferences.slice";
+import { pushApi, pushApiEndpoints } from "../notifications/pushApi.slice";
 import { pendingUpdateSlice } from "../pendingUpdates/pendingUpdate.slice";
 import appSettingsReducer from "../settings/appSettings.slice";
 import { assetApiSlice } from "../token/tokenManifestSlice";
@@ -179,6 +180,7 @@ export const reduxStore = configureStore({
     [tokenPriceApi.reducerPath]: tokenPriceApi.reducer,
     [accountingApi.reducerPath]: accountingApi.reducer,
     [vestingSubgraphApi.reducerPath]: vestingSubgraphApi.reducer,
+    [pushApi.reducerPath]: pushApi.reducer,
 
     // Persisted slices
     appSettings: appSettingsPersistedReducer,
@@ -214,7 +216,8 @@ export const reduxStore = configureStore({
       .concat(platformApi.middleware)
       .concat(faucetApi.middleware)
       .concat(tokenPriceApi.middleware)
-      .concat(accountingApi.middleware),
+      .concat(accountingApi.middleware)
+      .concat(pushApi.middleware),
 });
 
 export const reduxPersistor = persistStore(reduxStore);

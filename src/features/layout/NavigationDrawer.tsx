@@ -6,6 +6,7 @@ import ControlPointDuplicateOutlinedIcon from "@mui/icons-material/ControlPointD
 import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
 import LockClockRoundedIcon from "@mui/icons-material/LockClockRounded";
 import LooksRoundedIcon from "@mui/icons-material/LooksRounded";
+import SettingsIcon from "@mui/icons-material/Settings";
 import {
   Box,
   List,
@@ -23,6 +24,7 @@ import Image from "next/image";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { FC, memo, useCallback } from "react";
+import { useAccount } from "wagmi";
 import Link from "../common/Link";
 import AppSettingsBtn from "../settings/AppSettingsBtn";
 import ConnectWallet from "../wallet/ConnectWallet";
@@ -219,6 +221,14 @@ export default memo(function NavigationDrawer() {
           )}
           icon={LockClockRoundedIcon}
         />
+        <NavigationItem
+          id="nav-settings"
+          title="Settings"
+          href="/settings"
+          onClick={closeNavigationDrawer}
+          active={isActiveRoute("/settings")}
+          icon={SettingsIcon}
+        />
       </Stack>
 
       <Stack justifyContent="flex-end" sx={{ flex: 1 }}>
@@ -227,7 +237,6 @@ export default memo(function NavigationDrawer() {
           gap={1}
         >
           <MoreNavigationItem />
-          <AppSettingsBtn />
         </Stack>
       </Stack>
     </SwipeableDrawer>
