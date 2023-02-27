@@ -10,8 +10,8 @@ Given(/^Dashboard page is visible in the gnosis app$/, function () {
     GnosisSafe.validateThatDashboardLoaded()
 });
 Given(/^User connects their wallet in the gnosis app$/, function () {
-
+    GnosisSafe.connectGnosisSafeWallet()
 });
-Then(/^The correct wallet is connected to the gnosis app$/, function () {
-
+Then(/^The correct wallet is connected to the gnosis app on "([^"]*)"$/, function (network:string) {
+    GnosisSafe.validateCorrectlyConnectedWallet(network)
 });
