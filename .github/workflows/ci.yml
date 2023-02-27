@@ -43,7 +43,6 @@ jobs:
         uses: cypress-io/github-action@v4
         with:
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
-          browser: chrome
           working-directory: tests
           parallel: true
           record: true
@@ -77,7 +76,6 @@ jobs:
         uses: cypress-io/github-action@v4
         with:
           ci-build-id: '${{ github.sha }}-${{ github.workflow }}-${{ github.event_name }}'
-          browser: chrome
           working-directory: tests
           parallel: false
           record: true
