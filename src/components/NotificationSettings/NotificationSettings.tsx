@@ -116,7 +116,7 @@ const NotificationSettings: FC = () => {
                 checked={channel.isSubscribed}
               />
             }
-            label="Push Protocol"
+            label={channel.name}
           />
         ))}
       </Stack>
