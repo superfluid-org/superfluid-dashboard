@@ -12,6 +12,7 @@ import {
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import {
   listenerMiddleware,
+  RootState,
   transactionTracker,
 } from "../../features/redux/store";
 import config from "../../utils/config";
@@ -19,6 +20,7 @@ import { IsCypress, SSR } from "../../utils/SSRUtils";
 import { useAccount, useNetwork } from "wagmi";
 import { supportId } from "../../features/analytics/useAppInstanceDetails";
 import { useAnalytics } from "../../features/analytics/useAnalytics";
+import { transactionTrackerSelectors } from "@superfluid-finance/sdk-redux";
 
 const SENTRY_WALLET_CONTEXT = "Connected Wallet";
 const SENTRY_WALLET_TAG = "wallet";
@@ -53,9 +55,22 @@ const MonitorContext: FC = () => {
     () =>
       listenerMiddleware.startListening({
         actionCreator: transactionTracker.actions.updateTransaction,
-        effect: ({ payload }) => {
+        effect: ({ payload }, { getState }) => {
+          const state = getState() as RootState;
           if (payload.changes.status) {
-            track(`Transaction Marked ${payload.changes.status}`); // Succeeded, Failure, Unknown etc
+            const trackedTransaction = transactionTrackerSelectors.selectById(
+              state,
+              payload.id
+            );
+            track(
+              `Transaction Marked ${payload.changes.status}`,
+              trackedTransaction
+                ? {
+                    chainId: trackedTransaction.chainId,
+                    transactionHash: trackedTransaction.hash,
+                  }
+                : {}
+            ); // Succeeded, Failure, Unknown etc
           }
         },
       }),
@@ -132,8 +147,6 @@ const MonitorContext: FC = () => {
                 support_id: supportId,
               });
               resolve();
-            } else {
-              reject("Couldn't set visitor ID.");
             }
           }).catch(retry),
         {
