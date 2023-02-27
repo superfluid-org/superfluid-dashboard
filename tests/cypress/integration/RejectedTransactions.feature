@@ -1,4 +1,4 @@
-@rejected @numTestsKeptInMemory(0)
+@ignoreDuringUI @rejected @numTestsKeptInMemory(0)
 Feature:Transactional rejected test cases
 
   Scenario: Creating a new stream on selected network
