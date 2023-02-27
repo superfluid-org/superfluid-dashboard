@@ -23,7 +23,7 @@ export const usePushProtocol = () => {
 
   const { data: notifications } = pushApi.useGetNotificationsQuery(address!);
   const { data: isSubscribed, refetch: refetchIsSubscribed } =
-    pushApi.useIsSubscribedQuery();
+    pushApi.useIsSubscribedQuery(address!);
 
   const toggleSubscribe = useCallback(async () => {
     const originalChainId = chain?.id;
@@ -40,10 +40,6 @@ export const usePushProtocol = () => {
       });
 
       await refetchIsSubscribed();
-
-      if (originalChainId !== 1 && switchNetworkAsync) {
-        await switchNetworkAsync(originalChainId);
-      }
     }
   }, [chain, address, isSubscribed]);
 
