@@ -27,6 +27,7 @@ import { FC, memo, useCallback } from "react";
 import { useAccount } from "wagmi";
 import Link from "../common/Link";
 import AppSettingsBtn from "../settings/AppSettingsBtn";
+import ThemeChanger from "../theme/ThemeChanger";
 import ConnectWallet from "../wallet/ConnectWallet";
 import { useLayoutContext } from "./LayoutContext";
 import MoreNavigationItem from "./MoreNavigationItem";
@@ -236,6 +237,7 @@ export default memo(function NavigationDrawer() {
           sx={{ my: 2, px: 2, color: theme.palette.text.secondary }}
           gap={1}
         >
+          <ThemeChanger />
           <MoreNavigationItem />
         </Stack>
       </Stack>
