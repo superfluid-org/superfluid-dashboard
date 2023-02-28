@@ -4,6 +4,10 @@ import { getSerializeQueryArgs } from "@superfluid-finance/sdk-redux";
 import { allNetworks, tryFindNetwork } from "../features/network/networks";
 import {
   getBuiltGraphSDK,
+  GetCreateTasksQuery,
+  GetCreateTasksQueryVariables,
+  GetDeleteTasksQuery,
+  GetDeleteTasksQueryVariables,
   GetTasksQuery,
   GetTasksQueryVariables,
   PollQuery,
@@ -38,6 +42,50 @@ export const schedulingSubgraphApi = createApi({
         return {
           data: {
             tasks: subgraphTasks,
+          },
+        };
+      },
+      providesTags: (_result, _error, arg) => [
+        {
+          type: "GENERAL",
+          id: arg.chainId,
+        },
+      ],
+    }),
+    getCreateTasks: build.query<
+      GetCreateTasksQuery,
+      { chainId: number } & GetCreateTasksQueryVariables
+    >({
+      queryFn: async ({ chainId, ...variables }) => {
+        const sdk = tryGetBuiltGraphSdkForNetwork(chainId);
+        const createTasks = sdk
+          ? (await sdk.getCreateTasks(variables)).createTasks
+          : [];
+        return {
+          data: {
+            createTasks,
+          },
+        };
+      },
+      providesTags: (_result, _error, arg) => [
+        {
+          type: "GENERAL",
+          id: arg.chainId,
+        },
+      ],
+    }),
+    getDeleteTasks: build.query<
+      GetDeleteTasksQuery,
+      { chainId: number } & GetDeleteTasksQueryVariables
+    >({
+      queryFn: async ({ chainId, ...variables }) => {
+        const sdk = tryGetBuiltGraphSdkForNetwork(chainId);
+        const deleteTasks = sdk
+          ? (await sdk.getDeleteTasks(variables)).deleteTasks
+          : [];
+        return {
+          data: {
+            deleteTasks,
           },
         };
       },

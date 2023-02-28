@@ -1725,7 +1725,27 @@ export type TokenSenderReceiverCursor_Filter = {
 export type TokenSenderReceiverCursor_OrderBy =
   | 'id'
   | 'currentCreateFlowTask'
-  | 'currentDeleteFlowTask';
+  | 'currentCreateFlowTask__id'
+  | 'currentCreateFlowTask__executedAt'
+  | 'currentCreateFlowTask__executionAt'
+  | 'currentCreateFlowTask__expirationAt'
+  | 'currentCreateFlowTask__cancelledAt'
+  | 'currentCreateFlowTask__superToken'
+  | 'currentCreateFlowTask__sender'
+  | 'currentCreateFlowTask__receiver'
+  | 'currentCreateFlowTask__startDate'
+  | 'currentCreateFlowTask__startDateMaxDelay'
+  | 'currentCreateFlowTask__startAmount'
+  | 'currentCreateFlowTask__flowRate'
+  | 'currentDeleteFlowTask'
+  | 'currentDeleteFlowTask__id'
+  | 'currentDeleteFlowTask__executedAt'
+  | 'currentDeleteFlowTask__executionAt'
+  | 'currentDeleteFlowTask__expirationAt'
+  | 'currentDeleteFlowTask__cancelledAt'
+  | 'currentDeleteFlowTask__superToken'
+  | 'currentDeleteFlowTask__sender'
+  | 'currentDeleteFlowTask__receiver';
 
 export type _Block_ = {
   /** The hash of the block */
@@ -2261,6 +2281,18 @@ const merger = new(BareMerger as any)({
           return printWithCache(GetTasksDocument);
         },
         location: 'GetTasksDocument.graphql'
+      },{
+        document: GetCreateTasksDocument,
+        get rawSDL() {
+          return printWithCache(GetCreateTasksDocument);
+        },
+        location: 'GetCreateTasksDocument.graphql'
+      },{
+        document: GetDeleteTasksDocument,
+        get rawSDL() {
+          return printWithCache(GetDeleteTasksDocument);
+        },
+        location: 'GetDeleteTasksDocument.graphql'
       }
     ];
     },
@@ -2321,6 +2353,24 @@ export type GetTasksQuery = { tasks: Array<(
     & Pick<DeleteTask, 'id' | 'cancelledAt' | 'executedAt' | 'executionAt' | 'expirationAt' | 'receiver' | 'sender' | 'superToken'>
   )> };
 
+export type GetCreateTasksQueryVariables = Exact<{
+  where?: InputMaybe<CreateTask_Filter>;
+  orderBy?: InputMaybe<CreateTask_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+}>;
+
+
+export type GetCreateTasksQuery = { createTasks: Array<Pick<CreateTask, 'superToken' | 'startDateMaxDelay' | 'startDate' | 'startAmount' | 'sender' | 'receiver' | 'id' | 'flowRate' | 'expirationAt' | 'executionAt' | 'executedAt' | 'cancelledAt'>> };
+
+export type GetDeleteTasksQueryVariables = Exact<{
+  where?: InputMaybe<DeleteTask_Filter>;
+  orderBy?: InputMaybe<DeleteTask_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+}>;
+
+
+export type GetDeleteTasksQuery = { deleteTasks: Array<Pick<DeleteTask, 'id' | 'cancelledAt' | 'executedAt' | 'executionAt' | 'expirationAt' | 'receiver' | 'sender' | 'superToken'>> };
+
 
 export const PollDocument = gql`
     query poll($block: Block_height!) {
@@ -2365,6 +2415,54 @@ export const GetTasksDocument = gql`
   }
 }
     ` as unknown as DocumentNode<GetTasksQuery, GetTasksQueryVariables>;
+export const GetCreateTasksDocument = gql`
+    query getCreateTasks($where: CreateTask_filter = {}, $orderBy: CreateTask_orderBy = id, $orderDirection: OrderDirection = asc) {
+  createTasks(
+    first: 1000
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+    where: $where
+  ) {
+    ... on CreateTask {
+      superToken
+      startDateMaxDelay
+      startDate
+      startAmount
+      sender
+      receiver
+      id
+      flowRate
+      expirationAt
+      executionAt
+      executedAt
+      cancelledAt
+    }
+  }
+}
+    ` as unknown as DocumentNode<GetCreateTasksQuery, GetCreateTasksQueryVariables>;
+export const GetDeleteTasksDocument = gql`
+    query getDeleteTasks($where: DeleteTask_filter = {}, $orderBy: DeleteTask_orderBy = id, $orderDirection: OrderDirection = asc) {
+  deleteTasks(
+    first: 1000
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+    where: $where
+  ) {
+    ... on DeleteTask {
+      id
+      cancelledAt
+      executedAt
+      executionAt
+      expirationAt
+      receiver
+      sender
+      superToken
+    }
+  }
+}
+    ` as unknown as DocumentNode<GetDeleteTasksQuery, GetDeleteTasksQueryVariables>;
+
+
 
 
 
@@ -2376,6 +2474,12 @@ export function getSdk<C, E>(requester: Requester<C, E>) {
     },
     getTasks(variables?: GetTasksQueryVariables, options?: C): Promise<GetTasksQuery> {
       return requester<GetTasksQuery, GetTasksQueryVariables>(GetTasksDocument, variables, options) as Promise<GetTasksQuery>;
+    },
+    getCreateTasks(variables?: GetCreateTasksQueryVariables, options?: C): Promise<GetCreateTasksQuery> {
+      return requester<GetCreateTasksQuery, GetCreateTasksQueryVariables>(GetCreateTasksDocument, variables, options) as Promise<GetCreateTasksQuery>;
+    },
+    getDeleteTasks(variables?: GetDeleteTasksQueryVariables, options?: C): Promise<GetDeleteTasksQuery> {
+      return requester<GetDeleteTasksQuery, GetDeleteTasksQueryVariables>(GetDeleteTasksDocument, variables, options) as Promise<GetDeleteTasksQuery>;
     }
   };
 }

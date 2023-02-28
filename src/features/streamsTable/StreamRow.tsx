@@ -16,12 +16,13 @@ import {
   useTheme,
 } from "@mui/material";
 import { Stream } from "@superfluid-finance/sdk-core";
-import { format } from "date-fns";
+import { format, isAfter } from "date-fns";
 import { BigNumber } from "ethers";
 import { useRouter } from "next/router";
-import { FC, memo } from "react";
+import { FC, memo, useMemo } from "react";
 import AddressName from "../../components/AddressName/AddressName";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
+import { ScheduledStream } from "../../hooks/streamSchedulingHooks";
 import { getStreamPagePath } from "../../pages/stream/[_network]/[_stream]";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { Network } from "../network/networks";
@@ -86,7 +87,7 @@ export const StreamRowLoading = () => {
 };
 
 interface StreamRowProps {
-  stream: (Stream | PendingOutgoingStream) & StreamScheduling;
+  stream: (Stream | PendingOutgoingStream | ScheduledStream) & StreamScheduling;
   network: Network;
 }
 
@@ -98,6 +99,8 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
     currentFlowRate,
     streamedUntilUpdatedAt,
     updatedAtTimestamp,
+    startDateScheduled,
+    endDateScheduled,
   } = stream;
 
   const theme = useTheme();
@@ -118,9 +121,11 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
   const isOutgoing = visibleAddress?.toLowerCase() === sender.toLowerCase();
 
   const isPending = !!(stream as PendingOutgoingStream).pendingType;
+
   const isPendingAndWaitingForSubgraph = !!(stream as PendingOutgoingStream)
     .hasTransactionSucceeded;
-  const isActive = !isPending && currentFlowRate !== "0";
+
+  const isActive = !isPending && !startDateScheduled && currentFlowRate !== "0";
 
   const tableCellProps: Partial<TableCellProps> = isPending
     ? {}
@@ -152,14 +157,16 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
             <Typography variant="h7mono">
               <FlowingBalance
                 balance={streamedUntilUpdatedAt}
-                flowRate={isPending ? "0" : currentFlowRate}
+                flowRate={
+                  isPending || !!startDateScheduled ? "0" : currentFlowRate
+                }
                 balanceTimestamp={updatedAtTimestamp}
                 disableRoundingIndicator
               />
             </Typography>
           </TableCell>
           <TableCell {...tableCellProps}>
-            {isActive || isPending ? (
+            {isActive || isPending || startDateScheduled ? (
               <Typography data-cy={"flow-rate"} variant="body2mono">
                 {isOutgoing ? "-" : "+"}
                 <Amount
@@ -173,23 +180,21 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
           </TableCell>
           <TableCell {...tableCellProps} sx={{ px: 1, ...tableCellProps.sx }}>
             {/* // TODO(KK): Tooltips? */}
-            {isActive ? (
-              stream.endDate ? (
-                <TimerOutlined sx={{ display: "block" }} />
-              ) : (
-                <AllInclusiveIcon sx={{ display: "block" }} />
-              )
+            {!!startDateScheduled || !!endDateScheduled ? (
+              <TimerOutlined sx={{ display: "block" }} />
+            ) : isActive ? (
+              <AllInclusiveIcon sx={{ display: "block" }} />
             ) : null}
           </TableCell>
           <TableCell {...tableCellProps} sx={{ pl: 1, ...tableCellProps.sx }}>
             <Stack data-cy={"start-end-date"}>
               <Box>
                 {stream.startDate &&
-                  format(stream.startDate.getTime(), "d MMM. yyyy")}
+                  format(stream.startDate.getTime(), "d MMM. yyyy HH:mm")}
               </Box>
               <Box>
                 {stream.endDate &&
-                  format(stream.endDate.getTime(), "d MMM. yyyy")}
+                  format(stream.endDate.getTime(), "d MMM. yyyy HH:mm")}
               </Box>
             </Stack>
           </TableCell>
@@ -206,7 +211,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
               />
             }
             secondary={
-              isActive || isPending ? (
+              isActive || isPending || !!startDateScheduled ? (
                 <>
                   {isOutgoing ? "-" : "+"}
                   <Amount

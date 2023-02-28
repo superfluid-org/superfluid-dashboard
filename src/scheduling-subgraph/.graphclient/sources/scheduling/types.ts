@@ -1704,7 +1704,27 @@ export type TokenSenderReceiverCursor_filter = {
 export type TokenSenderReceiverCursor_orderBy =
   | 'id'
   | 'currentCreateFlowTask'
-  | 'currentDeleteFlowTask';
+  | 'currentCreateFlowTask__id'
+  | 'currentCreateFlowTask__executedAt'
+  | 'currentCreateFlowTask__executionAt'
+  | 'currentCreateFlowTask__expirationAt'
+  | 'currentCreateFlowTask__cancelledAt'
+  | 'currentCreateFlowTask__superToken'
+  | 'currentCreateFlowTask__sender'
+  | 'currentCreateFlowTask__receiver'
+  | 'currentCreateFlowTask__startDate'
+  | 'currentCreateFlowTask__startDateMaxDelay'
+  | 'currentCreateFlowTask__startAmount'
+  | 'currentCreateFlowTask__flowRate'
+  | 'currentDeleteFlowTask'
+  | 'currentDeleteFlowTask__id'
+  | 'currentDeleteFlowTask__executedAt'
+  | 'currentDeleteFlowTask__executionAt'
+  | 'currentDeleteFlowTask__expirationAt'
+  | 'currentDeleteFlowTask__cancelledAt'
+  | 'currentDeleteFlowTask__superToken'
+  | 'currentDeleteFlowTask__sender'
+  | 'currentDeleteFlowTask__receiver';
 
 export type _Block_ = {
   /** The hash of the block */
