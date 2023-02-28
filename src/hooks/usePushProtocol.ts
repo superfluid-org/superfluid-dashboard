@@ -9,6 +9,7 @@ import {
 import * as PushApi from "@pushprotocol/restapi";
 import { SignerType } from "@pushprotocol/restapi";
 import { pushApi } from "../features/notifications/pushApi.slice";
+import noop from "lodash/noop";
 
 export const superfluidChannelAddress =
   process.env.NEXT_PUBLIC_PUSH_SUPERFLUID_CHANNEL ?? "";
@@ -21,9 +22,9 @@ export const usePushProtocol = () => {
   const { chain } = useNetwork();
   const { switchNetworkAsync } = useSwitchNetwork();
 
-  const { data: notifications } = pushApi.useGetNotificationsQuery(address!);
+  const { data: notifications } = pushApi.useGetNotificationsQuery(address);
   const { data: isSubscribed, refetch: refetchIsSubscribed } =
-    pushApi.useIsSubscribedQuery(address!);
+    pushApi.useIsSubscribedQuery(address);
 
   const toggleSubscribe = useCallback(async () => {
     const originalChainId = chain?.id;
@@ -41,7 +42,7 @@ export const usePushProtocol = () => {
 
       await refetchIsSubscribed();
     }
-  }, [chain, address, isSubscribed]);
+  }, [chain, address, isSubscribed, signer]);
 
   return {
     toggleSubscribe,

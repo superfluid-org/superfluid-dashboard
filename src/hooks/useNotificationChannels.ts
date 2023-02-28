@@ -7,13 +7,14 @@ export type NotificationChannel = {
   name: string;
   channelType: NotificationChannelType;
   isSubscribed: boolean;
-  onToggle: (...args: any[]) => Promise<void>;
+  onToggle: (...args: unknown[]) => unknown;
 };
 
 export const useNotificationChannels = () => {
   const {
     toggleSubscribe: toggleSubscribePush,
     isSubscribed: isPushSubscribed,
+    notifications,
   } = usePushProtocol();
 
   const push: NotificationChannel = useMemo(
