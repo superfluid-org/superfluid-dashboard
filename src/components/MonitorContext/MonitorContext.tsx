@@ -59,14 +59,14 @@ const MonitorContext: FC = () => {
               payload.id
             );
             track(
-              `Transaction Marked ${payload.changes.status}`,
+              `Transaction Marked ${payload.changes.status}`, // Succeeded, Failure, Unknown etc
               trackedTransaction
                 ? {
                     chainId: trackedTransaction.chainId,
                     transactionHash: trackedTransaction.hash,
                   }
                 : {}
-            ); // Succeeded, Failure, Unknown etc
+            );
           }
         },
       }),
@@ -128,8 +128,9 @@ const MonitorContext: FC = () => {
     }
   }, [instanceDetails]);
 
-  // Set user ID for integrations that are not configured through Segment.
   useEffect(() => {
+    // Set user ID for integrations that are not configured through Segment.
+
     const address = instanceDetails.appInstance.wallet.address;
     const isHotjarInitialized = hotjar.initialized();
 
