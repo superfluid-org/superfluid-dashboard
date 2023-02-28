@@ -110,6 +110,7 @@ const NotificationSettings: FC = () => {
         </Stack>
         {Object.values(notificationChannels).map((channel) => (
           <FormControlLabel
+            key={channel.name}
             control={
               <Switch
                 onChange={channel.onToggle}
