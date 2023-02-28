@@ -249,7 +249,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
                 </Typography>
               </>
             )}
-            {!isPending && isActive && (
+            {!isPending && (isActive || !!startDateScheduled) && (
               <>
                 {isOutgoing && (
                   <ModifyStreamButton

@@ -73,13 +73,6 @@ import {
   ValidStreamingForm,
 } from "./StreamingFormProvider";
 
-const MIN_VISIBLE_END_DATE = add(new Date(), {
-  minutes: 5,
-});
-const MAX_VISIBLE_END_DATE = add(new Date(), {
-  years: 2,
-});
-
 function getStreamedTotal(
   startTimestamp = getUnixTime(new Date()),
   endTimestamp: number | null,
@@ -131,6 +124,18 @@ export default memo(function SendCard() {
   const { visibleAddress } = useVisibleAddress();
   const getTransactionOverrides = useGetTransactionOverrides();
   const { txAnalytics } = useAnalytics();
+
+  const [MIN_VISIBLE_END_DATE, MAX_VISIBLE_END_DATE] = useMemo(
+    () => [
+      add(new Date(), {
+        minutes: 5,
+      }),
+      add(new Date(), {
+        years: 2,
+      }),
+    ],
+    []
+  );
 
   const {
     watch,
@@ -325,18 +330,29 @@ export default memo(function SendCard() {
     />
   );
 
-  const scheduledDatesResponse = rpcApi.useScheduledDatesQuery(
-    shouldSearchForActiveFlow && activeFlow
-      ? {
-          chainId: network.id,
-          superTokenAddress: tokenAddress,
-          senderAddress: visibleAddress,
-          receiverAddress: receiverAddress,
-        }
-      : skipToken
-  );
-  const { startDate: existingStartTimestamp, endDate: existingEndTimestamp } =
-    scheduledDatesResponse.data || {};
+  const { existingStartTimestamp, existingEndTimestamp } =
+    rpcApi.useScheduledDatesQuery(
+      shouldSearchForActiveFlow && network?.flowSchedulerContractAddress
+        ? {
+            chainId: network.id,
+            receiverAddress: receiverAddress,
+            senderAddress: visibleAddress,
+            superTokenAddress: tokenAddress,
+          }
+        : skipToken,
+      {
+        selectFromResult: (result) => {
+          const { startDate, endDate } = result.data || {};
+
+          return {
+            existingStartTimestamp: startDate,
+            existingEndTimestamp: endDate,
+          };
+        },
+      }
+    );
+
+  const hasScheduledFlow = !!existingStartTimestamp;
 
   const existingEndDate = existingEndTimestamp
     ? fromUnixTime(existingEndTimestamp)
@@ -427,6 +443,7 @@ export default memo(function SendCard() {
               onChange(date ? getUnixTime(date) : null)
             }
             disablePast
+            disabled={!!activeFlow}
           />
         )}
       />
@@ -567,6 +584,7 @@ export default memo(function SendCard() {
 
   const hasAnythingChanged =
     existingEndTimestamp !== endTimestamp ||
+    existingStartTimestamp !== startTimestamp ||
     (activeFlow && activeFlow.flowRateWei !== flowRateWei.toString());
 
   const isSendDisabled =
@@ -716,11 +734,13 @@ export default memo(function SendCard() {
     </TransactionBoundary>
   );
 
-  const [flowDeleteTrigger, flowDeleteResult] = rpcApi.useFlowDeleteMutation();
+  const [flowDeleteTrigger, flowDeleteResult] =
+    rpcApi.useDeleteFlowWithSchedulingMutation();
+
   const DeleteFlowBoundary = (
     <TransactionBoundary mutationResult={flowDeleteResult}>
       {({ setDialogLoadingInfo }) =>
-        activeFlow && (
+        (activeFlow || hasScheduledFlow) && (
           <TransactionButton
             dataCy={"cancel-stream-button"}
             ButtonProps={{

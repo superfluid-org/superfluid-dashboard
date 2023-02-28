@@ -2,6 +2,7 @@ import { Operation } from "@superfluid-finance/sdk-core";
 import {
   BaseQuery,
   FlowCreateMutation,
+  FlowDeleteMutation,
   FlowUpdateMutation,
   getFramework,
   registerNewTransaction,
@@ -31,6 +32,10 @@ export interface UpsertFlowWithScheduling
   senderAddress: string;
   startTimestamp: number | null;
   endTimestamp: number | null;
+}
+
+export interface DeleteFlowWithScheduling extends FlowDeleteMutation {
+  senderAddress: string;
 }
 
 interface ScheduledDatesResponse {
@@ -106,7 +111,7 @@ export const flowSchedulerEndpoints = {
         }[] = [];
 
         const network = tryFindNetwork(allNetworks, chainId);
-        // TODO(KK): Uncomment & implement again when stream scheduling is handled.
+
         if (network?.flowSchedulerContractAddress) {
           const flowScheduler = getFlowScheduler(chainId, arg.signer);
 
@@ -182,8 +187,6 @@ export const flowSchedulerEndpoints = {
                   arg.overrides ?? {}
                 );
 
-              console.log({ arg, streamOrder });
-
               const isModifyingSchedule = !!(
                 existingStartTimestamp || existingEndTimestamp
               );
@@ -200,7 +203,7 @@ export const flowSchedulerEndpoints = {
             }
           } else {
             if (existingEndTimestamp || existingStartTimestamp) {
-              const streamOrder =
+              const deleteStreamOrder =
                 await flowScheduler.populateTransaction.deleteFlowSchedule(
                   arg.superTokenAddress,
                   arg.receiverAddress,
@@ -209,7 +212,7 @@ export const flowSchedulerEndpoints = {
               subOperations.push({
                 operation: await framework.host.callAppAction(
                   network.flowSchedulerContractAddress,
-                  streamOrder.data!
+                  deleteStreamOrder.data!
                 ),
                 title: "Delete Schedule Order",
               });
@@ -272,6 +275,124 @@ export const flowSchedulerEndpoints = {
             ...(arg.transactionExtraData ?? {}),
           },
           title: mainTransactionTitle,
+        });
+
+        return {
+          data: {
+            chainId,
+            hash: transactionResponse.hash,
+            subTransactionTitles,
+          },
+        };
+      },
+    }),
+    deleteFlowWithScheduling: builder.mutation<
+      TransactionInfo & { subTransactionTitles: TransactionTitle[] },
+      DeleteFlowWithScheduling
+    >({
+      async queryFn({ chainId, ...arg }, { dispatch }) {
+        const userData = arg.userDataBytes ?? "0x";
+        const framework = await getFramework(chainId);
+
+        const subOperations: {
+          operation: Operation;
+          title: TransactionTitle;
+        }[] = [];
+
+        const [superToken, activeExistingFlow] = await Promise.all([
+          framework.loadSuperToken(arg.superTokenAddress),
+          dispatch(
+            rpcApi.endpoints.getActiveFlow.initiate(
+              {
+                chainId,
+                tokenAddress: arg.superTokenAddress,
+                senderAddress: arg.senderAddress,
+                receiverAddress: arg.receiverAddress,
+              },
+              {
+                subscribe: false,
+              }
+            )
+          ).unwrap(),
+        ]);
+
+        const network = tryFindNetwork(allNetworks, chainId);
+
+        if (!!activeExistingFlow && network) {
+          subOperations.push({
+            operation: await superToken.deleteFlow({
+              userData,
+              sender: arg.senderAddress,
+              receiver: arg.receiverAddress,
+              overrides: arg.overrides,
+            }),
+            title: "Close Stream",
+          });
+        }
+
+        if (network?.flowSchedulerContractAddress) {
+          const flowScheduler = getFlowScheduler(chainId, arg.signer);
+
+          const existingDatesResponse = await dispatch(
+            rpcApi.endpoints.scheduledDates.initiate(
+              {
+                chainId,
+                superTokenAddress: arg.superTokenAddress,
+                senderAddress: arg.senderAddress,
+                receiverAddress: arg.receiverAddress,
+              },
+              {
+                subscribe: false,
+              }
+            )
+          ).unwrap();
+
+          const {
+            startDate: existingStartTimestamp,
+            endDate: existingEndTimestamp,
+          } = existingDatesResponse || {};
+
+          if (existingStartTimestamp || existingEndTimestamp) {
+            const deleteStreamOrder =
+              await flowScheduler.populateTransaction.deleteFlowSchedule(
+                arg.superTokenAddress,
+                arg.receiverAddress,
+                "0x"
+              );
+            subOperations.push({
+              operation: await framework.host.callAppAction(
+                network.flowSchedulerContractAddress,
+                deleteStreamOrder.data!
+              ),
+              title: "Delete Schedule Order",
+            });
+          }
+        }
+
+        const executableOperationOrBatchCall =
+          subOperations.length === 1
+            ? subOperations[0].operation
+            : framework.batchCall(subOperations.map((x) => x.operation));
+
+        const transactionResponse = await executableOperationOrBatchCall.exec(
+          arg.signer
+        );
+
+        const subTransactionTitles = subOperations.map((x) => x.title);
+
+        const signerAddress = await arg.signer.getAddress();
+
+        await registerNewTransaction({
+          dispatch,
+          chainId,
+          transactionResponse,
+          waitForConfirmation: !!arg.waitForConfirmation,
+          signer: signerAddress,
+          extraData: {
+            subTransactionTitles,
+            ...(arg.transactionExtraData ?? {}),
+          },
+          title: "Close Stream",
         });
 
         return {
