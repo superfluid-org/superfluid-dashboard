@@ -104,7 +104,7 @@ export class GnosisSafe extends BasePage {
     static openCustomAppPage(network) {
         cy.visit(`${GNOSIS_SAFE_BASEURL}${GnosisSafePrefixByNetworkSlug[network]}${GnosisSafeAddressesPerNetwork[network]}/apps/custom`)
         Cypress.config("baseUrl","https://app.superfluid.finance")
-        cy.get(GNOSIS_BUTTONS).contains("Accept all").click()
+        cy.get(GNOSIS_BUTTONS,{timeout:30000}).contains("Accept all").click()
     }
 
     static addCustomSuperfluidApp() {
