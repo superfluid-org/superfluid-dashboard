@@ -10,7 +10,8 @@ import * as PushApi from "@pushprotocol/restapi";
 import { SignerType } from "@pushprotocol/restapi";
 import { pushApi } from "../features/notifications/pushApi.slice";
 import noop from "lodash/noop";
-
+import { Signer } from "ethers";
+Signer;
 export const superfluidChannelAddress =
   process.env.NEXT_PUBLIC_PUSH_SUPERFLUID_CHANNEL ?? "";
 
@@ -21,6 +22,8 @@ export const usePushProtocol = () => {
   const { data: signer } = useSigner();
   const { chain } = useNetwork();
   const { switchNetworkAsync } = useSwitchNetwork();
+
+  const [changeSubscription] = pushApi.useChangeSubscriptionMutation();
 
   const { data: notifications } = pushApi.useGetNotificationsQuery(address);
   const { data: isSubscribed, refetch: refetchIsSubscribed } =
@@ -33,14 +36,13 @@ export const usePushProtocol = () => {
         await switchNetworkAsync(1);
       }
 
-      await PushApi.channels[isSubscribed ? "unsubscribe" : "subscribe"]({
-        signer: signer as unknown as SignerType,
-        channelAddress: superFluidChannel,
-        userAddress: `eip155:1:${address}`,
-        env: "prod",
-      });
-
-      await refetchIsSubscribed();
+      if (signer) {
+        await changeSubscription({
+          signer: signer as unknown as SignerType,
+          address,
+          subscribed: isSubscribed ? "unsubscribe" : "subscribe",
+        });
+      }
     }
   }, [chain, address, isSubscribed, signer]);
 

@@ -1,8 +1,11 @@
 import { fakeBaseQuery } from "@reduxjs/toolkit/dist/query";
 import { createApi } from "@reduxjs/toolkit/dist/query/react";
+import {
+  superFluidChannel,
+  superfluidChannelAddress,
+} from "../../hooks/usePushProtocol";
+import { ParsedResponseType, SignerType } from "@pushprotocol/restapi";
 import * as PushApi from "@pushprotocol/restapi";
-import { superfluidChannelAddress } from "../../hooks/usePushProtocol";
-import { ParsedResponseType } from "@pushprotocol/restapi";
 
 export interface ResolveNameResult {
   address: string;
@@ -36,6 +39,47 @@ export const pushApi = createApi({
           };
         },
       }),
+      changeSubscription: builder.mutation<
+        { status: string; message: string },
+        {
+          signer: SignerType;
+          address: string;
+          subscribed: "subscribe" | "unsubscribe";
+        }
+      >({
+        queryFn: async ({ address, signer, subscribed }) => {
+          const result = await PushApi.channels[subscribed]({
+            signer,
+            channelAddress: superFluidChannel,
+            userAddress: `eip155:1:${address}`,
+            env: "prod",
+          });
+
+          return { data: result };
+        },
+        onQueryStarted: async (
+          { address, subscribed },
+          { dispatch, queryFulfilled }
+        ) => {
+          const patchResult = dispatch(
+            pushApi.util.updateQueryData(
+              "isSubscribed",
+              address,
+              () => subscribed === "subscribe"
+            )
+          );
+
+          try {
+            const result = await queryFulfilled;
+
+            if (result.data.status === "error") {
+              patchResult.undo();
+            }
+          } catch {
+            patchResult.undo();
+          }
+        },
+      }),
       getNotifications: builder.query<ParsedResponseType[], string | undefined>(
         {
           queryFn: async (user) => {
@@ -53,20 +97,6 @@ export const pushApi = createApi({
             return {
               data: notifications.filter((n) => n.app === "Superfluid"),
             };
-          },
-
-          onQueryStarted: async (user, { dispatch, queryFulfilled }) => {
-            const patchResult = dispatch(
-              pushApi.util.updateQueryData("isSubscribed", user, (draft) =>
-                draft.valueOf()
-              )
-            );
-
-            try {
-              await queryFulfilled;
-            } catch {
-              patchResult.undo();
-            }
           },
         }
       ),
