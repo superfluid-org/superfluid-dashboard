@@ -17,7 +17,6 @@ export const useNotificationChannels = (): Record<
   const {
     toggleSubscribe: toggleSubscribePush,
     isSubscribed: isPushSubscribed,
-    notifications,
   } = usePushProtocol();
 
   const push: NotificationChannel = useMemo(
