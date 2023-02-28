@@ -60,7 +60,7 @@ export class GnosisSafe extends BasePage {
     }
 
     static continueDisclaimer() {
-        cy.get(GNOSIS_BUTTONS).contains("Accept all").click()
+        cy.get(GNOSIS_BUTTONS,{timeout: 30000}).contains("Accept all").click()
         cy.get(GNOSIS_BUTTONS).contains("Continue").click()
         cy.get(GNOSIS_WARNING_CHECKBOX).click()
         //Cypress too fast :(
