@@ -21,7 +21,7 @@ const CUSTOM_APP_URL_FIELD = "input[name=appUrl]"
 const CUSTOM_APP_TITLE = "[class*=customAppContainer] h2"
 const CUSTOM_APP_DESCRIPTION = "[class*=customAppContainer] p"
 const CUSTOM_APP_ERROR_ELEMENT = "[class*=customAppPlaceholderContainer]"
-const CUSTOM_APP_WARNING_CHECKBOX = "input[name=riskAcknowledgement]"
+const CUSTOM_APP_WARNING_CHECKBOX = "[data-layer=Content]"
 const CUSTOM_APP_ADD_BUTTON = "[role=dialog] [type=submit]"
 const ADDED_CUSTOM_APP_TITLE = "[class*=safeAppsContainer] a[rel=noreferrer] div h5"
 const ADDED_CUSTOM_APP_DESCRIPTION = "[class*=safeAppsContainer] a[rel=noreferrer] div p"
@@ -55,15 +55,19 @@ const GnosisSafeAddressesPerNetwork = {
 export class GnosisSafe extends BasePage {
     static openSafeOnNetwork(network: string) {
         cy.wrap(network).as("selectedNetwork")
-        cy.visit(`${GNOSIS_SAFE_BASEURL}${GnosisSafePrefixByNetworkSlug[network]}${GnosisSafeAddressesPerNetwork[network]}/apps?appUrl=${Cypress.config("baseUrl")}`)
-
+        cy.visit(`${GNOSIS_SAFE_BASEURL}apps/open?safe=${GnosisSafePrefixByNetworkSlug[network]}${GnosisSafeAddressesPerNetwork[network]}&appUrl=${Cypress.config("baseUrl")}`)
     }
 
     static continueDisclaimer() {
+        //The disclaimer is quite annoying and messes up when cypress quickly clicks on it
+        //Waiting for other stuff to be visible / not be visible / exist / not exist didn't help here :(
         cy.get(GNOSIS_BUTTONS,{timeout: 30000}).contains("Accept all").click()
-        cy.get(GNOSIS_BUTTONS).contains("Continue").click()
+        cy.get(GNOSIS_BUTTONS).contains("Accept all").should("not.exist")
+        cy.wait(1000)
+        cy.get(GNOSIS_BUTTONS,{timeout: 30000}).contains("Continue").click()
+        cy.wait(1000)
+        cy.get(".MuiTypography-root > .MuiBox-root").should("not.be.visible")
         cy.get(GNOSIS_WARNING_CHECKBOX).click()
-        //Cypress too fast :(
         cy.wait(1000)
         cy.get(GNOSIS_BUTTONS).contains("Continue").click()
         cy.get(LOADING_SPINNER).should("be.visible")
