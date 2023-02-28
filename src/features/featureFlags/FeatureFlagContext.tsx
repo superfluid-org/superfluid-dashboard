@@ -37,6 +37,7 @@ export const MAINNET_FEATURE_CODES = [
   "462T_MINERVA",
   "916G_TOKENOPS",
   "162VM_Aragon",
+  "727TH_GRAPH",
 ];
 
 // TODO: (M) IMO we do not need a separate provider for this, just a features selector hook for flags feature.
