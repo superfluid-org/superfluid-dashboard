@@ -38,6 +38,7 @@ export const usePushProtocol = () => {
         channelAddress: superFluidChannel,
         userAddress: `eip155:1:${address}`,
         env: "prod",
+        onError: (err) => console.log(err),
       });
 
       await refetchIsSubscribed();
