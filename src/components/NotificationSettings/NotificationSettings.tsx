@@ -75,7 +75,7 @@ const NotificationSettings: FC = () => {
             vitae ac augue amet.
           </Typography>
         </Stack>
-        <Button variant="contained">Save</Button>
+        {/* <Button variant="contained">Save</Button> */}
       </Stack>
       <Divider />
       <Stack p="30px" direction="row" alignItems="center" gap={4}>
