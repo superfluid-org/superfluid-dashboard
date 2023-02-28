@@ -17,7 +17,7 @@ Feature: Gnosis safe test cases
       | optimism     |
       | goerli       |
 
-  Scenario Outline: Gnosis safe connecting to dashboard on <network>
+  Scenario Outline: Gnosis safe - adding superfluid as a custom app <network>
     Given Gnosis safe custom app page is open on "<network>"
     And User tries to add Superfluid as a custom app
     And Manifest is loaded correctly and user accepts the warning and adds the app
