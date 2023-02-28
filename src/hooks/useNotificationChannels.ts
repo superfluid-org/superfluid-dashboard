@@ -10,7 +10,10 @@ export type NotificationChannel = {
   onToggle: (...args: unknown[]) => unknown;
 };
 
-export const useNotificationChannels = () => {
+export const useNotificationChannels = (): Record<
+  NotificationChannelType,
+  NotificationChannel
+> => {
   const {
     toggleSubscribe: toggleSubscribePush,
     isSubscribed: isPushSubscribed,
