@@ -145,7 +145,7 @@ Feature: Vesting page test cases
     Given Transactional account john is connected to the dashboard on polygon-mumbai
     And User opens the navigation more menu
     And User opens the access code menu
-    And User types "724ZX_ENS" in the access code menu
+    And User types "AHR2_MAINNET" in the access code menu
     And User submits the access code
     #Workaround, inputing the code from the network not supported screen will not enable the button
     And User clicks on the "vesting" navigation button
