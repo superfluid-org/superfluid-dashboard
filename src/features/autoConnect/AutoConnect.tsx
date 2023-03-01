@@ -36,11 +36,24 @@ export const AutoConnectProvider: FC<PropsWithChildren> = ({ children }) => {
       const gnosisSafeConnector = wagmiClient.connectors.find(
         (c) => c.id === "safe" && c.ready
       );
+
+      console.log({
+        gnosisSafeConnector,
+      });
+
+      console.log({
+        gnosisSafeConnectorNotReady: wagmiClient.connectors.find(
+          (c) => c.id === "safe" && !c.ready
+        ),
+      });
+
       if (gnosisSafeConnector) {
         await gnosisSafeConnector.connect();
+        console.log("autoconnecting to gnosis");
         isAutoConnectedRef.current = true;
       } else {
         const provider = await wagmiClient.autoConnect();
+        console.log("autoconnecting but to gnosis");
         isAutoConnectedRef.current = !!provider;
       }
     };
