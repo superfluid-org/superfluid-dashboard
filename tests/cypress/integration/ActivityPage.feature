@@ -35,7 +35,7 @@ Feature: Activity History Page tests
     Given "Dashboard Page" is open without connecting a wallet
     And User uses view mode to look at "staticBalanceAccount"
     And User clicks on the "history" navigation button
-    And User changes the activity history filter to 10 months before
+    And User changes the activity history filter to 15 months before
     And User closes the dropdown
     And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
     And User waits for the activity history to load
@@ -45,7 +45,7 @@ Feature: Activity History Page tests
     Given "Dashboard Page" is open without connecting a wallet
     And User uses view mode to look at "staticBalanceAccount"
     And User clicks on the "history" navigation button
-    And User changes the activity history filter to 10 months before
+    And User changes the activity history filter to 15 months before
     And User closes the dropdown
     And Activity rows for "arbitrum-one" are visible
     And User opens the network selection dropdown
