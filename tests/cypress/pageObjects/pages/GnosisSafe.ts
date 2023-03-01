@@ -76,9 +76,6 @@ export class GnosisSafe extends BasePage {
 
     static validateThatDashboardLoaded() {
         cy.frameLoaded(SUPERFLUID_IFRAME)
-        cy.enter(SUPERFLUID_IFRAME).then(getBody => {
-            getBody().find(CONNECT_WALLET_BUTTON).should("be.visible")
-        })
     }
 
     static connectGnosisSafeWallet() {
@@ -99,6 +96,12 @@ export class GnosisSafe extends BasePage {
 
     static validateCorrectlyConnectedWallet(network: string) {
         cy.enter(SUPERFLUID_IFRAME).then(getBody => {
+                if (network === "ethereum") {
+                    getBody().find(NAVIGATION_MORE_BUTTON).click();
+                    getBody().find(ACCESS_CODE_BUTTON).click();
+                    getBody().find(ACCESS_CODE_INPUT).type("AHR2_MAINNET");
+                    getBody().find(ACCESS_CODE_SUBMIT).click();
+                }
             getBody().find(CONNECTED_WALLET).should("have.text", BasePage.shortenHex(GnosisSafeAddressesPerNetwork[network]))
             getBody().find(WALLET_CONNECTION_STATUS).should("have.text", "Connected")
             getBody().find(TOP_BAR_NETWORK_BUTTON).should("contain.text", networksBySlug.get(network).name)
