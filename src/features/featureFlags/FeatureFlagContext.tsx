@@ -29,6 +29,7 @@ export const VESTING_FEATURE_CODES = [
   "V910_Bertrand",
   "162VM_Aragon",
   "7L5G_Ricochet",
+  "727TH_GRAPH",
 ];
 
 export const MAINNET_FEATURE_CODES = [
