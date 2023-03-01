@@ -338,8 +338,6 @@ const StreamPageContent: FC<{
     }
   );
 
-  console.log({ scheduledStream });
-
   const tokenSnapshotQuery = subgraphApi.useAccountTokenSnapshotQuery({
     chainId: network.id,
     id: `${senderAddress.toLowerCase()}-${tokenAddress.toLowerCase()}`,

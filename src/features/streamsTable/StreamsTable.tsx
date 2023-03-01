@@ -142,7 +142,6 @@ const StreamsTable: FC<StreamsTableProps> = ({
     }
   );
 
-  console.log({ activeTasks });
 
   const scheduledIncomingStreams = useMemo(
     () =>

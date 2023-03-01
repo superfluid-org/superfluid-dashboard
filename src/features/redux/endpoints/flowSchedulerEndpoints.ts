@@ -299,21 +299,18 @@ export const flowSchedulerEndpoints = {
           title: TransactionTitle;
         }[] = [];
 
+        const activeFlowQuery = dispatch(
+          rpcApi.endpoints.getActiveFlow.initiate({
+            chainId,
+            tokenAddress: arg.superTokenAddress,
+            senderAddress: arg.senderAddress,
+            receiverAddress: arg.receiverAddress,
+          })
+        );
+
         const [superToken, activeExistingFlow] = await Promise.all([
           framework.loadSuperToken(arg.superTokenAddress),
-          dispatch(
-            rpcApi.endpoints.getActiveFlow.initiate(
-              {
-                chainId,
-                tokenAddress: arg.superTokenAddress,
-                senderAddress: arg.senderAddress,
-                receiverAddress: arg.receiverAddress,
-              },
-              {
-                subscribe: false,
-              }
-            )
-          ).unwrap(),
+          activeFlowQuery.unwrap().finally(() => activeFlowQuery.unsubscribe()),
         ]);
 
         const network = tryFindNetwork(allNetworks, chainId);
@@ -342,7 +339,7 @@ export const flowSchedulerEndpoints = {
                 receiverAddress: arg.receiverAddress,
               },
               {
-                subscribe: false,
+                subscribe: true,
               }
             )
           ).unwrap();
