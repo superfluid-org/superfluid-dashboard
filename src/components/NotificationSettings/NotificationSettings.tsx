@@ -84,7 +84,7 @@ const NotificationSettings: FC = () => {
             Wallet Address
           </Typography>
           <Typography variant="body1" color="secondary">
-            You'll be notified about your currently connected wallet address.
+            You will be notified about your currently connected wallet address.
           </Typography>
         </Stack>
         <Avatar
