@@ -1,6 +1,6 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import axios from "axios";
-import { chain } from "wagmi";
+import * as chain from "wagmi/chains";
 
 export interface GasRecommendation {
   maxFeeGwei: number;

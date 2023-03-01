@@ -1,4 +1,4 @@
-import { SafeConnector } from "@gnosis.pm/safe-apps-wagmi";
+import { SafeConnector } from '@wagmi/connectors/safe'
 import { Chain, Wallet } from "@rainbow-me/rainbowkit";
 
 export interface GnosisSafeOptions {

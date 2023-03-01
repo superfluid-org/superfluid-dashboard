@@ -1,0 +1,2 @@
+require('cypress-iframe')
+

@@ -86,7 +86,7 @@ const VestingScheduleDetailsPage: NextPageWithLayout = () => {
       );
       setRouteHandled(true);
     }
-  }, [setRouteHandled, router.isReady, router.query._token]);
+  }, [router.isReady, router.query._network, router.query._id]);
 
   const isPageReady = routeHandled;
   if (!isPageReady) {

@@ -1,4 +1,4 @@
-import {Before} from "@badeball/cypress-cucumber-preprocessor";
+import {After, Before} from "@badeball/cypress-cucumber-preprocessor";
 
 Before({ tags: "@rejected" }, function () {
     //Don't add rejected cases together with transactional ones , as the before hook will change the env value and it should

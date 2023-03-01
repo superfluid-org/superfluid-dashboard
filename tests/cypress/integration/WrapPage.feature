@@ -12,7 +12,7 @@ Feature: Wrap page test cases
 
   @broken @skip
   Scenario: Token balances shown for a user with a connected wallet
-    Given "Wrap Page" is open with a mocked connection to "staticBalanceAccount" on "polygon"
+    Given "Wrap Page" is open with "staticBalanceAccount" connected on "polygon"
     And User connects their wallet to the dashboard
     Then The "MATIC" balance is shown correctly on "polygon"
     And User opens the token selection in the wrap page
@@ -26,16 +26,16 @@ Feature: Wrap page test cases
     And User chooses "USDCx" to wrap
     Then The "USDC" balance is shown correctly on "polygon"
 
-
   Scenario: Wrong network warnings in the wrap page
-    Given "Wrap Page" is open with a mocked connection to "staticBalanceAccount" on "polygon"
+    Given Dashboard is open with a mocked connection to "staticBalanceAccount" on "gnosis"
     And User connects their wallet to the dashboard
-    And User changes their network to "gnosis"
+    And User changes their network to "polygon"
+    And User clicks on the "wrap-unwrap" navigation button
     And User inputs "0.5" into the wrap field
-    And Change network button is visible with a message asking user to switch to "gnosis"
+    And Change network button is visible with a message asking user to switch to "polygon"
     And User switches to unwrap tab
     And User inputs "0.8" into the unwrap field
-    And Change network button is visible with a message asking user to switch to "gnosis"
+    And Change network button is visible with a message asking user to switch to "polygon"
 
 
   Scenario: View mode warnings in wrap page

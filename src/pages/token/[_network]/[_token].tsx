@@ -85,7 +85,7 @@ const TokenPage: NextPage = () => {
       );
       setRouteHandled(true);
     }
-  }, [setRouteHandled, router.isReady, router.query._token]);
+  }, [setRouteHandled, router.isReady, router.query._token, router.query._network]);
 
   useEffect(() => {
     if (!isAutoConnecting && !visibleAddress) {

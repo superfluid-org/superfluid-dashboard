@@ -28,13 +28,17 @@ export const VESTING_FEATURE_CODES = [
   "V754_Seliqui",
   "V910_Bertrand",
   "162VM_Aragon",
+  "7L5G_Ricochet",
+  "727TH_GRAPH",
 ];
 
 export const MAINNET_FEATURE_CODES = [
+  "AHR2_MAINNET",
   "724ZX_ENS",
   "462T_MINERVA",
   "916G_TOKENOPS",
   "162VM_Aragon",
+  "727TH_GRAPH",
 ];
 
 // TODO: (M) IMO we do not need a separate provider for this, just a features selector hook for flags feature.
