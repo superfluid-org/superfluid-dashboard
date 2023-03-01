@@ -18,6 +18,7 @@ import Blockies from "react-blockies";
 import { usePushProtocol } from "../../hooks/usePushProtocol";
 import ConnectWallet from "../../features/wallet/ConnectWallet";
 import { useNotificationChannels } from "../../hooks/useNotificationChannels";
+import Link from "next/link";
 
 const NoWalletConnected: FC = () => {
   const theme = useTheme();
@@ -71,21 +72,19 @@ const NotificationSettings: FC = () => {
             Notifications
           </Typography>
           <Typography variant="body1" color="secondary">
-            Lorem ipsum dolor sit amet consectetur. Fermentum elit sit orci ante
-            vitae ac augue amet.
+            Get notified about your Superfluid streams and Super Token activity.
           </Typography>
         </Stack>
         {/* <Button variant="contained">Save</Button> */}
       </Stack>
       <Divider />
       <Stack p="30px" direction="row" alignItems="center" gap={4}>
-        <Stack sx={{ width: 300 }}>
+        <Stack sx={{ width: 350 }}>
           <Typography component="h1" variant="h5">
             Wallet Address
           </Typography>
           <Typography variant="body1" color="secondary">
-            Lorem ipsum dolor sit amet consectetur. Fermentum elit sit orci ante
-            vitae ac augue amet.
+            You'll be notified about your currently connected wallet address.
           </Typography>
         </Stack>
         <Avatar
@@ -99,13 +98,16 @@ const NotificationSettings: FC = () => {
       </Stack>
       <Divider />
       <Stack p="30px" direction="row" alignItems="center" gap={4}>
-        <Stack sx={{ width: 300 }}>
+        <Stack sx={{ width: 350 }}>
           <Typography component="h1" variant="h5">
             Notification Channel
           </Typography>
           <Typography variant="body1" color="secondary">
-            Lorem ipsum dolor sit amet consectetur. Fermentum elit sit orci ante
-            vitae ac augue amet.
+            Turn on notifications for every channel, that is most convenient for
+            you. To access your Push Protocol inbox, click{" "}
+            <Link href="https://app.push.org/#/inbox" target="_blank">
+              here.
+            </Link>
           </Typography>
         </Stack>
         {Object.values(notificationChannels).map((channel) => (
