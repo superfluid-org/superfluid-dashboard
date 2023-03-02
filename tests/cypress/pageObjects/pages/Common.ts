@@ -435,5 +435,48 @@ export class Common extends BasePage {
             },
           });
         });
-    }
+  }
+
+  static checkThatSuperfluidRPCisNotBehind(minutes: number, network: string) {
+    const Web3 = require("web3");
+    const web3 = new Web3(new Web3.providers.HttpProvider(networksBySlug.get(network).superfluidRpcUrl));
+    cy.wrap(null).then(() => {
+      return web3.eth.getBlock("latest").then(block => {
+        let blockVsTimeNowDifferenceInMinutes = (Date.now() - (block.timestamp * 1000)) / 1000 / 60
+        expect(blockVsTimeNowDifferenceInMinutes).to.be.lessThan(minutes,
+            `${networksBySlug.get(network).name} RPC node is behind by ${blockVsTimeNowDifferenceInMinutes.toFixed(0)} minutes.
+       Latest block number: ${block.number}`)
+      })
+    })
+  }
+
+  static checkThatTheGraphIsNotBehind(minutes: number, network: string) {
+    cy.request({
+      method: 'POST',
+      url: networksBySlug.get(network).subgraphUrl,
+      body: {
+        operationName: 'MyQuery',
+        query: "query MyQuery {" +
+            "  _meta {" +
+            "    hasIndexingErrors" +
+            "    block {" +
+            "      number" +
+            "      timestamp" +
+            "    }" +
+            "  }" +
+            "}"
+        ,
+      },
+    }).then(res => {
+      let metaData = res.body.data._meta
+      let blockVsTimeNowDifferenceInMinutes = (Date.now() - (metaData.block.timestamp * 1000)) / 1000 / 60
+      expect(metaData.hasIndexingErrors).to.be.false
+      expect(blockVsTimeNowDifferenceInMinutes).to.be.lessThan(minutes,
+          `${networksBySlug.get(network).name} graph is behind by ${blockVsTimeNowDifferenceInMinutes.toFixed(0)} minutes.
+       Last synced block number: ${metaData.block.number} 
+       URL:
+       ${networksBySlug.get(network).subgraphUrl}
+      `)
+    })
+  }
 }
