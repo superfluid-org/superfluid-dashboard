@@ -33,7 +33,7 @@ export const notificationsSlice = createSlice({
   },
 });
 
-export const { markAsSeen } = notificationsSlice.actions;
+export const { markAsSeen, markAsSeenBatch } = notificationsSlice.actions;
 
 const selectSelf = (state: RootState): NotificationsState =>
   state.notifications;
