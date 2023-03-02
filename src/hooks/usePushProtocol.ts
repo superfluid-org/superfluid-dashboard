@@ -17,9 +17,10 @@ export const usePushProtocol = () => {
 
   const [changeSubscription] = pushApi.useChangeSubscriptionMutation();
 
-  const { data: notifications } = pushApi.useGetNotificationsQuery(address);
-  const { data: isSubscribed, refetch: refetchIsSubscribed } =
-    pushApi.useIsSubscribedQuery(address);
+  const { data: notifications } = pushApi.useGetNotificationsQuery(address, {
+    pollingInterval: 15000,
+  });
+  const { data: isSubscribed } = pushApi.useIsSubscribedQuery(address);
 
   const toggleSubscribe = useCallback(async () => {
     const originalChainId = chain?.id;

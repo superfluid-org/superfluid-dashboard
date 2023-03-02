@@ -1,5 +1,4 @@
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import {
   Badge,
   Box,
@@ -26,7 +25,6 @@ import { useRouter } from "next/router";
 
 const NotificationsBell: FC = () => {
   const theme = useTheme();
-  const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const dispatch = useAppDispatch();
@@ -119,7 +117,7 @@ const NotificationsBell: FC = () => {
                         {channel}
                       </Typography>
                     </Stack>
-                    <Typography variant="caption">{message}</Typography>
+                    g<Typography variant="caption">{message}</Typography>
                   </Stack>
                 </Tooltip>
                 {i !== arr.length - 1 && <Divider />}
