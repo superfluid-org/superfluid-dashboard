@@ -4,12 +4,16 @@ import { ethers } from "ethers";
 import HDWalletProvider from "@truffle/hdwallet-provider";
 import {MockProvider} from "@rsksmart/mock-web3-provider";
 
+export const TOP_BAR_NETWORK_BUTTON = "[data-cy=top-bar-network-button]";
+export const CONNECTED_WALLET = "[data-cy=wallet-connection-status] h6";
+export const WALLET_CONNECTION_STATUS = "[data-cy=wallet-connection-status] p";
+export const NAVIGATION_MORE_BUTTON = "[data-cy=nav-more-button]";
+export const ACCESS_CODE_BUTTON = "[data-cy=more-access-code-btn]";
+export const ACCESS_CODE_INPUT = "[data-cy=access-code-input]";
+export const ACCESS_CODE_SUBMIT = "[data-cy=submit-access-code]";
+export const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet-button]";
 const NAVIGATION_BUTTON_PREFIX = "[data-cy=nav-";
-const TOP_BAR_NETWORK_BUTTON = "[data-cy=top-bar-network-button]";
-const CONNECTED_WALLET = "[data-cy=wallet-connection-status] h6";
-const WALLET_CONNECTION_STATUS = "[data-cy=wallet-connection-status] p";
 const NAVIGATION_DRAWER = "[data-cy=navigation-drawer]";
-const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet-button]";
 const VIEW_MODE_INPUT = "[data-cy=view-mode-inputs]";
 const ADDRESS_DIALOG_INPUT = "[data-cy=address-dialog-input] input";
 const VIEWED_ACCOUNT = "[data-cy=view-mode-chip] > span";
@@ -33,10 +37,6 @@ const START_END_DATES = "[data-cy=start-end-date]";
 const DISCONNECT_BUTTON = "[data-testid=rk-disconnect-button]";
 const RAINBOWKIT_CLOSE_BUTTON = "[aria-label=Close]";
 const TX_ERROR = "[data-cy=tx-error]";
-const NAVIGATION_MORE_BUTTON = "[data-cy=nav-more-button]";
-const ACCESS_CODE_BUTTON = "[data-cy=more-access-code-btn]";
-const ACCESS_CODE_INPUT = "[data-cy=access-code-input]";
-const ACCESS_CODE_SUBMIT = "[data-cy=submit-access-code]";
 const CLOSE_BUTTON = "[data-testid=CloseRoundedIcon]";
 const ACCESS_CODE_DIALOG = "[data-cy=access-code-dialog]";
 const ACCESS_CODE_ERROR = "[data-cy=access-code-error]";
@@ -199,7 +199,7 @@ export class Common extends BasePage {
     if (selectedNetwork === "ethereum") {
       this.click(NAVIGATION_MORE_BUTTON);
       this.click(ACCESS_CODE_BUTTON);
-      this.type(ACCESS_CODE_INPUT, "724ZX_ENS");
+      this.type(ACCESS_CODE_INPUT, "AHR2_MAINNET");
       this.click(ACCESS_CODE_SUBMIT);
     }
     if (Cypress.env("vesting")) {
@@ -435,5 +435,48 @@ export class Common extends BasePage {
             },
           });
         });
-    }
+  }
+
+  static checkThatSuperfluidRPCisNotBehind(minutes: number, network: string) {
+    const Web3 = require("web3");
+    const web3 = new Web3(new Web3.providers.HttpProvider(networksBySlug.get(network).superfluidRpcUrl));
+    cy.wrap(null).then(() => {
+      return web3.eth.getBlock("latest").then(block => {
+        let blockVsTimeNowDifferenceInMinutes = (Date.now() - (block.timestamp * 1000)) / 1000 / 60
+        expect(blockVsTimeNowDifferenceInMinutes).to.be.lessThan(minutes,
+            `${networksBySlug.get(network).name} RPC node is behind by ${blockVsTimeNowDifferenceInMinutes.toFixed(0)} minutes.
+       Latest block number: ${block.number}`)
+      })
+    })
+  }
+
+  static checkThatTheGraphIsNotBehind(minutes: number, network: string) {
+    cy.request({
+      method: 'POST',
+      url: networksBySlug.get(network).subgraphUrl,
+      body: {
+        operationName: 'MyQuery',
+        query: "query MyQuery {" +
+            "  _meta {" +
+            "    hasIndexingErrors" +
+            "    block {" +
+            "      number" +
+            "      timestamp" +
+            "    }" +
+            "  }" +
+            "}"
+        ,
+      },
+    }).then(res => {
+      let metaData = res.body.data._meta
+      let blockVsTimeNowDifferenceInMinutes = (Date.now() - (metaData.block.timestamp * 1000)) / 1000 / 60
+      expect(metaData.hasIndexingErrors).to.be.false
+      expect(blockVsTimeNowDifferenceInMinutes).to.be.lessThan(minutes,
+          `${networksBySlug.get(network).name} graph is behind by ${blockVsTimeNowDifferenceInMinutes.toFixed(0)} minutes.
+       Last synced block number: ${metaData.block.number} 
+       URL:
+       ${networksBySlug.get(network).subgraphUrl}
+      `)
+    })
+  }
 }
