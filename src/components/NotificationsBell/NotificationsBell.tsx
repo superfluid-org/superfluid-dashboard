@@ -21,9 +21,12 @@ import {
 } from "../../features/notifications/notifications.slice";
 import { useAppDispatch } from "../../features/redux/store";
 import { useNotificationChannels } from "../../hooks/useNotificationChannels";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 const NotificationsBell: FC = () => {
   const theme = useTheme();
+  const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const dispatch = useAppDispatch();
@@ -84,43 +87,51 @@ const NotificationsBell: FC = () => {
         }}
       >
         <Box>
-          {notifications.map(({ id, title, message, channel }, i, arr) => (
-            <>
-              <Tooltip
-                followCursor
-                title={seen[id] ? "" : "Click to mark this as seen"}
-                sx={{ zIndex: 10000 }}
-              >
-                <Stack
-                  onClick={onMarkAsSeen(id)}
-                  p={2}
-                  sx={{
-                    cursor: "pointer",
-                    ":hover": {
-                      background: colors.grey[100],
-                    },
-                  }}
+          {notifications.length > 0 ? (
+            notifications.map(({ id, title, message, channel }, i, arr) => (
+              <>
+                <Tooltip
+                  followCursor
+                  title={seen[id] ? "" : "Click to mark this as seen"}
+                  sx={{ zIndex: 10000 }}
                 >
-                  <Badge variant="dot" color="primary" invisible={seen[id]} />
-                  <Stack direction="row" alignItems="center" gap={1}>
-                    <Typography variant="subtitle1">{title}</Typography>
-                    <Typography
-                      variant="subtitle1"
-                      px={1}
-                      fontSize="10px"
-                      borderRadius={2}
-                      color="white"
-                      sx={{ backgroundColor: theme.palette.primary.main }}
-                    >
-                      {channel}
-                    </Typography>
+                  <Stack
+                    onClick={onMarkAsSeen(id)}
+                    p={2}
+                    sx={{
+                      cursor: "pointer",
+                      ":hover": {
+                        background: colors.grey[100],
+                      },
+                    }}
+                  >
+                    <Badge variant="dot" color="primary" invisible={seen[id]} />
+                    <Stack direction="row" alignItems="center" gap={1}>
+                      <Typography variant="subtitle1">{title}</Typography>
+                      <Typography
+                        variant="subtitle1"
+                        px={1}
+                        fontSize="10px"
+                        borderRadius={2}
+                        color="white"
+                        sx={{ backgroundColor: theme.palette.primary.main }}
+                      >
+                        {channel}
+                      </Typography>
+                    </Stack>
+                    <Typography variant="caption">{message}</Typography>
                   </Stack>
-                  <Typography variant="caption">{message}</Typography>
-                </Stack>
-              </Tooltip>
-              {i !== arr.length - 1 && <Divider />}
-            </>
-          ))}
+                </Tooltip>
+                {i !== arr.length - 1 && <Divider />}
+              </>
+            ))
+          ) : (
+            <Typography variant="body1" p={1.5}>
+              You seem to have 0 notifications. <br /> Go to{" "}
+              <Link href="/settings">settings</Link>, and subscribe to some
+              channels.
+            </Typography>
+          )}
           <Stack>
             {unseenCount > 1 && (
               <Button onClick={onMarkAllAsSeen(notifications.map((n) => n.id))}>
