@@ -14,8 +14,8 @@ import {
 import { FC } from "react";
 import { useAccount } from "wagmi";
 import Blockies from "react-blockies";
+import { CopyIconBtn } from "../../features/common/CopyIconBtn";
 
-import { usePushProtocol } from "../../hooks/usePushProtocol";
 import ConnectWallet from "../../features/wallet/ConnectWallet";
 import { useNotificationChannels } from "../../hooks/useNotificationChannels";
 import Link from "next/link";
@@ -94,7 +94,10 @@ const NotificationSettings: FC = () => {
         >
           <Blockies seed={address.toLowerCase()} />
         </Avatar>
-        <Typography>{address}</Typography>
+        <Stack direction="row">
+          <Typography variant="body1">{address} </Typography>
+          <CopyIconBtn IconButtonProps={{ size: "small" }} copyText={address} />
+        </Stack>
       </Stack>
       <Divider />
       <Stack p="30px" direction="row" alignItems="center" gap={4}>
