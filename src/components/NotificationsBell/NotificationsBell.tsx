@@ -107,7 +107,7 @@ const NotificationsBell: FC = () => {
                     <Typography
                       variant="subtitle2"
                       px={0.5}
-                      fontSize="12px"
+                      fontSize="10px"
                       borderRadius={2}
                       color="white"
                       sx={{ backgroundColor: theme.palette.primary.main }}
@@ -122,7 +122,7 @@ const NotificationsBell: FC = () => {
             </>
           ))}
           <Stack>
-            {unseenCount > 0 && (
+            {unseenCount > 1 && (
               <Button onClick={onMarkAllAsSeen(notifications.map((n) => n.id))}>
                 Mark all as seen
               </Button>
