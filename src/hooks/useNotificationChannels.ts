@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { usePushProtocol } from "./usePushProtocol";
 
-export type NotificationChannelType = "PUSH";
+export type NotificationChannelType = "Push Protocol";
 export type Notification = {
   id: string;
   title: string;
@@ -32,14 +32,14 @@ export const useNotificationChannels: UseNotificationChannels = () => {
   const push: NotificationChannel = useMemo(
     () => ({
       name: "Push Protocol",
-      channelType: "PUSH",
+      channelType: "Push Protocol",
       isSubscribed: isPushSubscribed,
       onToggle: toggleSubscribePush,
       notifications: pushNotifcations.map((n) => ({
         id: n.sid,
         title: n.title,
         message: n.message,
-        channel: "PUSH",
+        channel: "Push Protocol",
       })),
     }),
     [isPushSubscribed, toggleSubscribePush, pushNotifcations]

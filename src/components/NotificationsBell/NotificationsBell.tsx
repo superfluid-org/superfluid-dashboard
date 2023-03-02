@@ -105,8 +105,8 @@ const NotificationsBell: FC = () => {
                   <Stack direction="row" alignItems="center" gap={1}>
                     <Typography variant="subtitle1">{title}</Typography>
                     <Typography
-                      variant="subtitle2"
-                      px={0.5}
+                      variant="subtitle1"
+                      px={1}
                       fontSize="10px"
                       borderRadius={2}
                       color="white"
