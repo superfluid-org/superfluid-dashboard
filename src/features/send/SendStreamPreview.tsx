@@ -59,6 +59,7 @@ const PreviewItem: FC<PropsWithChildren<PreviewItemProps>> = ({
   const valueTypography = (
     <Typography
       data-cy={dataCy}
+      component="span"
       variant="body2"
       fontWeight="500"
       sx={{

@@ -1,10 +1,9 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { BigNumber } from "ethers";
 import { parseEther } from "ethers/lib/utils";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAccount } from "wagmi";
-import { bool, date, mixed, number, object, ObjectSchema, string } from "yup";
+import { bool, mixed, number, object, ObjectSchema, string } from "yup";
 import { dateNowSeconds } from "../../utils/dateUtils";
 import { getMinimumStreamTimeInMinutes } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
@@ -12,6 +11,7 @@ import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi } from "../redux/store";
 import { formRestorationOptions } from "../transactionRestoration/transactionRestorations";
 import { UnitOfTime } from "./FlowRateInput";
+import { SCHEDULE_START_END_MIN_DIFF_S } from "./SendCard";
 import useCalculateBufferInfo from "./useCalculateBufferInfo";
 
 export type ValidStreamingForm = {
@@ -74,23 +74,46 @@ const StreamingFormProvider: FC<
     () =>
       object().test(async (values, context) => {
         const primaryValidation: ObjectSchema<ValidStreamingForm> = object({
-          data: object({
-            tokenAddress: string().required().test(testAddress()),
-            receiverAddress: string().required().test(testAddress()),
-            flowRate: object({
-              amountEther: string()
-                .required()
-                .test(testEtherAmount({ notNegative: true, notZero: true })),
-              unitOfTime: mixed<UnitOfTime>()
-                .required()
-                .test(
-                  (x) => Object.values(UnitOfTime).includes(x as UnitOfTime) // To check whether value is from an enum: https://github.com/microsoft/TypeScript/issues/33200#issuecomment-527670779
+          data: object().shape(
+            {
+              tokenAddress: string().required().test(testAddress()),
+              receiverAddress: string().required().test(testAddress()),
+              flowRate: object({
+                amountEther: string()
+                  .required()
+                  .test(testEtherAmount({ notNegative: true, notZero: true })),
+                unitOfTime: mixed<UnitOfTime>()
+                  .required()
+                  .test(
+                    (x) => Object.values(UnitOfTime).includes(x as UnitOfTime) // To check whether value is from an enum: https://github.com/microsoft/TypeScript/issues/33200#issuecomment-527670779
+                  ),
+              }),
+              understandLiquidationRisk: bool().required(),
+              startTimestamp: number()
+                .default(null)
+                .nullable()
+                .when("endTimestamp", ([endTimestamp], schema) =>
+                  endTimestamp
+                    ? schema.max(
+                        endTimestamp - SCHEDULE_START_END_MIN_DIFF_S,
+                        "Start date can not be after end date!"
+                      )
+                    : schema
                 ),
-            }),
-            understandLiquidationRisk: bool().required(),
-            startTimestamp: number().default(null).nullable(),
-            endTimestamp: number().default(null).nullable(),
-          }),
+              endTimestamp: number()
+                .default(null)
+                .nullable()
+                .when("startTimestamp", ([startTimestamp], schema) =>
+                  startTimestamp
+                    ? schema.min(
+                        startTimestamp + SCHEDULE_START_END_MIN_DIFF_S,
+                        "End date can not be before start date!"
+                      )
+                    : schema
+                ),
+            },
+            [["startTimestamp", "endTimestamp"]]
+          ),
         });
 
         clearErrors("data");
@@ -207,15 +230,30 @@ const StreamingFormProvider: FC<
   const { formState, setValue, trigger, clearErrors, setError, watch } =
     formMethods;
 
-  const [receiverAddress, tokenAddress, flowRateEther] = watch([
+  const [
+    receiverAddress,
+    tokenAddress,
+    flowRateEther,
+    startTimestamp,
+    endTimestamp,
+  ] = watch([
     "data.receiverAddress",
     "data.tokenAddress",
     "data.flowRate",
+    "data.startTimestamp",
+    "data.endTimestamp",
   ]);
 
   useEffect(() => {
     setValue("data.understandLiquidationRisk", false);
-  }, [receiverAddress, tokenAddress, flowRateEther, setValue]);
+  }, [
+    receiverAddress,
+    tokenAddress,
+    startTimestamp,
+    endTimestamp,
+    flowRateEther,
+    setValue,
+  ]);
 
   const [isInitialized, setIsInitialized] = useState(!initialFormValues);
 

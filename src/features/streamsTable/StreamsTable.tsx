@@ -114,11 +114,13 @@ const StreamsTable: FC<StreamsTableProps> = ({
           where: {
             or: [
               {
+                superToken: tokenAddress,
                 sender: visibleAddress.toLowerCase(),
                 cancelledAt: null,
                 executedAt: null,
               },
               {
+                superToken: tokenAddress,
                 receiver: visibleAddress.toLowerCase(),
                 cancelledAt: null,
                 executedAt: null,
@@ -141,7 +143,6 @@ const StreamsTable: FC<StreamsTableProps> = ({
       },
     }
   );
-
 
   const scheduledIncomingStreams = useMemo(
     () =>

@@ -38,15 +38,17 @@ export interface DeleteFlowWithScheduling extends FlowDeleteMutation {
   senderAddress: string;
 }
 
-interface ScheduledDatesResponse {
-  startDate: number | null;
-  endDate: number | null;
+interface StreamScheduleResponse {
+  startDate?: number;
+  startMaxDelay?: number;
+  endDate?: number;
+  flowRate?: string;
 }
 
 export const flowSchedulerEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
     scheduledDates: builder.query<
-      ScheduledDatesResponse,
+      StreamScheduleResponse | undefined,
       GetFlowScheduledDates
     >({
       queryFn: async ({
@@ -61,17 +63,22 @@ export const flowSchedulerEndpoints = {
           framework.settings.provider
         );
 
-        const { startDate, endDate } = await flowScheduler.getFlowSchedule(
-          superTokenAddress,
-          senderAddress,
-          receiverAddress
-        );
+        const { startDate, endDate, startMaxDelay, flowRate } =
+          await flowScheduler.getFlowSchedule(
+            superTokenAddress,
+            senderAddress,
+            receiverAddress
+          );
+
+        if (!startDate && !endDate) return { data: undefined };
 
         return {
           data: {
             startDate,
             endDate,
-          },
+            startMaxDelay,
+            flowRate: flowRate.toString(),
+          } as StreamScheduleResponse,
         };
       },
       providesTags: (_result, _error, arg) => [
