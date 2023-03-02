@@ -7,11 +7,6 @@ import {
 import { ParsedResponseType, SignerType } from "@pushprotocol/restapi";
 import * as PushApi from "@pushprotocol/restapi";
 
-export interface ResolveNameResult {
-  address: string;
-  name: string;
-}
-
 export const pushApi = createApi({
   reducerPath: "push",
   baseQuery: fakeBaseQuery(),
