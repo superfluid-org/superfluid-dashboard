@@ -1,15 +1,7 @@
 import { useCallback } from "react";
-import {
-  useAccount,
-  useNetwork,
-  useQuery,
-  useSigner,
-  useSwitchNetwork,
-} from "wagmi";
-import * as PushApi from "@pushprotocol/restapi";
+import { useAccount, useNetwork, useSigner, useSwitchNetwork } from "wagmi";
 import { SignerType } from "@pushprotocol/restapi";
 import { pushApi } from "../features/notifications/pushApi.slice";
-import noop from "lodash/noop";
 import { Signer } from "ethers";
 Signer;
 export const superfluidChannelAddress =
