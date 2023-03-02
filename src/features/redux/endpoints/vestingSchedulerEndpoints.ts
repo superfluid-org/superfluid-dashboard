@@ -48,7 +48,7 @@ interface RpcVestingSchedule {
   endDateTimestamp: number;
 }
 
-interface EnsureRequiredAccessForVestingMutation
+interface FixAccessForVestingMutation
   extends BaseSuperTokenMutation {
   senderAddress: string;
   requiredTokenAllowanceWei: string;
@@ -58,9 +58,9 @@ interface EnsureRequiredAccessForVestingMutation
 
 export const vestingSchedulerMutationEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
-    ensureRequiredAccessForVesting: builder.mutation<
+    fixAccessForVesting: builder.mutation<
       TransactionInfo & { subTransactionTitles: TransactionTitle[] },
-      EnsureRequiredAccessForVestingMutation
+      FixAccessForVestingMutation
     >({
       queryFn: async ({
         signer,
@@ -160,7 +160,7 @@ export const vestingSchedulerMutationEndpoints = {
           chainId,
           dispatch,
           signer: signerAddress,
-          title: "Ensure Required Access for Vesting",
+          title: "Fix Access for Vesting",
           extraData: {
             subTransactionTitles,
             ...(transactionExtraData ?? {}),

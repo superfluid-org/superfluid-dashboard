@@ -32,7 +32,7 @@ declare module "@superfluid-finance/sdk-redux" {
     "Modify Stream": true;
     "Create Vesting Schedule": true;
     "Delete Vesting Schedule": true;
-    "Ensure Required Access for Vesting": true;
+    "Fix Access for Vesting": true;
   }
 }
 

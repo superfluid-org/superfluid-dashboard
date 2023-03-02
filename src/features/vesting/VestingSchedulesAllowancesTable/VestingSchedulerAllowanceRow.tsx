@@ -12,6 +12,7 @@ import {
   TableBody,
   TableCell,
   TableRow,
+  Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { BigNumber } from "ethers";
@@ -25,7 +26,6 @@ import Amount from "../../token/Amount";
 import TokenIcon from "../../token/TokenIcon";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
-import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 
 export const VestingSchedulerAllowanceRowSkeleton = () => (
   <TableRow>
@@ -105,8 +105,8 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
     });
 
   const { txAnalytics } = useAnalytics();
-  const [ensureRequiredAccess, ensureRequiredAccessResult] =
-    rpcApi.useEnsureRequiredAccessForVestingMutation();
+  const [fixAccess, fixAccessResult] =
+    rpcApi.useFixAccessForVestingMutation();
 
   const { address: currentAccountAddress } = useAccount();
   const isSenderLooking =
@@ -247,9 +247,9 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                     {showEnsureRequiredAccessButton && (
                       <Stack direction="row" justifyContent="flex-end">
                         <TransactionBoundary
-                          mutationResult={ensureRequiredAccessResult}
+                          mutationResult={fixAccessResult}
                         >
-                          {() => (
+                          {({ setDialogLoadingInfo }) => (
                             <TransactionButton
                               ButtonProps={{
                                 size: "medium",
@@ -262,6 +262,13 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                                     "No vesting contract configured for network. Should never happen!"
                                   );
                                 }
+
+                                setDialogLoadingInfo(
+                                  <Typography variant="h5" color="text.secondary" translate="yes">
+                                    You are fixing access for the vesting smart contract so that it could be correctly executed.
+                                  </Typography>
+                                );
+
                                 const primaryArgs = {
                                   chainId: network.id,
                                   superTokenAddress: tokenAddress,
@@ -273,7 +280,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                                   requiredFlowRateAllowanceWei:
                                     requiredFlowOperatorAllowance.toString(),
                                 };
-                                ensureRequiredAccess({
+                                fixAccess({
                                   ...primaryArgs,
                                   signer,
                                   waitForConfirmation: false,
@@ -281,7 +288,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                                   .unwrap()
                                   .then(
                                     ...txAnalytics(
-                                      "Ensure Required Access for Vesting",
+                                      "Fix Access for Vesting",
                                       primaryArgs
                                     )
                                   );

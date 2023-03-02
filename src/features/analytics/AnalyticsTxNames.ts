@@ -9,4 +9,4 @@ export type AnalyticsTransactionNames =
   | "Revoke IDA Subscription"
   | "Create Vesting Schedule"
   | "Delete Vesting Schedule"
-  | "Ensure Required Access for Vesting";
+  | "Fix Access for Vesting";
