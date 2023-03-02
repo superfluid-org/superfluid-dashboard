@@ -62,7 +62,7 @@ const NoWalletConnected: FC = () => {
 const NotificationSettings: FC = () => {
   const { address } = useAccount();
 
-  const notificationChannels = useNotificationChannels();
+  const { channels } = useNotificationChannels();
 
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -118,7 +118,7 @@ const NotificationSettings: FC = () => {
             </Link>
           </Typography>
         </Stack>
-        {Object.values(notificationChannels).map((channel) => (
+        {Object.values(channels).map((channel) => (
           <FormControlLabel
             key={channel.name}
             control={

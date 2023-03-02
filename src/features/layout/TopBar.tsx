@@ -1,3 +1,4 @@
+import { Notifications } from "@mui/icons-material";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import {
   alpha,
@@ -11,6 +12,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { memo } from "react";
+import NotificationsBell from "../../components/NotificationsBell/NotificationsBell";
 import useBodyScrolled from "../../hooks/useBodyScrolled";
 import ImpersonationChip from "../impersonation/ImpersonationChip";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
@@ -96,6 +98,7 @@ export default memo(function TopBar() {
         <Box flex={1} />
 
         <Stack direction="row" spacing={2} alignItems="center">
+          <NotificationsBell />
           {isBelowLg && !isImpersonated && <ConnectWallet small />}
           <ImpersonationChip />
           <SelectNetwork />

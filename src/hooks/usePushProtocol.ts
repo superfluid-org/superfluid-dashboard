@@ -40,7 +40,7 @@ export const usePushProtocol = () => {
 
   return {
     toggleSubscribe,
-    notifications,
+    notifications: notifications ?? [],
     isSubscribed: Boolean(isSubscribed),
   };
 };
