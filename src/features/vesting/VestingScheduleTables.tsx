@@ -239,7 +239,7 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
           {vestingSchedulesLoading ? (
             <Skeleton width="200px" />
           ) : (
-            <Typography variant="h6">Allowances and Permissions</Typography>
+            <Typography variant="h6">Permissions and Allowances</Typography>
           )}
 
           <VestingSchedulerAllowancesTable />

@@ -120,7 +120,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
         title="No Allowances Data"
         description="Allowances and permissions that you have given will appear here."
       />
-    );
+    );  
   }
 
   return (
@@ -138,17 +138,17 @@ const VestingSchedulerAllowancesTable: FC = () => {
                 />
               </TableCell>
               <TableCell data-cy="operator-permissions-cell" width="260px">
-                Flow Operator Permissions
+                Stream Permissions
                 <TooltipIcon
                   IconProps={{ sx: { ml: 0.5 } }}
-                  title="The flow operator permissions needed by the contract for creating & deletion of Superfluid flows."
+                  title="The stream permissions needed by the contract for creating & deletion of Superfluid flows."
                 />
               </TableCell>
               <TableCell data-cy="flow-allowance-cell" width="250px">
-                Flow Rate Allowance
+                Stream Allowance
                 <TooltipIcon
                   IconProps={{ sx: { ml: 0.5 } }}
-                  title="The flow rate allowance needed by the contract for creating Superfluid flows."
+                  title="The stream flow rate allowance needed by the contract for creating Superfluid flows."
                 />
               </TableCell>
               <TableCell width="60px" />

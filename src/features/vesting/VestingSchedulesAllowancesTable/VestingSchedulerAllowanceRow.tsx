@@ -1,5 +1,5 @@
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
-import DangerousRoundedIcon from "@mui/icons-material/DangerousRounded";
+import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import {
@@ -177,7 +177,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                 color="primary"
               />
             ) : (
-              <DangerousRoundedIcon
+              <CancelRoundedIcon
                 data-cy={`${tokenSymbol}-allowance-status`}
                 color="error"
               />
@@ -192,7 +192,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                 color="primary"
               />
             ) : (
-              <DangerousRoundedIcon
+              <CancelRoundedIcon
                 data-cy={`${tokenSymbol}-permission-status`}
                 color="error"
               />
@@ -207,7 +207,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                 color="primary"
               />
             ) : (
-              <DangerousRoundedIcon
+              <CancelRoundedIcon
                 data-cy={`${tokenSymbol}-flow-allowance-status`}
                 color="error"
               />
@@ -236,21 +236,16 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
           >
             <Table sx={{ width: "100%" }}>
               <TableBody>
-                <TableRow>
-                  <TableCell
-                    sx={{
-                      verticalAlign: "bottom",
-                      "&.MuiListItemText-secondary": {
-                        fontSize: "1rem"
-                      }
-                    }}
-                  >
+                <TableRow
+                  sx={{
+                    "& .MuiTypography-body2": {
+                      fontSize: "1rem",
+                    },
+                  }}
+                >
+                  <TableCell>
                     {showEnsureRequiredAccessButton && (
-                      <Stack
-                        direction="row"
-                        justifyContent="flex-end"
-                        sx={{ mb: 1 }}
-                      >
+                      <Stack direction="row" justifyContent="flex-end">
                         <TransactionBoundary
                           mutationResult={ensureRequiredAccessResult}
                         >
@@ -292,7 +287,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                                   );
                               }}
                             >
-                              Give Required Access
+                              Fix Access
                             </TransactionButton>
                           )}
                         </TransactionBoundary>
@@ -300,6 +295,15 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                     )}
                   </TableCell>
                   <TableCell width="220px">
+                    <ListItemText
+                      data-cy={`${tokenSymbol}-current-allowance`}
+                      primary="Current"
+                      secondary={
+                        <>
+                          <Amount wei={tokenAllowance} /> {tokenSymbol}
+                        </>
+                      }
+                    />
                     <ListItemText
                       data-cy={`${tokenSymbol}-recommended-allowance`}
                       primary="Required"
@@ -310,29 +314,30 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                         </>
                       }
                     />
-                    <ListItemText
-                      data-cy={`${tokenSymbol}-current-allowance`}
-                      primary="Current"
-                      secondary={
-                        <>
-                          <Amount wei={tokenAllowance} /> {tokenSymbol}
-                        </>
-                      }
-                    />
                   </TableCell>
                   <TableCell width="260px">
-                    <ListItemText
-                      data-cy={`${tokenSymbol}-recommended-permissions`}
-                      primary="Required"
-                      secondary={requiredPermissionsString}
-                    />
                     <ListItemText
                       primary="Current"
                       data-cy={`${tokenSymbol}-current-permissions`}
                       secondary={permissionsString}
                     />
+                    <ListItemText
+                      data-cy={`${tokenSymbol}-recommended-permissions`}
+                      primary="Required"
+                      secondary={requiredPermissionsString}
+                    />
                   </TableCell>
                   <TableCell width="350px">
+                    <ListItemText
+                      data-cy={`${tokenSymbol}-current-flow-allowance`}
+                      primary="Current"
+                      secondary={
+                        <>
+                          <Amount wei={flowOperatorAllowance} /> {tokenSymbol}
+                          /sec
+                        </>
+                      }
+                    />
                     <ListItemText
                       data-cy={`${tokenSymbol}-recommended-flow-allowance`}
                       primary="Required"
@@ -340,16 +345,6 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                         <>
                           <Amount wei={requiredFlowOperatorAllowance} />{" "}
                           {tokenSymbol}
-                          /sec
-                        </>
-                      }
-                    />
-                    <ListItemText
-                      data-cy={`${tokenSymbol}-current-flow-allowance`}
-                      primary="Current"
-                      secondary={
-                        <>
-                          <Amount wei={flowOperatorAllowance} /> {tokenSymbol}
                           /sec
                         </>
                       }
