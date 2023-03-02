@@ -117,8 +117,8 @@ const VestingSchedulerAllowancesTable: FC = () => {
   if ((!isLoading && tokenSummaries.length === 0) || !senderAddress) {
     return (
       <NoContentPaper
-        title="No Allowances Data"
-        description="Allowances and permissions that you have given will appear here."
+        title="No Access Data"
+        description="Permissions and allowances that you have given will appear here."
       />
     );  
   }

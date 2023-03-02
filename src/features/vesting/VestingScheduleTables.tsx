@@ -42,8 +42,8 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
   >
     <Typography variant="body1" color="secondary">
       {whitelisted
-        ? "Keepers arranged by Superfluid."
-        : "Keeper arrangements are user responsibility."}
+        ? <>Your wallet address <strong>is</strong> on the allowlist.</>
+        : <>Your wallet address is <strong>not</strong> on the allowlist.</>}
     </Typography>
 
     {network.vestingContractAddress && (
