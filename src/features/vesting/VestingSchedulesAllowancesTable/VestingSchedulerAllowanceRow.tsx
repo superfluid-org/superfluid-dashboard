@@ -8,16 +8,24 @@ import {
   ListItemText,
   Skeleton,
   Stack,
+  Table,
+  TableBody,
   TableCell,
   TableRow,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { BigNumber } from "ethers";
 import { FC, useState } from "react";
+import { useAccount } from "wagmi";
+import { flowOperatorPermissionsToString } from "../../../utils/flowOperatorPermissionsToString";
+import { useAnalytics } from "../../analytics/useAnalytics";
 import { Network } from "../../network/networks";
 import { rpcApi, subgraphApi } from "../../redux/store";
+import Amount from "../../token/Amount";
 import TokenIcon from "../../token/TokenIcon";
-import VestingSchedulerAllowanceDetailsTable from "./VestingSchedulerAllowanceDetailsTable";
+import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
+import { TransactionButton } from "../../transactionBoundary/TransactionButton";
+import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 
 export const VestingSchedulerAllowanceRowSkeleton = () => (
   <TableRow>
@@ -82,6 +90,13 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   requiredFlowOperatorAllowance,
 }) => {
   const theme = useTheme();
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const tokenQuery = subgraphApi.useTokenQuery({
+    chainId: network.id,
+    id: tokenAddress,
+  });
+
   const vestingSchedulerAllowancesQuery =
     rpcApi.useGetVestingSchedulerAllowancesQuery({
       chainId: network.id,
@@ -89,12 +104,14 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
       senderAddress: senderAddress,
     });
 
-  const tokenQuery = subgraphApi.useTokenQuery({
-    chainId: network.id,
-    id: tokenAddress,
-  });
+  const { txAnalytics } = useAnalytics();
+  const [ensureRequiredAccess, ensureRequiredAccessResult] =
+    rpcApi.useEnsureRequiredAccessForVestingMutation();
 
-  const [isExpanded, setIsExpanded] = useState(false);
+  const { address: currentAccountAddress } = useAccount();
+  const isSenderLooking =
+    currentAccountAddress &&
+    senderAddress.toLowerCase() === currentAccountAddress.toLowerCase();
 
   if (!vestingSchedulerAllowancesQuery.data) {
     return <VestingSchedulerAllowanceRowSkeleton />;
@@ -109,10 +126,24 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   );
 
   const existingPermissions = Number(flowOperatorPermissions);
-
   const isEnoughFlowOperatorPermissions =
     requiredFlowOperatorPermissions === 0 ||
     existingPermissions & requiredFlowOperatorPermissions;
+
+  const showEnsureRequiredAccessButton =
+    isSenderLooking &&
+    (!isEnoughTokenAllowance ||
+      !isEnoughFlowOperatorAllowance ||
+      !isEnoughFlowOperatorPermissions);
+
+  const permissionsString =
+    flowOperatorPermissionsToString(existingPermissions);
+  const requiredPermissionsString = flowOperatorPermissionsToString(
+    requiredFlowOperatorPermissions
+  );
+
+  const token = tokenQuery.data;
+  const tokenSymbol = token?.symbol || "";
 
   return (
     <>
@@ -132,22 +163,22 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
           <Stack direction="row" alignItems="center" gap={1.5}>
             <TokenIcon
               isSuper
-              tokenSymbol={tokenQuery.data?.symbol}
+              tokenSymbol={tokenSymbol}
               isLoading={tokenQuery.isLoading}
             />
-            <ListItemText primary={tokenQuery.data?.symbol} />
+            <ListItemText primary={tokenSymbol} />
           </Stack>
         </TableCell>
         <TableCell>
           <Stack direction="column" spacing={1} alignItems="center">
             {isEnoughTokenAllowance ? (
               <CheckCircleRoundedIcon
-                data-cy={`${tokenQuery.data?.symbol}-allowance-status`}
+                data-cy={`${tokenSymbol}-allowance-status`}
                 color="primary"
               />
             ) : (
               <DangerousRoundedIcon
-                data-cy={`${tokenQuery.data?.symbol}-allowance-status`}
+                data-cy={`${tokenSymbol}-allowance-status`}
                 color="error"
               />
             )}
@@ -157,12 +188,12 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
           <Stack direction="column" spacing={1} alignItems="center">
             {isEnoughFlowOperatorPermissions ? (
               <CheckCircleRoundedIcon
-                data-cy={`${tokenQuery.data?.symbol}-permission-status`}
+                data-cy={`${tokenSymbol}-permission-status`}
                 color="primary"
               />
             ) : (
               <DangerousRoundedIcon
-                data-cy={`${tokenQuery.data?.symbol}-permission-status`}
+                data-cy={`${tokenSymbol}-permission-status`}
                 color="error"
               />
             )}
@@ -172,12 +203,12 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
           <Stack direction="column" spacing={1} alignItems="center">
             {isEnoughFlowOperatorAllowance ? (
               <CheckCircleRoundedIcon
-                data-cy={`${tokenQuery.data?.symbol}-flow-allowance-status`}
+                data-cy={`${tokenSymbol}-flow-allowance-status`}
                 color="primary"
               />
             ) : (
               <DangerousRoundedIcon
-                data-cy={`${tokenQuery.data?.symbol}-flow-allowance-status`}
+                data-cy={`${tokenSymbol}-flow-allowance-status`}
                 color="error"
               />
             )}
@@ -201,17 +232,132 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
           <Collapse
             in={isExpanded}
             timeout={theme.transitions.duration.standard}
-            unmountOnExit
+            mountOnEnter
           >
-            <VestingSchedulerAllowanceDetailsTable
-              tokenSymbol={tokenQuery.data?.symbol || ""}
-              tokenAllowance={tokenAllowance}
-              flowOperatorAllowance={flowOperatorAllowance}
-              recommendedTokenAllowance={recommendedTokenAllowance}
-              requiredFlowOperatorAllowance={requiredFlowOperatorAllowance}
-              existingPermissions={existingPermissions}
-              requiredFlowOperatorPermissions={requiredFlowOperatorPermissions}
-            />
+            <Table sx={{ width: "100%" }}>
+              <TableBody>
+                <TableRow>
+                  <TableCell
+                    sx={{
+                      verticalAlign: "bottom",
+                      "&.MuiListItemText-secondary": {
+                        fontSize: "1rem"
+                      }
+                    }}
+                  >
+                    {showEnsureRequiredAccessButton && (
+                      <Stack
+                        direction="row"
+                        justifyContent="flex-end"
+                        sx={{ mb: 1 }}
+                      >
+                        <TransactionBoundary
+                          mutationResult={ensureRequiredAccessResult}
+                        >
+                          {() => (
+                            <TransactionButton
+                              ButtonProps={{
+                                size: "medium",
+                                fullWidth: false,
+                                variant: "contained",
+                              }}
+                              onClick={async (signer) => {
+                                if (!network.vestingContractAddress) {
+                                  throw new Error(
+                                    "No vesting contract configured for network. Should never happen!"
+                                  );
+                                }
+                                const primaryArgs = {
+                                  chainId: network.id,
+                                  superTokenAddress: tokenAddress,
+                                  senderAddress: senderAddress,
+                                  requiredTransferAllowanceWei:
+                                    recommendedTokenAllowance.toString(),
+                                  requiredFlowOperatorPermissions:
+                                    requiredFlowOperatorPermissions,
+                                  requiredFlowRateAllowanceWei:
+                                    requiredFlowOperatorAllowance.toString(),
+                                };
+                                ensureRequiredAccess({
+                                  ...primaryArgs,
+                                  signer,
+                                  waitForConfirmation: false,
+                                })
+                                  .unwrap()
+                                  .then(
+                                    ...txAnalytics(
+                                      "Ensure Required Access for Vesting",
+                                      primaryArgs
+                                    )
+                                  );
+                              }}
+                            >
+                              Give Required Access
+                            </TransactionButton>
+                          )}
+                        </TransactionBoundary>
+                      </Stack>
+                    )}
+                  </TableCell>
+                  <TableCell width="220px">
+                    <ListItemText
+                      data-cy={`${tokenSymbol}-recommended-allowance`}
+                      primary="Required"
+                      secondary={
+                        <>
+                          <Amount wei={recommendedTokenAllowance} />{" "}
+                          {tokenSymbol}
+                        </>
+                      }
+                    />
+                    <ListItemText
+                      data-cy={`${tokenSymbol}-current-allowance`}
+                      primary="Current"
+                      secondary={
+                        <>
+                          <Amount wei={tokenAllowance} /> {tokenSymbol}
+                        </>
+                      }
+                    />
+                  </TableCell>
+                  <TableCell width="260px">
+                    <ListItemText
+                      data-cy={`${tokenSymbol}-recommended-permissions`}
+                      primary="Required"
+                      secondary={requiredPermissionsString}
+                    />
+                    <ListItemText
+                      primary="Current"
+                      data-cy={`${tokenSymbol}-current-permissions`}
+                      secondary={permissionsString}
+                    />
+                  </TableCell>
+                  <TableCell width="350px">
+                    <ListItemText
+                      data-cy={`${tokenSymbol}-recommended-flow-allowance`}
+                      primary="Required"
+                      secondary={
+                        <>
+                          <Amount wei={requiredFlowOperatorAllowance} />{" "}
+                          {tokenSymbol}
+                          /sec
+                        </>
+                      }
+                    />
+                    <ListItemText
+                      data-cy={`${tokenSymbol}-current-flow-allowance`}
+                      primary="Current"
+                      secondary={
+                        <>
+                          <Amount wei={flowOperatorAllowance} /> {tokenSymbol}
+                          /sec
+                        </>
+                      }
+                    />
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
           </Collapse>
         </TableCell>
       </TableRow>
