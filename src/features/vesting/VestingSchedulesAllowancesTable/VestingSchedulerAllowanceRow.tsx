@@ -105,8 +105,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
     });
 
   const { txAnalytics } = useAnalytics();
-  const [fixAccess, fixAccessResult] =
-    rpcApi.useFixAccessForVestingMutation();
+  const [fixAccess, fixAccessResult] = rpcApi.useFixAccessForVestingMutation();
 
   const { address: currentAccountAddress } = useAccount();
   const isSenderLooking =
@@ -245,60 +244,63 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                 >
                   <TableCell>
                     {showEnsureRequiredAccessButton && (
-                      <Stack direction="row" justifyContent="flex-end">
-                        <TransactionBoundary
-                          mutationResult={fixAccessResult}
-                        >
-                          {({ setDialogLoadingInfo }) => (
-                            <TransactionButton
-                              ButtonProps={{
-                                size: "medium",
-                                fullWidth: false,
-                                variant: "contained",
-                              }}
-                              onClick={async (signer) => {
-                                if (!network.vestingContractAddress) {
-                                  throw new Error(
-                                    "No vesting contract configured for network. Should never happen!"
-                                  );
-                                }
-
-                                setDialogLoadingInfo(
-                                  <Typography variant="h5" color="text.secondary" translate="yes">
-                                    You are fixing access for the vesting smart contract so that it could be correctly executed.
-                                  </Typography>
+                      <TransactionBoundary mutationResult={fixAccessResult}>
+                        {({ setDialogLoadingInfo }) => (
+                          <TransactionButton
+                            ButtonProps={{
+                              size: "medium",
+                              fullWidth: false,
+                              variant: "contained",
+                            }}
+                            onClick={async (signer) => {
+                              if (!network.vestingContractAddress) {
+                                throw new Error(
+                                  "No vesting contract configured for network. Should never happen!"
                                 );
+                              }
 
-                                const primaryArgs = {
-                                  chainId: network.id,
-                                  superTokenAddress: tokenAddress,
-                                  senderAddress: senderAddress,
-                                  requiredTokenAllowanceWei:
-                                    recommendedTokenAllowance.toString(),
-                                  requiredFlowOperatorPermissions:
-                                    requiredFlowOperatorPermissions,
-                                  requiredFlowRateAllowanceWei:
-                                    requiredFlowOperatorAllowance.toString(),
-                                };
-                                fixAccess({
-                                  ...primaryArgs,
-                                  signer,
-                                  waitForConfirmation: false,
-                                })
-                                  .unwrap()
-                                  .then(
-                                    ...txAnalytics(
-                                      "Fix Access for Vesting",
-                                      primaryArgs
-                                    )
-                                  );
-                              }}
-                            >
-                              Fix Access
-                            </TransactionButton>
-                          )}
-                        </TransactionBoundary>
-                      </Stack>
+                              setDialogLoadingInfo(
+                                <Typography
+                                  variant="h5"
+                                  color="text.secondary"
+                                  translate="yes"
+                                >
+                                  You are fixing access for the vesting smart
+                                  contract so that it could be correctly
+                                  executed.
+                                </Typography>
+                              );
+
+                              const primaryArgs = {
+                                chainId: network.id,
+                                superTokenAddress: tokenAddress,
+                                senderAddress: senderAddress,
+                                requiredTokenAllowanceWei:
+                                  recommendedTokenAllowance.toString(),
+                                requiredFlowOperatorPermissions:
+                                  requiredFlowOperatorPermissions,
+                                requiredFlowRateAllowanceWei:
+                                  requiredFlowOperatorAllowance.toString(),
+                              };
+                              fixAccess({
+                                ...primaryArgs,
+                                signer,
+                                waitForConfirmation: false,
+                              })
+                                .unwrap()
+                                .then(
+                                  ...txAnalytics(
+                                    "Fix Access for Vesting",
+                                    primaryArgs
+                                  )
+                                )
+                                .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
+                            }}
+                          >
+                            Fix Access
+                          </TransactionButton>
+                        )}
+                      </TransactionBoundary>
                     )}
                   </TableCell>
                   <TableCell width="220px">
