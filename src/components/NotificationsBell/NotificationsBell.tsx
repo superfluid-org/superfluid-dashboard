@@ -127,7 +127,7 @@ const NotificationsBell: FC = () => {
             ))
           ) : (
             <Typography variant="body1" p={1.5}>
-              You seem to have 0 notifications. <br /> Go to{" "}
+              You seem to have no notifications. <br /> Go to{" "}
               <Link href="/settings">settings</Link>, and subscribe to some
               channels.
             </Typography>
