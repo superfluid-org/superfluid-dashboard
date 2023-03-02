@@ -22,3 +22,30 @@ Feature: Test cases that run indefinitely on all supported networks
       | avalanche      | AVAX  |
       | bsc            | BNB   |
 
+  Scenario Outline: Superfluid RPCS are not behind on <network>
+    Given Superfluid RPCs are not more then 10 minutes behind on <network>
+    Examples:
+      | network        |
+      | goerli         |
+      | polygon-mumbai |
+      | avalanche-fuji |
+      | gnosis         |
+      | polygon        |
+      | optimism       |
+      | arbitrum-one   |
+      | avalanche      |
+      | bsc            |
+
+  Scenario Outline: The graph is not behind on <network>
+    Given The graph is not more then 10 minutes behind on <network>
+    Examples:
+      | network        |
+      | goerli         |
+      | polygon-mumbai |
+      | avalanche-fuji |
+      | gnosis         |
+      | polygon        |
+      | optimism       |
+      | arbitrum-one   |
+      | avalanche      |
+      | bsc            |
