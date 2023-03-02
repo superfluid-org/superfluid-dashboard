@@ -223,7 +223,6 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
         <TableCell
           colSpan={5}
           sx={{
-            border: "none",
             minHeight: 0,
             p: 0,
           }}
