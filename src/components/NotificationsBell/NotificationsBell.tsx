@@ -117,7 +117,7 @@ const NotificationsBell: FC = () => {
                         {channel}
                       </Typography>
                     </Stack>
-                    g<Typography variant="caption">{message}</Typography>
+                    <Typography variant="caption">{message}</Typography>
                   </Stack>
                 </Tooltip>
                 {i !== arr.length - 1 && <Divider />}
