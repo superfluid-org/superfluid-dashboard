@@ -1,7 +1,5 @@
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
-import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
-import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import {
   Collapse,
   IconButton,
@@ -26,6 +24,7 @@ import Amount from "../../token/Amount";
 import TokenIcon from "../../token/TokenIcon";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
+import OpenIcon from "../../../components/OpenIcon/OpenIcon";
 
 export const VestingSchedulerAllowanceRowSkeleton = () => (
   <TableRow>
@@ -129,7 +128,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
     requiredFlowOperatorPermissions === 0 ||
     existingPermissions & requiredFlowOperatorPermissions;
 
-  const showEnsureRequiredAccessButton =
+  const showFixRequiredAccessButton =
     isSenderLooking &&
     (!isEnoughTokenAllowance ||
       !isEnoughFlowOperatorAllowance ||
@@ -215,7 +214,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
         </TableCell>
         <TableCell>
           <IconButton onClick={() => setIsExpanded(!isExpanded)}>
-            {isExpanded ? <ExpandLessRoundedIcon /> : <ExpandMoreRoundedIcon />}
+            <OpenIcon open={isExpanded} />
           </IconButton>
         </TableCell>
       </TableRow>
@@ -242,7 +241,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                   }}
                 >
                   <TableCell>
-                    {showEnsureRequiredAccessButton && (
+                    {showFixRequiredAccessButton && (
                       <TransactionBoundary mutationResult={fixAccessResult}>
                         {({ setDialogLoadingInfo }) => (
                           <TransactionButton
