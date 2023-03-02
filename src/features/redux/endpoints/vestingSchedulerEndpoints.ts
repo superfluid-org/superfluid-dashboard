@@ -51,7 +51,7 @@ interface RpcVestingSchedule {
 interface EnsureRequiredAccessForVestingMutation
   extends BaseSuperTokenMutation {
   senderAddress: string;
-  requiredTransferAllowanceWei: string;
+  requiredTokenAllowanceWei: string;
   requiredFlowOperatorPermissions: number;
   requiredFlowRateAllowanceWei: string;
 }
@@ -67,7 +67,7 @@ export const vestingSchedulerMutationEndpoints = {
         chainId,
         superTokenAddress,
         senderAddress,
-        requiredTransferAllowanceWei,
+        requiredTokenAllowanceWei,
         requiredFlowOperatorPermissions,
         requiredFlowRateAllowanceWei,
         transactionExtraData,
@@ -117,27 +117,27 @@ export const vestingSchedulerMutationEndpoints = {
           });
         }
 
-        // # ERC-20 allowance ("transfer allowance")
+        // # ERC-20 allowance ("token allowance")
         const superTokenContract = SuperToken__factory.connect(
           superToken.address,
           signer
         );
-        const existingTransferAllowance = await superTokenContract.allowance(
+        const existingTokenAllowance = await superTokenContract.allowance(
           senderAddress,
           vestingScheduler.address
         );
-        const requiredTransferAllowance = BigNumber.from(
-          requiredTransferAllowanceWei
+        const requiredTokenAllowance = BigNumber.from(
+          requiredTokenAllowanceWei
         );
-        const hasRequiredTransferAllowance = existingTransferAllowance.gte(
-          requiredTransferAllowance
+        const hasRequiredTokenAllowance = existingTokenAllowance.gte(
+          requiredTokenAllowance
         );
 
-        if (!hasRequiredTransferAllowance) {
+        if (!hasRequiredTokenAllowance) {
           const approveAllowancePromise =
             superTokenContract.populateTransaction.approve(
               vestingScheduler.address,
-              requiredTransferAllowance
+              requiredTokenAllowance
             );
           batchedOperations.push({
             operation: new Operation(approveAllowancePromise, "ERC20_APPROVE"),
@@ -316,7 +316,7 @@ export const vestingSchedulerMutationEndpoints = {
         });
 
         const flowRateBigNumber = BigNumber.from(arg.flowRateWei);
-        const maximumNeededTransferAllowance = BigNumber.from(
+        const maximumNeededTokenAllowance = BigNumber.from(
           arg.cliffTransferAmountWei
         )
           .add(flowRateBigNumber.mul(START_DATE_VALID_AFTER_IN_SECONDS))
@@ -327,17 +327,17 @@ export const vestingSchedulerMutationEndpoints = {
           signer
         );
 
-        const existingTransferAllowance = await superTokenContract.allowance(
+        const existingTokenAllowance = await superTokenContract.allowance(
           senderAddress,
           vestingScheduler.address
         );
-        const newTransferAllowance = existingTransferAllowance.add(
-          maximumNeededTransferAllowance
+        const newTokenAllowance = existingTokenAllowance.add(
+          maximumNeededTokenAllowance
         );
         const approveAllowancePromise =
           superTokenContract.populateTransaction.approve(
             vestingScheduler.address,
-            newTransferAllowance
+            newTokenAllowance
           );
 
         subOperations.push({

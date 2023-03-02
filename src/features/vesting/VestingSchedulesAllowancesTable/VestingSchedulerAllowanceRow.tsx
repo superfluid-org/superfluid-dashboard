@@ -266,7 +266,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                                   chainId: network.id,
                                   superTokenAddress: tokenAddress,
                                   senderAddress: senderAddress,
-                                  requiredTransferAllowanceWei:
+                                  requiredTokenAllowanceWei:
                                     recommendedTokenAllowance.toString(),
                                   requiredFlowOperatorPermissions:
                                     requiredFlowOperatorPermissions,
