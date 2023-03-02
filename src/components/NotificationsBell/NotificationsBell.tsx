@@ -11,6 +11,7 @@ import {
   Stack,
   Tooltip,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { FC, useMemo, useState } from "react";
 import { useSeenNotifications } from "../../features/notifications/notifactionHooks";
@@ -22,6 +23,7 @@ import { useAppDispatch } from "../../features/redux/store";
 import { useNotificationChannels } from "../../hooks/useNotificationChannels";
 
 const NotificationsBell: FC = () => {
+  const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const dispatch = useAppDispatch();
@@ -82,7 +84,7 @@ const NotificationsBell: FC = () => {
         }}
       >
         <Box>
-          {notifications.map(({ id, title, message }, i, arr) => (
+          {notifications.map(({ id, title, message, channel }, i, arr) => (
             <>
               <Tooltip
                 followCursor
@@ -100,7 +102,19 @@ const NotificationsBell: FC = () => {
                   }}
                 >
                   <Badge variant="dot" color="primary" invisible={seen[id]} />
-                  <Typography variant="subtitle1">{title}</Typography>
+                  <Stack direction="row" alignItems="center" gap={1}>
+                    <Typography variant="subtitle1">{title}</Typography>
+                    <Typography
+                      variant="subtitle2"
+                      px={0.5}
+                      fontSize="12px"
+                      borderRadius={2}
+                      color="white"
+                      sx={{ backgroundColor: theme.palette.primary.main }}
+                    >
+                      {channel}
+                    </Typography>
+                  </Stack>
                   <Typography variant="caption">{message}</Typography>
                 </Stack>
               </Tooltip>

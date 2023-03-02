@@ -6,6 +6,7 @@ export type Notification = {
   id: string;
   title: string;
   message: string;
+  channel: NotificationChannelType;
 };
 
 export type NotificationChannel = {
@@ -38,7 +39,7 @@ export const useNotificationChannels: UseNotificationChannels = () => {
         id: n.sid,
         title: n.title,
         message: n.message,
-        seen: false,
+        channel: "PUSH",
       })),
     }),
     [isPushSubscribed, toggleSubscribePush, pushNotifcations]
