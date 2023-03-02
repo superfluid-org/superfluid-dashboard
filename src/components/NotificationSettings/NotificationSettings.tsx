@@ -19,6 +19,7 @@ import { CopyIconBtn } from "../../features/common/CopyIconBtn";
 import ConnectWallet from "../../features/wallet/ConnectWallet";
 import { useNotificationChannels } from "../../hooks/useNotificationChannels";
 import Link from "next/link";
+import shortenHex from "../../utils/shortenHex";
 
 const NoWalletConnected: FC = () => {
   const theme = useTheme();
@@ -64,6 +65,9 @@ const NotificationSettings: FC = () => {
 
   const notificationChannels = useNotificationChannels();
 
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
   return address ? (
     <Box borderRadius="20px" sx={{ border: "1px solid #E0E0E0" }}>
       <Stack p="30px" direction="row" justifyContent="space-between">
@@ -95,7 +99,9 @@ const NotificationSettings: FC = () => {
           <Blockies seed={address.toLowerCase()} />
         </Avatar>
         <Stack direction="row">
-          <Typography variant="body1">{address} </Typography>
+          <Typography variant="body1">
+            {isBelowMd ? shortenHex(address) : address}
+          </Typography>
           <CopyIconBtn IconButtonProps={{ size: "small" }} copyText={address} />
         </Stack>
       </Stack>
