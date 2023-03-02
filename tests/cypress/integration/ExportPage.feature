@@ -36,6 +36,8 @@ Feature: Export Stream Data page test cases
     And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as an extra accountable account
     And User selects "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" from the search section
     And User clicks the OK button
+    And User changes the export start date to "01/23"
+    And User changes the export end date with date picker to "Jan" "2023"
     Then Exported data for "multiple accounts" is fetched and shown correctly
 
   Scenario: Selecting a counterparty and exporting the data
@@ -45,6 +47,8 @@ Feature: Export Stream Data page test cases
     And User searches for "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" as the counterparty account
     And User selects "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" from the search section
     And User clicks the OK button
+    And User changes the export start date to "01/23"
+    And User changes the export end date with date picker to "Jan" "2023"
     Then Exported data for "counterparty" is fetched and shown correctly
 
   Scenario: Date range of the reports
@@ -59,6 +63,8 @@ Feature: Export Stream Data page test cases
     And User searches for "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" as the accountable account
     And User selects "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" from the search section
     And User clicks the OK button
+    And User changes the export start date to "01/23"
+    And User changes the export end date with date picker to "Jan" "2023"
     And User clicks on the export preview button
     And User enables all of the columns
     Then Exported data for "all columns" is fetched and shown correctly
@@ -87,6 +93,8 @@ Feature: Export Stream Data page test cases
     And User searches for "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" as the accountable account
     And User selects "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" from the search section
     And User clicks the OK button
+    And User changes the export start date to "01/23"
+    And User changes the export end date with date picker to "Jan" "2023"
     And User clicks on the export preview button
     And User exports the CSV
     Then CSV contains the correct data

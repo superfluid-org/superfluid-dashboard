@@ -24,7 +24,7 @@ Feature: Common element test cases
     And User closes the dropdown
     And User opens the navigation more menu
     And User opens the access code menu
-    And User types "724ZX_ENS" in the access code menu
+    And User types "AHR2_MAINNET" in the access code menu
     And User submits the access code
     Then Access code window is not visible
     And User opens the dashboard network selection dropdown

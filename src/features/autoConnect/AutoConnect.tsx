@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useAccount, useClient } from "wagmi";
+import { useAccount, useClient, useConnect } from "wagmi";
 
 interface AutoConnectContextValue {
   isAutoConnecting: boolean;
@@ -22,6 +22,7 @@ interface AutoConnectContextValue {
 const AutoConnectContext = createContext<AutoConnectContextValue>(null!);
 
 export const AutoConnectProvider: FC<PropsWithChildren> = ({ children }) => {
+  const { connect } = useConnect();
   const wagmiClient = useClient();
   const [isAutoConnecting, setIsAutoConnecting] = useState(true);
   const isAutoConnectedRef = useRef(true); // Assume auto-connected because of weird race conditions.
@@ -37,7 +38,9 @@ export const AutoConnectProvider: FC<PropsWithChildren> = ({ children }) => {
         (c) => c.id === "safe" && c.ready
       );
       if (gnosisSafeConnector) {
-        await gnosisSafeConnector.connect();
+        connect({
+          connector: gnosisSafeConnector,
+        });
         isAutoConnectedRef.current = true;
       } else {
         const provider = await wagmiClient.autoConnect();
@@ -45,7 +48,7 @@ export const AutoConnectProvider: FC<PropsWithChildren> = ({ children }) => {
       }
     };
     doAsync().finally(() => void setIsAutoConnecting(false));
-  }, [wagmiClient]);
+  }, [wagmiClient, connect]);
 
   return (
     <AutoConnectContext.Provider
