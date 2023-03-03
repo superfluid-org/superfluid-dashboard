@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { useAccount, useNetwork, useSigner, useSwitchNetwork } from "wagmi";
 import { SignerType } from "@pushprotocol/restapi";
 import { pushApi } from "../features/notifications/pushApi.slice";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 export const superfluidChannelAddress =
   process.env.NEXT_PUBLIC_PUSH_SUPERFLUID_CHANNEL ?? "";
 
@@ -15,10 +16,15 @@ export const usePushProtocol = () => {
 
   const [changeSubscription] = pushApi.useChangeSubscriptionMutation();
 
-  const { data: notifications } = pushApi.useGetNotificationsQuery(address, {
-    pollingInterval: 15000,
-  });
-  const { data: isSubscribed } = pushApi.useIsSubscribedQuery(address);
+  const { data: notifications } = pushApi.useGetNotificationsQuery(
+    address ?? skipToken,
+    {
+      pollingInterval: 15000,
+    }
+  );
+  const { data: isSubscribed } = pushApi.useIsSubscribedQuery(
+    address ?? skipToken
+  );
 
   const toggleSubscribe = useCallback(async () => {
     const originalChainId = chain?.id;
