@@ -98,6 +98,7 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
         }
       : skipToken,
     {
+      refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
       selectFromResult: (result) => ({
         ...result,
         vestingSchedules: result.data?.vestingSchedules ?? [],

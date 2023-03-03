@@ -84,6 +84,8 @@ const StreamsTable: FC<StreamsTableProps> = ({
       orderBy: "updatedAtTimestamp",
       orderDirection: "desc",
     },
+  },{
+    refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
   });
 
   const outgoingStreamsQuery = subgraphApi.useStreamsQuery({
@@ -100,6 +102,8 @@ const StreamsTable: FC<StreamsTableProps> = ({
       orderBy: "updatedAtTimestamp",
       orderDirection: "desc",
     },
+  }, {
+    refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
   });
 
   const { schedulings } = { schedulings: [] };

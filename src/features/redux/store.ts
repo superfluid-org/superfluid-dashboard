@@ -58,7 +58,7 @@ import { platformApi } from "./platformApi/platformApi";
 export const rpcApi = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({
     ...options,
-    refetchOnFocus: true,
+    refetchOnMountOrArgChange: 30,
     refetchOnReconnect: true,
   })
 )
@@ -81,7 +81,7 @@ export const subgraphApi = initializeSubgraphApiSlice((options) =>
         return action.payload[reducerPath];
       }
     },
-    refetchOnFocus: true,
+    refetchOnMountOrArgChange: 30,
     refetchOnReconnect: true,
   })
 )
