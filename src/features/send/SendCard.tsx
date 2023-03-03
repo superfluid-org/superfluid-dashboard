@@ -512,10 +512,8 @@ export default memo(function SendCard() {
           );
           if (newMaxEndTimestamp) {
             const maxDateUnix = getUnixTime(MAX_DATE);
-            if (newMaxEndTimestamp < maxDateUnix) {
-              setTotalStreamedEther(newValue);
-              setValue("data.endTimestamp", newMaxEndTimestamp);
-            } else {
+
+            if (newMaxEndTimestamp >= maxDateUnix) {
               // Setting total streamed and end date to maximum allowed.
               setTotalStreamedEther(
                 getStreamedTotalEtherRoundedString(
@@ -525,12 +523,16 @@ export default memo(function SendCard() {
                 )
               );
               setValue("data.endTimestamp", maxDateUnix);
+              return;
             }
+
+            setValue("data.endTimestamp", newMaxEndTimestamp);
           }
         } else {
           setValue("data.endTimestamp", null);
-          setTotalStreamedEther(newValue);
         }
+
+        setTotalStreamedEther(newValue);
       }}
       InputProps={{
         startAdornment: <>≈&nbsp;</>,
