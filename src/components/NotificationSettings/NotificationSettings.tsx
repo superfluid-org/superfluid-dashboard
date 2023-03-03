@@ -68,7 +68,7 @@ const NotificationSettings: FC = () => {
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   return address ? (
-    <Box borderRadius="20px" sx={{ border: "1px solid #E0E0E0" }}>
+    <Box sx={{ border: "1px solid #E0E0E0", borderRadius: 2 }}>
       <Stack p="30px" direction="row" justifyContent="space-between">
         <Stack>
           <Typography component="h1" variant="h5">
