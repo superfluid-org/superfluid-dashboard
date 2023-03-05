@@ -53,7 +53,7 @@ const NotificationList: FC<NotificationListProps> = ({
   return notifications[activeTab].length > 0 ? (
     <>
       {notifications[activeTab].map(({ id, title, message, channel }) => (
-        <Box key={id} maxHeight={300}>
+        <Stack key={id}>
           <Tooltip
             followCursor
             title={seen[id] ? "" : "Click to archive"}
@@ -87,7 +87,7 @@ const NotificationList: FC<NotificationListProps> = ({
             </Stack>
           </Tooltip>
           <Divider />
-        </Box>
+        </Stack>
       ))}
     </>
   ) : (

@@ -64,7 +64,6 @@ export const useNotificationChannels: UseNotificationChannels = () => {
         title: n.title,
         message: parseNotificationData(n.notification.body),
         channel: "Push Protocol",
-        x: console.log(n),
       })),
     }),
     [isPushSubscribed, toggleSubscribePush, pushNotifcations]

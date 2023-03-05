@@ -1,4 +1,4 @@
-import { Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { FC } from "react";
 import { NotificationTab } from "./NotificationsBell";
 
@@ -18,10 +18,7 @@ const NotificationHeader: FC<NotificationHeaderProps> = ({
       sx={{
         justifyContent: "space-between",
         alignItems: "center",
-        position: "sticky",
-        top: 0,
         background: "white",
-        zIndex: 1000,
         borderBottom: "1px solid #E0E0E0",
       }}
     >

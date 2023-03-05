@@ -7,6 +7,7 @@ import {
   Paper,
   Popover,
   Stack,
+  Typography,
 } from "@mui/material";
 import { FC, useState } from "react";
 import { useSeenNotifications } from "../../features/notifications/notifactionHooks";
@@ -17,10 +18,14 @@ import { useNotificationChannels } from "../../hooks/useNotificationChannels";
 
 import NotificationList from "./NotificationList";
 import NotificationHeader from "./NotificationHeader";
+import { useAccount } from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import ConnectWallet from "../../features/wallet/ConnectWallet";
 
 export type NotificationTab = "new" | "archive";
 
 const NotificationsBell: FC = () => {
+  const { address } = useAccount();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const [activeTab, setActiveTab] = useState<NotificationTab>("new");
@@ -58,6 +63,12 @@ const NotificationsBell: FC = () => {
       </IconButton>
       <Popover
         id={id}
+        PaperProps={{
+          sx: {
+            width: 350,
+            overflow: "hidden",
+          },
+        }}
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
         onClose={handleClose}
@@ -70,36 +81,40 @@ const NotificationsBell: FC = () => {
           horizontal: "center",
         }}
       >
-        <Box width={350}>
-          <NotificationHeader
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-          />
-          <NotificationList
-            notifications={notifications}
-            activeTab={activeTab}
-          />
-          {notifications.new.length > 1 && activeTab === "new" && (
-            <Paper
-              sx={{
-                position: "sticky",
-                bottom: 0,
-                background: "white",
-                borderRadius: 0,
-                border: "none",
-              }}
-            >
-              <Button
-                fullWidth
-                onClick={onMarkAllAsSeen(
-                  notifications[activeTab].map((n) => n.id)
-                )}
-              >
-                Archive all
-              </Button>
-            </Paper>
+        <NotificationHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+        <Box sx={{ maxHeight: 350, overflow: "auto" }}>
+          {address ? (
+            <NotificationList
+              notifications={notifications}
+              activeTab={activeTab}
+            />
+          ) : (
+            <Stack p={2} gap={1}>
+              <Typography variant="body1" align="center">
+                Connect your wallet to check your notifications.
+              </Typography>
+              <ConnectWallet />
+            </Stack>
           )}
         </Box>
+        {notifications.new.length > 1 && activeTab === "new" && (
+          <Paper
+            sx={{
+              background: "white",
+              borderRadius: 0,
+              border: "none",
+            }}
+          >
+            <Button
+              fullWidth
+              onClick={onMarkAllAsSeen(
+                notifications[activeTab].map((n) => n.id)
+              )}
+            >
+              Archive all
+            </Button>
+          </Paper>
+        )}
       </Popover>
     </>
   );
