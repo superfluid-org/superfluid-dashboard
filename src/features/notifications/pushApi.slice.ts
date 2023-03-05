@@ -18,14 +18,8 @@ export const pushApi = createApi({
   keepUnusedDataFor: 600,
   endpoints: (builder) => {
     return {
-      isSubscribed: builder.query<boolean, string | undefined>({
+      isSubscribed: builder.query<boolean, string>({
         queryFn: async (user) => {
-          if (!user) {
-            return {
-              data: false,
-            };
-          }
-
           const result: { channel: string }[] =
             await PushApi.user.getSubscriptions({
               user,
@@ -80,26 +74,18 @@ export const pushApi = createApi({
           }
         },
       }),
-      getNotifications: builder.query<ParsedResponseType[], string | undefined>(
-        {
-          queryFn: async (user) => {
-            if (!user) {
-              return {
-                data: [],
-              };
-            }
-
-            const notifications: ParsedResponseType[] =
-              await PushApi.user.getFeeds({
-                user: `eip155:1:${user}`,
-                env: "prod",
-              });
-            return {
-              data: notifications.filter((n) => n.app === "Superfluid"),
-            };
-          },
-        }
-      ),
+      getNotifications: builder.query<ParsedResponseType[], string>({
+        queryFn: async (user) => {
+          const notifications: ParsedResponseType[] =
+            await PushApi.user.getFeeds({
+              user: `eip155:1:${user}`,
+              env: "prod",
+            });
+          return {
+            data: notifications.filter((n) => n.app === "Superfluid"),
+          };
+        },
+      }),
     };
   },
 });

@@ -1,11 +1,12 @@
 import { useMemo } from "react";
+import { useSeenNotifications } from "../features/notifications/notifactionHooks";
 import { usePushProtocol } from "./usePushProtocol";
 
 export type NotificationChannelType = "Push Protocol";
 export type Notification = {
   id: string;
   title: string;
-  message: string;
+  message: MessageData;
   channel: NotificationChannelType;
 };
 
@@ -17,10 +18,31 @@ export type NotificationChannel = {
   notifications: Notification[];
 };
 
+export type MessageData = {
+  type: string;
+  token: string;
+  symbol: string;
+  network: string;
+  liquidation?: string;
+};
+
 export type UseNotificationChannels = () => {
   channels: Record<NotificationChannelType, NotificationChannel>;
-  notifications: Notification[];
+  notifications: {
+    new: Notification[];
+    archive: Notification[];
+  };
 };
+
+const parseNotificationData = (raw: string): MessageData =>
+  raw.split(",").reduce((acc, curr) => {
+    const [key, value] = curr.split(":");
+
+    return {
+      ...acc,
+      [key]: value,
+    };
+  }, {} as MessageData);
 
 export const useNotificationChannels: UseNotificationChannels = () => {
   const {
@@ -28,6 +50,8 @@ export const useNotificationChannels: UseNotificationChannels = () => {
     isSubscribed: isPushSubscribed,
     notifications: pushNotifcations,
   } = usePushProtocol();
+
+  const seenNotifications = useSeenNotifications();
 
   const push: NotificationChannel = useMemo(
     () => ({
@@ -38,22 +62,21 @@ export const useNotificationChannels: UseNotificationChannels = () => {
       notifications: pushNotifcations.map((n) => ({
         id: n.sid,
         title: n.title,
-        message: n.message,
+        message: parseNotificationData(n.notification.body),
         channel: "Push Protocol",
+        x: console.log(n),
       })),
     }),
     [isPushSubscribed, toggleSubscribePush, pushNotifcations]
-  );
-
-  const notifications: Notification[] = useMemo(
-    () => ([] as Notification[]).concat(push.notifications),
-    [pushNotifcations]
   );
 
   return {
     channels: {
       [push.channelType]: push,
     },
-    notifications,
+    notifications: {
+      new: push.notifications.filter((n) => !seenNotifications[n.id]),
+      archive: push.notifications.filter((n) => seenNotifications[n.id]),
+    },
   };
 };

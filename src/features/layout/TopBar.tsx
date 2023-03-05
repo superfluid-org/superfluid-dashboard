@@ -98,10 +98,10 @@ export default memo(function TopBar() {
         <Box flex={1} />
 
         <Stack direction="row" spacing={2} alignItems="center">
-          <NotificationsBell />
           {isBelowLg && !isImpersonated && <ConnectWallet small />}
           <ImpersonationChip />
           <SelectNetwork />
+          <NotificationsBell />
           <TransactionBell />
         </Stack>
       </Stack>
