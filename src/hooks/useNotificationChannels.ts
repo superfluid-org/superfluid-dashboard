@@ -18,8 +18,13 @@ export type NotificationChannel = {
   notifications: Notification[];
 };
 
+export type MessageType =
+  | "liquidation"
+  | "liquidation-risk-2day"
+  | "liquidation-risk-7day";
+
 export type MessageData = {
-  type: string;
+  type: MessageType;
   token: string;
   symbol: string;
   network: string;

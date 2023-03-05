@@ -18,6 +18,9 @@ import { useSeenNotifications } from "../../features/notifications/notifactionHo
 import { markAsSeen } from "../../features/notifications/notifications.slice";
 import { useAppDispatch } from "../../features/redux/store";
 import { MessageData, Notification } from "../../hooks/useNotificationChannels";
+import InfoIcon from "@mui/icons-material/Info";
+import ReportIcon from "@mui/icons-material/Report";
+import { capitalize } from "lodash";
 
 type NotificationListProps = {
   notifications: {
@@ -27,16 +30,34 @@ type NotificationListProps = {
   activeTab: "new" | "archive";
 };
 
-const createLiquidationRiskMessage = (message: MessageData) =>
-  `Your ${message.token}(${
-    message.symbol
-  }) is about to be liquidated at ${format(
-    Number(message.liquidation) * 1000,
+const getIcon = ({ type }: MessageData) => {
+  switch (type) {
+    case "liquidation":
+      return (
+        <InfoIcon fontSize="small" sx={{ color: colors.lightBlue[500] }} />
+      );
+    case "liquidation-risk-2day":
+      return <ReportIcon fontSize="small" sx={{ color: colors.red[500] }} />;
+    case "liquidation-risk-7day":
+      return <ReportIcon fontSize="small" sx={{ color: colors.amber[500] }} />;
+  }
+};
+
+const createLiquidationRiskMessage = ({
+  token,
+  symbol,
+  network,
+  liquidation,
+}: MessageData) =>
+  `Your ${token}(${symbol}) on ${capitalize(
+    network
+  )} is about to be liquidated at ${format(
+    Number(liquidation) * 1000,
     "yyyy/MM/dd HH:mm."
   )}`;
 
-const createLiquidatedMessage = (message: MessageData) =>
-  `Your ${message.token}(${message.symbol}) was liquidated.`;
+const createLiquidatedMessage = ({ network, token, symbol }: MessageData) =>
+  `Your ${token}(${symbol}) on ${capitalize(network)} was liquidated.`;
 
 const NotificationList: FC<NotificationListProps> = ({
   notifications,
@@ -71,7 +92,11 @@ const NotificationList: FC<NotificationListProps> = ({
               }}
             >
               <Stack direction="row" justifyContent="space-between">
-                <Typography variant="h6">{title}</Typography>
+                <Stack direction="row" alignItems="center" gap={0.5}>
+                  {getIcon(message)}
+                  <Typography variant="h6"> {title}</Typography>
+                </Stack>
+
                 {message.network && (
                   <NetworkIcon
                     network={findNetworkOrThrow(allNetworks, message.network)}
