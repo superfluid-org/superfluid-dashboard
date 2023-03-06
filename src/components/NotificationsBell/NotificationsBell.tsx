@@ -45,7 +45,7 @@ const NotificationsBell: FC = () => {
       dispatch(
         updateLastSeenNotification({
           address,
-          notificationId: notifications.new[0].id,
+          notificationId: notifications.new[0]?.id,
         })
       );
     }
