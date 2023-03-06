@@ -70,6 +70,7 @@ const Layout: FC<PropsWithChildren> = ({ children }) => {
         {!isBelowMd && theme.palette.mode === "dark" && <DarkGlow />}
         <Toolbar />
         <ToastContainer
+          theme={theme.palette.mode}
           style={{ position: "absolute" }}
           limit={5}
           progressStyle={{
