@@ -111,8 +111,8 @@ const NotificationSettings: FC = () => {
             Notification Channel
           </Typography>
           <Typography variant="body1" color="secondary">
-            Turn on notifications for every channel, that is most convenient for
-            you. To access your Push Protocol inbox, click{" "}
+            Turn on notifications for every channel you want to receive them
+            through. To access your Push Protocol inbox, click{" "}
             <Link href="https://app.push.org/#/inbox" target="_blank">
               here.
             </Link>
