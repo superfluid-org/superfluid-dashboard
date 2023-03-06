@@ -6,7 +6,6 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import format from "date-fns/format";
 import Link from "next/link";
 import { FC } from "react";
 import NetworkIcon from "../../features/network/NetworkIcon";
@@ -17,10 +16,9 @@ import {
 import { useSeenNotifications } from "../../features/notifications/notifactionHooks";
 import { markAsSeen } from "../../features/notifications/notifications.slice";
 import { useAppDispatch } from "../../features/redux/store";
-import { MessageData, Notification } from "../../hooks/useNotificationChannels";
-import InfoIcon from "@mui/icons-material/Info";
-import ReportIcon from "@mui/icons-material/Report";
-import { createMessage } from "../../utils/notification";
+import { Notification } from "../../hooks/useNotificationChannels";
+
+import { createMessage, getNotificationIcon } from "../../utils/notification";
 
 type NotificationListProps = {
   notifications: {
@@ -28,19 +26,6 @@ type NotificationListProps = {
     archive: Notification[];
   };
   activeTab: "new" | "archive";
-};
-
-const getIcon = ({ type }: MessageData) => {
-  switch (type) {
-    case "liquidation":
-      return (
-        <InfoIcon fontSize="small" sx={{ color: colors.lightBlue[500] }} />
-      );
-    case "liquidation-risk-2day":
-      return <ReportIcon fontSize="small" sx={{ color: colors.red[500] }} />;
-    case "liquidation-risk-7day":
-      return <ReportIcon fontSize="small" sx={{ color: colors.amber[500] }} />;
-  }
 };
 
 const NotificationList: FC<NotificationListProps> = ({
@@ -77,7 +62,7 @@ const NotificationList: FC<NotificationListProps> = ({
             >
               <Stack direction="row" justifyContent="space-between">
                 <Stack direction="row" alignItems="center" gap={0.5}>
-                  {getIcon(message.parsed)}
+                  {getNotificationIcon(message.parsed)}
                   <Typography variant="h6"> {title}</Typography>
                 </Stack>
 

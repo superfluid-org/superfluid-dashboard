@@ -69,7 +69,13 @@ const Layout: FC<PropsWithChildren> = ({ children }) => {
       <Main open={transactionDrawerOpen}>
         {!isBelowMd && theme.palette.mode === "dark" && <DarkGlow />}
         <Toolbar />
-        <ToastContainer style={{ position: "absolute" }} limit={5} />
+        <ToastContainer
+          style={{ position: "absolute" }}
+          limit={5}
+          progressStyle={{
+            background: theme.palette.primary.main,
+          }}
+        />
         {/* <TransactionSnackbar /> */}
         {children}
       </Main>

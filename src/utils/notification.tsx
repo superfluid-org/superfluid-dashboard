@@ -2,6 +2,10 @@ import { MessageData } from "../hooks/useNotificationChannels";
 import capitalize from "lodash/capitalize";
 import format from "date-fns/format";
 
+import InfoIcon from "@mui/icons-material/Info";
+import ReportIcon from "@mui/icons-material/Report";
+import { colors } from "@mui/material";
+
 export const createLiquidationRiskMessage = ({
   token,
   symbol,
@@ -44,6 +48,19 @@ export const createMessage = ({
       return createLiquidationRiskMessage(parsed);
     default:
       return raw;
+  }
+};
+
+export const getNotificationIcon = ({ type }: MessageData) => {
+  switch (type) {
+    case "liquidation":
+      return (
+        <InfoIcon fontSize="small" sx={{ color: colors.lightBlue[500] }} />
+      );
+    case "liquidation-risk-2day":
+      return <ReportIcon fontSize="small" sx={{ color: colors.red[500] }} />;
+    case "liquidation-risk-7day":
+      return <ReportIcon fontSize="small" sx={{ color: colors.amber[500] }} />;
   }
 };
 
