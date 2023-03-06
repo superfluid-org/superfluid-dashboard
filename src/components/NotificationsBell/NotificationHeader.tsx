@@ -26,7 +26,7 @@ const NotificationHeader: FC<NotificationHeaderProps> = ({
         <Typography variant="h5">Notifications</Typography>
         <Link href="/settings">
           <Tooltip title="Open Settings">
-            <SettingsIcon sx={{ cursor: "pointer" }} />
+            <SettingsIcon sx={{ cursor: "pointer", color: "GrayText" }} />
           </Tooltip>
         </Link>
       </Stack>
