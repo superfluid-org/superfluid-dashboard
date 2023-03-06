@@ -5,9 +5,9 @@ import format from "date-fns/format";
 import WaringIcon from "@mui/icons-material/Error";
 import { colors } from "@mui/material";
 import ErrorIcon from "@mui/icons-material/Cancel";
+import InfoIcon from "@mui/icons-material/Info";
 
 export const createLiquidationRiskMessage = ({
-  token,
   symbol,
   network,
   liquidation,
@@ -20,7 +20,6 @@ export const createLiquidationRiskMessage = ({
 
 export const createLiquidatedMessage = ({
   network,
-  token,
   symbol,
   liquidation,
 }: MessageData) =>
@@ -57,6 +56,10 @@ export const getNotificationIcon = ({ type }: MessageData) => {
       return <WaringIcon fontSize="small" sx={{ color: colors.amber[500] }} />;
     case "liquidation-risk-7day":
       return <WaringIcon fontSize="small" sx={{ color: colors.amber[500] }} />;
+    default:
+      return (
+        <InfoIcon fontSize="small" sx={{ color: colors.lightBlue[500] }} />
+      );
   }
 };
 
