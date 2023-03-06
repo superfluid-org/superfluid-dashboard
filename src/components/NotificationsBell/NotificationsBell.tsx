@@ -37,11 +37,18 @@ const NotificationsBell: FC = () => {
 
   const dispatch = useAppDispatch();
 
-  const lastSeenNotification = useLastSeenNotification();
+  const lastSeenNotification = useLastSeenNotification(address ?? "");
 
   const onBellClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
-    dispatch(updateLastSeenNotification(notifications.new[0].id));
+    if (address) {
+      dispatch(
+        updateLastSeenNotification({
+          address,
+          notificationId: notifications.new[0].id,
+        })
+      );
+    }
   };
 
   const handleClose = () => {

@@ -6,7 +6,7 @@ import {
   NotificationsState,
 } from "./notifications.slice";
 
-export const useLastSeenNotification = () =>
-  useAppSelector((state) =>
-    notificationsSelector(state, "lastSeenNotification")
+export const useLastSeenNotification = (address: string) =>
+  useAppSelector(
+    (state) => notificationsSelector(state, "lastSeenNotification")[address]
   );

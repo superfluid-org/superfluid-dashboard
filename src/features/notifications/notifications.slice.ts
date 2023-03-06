@@ -4,10 +4,10 @@ import { CurrencyCode } from "../../utils/currencyUtils";
 import { RootState } from "../redux/store";
 
 export interface NotificationsState {
-  lastSeenNotification: string;
+  lastSeenNotification: Record<string, string>;
 }
 
-const initialState: NotificationsState = { lastSeenNotification: "" };
+const initialState: NotificationsState = { lastSeenNotification: {} };
 
 export const notificationsSlice = createSlice({
   name: "notifications",
@@ -15,8 +15,14 @@ export const notificationsSlice = createSlice({
   reducers: {
     updateLastSeenNotification: (
       state,
-      action: PayloadAction<Partial<string>>
-    ) => ({ ...state, lastSeenNotification: action.payload }),
+      action: PayloadAction<{ address: string; notificationId: string }>
+    ) => ({
+      ...state,
+      lastSeenNotification: {
+        ...state.lastSeenNotification,
+        [action.payload.address]: action.payload.notificationId,
+      },
+    }),
   },
 });
 
