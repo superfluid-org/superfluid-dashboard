@@ -1,9 +1,12 @@
 import { Stack, CircularProgress, Typography } from "@mui/material";
 import { FC } from "react";
-import { PendingStreamCancellation } from "../../pendingUpdates/PendingStreamCancellation";
+import {
+  PendingStreamCancellation,
+  PendingCreateTaskDeletion,
+} from "../../pendingUpdates/PendingStreamCancellation";
 
 interface CancelStreamProgressProps {
-  pendingCancellation?: PendingStreamCancellation;
+  pendingCancellation?: PendingStreamCancellation | PendingCreateTaskDeletion;
 }
 
 const CancelStreamProgress: FC<CancelStreamProgressProps> = ({

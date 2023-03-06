@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Address, Stream } from "@superfluid-finance/sdk-core";
-import { getUnixTime, startOfToday } from "date-fns";
+import { getUnixTime } from "date-fns";
 import { FC, memo, useCallback, useMemo, useState } from "react";
 import {
   mapCreateTaskToScheduledStream,
@@ -30,6 +30,10 @@ import {
   PendingOutgoingStream,
   useAddressPendingOutgoingStreams,
 } from "../pendingUpdates/PendingOutgoingStream";
+import {
+  PendingCreateTask,
+  useAddressPendingOutgoingTasks,
+} from "../pendingUpdates/PendingOutgoingTask";
 import { subgraphApi } from "../redux/store";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import StreamRow, { StreamRowLoading } from "./StreamRow";
@@ -144,13 +148,23 @@ const StreamsTable: FC<StreamsTableProps> = ({
     }
   );
 
+  const pendingTasks = useAddressPendingOutgoingTasks(visibleAddress);
+
+  const allTasks = useMemo(
+    () => [...pendingTasks, ...activeTasks],
+    [activeTasks, pendingTasks]
+  );
+
   const scheduledIncomingStreams = useMemo(
     () =>
-      activeTasks
-        .filter((task) => task.receiver === visibleAddress?.toLowerCase())
+      allTasks
+        .filter(
+          (task) =>
+            task.receiver.toLowerCase() === visibleAddress?.toLowerCase()
+        )
         .filter((task) => task.__typename === "CreateTask")
         .map((task) => mapCreateTaskToScheduledStream(task as CreateTask)),
-    [activeTasks, visibleAddress]
+    [allTasks, visibleAddress]
   );
 
   const incomingStreams = useMemo(() => {
@@ -160,11 +174,15 @@ const StreamsTable: FC<StreamsTableProps> = ({
 
   const scheduledOutgoingStreams = useMemo(
     () =>
-      activeTasks
-        .filter((task) => task.sender === visibleAddress?.toLowerCase())
+      allTasks
+        .filter(
+          (task) => task.sender.toLowerCase() === visibleAddress?.toLowerCase()
+        )
         .filter((task) => task.__typename === "CreateTask")
-        .map((task) => mapCreateTaskToScheduledStream(task as CreateTask)),
-    [activeTasks, visibleAddress]
+        .map((task) =>
+          mapCreateTaskToScheduledStream(task as CreateTask | PendingCreateTask)
+        ),
+    [allTasks, visibleAddress]
   );
 
   const pendingOutgoingStreams =
@@ -191,7 +209,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
         const isActive = stream.currentFlowRate !== "0";
 
         const relevantTasks = isActive
-          ? activeTasks.filter(
+          ? allTasks.filter(
               (task) =>
                 task.sender.toLowerCase() === stream.sender.toLowerCase() &&
                 task.receiver.toLowerCase() === stream.receiver.toLowerCase() &&
@@ -229,7 +247,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
         if (!stream2Active && stream2Active) return 1;
         return 0;
       });
-  }, [incomingStreams, outgoingStreams, activeTasks]);
+  }, [incomingStreams, outgoingStreams, allTasks]);
 
   const filteredStreams = useMemo(() => {
     switch (streamsFilter.type) {

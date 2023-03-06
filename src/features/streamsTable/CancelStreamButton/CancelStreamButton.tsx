@@ -10,7 +10,6 @@ import { Stream } from "@superfluid-finance/sdk-core";
 import { Signer } from "ethers";
 import { FC } from "react";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
-import { getAddress } from "../../../utils/memoizedEthersUtils";
 import { useAnalytics } from "../../analytics/useAnalytics";
 import { Network } from "../../network/networks";
 import { usePendingStreamCancellation } from "../../pendingUpdates/PendingStreamCancellation";
@@ -48,7 +47,7 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
     const primaryArgs = {
       chainId: network.id,
       superTokenAddress: stream.token,
-      senderAddress: getAddress(sender),
+      senderAddress: sender,
       receiverAddress: receiver,
       userDataBytes: undefined,
     };

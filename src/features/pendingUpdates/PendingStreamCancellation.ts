@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { PendingUpdate } from "./PendingUpdate";
 import { pendingUpdateSelectors } from "./pendingUpdate.slice";
 import { useAppSelector } from "../redux/store";
+import { PendingCreateTask } from "./PendingOutgoingTask";
 
 export interface PendingStreamCancellation extends PendingUpdate {
   pendingType: "FlowDelete";
@@ -10,9 +11,17 @@ export interface PendingStreamCancellation extends PendingUpdate {
   receiverAddress: string;
 }
 
-export const isPendingStreamCancellation = (
+export interface PendingCreateTaskDeletion extends PendingUpdate {
+  pendingType: "CreateTaskDelete";
+  tokenAddress: string;
+  senderAddress: string;
+  receiverAddress: string;
+}
+
+export const isPendingCancellationOrDeletion = (
   x: PendingUpdate
-): x is PendingStreamCancellation => x.pendingType === "FlowDelete";
+): x is PendingStreamCancellation =>
+  ["FlowDelete", "CreateTaskDelete"].includes(x.pendingType);
 
 export const usePendingStreamCancellation = ({
   senderAddress,
@@ -22,16 +31,17 @@ export const usePendingStreamCancellation = ({
   senderAddress: string;
   receiverAddress: string;
   tokenAddress: string;
-}): PendingStreamCancellation | undefined => {
+}): PendingStreamCancellation | PendingCreateTaskDeletion | undefined => {
   const allPendingUpdates = useAppSelector((state) =>
     pendingUpdateSelectors.selectAll(state.pendingUpdates)
   );
 
   // TODO(KK): Chain ID should be checked here too.
+
   return useMemo(
     () =>
       allPendingUpdates
-        .filter(isPendingStreamCancellation)
+        .filter(isPendingCancellationOrDeletion)
         .filter(
           (x) =>
             x.senderAddress.toLowerCase() === senderAddress.toLowerCase() &&

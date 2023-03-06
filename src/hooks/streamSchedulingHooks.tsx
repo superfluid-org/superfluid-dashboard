@@ -4,6 +4,7 @@ import { StreamQuery } from "@superfluid-finance/sdk-redux";
 import { fromUnixTime, isAfter } from "date-fns";
 import { allNetworks, tryFindNetwork } from "../features/network/networks";
 import { PendingOutgoingStream } from "../features/pendingUpdates/PendingOutgoingStream";
+import { PendingCreateTask } from "../features/pendingUpdates/PendingOutgoingTask";
 import { rpcApi, subgraphApi } from "../features/redux/store";
 import { StreamScheduling } from "../features/streamsTable/StreamScheduling";
 import { CreateTask } from "../scheduling-subgraph/.graphclient";
@@ -14,6 +15,10 @@ export interface ScheduledStream
     "createdAtBlockNumber" | "updatedAtBlockNumber" | "tokenSymbol" | "deposit"
   > {}
 
+export interface PendingScheduledStream
+  extends ScheduledStream,
+    Pick<PendingCreateTask, "pendingType" | "hasTransactionSucceeded"> {}
+
 export const useScheduledStream = (
   arg: Omit<StreamQuery, "block"> | SkipToken
 ) => {
@@ -23,7 +28,7 @@ export const useScheduledStream = (
   const isSkip = arg === skipToken;
   const network = isSkip ? undefined : tryFindNetwork(allNetworks, arg.chainId);
 
-  const scheduleResponse = rpcApi.useScheduledDatesQuery(
+  const scheduleResponse = rpcApi.useGetFlowScheduleQuery(
     stream && network?.flowSchedulerContractAddress
       ? {
           chainId: network.id,
@@ -59,7 +64,11 @@ export const useScheduledStream = (
 };
 
 export const mapStreamScheduling = <
-  T extends Stream | PendingOutgoingStream | ScheduledStream
+  T extends
+    | Stream
+    | PendingOutgoingStream
+    | ScheduledStream
+    | PendingScheduledStream
 >(
   stream: T,
   scheduledUnixStart?: number | null,
@@ -75,24 +84,23 @@ export const mapStreamScheduling = <
   const startDate =
     startDateScheduled ?? fromUnixTime(stream.createdAtTimestamp);
 
-  const isActive =
-    isAfter(startDate, new Date()) && stream.currentFlowRate !== "0";
+  const isActive = stream.currentFlowRate !== "0";
 
   return {
     ...stream,
+    startDateScheduled,
+    startDate,
     endDateScheduled,
     endDate:
       endDateScheduled ??
       (!isActive ? fromUnixTime(stream.updatedAtTimestamp) : undefined),
-    startDateScheduled,
-    startDate,
   };
 };
 
 export const mapCreateTaskToScheduledStream = (
-  createTask: CreateTask
-): ScheduledStream => {
-  return {
+  createTask: CreateTask | PendingCreateTask
+): ScheduledStream | PendingScheduledStream => {
+  const baseScheduledStream = {
     id: createTask.id,
     createdAtTimestamp: Number(createTask.executionAt),
     updatedAtTimestamp: Number(createTask.executionAt),
@@ -107,4 +115,15 @@ export const mapCreateTaskToScheduledStream = (
     // tokenSymbol: "",
     // deposit: createTask.startDate,
   };
+
+  if ((createTask as PendingCreateTask).pendingType) {
+    return {
+      ...baseScheduledStream,
+      pendingType: (createTask as PendingCreateTask).pendingType,
+      hasTransactionSucceeded: (createTask as PendingCreateTask)
+        .hasTransactionSucceeded,
+    } as PendingScheduledStream;
+  }
+
+  return baseScheduledStream as ScheduledStream;
 };

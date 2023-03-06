@@ -22,7 +22,10 @@ import { useRouter } from "next/router";
 import { FC, memo, useMemo } from "react";
 import AddressName from "../../components/AddressName/AddressName";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
-import { ScheduledStream } from "../../hooks/streamSchedulingHooks";
+import {
+  PendingScheduledStream,
+  ScheduledStream,
+} from "../../hooks/streamSchedulingHooks";
 import { getStreamPagePath } from "../../pages/stream/[_network]/[_stream]";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { Network } from "../network/networks";
@@ -86,8 +89,16 @@ export const StreamRowLoading = () => {
   );
 };
 
+type PendingStreamType = PendingOutgoingStream | PendingScheduledStream;
+
 interface StreamRowProps {
-  stream: (Stream | PendingOutgoingStream | ScheduledStream) & StreamScheduling;
+  stream: (
+    | Stream
+    | PendingOutgoingStream
+    | ScheduledStream
+    | PendingScheduledStream
+  ) &
+    StreamScheduling;
   network: Network;
 }
 
@@ -120,9 +131,11 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
 
   const isOutgoing = visibleAddress?.toLowerCase() === sender.toLowerCase();
 
-  const isPending = !!(stream as PendingOutgoingStream).pendingType;
+  const pendingType = (stream as PendingStreamType).pendingType;
 
-  const isPendingAndWaitingForSubgraph = !!(stream as PendingOutgoingStream)
+  const isPending = !!pendingType;
+
+  const isPendingAndWaitingForSubgraph = !!(stream as PendingStreamType)
     .hasTransactionSucceeded;
 
   const isActive = !isPending && !startDateScheduled && currentFlowRate !== "0";
@@ -245,7 +258,11 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
                   variant="caption"
                   translate="yes"
                 >
-                  {isPendingAndWaitingForSubgraph ? "Syncing..." : "Sending..."}
+                  {isPendingAndWaitingForSubgraph
+                    ? "Syncing..."
+                    : pendingType === "CreateTaskCreate"
+                    ? "Scheduling..."
+                    : "Sending..."}
                 </Typography>
               </>
             )}

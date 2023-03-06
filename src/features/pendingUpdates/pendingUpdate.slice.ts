@@ -4,7 +4,11 @@ import { rpcApi, transactionTracker } from "../redux/store";
 import { PendingIndexSubscriptionApproval } from "./PendingIndexSubscriptionApprove";
 import { PendingIndexSubscriptionRevoke } from "./PendingIndexSubscriptionRevoke";
 import { PendingOutgoingStream } from "./PendingOutgoingStream";
-import { PendingStreamCancellation } from "./PendingStreamCancellation";
+import { PendingCreateTask } from "./PendingOutgoingTask";
+import {
+  PendingCreateTaskDeletion,
+  PendingStreamCancellation,
+} from "./PendingStreamCancellation";
 import { PendingUpdate } from "./PendingUpdate";
 import { PendingVestingSchedule } from "./PendingVestingSchedule";
 import { PendingVestingScheduleDeletion as PendingVestingScheduleDelete } from "./PendingVestingScheduleDelete";
@@ -26,28 +30,45 @@ export const pendingUpdateSlice = createSlice({
   name: "pendingUpdates",
   initialState: pendingUpdateAdapter.getInitialState(),
   reducers: {
-    removeOne: pendingUpdateAdapter.removeOne
+    removeOne: pendingUpdateAdapter.removeOne,
+    removeMany: pendingUpdateAdapter.removeMany,
   },
   extraReducers(builder) {
     builder.addMatcher(
-      rpcApi.endpoints.flowDelete.matchFulfilled,
+      rpcApi.endpoints.deleteFlowWithScheduling.matchFulfilled,
       (state, action) => {
         const { chainId, hash: transactionHash } = action.payload;
         const { senderAddress, superTokenAddress, receiverAddress } =
           action.meta.arg.originalArgs;
+
         if (senderAddress) {
-          const pendingUpdate: PendingStreamCancellation = {
+          const pendingFlowDeleteUpdate: PendingStreamCancellation = {
             chainId,
             transactionHash,
             senderAddress,
             receiverAddress,
-            id: transactionHash,
+            id: `${transactionHash}-FlowDelete`,
             tokenAddress: superTokenAddress,
             pendingType: "FlowDelete",
             timestamp: dateNowSeconds(),
             relevantSubgraph: "Protocol",
           };
-          pendingUpdateAdapter.addOne(state, pendingUpdate);
+          const pendingCreateTaskDeleteUpdate: PendingCreateTaskDeletion = {
+            chainId,
+            transactionHash,
+            senderAddress,
+            receiverAddress,
+            id: `${transactionHash}-CreateTaskDelete`,
+            tokenAddress: superTokenAddress,
+            pendingType: "CreateTaskDelete",
+            timestamp: dateNowSeconds(),
+            relevantSubgraph: "Scheduler",
+          };
+
+          pendingUpdateAdapter.addMany(state, [
+            pendingFlowDeleteUpdate,
+            pendingCreateTaskDeleteUpdate,
+          ]);
         }
       }
     );
@@ -90,17 +111,20 @@ export const pendingUpdateSlice = createSlice({
           hash: transactionHash,
           subTransactionTitles,
         } = action.payload;
+
         const {
           senderAddress,
           superTokenAddress,
           receiverAddress,
           flowRateWei,
+          startTimestamp,
         } = action.meta.arg.originalArgs;
+
+        const timestamp = dateNowSeconds();
 
         if (subTransactionTitles.includes("Create Stream")) {
           if (senderAddress) {
-            const timestamp = dateNowSeconds();
-            const pendingUpdate: PendingOutgoingStream = {
+            pendingUpdateAdapter.addOne(state, {
               pendingType: "FlowCreate",
               chainId,
               transactionHash,
@@ -114,9 +138,28 @@ export const pendingUpdateSlice = createSlice({
               streamedUntilUpdatedAt: "0",
               currentFlowRate: flowRateWei,
               relevantSubgraph: "Protocol",
-            };
-            pendingUpdateAdapter.addOne(state, pendingUpdate);
+            } as PendingOutgoingStream);
           }
+        }
+
+        if (
+          startTimestamp &&
+          subTransactionTitles.includes("Create Schedule Order")
+        ) {
+          pendingUpdateAdapter.addOne(state, {
+            pendingType: "CreateTaskCreate",
+            __typename: "CreateTask",
+            id: transactionHash,
+            executionAt: startTimestamp.toString(),
+            superToken: superTokenAddress,
+            sender: senderAddress,
+            receiver: receiverAddress,
+            flowRate: flowRateWei,
+            relevantSubgraph: "Scheduler",
+            transactionHash,
+            chainId,
+            timestamp,
+          } as PendingCreateTask);
         }
       }
     );

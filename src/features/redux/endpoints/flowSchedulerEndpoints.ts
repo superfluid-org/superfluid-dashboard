@@ -20,7 +20,7 @@ export const ACL_CREATE_PERMISSION = 1;
 export const ACL_UPDATE_PERMISSION = 2;
 export const ACL_DELETE_PERMISSION = 4;
 
-interface GetFlowScheduledDates extends BaseQuery<number | null> {
+interface GetFlowSchedule extends BaseQuery<number | null> {
   superTokenAddress: string;
   senderAddress: string;
   receiverAddress: string;
@@ -47,9 +47,9 @@ interface StreamScheduleResponse {
 
 export const flowSchedulerEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
-    scheduledDates: builder.query<
+    getFlowSchedule: builder.query<
       StreamScheduleResponse | undefined,
-      GetFlowScheduledDates
+      GetFlowSchedule
     >({
       queryFn: async ({
         chainId,
@@ -123,7 +123,7 @@ export const flowSchedulerEndpoints = {
           const flowScheduler = getFlowScheduler(chainId, arg.signer);
 
           const existingDatesResponse = await dispatch(
-            rpcApi.endpoints.scheduledDates.initiate(
+            rpcApi.endpoints.getFlowSchedule.initiate(
               {
                 chainId,
                 superTokenAddress: arg.superTokenAddress,
@@ -268,7 +268,7 @@ export const flowSchedulerEndpoints = {
             : activeExistingFlow
             ? "Modify Stream"
             : arg.endTimestamp || arg.startTimestamp
-            ? "Send Scheduled Stream"
+            ? "Schedule Stream"
             : "Create Stream";
 
         await registerNewTransaction({
@@ -338,7 +338,7 @@ export const flowSchedulerEndpoints = {
           const flowScheduler = getFlowScheduler(chainId, arg.signer);
 
           const existingDatesResponse = await dispatch(
-            rpcApi.endpoints.scheduledDates.initiate(
+            rpcApi.endpoints.getFlowSchedule.initiate(
               {
                 chainId,
                 superTokenAddress: arg.superTokenAddress,

@@ -336,7 +336,7 @@ export default memo(function SendCard() {
   );
 
   const { existingStartTimestamp, existingEndTimestamp, existingFlowRate } =
-    rpcApi.useScheduledDatesQuery(
+    rpcApi.useGetFlowScheduleQuery(
       shouldSearchForActiveFlow && network.flowSchedulerContractAddress
         ? {
             chainId: network.id,
