@@ -64,7 +64,7 @@ const NotificationList: FC<NotificationListProps> = ({
                   <Typography variant="h6"> {title}</Typography>
                 </Stack>
               </Stack>
-              <Typography variant="body2" pl={3}>
+              <Typography variant="body2" sx={{ pl: 3, color: "GrayText" }}>
                 {createMessage(message)}
               </Typography>
             </Stack>
