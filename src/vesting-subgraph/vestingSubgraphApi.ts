@@ -27,9 +27,9 @@ export const vestingSubgraphApi = createApi({
   reducerPath: "superfluid_vesting",
   baseQuery: fakeBaseQuery(),
   tagTypes: ["GENERAL", "SPECIFIC"], // TODO(KK): Make SDK be able to invalidate another slice!
-  refetchOnFocus: true,
-  refetchOnReconnect: true,
   keepUnusedDataFor: 180,
+  refetchOnMountOrArgChange: 90,
+  refetchOnReconnect: true,
   serializeQueryArgs: getSerializeQueryArgs(),
   endpoints: (build) => ({
     getVestingSchedule: build.query<

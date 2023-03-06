@@ -119,6 +119,8 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
   const vestingScheduleQuery = vestingSubgraphApi.useGetVestingScheduleQuery({
     chainId: network.id,
     id,
+  }, {
+    refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
   });
 
   const vestingSchedule = vestingScheduleQuery.data?.vestingSchedule;
@@ -217,6 +219,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
         }
       : skipToken,
     {
+      refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
       selectFromResult: (result) => ({
         ...result,
         activities: orderBy(

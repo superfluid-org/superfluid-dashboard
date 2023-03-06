@@ -51,6 +51,8 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
       orderBy: "updatedAtTimestamp",
       orderDirection: "desc",
     },
+  }, {
+    refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
   });
 
   const indexSubscriptions = useMemo(

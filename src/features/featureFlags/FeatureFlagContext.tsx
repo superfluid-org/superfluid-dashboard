@@ -31,6 +31,7 @@ export const VESTING_FEATURE_CODES = [
   "7L5G_Ricochet",
   "727TH_GRAPH",
   "VC8K_BOSON",
+  "75ZU_REBORN",
 ];
 
 export const MAINNET_FEATURE_CODES = [
