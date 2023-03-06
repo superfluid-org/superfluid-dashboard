@@ -19,13 +19,14 @@ import { useAppDispatch } from "../../features/redux/store";
 import { Notification } from "../../hooks/useNotificationChannels";
 
 import { createMessage, getNotificationIcon } from "../../utils/notification";
+import { NotificationTab } from "./NotificationsBell";
 
 type NotificationListProps = {
   notifications: {
     new: Notification[];
     archive: Notification[];
   };
-  activeTab: "new" | "archive";
+  activeTab: NotificationTab;
 };
 
 const NotificationList: FC<NotificationListProps> = ({

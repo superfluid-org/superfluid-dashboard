@@ -3,7 +3,7 @@ import { FC } from "react";
 import { NotificationTab } from "./NotificationsBell";
 
 type NotificationHeaderProps = {
-  activeTab: "new" | "archive";
+  activeTab: NotificationTab;
   setActiveTab: (tab: NotificationTab) => void;
 };
 
