@@ -43,7 +43,7 @@ export const MAINNET_FEATURE_CODES = [
   "916G_TOKENOPS",
   "162VM_Aragon",
   "727TH_GRAPH",
-  "VC8K_BOSON"
+  "VC8K_BOSON",
   "6Q4L_ALLUO",
 ];
 
