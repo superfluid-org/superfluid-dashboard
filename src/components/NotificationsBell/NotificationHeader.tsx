@@ -1,4 +1,6 @@
-import { Box, Stack, Typography } from "@mui/material";
+import SettingsIcon from "@mui/icons-material/SettingsOutlined";
+import { Stack, Tooltip, Typography } from "@mui/material";
+import Link from "next/link";
 import { FC } from "react";
 import { NotificationTab } from "./NotificationsBell";
 
@@ -14,15 +16,19 @@ const NotificationHeader: FC<NotificationHeaderProps> = ({
   return (
     <Stack
       p={2}
-      direction="row"
       sx={{
-        justifyContent: "space-between",
-        alignItems: "center",
         background: "white",
         borderBottom: "1px solid #E0E0E0",
       }}
     >
-      <Typography variant="h5">Notifications</Typography>
+      <Stack direction="row" justifyContent="space-between">
+        <Typography variant="h5">Notifications</Typography>
+        <Link href="/settings">
+          <Tooltip title="Open Settings">
+            <SettingsIcon sx={{ cursor: "pointer" }} />
+          </Tooltip>
+        </Link>
+      </Stack>
       <Stack direction="row" gap={1}>
         <Typography
           variant="body2"

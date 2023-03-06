@@ -1,7 +1,5 @@
-import { isWithinInterval } from "date-fns";
-import subWeeks from "date-fns/subWeeks";
+import { isWithinInterval, subMonths } from "date-fns";
 import { useMemo } from "react";
-import { useSeenNotifications } from "../features/notifications/notifactionHooks";
 import { parseNotificationBody } from "../utils/notification";
 import { usePushProtocol } from "./usePushProtocol";
 
@@ -52,41 +50,41 @@ export const useNotificationChannels: UseNotificationChannels = () => {
     notifications: pushNotifcations,
   } = usePushProtocol();
 
-  const seenNotifications = useSeenNotifications();
-
   const push: NotificationChannel = useMemo(
     () => ({
       name: "Push Protocol",
       channelType: "PUSH",
       isSubscribed: isPushSubscribed,
       onToggle: toggleSubscribePush,
-      notifications: pushNotifcations
-        .map(({ epoch, payload }) => ({
-          id: payload.data.sid,
-          title: payload.notification.title.replace("Superfluid - ", ""),
-          message: {
-            raw: payload.notification.body,
-            parsed: parseNotificationBody(payload.notification.body),
-          },
-          epoch: new Date(epoch),
-        }))
-        .filter(({ epoch }) =>
-          isWithinInterval(epoch, {
-            start: subWeeks(Date.now(), 1),
-            end: Date.now(),
-          })
-        ),
+      notifications: pushNotifcations.map(({ epoch, payload }) => ({
+        id: payload.data.sid,
+        title: payload.notification.title.replace("Superfluid - ", ""),
+        message: {
+          raw: payload.notification.body,
+          parsed: parseNotificationBody(payload.notification.body),
+        },
+        epoch: new Date(epoch),
+      })),
     }),
     [isPushSubscribed, toggleSubscribePush, pushNotifcations]
   );
+
+  const oneMonthIntervalFromNow = {
+    start: subMonths(Date.now(), 1),
+    end: Date.now(),
+  };
 
   return {
     channels: {
       [push.channelType]: push,
     },
     notifications: {
-      new: push.notifications.filter((n) => !seenNotifications[n.id]),
-      archive: push.notifications.filter((n) => seenNotifications[n.id]),
+      new: push.notifications.filter((n) =>
+        isWithinInterval(n.epoch, oneMonthIntervalFromNow)
+      ),
+      archive: push.notifications.filter(
+        (n) => !isWithinInterval(n.epoch, oneMonthIntervalFromNow)
+      ),
     },
   };
 };

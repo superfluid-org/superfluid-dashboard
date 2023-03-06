@@ -40,11 +40,11 @@ import faucetApi from "../faucet/faucetApi.slice";
 import { flagsSlice } from "../flags/flags.slice";
 import gasApi from "../gas/gasApi.slice";
 import { impersonationSlice } from "../impersonation/impersonation.slice";
+import { notificationsSlice } from "../notifications/notifications.slice";
 import { networkPreferencesSlice } from "../network/networkPreferences.slice";
 import { pushApi } from "../notifications/pushApi.slice";
 import { pendingUpdateSlice } from "../pendingUpdates/pendingUpdate.slice";
 import appSettingsReducer from "../settings/appSettings.slice";
-import notificationsReducer from "../notifications/notifications.slice";
 import { assetApiSlice } from "../token/tokenManifestSlice";
 import tokenPriceApi from "../tokenPrice/tokenPriceApi.slice";
 import { adHocMulticallEndpoints } from "./endpoints/adHocMulticallEndpoints";
@@ -56,7 +56,6 @@ import {
   vestingSchedulerQueryEndpoints,
 } from "./endpoints/vestingSchedulerEndpoints";
 import { platformApi } from "./platformApi/platformApi";
-import notificationsSlice from "../notifications/notifications.slice";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({
@@ -130,13 +129,9 @@ const appSettingsPersistedReducer = persistReducer(
   appSettingsReducer
 );
 
-const notificationsPersistedReducer = persistReducer(
-  {
-    storage,
-    key: "notifications",
-    version: 1,
-  },
-  notificationsReducer
+const notificatonsPersistedReducer = persistReducer(
+  { storage, key: "notifications", version: 1 },
+  notificationsSlice.reducer
 );
 
 export const listenerMiddleware = createListenerMiddleware();
@@ -201,7 +196,7 @@ export const reduxStore = configureStore({
     addressBook: addressBookPersistedReducer,
     customTokens: customTokensPersistedReducer,
     networkPreferences: networkPreferencesPersistedReducer,
-    notifications: notificationsPersistedReducer,
+    notifications: notificatonsPersistedReducer,
     flags: flagsPersistedReducer,
 
     // Default slices

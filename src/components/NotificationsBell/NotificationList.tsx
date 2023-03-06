@@ -8,13 +8,13 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import { FC } from "react";
+import NetworkBadge from "../../features/network/NetworkBadge";
 import NetworkIcon from "../../features/network/NetworkIcon";
 import {
   allNetworks,
   findNetworkOrThrow,
 } from "../../features/network/networks";
-import { useSeenNotifications } from "../../features/notifications/notifactionHooks";
-import { markAsSeen } from "../../features/notifications/notifications.slice";
+
 import { useAppDispatch } from "../../features/redux/store";
 import { Notification } from "../../hooks/useNotificationChannels";
 
@@ -33,25 +33,19 @@ const NotificationList: FC<NotificationListProps> = ({
   notifications,
   activeTab,
 }) => {
-  const seen = useSeenNotifications();
-
-  const dispatch = useAppDispatch();
-
-  const onMarkAsSeen = (id: string) => () => {
-    dispatch(markAsSeen(id));
-  };
-
   return notifications[activeTab].length > 0 ? (
     <>
       {notifications[activeTab].map(({ id, title, message }) => (
-        <Stack key={id}>
-          <Tooltip
-            followCursor
-            title={seen[id] ? "" : "Click to archive"}
-            sx={{ zIndex: 10000 }}
-          >
+        <Stack key={id} sx={{ position: "relative" }}>
+          {message.parsed.network && (
+            <NetworkBadge
+              sx={{ position: "absolute", top: 0, right: 8 }}
+              network={findNetworkOrThrow(allNetworks, message.parsed.network)}
+            />
+          )}
+
+          <Tooltip followCursor title="Placeholder" sx={{ zIndex: 10000 }}>
             <Stack
-              onClick={onMarkAsSeen(id)}
               p={2}
               sx={{
                 cursor: "pointer",
@@ -66,16 +60,6 @@ const NotificationList: FC<NotificationListProps> = ({
                   {getNotificationIcon(message.parsed)}
                   <Typography variant="h6"> {title}</Typography>
                 </Stack>
-
-                {message.parsed.network && (
-                  <NetworkIcon
-                    network={findNetworkOrThrow(
-                      allNetworks,
-                      message.parsed.network
-                    )}
-                    size={24}
-                  />
-                )}
               </Stack>
               <Typography variant="body2">{createMessage(message)}</Typography>
             </Stack>

@@ -9,8 +9,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { FC, useEffect, useState } from "react";
-import { markAsSeenBatch } from "../../features/notifications/notifications.slice";
+import { FC, useState } from "react";
 import {} from "../../features/network/networks";
 import { useAppDispatch } from "../../features/redux/store";
 import { useNotificationChannels } from "../../hooks/useNotificationChannels";
@@ -24,30 +23,30 @@ import useUpdateEffect from "react-use/lib/useUpdateEffect";
 import differenceBy from "lodash/differenceBy";
 import isEqual from "lodash/isEqual";
 import { displayToast } from "../Toast/toast";
+import { updateLastSeenNotification } from "../../features/notifications/notifications.slice";
+import { useLastSeenNotification } from "../../features/notifications/notificationHooks";
 
 export type NotificationTab = "new" | "archive";
 
 const NotificationsBell: FC = () => {
   const { address } = useAccount();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const { notifications } = useNotificationChannels();
 
   const [activeTab, setActiveTab] = useState<NotificationTab>("new");
 
   const dispatch = useAppDispatch();
 
+  const lastSeenNotification = useLastSeenNotification();
+
   const onBellClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
+    dispatch(updateLastSeenNotification(notifications.new[0].id));
   };
 
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  const onMarkAllAsSeen = (ids: string[]) => () => {
-    dispatch(markAsSeenBatch(ids));
-  };
-
-  const { notifications } = useNotificationChannels();
 
   const previousNewNotifications = usePrevious(notifications.new);
 
@@ -73,7 +72,10 @@ const NotificationsBell: FC = () => {
         <Badge
           badgeContent={notifications.new.length}
           color="primary"
-          invisible={notifications.new.length === 0}
+          invisible={
+            notifications.new.length === 0 ||
+            lastSeenNotification === notifications.new[0].id
+          }
         >
           <NotificationsIcon />
         </Badge>
@@ -114,24 +116,6 @@ const NotificationsBell: FC = () => {
             </Stack>
           )}
         </Box>
-        {notifications.new.length > 1 && activeTab === "new" && (
-          <Paper
-            sx={{
-              background: "white",
-              borderRadius: 0,
-              border: "none",
-            }}
-          >
-            <Button
-              fullWidth
-              onClick={onMarkAllAsSeen(
-                notifications[activeTab].map((n) => n.id)
-              )}
-            >
-              Archive all
-            </Button>
-          </Paper>
-        )}
       </Popover>
     </>
   );

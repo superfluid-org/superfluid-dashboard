@@ -1,39 +1,24 @@
-import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSelector, createSlice } from "@reduxjs/toolkit";
+import { CurrencyCode } from "../../utils/currencyUtils";
 import { RootState } from "../redux/store";
 
 export interface NotificationsState {
-  seen: Record<string, boolean>;
+  lastSeenNotification: string;
 }
 
-const initialState: NotificationsState = {
-  seen: {},
-};
+const initialState: NotificationsState = { lastSeenNotification: "" };
 
 export const notificationsSlice = createSlice({
   name: "notifications",
-  initialState: initialState,
+  initialState,
   reducers: {
-    markAsSeen: (state, action: PayloadAction<string>) => ({
-      ...state,
-      seen: {
-        ...state.seen,
-        [action.payload]: true,
-      },
-    }),
-    markAsSeenBatch: (state, action: PayloadAction<string[]>) => ({
-      ...state,
-      seen: {
-        ...state.seen,
-        ...action.payload.reduce<Record<string, boolean>>(
-          (acc, curr) => ({ ...acc, [curr]: true }),
-          {}
-        ),
-      },
-    }),
+    updateLastSeenNotification: (
+      state,
+      action: PayloadAction<Partial<string>>
+    ) => ({ ...state, lastSeenNotification: action.payload }),
   },
 });
-
-export const { markAsSeen, markAsSeenBatch } = notificationsSlice.actions;
 
 const selectSelf = (state: RootState): NotificationsState =>
   state.notifications;
@@ -43,4 +28,5 @@ export const notificationsSelector = createSelector(
   (state: NotificationsState, key: keyof NotificationsState) => state[key]
 );
 
+export const { updateLastSeenNotification } = notificationsSlice.actions;
 export default notificationsSlice.reducer;
