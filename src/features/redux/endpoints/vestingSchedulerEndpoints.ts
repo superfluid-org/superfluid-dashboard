@@ -48,8 +48,135 @@ interface RpcVestingSchedule {
   endDateTimestamp: number;
 }
 
+interface FixAccessForVestingMutation
+  extends BaseSuperTokenMutation {
+  senderAddress: string;
+  requiredTokenAllowanceWei: string;
+  requiredFlowOperatorPermissions: number;
+  requiredFlowRateAllowanceWei: string;
+}
+
 export const vestingSchedulerMutationEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
+    fixAccessForVesting: builder.mutation<
+      TransactionInfo & { subTransactionTitles: TransactionTitle[] },
+      FixAccessForVestingMutation
+    >({
+      queryFn: async ({
+        signer,
+        chainId,
+        superTokenAddress,
+        senderAddress,
+        requiredTokenAllowanceWei,
+        requiredFlowOperatorPermissions,
+        requiredFlowRateAllowanceWei,
+        transactionExtraData,
+        waitForConfirmation
+      }, { dispatch }) => {
+        const framework = await getFramework(chainId);
+        const superToken = await framework.loadSuperToken(superTokenAddress);
+        const vestingScheduler = getVestingScheduler(chainId, signer);
+
+        const batchedOperations: {
+          operation: Operation;
+          title: TransactionTitle;
+        }[] = [];
+
+        // # Flow Operator Permissions & Flow Rate Allowance
+        const flowOperatorData = await superToken.getFlowOperatorData({
+          flowOperator: vestingScheduler.address,
+          sender: senderAddress,
+          providerOrSigner: signer,
+        });
+        const existingPermissions = Number(flowOperatorData.permissions);
+        const existingFlowRateAllowance = BigNumber.from(
+          flowOperatorData.flowRateAllowance
+        );
+        const requiredFlowRateAllowance = BigNumber.from(
+          requiredFlowRateAllowanceWei
+        );
+
+        const hasRequiredPermissions =
+          existingPermissions & requiredFlowOperatorPermissions;
+        const hasRequiredFlowRateAllowance = existingFlowRateAllowance.gte(
+          requiredFlowRateAllowance
+        );
+
+        if (!hasRequiredPermissions || !hasRequiredFlowRateAllowance) {
+          batchedOperations.push({
+            title: "Approve Vesting Scheduler",
+            operation: await superToken.updateFlowOperatorPermissions({
+              flowOperator: vestingScheduler.address,
+              permissions: hasRequiredPermissions
+                ? existingPermissions
+                : existingPermissions | requiredFlowOperatorPermissions,
+              flowRateAllowance: hasRequiredFlowRateAllowance
+                ? existingFlowRateAllowance.toString()
+                : requiredFlowRateAllowance.toString(),
+            }),
+          });
+        }
+
+        // # ERC-20 allowance ("token allowance")
+        const superTokenContract = SuperToken__factory.connect(
+          superToken.address,
+          signer
+        );
+        const existingTokenAllowance = await superTokenContract.allowance(
+          senderAddress,
+          vestingScheduler.address
+        );
+        const requiredTokenAllowance = BigNumber.from(
+          requiredTokenAllowanceWei
+        );
+        const hasRequiredTokenAllowance = existingTokenAllowance.gte(
+          requiredTokenAllowance
+        );
+
+        if (!hasRequiredTokenAllowance) {
+          const approveAllowancePromise =
+            superTokenContract.populateTransaction.approve(
+              vestingScheduler.address,
+              requiredTokenAllowance
+            );
+          batchedOperations.push({
+            operation: new Operation(approveAllowancePromise, "ERC20_APPROVE"),
+            title: "Approve Allowance",
+          });
+        }
+
+        // # Execute transaction
+        const executable =
+          batchedOperations.length === 1
+            ? batchedOperations[0].operation
+            : framework.batchCall(batchedOperations.map((x) => x.operation));
+
+        const transactionResponse = await executable.exec(signer);
+        const subTransactionTitles = batchedOperations.map((x) => x.title);
+
+        const signerAddress = await signer.getAddress();
+        await registerNewTransaction({
+          transactionResponse,
+          chainId,
+          dispatch,
+          signer: signerAddress,
+          title: "Fix Access for Vesting",
+          extraData: {
+            subTransactionTitles,
+            ...(transactionExtraData ?? {}),
+          },
+          waitForConfirmation: !!waitForConfirmation,
+        });
+
+        return {
+          data: {
+            chainId,
+            hash: transactionResponse.hash,
+            subTransactionTitles,
+          },
+        };
+      },
+    }),
     deleteVestingSchedule: builder.mutation<
       TransactionInfo & { subTransactionTitles: TransactionTitle[] },
       DeleteVestingSchedule
@@ -189,7 +316,7 @@ export const vestingSchedulerMutationEndpoints = {
         });
 
         const flowRateBigNumber = BigNumber.from(arg.flowRateWei);
-        const maximumNeededTransferAllowance = BigNumber.from(
+        const maximumNeededTokenAllowance = BigNumber.from(
           arg.cliffTransferAmountWei
         )
           .add(flowRateBigNumber.mul(START_DATE_VALID_AFTER_IN_SECONDS))
@@ -200,21 +327,21 @@ export const vestingSchedulerMutationEndpoints = {
           signer
         );
 
-        const existingTransferAllowance = await superTokenContract.allowance(
+        const existingTokenAllowance = await superTokenContract.allowance(
           senderAddress,
           vestingScheduler.address
         );
-        const newTransferAllowance = existingTransferAllowance.add(
-          maximumNeededTransferAllowance
+        const newTokenAllowance = existingTokenAllowance.add(
+          maximumNeededTokenAllowance
         );
-        const increaseAllowancePromise =
+        const approveAllowancePromise =
           superTokenContract.populateTransaction.approve(
             vestingScheduler.address,
-            newTransferAllowance
+            newTokenAllowance
           );
 
         subOperations.push({
-          operation: new Operation(increaseAllowancePromise, "ERC20_APPROVE"),
+          operation: new Operation(approveAllowancePromise, "ERC20_APPROVE"),
           title: "Approve Allowance",
         });
 
