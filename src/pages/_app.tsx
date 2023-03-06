@@ -4,6 +4,7 @@ import { AppProps } from "next/app";
 import Head from "next/head";
 import { ReactElement, ReactNode, useEffect } from "react";
 import { hotjar } from "react-hotjar";
+import { ToastContainer } from "react-toastify";
 import MonitorContext from "../components/MonitorContext/MonitorContext";
 import { AnalyticsProvider } from "../features/analytics/AnalyticsProvider";
 import { AutoConnectProvider } from "../features/autoConnect/AutoConnect";
@@ -29,6 +30,7 @@ import WagmiManager, {
 import { initializeSuperfluidDashboardGlobalObject } from "../global";
 import config from "../utils/config";
 import { IsCypress } from "../utils/SSRUtils";
+import "react-toastify/dist/ReactToastify.css";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -92,6 +94,7 @@ export default function MyApp(props: AppPropsWithLayout) {
                                         <IntercomProvider>
                                           <MonitorContext />
                                           <Layout>
+                                            <ToastContainer />
                                             <MinigameProvider>
                                               {getLayout(
                                                 <Component {...pageProps} />

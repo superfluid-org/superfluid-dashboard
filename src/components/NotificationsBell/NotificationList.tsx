@@ -51,13 +51,23 @@ const createLiquidationRiskMessage = ({
 }: MessageData) =>
   `Your ${token}(${symbol}) on ${capitalize(
     network
-  )} is about to be liquidated at ${format(
-    Number(liquidation) * 1000,
-    "yyyy/MM/dd HH:mm."
-  )}`;
+  )} is about to be liquidated${
+    liquidation
+      ? " at " + format(Number(liquidation) * 1000, "yyyy/MM/dd HH:mm")
+      : ""
+  }.`;
 
-const createLiquidatedMessage = ({ network, token, symbol }: MessageData) =>
-  `Your ${token}(${symbol}) on ${capitalize(network)} was liquidated.`;
+const createLiquidatedMessage = ({
+  network,
+  token,
+  symbol,
+  liquidation,
+}: MessageData) =>
+  `Your ${token}(${symbol}) on ${capitalize(network)} was liquidated${
+    liquidation
+      ? " at " + format(Number(liquidation) * 1000, "yyyy/MM/dd HH:mm")
+      : ""
+  }.`;
 
 const NotificationList: FC<NotificationListProps> = ({
   notifications,
@@ -73,7 +83,7 @@ const NotificationList: FC<NotificationListProps> = ({
 
   return notifications[activeTab].length > 0 ? (
     <>
-      {notifications[activeTab].map(({ id, title, message, channel }) => (
+      {notifications[activeTab].map(({ id, title, message }) => (
         <Stack key={id}>
           <Tooltip
             followCursor
@@ -105,9 +115,9 @@ const NotificationList: FC<NotificationListProps> = ({
                 )}
               </Stack>
               <Typography variant="body2">
-                {message.liquidation
-                  ? createLiquidationRiskMessage(message)
-                  : createLiquidatedMessage(message)}
+                {message.type === "liquidation"
+                  ? createLiquidatedMessage(message)
+                  : createLiquidationRiskMessage(message)}
               </Typography>
             </Stack>
           </Tooltip>

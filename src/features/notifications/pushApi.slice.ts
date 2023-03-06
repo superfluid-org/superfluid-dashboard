@@ -4,8 +4,13 @@ import {
   superFluidChannel,
   superfluidChannelAddress,
 } from "../../hooks/usePushProtocol";
-import { ParsedResponseType, SignerType } from "@pushprotocol/restapi";
+import {
+  ApiNotificationType,
+  ParsedResponseType,
+  SignerType,
+} from "@pushprotocol/restapi";
 import * as PushApi from "@pushprotocol/restapi";
+import { displayToast } from "../../components/Toast/toast";
 
 export interface ResolveNameResult {
   address: string;
@@ -74,15 +79,20 @@ export const pushApi = createApi({
           }
         },
       }),
-      getNotifications: builder.query<ParsedResponseType[], string>({
+      getNotifications: builder.query<ApiNotificationType[], string>({
         queryFn: async (user) => {
-          const notifications: ParsedResponseType[] =
+          const notifications: ApiNotificationType[] =
             await PushApi.user.getFeeds({
               user: `eip155:1:${user}`,
               env: "prod",
+              limit: 100,
+              raw: true,
             });
+
           return {
-            data: notifications.filter((n) => n.app === "Superfluid"),
+            data: notifications.filter(
+              (n) => n.payload.data.app === "Superfluid"
+            ),
           };
         },
       }),

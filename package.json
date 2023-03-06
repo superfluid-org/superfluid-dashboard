@@ -58,6 +58,8 @@
     "react-hook-form": "^7.43.1",
     "react-hotjar": "^5.4.1",
     "react-redux": "^8.0.5",
+    "react-toastify": "^9.1.1",
+    "react-use": "^17.4.0",
     "react-use-intercom": "^2.1.0",
     "redux-persist": "^6.0.0",
     "serialize-error": "^8.1.0",

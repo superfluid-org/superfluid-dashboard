@@ -9,8 +9,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { FC, useState } from "react";
-import { useSeenNotifications } from "../../features/notifications/notifactionHooks";
+import { FC, useEffect, useState } from "react";
 import { markAsSeenBatch } from "../../features/notifications/notifications.slice";
 import {} from "../../features/network/networks";
 import { useAppDispatch } from "../../features/redux/store";
@@ -19,8 +18,12 @@ import { useNotificationChannels } from "../../hooks/useNotificationChannels";
 import NotificationList from "./NotificationList";
 import NotificationHeader from "./NotificationHeader";
 import { useAccount } from "wagmi";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import ConnectWallet from "../../features/wallet/ConnectWallet";
+import usePrevious from "react-use/lib/usePrevious";
+import useUpdateEffect from "react-use/lib/useUpdateEffect";
+import differenceBy from "lodash/differenceBy";
+import isEqual from "lodash/isEqual";
+import { displayToast } from "../Toast/toast";
 
 export type NotificationTab = "new" | "archive";
 
@@ -31,8 +34,6 @@ const NotificationsBell: FC = () => {
   const [activeTab, setActiveTab] = useState<NotificationTab>("new");
 
   const dispatch = useAppDispatch();
-
-  const seen = useSeenNotifications();
 
   const onBellClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -47,6 +48,24 @@ const NotificationsBell: FC = () => {
   };
 
   const { notifications } = useNotificationChannels();
+
+  const previousNewNotifications = usePrevious(notifications.new);
+
+  useUpdateEffect(() => {
+    if (
+      previousNewNotifications &&
+      previousNewNotifications.length > 0 &&
+      !isEqual(previousNewNotifications, notifications.new)
+    ) {
+      differenceBy(
+        notifications.new,
+        previousNewNotifications,
+        (n) => n.id
+      ).map(({ title, message }) =>
+        displayToast({ title, message: message.network })
+      );
+    }
+  }, [notifications]);
 
   const id = "notifications-bell";
 
