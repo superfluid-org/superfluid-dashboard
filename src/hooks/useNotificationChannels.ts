@@ -1,16 +1,18 @@
-import { ApiNotificationType } from "@pushprotocol/restapi";
 import { isWithinInterval } from "date-fns";
-import sub from "date-fns/sub";
 import subWeeks from "date-fns/subWeeks";
 import { useMemo } from "react";
 import { useSeenNotifications } from "../features/notifications/notifactionHooks";
+import { parseNotificationBody } from "../utils/notification";
 import { usePushProtocol } from "./usePushProtocol";
 
 export type NotificationChannelType = "PUSH";
 export type Notification = {
   id: string;
   title: string;
-  message: MessageData;
+  message: {
+    parsed: MessageData;
+    raw: string;
+  };
   epoch: Date;
 };
 
@@ -43,16 +45,6 @@ export type UseNotificationChannels = () => {
   };
 };
 
-const parseNotificationData = (raw: string): MessageData =>
-  raw.split(",").reduce((acc, curr) => {
-    const [key, value] = curr.split(":");
-
-    return {
-      ...acc,
-      [key]: value,
-    };
-  }, {} as MessageData);
-
 export const useNotificationChannels: UseNotificationChannels = () => {
   const {
     toggleSubscribe: toggleSubscribePush,
@@ -72,7 +64,10 @@ export const useNotificationChannels: UseNotificationChannels = () => {
         .map(({ epoch, payload }) => ({
           id: payload.data.sid,
           title: payload.notification.title.replace("Superfluid - ", ""),
-          message: parseNotificationData(payload.notification.body),
+          message: {
+            raw: payload.notification.body,
+            parsed: parseNotificationBody(payload.notification.body),
+          },
           epoch: new Date(epoch),
         }))
         .filter(({ epoch }) =>

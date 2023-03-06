@@ -20,7 +20,7 @@ import { useAppDispatch } from "../../features/redux/store";
 import { MessageData, Notification } from "../../hooks/useNotificationChannels";
 import InfoIcon from "@mui/icons-material/Info";
 import ReportIcon from "@mui/icons-material/Report";
-import { capitalize } from "lodash";
+import { createMessage } from "../../utils/notification";
 
 type NotificationListProps = {
   notifications: {
@@ -42,32 +42,6 @@ const getIcon = ({ type }: MessageData) => {
       return <ReportIcon fontSize="small" sx={{ color: colors.amber[500] }} />;
   }
 };
-
-const createLiquidationRiskMessage = ({
-  token,
-  symbol,
-  network,
-  liquidation,
-}: MessageData) =>
-  `Your ${token}(${symbol}) on ${capitalize(
-    network
-  )} is about to be liquidated${
-    liquidation
-      ? " at " + format(Number(liquidation) * 1000, "yyyy/MM/dd HH:mm")
-      : ""
-  }.`;
-
-const createLiquidatedMessage = ({
-  network,
-  token,
-  symbol,
-  liquidation,
-}: MessageData) =>
-  `Your ${token}(${symbol}) on ${capitalize(network)} was liquidated${
-    liquidation
-      ? " at " + format(Number(liquidation) * 1000, "yyyy/MM/dd HH:mm")
-      : ""
-  }.`;
 
 const NotificationList: FC<NotificationListProps> = ({
   notifications,
@@ -103,22 +77,21 @@ const NotificationList: FC<NotificationListProps> = ({
             >
               <Stack direction="row" justifyContent="space-between">
                 <Stack direction="row" alignItems="center" gap={0.5}>
-                  {getIcon(message)}
+                  {getIcon(message.parsed)}
                   <Typography variant="h6"> {title}</Typography>
                 </Stack>
 
-                {message.network && (
+                {message.parsed.network && (
                   <NetworkIcon
-                    network={findNetworkOrThrow(allNetworks, message.network)}
+                    network={findNetworkOrThrow(
+                      allNetworks,
+                      message.parsed.network
+                    )}
                     size={24}
                   />
                 )}
               </Stack>
-              <Typography variant="body2">
-                {message.type === "liquidation"
-                  ? createLiquidatedMessage(message)
-                  : createLiquidationRiskMessage(message)}
-              </Typography>
+              <Typography variant="body2">{createMessage(message)}</Typography>
             </Stack>
           </Tooltip>
           <Divider />

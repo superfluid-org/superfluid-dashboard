@@ -61,9 +61,7 @@ const NotificationsBell: FC = () => {
         notifications.new,
         previousNewNotifications,
         (n) => n.id
-      ).map(({ title, message }) =>
-        displayToast({ title, message: message.network })
-      );
+      ).map(({ title, message }) => displayToast({ title, message }));
     }
   }, [notifications]);
 
