@@ -20,6 +20,7 @@ const NotificationHeader: FC<NotificationHeaderProps> = ({
         background: "white",
         borderBottom: "1px solid #E0E0E0",
       }}
+      gap={1}
     >
       <Stack direction="row" justifyContent="space-between">
         <Typography variant="h5">Notifications</Typography>

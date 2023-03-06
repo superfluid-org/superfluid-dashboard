@@ -39,7 +39,10 @@ const NotificationList: FC<NotificationListProps> = ({
         <Stack key={id} sx={{ position: "relative" }}>
           {message.parsed.network && (
             <NetworkBadge
-              sx={{ position: "absolute", top: 0, right: 8 }}
+              sx={{ position: "absolute", top: 0, right: 20 }}
+              NetworkIconProps={{
+                size: 16,
+              }}
               network={findNetworkOrThrow(allNetworks, message.parsed.network)}
             />
           )}
@@ -61,7 +64,9 @@ const NotificationList: FC<NotificationListProps> = ({
                   <Typography variant="h6"> {title}</Typography>
                 </Stack>
               </Stack>
-              <Typography variant="body2">{createMessage(message)}</Typography>
+              <Typography variant="body2" pl={3}>
+                {createMessage(message)}
+              </Typography>
             </Stack>
           </Tooltip>
           <Divider />

@@ -2,9 +2,9 @@ import { MessageData } from "../hooks/useNotificationChannels";
 import capitalize from "lodash/capitalize";
 import format from "date-fns/format";
 
-import ReportIcon from "@mui/icons-material/Report";
+import WaringIcon from "@mui/icons-material/Error";
 import { colors } from "@mui/material";
-import CancelIcon from "@mui/icons-material/Cancel";
+import ErrorIcon from "@mui/icons-material/Cancel";
 
 export const createLiquidationRiskMessage = ({
   token,
@@ -12,9 +12,7 @@ export const createLiquidationRiskMessage = ({
   network,
   liquidation,
 }: MessageData) =>
-  `Your ${token}(${symbol}) on ${capitalize(
-    network
-  )} is about to be liquidated${
+  `Your ${symbol} on ${capitalize(network)} is about to be liquidated${
     liquidation
       ? " at " + format(Number(liquidation) * 1000, "yyyy/MM/dd HH:mm")
       : ""
@@ -26,7 +24,7 @@ export const createLiquidatedMessage = ({
   symbol,
   liquidation,
 }: MessageData) =>
-  `Your ${token}(${symbol}) on ${capitalize(network)} was liquidated${
+  `Your ${symbol} on ${capitalize(network)} was liquidated${
     liquidation
       ? " at " + format(Number(liquidation) * 1000, "yyyy/MM/dd HH:mm")
       : ""
@@ -54,11 +52,11 @@ export const createMessage = ({
 export const getNotificationIcon = ({ type }: MessageData) => {
   switch (type) {
     case "liquidation":
-      return <CancelIcon fontSize="small" sx={{ color: colors.red[500] }} />;
+      return <ErrorIcon fontSize="small" sx={{ color: colors.red[500] }} />;
     case "liquidation-risk-2day":
-      return <ReportIcon fontSize="small" sx={{ color: colors.amber[500] }} />;
+      return <WaringIcon fontSize="small" sx={{ color: colors.amber[500] }} />;
     case "liquidation-risk-7day":
-      return <ReportIcon fontSize="small" sx={{ color: colors.amber[500] }} />;
+      return <WaringIcon fontSize="small" sx={{ color: colors.amber[500] }} />;
   }
 };
 
