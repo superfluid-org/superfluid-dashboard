@@ -70,7 +70,8 @@ const NotificationList: FC<NotificationListProps> = ({
                 <Typography variant="body2" sx={{ color: "GrayText" }}>
                   {createMessage(message)}
                 </Typography>
-                {message.parsed.type &&
+                {activeTab === "new" &&
+                  message.parsed.type &&
                   message.parsed.type.includes("liquidation-risk") && (
                     <Link href="/wrap">
                       <Button sx={{ width: 120 }} variant="contained">
