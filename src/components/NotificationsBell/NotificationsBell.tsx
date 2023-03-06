@@ -55,7 +55,7 @@ const NotificationsBell: FC = () => {
     if (
       previousNewNotifications &&
       previousNewNotifications.length > 0 &&
-      !isEqual(previousNewNotifications, notifications.new)
+      isEqual(previousNewNotifications, notifications.new)
     ) {
       differenceBy(
         notifications.new,

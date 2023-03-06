@@ -7,6 +7,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { FC, PropsWithChildren, useCallback } from "react";
+import { ToastContainer } from "react-toastify";
 import AccessCodeDialog from "../featureFlags/AccessCodeDialog";
 import TransactionDrawer, {
   transactionDrawerWidth,
@@ -47,6 +48,7 @@ const Main = styled("main")<{
   [theme.breakpoints.down("md")]: {
     padding: `${theme.spacing(3.5)} 0`,
   },
+  position: "relative",
 }));
 
 const Layout: FC<PropsWithChildren> = ({ children }) => {
@@ -67,6 +69,7 @@ const Layout: FC<PropsWithChildren> = ({ children }) => {
       <Main open={transactionDrawerOpen}>
         {!isBelowMd && theme.palette.mode === "dark" && <DarkGlow />}
         <Toolbar />
+        <ToastContainer style={{ position: "absolute" }} limit={5} />
         {/* <TransactionSnackbar /> */}
         {children}
       </Main>
