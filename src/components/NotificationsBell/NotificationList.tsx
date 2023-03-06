@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   colors,
   Divider,
   Stack,
@@ -16,6 +17,7 @@ import {
 } from "../../features/network/networks";
 
 import { useAppDispatch } from "../../features/redux/store";
+import WrapCard from "../../features/tokenWrapping/WrapCard";
 import { Notification } from "../../hooks/useNotificationChannels";
 
 import { createMessage, getNotificationIcon } from "../../utils/notification";
@@ -64,9 +66,19 @@ const NotificationList: FC<NotificationListProps> = ({
                   <Typography variant="h6"> {title}</Typography>
                 </Stack>
               </Stack>
-              <Typography variant="body2" sx={{ pl: 3, color: "GrayText" }}>
-                {createMessage(message)}
-              </Typography>
+              <Stack pl={3} gap={1}>
+                <Typography variant="body2" sx={{ color: "GrayText" }}>
+                  {createMessage(message)}
+                </Typography>
+                {message.parsed.type &&
+                  message.parsed.type.includes("liquidation-risk") && (
+                    <Link href="/wrap">
+                      <Button sx={{ width: 120 }} variant="contained">
+                        Wrap tokens
+                      </Button>
+                    </Link>
+                  )}
+              </Stack>
             </Stack>
           </Tooltip>
           <Divider />
