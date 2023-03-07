@@ -49,39 +49,28 @@ const NotificationList: FC<NotificationListProps> = ({
             />
           )}
 
-          <Tooltip followCursor title="Placeholder" sx={{ zIndex: 10000 }}>
-            <Stack
-              p={2}
-              sx={{
-                cursor: "pointer",
-                ":hover": {
-                  background: colors.grey[100],
-                },
-                justifyContent: "center",
-              }}
-            >
-              <Stack direction="row" justifyContent="space-between">
-                <Stack direction="row" alignItems="center" gap={0.5}>
-                  {getNotificationIcon(message.parsed)}
-                  <Typography variant="h6"> {title}</Typography>
-                </Stack>
-              </Stack>
-              <Stack pl={3} gap={1}>
-                <Typography variant="body2" sx={{ color: "GrayText" }}>
-                  {createMessage(message)}
-                </Typography>
-                {activeTab === "new" &&
-                  message.parsed.type &&
-                  message.parsed.type.includes("liquidation-risk") && (
-                    <Link href="/wrap">
-                      <Button sx={{ width: 120 }} variant="contained">
-                        Wrap tokens
-                      </Button>
-                    </Link>
-                  )}
+          <Stack p={2} justifyContent="center">
+            <Stack direction="row" justifyContent="space-between">
+              <Stack direction="row" alignItems="center" gap={0.5}>
+                {getNotificationIcon(message.parsed)}
+                <Typography variant="h6"> {title}</Typography>
               </Stack>
             </Stack>
-          </Tooltip>
+            <Stack pl={3} gap={1}>
+              <Typography variant="body2" sx={{ color: "GrayText" }}>
+                {createMessage(message)}
+              </Typography>
+              {activeTab === "new" &&
+                message.parsed.type &&
+                message.parsed.type.includes("liquidation-risk") && (
+                  <Link href="/wrap">
+                    <Button sx={{ width: 120 }} variant="contained">
+                      Wrap tokens
+                    </Button>
+                  </Link>
+                )}
+            </Stack>
+          </Stack>
           <Divider />
         </Stack>
       ))}

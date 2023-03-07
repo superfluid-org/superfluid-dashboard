@@ -17,7 +17,6 @@ const NotificationHeader: FC<NotificationHeaderProps> = ({
     <Stack
       p={2}
       sx={{
-        background: "white",
         borderBottom: "1px solid #E0E0E0",
       }}
       gap={1}
