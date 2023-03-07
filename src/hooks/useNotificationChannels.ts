@@ -1,4 +1,4 @@
-import differenceInMonths from "date-fns/differenceInMonths";
+import differenceInDays from "date-fns/differenceInDays";
 import { useMemo } from "react";
 import { parseNotificationBody } from "../utils/notification";
 import { usePushProtocol } from "./usePushProtocol";
@@ -74,11 +74,11 @@ export const useNotificationChannels: UseNotificationChannels = () => {
       [push.channelType]: push,
     },
     notifications: {
-      new: push.notifications.filter(
-        (n) => differenceInMonths(n.epoch, new Date()) < 1
-      ),
+      new: push.notifications.filter((n) => {
+        return differenceInDays(new Date(), n.epoch) <= 30;
+      }),
       archive: push.notifications.filter(
-        (n) => differenceInMonths(n.epoch, new Date()) >= 1
+        (n) => differenceInDays(new Date(), n.epoch) > 30
       ),
     },
   };

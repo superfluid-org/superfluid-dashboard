@@ -85,7 +85,7 @@ export const pushApi = createApi({
             await PushApi.user.getFeeds({
               user: `eip155:1:${user}`,
               env: "prod",
-              limit: 100,
+              limit: 500,
               raw: true,
             });
 
