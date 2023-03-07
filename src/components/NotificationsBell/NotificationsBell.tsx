@@ -57,8 +57,6 @@ const NotificationsBell: FC = () => {
     setAnchorEl(null);
   };
 
-  console.log(previousNewNotifications, notifications.new);
-
   useUpdateEffect(() => {
     if (
       previousNewNotifications.length > 0 &&
