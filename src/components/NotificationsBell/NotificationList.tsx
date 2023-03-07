@@ -1,23 +1,13 @@
-import {
-  Box,
-  Button,
-  colors,
-  Divider,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { useTokenSearch } from "@lifi/widget/hooks";
+import { Button, Divider, Stack, Typography } from "@mui/material";
 import Link from "next/link";
 import { FC } from "react";
 import NetworkBadge from "../../features/network/NetworkBadge";
-import NetworkIcon from "../../features/network/NetworkIcon";
 import {
   allNetworks,
   findNetworkOrThrow,
 } from "../../features/network/networks";
 
-import { useAppDispatch } from "../../features/redux/store";
-import WrapCard from "../../features/tokenWrapping/WrapCard";
 import { Notification } from "../../hooks/useNotificationChannels";
 
 import { createMessage, getNotificationIcon } from "../../utils/notification";

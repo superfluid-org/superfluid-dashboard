@@ -55,13 +55,12 @@ const NotificationsBell: FC = () => {
     setAnchorEl(null);
   };
 
-  const previousNewNotifications = usePrevious(notifications.new);
+  const previousNewNotifications = usePrevious(notifications.new) ?? [];
 
   useUpdateEffect(() => {
     if (
-      previousNewNotifications &&
       previousNewNotifications.length > 0 &&
-      isEqual(previousNewNotifications, notifications.new)
+      !isEqual(previousNewNotifications, notifications.new)
     ) {
       differenceBy(
         notifications.new,
@@ -77,7 +76,9 @@ const NotificationsBell: FC = () => {
     <>
       <IconButton aria-describedby={id} onClick={onBellClick}>
         <Badge
-          badgeContent={notifications.new.length}
+          badgeContent={
+            notifications.new.length - previousNewNotifications.length
+          }
           color="primary"
           invisible={
             notifications.new.length === 0 ||
