@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  Button,
   Divider,
   FormControlLabel,
   Paper,
@@ -68,12 +69,18 @@ const NotificationSettings: FC = () => {
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   return address ? (
-    <Paper borderRadius="20px" sx={{ border: "1px solid #E0E0E0" }}>
-      <Stack p="30px" direction="row" justifyContent="space-between">
+    <Paper sx={{ border: "1px solid #E0E0E0", borderRadius: 2.25 }}>
+      <Stack p={4} justifyContent="space-between">
         <Stack>
-          <Typography component="h1" variant="h5">
-            Notifications
-          </Typography>
+          <Stack direction="row" justifyContent="space-between">
+            <Typography component="h1" variant="h5">
+              Notifications
+            </Typography>
+            <Button variant="contained" onClick={channels.PUSH.onToggle}>
+              {channels.PUSH.isSubscribed ? "Disable" : "Enable"} Notifications
+            </Button>
+          </Stack>
+
           <Typography variant="body1" color="secondary">
             Get notified about your Superfluid streams and Super Token activity.
           </Typography>
@@ -81,7 +88,7 @@ const NotificationSettings: FC = () => {
         {/* <Button variant="contained">Save</Button> */}
       </Stack>
       <Divider />
-      <Stack p="30px" direction="row" alignItems="center" gap={4}>
+      <Stack p={4} direction="row" alignItems="center" gap={4}>
         <Stack sx={{ width: 350 }}>
           <Typography component="h1" variant="h5">
             Wallet Address
@@ -104,8 +111,8 @@ const NotificationSettings: FC = () => {
           <CopyIconBtn IconButtonProps={{ size: "small" }} copyText={address} />
         </Stack>
       </Stack>
-      <Divider />
-      <Stack p="30px" direction="row" alignItems="center" gap={4}>
+      {/* <Divider />
+      <Stack p={4} direction="row" alignItems="center" gap={4}>
         <Stack sx={{ width: 350 }}>
           <Typography component="h1" variant="h5">
             Notification Channel
@@ -130,7 +137,7 @@ const NotificationSettings: FC = () => {
             label={channel.name}
           />
         ))}
-      </Stack>
+      </Stack> */}
     </Paper>
   ) : (
     <NoWalletConnected />
