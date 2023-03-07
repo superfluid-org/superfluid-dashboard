@@ -1,4 +1,4 @@
-import { isWithinInterval, subMonths } from "date-fns";
+import differenceInMonths from "date-fns/differenceInMonths";
 import { useMemo } from "react";
 import { parseNotificationBody } from "../utils/notification";
 import { usePushProtocol } from "./usePushProtocol";
@@ -69,21 +69,16 @@ export const useNotificationChannels: UseNotificationChannels = () => {
     [isPushSubscribed, toggleSubscribePush, pushNotifcations]
   );
 
-  const oneMonthIntervalFromNow = {
-    start: subMonths(Date.now(), 1),
-    end: Date.now(),
-  };
-
   return {
     channels: {
       [push.channelType]: push,
     },
     notifications: {
-      new: push.notifications.filter((n) =>
-        isWithinInterval(n.epoch, oneMonthIntervalFromNow)
+      new: push.notifications.filter(
+        (n) => differenceInMonths(n.epoch, new Date()) < 1
       ),
       archive: push.notifications.filter(
-        (n) => !isWithinInterval(n.epoch, oneMonthIntervalFromNow)
+        (n) => differenceInMonths(n.epoch, new Date()) >= 1
       ),
     },
   };

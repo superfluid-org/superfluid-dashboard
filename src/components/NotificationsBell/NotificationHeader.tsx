@@ -15,7 +15,7 @@ const NotificationHeader: FC<NotificationHeaderProps> = ({
 }) => {
   return (
     <>
-      <Stack p={2} gap={1}>
+      <Stack px={2} pt={2} gap={1}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="h5">Notifications</Typography>
           <Link href="/settings">
@@ -31,6 +31,8 @@ const NotificationHeader: FC<NotificationHeaderProps> = ({
               textDecoration: activeTab === "new" ? "underline" : "none",
               cursor: "pointer",
               color: activeTab === "new" ? "ButtonText" : "GrayText",
+              textUnderlineOffset: 5,
+              textDecorationThickness: 1.5,
             }}
             onClick={() => setActiveTab("new")}
           >
@@ -42,6 +44,8 @@ const NotificationHeader: FC<NotificationHeaderProps> = ({
               textDecoration: activeTab === "archive" ? "underline" : "none",
               cursor: "pointer",
               color: activeTab === "archive" ? "ButtonText" : "GrayText",
+              textUnderlineOffset: 5,
+              textDecorationThickness: 1.5,
             }}
             onClick={() => setActiveTab("archive")}
           >
