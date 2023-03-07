@@ -7,7 +7,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { FC, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import {} from "../../features/network/networks";
 import { useAppDispatch } from "../../features/redux/store";
 import {
@@ -19,21 +19,21 @@ import NotificationList from "./NotificationList";
 import NotificationHeader from "./NotificationHeader";
 import { useAccount } from "wagmi";
 import ConnectWallet from "../../features/wallet/ConnectWallet";
-import usePrevious from "react-use/lib/usePrevious";
 import useUpdateEffect from "react-use/lib/useUpdateEffect";
 import differenceBy from "lodash/differenceBy";
 import isEqual from "lodash/isEqual";
 import { displayToast } from "../Toast/toast";
 import { updateLastSeenNotification } from "../../features/notifications/notifications.slice";
 import { useLastSeenNotification } from "../../features/notifications/notificationHooks";
+import { usePrevious } from "react-use";
 
 export type NotificationTab = "new" | "archive";
 
 const NotificationsBell: FC = () => {
   const { address } = useAccount();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [badgeContent, setBadgeContent] = useState(0);
   const { notifications } = useNotificationChannels();
-  const previousNewNotifications = usePrevious(notifications.new) ?? [];
 
   const [activeTab, setActiveTab] = useState<NotificationTab>("new");
 
@@ -57,6 +57,8 @@ const NotificationsBell: FC = () => {
     setAnchorEl(null);
   };
 
+  const previousNewNotifications = usePrevious(notifications.new) ?? [];
+
   useUpdateEffect(() => {
     if (
       previousNewNotifications.length > 0 &&
@@ -70,12 +72,20 @@ const NotificationsBell: FC = () => {
     }
   }, [notifications]);
 
-  const id = "notifications-bell";
+  useEffect(() => {
+    if (lastSeenNotification === notifications.new[0]?.id) {
+      setBadgeContent(0);
+    } else {
+      setBadgeContent(
+        (badgeContent) =>
+          badgeContent +
+          notifications.new.length -
+          previousNewNotifications.length
+      );
+    }
+  }, [lastSeenNotification, notifications.new.length]);
 
-  const badgeContent = useMemo(
-    () => notifications.new.length - previousNewNotifications.length,
-    [lastSeenNotification, notifications.new.length]
-  );
+  const id = "notifications-bell";
 
   return (
     <>
@@ -83,10 +93,7 @@ const NotificationsBell: FC = () => {
         <Badge
           badgeContent={badgeContent}
           color="primary"
-          invisible={
-            notifications.new.length === 0 ||
-            lastSeenNotification === notifications.new[0].id
-          }
+          invisible={lastSeenNotification === notifications.new[0]?.id}
         >
           <NotificationsIcon />
         </Badge>
