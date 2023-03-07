@@ -1,5 +1,5 @@
 // TODO(KK): What's a better name?
-import { BigNumber } from "ethers";
+import { BigNumber, BigNumberish } from "ethers";
 import { FC, useState } from "react";
 import { Box, MenuItem, Select, TextField } from "@mui/material";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
@@ -50,6 +50,11 @@ export const wordTimeUnitMap: Record<string, UnitOfTime> = {
   year: UnitOfTime.Year,
 };
 
+export type ScheduledFlowRate = {
+  flowRate: string;
+  startTimestamp?: number; // UNIX timestamp
+};
+
 export type FlowRateWei = {
   amountWei: string;
   unitOfTime: UnitOfTime;
@@ -58,6 +63,10 @@ export type FlowRateWei = {
 export type FlowRateEther = {
   amountEther: string;
   unitOfTime: UnitOfTime;
+};
+
+export type ScheduledFlowRateEther = FlowRateEther & {
+  startTimestamp?: number; // UNIX timestamp
 };
 
 export const flowRateWeiToString = (

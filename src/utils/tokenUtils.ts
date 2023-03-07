@@ -142,11 +142,11 @@ export function calculateBuffer(
 
 export function calculateBufferAmount(
   network: Network,
-  flowRateWei: FlowRateWei,
+  flowRate: string,
   minBuffer: string
 ): BigNumber {
   const minBufferBN = BigNumber.from(minBuffer);
-  const calculatedBuffer = calculateTotalAmountWei(flowRateWei)
+  const calculatedBuffer = BigNumber.from(flowRate)
     .mul(network.bufferTimeInMinutes)
     .mul(60);
 

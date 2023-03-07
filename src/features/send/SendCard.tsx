@@ -32,8 +32,13 @@ import { formatEther, parseEther } from "ethers/lib/utils";
 import Link from "next/link";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import {
+  mapCreateTaskToScheduledStream,
+  mapStreamScheduling,
+} from "../../hooks/streamSchedulingHooks";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
+import { CreateTask } from "../../scheduling-subgraph/.graphclient";
 import { dateNowSeconds, getTimeInSeconds } from "../../utils/dateUtils";
 import { getDecimalPlacesToRoundTo } from "../../utils/DecimalUtils";
 import {
@@ -335,30 +340,46 @@ export default memo(function SendCard() {
     />
   );
 
-  const { existingStartTimestamp, existingEndTimestamp, existingFlowRate } =
-    rpcApi.useGetFlowScheduleQuery(
-      shouldSearchForActiveFlow && network.flowSchedulerContractAddress
-        ? {
-            chainId: network.id,
-            receiverAddress: receiverAddress,
-            senderAddress: visibleAddress,
-            superTokenAddress: tokenAddress,
-          }
-        : skipToken,
-      {
-        selectFromResult: (result) => {
-          const { startDate, endDate, flowRate } = result.data || {};
+  const {
+    existingStartTimestamp,
+    existingEndTimestamp,
+    existingFlowRate,
+    scheduledStream,
+  } = rpcApi.useGetFlowScheduleQuery(
+    shouldSearchForActiveFlow && network.flowSchedulerContractAddress
+      ? {
+          chainId: network.id,
+          receiverAddress: receiverAddress,
+          senderAddress: visibleAddress,
+          superTokenAddress: tokenAddress,
+        }
+      : skipToken,
+    {
+      selectFromResult: (result) => {
+        const { startDate, endDate, flowRate } = result.data || {};
 
-          return {
-            existingStartTimestamp: startDate,
-            existingEndTimestamp: endDate,
-            existingFlowRate: flowRate,
-          };
-        },
-      }
-    );
-
-  const hasScheduledFlow = !!existingStartTimestamp;
+        return {
+          existingStartTimestamp: startDate,
+          existingEndTimestamp: endDate,
+          existingFlowRate: flowRate,
+          scheduledStream: startDate
+            ? mapStreamScheduling(
+                mapCreateTaskToScheduledStream({
+                  id: `${visibleAddress}-${receiverAddress}-${tokenAddress}-scheduled-stream`,
+                  executionAt: startDate!.toString(),
+                  flowRate: flowRate!,
+                  receiver: receiverAddress!,
+                  sender: visibleAddress!,
+                  superToken: tokenAddress!,
+                } as CreateTask),
+                startDate,
+                endDate
+              )
+            : undefined,
+        };
+      },
+    }
+  );
 
   const existingEndDate = existingEndTimestamp
     ? fromUnixTime(existingEndTimestamp)
@@ -594,10 +615,7 @@ export default memo(function SendCard() {
 
     return calculateBufferAmount(
       network,
-      {
-        amountWei: parseEtherOrZero(flowRateEther.amountEther).toString(),
-        unitOfTime: flowRateEther.unitOfTime,
-      },
+      calculateTotalAmountWei(flowRateEther).toString(),
       tokenBufferQuery.data
     );
   }, [network, flowRateEther, tokenBufferQuery.data]);
@@ -659,9 +677,10 @@ export default memo(function SendCard() {
             const transactionRestoration:
               | SendStreamRestoration
               | ModifyStreamRestoration = {
-              type: activeFlow
-                ? RestorationType.ModifyStream
-                : RestorationType.SendStream,
+              type:
+                activeFlow || scheduledStream
+                  ? RestorationType.ModifyStream
+                  : RestorationType.SendStream,
               flowRate: {
                 amountWei: parseEther(formData.flowRate.amountEther).toString(),
                 unitOfTime: formData.flowRate.unitOfTime,
@@ -700,7 +719,9 @@ export default memo(function SendCard() {
               .unwrap()
               .then(
                 ...txAnalytics(
-                  activeFlow ? "Send Stream" : "Modify Stream",
+                  activeFlow || scheduledStream
+                    ? "Send Stream"
+                    : "Modify Stream",
                   primaryArgs
                 )
               )
@@ -709,12 +730,13 @@ export default memo(function SendCard() {
 
             setDialogLoadingInfo(
               <Typography variant="h5" color="text.secondary" translate="yes">
-                You are {activeFlow ? "modifying" : "sending"} a{" "}
+                You are{" "}
+                {activeFlow || scheduledStream ? "modifying" : "sending"} a{" "}
                 {endTimestamp ? "closed-ended" : ""} stream.
               </Typography>
             );
 
-            if (activeFlow) {
+            if (activeFlow || scheduledStream) {
               setDialogSuccessActions(
                 <TransactionDialogActions>
                   <Link
@@ -764,9 +786,7 @@ export default memo(function SendCard() {
             }
           }}
         >
-          {activeFlow || existingStartTimestamp
-            ? "Modify Stream"
-            : "Send Stream"}
+          {activeFlow || scheduledStream ? "Modify Stream" : "Send Stream"}
         </TransactionButton>
       )}
     </TransactionBoundary>
@@ -778,7 +798,7 @@ export default memo(function SendCard() {
   const DeleteFlowBoundary = (
     <TransactionBoundary mutationResult={flowDeleteResult}>
       {({ setDialogLoadingInfo }) =>
-        (activeFlow || hasScheduledFlow) && (
+        (activeFlow || scheduledStream) && (
           <TransactionButton
             dataCy={"cancel-stream-button"}
             ButtonProps={{
@@ -824,6 +844,25 @@ export default memo(function SendCard() {
     </TransactionBoundary>
   );
 
+  const existingScheduledFlowRate = useMemo(() => {
+    if (activeFlow) {
+      return {
+        flowRate: activeFlow.flowRateWei,
+      };
+    }
+
+    if (scheduledStream) {
+      return {
+        flowRate: scheduledStream.currentFlowRate,
+        startTimestamp: scheduledStream.startDateScheduled
+          ? getUnixTime(scheduledStream.startDateScheduled)
+          : undefined,
+      };
+    }
+
+    return null;
+  }, [activeFlow, scheduledStream]);
+
   return (
     <Card
       data-cy={"send-card"}
@@ -847,7 +886,7 @@ export default memo(function SendCard() {
         size="large"
         sx={{ alignSelf: "flex-start", pointerEvents: "none", mb: 4 }}
       >
-        {activeFlow ? "Modify Stream" : "Send Stream"}
+        {activeFlow || scheduledStream ? "Modify Stream" : "Send Stream"}
       </Button>
 
       <NetworkBadge
@@ -1019,10 +1058,11 @@ export default memo(function SendCard() {
           <StreamingPreview
             receiver={receiverAddress}
             token={token}
-            flowRateEther={flowRateEther}
-            existingStream={activeFlow ?? null}
-            newStartDate={startDate}
-            oldStartDate={existingStartDate}
+            existingScheduledFlowRate={existingScheduledFlowRate}
+            scheduledFlowRateEther={{
+              ...flowRateEther,
+              startTimestamp: startTimestamp ?? undefined,
+            }}
             newEndDate={endDate}
             oldEndDate={existingEndDate}
           />

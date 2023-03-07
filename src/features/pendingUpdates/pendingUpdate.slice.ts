@@ -37,11 +37,17 @@ export const pendingUpdateSlice = createSlice({
     builder.addMatcher(
       rpcApi.endpoints.deleteFlowWithScheduling.matchFulfilled,
       (state, action) => {
-        const { chainId, hash: transactionHash } = action.payload;
+        const {
+          chainId,
+          hash: transactionHash,
+          subTransactionTitles,
+        } = action.payload;
         const { senderAddress, superTokenAddress, receiverAddress } =
           action.meta.arg.originalArgs;
 
-        if (senderAddress) {
+        const pendingUpdates = [];
+
+        if (subTransactionTitles.includes("Close Stream")) {
           const pendingFlowDeleteUpdate: PendingStreamCancellation = {
             chainId,
             transactionHash,
@@ -53,6 +59,10 @@ export const pendingUpdateSlice = createSlice({
             timestamp: dateNowSeconds(),
             relevantSubgraph: "Protocol",
           };
+          pendingUpdates.push(pendingFlowDeleteUpdate);
+        }
+
+        if (subTransactionTitles.includes("Delete Schedule Order")) {
           const pendingCreateTaskDeleteUpdate: PendingCreateTaskDeletion = {
             chainId,
             transactionHash,
@@ -64,11 +74,11 @@ export const pendingUpdateSlice = createSlice({
             timestamp: dateNowSeconds(),
             relevantSubgraph: "Scheduler",
           };
+          pendingUpdates.push(pendingCreateTaskDeleteUpdate);
+        }
 
-          pendingUpdateAdapter.addMany(state, [
-            pendingFlowDeleteUpdate,
-            pendingCreateTaskDeleteUpdate,
-          ]);
+        if (pendingUpdates.length > 0) {
+          pendingUpdateAdapter.addMany(state, pendingUpdates);
         }
       }
     );

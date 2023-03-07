@@ -10,7 +10,7 @@ import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi } from "../redux/store";
 import { formRestorationOptions } from "../transactionRestoration/transactionRestorations";
-import { UnitOfTime } from "./FlowRateInput";
+import { calculateTotalAmountWei, UnitOfTime } from "./FlowRateInput";
 import { SCHEDULE_START_END_MIN_DIFF_S } from "./SendCard";
 import useCalculateBufferInfo from "./useCalculateBufferInfo";
 
@@ -178,12 +178,11 @@ const StreamingFormProvider: FC<
               calculateBufferInfo(
                 network,
                 realtimeBalance,
-                activeFlow,
+                activeFlow ? { flowRate: activeFlow.flowRateWei } : null,
                 {
-                  amountWei: parseEther(
-                    validForm.data.flowRate.amountEther
+                  flowRate: calculateTotalAmountWei(
+                    validForm.data.flowRate
                   ).toString(),
-                  unitOfTime: validForm.data.flowRate.unitOfTime,
                 },
                 tokenBufferQuery.data
               );
