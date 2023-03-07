@@ -68,7 +68,7 @@ const NotificationSettings: FC = () => {
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   return address ? (
-    <Box borderRadius="20px" sx={{ border: "1px solid #E0E0E0" }}>
+    <Paper borderRadius="20px" sx={{ border: "1px solid #E0E0E0" }}>
       <Stack p="30px" direction="row" justifyContent="space-between">
         <Stack>
           <Typography component="h1" variant="h5">
@@ -131,7 +131,7 @@ const NotificationSettings: FC = () => {
           />
         ))}
       </Stack>
-    </Box>
+    </Paper>
   ) : (
     <NoWalletConnected />
   );
