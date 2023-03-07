@@ -2,17 +2,18 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import {
   Badge,
   Box,
-  Button,
   IconButton,
-  Paper,
   Popover,
   Stack,
   Typography,
 } from "@mui/material";
-import { FC, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import {} from "../../features/network/networks";
 import { useAppDispatch } from "../../features/redux/store";
-import { useNotificationChannels } from "../../hooks/useNotificationChannels";
+import {
+  Notification,
+  useNotificationChannels,
+} from "../../hooks/useNotificationChannels";
 
 import NotificationList from "./NotificationList";
 import NotificationHeader from "./NotificationHeader";
@@ -32,6 +33,7 @@ const NotificationsBell: FC = () => {
   const { address } = useAccount();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const { notifications } = useNotificationChannels();
+  const previousNewNotifications = usePrevious(notifications.new) ?? [];
 
   const [activeTab, setActiveTab] = useState<NotificationTab>("new");
 
@@ -45,7 +47,7 @@ const NotificationsBell: FC = () => {
       dispatch(
         updateLastSeenNotification({
           address,
-          notificationId: notifications.new[0]?.id,
+          notificationId: notifications.new[0].id,
         })
       );
     }
@@ -55,7 +57,7 @@ const NotificationsBell: FC = () => {
     setAnchorEl(null);
   };
 
-  const previousNewNotifications = usePrevious(notifications.new) ?? [];
+  console.log(previousNewNotifications, notifications.new);
 
   useUpdateEffect(() => {
     if (
@@ -72,13 +74,16 @@ const NotificationsBell: FC = () => {
 
   const id = "notifications-bell";
 
+  const badgeContent = useMemo(
+    () => notifications.new.length - previousNewNotifications.length,
+    [lastSeenNotification, notifications.new.length]
+  );
+
   return (
     <>
       <IconButton aria-describedby={id} onClick={onBellClick}>
         <Badge
-          badgeContent={
-            notifications.new.length - previousNewNotifications.length
-          }
+          badgeContent={badgeContent}
           color="primary"
           invisible={
             notifications.new.length === 0 ||

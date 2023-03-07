@@ -25,9 +25,6 @@ const Toast: FC<ToastProps> = ({ title, message }) => (
 
 export const displayToast = (props: ToastProps) =>
   toast(<Toast {...props} />, {
-    style: {
-      position: "relative",
-    },
     position: "bottom-right",
     autoClose: 5000,
     closeOnClick: true,
