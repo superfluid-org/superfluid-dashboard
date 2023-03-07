@@ -1,9 +1,7 @@
 import * as Sentry from "@sentry/browser";
 import { useRouter } from "next/router";
-import promiseRetry from "promise-retry";
 import { FC, useCallback, useEffect, useState } from "react";
 import { hotjar } from "react-hotjar";
-import { useIntercom } from "react-use-intercom";
 import {
   addBeforeSend,
   BeforeSendFunc,
@@ -12,13 +10,13 @@ import {
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import {
   listenerMiddleware,
+  RootState,
   transactionTracker,
 } from "../../features/redux/store";
-import config from "../../utils/config";
-import { IsCypress, SSR } from "../../utils/SSRUtils";
 import { useAccount, useNetwork } from "wagmi";
 import { supportId } from "../../features/analytics/useAppInstanceDetails";
 import { useAnalytics } from "../../features/analytics/useAnalytics";
+import { transactionTrackerSelectors } from "@superfluid-finance/sdk-redux";
 
 const SENTRY_WALLET_CONTEXT = "Connected Wallet";
 const SENTRY_WALLET_TAG = "wallet";
@@ -53,9 +51,22 @@ const MonitorContext: FC = () => {
     () =>
       listenerMiddleware.startListening({
         actionCreator: transactionTracker.actions.updateTransaction,
-        effect: ({ payload }) => {
+        effect: ({ payload }, { getState }) => {
+          const state = getState() as RootState;
           if (payload.changes.status) {
-            track(`Transaction Marked ${payload.changes.status}`); // Succeeded, Failure, Unknown etc
+            const trackedTransaction = transactionTrackerSelectors.selectById(
+              state,
+              payload.id
+            );
+            track(
+              `Transaction Marked ${payload.changes.status}`, // Succeeded, Failure, Unknown etc
+              trackedTransaction
+                ? {
+                    chainId: trackedTransaction.chainId,
+                    transactionHash: trackedTransaction.hash,
+                  }
+                : {}
+            );
           }
         },
       }),
@@ -117,33 +128,24 @@ const MonitorContext: FC = () => {
     }
   }, [instanceDetails]);
 
-  const { getVisitorId } = useIntercom();
-
   useEffect(() => {
-    if (!SSR && !IsCypress && getVisitorId && config.intercom.appId) {
-      // This weird retrying is because we can't be exactly sure when Intercom is initialized (booted) because it's not exposed by useIntercom()-
-      promiseRetry(
-        (retry) =>
-          new Promise<void>((resolve, reject) => {
-            const visitorId = getVisitorId();
-            if (visitorId) {
-              Sentry.setUser({ id: visitorId });
-              hotjar.identify(visitorId, {
-                support_id: supportId,
-              });
-              resolve();
-            } else {
-              reject("Couldn't set visitor ID.");
-            }
-          }).catch(retry),
-        {
-          minTimeout: 500,
-          maxTimeout: 3000,
-          retries: 20,
-        }
-      );
+    // Set user ID for integrations that are not configured through Segment.
+
+    const address = instanceDetails.appInstance.wallet.address;
+    const isHotjarInitialized = hotjar.initialized();
+
+    if (address) {
+      Sentry.setUser({ id: address });
+      if (isHotjarInitialized) {
+        hotjar.identify(address, {});
+      }
+    } else {
+      Sentry.setUser(null);
+      if (isHotjarInitialized) {
+        hotjar.identify(null, {});
+      }
     }
-  }, [getVisitorId]);
+  }, [instanceDetails.appInstance.wallet.address]);
 
   const onRouteChangeComplete = useCallback(
     (_fullUrl: string, { shallow }: { shallow: boolean }) =>

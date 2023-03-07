@@ -49,6 +49,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
       },
     },
     {
+      refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
       selectFromResult: (result) => ({
         ...result,
         listedTokenSnapshots:
@@ -78,6 +79,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
         },
       },
       {
+        refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
         selectFromResult: (result) => ({
           ...result,
           unlistedTokenSnapshots:

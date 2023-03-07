@@ -38,6 +38,7 @@ export const useScheduledStream = (
     : undefined;
 
   return subgraphApi.useStreamQuery(arg, {
+    refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
     selectFromResult: (x) => ({
       ...x,
       data: x.data ? mapStreamScheduling(x.data, streamScheduling) : x.data,

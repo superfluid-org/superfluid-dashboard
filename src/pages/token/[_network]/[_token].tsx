@@ -154,6 +154,8 @@ const TokenPageContent: FC<{
   const tokenSnapshotQuery = subgraphApi.useAccountTokenSnapshotQuery({
     chainId: network.id,
     id: `${accountAddress.toLowerCase()}-${tokenAddress.toLowerCase()}`,
+  }, {
+    refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
   });
 
   const onShowForecastChange = (_e: unknown, checked: boolean) =>

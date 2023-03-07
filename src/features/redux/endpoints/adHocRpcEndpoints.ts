@@ -1,9 +1,15 @@
-import { ERC20Token, WrapperSuperToken } from "@superfluid-finance/sdk-core";
+import {
+  ERC20Token,
+  Operation,
+  WrapperSuperToken,
+} from "@superfluid-finance/sdk-core";
 import {
   getFramework,
   TransactionInfo,
   RpcEndpointBuilder,
   registerNewTransactionAndReturnQueryFnResult,
+  BaseSuperTokenMutation,
+  TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
 import { NATIVE_ASSET_ADDRESS } from "./tokenTypes";
 import {
@@ -26,6 +32,7 @@ declare module "@superfluid-finance/sdk-redux" {
     "Modify Stream": true;
     "Create Vesting Schedule": true;
     "Delete Vesting Schedule": true;
+    "Fix Access for Vesting": true;
   }
 }
 
