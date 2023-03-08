@@ -15,11 +15,11 @@ import {
   TransactionDialogActions,
   TransactionDialogButton,
 } from "../transactionBoundary/TransactionDialog";
-import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import Link from "next/link";
 import { Typography } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { useAnalytics } from "../analytics/useAnalytics";
+import { useAccount } from "wagmi";
 
 export const DeleteVestingTransactionButton: FC<{
   superTokenAddress: string;
@@ -40,13 +40,14 @@ export const DeleteVestingTransactionButton: FC<{
 
   const { expectedNetwork: network } = useConnectionBoundary();
 
-  const { visibleAddress } = useVisibleAddress();
-  const isSender =
-    senderAddress.toLowerCase() === visibleAddress?.toLowerCase();
+  const { address: currentAccountAddress } = useAccount();
+  const isSenderLooking =
+    currentAccountAddress &&
+    senderAddress.toLowerCase() === currentAccountAddress.toLowerCase();
 
   const { data: activeVestingSchedule } =
     rpcApi.useGetActiveVestingScheduleQuery(
-      isSender
+      isSenderLooking
         ? {
             chainId: network.id,
             superTokenAddress,
@@ -57,7 +58,7 @@ export const DeleteVestingTransactionButton: FC<{
     );
 
   const { data: activeFlow } = rpcApi.useGetActiveFlowQuery(
-    isSender && activeVestingSchedule
+    isSenderLooking && activeVestingSchedule
       ? {
           chainId: network.id,
           tokenAddress: superTokenAddress,
@@ -118,7 +119,8 @@ export const DeleteVestingTransactionButton: FC<{
                 waitForConfirmation: false,
               })
                 .unwrap()
-                .then(...txAnalytics("Delete Vesting Schedule", primaryArgs));
+                .then(...txAnalytics("Delete Vesting Schedule", primaryArgs))
+                .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
 
               setDialogSuccessActions(
                 <TransactionDialogActions>

@@ -15,8 +15,12 @@ import NoContentPaper from "../../../components/NoContent/NoContentPaper";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import TooltipIcon from "../../common/TooltipIcon";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
-import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION } from "../../redux/endpoints/flowSchedulerEndpoints";
+import {
+  ACL_CREATE_PERMISSION,
+  ACL_DELETE_PERMISSION,
+} from "../../redux/endpoints/flowSchedulerEndpoints";
 import { rpcApi } from "../../redux/store";
+import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import VestingSchedulerAllowanceRow, {
   VestingSchedulerAllowanceRowSkeleton,
@@ -113,77 +117,81 @@ const VestingSchedulerAllowancesTable: FC = () => {
   if ((!isLoading && tokenSummaries.length === 0) || !senderAddress) {
     return (
       <NoContentPaper
-        title="No Allowances Data"
-        description="Allowances and permissions that you have given will appear here."
+        title="No Access Data"
+        description="Permissions and allowances that you have given will appear here."
       />
-    );
+    );  
   }
 
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }}>
-        <TableHead>
-          <TableRow>
-            <TableCell>Token</TableCell>
-            <TableCell data-cy="allowance-cell" width="220px">
-              Token Allowance
-              <TooltipIcon
-                IconProps={{ sx: { ml: 0.5 } }}
-                title="The token allowance needed by the contract for cliff & compensation transfers."
-              />
-            </TableCell>
-            <TableCell data-cy="operator-permissions-cell" width="260px">
-              Flow Operator Permissions
-              <TooltipIcon
-                IconProps={{ sx: { ml: 0.5 } }}
-                title="The flow operator permissions needed by the contract for creating & deletion of Superfluid flows."
-              />
-            </TableCell>
-            <TableCell data-cy="flow-allowance-cell" width="250px">
-              Flow Operator Allowance
-              <TooltipIcon
-                IconProps={{ sx: { ml: 0.5 } }}
-                title="The flow operator allowance needed by the contract for creating Superfluid flows."
-              />
-            </TableCell>
-            <TableCell width="60px" />
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {isLoading ? (
-            <>
-              <VestingSchedulerAllowanceRowSkeleton />
-              <VestingSchedulerAllowanceRowSkeleton />
-            </>
-          ) : (
-            tokenSummaries.map(
-              (
-                {
-                  tokenAddress,
-                  recommendedTokenAllowance,
-                  requiredFlowOperatorPermissions,
-                  requiredFlowOperatorAllowance,
-                },
-                index
-              ) => (
-                <VestingSchedulerAllowanceRow
-                  key={tokenAddress}
-                  isLast={index === tokenSummaries.length - 1}
-                  network={network}
-                  tokenAddress={tokenAddress}
-                  senderAddress={senderAddress}
-                  recommendedTokenAllowance={recommendedTokenAllowance}
-                  requiredFlowOperatorPermissions={
-                    requiredFlowOperatorPermissions
-                  }
-                  requiredFlowOperatorAllowance={requiredFlowOperatorAllowance}
+    <ConnectionBoundary>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Token</TableCell>
+              <TableCell data-cy="allowance-cell" width="220px">
+                Token Allowance
+                <TooltipIcon
+                  IconProps={{ sx: { ml: 0.5 } }}
+                  title="The token allowance needed by the contract for cliff & compensation transfers."
                 />
+              </TableCell>
+              <TableCell data-cy="operator-permissions-cell" width="260px">
+                Stream Permissions
+                <TooltipIcon
+                  IconProps={{ sx: { ml: 0.5 } }}
+                  title="The stream permissions needed by the contract for creating & deletion of Superfluid flows."
+                />
+              </TableCell>
+              <TableCell data-cy="flow-allowance-cell" width="250px">
+                Stream Allowance
+                <TooltipIcon
+                  IconProps={{ sx: { ml: 0.5 } }}
+                  title="The stream flow rate allowance needed by the contract for creating Superfluid flows."
+                />
+              </TableCell>
+              <TableCell width="60px" />
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {isLoading ? (
+              <>
+                <VestingSchedulerAllowanceRowSkeleton />
+                <VestingSchedulerAllowanceRowSkeleton />
+              </>
+            ) : (
+              tokenSummaries.map(
+                (
+                  {
+                    tokenAddress,
+                    recommendedTokenAllowance,
+                    requiredFlowOperatorPermissions,
+                    requiredFlowOperatorAllowance,
+                  },
+                  index
+                ) => (
+                  <VestingSchedulerAllowanceRow
+                    key={tokenAddress}
+                    isLast={index === tokenSummaries.length - 1}
+                    network={network}
+                    tokenAddress={tokenAddress}
+                    senderAddress={senderAddress}
+                    recommendedTokenAllowance={recommendedTokenAllowance}
+                    requiredFlowOperatorPermissions={
+                      requiredFlowOperatorPermissions
+                    }
+                    requiredFlowOperatorAllowance={
+                      requiredFlowOperatorAllowance
+                    }
+                  />
+                )
               )
-            )
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </ConnectionBoundary>
   );
 };
 
