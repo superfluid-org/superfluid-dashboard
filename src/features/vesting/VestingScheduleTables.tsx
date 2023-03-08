@@ -42,8 +42,8 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
   >
     <Typography variant="body1" color="secondary">
       {whitelisted
-        ? "Keepers arranged by Superfluid."
-        : "Keeper arrangements are user responsibility."}
+        ? <>Your wallet address <strong>is</strong> on the allowlist.</>
+        : <>Your wallet address is <strong>not</strong> on the allowlist.</>}
     </Typography>
 
     {network.vestingContractAddress && (
@@ -98,6 +98,7 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
         }
       : skipToken,
     {
+      refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
       selectFromResult: (result) => ({
         ...result,
         vestingSchedules: result.data?.vestingSchedules ?? [],
@@ -239,7 +240,7 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
           {vestingSchedulesLoading ? (
             <Skeleton width="200px" />
           ) : (
-            <Typography variant="h6">Allowances and Permissions</Typography>
+            <Typography variant="h6">Permissions and Allowances</Typography>
           )}
 
           <VestingSchedulerAllowancesTable />

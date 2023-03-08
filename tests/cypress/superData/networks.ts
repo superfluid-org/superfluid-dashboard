@@ -46,7 +46,7 @@ export const superfluidRpcUrls = {
   avalancheFuji: "https://rpc-endpoints.superfluid.dev/avalanche-fuji",
   avalancheC: "https://rpc-endpoints.superfluid.dev/avalanche-c",
   ethereum: "https://rpc-endpoints.superfluid.dev/eth-mainnet",
-  bsc: "https://bsc-dataseed1.binance.org",
+  bsc: "https://rpc-endpoints.superfluid.dev/bsc-mainnet",
 };
 
 export const networkDefinition: {

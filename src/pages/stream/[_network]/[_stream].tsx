@@ -338,10 +338,15 @@ const StreamPageContent: FC<{
     }
   );
 
-  const tokenSnapshotQuery = subgraphApi.useAccountTokenSnapshotQuery({
-    chainId: network.id,
-    id: `${senderAddress.toLowerCase()}-${tokenAddress.toLowerCase()}`,
-  });
+  const tokenSnapshotQuery = subgraphApi.useAccountTokenSnapshotQuery(
+    {
+      chainId: network.id,
+      id: `${senderAddress.toLowerCase()}-${tokenAddress.toLowerCase()}`,
+    },
+    {
+      refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
+    }
+  );
 
   const { streamCreationEvent } = subgraphApi.useFlowUpdatedEventsQuery(
     {

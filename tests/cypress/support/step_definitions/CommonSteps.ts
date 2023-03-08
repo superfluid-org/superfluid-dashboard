@@ -157,3 +157,9 @@ Given(/^HDWallet transactions are rejected$/, function () {
 Given(/^Dashboard is open with a mocked connection to "([^"]*)" on "([^"]*)"$/, function (account:string,network:string) {
     Common.mockConnectionTo(account,network)
 });
+Given(/^Superfluid RPCs are not more then (\d+) minutes behind on (.*)$/, function (minutes:number,network:string) {
+    Common.checkThatSuperfluidRPCisNotBehind(minutes,network)
+});
+Given(/^The graph is not more then (\d+) minutes behind on (.*)$/, function (minutes:number,network:string) {
+    Common.checkThatTheGraphIsNotBehind(minutes,network)
+});
