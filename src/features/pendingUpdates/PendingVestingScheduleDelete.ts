@@ -38,28 +38,35 @@ export const useAddressPendingVestingScheduleDeletes = (
   );
 };
 
-export const usePendingVestingScheduleDelete = ({
-  chainId,
-  superTokenAddress,
-  senderAddress,
-  receiverAddress,
-}: {
-  chainId: number;
-  superTokenAddress: string;
-  senderAddress: string;
-  receiverAddress: string;
-}) => {
+export const usePendingVestingScheduleDelete = (
+  {
+    chainId,
+    superTokenAddress,
+    senderAddress,
+    receiverAddress,
+  }: {
+    chainId: number;
+    superTokenAddress: string;
+    senderAddress: string;
+    receiverAddress: string;
+  },
+  options?: { skip: boolean }
+) => {
   const list = useAddressPendingVestingScheduleDeletes(senderAddress);
+
+  const skip = options?.skip ?? false;
 
   return useMemo(
     () =>
-      list.filter(
-        (x) =>
-          x.chainId === chainId &&
-          x.superTokenAddress.toLowerCase() ===
-            superTokenAddress.toLowerCase() &&
-          x.receiverAddress.toLowerCase() === receiverAddress.toLowerCase()
-      )[0], // We assume no duplicates here.
-    [chainId, superTokenAddress, receiverAddress, list]
+      skip
+        ? undefined
+        : list.filter(
+            (x) =>
+              x.chainId === chainId &&
+              x.superTokenAddress.toLowerCase() ===
+                superTokenAddress.toLowerCase() &&
+              x.receiverAddress.toLowerCase() === receiverAddress.toLowerCase()
+          )[0], // We assume no duplicates here.
+    [chainId, superTokenAddress, receiverAddress, list, skip]
   );
 };
