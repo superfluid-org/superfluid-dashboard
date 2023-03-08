@@ -1,13 +1,5 @@
-import {
-  AppBar,
-  Box,
-  styled,
-  Toolbar,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, styled, Toolbar, useMediaQuery, useTheme } from "@mui/material";
 import { FC, PropsWithChildren, useCallback } from "react";
-import { ToastContainer } from "react-toastify";
 import AccessCodeDialog from "../featureFlags/AccessCodeDialog";
 import TransactionDrawer, {
   transactionDrawerWidth,
@@ -69,15 +61,6 @@ const Layout: FC<PropsWithChildren> = ({ children }) => {
       <Main open={transactionDrawerOpen}>
         {!isBelowMd && theme.palette.mode === "dark" && <DarkGlow />}
         <Toolbar />
-        <ToastContainer
-          newestOnTop
-          theme={theme.palette.mode}
-          style={{ position: "absolute" }}
-          limit={5}
-          progressStyle={{
-            background: theme.palette.primary.main,
-          }}
-        />
         {/* <TransactionSnackbar /> */}
         {children}
       </Main>

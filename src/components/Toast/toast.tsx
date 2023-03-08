@@ -1,6 +1,6 @@
-import { Stack, Typography } from "@mui/material";
+import { Stack, Typography, useTheme } from "@mui/material";
 import { FC, useCallback } from "react";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { useDisplayedToasts } from "../../features/notifications/notificationHooks";
 import { updateDisplayedToasts } from "../../features/notifications/notifications.slice";
 import { useAppDispatch } from "../../features/redux/store";
@@ -14,6 +14,21 @@ export type ToastProps = {
     raw: string;
     parsed: MessageData;
   };
+};
+
+export const ToastProvider = () => {
+  const theme = useTheme();
+
+  return (
+    <ToastContainer
+      newestOnTop
+      theme={theme.palette.mode}
+      limit={5}
+      progressStyle={{
+        background: theme.palette.primary.main,
+      }}
+    />
+  );
 };
 
 const Toast: FC<ToastProps> = ({ title, message }) => (

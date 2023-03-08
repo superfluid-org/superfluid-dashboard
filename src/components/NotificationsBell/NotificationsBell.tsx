@@ -37,7 +37,7 @@ const NotificationsBell: FC = () => {
 
   const onBellClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
-    if (address) {
+    if (address && notifications.new.length > 0) {
       dispatch(
         updateLastSeenNotification({
           address,
@@ -60,7 +60,7 @@ const NotificationsBell: FC = () => {
         .slice(0, indexOfLastSeen)
         .map(({ id, title, message }) => displayToast({ id, title, message }));
     }
-    if (!lastSeenNotification) {
+    if (!lastSeenNotification && notifications.new.length > 0) {
       displayToast({
         id: notifications.new[0].id,
         title: notifications.new[0].title,
