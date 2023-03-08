@@ -86,7 +86,11 @@ const NotificationsBell: FC = () => {
   return (
     <>
       <IconButton aria-describedby={id} onClick={onBellClick}>
-        <Badge badgeContent={badgeContent} color="primary" autoSave="">
+        <Badge
+          badgeContent={badgeContent}
+          color="primary"
+          invisible={notifications.new.length === 0}
+        >
           <NotificationsIcon />
         </Badge>
       </IconButton>
