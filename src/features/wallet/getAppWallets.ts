@@ -4,14 +4,15 @@ import {
   WalletList,
 } from "@rainbow-me/rainbowkit";
 import {
-  injectedWallet,
   metaMaskWallet,
   braveWallet,
   walletConnectWallet,
   coinbaseWallet,
 } from "@rainbow-me/rainbowkit/wallets";
+import bitkeep from "./bitkeep/bitkeep";
 import gnosisSafe from "./gnosisSafeWalletConnector/gnosisSafe";
 import mockConnector from "./mockConnector/mockConnector";
+import { namedInjectedWallet } from "./namedInjectedWallet/namedInjectedWallet";
 
 // Inspired by: https://github.com/rainbow-me/rainbowkit/blob/main/packages/rainbowkit/src/wallets/getDefaultWallets.ts
 export const getAppWallets = ({
@@ -24,12 +25,6 @@ export const getAppWallets = ({
   connectors: ReturnType<typeof connectorsForWallets>;
   wallets: WalletList;
 } => {
-  const needsInjectedWalletFallback =
-    typeof window !== "undefined" &&
-    window.ethereum &&
-    !window.ethereum.isMetaMask &&
-    !window.ethereum.isCoinbaseWallet;
-
   const needsMock =
     typeof window !== "undefined" &&
     typeof (window as any).mockSigner !== "undefined";
@@ -44,9 +39,8 @@ export const getAppWallets = ({
         }),
         braveWallet({ chains, shimDisconnect: true }),
         gnosisSafe({ chains }),
-        ...(needsInjectedWalletFallback
-          ? [injectedWallet({ chains, shimDisconnect: true })]
-          : []),
+        bitkeep({ chains, shimDisconnect: true }),
+        namedInjectedWallet({ chains, shimDisconnect: true }),
         walletConnectWallet({ chains }),
         coinbaseWallet({ appName, chains }),
         ...(needsMock ? [mockConnector({ chains })] : []),
