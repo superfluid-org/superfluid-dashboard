@@ -10,8 +10,8 @@ const bitkeep = ({
   chains,
   shimDisconnect,
 }: BitkeepConnectorOptions): Wallet => {
-  const isBitkeepWalletInjected =
-    typeof window !== "undefined" && window.ethereum?.isBitKeep === true;
+  const isBitkeepWalletInstalled =
+    typeof window !== "undefined" && !!window.bitkeep && !!window.bitkeep?.ethereum;
 
   return {
     id: "bitkeep",
@@ -19,15 +19,19 @@ const bitkeep = ({
     shortName: "BitKeep",
     iconUrl: "/icons/bitkeep-icon.svg",
     iconBackground: "#FFF",
-    hidden: () => !isBitkeepWalletInjected,
-    installed: isBitkeepWalletInjected || undefined,
+    installed: isBitkeepWalletInstalled || undefined,
+    downloadUrls: {
+      android: "https://bitkeep.com/en/download?type=0",
+      ios: "https://bitkeep.com/en/download?type=1",
+      browserExtension: "https://bitkeep.com/en/download?type=2"
+    },
     createConnector: () => ({
       connector: new InjectedConnector({
         chains,
         options: {
           shimDisconnect,
           name: "BitKeep",
-          getProvider: () => window.bitkeep?.ethereum ?? window.ethereum,
+          getProvider: () => typeof window !== "undefined" ? window.bitkeep?.ethereum : undefined,
         },
       }),
     }),
