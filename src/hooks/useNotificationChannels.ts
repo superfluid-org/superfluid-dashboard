@@ -1,3 +1,5 @@
+import { QueryDefinition } from "@reduxjs/toolkit/dist/query";
+import { QueryActionCreatorResult } from "@reduxjs/toolkit/dist/query/core/buildInitiate";
 import differenceInDays from "date-fns/differenceInDays";
 import { useMemo } from "react";
 import { parseNotificationBody } from "../utils/notification";

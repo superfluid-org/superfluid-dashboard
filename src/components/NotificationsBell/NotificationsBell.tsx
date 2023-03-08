@@ -30,16 +30,14 @@ import { usePrevious } from "react-use";
 export type NotificationTab = "new" | "archive";
 
 const NotificationsBell: FC = () => {
-  const { address } = useAccount();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [badgeContent, setBadgeContent] = useState(0);
-  const { notifications } = useNotificationChannels();
-
   const [activeTab, setActiveTab] = useState<NotificationTab>("new");
 
-  const dispatch = useAppDispatch();
-
+  const { address } = useAccount();
+  const { notifications } = useNotificationChannels();
   const lastSeenNotification = useLastSeenNotification(address ?? "");
+  const dispatch = useAppDispatch();
 
   const onBellClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -57,30 +55,31 @@ const NotificationsBell: FC = () => {
     setAnchorEl(null);
   };
 
-  const previousNewNotifications = usePrevious(notifications.new) ?? [];
-
   useUpdateEffect(() => {
-    if (
-      previousNewNotifications.length > 0 &&
-      !isEqual(previousNewNotifications, notifications.new)
-    ) {
-      differenceBy(
-        notifications.new,
-        previousNewNotifications,
-        (n) => n.id
-      ).map(({ title, message }) => displayToast({ title, message }));
+    const indexOfLastSeen = notifications.new.findIndex(
+      (n) => n.id === lastSeenNotification
+    );
+    if (indexOfLastSeen > 0) {
+      notifications.new
+        .slice(0, indexOfLastSeen)
+        .map(({ title, message }) => displayToast({ title, message }));
     }
-  }, [notifications]);
+    if (!lastSeenNotification) {
+      displayToast({
+        title: notifications.new[0].title,
+        message: notifications.new[0].message,
+      });
+    }
+  }, [notifications.new.length]);
 
   useEffect(() => {
     if (lastSeenNotification === notifications.new[0]?.id) {
       setBadgeContent(0);
     } else {
       setBadgeContent(
-        (badgeContent) =>
-          badgeContent +
-          notifications.new.length -
-          previousNewNotifications.length
+        lastSeenNotification
+          ? notifications.new.findIndex((n) => n.id === lastSeenNotification)
+          : notifications.new.length
       );
     }
   }, [lastSeenNotification, notifications.new.length]);
@@ -90,11 +89,7 @@ const NotificationsBell: FC = () => {
   return (
     <>
       <IconButton aria-describedby={id} onClick={onBellClick}>
-        <Badge
-          badgeContent={badgeContent}
-          color="primary"
-          invisible={lastSeenNotification === notifications.new[0]?.id}
-        >
+        <Badge badgeContent={badgeContent} color="primary" autoSave="">
           <NotificationsIcon />
         </Badge>
       </IconButton>
