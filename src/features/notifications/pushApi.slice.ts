@@ -10,7 +10,6 @@ import {
   SignerType,
 } from "@pushprotocol/restapi";
 import * as PushApi from "@pushprotocol/restapi";
-import { displayToast } from "../../components/Toast/toast";
 
 export interface ResolveNameResult {
   address: string;

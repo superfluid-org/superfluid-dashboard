@@ -10,22 +10,17 @@ import {
 import { FC, useEffect, useMemo, useState } from "react";
 import {} from "../../features/network/networks";
 import { useAppDispatch } from "../../features/redux/store";
-import {
-  Notification,
-  useNotificationChannels,
-} from "../../hooks/useNotificationChannels";
+import { useNotificationChannels } from "../../hooks/useNotificationChannels";
 
 import NotificationList from "./NotificationList";
 import NotificationHeader from "./NotificationHeader";
 import { useAccount } from "wagmi";
 import ConnectWallet from "../../features/wallet/ConnectWallet";
 import useUpdateEffect from "react-use/lib/useUpdateEffect";
-import differenceBy from "lodash/differenceBy";
-import isEqual from "lodash/isEqual";
-import { displayToast } from "../Toast/toast";
+
 import { updateLastSeenNotification } from "../../features/notifications/notifications.slice";
 import { useLastSeenNotification } from "../../features/notifications/notificationHooks";
-import { usePrevious } from "react-use";
+import { useToast } from "../../components/Toast/toast";
 
 export type NotificationTab = "new" | "archive";
 
@@ -38,6 +33,7 @@ const NotificationsBell: FC = () => {
   const { notifications } = useNotificationChannels();
   const lastSeenNotification = useLastSeenNotification(address ?? "");
   const dispatch = useAppDispatch();
+  const displayToast = useToast();
 
   const onBellClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -62,10 +58,11 @@ const NotificationsBell: FC = () => {
     if (indexOfLastSeen > 0) {
       notifications.new
         .slice(0, indexOfLastSeen)
-        .map(({ title, message }) => displayToast({ title, message }));
+        .map(({ id, title, message }) => displayToast({ id, title, message }));
     }
     if (!lastSeenNotification) {
       displayToast({
+        id: notifications.new[0].id,
         title: notifications.new[0].title,
         message: notifications.new[0].message,
       });

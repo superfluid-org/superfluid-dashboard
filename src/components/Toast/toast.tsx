@@ -1,10 +1,14 @@
 import { Stack, Typography } from "@mui/material";
-import { FC } from "react";
+import { FC, useCallback } from "react";
 import { toast } from "react-toastify";
+import { useDisplayedToasts } from "../../features/notifications/notificationHooks";
+import { updateDisplayedToasts } from "../../features/notifications/notifications.slice";
+import { useAppDispatch } from "../../features/redux/store";
 import { MessageData } from "../../hooks/useNotificationChannels";
 import { createMessage, getNotificationIcon } from "../../utils/notification";
 
 export type ToastProps = {
+  id: string;
   title: string;
   message: {
     raw: string;
@@ -23,13 +27,28 @@ const Toast: FC<ToastProps> = ({ title, message }) => (
   </Stack>
 );
 
-export const displayToast = (props: ToastProps) =>
-  toast(<Toast {...props} />, {
-    position: "bottom-right",
-    autoClose: 5000,
-    closeOnClick: true,
-    pauseOnHover: true,
-    pauseOnFocusLoss: true,
-  });
+export const useToast = () => {
+  const dispatch = useAppDispatch();
+  const displayedToasts = useDisplayedToasts();
+
+  const displayToast = useCallback(
+    (props: ToastProps) => {
+      if (!displayedToasts[props.id]) {
+        toast(<Toast {...props} />, {
+          position: "bottom-right",
+          autoClose: 5000,
+          closeOnClick: true,
+          pauseOnHover: true,
+          pauseOnFocusLoss: true,
+        });
+
+        dispatch(updateDisplayedToasts(props.id));
+      }
+    },
+    [displayedToasts]
+  );
+
+  return displayToast;
+};
 
 export default Toast;

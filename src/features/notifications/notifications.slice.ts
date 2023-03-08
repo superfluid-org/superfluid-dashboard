@@ -1,18 +1,28 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSelector, createSlice } from "@reduxjs/toolkit";
-import { CurrencyCode } from "../../utils/currencyUtils";
 import { RootState } from "../redux/store";
 
 export interface NotificationsState {
   lastSeenNotification: Record<string, string>;
+  displayedToasts: Record<string, boolean>;
 }
 
-const initialState: NotificationsState = { lastSeenNotification: {} };
+const initialState: NotificationsState = {
+  lastSeenNotification: {},
+  displayedToasts: {},
+};
 
 export const notificationsSlice = createSlice({
   name: "notifications",
   initialState,
   reducers: {
+    updateDisplayedToasts: (state, action: PayloadAction<string>) => ({
+      ...state,
+      displayedToasts: {
+        ...state.displayedToasts,
+        [action.payload]: true,
+      },
+    }),
     updateLastSeenNotification: (
       state,
       action: PayloadAction<{ address: string; notificationId: string }>
@@ -34,5 +44,6 @@ export const notificationsSelector = createSelector(
   (state: NotificationsState, key: keyof NotificationsState) => state[key]
 );
 
-export const { updateLastSeenNotification } = notificationsSlice.actions;
+export const { updateLastSeenNotification, updateDisplayedToasts } =
+  notificationsSlice.actions;
 export default notificationsSlice.reducer;
