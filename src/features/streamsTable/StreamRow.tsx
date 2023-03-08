@@ -140,9 +140,13 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
 
   const isActive = !isPending && !startDateScheduled && currentFlowRate !== "0";
 
-  const tableCellProps: Partial<TableCellProps> = isPending
-    ? {}
-    : { onClick: openStreamDetails, sx: { cursor: "pointer" } };
+  const tableCellProps: Partial<TableCellProps> =
+    isPending || startDateScheduled
+      ? {}
+      : {
+          onClick: openStreamDetails,
+          sx: { cursor: "pointer" },
+        };
 
   return (
     <TableRow hover data-cy={"stream-row"}>

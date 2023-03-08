@@ -267,7 +267,7 @@ export const flowSchedulerEndpoints = {
             ? subTransactionTitles[0]
             : activeExistingFlow
             ? "Modify Stream"
-            : arg.endTimestamp || arg.startTimestamp
+            : arg.startTimestamp
             ? "Schedule Stream"
             : "Create Stream";
 

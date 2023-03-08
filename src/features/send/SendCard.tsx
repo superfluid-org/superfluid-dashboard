@@ -385,10 +385,6 @@ export default memo(function SendCard() {
     ? fromUnixTime(existingEndTimestamp)
     : null;
 
-  const existingStartDate = existingStartTimestamp
-    ? fromUnixTime(existingStartTimestamp)
-    : null;
-
   const endDate = useMemo<Date | null>(
     () => (endTimestamp ? fromUnixTime(endTimestamp) : null),
     [endTimestamp]
@@ -402,7 +398,7 @@ export default memo(function SendCard() {
   const [totalStreamedEther, setTotalStreamedEther] = useState<string>("");
 
   useEffect(() => {
-    if (existingStartTimestamp || existingEndTimestamp || existingFlowRate) {
+    if (existingStartTimestamp || existingEndTimestamp) {
       setStreamScheduling(true);
 
       if (existingStartTimestamp && existingStartTimestamp > dateNowSeconds()) {
@@ -412,24 +408,34 @@ export default memo(function SendCard() {
       if (existingEndTimestamp && existingEndTimestamp > dateNowSeconds()) {
         setValue("data.endTimestamp", existingEndTimestamp);
       }
+    }
 
-      if (existingFlowRate) {
-        setValue("data.flowRate", getPrettyEtherFlowRate(existingFlowRate));
+    const hasScheduledFlowRate = existingFlowRate && existingFlowRate !== "0";
+    const hasActiveFlowRate =
+      activeFlow?.flowRateWei && activeFlow?.flowRateWei !== "0";
+
+    if (hasScheduledFlowRate || hasActiveFlowRate) {
+      const newFlowRate = hasScheduledFlowRate
+        ? existingFlowRate
+        : activeFlow?.flowRateWei;
+
+      if (newFlowRate) {
+        setValue("data.flowRate", getPrettyEtherFlowRate(newFlowRate));
       }
 
-      if (flowRateEther && existingEndTimestamp) {
+      if (existingEndTimestamp && newFlowRate) {
         setTotalStreamedEther(
           getStreamedTotalEtherRoundedString(
             existingStartTimestamp || startTimestamp,
             existingEndTimestamp || endTimestamp,
-            existingFlowRate || flowRateWei
+            newFlowRate
           )
         );
       }
     }
     // Only updating stuff when schedule data loads in.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [existingStartTimestamp, existingEndTimestamp, existingFlowRate]);
+  }, [existingStartTimestamp, existingEndTimestamp, existingFlowRate, activeFlow]);
 
   useEffect(() => {
     if (endTimestamp && flowRateWei) {
