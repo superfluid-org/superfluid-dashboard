@@ -6,7 +6,10 @@ export interface BitkeepConnectorOptions {
   shimDisconnect?: boolean;
 }
 
-const bitkeep = ({ chains, shimDisconnect }: BitkeepConnectorOptions): Wallet => {
+const bitkeep = ({
+  chains,
+  shimDisconnect,
+}: BitkeepConnectorOptions): Wallet => {
   const isBitkeepWalletInjected =
     typeof window !== "undefined" && window.ethereum?.isBitKeep === true;
 
@@ -23,6 +26,8 @@ const bitkeep = ({ chains, shimDisconnect }: BitkeepConnectorOptions): Wallet =>
         chains,
         options: {
           shimDisconnect,
+          name: "BitKeep",
+          getProvider: () => window.bitkeep?.ethereum ?? window.ethereum,
         },
       }),
     }),
