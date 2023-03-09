@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { BigNumber, constants } from "ethers";
+import { BigNumber } from "ethers";
 import { FC, useState } from "react";
 import { useAccount } from "wagmi";
 import { flowOperatorPermissionsToString } from "../../../utils/flowOperatorPermissionsToString";
@@ -25,7 +25,7 @@ import TokenIcon from "../../token/TokenIcon";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import OpenIcon from "../../../components/OpenIcon/OpenIcon";
-import { isMaxStreamAllowance, isMaxTokenAllowance } from "../../../utils/isMaxAllowance";
+import { isMaxFlowRateAllowance, isMaxTokenAllowance } from "../../../utils/isMaxAllowance";
 
 export const VestingSchedulerAllowanceRowSkeleton = () => (
   <TableRow>
@@ -77,7 +77,7 @@ interface VestingSchedulerAllowanceRowProps {
   senderAddress: string;
   recommendedTokenAllowance: BigNumber;
   requiredFlowOperatorPermissions: number; // Usually 5 (Create or Delete) https://docs.superfluid.finance/superfluid/developers/constant-flow-agreement-cfa/cfa-access-control-list-acl/acl-features
-  requiredFlowOperatorAllowance: BigNumber;
+  requiredFlowRateAllowance: BigNumber;
 }
 
 const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
@@ -87,7 +87,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   senderAddress,
   recommendedTokenAllowance,
   requiredFlowOperatorPermissions,
-  requiredFlowOperatorAllowance: requiredStreamAllowance,
+  requiredFlowRateAllowance,
 }) => {
   const theme = useTheme();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -116,12 +116,12 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
     return <VestingSchedulerAllowanceRowSkeleton />;
   }
 
-  const { tokenAllowance, flowOperatorPermissions, flowOperatorAllowance } =
+  const { tokenAllowance, flowOperatorPermissions, flowRateAllowance } =
     vestingSchedulerAllowancesQuery.data;
 
   const isEnoughTokenAllowance = recommendedTokenAllowance.lte(tokenAllowance);
-  const isEnoughFlowRateAllowance = requiredStreamAllowance.lte(
-    flowOperatorAllowance
+  const isEnoughFlowRateAllowance = requiredFlowRateAllowance.lte(
+    flowRateAllowance
   );
 
   const existingPermissions = Number(flowOperatorPermissions);
@@ -279,7 +279,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                                 requiredFlowOperatorPermissions:
                                   requiredFlowOperatorPermissions,
                                 requiredFlowRateAllowanceWei:
-                                  requiredStreamAllowance.toString(),
+                                  requiredFlowRateAllowance.toString(),
                               };
                               fixAccess({
                                 ...primaryArgs,
@@ -344,11 +344,11 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                       data-cy={`${tokenSymbol}-current-flow-allowance`}
                       primary="Current"
                       secondary={
-                        isMaxStreamAllowance(flowOperatorAllowance) ? (
+                        isMaxFlowRateAllowance(flowRateAllowance) ? (
                           <span>Maximum</span>
                         ) : (
                           <>
-                            <Amount wei={flowOperatorAllowance} /> {tokenSymbol}
+                            <Amount wei={flowRateAllowance} /> {tokenSymbol}
                             /sec
                           </>
                         )
@@ -359,7 +359,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                       primary="Required"
                       secondary={
                         <>
-                          <Amount wei={requiredStreamAllowance} /> {tokenSymbol}
+                          <Amount wei={requiredFlowRateAllowance} /> {tokenSymbol}
                           /sec
                         </>
                       }

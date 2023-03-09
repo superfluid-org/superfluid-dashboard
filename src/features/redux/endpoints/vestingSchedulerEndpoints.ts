@@ -11,7 +11,7 @@ import {
 import { BigNumber } from "ethers";
 import { getVestingScheduler } from "../../../eth-sdk/getEthSdk";
 import {
-  isMaxStreamAllowance,
+  isMaxFlowRateAllowance,
   isMaxTokenAllowance,
 } from "../../../utils/isMaxAllowance";
 import { UnitOfTime } from "../../send/FlowRateInput";
@@ -105,7 +105,7 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
       const existingFlowRateAllowance = BigNumber.from(
         flowOperatorData.flowRateAllowance
       );
-      const newFlowRateAllowance = isMaxStreamAllowance(
+      const newFlowRateAllowance = isMaxFlowRateAllowance(
         existingFlowRateAllowance
       )
         ? existingFlowRateAllowance
@@ -473,7 +473,7 @@ export const vestingSchedulerQueryEndpoints = {
       {
         tokenAllowance: string;
         flowOperatorPermissions: number;
-        flowOperatorAllowance: string;
+        flowRateAllowance: string;
       },
       { chainId: number; tokenAddress: string; senderAddress: string }
     >({
@@ -498,8 +498,8 @@ export const vestingSchedulerQueryEndpoints = {
         });
 
         const {
+          flowRateAllowance,
           permissions: flowOperatorPermissions,
-          flowRateAllowance: flowOperatorAllowance,
         } = await superToken.getFlowOperatorData({
           sender: senderAddress,
           flowOperator: vestingScheduler.address,
@@ -510,7 +510,7 @@ export const vestingSchedulerQueryEndpoints = {
           data: {
             tokenAllowance,
             flowOperatorPermissions: Number(flowOperatorPermissions),
-            flowOperatorAllowance,
+            flowRateAllowance,
           },
         };
       },
