@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { BigNumber } from "ethers";
+import { BigNumber, constants } from "ethers";
 import { FC, useState } from "react";
 import { useAccount } from "wagmi";
 import { flowOperatorPermissionsToString } from "../../../utils/flowOperatorPermissionsToString";
@@ -25,6 +25,7 @@ import TokenIcon from "../../token/TokenIcon";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import OpenIcon from "../../../components/OpenIcon/OpenIcon";
+import { isMaxStreamAllowance, isMaxTokenAllowance } from "../../../utils/isMaxAllowance";
 
 export const VestingSchedulerAllowanceRowSkeleton = () => (
   <TableRow>
@@ -86,7 +87,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   senderAddress,
   recommendedTokenAllowance,
   requiredFlowOperatorPermissions,
-  requiredFlowOperatorAllowance,
+  requiredFlowOperatorAllowance: requiredStreamAllowance,
 }) => {
   const theme = useTheme();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -119,7 +120,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
     vestingSchedulerAllowancesQuery.data;
 
   const isEnoughTokenAllowance = recommendedTokenAllowance.lte(tokenAllowance);
-  const isEnoughFlowOperatorAllowance = requiredFlowOperatorAllowance.lte(
+  const isEnoughFlowRateAllowance = requiredStreamAllowance.lte(
     flowOperatorAllowance
   );
 
@@ -131,7 +132,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   const showFixRequiredAccessButton =
     isSenderLooking &&
     (!isEnoughTokenAllowance ||
-      !isEnoughFlowOperatorAllowance ||
+      !isEnoughFlowRateAllowance ||
       !isEnoughFlowOperatorPermissions);
 
   const permissionsString =
@@ -199,7 +200,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
         </TableCell>
         <TableCell>
           <Stack direction="column" spacing={1} alignItems="center">
-            {isEnoughFlowOperatorAllowance ? (
+            {isEnoughFlowRateAllowance ? (
               <CheckCircleRoundedIcon
                 data-cy={`${tokenSymbol}-flow-allowance-status`}
                 color="primary"
@@ -278,7 +279,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                                 requiredFlowOperatorPermissions:
                                   requiredFlowOperatorPermissions,
                                 requiredFlowRateAllowanceWei:
-                                  requiredFlowOperatorAllowance.toString(),
+                                  requiredStreamAllowance.toString(),
                               };
                               fixAccess({
                                 ...primaryArgs,
@@ -306,9 +307,13 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                       data-cy={`${tokenSymbol}-current-allowance`}
                       primary="Current"
                       secondary={
-                        <>
-                          <Amount wei={tokenAllowance} /> {tokenSymbol}
-                        </>
+                        isMaxTokenAllowance(tokenAllowance) ? (
+                          <span>Maximum</span>
+                        ) : (
+                          <>
+                            <Amount wei={tokenAllowance} /> {tokenSymbol}
+                          </>
+                        )
                       }
                     />
                     <ListItemText
@@ -339,10 +344,14 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                       data-cy={`${tokenSymbol}-current-flow-allowance`}
                       primary="Current"
                       secondary={
-                        <>
-                          <Amount wei={flowOperatorAllowance} /> {tokenSymbol}
-                          /sec
-                        </>
+                        isMaxStreamAllowance(flowOperatorAllowance) ? (
+                          <span>Maximum</span>
+                        ) : (
+                          <>
+                            <Amount wei={flowOperatorAllowance} /> {tokenSymbol}
+                            /sec
+                          </>
+                        )
                       }
                     />
                     <ListItemText
@@ -350,8 +359,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                       primary="Required"
                       secondary={
                         <>
-                          <Amount wei={requiredFlowOperatorAllowance} />{" "}
-                          {tokenSymbol}
+                          <Amount wei={requiredStreamAllowance} /> {tokenSymbol}
                           /sec
                         </>
                       }

@@ -1,5 +1,6 @@
 import {
   ERC20Token,
+  ERC20__factory,
   Operation,
   WrapperSuperToken,
 } from "@superfluid-finance/sdk-core";
@@ -226,6 +227,6 @@ export const adHocRpcEndpoints = {
           id: arg.chainId, // TODO(KK): Could be made more specific.
         },
       ],
-    }),
+    })
   }),
 };
