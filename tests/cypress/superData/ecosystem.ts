@@ -226,6 +226,21 @@ export const SUPERFLUID_INTEGRATIONS = [
             secondary: "#FB708B",
         },
     },
+    {
+    name: "Passage",
+    href: "https://www.passage.xyz/",
+    icon: "/icons/ecosystem/passage.svg",
+    description: `Crypto infrastructure for the new membership economy`,
+    chains: [
+      networkDefinition.ethereum.id,
+      networkDefinition.polygon.id,
+      networkDefinition.optimism.id,
+    ],
+    colors: {
+      primary: "#000000",
+      secondary: "#0F2B71",
+    },
+  },
 ];
 
 export const OTHER_APPS_BUILT_ON_SUPERFLUID = [
@@ -238,17 +253,6 @@ export const OTHER_APPS_BUILT_ON_SUPERFLUID = [
         colors: {
             primary: "#645D5B",
             secondary: "#978D87",
-        },
-    },
-    {
-        name: "Diagonal",
-        href: "https://diagonal.finance/",
-        icon: "/icons/ecosystem/diagonal.svg",
-        description: `Non-custodial protocol for recurring payments on Ethereum`,
-        chains: [networkDefinition.polygon.id],
-        colors: {
-            primary: "#D4493F",
-            secondary: "#F3766C",
         },
     },
     {
