@@ -41,6 +41,7 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
     senderAddress: sender,
     receiverAddress: receiver,
   });
+
   const { txAnalytics } = useAnalytics();
 
   const deleteStream = async (signer: Signer) => {

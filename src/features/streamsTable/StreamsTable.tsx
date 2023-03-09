@@ -77,41 +77,47 @@ const StreamsTable: FC<StreamsTableProps> = ({
     type: StreamTypeFilter.All,
   });
 
-  const incomingStreamsQuery = subgraphApi.useStreamsQuery({
-    chainId: network.id,
-    filter: {
-      receiver: visibleAddress,
-      token: tokenAddress,
+  const incomingStreamsQuery = subgraphApi.useStreamsQuery(
+    {
+      chainId: network.id,
+      filter: {
+        receiver: visibleAddress,
+        token: tokenAddress,
+      },
+      pagination: {
+        take: Infinity,
+        skip: 0,
+      },
+      order: {
+        orderBy: "updatedAtTimestamp",
+        orderDirection: "desc",
+      },
     },
-    pagination: {
-      take: Infinity,
-      skip: 0,
-    },
-    order: {
-      orderBy: "updatedAtTimestamp",
-      orderDirection: "desc",
-    },
-  },{
-    refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
-  });
+    {
+      refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
+    }
+  );
 
-  const outgoingStreamsQuery = subgraphApi.useStreamsQuery({
-    chainId: network.id,
-    filter: {
-      sender: visibleAddress,
-      token: tokenAddress,
+  const outgoingStreamsQuery = subgraphApi.useStreamsQuery(
+    {
+      chainId: network.id,
+      filter: {
+        sender: visibleAddress,
+        token: tokenAddress,
+      },
+      pagination: {
+        take: Infinity,
+        skip: 0,
+      },
+      order: {
+        orderBy: "updatedAtTimestamp",
+        orderDirection: "desc",
+      },
     },
-    pagination: {
-      take: Infinity,
-      skip: 0,
-    },
-    order: {
-      orderBy: "updatedAtTimestamp",
-      orderDirection: "desc",
-    },
-  }, {
-    refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
-  });
+    {
+      refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
+    }
+  );
 
   const { activeTasks } = schedulingSubgraphApi.useGetTasksQuery(
     visibleAddress && network.flowSchedulerSubgraphUrl
@@ -122,13 +128,13 @@ const StreamsTable: FC<StreamsTableProps> = ({
           where: {
             or: [
               {
-                superToken: tokenAddress,
+                superToken: tokenAddress.toLowerCase(),
                 sender: visibleAddress.toLowerCase(),
                 cancelledAt: null,
                 executedAt: null,
               },
               {
-                superToken: tokenAddress,
+                superToken: tokenAddress.toLowerCase(),
                 receiver: visibleAddress.toLowerCase(),
                 cancelledAt: null,
                 executedAt: null,
@@ -234,12 +240,8 @@ const StreamsTable: FC<StreamsTableProps> = ({
 
         return mapStreamScheduling(
           stream,
-          hasScheduledStart && createTask
-            ? Number(createTask.executionAt)
-            : undefined,
-          deleteTask && (hasScheduledStart || !createTask)
-            ? Number(deleteTask.executionAt)
-            : undefined
+          hasScheduledStart ? Number(createTask.executionAt) : undefined,
+          !!deleteTask ? Number(deleteTask.executionAt) : undefined
         );
       })
       .sort((s1, s2) => s2.updatedAtTimestamp - s1.updatedAtTimestamp)

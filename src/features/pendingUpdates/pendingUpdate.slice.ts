@@ -4,7 +4,7 @@ import { rpcApi, transactionTracker } from "../redux/store";
 import { PendingIndexSubscriptionApproval } from "./PendingIndexSubscriptionApprove";
 import { PendingIndexSubscriptionRevoke } from "./PendingIndexSubscriptionRevoke";
 import { PendingOutgoingStream } from "./PendingOutgoingStream";
-import { PendingCreateTask } from "./PendingOutgoingTask";
+import { PendingCreateTask, PendingDeleteTask } from "./PendingOutgoingTask";
 import {
   PendingCreateTaskDeletion,
   PendingStreamCancellation,
@@ -53,7 +53,7 @@ export const pendingUpdateSlice = createSlice({
             transactionHash,
             senderAddress,
             receiverAddress,
-            id: `${transactionHash}-FlowDelete`,
+            id: transactionHash,
             tokenAddress: superTokenAddress,
             pendingType: "FlowDelete",
             timestamp: dateNowSeconds(),
@@ -62,7 +62,7 @@ export const pendingUpdateSlice = createSlice({
           pendingUpdates.push(pendingFlowDeleteUpdate);
         }
 
-        if (subTransactionTitles.includes("Delete Schedule Order")) {
+        if (subTransactionTitles.includes("Delete Schedule")) {
           const pendingCreateTaskDeleteUpdate: PendingCreateTaskDeletion = {
             chainId,
             transactionHash,
@@ -128,13 +128,16 @@ export const pendingUpdateSlice = createSlice({
           receiverAddress,
           flowRateWei,
           startTimestamp,
+          endTimestamp,
         } = action.meta.arg.originalArgs;
 
         const timestamp = dateNowSeconds();
 
+        const pendingUpdatesToAdd = [];
+
         if (subTransactionTitles.includes("Create Stream")) {
           if (senderAddress) {
-            pendingUpdateAdapter.addOne(state, {
+            pendingUpdatesToAdd.push({
               pendingType: "FlowCreate",
               chainId,
               transactionHash,
@@ -152,24 +155,44 @@ export const pendingUpdateSlice = createSlice({
           }
         }
 
-        if (
-          startTimestamp &&
-          subTransactionTitles.includes("Create Schedule Order")
-        ) {
-          pendingUpdateAdapter.addOne(state, {
-            pendingType: "CreateTaskCreate",
-            __typename: "CreateTask",
-            id: transactionHash,
-            executionAt: startTimestamp.toString(),
-            superToken: superTokenAddress,
-            sender: senderAddress,
-            receiver: receiverAddress,
-            flowRate: flowRateWei,
-            relevantSubgraph: "Scheduler",
-            transactionHash,
-            chainId,
-            timestamp,
-          } as PendingCreateTask);
+        if (subTransactionTitles.includes("Create Schedule")) {
+          if (startTimestamp) {
+            pendingUpdatesToAdd.push({
+              pendingType: "CreateTaskCreate",
+              __typename: "CreateTask",
+              id: `${transactionHash}-CreateTaskCreate`,
+              executionAt: startTimestamp.toString(),
+              superToken: superTokenAddress,
+              sender: senderAddress,
+              receiver: receiverAddress,
+              flowRate: flowRateWei,
+              relevantSubgraph: "Scheduler",
+              transactionHash,
+              chainId,
+              timestamp,
+            } as PendingCreateTask);
+          }
+
+          if (endTimestamp) {
+            pendingUpdatesToAdd.push({
+              pendingType: "DeleteTaskCreate",
+              __typename: "DeleteTask",
+              id: `${transactionHash}-DeleteTaskCreate`,
+              executionAt: endTimestamp.toString(),
+              superToken: superTokenAddress,
+              sender: senderAddress,
+              receiver: receiverAddress,
+              relevantSubgraph: "Scheduler",
+              transactionHash,
+              chainId,
+              timestamp,
+            } as PendingDeleteTask);
+          }
+        }
+
+        if (pendingUpdatesToAdd.length > 0) {
+          console.log("Adding", pendingUpdatesToAdd);
+          pendingUpdateAdapter.addMany(state, pendingUpdatesToAdd);
         }
       }
     );

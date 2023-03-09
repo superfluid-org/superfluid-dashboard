@@ -1,7 +1,7 @@
 import { skipToken, SkipToken } from "@reduxjs/toolkit/dist/query";
 import { Stream } from "@superfluid-finance/sdk-core";
 import { StreamQuery } from "@superfluid-finance/sdk-redux";
-import { fromUnixTime, isAfter } from "date-fns";
+import { fromUnixTime } from "date-fns";
 import { allNetworks, tryFindNetwork } from "../features/network/networks";
 import { PendingOutgoingStream } from "../features/pendingUpdates/PendingOutgoingStream";
 import { PendingCreateTask } from "../features/pendingUpdates/PendingOutgoingTask";
@@ -92,9 +92,9 @@ export const mapStreamScheduling = <
     startDateScheduled,
     startDate,
     endDateScheduled,
-    endDate:
-      endDateScheduled ??
-      (!isActive ? fromUnixTime(stream.updatedAtTimestamp) : undefined),
+    endDate: isActive
+      ? endDateScheduled
+      : fromUnixTime(stream.updatedAtTimestamp),
   };
 };
 
@@ -110,11 +110,6 @@ export const mapCreateTaskToScheduledStream = (
     receiver: createTask.receiver,
     sender: createTask.sender,
     token: createTask.superToken,
-
-    // createdAtBlockNumber: BlockNumber;
-    // updatedAtBlockNumber: BlockNumber;
-    // tokenSymbol: "",
-    // deposit: createTask.startDate,
   };
 
   if ((createTask as PendingCreateTask).pendingType) {

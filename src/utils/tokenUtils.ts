@@ -5,9 +5,7 @@ import { formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
 import minBy from "lodash/fp/minBy";
 import { Network } from "../features/network/networks";
 import {
-  calculateTotalAmountWei,
   FlowRateEther,
-  FlowRateWei,
   UnitOfTime,
   unitOfTimeList,
 } from "../features/send/FlowRateInput";
@@ -142,7 +140,7 @@ export function calculateBuffer(
 
 export function calculateBufferAmount(
   network: Network,
-  flowRate: string,
+  flowRate: BigNumberish,
   minBuffer: string
 ): BigNumber {
   const minBufferBN = BigNumber.from(minBuffer);
