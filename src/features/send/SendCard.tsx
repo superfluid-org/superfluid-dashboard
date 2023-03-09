@@ -359,8 +359,8 @@ export default memo(function SendCard() {
         const { startDate, endDate, flowRate } = result.data || {};
 
         return {
-          existingStartTimestamp: startDate,
-          existingEndTimestamp: endDate,
+          existingStartTimestamp: startDate || null,
+          existingEndTimestamp: endDate || null,
           existingFlowRate: flowRate,
           scheduledStream: startDate
             ? mapStreamScheduling(
@@ -446,6 +446,8 @@ export default memo(function SendCard() {
           flowRateWei
         )
       );
+    } else if (!endTimestamp) {
+      setTotalStreamedEther("");
     }
   }, [startTimestamp, endTimestamp, flowRateWei]);
 
@@ -643,8 +645,10 @@ export default memo(function SendCard() {
   );
 
   const hasAnythingChanged =
-    existingEndTimestamp !== endTimestamp ||
-    existingStartTimestamp !== startTimestamp ||
+    (!!existingEndTimestamp !== !!endTimestamp &&
+      existingEndTimestamp !== endTimestamp) ||
+    (!!existingStartTimestamp !== !!startTimestamp &&
+      existingStartTimestamp !== startTimestamp) ||
     (activeFlow && activeFlow.flowRateWei !== flowRateWei.toString());
 
   const isSendDisabled =

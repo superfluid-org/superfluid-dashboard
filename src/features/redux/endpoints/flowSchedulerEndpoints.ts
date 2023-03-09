@@ -48,7 +48,7 @@ interface StreamScheduleResponse {
 export const flowSchedulerEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
     getFlowSchedule: builder.query<
-      StreamScheduleResponse | undefined,
+      StreamScheduleResponse | null,
       GetFlowSchedule
     >({
       queryFn: async ({
@@ -70,7 +70,7 @@ export const flowSchedulerEndpoints = {
             receiverAddress
           );
 
-        if (!startDate && !endDate) return { data: undefined };
+        if (!startDate && !endDate) return { data: null };
 
         return {
           data: {
