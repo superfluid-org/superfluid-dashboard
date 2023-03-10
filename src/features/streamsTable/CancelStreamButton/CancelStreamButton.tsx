@@ -9,6 +9,7 @@ import {
 import { Stream } from "@superfluid-finance/sdk-core";
 import { Signer } from "ethers";
 import { FC } from "react";
+import { ScheduledStream } from "../../../hooks/streamSchedulingHooks";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { useAnalytics } from "../../analytics/useAnalytics";
 import { Network } from "../../network/networks";
@@ -16,10 +17,11 @@ import { usePendingStreamCancellation } from "../../pendingUpdates/PendingStream
 import { rpcApi } from "../../redux/store";
 import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
+import { StreamScheduling } from "../StreamScheduling";
 import CancelStreamProgress from "./CancelStreamProgress";
 
 interface CancelStreamButtonProps {
-  stream: Stream;
+  stream: (Stream | ScheduledStream) & StreamScheduling;
   network: Network;
   IconButtonProps?: Partial<IconButtonProps>;
   TooltipProps?: Partial<TooltipProps>;
@@ -69,7 +71,10 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
         <TransactionBoundary mutationResult={flowDeleteMutation}>
           {({ mutationResult, signer, setDialogLoadingInfo }) =>
             mutationResult.isLoading || !!pendingCancellation ? (
-              <CancelStreamProgress pendingCancellation={pendingCancellation} />
+              <CancelStreamProgress
+                isSchedule={!!stream.startDateScheduled}
+                pendingCancellation={pendingCancellation}
+              />
             ) : (
               <>
                 <Tooltip

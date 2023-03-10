@@ -748,7 +748,7 @@ export default memo(function SendCard() {
               <Typography variant="h5" color="text.secondary" translate="yes">
                 You are{" "}
                 {activeFlow || scheduledStream ? "modifying" : "sending"} a{" "}
-                {endTimestamp ? "closed-ended" : ""} stream.
+                {startTimestamp || endTimestamp ? "scheduled" : ""} stream.
               </Typography>
             );
 

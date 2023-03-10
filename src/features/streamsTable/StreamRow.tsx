@@ -280,7 +280,9 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
                   />
                 )}
                 <CancelStreamButton
-                  stream={stream as Stream}
+                  stream={
+                    stream as (Stream | ScheduledStream) & StreamScheduling
+                  }
                   network={network}
                   IconButtonProps={{ size: "small" }}
                 />

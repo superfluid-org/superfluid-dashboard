@@ -12,6 +12,7 @@ export interface PendingUpdate {
     | "CreateTaskCreate"
     | "DeleteTaskCreate"
     | "CreateTaskDelete"
+    | "DeleteTaskDelete"
     | "IndexSubscriptionApprove"
     | "IndexSubscriptionRevoke"
     | "VestingScheduleCreate"

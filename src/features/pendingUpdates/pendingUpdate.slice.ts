@@ -153,6 +153,39 @@ export const pendingUpdateSlice = createSlice({
               relevantSubgraph: "Protocol",
             } as PendingOutgoingStream);
           }
+
+          if (
+            subTransactionTitles.includes("Modify Schedule") &&
+            !startTimestamp
+          ) {
+            const pendingCreateTaskDeleteUpdate: PendingCreateTaskDeletion = {
+              chainId,
+              transactionHash,
+              senderAddress,
+              receiverAddress,
+              id: `${transactionHash}-CreateTaskDelete`,
+              tokenAddress: superTokenAddress,
+              pendingType: "CreateTaskDelete",
+              timestamp: dateNowSeconds(),
+              relevantSubgraph: "Scheduler",
+            };
+            pendingUpdatesToAdd.push(pendingCreateTaskDeleteUpdate);
+          }
+        }
+
+        if (subTransactionTitles.includes("Delete Schedule")) {
+          const pendingCreateTaskDeleteUpdate: PendingCreateTaskDeletion = {
+            chainId,
+            transactionHash,
+            senderAddress,
+            receiverAddress,
+            id: `${transactionHash}-CreateTaskDelete`,
+            tokenAddress: superTokenAddress,
+            pendingType: "CreateTaskDelete",
+            timestamp: dateNowSeconds(),
+            relevantSubgraph: "Scheduler",
+          };
+          pendingUpdatesToAdd.push(pendingCreateTaskDeleteUpdate);
         }
 
         if (subTransactionTitles.includes("Create Schedule")) {
@@ -191,7 +224,6 @@ export const pendingUpdateSlice = createSlice({
         }
 
         if (pendingUpdatesToAdd.length > 0) {
-          console.log("Adding", pendingUpdatesToAdd);
           pendingUpdateAdapter.addMany(state, pendingUpdatesToAdd);
         }
       }

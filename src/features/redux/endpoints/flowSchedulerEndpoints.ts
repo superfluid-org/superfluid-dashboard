@@ -213,22 +213,20 @@ export const flowSchedulerEndpoints = {
                   : "Create Schedule",
               });
             }
-          } else {
-            if (existingEndTimestamp || existingStartTimestamp) {
-              const deleteStreamOrder =
-                await flowScheduler.populateTransaction.deleteFlowSchedule(
-                  arg.superTokenAddress,
-                  arg.receiverAddress,
-                  "0x"
-                );
-              subOperations.push({
-                operation: await framework.host.callAppAction(
-                  network.flowSchedulerContractAddress,
-                  deleteStreamOrder.data!
-                ),
-                title: "Delete Schedule",
-              });
-            }
+          } else if (existingStartTimestamp || existingEndTimestamp) {
+            const deleteStreamOrder =
+              await flowScheduler.populateTransaction.deleteFlowSchedule(
+                arg.superTokenAddress,
+                arg.receiverAddress,
+                "0x"
+              );
+            subOperations.push({
+              operation: await framework.host.callAppAction(
+                network.flowSchedulerContractAddress,
+                deleteStreamOrder.data!
+              ),
+              title: "Delete Schedule",
+            });
           }
         }
 
