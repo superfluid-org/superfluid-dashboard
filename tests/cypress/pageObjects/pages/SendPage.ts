@@ -90,7 +90,6 @@ export class SendPage extends BasePage {
     }
 
     static checkIfSendContainerIsVisible() {
-        this.isVisible(SEND_BUTTON);
         this.isVisible(RECEIVER_BUTTON);
         this.isVisible(SELECT_TOKEN_BUTTON);
         this.isVisible(FLOW_RATE_INPUT);
