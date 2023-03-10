@@ -33,16 +33,16 @@ export const getAppWallets = ({
     {
       groupName: "Popular",
       wallets: [
+        namedInjectedWallet({ chains, shimDisconnect: true }),
+        gnosisSafe({ chains }),
+        braveWallet({ chains, shimDisconnect: true }),
         metaMaskWallet({
           chains,
           shimDisconnect: true,
         }),
-        braveWallet({ chains, shimDisconnect: true }),
-        gnosisSafe({ chains }),
-        bitkeep({ chains, shimDisconnect: true }),
-        namedInjectedWallet({ chains, shimDisconnect: true }),
         walletConnectWallet({ chains }),
         coinbaseWallet({ appName, chains }),
+        bitkeep({ chains, shimDisconnect: true }),
         ...(needsMock ? [mockConnector({ chains })] : []),
         // wallet.trust({ chains }),
       ],
