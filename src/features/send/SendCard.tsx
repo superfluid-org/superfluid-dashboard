@@ -647,10 +647,14 @@ export default memo(function SendCard() {
       existingEndTimestamp !== endTimestamp) ||
     (!!existingStartTimestamp !== !!startTimestamp &&
       existingStartTimestamp !== startTimestamp) ||
-    (activeFlow && activeFlow.flowRateWei !== flowRateWei.toString());
+    (activeFlow && activeFlow.flowRateWei !== flowRateWei.toString()) ||
+    (scheduledStream &&
+      scheduledStream.currentFlowRate !== flowRateWei.toString());
 
   const isSendDisabled =
-    !hasAnythingChanged || formState.isValidating || !formState.isValid;
+    formState.isValidating ||
+    !formState.isValid ||
+    !(hasAnythingChanged && (!!activeFlow || !!scheduledStream));
 
   const [upsertFlow, upsertFlowResult] =
     rpcApi.useUpsertFlowWithSchedulingMutation();
@@ -1066,8 +1070,8 @@ export default memo(function SendCard() {
           <StreamingPreview
             receiver={receiverAddress}
             token={token}
-            existingScheduledFlowRate={existingScheduledFlowRate}
-            scheduledFlowRateEther={{
+            existingFlowRate={existingScheduledFlowRate}
+            flowRateEther={{
               ...flowRateEther,
               startTimestamp: startTimestamp ?? undefined,
             }}
