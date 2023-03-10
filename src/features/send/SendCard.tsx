@@ -652,12 +652,11 @@ export default memo(function SendCard() {
       existingStartTimestamp !== startTimestamp) ||
     (activeFlow && activeFlow.flowRateWei !== flowRateWei.toString()) ||
     (scheduledStream &&
-      scheduledStream.currentFlowRate !== flowRateWei.toString());
+      scheduledStream.currentFlowRate !== flowRateWei.toString()) ||
+    (!activeFlow && !scheduledStream && flowRateEther.amountEther !== "");
 
   const isSendDisabled =
-    formState.isValidating ||
-    !formState.isValid ||
-    !(hasAnythingChanged && (!!activeFlow || !!scheduledStream));
+    formState.isValidating || !formState.isValid || !hasAnythingChanged;
 
   const [upsertFlow, upsertFlowResult] =
     rpcApi.useUpsertFlowWithSchedulingMutation();
