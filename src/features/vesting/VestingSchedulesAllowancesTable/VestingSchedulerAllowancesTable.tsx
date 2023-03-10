@@ -15,10 +15,6 @@ import NoContentPaper from "../../../components/NoContent/NoContentPaper";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import TooltipIcon from "../../common/TooltipIcon";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
-import {
-  ACL_CREATE_PERMISSION,
-  ACL_DELETE_PERMISSION,
-} from "../../redux/endpoints/flowSchedulerEndpoints";
 import { rpcApi } from "../../redux/store";
 import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";

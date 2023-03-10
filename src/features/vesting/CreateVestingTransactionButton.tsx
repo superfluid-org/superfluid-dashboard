@@ -53,7 +53,6 @@ export const CreateVestingTransactionButton: FC<{
                   },
                 }) => {
                   const startDateTimestamp = getTimeInSeconds(startDate);
-
                   const cliffDateTimestamp = cliffEnabled
                     ? startDateTimestamp +
                       Math.round(

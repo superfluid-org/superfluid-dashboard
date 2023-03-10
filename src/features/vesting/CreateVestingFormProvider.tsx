@@ -15,10 +15,7 @@ import { createHandleHigherOrderValidationErrorFunc } from "../../utils/createHa
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import {
-  networkDefinition,
-  vestingSupportedNetworks,
-} from "../network/networks";
+import { vestingSupportedNetworks } from "../network/networks";
 import {
   MAX_VESTING_DURATION_IN_SECONDS,
   MAX_VESTING_DURATION_IN_YEARS,
@@ -26,6 +23,7 @@ import {
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import { DevTool } from "@hookform/devtools";
 
 export type ValidVestingForm = {
   data: {
@@ -293,7 +291,7 @@ const CreateVestingFormProvider: FC<{
     mode: "onChange",
   });
 
-  const { formState, clearErrors, setError } = formMethods;
+  const { formState, clearErrors, setError, control } = formMethods;
 
   useEffect(() => {
     if (formState.isDirty) stopAutoSwitchToWalletNetwork();
@@ -304,7 +302,10 @@ const CreateVestingFormProvider: FC<{
   useEffect(() => setIsInitialized(true), []);
 
   return (
-    <FormProvider {...formMethods}>{children(isInitialized)}</FormProvider>
+    <FormProvider {...formMethods}>
+      <DevTool control={control} />
+      {children(isInitialized)}
+    </FormProvider>
   );
 };
 

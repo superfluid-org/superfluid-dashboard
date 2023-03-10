@@ -67,6 +67,7 @@
     "@dethcrypto/eth-sdk": "^0.3.3",
     "@dethcrypto/eth-sdk-client": "^0.1.6",
     "@graphprotocol/client-cli": "^2.2.18",
+    "@hookform/devtools": "^4.3.1",
     "@rtk-query/codegen-openapi": "^1.0.0",
     "@types/lodash": "^4.14.191",
     "@types/node": "^17.0.45",

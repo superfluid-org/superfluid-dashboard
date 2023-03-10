@@ -541,6 +541,7 @@ export const CreateVestingForm: FC<{
       </Stack>
 
       <Stack gap={1}>{PreviewVestingScheduleButton}</Stack>
+
     </Stack>
   );
 };
