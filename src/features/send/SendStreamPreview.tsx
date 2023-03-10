@@ -114,8 +114,8 @@ const PreviewItem: FC<PropsWithChildren<PreviewItemProps>> = ({
 interface StreamingPreviewProps {
   receiver: string;
   token: SuperTokenMinimal;
-  existingScheduledFlowRate: ScheduledFlowRate | null;
-  scheduledFlowRateEther: ScheduledFlowRateEther;
+  existingFlowRate: ScheduledFlowRate | null;
+  flowRateEther: ScheduledFlowRateEther;
   newEndDate: Date | null;
   oldEndDate: Date | null;
 }
@@ -123,8 +123,8 @@ interface StreamingPreviewProps {
 export const StreamingPreview: FC<StreamingPreviewProps> = ({
   receiver,
   token,
-  existingScheduledFlowRate,
-  scheduledFlowRateEther,
+  existingFlowRate,
+  flowRateEther,
   newEndDate,
   oldEndDate,
 }) => {
@@ -168,18 +168,34 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
 
   const existingPrettyEtherFlowRate = useMemo(
     () =>
-      existingScheduledFlowRate
-        ? getPrettyEtherFlowRate(existingScheduledFlowRate.flowRate)
+      existingFlowRate
+        ? getPrettyEtherFlowRate(existingFlowRate.flowRate)
         : undefined,
-    [existingScheduledFlowRate]
+    [existingFlowRate]
   );
 
   const newScheduledFlowRate: ScheduledFlowRate = useMemo(
     () => ({
-      flowRate: calculateTotalAmountWei(scheduledFlowRateEther).toString(),
-      startTimestamp: scheduledFlowRateEther.startTimestamp,
+      flowRate: calculateTotalAmountWei(flowRateEther).toString(),
+      startTimestamp: flowRateEther.startTimestamp,
     }),
-    [scheduledFlowRateEther]
+    [flowRateEther]
+  );
+
+  const newAmountPerSecond = useMemo<string>(
+    () =>
+      formatEther(
+        parseEtherOrZero(flowRateEther.amountEther).div(
+          flowRateEther.unitOfTime
+        )
+      ),
+    [flowRateEther.amountEther, flowRateEther.unitOfTime]
+  );
+
+  const oldAmountPerSecond = useMemo<string | undefined>(
+    () =>
+      existingFlowRate ? formatEther(existingFlowRate.flowRate) : undefined,
+    [existingFlowRate]
   );
 
   const {
@@ -201,7 +217,7 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
     const { newDateWhenBalanceCritical, ...bufferInfo } = calculateBufferInfo(
       network,
       realtimeBalance,
-      existingScheduledFlowRate,
+      existingFlowRate,
       newScheduledFlowRate,
       tokenBufferQuery.data
     );
@@ -218,7 +234,7 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
   }, [
     network,
     realtimeBalanceQuery,
-    existingScheduledFlowRate,
+    existingFlowRate,
     newScheduledFlowRate,
     calculateBufferInfo,
     realtimeBalance,
@@ -274,23 +290,22 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
             flowRateEtherToString(existingPrettyEtherFlowRate, token.symbol)
           }
         >
-          {flowRateEtherToString(scheduledFlowRateEther, token.symbol)}
+          {flowRateEtherToString(flowRateEther, token.symbol)}
         </PreviewItem>
 
         <PreviewItem
           dataCy="preview-per-second"
           label="Amount per second"
           oldValue={
-            existingScheduledFlowRate &&
-            existingScheduledFlowRate.flowRate !=
-              newScheduledFlowRate.flowRate && (
+            existingFlowRate &&
+            oldAmountPerSecond != newAmountPerSecond && (
               <>
-                {existingScheduledFlowRate.flowRate} {token.symbol}
+                {oldAmountPerSecond} {token.symbol}
               </>
             )
           }
         >
-          {newScheduledFlowRate.flowRate} {token.symbol}
+          {newAmountPerSecond} {token.symbol}
         </PreviewItem>
 
         {/* TODO: Handle start date if modifying stream */}
@@ -312,9 +327,7 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
           dataCy="preview-ends-on"
           label="End date"
           oldValue={
-            existingScheduledFlowRate &&
-            oldEndDate != newEndDate &&
-            oldEndDateString
+            existingFlowRate && oldEndDate != newEndDate && oldEndDateString
           }
         >
           <Stack direction="row" alignItems="center" gap={0.5}>
@@ -346,7 +359,7 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
               </Typography>
             }
             oldValue={
-              existingScheduledFlowRate &&
+              existingFlowRate &&
               oldBufferAmount && (
                 <Amount wei={oldBufferAmount}> {token.symbol}</Amount>
               )
@@ -380,7 +393,7 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
             label="Predicted buffer loss date"
             isError={isBufferLossCritical}
             oldValue={
-              existingScheduledFlowRate &&
+              existingFlowRate &&
               oldDateWhenBalanceCritical &&
               `${format(oldDateWhenBalanceCritical, "P")} at ${format(
                 oldDateWhenBalanceCritical,
