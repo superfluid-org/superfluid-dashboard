@@ -650,10 +650,8 @@ export default memo(function SendCard() {
   );
 
   const hasAnythingChanged =
-    (!!existingEndTimestamp !== !!endTimestamp &&
-      existingEndTimestamp !== endTimestamp) ||
-    (!!existingStartTimestamp !== !!startTimestamp &&
-      existingStartTimestamp !== startTimestamp) ||
+    existingEndTimestamp !== endTimestamp ||
+    existingStartTimestamp !== startTimestamp ||
     (activeFlow && activeFlow.flowRateWei !== flowRateWei.toString()) ||
     (scheduledStream &&
       scheduledStream.currentFlowRate !== flowRateWei.toString()) ||
