@@ -529,36 +529,34 @@ export default memo(function SendCard() {
       onChange={(event) => {
         const newValue = event.target.value;
 
-        if (
-          newValue &&
-          isFinite(Number(newValue)) &&
-          flowRateWei.gt(BigNumber.from(0))
-        ) {
-          const newMaxEndTimestamp = getEndTimestamp(
-            startTimestamp,
-            newValue,
-            flowRateWei
-          );
-          if (newMaxEndTimestamp) {
-            const maxDateUnix = getUnixTime(MAX_DATE);
+        if (flowRateWei.gt(BigNumber.from(0))) {
+          if (newValue && isFinite(Number(newValue))) {
+            const newMaxEndTimestamp = getEndTimestamp(
+              startTimestamp,
+              newValue,
+              flowRateWei
+            );
+            if (newMaxEndTimestamp) {
+              const maxDateUnix = getUnixTime(MAX_DATE);
 
-            if (newMaxEndTimestamp >= maxDateUnix) {
-              // Setting total streamed and end date to maximum allowed.
-              setTotalStreamedEther(
-                getStreamedTotalEtherRoundedString(
-                  startTimestamp || getUnixTime(new Date()),
-                  maxDateUnix,
-                  flowRateWei
-                )
-              );
-              setValue("data.endTimestamp", maxDateUnix);
-              return;
+              if (newMaxEndTimestamp >= maxDateUnix) {
+                // Setting total streamed and end date to maximum allowed.
+                setTotalStreamedEther(
+                  getStreamedTotalEtherRoundedString(
+                    startTimestamp || getUnixTime(new Date()),
+                    maxDateUnix,
+                    flowRateWei
+                  )
+                );
+                setValue("data.endTimestamp", maxDateUnix);
+                return;
+              }
+
+              setValue("data.endTimestamp", newMaxEndTimestamp);
             }
-
-            setValue("data.endTimestamp", newMaxEndTimestamp);
+          } else {
+            setValue("data.endTimestamp", null);
           }
-        } else {
-          setValue("data.endTimestamp", null);
         }
 
         setTotalStreamedEther(newValue);
