@@ -1,21 +1,40 @@
-import { Box, Stack, Typography } from "@mui/material";
+import {
+  Alert,
+  AlertTitle,
+  Box,
+  Checkbox,
+  Divider,
+  FormControlLabel,
+  FormGroup,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { getUnixTime } from "date-fns";
 import add from "date-fns/fp/add";
 import format from "date-fns/fp/format";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import AddressName from "../../components/AddressName/AddressName";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
+import { flowOperatorPermissionsToString } from "../../utils/flowOperatorPermissionsToString";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import NetworkIcon from "../network/NetworkIcon";
 import { Network, networkDefinition } from "../network/networks";
+import { rpcApi } from "../redux/store";
 import { timeUnitWordMap } from "../send/FlowRateInput";
+import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
+import { calculateAdditionalDataFromValidVestingForm } from "./calculateAdditionalDataFromValidVestingForm";
 import { VestingFormLabels } from "./CreateVestingForm";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { CreateVestingCardView, VestingToken } from "./CreateVestingSection";
 import { CreateVestingTransactionButton } from "./CreateVestingTransactionButton";
 import { VestingScheduleGraph } from "./VestingScheduleGraph";
+import {
+  calculateRequiredAccessForActiveVestingSchedule,
+  RequiredAccessForActiveVestingSchedule,
+} from "./VestingSchedulesAllowancesTable/calculateRequiredAccessForActiveVestingSchedule";
 
 interface CreateVestingPreviewProps {
   token: VestingToken;
@@ -28,7 +47,7 @@ export const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
   network,
   setView,
 }) => {
-  const { watch } = useFormContext<ValidVestingForm>();
+  const { watch, getValues } = useFormContext<ValidVestingForm>();
 
   const [
     receiverAddress,
@@ -66,6 +85,31 @@ export const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
     },
     startDate
   );
+
+  const { data: vestingSchedulerConstants } =
+    rpcApi.useGetVestingSchedulerConstantsQuery({
+      chainId: network.id,
+    });
+
+  const requiredAccess = useMemo<
+    RequiredAccessForActiveVestingSchedule | undefined
+  >(() => {
+    if (!vestingSchedulerConstants) {
+      return undefined;
+    }
+
+    const { flowRate, cliffAmount } =
+      calculateAdditionalDataFromValidVestingForm(getValues());
+
+    return calculateRequiredAccessForActiveVestingSchedule(
+      {
+        cliffAmount,
+        flowRate,
+        cliffAndFlowExecutedAt: undefined,
+      },
+      vestingSchedulerConstants
+    );
+  }, [vestingSchedulerConstants, getValues]);
 
   return (
     <Stack gap={3}>
@@ -178,6 +222,67 @@ export const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
           </Box>
         )}
       </Stack>
+
+      <Divider />
+
+      <Stack direction="row" justifyContent="space-between">
+        <Stack>
+          <Typography color="text.secondary">Token Allowance</Typography>
+          <Typography>
+            {requiredAccess?.recommendedTokenAllowance ? (
+              <Amount wei={requiredAccess.recommendedTokenAllowance}>
+                {" "}
+                {token.symbol}
+              </Amount>
+            ) : (
+              " "
+            )}
+          </Typography>
+        </Stack>
+        <Stack>
+          <Typography color="text.secondary">Stream Permissions</Typography>
+          <Typography>
+            {requiredAccess?.requiredFlowOperatorPermissions
+              ? flowOperatorPermissionsToString(
+                  requiredAccess.requiredFlowOperatorPermissions
+                )
+              : " "}
+          </Typography>
+        </Stack>
+        <Stack>
+          <Typography color="text.secondary">Stream Allowance</Typography>
+          <Typography>
+            {requiredAccess?.requiredFlowRateAllowance ? (
+              <Amount wei={requiredAccess.requiredFlowRateAllowance}>
+                {" "}
+                {token.symbol}/sec
+              </Amount>
+            ) : (
+              " "
+            )}
+          </Typography>
+        </Stack>
+      </Stack>
+
+      <FormGroup>
+        <FormControlLabel
+          control={<Checkbox defaultChecked />}
+          label="Add required permissions & allowances"
+        />
+        <FormControlLabel
+          disabled
+          control={<Checkbox />}
+          label="Maximum allowance"
+        />
+      </FormGroup>
+
+      <Alert severity="warning">
+        <AlertTitle>Smart contract wallet!</AlertTitle>
+        <Typography>
+          If you queue up the transactions then it might override the previous
+          allowance.
+        </Typography>
+      </Alert>
 
       <CreateVestingTransactionButton setView={setView} />
     </Stack>

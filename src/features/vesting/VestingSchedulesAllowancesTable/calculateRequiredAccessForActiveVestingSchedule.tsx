@@ -4,6 +4,12 @@ import {
   ACL_DELETE_PERMISSION,
 } from "../../redux/endpoints/flowSchedulerEndpoints";
 
+export type RequiredAccessForActiveVestingSchedule = {
+  recommendedTokenAllowance: BigNumber;
+  requiredFlowRateAllowance: BigNumber;
+  requiredFlowOperatorPermissions: number;
+}
+
 export function calculateRequiredAccessForActiveVestingSchedule(
   {
     flowRate,
@@ -21,11 +27,7 @@ export function calculateRequiredAccessForActiveVestingSchedule(
     START_DATE_VALID_AFTER_IN_SECONDS: number;
     END_DATE_VALID_BEFORE_IN_SECONDS: number;
   }
-): {
-  recommendedTokenAllowance: BigNumber;
-  requiredFlowRateAllowance: BigNumber;
-  requiredFlowOperatorPermissions: number;
-} {
+): RequiredAccessForActiveVestingSchedule {
   const tokenAllowanceForStartDateValidAfter = BigNumber.from(flowRate).mul(
     START_DATE_VALID_AFTER_IN_SECONDS
   );
