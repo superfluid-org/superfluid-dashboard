@@ -415,15 +415,19 @@ export default memo(function SendCard() {
       activeFlow?.flowRateWei && activeFlow?.flowRateWei !== "0";
 
     if (hasScheduledFlowRate || hasActiveFlowRate) {
-      const newFlowRate = hasScheduledFlowRate
-        ? existingFlowRate
-        : activeFlow?.flowRateWei;
+      // We will only set the flow rate to existing one if user has not touched it yet
+      const newFlowRate =
+        flowRateEther.amountEther === ""
+          ? hasScheduledFlowRate
+            ? existingFlowRate
+            : activeFlow?.flowRateWei
+          : undefined;
 
       if (newFlowRate) {
         setValue("data.flowRate", getPrettyEtherFlowRate(newFlowRate));
       }
 
-      if (existingEndTimestamp && newFlowRate) {
+      if (existingEndTimestamp && newFlowRate && newFlowRate) {
         setTotalStreamedEther(
           getStreamedTotalEtherRoundedString(
             existingStartTimestamp || startTimestamp,
