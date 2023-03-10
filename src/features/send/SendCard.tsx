@@ -471,6 +471,7 @@ export default memo(function SendCard() {
           <DateTimePicker
             renderInput={(props) => (
               <TextField
+                data-cy={"start-date"}
                 fullWidth
                 autoComplete="off"
                 {...props}
@@ -501,6 +502,7 @@ export default memo(function SendCard() {
           <DateTimePicker
             renderInput={(props) => (
               <TextField
+                data-cy={"end-date"}
                 fullWidth
                 autoComplete="off"
                 {...props}
@@ -524,6 +526,7 @@ export default memo(function SendCard() {
 
   const TotalStreamedController = (
     <TextField
+      data-cy={"total-stream"}
       value={totalStreamedEther}
       autoComplete="off"
       onChange={(event) => {
@@ -966,6 +969,7 @@ export default memo(function SendCard() {
         {!!network.flowSchedulerContractAddress && (
           <>
             <FormControlLabel
+              data-cy={"scheduling-tooltip"}
               control={StreamSchedulingController}
               label={
                 <Stack direction="row" alignItems="center" gap={0.75}>
