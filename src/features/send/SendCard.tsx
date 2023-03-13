@@ -87,7 +87,7 @@ import {
 } from "./StreamingFormProvider";
 
 // Minimum start and end date difference in seconds.
-export const SCHEDULE_START_END_MIN_DIFF_S = 5 * UnitOfTime.Minute;
+export const SCHEDULE_START_END_MIN_DIFF_S = 15 * UnitOfTime.Minute;
 
 function getStreamedTotal(
   startTimestamp = getUnixTime(new Date()),

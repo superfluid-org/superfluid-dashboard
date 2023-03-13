@@ -1,4 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
+import { add, getUnixTime } from "date-fns";
 import { parseEther } from "ethers/lib/utils";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -70,6 +71,20 @@ const StreamingFormProvider: FC<
   const calculateBufferInfo = useCalculateBufferInfo();
   const [tokenBufferTrigger] = rpcApi.useLazyTokenBufferQuery();
 
+  const [MIN_DATE_UNIX, MAX_DATE_UNIX] = useMemo(
+    () => [
+      getUnixTime(new Date()),
+      getUnixTime(
+        add(new Date(), {
+          years: 2,
+          // User can stay afk in the form for 15 minutes or else the minimum date is already passed in date component.
+          minutes: SCHEDULE_START_END_MIN_DIFF_S,
+        })
+      ),
+    ],
+    []
+  );
+
   const formSchema = useMemo(
     () =>
       object().test(async (values, context) => {
@@ -92,24 +107,26 @@ const StreamingFormProvider: FC<
               startTimestamp: number()
                 .default(null)
                 .nullable()
+                .min(MIN_DATE_UNIX)
                 .when("endTimestamp", ([endTimestamp], schema) =>
                   endTimestamp
                     ? schema.max(
-                        endTimestamp - SCHEDULE_START_END_MIN_DIFF_S,
+                        endTimestamp - UnitOfTime.Minute * 5,
                         "Start date can not be after end date!"
                       )
-                    : schema
+                    : schema.max(MAX_DATE_UNIX)
                 ),
               endTimestamp: number()
                 .default(null)
                 .nullable()
+                .max(MAX_DATE_UNIX)
                 .when("startTimestamp", ([startTimestamp], schema) =>
                   startTimestamp
                     ? schema.min(
-                        startTimestamp + SCHEDULE_START_END_MIN_DIFF_S,
+                        startTimestamp + UnitOfTime.Minute * 5,
                         "End date can not be before start date!"
                       )
-                    : schema
+                    : schema.min(MIN_DATE_UNIX)
                 ),
             },
             [["startTimestamp", "endTimestamp"]]
