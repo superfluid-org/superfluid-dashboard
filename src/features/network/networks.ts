@@ -47,6 +47,7 @@ export const superfluidRpcUrls = {
   avalancheC: "https://rpc-endpoints.superfluid.dev/avalanche-c",
   bnbSmartChain: "https://rpc-endpoints.superfluid.dev/bsc-mainnet",
   ethereum: "https://rpc-endpoints.superfluid.dev/eth-mainnet",
+  "celo-mainnet": "https://rpc-endpoints.superfluid.dev/celo-mainnet",
 } as const;
 
 export const superfluidPlatformUrls = {
@@ -74,6 +75,8 @@ export const vestingSubgraphUrls = {
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-bsc-mainnet",
   ethereum:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-eth-mainnet",
+  "celo-mainnet":
+    "https://thegraph.com/hosted-service/subgraph/superfluid-finance/vesting-v1-celo-mainnet",
 } as const;
 
 export const vestingContractAddresses = {
@@ -116,6 +119,12 @@ const blockExplorers = {
       url: "https://bscscan.com/",
     },
   },
+  celoscan: {
+    mainnet: {
+      name: "Celo Scan",
+      url: "https://celoscan.io/",
+    },
+  },
 };
 
 export const networkDefinition: {
@@ -134,6 +143,7 @@ export const networkDefinition: {
   ethereum: Network & {
     vestingContractAddress: `0x${string}`;
   };
+  celoMainnet: Network;
 } = {
   goerli: {
     ...chain.goerli,
@@ -512,6 +522,43 @@ export const networkDefinition: {
     vestingSubgraphUrl: vestingSubgraphUrls.ethereum,
     platformUrl: superfluidPlatformUrls.ethereum,
   },
+  celoMainnet: {
+    ...chain.celo,
+    blockExplorers: {
+      celoscan: blockExplorers.celoscan.mainnet,
+      default: blockExplorers.celoscan.mainnet,
+    },
+    slugName: "celo-mainnet",
+    v1ShortName: "celo",
+    bufferTimeInMinutes: 240,
+    icon: "/icons/network/celo-mainnet.svg",
+    color: "#FCFF52",
+    rpcUrls: {
+      ...chain.celo.rpcUrls,
+      superfluid: { http: [superfluidRpcUrls["celo-mainnet"]] },
+    },
+    subgraphUrl:
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-celo-mainnet",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://celoscan.io/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://celoscan.io/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.celo.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "CELOx",
+        address: "0x671425ae1f272bc6f79bec3ed5c4b00e9c628240",
+        name: "Super Celo",
+        decimals: 18,
+      },
+    },
+    vestingContractAddress: undefined,
+    vestingSubgraphUrl: undefined,
+    platformUrl: undefined,
+  },
 };
 
 export const allNetworks: Network[] = [
@@ -525,9 +572,10 @@ export const allNetworks: Network[] = [
   networkDefinition.arbitrum,
   networkDefinition.avalancheC,
   networkDefinition.bsc,
+  networkDefinition.celoMainnet,
 ];
-export const mainNetworks = allNetworks.filter(x => !x.testnet);
-export const testNetworks = allNetworks.filter(x => x.testnet);
+export const mainNetworks = allNetworks.filter((x) => !x.testnet);
+export const testNetworks = allNetworks.filter((x) => x.testnet);
 
 export const tryFindNetwork = (
   networks: Network[],
@@ -573,7 +621,7 @@ export const findNetworkOrThrow = (
     throw new Error("Network not found. This should never happen.");
   }
   return network;
-}
+};
 
 export const getNetworkDefaultTokenPair = memoize(
   (network: Network): SuperTokenPair => ({

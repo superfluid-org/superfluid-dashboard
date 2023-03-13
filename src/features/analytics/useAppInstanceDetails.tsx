@@ -60,7 +60,6 @@ export const useAppInstanceDetails = () => {
     address: activeAccountAddress,
   } = useAccount();
 
-  const isMainnetEnabled = useMainnetEnabled();
   const isVestingEnabled = useVestingEnabled();
 
   const deps = [
@@ -71,7 +70,6 @@ export const useAppInstanceDetails = () => {
     activeAccountAddress,
     isAutoConnectedRef,
     transactionDrawerOpen,
-    isMainnetEnabled,
     isVestingEnabled,
   ];
 
@@ -101,11 +99,10 @@ export const useAppInstanceDetails = () => {
         : { isConnected: false }),
     };
 
-    const isAnyFeatureEnabled = isMainnetEnabled || isVestingEnabled;
+    const isAnyFeatureEnabled = isVestingEnabled;
     const featuresObj: AppInstanceDetails["appInstance"]["enabledFeatures"] =
       isAnyFeatureEnabled
         ? {
-            ...(isMainnetEnabled ? { mainnet: true } : {}),
             ...(isVestingEnabled ? { vesting: true } : {}),
           }
         : undefined;

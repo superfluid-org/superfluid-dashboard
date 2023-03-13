@@ -5,8 +5,7 @@ import {
   useContext,
   useMemo,
 } from "react";
-import { useFeatureFlags } from "../featureFlags/FeatureFlagContext";
-import { Network, networkDefinition, allNetworks } from "./networks";
+import { Network, allNetworks } from "./networks";
 
 interface AvailableNetworksContextValue {
   availableNetworks: Network[];
@@ -23,41 +22,26 @@ const AvailableNetworksContext = createContext<AvailableNetworksContextValue>(
 export const AvailableNetworksProvider: FC<PropsWithChildren> = ({
   children,
 }) => {
-  const { isMainnetEnabled } = useFeatureFlags();
-
-  const availableNetworks = useMemo(
-    () =>
-      allNetworks.filter(
-        (network) =>
-          !(network.id === networkDefinition.ethereum.id && !isMainnetEnabled)
-      ),
-    [isMainnetEnabled]
-  );
-
   const availableNetworksFiltered = useMemo(
     () => ({
-      availableMainNetworks: availableNetworks.filter(
-        (network) => !network.testnet
-      ),
-      availableTestNetworks: availableNetworks.filter(
-        (network) => network.testnet
-      ),
+      availableMainNetworks: allNetworks.filter((network) => !network.testnet),
+      availableTestNetworks: allNetworks.filter((network) => network.testnet),
       availableNetworksByChainId: new Map(
-        availableNetworks.map((network) => [network.id, network])
+        allNetworks.map((network) => [network.id, network])
       ),
       availableNetworksBySlug: new Map(
         allNetworks.map((network) => [network.slugName, network])
       ),
     }),
-    [availableNetworks]
+    []
   );
 
   const contextValue = useMemo<AvailableNetworksContextValue>(
     () => ({
-      availableNetworks,
+      availableNetworks: allNetworks,
       ...availableNetworksFiltered,
     }),
-    [availableNetworks, availableNetworksFiltered]
+    []
   );
 
   return (
