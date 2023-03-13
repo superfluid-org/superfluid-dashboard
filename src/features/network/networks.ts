@@ -52,7 +52,12 @@ export const superfluidRpcUrls = {
 
 export const superfluidPlatformUrls = {
   goerli: "https://prod-goerli-platform-service.dev.superfluid.dev",
+  gnosis: "https://prod-xdai-mainnet-platform-service.prod.superfluid.dev",
   polygon: "https://prod-polygon-mainnet-platform-service.prod.superfluid.dev",
+  arbitrum: "https://prod-arbitrum-one-platform-service.prod.superfluid.dev",
+  optimism:
+    "https://prod-optimism-mainnet-platform-service.prod.superfluid.dev",
+  avalancheC: "https://prod-avalanche-c-platform-service.prod.superfluid.dev",
   bnbSmartChain:
     "https://prod-bsc-mainnet-platform-service.prod.superfluid.dev",
   ethereum: "https://prod-eth-mainnet-platform-service.prod.superfluid.dev",
@@ -244,7 +249,7 @@ export const networkDefinition: {
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.gnosis,
     vestingContractAddress: vestingContractAddresses.gnosis,
     vestingSubgraphUrl: vestingSubgraphUrls.gnosis,
-    platformUrl: undefined,
+    platformUrl: superfluidPlatformUrls.gnosis,
   },
   polygon: {
     ...chain.polygon,
@@ -396,7 +401,7 @@ export const networkDefinition: {
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.optimism,
     vestingContractAddress: vestingContractAddresses.optimism,
     vestingSubgraphUrl: vestingSubgraphUrls.optimism,
-    platformUrl: undefined,
+    platformUrl: superfluidPlatformUrls.optimism,
   },
   arbitrum: {
     ...chain.arbitrum,
@@ -432,7 +437,7 @@ export const networkDefinition: {
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.arbitrum,
     vestingContractAddress: vestingContractAddresses.arbitrum,
     vestingSubgraphUrl: vestingSubgraphUrls.arbitrum,
-    platformUrl: undefined,
+    platformUrl: superfluidPlatformUrls.arbitrum,
   },
   avalancheC: {
     name: "Avalanche C",
@@ -479,7 +484,7 @@ export const networkDefinition: {
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.avalancheC,
     vestingContractAddress: vestingContractAddresses.avalancheC,
     vestingSubgraphUrl: vestingSubgraphUrls.avalancheC,
-    platformUrl: undefined,
+    platformUrl: superfluidPlatformUrls.avalancheC,
   },
   bsc: {
     name: "BNB Smart Chain",
