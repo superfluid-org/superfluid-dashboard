@@ -190,7 +190,7 @@ export const flowSchedulerEndpoints = {
                   arg.superTokenAddress,
                   arg.receiverAddress,
                   arg.startTimestamp || 0,
-                  hasScheduledStart ? UnitOfTime.Minute * 5 : 0, // startDuration
+                  hasScheduledStart ? UnitOfTime.Day * 3 : 0, // startDuration
                   hasScheduledStart ? arg.flowRateWei : 0, // flowRate
                   0, // startAmount
                   arg.endTimestamp || 0,

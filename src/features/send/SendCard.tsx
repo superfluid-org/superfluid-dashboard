@@ -29,7 +29,7 @@ import { add, fromUnixTime, getUnixTime, sub } from "date-fns";
 import Decimal from "decimal.js";
 import { BigNumber, BigNumberish } from "ethers";
 import { formatEther, parseEther } from "ethers/lib/utils";
-import Link from "next/link";
+import NextLink from "next/link";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import {
@@ -47,12 +47,14 @@ import {
   parseEtherOrZero,
 } from "../../utils/tokenUtils";
 import { useAnalytics } from "../analytics/useAnalytics";
+import Link from "../common/Link";
 import TooltipIcon from "../common/TooltipIcon";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import NetworkBadge from "../network/NetworkBadge";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { isWrappable, SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
+import { platformApi } from "../redux/platformApi/platformApi";
 import { rpcApi, subgraphApi } from "../redux/store";
 import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
@@ -130,6 +132,33 @@ function getEndTimestamp(
     .add(startTimestamp || dateNowSeconds())
     .toNumber();
 }
+
+const WhitelistTransparentBox = () => (
+  <Stack
+    sx={{
+      position: "absolute",
+      width: "calc(100% + 10px)",
+      height: "calc(100% + 10px)",
+      marginTop: "-5px",
+      marginLeft: "-5px",
+      alignItems: "center",
+      justifyContent: "center",
+      backdropFilter: "blur(5px)",
+      backfaceVisibility: "hidden",
+    }}
+  >
+    <Box sx={{ px: 4, pb: 3, textAlign: "center" }}>
+      <Typography variant="h6">You are not on the allow list.</Typography>
+      <Typography>
+        If you want to setup precise start and end date of your schedule,{" "}
+        <Link href="https://airtable.com/shrAdDf7DaNxYkWbh" target="_blank">
+          Apply for access
+        </Link>
+        .
+      </Typography>
+    </Box>
+  </Stack>
+);
 
 export default memo(function SendCard() {
   const theme = useTheme();
@@ -755,7 +784,7 @@ export default memo(function SendCard() {
             if (activeFlow || scheduledStream) {
               setDialogSuccessActions(
                 <TransactionDialogActions>
-                  <Link
+                  <NextLink
                     href={getTokenPagePath({
                       network: network.slugName,
                       token: formData.tokenAddress,
@@ -768,7 +797,7 @@ export default memo(function SendCard() {
                     >
                       Go to token page ➜
                     </TransactionDialogButton>
-                  </Link>
+                  </NextLink>
                 </TransactionDialogActions>
               );
             } else {
@@ -782,7 +811,7 @@ export default memo(function SendCard() {
                     >
                       Send more streams
                     </TransactionDialogButton>
-                    <Link
+                    <NextLink
                       href={getTokenPagePath({
                         network: network.slugName,
                         token: formData.tokenAddress,
@@ -795,7 +824,7 @@ export default memo(function SendCard() {
                       >
                         Go to token page ➜
                       </TransactionDialogButton>
-                    </Link>
+                    </NextLink>
                   </Stack>
                 </TransactionDialogActions>
               );
@@ -878,6 +907,22 @@ export default memo(function SendCard() {
 
     return null;
   }, [activeFlow, scheduledStream]);
+
+  const { isPlatformWhitelisted } = platformApi.useIsAccountWhitelistedQuery(
+    visibleAddress && network?.platformUrl
+      ? {
+          chainId: network.id,
+          baseUrl: network.platformUrl,
+          account: visibleAddress?.toLowerCase(),
+        }
+      : skipToken,
+    {
+      selectFromResult: (queryResult) => ({
+        ...queryResult,
+        isPlatformWhitelisted: !!queryResult.data,
+      }),
+    }
+  );
 
   return (
     <Card
@@ -979,8 +1024,13 @@ export default memo(function SendCard() {
                 </Stack>
               }
             />
-            <Collapse in={streamScheduling}>
-              <Stack spacing={2.5}>
+            <Collapse
+              in={streamScheduling}
+              mountOnEnter
+              unmountOnExit
+              sx={{ m: -0.5, marginTop: "0 !important" }}
+            >
+              <Stack gap={2.5} sx={{ position: "relative", p: 0.5, pt: 3 }}>
                 <Stack
                   sx={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}
                   gap={2.5}
@@ -1026,6 +1076,8 @@ export default memo(function SendCard() {
                   </Stack>
                   {TotalStreamedController}
                 </Stack>
+
+                {!isPlatformWhitelisted && <WhitelistTransparentBox />}
               </Stack>
             </Collapse>
           </>
@@ -1052,7 +1104,7 @@ export default memo(function SendCard() {
                 />
               </Stack>
               {isWrappableSuperToken && (
-                <Link
+                <NextLink
                   href={`/wrap?upgrade&token=${tokenAddress}&network=${network.slugName}`}
                   passHref
                 >
@@ -1065,7 +1117,7 @@ export default memo(function SendCard() {
                       <AddRounded />
                     </IconButton>
                   </Tooltip>
-                </Link>
+                </NextLink>
               )}
             </Stack>
             <Divider />
