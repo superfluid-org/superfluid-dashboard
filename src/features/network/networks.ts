@@ -526,7 +526,7 @@ export const networkDefinition: {
       celoscan: blockExplorers.celoscan.mainnet,
       default: blockExplorers.celoscan.mainnet,
     },
-    slugName: "celo-mainnet",
+    slugName: "celo",
     v1ShortName: "celo",
     bufferTimeInMinutes: 240,
     icon: "/icons/network/celo-mainnet.svg",
