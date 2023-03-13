@@ -196,12 +196,6 @@ export class Common extends BasePage {
       //The nextjs error is annoying when developing test cases in dev mode
       cy.get("nextjs-portal").shadow().find("[aria-label=Close]").click();
     }
-    if (selectedNetwork === "ethereum") {
-      this.click(NAVIGATION_MORE_BUTTON);
-      this.click(ACCESS_CODE_BUTTON);
-      this.type(ACCESS_CODE_INPUT, "AHR2_MAINNET");
-      this.click(ACCESS_CODE_SUBMIT);
-    }
     if (Cypress.env("vesting")) {
       this.click(NAVIGATION_MORE_BUTTON);
       this.click(ACCESS_CODE_BUTTON);
