@@ -148,8 +148,8 @@ const WhitelistTransparentBox = () => (
     }}
   >
     <Box sx={{ px: 4, pb: 3, textAlign: "center" }}>
-      <Typography variant="h6">You are not on the allow list.</Typography>
-      <Typography sx={{ maxWidth: "410px" }}>
+      <Typography variant="h5">You are not on the allow list.</Typography>
+      <Typography sx={{ maxWidth: "410px" }} variant="body1">
         If you want to set start and end dates for your streams,{" "}
         <Link
           href="https://use.superfluid.finance/schedulestreams"
@@ -1031,11 +1031,15 @@ export default memo(function SendCard() {
               in={streamScheduling}
               mountOnEnter
               unmountOnExit
-              sx={{ m: -0.5, marginTop: "0 !important" }}
+              sx={{ mx: -0.5, marginTop: "0 !important", overflow: "hidden" }}
             >
               <Stack gap={2.5} sx={{ position: "relative", p: 0.5, pt: 3 }}>
                 <Stack
-                  sx={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    ...(!isPlatformWhitelisted ? { opacity: 0.5 } : {}),
+                  }}
                   gap={2.5}
                 >
                   <Stack>
@@ -1066,7 +1070,11 @@ export default memo(function SendCard() {
                   </Stack>
                 </Stack>
 
-                <Stack>
+                <Stack
+                  sx={{
+                    ...(!isPlatformWhitelisted ? { opacity: 0.5 } : {}),
+                  }}
+                >
                   <Stack
                     direction="row"
                     alignItems="center"
