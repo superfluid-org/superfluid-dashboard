@@ -4,7 +4,7 @@ import { useLayoutContext } from "../layout/LayoutContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { useAutoConnect } from "../autoConnect/AutoConnect";
 import { customAlphabet } from "nanoid";
-import { useMainnetEnabled, useVestingEnabled } from "../flags/flagsHooks";
+import { useVestingEnabled } from "../flags/flagsHooks";
 
 export const supportId = customAlphabet("6789BCDFGHJKLMNPQRTWbcdfghjkmnpqrtwz")(
   8

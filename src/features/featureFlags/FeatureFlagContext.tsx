@@ -8,10 +8,7 @@ import {
   useEffect,
   useMemo,
 } from "react";
-import {
-  enableMainnetFeature,
-  enableVestingFeature,
-} from "../flags/flags.slice";
+import { enableVestingFeature } from "../flags/flags.slice";
 import { useVestingEnabled } from "../flags/flagsHooks";
 import { useAppDispatch } from "../redux/store";
 
