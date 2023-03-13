@@ -75,8 +75,6 @@ export const vestingSubgraphUrls = {
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-bsc-mainnet",
   ethereum:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-eth-mainnet",
-  "celo-mainnet":
-    "https://thegraph.com/hosted-service/subgraph/superfluid-finance/vesting-v1-celo-mainnet",
 } as const;
 
 export const vestingContractAddresses = {
