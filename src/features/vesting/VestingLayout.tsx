@@ -28,13 +28,11 @@ const VESTING_SUPPORTED_NETWORK_IDS = vestingSupportedNetworks.map(
 const VestingNotSupportedCard = () => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-  const { isMainnetEnabled } = useFeatureFlags();
 
   const NetworkSwitchLinks = useMemo(
     () =>
       vestingSupportedNetworks.map((network, index) => {
-        const isNetworkDisabled =
-          network.id === networkDefinition.ethereum.id && !isMainnetEnabled;
+        const isNetworkDisabled = network.id === networkDefinition.ethereum.id;
 
         if (VESTING_SUPPORTED_NETWORK_IDS.length - 1 === index) {
           return (
@@ -65,7 +63,7 @@ const VestingNotSupportedCard = () => {
           </Fragment>
         );
       }),
-    [isMainnetEnabled]
+    []
   );
 
   return (
