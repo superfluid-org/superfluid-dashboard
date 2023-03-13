@@ -149,9 +149,12 @@ const WhitelistTransparentBox = () => (
   >
     <Box sx={{ px: 4, pb: 3, textAlign: "center" }}>
       <Typography variant="h6">You are not on the allow list.</Typography>
-      <Typography>
-        If you want to setup precise start and end date of your schedule,{" "}
-        <Link href="https://airtable.com/shrAdDf7DaNxYkWbh" target="_blank">
+      <Typography sx={{ maxWidth: "410px" }}>
+        If you want to set start and end dates for your streams,{" "}
+        <Link
+          href="https://use.superfluid.finance/schedulestreams"
+          target="_blank"
+        >
           Apply for access
         </Link>
         .

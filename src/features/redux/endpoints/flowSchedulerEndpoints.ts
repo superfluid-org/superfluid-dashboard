@@ -126,7 +126,7 @@ export const flowSchedulerEndpoints = {
         if (network?.flowSchedulerContractAddress) {
           const flowScheduler = getFlowScheduler(chainId, arg.signer);
 
-          const existingDatesResponse = await dispatch(
+          const existingFlowSchedule = await dispatch(
             rpcApi.endpoints.getFlowSchedule.initiate(
               {
                 chainId,
@@ -144,7 +144,8 @@ export const flowSchedulerEndpoints = {
           const {
             startDate: existingStartTimestamp,
             endDate: existingEndTimestamp,
-          } = existingDatesResponse || {};
+            flowRate: existingFlowRate,
+          } = existingFlowSchedule || {};
 
           if (hasScheduling) {
             const flowOperatorData = await superToken.getFlowOperatorData({
@@ -183,7 +184,8 @@ export const flowSchedulerEndpoints = {
 
             if (
               arg.startTimestamp !== existingStartTimestamp ||
-              arg.endTimestamp !== existingEndTimestamp
+              arg.endTimestamp !== existingEndTimestamp ||
+              (hasScheduledStart && arg.flowRateWei !== existingFlowRate)
             ) {
               const streamOrder =
                 await flowScheduler.populateTransaction.createFlowSchedule(
@@ -346,7 +348,7 @@ export const flowSchedulerEndpoints = {
         if (network?.flowSchedulerContractAddress) {
           const flowScheduler = getFlowScheduler(chainId, arg.signer);
 
-          const existingDatesResponse = await dispatch(
+          const existingFlowSchedule = await dispatch(
             rpcApi.endpoints.getFlowSchedule.initiate(
               {
                 chainId,
@@ -364,7 +366,7 @@ export const flowSchedulerEndpoints = {
           const {
             startDate: existingStartTimestamp,
             endDate: existingEndTimestamp,
-          } = existingDatesResponse || {};
+          } = existingFlowSchedule || {};
 
           if (existingStartTimestamp || existingEndTimestamp) {
             const deleteStreamOrder =
