@@ -37,6 +37,11 @@ const NotificationsBell: FC = () => {
 
   const onBellClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+
     if (address && notifications.new.length > 0) {
       dispatch(
         updateLastSeenNotification({
@@ -45,10 +50,6 @@ const NotificationsBell: FC = () => {
         })
       );
     }
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
   };
 
   useUpdateEffect(() => {

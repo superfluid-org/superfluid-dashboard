@@ -17,7 +17,6 @@ const initialState: NotificationsState = {
 export const notificationsSlice = createSlice({
   name: "notifications",
   initialState,
-
   reducers: {
     markAsArchived: (
       state,
