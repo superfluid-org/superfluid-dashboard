@@ -61,9 +61,7 @@ const NotificationsBell: FC = () => {
       (n) => n.id === lastSeenNotification
     );
     if (indexOfLastSeen > 0) {
-      notifications.new
-        .slice(0, indexOfLastSeen)
-        .map(({ id, title, message }) => displayToast({ id, title, message }));
+      notifications.new.slice(0, indexOfLastSeen).map(displayToast);
     }
     if (!lastSeenNotification && notifications.new.length > 0) {
       displayToast({
