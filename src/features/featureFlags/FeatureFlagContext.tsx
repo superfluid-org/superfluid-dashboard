@@ -1,4 +1,4 @@
-import { isString, isUndefined } from "lodash";
+import { isString } from "lodash";
 import { useRouter } from "next/router";
 import {
   createContext,
@@ -8,18 +8,14 @@ import {
   useEffect,
   useMemo,
 } from "react";
-import {
-  enableMainnetFeature,
-  enableVestingFeature,
-} from "../flags/flags.slice";
-import { useMainnetEnabled, useVestingEnabled } from "../flags/flagsHooks";
+import { enableVestingFeature } from "../flags/flags.slice";
+import { useVestingEnabled } from "../flags/flagsHooks";
 import { useAppDispatch } from "../redux/store";
 
 const FeatureFlagContext = createContext<FeatureFlagContextValue>(null!);
 
 interface FeatureFlagContextValue {
   isVestingEnabled: boolean;
-  isMainnetEnabled: boolean;
 }
 
 export const VESTING_FEATURE_CODES = [
@@ -36,17 +32,6 @@ export const VESTING_FEATURE_CODES = [
   "FCRY_JIGSTAK",
 ];
 
-export const MAINNET_FEATURE_CODES = [
-  "AHR2_MAINNET",
-  "724ZX_ENS",
-  "462T_MINERVA",
-  "916G_TOKENOPS",
-  "162VM_Aragon",
-  "727TH_GRAPH",
-  "VC8K_BOSON",
-  "6Q4L_ALLUO",
-];
-
 // TODO: (M) IMO we do not need a separate provider for this, just a features selector hook for flags feature.
 // We could just create a HOC component to manage "code" query params.
 export const FeatureFlagProvider: FC<PropsWithChildren> = ({ children }) => {
@@ -54,7 +39,6 @@ export const FeatureFlagProvider: FC<PropsWithChildren> = ({ children }) => {
   const dispatch = useAppDispatch();
 
   const isVestingEnabled = useVestingEnabled();
-  const isMainnetEnabled = useMainnetEnabled();
 
   useEffect(() => {
     if (router.isReady) {
@@ -64,13 +48,9 @@ export const FeatureFlagProvider: FC<PropsWithChildren> = ({ children }) => {
         const enableVesting =
           !isVestingEnabled && VESTING_FEATURE_CODES.includes(code);
 
-        const enableMainnet =
-          !isMainnetEnabled && MAINNET_FEATURE_CODES.includes(code);
-
         if (enableVesting) dispatch(enableVestingFeature());
-        if (enableMainnet) dispatch(enableMainnetFeature());
 
-        if (enableVesting || enableMainnet) {
+        if (enableVesting) {
           router.replace(
             {
               query,
@@ -88,9 +68,8 @@ export const FeatureFlagProvider: FC<PropsWithChildren> = ({ children }) => {
   const contextValue = useMemo<FeatureFlagContextValue>(
     () => ({
       isVestingEnabled,
-      isMainnetEnabled,
     }),
-    [isVestingEnabled, isMainnetEnabled]
+    [isVestingEnabled]
   );
 
   return (

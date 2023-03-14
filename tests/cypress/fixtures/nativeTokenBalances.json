@@ -53,6 +53,12 @@
         "underlyingBalance": "0",
         "superTokenBalance": "0"
       }
+    },
+    "celo": {
+      "CELO": {
+        "underlyingBalance": "0",
+        "superTokenBalance": "0"
+      }
     }
   }
 }
