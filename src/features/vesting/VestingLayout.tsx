@@ -32,7 +32,8 @@ const VestingNotSupportedCard = () => {
   const NetworkSwitchLinks = useMemo(
     () =>
       vestingSupportedNetworks.map((network, index) => {
-        const isNetworkDisabled = network.id === networkDefinition.ethereum.id;
+        const isNetworkDisabled =
+          network.id === networkDefinition.celoMainnet.id;
 
         if (VESTING_SUPPORTED_NETWORK_IDS.length - 1 === index) {
           return (
