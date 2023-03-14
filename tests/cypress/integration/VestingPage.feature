@@ -234,3 +234,16 @@ Feature: Vesting page test cases
     And User types "98S_VEST" in the access code menu
     And User submits the access code
     Then Total stats for the sent vesting schedules are shown correctly
+
+  @NoCode
+  Scenario: Vesting schedule unlock message - Enter invalid access code
+    Given Transactional account john is connected to the dashboard on polygon
+    And User clicks on the "vesting" navigation button
+    Then Unlock Vesting with Superfluid screen is visible
+    And User clicks on the input access code button
+    And User types "TESTING" in the access code menu
+    And User submits the access code
+    Then Invalid Access Code error is shown
+    And User closes the access code dialog
+    Then Unlock Vesting with Superfluid screen is visible
+

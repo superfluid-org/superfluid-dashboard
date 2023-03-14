@@ -31,6 +31,7 @@ Feature: Common element test cases
     And User opens the dashboard network selection dropdown
     And Ethereum mainnet is visible in the network selection dropdown
 
+  @skip #No more access code, but if we bring it back we have the steps
   Scenario: Submitting wrong access codes
     Given "Dashboard page" is open without connecting a wallet
     And User opens the navigation more menu
