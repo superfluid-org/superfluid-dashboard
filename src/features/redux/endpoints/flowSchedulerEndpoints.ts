@@ -10,6 +10,7 @@ import {
   TransactionInfo,
   TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
+import { getUnixTime } from "date-fns";
 import { BigNumber } from "ethers";
 import { getFlowScheduler } from "../../../eth-sdk/getEthSdk";
 import { allNetworks, tryFindNetwork } from "../../network/networks";
@@ -70,7 +71,14 @@ export const flowSchedulerEndpoints = {
             receiverAddress
           );
 
-        if (!startDate && !endDate) return { data: null };
+        const unixNow = getUnixTime(new Date());
+
+        if (
+          (!startDate && !endDate) ||
+          (startDate && startDate + (startMaxDelay || 0) <= unixNow)
+        ) {
+          return { data: null };
+        }
 
         return {
           data: {
