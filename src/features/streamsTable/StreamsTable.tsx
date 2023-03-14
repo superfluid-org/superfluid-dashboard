@@ -144,6 +144,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
         }
       : skipToken,
     {
+      refetchOnFocus: true,
       selectFromResult: (response) => {
         const unixNow = getUnixTime(new Date());
 
@@ -158,7 +159,10 @@ const StreamsTable: FC<StreamsTableProps> = ({
     }
   );
 
-  const pendingTasks = useAddressPendingOutgoingTasks(visibleAddress);
+  const pendingTasks = useAddressPendingOutgoingTasks(
+    visibleAddress,
+    tokenAddress
+  );
 
   const allTasks = useMemo(
     () => [...pendingTasks, ...activeTasks],

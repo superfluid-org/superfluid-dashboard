@@ -28,7 +28,8 @@ export const isPendingTask = (
   ["CreateTaskCreate", "DeleteTaskCreate"].includes(x.pendingType);
 
 export const useAddressPendingOutgoingTasks = (
-  address: string | undefined
+  address: string | undefined,
+  token: string | undefined
 ): Array<PendingDeleteTask | PendingCreateTask> => {
   const allPendingUpdates = useAppSelector((state) =>
     pendingUpdateSelectors.selectAll(state.pendingUpdates)
@@ -40,6 +41,11 @@ export const useAddressPendingOutgoingTasks = (
         ? allPendingUpdates
             .filter(isPendingTask)
             .filter((x) => x.sender.toLowerCase() === address.toLowerCase())
+            .filter(
+              (x) =>
+                !token ||
+                (token && x.superToken.toLowerCase() === token.toLowerCase())
+            )
         : [],
     [address, allPendingUpdates]
   );
