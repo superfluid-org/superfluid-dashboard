@@ -43,11 +43,15 @@ const NotificationsBell: FC = () => {
     setAnchorEl(null);
 
     if (address && notifications.new.length > 0) {
-      dispatch(
-        updateLastSeenNotification({
-          address,
-          notificationId: notifications.new[0].id,
-        })
+      setTimeout(
+        () =>
+          dispatch(
+            updateLastSeenNotification({
+              address,
+              notificationId: notifications.new[0].id,
+            })
+          ),
+        100
       );
     }
   };
