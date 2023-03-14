@@ -47,6 +47,6 @@ export const useAddressPendingOutgoingTasks = (
                 (token && x.superToken.toLowerCase() === token.toLowerCase())
             )
         : [],
-    [address, allPendingUpdates]
+    [address, token, allPendingUpdates]
   );
 };
