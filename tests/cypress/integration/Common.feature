@@ -17,6 +17,7 @@ Feature: Common element test cases
     And User changes their network to "polygon"
     And The navigation drawer shows that "ongoingStreamAccount" is "Connected"
 
+  @skip #No more access code, but if we bring it back we have the steps
   Scenario: Using access code to see ethereum mainnet
     Given "Dashboard page" is open without connecting a wallet
     And User opens the dashboard network selection dropdown
@@ -39,4 +40,3 @@ Feature: Common element test cases
     Then Invalid Access Code error is shown
     And User closes the access code dialog
     And User opens the dashboard network selection dropdown
-    Then Ethereum mainnet is not available in the network selection dropdown
