@@ -155,7 +155,7 @@ export const networkDefinition: {
       superfluid: { http: [superfluidRpcUrls.goerli] },
     },
     subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli",
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-dev-goerli",
     getLinkForTransaction: (txHash: string): string =>
       `https://goerli.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -233,7 +233,7 @@ export const networkDefinition: {
       superfluid: { http: [superfluidRpcUrls.polygon] },
     },
     subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-matic",
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-dev-matic",
     getLinkForTransaction: (txHash: string): string =>
       `https://polygonscan.com/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -266,7 +266,7 @@ export const networkDefinition: {
       superfluid: { http: [superfluidRpcUrls.polygonMumbai] },
     },
     subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-mumbai",
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-dev-mumbai",
     getLinkForTransaction: (txHash: string): string =>
       `https://mumbai.polygonscan.com/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -302,7 +302,7 @@ export const networkDefinition: {
       public: { http: ["https://api.avax-test.network/ext/C/rpc"] },
     },
     subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-avalanche-fuji",
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-dev-avalanche-fuji",
     getLinkForTransaction: (txHash: string): string =>
       `https://testnet.snowtrace.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -343,7 +343,7 @@ export const networkDefinition: {
       superfluid: { http: [superfluidRpcUrls.optimism] },
     },
     subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-mainnet",
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-dev-optimism-mainnet",
     getLinkForTransaction: (txHash: string): string =>
       `https://optimistic.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -377,7 +377,7 @@ export const networkDefinition: {
       superfluid: { http: [superfluidRpcUrls.arbitrum] },
     },
     subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-one",
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-dev-arbitrum-one",
     getLinkForTransaction: (txHash: string): string =>
       `https://arbiscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -414,7 +414,7 @@ export const networkDefinition: {
       public: { http: ["https://api.avax.network/ext/bc/C/rpc"] },
     },
     subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-avalanche-c",
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-dev-avalanche-c",
     getLinkForTransaction: (txHash: string): string =>
       `https://avascan.info/blockchain/c/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -459,7 +459,7 @@ export const networkDefinition: {
       public: { http: ["https://bsc-dataseed1.binance.org"] },
     },
     subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-bsc-mainnet",
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-dev-bsc-mainnet",
     getLinkForTransaction: (txHash: string): string =>
       `https://bscscan.com/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -536,7 +536,7 @@ export const networkDefinition: {
       superfluid: { http: [superfluidRpcUrls["celo-mainnet"]] },
     },
     subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-celo-mainnet",
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-dev-celo-mainnet",
     getLinkForTransaction: (txHash: string): string =>
       `https://celoscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
