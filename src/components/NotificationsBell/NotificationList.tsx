@@ -1,12 +1,18 @@
 import { useTokenSearch } from "@lifi/widget/hooks";
 import { Button, Divider, Stack, Typography } from "@mui/material";
 import Link from "next/link";
-import { FC } from "react";
+import { FC, useCallback } from "react";
+import { useDispatch } from "react-redux";
+import { useAccount } from "wagmi";
 import NetworkBadge from "../../features/network/NetworkBadge";
 import {
   allNetworks,
   findNetworkOrThrow,
 } from "../../features/network/networks";
+import {
+  markAsArchived,
+  updateLastSeenNotification,
+} from "../../features/notifications/notifications.slice";
 
 import { Notification } from "../../hooks/useNotificationChannels";
 
@@ -25,10 +31,42 @@ const NotificationList: FC<NotificationListProps> = ({
   notifications,
   activeTab,
 }) => {
+  const dispatch = useDispatch();
+  const { address } = useAccount();
+
+  const archive = useCallback(
+    (notificationId: string) => () => {
+      if (address) {
+        const index = notifications.new.findIndex(
+          (n) => n.id === notificationId
+        );
+        dispatch(
+          markAsArchived({
+            address,
+            notificationId,
+            nextNotificationId:
+              index === 0 ? notifications.new[index + 1].id : undefined,
+          })
+        );
+      }
+    },
+    [notifications]
+  );
+
   return notifications[activeTab].length > 0 ? (
     <>
       {notifications[activeTab].map(({ id, title, message }) => (
-        <Stack key={id} sx={{ position: "relative" }}>
+        <Stack
+          key={id}
+          sx={{
+            position: "relative",
+            "&:hover": {
+              ".notification-list-archive": {
+                maxHeight: 50,
+              },
+            },
+          }}
+        >
           {message.parsed.network && (
             <NetworkBadge
               sx={{ position: "absolute", top: 0, right: 20 }}
@@ -61,6 +99,20 @@ const NotificationList: FC<NotificationListProps> = ({
                 )}
             </Stack>
           </Stack>
+          {activeTab === "new" && (
+            <Stack
+              sx={{
+                maxHeight: 0,
+                overflow: "hidden",
+                transition: "max-height .5s",
+              }}
+              className="notification-list-archive"
+            >
+              <Divider />
+              <Button onClick={archive(id)}>Archive</Button>
+            </Stack>
+          )}
+
           <Divider />
         </Stack>
       ))}

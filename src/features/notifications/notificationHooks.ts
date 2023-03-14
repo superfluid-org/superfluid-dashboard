@@ -8,3 +8,7 @@ export const useLastSeenNotification = (address: string) =>
 
 export const useDisplayedToasts = () =>
   useAppSelector((state) => notificationsSelector(state, "displayedToasts"));
+
+// TODO: Figure out the typing for this
+export const useArchivedNotifications = () =>
+  useAppSelector((state) => state.notifications.archived);

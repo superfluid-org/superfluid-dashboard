@@ -2,6 +2,7 @@ import { QueryDefinition } from "@reduxjs/toolkit/dist/query";
 import { QueryActionCreatorResult } from "@reduxjs/toolkit/dist/query/core/buildInitiate";
 import differenceInDays from "date-fns/differenceInDays";
 import { useMemo } from "react";
+import { useArchivedNotifications } from "../features/notifications/notificationHooks";
 import { parseNotificationBody } from "../utils/notification";
 import { usePushProtocol } from "./usePushProtocol";
 
@@ -45,12 +46,23 @@ export type UseNotificationChannels = () => {
   };
 };
 
+const autoArchivationInDays = 30;
+
+const isArchived = (
+  { id, epoch }: Notification,
+  archivedNotifications: Record<string, boolean>
+) =>
+  differenceInDays(new Date(), epoch) > autoArchivationInDays ||
+  archivedNotifications[id];
+
 export const useNotificationChannels: UseNotificationChannels = () => {
   const {
     toggleSubscribe: toggleSubscribePush,
     isSubscribed: isPushSubscribed,
     notifications: pushNotifcations,
   } = usePushProtocol();
+
+  const archivedNotifications = useArchivedNotifications();
 
   const push: NotificationChannel = useMemo(
     () => ({
@@ -76,11 +88,11 @@ export const useNotificationChannels: UseNotificationChannels = () => {
       [push.channelType]: push,
     },
     notifications: {
-      new: push.notifications.filter((n) => {
-        return differenceInDays(new Date(), n.epoch) <= 30;
-      }),
-      archive: push.notifications.filter(
-        (n) => differenceInDays(new Date(), n.epoch) > 30
+      new: push.notifications.filter(
+        (n) => !isArchived(n, archivedNotifications)
+      ),
+      archive: push.notifications.filter((n) =>
+        isArchived(n, archivedNotifications)
       ),
     },
   };
