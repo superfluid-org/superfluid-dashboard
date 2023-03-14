@@ -199,8 +199,10 @@ const StreamsTable: FC<StreamsTableProps> = ({
     [allTasks, visibleAddress]
   );
 
-  const pendingOutgoingStreams =
-    useAddressPendingOutgoingStreams(visibleAddress);
+  const pendingOutgoingStreams = useAddressPendingOutgoingStreams(
+    visibleAddress,
+    tokenAddress
+  );
 
   const outgoingStreams = useMemo<
     (Stream | PendingOutgoingStream | ScheduledStream)[]
