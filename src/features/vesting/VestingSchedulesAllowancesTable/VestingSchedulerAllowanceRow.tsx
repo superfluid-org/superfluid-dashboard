@@ -25,7 +25,7 @@ import TokenIcon from "../../token/TokenIcon";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import OpenIcon from "../../../components/OpenIcon/OpenIcon";
-import { isCloseToMaxFlowRateAllowance, isCloseToMaxTokenAllowance } from "../../../utils/isCloseToMaxAllowance";
+import { isCloseToUnlimitedFlowRateAllowance, isCloseToUnlimitedTokenAllowance } from "../../../utils/isCloseToUnlimitedAllowance";
 
 export const VestingSchedulerAllowanceRowSkeleton = () => (
   <TableRow>
@@ -307,8 +307,8 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                       data-cy={`${tokenSymbol}-current-allowance`}
                       primary="Current"
                       secondary={
-                        isCloseToMaxTokenAllowance(tokenAllowance) ? (
-                          <span>Maximum</span>
+                        isCloseToUnlimitedTokenAllowance(tokenAllowance) ? (
+                          <span>Unlimited</span>
                         ) : (
                           <>
                             <Amount wei={tokenAllowance} /> {tokenSymbol}
@@ -344,8 +344,8 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                       data-cy={`${tokenSymbol}-current-flow-allowance`}
                       primary="Current"
                       secondary={
-                        isCloseToMaxFlowRateAllowance(flowRateAllowance) ? (
-                          <span>Maximum</span>
+                        isCloseToUnlimitedFlowRateAllowance(flowRateAllowance) ? (
+                          <span>Unlimited</span>
                         ) : (
                           <>
                             <Amount wei={flowRateAllowance} /> {tokenSymbol}

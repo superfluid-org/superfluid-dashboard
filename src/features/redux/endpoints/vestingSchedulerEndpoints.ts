@@ -11,9 +11,9 @@ import {
 import { BigNumber } from "ethers";
 import { getVestingScheduler } from "../../../eth-sdk/getEthSdk";
 import {
-  isCloseToMaxFlowRateAllowance,
-  isCloseToMaxTokenAllowance,
-} from "../../../utils/isCloseToMaxAllowance";
+  isCloseToUnlimitedFlowRateAllowance,
+  isCloseToUnlimitedTokenAllowance,
+} from "../../../utils/isCloseToUnlimitedAllowance";
 import { UnitOfTime } from "../../send/FlowRateInput";
 import {
   ACL_CREATE_PERMISSION,
@@ -105,7 +105,7 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
       const existingFlowRateAllowance = BigNumber.from(
         flowOperatorData.flowRateAllowance
       );
-      const newFlowRateAllowance = isCloseToMaxFlowRateAllowance(
+      const newFlowRateAllowance = isCloseToUnlimitedFlowRateAllowance(
         existingFlowRateAllowance
       )
         ? existingFlowRateAllowance
@@ -133,7 +133,7 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
         .add(flowRateBigNumber.mul(START_DATE_VALID_AFTER_IN_SECONDS))
         .add(flowRateBigNumber.mul(END_DATE_VALID_BEFORE_IN_SECONDS));
 
-      const newTokenAllowance = isCloseToMaxTokenAllowance(existingTokenAllowance)
+      const newTokenAllowance = isCloseToUnlimitedTokenAllowance(existingTokenAllowance)
         ? existingTokenAllowance
         : existingTokenAllowance.add(maximumNeededTokenAllowance);
 
