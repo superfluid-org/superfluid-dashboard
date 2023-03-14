@@ -21,6 +21,8 @@ Feature: Test cases that run indefinitely on all supported networks
       | arbitrum-one   | ETH   |
       | avalanche      | AVAX  |
       | bsc            | BNB   |
+      | celo            | CELO   |
+
 
   Scenario Outline: Superfluid RPCS are not behind on <network>
     Given Superfluid RPCs are not more then 10 minutes behind on <network>
@@ -35,6 +37,7 @@ Feature: Test cases that run indefinitely on all supported networks
       | arbitrum-one   |
       | avalanche      |
       | bsc            |
+      | celo           |
 
   Scenario Outline: The graph is not behind on <network>
     Given The graph is not more then 10 minutes behind on <network>
@@ -49,3 +52,4 @@ Feature: Test cases that run indefinitely on all supported networks
       | arbitrum-one   |
       | avalanche      |
       | bsc            |
+      | celo           |

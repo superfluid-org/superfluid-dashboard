@@ -106,15 +106,6 @@ export const flagsSlice = createSlice({
         } as VestingFeatureFlag,
       }),
     },
-    enableMainnetFeature: {
-      reducer: adapter.upsertOne,
-      prepare: () => ({
-        payload: {
-          id: nanoid(),
-          type: Flag.MainnetFeature,
-        } as MainnetFeatureFlag,
-      }),
-    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -145,7 +136,6 @@ export const {
   addTestTokensReceivedFlag,
   addTokenAddedFlag,
   enableVestingFeature,
-  enableMainnetFeature,
 } = flagsSlice.actions;
 
 const selectSelf = (state: RootState): EntityState<FlagType> => state.flags;
