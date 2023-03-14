@@ -3,10 +3,6 @@ import {BasePage} from "../BasePage";
 import {networksBySlug} from "../../superData/networks";
 import {
     TOP_BAR_NETWORK_BUTTON,
-    NAVIGATION_MORE_BUTTON,
-    ACCESS_CODE_BUTTON,
-    ACCESS_CODE_INPUT,
-    ACCESS_CODE_SUBMIT,
     CONNECT_WALLET_BUTTON,
     CONNECTED_WALLET,
     WALLET_CONNECTION_STATUS
