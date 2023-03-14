@@ -28,31 +28,18 @@ const VESTING_SUPPORTED_NETWORK_IDS = vestingSupportedNetworks.map(
 const VestingNotSupportedCard = () => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-  const { isMainnetEnabled } = useFeatureFlags();
 
   const NetworkSwitchLinks = useMemo(
     () =>
       vestingSupportedNetworks.map((network, index) => {
-        const isNetworkDisabled =
-          network.id === networkDefinition.ethereum.id && !isMainnetEnabled;
-
         if (VESTING_SUPPORTED_NETWORK_IDS.length - 1 === index) {
-          return (
-            <NetworkSwitchLink
-              key={network.id}
-              network={network}
-              disabled={isNetworkDisabled}
-            />
-          );
+          return <NetworkSwitchLink key={network.id} network={network} />;
         }
 
         if (VESTING_SUPPORTED_NETWORK_IDS.length - 2 === index) {
           return (
             <Fragment key={network.id}>
-              <NetworkSwitchLink
-                network={network}
-                disabled={isNetworkDisabled}
-              />
+              <NetworkSwitchLink network={network} />
               {" or "}
             </Fragment>
           );
@@ -60,12 +47,12 @@ const VestingNotSupportedCard = () => {
 
         return (
           <Fragment key={network.id}>
-            <NetworkSwitchLink network={network} disabled={isNetworkDisabled} />
+            <NetworkSwitchLink network={network} />
             {", "}
           </Fragment>
         );
       }),
-    [isMainnetEnabled]
+    []
   );
 
   return (

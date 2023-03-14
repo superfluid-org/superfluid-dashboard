@@ -136,21 +136,14 @@ Feature: Vesting page test cases
     And User opens the last vesting schedule they have created
     And Vesting details page is shown correctly for the created schedule
 
-  Scenario: Vesting schedules only available on Mainnet,Polygon,BNB and Goerli
-    Given Transactional account john is connected to the dashboard on polygon-mumbai
-    Then User sees network not supported screen in the vesting page
-    And Mainnet network link is disabled
+#  Scenario: Vesting schedules only available on Mainnet,Polygon,BNB and Goerli
+#    Given Transactional account john is connected to the dashboard on polygon-mumbai
+#    Then User sees network not supported screen in the vesting page
+#    And Mainnet network link is disabled
 
   Scenario: Vesting schedules only available on Mainnet,Polygon,BNB and Goerli - mainnet code enabled
     Given Transactional account john is connected to the dashboard on polygon-mumbai
-    And User opens the navigation more menu
-    And User opens the access code menu
-    And User types "AHR2_MAINNET" in the access code menu
-    And User submits the access code
     #Workaround, inputing the code from the network not supported screen will not enable the button
-    And User clicks on the "vesting" navigation button
-    And User clicks on the "ecosystem" navigation button
-    Then Projects that are "automating crypto payroll" are shown
     And User clicks on the "vesting" navigation button
     Then User sees network not supported screen in the vesting page
     And Mainnet network link is enabled
@@ -241,3 +234,16 @@ Feature: Vesting page test cases
     And User types "98S_VEST" in the access code menu
     And User submits the access code
     Then Total stats for the sent vesting schedules are shown correctly
+
+  @NoCode
+  Scenario: Vesting schedule unlock message - Enter invalid access code
+    Given Transactional account john is connected to the dashboard on polygon
+    And User clicks on the "vesting" navigation button
+    Then Unlock Vesting with Superfluid screen is visible
+    And User clicks on the input access code button
+    And User types "TESTING" in the access code menu
+    And User submits the access code
+    Then Invalid Access Code error is shown
+    And User closes the access code dialog
+    Then Unlock Vesting with Superfluid screen is visible
+
