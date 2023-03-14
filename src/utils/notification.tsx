@@ -51,14 +51,14 @@ export const createMessage = ({
 export const getNotificationIcon = ({ type }: MessageData) => {
   switch (type) {
     case "liquidation":
-      return <ErrorIcon fontSize="small" sx={{ color: colors.red[500] }} />;
+      return <ErrorIcon fontSize="medium" sx={{ color: colors.red[500] }} />;
     case "liquidation-risk-2day":
-      return <WaringIcon fontSize="small" sx={{ color: colors.amber[500] }} />;
+      return <WaringIcon fontSize="medium" sx={{ color: colors.amber[500] }} />;
     case "liquidation-risk-7day":
-      return <WaringIcon fontSize="small" sx={{ color: colors.amber[500] }} />;
+      return <WaringIcon fontSize="medium" sx={{ color: colors.amber[500] }} />;
     default:
       return (
-        <InfoIcon fontSize="small" sx={{ color: colors.lightBlue[500] }} />
+        <InfoIcon fontSize="medium" sx={{ color: colors.lightBlue[500] }} />
       );
   }
 };

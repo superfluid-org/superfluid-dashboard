@@ -74,7 +74,7 @@ const NotificationEntry: FC<NotificationProps> = ({
                 <Typography variant="h6"> {notification.title}</Typography>
               </Stack>
             </Stack>
-            <Stack pl={3} gap={1}>
+            <Stack pl={3.5} gap={1}>
               <Typography variant="body2" sx={{ color: "GrayText" }}>
                 {createMessage(notification.message)}
               </Typography>
@@ -82,7 +82,7 @@ const NotificationEntry: FC<NotificationProps> = ({
           </Box>
         </Stack>
 
-        <Box px={3} pt={1}>
+        <Box px={seen ? 3 : 4.5} pt={1}>
           {type === "new" &&
             notification.message.parsed.type &&
             notification.message.parsed.type.includes("liquidation-risk") && (
