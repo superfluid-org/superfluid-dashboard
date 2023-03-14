@@ -8,8 +8,8 @@ const MAX_FLOWRATE_ALLOWANCE_THRESHOLD = BigNumber.from(
   "29714560942849626097578981375"
 ); // 3/4 of int96
 
-export const isMaxTokenAllowance = (wei: BigNumberish) =>
+export const isCloseToMaxTokenAllowance = (wei: BigNumberish) =>
   BigNumber.from(wei).gt(MAX_TOKEN_ALLOWANCE_THRESHOLD);
 
-export const isMaxFlowRateAllowance = (wei: BigNumberish) =>
+export const isCloseToMaxFlowRateAllowance = (wei: BigNumberish) =>
   BigNumber.from(wei).gt(MAX_FLOWRATE_ALLOWANCE_THRESHOLD);
