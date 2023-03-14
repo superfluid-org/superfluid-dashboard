@@ -8,6 +8,7 @@ import {
   braveWallet,
   walletConnectWallet,
   coinbaseWallet,
+  rainbowWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import bitkeep from "./bitkeep/bitkeep";
 import gnosisSafe from "./gnosisSafeWalletConnector/gnosisSafe";
@@ -43,6 +44,7 @@ export const getAppWallets = ({
         walletConnectWallet({ chains }),
         coinbaseWallet({ appName, chains }),
         bitkeep({ chains, shimDisconnect: true }),
+        rainbowWallet( { chains }),
         ...(needsMock ? [mockConnector({ chains })] : []),
         // wallet.trust({ chains }),
       ],
