@@ -36,7 +36,6 @@ const NotificationEntry: FC<NotificationProps> = ({
 }) => {
   return (
     <Stack
-      key={notification.id}
       sx={{
         position: "relative",
         "&:hover": {

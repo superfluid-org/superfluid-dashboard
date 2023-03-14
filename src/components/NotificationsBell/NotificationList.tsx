@@ -72,6 +72,7 @@ const NotificationList: FC<NotificationListProps> = ({
     <>
       {notifications[activeTab].map((notification) => (
         <NotificationEntry
+          key={notification.id}
           type={activeTab}
           notification={notification}
           seen={isSeen(notification)}
