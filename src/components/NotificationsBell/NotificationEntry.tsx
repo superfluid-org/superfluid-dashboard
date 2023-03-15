@@ -66,7 +66,7 @@ const NotificationEntry: FC<NotificationProps> = ({
             </Box>
           )}
 
-          <Box sx={{ filter: seen ? "opacity(70%)" : "none" }}>
+          <Box sx={{ filter: type === "archive" ? "opacity(70%)" : "none" }}>
             <Stack direction="row" justifyContent="space-between">
               <Stack direction="row" alignItems="center" gap={0.5}>
                 {getNotificationIcon(notification.message.parsed)}
