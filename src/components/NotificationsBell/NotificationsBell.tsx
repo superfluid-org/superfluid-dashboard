@@ -6,8 +6,9 @@ import {
   Popover,
   Stack,
   Typography,
+  useTheme,
 } from "@mui/material";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import {} from "../../features/network/networks";
 import { useAppDispatch } from "../../features/redux/store";
 import { useNotificationChannels } from "../../hooks/useNotificationChannels";
@@ -28,6 +29,8 @@ const NotificationsBell: FC = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [badgeContent, setBadgeContent] = useState(0);
   const [activeTab, setActiveTab] = useState<NotificationTab>("new");
+
+  const theme = useTheme();
 
   const { address } = useAccount();
   const { notifications } = useNotificationChannels();
@@ -94,7 +97,14 @@ const NotificationsBell: FC = () => {
           color="primary"
           invisible={notifications.new.length === 0}
         >
-          <NotificationsIcon />
+          <NotificationsIcon
+            sx={{
+              color:
+                theme.palette.mode === "dark"
+                  ? "white"
+                  : theme.palette.text.primary,
+            }}
+          />
         </Badge>
       </IconButton>
       <Popover

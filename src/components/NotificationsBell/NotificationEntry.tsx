@@ -50,6 +50,7 @@ const NotificationEntry: FC<NotificationProps> = ({
           sx={{ position: "absolute", top: 0, right: 20 }}
           NetworkIconProps={{
             size: 16,
+            fontSize: 12,
           }}
           network={findNetworkOrThrow(
             allNetworks,
