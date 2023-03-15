@@ -1,14 +1,20 @@
 import { defineConfig } from "@dethcrypto/eth-sdk";
-import { networkDefinition } from "../features/network/networks";
+import {
+  autoWrapAddresses,
+  flowSchedulerContractAddresses,
+  vestingContractAddresses,
+} from "../features/network/networkConstants";
 
 const ethSdkConfig = defineConfig({
   contracts: {
     goerli: {
-      flowScheduler: networkDefinition.goerli.flowSchedulerContractAddress, // Goerli used as source of truth for the ABI of Flow Scheduler. 
+      autoWrapManager: autoWrapAddresses.goerli.manager,
+      autoWrapStrategy: autoWrapAddresses.goerli.strategy,
+      flowScheduler: flowSchedulerContractAddresses.goerli, // Goerli used as source of truth for the ABI of Flow Scheduler.
     },
     mainnet: {
-      vestingScheduler: networkDefinition.ethereum.vestingContractAddress // Mainnet used as source of truth for the ABI of Vesting Scheduler. 
-    }
+      vestingScheduler: vestingContractAddresses.ethereum, // Mainnet used as source of truth for the ABI of Vesting Scheduler.
+    },
   },
   outputPath: "./src/eth-sdk/client",
 });
