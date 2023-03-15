@@ -38,7 +38,7 @@ const NotificationEntry: FC<NotificationProps> = ({
     <Stack
       sx={{
         position: "relative",
-        "&:hover": {
+        "&:hover, &:active": {
           ".archive-cta": {
             maxHeight: 50,
           },
