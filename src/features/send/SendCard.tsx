@@ -1023,7 +1023,7 @@ export default memo(function SendCard() {
               label={
                 <Stack direction="row" alignItems="center" gap={0.75}>
                   Stream Scheduling
-                  <TooltipIcon title="Experimental feature to automatically cancel the stream on specified end date. Only available on Goerli." />
+                  <TooltipIcon title="Schedule start and end dates for future or fixed-duration streams" />
                 </Stack>
               }
             />
