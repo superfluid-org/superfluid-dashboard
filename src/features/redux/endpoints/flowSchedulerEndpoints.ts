@@ -13,7 +13,11 @@ import {
 import { getUnixTime } from "date-fns";
 import { BigNumber } from "ethers";
 import { getFlowScheduler } from "../../../eth-sdk/getEthSdk";
-import { allNetworks, tryFindNetwork } from "../../network/networks";
+import {
+  allNetworks,
+  findNetworkOrThrow,
+  tryFindNetwork,
+} from "../../network/networks";
 import { UnitOfTime } from "../../send/FlowRateInput";
 import { rpcApi } from "../store";
 
@@ -97,25 +101,26 @@ export const flowSchedulerEndpoints = {
       async queryFn({ chainId, ...arg }, { dispatch }) {
         const userData = arg.userDataBytes ?? "0x";
         const framework = await getFramework(chainId);
-        const hasScheduledStart = !!arg.startTimestamp;
-        const hasScheduledEnd = !!arg.endTimestamp;
-        const hasScheduling = hasScheduledStart || hasScheduledEnd;
+        const shouldScheduleStart = !!arg.startTimestamp;
+        const shouldScheduledEnd = !!arg.endTimestamp;
+        const shouldSchedule = shouldScheduleStart || shouldScheduledEnd;
 
+        const getActiveFlow = dispatch(
+          rpcApi.endpoints.getActiveFlow.initiate(
+            {
+              chainId,
+              tokenAddress: arg.superTokenAddress,
+              senderAddress: arg.senderAddress,
+              receiverAddress: arg.receiverAddress,
+            },
+            {
+              subscribe: true,
+            }
+          )
+        );
         const [superToken, activeExistingFlow] = await Promise.all([
           framework.loadSuperToken(arg.superTokenAddress),
-          dispatch(
-            rpcApi.endpoints.getActiveFlow.initiate(
-              {
-                chainId,
-                tokenAddress: arg.superTokenAddress,
-                senderAddress: arg.senderAddress,
-                receiverAddress: arg.receiverAddress,
-              },
-              {
-                subscribe: false,
-              }
-            )
-          ).unwrap(),
+          getActiveFlow.unwrap().finally(() => getActiveFlow.unsubscribe()),
         ]);
 
         const subOperations: {
@@ -128,7 +133,7 @@ export const flowSchedulerEndpoints = {
         if (network?.flowSchedulerContractAddress) {
           const flowScheduler = getFlowScheduler(chainId, arg.signer);
 
-          const existingFlowSchedule = await dispatch(
+          const getFlowSchedule = dispatch(
             rpcApi.endpoints.getFlowSchedule.initiate(
               {
                 chainId,
@@ -137,11 +142,13 @@ export const flowSchedulerEndpoints = {
                 receiverAddress: arg.receiverAddress,
               },
               {
-                subscribe: false,
-                forceRefetch: true,
+                subscribe: true,
               }
             )
-          ).unwrap();
+          );
+          const existingFlowSchedule = await getFlowSchedule
+            .unwrap()
+            .finally(() => getFlowSchedule.unsubscribe());
 
           const {
             startDate: existingStartTimestamp,
@@ -149,20 +156,20 @@ export const flowSchedulerEndpoints = {
             flowRate: existingFlowRate,
           } = existingFlowSchedule || {};
 
-          if (hasScheduling) {
+          if (shouldSchedule) {
             const flowOperatorData = await superToken.getFlowOperatorData({
               flowOperator: network.flowSchedulerContractAddress,
               sender: arg.senderAddress,
               providerOrSigner: arg.signer,
             });
 
-            const permissions = Number(flowOperatorData.permissions);
-
+            const existingPermissions = Number(flowOperatorData.permissions);
             const neededPermissions =
-              (hasScheduledStart ? ACL_CREATE_PERMISSION : 0) |
-              (hasScheduledEnd ? ACL_DELETE_PERMISSION : 0);
+              (shouldScheduleStart ? ACL_CREATE_PERMISSION : 0) |
+              (shouldScheduledEnd ? ACL_DELETE_PERMISSION : 0);
 
-            const hasNeededPermissions = permissions & neededPermissions;
+            const hasNeededPermissions =
+              existingPermissions & neededPermissions;
 
             const doesNeedAllowance = !activeExistingFlow && arg.startTimestamp;
             const neededAllowance = doesNeedAllowance
@@ -176,7 +183,7 @@ export const flowSchedulerEndpoints = {
                 operation: await superToken.updateFlowOperatorPermissions({
                   flowOperator: network.flowSchedulerContractAddress,
                   flowRateAllowance: neededAllowance,
-                  permissions: permissions | neededPermissions,
+                  permissions: existingPermissions | neededPermissions,
                   userData: userData,
                   overrides: arg.overrides,
                 }),
@@ -187,15 +194,15 @@ export const flowSchedulerEndpoints = {
             if (
               arg.startTimestamp !== existingStartTimestamp ||
               arg.endTimestamp !== existingEndTimestamp ||
-              (hasScheduledStart && arg.flowRateWei !== existingFlowRate)
+              (shouldScheduleStart && arg.flowRateWei !== existingFlowRate)
             ) {
               const streamOrder =
                 await flowScheduler.populateTransaction.createFlowSchedule(
                   arg.superTokenAddress,
                   arg.receiverAddress,
                   arg.startTimestamp || 0,
-                  hasScheduledStart ? UnitOfTime.Day * 3 : 0, // startDuration
-                  hasScheduledStart ? arg.flowRateWei : 0, // flowRate
+                  shouldScheduleStart ? UnitOfTime.Day * 1 : 0, // startDuration
+                  shouldScheduleStart ? arg.flowRateWei : 0, // flowRate
                   0, // startAmount
                   arg.endTimestamp || 0,
                   userData,
@@ -249,7 +256,7 @@ export const flowSchedulerEndpoints = {
               title: "Update Stream",
             });
           }
-        } else if (!hasScheduledStart) {
+        } else if (!shouldScheduleStart) {
           // We are creating a flow only if it is not scheduled into future
           subOperations.push({
             operation: await superToken.createFlow(flowArg),
@@ -274,7 +281,7 @@ export const flowSchedulerEndpoints = {
             ? subTransactionTitles[0]
             : activeExistingFlow
             ? "Modify Stream"
-            : hasScheduledStart
+            : shouldScheduleStart
             ? "Schedule Stream"
             : "Create Stream";
 
@@ -323,7 +330,6 @@ export const flowSchedulerEndpoints = {
             },
             {
               subscribe: true,
-              forceRefetch: true,
             }
           )
         );
@@ -333,9 +339,9 @@ export const flowSchedulerEndpoints = {
           activeFlowQuery.unwrap().finally(() => activeFlowQuery.unsubscribe()),
         ]);
 
-        const network = tryFindNetwork(allNetworks, chainId);
+        const network = findNetworkOrThrow(allNetworks, chainId);
 
-        if (!!activeExistingFlow && network) {
+        if (activeExistingFlow) {
           subOperations.push({
             operation: await superToken.deleteFlow({
               userData,
@@ -349,8 +355,7 @@ export const flowSchedulerEndpoints = {
 
         if (network?.flowSchedulerContractAddress) {
           const flowScheduler = getFlowScheduler(chainId, arg.signer);
-
-          const existingFlowSchedule = await dispatch(
+          const getFlowSchedule = dispatch(
             rpcApi.endpoints.getFlowSchedule.initiate(
               {
                 chainId,
@@ -360,10 +365,12 @@ export const flowSchedulerEndpoints = {
               },
               {
                 subscribe: true,
-                forceRefetch: true,
               }
             )
-          ).unwrap();
+          );
+          const existingFlowSchedule = await getFlowSchedule
+            .unwrap()
+            .finally(() => getFlowSchedule.unsubscribe());
 
           const {
             startDate: existingStartTimestamp,
