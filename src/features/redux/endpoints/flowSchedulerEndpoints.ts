@@ -41,7 +41,6 @@ export interface DeleteFlowWithScheduling extends FlowDeleteMutation {
 
 interface StreamScheduleResponse {
   startDate?: number;
-  startMaxDelay?: number;
   endDate?: number;
   flowRate?: string;
 }
@@ -73,19 +72,14 @@ export const flowSchedulerEndpoints = {
 
         const unixNow = getUnixTime(new Date());
 
-        if (
-          (!startDate && !endDate) ||
-          (startDate && startDate + (startMaxDelay || 0) <= unixNow)
-        ) {
-          return { data: null };
-        }
+        const isStartExpired = startDate + startMaxDelay <= unixNow;
+        const effectiveStartDate = isStartExpired ? undefined : startDate;
 
         return {
           data: {
-            startDate,
-            endDate,
-            startMaxDelay,
-            flowRate: flowRate.toString(),
+            startDate: effectiveStartDate,
+            endDate: endDate ? endDate : undefined,
+            flowRate: isStartExpired ? undefined : flowRate.toString(),
           } as StreamScheduleResponse,
         };
       },
