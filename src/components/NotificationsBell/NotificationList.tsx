@@ -55,12 +55,15 @@ const NotificationList: FC<NotificationListProps> = ({
         const index = notifications.new.findIndex(
           (n) => n.id === notificationId
         );
+
         dispatch(
           markAsArchived({
             address,
             notificationId,
             nextNotificationId:
-              index === 0 ? notifications.new[index + 1].id : undefined,
+              index === 0 && notifications.new[index + 1]
+                ? notifications.new[index + 1].id
+                : undefined,
           })
         );
       }
