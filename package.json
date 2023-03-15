@@ -31,7 +31,7 @@
     "@mui/x-data-grid": "^5.17.26",
     "@mui/x-date-pickers": "^5.0.20",
     "@rainbow-me/rainbowkit": "^0.11.1",
-    "@reduxjs/toolkit": "^1.9.3",
+    "@reduxjs/toolkit": "1.9.2",
     "@rtk-query/graphql-request-base-query": "^2.2.0",
     "@segment/analytics-next": "^1.51.3",
     "@sentry/nextjs": "^7.43.0",
