@@ -102,6 +102,7 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
       const newPermissions =
         existingPermissions | ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION;
 
+      const flowRateBigNumber = BigNumber.from(arg.flowRateWei);
       const existingFlowRateAllowance = BigNumber.from(
         flowOperatorData.flowRateAllowance
       );
@@ -109,7 +110,7 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
         existingFlowRateAllowance
       )
         ? existingFlowRateAllowance
-        : existingFlowRateAllowance.add(BigNumber.from(arg.flowRateWei));
+        : existingFlowRateAllowance.add(flowRateBigNumber);
 
       const hasEnoughSuperTokenAccess =
         existingPermissions === newPermissions &&
@@ -126,7 +127,6 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
         });
       }
 
-      const flowRateBigNumber = BigNumber.from(arg.flowRateWei);
       const maximumNeededTokenAllowance = BigNumber.from(
         arg.cliffTransferAmountWei
       )
