@@ -47,12 +47,17 @@ const VestingRow: FC<VestingRowProps> = ({
     cliffAndFlowDate,
   } = vestingSchedule;
 
-  const pendingDelete = usePendingVestingScheduleDelete({
-    chainId: network.id,
-    superTokenAddress: superToken,
-    receiverAddress: receiver,
-    senderAddress: sender,
-  });
+  const pendingDelete = usePendingVestingScheduleDelete(
+    {
+      chainId: network.id,
+      superTokenAddress: superToken,
+      receiverAddress: receiver,
+      senderAddress: sender,
+    },
+    {
+      skip: vestingSchedule.status.isFinished,
+    }
+  );
 
   const { visibleAddress } = useVisibleAddress();
 

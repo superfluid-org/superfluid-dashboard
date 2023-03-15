@@ -49,30 +49,6 @@ const MoreNavigationItem: FC = () => {
 
   const closeMoreMenu = () => setMoreMenuAnchor(null);
 
-  const openMainnetAccessCodeDialog = () => {
-    closeMoreMenu();
-    setAccessCodeDialogContent({
-      title: "Access Ethereum Mainnet",
-      description: (
-        <>
-          <Typography>
-            Enter your access code to unlock Ethereum Mainnet.
-          </Typography>
-          <Typography>
-            Apply for the access code{" "}
-            <PrimaryLink
-              href="https://use.superfluid.finance/ethmainnet"
-              target="_blank"
-            >
-              here
-            </PrimaryLink>
-            .
-          </Typography>
-        </>
-      ),
-    });
-  };
-
   return (
     <>
       <ListItemButton
@@ -166,17 +142,6 @@ const MoreNavigationItem: FC = () => {
             <ListItemText>Export Stream Data</ListItemText>
           </ListItemButton>
         </Link>
-
-        <ListItemButton
-          data-cy={"more-access-code-btn"}
-          onClick={openMainnetAccessCodeDialog}
-        >
-          <ListItemIcon>
-            <QrCodeRoundedIcon sx={{ color: theme.palette.text.primary }} />
-          </ListItemIcon>
-          <ListItemText>Access Ethereum Mainnet</ListItemText>
-        </ListItemButton>
-        <AppCurrencySelect />
       </Popover>
     </>
   );

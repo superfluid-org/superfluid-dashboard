@@ -8,6 +8,7 @@ import {
   TokenType,
 } from "./tokenTypes";
 import { BasePage } from "../pageObjects/BasePage";
+import ensureDefined from "../../../src/utils/ensureDefined";
 
 // id == chainId
 // name == displayName
@@ -47,6 +48,7 @@ export const superfluidRpcUrls = {
   avalancheC: "https://rpc-endpoints.superfluid.dev/avalanche-c",
   ethereum: "https://rpc-endpoints.superfluid.dev/eth-mainnet",
   bsc: "https://rpc-endpoints.superfluid.dev/bsc-mainnet",
+  "celo-mainnet": "https://rpc-endpoints.superfluid.dev/celo-mainnet",
 };
 
 export const networkDefinition: {
@@ -63,6 +65,7 @@ export const networkDefinition: {
   avalancheC: Network;
   bsc: Network;
   ethereum: Network;
+  celoMainnet: Network,
 } = {
   goerli: {
     ...chain.goerli,
@@ -352,6 +355,33 @@ export const networkDefinition: {
       },
     },
   },
+  celoMainnet: {
+    ...chain.celo,
+    slugName: "celo",
+    v1ShortName: "celo",
+    bufferTimeInMinutes: 240,
+    icon: "/icons/network/celo-mainnet.svg",
+    color: "#FCFF52",
+    superfluidRpcUrl: superfluidRpcUrls["celo-mainnet"],
+    subgraphUrl:
+        "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-celo-mainnet",
+    getLinkForTransaction: (txHash: string): string =>
+        `https://celoscan.io/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+        `https://celoscan.io/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.celo.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "CELOx",
+        address: "0x671425ae1f272bc6f79bec3ed5c4b00e9c628240",
+        name: "Super Celo",
+        decimals: 18,
+      },
+    },
+  },
 };
 
 export const networks: Network[] = [
@@ -365,6 +395,7 @@ export const networks: Network[] = [
   networkDefinition.avalancheC,
   networkDefinition.bsc,
   networkDefinition.ethereum,
+  networkDefinition.celoMainnet,
 ];
 
 export const getNetworkDefaultTokenPair = memoize(

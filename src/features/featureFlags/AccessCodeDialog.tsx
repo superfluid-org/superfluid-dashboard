@@ -15,14 +15,8 @@ import { ChangeEvent, FC, ReactElement, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useAnalytics } from "../analytics/useAnalytics";
 import ResponsiveDialog from "../common/ResponsiveDialog";
-import {
-  enableMainnetFeature,
-  enableVestingFeature,
-} from "../flags/flags.slice";
-import {
-  MAINNET_FEATURE_CODES,
-  VESTING_FEATURE_CODES,
-} from "./FeatureFlagContext";
+import { enableVestingFeature } from "../flags/flags.slice";
+import { VESTING_FEATURE_CODES } from "./FeatureFlagContext";
 
 interface AccessCodeDialogProps {
   title: string | ReactElement;
@@ -49,9 +43,8 @@ const AccessCodeDialog: FC<AccessCodeDialogProps> = ({
   };
 
   const submitCode = () => {
-    const enableMainnet = MAINNET_FEATURE_CODES.includes(featureCode);
     const enableVesting = VESTING_FEATURE_CODES.includes(featureCode);
-    const isValidAccessCode = enableMainnet || enableVesting;
+    const isValidAccessCode = enableVesting;
 
     if (isValidAccessCode) {
       track("Valid Access Code Entered", {
@@ -61,10 +54,6 @@ const AccessCodeDialog: FC<AccessCodeDialogProps> = ({
       track("Invalid Access Code Entered", {
         code: featureCode,
       });
-    }
-
-    if (enableMainnet) {
-      dispatch(enableMainnetFeature());
     }
 
     if (enableVesting) {

@@ -3,10 +3,6 @@ import {BasePage} from "../BasePage";
 import {networksBySlug} from "../../superData/networks";
 import {
     TOP_BAR_NETWORK_BUTTON,
-    NAVIGATION_MORE_BUTTON,
-    ACCESS_CODE_BUTTON,
-    ACCESS_CODE_INPUT,
-    ACCESS_CODE_SUBMIT,
     CONNECT_WALLET_BUTTON,
     CONNECTED_WALLET,
     WALLET_CONNECTION_STATUS
@@ -54,7 +50,6 @@ const GnosisSafeAddressesPerNetwork = {
 
 export class GnosisSafe extends BasePage {
     static openSafeOnNetwork(network: string) {
-        cy.wrap(network).as("selectedNetwork")
         cy.visit(`${GNOSIS_SAFE_BASEURL}apps/open?safe=${GnosisSafePrefixByNetworkSlug[network]}${GnosisSafeAddressesPerNetwork[network]}&appUrl=${Cypress.config("baseUrl")}`)
     }
 
@@ -80,15 +75,6 @@ export class GnosisSafe extends BasePage {
 
     static connectGnosisSafeWallet() {
         cy.enter(SUPERFLUID_IFRAME).then(getBody => {
-            cy.get("@selectedNetwork").then((network) => {
-                // @ts-ignore
-                if (network === "ethereum") {
-                    getBody().find(NAVIGATION_MORE_BUTTON).click();
-                    getBody().find(ACCESS_CODE_BUTTON).click();
-                    getBody().find(ACCESS_CODE_INPUT).type("AHR2_MAINNET");
-                    getBody().find(ACCESS_CODE_SUBMIT).click();
-                }
-            })
             getBody().find(CONNECT_WALLET_BUTTON).first().click()
             getBody().find(GNOSIS_SAFE_WALLET_OPTION).click()
         })
@@ -96,12 +82,6 @@ export class GnosisSafe extends BasePage {
 
     static validateCorrectlyConnectedWallet(network: string) {
         cy.enter(SUPERFLUID_IFRAME).then(getBody => {
-                if (network === "ethereum") {
-                    getBody().find(NAVIGATION_MORE_BUTTON).click();
-                    getBody().find(ACCESS_CODE_BUTTON).click();
-                    getBody().find(ACCESS_CODE_INPUT).type("AHR2_MAINNET");
-                    getBody().find(ACCESS_CODE_SUBMIT).click();
-                }
             getBody().find(CONNECTED_WALLET).should("have.text", BasePage.shortenHex(GnosisSafeAddressesPerNetwork[network]))
             getBody().find(WALLET_CONNECTION_STATUS).should("have.text", "Connected")
             getBody().find(TOP_BAR_NETWORK_BUTTON).should("contain.text", networksBySlug.get(network).name)

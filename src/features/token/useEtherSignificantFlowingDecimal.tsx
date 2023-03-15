@@ -20,11 +20,21 @@ const useSignificantFlowingDecimal = (flowRate: string, price = 1) =>
       .div(ticksPerSecond)
       .toFixed(0);
 
-    const afterEtherDecimal = formatEther(flowRatePerTick).split(".")[1];
-    const numberAfterDecimalWithoutLeadingZeroes = Number(afterEtherDecimal);
+    const [beforeEtherDecimal, afterEtherDecimal] =
+      formatEther(flowRatePerTick).split(".");
+
+    const isFlowingInWholeNumbers = new Decimal(beforeEtherDecimal).abs().gt(0);
+    if (isFlowingInWholeNumbers) {
+      return 0; // Flowing in whole numbers per tick.
+    }
+
+    const numberAfterDecimalWithoutLeadingZeroes = new Decimal(
+      afterEtherDecimal
+    );
+
     const lengthToFirstSignificatDecimal = afterEtherDecimal
       .toString()
-      .replace(numberAfterDecimalWithoutLeadingZeroes.toString(), "").length;
+      .replace(numberAfterDecimalWithoutLeadingZeroes.toString(), "").length; // We're basically counting the zeroes.
 
     if (lengthToFirstSignificatDecimal === 17) return 18; // Don't go over 18.
 

@@ -26,8 +26,3 @@ export const useVestingEnabled = () =>
     id: Flag.VestingFeature,
     type: Flag.VestingFeature,
   });
-
-export const useMainnetEnabled = () =>
-  useHasFlag({
-    type: Flag.MainnetFeature,
-  });

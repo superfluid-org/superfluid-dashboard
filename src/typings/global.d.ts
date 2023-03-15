@@ -1,4 +1,5 @@
 import { Overrides } from "ethers";
+import { Ethereum } from "@wagmi/connectors";
 
 export type GlobalGasOverrides = Pick<
   Overrides,
@@ -16,6 +17,7 @@ export type SuperfluidDashboardGlobal = {
 declare global {
   interface Window {
     superfluid_dashboard: SuperfluidDashboardGlobal;
+    bitkeep?: { ethereum?: Ethereum };
   }
 }
 
