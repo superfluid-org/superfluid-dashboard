@@ -25,6 +25,7 @@ import TokenIcon from "../../token/TokenIcon";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import OpenIcon from "../../../components/OpenIcon/OpenIcon";
+import { isCloseToUnlimitedFlowRateAllowance, isCloseToUnlimitedTokenAllowance } from "../../../utils/isCloseToUnlimitedAllowance";
 
 export const VestingSchedulerAllowanceRowSkeleton = () => (
   <TableRow>
@@ -76,7 +77,7 @@ interface VestingSchedulerAllowanceRowProps {
   senderAddress: string;
   recommendedTokenAllowance: BigNumber;
   requiredFlowOperatorPermissions: number; // Usually 5 (Create or Delete) https://docs.superfluid.finance/superfluid/developers/constant-flow-agreement-cfa/cfa-access-control-list-acl/acl-features
-  requiredFlowOperatorAllowance: BigNumber;
+  requiredFlowRateAllowance: BigNumber;
 }
 
 const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
@@ -86,7 +87,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   senderAddress,
   recommendedTokenAllowance,
   requiredFlowOperatorPermissions,
-  requiredFlowOperatorAllowance,
+  requiredFlowRateAllowance,
 }) => {
   const theme = useTheme();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -115,12 +116,12 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
     return <VestingSchedulerAllowanceRowSkeleton />;
   }
 
-  const { tokenAllowance, flowOperatorPermissions, flowOperatorAllowance } =
+  const { tokenAllowance, flowOperatorPermissions, flowRateAllowance } =
     vestingSchedulerAllowancesQuery.data;
 
   const isEnoughTokenAllowance = recommendedTokenAllowance.lte(tokenAllowance);
-  const isEnoughFlowOperatorAllowance = requiredFlowOperatorAllowance.lte(
-    flowOperatorAllowance
+  const isEnoughFlowRateAllowance = requiredFlowRateAllowance.lte(
+    flowRateAllowance
   );
 
   const existingPermissions = Number(flowOperatorPermissions);
@@ -131,7 +132,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   const showFixRequiredAccessButton =
     isSenderLooking &&
     (!isEnoughTokenAllowance ||
-      !isEnoughFlowOperatorAllowance ||
+      !isEnoughFlowRateAllowance ||
       !isEnoughFlowOperatorPermissions);
 
   const permissionsString =
@@ -199,7 +200,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
         </TableCell>
         <TableCell>
           <Stack direction="column" spacing={1} alignItems="center">
-            {isEnoughFlowOperatorAllowance ? (
+            {isEnoughFlowRateAllowance ? (
               <CheckCircleRoundedIcon
                 data-cy={`${tokenSymbol}-flow-allowance-status`}
                 color="primary"
@@ -278,7 +279,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                                 requiredFlowOperatorPermissions:
                                   requiredFlowOperatorPermissions,
                                 requiredFlowRateAllowanceWei:
-                                  requiredFlowOperatorAllowance.toString(),
+                                  requiredFlowRateAllowance.toString(),
                               };
                               fixAccess({
                                 ...primaryArgs,
@@ -306,9 +307,13 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                       data-cy={`${tokenSymbol}-current-allowance`}
                       primary="Current"
                       secondary={
-                        <>
-                          <Amount wei={tokenAllowance} /> {tokenSymbol}
-                        </>
+                        isCloseToUnlimitedTokenAllowance(tokenAllowance) ? (
+                          <span>Unlimited</span>
+                        ) : (
+                          <>
+                            <Amount wei={tokenAllowance} /> {tokenSymbol}
+                          </>
+                        )
                       }
                     />
                     <ListItemText
@@ -339,10 +344,14 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                       data-cy={`${tokenSymbol}-current-flow-allowance`}
                       primary="Current"
                       secondary={
-                        <>
-                          <Amount wei={flowOperatorAllowance} /> {tokenSymbol}
-                          /sec
-                        </>
+                        isCloseToUnlimitedFlowRateAllowance(flowRateAllowance) ? (
+                          <span>Unlimited</span>
+                        ) : (
+                          <>
+                            <Amount wei={flowRateAllowance} /> {tokenSymbol}
+                            /sec
+                          </>
+                        )
                       }
                     />
                     <ListItemText
@@ -350,8 +359,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                       primary="Required"
                       secondary={
                         <>
-                          <Amount wei={requiredFlowOperatorAllowance} />{" "}
-                          {tokenSymbol}
+                          <Amount wei={requiredFlowRateAllowance} /> {tokenSymbol}
                           /sec
                         </>
                       }
