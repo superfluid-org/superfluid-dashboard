@@ -131,7 +131,7 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
           <VestingProgress
             nth={3}
             start={cliffDate}
-            end={cliffDate}
+            end={endDate}
             dateNow={dateNow}
           />
         </>
