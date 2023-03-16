@@ -24,9 +24,10 @@ const NotificationHeader: FC<NotificationHeaderProps> = ({
   // Without delay, the active tab's underline renders weirdly inside the popover...
   const [delayedActiveTabRender, setDelayedActiveTabRender] =
     useState<boolean>(false);
+    
   setTimeout(() => {
     setDelayedActiveTabRender(true);
-  }, 250);
+  }, 200);
 
   return (
     <>
@@ -45,7 +46,6 @@ const NotificationHeader: FC<NotificationHeaderProps> = ({
           value={delayedActiveTabRender ? activeTab : false}
           onChange={(_, newValue) => setActiveTab(newValue)}
           sx={{ minHeight: "inherit" }}
-          TabIndicatorProps={{}}
         >
           <Tab
             value="new"

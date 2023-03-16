@@ -1,6 +1,6 @@
 import { Divider, Typography } from "@mui/material";
 import Link from "next/link";
-import { FC, useCallback } from "react";
+import { FC, Fragment, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { useAccount } from "wagmi";
 
@@ -76,16 +76,15 @@ const NotificationList: FC<NotificationListProps> = ({
   return notifications[activeTab].length > 0 ? (
     <>
       {notifications[activeTab].map((notification, i, arr) => (
-        <>
+        <Fragment key={notification.id}>
           <NotificationEntry
-            key={notification.id}
             type={activeTab}
             notification={notification}
             seen={isSeen(notification.id)}
             archive={archive}
           />
           {i !== arr.length - 1 && <Divider />}
-        </>
+        </Fragment>
       ))}
     </>
   ) : (
