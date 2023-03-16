@@ -5,11 +5,12 @@ import {
   Stack,
   Tab,
   Tabs,
+  TabsActions,
   Tooltip,
   Typography,
 } from "@mui/material";
 import Link from "next/link";
-import { FC } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { NotificationTab } from "./NotificationsBell";
 
 type NotificationHeaderProps = {
@@ -21,6 +22,13 @@ const NotificationHeader: FC<NotificationHeaderProps> = ({
   activeTab,
   setActiveTab,
 }) => {
+  // Without delay, the active tab's underline renders weirdly inside the popover...
+  const [delayedActiveTabRender, setDelayedActiveTabRender] =
+    useState<boolean>(false);
+  setTimeout(() => {
+    setDelayedActiveTabRender(true);
+  }, 250);
+
   return (
     <>
       <Stack px={2} pt={2} gap={1}>
@@ -35,9 +43,10 @@ const NotificationHeader: FC<NotificationHeaderProps> = ({
           </Link>
         </Stack>
         <Tabs
-          value={activeTab}
+          value={delayedActiveTabRender ? activeTab : false}
           onChange={(_, newValue) => setActiveTab(newValue)}
           sx={{ minHeight: "inherit" }}
+          TabIndicatorProps={{}}
         >
           <Tab
             value="new"
