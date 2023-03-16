@@ -3,10 +3,14 @@ import { useAccount, useNetwork, useSigner, useSwitchNetwork } from "wagmi";
 import { SignerType } from "@pushprotocol/restapi";
 import { pushApi } from "../features/notifications/pushApi.slice";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { isProduction } from "../utils/config";
 export const superfluidChannelAddress =
   process.env.NEXT_PUBLIC_PUSH_SUPERFLUID_CHANNEL ?? "";
 
 export const superFluidChannel = `eip155:1:${superfluidChannelAddress}`;
+
+const productionFetchFrequency = 300 * 1000; // 5mins
+const developmentFetchFrequency = 15000; // 15seconds
 
 export const usePushProtocol = () => {
   const { address } = useAccount();
@@ -19,7 +23,9 @@ export const usePushProtocol = () => {
   const { data: notifications } = pushApi.useGetNotificationsQuery(
     address ?? skipToken,
     {
-      pollingInterval: 15000,
+      pollingInterval: isProduction
+        ? productionFetchFrequency
+        : developmentFetchFrequency,
     }
   );
   const { data: isSubscribed } = pushApi.useIsSubscribedQuery(
