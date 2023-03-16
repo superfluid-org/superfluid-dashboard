@@ -33,7 +33,7 @@ const NotificationList: FC<NotificationListProps> = ({
   const { channels } = useNotificationChannels();
 
   const isSeen = useCallback(
-    (notification: Notification) => {
+    (notificationId: string) => {
       const lastSeenNotificationIndex = notifications.new.findIndex(
         (n) => n.id === lastSeenNotification
       );
@@ -43,7 +43,7 @@ const NotificationList: FC<NotificationListProps> = ({
       }
 
       const currentNotificationIndex = notifications.new.findIndex(
-        (n) => n.id === notification.id
+        (n) => n.id === notificationId
       );
 
       return currentNotificationIndex >= lastSeenNotificationIndex;
@@ -81,7 +81,7 @@ const NotificationList: FC<NotificationListProps> = ({
             key={notification.id}
             type={activeTab}
             notification={notification}
-            seen={isSeen(notification)}
+            seen={isSeen(notification.id)}
             archive={archive}
           />
           {i !== arr.length - 1 && <Divider />}
