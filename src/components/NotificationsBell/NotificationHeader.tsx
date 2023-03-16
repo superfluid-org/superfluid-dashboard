@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import Link from "next/link";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { NotificationTab } from "./NotificationsBell";
 
 type NotificationHeaderProps = {
@@ -24,10 +24,13 @@ const NotificationHeader: FC<NotificationHeaderProps> = ({
   // Without delay, the active tab's underline renders weirdly inside the popover...
   const [delayedActiveTabRender, setDelayedActiveTabRender] =
     useState<boolean>(false);
-    
-  setTimeout(() => {
-    setDelayedActiveTabRender(true);
-  }, 200);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDelayedActiveTabRender(true);
+    }, 200);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <>
