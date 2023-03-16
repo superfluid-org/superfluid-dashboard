@@ -1,6 +1,4 @@
-import { useTokenSearch } from "@lifi/widget/hooks";
-import { Button, Divider, Stack, Typography } from "@mui/material";
-import { findIndex } from "lodash";
+import { Typography } from "@mui/material";
 import Link from "next/link";
 import { FC, useCallback } from "react";
 import { useDispatch } from "react-redux";
@@ -9,7 +7,10 @@ import { useAccount } from "wagmi";
 import { useLastSeenNotification } from "../../features/notifications/notificationHooks";
 import { markAsArchived } from "../../features/notifications/notifications.slice";
 
-import { Notification } from "../../hooks/useNotificationChannels";
+import {
+  Notification,
+  useNotificationChannels,
+} from "../../hooks/useNotificationChannels";
 
 import NotificationEntry from "./NotificationEntry";
 import { NotificationTab } from "./NotificationsBell";
@@ -29,6 +30,7 @@ const NotificationList: FC<NotificationListProps> = ({
   const dispatch = useDispatch();
   const { address } = useAccount();
   const lastSeenNotification = useLastSeenNotification(address ?? "");
+  const { channels } = useNotificationChannels();
 
   const isSeen = useCallback(
     (notification: Notification) => {
@@ -85,8 +87,9 @@ const NotificationList: FC<NotificationListProps> = ({
     </>
   ) : (
     <Typography variant="body1" p={1.5}>
-      No {activeTab} notifications found. <br /> Check{" "}
-      <Link href="/settings">settings</Link> to see if you are subscribed.
+      {channels.PUSH.isSubscribed
+        ? `You don't have any ${activeTab} notifications.`
+        : "You are not subscribed. Check settings to enable notifications"}
     </Typography>
   );
 };
