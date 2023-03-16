@@ -5,12 +5,11 @@ import {
   Stack,
   Tab,
   Tabs,
-  TabsActions,
   Tooltip,
   Typography,
 } from "@mui/material";
 import Link from "next/link";
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useState } from "react";
 import { NotificationTab } from "./NotificationsBell";
 
 type NotificationHeaderProps = {
