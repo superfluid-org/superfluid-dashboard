@@ -68,8 +68,12 @@ const NotificationSettings: FC = () => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  return address ? (
-    <Paper sx={{ border: "1px solid #E0E0E0", borderRadius: 2.25 }}>
+  if (!address) {
+    return <NoWalletConnected />;
+  }
+
+  return (
+    <Paper>
       <Stack p={4} justifyContent="space-between">
         <Stack>
           <Stack direction="row" justifyContent="space-between">
@@ -85,7 +89,6 @@ const NotificationSettings: FC = () => {
             Get notified about your Superfluid streams and Super Token activity.
           </Typography>
         </Stack>
-        {/* <Button variant="contained">Save</Button> */}
       </Stack>
       <Divider />
       <Stack p={4} direction="row" alignItems="center" gap={4}>
@@ -111,36 +114,7 @@ const NotificationSettings: FC = () => {
           <CopyIconBtn IconButtonProps={{ size: "small" }} copyText={address} />
         </Stack>
       </Stack>
-      {/* <Divider />
-      <Stack p={4} direction="row" alignItems="center" gap={4}>
-        <Stack sx={{ width: 350 }}>
-          <Typography component="h1" variant="h5">
-            Notification Channel
-          </Typography>
-          <Typography variant="body1" color="secondary">
-            Turn on notifications for every channel you want to receive them
-            through. To access your Push Protocol inbox, click{" "}
-            <Link href="https://app.push.org/#/inbox" target="_blank">
-              here.
-            </Link>
-          </Typography>
-        </Stack>
-        {Object.values(channels).map((channel) => (
-          <FormControlLabel
-            key={channel.name}
-            control={
-              <Switch
-                onChange={channel.onToggle}
-                checked={channel.isSubscribed}
-              />
-            }
-            label={channel.name}
-          />
-        ))}
-      </Stack> */}
     </Paper>
-  ) : (
-    <NoWalletConnected />
   );
 };
 

@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Divider, Typography } from "@mui/material";
 import Link from "next/link";
 import { FC, useCallback } from "react";
 import { useDispatch } from "react-redux";
@@ -75,14 +75,17 @@ const NotificationList: FC<NotificationListProps> = ({
 
   return notifications[activeTab].length > 0 ? (
     <>
-      {notifications[activeTab].map((notification) => (
-        <NotificationEntry
-          key={notification.id}
-          type={activeTab}
-          notification={notification}
-          seen={isSeen(notification)}
-          archive={archive}
-        />
+      {notifications[activeTab].map((notification, i, arr) => (
+        <>
+          <NotificationEntry
+            key={notification.id}
+            type={activeTab}
+            notification={notification}
+            seen={isSeen(notification)}
+            archive={archive}
+          />
+          {i !== arr.length - 1 && <Divider />}
+        </>
       ))}
     </>
   ) : (

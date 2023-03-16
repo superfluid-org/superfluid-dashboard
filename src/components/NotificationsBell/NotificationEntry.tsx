@@ -107,8 +107,6 @@ const NotificationEntry: FC<NotificationProps> = ({
           <Button onClick={archive(notification.id)}>Archive</Button>
         </Stack>
       )}
-
-      <Divider />
     </Stack>
   );
 };
