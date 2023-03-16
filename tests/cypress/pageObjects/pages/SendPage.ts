@@ -90,7 +90,6 @@ export class SendPage extends BasePage {
     }
 
     static checkIfSendContainerIsVisible() {
-        this.isVisible(SEND_BUTTON);
         this.isVisible(RECEIVER_BUTTON);
         this.isVisible(SELECT_TOKEN_BUTTON);
         this.isVisible(FLOW_RATE_INPUT);
@@ -328,9 +327,10 @@ export class SendPage extends BasePage {
         this.click(RECEIVER_BUTTON);
         cy.get(RECENT_ENTRIES,{timeout:30000}).should("be.visible")
         this.type(ADDRESS_DIALOG_INPUT, address);
+        this.clear(FLOW_RATE_INPUT)
+        this.type(FLOW_RATE_INPUT, amount);
         this.click(SELECT_TOKEN_BUTTON);
         cy.get(`[data-cy="${selectedToken}-list-item"]`, {timeout: 60000}).click()
-        this.type(FLOW_RATE_INPUT, amount);
         this.click(TIME_UNIT_SELECTION_BUTTON)
         this.click(`[data-value=${UnitOfTime[timeUnit[0].toUpperCase() + timeUnit.substring(1)]!}]`)
         this.click(RISK_CHECKBOX)

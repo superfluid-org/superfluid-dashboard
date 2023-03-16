@@ -1,0 +1,15 @@
+sources:
+  - name: scheduling
+    handler:
+      graphql:
+        endpoint: '{context.url:https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-eth-goerli}'
+        retry: 5
+documents:
+  - './*.graphql'
+codegen:
+  namingConvention: change-case-all#pascalCase
+  scalars:
+    BigInt: string
+    Bytes: string
+    BigDecimal: string
+  maybeValue: T | null | undefined

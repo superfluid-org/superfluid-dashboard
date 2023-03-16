@@ -15,13 +15,10 @@ import NoContentPaper from "../../../components/NoContent/NoContentPaper";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import TooltipIcon from "../../common/TooltipIcon";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
-import {
-  ACL_CREATE_PERMISSION,
-  ACL_DELETE_PERMISSION,
-} from "../../redux/endpoints/flowSchedulerEndpoints";
 import { rpcApi } from "../../redux/store";
 import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
+import { calculateRequiredAccessForActiveVestingSchedule } from "./calculateRequiredAccessForActiveVestingSchedule";
 import VestingSchedulerAllowanceRow, {
   VestingSchedulerAllowanceRowSkeleton,
 } from "./VestingSchedulerAllowanceRow";
@@ -65,48 +62,38 @@ const VestingSchedulerAllowancesTable: FC = () => {
         (x) => !x.status.isFinished
       );
 
-      const recommendedTokenAllowance = activeVestingSchedules.reduce(
-        (previousValue, vestingSchedule) => {
-          const startDateValidAfterAllowance = BigNumber.from(
-            vestingSchedule.flowRate
-          ).mul(vestingSchedulerConstants.START_DATE_VALID_AFTER_IN_SECONDS);
-          const endDateValidBeforeAllowance = BigNumber.from(
-            vestingSchedule.flowRate
-          ).mul(vestingSchedulerConstants.END_DATE_VALID_BEFORE_IN_SECONDS);
-
-          if (vestingSchedule.cliffAndFlowExecutedAt) {
-            return previousValue.add(endDateValidBeforeAllowance);
-          } else {
-            return previousValue
-              .add(vestingSchedule.cliffAmount)
-              .add(startDateValidAfterAllowance)
-              .add(endDateValidBeforeAllowance);
-          }
-        },
-        BigNumber.from("0")
-      );
-
-      const requiredFlowOperatorAllowance = activeVestingSchedules
-        .filter((x) => !x.cliffAndFlowExecutedAt)
+      const aggregatedRequiredAccess = activeVestingSchedules
+        .map((vs) =>
+          calculateRequiredAccessForActiveVestingSchedule(
+            vs,
+            vestingSchedulerConstants
+          )
+        )
         .reduce(
-          (previousValue, vestingSchedule) =>
-            previousValue.add(vestingSchedule.flowRate),
-          BigNumber.from("0")
+          (previousValue, currentValue) => ({
+            ...previousValue,
+            recommendedTokenAllowance:
+              previousValue.recommendedTokenAllowance.add(
+                currentValue.recommendedTokenAllowance
+              ),
+            requiredFlowRateAllowance:
+              previousValue.requiredFlowRateAllowance.add(
+                currentValue.requiredFlowRateAllowance
+              ),
+            requiredFlowOperatorPermissions:
+              previousValue.requiredFlowOperatorPermissions |
+              currentValue.requiredFlowOperatorPermissions,
+          }),
+          {
+            recommendedTokenAllowance: BigNumber.from("0"),
+            requiredFlowRateAllowance: BigNumber.from("0"),
+            requiredFlowOperatorPermissions: 0,
+          }
         );
-
-      // https://docs.superfluid.finance/superfluid/developers/constant-flow-agreement-cfa/cfa-access-control-list-acl/acl-features
-      const requiredFlowOperatorPermissions =
-        activeVestingSchedules.length === 0
-          ? 0 // None
-          : activeVestingSchedules.some((x) => !x.cliffAndFlowExecutedAt) // Create not needed after cliffAndFlows are executed
-          ? ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION
-          : ACL_DELETE_PERMISSION;
 
       return {
         tokenAddress,
-        recommendedTokenAllowance,
-        requiredFlowOperatorPermissions,
-        requiredFlowOperatorAllowance,
+        ...aggregatedRequiredAccess,
       };
     });
   }, [vestingSchedulesQuery.data, vestingSchedulerConstants]);
@@ -120,7 +107,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
         title="No Access Data"
         description="Permissions and allowances that you have given will appear here."
       />
-    );  
+    );
   }
 
   return (
@@ -167,7 +154,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
                     tokenAddress,
                     recommendedTokenAllowance,
                     requiredFlowOperatorPermissions,
-                    requiredFlowOperatorAllowance,
+                    requiredFlowRateAllowance,
                   },
                   index
                 ) => (
@@ -181,8 +168,8 @@ const VestingSchedulerAllowancesTable: FC = () => {
                     requiredFlowOperatorPermissions={
                       requiredFlowOperatorPermissions
                     }
-                    requiredFlowOperatorAllowance={
-                      requiredFlowOperatorAllowance
+                    requiredFlowRateAllowance={
+                      requiredFlowRateAllowance
                     }
                   />
                 )

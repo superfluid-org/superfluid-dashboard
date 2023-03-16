@@ -31,9 +31,16 @@ export const useVestingTransactionTracking = () => {
             state,
             payload.id
           )!;
-          const network = tryFindNetwork(allNetworks, trackedTransaction.chainId);
+          const network = tryFindNetwork(
+            allNetworks,
+            trackedTransaction.chainId
+          );
 
-          if (network && network.vestingContractAddress && blockTransactionSucceededIn) {
+          if (
+            network &&
+            network.vestingContractAddress &&
+            blockTransactionSucceededIn
+          ) {
             // Poll Subgraph for all the events for this block and then invalidate Subgraph cache based on that.
             promiseRetry(
               (retry, _number) =>
@@ -59,7 +66,7 @@ export const useVestingTransactionTracking = () => {
                 state.pendingUpdates,
                 payload.id
               );
-              console.warn("Pending update not found.");
+
               if (pendingUpdate?.relevantSubgraph === "Vesting") {
                 dispatch(pendingUpdateSlice.actions.removeOne(payload.id));
                 dispatch(

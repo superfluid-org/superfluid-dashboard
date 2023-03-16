@@ -1,38 +1,40 @@
 import {
   ERC20Token,
+  ERC20__factory,
   Operation,
   WrapperSuperToken,
 } from "@superfluid-finance/sdk-core";
 import {
   getFramework,
-  TransactionInfo,
-  RpcEndpointBuilder,
   registerNewTransactionAndReturnQueryFnResult,
-  BaseSuperTokenMutation,
-  TransactionTitle,
+  RpcEndpointBuilder,
+  TransactionInfo,
 } from "@superfluid-finance/sdk-redux";
-import { NATIVE_ASSET_ADDRESS } from "./tokenTypes";
+import { Overrides, Signer } from "ethers";
 import {
   balanceFetcher,
   BalanceQueryParams,
-  UnderlyingBalance,
   RealtimeBalance,
+  UnderlyingBalance,
 } from "./balanceFetcher";
-import { Overrides, Signer } from "ethers";
+import { NATIVE_ASSET_ADDRESS } from "./tokenTypes";
 
 declare module "@superfluid-finance/sdk-redux" {
   interface TransactionTitleOverrides {
     "Approve Allowance": true;
     "Claim Tokens": true;
-    "Approve Scheduler for End Date": true; // Give Stream Scheduler contract delete permission.
-    "Approve Vesting Scheduler": true; // Give Stream Scheduler contract delete & update permission.
-    "Schedule Stream End Date": true;
-    "Remove Stream End Date": true;
-    "Send Closed-Ended Stream": true;
     "Modify Stream": true;
+    "Fix Access for Vesting": true;
+    // Vesting scheduler
+    "Approve Vesting Scheduler": true; // Give Stream Scheduler contract delete & update permission.
     "Create Vesting Schedule": true;
     "Delete Vesting Schedule": true;
-    "Fix Access for Vesting": true;
+    // Scheduled streams
+    "Schedule Stream": true;
+    "Update Scheduler Permissions": true; // Give Stream Scheduler contract create & delete permissions.
+    "Create Schedule": true;
+    "Modify Schedule": true;
+    "Delete Schedule": true;
   }
 }
 
@@ -226,6 +228,6 @@ export const adHocRpcEndpoints = {
           id: arg.chainId, // TODO(KK): Could be made more specific.
         },
       ],
-    }),
+    })
   }),
 };

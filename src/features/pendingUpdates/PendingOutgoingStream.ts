@@ -21,7 +21,8 @@ export const isPendingOutgoingStreamUpdate = (
 ): x is PendingOutgoingStream => x.pendingType === "FlowCreate";
 
 export const useAddressPendingOutgoingStreams = (
-  address: string | undefined
+  address: string | undefined,
+  token: string
 ): PendingOutgoingStream[] => {
   const allPendingUpdates = useAppSelector((state) =>
     pendingUpdateSelectors.selectAll(state.pendingUpdates)
@@ -32,8 +33,12 @@ export const useAddressPendingOutgoingStreams = (
       address
         ? allPendingUpdates
             .filter(isPendingOutgoingStreamUpdate)
-            .filter((x) => x.sender.toLowerCase() === address.toLowerCase())
+            .filter(
+              (x) =>
+                x.sender.toLowerCase() === address.toLowerCase() &&
+                x.token.toLowerCase() === token.toLowerCase()
+            )
         : [],
-    [address, allPendingUpdates]
+    [address, token, allPendingUpdates]
   );
 };

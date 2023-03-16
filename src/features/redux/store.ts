@@ -31,6 +31,7 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { deserializeError } from "serialize-error";
+import { schedulingSubgraphApi } from "../../scheduling-subgraph/schedulingSubgraphApi";
 import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
 import accountingApi from "../accounting/accountingApi.slice";
 import { addressBookSlice } from "../addressBook/addressBook.slice";
@@ -189,6 +190,7 @@ export const reduxStore = configureStore({
     [accountingApi.reducerPath]: accountingApi.reducer,
     [vestingSubgraphApi.reducerPath]: vestingSubgraphApi.reducer,
     [pushApi.reducerPath]: pushApi.reducer,
+    [schedulingSubgraphApi.reducerPath]: schedulingSubgraphApi.reducer,
 
     // Persisted slices
     appSettings: appSettingsPersistedReducer,
@@ -218,6 +220,7 @@ export const reduxStore = configureStore({
       .prepend(sentryErrorLogger)
       .concat(rpcApi.middleware)
       .concat(vestingSubgraphApi.middleware)
+      .concat(schedulingSubgraphApi.middleware)
       .concat(subgraphApi.middleware)
       .concat(assetApiSlice.middleware)
       .concat(ensApi.middleware)

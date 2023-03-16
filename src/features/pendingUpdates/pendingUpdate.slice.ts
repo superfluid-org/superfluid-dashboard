@@ -4,7 +4,11 @@ import { rpcApi, transactionTracker } from "../redux/store";
 import { PendingIndexSubscriptionApproval } from "./PendingIndexSubscriptionApprove";
 import { PendingIndexSubscriptionRevoke } from "./PendingIndexSubscriptionRevoke";
 import { PendingOutgoingStream } from "./PendingOutgoingStream";
-import { PendingStreamCancellation } from "./PendingStreamCancellation";
+import { PendingCreateTask, PendingDeleteTask } from "./PendingOutgoingTask";
+import {
+  PendingCreateTaskDeletion,
+  PendingStreamCancellation,
+} from "./PendingStreamCancellation";
 import { PendingUpdate } from "./PendingUpdate";
 import { PendingVestingSchedule } from "./PendingVestingSchedule";
 import { PendingVestingScheduleDeletion as PendingVestingScheduleDelete } from "./PendingVestingScheduleDelete";
@@ -26,17 +30,25 @@ export const pendingUpdateSlice = createSlice({
   name: "pendingUpdates",
   initialState: pendingUpdateAdapter.getInitialState(),
   reducers: {
-    removeOne: pendingUpdateAdapter.removeOne
+    removeOne: pendingUpdateAdapter.removeOne,
+    removeMany: pendingUpdateAdapter.removeMany,
   },
   extraReducers(builder) {
     builder.addMatcher(
-      rpcApi.endpoints.flowDelete.matchFulfilled,
+      rpcApi.endpoints.deleteFlowWithScheduling.matchFulfilled,
       (state, action) => {
-        const { chainId, hash: transactionHash } = action.payload;
+        const {
+          chainId,
+          hash: transactionHash,
+          subTransactionTitles,
+        } = action.payload;
         const { senderAddress, superTokenAddress, receiverAddress } =
           action.meta.arg.originalArgs;
-        if (senderAddress) {
-          const pendingUpdate: PendingStreamCancellation = {
+
+        const pendingUpdates = [];
+
+        if (subTransactionTitles.includes("Close Stream")) {
+          const pendingFlowDeleteUpdate: PendingStreamCancellation = {
             chainId,
             transactionHash,
             senderAddress,
@@ -47,7 +59,26 @@ export const pendingUpdateSlice = createSlice({
             timestamp: dateNowSeconds(),
             relevantSubgraph: "Protocol",
           };
-          pendingUpdateAdapter.addOne(state, pendingUpdate);
+          pendingUpdates.push(pendingFlowDeleteUpdate);
+        }
+
+        if (subTransactionTitles.includes("Delete Schedule")) {
+          const pendingCreateTaskDeleteUpdate: PendingCreateTaskDeletion = {
+            chainId,
+            transactionHash,
+            senderAddress,
+            receiverAddress,
+            id: `${transactionHash}-CreateTaskDelete`,
+            tokenAddress: superTokenAddress,
+            pendingType: "CreateTaskDelete",
+            timestamp: dateNowSeconds(),
+            relevantSubgraph: "Scheduler",
+          };
+          pendingUpdates.push(pendingCreateTaskDeleteUpdate);
+        }
+
+        if (pendingUpdates.length > 0) {
+          pendingUpdateAdapter.addMany(state, pendingUpdates);
         }
       }
     );
@@ -90,17 +121,23 @@ export const pendingUpdateSlice = createSlice({
           hash: transactionHash,
           subTransactionTitles,
         } = action.payload;
+
         const {
           senderAddress,
           superTokenAddress,
           receiverAddress,
           flowRateWei,
+          startTimestamp,
+          endTimestamp,
         } = action.meta.arg.originalArgs;
+
+        const timestamp = dateNowSeconds();
+
+        const pendingUpdatesToAdd = [];
 
         if (subTransactionTitles.includes("Create Stream")) {
           if (senderAddress) {
-            const timestamp = dateNowSeconds();
-            const pendingUpdate: PendingOutgoingStream = {
+            pendingUpdatesToAdd.push({
               pendingType: "FlowCreate",
               chainId,
               transactionHash,
@@ -114,9 +151,80 @@ export const pendingUpdateSlice = createSlice({
               streamedUntilUpdatedAt: "0",
               currentFlowRate: flowRateWei,
               relevantSubgraph: "Protocol",
-            };
-            pendingUpdateAdapter.addOne(state, pendingUpdate);
+            } as PendingOutgoingStream);
           }
+
+          if (
+            subTransactionTitles.includes("Modify Schedule") &&
+            !startTimestamp
+          ) {
+            const pendingCreateTaskDeleteUpdate: PendingCreateTaskDeletion = {
+              chainId,
+              transactionHash,
+              senderAddress,
+              receiverAddress,
+              id: `${transactionHash}-CreateTaskDelete`,
+              tokenAddress: superTokenAddress,
+              pendingType: "CreateTaskDelete",
+              timestamp: dateNowSeconds(),
+              relevantSubgraph: "Scheduler",
+            };
+            pendingUpdatesToAdd.push(pendingCreateTaskDeleteUpdate);
+          }
+        }
+
+        if (subTransactionTitles.includes("Delete Schedule")) {
+          const pendingCreateTaskDeleteUpdate: PendingCreateTaskDeletion = {
+            chainId,
+            transactionHash,
+            senderAddress,
+            receiverAddress,
+            id: `${transactionHash}-CreateTaskDelete`,
+            tokenAddress: superTokenAddress,
+            pendingType: "CreateTaskDelete",
+            timestamp: dateNowSeconds(),
+            relevantSubgraph: "Scheduler",
+          };
+          pendingUpdatesToAdd.push(pendingCreateTaskDeleteUpdate);
+        }
+
+        if (subTransactionTitles.includes("Create Schedule")) {
+          if (startTimestamp) {
+            pendingUpdatesToAdd.push({
+              pendingType: "CreateTaskCreate",
+              __typename: "CreateTask",
+              id: `${transactionHash}-CreateTaskCreate`,
+              executionAt: startTimestamp.toString(),
+              superToken: superTokenAddress,
+              sender: senderAddress,
+              receiver: receiverAddress,
+              flowRate: flowRateWei,
+              relevantSubgraph: "Scheduler",
+              transactionHash,
+              chainId,
+              timestamp,
+            } as PendingCreateTask);
+          }
+
+          if (endTimestamp) {
+            pendingUpdatesToAdd.push({
+              pendingType: "DeleteTaskCreate",
+              __typename: "DeleteTask",
+              id: `${transactionHash}-DeleteTaskCreate`,
+              executionAt: endTimestamp.toString(),
+              superToken: superTokenAddress,
+              sender: senderAddress,
+              receiver: receiverAddress,
+              relevantSubgraph: "Scheduler",
+              transactionHash,
+              chainId,
+              timestamp,
+            } as PendingDeleteTask);
+          }
+        }
+
+        if (pendingUpdatesToAdd.length > 0) {
+          pendingUpdateAdapter.addMany(state, pendingUpdatesToAdd);
         }
       }
     );
