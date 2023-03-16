@@ -1,5 +1,13 @@
 import SettingsIcon from "@mui/icons-material/SettingsOutlined";
-import { Divider, Stack, Tooltip, Typography } from "@mui/material";
+import {
+  Divider,
+  IconButton,
+  Stack,
+  Tab,
+  Tabs,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import Link from "next/link";
 import { FC } from "react";
 import { NotificationTab } from "./NotificationsBell";
@@ -20,38 +28,36 @@ const NotificationHeader: FC<NotificationHeaderProps> = ({
           <Typography variant="h5">Notifications</Typography>
           <Link href="/settings">
             <Tooltip title="Open Settings">
-              <SettingsIcon sx={{ cursor: "pointer", color: "GrayText" }} />
+              <IconButton size="small">
+                <SettingsIcon sx={{ ycolor: "GrayText" }} />
+              </IconButton>
             </Tooltip>
           </Link>
         </Stack>
-        <Stack direction="row" gap={1}>
-          <Typography
-            variant="body2"
+        <Tabs
+          value={activeTab}
+          onChange={(_, newValue) => setActiveTab(newValue)}
+          sx={{ minHeight: "inherit" }}
+        >
+          <Tab
+            value="new"
+            label="New"
             sx={{
-              textDecoration: activeTab === "new" ? "underline" : "none",
-              cursor: "pointer",
-              color: activeTab === "new" ? "ButtonText" : "GrayText",
-              textUnderlineOffset: 5,
-              textDecorationThickness: 1.5,
+              fontSize: 12,
+              minHeight: "inherit",
+              padding: 1,
             }}
-            onClick={() => setActiveTab("new")}
-          >
-            New
-          </Typography>
-          <Typography
-            variant="body2"
+          />
+          <Tab
+            value="archive"
+            label="Archive"
             sx={{
-              textDecoration: activeTab === "archive" ? "underline" : "none",
-              cursor: "pointer",
-              color: activeTab === "archive" ? "ButtonText" : "GrayText",
-              textUnderlineOffset: 5,
-              textDecorationThickness: 1.5,
+              fontSize: 12,
+              minHeight: "inherit",
+              padding: 1,
             }}
-            onClick={() => setActiveTab("archive")}
-          >
-            Archive
-          </Typography>
-        </Stack>
+          />
+        </Tabs>
       </Stack>
       <Divider />
     </>
