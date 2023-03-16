@@ -104,7 +104,9 @@ const NotificationEntry: FC<NotificationProps> = ({
           className="archive-cta"
         >
           <Divider />
-          <Button onClick={archive(notification.id)}>Archive</Button>
+          <Button sx={{ borderRadius: 0 }} onClick={archive(notification.id)}>
+            Archive
+          </Button>
         </Stack>
       )}
     </Stack>
