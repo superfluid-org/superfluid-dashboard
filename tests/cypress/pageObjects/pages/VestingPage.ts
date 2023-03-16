@@ -257,7 +257,6 @@ export class VestingPage extends BasePage {
             this.hasText(DETAILS_SCHEDULED_DATE ,format((schedule.createdAt * 1000), "MMM do, yyyy HH:mm") )
             this.hasText(DETAILS_CLIFF_START,format((schedule.startDate * 1000), "MMM do, yyyy HH:mm") )
             this.hasText(DETAILS_CLIFF_END,format((schedule.cliffDate * 1000), "MMM do, yyyy HH:mm") )
-            this.hasText(DETAILS_VESTING_START,format((schedule.cliffDate * 1000), "MMM do, yyyy HH:mm") )
             this.hasText(DETAILS_VESTING_END,format((schedule.endDate * 1000), "MMM do, yyyy HH:mm") )
         })
     }
@@ -390,7 +389,7 @@ export class VestingPage extends BasePage {
                 this.validateScheduleBarElements([SCHEDULE_VESTING_SCHEDULED, SCHEDULE_CLIFF_START], [SCHEDULE_CLIFF_END, SCHEDULE_VESTING_END], 50)
                 break;
             case "Cliff vested":
-                this.validateScheduleBarElements([SCHEDULE_VESTING_SCHEDULED, SCHEDULE_CLIFF_START, SCHEDULE_CLIFF_END, SCHEDULE_VESTING_START], [SCHEDULE_VESTING_END], 50)
+                this.validateScheduleBarElements([SCHEDULE_VESTING_SCHEDULED, SCHEDULE_CLIFF_START, SCHEDULE_CLIFF_END], [SCHEDULE_VESTING_END], 50)
                 break;
             case "Vesting ended":
                 this.validateScheduleBarElements([SCHEDULE_VESTING_SCHEDULED, SCHEDULE_CLIFF_START, SCHEDULE_CLIFF_END, SCHEDULE_VESTING_END], [] , 100)
