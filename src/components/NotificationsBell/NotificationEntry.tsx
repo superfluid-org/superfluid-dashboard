@@ -1,4 +1,12 @@
-import { Box, Button, colors, Divider, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  colors,
+  Divider,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { FC } from "react";
 import { NextLinkComposed } from "../../features/common/Link";
 import NetworkBadge from "../../features/network/NetworkBadge";
@@ -35,6 +43,8 @@ const NotificationEntry: FC<NotificationProps> = ({
   seen,
   archive,
 }) => {
+  const theme = useTheme();
+
   return (
     <Stack
       sx={{
@@ -106,7 +116,7 @@ const NotificationEntry: FC<NotificationProps> = ({
           sx={{
             maxHeight: 0,
             overflow: "hidden",
-            transition: "max-height .5s",
+            transition: `max-height ${theme.transitions.duration.short}ms`,
           }}
           className="archive-cta"
         >
