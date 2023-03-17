@@ -49,7 +49,7 @@ const NotificationEntry: FC<NotificationProps> = ({
     >
       {notification.message.parsed.network && (
         <NetworkBadge
-          sx={{ position: "absolute", top: 0, right: 22 }}
+          sx={{ position: "absolute", top: 0, right: 23.5 }}
           NetworkIconProps={{
             size: 20,
             fontSize: 16,
