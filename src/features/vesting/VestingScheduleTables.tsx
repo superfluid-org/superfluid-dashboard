@@ -12,7 +12,7 @@ import NoContentPaper from "../../components/NoContent/NoContentPaper";
 import { getAddress } from "../../utils/memoizedEthersUtils";
 import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
 import { CopyIconBtn } from "../common/CopyIconBtn";
-import Link from "../common/Link";
+import { NextLinkComposed } from "../common/Link";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { Network } from "../network/networks";
 import {
@@ -41,9 +41,15 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
     spacing={1}
   >
     <Typography variant="body1" color="secondary">
-      {whitelisted
-        ? <>Your wallet address <strong>is</strong> on the allowlist.</>
-        : <>Your wallet address is <strong>not</strong> on the allowlist.</>}
+      {whitelisted ? (
+        <>
+          Your wallet address <strong>is</strong> on the allowlist.
+        </>
+      ) : (
+        <>
+          Your wallet address is <strong>not</strong> on the allowlist.
+        </>
+      )}
     </Typography>
 
     {network.vestingContractAddress && (
@@ -63,15 +69,15 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
             IconButtonProps={{ size: "small" }}
           />
           <Tooltip arrow title="View on blockchain explorer" placement="top">
-            <Link
+            <NextLinkComposed
               passHref
-              href={network.getLinkForAddress(network.vestingContractAddress)}
+              to={network.getLinkForAddress(network.vestingContractAddress)}
               target="_blank"
             >
-              <IconButton href="" target="_blank" size="small">
+              <IconButton size="small">
                 <LaunchRoundedIcon color="inherit" />
               </IconButton>
-            </Link>
+            </NextLinkComposed>
           </Tooltip>
         </Stack>
       </Stack>

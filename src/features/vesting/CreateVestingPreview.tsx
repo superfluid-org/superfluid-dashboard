@@ -1,4 +1,8 @@
-import { Box, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Stack,
+  Typography,
+} from "@mui/material";
 import add from "date-fns/fp/add";
 import format from "date-fns/fp/format";
 import { FC } from "react";
@@ -8,7 +12,7 @@ import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import NetworkIcon from "../network/NetworkIcon";
-import { Network, networkDefinition } from "../network/networks";
+import { Network } from "../network/networks";
 import { timeUnitWordMap } from "../send/FlowRateInput";
 import TokenIcon from "../token/TokenIcon";
 import { VestingFormLabels } from "./CreateVestingForm";
@@ -178,7 +182,6 @@ export const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
           </Box>
         )}
       </Stack>
-
       <CreateVestingTransactionButton setView={setView} />
     </Stack>
   );

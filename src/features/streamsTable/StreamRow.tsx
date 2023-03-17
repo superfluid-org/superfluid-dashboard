@@ -1,6 +1,6 @@
+import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import TimerOutlined from "@mui/icons-material/TimerOutlined";
 import {
   Box,
@@ -16,12 +16,16 @@ import {
   useTheme,
 } from "@mui/material";
 import { Stream } from "@superfluid-finance/sdk-core";
-import { format } from "date-fns";
+import { format, isAfter } from "date-fns";
 import { BigNumber } from "ethers";
 import { useRouter } from "next/router";
-import { FC, memo } from "react";
-import AddressAvatar from "../../components/Avatar/AddressAvatar";
+import { FC, memo, useMemo } from "react";
 import AddressName from "../../components/AddressName/AddressName";
+import AddressAvatar from "../../components/Avatar/AddressAvatar";
+import {
+  PendingScheduledStream,
+  ScheduledStream,
+} from "../../hooks/streamSchedulingHooks";
 import { getStreamPagePath } from "../../pages/stream/[_network]/[_stream]";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { Network } from "../network/networks";
@@ -29,7 +33,6 @@ import { PendingOutgoingStream } from "../pendingUpdates/PendingOutgoingStream";
 import { UnitOfTime } from "../send/FlowRateInput";
 import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
-import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import CancelStreamButton from "./CancelStreamButton/CancelStreamButton";
 import ModifyStreamButton from "./ModifyStreamButton";
@@ -86,8 +89,16 @@ export const StreamRowLoading = () => {
   );
 };
 
+type PendingStreamType = PendingOutgoingStream | PendingScheduledStream;
+
 interface StreamRowProps {
-  stream: (Stream | PendingOutgoingStream) & StreamScheduling;
+  stream: (
+    | Stream
+    | PendingOutgoingStream
+    | ScheduledStream
+    | PendingScheduledStream
+  ) &
+    StreamScheduling;
   network: Network;
 }
 
@@ -98,8 +109,9 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
     receiver,
     currentFlowRate,
     streamedUntilUpdatedAt,
-    createdAtTimestamp,
     updatedAtTimestamp,
+    startDateScheduled,
+    endDateScheduled,
   } = stream;
 
   const theme = useTheme();
@@ -119,14 +131,22 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
 
   const isOutgoing = visibleAddress?.toLowerCase() === sender.toLowerCase();
 
-  const isPending = !!(stream as PendingOutgoingStream).pendingType;
-  const isPendingAndWaitingForSubgraph = !!(stream as PendingOutgoingStream)
-    .hasTransactionSucceeded;
-  const isActive = !isPending && currentFlowRate !== "0";
+  const pendingType = (stream as PendingStreamType).pendingType;
 
-  const tableCellProps: Partial<TableCellProps> = isPending
-    ? {}
-    : { onClick: openStreamDetails, sx: { cursor: "pointer" } };
+  const isPending = !!pendingType;
+
+  const isPendingAndWaitingForSubgraph = !!(stream as PendingStreamType)
+    .hasTransactionSucceeded;
+
+  const isActive = !isPending && !startDateScheduled && currentFlowRate !== "0";
+
+  const tableCellProps: Partial<TableCellProps> =
+    isPending || startDateScheduled
+      ? {}
+      : {
+          onClick: openStreamDetails,
+          sx: { cursor: "pointer" },
+        };
 
   return (
     <TableRow hover data-cy={"stream-row"}>
@@ -154,14 +174,16 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
             <Typography variant="h7mono">
               <FlowingBalance
                 balance={streamedUntilUpdatedAt}
-                flowRate={isPending ? "0" : currentFlowRate}
+                flowRate={
+                  isPending || !!startDateScheduled ? "0" : currentFlowRate
+                }
                 balanceTimestamp={updatedAtTimestamp}
                 disableRoundingIndicator
               />
             </Typography>
           </TableCell>
           <TableCell {...tableCellProps}>
-            {isActive || isPending ? (
+            {isActive || isPending || startDateScheduled ? (
               <Typography data-cy={"flow-rate"} variant="body2mono">
                 {isOutgoing ? "-" : "+"}
                 <Amount
@@ -175,23 +197,21 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
           </TableCell>
           <TableCell {...tableCellProps} sx={{ px: 1, ...tableCellProps.sx }}>
             {/* // TODO(KK): Tooltips? */}
-            {isActive ? (
-              stream.endDate ? (
-                <TimerOutlined sx={{ display: "block" }} />
-              ) : (
-                <AllInclusiveIcon sx={{ display: "block" }} />
-              )
+            {!!startDateScheduled || !!endDateScheduled ? (
+              <TimerOutlined sx={{ display: "block" }} />
+            ) : isActive ? (
+              <AllInclusiveIcon sx={{ display: "block" }} />
             ) : null}
           </TableCell>
           <TableCell {...tableCellProps} sx={{ pl: 1, ...tableCellProps.sx }}>
             <Stack data-cy={"start-end-date"}>
               <Box>
                 {stream.startDate &&
-                  format(stream.startDate.getTime(), "d MMM. yyyy")}
+                  format(stream.startDate.getTime(), "d MMM. yyyy HH:mm")}
               </Box>
               <Box>
                 {stream.endDate &&
-                  format(stream.endDate.getTime(), "d MMM. yyyy")}
+                  format(stream.endDate.getTime(), "d MMM. yyyy HH:mm")}
               </Box>
             </Stack>
           </TableCell>
@@ -208,7 +228,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
               />
             }
             secondary={
-              isActive || isPending ? (
+              isActive || isPending || !!startDateScheduled ? (
                 <>
                   {isOutgoing ? "-" : "+"}
                   <Amount
@@ -242,11 +262,15 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
                   variant="caption"
                   translate="yes"
                 >
-                  {isPendingAndWaitingForSubgraph ? "Syncing..." : "Sending..."}
+                  {isPendingAndWaitingForSubgraph
+                    ? "Syncing..."
+                    : pendingType === "CreateTaskCreate"
+                    ? "Scheduling..."
+                    : "Sending..."}
                 </Typography>
               </>
             )}
-            {!isPending && isActive && (
+            {!isPending && (isActive || !!startDateScheduled) && (
               <>
                 {isOutgoing && (
                   <ModifyStreamButton
@@ -256,7 +280,9 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
                   />
                 )}
                 <CancelStreamButton
-                  stream={stream as Stream}
+                  stream={
+                    stream as (Stream | ScheduledStream) & StreamScheduling
+                  }
                   network={network}
                   IconButtonProps={{ size: "small" }}
                 />

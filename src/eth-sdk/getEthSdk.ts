@@ -9,7 +9,7 @@ export const getFlowScheduler = (
 ) => {
   const network = findNetworkOrThrow(allNetworks, chainId);
 
-  const networkFlowSchedulerAddress = network?.vestingContractAddress;
+  const networkFlowSchedulerAddress = network?.flowSchedulerContractAddress;
   const doesNetworkSupportFlowScheduler = !!networkFlowSchedulerAddress;
   if (!doesNetworkSupportFlowScheduler) {
     throw new Error(

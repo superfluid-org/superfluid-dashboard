@@ -29,6 +29,10 @@ import WagmiManager, {
 import { initializeSuperfluidDashboardGlobalObject } from "../global";
 import config from "../utils/config";
 import { IsCypress } from "../utils/SSRUtils";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
+import { useTheme } from "@mui/material";
+import { ToastProvider } from "../components/Toast/toast";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -67,6 +71,8 @@ export default function MyApp(props: AppPropsWithLayout) {
     []
   );
 
+  const theme = useTheme();
+
   return (
     <NextThemesProvider>
       <CacheProvider value={emotionCache}>
@@ -89,6 +95,7 @@ export default function MyApp(props: AppPropsWithLayout) {
                                   <TransactionRestorationContextProvider>
                                     <LayoutContextProvider>
                                       <AnalyticsProvider>
+                                        <ToastProvider />
                                         <IntercomProvider>
                                           <MonitorContext />
                                           <Layout>

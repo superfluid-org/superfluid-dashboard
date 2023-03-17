@@ -1,0 +1,78 @@
+query getTasks($where: Task_filter = {}, $orderBy: Task_orderBy = id, $orderDirection: OrderDirection = asc) {
+  tasks(
+    first: 1000
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+    where: $where
+  ) {
+    __typename
+    ... on CreateTask {
+      superToken
+      startDateMaxDelay
+      startDate
+      startAmount
+      sender
+      receiver
+      id
+      flowRate
+      expirationAt
+      executionAt
+      executedAt
+      cancelledAt
+    }
+    ... on DeleteTask {
+      id
+      cancelledAt
+      executedAt
+      executionAt
+      expirationAt
+      receiver
+      sender
+      superToken
+    }
+  }
+}
+
+query getCreateTasks($where: CreateTask_filter = {}, $orderBy: CreateTask_orderBy = id, $orderDirection: OrderDirection = asc) {
+  createTasks(
+    first: 1000
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+    where: $where
+  ) {
+    ... on CreateTask {
+      superToken
+      startDateMaxDelay
+      startDate
+      startAmount
+      sender
+      receiver
+      id
+      flowRate
+      expirationAt
+      executionAt
+      executedAt
+      cancelledAt
+    }
+  }
+}
+
+query getDeleteTasks($where: DeleteTask_filter = {}, $orderBy: DeleteTask_orderBy = id, $orderDirection: OrderDirection = asc) {
+  deleteTasks(
+    first: 1000
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+    where: $where
+  ) {
+    ... on DeleteTask {
+      id
+      cancelledAt
+      executedAt
+      executionAt
+      expirationAt
+      receiver
+      sender
+      superToken
+    }
+  }
+}

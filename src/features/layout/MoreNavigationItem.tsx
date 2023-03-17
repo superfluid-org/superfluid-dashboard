@@ -14,6 +14,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { FC, MouseEvent, useState } from "react";
+import AppCurrencySelect from "../../components/CurrencySelect/AppCurrencySelect";
 import PrimaryLink from "../common/Link";
 import { useLayoutContext } from "./LayoutContext";
 
@@ -47,30 +48,6 @@ const MoreNavigationItem: FC = () => {
     setMoreMenuAnchor(event.currentTarget);
 
   const closeMoreMenu = () => setMoreMenuAnchor(null);
-
-  const openMainnetAccessCodeDialog = () => {
-    closeMoreMenu();
-    setAccessCodeDialogContent({
-      title: "Access Ethereum Mainnet",
-      description: (
-        <>
-          <Typography>
-            Enter your access code to unlock Ethereum Mainnet.
-          </Typography>
-          <Typography>
-            Apply for the access code{" "}
-            <PrimaryLink
-              href="https://use.superfluid.finance/ethmainnet"
-              target="_blank"
-            >
-              here
-            </PrimaryLink>
-            .
-          </Typography>
-        </>
-      ),
-    });
-  };
 
   return (
     <>
@@ -152,7 +129,11 @@ const MoreNavigationItem: FC = () => {
         </Link>
 
         <Link href="/accounting">
-          <ListItemButton data-cy={"more-export-btn"} href="" onClick={closeMoreMenu}>
+          <ListItemButton
+            data-cy={"more-export-btn"}
+            href=""
+            onClick={closeMoreMenu}
+          >
             <ListItemIcon>
               <AssessmentRoundedIcon
                 sx={{ color: theme.palette.text.primary }}
@@ -161,16 +142,6 @@ const MoreNavigationItem: FC = () => {
             <ListItemText>Export Stream Data</ListItemText>
           </ListItemButton>
         </Link>
-
-        <ListItemButton
-          data-cy={"more-access-code-btn"}
-          onClick={openMainnetAccessCodeDialog}
-        >
-          <ListItemIcon>
-            <QrCodeRoundedIcon sx={{ color: theme.palette.text.primary }} />
-          </ListItemIcon>
-          <ListItemText>Access Ethereum Mainnet</ListItemText>
-        </ListItemButton>
       </Popover>
     </>
   );

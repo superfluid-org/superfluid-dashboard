@@ -15,19 +15,25 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Address, Stream } from "@superfluid-finance/sdk-core";
+import { getUnixTime } from "date-fns";
 import { FC, memo, useCallback, useMemo, useState } from "react";
 import {
-  isActiveStreamSchedulingOrder,
+  mapCreateTaskToScheduledStream,
   mapStreamScheduling,
+  ScheduledStream,
 } from "../../hooks/streamSchedulingHooks";
-import { getAddress } from "../../utils/memoizedEthersUtils";
+import { CreateTask } from "../../scheduling-subgraph/.graphclient";
+import { schedulingSubgraphApi } from "../../scheduling-subgraph/schedulingSubgraphApi";
 import { EmptyRow } from "../common/EmptyRow";
 import { Network } from "../network/networks";
 import {
   PendingOutgoingStream,
   useAddressPendingOutgoingStreams,
 } from "../pendingUpdates/PendingOutgoingStream";
-import { platformApi } from "../redux/platformApi/platformApi";
+import {
+  PendingCreateTask,
+  useAddressPendingOutgoingTasks,
+} from "../pendingUpdates/PendingOutgoingTask";
 import { subgraphApi } from "../redux/store";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import StreamRow, { StreamRowLoading } from "./StreamRow";
@@ -39,7 +45,8 @@ enum StreamTypeFilter {
   Outgoing,
 }
 
-type StreamType = (Stream | PendingOutgoingStream) & StreamScheduling;
+type StreamType = (Stream | PendingOutgoingStream | ScheduledStream) &
+  StreamScheduling;
 
 interface StreamFilter {
   type: StreamTypeFilter;
@@ -70,80 +77,179 @@ const StreamsTable: FC<StreamsTableProps> = ({
     type: StreamTypeFilter.All,
   });
 
-  const incomingStreamsQuery = subgraphApi.useStreamsQuery({
-    chainId: network.id,
-    filter: {
-      receiver: visibleAddress,
-      token: tokenAddress,
+  const incomingStreamsQuery = subgraphApi.useStreamsQuery(
+    {
+      chainId: network.id,
+      filter: {
+        receiver: visibleAddress,
+        token: tokenAddress,
+      },
+      pagination: {
+        take: Infinity,
+        skip: 0,
+      },
+      order: {
+        orderBy: "updatedAtTimestamp",
+        orderDirection: "desc",
+      },
     },
-    pagination: {
-      take: Infinity,
-      skip: 0,
-    },
-    order: {
-      orderBy: "updatedAtTimestamp",
-      orderDirection: "desc",
-    },
-  },{
-    refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
-  });
+    {
+      refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
+    }
+  );
 
-  const outgoingStreamsQuery = subgraphApi.useStreamsQuery({
-    chainId: network.id,
-    filter: {
-      sender: visibleAddress,
-      token: tokenAddress,
+  const outgoingStreamsQuery = subgraphApi.useStreamsQuery(
+    {
+      chainId: network.id,
+      filter: {
+        sender: visibleAddress,
+        token: tokenAddress,
+      },
+      pagination: {
+        take: Infinity,
+        skip: 0,
+      },
+      order: {
+        orderBy: "updatedAtTimestamp",
+        orderDirection: "desc",
+      },
     },
-    pagination: {
-      take: Infinity,
-      skip: 0,
-    },
-    order: {
-      orderBy: "updatedAtTimestamp",
-      orderDirection: "desc",
-    },
-  }, {
-    refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
-  });
+    {
+      refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
+    }
+  );
 
-  const { schedulings } = { schedulings: [] };
-  // TODO(KK): Un-comment and handle when bringing back stream scheduling.
-  // platformApi.useListSubscriptionsQuery(
-  //   visibleAddress && network.platformUrl
-  //     ? {
-  //         account: getAddress(visibleAddress),
-  //         chainId: network.id,
-  //         baseUrl: network.platformUrl,
-  //       }
-  //     : skipToken,
-  //   {
-  //     selectFromResult: (x) => ({
-  //       schedulings: x.data?.data ?? [],
-  //     }),
-  //   }
-  // );
+  const { activeTasks } = schedulingSubgraphApi.useGetTasksQuery(
+    visibleAddress && network.flowSchedulerSubgraphUrl
+      ? {
+          chainId: network.id,
+          orderBy: "executionAt",
+          orderDirection: "asc",
+          where: {
+            or: [
+              {
+                superToken: tokenAddress.toLowerCase(),
+                sender: visibleAddress.toLowerCase(),
+                cancelledAt: null,
+                executedAt: null,
+              },
+              {
+                superToken: tokenAddress.toLowerCase(),
+                receiver: visibleAddress.toLowerCase(),
+                cancelledAt: null,
+                executedAt: null,
+              },
+            ],
+          },
+        }
+      : skipToken,
+    {
+      refetchOnFocus: true,
+      selectFromResult: (response) => {
+        const unixNow = getUnixTime(new Date());
 
-  const pendingOutgoingStreams =
-    useAddressPendingOutgoingStreams(visibleAddress);
+        return {
+          activeTasks: (response.data?.tasks ?? []).filter(
+            (task) =>
+              (!task.expirationAt && Number(task.executionAt) > unixNow) ||
+              Number(task.expirationAt) > unixNow
+          ),
+        };
+      },
+    }
+  );
 
-  const outgoingStreams = useMemo<(Stream | PendingOutgoingStream)[]>(() => {
+  const pendingTasks = useAddressPendingOutgoingTasks(
+    visibleAddress,
+    tokenAddress
+  );
+
+  const allTasks = useMemo(
+    () => [...pendingTasks, ...activeTasks],
+    [activeTasks, pendingTasks]
+  );
+
+  const scheduledIncomingStreams = useMemo(
+    () =>
+      allTasks
+        .filter(
+          (task) =>
+            task.receiver.toLowerCase() === visibleAddress?.toLowerCase()
+        )
+        .filter((task) => task.__typename === "CreateTask")
+        .map((task) => mapCreateTaskToScheduledStream(task as CreateTask)),
+    [allTasks, visibleAddress]
+  );
+
+  const incomingStreams = useMemo(() => {
+    const queriedIncomingStreams = incomingStreamsQuery.data?.items ?? [];
+    return [...queriedIncomingStreams, ...scheduledIncomingStreams];
+  }, [incomingStreamsQuery.data, scheduledIncomingStreams]);
+
+  const scheduledOutgoingStreams = useMemo(
+    () =>
+      allTasks
+        .filter(
+          (task) => task.sender.toLowerCase() === visibleAddress?.toLowerCase()
+        )
+        .filter((task) => task.__typename === "CreateTask")
+        .map((task) =>
+          mapCreateTaskToScheduledStream(task as CreateTask | PendingCreateTask)
+        ),
+    [allTasks, visibleAddress]
+  );
+
+  const pendingOutgoingStreams = useAddressPendingOutgoingStreams(
+    visibleAddress,
+    tokenAddress
+  );
+
+  const outgoingStreams = useMemo<
+    (Stream | PendingOutgoingStream | ScheduledStream)[]
+  >(() => {
     const queriedOutgoingStreams = outgoingStreamsQuery.data?.items ?? [];
-    return [...queriedOutgoingStreams, ...pendingOutgoingStreams];
-  }, [outgoingStreamsQuery.data, pendingOutgoingStreams, schedulings]);
+    return [
+      ...queriedOutgoingStreams,
+      ...pendingOutgoingStreams,
+      ...scheduledOutgoingStreams,
+    ];
+  }, [
+    outgoingStreamsQuery.data,
+    pendingOutgoingStreams,
+    scheduledOutgoingStreams,
+  ]);
 
   const streams = useMemo<StreamType[]>(() => {
-    return [
-      ...([StreamTypeFilter.All, StreamTypeFilter.Incoming].includes(
-        streamsFilter.type
-      )
-        ? incomingStreamsQuery.data?.items || []
-        : []),
-      ...([StreamTypeFilter.All, StreamTypeFilter.Outgoing].includes(
-        streamsFilter.type
-      )
-        ? outgoingStreams || []
-        : []),
-    ]
+    return [...incomingStreams, ...outgoingStreams]
+      .map((stream) => {
+        const isActive = stream.currentFlowRate !== "0";
+
+        const relevantTasks = isActive
+          ? allTasks.filter(
+              (task) =>
+                task.sender.toLowerCase() === stream.sender.toLowerCase() &&
+                task.receiver.toLowerCase() === stream.receiver.toLowerCase() &&
+                task.superToken.toLowerCase() === stream.token.toLowerCase()
+            )
+          : [];
+
+        const createTask = relevantTasks.find(
+          (task) => task.__typename === "CreateTask"
+        );
+        const deleteTask = relevantTasks.find(
+          (task) => task.__typename === "DeleteTask"
+        );
+
+        const hasScheduledStart =
+          createTask &&
+          Number(createTask.executionAt) === stream.createdAtTimestamp;
+
+        return mapStreamScheduling(
+          stream,
+          hasScheduledStart ? Number(createTask.executionAt) : undefined,
+          !!deleteTask ? Number(deleteTask.executionAt) : undefined
+        );
+      })
       .sort((s1, s2) => s2.updatedAtTimestamp - s1.updatedAtTimestamp)
       .sort((s1, s2) => {
         const stream1Active = s1.currentFlowRate !== "0";
@@ -152,17 +258,27 @@ const StreamsTable: FC<StreamsTableProps> = ({
         if (stream1Active && !stream2Active) return -1;
         if (!stream2Active && stream2Active) return 1;
         return 0;
-      })
-      .map((stream) => {
-        const isStreamActive = stream.currentFlowRate !== "0";
-
-        const streamScheduling = isStreamActive
-          ? schedulings.find((x) => isActiveStreamSchedulingOrder(stream, x))
-          : undefined;
-
-        return mapStreamScheduling(stream, streamScheduling);
       });
-  }, [incomingStreamsQuery.data, outgoingStreams, streamsFilter]);
+  }, [incomingStreams, outgoingStreams, allTasks]);
+
+  const filteredStreams = useMemo(() => {
+    switch (streamsFilter.type) {
+      case StreamTypeFilter.Incoming: {
+        return streams.filter(
+          (stream) =>
+            stream.receiver.toLowerCase() === visibleAddress?.toLowerCase()
+        );
+      }
+      case StreamTypeFilter.Outgoing: {
+        return streams.filter(
+          (stream) =>
+            stream.sender.toLowerCase() === visibleAddress?.toLowerCase()
+        );
+      }
+      default:
+        return streams;
+    }
+  }, [streams, visibleAddress, streamsFilter]);
 
   const handleChangePage = (_e: unknown, newPage: number) => setPage(newPage);
 
@@ -185,7 +301,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
   );
 
   const isLoading =
-    streams.length === 0 &&
+    filteredStreams.length === 0 &&
     (incomingStreamsQuery.isLoading || outgoingStreamsQuery.isLoading);
 
   return (
@@ -246,10 +362,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
                   color={getFilterBtnColor(StreamTypeFilter.All)}
                   onClick={setStreamTypeFilter(StreamTypeFilter.All)}
                 >
-                  All (
-                  {(incomingStreamsQuery.data?.items.length || 0) +
-                    outgoingStreams.length}
-                  )
+                  All ({streams.length})
                 </Button>
                 <Button
                   variant="textContained"
@@ -259,7 +372,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
                 >
                   Incoming{" "}
                   {incomingStreamsQuery.isSuccess &&
-                    `(${incomingStreamsQuery.data?.items.length})`}
+                    `(${incomingStreams.length})`}
                 </Button>
                 <Button
                   variant="textContained"
@@ -300,10 +413,10 @@ const StreamsTable: FC<StreamsTableProps> = ({
         <TableBody>
           {isLoading ? (
             <StreamRowLoading />
-          ) : streams.length === 0 ? (
+          ) : filteredStreams.length === 0 ? (
             <EmptyRow span={5} />
           ) : (
-            streams
+            filteredStreams
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((stream) => (
                 <StreamRow key={stream.id} stream={stream} network={network} />
@@ -311,11 +424,12 @@ const StreamsTable: FC<StreamsTableProps> = ({
           )}
         </TableBody>
       </Table>
-      {(streams.length > 5 || (!isBelowMd && streams.length <= 5)) && (
+      {(filteredStreams.length > 5 ||
+        (!isBelowMd && filteredStreams.length <= 5)) && (
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={streams.length}
+          count={filteredStreams.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
@@ -323,7 +437,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
           sx={{
             ...(subTable ? { background: "transparent" } : {}),
             "> *": {
-              visibility: streams.length <= 5 ? "hidden" : "visible",
+              visibility: filteredStreams.length <= 5 ? "hidden" : "visible",
             },
           }}
         />

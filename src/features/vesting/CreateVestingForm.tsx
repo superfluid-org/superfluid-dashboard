@@ -60,7 +60,7 @@ export const CreateVestingForm: FC<{
 
   const { network } = useExpectedNetwork();
 
-  const { watch, control, formState, setValue, trigger } =
+  const { watch, control, formState, setValue } =
     useFormContext<PartialVestingForm>();
 
   const minVestingStartDate = useMemo(
@@ -94,28 +94,6 @@ export const CreateVestingForm: FC<{
     "data.cliffEnabled",
     "data.vestingPeriod",
   ]);
-
-  const onCliffEnabledChanged = useCallback(
-    (_event: any, checked: boolean) => {
-      setValue("data.cliffEnabled", checked);
-
-      if (!cliffEnabled) {
-        setValue("data.cliffAmountEther", "");
-        setValue("data.cliffPeriod", {
-          numerator: "",
-          denominator: vestingPeriod.denominator,
-        });
-        trigger([
-          "data.cliffAmountEther",
-          "data.cliffPeriod",
-          "data.cliffEnabled",
-        ]);
-      } else {
-        trigger("data.cliffEnabled");
-      }
-    },
-    [cliffEnabled, vestingPeriod.denominator, setValue, trigger]
-  );
 
   const ReceiverController = (
     <Controller
@@ -199,10 +177,10 @@ export const CreateVestingForm: FC<{
     <Controller
       control={control}
       name="data.totalAmountEther"
-      render={({ field: { onChange, onBlur } }) => (
+      render={({ field: { value, onChange, onBlur } }) => (
         <TextField
           data-cy={"total-amount-input"}
-          value={totalAmountEther}
+          value={value}
           onChange={onChange}
           onBlur={onBlur}
           InputProps={{
@@ -222,7 +200,7 @@ export const CreateVestingForm: FC<{
       <Controller
         control={control}
         name="data.startDate"
-        render={({ field: { onChange, onBlur } }) => (
+        render={({ field: { value, onChange, onBlur } }) => (
           <DateTimePicker
             renderInput={(props) => (
               <TextField
@@ -232,7 +210,7 @@ export const CreateVestingForm: FC<{
                 onBlur={onBlur}
               />
             )}
-            value={startDate}
+            value={value}
             ampm={false}
             onChange={onChange}
             disablePast
@@ -248,10 +226,10 @@ export const CreateVestingForm: FC<{
     <Controller
       control={control}
       name="data.cliffAmountEther"
-      render={({ field: { onChange, onBlur } }) => (
+      render={({ field: { value, onChange, onBlur } }) => (
         <TextField
           data-cy={"cliff-amount-input"}
-          value={cliffAmountEther}
+          value={value}
           onChange={onChange}
           onBlur={onBlur}
           InputProps={{
@@ -262,7 +240,7 @@ export const CreateVestingForm: FC<{
             ),
           }}
           inputProps={{
-            inputPropsForEtherAmount,
+            ...inputPropsForEtherAmount,
           }}
         />
       )}
@@ -273,7 +251,7 @@ export const CreateVestingForm: FC<{
     <Controller
       control={control}
       name="data.cliffPeriod"
-      render={({ field: { onChange, onBlur, value } }) => (
+      render={({ field: { value, onChange, onBlur } }) => (
         <Box sx={{ display: "grid", gridTemplateColumns: "2fr 1fr" }}>
           <TextField
             data-cy={"cliff-period-input"}
@@ -330,7 +308,7 @@ export const CreateVestingForm: FC<{
     <Controller
       control={control}
       name="data.vestingPeriod"
-      render={({ field: { onChange, onBlur, value } }) => {
+      render={({ field: { value, onChange, onBlur } }) => {
         return (
           <Box sx={{ display: "grid", gridTemplateColumns: "2fr 1fr" }}>
             <TextField
@@ -390,10 +368,32 @@ export const CreateVestingForm: FC<{
     <Controller
       control={control}
       name="data.cliffEnabled"
-      render={({ field: { value } }) => (
+      render={({ field: { value, onChange, onBlur } }) => (
         <FormControlLabel
           data-cy={"cliff-toggle"}
-          control={<Switch checked={value} onChange={onCliffEnabledChanged} />}
+          control={
+            <Switch
+              checked={value}
+              onChange={(_event, checked) => {
+                onChange(checked);
+                if (!checked) {
+                  setValue("data.cliffAmountEther", "", {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  });
+                  setValue(
+                    "data.cliffPeriod",
+                    {
+                      numerator: "",
+                      denominator: vestingPeriod.denominator,
+                    },
+                    { shouldDirty: true, shouldValidate: true }
+                  );
+                }
+              }}
+              onBlur={onBlur}
+            />
+          }
           label="Add Cliff"
           sx={{ mr: 1 }}
         />

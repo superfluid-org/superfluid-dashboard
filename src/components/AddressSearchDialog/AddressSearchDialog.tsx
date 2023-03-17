@@ -202,6 +202,7 @@ export default memo(function AddressSearchDialog({
         </IconButton>
         <TextField
           data-cy={"address-dialog-input"}
+          autoComplete="off"
           fullWidth
           autoFocus
           onChange={(e) => setSearchTerm(e.target.value)}

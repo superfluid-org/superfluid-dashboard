@@ -59,17 +59,17 @@
           {
             "fromTo": "0x618a...DE40",
             "flowRate": "-5/mo",
-            "endDate": "2 Jul. 2021"
+            "endDate": "2 Jul. 2021 07:22"
           },
           {
             "fromTo": "0xcb86...42D8",
             "flowRate": "+4/mo",
-            "endDate": "2 Jul. 2021"
+            "endDate": "2 Jul. 2021 07:28"
           },
           {
             "fromTo": "0x13a9...4244",
             "flowRate": "-",
-            "endDate": "28 Nov. 202229 Nov. 2022"
+            "endDate": "28 Nov. 2022 12:5329 Nov. 2022 09:05"
           }
         ]
       }
@@ -106,12 +106,12 @@
           {
             "fromTo": "0x618a...DE40",
             "flowRate": "-0.02/mo",
-            "endDate": "2 Jul. 2021"
+            "endDate": "2 Jul. 2021 07:54"
           },
           {
             "fromTo": "0xcb86...42D8",
             "flowRate": "-",
-            "endDate": "2 Jul. 202122 Feb. 2023"
+            "endDate": "2 Jul. 2021 07:5722 Feb. 2023 03:57"
           }
         ]
       }

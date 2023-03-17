@@ -12,6 +12,7 @@ export const ACCESS_CODE_BUTTON = "[data-cy=more-access-code-btn]";
 export const ACCESS_CODE_INPUT = "[data-cy=access-code-input]";
 export const ACCESS_CODE_SUBMIT = "[data-cy=submit-access-code]";
 export const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet-button]";
+const VESTING_CODE_BUTTON = "[data-cy=vesting-code-button]"
 const NAVIGATION_BUTTON_PREFIX = "[data-cy=nav-";
 const NAVIGATION_DRAWER = "[data-cy=navigation-drawer]";
 const VIEW_MODE_INPUT = "[data-cy=view-mode-inputs]";
@@ -196,15 +197,9 @@ export class Common extends BasePage {
       //The nextjs error is annoying when developing test cases in dev mode
       cy.get("nextjs-portal").shadow().find("[aria-label=Close]").click();
     }
-    if (selectedNetwork === "ethereum") {
-      this.click(NAVIGATION_MORE_BUTTON);
-      this.click(ACCESS_CODE_BUTTON);
-      this.type(ACCESS_CODE_INPUT, "AHR2_MAINNET");
-      this.click(ACCESS_CODE_SUBMIT);
-    }
     if (Cypress.env("vesting")) {
-      this.click(NAVIGATION_MORE_BUTTON);
-      this.click(ACCESS_CODE_BUTTON);
+      this.clickNavBarButton("vesting")
+      this.click(VESTING_CODE_BUTTON);
       this.type(ACCESS_CODE_INPUT, "98S_VEST");
       this.click(ACCESS_CODE_SUBMIT);
     }
@@ -470,13 +465,16 @@ export class Common extends BasePage {
     }).then(res => {
       let metaData = res.body.data._meta
       let blockVsTimeNowDifferenceInMinutes = (Date.now() - (metaData.block.timestamp * 1000)) / 1000 / 60
-      expect(metaData.hasIndexingErrors).to.be.false
-      expect(blockVsTimeNowDifferenceInMinutes).to.be.lessThan(minutes,
-          `${networksBySlug.get(network).name} graph is behind by ${blockVsTimeNowDifferenceInMinutes.toFixed(0)} minutes.
+      //Sometimes the graph meta does not return timestamp for blocks, don't assert if it is so
+      if (metaData.block.timestamp !== null) {
+        expect(metaData.hasIndexingErrors).to.be.false
+        expect(blockVsTimeNowDifferenceInMinutes).to.be.lessThan(minutes,
+            `${networksBySlug.get(network).name} graph is behind by ${blockVsTimeNowDifferenceInMinutes.toFixed(0)} minutes.
        Last synced block number: ${metaData.block.number} 
        URL:
        ${networksBySlug.get(network).subgraphUrl}
       `)
+      }
     })
   }
 }

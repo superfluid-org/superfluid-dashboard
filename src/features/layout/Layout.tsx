@@ -1,11 +1,4 @@
-import {
-  AppBar,
-  Box,
-  styled,
-  Toolbar,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, styled, Toolbar, useMediaQuery, useTheme } from "@mui/material";
 import { FC, PropsWithChildren, useCallback } from "react";
 import AccessCodeDialog from "../featureFlags/AccessCodeDialog";
 import TransactionDrawer, {
@@ -47,6 +40,7 @@ const Main = styled("main")<{
   [theme.breakpoints.down("md")]: {
     padding: `${theme.spacing(3.5)} 0`,
   },
+  position: "relative",
 }));
 
 const Layout: FC<PropsWithChildren> = ({ children }) => {

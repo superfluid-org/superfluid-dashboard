@@ -6,14 +6,8 @@ import {
   calculateMaybeCriticalAtTimestamp,
 } from "../../utils/tokenUtils";
 import { Network } from "../network/networks";
-import { Web3FlowInfo } from "../redux/endpoints/adHocRpcEndpoints";
 import { RealtimeBalance } from "../redux/endpoints/balanceFetcher";
-import { rpcApi } from "../redux/store";
-import {
-  calculateTotalAmountWei,
-  FlowRateWei,
-  UnitOfTime,
-} from "./FlowRateInput";
+import { ScheduledFlowRate } from "./FlowRateInput";
 
 const calculateDateWhenBalanceCritical = (
   realtimeBalance?: RealtimeBalance,
@@ -41,23 +35,20 @@ export default function useCalculateBufferInfo() {
     (
       network: Network,
       realtimeBalance: RealtimeBalance,
-      activeFlow: Web3FlowInfo | null,
-      flowRate: FlowRateWei,
+      existingScheduledFlowRate: ScheduledFlowRate | null,
+      scheduledFlowRate: ScheduledFlowRate,
       tokenBuffer: string
     ) => {
       const newBufferAmount = calculateBufferAmount(
         network,
-        flowRate,
+        scheduledFlowRate.flowRate,
         tokenBuffer
       );
 
-      const oldBufferAmount = activeFlow
+      const oldBufferAmount = existingScheduledFlowRate
         ? calculateBufferAmount(
             network,
-            {
-              amountWei: activeFlow.flowRateWei,
-              unitOfTime: UnitOfTime.Second,
-            },
+            existingScheduledFlowRate.flowRate,
             tokenBuffer
           )
         : BigNumber.from(0);
@@ -68,14 +59,11 @@ export default function useCalculateBufferInfo() {
         realtimeBalance?.balance ?? 0
       ).sub(bufferDelta);
 
-      const newFlowRate = calculateTotalAmountWei({
-        amountWei: flowRate.amountWei,
-        unitOfTime: flowRate.unitOfTime,
-      });
-
-      const flowRateDelta = activeFlow
-        ? newFlowRate.sub(BigNumber.from(activeFlow.flowRateWei))
-        : newFlowRate;
+      const flowRateDelta = existingScheduledFlowRate
+        ? BigNumber.from(scheduledFlowRate.flowRate).sub(
+            BigNumber.from(existingScheduledFlowRate.flowRate)
+          )
+        : scheduledFlowRate.flowRate;
 
       const newTotalFlowRate =
         flowRateDelta && realtimeBalance
@@ -99,7 +87,7 @@ export default function useCalculateBufferInfo() {
         oldBufferAmount,
         bufferDelta,
         balanceAfterBuffer,
-        newFlowRate,
+        newFlowRate: scheduledFlowRate.flowRate,
         flowRateDelta,
         newTotalFlowRate,
         oldDateWhenBalanceCritical,

@@ -37,7 +37,6 @@ const AppSettingsBtn: FC<AppSettingsBtnProps> = ({}) => {
         }}
       >
         <ThemeChanger />
-        <AppCurrencySelect />
       </Popover>
     </>
   );

@@ -9,6 +9,10 @@ export interface PendingUpdate {
   pendingType:
     | "FlowCreate"
     | "FlowDelete"
+    | "CreateTaskCreate"
+    | "DeleteTaskCreate"
+    | "CreateTaskDelete"
+    | "DeleteTaskDelete"
     | "IndexSubscriptionApprove"
     | "IndexSubscriptionRevoke"
     | "VestingScheduleCreate"
@@ -23,5 +27,5 @@ export interface PendingUpdate {
   /**
    * Quick solution for knowing which Subgraph to wait for before deleting the pending update entry.
    */
-  relevantSubgraph: "Protocol" | "Vesting";
+  relevantSubgraph: "Protocol" | "Vesting" | "Scheduler";
 }

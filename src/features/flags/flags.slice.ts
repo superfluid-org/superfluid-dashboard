@@ -16,6 +16,7 @@ export enum Flag {
   TokenAdded = "token-added",
   VestingFeature = "vesting-feature",
   MainnetFeature = "mainnet-feature",
+  FlowSchedulerFeature = "flow-scheduler-feature",
 }
 
 interface BaseFlag<T> {
@@ -41,6 +42,9 @@ interface VestingFeatureFlag extends BaseFlag<Flag.VestingFeature> {
 }
 
 interface MainnetFeatureFlag extends BaseFlag<Flag.MainnetFeature> {}
+
+interface FlowSchedulerFeatureFlag
+  extends BaseFlag<Flag.FlowSchedulerFeature> {}
 
 type FlagType =
   | TestTokensReceivedFlag
@@ -102,15 +106,6 @@ export const flagsSlice = createSlice({
         } as VestingFeatureFlag,
       }),
     },
-    enableMainnetFeature: {
-      reducer: adapter.upsertOne,
-      prepare: () => ({
-        payload: {
-          id: nanoid(),
-          type: Flag.MainnetFeature,
-        } as MainnetFeatureFlag,
-      }),
-    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -141,7 +136,6 @@ export const {
   addTestTokensReceivedFlag,
   addTokenAddedFlag,
   enableVestingFeature,
-  enableMainnetFeature,
 } = flagsSlice.actions;
 
 const selectSelf = (state: RootState): EntityState<FlagType> => state.flags;

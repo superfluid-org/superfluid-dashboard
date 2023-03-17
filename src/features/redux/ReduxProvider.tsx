@@ -1,4 +1,7 @@
-import { initiateOldPendingTransactionsTrackingThunk, setFrameworkForSdkRedux } from "@superfluid-finance/sdk-redux";
+import {
+  initiateOldPendingTransactionsTrackingThunk,
+  setFrameworkForSdkRedux,
+} from "@superfluid-finance/sdk-redux";
 import { FC, PropsWithChildren, useCallback, useEffect } from "react";
 import { Provider } from "react-redux";
 import { useAccount, useSigner } from "wagmi";
@@ -9,6 +12,7 @@ import { addCustomTokens } from "../customTokens/customTokens.slice";
 import { allNetworks } from "../network/networks";
 import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import { reduxStore, useAppDispatch } from "./store";
+import { useSchedulerTransactionTracking } from "./UseSchedulerTransactionTracking";
 import { useVestingTransactionTracking } from "./UseVestingTransactionTracking";
 
 // Initialize SDK-core Frameworks for SDK-redux.
@@ -76,6 +80,7 @@ const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
   }, [signer]);
 
   useVestingTransactionTracking();
+  useSchedulerTransactionTracking();
 
   return <>{children}</>;
 };
