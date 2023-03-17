@@ -76,13 +76,14 @@ const NotificationsBell: FC = () => {
   }, [notifications.new.length]);
 
   useEffect(() => {
-    if (lastSeenNotification === notifications.new[0]?.id) {
+    const lastSeenIndex = notifications.new.findIndex(
+      (n) => n.id === lastSeenNotification
+    );
+    if (lastSeenNotification && lastSeenIndex <= 0) {
       setBadgeContent(0);
     } else {
       setBadgeContent(
-        lastSeenNotification
-          ? notifications.new.findIndex((n) => n.id === lastSeenNotification)
-          : notifications.new.length
+        lastSeenNotification ? lastSeenIndex : notifications.new.length
       );
     }
   }, [lastSeenNotification, notifications.new.length]);
