@@ -1,6 +1,7 @@
 import { Box, Button, colors, Divider, Stack, Typography } from "@mui/material";
 import Link from "next/link";
 import { FC } from "react";
+import { NextLinkComposed } from "../../features/common/Link";
 import NetworkBadge from "../../features/network/NetworkBadge";
 import {
   allNetworks,
@@ -8,6 +9,7 @@ import {
 } from "../../features/network/networks";
 import { Notification } from "../../hooks/useNotificationChannels";
 import { createMessage, getNotificationIcon } from "../../utils/notification";
+import { getWrapPagePath } from "../../utils/URLUtils";
 import { NotificationTab } from "./NotificationsBell";
 
 type NotificationProps = {
@@ -86,11 +88,17 @@ const NotificationEntry: FC<NotificationProps> = ({
           {type === "new" &&
             notification.message.parsed.type &&
             notification.message.parsed.type.includes("liquidation-risk") && (
-              <Link href="/wrap">
+              <NextLinkComposed
+                passHref={true}
+                to={getWrapPagePath({
+                  network: notification.message.parsed.network,
+                  token: notification.message.parsed.tokenAddress,
+                })}
+              >
                 <Button sx={{ width: 120 }} variant="contained">
                   Wrap tokens
                 </Button>
-              </Link>
+              </NextLinkComposed>
             )}
         </Box>
       </Stack>

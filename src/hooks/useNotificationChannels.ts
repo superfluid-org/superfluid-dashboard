@@ -36,6 +36,7 @@ export type MessageType =
 export type MessageData = {
   type: MessageType;
   token: string;
+  tokenAddress: string;
   symbol: string;
   network: string;
   liquidation?: string;
@@ -86,6 +87,7 @@ export const useNotificationChannels: UseNotificationChannels = () => {
     [pushSubscription, toggleSubscribePush, pushNotifcations]
   );
 
+  console.log(push.notifications);
   return {
     channels: {
       [push.channelType]: push,

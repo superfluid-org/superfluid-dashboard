@@ -8,3 +8,11 @@ export function buildQueryString(queryObject: Object) {
     .filter((item) => item !== null)
     .join("&");
 }
+
+export const getWrapPagePath = ({
+  network,
+  token,
+}: {
+  network: string;
+  token: string;
+}) => `/wrap?network=${network}&token=${token}`;
