@@ -14,6 +14,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { FC, MouseEvent, useState } from "react";
+import AppCurrencySelect from "../../components/CurrencySelect/AppCurrencySelect";
 import PrimaryLink from "../common/Link";
 import { useLayoutContext } from "./LayoutContext";
 
@@ -128,7 +129,11 @@ const MoreNavigationItem: FC = () => {
         </Link>
 
         <Link href="/accounting">
-          <ListItemButton data-cy={"more-export-btn"} href="" onClick={closeMoreMenu}>
+          <ListItemButton
+            data-cy={"more-export-btn"}
+            href=""
+            onClick={closeMoreMenu}
+          >
             <ListItemIcon>
               <AssessmentRoundedIcon
                 sx={{ color: theme.palette.text.primary }}

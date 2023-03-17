@@ -41,7 +41,9 @@ import faucetApi from "../faucet/faucetApi.slice";
 import { flagsSlice } from "../flags/flags.slice";
 import gasApi from "../gas/gasApi.slice";
 import { impersonationSlice } from "../impersonation/impersonation.slice";
+import { notificationsSlice } from "../notifications/notifications.slice";
 import { networkPreferencesSlice } from "../network/networkPreferences.slice";
+import { pushApi } from "../notifications/pushApi.slice";
 import { pendingUpdateSlice } from "../pendingUpdates/pendingUpdate.slice";
 import appSettingsReducer from "../settings/appSettings.slice";
 import { assetApiSlice } from "../token/tokenManifestSlice";
@@ -128,6 +130,11 @@ const appSettingsPersistedReducer = persistReducer(
   appSettingsReducer
 );
 
+const notificatonsPersistedReducer = persistReducer(
+  { storage, key: "notifications", version: 1 },
+  notificationsSlice.reducer
+);
+
 export const listenerMiddleware = createListenerMiddleware();
 
 export const sentryErrorLogger: Middleware =
@@ -182,6 +189,7 @@ export const reduxStore = configureStore({
     [tokenPriceApi.reducerPath]: tokenPriceApi.reducer,
     [accountingApi.reducerPath]: accountingApi.reducer,
     [vestingSubgraphApi.reducerPath]: vestingSubgraphApi.reducer,
+    [pushApi.reducerPath]: pushApi.reducer,
     [schedulingSubgraphApi.reducerPath]: schedulingSubgraphApi.reducer,
 
     // Persisted slices
@@ -190,6 +198,7 @@ export const reduxStore = configureStore({
     addressBook: addressBookPersistedReducer,
     customTokens: customTokensPersistedReducer,
     networkPreferences: networkPreferencesPersistedReducer,
+    notifications: notificatonsPersistedReducer,
     flags: flagsPersistedReducer,
 
     // Default slices
@@ -219,7 +228,8 @@ export const reduxStore = configureStore({
       .concat(platformApi.middleware)
       .concat(faucetApi.middleware)
       .concat(tokenPriceApi.middleware)
-      .concat(accountingApi.middleware),
+      .concat(accountingApi.middleware)
+      .concat(pushApi.middleware),
 });
 
 export const reduxPersistor = persistStore(reduxStore);

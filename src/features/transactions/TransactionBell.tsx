@@ -4,7 +4,6 @@ import {
   pendingTransactionsSelector,
   useAccountTransactionsSelector,
 } from "../wallet/useAccountTransactions";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import { useAccount } from "wagmi";
 import { memo } from "react";
 import MenuOpenRoundedIcon from "@mui/icons-material/MenuOpenRounded";

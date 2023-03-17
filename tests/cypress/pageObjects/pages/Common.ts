@@ -465,13 +465,16 @@ export class Common extends BasePage {
     }).then(res => {
       let metaData = res.body.data._meta
       let blockVsTimeNowDifferenceInMinutes = (Date.now() - (metaData.block.timestamp * 1000)) / 1000 / 60
-      expect(metaData.hasIndexingErrors).to.be.false
-      expect(blockVsTimeNowDifferenceInMinutes).to.be.lessThan(minutes,
-          `${networksBySlug.get(network).name} graph is behind by ${blockVsTimeNowDifferenceInMinutes.toFixed(0)} minutes.
+      //Sometimes the graph meta does not return timestamp for blocks, don't assert if it is so
+      if (metaData.block.timestamp !== null) {
+        expect(metaData.hasIndexingErrors).to.be.false
+        expect(blockVsTimeNowDifferenceInMinutes).to.be.lessThan(minutes,
+            `${networksBySlug.get(network).name} graph is behind by ${blockVsTimeNowDifferenceInMinutes.toFixed(0)} minutes.
        Last synced block number: ${metaData.block.number} 
        URL:
        ${networksBySlug.get(network).subgraphUrl}
       `)
+      }
     })
   }
 }

@@ -90,7 +90,8 @@ const NotConnectedCard = () => {
       elevation={1}
       sx={{
         px: 4,
-        py: 7,
+        pt: 7,
+        pb: 3,
         [theme.breakpoints.down("md")]: {
           px: 2,
           py: 3,
@@ -104,9 +105,21 @@ const NotConnectedCard = () => {
         Received and Sent Vesting Schedules will appear here.
       </Typography>
 
-      <Box sx={{ maxWidth: 400, width: "100%", mx: "auto", mt: 4 }}>
+      <Box sx={{ maxWidth: 400, width: "100%", mx: "auto", mt: 4, mb: 3 }}>
         <ConnectOrImpersonate />
       </Box>
+
+      <Typography color="text.secondary" textAlign="center">
+        Want to Vest tokens? Apply for the access code{" "}
+        <Link
+          data-cy="vesting-form-link"
+          href="https://use.superfluid.finance/vesting"
+          target="_blank"
+        >
+          here
+        </Link>
+        .
+      </Typography>
     </Paper>
   );
 };

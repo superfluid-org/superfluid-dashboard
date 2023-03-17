@@ -82,25 +82,16 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
 
   const dateNow = useTimer(UnitOfTime.Minute);
 
-  const createdAt = useMemo(
-    () => fromUnixTime(unixCreatedAt),
-    [unixCreatedAt]
-  );
+  const createdAt = useMemo(() => fromUnixTime(unixCreatedAt), [unixCreatedAt]);
 
-  const startDate = useMemo(
-    () => fromUnixTime(unixStartDate),
-    [unixStartDate]
-  );
+  const startDate = useMemo(() => fromUnixTime(unixStartDate), [unixStartDate]);
 
   const cliffDate = useMemo(
     () => (unixCliffDate ? fromUnixTime(unixCliffDate) : null),
     [unixCliffDate]
   );
 
-  const endDate = useMemo(
-    () => fromUnixTime(unixEndDate),
-    [unixEndDate]
-  );
+  const endDate = useMemo(() => fromUnixTime(unixEndDate), [unixEndDate]);
 
   const cliffAndFlowDate = useMemo(
     () => fromUnixTime(Number(unixCliffAndFlowDate)),
@@ -111,7 +102,7 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumns: `repeat(${cliffDate ? 5 : 3}, 170px)`,
+        gridTemplateColumns: `repeat(${cliffDate ? 4 : 3}, 170px)`,
         justifyContent: "space-between",
       }}
     >
@@ -121,7 +112,15 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
         end={startDate}
         dateNow={dateNow}
       />
-      {cliffDate && (
+
+      {!cliffDate ? (
+        <VestingProgress
+          nth={cliffDate ? 4 : 2}
+          start={cliffAndFlowDate}
+          end={endDate}
+          dateNow={dateNow}
+        />
+      ) : (
         <>
           <VestingProgress
             nth={2}
@@ -132,36 +131,36 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
           <VestingProgress
             nth={3}
             start={cliffDate}
-            end={cliffDate}
+            end={endDate}
             dateNow={dateNow}
           />
         </>
       )}
 
-      <VestingProgress
-        nth={cliffDate ? 4 : 2}
-        start={cliffAndFlowDate}
-        end={endDate}
-        dateNow={dateNow}
-      />
-
       <VestingScheduleProgressCheckpoint
-        title="Vesting Scheduled"
+        titles={["Vesting Scheduled"]}
         targetDate={createdAt}
         dateNow={dateNow}
         dataCy={"vesting-scheduled"}
       />
 
-      {cliffDate && (
+      {!cliffDate ? (
+        <VestingScheduleProgressCheckpoint
+          titles={["Vesting Starts", "Stream Starts"]}
+          targetDate={cliffAndFlowDate}
+          dateNow={dateNow}
+          dataCy={"vesting-start"}
+        />
+      ) : (
         <>
           <VestingScheduleProgressCheckpoint
-            title="Cliff Starts"
+            titles={["Vesting Starts"]}
             targetDate={startDate}
             dateNow={dateNow}
             dataCy={"cliff-start"}
           />
           <VestingScheduleProgressCheckpoint
-            title="Cliff Ends"
+            titles={["Cliff Vested", "Stream starts"]}
             targetDate={cliffDate}
             dateNow={dateNow}
             dataCy={"cliff-end"}
@@ -170,14 +169,7 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
       )}
 
       <VestingScheduleProgressCheckpoint
-        title="Vesting Starts"
-        targetDate={cliffAndFlowDate}
-        dateNow={dateNow}
-        dataCy={"vesting-start"}
-      />
-
-      <VestingScheduleProgressCheckpoint
-        title="Vesting Ends"
+        titles={["Vesting Ends"]}
         targetDate={endDate}
         dateNow={dateNow}
         dataCy={"vesting-end"}
