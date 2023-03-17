@@ -10,7 +10,6 @@ import { Notification } from "../../hooks/useNotificationChannels";
 import { createMessage, getNotificationIcon } from "../../utils/notification";
 import { getWrapPagePath } from "../../utils/URLUtils";
 import { NotificationTab } from "./NotificationsBell";
-import isAfter from "date-fns/isAfter";
 
 type NotificationProps = {
   notification: Notification;
@@ -85,13 +84,9 @@ const NotificationEntry: FC<NotificationProps> = ({
         </Stack>
 
         <Box px={seen ? 4 : 5} pt={1}>
-          {type === "archive" &&
+          {type === "new" &&
             notification.message.parsed.type &&
-            notification.message.parsed.type.includes("liquidation-risk") &&
-            isAfter(
-              Number(notification.message.parsed.liquidation) * 1000,
-              Date.now()
-            ) && (
+            notification.message.parsed.type.includes("liquidation-risk") && (
               <NextLinkComposed
                 passHref={true}
                 to={getWrapPagePath({
