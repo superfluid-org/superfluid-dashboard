@@ -20,7 +20,10 @@ export type Notification = {
 export type NotificationChannel = {
   name: string;
   channelType: NotificationChannelType;
-  isSubscribed: boolean;
+  subscription: {
+    isSubscribed: boolean;
+    isLoading: boolean;
+  };
   onToggle: (...args: unknown[]) => unknown;
   notifications: Notification[];
 };
@@ -58,7 +61,7 @@ const isArchived = (
 export const useNotificationChannels: UseNotificationChannels = () => {
   const {
     toggleSubscribe: toggleSubscribePush,
-    isSubscribed: isPushSubscribed,
+    subscription: pushSubscription,
     notifications: pushNotifcations,
   } = usePushProtocol();
 
@@ -68,7 +71,7 @@ export const useNotificationChannels: UseNotificationChannels = () => {
     () => ({
       name: "Push Protocol",
       channelType: "PUSH",
-      isSubscribed: isPushSubscribed,
+      subscription: pushSubscription,
       onToggle: toggleSubscribePush,
       notifications: pushNotifcations.map(({ epoch, payload }) => ({
         id: payload.data.sid,
@@ -80,7 +83,7 @@ export const useNotificationChannels: UseNotificationChannels = () => {
         epoch: new Date(epoch),
       })),
     }),
-    [isPushSubscribed, toggleSubscribePush, pushNotifcations]
+    [pushSubscription, toggleSubscribePush, pushNotifcations]
   );
 
   return {

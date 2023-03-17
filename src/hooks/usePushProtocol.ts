@@ -18,7 +18,8 @@ export const usePushProtocol = () => {
   const { chain } = useNetwork();
   const { switchNetworkAsync } = useSwitchNetwork();
 
-  const [changeSubscription] = pushApi.useChangeSubscriptionMutation();
+  const [changeSubscription, subscriptionStatus] =
+    pushApi.useChangeSubscriptionMutation();
 
   const { data: notifications } = pushApi.useGetNotificationsQuery(
     address ?? skipToken,
@@ -40,7 +41,7 @@ export const usePushProtocol = () => {
       }
 
       if (signer) {
-        await changeSubscription({
+        const {} = await changeSubscription({
           signer: signer as unknown as SignerType,
           address,
           subscribed: isSubscribed ? "unsubscribe" : "subscribe",
@@ -52,6 +53,9 @@ export const usePushProtocol = () => {
   return {
     toggleSubscribe,
     notifications: notifications ?? [],
-    isSubscribed: Boolean(isSubscribed),
+    subscription: {
+      isSubscribed: Boolean(isSubscribed),
+      isLoading: subscriptionStatus.isLoading,
+    },
   };
 };

@@ -20,6 +20,7 @@ import ConnectWallet from "../../features/wallet/ConnectWallet";
 import { useNotificationChannels } from "../../hooks/useNotificationChannels";
 import Link from "next/link";
 import shortenHex from "../../utils/shortenHex";
+import { LoadingButton } from "@mui/lab";
 
 const NoWalletConnected: FC = () => {
   const theme = useTheme();
@@ -80,9 +81,14 @@ const NotificationSettings: FC = () => {
             <Typography component="h1" variant="h5">
               Notifications
             </Typography>
-            <Button variant="contained" onClick={channels.PUSH.onToggle}>
-              {channels.PUSH.isSubscribed ? "Disable" : "Enable"} Notifications
-            </Button>
+            <LoadingButton
+              variant="contained"
+              onClick={channels.PUSH.onToggle}
+              loading={channels.PUSH.subscription.isLoading}
+            >
+              {channels.PUSH.subscription.isSubscribed ? "Disable" : "Enable"}{" "}
+              Notifications
+            </LoadingButton>
           </Stack>
 
           <Typography variant="body1" color="secondary">
