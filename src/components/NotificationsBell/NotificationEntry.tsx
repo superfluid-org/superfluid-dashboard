@@ -71,12 +71,12 @@ const NotificationEntry: FC<NotificationProps> = ({
 
           <Box sx={{ filter: type === "archive" ? "opacity(70%)" : "none" }}>
             <Stack direction="row" justifyContent="space-between">
-              <Stack direction="row" alignItems="center" gap={0.5}>
+              <Stack direction="row" alignItems="center" gap={1}>
                 {getNotificationIcon(notification.message.parsed)}
                 <Typography variant="h6"> {notification.title}</Typography>
               </Stack>
             </Stack>
-            <Stack pl={3.5} gap={1}>
+            <Stack pl={4} gap={1}>
               <Typography variant="body2" sx={{ color: "GrayText" }}>
                 {createMessage(notification.message)}
               </Typography>
@@ -84,8 +84,8 @@ const NotificationEntry: FC<NotificationProps> = ({
           </Box>
         </Stack>
 
-        <Box px={seen ? 3 : 4.5} pt={1}>
-          {type === "new" &&
+        <Box px={seen ? 4 : 5} pt={1}>
+          {type === "archive" &&
             notification.message.parsed.type &&
             notification.message.parsed.type.includes("liquidation-risk") &&
             isAfter(
