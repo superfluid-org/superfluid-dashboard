@@ -97,7 +97,6 @@ export const useNotificationChannels: UseNotificationChannels = () => {
     [pushSubscription, toggleSubscribePush, pushNotifcations]
   );
 
-  console.log(push.notifications);
   return {
     channels: {
       [push.channelType]: push,
