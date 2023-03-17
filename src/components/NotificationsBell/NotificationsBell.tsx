@@ -60,11 +60,11 @@ const NotificationsBell: FC = () => {
   };
 
   useUpdateEffect(() => {
-    const indexOfLastSeen = notifications.new.findIndex(
+    const lastSeenIndex = notifications.new.findIndex(
       (n) => n.id === lastSeenNotification
     );
-    if (indexOfLastSeen > 0) {
-      notifications.new.slice(0, indexOfLastSeen).map(displayToast);
+    if (lastSeenIndex > 0) {
+      notifications.new.slice(0, lastSeenIndex).map(displayToast);
     }
     if (!lastSeenNotification && notifications.new.length > 0) {
       displayToast({
