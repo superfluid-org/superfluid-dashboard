@@ -257,7 +257,6 @@ export class VestingPage extends BasePage {
             this.hasText(DETAILS_SCHEDULED_DATE ,format((schedule.createdAt * 1000), "MMM do, yyyy HH:mm") )
             this.hasText(DETAILS_CLIFF_START,format((schedule.startDate * 1000), "MMM do, yyyy HH:mm") )
             this.hasText(DETAILS_CLIFF_END,format((schedule.cliffDate * 1000), "MMM do, yyyy HH:mm") )
-            this.hasText(DETAILS_VESTING_START,format((schedule.cliffDate * 1000), "MMM do, yyyy HH:mm") )
             this.hasText(DETAILS_VESTING_END,format((schedule.endDate * 1000), "MMM do, yyyy HH:mm") )
         })
     }
@@ -384,20 +383,16 @@ export class VestingPage extends BasePage {
 
         switch (status) {
             case "Scheduled":
-                this.validateScheduleBarElements([SCHEDULE_VESTING_SCHEDULED], [SCHEDULE_CLIFF_START, SCHEDULE_CLIFF_END, SCHEDULE_VESTING_END, SCHEDULE_VESTING_START], 50)
+                this.validateScheduleBarElements([SCHEDULE_VESTING_SCHEDULED], [SCHEDULE_CLIFF_START, SCHEDULE_CLIFF_END, SCHEDULE_VESTING_END], 50)
                 break;
-            case "Cliff Started":
-                this.validateScheduleBarElements([SCHEDULE_VESTING_SCHEDULED, SCHEDULE_CLIFF_START], [SCHEDULE_CLIFF_END, SCHEDULE_VESTING_END, SCHEDULE_VESTING_START], 50)
+            case "Vesting Started":
+                this.validateScheduleBarElements([SCHEDULE_VESTING_SCHEDULED, SCHEDULE_CLIFF_START], [SCHEDULE_CLIFF_END, SCHEDULE_VESTING_END], 50)
                 break;
-            case "Cliff ended":
-                //Cliff ended and vesting starts are always at the same time, even mocking it to different times doesn't change the green bar to be in the middle between the points
-                this.validateScheduleBarElements([SCHEDULE_VESTING_SCHEDULED, SCHEDULE_CLIFF_START, SCHEDULE_CLIFF_END], [SCHEDULE_VESTING_END, SCHEDULE_VESTING_START], 100)
-                break;
-            case "Vesting started":
-                this.validateScheduleBarElements([SCHEDULE_VESTING_SCHEDULED, SCHEDULE_CLIFF_START, SCHEDULE_CLIFF_END, SCHEDULE_VESTING_START], [SCHEDULE_VESTING_END], 50)
+            case "Cliff vested":
+                this.validateScheduleBarElements([SCHEDULE_VESTING_SCHEDULED, SCHEDULE_CLIFF_START, SCHEDULE_CLIFF_END], [SCHEDULE_VESTING_END], 50)
                 break;
             case "Vesting ended":
-                this.validateScheduleBarElements([SCHEDULE_VESTING_SCHEDULED, SCHEDULE_CLIFF_START, SCHEDULE_CLIFF_END, SCHEDULE_VESTING_START, SCHEDULE_VESTING_END], [] , 100)
+                this.validateScheduleBarElements([SCHEDULE_VESTING_SCHEDULED, SCHEDULE_CLIFF_START, SCHEDULE_CLIFF_END, SCHEDULE_VESTING_END], [] , 100)
                 break;
             default:
                 throw new Error(`Unknown schedule bar state: ${status}`)
@@ -427,7 +422,7 @@ export class VestingPage extends BasePage {
                             schedule.failedAt = null
                             schedule.startDate = this.getDayTimestamp(1)
                             break;
-                        case "Cliff Started":
+                        case "Vesting Started":
                             //Vesting scheduled
                             schedule.createdAt = this.getDayTimestamp(-2)
                             //Cliff starts
@@ -446,26 +441,7 @@ export class VestingPage extends BasePage {
                             schedule.earlyEndCompensation = null
                             schedule.failedAt = null
                             break;
-                        case "Cliff ended":
-                            //Vesting scheduled
-                            schedule.createdAt = this.getDayTimestamp(-3)
-                            //Cliff starts
-                            schedule.startDate = this.getDayTimestamp(-2)
-                            //Cliff Ends
-                            schedule.cliffDate = this.getDayTimestamp(-1)
-                            //Vesting starts
-                            schedule.cliffAndFlowDate = this.getDayTimestamp(1)
-                            schedule.cliffAndFlowExecutedAt = this.getDayTimestamp(1)
-                            schedule.cliffAndFlowExpirationAt = this.getDayTimestamp(1) + 1000
-                            //Vesting ends
-                            schedule.endDate = this.getDayTimestamp(2)
-                            schedule.endDateValidAt = this.getDayTimestamp(2) + 1000
-                            schedule.endExecutedAt = null
-                            //Error states
-                            schedule.earlyEndCompensation = null
-                            schedule.failedAt = null
-                            break;
-                        case "Vesting started":
+                        case "Cliff vested":
                             //Vesting scheduled
                             schedule.createdAt = this.getDayTimestamp(-3)
                             //Cliff starts

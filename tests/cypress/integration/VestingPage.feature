@@ -183,9 +183,8 @@ Feature: Vesting page test cases
     Examples:
       | state           |
       | Scheduled       |
-      | Cliff Started   |
-      | Cliff ended     |
-      | Vesting started |
+      | Vesting Started   |
+      | Cliff vested     |
       | Vesting ended   |
 
   Scenario: Vesting schedule aggregate stats
