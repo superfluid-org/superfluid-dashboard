@@ -41,7 +41,7 @@ export const usePushProtocol = () => {
       }
 
       if (signer) {
-        const {} = await changeSubscription({
+        await changeSubscription({
           signer: signer as unknown as SignerType,
           address,
           subscribed: isSubscribed ? "unsubscribe" : "subscribe",
