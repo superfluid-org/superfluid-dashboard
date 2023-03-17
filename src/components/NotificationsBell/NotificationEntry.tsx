@@ -1,5 +1,4 @@
 import { Box, Button, colors, Divider, Stack, Typography } from "@mui/material";
-import Link from "next/link";
 import { FC } from "react";
 import { NextLinkComposed } from "../../features/common/Link";
 import NetworkBadge from "../../features/network/NetworkBadge";
@@ -11,6 +10,7 @@ import { Notification } from "../../hooks/useNotificationChannels";
 import { createMessage, getNotificationIcon } from "../../utils/notification";
 import { getWrapPagePath } from "../../utils/URLUtils";
 import { NotificationTab } from "./NotificationsBell";
+import isAfter from "date-fns/isAfter";
 
 type NotificationProps = {
   notification: Notification;
@@ -51,8 +51,8 @@ const NotificationEntry: FC<NotificationProps> = ({
         <NetworkBadge
           sx={{ position: "absolute", top: 0, right: 20 }}
           NetworkIconProps={{
-            size: 16,
-            fontSize: 12,
+            size: 20,
+            fontSize: 16,
           }}
           network={findNetworkOrThrow(
             allNetworks,
@@ -87,7 +87,11 @@ const NotificationEntry: FC<NotificationProps> = ({
         <Box px={seen ? 3 : 4.5} pt={1}>
           {type === "new" &&
             notification.message.parsed.type &&
-            notification.message.parsed.type.includes("liquidation-risk") && (
+            notification.message.parsed.type.includes("liquidation-risk") &&
+            isAfter(
+              Number(notification.message.parsed.liquidation),
+              Date.now()
+            ) && (
               <NextLinkComposed
                 passHref={true}
                 to={getWrapPagePath({
