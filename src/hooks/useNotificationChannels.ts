@@ -1,5 +1,7 @@
 import { QueryDefinition } from "@reduxjs/toolkit/dist/query";
 import { QueryActionCreatorResult } from "@reduxjs/toolkit/dist/query/core/buildInitiate";
+import { isAfter } from "date-fns";
+import addDays from "date-fns/addDays";
 import differenceInDays from "date-fns/differenceInDays";
 import { useMemo } from "react";
 import { useArchivedNotifications } from "../features/notifications/notificationHooks";
@@ -53,9 +55,17 @@ export type UseNotificationChannels = () => {
 const autoArchivationInDays = 30;
 
 const isArchived = (
-  { id, epoch }: Notification,
+  {
+    id,
+    epoch,
+    message: {
+      parsed: { liquidation, type },
+    },
+  }: Notification,
   archivedNotifications: Record<string, boolean>
 ) =>
+  (type !== "liquidation" &&
+    isAfter(Date.now(), addDays(Number(liquidation) * 1000, 1))) ||
   differenceInDays(new Date(), epoch) > autoArchivationInDays ||
   archivedNotifications[id];
 

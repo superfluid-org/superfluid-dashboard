@@ -89,7 +89,7 @@ const NotificationEntry: FC<NotificationProps> = ({
             notification.message.parsed.type &&
             notification.message.parsed.type.includes("liquidation-risk") &&
             isAfter(
-              Number(notification.message.parsed.liquidation),
+              Number(notification.message.parsed.liquidation) * 1000,
               Date.now()
             ) && (
               <NextLinkComposed
