@@ -106,6 +106,7 @@ const ConnectWallet: FC<ConnectWalletProps> = ({ small = false }) => {
   return (
     <LoadingButton
       data-cy={"connect-wallet-button"}
+      disabled={true}
       loading={!mounted || isAutoConnecting}
       variant="contained"
       size={small ? "small" : "xl"}

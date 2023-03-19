@@ -22,6 +22,7 @@ import TransactionBell from "../transactions/TransactionBell";
 import ConnectWallet from "../wallet/ConnectWallet";
 import { useLayoutContext } from "./LayoutContext";
 import { menuDrawerWidth } from "./NavigationDrawer";
+import { Web3Button } from "@web3modal/react";
 
 interface CustomAppBarProps {
   transactionDrawerOpen: boolean;
@@ -98,6 +99,8 @@ export default memo(function TopBar() {
         <Box flex={1} />
 
         <Stack direction="row" spacing={2} alignItems="center">
+          <Web3Button />
+
           {isBelowLg && !isImpersonated && <ConnectWallet small />}
           <ImpersonationChip />
           <SelectNetwork />

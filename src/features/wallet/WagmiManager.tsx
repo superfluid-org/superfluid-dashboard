@@ -14,14 +14,18 @@ import { configureChains } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
+import {
+  w3mConnectors,
+  w3mProvider,
+  EthereumClient,
+} from "@web3modal/ethereum";
+import { Web3Modal } from "@web3modal/react";
+
+const walletConnectProjectId = "952483bf7a0f5ace4c40eb53967f1368";
 
 export const { chains: wagmiChains, provider: wagmiRpcProvider } =
   configureChains(allNetworks, [
-    jsonRpcProvider({
-      rpc: (chain) => ({
-        http: findNetworkOrThrow(allNetworks, chain.id).rpcUrls.superfluid.http[0],
-      }),
-    }),
+    w3mProvider({ projectId: walletConnectProjectId }),
   ]);
 
 const { connectors } = getAppWallets({
@@ -29,11 +33,22 @@ const { connectors } = getAppWallets({
   chains: wagmiChains,
 });
 
+// const { chains, provider, webSocketProvider } = configureChains(
+//   [mainnet, ...(process.env.NODE_ENV === 'development' ? [goerli] : [])],
+//   [w3mProvider({ projectId: walletConnectProjectId })],
+// )
+
 export const wagmiClient = createWagmiClient({
   autoConnect: false, // Disable because of special Gnosis Safe handling in useAutoConnect.
-  connectors,
+  connectors: w3mConnectors({
+    chains: wagmiChains,
+    projectId: walletConnectProjectId,
+    version: 1,
+  }),
   provider: wagmiRpcProvider,
 });
+
+const ethereumClient = new EthereumClient(wagmiClient, wagmiChains)
 
 const WagmiManager: FC<PropsWithChildren> = ({ children }) => {
   return <WagmiConfig client={wagmiClient}>{children}</WagmiConfig>;
@@ -80,6 +95,10 @@ export const RainbowKitManager: FC<PropsWithChildren> = ({ children }) => {
             })
       }
     >
+      <Web3Modal
+        projectId={walletConnectProjectId}
+        ethereumClient={ethereumClient}
+      />
       {children}
     </RainbowKitProvider>
   );
