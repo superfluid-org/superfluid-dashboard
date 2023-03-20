@@ -24,7 +24,7 @@ const createWrapScheduleOperation = (): Operation => {
     return { } as any;
 }
 
-export const adHocRpcEndpoints = {
+export const autoWrapEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
     getWrapSchedule: builder.query<WrapSchedule, GetWrapSchedule>({
         queryFn: async (arg) => {

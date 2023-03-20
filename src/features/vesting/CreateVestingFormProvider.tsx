@@ -41,6 +41,7 @@ export type ValidVestingForm = {
       numerator?: number;
       denominator: UnitOfTime;
     };
+    setupAutoWrap?: boolean;
   };
 };
 
@@ -60,6 +61,7 @@ export type PartialVestingForm = {
       numerator?: number | "";
       denominator: UnitOfTime;
     };
+    setupAutoWrap: boolean;
   };
 };
 
@@ -110,6 +112,7 @@ const CreateVestingFormProvider: FC<{
               .required()
               .test((x) => Object.values(UnitOfTime).includes(x as UnitOfTime)),
           }).required(),
+          shouldAutoWrap: boolean().optional()
         }),
       }),
     []
@@ -285,6 +288,7 @@ const CreateVestingFormProvider: FC<{
         },
         receiverAddress: null,
         cliffEnabled: false,
+        shouldAutoWrap: false
       },
     },
     resolver: yupResolver(formSchema),

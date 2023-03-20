@@ -4,6 +4,7 @@ import {
   AlertTitle,
   Box,
   Button,
+  Checkbox,
   FormControlLabel,
   FormGroup,
   FormLabel,
@@ -28,7 +29,7 @@ import TooltipIcon from "../common/TooltipIcon";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
-import { subgraphApi } from "../redux/store";
+import { rpcApi, subgraphApi } from "../redux/store";
 import AddressSearch from "../send/AddressSearch";
 import {
   timeUnitWordMap,
@@ -37,6 +38,7 @@ import {
 } from "../send/FlowRateInput";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
 import { transactionButtonDefaultProps } from "../transactionBoundary/TransactionButton";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { PartialVestingForm } from "./CreateVestingFormProvider";
 import { CreateVestingCardView, VestingToken } from "./CreateVestingSection";
 
@@ -401,6 +403,43 @@ export const CreateVestingForm: FC<{
     />
   );
 
+  const { visibleAddress } = useVisibleAddress();
+  const {
+    isLoading: isAutoWrapStatusLoading,
+    currentData: hasAutoWrapAlreadyEnabled,
+  } = rpcApi.useGetWrapScheduleQuery(
+    network.autoWrapManagerContractAddress &&
+      token &&
+      token.underlyingAddress &&
+      visibleAddress
+      ? {
+          chainId: network.id,
+          accountAddress: visibleAddress,
+          superTokenAddress: token.address,
+          underlyingTokenAddress: token.underlyingAddress,
+        }
+      : skipToken
+  );
+
+  const AutoWrapController = (
+    <Controller
+      control={control}
+      name="data.setupAutoWrap"
+      render={({ field: { value, onChange, onBlur } }) => (
+        <>
+          {!isAutoWrapStatusLoading && !hasAutoWrapAlreadyEnabled && (
+            <FormControlLabel
+              label="Allow for automatic wrapping"
+              control={
+                <Checkbox checked={!!value} onChange={onChange} onBlur={onBlur} />
+              }
+            />
+          )}
+        </>
+      )}
+    ></Controller>
+  );
+
   const PreviewVestingScheduleButton = (
     <Button
       data-cy={"preview-schedule-button"}
@@ -538,6 +577,8 @@ export const CreateVestingForm: FC<{
             </>
           )}
         </Alert>
+
+        {AutoWrapController}
       </Stack>
 
       <Stack gap={1}>{PreviewVestingScheduleButton}</Stack>
