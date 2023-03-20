@@ -6,18 +6,22 @@ import {
   Stack,
   TextField,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
-import { useAccount, useDisconnect } from "wagmi";
+import { useAccount, useBalance, useDisconnect } from "wagmi";
 import AddressName from "../../components/AddressName/AddressName";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 
-import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
-import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
+import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-import copyToClipboard from "../../utils/copyToClipboard";
+import { isAddress } from "../../utils/memoizedEthersUtils";
+import CopyBtn from "../common/CopyBtn";
+import { useImpersonation } from "../impersonation/ImpersonationContext";
+import Amount from "../token/Amount";
+
 interface AccountModalProps {
   open: boolean;
   onClose: () => void;
@@ -26,6 +30,9 @@ interface AccountModalProps {
 const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
   const { address } = useAccount();
   const { disconnectAsync } = useDisconnect();
+  const { impersonate } = useImpersonation();
+  const theme = useTheme();
+  const { data: balanceData } = useBalance({ address });
 
   const [viewAddress, setViewAddress] = useState("");
 
@@ -39,9 +46,13 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
 
   const onDisconnect = () => disconnectAsync();
 
-  const onCopyAddress = useCallback(() => {
-    if (address) copyToClipboard(address);
-  }, [address]);
+  const onImpersonate = useCallback(() => {
+    if (viewAddress && isAddress(viewAddress)) {
+      impersonate(viewAddress);
+      onClose();
+      setViewAddress("");
+    }
+  }, [impersonate, viewAddress, setViewAddress, onClose]);
 
   return (
     <ResponsiveDialog
@@ -55,28 +66,30 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
         </Typography>
       </DialogTitle>
       {address && (
-        <DialogContent sx={{ p: 5, pt: 0 }}>
+        <DialogContent sx={{ px: 5, pt: 0, pb: 3.5 }}>
           <Stack alignItems="center">
             <AddressAvatar address={address} />
             <Typography variant="h4" component="span" sx={{ mt: 1.5 }}>
               <AddressName address={address} />
             </Typography>
-            <Typography variant="h5" color="text.secondary">
-              1 MATIC
-            </Typography>
+            {balanceData && (
+              <Typography variant="h5" color="text.secondary">
+                <Amount wei={balanceData.value} /> {balanceData.symbol}
+              </Typography>
+            )}
           </Stack>
 
           <Stack direction="row" gap={1} sx={{ my: 4 }}>
-            <Button
-              variant="outlined"
-              color="secondary"
-              size="large"
-              endIcon={<ContentCopyRoundedIcon />}
-              sx={{ flex: 1 }}
-              onClick={onCopyAddress}
-            >
-              Copy Address
-            </Button>
+            <CopyBtn
+              label="Copy Address"
+              copyText={address}
+              ButtonProps={{
+                variant: "outlined",
+                color: "secondary",
+                size: "large",
+                sx: { flex: 1 },
+              }}
+            />
 
             <Button
               variant="outlined"
@@ -104,11 +117,17 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
               InputProps={{ startAdornment: <SearchRoundedIcon /> }}
               value={viewAddress}
               onChange={onViewAddressChange}
-              autoComplete="false"
+              autoComplete="off"
               sx={{ flex: 1 }}
             />
-            <IconButton color="secondary" sx={{ border: "1px solid #D1D2D3" }}>
-              <ArrowForwardRoundedIcon />
+            <IconButton
+              color="secondary"
+              sx={{ border: "1px solid #D1D2D3" }}
+              onClick={onImpersonate}
+            >
+              <ArrowForwardRoundedIcon
+                sx={{ color: theme.palette.text.primary }}
+              />
             </IconButton>
           </Stack>
         </DialogContent>
