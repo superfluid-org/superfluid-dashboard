@@ -4,11 +4,11 @@ import { networkDefinition } from "../features/network/networks";
 const ethSdkConfig = defineConfig({
   contracts: {
     goerli: {
-      flowScheduler: networkDefinition.goerli.flowSchedulerContractAddress, // Goerli used as source of truth for the ABI of Flow Scheduler. 
+      flowScheduler: networkDefinition.goerli.flowSchedulerContractAddress, // Goerli used as source of truth for the ABI of Flow Scheduler.
     },
     mainnet: {
-      vestingScheduler: networkDefinition.ethereum.vestingContractAddress // Mainnet used as source of truth for the ABI of Vesting Scheduler. 
-    }
+      vestingScheduler: networkDefinition.ethereum.vestingContractAddress, // Mainnet used as source of truth for the ABI of Vesting Scheduler.
+    },
   },
   outputPath: "./src/eth-sdk/client",
 });

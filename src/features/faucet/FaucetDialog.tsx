@@ -63,7 +63,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
     accountAddress
       ? {
           type: Flag.TestTokensReceived,
-          chainId: networkDefinition.goerli.id,
+          chainId: networkDefinition.polygonMumbai.id,
           account: getAddress(accountAddress),
         }
       : undefined
@@ -72,7 +72,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
   const claimTokens = useCallback(() => {
     if (accountAddress) {
       claimTestTokensTrigger({
-        chainId: networkDefinition.goerli.id,
+        chainId: networkDefinition.polygonMumbai.id,
         account: accountAddress,
       }).then((response) => {
         if (response.isSuccess) setTransactionDrawerOpen(true);
@@ -143,7 +143,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
             </Alert>
           )}
 
-          <ConnectionBoundary expectedNetwork={networkDefinition.goerli}>
+          <ConnectionBoundary expectedNetwork={networkDefinition.polygonMumbai}>
             <ConnectionBoundaryButton
               ButtonProps={{
                 size: "xl",
