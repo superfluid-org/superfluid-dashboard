@@ -1,9 +1,11 @@
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import PersonSearchRoundedIcon from "@mui/icons-material/PersonSearchRounded";
 import {
   Button,
   DialogContent,
   DialogTitle,
+  IconButton,
   Stack,
   Typography,
   useTheme,
@@ -52,7 +54,18 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
 
   const openAddressSearch = () => setAddressSearchOpen(true);
   const closeAddressSearch = () => setAddressSearchOpen(false);
-  const onDisconnect = () => disconnectAsync();
+
+  const onDisconnect = useCallback(() => {
+    handleClose();
+
+    const timeoutID = setTimeout(() => {
+      disconnectAsync();
+    }, theme.transitions.duration.standard);
+
+    return () => {
+      if (timeoutID) clearTimeout(timeoutID);
+    };
+  }, [handleClose, disconnectAsync, theme]);
 
   const onImpersonate = useCallback(
     (viewAddress: string) => {
@@ -74,6 +87,13 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
             <Typography variant="h4" textAlign="center">
               Wallet Connected
             </Typography>
+            <IconButton
+              onClick={handleClose}
+              sx={{ position: "absolute", right: 20, top: 24 }}
+              color="inherit"
+            >
+              <CloseRoundedIcon />
+            </IconButton>
           </DialogTitle>
           {address && (
             <DialogContent sx={{ px: 5, pt: 0, pb: 3.5 }}>
@@ -114,10 +134,6 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
               </Stack>
 
               <Typography variant="h6">View as any wallet</Typography>
-              <Typography variant="body1" color="text.secondary">
-                We’ll disconnect you if you view as another wallet so be sure to
-                reconnect when you are done.
-              </Typography>
 
               <Stack
                 direction="row"

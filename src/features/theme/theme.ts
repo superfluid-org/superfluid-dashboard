@@ -629,6 +629,16 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
               ),
             },
           },
+          colorWarning: {
+            color: theme.palette.warning.main,
+            backgroundColor: alpha(theme.palette.warning.main, 0.08),
+            "&:hover": {
+              backgroundColor: alpha(
+                theme.palette.warning.main,
+                getModeStyle(0.12, 0.16)
+              ),
+            },
+          },
           sizeSmall: {
             padding: theme.spacing(0.5),
             ".MuiSvgIcon-root": {
