@@ -15,8 +15,8 @@ import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import {
   PartialVestingForm,
 } from "./CreateVestingFormProvider";
-import { CreateVestingPreview } from "./CreateVestingPreview";
-import { CreateVestingForm } from "./CreateVestingForm";
+import CreateVestingPreview from "./CreateVestingPreview";
+import CreateVestingForm from "./CreateVestingForm";
 import { useRouter } from "next/router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useVestingToken } from "./useVestingToken";

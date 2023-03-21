@@ -22,7 +22,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { add } from "date-fns";
-import { FC, useCallback, useMemo } from "react";
+import { FC, memo, useCallback, useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import TooltipIcon from "../common/TooltipIcon";
@@ -53,7 +53,7 @@ export enum VestingFormLabels {
   TotalVestedAmount = "Total Vested Amount",
 }
 
-export const CreateVestingForm: FC<{
+const CreateVestingForm: FC<{
   token: VestingToken | undefined;
   setView: (value: CreateVestingCardView) => void;
 }> = ({ token, setView }) => {
@@ -82,17 +82,9 @@ export const CreateVestingForm: FC<{
   );
 
   const [
-    receiverAddress,
-    totalAmountEther,
-    startDate,
-    cliffAmountEther,
     cliffEnabled,
     vestingPeriod,
   ] = watch([
-    "data.receiverAddress",
-    "data.totalAmountEther",
-    "data.startDate",
-    "data.cliffAmountEther",
     "data.cliffEnabled",
     "data.vestingPeriod",
   ]);
@@ -101,9 +93,9 @@ export const CreateVestingForm: FC<{
     <Controller
       control={control}
       name="data.receiverAddress"
-      render={({ field: { onChange, onBlur } }) => (
+      render={({ field: { value, onChange, onBlur } }) => (
         <AddressSearch
-          address={receiverAddress}
+          address={value}
           onChange={onChange}
           onBlur={onBlur}
           addressLength={isBelowMd ? "medium" : "long"}
@@ -585,3 +577,5 @@ export const CreateVestingForm: FC<{
     </Stack>
   );
 };
+
+export default memo(CreateVestingForm);
