@@ -1,7 +1,5 @@
 import PersonSearchRoundedIcon from "@mui/icons-material/PersonSearchRounded";
-import { Box, Button, Card, Paper, Stack, Typography } from "@mui/material";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { useTheme } from "@mui/system";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import { FC, useCallback, useState } from "react";
 import AddressSearchIndex from "../../features/impersonation/AddressSearchIndex";
 import { useImpersonation } from "../../features/impersonation/ImpersonationContext";

@@ -1,24 +1,21 @@
+import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
+import PersonSearchRoundedIcon from "@mui/icons-material/PersonSearchRounded";
 import {
   Button,
   DialogContent,
   DialogTitle,
-  IconButton,
   Stack,
-  TextField,
   Typography,
   useTheme,
 } from "@mui/material";
-import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { useAccount, useBalance, useDisconnect } from "wagmi";
 import AddressName from "../../components/AddressName/AddressName";
+import { AddressSearchDialogContent } from "../../components/AddressSearchDialog/AddressSearchDialog";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
-import ResponsiveDialog from "../common/ResponsiveDialog";
-
-import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
-import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
-import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-import { isAddress } from "../../utils/memoizedEthersUtils";
 import CopyBtn from "../common/CopyBtn";
+import ResponsiveDialog from "../common/ResponsiveDialog";
+import AddressSearchIndex from "../impersonation/AddressSearchIndex";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 import Amount from "../token/Amount";
 
@@ -28,109 +25,128 @@ interface AccountModalProps {
 }
 
 const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
+  const theme = useTheme();
+
   const { address } = useAccount();
   const { disconnectAsync } = useDisconnect();
   const { impersonate } = useImpersonation();
-  const theme = useTheme();
   const { data: balanceData } = useBalance({ address });
 
-  const [viewAddress, setViewAddress] = useState("");
+  const [addressSearchOpen, setAddressSearchOpen] = useState(false);
+
+  const handleClose = useCallback(() => {
+    onClose();
+
+    const timeoutID = setTimeout(() => {
+      setAddressSearchOpen(false);
+    }, theme.transitions.duration.standard);
+
+    return () => {
+      if (timeoutID) clearTimeout(timeoutID);
+    };
+  }, [onClose, setAddressSearchOpen, theme]);
 
   useEffect(() => {
-    if (open && !address) onClose();
-  }, [open, address, onClose]);
+    if (open && !address) handleClose();
+  }, [open, address, handleClose]);
 
-  const onViewAddressChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setViewAddress(e.target.value);
-  };
-
+  const openAddressSearch = () => setAddressSearchOpen(true);
+  const closeAddressSearch = () => setAddressSearchOpen(false);
   const onDisconnect = () => disconnectAsync();
 
-  const onImpersonate = useCallback(() => {
-    if (viewAddress && isAddress(viewAddress)) {
+  const onImpersonate = useCallback(
+    (viewAddress: string) => {
       impersonate(viewAddress);
-      onClose();
-      setViewAddress("");
-    }
-  }, [impersonate, viewAddress, setViewAddress, onClose]);
+      handleClose();
+    },
+    [impersonate, handleClose]
+  );
 
   return (
     <ResponsiveDialog
       open={open}
-      onClose={onClose}
-      PaperProps={{ sx: { maxWidth: 480 } }}
+      onClose={handleClose}
+      PaperProps={{ sx: { width: 500 } }}
     >
-      <DialogTitle sx={{ px: 5, pt: 3.5 }}>
-        <Typography variant="h4" textAlign="center">
-          Wallet Connected
-        </Typography>
-      </DialogTitle>
-      {address && (
-        <DialogContent sx={{ px: 5, pt: 0, pb: 3.5 }}>
-          <Stack alignItems="center">
-            <AddressAvatar address={address} />
-            <Typography variant="h4" component="span" sx={{ mt: 1.5 }}>
-              <AddressName address={address} />
+      {!addressSearchOpen ? (
+        <>
+          <DialogTitle sx={{ px: 5, pt: 3.5 }}>
+            <Typography variant="h4" textAlign="center">
+              Wallet Connected
             </Typography>
-            {balanceData && (
-              <Typography variant="h5" color="text.secondary">
-                <Amount wei={balanceData.value} /> {balanceData.symbol}
+          </DialogTitle>
+          {address && (
+            <DialogContent sx={{ px: 5, pt: 0, pb: 3.5 }}>
+              <Stack alignItems="center">
+                <AddressAvatar address={address} />
+                <Typography variant="h4" component="span" sx={{ mt: 1.5 }}>
+                  <AddressName address={address} />
+                </Typography>
+                {balanceData && (
+                  <Typography variant="h5" color="text.secondary">
+                    <Amount wei={balanceData.value} /> {balanceData.symbol}
+                  </Typography>
+                )}
+              </Stack>
+
+              <Stack direction="row" gap={1} sx={{ my: 4 }}>
+                <CopyBtn
+                  label="Copy Address"
+                  copyText={address}
+                  ButtonProps={{
+                    variant: "outlined",
+                    color: "secondary",
+                    size: "large",
+                    sx: { flex: 1 },
+                  }}
+                />
+
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  size="large"
+                  endIcon={<LogoutRoundedIcon />}
+                  sx={{ flex: 1 }}
+                  onClick={onDisconnect}
+                >
+                  Disconnect
+                </Button>
+              </Stack>
+
+              <Typography variant="h6">View as any wallet</Typography>
+              <Typography variant="body1" color="text.secondary">
+                We’ll disconnect you if you view as another wallet so be sure to
+                reconnect when you are done.
               </Typography>
-            )}
-          </Stack>
 
-          <Stack direction="row" gap={1} sx={{ my: 4 }}>
-            <CopyBtn
-              label="Copy Address"
-              copyText={address}
-              ButtonProps={{
-                variant: "outlined",
-                color: "secondary",
-                size: "large",
-                sx: { flex: 1 },
-              }}
-            />
-
-            <Button
-              variant="outlined"
-              color="secondary"
-              size="large"
-              endIcon={<LogoutRoundedIcon />}
-              sx={{ flex: 1 }}
-              onClick={onDisconnect}
-            >
-              Disconnect
-            </Button>
-          </Stack>
-
-          <Typography variant="h6">View as any wallet</Typography>
-          <Typography variant="body1" color="text.secondary">
-            We’ll disconnect you if you view as another wallet so be sure to
-            reconnect when you are done.
-          </Typography>
-
-          <Stack direction="row" alignItems="center" gap={1.25} sx={{ mt: 2 }}>
-            <TextField
-              variant="outlined"
-              size="small"
-              placeholder="Paste any wallet address"
-              InputProps={{ startAdornment: <SearchRoundedIcon /> }}
-              value={viewAddress}
-              onChange={onViewAddressChange}
-              autoComplete="off"
-              sx={{ flex: 1 }}
-            />
-            <IconButton
-              color="secondary"
-              sx={{ border: "1px solid #D1D2D3" }}
-              onClick={onImpersonate}
-            >
-              <ArrowForwardRoundedIcon
-                sx={{ color: theme.palette.text.primary }}
-              />
-            </IconButton>
-          </Stack>
-        </DialogContent>
+              <Stack
+                direction="row"
+                alignItems="center"
+                gap={1.25}
+                sx={{ mt: 2 }}
+              >
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  fullWidth
+                  startIcon={<PersonSearchRoundedIcon />}
+                  onClick={openAddressSearch}
+                >
+                  View the dashboard as any address
+                </Button>
+              </Stack>
+            </DialogContent>
+          )}
+        </>
+      ) : (
+        <AddressSearchDialogContent
+          title="Select Address To View"
+          open={addressSearchOpen}
+          onClose={handleClose}
+          onBack={closeAddressSearch}
+          onSelectAddress={onImpersonate}
+          index={<AddressSearchIndex onSelectAddress={onImpersonate} />}
+        />
       )}
     </ResponsiveDialog>
   );
