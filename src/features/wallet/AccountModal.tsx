@@ -144,6 +144,7 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
                 <Button
                   variant="outlined"
                   color="secondary"
+                  size="large"
                   fullWidth
                   startIcon={<PersonSearchRoundedIcon />}
                   onClick={openAddressSearch}
