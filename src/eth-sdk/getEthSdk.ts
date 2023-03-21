@@ -1,7 +1,12 @@
 import { providers, Signer } from "ethers";
 import { allNetworks, findNetworkOrThrow } from "../features/network/networks";
-import { AutoWrapManager__factory, FlowScheduler__factory } from "./client/esm/types/factories/goerli";
+import {
+  AutoWrapManager__factory,
+  AutoWrapStrategy__factory,
+  FlowScheduler__factory,
+} from "./client/esm/types/factories/goerli";
 import { VestingScheduler__factory } from "./client/esm/types/factories/mainnet";
+import { AutoWrapManager, AutoWrapStrategy } from "./client/esm/types";
 
 export const getFlowScheduler = (
   chainId: number,
@@ -43,22 +48,31 @@ export const getVestingScheduler = (
   );
 };
 
-export const getAutoWrapManager = (
+export const getAutoWrap = (
   chainId: number,
   providerOrSigner: providers.Provider | Signer
-) => {
+): {
+  manager: AutoWrapManager;
+  strategy: AutoWrapStrategy;
+} => {
   const network = findNetworkOrThrow(allNetworks, chainId);
 
-  const networkContractAddress = network?.autoWrapManagerContractAddress;
-  const doesNetworkSupportContract = networkContractAddress;
+  const networkContractAddresses = network?.autoWrap;
+  const doesNetworkSupportContract = networkContractAddresses;
   if (!doesNetworkSupportContract) {
     throw new Error(
       `Auto Wrap not available for network [${chainId}:${network?.name}].`
     );
   }
 
-  return AutoWrapManager__factory.connect(
-    networkContractAddress,
-    providerOrSigner
-  );
+  return {
+    manager: AutoWrapManager__factory.connect(
+      networkContractAddresses.managerContractAddress,
+      providerOrSigner
+    ),
+    strategy: AutoWrapStrategy__factory.connect(
+      networkContractAddresses.strategyContractAddress,
+      providerOrSigner
+    ),
+  };
 };

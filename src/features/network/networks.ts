@@ -10,7 +10,15 @@ import {
   TokenType,
 } from "../redux/endpoints/tokenTypes";
 import sfMeta from "@superfluid-finance/metadata";
-import { autoWrapAddresses, flowSchedulerContractAddresses, flowSchedulerSubgraphUrls, superfluidPlatformUrls, superfluidRpcUrls, vestingContractAddresses, vestingSubgraphUrls } from "./networkConstants";
+import {
+  autoWrapAddresses,
+  flowSchedulerContractAddresses,
+  flowSchedulerSubgraphUrls,
+  superfluidPlatformUrls,
+  superfluidRpcUrls,
+  vestingContractAddresses,
+  vestingSubgraphUrls,
+} from "./networkConstants";
 
 // id == chainId
 // name == displayName
@@ -36,7 +44,10 @@ export type Network = Chain & {
   vestingContractAddress: `0x${string}` | undefined;
   vestingSubgraphUrl: `https://${string}` | undefined;
   platformUrl: string | undefined;
-  autoWrapManagerContractAddress?: `0x${string}` | undefined;
+  autoWrap?: {
+    managerContractAddress: `0x${string}`;
+    strategyContractAddress: `0x${string}`;
+  };
 };
 
 const blockExplorers = {
@@ -128,7 +139,10 @@ export const networkDefinition: {
     vestingContractAddress: vestingContractAddresses.goerli,
     vestingSubgraphUrl: vestingSubgraphUrls.goerli,
     platformUrl: superfluidPlatformUrls.goerli,
-    autoWrapManagerContractAddress: autoWrapAddresses.goerli.manager
+    autoWrap: {
+      managerContractAddress: autoWrapAddresses.goerli.manager,
+      strategyContractAddress: autoWrapAddresses.goerli.strategy,
+    },
   },
   gnosis: {
     name: "Gnosis Chain",
