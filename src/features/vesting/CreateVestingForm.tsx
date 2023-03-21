@@ -408,7 +408,7 @@ export const CreateVestingForm: FC<{
     isLoading: isAutoWrapStatusLoading,
     currentData: hasAutoWrapAlreadyEnabled,
   } = rpcApi.useGetWrapScheduleQuery(
-    network.autoWrapManagerContractAddress &&
+    network.autoWrap &&
       token &&
       token.underlyingAddress &&
       visibleAddress

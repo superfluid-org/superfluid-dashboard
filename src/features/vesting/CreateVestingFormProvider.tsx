@@ -112,7 +112,7 @@ const CreateVestingFormProvider: FC<{
               .required()
               .test((x) => Object.values(UnitOfTime).includes(x as UnitOfTime)),
           }).required(),
-          shouldAutoWrap: boolean().optional()
+          setupAutoWrap: boolean().optional()
         }),
       }),
     []
@@ -288,7 +288,7 @@ const CreateVestingFormProvider: FC<{
         },
         receiverAddress: null,
         cliffEnabled: false,
-        shouldAutoWrap: false
+        setupAutoWrap: false
       },
     },
     resolver: yupResolver(formSchema),
