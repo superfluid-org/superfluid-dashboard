@@ -11,7 +11,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import { FC, memo } from "react";
+import { FC, memo, SyntheticEvent, useCallback } from "react";
 import { useAccount, useNetwork } from "wagmi";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
@@ -26,7 +26,7 @@ interface AccountInfoProps {
   isConnected?: boolean;
   isImpersonating?: boolean;
   onClick?: () => void;
-  stopImpersonation: () => void;
+  stopImpersonation: (e: SyntheticEvent) => void;
 }
 
 const AccountInfo: FC<AccountInfoProps> = ({
@@ -116,9 +116,18 @@ const ConnectWallet: FC<ConnectWalletProps> = ({ small = false }) => {
 
   const { visibleAddress } = useVisibleAddress();
   const { chain: activeChain } = useNetwork();
-  const { stopImpersonation: stopImpersonation, isImpersonated } =
-    useImpersonation();
+  const { stopImpersonation, isImpersonated } = useImpersonation();
+
   const { isAutoConnecting } = useAutoConnect();
+
+  const handleStopImpersonation = useCallback(
+    (e: SyntheticEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      stopImpersonation();
+    },
+    [stopImpersonation]
+  );
 
   if (visibleAddress && activeChain && mounted) {
     // TODO(KK): Better solution for pointer/click
@@ -128,14 +137,14 @@ const ConnectWallet: FC<ConnectWalletProps> = ({ small = false }) => {
         isConnected={network.id === activeChain.id}
         isImpersonating={isImpersonated}
         onClick={openAccountModal}
-        stopImpersonation={stopImpersonation}
+        stopImpersonation={handleStopImpersonation}
       />
     ) : (
       <MobileAccountInfo
         address={visibleAddress}
         isImpersonating={isImpersonated}
         onClick={openAccountModal}
-        stopImpersonation={stopImpersonation}
+        stopImpersonation={handleStopImpersonation}
       />
     );
   }
