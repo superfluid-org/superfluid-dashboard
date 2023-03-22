@@ -229,7 +229,7 @@ export const adHocRpcEndpoints = {
         },
       ],
     }),
-    isEOA: builder.query<boolean, { chainId: number; accountAddress: string }>({
+    isEOA: builder.query<boolean | null, { chainId: number; accountAddress: string }>({
       keepUnusedDataFor: Number.MAX_VALUE,
       queryFn: async ({ chainId, accountAddress }) => {
         const framework = await getFramework(chainId);
@@ -244,7 +244,7 @@ export const adHocRpcEndpoints = {
         } catch (e) {
           console.error("Error while checking if account is EOA", e);
           return {
-            data: false, // If we can't get the code, we default to EOA.
+            data: null
           };
         }
       },

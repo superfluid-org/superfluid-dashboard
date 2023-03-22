@@ -13,7 +13,7 @@ import { rpcApi } from "../redux/store";
 
 interface VisibleAddressContextValue {
   visibleAddress: string | undefined;
-  isEOA?: boolean;
+  isEOA: boolean | null;
 }
 
 const VisibleAddressContext = createContext<VisibleAddressContextValue>(null!);
@@ -24,19 +24,22 @@ export const VisibleAddressProvider: FC<PropsWithChildren> = ({ children }) => {
   const { address: accountAddress } = useAccount();
   const visibleAddress = impersonatedAddress ?? accountAddress;
 
-  const { data: isEOA } = rpcApi.useIsEOAQuery(
+  const { isEOA } = rpcApi.useIsEOAQuery(
     visibleAddress
       ? {
           chainId: network.id,
           accountAddress: visibleAddress,
         }
-      : skipToken
+      : skipToken,
+    {
+      selectFromResult: ({ data }) => ({ isEOA: data ?? null }),
+    }
   );
 
   const contextValue = useMemo(
     () => ({
       visibleAddress,
-      isEOA: !!isEOA,
+      isEOA,
     }),
     [visibleAddress, isEOA]
   );
