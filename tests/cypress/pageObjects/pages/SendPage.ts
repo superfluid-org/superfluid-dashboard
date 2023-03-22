@@ -40,7 +40,7 @@ const PREVIEW_BALANCE = "[data-cy=balance]";
 const TOKEN_NO_SEARCH_RESULTS = "[data-cy=token-search-no-results]";
 const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet]";
 const DIALOG = "[role=dialog]"
-const DIALOG_CONTENT = "[data-cy=test]"
+const DIALOG_CONTENT = "[data-cy=dialog-content]"
 const APPROVAL_MESSAGE = "[data-cy=approval-message]"
 const TX_MESSAGE_NETWORK = "[data-cy=tx-network]"
 const LOADING_SPINNER = "[role=progressbar]"

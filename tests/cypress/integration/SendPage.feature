@@ -169,8 +169,8 @@ Feature: Send Page test cases
     And User opens "goerli" "TDLx" individual token page
     Then The stream row to "0x9B6157d44134b21D934468B8bf709294cB298aa7" has a flow rate of "-1" and dates to "21 Mar. 2023 08:3430 Jan. 2025 22:00"
 
-  @rejected
   Scenario: Modifying a streams start date
+    Given HDWallet transactions are rejected
     Given "Send Page" is open with "john" connected on "goerli"
     And User inputs all the details to send "2" "TDLx" per "month" to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B"
     And User inputs a date "1" "year" into the future into the stream start date
@@ -179,8 +179,8 @@ Feature: Send Page test cases
     And Scheduled stream transaction dialogs are shown
     And Transaction rejected error is shown
 
-  @rejected
   Scenario: Modifying a stream with just end date
+    Given HDWallet transactions are rejected
     Given "Send Page" is open with "john" connected on "goerli"
     And User inputs all the details to send "1" "TDLx" per "month" to "0x9B6157d44134b21D934468B8bf709294cB298aa7"
     And Stream start date field is disabled
@@ -190,8 +190,8 @@ Feature: Send Page test cases
     And Scheduled stream transaction dialogs are shown
     And Transaction rejected error is shown
 
-  @rejected
   Scenario: Modifying a stream with start and end date ( not started yet )
+    Given HDWallet transactions are rejected
     Given "Send Page" is open with "john" connected on "goerli"
     And User inputs all the details to send "1" "TDLx" per "month" to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4"
     And User inputs a date "1" "year" into the future into the stream start date
@@ -201,22 +201,22 @@ Feature: Send Page test cases
     And Scheduled stream transaction dialogs are shown
     And Transaction rejected error is shown
 
-  @rejected
   Scenario: Cancelling a scheduled stream - just end date
+    Given HDWallet transactions are rejected
     Given "Send Page" is open with "john" connected on "goerli"
     And User inputs all the details to send "1" "TDLx" per "month" to "0x9B6157d44134b21D934468B8bf709294cB298aa7"
     And User tries to cancel the stream and the first transaction dialogs are visible on "goerli"
     And Transaction rejected error is shown
 
-  @rejected
   Scenario: Cancelling a scheduled stream - just start date
+    Given HDWallet transactions are rejected
     Given "Send Page" is open with "john" connected on "goerli"
     And User inputs all the details to send "1" "TDLx" per "month" to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B"
     And User tries to cancel the stream and the first transaction dialogs are visible on "goerli"
     And Transaction rejected error is shown
 
-  @rejected
   Scenario: Cancelling a scheduled stream - start and end date ( Not started )
+    Given HDWallet transactions are rejected
     Given "Send Page" is open with "john" connected on "goerli"
     And User inputs all the details to send "1" "TDLx" per "month" to "0x9B6157d44134b21D934468B8bf709294cB298aa7"
     And User tries to cancel the stream and the first transaction dialogs are visible on "goerli"
