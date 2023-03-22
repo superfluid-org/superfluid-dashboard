@@ -1,15 +1,15 @@
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 import {
   createContext,
   FC,
   PropsWithChildren,
   useContext,
-  useEffect,
   useMemo,
-  useState,
 } from "react";
-import { useAccount, useProvider } from "wagmi";
+import { useAccount } from "wagmi";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
+import { rpcApi } from "../redux/store";
 
 interface VisibleAddressContextValue {
   visibleAddress: string | undefined;
@@ -24,33 +24,19 @@ export const VisibleAddressProvider: FC<PropsWithChildren> = ({ children }) => {
   const { address: accountAddress } = useAccount();
   const visibleAddress = impersonatedAddress ?? accountAddress;
 
-  const readOnlyProvider = useProvider({
-    chainId: network.id,
-  });
-
-  const [isEOA, setIsEOA] = useState<boolean | undefined>();
-  useEffect(() => {
-    const handleIsEOA = async () => {
-      if (accountAddress) {
-        try {
-          const code = await readOnlyProvider.getCode(accountAddress);
-          const isSmartContract = code.length > 2; // The code is "0x" when not a smart contract.
-          setIsEOA(!isSmartContract);
-        } catch (e) {
-          setIsEOA(undefined);
-          throw e;
+  const { data: isEOA } = rpcApi.useIsEOAQuery(
+    visibleAddress
+      ? {
+          chainId: network.id,
+          accountAddress: visibleAddress,
         }
-      } else {
-        setIsEOA(undefined);
-      }
-    };
-    handleIsEOA();
-  }, [visibleAddress, readOnlyProvider]);
+      : skipToken
+  );
 
   const contextValue = useMemo(
     () => ({
       visibleAddress,
-      isEOA,
+      isEOA: !!isEOA,
     }),
     [visibleAddress, isEOA]
   );
