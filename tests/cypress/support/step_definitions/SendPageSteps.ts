@@ -10,7 +10,7 @@ Given(/^Stream preview is shown correctly when user is not connected$/, () => {
     SendPage.checkIfStreamPreviewIsCorrectWhenUserNotConnected();
 });
 Given(/^User accepts the risk warning$/, () => {
-    SendPage.acceptRiskWarning();
+    SendPage.isSchedulingSupported(() => SendPage.acceptRiskWarning());
 });
 
 Given(/^Stream ending on and amount per second is shown correctly$/, () => {
@@ -189,45 +189,45 @@ Then(/^The preview buffer amount shown and warning sections shows (\d+) tokens a
     SendPage.validateEthereumMainnetMinimumDeposit()
 });
 Given(/^User clicks the scheduling toggle$/, function () {
-    SendPage.clickSchedulingToggle()
+    SendPage.isSchedulingSupported(() => SendPage.clickSchedulingToggle())
 });
 Given(/^User inputs a date "([^"]*)" "([^"]*)" into the future into the stream start date$/, function (amount:number,timeunit:string) {
-    SendPage.inputStartDate(amount,timeunit)
+    SendPage.isSchedulingSupported(() => SendPage.inputStartDate(amount,timeunit))
 });
 Given(/^User inputs a date "([^"]*)" "([^"]*)" into the future into the stream end date$/, function (amount:number,timeunit:string) {
-    SendPage.inputEndDate(amount,timeunit)
+    SendPage.isSchedulingSupported(() => SendPage.inputEndDate(amount,timeunit))
 });
 Then(/^The end date container outline is red$/, function () {
-    SendPage.validateEndDateBorderIsRed()
+    SendPage.isSchedulingSupported(() => SendPage.validateEndDateBorderIsRed())
 });
 Then(/^The start date container outline is red$/, function () {
-    SendPage.validateStartDateBorderIsRed()
+    SendPage.isSchedulingSupported(() => SendPage.validateStartDateBorderIsRed())
 });
 
 Then(/^Allowlist message is shown$/, function () {
-    SendPage.validateVisibleAllowlistMessage()
+    SendPage.isSchedulingSupported(() => SendPage.validateVisibleAllowlistMessage())
 });
 Then(/^Scheduled stream fields are visible$/, function () {
-    SendPage.validateScheduledStreamFieldsAreVisible()
+    SendPage.isSchedulingSupported(() => SendPage.validateScheduledStreamFieldsAreVisible())
 });
 Given(/^User clicks the send transaction button$/, function () {
     SendPage.clickSendButton()
 });
 Given(/^Scheduled stream transaction dialogs are shown$/, function () {
-    SendPage.validateScheduledStreamDialogs()
+    SendPage.isSchedulingSupported(() => SendPage.validateScheduledStreamDialogs())
 });
 Then(/^The total stream amount is correctly calculated to be "([^"]*)"$/, function (amount:string) {
-    SendPage.validateTotalStreamAmount(amount)
+    SendPage.isSchedulingSupported(() => SendPage.validateTotalStreamAmount(amount))
 });
 Given(/^Stream start date field is disabled$/, function () {
-    SendPage.validateDisabledStartDateField()
+    SendPage.isSchedulingSupported(() => SendPage.validateDisabledStartDateField())
 });
 Then(/^The flow rate field in the send page is "([^"]*)"$/, function (flowrate:string) {
-    SendPage.validateSetFlowRate(flowrate)
+    SendPage.isSchedulingSupported(() => SendPage.validateSetFlowRate(flowrate))
 });
 Then(/^The stream start date is set to "([^"]*)"$/, function (date:string) {
-    SendPage.validateStreamStartDate(date)
+    SendPage.isSchedulingSupported(() => SendPage.validateStreamStartDate(date))
 });
 Then(/^The stream end date is set to "([^"]*)"$/, function (date:string) {
-    SendPage.validateStreamEndDate(date)
+    SendPage.isSchedulingSupported(() => SendPage.validateStreamEndDate(date))
 });

@@ -337,7 +337,7 @@ export class SendPage extends BasePage {
         this.click(RECEIVER_BUTTON);
         cy.get(RECENT_ENTRIES,{timeout:30000}).should("be.visible")
         this.type(ADDRESS_DIALOG_INPUT, address);
-        this.clear(FLOW_RATE_INPUT)
+        this.clear(`${FLOW_RATE_INPUT} input`)
         this.type(FLOW_RATE_INPUT, amount);
         this.click(SELECT_TOKEN_BUTTON);
         cy.get(`[data-cy="${selectedToken}-list-item"]`, {timeout: 60000}).click()
@@ -571,4 +571,14 @@ export class SendPage extends BasePage {
     static validateStreamEndDate(date:string) {
         this.hasValue(`${END_DATE} input`,date)
     }
+
+    static isSchedulingSupported(fn: () => void) {
+        if (["polygon-mumbai","avalanche-fuji"].includes(Cypress.env("network")) && Cypress.env("scheduling")) {
+            cy.log(`Skipping the step because ${Cypress.env("network")} is not supported`)
+            return
+        } else {
+            fn();
+        }
+    }
+
 }
