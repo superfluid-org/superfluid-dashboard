@@ -167,7 +167,7 @@ export const TransactionDialogContent: FC<PropsWithChildren> = ({
   children,
 }) => {
   return (
-    <Stack component={DialogContent} sx={{ p: 4 }}>
+    <Stack data-cy={"dialog-content"} component={DialogContent} sx={{ p: 4 }}>
       {children}
     </Stack>
   );

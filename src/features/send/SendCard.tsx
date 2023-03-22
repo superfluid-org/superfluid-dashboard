@@ -148,10 +148,11 @@ const WhitelistTransparentBox = () => (
     }}
   >
     <Box sx={{ px: 4, pb: 3, textAlign: "center" }}>
-      <Typography variant="h5">You are not on the allow list.</Typography>
-      <Typography sx={{ maxWidth: "410px" }} variant="body1">
+      <Typography data-cy="allowlist-message" variant="h5">You are not on the allow list.</Typography>
+      <Typography data-cy="allowlist-message" sx={{ maxWidth: "410px" }} variant="body1">
         If you want to set start and end dates for your streams,{" "}
         <Link
+          data-cy={"allowlist-link"}
           href="https://use.superfluid.finance/schedulestreams"
           target="_blank"
         >
@@ -1028,6 +1029,7 @@ export default memo(function SendCard() {
               }
             />
             <Collapse
+              data-cy={"scheduling-collapse"}
               in={streamScheduling}
               mountOnEnter
               unmountOnExit
