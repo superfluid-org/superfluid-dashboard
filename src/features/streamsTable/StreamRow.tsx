@@ -11,6 +11,7 @@ import {
   TableCell,
   TableCellProps,
   TableRow,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
@@ -28,6 +29,7 @@ import {
 } from "../../hooks/streamSchedulingHooks";
 import { getStreamPagePath } from "../../pages/stream/[_network]/[_stream]";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
+import TooltipIcon from "../common/TooltipIcon";
 import { Network } from "../network/networks";
 import { PendingOutgoingStream } from "../pendingUpdates/PendingOutgoingStream";
 import { UnitOfTime } from "../send/FlowRateInput";
@@ -36,6 +38,7 @@ import FlowingBalance from "../token/FlowingBalance";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import CancelStreamButton from "./CancelStreamButton/CancelStreamButton";
 import ModifyStreamButton from "./ModifyStreamButton";
+import { ActiveStreamIcon, ScheduledStreamIcon } from "./StreamIcons";
 import { StreamScheduling } from "./StreamScheduling";
 
 export const StreamRowLoading = () => {
@@ -198,9 +201,12 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
           <TableCell {...tableCellProps} sx={{ px: 1, ...tableCellProps.sx }}>
             {/* // TODO(KK): Tooltips? */}
             {!!startDateScheduled || !!endDateScheduled ? (
-              <TimerOutlined sx={{ display: "block" }} />
+              <ScheduledStreamIcon
+                scheduledStart={!!startDateScheduled}
+                scheduledEnd={!!endDateScheduled}
+              />
             ) : isActive ? (
-              <AllInclusiveIcon sx={{ display: "block" }} />
+              <ActiveStreamIcon />
             ) : null}
           </TableCell>
           <TableCell {...tableCellProps} sx={{ pl: 1, ...tableCellProps.sx }}>

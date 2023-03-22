@@ -52,6 +52,8 @@ import TooltipIcon from "../common/TooltipIcon";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import NetworkBadge from "../network/NetworkBadge";
+import { networkDefinition } from "../network/networks";
+import NetworkSwitchLink from "../network/NetworkSwitchLink";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { isWrappable, SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { platformApi } from "../redux/platformApi/platformApi";
@@ -156,7 +158,12 @@ const WhitelistTransparentBox = () => (
           target="_blank"
         >
           Apply for access
-        </Link>
+        </Link>{" "}
+        or try it out on{" "}
+        <NetworkSwitchLink
+          title="Polygon Mumbai"
+          network={networkDefinition.polygonMumbai}
+        />
         .
       </Typography>
     </Box>
