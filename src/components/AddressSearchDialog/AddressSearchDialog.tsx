@@ -1,3 +1,4 @@
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import {
   Button,
@@ -12,11 +13,13 @@ import {
   ListItemButton,
   ListItemText,
   ListSubheader,
+  Stack,
   TextField,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { Address } from "@superfluid-finance/sdk-core";
 import {
   FC,
   memo,
@@ -26,16 +29,14 @@ import {
   useMemo,
   useState,
 } from "react";
-import ResponsiveDialog from "../../features/common/ResponsiveDialog";
-import AddressAvatar from "../Avatar/AddressAvatar";
-import { getAddress, isAddress } from "../../utils/memoizedEthersUtils";
-import useAddressName from "../../hooks/useAddressName";
-import { useAppSelector } from "../../features/redux/store";
 import { addressBookSelectors } from "../../features/addressBook/addressBook.slice";
+import ResponsiveDialog from "../../features/common/ResponsiveDialog";
 import { ensApi } from "../../features/ens/ensApi.slice";
+import { useAppSelector } from "../../features/redux/store";
+import useAddressName from "../../hooks/useAddressName";
+import { getAddress, isAddress } from "../../utils/memoizedEthersUtils";
 import shortenHex from "../../utils/shortenHex";
-import { Address } from "@superfluid-finance/sdk-core";
-import Box from "@mui/material/Box/Box";
+import AddressAvatar from "../Avatar/AddressAvatar";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
@@ -99,7 +100,8 @@ export type AddressSearchDialogProps = {
   open: boolean;
   index: ReactNode | null;
   addresses?: Address[];
-  onClose: () => void;
+  onClose?: () => void;
+  onBack?: () => void;
   onSelectAddress: (address: string) => void;
   showAddressBook?: boolean;
   disableAutoselect?: boolean;
@@ -107,18 +109,19 @@ export type AddressSearchDialogProps = {
   showSelected?: boolean;
 };
 
-export default memo(function AddressSearchDialog({
+export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
   open,
   addresses = [],
   onSelectAddress,
   onClose,
+  onBack,
   title,
   index,
   showAddressBook = true,
   disableAutoselect = false,
   disabledAddresses = [],
   showSelected = false,
-}: AddressSearchDialogProps) {
+}) => {
   const theme = useTheme();
 
   const [searchTermVisible, setSearchTermVisible] = useState("");
@@ -180,26 +183,23 @@ export default memo(function AddressSearchDialog({
   const searchSynced = searchTermDebounced === searchTermVisible.trim();
 
   return (
-    <ResponsiveDialog
-      data-cy={"receiver-dialog"}
-      open={open}
-      onClose={() => onClose()}
-      PaperProps={{ sx: { borderRadius: "20px", maxWidth: 550 } }}
-    >
+    <>
       <DialogTitle sx={{ p: 3 }}>
-        <Typography variant="h4" sx={{ mb: 3 }}>
-          {title}
-        </Typography>
-        <IconButton
-          onClick={onClose}
-          sx={{
-            position: "absolute",
-            right: theme.spacing(3),
-            top: theme.spacing(3),
-          }}
-        >
-          <CloseRoundedIcon />
-        </IconButton>
+        <Stack direction="row" alignItems="center" gap={2} sx={{ mb: 3 }}>
+          {onBack && (
+            <IconButton onClick={onBack} sx={{ m: -0.5 }} color="inherit">
+              <ArrowBackRoundedIcon />
+            </IconButton>
+          )}
+          <Typography variant="h4" sx={{ flex: 1 }}>
+            {title}
+          </Typography>
+          {onClose && (
+            <IconButton onClick={onClose} sx={{ m: -0.5 }} color="inherit">
+              <CloseRoundedIcon />
+            </IconButton>
+          )}
+        </Stack>
         <TextField
           data-cy={"address-dialog-input"}
           autoComplete="off"
@@ -322,12 +322,59 @@ export default memo(function AddressSearchDialog({
             </List>
           </DialogContent>
           <DialogActions sx={{ p: 3 }}>
-            <Button data-cy={"ok-button"} variant="contained" size="xl" onClick={onClose}>
+            <Button
+              data-cy={"ok-button"}
+              variant="contained"
+              size="xl"
+              onClick={onClose}
+            >
               Ok
             </Button>
           </DialogActions>
         </>
       )}
+    </>
+  );
+};
+
+export default memo(function AddressSearchDialog({
+  open,
+  addresses,
+  onSelectAddress,
+  onClose,
+  onBack,
+  title,
+  index,
+  showAddressBook,
+  disableAutoselect,
+  disabledAddresses,
+  showSelected,
+}: AddressSearchDialogProps) {
+  const handleClose = useCallback(() => {
+    if (onClose) onClose();
+    if (onBack) onBack();
+  }, [onClose, onBack]);
+
+  return (
+    <ResponsiveDialog
+      data-cy={"receiver-dialog"}
+      open={open}
+      onClose={handleClose}
+      PaperProps={{ sx: { borderRadius: "20px", maxWidth: 550 } }}
+    >
+      <AddressSearchDialogContent
+        open={open}
+        addresses={addresses}
+        title={title}
+        index={index}
+        showAddressBook={showAddressBook}
+        disableAutoselect={disableAutoselect}
+        disabledAddresses={disabledAddresses}
+        showSelected={showSelected}
+        onSelectAddress={onSelectAddress}
+        onClose={onClose}
+        onBack={onBack}
+      />
     </ResponsiveDialog>
   );
 });

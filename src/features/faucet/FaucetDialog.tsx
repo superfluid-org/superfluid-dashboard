@@ -143,6 +143,13 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
             </Alert>
           )}
 
+          <Alert severity="warning">
+            <AlertTitle>
+              Goerli Faucet is down, Superfluid will be migrating to Mumbai
+              shortly.
+            </AlertTitle>
+          </Alert>
+
           <ConnectionBoundary expectedNetwork={networkDefinition.goerli}>
             <ConnectionBoundaryButton
               ButtonProps={{
@@ -162,7 +169,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
                     fullWidth
                     loading={claimTestTokensResponse.isLoading}
                     variant="contained"
-                    disabled={hasClaimedTokens}
+                    disabled={true /* until we move to Mumbai */}
                     onClick={claimTokens}
                   >
                     {hasClaimedTokens ? "Tokens Claimed" : "Claim"}

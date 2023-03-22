@@ -153,15 +153,31 @@ const AddressBook: NextPage = () => {
       const blob = new Blob([file], { type: "text/csv;charset=utf-8" });
       const contents = await blob.text();
 
-      const { data: parsedCSV } = parse<{ NAME?: string; ADDRESS: string }>(
+      const { data: parsedCSV } = parse<{ address: string; name?: string }>(
         contents,
-        { header: true }
+        {
+          header: true,
+          transformHeader: (header: string) => header.toLowerCase(),
+        }
       );
 
-      const mappedData: AddressBookEntry[] = parsedCSV.map((item) => ({
-        name: item.NAME,
-        address: getAddress(item.ADDRESS),
-      }));
+      const mappedData: AddressBookEntry[] = parsedCSV.reduce(
+        (mappedData: AddressBookEntry[], item, index) => {
+          try {
+            const parsedItem = {
+              name: item.name,
+              address: getAddress(item.address),
+            };
+
+            return [...mappedData, parsedItem];
+          } catch (e) {
+            // Using index + 2 here because the first row is for titles
+            console.error(`Failed to parse row ${index + 2}!`, e);
+            return mappedData;
+          }
+        },
+        []
+      );
 
       insertImportedAddresses(mappedData);
     } catch (e) {

@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import { FC } from "react";
+import WarningDialog from "../send/WarningDialog";
 
 const ClaimTokensBtn = () => (
   <Link href="/?showFaucet=true" passHref>

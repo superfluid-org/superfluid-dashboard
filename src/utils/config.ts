@@ -7,7 +7,7 @@ const segmentWriteKeyForProduction =
   "U00hhAgEO5bL8vb5OdhFYsIYTDwI04ei"; // This will be exposed client-side anyways.
 
 const netlifyContext = process.env.NEXT_PUBLIC_NETLIFY_CONTEXT;
-const isProduction = netlifyContext === "production";
+export const isProduction = netlifyContext === "production";
 const isDeployPreview = netlifyContext === "deploy-preview";
 
 const config = {

@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { FC, memo, useMemo } from "react";
 
 interface VestingScheduleProgressCheckpointProps {
-  title: string;
+  titles: string[];
   targetDate: Date;
   dateNow: Date;
   dataCy?: string;
@@ -11,7 +11,7 @@ interface VestingScheduleProgressCheckpointProps {
 
 const VestingScheduleProgressCheckpoint: FC<
   VestingScheduleProgressCheckpointProps
-> = ({ title, targetDate, dateNow,dataCy }) => {
+> = ({ titles, targetDate, dateNow, dataCy }) => {
   const theme = useTheme();
   const isActive = useMemo(() => targetDate <= dateNow, [targetDate, dateNow]);
 
@@ -29,9 +29,19 @@ const VestingScheduleProgressCheckpoint: FC<
           }}
         />
       </Stack>
-      <Typography data-cy={`${dataCy}-title`} variant="h6" color="text.secondary" sx={{ mt: 1 }}>
-        {title}
-      </Typography>
+      <Stack sx={{ mt: 1 }} alignItems="center">
+        {titles.map((title) => (
+          <Typography
+            key={title}
+            data-cy={`${dataCy}-title`}
+            variant="h6"
+            color="text.secondary"
+          >
+            {title}
+          </Typography>
+        ))}
+      </Stack>
+
       <Typography data-cy={`${dataCy}-date`} variant="h6">
         {format(targetDate, "MMM do, yyyy HH:mm")}
       </Typography>
