@@ -55,7 +55,7 @@ export const superfluidPlatformUrls = {
   goerli: "https://prod-goerli-platform-service.dev.superfluid.dev",
   gnosis: "https://prod-xdai-mainnet-platform-service.prod.superfluid.dev",
   polygon: "https://prod-polygon-mainnet-platform-service.prod.superfluid.dev",
-  mumbai: "https://prod-polygon-mumbai-platform-service.prod.superfluid.dev",
+  mumbai: "https://prod-polygon-mumbai-platform-service.dev.superfluid.dev",
   arbitrum: "https://prod-arbitrum-one-platform-service.prod.superfluid.dev",
   optimism:
     "https://prod-optimism-mainnet-platform-service.prod.superfluid.dev",
