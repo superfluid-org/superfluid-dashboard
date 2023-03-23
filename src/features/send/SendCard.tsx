@@ -209,14 +209,12 @@ export default memo(function SendCard() {
     receiverAddress,
     tokenAddress,
     flowRateEther,
-    understandLiquidationRisk,
     startTimestamp,
     endTimestamp,
   ] = watch([
     "data.receiverAddress",
     "data.tokenAddress",
     "data.flowRate",
-    "data.understandLiquidationRisk",
     "data.startTimestamp",
     "data.endTimestamp",
   ]);
@@ -625,12 +623,12 @@ export default memo(function SendCard() {
     <Controller
       control={control}
       name="data.understandLiquidationRisk"
-      render={({ field: { onChange, onBlur } }) => (
+      render={({ field: { onChange, onBlur, value } }) => (
         <FormControlLabel
           control={
             <Checkbox
               data-cy={"risk-checkbox"}
-              checked={understandLiquidationRisk}
+              checked={value}
               onChange={onChange}
               onBlur={onBlur}
               sx={{ color: "inherit" }}
