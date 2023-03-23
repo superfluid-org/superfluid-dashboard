@@ -214,7 +214,7 @@ export const flowSchedulerEndpoints = {
                     userData: userData,
                     overrides: arg.overrides,
                   }),
-                  title: "Update Scheduler Permissions",
+                  title: "Approve Stream Scheduler",
                 });
               } else {
                 // For smart contracts wallets, we're concerned about the transactions being queued up and executed together which would break our permissions/allowance calculation logic which is based on current on-chain data.
@@ -226,7 +226,7 @@ export const flowSchedulerEndpoints = {
                       userData: userData,
                       overrides: arg.overrides,
                     }),
-                  title: "Update Scheduler Permissions",
+                  title: "Approve Stream Scheduler",
                 });
               }
             }
