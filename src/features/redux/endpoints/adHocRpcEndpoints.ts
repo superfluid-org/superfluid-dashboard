@@ -26,12 +26,12 @@ declare module "@superfluid-finance/sdk-redux" {
     "Modify Stream": true;
     "Fix Access for Vesting": true;
     // Vesting scheduler
-    "Approve Vesting Scheduler": true; // Give Stream Scheduler contract delete & update permission.
+    "Approve Vesting Scheduler": true; // Give Stream Scheduler contract delete & update permission, flow rate allowance, token allowance.
     "Create Vesting Schedule": true;
     "Delete Vesting Schedule": true;
     // Scheduled streams
     "Schedule Stream": true;
-    "Update Scheduler Permissions": true; // Give Stream Scheduler contract create & delete permissions.
+    "Approve Stream Scheduler": true; // Give Stream Scheduler contract create & delete permissions, flow rate allowance.
     "Create Schedule": true;
     "Modify Schedule": true;
     "Delete Schedule": true;
