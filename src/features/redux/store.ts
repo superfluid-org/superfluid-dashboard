@@ -8,7 +8,7 @@ import {
   Middleware,
   MiddlewareAPI,
 } from "@reduxjs/toolkit";
-import { setupListeners } from "@reduxjs/toolkit/query";
+import { defaultSerializeQueryArgs, setupListeners } from "@reduxjs/toolkit/query";
 import * as Sentry from "@sentry/react";
 import {
   allRpcEndpoints,

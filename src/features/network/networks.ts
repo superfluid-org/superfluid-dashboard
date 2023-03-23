@@ -87,24 +87,7 @@ const blockExplorers = {
   },
 };
 
-export const networkDefinition: {
-  goerli: Network & {
-    flowSchedulerContractAddress: `0x${string}`;
-    platformUrl: string;
-  };
-  gnosis: Network;
-  polygon: Network;
-  polygonMumbai: Network;
-  avalancheFuji: Network;
-  optimism: Network;
-  arbitrum: Network;
-  avalancheC: Network;
-  bsc: Network;
-  ethereum: Network & {
-    vestingContractAddress: `0x${string}`;
-  };
-  celoMainnet: Network;
-} = {
+export const networkDefinition = {
   goerli: {
     ...chain.goerli,
     blockExplorers: ensureDefined(chain.goerli.blockExplorers),
@@ -115,7 +98,7 @@ export const networkDefinition: {
     rpcUrls: {
       ...chain.goerli.rpcUrls,
       superfluid: { http: [superfluidRpcUrls.goerli] },
-    },
+    } as const,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli",
     getLinkForTransaction: (txHash: string): string =>
@@ -132,8 +115,8 @@ export const networkDefinition: {
         address: "0x5943f705abb6834cad767e6e4bb258bc48d9c947",
         name: "Super ETH",
         decimals: 18,
-      },
-    },
+      } as const,
+    } as const,
     flowSchedulerContractAddress: flowSchedulerContractAddresses.goerli,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.goerli,
     vestingContractAddress: vestingContractAddresses.goerli,
@@ -142,14 +125,14 @@ export const networkDefinition: {
     autoWrap: {
       managerContractAddress: autoWrapAddresses.goerli.manager,
       strategyContractAddress: autoWrapAddresses.goerli.strategy,
-    },
-  },
+    } as const,
+  } as const,
   gnosis: {
     name: "Gnosis Chain",
     blockExplorers: {
       etherscan: undefined!,
       default: blockExplorers.blockscout.gnosis,
-    },
+    } as const,
     slugName: "gnosis",
     v1ShortName: "xdai",
     network: "xdai",
@@ -159,10 +142,10 @@ export const networkDefinition: {
     icon: "/icons/network/gnosis.svg",
     color: "#04795b",
     rpcUrls: {
-      superfluid: { http: [superfluidRpcUrls.gnosis] },
-      default: { http: ["https://rpc.gnosischain.com/"] },
-      public: { http: ["https://rpc.gnosischain.com/"] },
-    },
+      superfluid: { http: [superfluidRpcUrls.gnosis] } as const,
+      default: { http: ["https://rpc.gnosischain.com/"] } as const,
+      public: { http: ["https://rpc.gnosischain.com/"] } as const,
+    } as const,
     subgraphUrl:
       "https://subgraph.satsuma-prod.com/c5br3jaVlJI6/superfluid/xdai/api",
     getLinkForTransaction: (txHash: string): string =>
@@ -181,14 +164,14 @@ export const networkDefinition: {
         address: "0x59988e47a3503aafaa0368b9def095c818fdca01",
         name: "Super xDAI",
         decimals: 18,
-      },
-    },
+      } as const,
+    } as const,
     flowSchedulerContractAddress: flowSchedulerContractAddresses.gnosis,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.gnosis,
     vestingContractAddress: vestingContractAddresses.gnosis,
     vestingSubgraphUrl: vestingSubgraphUrls.gnosis,
     platformUrl: superfluidPlatformUrls.gnosis,
-  },
+  } as const,
   polygon: {
     ...chain.polygon,
     blockExplorers: ensureDefined(chain.polygon.blockExplorers),
@@ -199,8 +182,8 @@ export const networkDefinition: {
     color: "#7c3fe4",
     rpcUrls: {
       ...chain.polygon.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls.polygon] },
-    },
+      superfluid: { http: [superfluidRpcUrls.polygon] } as const,
+    } as const,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-matic",
     getLinkForTransaction: (txHash: string): string =>
@@ -217,14 +200,14 @@ export const networkDefinition: {
         address: "0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3",
         name: "Super MATIC",
         decimals: 18,
-      },
-    },
+      } as const,
+    } as const,
     flowSchedulerContractAddress: flowSchedulerContractAddresses.polygon,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.polygon,
     vestingContractAddress: vestingContractAddresses.polygon,
     vestingSubgraphUrl: vestingSubgraphUrls.polygon,
     platformUrl: superfluidPlatformUrls.polygon,
-  },
+  } as const,
   polygonMumbai: {
     ...chain.polygonMumbai,
     blockExplorers: ensureDefined(chain.polygonMumbai.blockExplorers),
@@ -234,8 +217,8 @@ export const networkDefinition: {
     color: "#3099f2",
     rpcUrls: {
       ...chain.polygonMumbai.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls.polygonMumbai] },
-    },
+      superfluid: { http: [superfluidRpcUrls.polygonMumbai] } as const,
+    } as const,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-mumbai",
     getLinkForTransaction: (txHash: string): string =>
@@ -252,14 +235,14 @@ export const networkDefinition: {
         address: "0x96b82b65acf7072efeb00502f45757f254c2a0d4",
         name: "Super MATIC",
         decimals: 18,
-      },
-    },
+      } as const,
+    } as const,
     flowSchedulerContractAddress: undefined,
     flowSchedulerSubgraphUrl: undefined,
     vestingContractAddress: undefined,
     vestingSubgraphUrl: undefined,
     platformUrl: undefined,
-  },
+  } as const,
   avalancheFuji: {
     name: "Fuji (C-Chain)",
     slugName: "avalanche-fuji",
@@ -270,10 +253,10 @@ export const networkDefinition: {
     bufferTimeInMinutes: 60,
     color: "#2b374b",
     rpcUrls: {
-      superfluid: { http: [superfluidRpcUrls.avalancheFuji] },
-      default: { http: ["https://api.avax-test.network/ext/C/rpc"] },
-      public: { http: ["https://api.avax-test.network/ext/C/rpc"] },
-    },
+      superfluid: { http: [superfluidRpcUrls.avalancheFuji] } as const,
+      default: { http: ["https://api.avax-test.network/ext/C/rpc"] } as const,
+      public: { http: ["https://api.avax-test.network/ext/C/rpc"] } as const,
+    } as const,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-avalanche-fuji",
     getLinkForTransaction: (txHash: string): string =>
@@ -284,7 +267,7 @@ export const networkDefinition: {
       etherscan: undefined!,
       snowtrace: blockExplorers.snowtrace.avalancheFuji,
       default: blockExplorers.snowtrace.avalancheFuji,
-    },
+    } as const,
     nativeCurrency: {
       name: "AVAX",
       symbol: "AVAX",
@@ -297,14 +280,14 @@ export const networkDefinition: {
         address: "0x5735c32c38f5af0fb04a7c77c832ba4d7abffec8",
         name: "Super AVAX",
         decimals: 18,
-      },
-    },
+      } as const,
+    } as const,
     flowSchedulerContractAddress: undefined,
     flowSchedulerSubgraphUrl: undefined,
     vestingContractAddress: undefined,
     vestingSubgraphUrl: undefined,
     platformUrl: undefined,
-  },
+  } as const,
   optimism: {
     ...chain.optimism,
     blockExplorers: ensureDefined(chain.optimism.blockExplorers),
@@ -315,8 +298,8 @@ export const networkDefinition: {
     color: "#ff0320",
     rpcUrls: {
       ...chain.optimism.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls.optimism] },
-    },
+      superfluid: { http: [superfluidRpcUrls.optimism] } as const,
+    } as const,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-mainnet",
     getLinkForTransaction: (txHash: string): string =>
@@ -333,14 +316,14 @@ export const networkDefinition: {
         address: "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
         name: "Super ETH",
         decimals: 18,
-      },
-    },
+      } as const,
+    } as const,
     flowSchedulerContractAddress: flowSchedulerContractAddresses.optimism,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.optimism,
     vestingContractAddress: vestingContractAddresses.optimism,
     vestingSubgraphUrl: vestingSubgraphUrls.optimism,
     platformUrl: superfluidPlatformUrls.optimism,
-  },
+  } as const,
   arbitrum: {
     ...chain.arbitrum,
     blockExplorers: ensureDefined(chain.arbitrum.blockExplorers),
@@ -351,8 +334,8 @@ export const networkDefinition: {
     color: "#2b374b",
     rpcUrls: {
       ...chain.arbitrum.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls.arbitrum] },
-    },
+      superfluid: { http: [superfluidRpcUrls.arbitrum] } as const,
+    } as const,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-one",
     getLinkForTransaction: (txHash: string): string =>
@@ -369,14 +352,14 @@ export const networkDefinition: {
         address: "0xe6c8d111337d0052b9d88bf5d7d55b7f8385acd3",
         name: "Super ETH",
         decimals: 18,
-      },
-    },
+      } as const,
+    } as const,
     flowSchedulerContractAddress: flowSchedulerContractAddresses.arbitrum,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.arbitrum,
     vestingContractAddress: vestingContractAddresses.arbitrum,
     vestingSubgraphUrl: vestingSubgraphUrls.arbitrum,
     platformUrl: superfluidPlatformUrls.arbitrum,
-  },
+  } as const,
   avalancheC: {
     name: "Avalanche C",
     slugName: "avalanche",
@@ -388,10 +371,10 @@ export const networkDefinition: {
     icon: "/icons/network/avalanche.svg",
     color: "#e84142",
     rpcUrls: {
-      superfluid: { http: [superfluidRpcUrls.avalancheC] },
-      default: { http: ["https://api.avax.network/ext/bc/C/rpc"] },
-      public: { http: ["https://api.avax.network/ext/bc/C/rpc"] },
-    },
+      superfluid: { http: [superfluidRpcUrls.avalancheC] } as const,
+      default: { http: ["https://api.avax.network/ext/bc/C/rpc"] } as const,
+      public: { http: ["https://api.avax.network/ext/bc/C/rpc"] } as const,
+    } as const,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-avalanche-c",
     getLinkForTransaction: (txHash: string): string =>
@@ -403,7 +386,7 @@ export const networkDefinition: {
       snowtrace: blockExplorers.snowtrace.avalancheC,
       avascan: blockExplorers.avascan.avalancheC,
       default: blockExplorers.avascan.avalancheC,
-    },
+    } as const,
     nativeCurrency: {
       name: "AVAX",
       symbol: "AVAX",
@@ -416,14 +399,14 @@ export const networkDefinition: {
         address: "0xBE916845D8678b5d2F7aD79525A62D7c08ABba7e",
         name: "Super AVAX",
         decimals: 18,
-      },
-    },
+      } as const,
+    } as const,
     flowSchedulerContractAddress: flowSchedulerContractAddresses.avalancheC,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.avalancheC,
     vestingContractAddress: vestingContractAddresses.avalancheC,
     vestingSubgraphUrl: vestingSubgraphUrls.avalancheC,
     platformUrl: superfluidPlatformUrls.avalancheC,
-  },
+  } as const,
   bsc: {
     name: "BNB Smart Chain",
     slugName: "bsc",
@@ -435,10 +418,10 @@ export const networkDefinition: {
     icon: "/icons/network/bnb.svg",
     color: "#F0B90B",
     rpcUrls: {
-      superfluid: { http: [superfluidRpcUrls.bnbSmartChain] },
-      default: { http: ["https://bsc-dataseed1.binance.org"] },
-      public: { http: ["https://bsc-dataseed1.binance.org"] },
-    },
+      superfluid: { http: [superfluidRpcUrls.bnbSmartChain] } as const,
+      default: { http: ["https://bsc-dataseed1.binance.org"] } as const,
+      public: { http: ["https://bsc-dataseed1.binance.org"] } as const,
+    } as const,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-bsc-mainnet",
     getLinkForTransaction: (txHash: string): string =>
@@ -448,7 +431,7 @@ export const networkDefinition: {
     blockExplorers: {
       bscscan: blockExplorers.bscscan.bnbSmartChain,
       default: blockExplorers.bscscan.bnbSmartChain,
-    },
+    } as const,
     nativeCurrency: {
       name: "Binance Chain Native Token",
       symbol: "BNB",
@@ -461,14 +444,14 @@ export const networkDefinition: {
         address: "0x529a4116f160c833c61311569d6b33dff41fd657",
         name: "Super BNB",
         decimals: 18,
-      },
-    },
+      } as const,
+    } as const,
     flowSchedulerContractAddress: flowSchedulerContractAddresses.bnbSmartChain,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.bnbSmartChain,
     vestingContractAddress: vestingContractAddresses.bnbSmartChain,
     vestingSubgraphUrl: vestingSubgraphUrls.bnbSmartChain,
     platformUrl: superfluidPlatformUrls.bnbSmartChain,
-  },
+  } as const,
   ethereum: {
     ...chain.mainnet,
     blockExplorers: ensureDefined(chain.mainnet.blockExplorers),
@@ -479,8 +462,8 @@ export const networkDefinition: {
     color: "#627EEA",
     rpcUrls: {
       ...chain.mainnet.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls.ethereum] },
-    },
+      superfluid: { http: [superfluidRpcUrls.ethereum] } as const,
+    } as const,
     subgraphUrl:
       "https://subgraph.satsuma-prod.com/c5br3jaVlJI6/superfluid/eth-mainnet/api",
     getLinkForTransaction: (txHash: string): string =>
@@ -497,20 +480,20 @@ export const networkDefinition: {
         address: "0xC22BeA0Be9872d8B7B3933CEc70Ece4D53A900da",
         name: "Super ETH",
         decimals: 18,
-      },
-    },
+      } as const,
+    } as const,
     flowSchedulerContractAddress: flowSchedulerContractAddresses.ethereum,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.ethereum,
     vestingContractAddress: vestingContractAddresses.ethereum,
     vestingSubgraphUrl: vestingSubgraphUrls.ethereum,
     platformUrl: superfluidPlatformUrls.ethereum,
-  },
+  } as const,
   celoMainnet: {
     ...chain.celo,
     blockExplorers: {
       celoscan: blockExplorers.celoscan.mainnet,
       default: blockExplorers.celoscan.mainnet,
-    },
+    } as const,
     slugName: "celo",
     v1ShortName: "celo",
     bufferTimeInMinutes: 240,
@@ -518,8 +501,8 @@ export const networkDefinition: {
     color: "#FCFF52",
     rpcUrls: {
       ...chain.celo.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls["celo-mainnet"]] },
-    },
+      superfluid: { http: [superfluidRpcUrls["celo-mainnet"]] } as const,
+    } as const,
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-celo-mainnet",
     getLinkForTransaction: (txHash: string): string =>
@@ -536,12 +519,12 @@ export const networkDefinition: {
         address: "0x671425ae1f272bc6f79bec3ed5c4b00e9c628240",
         name: "Super Celo",
         decimals: 18,
-      },
-    },
+      } as const,
+    } as const,
     vestingContractAddress: undefined,
     vestingSubgraphUrl: undefined,
     platformUrl: undefined,
-  },
+  } as const,
 };
 
 export const allNetworks: Network[] = [

@@ -1,7 +1,5 @@
 import {
   ERC20Token,
-  ERC20__factory,
-  Operation,
   WrapperSuperToken,
 } from "@superfluid-finance/sdk-core";
 import {
@@ -10,7 +8,8 @@ import {
   RpcEndpointBuilder,
   TransactionInfo,
 } from "@superfluid-finance/sdk-redux";
-import { Overrides, Signer } from "ethers";
+import { WriteContractPreparedArgs, writeContract } from "@wagmi/core";
+import { BigNumber, Overrides, Signer } from "ethers";
 import {
   balanceFetcher,
   BalanceQueryParams,
@@ -26,12 +25,12 @@ declare module "@superfluid-finance/sdk-redux" {
     "Modify Stream": true;
     "Fix Access for Vesting": true;
     // Vesting scheduler
-    "Approve Vesting Scheduler": true; // Give Stream Scheduler contract delete & update permission.
+    "Approve Vesting Scheduler": true; // Give Stream Scheduler contract delete & update permissions and also flow rate allowance.
     "Create Vesting Schedule": true;
     "Delete Vesting Schedule": true;
     // Scheduled streams
     "Schedule Stream": true;
-    "Update Scheduler Permissions": true; // Give Stream Scheduler contract create & delete permissions.
+    "Update Scheduler Permissions": true; // Give Stream Scheduler contract create & delete permissions and also flow rate allowance.
     "Create Schedule": true;
     "Modify Schedule": true;
     "Delete Schedule": true;
@@ -45,8 +44,59 @@ export interface Web3FlowInfo {
   owedDepositWei: string;
 }
 
+const createWriteContractEndpoint = (builder: RpcEndpointBuilder) =>
+  builder.mutation<
+    TransactionInfo,
+    {
+      signer: Signer;
+      config: WriteContractPreparedArgs<unknown[], string> & {
+        chainId: number;
+      };
+    }
+  >({
+    queryFn: async ({ signer, config }, { dispatch }) => {
+      const result = await writeContract(config);
+      return registerNewTransactionAndReturnQueryFnResult({
+        dispatch,
+        signer: await signer.getAddress(),
+        chainId: config.chainId,
+        title: "Approve Allowance",
+        waitForConfirmation: false,
+        transactionResponse: {
+          chainId: config.chainId,
+          ...result,
+          confirmations: 0,
+          data: "",
+          from: "",
+          gasLimit: BigNumber.from("0"),
+          nonce: 0,
+          value: BigNumber.from("0"),
+        },
+        extraData: undefined,
+      });
+    },
+  });
+
+
+const createAllowanceEndpoint = (builder: RpcEndpointBuilder) =>
+  builder.query<
+    unknown,
+    { 
+      chainId: number,
+      tokenAddress: string,
+    }
+  >({
+    queryFn: async () => {
+      return {
+        data: {} as unknown
+      }
+    },
+  });
+
 export const adHocRpcEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
+    allowance: createAllowanceEndpoint(builder),
+    writeContract: createWriteContractEndpoint(builder),
     getActiveFlow: builder.query<
       // TODO(KK): Create equivalent endpoint in the SDK
       Web3FlowInfo | null,
@@ -228,6 +278,6 @@ export const adHocRpcEndpoints = {
           id: arg.chainId, // TODO(KK): Could be made more specific.
         },
       ],
-    })
+    }),
   }),
 };

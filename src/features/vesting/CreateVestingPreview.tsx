@@ -1,20 +1,18 @@
 import { Box, Stack, Typography } from "@mui/material";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
 import add from "date-fns/fp/add";
 import format from "date-fns/fp/format";
 import { FC, memo } from "react";
 import { useFormContext } from "react-hook-form";
-import { useSigner } from "wagmi";
 import AddressName from "../../components/AddressName/AddressName";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
-import { rpcApi } from "../redux/store";
 import { timeUnitWordMap } from "../send/FlowRateInput";
 import TokenIcon from "../token/TokenIcon";
-import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import AddAllowanceTransactionButton from "./AddAllowanceTransactionButton";
+import AutoWrapTransactionButton from "./AutoWrapTransactionButton";
 import { VestingFormLabels } from "./CreateVestingForm";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { CreateVestingCardView, VestingToken } from "./CreateVestingSection";
@@ -70,22 +68,6 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
     },
     startDate
   );
-
-  // const { visibleAddress } = useVisibleAddress();
-
-  // const foo = rpcApi.usePrepareAutoWrapApproveQuery(
-  //     network.autoWrap &&
-  //     token &&
-  //     token.underlyingAddress &&
-  //     visibleAddress
-  //     ? {
-  //         signer: {} as any,
-  //         chainId: network.id,
-  //         accountAddress: visibleAddress,
-  //         underlyingTokenAddress: token.underlyingAddress,
-  //       }
-  //     : skipToken
-  // );
 
   return (
     <Stack gap={3}>
@@ -198,7 +180,11 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
           </Box>
         )}
       </Stack>
+
+      <AddAllowanceTransactionButton token={token} />
+      <AutoWrapTransactionButton token={token} />
       <CreateVestingTransactionButton setView={setView} />
+      
     </Stack>
   );
 };
