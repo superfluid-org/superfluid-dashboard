@@ -213,17 +213,16 @@ Feature: Vesting page test cases
       And User opens the last vesting schedule they have created
       And Vesting details page is shown correctly for the created schedule
 
-    @NoCode
+   @NoCode
    Scenario: Vesting schedule unlock message - Try out on Mumbai testnet button
       Given Transactional account john is connected to the dashboard on polygon
       And User clicks on the "vesting" navigation button
       Then Unlock Vesting with Superfluid screen is visible
       And User tries out vesting on Mumbai testnet
-      And The created vesting schedule is shown correctly in the table
-      And User opens the last vesting schedule they have created
-      And Vesting details page is shown correctly for the created schedule
+      And No created vesting schedules message is shown
+      And No received vesting schedules message is shown
 
-      @NoCode
+  @NoCode
   Scenario: Vesting schedule unlock message - Enter access code
     Given Transactional account john is connected to the dashboard on polygon
     And User clicks on the "vesting" navigation button

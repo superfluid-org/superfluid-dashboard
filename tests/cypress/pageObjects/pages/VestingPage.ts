@@ -262,7 +262,7 @@ export class VestingPage extends BasePage {
     }
 
     static validateNotSupportedNetworkScreen() {
-        const supportedNetworks = ["ethereum","polygon","bsc","goerli","gnosis","polygon-mumbai","optimism","arbitrum-one","avalanche-c"]
+        const supportedNetworks = ["ethereum","polygon","bsc","goerli","gnosis","polygon-mumbai","optimism","arbitrum-one","avalanche"]
         this.hasText(NOT_SUPPORTED_NETWORK_MSG,"This network is not supported.")
         supportedNetworks.forEach(network => {
             this.isVisible(`[data-cy=${network}-link]` )
