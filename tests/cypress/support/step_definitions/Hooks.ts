@@ -21,3 +21,7 @@ Before({ tags: "@vesting and not @NoCode" }, function () {
 Before({ tags: "@NoCode" }, function () {
     Cypress.env("vesting" , false)
 });
+
+Before({tags: "@scheduling"} , () => {
+    Cypress.env("scheduling" , true)
+})

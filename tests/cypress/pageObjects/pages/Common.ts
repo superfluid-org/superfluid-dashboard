@@ -1,4 +1,4 @@
-import { BasePage } from "../BasePage";
+import {BasePage, wordTimeUnitMap} from "../BasePage";
 import { networksBySlug, superfluidRpcUrls } from "../../superData/networks";
 import { ethers } from "ethers";
 import HDWalletProvider from "@truffle/hdwallet-provider";
@@ -43,6 +43,8 @@ const ACCESS_CODE_DIALOG = "[data-cy=access-code-dialog]";
 const ACCESS_CODE_ERROR = "[data-cy=access-code-error]";
 const ACCESS_CODE_MESSAGE = "[data-cy=access-code-error-msg]";
 const VESTING_ACCESS_CODE_BUTTON = "[data-cy=more-vesting-code-btn]";
+const STREAM_ROWS = "[data-cy=stream-row]"
+const TIMER_ICONS = "[data-testid=TimerOutlinedIcon]"
 
 export class Common extends BasePage {
   static clickNavBarButton(button: string) {
@@ -476,5 +478,31 @@ export class Common extends BasePage {
       `)
       }
     })
+  }
+
+  static inputDateIntoField(selector:string,amount: number,timeUnit) {
+    let newDate: Date;
+    let currentTime = new Date()
+    const unitOfTime = wordTimeUnitMap[timeUnit];
+    if (unitOfTime === undefined) {
+      throw new Error(`Invalid time unit: ${timeUnit}`);
+    }
+
+    newDate = new Date(currentTime.getTime() + amount * (unitOfTime * 1000));
+
+    const month = `0${newDate.getMonth() + 1}`.slice(-2);
+    const day = `0${newDate.getDate()}`.slice(-2);
+    const year = newDate.getFullYear();
+    const hours = `0${newDate.getHours()}`.slice(-2);
+    const minutes = `0${newDate.getMinutes()}`.slice(-2);
+    const finalFutureDate = `${month}/${day}/${year} ${hours}:${minutes}`;
+    this.type(selector,finalFutureDate)
+  }
+
+
+  static validateScheduledStreamRow(address: string, flowRate: number, startEndDate: string) {
+    cy.contains(SENDER_RECEIVER_ADDRESSES,this.shortenHex(address)).parents(STREAM_ROWS).find(STREAM_FLOW_RATES).should("have.text",`${flowRate}/mo`)
+    cy.contains(SENDER_RECEIVER_ADDRESSES,this.shortenHex(address)).parents(STREAM_ROWS).find(START_END_DATES).should("have.text",startEndDate)
+    cy.contains(SENDER_RECEIVER_ADDRESSES,this.shortenHex(address)).parents(STREAM_ROWS).find(TIMER_ICONS).should("be.visible")
   }
 }

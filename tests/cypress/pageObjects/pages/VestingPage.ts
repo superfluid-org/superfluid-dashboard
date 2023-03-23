@@ -114,22 +114,7 @@ export class VestingPage extends BasePage {
     }
 
     static inputFutureDateInVestingStartDateField(amount: number, timeUnit: string) {
-            let newDate: Date;
-
-            const unitOfTime = wordTimeUnitMap[timeUnit];
-            if (unitOfTime === undefined) {
-                throw new Error(`Invalid time unit: ${timeUnit}`);
-            }
-
-            newDate = new Date(currentTime.getTime() + amount * (unitOfTime * 1000));
-
-            const month = `0${newDate.getMonth() + 1}`.slice(-2);
-            const day = `0${newDate.getDate()}`.slice(-2);
-            const year = newDate.getFullYear();
-            const hours = `0${newDate.getHours()}`.slice(-2);
-            const minutes = `0${newDate.getMinutes()}`.slice(-2);
-            const finalFutureDate = `${month}/${day}/${year} ${hours}:${minutes}`;
-            this.type(DATE_INPUT,finalFutureDate)
+        Common.inputDateIntoField(DATE_INPUT,amount,timeUnit)
     }
 
     static inputCliffAmount(amount: number) {
@@ -367,7 +352,6 @@ export class VestingPage extends BasePage {
             }
             cy.get("[data-cy=total-progress-line]").eq(i).then(el => {
                 let expectedWidth = i === (greenOnes.length - 1) ? (el.width() / 100 * barPercentage) : el.width()
-                console.log(greyOnes[0])
                 cy.get("[data-cy=actual-progress-line]").eq(i).invoke("width").should("be.closeTo", expectedWidth, 1)
                 cy.get("[data-cy=actual-progress-line]").eq(i).should("be.visible")
 
