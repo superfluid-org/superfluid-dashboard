@@ -205,7 +205,7 @@ export class Common extends BasePage {
     }
     this.changeNetwork(selectedNetwork);
     let workaroundNetwork =
-        selectedNetwork === "goerli" ? "polygon-mumbai" : "goerli";
+        selectedNetwork === "goerli" ? "avalanche-fuji" : "goerli";
     this.changeNetwork(workaroundNetwork);
     this.changeNetwork(selectedNetwork);
   }

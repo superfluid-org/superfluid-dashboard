@@ -62,7 +62,7 @@ const SCHEDULE_CLIFF_END = "[data-cy=cliff-end]"
 const SCHEDULE_VESTING_START = "[data-cy=vesting-start]"
 const SCHEDULE_VESTING_END = "[data-cy=vesting-end]"
 const ACCESS_CODE_BUTTON = "[data-cy=vesting-code-button]"
-const TRY_GOERLI_BUTTON = "[data-cy=try-on-goerli-button]"
+const TRY_MUMBAI_BUTTON = "[data-cy=try-on-mumbai-button]"
 const VESTING_FORM_LINK = "[data-cy=vesting-form-link]"
 const TOPUP_WARNING_TITLE = "[data-cy=top-up-alert-title]"
 const TOPUP_WARNING_TEXT = "[data-cy=top-up-alert-text]"
@@ -262,11 +262,12 @@ export class VestingPage extends BasePage {
     }
 
     static validateNotSupportedNetworkScreen() {
-        const supportedNetworks = ["ethereum","polygon","bsc","goerli"]
+        const supportedNetworks = ["ethereum","polygon","bsc","goerli","gnosis","polygon-mumbai","optimism","arbitrum-one","avalanche"]
         this.hasText(NOT_SUPPORTED_NETWORK_MSG,"This network is not supported.")
         supportedNetworks.forEach(network => {
             this.isVisible(`[data-cy=${network}-link]` )
         })
+        this.doesNotExist("[data-cy=avalanche-fuji-link]")
     }
 
     static validateDisabledMainnetNetworkLink() {
@@ -501,14 +502,14 @@ export class VestingPage extends BasePage {
 
     static validateNoCodeUnlockScreen() {
         cy.contains("Unlock Vesting with Superfluid").should("be.visible")
-        cy.contains("Provide your Access Code or try out Vesting Schedule on Goerli Testnet.").should("be.visible")
+        cy.contains("Provide your Access Code or try out Vesting Schedule on Mumbai Testnet.").should("be.visible")
         this.hasAttributeWithValue(VESTING_FORM_LINK,"href","https://use.superfluid.finance/vesting")
         this.isVisible(ACCESS_CODE_BUTTON)
-        this.isVisible(TRY_GOERLI_BUTTON)
+        this.isVisible(TRY_MUMBAI_BUTTON)
     }
 
-    static clickOnTryOnGoerliButton() {
-        this.click(TRY_GOERLI_BUTTON)
+    static clickOnTryOnMumbaiButton() {
+        this.click(TRY_MUMBAI_BUTTON)
     }
 
     static clickInputAccessCodeButton() {

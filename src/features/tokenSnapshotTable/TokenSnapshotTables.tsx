@@ -102,7 +102,7 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
       {!hasContent && !isLoading && (
         <Stack gap={4}>
           <TokenSnapshotEmptyCard />
-          {/* <FaucetCard /> */}
+          <FaucetCard />
         </Stack>
       )}
 

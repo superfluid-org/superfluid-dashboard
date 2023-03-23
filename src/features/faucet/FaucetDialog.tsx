@@ -63,7 +63,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
     accountAddress
       ? {
           type: Flag.TestTokensReceived,
-          chainId: networkDefinition.goerli.id,
+          chainId: networkDefinition.polygonMumbai.id,
           account: getAddress(accountAddress),
         }
       : undefined
@@ -72,7 +72,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
   const claimTokens = useCallback(() => {
     if (accountAddress) {
       claimTestTokensTrigger({
-        chainId: networkDefinition.goerli.id,
+        chainId: networkDefinition.polygonMumbai.id,
         account: accountAddress,
       }).then((response) => {
         if (response.isSuccess) setTransactionDrawerOpen(true);
@@ -143,14 +143,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
             </Alert>
           )}
 
-          <Alert severity="warning">
-            <AlertTitle>
-              Goerli Faucet is down, Superfluid will be migrating to Mumbai
-              shortly.
-            </AlertTitle>
-          </Alert>
-
-          <ConnectionBoundary expectedNetwork={networkDefinition.goerli}>
+          <ConnectionBoundary expectedNetwork={networkDefinition.polygonMumbai}>
             <ConnectionBoundaryButton
               ButtonProps={{
                 size: "xl",
@@ -169,7 +162,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
                     fullWidth
                     loading={claimTestTokensResponse.isLoading}
                     variant="contained"
-                    disabled={true /* until we move to Mumbai */}
+                    disabled={hasClaimedTokens}
                     onClick={claimTokens}
                   >
                     {hasClaimedTokens ? "Tokens Claimed" : "Claim"}

@@ -26,12 +26,12 @@ declare module "@superfluid-finance/sdk-redux" {
     "Modify Stream": true;
     "Fix Access for Vesting": true;
     // Vesting scheduler
-    "Approve Vesting Scheduler": true; // Give Stream Scheduler contract delete & update permission.
+    "Approve Vesting Scheduler": true; // Give Stream Scheduler contract delete & update permission, flow rate allowance, token allowance.
     "Create Vesting Schedule": true;
     "Delete Vesting Schedule": true;
     // Scheduled streams
     "Schedule Stream": true;
-    "Update Scheduler Permissions": true; // Give Stream Scheduler contract create & delete permissions.
+    "Approve Stream Scheduler": true; // Give Stream Scheduler contract create & delete permissions, flow rate allowance.
     "Create Schedule": true;
     "Modify Schedule": true;
     "Delete Schedule": true;
@@ -228,6 +228,26 @@ export const adHocRpcEndpoints = {
           id: arg.chainId, // TODO(KK): Could be made more specific.
         },
       ],
-    })
+    }),
+    isEOA: builder.query<boolean | null, { chainId: number; accountAddress: string }>({
+      keepUnusedDataFor: Number.MAX_VALUE,
+      queryFn: async ({ chainId, accountAddress }) => {
+        const framework = await getFramework(chainId);
+        try {
+          const code = await framework.settings.provider.getCode(
+            accountAddress
+          );
+          const isSmartContract = code.length > 2; // The code is "0x" when not a smart contract.
+          return {
+            data: !isSmartContract,
+          };
+        } catch (e) {
+          console.error("Error while checking if account is EOA", e);
+          return {
+            data: null
+          };
+        }
+      },
+    }),
   }),
 };
