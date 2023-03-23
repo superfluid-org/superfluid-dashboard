@@ -1,25 +1,31 @@
-import { Tooltip, TooltipProps, useMediaQuery, useTheme } from "@mui/material";
 import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import TimerOutlined from "@mui/icons-material/TimerOutlined";
-import { FC, PropsWithChildren, ReactElement, ReactNode, useMemo } from "react";
+import {
+  SvgIconProps,
+  Tooltip,
+  TooltipProps,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import { FC } from "react";
 
 interface ScheduledStreamIconProps {
-  scheduledStart: boolean;
-  scheduledEnd: boolean;
+  scheduledStart?: boolean;
+  scheduledEnd?: boolean;
+  IconProps?: Partial<SvgIconProps>;
 }
 
 export const ScheduledStreamIcon: FC<ScheduledStreamIconProps> = ({
-  scheduledStart,
-  scheduledEnd,
+  scheduledStart = false,
+  scheduledEnd = false,
+  IconProps = {},
 }) => (
   <StreamIconTooltip
     title={`This stream has scheduled ${scheduledStart ? "start " : ""}${
       scheduledStart && scheduledEnd ? "and " : ""
     }${scheduledEnd ? "end " : ""}date.`}
   >
-    <TimerOutlined sx={{ display: "block" }} />
+    <TimerOutlined sx={{ display: "block" }} {...IconProps} />
   </StreamIconTooltip>
 );
 

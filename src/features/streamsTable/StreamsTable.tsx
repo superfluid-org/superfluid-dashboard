@@ -159,14 +159,35 @@ const StreamsTable: FC<StreamsTableProps> = ({
     }
   );
 
+  const pendingOutgoingStreams = useAddressPendingOutgoingStreams(
+    visibleAddress,
+    tokenAddress
+  );
+
   const pendingTasks = useAddressPendingOutgoingTasks(
     visibleAddress,
     tokenAddress
   );
 
   const allTasks = useMemo(
-    () => [...pendingTasks, ...activeTasks],
-    [activeTasks, pendingTasks]
+    () => [
+      ...pendingTasks,
+      // Filtering out CreateTasks that should be overridden by new pending stream to prevent duplicate stream rows.
+      ...activeTasks.filter(
+        (pendingTask) =>
+          pendingTask.__typename !== "CreateTask" ||
+          !pendingOutgoingStreams.some(
+            (pendingOutgoingStream) =>
+              pendingOutgoingStream.sender.toLowerCase() ===
+                pendingTask.sender.toLowerCase() &&
+              pendingOutgoingStream.receiver.toLowerCase() ===
+                pendingTask.receiver.toLowerCase() &&
+              pendingOutgoingStream.token.toLowerCase() ===
+                pendingTask.superToken.toLowerCase()
+          )
+      ),
+    ],
+    [activeTasks, pendingTasks, pendingOutgoingStreams]
   );
 
   const scheduledIncomingStreams = useMemo(
@@ -197,11 +218,6 @@ const StreamsTable: FC<StreamsTableProps> = ({
           mapCreateTaskToScheduledStream(task as CreateTask | PendingCreateTask)
         ),
     [allTasks, visibleAddress]
-  );
-
-  const pendingOutgoingStreams = useAddressPendingOutgoingStreams(
-    visibleAddress,
-    tokenAddress
   );
 
   const outgoingStreams = useMemo<
