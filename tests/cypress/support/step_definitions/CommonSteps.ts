@@ -160,6 +160,9 @@ Given(/^Dashboard is open with a mocked connection to "([^"]*)" on "([^"]*)"$/, 
 Given(/^Superfluid RPCs are not more then (\d+) minutes behind on (.*)$/, function (minutes:number,network:string) {
     Common.checkThatSuperfluidRPCisNotBehind(minutes,network)
 });
-Given(/^The graph is not more then (\d+) minutes behind on (.*)$/, function (minutes:number,network:string) {
-    Common.checkThatTheGraphIsNotBehind(minutes,network)
+Given(/^The graph is not more then (\d+) minutes behind on (.*)$/, function (minutes: number, network: string) {
+    Common.checkThatTheGraphIsNotBehind(minutes, network)
+});
+Then(/^The stream row to "([^"]*)" has a flow rate of "([^"]*)" and dates to "([^"]*)"$/, function (address: string, flowRate: number, startEndDate: string) {
+    Common.validateScheduledStreamRow(address, flowRate, startEndDate)
 });

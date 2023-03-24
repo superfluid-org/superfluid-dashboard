@@ -1,8 +1,8 @@
 import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import CloseIcon from "@mui/icons-material/Close";
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
-import TimerOutlined from "@mui/icons-material/TimerOutlined";
 import {
   Box,
   Container,
@@ -35,8 +35,8 @@ import Minigame from "../../../features/minigame/MinigameContainer";
 import { useMinigame } from "../../../features/minigame/MinigameContext";
 import NetworkIcon from "../../../features/network/NetworkIcon";
 import {
-  Network,
   allNetworks,
+  Network,
   tryFindNetwork,
 } from "../../../features/network/networks";
 import { rpcApi, subgraphApi } from "../../../features/redux/store";
@@ -44,6 +44,7 @@ import { UnitOfTime } from "../../../features/send/FlowRateInput";
 import SharingSection from "../../../features/socialSharing/SharingSection";
 import CancelStreamButton from "../../../features/streamsTable/CancelStreamButton/CancelStreamButton";
 import ModifyStreamButton from "../../../features/streamsTable/ModifyStreamButton";
+import { ScheduledStreamIcon } from "../../../features/streamsTable/StreamIcons";
 import Amount from "../../../features/token/Amount";
 import FlowingBalance from "../../../features/token/FlowingBalance";
 import TokenIcon from "../../../features/token/TokenIcon";
@@ -54,15 +55,14 @@ import { useScheduledStream } from "../../../hooks/streamSchedulingHooks";
 import useAddressName from "../../../hooks/useAddressName";
 import useNavigateBack from "../../../hooks/useNavigateBack";
 import config from "../../../utils/config";
+import { getTimeInSeconds } from "../../../utils/dateUtils";
 import shortenHex from "../../../utils/shortenHex";
 import {
   calculateBuffer,
   calculateMaybeCriticalAtTimestamp,
 } from "../../../utils/tokenUtils";
-import Page404 from "../../404";
-import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
-import { getTimeInSeconds } from "../../../utils/dateUtils";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
+import Page404 from "../../404";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -810,7 +810,10 @@ const StreamPageContent: FC<{
                   label={`End Date:`}
                   value={
                     <Stack direction="row" alignItems="center" gap={0.5}>
-                      <TimerOutlined fontSize="small" />
+                      <ScheduledStreamIcon
+                        scheduledStart
+                        IconProps={{ fontSize: "small" }}
+                      />
                       {format(endDateScheduled.getTime(), "d MMM. yyyy H:mm")}
                     </Stack>
                   }

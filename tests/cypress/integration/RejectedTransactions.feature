@@ -82,3 +82,52 @@ Feature:Transactional rejected test cases
     And User revokes the last index distributions
     And Distribution revoking dialog on "selected network" shows up
     And Transaction rejected error is shown
+
+  @scheduling
+  Scenario: Creating a stream with just start date
+    Given Transactional account john is connected to the dashboard on selected network
+    And User clicks on the "send" navigation button
+    And User inputs all the details to send "1" "TokenTwox" per "month" to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4"
+    And User clicks the scheduling toggle
+    And User inputs a date "1" "year" into the future into the stream start date
+    And User accepts the risk warning
+    And User clicks the send transaction button
+    And Scheduled stream transaction dialogs are shown
+    And Transaction rejected error is shown
+
+  @scheduling
+  Scenario: Creating a stream with just end date
+    Given Transactional account john is connected to the dashboard on selected network
+    And User clicks on the "send" navigation button
+    And User inputs all the details to send "1" "TokenTwox" per "month" to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4"
+    And User clicks the scheduling toggle
+    And User inputs a date "1" "year" into the future into the stream end date
+    And User accepts the risk warning
+    And User clicks the send transaction button
+    And Scheduled stream transaction dialogs are shown
+    And Transaction rejected error is shown
+
+  @scheduling
+  Scenario: Creating a stream with start and end date
+    Given Transactional account john is connected to the dashboard on selected network
+    And User clicks on the "send" navigation button
+    And User inputs all the details to send "1" "TokenTwox" per "month" to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4"
+    And User clicks the scheduling toggle
+    And User inputs a date "1" "year" into the future into the stream start date
+    And User inputs a date "2" "year" into the future into the stream end date
+    And User accepts the risk warning
+    And User clicks the send transaction button
+    And Scheduled stream transaction dialogs are shown
+    And Transaction rejected error is shown
+
+  @scheduling
+  Scenario: Adding end date to an ongoing stream
+    Given Transactional account john is connected to the dashboard on selected network
+    And User clicks on the "send" navigation button
+    And User inputs all the details to send "1" "TokenOnex" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"
+    And User clicks the scheduling toggle
+    And User inputs a date "2" "year" into the future into the stream end date
+    And User accepts the risk warning
+    And User clicks the send transaction button
+    And Scheduled stream transaction dialogs are shown
+    And Transaction rejected error is shown

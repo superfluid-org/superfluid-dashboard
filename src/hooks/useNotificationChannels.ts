@@ -1,5 +1,5 @@
-import { QueryDefinition } from "@reduxjs/toolkit/dist/query";
-import { QueryActionCreatorResult } from "@reduxjs/toolkit/dist/query/core/buildInitiate";
+import { isAfter } from "date-fns";
+import addDays from "date-fns/addDays";
 import differenceInDays from "date-fns/differenceInDays";
 import { useMemo } from "react";
 import { useArchivedNotifications } from "../features/notifications/notificationHooks";
@@ -20,7 +20,10 @@ export type Notification = {
 export type NotificationChannel = {
   name: string;
   channelType: NotificationChannelType;
-  isSubscribed: boolean;
+  subscription: {
+    isSubscribed: boolean;
+    isLoading: boolean;
+  };
   onToggle: (...args: unknown[]) => unknown;
   notifications: Notification[];
 };
@@ -33,6 +36,7 @@ export type MessageType =
 export type MessageData = {
   type: MessageType;
   token: string;
+  tokenAddress: string;
   symbol: string;
   network: string;
   liquidation?: string;
@@ -49,16 +53,24 @@ export type UseNotificationChannels = () => {
 const autoArchivationInDays = 30;
 
 const isArchived = (
-  { id, epoch }: Notification,
+  {
+    id,
+    epoch,
+    message: {
+      parsed: { liquidation, type },
+    },
+  }: Notification,
   archivedNotifications: Record<string, boolean>
 ) =>
+  (type !== "liquidation" &&
+    isAfter(Date.now(), addDays(Number(liquidation) * 1000, 1))) ||
   differenceInDays(new Date(), epoch) > autoArchivationInDays ||
   archivedNotifications[id];
 
 export const useNotificationChannels: UseNotificationChannels = () => {
   const {
     toggleSubscribe: toggleSubscribePush,
-    isSubscribed: isPushSubscribed,
+    subscription: pushSubscription,
     notifications: pushNotifcations,
   } = usePushProtocol();
 
@@ -68,7 +80,7 @@ export const useNotificationChannels: UseNotificationChannels = () => {
     () => ({
       name: "Push Protocol",
       channelType: "PUSH",
-      isSubscribed: isPushSubscribed,
+      subscription: pushSubscription,
       onToggle: toggleSubscribePush,
       notifications: pushNotifcations.map(({ epoch, payload }) => ({
         id: payload.data.sid,
@@ -80,7 +92,7 @@ export const useNotificationChannels: UseNotificationChannels = () => {
         epoch: new Date(epoch),
       })),
     }),
-    [isPushSubscribed, toggleSubscribePush, pushNotifcations]
+    [pushSubscription, toggleSubscribePush, pushNotifcations]
   );
 
   return {

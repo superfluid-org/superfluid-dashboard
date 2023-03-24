@@ -60,11 +60,11 @@ const NotificationsBell: FC = () => {
   };
 
   useUpdateEffect(() => {
-    const indexOfLastSeen = notifications.new.findIndex(
+    const lastSeenIndex = notifications.new.findIndex(
       (n) => n.id === lastSeenNotification
     );
-    if (indexOfLastSeen > 0) {
-      notifications.new.slice(0, indexOfLastSeen).map(displayToast);
+    if (lastSeenIndex > 0) {
+      notifications.new.slice(0, lastSeenIndex).map(displayToast);
     }
     if (!lastSeenNotification && notifications.new.length > 0) {
       displayToast({
@@ -76,13 +76,14 @@ const NotificationsBell: FC = () => {
   }, [notifications.new.length]);
 
   useEffect(() => {
-    if (lastSeenNotification === notifications.new[0]?.id) {
+    const lastSeenIndex = notifications.new.findIndex(
+      (n) => n.id === lastSeenNotification
+    );
+    if (lastSeenNotification && lastSeenIndex <= 0) {
       setBadgeContent(0);
     } else {
       setBadgeContent(
-        lastSeenNotification
-          ? notifications.new.findIndex((n) => n.id === lastSeenNotification)
-          : notifications.new.length
+        lastSeenNotification ? lastSeenIndex : notifications.new.length
       );
     }
   }, [lastSeenNotification, notifications.new.length]);

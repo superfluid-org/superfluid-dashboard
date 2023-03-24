@@ -11,7 +11,7 @@ Feature: Vesting page test cases
     Given Transactional account bob is connected to the dashboard on goerli
     And User clicks on the create vesting schedule button
     And Vesting creation form is visible
-    And User changes their network to "polygon-mumbai"
+    And User changes their network to "avalanche-fuji"
     Then User sees network not supported screen in the vesting page
 
   Scenario: Creation form - Cannot vest to yourself
@@ -141,12 +141,11 @@ Feature: Vesting page test cases
 #    Then User sees network not supported screen in the vesting page
 #    And Mainnet network link is disabled
 
-  Scenario: Vesting schedules only available on Mainnet,Polygon,BNB and Goerli - mainnet code enabled
-    Given Transactional account john is connected to the dashboard on polygon-mumbai
+  Scenario: Network not supported screen in vesting page
+    Given Transactional account john is connected to the dashboard on avalanche-fuji
     #Workaround, inputing the code from the network not supported screen will not enable the button
     And User clicks on the "vesting" navigation button
     Then User sees network not supported screen in the vesting page
-    And Mainnet network link is enabled
 
   Scenario: Allowance table statuses
     Given Transactional account john is connected to the dashboard on goerli
@@ -214,17 +213,16 @@ Feature: Vesting page test cases
       And User opens the last vesting schedule they have created
       And Vesting details page is shown correctly for the created schedule
 
-    @NoCode
-   Scenario: Vesting schedule unlock message - Try out on goerli testnet button
+   @NoCode
+   Scenario: Vesting schedule unlock message - Try out on Mumbai testnet button
       Given Transactional account john is connected to the dashboard on polygon
       And User clicks on the "vesting" navigation button
       Then Unlock Vesting with Superfluid screen is visible
-      And User tries out vesting on Goerli testnet
-      And The created vesting schedule is shown correctly in the table
-      And User opens the last vesting schedule they have created
-      And Vesting details page is shown correctly for the created schedule
+      And User tries out vesting on Mumbai testnet
+      And No created vesting schedules message is shown
+      And No received vesting schedules message is shown
 
-      @NoCode
+  @NoCode
   Scenario: Vesting schedule unlock message - Enter access code
     Given Transactional account john is connected to the dashboard on polygon
     And User clicks on the "vesting" navigation button

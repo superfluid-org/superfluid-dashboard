@@ -1,7 +1,9 @@
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { LoadingButton } from "@mui/lab";
 import {
   Button,
+  IconButton,
   ListItem,
   ListItemAvatar,
   ListItemText,
@@ -9,7 +11,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import { FC, memo } from "react";
+import { FC, memo, SyntheticEvent, useCallback } from "react";
 import { useAccount, useNetwork } from "wagmi";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
@@ -17,63 +19,89 @@ import { useAutoConnect } from "../autoConnect/AutoConnect";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { useConnectButton } from "./ConnectButtonProvider";
+import { useVisibleAddress } from "./VisibleAddressContext";
 
 interface AccountInfoProps {
   address: Address;
   isConnected?: boolean;
+  isImpersonating?: boolean;
   onClick?: () => void;
+  stopImpersonation: (e: SyntheticEvent) => void;
 }
 
 const AccountInfo: FC<AccountInfoProps> = ({
   address,
   isConnected,
+  isImpersonating,
   onClick,
-}) => {
-  return (
-    <ListItem sx={{ px: 2, py: 0, cursor: "pointer" }} onClick={onClick}>
-      <ListItemAvatar sx={{ mr: 2 }}>
-        <AddressAvatar address={address} />
-      </ListItemAvatar>
-      <ListItemText
-        data-cy={"wallet-connection-status"}
-        primary={<AddressName address={address} />}
-        secondary={isConnected ? "Connected" : "Wrong network"}
-        primaryTypographyProps={{
-          variant: "h6",
-          sx: {
-            textOverflow: "ellipsis",
-            whiteSpace: "pre",
-            overflow: "hidden",
-          },
-        }}
-        secondaryTypographyProps={{
-          color: isConnected ? "primary" : "error",
-        }}
-      />
-    </ListItem>
-  );
-};
-
-const MobileAccountInfo: FC<AccountInfoProps> = ({ address, onClick }) => {
-  return (
-    <Button
-      onClick={onClick}
-      variant="outlined"
-      color="secondary"
-      startIcon={
-        <AddressAvatar
-          address={address}
-          AvatarProps={{
-            sx: { width: "21px", height: "21px", borderRadius: "5px" },
-          }}
-          BlockiesProps={{ size: 7, scale: 3 }}
-        />
+  stopImpersonation,
+}) => (
+  <ListItem sx={{ px: 2, py: 0, cursor: "pointer" }} onClick={onClick}>
+    <ListItemAvatar sx={{ mr: 2 }}>
+      <AddressAvatar address={address} />
+    </ListItemAvatar>
+    <ListItemText
+      data-cy={"wallet-connection-status"}
+      primary={<AddressName address={address} />}
+      secondary={
+        isImpersonating
+          ? "Viewing as"
+          : isConnected
+          ? "Connected"
+          : "Wrong network"
       }
-    >
-      <AddressName address={address} />
-    </Button>
-  );
-};
+      primaryTypographyProps={{
+        variant: "h6",
+        sx: {
+          textOverflow: "ellipsis",
+          whiteSpace: "pre",
+          overflow: "hidden",
+        },
+      }}
+      secondaryTypographyProps={{
+        color: isImpersonating
+          ? "warning.main"
+          : isConnected
+          ? "primary"
+          : "error",
+      }}
+    />
+    {isImpersonating && (
+      <IconButton onClick={stopImpersonation} color="warning" size="small">
+        <CloseRoundedIcon color="warning" />
+      </IconButton>
+    )}
+  </ListItem>
+);
+
+const MobileAccountInfo: FC<AccountInfoProps> = ({
+  address,
+  isImpersonating,
+  onClick,
+  stopImpersonation,
+}) => (
+  <Button
+    onClick={onClick}
+    variant="outlined"
+    color="secondary"
+    startIcon={
+      <AddressAvatar
+        address={address}
+        AvatarProps={{
+          sx: { width: "21px", height: "21px", borderRadius: "5px" },
+        }}
+        BlockiesProps={{ size: 7, scale: 3 }}
+      />
+    }
+  >
+    <AddressName address={address} />
+    {isImpersonating && (
+      <IconButton onClick={stopImpersonation}>
+        <CloseRoundedIcon />
+      </IconButton>
+    )}
+  </Button>
+);
 
 interface ConnectWalletProps {
   small?: boolean;
@@ -85,21 +113,39 @@ const ConnectWallet: FC<ConnectWalletProps> = ({ small = false }) => {
 
   const { network } = useExpectedNetwork();
   const { openConnectModal, openAccountModal, mounted } = useConnectButton();
-  const { address: accountAddress } = useAccount();
+
+  const { visibleAddress } = useVisibleAddress();
   const { chain: activeChain } = useNetwork();
-  const { stopImpersonation: stopImpersonation } = useImpersonation();
+  const { stopImpersonation, isImpersonated } = useImpersonation();
+
   const { isAutoConnecting } = useAutoConnect();
 
-  if (accountAddress && activeChain && mounted) {
+  const handleStopImpersonation = useCallback(
+    (e: SyntheticEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      stopImpersonation();
+    },
+    [stopImpersonation]
+  );
+
+  if (visibleAddress && activeChain && mounted) {
     // TODO(KK): Better solution for pointer/click
     return isAboveMd ? (
       <AccountInfo
-        address={accountAddress}
+        address={visibleAddress}
         isConnected={network.id === activeChain.id}
+        isImpersonating={isImpersonated}
         onClick={openAccountModal}
+        stopImpersonation={handleStopImpersonation}
       />
     ) : (
-      <MobileAccountInfo address={accountAddress} onClick={openAccountModal} />
+      <MobileAccountInfo
+        address={visibleAddress}
+        isImpersonating={isImpersonated}
+        onClick={openAccountModal}
+        stopImpersonation={handleStopImpersonation}
+      />
     );
   }
 

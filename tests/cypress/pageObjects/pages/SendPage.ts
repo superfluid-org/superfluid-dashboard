@@ -1,6 +1,7 @@
 import {BasePage, UnitOfTime} from "../BasePage";
 import {WrapPage} from "./WrapPage";
 import {networksBySlug} from "../../superData/networks";
+import {Common} from "./Common";
 
 const SEND_BUTTON = "[data-cy=send-transaction-button]";
 const RECEIVER_BUTTON = "[data-cy=address-button]";
@@ -39,6 +40,7 @@ const PREVIEW_BALANCE = "[data-cy=balance]";
 const TOKEN_NO_SEARCH_RESULTS = "[data-cy=token-search-no-results]";
 const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet]";
 const DIALOG = "[role=dialog]"
+const DIALOG_CONTENT = "[data-cy=dialog-content]"
 const APPROVAL_MESSAGE = "[data-cy=approval-message]"
 const TX_MESSAGE_NETWORK = "[data-cy=tx-network]"
 const LOADING_SPINNER = "[role=progressbar]"
@@ -54,6 +56,14 @@ const PREVIEW_BUFFER_LOSS = "[data-cy=buffer-loss]"
 const TX_DRAWER_BUTTON = "[data-cy=tx-drawer-button]"
 const OK_BUTTON = "[data-cy=ok-button]"
 const RECEIVER_DIALOG = "[data-cy=receiver-dialog]"
+const START_DATE = "[data-cy=start-date]"
+const START_DATE_BORDER = `${START_DATE} fieldset`
+const END_DATE = "[data-cy=end-date]"
+const END_DATE_BORDER = `${END_DATE} fieldset`
+const SCHEDULING_TOGGLE = "[data-cy=scheduling-tooltip] [type=checkbox]"
+const TOTAL_STREAM_INPUT = "[data-cy=total-stream] input"
+const ALLOWLIST_MESSAGE = "[data-cy=allowlist-message]"
+const ALLOWLIST_LINK = "[data-cy=allowlist-link]"
 
 export class SendPage extends BasePage {
     static searchForTokenInTokenList(token: string) {
@@ -327,7 +337,7 @@ export class SendPage extends BasePage {
         this.click(RECEIVER_BUTTON);
         cy.get(RECENT_ENTRIES,{timeout:30000}).should("be.visible")
         this.type(ADDRESS_DIALOG_INPUT, address);
-        this.clear(FLOW_RATE_INPUT)
+        this.clear(`${FLOW_RATE_INPUT} input`)
         this.type(FLOW_RATE_INPUT, amount);
         this.click(SELECT_TOKEN_BUTTON);
         cy.get(`[data-cy="${selectedToken}-list-item"]`, {timeout: 60000}).click()
@@ -496,4 +506,79 @@ export class SendPage extends BasePage {
             this.hasText(BUFFER_WARNING_AMOUNT , `69 ${token}`)
         })
     }
+
+    static clickSchedulingToggle() {
+        this.click(SCHEDULING_TOGGLE)
+    }
+
+    static inputStartDate(amount: number, timeunit: string) {
+        this.clear(START_DATE)
+        Common.inputDateIntoField(START_DATE,amount,timeunit)
+    }
+
+    static inputEndDate(amount: number, timeunit: string) {
+        this.clear(END_DATE)
+        Common.inputDateIntoField(END_DATE,amount,timeunit)
+    }
+
+    static validateEndDateBorderIsRed() {
+        cy.get(END_DATE_BORDER).should("have.css","border-color" , "rgb(210, 37, 37)")
+    }
+
+    static validateStartDateBorderIsRed() {
+        cy.get(START_DATE_BORDER).should("have.css","border-color" , "rgb(210, 37, 37)")
+    }
+
+    static validateVisibleAllowlistMessage() {
+        this.isVisible(ALLOWLIST_MESSAGE)
+        this.containsText(ALLOWLIST_MESSAGE, "You are not on the allow list.")
+        this.containsText(ALLOWLIST_MESSAGE,"If you want to set start and end dates for your streams,")
+        this.containsText(ALLOWLIST_LINK,"Apply for access")
+        this.hasAttributeWithValue(ALLOWLIST_LINK,"href" , "https://use.superfluid.finance/schedulestreams")
+    }
+
+    static validateScheduledStreamFieldsAreVisible() {
+        this.isVisible(START_DATE)
+        this.isVisible(END_DATE)
+        this.isVisible(TOTAL_STREAM_INPUT)
+    }
+
+    static clickSendButton() {
+        this.click(SEND_BUTTON)
+    }
+
+    static validateScheduledStreamDialogs() {
+        this.isVisible(DIALOG_CONTENT)
+        cy.get(DIALOG_CONTENT).invoke("text").should("match",/You are (sending|modifying) a scheduled stream/)
+    }
+
+    static validateTotalStreamAmount(amount: string) {
+        this.hasValue(TOTAL_STREAM_INPUT,amount)
+    }
+
+    static validateDisabledStartDateField() {
+        this.isDisabled(`${START_DATE} input`)
+    }
+
+    static validateSetFlowRate(flowrate: string) {
+        this.hasValue(`${FLOW_RATE_INPUT} input`,flowrate)
+    }
+
+    static validateStreamStartDate(date:string) {
+        this.hasValue(`${START_DATE} input`,date)
+    }
+
+    static validateStreamEndDate(date:string) {
+        this.hasValue(`${END_DATE} input`,date)
+    }
+
+    static isSchedulingSupported(fn: () => void) {
+        if (["polygon-mumbai","avalanche-fuji"].includes(Cypress.env("network")) && Cypress.env("scheduling")) {
+            cy.log(`Skipping the step because ${Cypress.env("network")} is not supported`)
+            return
+        } else {
+            fn();
+        }
+    }
+
 }

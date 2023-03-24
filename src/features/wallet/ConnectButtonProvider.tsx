@@ -1,5 +1,15 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { createContext, FC, PropsWithChildren, useContext } from "react";
+import {
+  createContext,
+  FC,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
+import { useAccount } from "wagmi";
+import AccountModal from "./AccountModal";
 
 // TODO: PR to rainbowkit to expose this interface. It is inpossible to get it out atm.
 interface ConnectButtonContextValue {
@@ -24,6 +34,7 @@ interface ConnectButtonContextValue {
   };
   mounted: boolean;
   openAccountModal: () => void;
+  closeAccountModal: () => void;
   openChainModal: () => void;
   openConnectModal: () => void;
   accountModalOpen: boolean;
@@ -33,15 +44,41 @@ interface ConnectButtonContextValue {
 
 const ConnectButtonContext = createContext<ConnectButtonContextValue>(null!);
 
-const ConnectButtonProvider: FC<PropsWithChildren> = ({ children }) => (
-  <ConnectButton.Custom>
-    {(connectButtonContext) => (
-      <ConnectButtonContext.Provider value={connectButtonContext}>
-        {children}
-      </ConnectButtonContext.Provider>
-    )}
-  </ConnectButton.Custom>
-);
+const ConnectButtonProvider: FC<PropsWithChildren> = ({ children }) => {
+  const [accountModalOpen, setAccountModalOpen] = useState(false);
+  const { address } = useAccount();
+
+  const openAccountModal = useCallback(
+    () => address && setAccountModalOpen(true),
+    [setAccountModalOpen, address]
+  );
+
+  const closeAccountModal = useCallback(
+    () => setAccountModalOpen(false),
+    [setAccountModalOpen]
+  );
+
+  const overriddenContext = useMemo(
+    () => ({ accountModalOpen, openAccountModal, closeAccountModal }),
+    [accountModalOpen, openAccountModal, closeAccountModal]
+  );
+
+  return (
+    <ConnectButton.Custom>
+      {(connectButtonContext) => (
+        <ConnectButtonContext.Provider
+          value={{
+            ...connectButtonContext,
+            ...overriddenContext,
+          }}
+        >
+          {children}
+          <AccountModal open={accountModalOpen} onClose={closeAccountModal} />
+        </ConnectButtonContext.Provider>
+      )}
+    </ConnectButton.Custom>
+  );
+};
 
 export const useConnectButton = () => useContext(ConnectButtonContext);
 

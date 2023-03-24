@@ -1,6 +1,15 @@
-import { Box, Button, colors, Divider, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  colors,
+  Divider,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import Link from "next/link";
 import { FC } from "react";
+import { NextLinkComposed } from "../../features/common/Link";
 import NetworkBadge from "../../features/network/NetworkBadge";
 import {
   allNetworks,
@@ -8,6 +17,7 @@ import {
 } from "../../features/network/networks";
 import { Notification } from "../../hooks/useNotificationChannels";
 import { createMessage, getNotificationIcon } from "../../utils/notification";
+import { getWrapPagePath } from "../../utils/URLUtils";
 import { NotificationTab } from "./NotificationsBell";
 
 type NotificationProps = {
@@ -34,6 +44,8 @@ const NotificationEntry: FC<NotificationProps> = ({
   seen,
   archive,
 }) => {
+  const theme = useTheme();
+
   return (
     <Stack
       sx={{
@@ -47,10 +59,10 @@ const NotificationEntry: FC<NotificationProps> = ({
     >
       {notification.message.parsed.network && (
         <NetworkBadge
-          sx={{ position: "absolute", top: 0, right: 20 }}
+          sx={{ position: "absolute", top: 0, right: 23.5 }}
           NetworkIconProps={{
-            size: 16,
-            fontSize: 12,
+            size: 20,
+            fontSize: 16,
           }}
           network={findNetworkOrThrow(
             allNetworks,
@@ -69,12 +81,12 @@ const NotificationEntry: FC<NotificationProps> = ({
 
           <Box sx={{ filter: type === "archive" ? "opacity(70%)" : "none" }}>
             <Stack direction="row" justifyContent="space-between">
-              <Stack direction="row" alignItems="center" gap={0.5}>
+              <Stack direction="row" alignItems="center" gap={1}>
                 {getNotificationIcon(notification.message.parsed)}
                 <Typography variant="h6"> {notification.title}</Typography>
               </Stack>
             </Stack>
-            <Stack pl={3.5} gap={1}>
+            <Stack pl={4} gap={1}>
               <Typography variant="body2" sx={{ color: "GrayText" }}>
                 {createMessage(notification.message)}
               </Typography>
@@ -82,11 +94,16 @@ const NotificationEntry: FC<NotificationProps> = ({
           </Box>
         </Stack>
 
-        <Box px={seen ? 3 : 4.5} pt={1}>
+        <Box px={seen ? 4 : 5} pt={1}>
           {type === "new" &&
             notification.message.parsed.type &&
             notification.message.parsed.type.includes("liquidation-risk") && (
-              <Link href="/wrap">
+              <Link
+                href={getWrapPagePath({
+                  network: notification.message.parsed.network,
+                  token: notification.message.parsed.tokenAddress,
+                })}
+              >
                 <Button sx={{ width: 120 }} variant="contained">
                   Wrap tokens
                 </Button>
@@ -99,7 +116,7 @@ const NotificationEntry: FC<NotificationProps> = ({
           sx={{
             maxHeight: 0,
             overflow: "hidden",
-            transition: "max-height .5s",
+            transition: `max-height ${theme.transitions.duration.short}ms`,
           }}
           className="archive-cta"
         >

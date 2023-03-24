@@ -30,6 +30,9 @@ export const VESTING_FEATURE_CODES = [
   "75ZU_REBORN",
   "6Q4L_ALLUO",
   "FCRY_JIGSTAK",
+  "D7D7_SWIVEL",
+  "8H0H_KLEROS",
+  "6J2L_KITTY",
 ];
 
 // TODO: (M) IMO we do not need a separate provider for this, just a features selector hook for flags feature.

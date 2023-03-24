@@ -45,6 +45,10 @@ import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import TimerOutlined from "@mui/icons-material/TimerOutlined";
 import { ScheduledStream } from "../../hooks/streamSchedulingHooks";
 import { Web3FlowInfo } from "../redux/endpoints/adHocRpcEndpoints";
+import {
+  ActiveStreamIcon,
+  ScheduledStreamIcon,
+} from "../streamsTable/StreamIcons";
 
 interface PreviewItemProps {
   label: string | ReactNode;
@@ -312,7 +316,7 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
         {newScheduledFlowRate.startTimestamp && (
           <PreviewItem dataCy="preview-starts-on" label="Start date">
             <Stack direction="row" alignItems="center" gap={0.5}>
-              <TimerOutlined />
+              <ScheduledStreamIcon scheduledStart />
               {format(
                 fromUnixTime(newScheduledFlowRate.startTimestamp),
                 "P"
@@ -333,12 +337,12 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
           <Stack direction="row" alignItems="center" gap={0.5}>
             {newEndDate ? (
               <>
-                <TimerOutlined />
+                <ScheduledStreamIcon scheduledEnd />
                 {format(newEndDate, "P")} at {format(newEndDate, "p")}
               </>
             ) : (
               <>
-                <AllInclusiveIcon />
+                <ActiveStreamIcon />
                 Never
               </>
             )}

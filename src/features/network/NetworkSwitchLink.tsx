@@ -6,11 +6,13 @@ import { Network } from "./networks";
 
 interface NetworkSwitchLinkProps {
   network: Network;
+  title?: string;
   disabled?: boolean;
 }
 
 const NetworkSwitchLink: FC<NetworkSwitchLinkProps> = ({
   network,
+  title,
   disabled = false,
 }) => {
   const { setExpectedNetwork } = useExpectedNetwork();
@@ -38,7 +40,7 @@ const NetworkSwitchLink: FC<NetworkSwitchLinkProps> = ({
       disabled={disabled}
       onClick={networkSwitchClicked}
     >
-      {network.name}
+      {title || network.name}
     </Link>
   );
 };
