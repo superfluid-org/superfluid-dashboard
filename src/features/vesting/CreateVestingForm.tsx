@@ -29,6 +29,7 @@ import TooltipIcon from "../common/TooltipIcon";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
+import { TokenType } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import AddressSearch from "../send/AddressSearch";
 import {
@@ -81,10 +82,7 @@ const CreateVestingForm: FC<{
     []
   );
 
-  const [
-    cliffEnabled,
-    vestingPeriod,
-  ] = watch([
+  const [cliffEnabled, vestingPeriod] = watch([
     "data.cliffEnabled",
     "data.vestingPeriod",
   ]);
@@ -400,10 +398,7 @@ const CreateVestingForm: FC<{
     isLoading: isAutoWrapStatusLoading,
     currentData: isAutoWrapConfigured,
   } = rpcApi.useIsAutoWrapStrategyConfiguredEndpointQuery(
-      network.autoWrap &&
-      token &&
-      token.underlyingAddress &&
-      visibleAddress
+    network.autoWrap && token && token.underlyingAddress && visibleAddress
       ? {
           chainId: network.id,
           accountAddress: visibleAddress,
@@ -419,14 +414,20 @@ const CreateVestingForm: FC<{
       name="data.setupAutoWrap"
       render={({ field: { value, onChange, onBlur } }) => (
         <>
-          {token && !isAutoWrapStatusLoading && !isAutoWrapConfigured && (
-            <FormControlLabel
-              label="Allow for automatic wrapping"
-              control={
-                <Checkbox checked={!!value} onChange={onChange} onBlur={onBlur} />
-              }
-            />
-          )}
+          {token?.type === TokenType.WrapperSuperToken &&
+            !isAutoWrapStatusLoading &&
+            !isAutoWrapConfigured && (
+              <FormControlLabel
+                label="Allow for automatic wrapping"
+                control={
+                  <Checkbox
+                    checked={!!value}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                  />
+                }
+              />
+            )}
         </>
       )}
     ></Controller>
