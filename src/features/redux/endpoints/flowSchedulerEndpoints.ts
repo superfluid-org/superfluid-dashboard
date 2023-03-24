@@ -91,7 +91,7 @@ export const flowSchedulerEndpoints = {
       providesTags: (_result, _error, arg) => [
         {
           type: "GENERAL",
-          id: arg.chainId.toString(),
+          id: arg.chainId,
         },
       ],
     }),

@@ -780,7 +780,7 @@ export default memo(function SendCard() {
                 )
               )
               .then(() => void resetForm())
-              .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
+              .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
 
             setDialogLoadingInfo(
               <Typography variant="h5" color="text.secondary" translate="yes">
@@ -888,7 +888,7 @@ export default memo(function SendCard() {
                 .unwrap()
                 .then(...txAnalytics("Cancel Stream", primaryArgs))
                 .then(() => resetForm())
-                .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
+                .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}
           >
             Cancel Stream

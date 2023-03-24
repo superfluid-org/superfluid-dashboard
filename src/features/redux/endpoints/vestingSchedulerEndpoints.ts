@@ -480,7 +480,7 @@ export const vestingSchedulerQueryEndpoints = {
       providesTags: (_result, _error, arg) => [
         {
           type: "GENERAL",
-          id: arg.chainId.toString(),
+          id: arg.chainId,
         },
       ],
       queryFn: async ({ chainId, tokenAddress, senderAddress }) => {
@@ -522,7 +522,7 @@ export const vestingSchedulerQueryEndpoints = {
       providesTags: (_result, _error, arg) => [
         {
           type: "GENERAL",
-          id: arg.chainId.toString(),
+          id: arg.chainId,
         },
       ],
       queryFn: async ({

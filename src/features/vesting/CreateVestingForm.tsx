@@ -398,9 +398,9 @@ const CreateVestingForm: FC<{
   const { visibleAddress } = useVisibleAddress();
   const {
     isLoading: isAutoWrapStatusLoading,
-    currentData: hasAutoWrapAlreadyEnabled,
-  } = rpcApi.useGetWrapScheduleQuery(
-    network.autoWrap &&
+    currentData: isAutoWrapConfigured,
+  } = rpcApi.useIsAutoWrapStrategyConfiguredEndpointQuery(
+      network.autoWrap &&
       token &&
       token.underlyingAddress &&
       visibleAddress
@@ -419,7 +419,7 @@ const CreateVestingForm: FC<{
       name="data.setupAutoWrap"
       render={({ field: { value, onChange, onBlur } }) => (
         <>
-          {!isAutoWrapStatusLoading && !hasAutoWrapAlreadyEnabled && (
+          {token && !isAutoWrapStatusLoading && !isAutoWrapConfigured && (
             <FormControlLabel
               label="Allow for automatic wrapping"
               control={

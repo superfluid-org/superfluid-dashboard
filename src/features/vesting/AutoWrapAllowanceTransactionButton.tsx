@@ -10,8 +10,9 @@ import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { VestingToken } from "./CreateVestingSection";
 
-const AddAllowanceTransactionButton: FC<{ token: VestingToken }> = ({
+const AutoWrapAllowanceTransactionButton: FC<{ token: VestingToken, isVisible: boolean }> = ({
   token,
+  isVisible
 }) => {
   const { network } = useExpectedNetwork();
   const { watch } = useFormContext<ValidVestingForm>();
@@ -47,7 +48,7 @@ const AddAllowanceTransactionButton: FC<{ token: VestingToken }> = ({
         setDialogLoadingInfo,
         setDialogSuccessActions,
       }) =>
-        !mutationResult.isSuccess && (
+        isVisible && (
           <TransactionButton
             disabled={!config}
             onClick={async (signer) => {
@@ -72,7 +73,7 @@ const AddAllowanceTransactionButton: FC<{ token: VestingToken }> = ({
               }).unwrap();
             }}
           >
-            Add allowance
+            Approve Auto Wrap
           </TransactionButton>
         )
       }
@@ -80,4 +81,4 @@ const AddAllowanceTransactionButton: FC<{ token: VestingToken }> = ({
   );
 };
 
-export default memo(AddAllowanceTransactionButton);
+export default memo(AutoWrapAllowanceTransactionButton);

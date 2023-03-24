@@ -57,9 +57,9 @@ import {
   vestingSchedulerQueryEndpoints,
 } from "./endpoints/vestingSchedulerEndpoints";
 import { platformApi } from "./platformApi/platformApi";
-import { autoWrapEndpoints } from "./endpoints/autoWrapEndpoints";
+import { autoWrapEndpoints1, autoWrapEndpoints2 } from "./endpoints/autoWrapEndpoints";
 
-export const rpcApi = initializeRpcApiSlice((options) =>
+export const rpcApiPrimary = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({
     ...options,
     keepUnusedDataFor: 180,
@@ -73,7 +73,10 @@ export const rpcApi = initializeRpcApiSlice((options) =>
   .injectEndpoints(flowSchedulerEndpoints)
   .injectEndpoints(vestingSchedulerMutationEndpoints)
   .injectEndpoints(vestingSchedulerQueryEndpoints)
-  .injectEndpoints(autoWrapEndpoints);
+  .injectEndpoints(autoWrapEndpoints1);
+
+export const rpcApi = rpcApiPrimary
+  .injectEndpoints(autoWrapEndpoints2);
 
 export const subgraphApi = initializeSubgraphApiSlice((options) =>
   createApiWithReactHooks({

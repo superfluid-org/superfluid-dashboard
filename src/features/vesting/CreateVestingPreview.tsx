@@ -1,4 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 import add from "date-fns/fp/add";
 import format from "date-fns/fp/format";
 import { FC, memo } from "react";
@@ -9,10 +10,12 @@ import { parseEtherOrZero } from "../../utils/tokenUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
+import { rpcApi } from "../redux/store";
 import { timeUnitWordMap } from "../send/FlowRateInput";
 import TokenIcon from "../token/TokenIcon";
-import AddAllowanceTransactionButton from "./AddAllowanceTransactionButton";
-import AutoWrapTransactionButton from "./AutoWrapTransactionButton";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import AutoWrapAllowanceTransactionButton from "./AutoWrapAllowanceTransactionButton";
+import AutoWrapStrategyTransactionButton from "./AutoWrapStrategyTransactionButton";
 import { VestingFormLabels } from "./CreateVestingForm";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { CreateVestingCardView, VestingToken } from "./CreateVestingSection";
@@ -40,6 +43,7 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
     cliffAmountEther = "0",
     cliffPeriod,
     cliffEnabled,
+    setupAutoWrap,
   ] = watch([
     "data.receiverAddress",
     "data.totalAmountEther",
@@ -48,6 +52,7 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
     "data.cliffAmountEther",
     "data.cliffPeriod",
     "data.cliffEnabled",
+    "data.setupAutoWrap",
   ]);
 
   const { numerator: cliffNumerator = 0, denominator: cliffDenominator } =
@@ -67,6 +72,50 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
       seconds: vestingPeriod.numerator * vestingPeriod.denominator,
     },
     startDate
+  );
+
+  const { visibleAddress } = useVisibleAddress();
+
+  const {
+    data: isAutoWrapAllowanceConfigured,
+    isLoading: isAutoWrapAllowanceLoading,
+  } = rpcApi.useIsAutoWrapAllowanceConfiguredEndpointQuery(
+    setupAutoWrap && visibleAddress
+      ? {
+          chainId: network.id,
+          accountAddress: visibleAddress,
+          superTokenAddress: token.address,
+          underlyingTokenAddress: token.underlyingAddress,
+        }
+      : skipToken
+  );
+
+  console.log({
+    isAutoWrapAllowanceConfigured
+  })
+
+  const isAutoWrapAllowanceOK = Boolean(
+    !setupAutoWrap ||
+      (!isAutoWrapAllowanceLoading && isAutoWrapAllowanceConfigured)
+  );
+
+  const {
+    data: isAutoWrapStrategyConfigured,
+    isLoading: isAutoWrapStrategyConfiguredLoading,
+  } = rpcApi.useIsAutoWrapStrategyConfiguredEndpointQuery(
+    setupAutoWrap && visibleAddress
+      ? {
+          chainId: network.id,
+          accountAddress: visibleAddress,
+          superTokenAddress: token.address,
+          underlyingTokenAddress: token.underlyingAddress,
+        }
+      : skipToken
+  );
+
+  const isAutoWrapStrategyOK = Boolean(
+    !setupAutoWrap ||
+      (!isAutoWrapStrategyConfiguredLoading && isAutoWrapStrategyConfigured)
   );
 
   return (
@@ -181,10 +230,21 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
         )}
       </Stack>
 
-      <AddAllowanceTransactionButton token={token} />
-      <AutoWrapTransactionButton token={token} />
-      <CreateVestingTransactionButton setView={setView} />
-      
+      {setupAutoWrap && (
+        <>
+          <AutoWrapAllowanceTransactionButton
+            token={token}
+            isVisible={!isAutoWrapAllowanceOK}
+          />
+          <AutoWrapStrategyTransactionButton
+            token={token}
+            isVisible={isAutoWrapAllowanceOK && !isAutoWrapStrategyOK}
+          />
+        </>
+      )}
+      {isAutoWrapAllowanceOK && isAutoWrapStrategyOK && (
+        <CreateVestingTransactionButton setView={setView} />
+      )}
     </Stack>
   );
 };

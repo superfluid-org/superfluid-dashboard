@@ -11,8 +11,9 @@ import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { VestingToken } from "./CreateVestingSection";
 
-const AutoWrapTransactionButton: FC<{ token: VestingToken }> = ({
+const AutoWrapStrategyTransactionButton: FC<{ token: VestingToken, isVisible: boolean }> = ({
   token,
+  isVisible
 }) => {
   const { data: signer } = useSigner();
   const { network } = useExpectedNetwork();
@@ -31,10 +32,11 @@ const AutoWrapTransactionButton: FC<{ token: VestingToken }> = ({
   // { name: 'lowerLimit', internalType: 'uint64', type: 'uint64' },
   // { name: 'upperLimit', internalType: 'uint64', type: 'uint64' },
 
+  // TODO(KK): handle errors
   // TODO(KK): Check whether there's an underlying token properly...
   const { config } = usePrepareContractWrite({
     enabled: setupAutoWrap && !!network.autoWrap, // TODO(KK): any other conditions to add here?
-    address: token.underlyingAddress as `0x${string}`,
+    address: network.autoWrap!.managerContractAddress as `0x${string}`,
     abi: autoWrapManagerABI,
     functionName: "createWrapSchedule",
     args: [
@@ -47,7 +49,7 @@ const AutoWrapTransactionButton: FC<{ token: VestingToken }> = ({
     ],
     signer: signer,
     chainId: network.id,
-    overrides: {}, // TODO: overrides
+    overrides: { gasLimit: BigNumber.from("1000000") }, // TODO: overrides
   });
 
   const [trigger, mutationResult] = rpcApi.useWriteContractMutation();
@@ -60,7 +62,7 @@ const AutoWrapTransactionButton: FC<{ token: VestingToken }> = ({
         setDialogLoadingInfo,
         setDialogSuccessActions,
       }) =>
-        !mutationResult.isSuccess && (
+        isVisible && (
           <TransactionButton
             disabled={!config}
             onClick={async (signer) => {
@@ -85,7 +87,7 @@ const AutoWrapTransactionButton: FC<{ token: VestingToken }> = ({
               }).unwrap();
             }}
           >
-            Add allowance
+            Configure Auto Wrap
           </TransactionButton>
         )
       }
@@ -93,4 +95,4 @@ const AutoWrapTransactionButton: FC<{ token: VestingToken }> = ({
   );
 };
 
-export default memo(AutoWrapTransactionButton);
+export default memo(AutoWrapStrategyTransactionButton);

@@ -308,7 +308,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                                       primaryArgs
                                     )
                                   )
-                                  .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
+                                  .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
                               }}
                             >
                               <CheckCircleRoundedIcon />
@@ -396,7 +396,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                                       primaryArgs
                                     )
                                   )
-                                  .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
+                                  .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
                               }}
                             >
                               <CancelRoundedIcon />

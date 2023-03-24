@@ -44,7 +44,7 @@ export interface Web3FlowInfo {
   owedDepositWei: string;
 }
 
-const createWriteContractEndpoint = (builder: RpcEndpointBuilder) =>
+const writeContractEndpoint = (builder: RpcEndpointBuilder) =>
   builder.mutation<
     TransactionInfo,
     {
@@ -78,7 +78,7 @@ const createWriteContractEndpoint = (builder: RpcEndpointBuilder) =>
   });
 
 
-const createAllowanceEndpoint = (builder: RpcEndpointBuilder) =>
+const allowanceEndpoint = (builder: RpcEndpointBuilder) =>
   builder.query<
     unknown,
     {
@@ -87,6 +87,7 @@ const createAllowanceEndpoint = (builder: RpcEndpointBuilder) =>
     }
   >({
     queryFn: async () => {
+
       return {
         data: {} as unknown
       }
@@ -95,8 +96,8 @@ const createAllowanceEndpoint = (builder: RpcEndpointBuilder) =>
 
 export const adHocRpcEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
-    allowance: createAllowanceEndpoint(builder),
-    writeContract: createWriteContractEndpoint(builder),
+    allowance: allowanceEndpoint(builder),
+    writeContract: writeContractEndpoint(builder),
     getActiveFlow: builder.query<
       // TODO(KK): Create equivalent endpoint in the SDK
       Web3FlowInfo | null,

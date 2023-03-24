@@ -1,3 +1,4 @@
+import { ERC20__factory } from "@superfluid-finance/sdk-core";
 import {
   BaseSuperTokenMutation,
   getFramework,
@@ -6,15 +7,10 @@ import {
 import { erc20ABI, prepareWriteContract } from "@wagmi/core";
 import { constants } from "ethers";
 import { getAutoWrap } from "../../../eth-sdk/getEthSdk";
+import { isCloseToUnlimitedTokenAllowance } from "../../../utils/isCloseToUnlimitedAllowance";
+import { rpcApi, rpcApiPrimary } from "../store";
 
-type GetWrapSchedule = {
-  chainId: number;
-  accountAddress: string;
-  superTokenAddress: string;
-  underlyingTokenAddress: string;
-};
-
-type WrapSchedule = {
+export type WrapSchedule = {
   user: string;
   superToken: string;
   strategy: string;
@@ -24,8 +20,14 @@ type WrapSchedule = {
   upperLimit: string; // Why was this a big number?
 };
 
-// Rename to "active".
-const createGetWrapScheduleEndpoint = (builder: RpcEndpointBuilder) =>
+export type GetWrapSchedule = {
+  chainId: number;
+  accountAddress: string;
+  superTokenAddress: string;
+  underlyingTokenAddress: string;
+};
+
+const getActiveWrapScheduleEndpoint = (builder: RpcEndpointBuilder) =>
   builder.query<WrapSchedule | null, GetWrapSchedule>({
     queryFn: async (arg) => {
       const framework = await getFramework(arg.chainId);
@@ -40,9 +42,9 @@ const createGetWrapScheduleEndpoint = (builder: RpcEndpointBuilder) =>
         superToken: rawWrapSchedule.superToken,
         strategy: rawWrapSchedule.strategy,
         liquidityToken: rawWrapSchedule.liquidityToken,
-        expiry: rawWrapSchedule.expiry.toString(), // Why was this a big number?
-        lowerLimit: rawWrapSchedule.lowerLimit.toString(), // Why was this a big number?
-        upperLimit: rawWrapSchedule.upperLimit.toString(), // Why was this a big number?
+        expiry: rawWrapSchedule.expiry.toString(), // Should have been `number`, not `BigNumber`.
+        lowerLimit: rawWrapSchedule.lowerLimit.toString(), // Should have been `number`, not `BigNumber`.
+        upperLimit: rawWrapSchedule.upperLimit.toString(), // Should have been `number`, not `BigNumber`.
       };
 
       return {
@@ -52,41 +54,88 @@ const createGetWrapScheduleEndpoint = (builder: RpcEndpointBuilder) =>
             : wrapSchedule,
       };
     },
+    providesTags: (_result, _error, arg) => [
+      {
+        type: "GENERAL",
+        id: arg.chainId,
+      },
+    ],
   });
 
-type AutoWrapAllowanceMutation = {
-  accountAddress: string;
-  underlyingTokenAddress: string;
-} & Pick<BaseSuperTokenMutation, "chainId" | "signer" | "overrides">;
+const isAutoWrapStrategyConfiguredEndpoint = (builder: RpcEndpointBuilder) =>
+  builder.query<boolean, GetWrapSchedule>({
+    queryFn: async (arg, { dispatch }) => {
+      const framework = await getFramework(arg.chainId);
+      const { strategy } = getAutoWrap(
+        arg.chainId,
+        framework.settings.provider
+      );
 
-// const createPrepareAutoWrapApproveEndpoint = (builder: RpcEndpointBuilder) =>
-//   builder.mutation<unknown, AutoWrapAllowanceMutation>({
-//     queryFn: async ({ chainId, signer, underlyingTokenAddress, overrides }) => {
-//       const { strategy } = getAutoWrap(chainId, signer);
-//       const config = await prepareWriteContract({
-//         address: underlyingTokenAddress as `0x${string}`,
-//         abi: erc20ABI,
-//         functionName: "approve",
-//         args: [strategy.address as `0x${string}`, constants.MaxUint256],
-//         signer: signer,
-//         chainId: chainId,
-//         overrides: overrides as any, // `0x${string}` issue
-//       });
+      const getWrapSchedule = dispatch(
+        rpcApiPrimary.endpoints.getActiveWrapSchedule.initiate(arg, {
+          subscribe: true,
+        })
+      );
+      const wrapSchedule = await getWrapSchedule
+        .unwrap()
+        .finally(() => getWrapSchedule.unsubscribe());
 
-//       return {
-//         // data: config,
-//         data: { } as any
-//       };
-//     },
-//     serializeQueryArgs: ({ queryArgs }) => {
-//       const { signer, overrides, ...rest } = queryArgs;
-//       return rest;
-//     },
-//   });
+      const isStrategyConfigured =
+        wrapSchedule?.strategy.toLowerCase() === strategy.address.toLowerCase();
 
-export const autoWrapEndpoints = {
+      // NOTE: To be completely correct, other properties should be checked as well. For example, to check that it's not expired...
+
+      return {
+        data: isStrategyConfigured,
+      };
+    },
+    providesTags: (_result, _error, arg) => [
+      {
+        type: "GENERAL",
+        id: arg.chainId,
+      },
+    ],
+  });
+
+const isAutoWrapAllowanceConfiguredEndpoint = (builder: RpcEndpointBuilder) =>
+  builder.query<boolean, GetWrapSchedule>({
+    queryFn: async (arg) => {
+      const framework = await getFramework(arg.chainId);
+      const tokenContract = ERC20__factory.connect(arg.underlyingTokenAddress, framework.settings.provider);
+
+      const { strategy } = getAutoWrap(
+        arg.chainId,
+        framework.settings.provider
+      );
+
+      const allowance = await tokenContract.allowance(arg.accountAddress, strategy.address);
+
+      console.log({
+        allowance
+      })
+
+      return {
+        data: isCloseToUnlimitedTokenAllowance(allowance), // Meh... We could also check that allowance is not 0.
+      };
+    },
+    providesTags: (_result, _error, arg) => [
+      {
+        type: "GENERAL",
+        id: arg.chainId,
+      },
+    ],
+  });
+
+export const autoWrapEndpoints1 = {
   endpoints: (builder: RpcEndpointBuilder) => ({
-    // prepareAutoWrapApprove: createPrepareAutoWrapApproveEndpoint(builder),
-    getWrapSchedule: createGetWrapScheduleEndpoint(builder),
+    getActiveWrapSchedule: getActiveWrapScheduleEndpoint(builder),
+    isAutoWrapAllowanceConfiguredEndpoint: isAutoWrapAllowanceConfiguredEndpoint(builder)
+  }),
+};
+
+export const autoWrapEndpoints2 = {
+  endpoints: (builder: RpcEndpointBuilder) => ({
+    isAutoWrapStrategyConfiguredEndpoint:
+      isAutoWrapStrategyConfiguredEndpoint(builder),
   }),
 };
