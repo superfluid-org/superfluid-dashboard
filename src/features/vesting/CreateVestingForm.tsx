@@ -414,7 +414,7 @@ const CreateVestingForm: FC<{
       name="data.setupAutoWrap"
       render={({ field: { value, onChange, onBlur } }) => (
         <>
-          {token?.type === TokenType.WrapperSuperToken &&
+          {network.autoWrap && token?.type === TokenType.WrapperSuperToken &&
             !isAutoWrapStatusLoading &&
             !isAutoWrapConfigured && (
               <FormControlLabel
