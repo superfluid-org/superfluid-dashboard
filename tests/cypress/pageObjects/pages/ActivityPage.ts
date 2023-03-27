@@ -46,7 +46,6 @@ export class ActivityPage extends BasePage {
             this.recordNetworkData(network, activityHistoryData)
         })
         cy.writeFile("cypress/record/activityData.json", activityHistoryData)
-        console.log(activityHistoryData)
     }
 
     static recordNetworkData(network: { slugName: string }, json: { account: Record<string, any[]> }) {

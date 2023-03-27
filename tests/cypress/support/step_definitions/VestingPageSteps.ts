@@ -115,8 +115,8 @@ Then(/^Total stats for the sent vesting schedules are shown correctly$/, functio
 Then(/^Unlock Vesting with Superfluid screen is visible$/, function () {
     VestingPage.validateNoCodeUnlockScreen()
 });
-Then(/^User tries out vesting on Goerli testnet$/, function () {
-    VestingPage.clickOnTryOnGoerliButton()
+Then(/^User tries out vesting on Mumbai testnet$/, function () {
+    VestingPage.clickOnTryOnMumbaiButton()
 });
 Then(/^User clicks on the input access code button$/, function () {
     VestingPage.clickInputAccessCodeButton()

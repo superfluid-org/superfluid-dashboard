@@ -75,7 +75,7 @@ const AUTOMATE_CRYPTO_VESTING: EcosystemApp[] = [
 const INVEST_IN_REALTIME: EcosystemApp[] = [
   {
     name: "Ricochet",
-    href: "https://ricochet.exchange/",
+    href: "https://ricochet-exchange.eth.limo/",
     description: `An exchange for effortless real-time crypto investing and streaming`,
     icon: "/icons/ecosystem/ricochet.svg",
     chains: [networkDefinition.polygon.id],

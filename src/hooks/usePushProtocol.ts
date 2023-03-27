@@ -18,7 +18,8 @@ export const usePushProtocol = () => {
   const { chain } = useNetwork();
   const { switchNetworkAsync } = useSwitchNetwork();
 
-  const [changeSubscription] = pushApi.useChangeSubscriptionMutation();
+  const [changeSubscription, subscriptionStatus] =
+    pushApi.useChangeSubscriptionMutation();
 
   const { data: notifications } = pushApi.useGetNotificationsQuery(
     address ?? skipToken,
@@ -52,6 +53,9 @@ export const usePushProtocol = () => {
   return {
     toggleSubscribe,
     notifications: notifications ?? [],
-    isSubscribed: Boolean(isSubscribed),
+    subscription: {
+      isSubscribed: Boolean(isSubscribed),
+      isLoading: subscriptionStatus.isLoading,
+    },
   };
 };

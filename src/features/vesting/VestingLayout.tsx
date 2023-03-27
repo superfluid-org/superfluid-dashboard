@@ -143,11 +143,11 @@ const UnlockVestingCard = () => {
     });
   };
 
-  const switchToGoerli = useCallback(() => {
-    setExpectedNetwork(networkDefinition.goerli.id);
+  const switchToMumbai = useCallback(() => {
+    setExpectedNetwork(networkDefinition.polygonMumbai.id);
 
     if (accountAddress && switchNetwork) {
-      switchNetwork(networkDefinition.goerli.id);
+      switchNetwork(networkDefinition.polygonMumbai.id);
     }
   }, [setExpectedNetwork, switchNetwork, accountAddress]);
 
@@ -155,7 +155,7 @@ const UnlockVestingCard = () => {
     <Card component={Stack} sx={{ p: 3, pt: 8 }} alignItems="center">
       <Typography variant="h4">Unlock Vesting with Superfluid</Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 5 }}>
-        Provide your Access Code or try out Vesting Schedule on Goerli Testnet.
+        Provide your Access Code or try out Vesting Schedule on Mumbai Testnet.
       </Typography>
       <Stack
         gap={1.5}
@@ -171,12 +171,12 @@ const UnlockVestingCard = () => {
           Enter Access Code
         </Button>
         <Button
-          data-cy={"try-on-goerli-button"}
+          data-cy={"try-on-mumbai-button"}
           variant="outlined"
           size="large"
-          onClick={switchToGoerli}
+          onClick={switchToMumbai}
         >
-          Try out on Goerli Testnet
+          Try out on Mumbai Testnet
         </Button>
       </Stack>
       <Typography variant="body1" color="text.secondary">
