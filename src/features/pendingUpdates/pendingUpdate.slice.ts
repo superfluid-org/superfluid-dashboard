@@ -91,6 +91,7 @@ export const pendingUpdateSlice = createSlice({
           superTokenAddress,
           receiverAddress,
           flowRateWei,
+          userDataBytes
         } = action.meta.arg.originalArgs;
         if (senderAddress) {
           const timestamp = dateNowSeconds();
@@ -108,6 +109,7 @@ export const pendingUpdateSlice = createSlice({
             streamedUntilUpdatedAt: "0",
             currentFlowRate: flowRateWei,
             relevantSubgraph: "Protocol",
+            userData: userDataBytes ?? "0x"
           };
           pendingUpdateAdapter.addOne(state, pendingUpdate);
         }
