@@ -4,6 +4,16 @@ import config from "../../utils/config";
 import { CurrencyCode } from "../../utils/currencyUtils";
 import { UnitOfTime } from "../send/FlowRateInput";
 
+export enum VirtualizationPeriod {
+  Second = "second",
+  Minute = "minute",
+  Hour = "hour",
+  Day = "day",
+  Week = "week",
+  Month = "month",
+  Year = "year",
+}
+
 export interface VirtualStreamPeriod {
   startTime: number;
   endTime: number;
@@ -38,11 +48,21 @@ interface StreamPeriodsArguments {
   addresses: Address[];
   start: number;
   end: number;
-  priceGranularity: UnitOfTime;
-  virtualization: UnitOfTime;
+  priceGranularity: VirtualizationPeriod;
+  virtualization: VirtualizationPeriod;
   currency: CurrencyCode;
   receivers?: Address[];
 }
+
+export const UnitOfTimeVirtualizationMap = {
+  [UnitOfTime.Second]: VirtualizationPeriod.Second,
+  [UnitOfTime.Minute]: VirtualizationPeriod.Minute,
+  [UnitOfTime.Hour]: VirtualizationPeriod.Hour,
+  [UnitOfTime.Day]: VirtualizationPeriod.Day,
+  [UnitOfTime.Week]: VirtualizationPeriod.Week,
+  [UnitOfTime.Month]: VirtualizationPeriod.Month,
+  [UnitOfTime.Year]: VirtualizationPeriod.Year,
+};
 
 const accountingApi = createApi({
   reducerPath: "accounting",
