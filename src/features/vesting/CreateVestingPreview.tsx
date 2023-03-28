@@ -90,10 +90,6 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
       : skipToken
   );
 
-  console.log({
-    isAutoWrapAllowanceConfigured
-  })
-
   const isAutoWrapAllowanceOK = Boolean(
     !setupAutoWrap ||
       (!isAutoWrapAllowanceLoading && isAutoWrapAllowanceConfigured)
