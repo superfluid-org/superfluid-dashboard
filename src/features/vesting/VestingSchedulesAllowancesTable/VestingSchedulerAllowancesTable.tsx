@@ -117,6 +117,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
           <TableHead>
             <TableRow>
               <TableCell>Token</TableCell>
+              <TableCell>Auto Wrap</TableCell>
               <TableCell data-cy="allowance-cell" width="220px">
                 Token Allowance
                 <TooltipIcon

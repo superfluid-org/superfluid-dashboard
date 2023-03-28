@@ -26,6 +26,7 @@ import { TransactionBoundary } from "../../transactionBoundary/TransactionBounda
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import OpenIcon from "../../../components/OpenIcon/OpenIcon";
 import { isCloseToUnlimitedFlowRateAllowance, isCloseToUnlimitedTokenAllowance } from "../../../utils/isCloseToUnlimitedAllowance";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 export const VestingSchedulerAllowanceRowSkeleton = () => (
   <TableRow>
@@ -92,10 +93,34 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   const theme = useTheme();
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const tokenQuery = subgraphApi.useTokenQuery({
+  const { token, isTokenLoading } = subgraphApi.useTokenQuery({
     chainId: network.id,
     id: tokenAddress,
+  }, {
+    selectFromResult: ({ data, isLoading }) => ({
+      token: data,
+      isTokenLoading: isLoading
+    })
   });
+
+  // TODO(KK)
+  const {
+    data: isAutoWrapAllowanceConfigured,
+    isLoading: isAutoWrapAllowanceLoading,
+  } = rpcApi.useIsAutoWrapAllowanceConfiguredEndpointQuery(
+    network.autoWrap && token && token.underlyingAddress
+      ? {
+          chainId: network.id,
+          accountAddress: senderAddress,
+          superTokenAddress: token.id,
+          underlyingTokenAddress: token.underlyingAddress,
+        }
+      : skipToken
+  );
+
+  console.log({
+    isAutoWrapAllowanceConfigured
+  })
 
   const vestingSchedulerAllowancesQuery =
     rpcApi.useGetVestingSchedulerAllowancesQuery({
@@ -141,13 +166,12 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
     requiredFlowOperatorPermissions
   );
 
-  const token = tokenQuery.data;
   const tokenSymbol = token?.symbol || "";
 
   return (
     <>
       <TableRow
-        data-cy={`${tokenQuery.data?.symbol}-row`}
+        data-cy={`${tokenSymbol}-row`}
         sx={
           isLast && !isExpanded
             ? {
@@ -163,10 +187,13 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
             <TokenIcon
               isSuper
               tokenSymbol={tokenSymbol}
-              isLoading={tokenQuery.isLoading}
+              isLoading={isTokenLoading}
             />
             <ListItemText primary={tokenSymbol} />
           </Stack>
+        </TableCell>
+        <TableCell>
+          { isAutoWrapAllowanceConfigured ? "Yes" : "No" }
         </TableCell>
         <TableCell>
           <Stack direction="column" spacing={1} alignItems="center">
