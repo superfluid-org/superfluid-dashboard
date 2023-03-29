@@ -30,7 +30,14 @@ const CounterpartyAddress: FC<CounterpartyAddressProps> = ({
       <Typography variant="h6" color="text.secondary">
         <AddressName address={address} />
       </Typography>
-      <CopyIconBtn IconButtonProps={{ size: "small" }} copyText={address} />
+      <CopyIconBtn
+        IconButtonProps={{ size: "small" }}
+        TooltipProps={{
+          arrow: true,
+          placement: "top",
+        }}
+        copyText={address}
+      />
     </Stack>
   </Stack>
 );
