@@ -58,10 +58,9 @@ const writeContractEndpoint = (builder: RpcEndpointBuilder) =>
       const result = await writeContract(config);
       return registerNewTransactionAndReturnQueryFnResult({
         dispatch,
-        signer: await signer.getAddress(),
+        signerAddress: await signer.getAddress(),
         chainId: config.chainId,
         title: "Approve Allowance",
-        waitForConfirmation: false,
         transactionResponse: {
           chainId: config.chainId,
           ...result,
@@ -224,7 +223,6 @@ export const adHocRpcEndpoints = {
         chainId: number;
         superTokenAddress: string;
         amountWei: string;
-        waitForConfirmation?: boolean;
         transactionExtraData?: Record<string, unknown>;
         signer: Signer;
         overrides: Overrides;
@@ -253,8 +251,7 @@ export const adHocRpcEndpoints = {
         return await registerNewTransactionAndReturnQueryFnResult({
           transactionResponse,
           chainId: arg.chainId,
-          signer: await arg.signer.getAddress(),
-          waitForConfirmation: !!arg.waitForConfirmation,
+          signerAddress: await arg.signer.getAddress(),
           dispatch: queryApi.dispatch,
           title: "Approve Allowance",
           extraData: arg.transactionExtraData,

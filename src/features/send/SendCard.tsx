@@ -767,8 +767,7 @@ export default memo(function SendCard() {
                 restoration: transactionRestoration,
               },
               signer,
-              overrides: await getTransactionOverrides(network),
-              waitForConfirmation: false,
+              overrides: await getTransactionOverrides(network)
             })
               .unwrap()
               .then(
@@ -882,7 +881,6 @@ export default memo(function SendCard() {
               flowDeleteTrigger({
                 ...primaryArgs,
                 signer,
-                waitForConfirmation: false,
                 overrides: await getTransactionOverrides(network),
               })
                 .unwrap()

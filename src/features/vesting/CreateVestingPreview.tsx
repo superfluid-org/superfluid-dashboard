@@ -79,7 +79,7 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
   const {
     data: isAutoWrapAllowanceConfigured,
     isLoading: isAutoWrapAllowanceLoading,
-  } = rpcApi.useIsAutoWrapAllowanceConfiguredEndpointQuery(
+  } = rpcApi.useIsAutoWrapAllowanceConfiguredQuery(
     setupAutoWrap && visibleAddress
       ? {
           chainId: network.id,
@@ -98,7 +98,7 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
   const {
     data: isAutoWrapStrategyConfigured,
     isLoading: isAutoWrapStrategyConfiguredLoading,
-  } = rpcApi.useIsAutoWrapStrategyConfiguredEndpointQuery(
+  } = rpcApi.useIsAutoWrapStrategyConfiguredQuery(
     setupAutoWrap && visibleAddress
       ? {
           chainId: network.id,

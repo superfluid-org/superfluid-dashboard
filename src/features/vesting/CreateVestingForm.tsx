@@ -397,7 +397,7 @@ const CreateVestingForm: FC<{
   const {
     isLoading: isAutoWrapStatusLoading,
     currentData: isAutoWrapConfigured,
-  } = rpcApi.useIsAutoWrapStrategyConfiguredEndpointQuery(
+  } = rpcApi.useIsAutoWrapStrategyConfiguredQuery(
     network.autoWrap && token && token.underlyingAddress && visibleAddress
       ? {
           chainId: network.id,

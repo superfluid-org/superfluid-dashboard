@@ -552,8 +552,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                       restoration,
                     },
                     signer,
-                    overrides,
-                    waitForConfirmation: false,
+                    overrides
                   })
                     .unwrap()
                     .then(...txAnalytics("Wrap", primaryArgs))

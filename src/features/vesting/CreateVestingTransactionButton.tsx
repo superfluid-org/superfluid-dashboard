@@ -76,8 +76,7 @@ export const CreateVestingTransactionButton: FC<{
                   createVestingSchedule({
                     ...primaryArgs,
                     signer,
-                    overrides: await getOverrides(),
-                    waitForConfirmation: false,
+                    overrides: await getOverrides()
                   })
                     .unwrap()
                     .then(

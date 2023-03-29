@@ -57,7 +57,6 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
     flowDeleteTrigger({
       ...primaryArgs,
       signer,
-      waitForConfirmation: false,
       overrides: await getTransactionOverrides(network),
     })
       .unwrap()

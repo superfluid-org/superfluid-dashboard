@@ -298,8 +298,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                                   signer,
                                   overrides: await getTransactionOverrides(
                                     network
-                                  ),
-                                  waitForConfirmation: false,
+                                  )
                                 })
                                   .unwrap()
                                   .then(
@@ -386,8 +385,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                                   signer,
                                   overrides: await getTransactionOverrides(
                                     network
-                                  ),
-                                  waitForConfirmation: false,
+                                  )
                                 })
                                   .unwrap()
                                   .then(

@@ -107,7 +107,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   const {
     data: isAutoWrapAllowanceConfigured,
     isLoading: isAutoWrapAllowanceLoading,
-  } = rpcApi.useIsAutoWrapAllowanceConfiguredEndpointQuery(
+  } = rpcApi.useIsAutoWrapAllowanceConfiguredQuery(
     network.autoWrap && token && token.underlyingAddress
       ? {
           chainId: network.id,
@@ -117,10 +117,6 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
         }
       : skipToken
   );
-
-  console.log({
-    isAutoWrapAllowanceConfigured
-  })
 
   const vestingSchedulerAllowancesQuery =
     rpcApi.useGetVestingSchedulerAllowancesQuery({
@@ -310,8 +306,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                               };
                               fixAccess({
                                 ...primaryArgs,
-                                signer,
-                                waitForConfirmation: false,
+                                signer
                               })
                                 .unwrap()
                                 .then(

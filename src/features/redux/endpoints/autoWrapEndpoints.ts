@@ -125,13 +125,13 @@ const isAutoWrapAllowanceConfiguredEndpoint = (builder: RpcEndpointBuilder) =>
 export const autoWrapEndpoints1 = {
   endpoints: (builder: RpcEndpointBuilder) => ({
     getActiveWrapSchedule: getActiveWrapScheduleEndpoint(builder),
-    isAutoWrapAllowanceConfiguredEndpoint: isAutoWrapAllowanceConfiguredEndpoint(builder)
+    isAutoWrapAllowanceConfigured: isAutoWrapAllowanceConfiguredEndpoint(builder)
   }),
 };
 
 export const autoWrapEndpoints2 = {
   endpoints: (builder: RpcEndpointBuilder) => ({
-    isAutoWrapStrategyConfiguredEndpoint:
+    isAutoWrapStrategyConfigured:
       isAutoWrapStrategyConfiguredEndpoint(builder),
   }),
 };

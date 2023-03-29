@@ -115,8 +115,7 @@ export const DeleteVestingTransactionButton: FC<{
               deleteVestingSchedule({
                 ...primaryArgs,
                 signer,
-                overrides: await getOverrides(),
-                waitForConfirmation: false,
+                overrides: await getOverrides()
               })
                 .unwrap()
                 .then(...txAnalytics("Delete Vesting Schedule", primaryArgs))

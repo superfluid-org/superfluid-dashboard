@@ -29,8 +29,7 @@ const faucetApi = createApi({
               dispatch: queryApi.dispatch,
               chainId,
               transactionResponse: data.tx,
-              waitForConfirmation: false,
-              signer: account,
+              signerAddress: account,
               extraData: {},
               title: "Claim Tokens",
             });

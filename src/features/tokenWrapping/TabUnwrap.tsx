@@ -354,8 +354,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                     restoration,
                   },
                   signer,
-                  overrides,
-                  waitForConfirmation: false,
+                  overrides
                 })
                   .unwrap()
                   .then(...txAnalytics("Unwrap", primaryArgs))
