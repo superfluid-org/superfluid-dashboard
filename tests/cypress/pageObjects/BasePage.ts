@@ -4,7 +4,7 @@ export enum UnitOfTime {
     Hour = 3600,
     Day = 86400,
     Week = 604800,
-    Month = 2592000,
+    Month = 2628000,
     Year = 31536000
 }
 

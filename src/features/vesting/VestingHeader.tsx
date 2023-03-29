@@ -1,15 +1,15 @@
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
-import { Button, IconButton, Stack, Typography } from "@mui/material";
+import { Button, IconButton, Stack, SxProps, Theme } from "@mui/material";
 import NextLink from "next/link";
-import { FC, memo, PropsWithChildren, ReactElement } from "react";
+import { FC, memo, PropsWithChildren } from "react";
 import { useAccount } from "wagmi";
-import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 
 interface VestingHeaderProps extends PropsWithChildren {
   onBack?: () => void;
   actions?: any;
   hideCreate?: boolean;
+  sx?: SxProps<Theme>;
 }
 
 const VestingHeader: FC<VestingHeaderProps> = ({
@@ -17,6 +17,7 @@ const VestingHeader: FC<VestingHeaderProps> = ({
   actions,
   hideCreate = false,
   children,
+  sx = {},
 }) => {
   const { address: accountAddress } = useAccount();
 
@@ -25,7 +26,7 @@ const VestingHeader: FC<VestingHeaderProps> = ({
       direction="row"
       justifyContent="space-between"
       alignItems="center"
-      sx={{ mb: 4.5 }}
+      sx={{ mb: 4.5, ...sx }}
     >
       <Stack direction="row" alignItems="center" gap={2}>
         {onBack && (

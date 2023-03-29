@@ -17,13 +17,11 @@ import AddressName from "../../components/AddressName/AddressName";
 import useAddressNames from "../../hooks/useAddressNames";
 import { currenciesByCode } from "../../utils/currencyUtils";
 import Link from "../common/Link";
-import {
-  mainNetworks,
-  tryFindNetwork,
-} from "../network/networks";
+import { mainNetworks, tryFindNetwork } from "../network/networks";
 import { formatAmount } from "../token/Amount";
 import accountingApi, {
   AccountingStreamPeriod,
+  UnitOfTimeVirtualizationMap,
   VirtualStreamPeriod,
 } from "./accountingApi.slice";
 import { ValidAccountingExportForm } from "./AccountingExportFormProvider";
@@ -83,8 +81,8 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
           chains: mainNetworks.map((x) => x.id),
           start: getUnixTime(startDate),
           end: getUnixTime(endDate),
-          priceGranularity: priceGranularity,
-          virtualization: virtualizationPeriod,
+          priceGranularity: UnitOfTimeVirtualizationMap[priceGranularity],
+          virtualization: UnitOfTimeVirtualizationMap[virtualizationPeriod],
           currency: currencyCode,
           ...(counterparties.length > 0 ? { counterparties } : {}),
         }
