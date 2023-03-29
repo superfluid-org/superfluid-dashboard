@@ -31,6 +31,7 @@ const CounterpartyAddress: FC<CounterpartyAddressProps> = ({
         <AddressName address={address} />
       </Typography>
       <CopyIconBtn
+        description="Copy address to clipboard"
         IconButtonProps={{ size: "small" }}
         TooltipProps={{
           arrow: true,
