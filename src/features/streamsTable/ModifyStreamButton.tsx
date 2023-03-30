@@ -26,7 +26,9 @@ const ModifyStreamButton: FC<ModifyStreamButtonProps> = ({
   IconButtonProps = {},
   TooltipProps = {},
 }) => {
-  const { isConnected } = useAccount();
+  const { address: accountAddress, isConnected } = useAccount();
+
+  const { sender, receiver } = stream;
 
   const modifyStreamUrl = useMemo(
     () =>
@@ -38,6 +40,16 @@ const ModifyStreamButton: FC<ModifyStreamButtonProps> = ({
       }),
     [stream, network]
   );
+
+  const isSenderOrReceiverLooking = useMemo(
+    () =>
+      accountAddress &&
+      (sender.toLowerCase() === accountAddress.toLowerCase() ||
+        receiver.toLowerCase() === accountAddress.toLowerCase()),
+    [accountAddress, sender, receiver]
+  );
+
+  if (!isSenderOrReceiverLooking) return null;
 
   return (
     <Tooltip
