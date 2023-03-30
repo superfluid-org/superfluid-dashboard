@@ -25,7 +25,10 @@ import TokenIcon from "../../token/TokenIcon";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import OpenIcon from "../../../components/OpenIcon/OpenIcon";
-import { isCloseToUnlimitedFlowRateAllowance, isCloseToUnlimitedTokenAllowance } from "../../../utils/isCloseToUnlimitedAllowance";
+import {
+  isCloseToUnlimitedFlowRateAllowance,
+  isCloseToUnlimitedTokenAllowance,
+} from "../../../utils/isCloseToUnlimitedAllowance";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 export const VestingSchedulerAllowanceRowSkeleton = () => (
@@ -93,15 +96,18 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   const theme = useTheme();
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const { token, isTokenLoading } = subgraphApi.useTokenQuery({
-    chainId: network.id,
-    id: tokenAddress,
-  }, {
-    selectFromResult: ({ data, isLoading }) => ({
-      token: data,
-      isTokenLoading: isLoading
-    })
-  });
+  const { token, isTokenLoading } = subgraphApi.useTokenQuery(
+    {
+      chainId: network.id,
+      id: tokenAddress,
+    },
+    {
+      selectFromResult: ({ data, isLoading }) => ({
+        token: data,
+        isTokenLoading: isLoading,
+      }),
+    }
+  );
 
   // TODO(KK)
   const {
@@ -141,9 +147,8 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
     vestingSchedulerAllowancesQuery.data;
 
   const isEnoughTokenAllowance = recommendedTokenAllowance.lte(tokenAllowance);
-  const isEnoughFlowRateAllowance = requiredFlowRateAllowance.lte(
-    flowRateAllowance
-  );
+  const isEnoughFlowRateAllowance =
+    requiredFlowRateAllowance.lte(flowRateAllowance);
 
   const existingPermissions = Number(flowOperatorPermissions);
   const isEnoughFlowOperatorPermissions =
@@ -188,66 +193,76 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
             <ListItemText primary={tokenSymbol} />
           </Stack>
         </TableCell>
-        <TableCell>
-          { isAutoWrapAllowanceConfigured ? "Yes" : "No" }
+        <TableCell align="center">
+          {isEnoughTokenAllowance ? (
+            <CheckCircleRoundedIcon
+              data-cy={`${tokenSymbol}-allowance-status`}
+              color="primary"
+            />
+          ) : (
+            <CancelRoundedIcon
+              data-cy={`${tokenSymbol}-allowance-status`}
+              color="error"
+            />
+          )}
         </TableCell>
-        <TableCell>
-          <Stack direction="column" spacing={1} alignItems="center">
-            {isEnoughTokenAllowance ? (
+        <TableCell align="center">
+          {isEnoughFlowOperatorPermissions ? (
+            <CheckCircleRoundedIcon
+              data-cy={`${tokenSymbol}-permission-status`}
+              color="primary"
+            />
+          ) : (
+            <CancelRoundedIcon
+              data-cy={`${tokenSymbol}-permission-status`}
+              color="error"
+            />
+          )}
+        </TableCell>
+        <TableCell align="center">
+          {isEnoughFlowRateAllowance ? (
+            <CheckCircleRoundedIcon
+              data-cy={`${tokenSymbol}-flow-allowance-status`}
+              color="primary"
+            />
+          ) : (
+            <CancelRoundedIcon
+              data-cy={`${tokenSymbol}-flow-allowance-status`}
+              color="error"
+            />
+          )}
+        </TableCell>
+        {network.autoWrap && (
+          <TableCell align="center">
+            {isAutoWrapAllowanceConfigured ? (
               <CheckCircleRoundedIcon
-                data-cy={`${tokenSymbol}-allowance-status`}
+                data-cy={`${tokenSymbol}-auto-wrap-status`}
                 color="primary"
               />
             ) : (
               <CancelRoundedIcon
-                data-cy={`${tokenSymbol}-allowance-status`}
+                data-cy={`${tokenSymbol}-auto-wrap-status`}
                 color="error"
               />
             )}
-          </Stack>
-        </TableCell>
-        <TableCell>
-          <Stack direction="column" spacing={1} alignItems="center">
-            {isEnoughFlowOperatorPermissions ? (
-              <CheckCircleRoundedIcon
-                data-cy={`${tokenSymbol}-permission-status`}
-                color="primary"
-              />
-            ) : (
-              <CancelRoundedIcon
-                data-cy={`${tokenSymbol}-permission-status`}
-                color="error"
-              />
-            )}
-          </Stack>
-        </TableCell>
-        <TableCell>
-          <Stack direction="column" spacing={1} alignItems="center">
-            {isEnoughFlowRateAllowance ? (
-              <CheckCircleRoundedIcon
-                data-cy={`${tokenSymbol}-flow-allowance-status`}
-                color="primary"
-              />
-            ) : (
-              <CancelRoundedIcon
-                data-cy={`${tokenSymbol}-flow-allowance-status`}
-                color="error"
-              />
-            )}
-          </Stack>
-        </TableCell>
+          </TableCell>
+        )}
         <TableCell>
           <IconButton onClick={() => setIsExpanded(!isExpanded)}>
             <OpenIcon open={isExpanded} />
           </IconButton>
         </TableCell>
       </TableRow>
-      <TableRow sx={isLast ? { ".MuiTableCell-root": { border: "none" } } : {}}>
+      <TableRow>
         <TableCell
-          colSpan={5}
+          colSpan={6}
           sx={{
             minHeight: 0,
             p: 0,
+            transition: theme.transitions.create("border-width", {
+              duration: theme.transitions.duration.standard,
+            }),
+            ...(isLast || !isExpanded ? { borderWidth: "0" } : {}),
           }}
         >
           <Collapse
@@ -306,7 +321,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                               };
                               fixAccess({
                                 ...primaryArgs,
-                                signer
+                                signer,
                               })
                                 .unwrap()
                                 .then(
@@ -366,7 +381,9 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                       data-cy={`${tokenSymbol}-current-flow-allowance`}
                       primary="Current"
                       secondary={
-                        isCloseToUnlimitedFlowRateAllowance(flowRateAllowance) ? (
+                        isCloseToUnlimitedFlowRateAllowance(
+                          flowRateAllowance
+                        ) ? (
                           <span>Unlimited</span>
                         ) : (
                           <>
@@ -381,12 +398,14 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                       primary="Required"
                       secondary={
                         <>
-                          <Amount wei={requiredFlowRateAllowance} /> {tokenSymbol}
+                          <Amount wei={requiredFlowRateAllowance} />{" "}
+                          {tokenSymbol}
                           /sec
                         </>
                       }
                     />
                   </TableCell>
+                  {network.autoWrap && <TableCell />}
                 </TableRow>
               </TableBody>
             </Table>

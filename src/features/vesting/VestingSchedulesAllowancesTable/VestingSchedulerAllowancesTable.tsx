@@ -117,7 +117,6 @@ const VestingSchedulerAllowancesTable: FC = () => {
           <TableHead>
             <TableRow>
               <TableCell>Token</TableCell>
-              <TableCell>Auto Wrap</TableCell>
               <TableCell data-cy="allowance-cell" width="220px">
                 Token Allowance
                 <TooltipIcon
@@ -139,6 +138,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
                   title="The stream flow rate allowance needed by the contract for creating Superfluid flows."
                 />
               </TableCell>
+              {network.autoWrap && <TableCell>Auto Wrap</TableCell>}
               <TableCell width="60px" />
             </TableRow>
           </TableHead>
@@ -169,9 +169,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
                     requiredFlowOperatorPermissions={
                       requiredFlowOperatorPermissions
                     }
-                    requiredFlowRateAllowance={
-                      requiredFlowRateAllowance
-                    }
+                    requiredFlowRateAllowance={requiredFlowRateAllowance}
                   />
                 )
               )
