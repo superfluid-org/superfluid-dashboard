@@ -1,8 +1,15 @@
-export const autoWrapAddresses = {
-  goerli: {
-    manager: "0x0B82D14E9616ca4d260E77454834AdCf5887595F",
-    strategy: "0xea49af829d3e28d3ec49e0e0a0ba1e7860a56f60",
-  },
+export const autoWrapManagerAddresses = {
+  [137]: "0x2581c27E7f6D6AF452E63fCe884EDE3EDd716b32",
+  [56]: "0x2AcdD61ac1EFFe1535109449c31889bdE8d7f325",
+  [5]: "0x0B82D14E9616ca4d260E77454834AdCf5887595F",
+  [80001]: "0x3eAB3c6207F488E475b7955B631B564F0E6317B9",
+} as const;
+
+export const autoWrapStrategyAddresses = {
+  [137]: "0xb4afa36BAd8c76976Dc77a21c9Ad711EF720eE4b",
+  [56]: "0x9e308cb079ae130790F604b1030cDf386670f199",
+  [5]: "0xea49af829d3e28d3ec49e0e0a0ba1e7860a56f60",
+  [80001]: "0x544728AFDBeEafBeC9e1329031788edb53017bC4",
 } as const;
 
 export const flowSchedulerContractAddresses = {

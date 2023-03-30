@@ -11,7 +11,8 @@ import {
 } from "../redux/endpoints/tokenTypes";
 import sfMeta from "@superfluid-finance/metadata";
 import {
-  autoWrapAddresses,
+  autoWrapManagerAddresses,
+  autoWrapStrategyAddresses,
   flowSchedulerContractAddresses,
   flowSchedulerSubgraphUrls,
   superfluidPlatformUrls,
@@ -19,6 +20,7 @@ import {
   vestingContractAddresses,
   vestingSubgraphUrls,
 } from "./networkConstants";
+import { channel } from "diagnostics_channel";
 
 // id == chainId
 // name == displayName
@@ -123,8 +125,8 @@ export const networkDefinition = {
     vestingSubgraphUrl: vestingSubgraphUrls.goerli,
     platformUrl: superfluidPlatformUrls.goerli,
     autoWrap: {
-      managerContractAddress: autoWrapAddresses.goerli.manager,
-      strategyContractAddress: autoWrapAddresses.goerli.strategy,
+      managerContractAddress: autoWrapManagerAddresses[chain.goerli.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.goerli.id],
     } as const,
   } as const,
   gnosis: {
@@ -207,6 +209,10 @@ export const networkDefinition = {
     vestingContractAddress: vestingContractAddresses.polygon,
     vestingSubgraphUrl: vestingSubgraphUrls.polygon,
     platformUrl: superfluidPlatformUrls.polygon,
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.polygon.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.polygon.id],
+    } as const,
   } as const,
   polygonMumbai: {
     ...chain.polygonMumbai,
@@ -242,6 +248,10 @@ export const networkDefinition = {
     vestingContractAddress: vestingContractAddresses.mumbai,
     vestingSubgraphUrl: vestingSubgraphUrls.mumbai,
     platformUrl: superfluidPlatformUrls.mumbai,
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.polygonMumbai.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.polygonMumbai.id],
+    } as const,
   } as const,
   avalancheFuji: {
     name: "Fuji (C-Chain)",
@@ -408,12 +418,11 @@ export const networkDefinition = {
     platformUrl: superfluidPlatformUrls.avalancheC,
   } as const,
   bsc: {
+    ...chain.bsc,
     name: "BNB Smart Chain",
     slugName: "bsc",
     v1ShortName: "bsc-mainnet",
     network: "bnb-smart-chain",
-    id: 56,
-    testnet: false,
     bufferTimeInMinutes: 240,
     icon: "/icons/network/bnb.svg",
     color: "#F0B90B",
@@ -451,6 +460,10 @@ export const networkDefinition = {
     vestingContractAddress: vestingContractAddresses.bnbSmartChain,
     vestingSubgraphUrl: vestingSubgraphUrls.bnbSmartChain,
     platformUrl: superfluidPlatformUrls.bnbSmartChain,
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.bsc.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.bsc.id],
+    } as const,
   } as const,
   ethereum: {
     ...chain.mainnet,

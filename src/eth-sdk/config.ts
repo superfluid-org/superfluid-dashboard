@@ -1,6 +1,5 @@
 import { defineConfig } from "@dethcrypto/eth-sdk";
 import {
-  autoWrapAddresses,
   flowSchedulerContractAddresses,
   vestingContractAddresses,
 } from "../features/network/networkConstants";
@@ -8,8 +7,6 @@ import {
 const ethSdkConfig = defineConfig({
   contracts: {
     goerli: {
-      autoWrapManager: autoWrapAddresses.goerli.manager,
-      autoWrapStrategy: autoWrapAddresses.goerli.strategy,
       flowScheduler: flowSchedulerContractAddresses.goerli, // Goerli used as source of truth for the ABI of Flow Scheduler.
     },
     mainnet: {
