@@ -61,7 +61,7 @@ Feature: Common element test cases
     And User opens the notifications modal
     Then Connect wallet button is visible in the notification modal
 
-  @mocked
+  @only @mocked
   Scenario Outline: Receiving opening and archiving a notification
     Given Notifications requests are mocked to "<notification>"
     Given "Settings Page" is open with "alice" connected on "ethereum"

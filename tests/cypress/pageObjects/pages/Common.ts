@@ -739,7 +739,7 @@ export class Common extends BasePage {
   }
 
   static validateNotificationToast(type: string) {
-    this.validateNotifTitleAndMessage(TOAST_MESSAGE, TOAST_TITLE, type)
+    this.validateNotifTitleAndMessage(TOAST_MESSAGE, TOAST_TITLE, type , true)
   }
 
   static validateNotificationBadge(amount: string) {
@@ -756,20 +756,20 @@ export class Common extends BasePage {
   }
 
   static validateArchivedNotification(type: string) {
-    this.validateNotifTitleAndMessage(NOTIF_MESSAGE, NOTIF_TITLE, type)
+    this.validateNotifTitleAndMessage(NOTIF_MESSAGE, NOTIF_TITLE, type , true)
   }
 
   static validateNewNotification(type: string) {
     this.isVisible(NEW_NOTIF_DOT)
-    this.validateNotifTitleAndMessage(NOTIF_MESSAGE, NOTIF_TITLE, type)
+    this.validateNotifTitleAndMessage(NOTIF_MESSAGE, NOTIF_TITLE, type , false)
   }
 
   static validateReadNotification(type: string) {
     this.doesNotExist(NEW_NOTIF_DOT)
-    this.validateNotifTitleAndMessage(NOTIF_MESSAGE, NOTIF_TITLE, type)
+    this.validateNotifTitleAndMessage(NOTIF_MESSAGE, NOTIF_TITLE, type , false)
   }
 
-  static validateNotifTitleAndMessage(messageSelector: string, titleSelector: string, type: string) {
+  static validateNotifTitleAndMessage(messageSelector: string, titleSelector: string, type: string , archivedOrToast: boolean) {
     const ASSERT_STRING = type.toLowerCase() === "old notification" ? this.getNotifDateAssertStringFromDate(OLD_NOTIF_DATE) : this.getNotifDateAssertStringFromDate(NEW_NOTIF_DATE)
     switch (type.toLowerCase()) {
       case "liquidated":
@@ -787,13 +787,17 @@ export class Common extends BasePage {
       case "liquidation risk":
         this.hasText(titleSelector, ` ${type}`)
         this.isVisible(WARNING_ICON)
-        this.validateWrapButtonsInNotifModal()
+        if(!archivedOrToast) {
+          this.validateWrapButtonsInNotifModal()
+        }
         this.hasText(messageSelector, `Your TDLx on Polygon is about to be liquidated at ${ASSERT_STRING}.`)
         break;
       case "urgent liquidation risk":
         this.hasText(titleSelector, ` ${type}`)
         this.isVisible(WARNING_ICON)
-        this.validateWrapButtonsInNotifModal()
+        if(!archivedOrToast) {
+          this.validateWrapButtonsInNotifModal()
+        }
         this.hasText(messageSelector, `Your TDLx on Polygon is about to be liquidated at ${ASSERT_STRING}.`)
         break;
       case "outdated format":
