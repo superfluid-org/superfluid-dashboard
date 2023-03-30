@@ -28,8 +28,6 @@ const ModifyStreamButton: FC<ModifyStreamButtonProps> = ({
 }) => {
   const { address: accountAddress, isConnected } = useAccount();
 
-  const { sender, receiver } = stream;
-
   const modifyStreamUrl = useMemo(
     () =>
       getSendPagePath({
@@ -44,9 +42,8 @@ const ModifyStreamButton: FC<ModifyStreamButtonProps> = ({
   const isSenderOrReceiverLooking = useMemo(
     () =>
       accountAddress &&
-      (sender.toLowerCase() === accountAddress.toLowerCase() ||
-        receiver.toLowerCase() === accountAddress.toLowerCase()),
-    [accountAddress, sender, receiver]
+      stream.sender.toLowerCase() === accountAddress.toLowerCase(),
+    [accountAddress, stream.sender]
   );
 
   if (!isSenderOrReceiverLooking) return null;
