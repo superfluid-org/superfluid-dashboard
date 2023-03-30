@@ -1,9 +1,8 @@
 import { defineConfig } from "@wagmi/cli";
-import { etherscan } from "@wagmi/cli/plugins";
+import { etherscan, react } from "@wagmi/cli/plugins";
 import { erc20ABI } from "wagmi";
 import {
   autoWrapManagerAddresses,
-  autoWrapStrategyAddresses,
 } from "./src/features/network/networkConstants";
 
 /** @type {import('@wagmi/cli').Config} */
@@ -23,12 +22,17 @@ export default defineConfig({
         {
           name: "AutoWrapManager",
           address: autoWrapManagerAddresses,
-        },
-        {
-          name: "AutoWrapStrategy",
-          address: autoWrapStrategyAddresses,
-        },
+        }
       ],
+    }),
+    react({
+      useContractWrite: false,
+      useContractRead: false,
+      useContractItemEvent: false,
+      useContractFunctionRead: false,
+      useContractEvent: false,
+      useContractFunctionWrite: false,
+      usePrepareContractWrite: true,
     }),
   ],
 });

@@ -20,7 +20,8 @@ import {
   vestingContractAddresses,
   vestingSubgraphUrls,
 } from "./networkConstants";
-import { channel } from "diagnostics_channel";
+import { BigNumber, BigNumberish } from "ethers";
+import { UnitOfTime } from "../send/FlowRateInput";
 
 // id == chainId
 // name == displayName
@@ -49,6 +50,8 @@ export type Network = Chain & {
   autoWrap?: {
     managerContractAddress: `0x${string}`;
     strategyContractAddress: `0x${string}`;
+    lowerLimit: BigNumberish;
+    upperLimit: BigNumberish;
   };
 };
 
@@ -127,6 +130,8 @@ export const networkDefinition = {
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.goerli.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.goerli.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 7),
     } as const,
   } as const,
   gnosis: {
@@ -212,6 +217,8 @@ export const networkDefinition = {
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.polygon.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.polygon.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 7),
     } as const,
   } as const,
   polygonMumbai: {
@@ -250,7 +257,10 @@ export const networkDefinition = {
     platformUrl: superfluidPlatformUrls.mumbai,
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.polygonMumbai.id],
-      strategyContractAddress: autoWrapStrategyAddresses[chain.polygonMumbai.id],
+      strategyContractAddress:
+        autoWrapStrategyAddresses[chain.polygonMumbai.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 7),
     } as const,
   } as const,
   avalancheFuji: {
@@ -463,6 +473,8 @@ export const networkDefinition = {
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.bsc.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.bsc.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 7),
     } as const,
   } as const,
   ethereum: {

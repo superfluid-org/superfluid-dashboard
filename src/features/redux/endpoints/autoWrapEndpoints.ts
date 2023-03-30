@@ -1,14 +1,12 @@
 import { ERC20__factory } from "@superfluid-finance/sdk-core";
 import {
-  BaseSuperTokenMutation,
   getFramework,
   RpcEndpointBuilder,
 } from "@superfluid-finance/sdk-redux";
-import { erc20ABI, prepareWriteContract } from "@wagmi/core";
 import { constants } from "ethers";
 import { getAutoWrap } from "../../../eth-sdk/getEthSdk";
 import { isCloseToUnlimitedTokenAllowance } from "../../../utils/isCloseToUnlimitedAllowance";
-import { rpcApi, rpcApiPrimary } from "../store";
+import { rpcApiBase } from "../store";
 
 export type WrapSchedule = {
   user: string;
@@ -72,7 +70,7 @@ const isAutoWrapStrategyConfiguredEndpoint = (builder: RpcEndpointBuilder) =>
       );
 
       const getWrapSchedule = dispatch(
-        rpcApiPrimary.endpoints.getActiveWrapSchedule.initiate(arg, {
+        rpcApiBase.endpoints.getActiveWrapSchedule.initiate(arg, {
           subscribe: true,
         })
       );
@@ -122,14 +120,14 @@ const isAutoWrapAllowanceConfiguredEndpoint = (builder: RpcEndpointBuilder) =>
     ],
   });
 
-export const autoWrapEndpoints1 = {
+export const autoWrapEndpoints_1of2 = {
   endpoints: (builder: RpcEndpointBuilder) => ({
     getActiveWrapSchedule: getActiveWrapScheduleEndpoint(builder),
     isAutoWrapAllowanceConfigured: isAutoWrapAllowanceConfiguredEndpoint(builder)
   }),
 };
 
-export const autoWrapEndpoints2 = {
+export const autoWrapEndpoints_2of2 = {
   endpoints: (builder: RpcEndpointBuilder) => ({
     isAutoWrapStrategyConfigured:
       isAutoWrapStrategyConfiguredEndpoint(builder),

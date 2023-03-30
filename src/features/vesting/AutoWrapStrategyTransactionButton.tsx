@@ -1,9 +1,9 @@
 import { Typography } from "@mui/material";
-import { BigNumber, constants } from "ethers";
+import { BigNumber } from "ethers";
 import { FC, memo } from "react";
 import { useFormContext } from "react-hook-form";
-import { erc20ABI, usePrepareContractWrite, useSigner } from "wagmi";
-import { autoWrapManagerABI, autoWrapStrategyABI } from "../../generated";
+import { useSigner } from "wagmi";
+import { usePrepareAutoWrapManagerCreateWrapSchedule } from "../../generated";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi } from "../redux/store";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
@@ -34,25 +34,23 @@ const AutoWrapStrategyTransactionButton: FC<{ token: VestingToken, isVisible: bo
 
   // TODO(KK): handle errors
   // TODO(KK): Check whether there's an underlying token properly...
-  const { config } = usePrepareContractWrite({
-    enabled: setupAutoWrap && !!network.autoWrap, // TODO(KK): any other conditions to add here?
-    address: network.autoWrap!.managerContractAddress as `0x${string}`,
-    abi: autoWrapManagerABI,
-    functionName: "createWrapSchedule",
+  // TODO(KK): Any better way to handle any's and bangs?
+  const { config } = usePrepareAutoWrapManagerCreateWrapSchedule({
+    chainId: network.id as any,
+    enabled: setupAutoWrap, // TODO(KK): any other conditions to add here?
     args: [
       token.address as `0x${string}`,
       network.autoWrap!.strategyContractAddress, // TODO: guard somewhere
       token.underlyingAddress as `0x${string}`, // TODO(KK): guard
       BigNumber.from("18446744073709551615"),
-      BigNumber.from("604800"),
-      BigNumber.from("604800")
+      BigNumber.from(network.autoWrap!.lowerLimit),
+      BigNumber.from(network.autoWrap!.upperLimit)
     ],
     signer: signer,
-    chainId: network.id,
     overrides: { gasLimit: BigNumber.from("1000000") }, // TODO: overrides
   });
 
-  const [trigger, mutationResult] = rpcApi.useWriteContractMutation();
+  const [write, mutationResult] = rpcApi.useWriteContractMutation();
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
@@ -78,7 +76,7 @@ const AutoWrapStrategyTransactionButton: FC<{ token: VestingToken, isVisible: bo
                 </Typography>
               );
 
-              trigger({
+              write({
                 signer,
                 config: {
                   ...config,

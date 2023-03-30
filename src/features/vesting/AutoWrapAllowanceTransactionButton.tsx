@@ -3,6 +3,7 @@ import { constants } from "ethers";
 import { FC, memo } from "react";
 import { useFormContext } from "react-hook-form";
 import { erc20ABI, usePrepareContractWrite, useSigner } from "wagmi";
+import { usePrepareErc20Approve } from "../../generated";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi } from "../redux/store";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
@@ -24,11 +25,9 @@ const AutoWrapAllowanceTransactionButton: FC<{ token: VestingToken, isVisible: b
 
   // TODO(KK): Check whether there's an underlying token properly...
   const { data: signer } = useSigner();
-  const { config } = usePrepareContractWrite({
+  const { config } = usePrepareErc20Approve({
     enabled: setupAutoWrap && !!network.autoWrap, // TODO(KK): any other conditions to add here?
     address: token.underlyingAddress as `0x${string}`,
-    abi: erc20ABI,
-    functionName: "approve",
     args: [
       network.autoWrap?.strategyContractAddress as `0x${string}`,
       constants.MaxUint256,
@@ -38,7 +37,7 @@ const AutoWrapAllowanceTransactionButton: FC<{ token: VestingToken, isVisible: b
     overrides: {}, // TODO: overrides
   });
 
-  const [trigger, mutationResult] = rpcApi.useWriteContractMutation();
+  const [write, mutationResult] = rpcApi.useWriteContractMutation();
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
@@ -64,7 +63,7 @@ const AutoWrapAllowanceTransactionButton: FC<{ token: VestingToken, isVisible: b
                 </Typography>
               );
 
-              trigger({
+              write({
                 signer,
                 config: {
                   ...config,
