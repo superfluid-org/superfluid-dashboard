@@ -8,7 +8,8 @@ import {
 } from "@mui/material";
 import { Stream } from "@superfluid-finance/sdk-core";
 import { Signer } from "ethers";
-import { FC } from "react";
+import { FC, useMemo } from "react";
+import { useAccount } from "wagmi";
 import { ScheduledStream } from "../../../hooks/streamSchedulingHooks";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { useAnalytics } from "../../analytics/useAnalytics";
@@ -33,6 +34,8 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
   IconButtonProps = {},
   TooltipProps = {},
 }) => {
+  const { address: accountAddress } = useAccount();
+
   const { token, sender, receiver } = stream;
   const [flowDeleteTrigger, flowDeleteMutation] =
     rpcApi.useDeleteFlowWithSchedulingMutation();
@@ -64,6 +67,16 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
       .then(...txAnalytics("Cancel Stream", primaryArgs))
       .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
   };
+
+  const isSenderOrReceiverLooking = useMemo(
+    () =>
+      accountAddress &&
+      (sender.toLowerCase() === accountAddress.toLowerCase() ||
+        receiver.toLowerCase() === accountAddress.toLowerCase()),
+    [accountAddress, sender, receiver]
+  );
+
+  if (!isSenderOrReceiverLooking) return null;
 
   return (
     <ConnectionBoundary expectedNetwork={network}>
