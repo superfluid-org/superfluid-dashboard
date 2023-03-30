@@ -39,14 +39,14 @@ const ModifyStreamButton: FC<ModifyStreamButtonProps> = ({
     [stream, network]
   );
 
-  const isSenderOrReceiverLooking = useMemo(
+  const isSenderLooking = useMemo(
     () =>
       accountAddress &&
       stream.sender.toLowerCase() === accountAddress.toLowerCase(),
     [accountAddress, stream.sender]
   );
 
-  if (!isSenderOrReceiverLooking) return null;
+  if (!isSenderLooking) return null;
 
   return (
     <Tooltip
