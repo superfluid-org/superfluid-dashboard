@@ -1,4 +1,5 @@
 import { Typography } from "@mui/material";
+import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { constants } from "ethers";
 import { FC, memo } from "react";
 import { useFormContext } from "react-hook-form";
@@ -10,6 +11,8 @@ import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary"
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { VestingToken } from "./CreateVestingSection";
+
+const BUTTON_TITLE: TransactionTitle = "Approve Auto Wrap" 
 
 const AutoWrapAllowanceTransactionButton: FC<{ token: VestingToken, isVisible: boolean }> = ({
   token,
@@ -59,7 +62,7 @@ const AutoWrapAllowanceTransactionButton: FC<{ token: VestingToken, isVisible: b
                   color="text.secondary"
                   translate="yes"
                 >
-                  You are approving auto-wrap (TODO: better name) ERC-20 allowance for the underlying token.
+                  You are approving Auto Wrap ERC-20 allowance for the underlying token.
                 </Typography>
               );
 
@@ -72,7 +75,7 @@ const AutoWrapAllowanceTransactionButton: FC<{ token: VestingToken, isVisible: b
               }).unwrap();
             }}
           >
-            Approve Auto Wrap
+            {BUTTON_TITLE}
           </TransactionButton>
         )
       }

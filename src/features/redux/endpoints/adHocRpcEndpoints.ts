@@ -34,6 +34,8 @@ declare module "@superfluid-finance/sdk-redux" {
     "Create Schedule": true;
     "Modify Schedule": true;
     "Delete Schedule": true;
+    "Approve Auto Wrap": true;
+    "Configure Auto Wrap": true;
   }
 }
 

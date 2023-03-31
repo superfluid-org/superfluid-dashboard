@@ -30,6 +30,8 @@ import {
   isCloseToUnlimitedTokenAllowance,
 } from "../../../utils/isCloseToUnlimitedAllowance";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { getSuperTokenType } from "../../redux/endpoints/adHocSubgraphEndpoints";
+import { TokenType } from "../../redux/endpoints/tokenTypes";
 
 export const VestingSchedulerAllowanceRowSkeleton = () => (
   <TableRow>
@@ -96,7 +98,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   const theme = useTheme();
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const { token, isTokenLoading } = subgraphApi.useTokenQuery(
+  const { token, tokenType, isTokenLoading } = subgraphApi.useTokenQuery(
     {
       chainId: network.id,
       id: tokenAddress,
@@ -105,16 +107,23 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
       selectFromResult: ({ data, isLoading }) => ({
         token: data,
         isTokenLoading: isLoading,
+        tokenType: data ? getSuperTokenType({
+          network,
+          address: data.id,
+          underlyingAddress: data.underlyingAddress,
+        }) : undefined
       }),
     }
   );
+
+  const isAutoWrappable = tokenType && tokenType === TokenType.WrapperSuperToken;
 
   // TODO(KK)
   const {
     data: isAutoWrapAllowanceConfigured,
     isLoading: isAutoWrapAllowanceLoading,
   } = rpcApi.useIsAutoWrapAllowanceConfiguredQuery(
-    network.autoWrap && token && token.underlyingAddress
+    network.autoWrap && token && isAutoWrappable
       ? {
           chainId: network.id,
           accountAddress: senderAddress,

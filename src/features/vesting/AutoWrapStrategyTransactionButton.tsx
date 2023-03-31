@@ -1,4 +1,5 @@
 import { Typography } from "@mui/material";
+import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { BigNumber } from "ethers";
 import { FC, memo } from "react";
 import { useFormContext } from "react-hook-form";
@@ -11,19 +12,17 @@ import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { VestingToken } from "./CreateVestingSection";
 
-const AutoWrapStrategyTransactionButton: FC<{ token: VestingToken, isVisible: boolean }> = ({
-  token,
-  isVisible
-}) => {
+const BUTTON_TITLE: TransactionTitle = "Approve Auto Wrap";
+
+const AutoWrapStrategyTransactionButton: FC<{
+  token: VestingToken;
+  isVisible: boolean;
+}> = ({ token, isVisible }) => {
   const { data: signer } = useSigner();
   const { network } = useExpectedNetwork();
 
   const { watch } = useFormContext<ValidVestingForm>();
-  const [
-    setupAutoWrap
-  ] = watch([
-    "data.setupAutoWrap"
-  ]);
+  const [setupAutoWrap] = watch(["data.setupAutoWrap"]);
 
   // { name: 'superToken', internalType: 'address', type: 'address' },
   // { name: 'strategy', internalType: 'address', type: 'address' },
@@ -44,10 +43,9 @@ const AutoWrapStrategyTransactionButton: FC<{ token: VestingToken, isVisible: bo
       token.underlyingAddress as `0x${string}`, // TODO(KK): guard
       BigNumber.from("18446744073709551615"),
       BigNumber.from(network.autoWrap!.lowerLimit),
-      BigNumber.from(network.autoWrap!.upperLimit)
+      BigNumber.from(network.autoWrap!.upperLimit),
     ],
     signer: signer,
-    overrides: { gasLimit: BigNumber.from("1000000") }, // TODO: overrides
   });
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
@@ -67,12 +65,8 @@ const AutoWrapStrategyTransactionButton: FC<{ token: VestingToken, isVisible: bo
               if (!config) throw new Error("This should never happen!");
 
               setDialogLoadingInfo(
-                <Typography
-                  variant="h5"
-                  color="text.secondary"
-                  translate="yes"
-                >
-                  You are setting up auto-wrap strategy.
+                <Typography variant="h5" color="text.secondary" translate="yes">
+                  You are setting up Auto Wrap to wrap your tokens when balances reaches low.
                 </Typography>
               );
 
@@ -85,7 +79,7 @@ const AutoWrapStrategyTransactionButton: FC<{ token: VestingToken, isVisible: bo
               }).unwrap();
             }}
           >
-            Configure Auto Wrap
+            {BUTTON_TITLE}
           </TransactionButton>
         )
       }
