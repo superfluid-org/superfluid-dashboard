@@ -41,7 +41,7 @@ const AutoWrapStrategyTransactionButton: FC<{
       token.address as `0x${string}`,
       network.autoWrap!.strategyContractAddress, // TODO: guard somewhere
       token.underlyingAddress as `0x${string}`, // TODO(KK): guard
-      BigNumber.from("2000000000"),
+      BigNumber.from("3000000000"),
       BigNumber.from(network.autoWrap!.lowerLimit),
       BigNumber.from(network.autoWrap!.upperLimit),
     ],

@@ -571,7 +571,10 @@ const CreateVestingForm: FC<{
           )}
         </Alert>
 
-        {AutoWrapController}
+        <Stack direction="row" alignItems="center">
+          {AutoWrapController}
+          <TooltipIcon title="Auto Wrap will handle low balances to cover all streams in a selected token." />
+        </Stack>
       </Stack>
 
       <Stack gap={1}>{PreviewVestingScheduleButton}</Stack>
