@@ -674,6 +674,7 @@ export const allNetworks: Network[] = [
   networkDefinition.avalancheFuji,
   networkDefinition.optimism,
   networkDefinition.arbitrum,
+  networkDefinition.arbitrumGoerli,
   networkDefinition.avalancheC,
   networkDefinition.bsc,
   networkDefinition.celoMainnet,
