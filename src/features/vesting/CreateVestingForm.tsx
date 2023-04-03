@@ -550,7 +550,7 @@ const CreateVestingForm: FC<{
               setupAutoWrap ? (
                 <>
                   <AlertTitle data-cy={"top-up-alert-title"}>
-                    Don't forget to top up for the cliff!
+                    Don’t forget to top up for the cliff!
                   </AlertTitle>
                   <Typography data-cy={"top-up-alert-text"}>
                     The auto-wrap will not take account of the vesting cliff.
