@@ -59,7 +59,7 @@ export const AUTOMATE_CRYPTO_VESTING = [
 export const INVEST_IN_REALTIME = [
     {
         name: "Ricochet",
-        href: "https://ricochet.exchange/",
+        href: "https://ricochet-exchange.eth.limo/",
         description: `An exchange for effortless real-time crypto investing and streaming`,
         icon: "/icons/ecosystem/ricochet.svg",
         chains: [networkDefinition.polygon.id],

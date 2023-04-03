@@ -148,26 +148,26 @@ Feature: Send Page test cases
   Scenario: Stream tables - stream with just start date
     Given "Dashboard Page" is open with "john" connected on "goerli"
     And User clicks on "goerli" "TDLx" row
-    Then The stream row to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B" has a flow rate of "-1" and dates to "1 Jan. 2025 10:00"
+    Then The stream row to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B" has a flow rate of "-1.0139" and dates to "1 Jan. 2025 10:00"
     And User clicks on "goerli" "TDLx" row
     And User opens "goerli" "TDLx" individual token page
-    Then The stream row to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B" has a flow rate of "-1" and dates to "1 Jan. 2025 10:00"
+    Then The stream row to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B" has a flow rate of "-1.0139" and dates to "1 Jan. 2025 10:00"
 
   Scenario: Stream tables - stream with start and end date
     Given "Dashboard Page" is open with "john" connected on "goerli"
     And User clicks on "goerli" "TDLx" row
-    Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "31 Dec. 2024 22:0030 Jan. 2025 22:00"
+    Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1.0139" and dates to "31 Dec. 2024 22:0030 Jan. 2025 22:00"
     And User clicks on "goerli" "TDLx" row
     And User opens "goerli" "TDLx" individual token page
-    Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "31 Dec. 2024 22:0030 Jan. 2025 22:00"
+    Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1.0139" and dates to "31 Dec. 2024 22:0030 Jan. 2025 22:00"
 
   Scenario: Stream tables - stream with end date
     Given "Dashboard Page" is open with "john" connected on "goerli"
     And User clicks on "goerli" "TDLx" row
-    Then The stream row to "0x9B6157d44134b21D934468B8bf709294cB298aa7" has a flow rate of "-1" and dates to "21 Mar. 2023 08:3430 Jan. 2025 22:00"
+    Then The stream row to "0x9B6157d44134b21D934468B8bf709294cB298aa7" has a flow rate of "-1.0139" and dates to "21 Mar. 2023 08:3430 Jan. 2025 22:00"
     And User clicks on "goerli" "TDLx" row
     And User opens "goerli" "TDLx" individual token page
-    Then The stream row to "0x9B6157d44134b21D934468B8bf709294cB298aa7" has a flow rate of "-1" and dates to "21 Mar. 2023 08:3430 Jan. 2025 22:00"
+    Then The stream row to "0x9B6157d44134b21D934468B8bf709294cB298aa7" has a flow rate of "-1.0139" and dates to "21 Mar. 2023 08:3430 Jan. 2025 22:00"
 
   Scenario: Modifying a streams start date
     Given HDWallet transactions are rejected
@@ -227,7 +227,7 @@ Feature: Send Page test cases
     And User searches for "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" as a receiver
     And User opens the token selection screen
     And User selects "TDLx" from the super token list
-    Then  The flow rate field in the send page is "1"
+    Then The flow rate field in the send page is "12.17"
     And The stream start date is set to "12/31/2024 22:00"
     And The stream end date is set to "01/30/2025 22:00"
 
