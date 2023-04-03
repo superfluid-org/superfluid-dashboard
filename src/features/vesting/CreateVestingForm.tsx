@@ -408,27 +408,23 @@ const CreateVestingForm: FC<{
       : skipToken
   );
 
+  const isAutoWrapVisible =
+    network.autoWrap &&
+    token?.type === TokenType.WrapperSuperToken &&
+    !isAutoWrapStatusLoading &&
+    !isAutoWrapConfigured;
+
   const AutoWrapController = (
     <Controller
       control={control}
       name="data.setupAutoWrap"
       render={({ field: { value, onChange, onBlur } }) => (
-        <>
-          {network.autoWrap && token?.type === TokenType.WrapperSuperToken &&
-            !isAutoWrapStatusLoading &&
-            !isAutoWrapConfigured && (
-              <FormControlLabel
-                label="Allow for automatic wrapping"
-                control={
-                  <Checkbox
-                    checked={!!value}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                  />
-                }
-              />
-            )}
-        </>
+        <FormControlLabel
+          label="Allow for automatic wrapping"
+          control={
+            <Checkbox checked={!!value} onChange={onChange} onBlur={onBlur} />
+          }
+        />
       )}
     ></Controller>
   );
@@ -572,8 +568,12 @@ const CreateVestingForm: FC<{
         </Alert>
 
         <Stack direction="row" alignItems="center">
-          {AutoWrapController}
-          <TooltipIcon title="Auto Wrap will handle low balances to cover all streams in a selected token." />
+          {isAutoWrapVisible && (
+            <>
+              {AutoWrapController}
+              <TooltipIcon title="Auto Wrap will handle low balances to cover all streams in a selected token." />
+            </>
+          )}
         </Stack>
       </Stack>
 
