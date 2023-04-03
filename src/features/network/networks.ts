@@ -57,6 +57,7 @@ export const superfluidPlatformUrls = {
   polygon: "https://prod-polygon-mainnet-platform-service.prod.superfluid.dev",
   mumbai: "https://prod-polygon-mumbai-platform-service.dev.superfluid.dev",
   arbitrum: "https://prod-arbitrum-one-platform-service.prod.superfluid.dev",
+  arbitrumGoerli: "https://prod-goerli-platform-service.dev.superfluid.dev", // temp
   optimism:
     "https://prod-optimism-mainnet-platform-service.prod.superfluid.dev",
   avalancheC: "https://prod-avalanche-c-platform-service.prod.superfluid.dev",
@@ -76,6 +77,8 @@ export const vestingSubgraphUrls = {
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-polygon-mumbai",
   arbitrum:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-arbitrum-one",
+  arbitrumGoerli:
+    "https://api.thegraph.com/subgraphs/name/tokdaniel/vesting-v1-arbitrum-goerli",
   optimism:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-optimism-mainnet",
   avalancheC:
@@ -92,6 +95,7 @@ export const vestingContractAddresses = {
   polygon: "0xcFE6382B33F2AdaFbE46e6A26A88E0182ae32b0c",
   mumbai: "0x3962EE56c9f7176215D149938BA685F91aBB633B",
   arbitrum: "0x55c8fc400833eEa791087cF343Ff2409A39DeBcC",
+  arbitrumGoerli: "0xD7774fA18E40c06b0320493183D840f0f6c5Ca96",
   optimism: "0x65377d4dfE9c01639A41952B5083D58964782892",
   avalancheC: "0x3fA8B653F9abf91428800C0ba0F8D145a71F97A1",
   bnbSmartChain: "0x9B91c27f78376383003C6A12Ad12B341d016C5b9",
@@ -103,6 +107,8 @@ export const flowSchedulerSubgraphUrls = {
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-eth-goerli",
   arbitrum:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-arbitrum-one",
+  arbitrumGoerl:
+    "https://api.thegraph.com/subgraphs/name/tokdaniel/scheduling-v1-arbitrum-goerli", //temp
   avalancheC:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-avalanche-c",
   bnbSmartChain:
@@ -122,6 +128,7 @@ export const flowSchedulerSubgraphUrls = {
 export const flowSchedulerContractAddresses = {
   goerli: "0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca",
   arbitrum: "0x3fA8B653F9abf91428800C0ba0F8D145a71F97A1",
+  arbitrumGoerli: "0xe7a6f93D19527114F13A9765293BBA7BA09E08DA",
   avalancheC: "0xF7AfF590E9DE493D7ACb421Fca7f1E35C1ad4Ce5",
   bnbSmartChain: "0x2f9e2A2A59405682d4F86779275CF5525AD7eC2B",
   ethereum: "0xAA0cD305eD020137E302CeCede7b18c0A05aCCDA",
@@ -179,6 +186,7 @@ export const networkDefinition: {
   avalancheFuji: Network;
   optimism: Network;
   arbitrum: Network;
+  arbitrumGoerli: Network;
   avalancheC: Network;
   bsc: Network;
   ethereum: Network & {
@@ -453,6 +461,42 @@ export const networkDefinition: {
     vestingContractAddress: vestingContractAddresses.arbitrum,
     vestingSubgraphUrl: vestingSubgraphUrls.arbitrum,
     platformUrl: superfluidPlatformUrls.arbitrum,
+  },
+  arbitrumGoerli: {
+    ...chain.arbitrumGoerli,
+    blockExplorers: ensureDefined(chain.arbitrumGoerli.blockExplorers),
+    slugName: "arbitrum-goerli",
+    v1ShortName: "arbitrum-goerli",
+    bufferTimeInMinutes: 240,
+    icon: "/icons/network/arbitrum.svg",
+    color: "#2b374b",
+    rpcUrls: {
+      ...chain.arbitrumGoerli.rpcUrls,
+      superfluid: { http: [superfluidRpcUrls.arbitrum] },
+    },
+    subgraphUrl:
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-goerli",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://goerli.arbiscan.io/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://goerli.arbiscan.io/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.arbitrumGoerli.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0xe6c8d111337d0052b9d88bf5d7d55b7f8385acd3",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+    flowSchedulerContractAddress: flowSchedulerContractAddresses.arbitrumGoerli,
+    flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.arbitrumGoerl,
+    vestingContractAddress: vestingContractAddresses.arbitrumGoerli,
+    vestingSubgraphUrl: vestingSubgraphUrls.arbitrumGoerli,
+    platformUrl: superfluidPlatformUrls.arbitrumGoerli,
   },
   avalancheC: {
     name: "Avalanche C",
