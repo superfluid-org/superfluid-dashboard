@@ -82,9 +82,10 @@ const CreateVestingForm: FC<{
     []
   );
 
-  const [cliffEnabled, vestingPeriod] = watch([
+  const [cliffEnabled, vestingPeriod, setupAutoWrap] = watch([
     "data.cliffEnabled",
     "data.vestingPeriod",
+    "data.setupAutoWrap",
   ]);
 
   const ReceiverController = (
@@ -543,29 +544,44 @@ const CreateVestingForm: FC<{
           </Box>
         )}
 
-        <Alert severity="warning">
-          {cliffEnabled ? (
-            <>
-              <AlertTitle data-cy={"top-up-alert-title"}>
-                Don’t forget to top up for the vesting schedule!
-              </AlertTitle>
-              <Typography data-cy={"top-up-alert-text"}>
-                Remember to top up your Super Token balance in time for the
-                cliff amount and vesting stream.
-              </Typography>
-            </>
-          ) : (
-            <>
-              <AlertTitle data-cy={"top-up-alert-title"}>
-                Don’t forget to top up for the vesting schedule!
-              </AlertTitle>
-              <Typography data-cy={"top-up-alert-text"}>
-                Remember to top up your Super Token balance in time for the
-                vesting stream.
-              </Typography>
-            </>
-          )}
-        </Alert>
+        {!(setupAutoWrap && !cliffEnabled) && (
+          <Alert severity="warning">
+            {cliffEnabled ? (
+              setupAutoWrap ? (
+                <>
+                  <AlertTitle data-cy={"top-up-alert-title"}>
+                    Don't forget to top up for the cliff!
+                  </AlertTitle>
+                  <Typography data-cy={"top-up-alert-text"}>
+                    The auto-wrap will not take account of the vesting cliff.
+                    Remember to top up your Super Token balance for the cliff
+                    amount and the first week of a vesting stream.
+                  </Typography>
+                </>
+              ) : (
+                <>
+                  <AlertTitle data-cy={"top-up-alert-title"}>
+                    Don’t forget to top up for the vesting schedule!
+                  </AlertTitle>
+                  <Typography data-cy={"top-up-alert-text"}>
+                    Remember to top up your Super Token balance in time for the
+                    cliff amount and vesting stream.
+                  </Typography>
+                </>
+              )
+            ) : (
+              <>
+                <AlertTitle data-cy={"top-up-alert-title"}>
+                  Don’t forget to top up for the vesting schedule!
+                </AlertTitle>
+                <Typography data-cy={"top-up-alert-text"}>
+                  Remember to top up your Super Token balance in time for the
+                  vesting stream.
+                </Typography>
+              </>
+            )}
+          </Alert>
+        )}
 
         <Stack direction="row" alignItems="center">
           {isAutoWrapVisible && (
