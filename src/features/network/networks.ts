@@ -43,6 +43,7 @@ export const superfluidRpcUrls = {
   polygon: "https://rpc-endpoints.superfluid.dev/polygon-mainnet",
   polygonMumbai: "https://rpc-endpoints.superfluid.dev/polygon-mumbai",
   arbitrum: "https://rpc-endpoints.superfluid.dev/arbitrum-one",
+  arbitrumGoerli: "https://rpc-endpoints.superfluid.dev/arbitrum-goerli",
   optimism: "https://rpc-endpoints.superfluid.dev/optimism-mainnet",
   avalancheFuji: "https://rpc-endpoints.superfluid.dev/avalanche-fuji",
   avalancheC: "https://rpc-endpoints.superfluid.dev/avalanche-c",
@@ -472,7 +473,7 @@ export const networkDefinition: {
     color: "#2b374b",
     rpcUrls: {
       ...chain.arbitrumGoerli.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls.arbitrum] },
+      superfluid: { http: [superfluidRpcUrls.arbitrumGoerli] },
     },
     subgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-goerli",
