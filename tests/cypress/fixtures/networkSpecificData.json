@@ -53,7 +53,7 @@
         "liquidationDate": "March 31st, 2036",
         "token": "fDAIx",
         "netFlowRate": "-1.0139/mo",
-        "inFlow": "+4/mo",
+        "inFlow": "+4.0556/mo",
         "outFlow": "-5.0694/mo",
         "streams": [
           {
@@ -63,7 +63,7 @@
           },
           {
             "fromTo": "0xcb86...42D8",
-            "flowRate": "+4/mo",
+            "flowRate": "+4.0556/mo",
             "endDate": "2 Jul. 2021 07:28"
           },
           {
@@ -199,17 +199,17 @@
       "tokenValues": {
         "token": "fDAIx",
         "netFlowRate": "-1.0139/mo",
-        "inFlow": "+4/mo",
-        "outFlow": "-5/mo",
+        "inFlow": "+4.0556/mo",
+        "outFlow": "-5.0694/mo",
         "streams": [
           {
             "fromTo": "0xcb86...42D8",
-            "flowRate": "+4/mo",
+            "flowRate": "+4.0556/mo",
             "endDate": "2 Jul. 2021"
           },
           {
             "fromTo": "0x618a...DE40",
-            "flowRate": "-5/mo",
+            "flowRate": "-5.0694/mo",
             "endDate": "2 Jul. 2021"
           }
         ]
@@ -246,8 +246,8 @@
       "tokenValues": {
         "token": "fDAIx",
         "netFlowRate": "-1.0139/mo",
-        "inFlow": "+4/mo",
-        "outFlow": "-5/mo",
+        "inFlow": "+4.0556/mo",
+        "outFlow": "-5.0694/mo",
         "streams": [
           {
             "fromTo": "0x618a...DE40",
@@ -256,12 +256,12 @@
           },
           {
             "fromTo": "0xad97...8a19",
-            "flowRate": "+4/mo",
+            "flowRate": "+4.0556/mo",
             "endDate": "30 Dec. 2021"
           },
           {
             "fromTo": "0x618a...DE40",
-            "flowRate": "-5/mo",
+            "flowRate": "-5.0694/mo",
             "endDate": "21 Dec. 2021"
           }
         ]
