@@ -12,7 +12,7 @@ import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { VestingToken } from "./CreateVestingSection";
 
-const BUTTON_TITLE: TransactionTitle = "Configure Auto Wrap";
+const TX_TITLE: TransactionTitle = "Configure Auto-Wrap";
 
 const AutoWrapStrategyTransactionButton: FC<{
   token: VestingToken;
@@ -66,7 +66,7 @@ const AutoWrapStrategyTransactionButton: FC<{
 
               setDialogLoadingInfo(
                 <Typography variant="h5" color="text.secondary" translate="yes">
-                  You are configuring Auto Wrap to top up your {token.symbol} tokens when balance reaches low.
+                  You are configuring Auto-Wrap to top up your {token.symbol} tokens when balance reaches low.
                 </Typography>
               );
 
@@ -74,12 +74,13 @@ const AutoWrapStrategyTransactionButton: FC<{
                 signer,
                 config: {
                   ...config,
-                  chainId: network.id,
+                  chainId: network.id
                 },
+                transactionTitle: TX_TITLE
               }).unwrap();
             }}
           >
-            {BUTTON_TITLE}
+            {TX_TITLE}
           </TransactionButton>
         )
       }

@@ -12,7 +12,7 @@ import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { VestingToken } from "./CreateVestingSection";
 
-const BUTTON_TITLE: TransactionTitle = "Approve Auto Wrap" 
+const TX_TITLE: TransactionTitle = "Approve Auto-Wrap" 
 
 const AutoWrapAllowanceTransactionButton: FC<{ token: VestingToken, isVisible: boolean }> = ({
   token,
@@ -62,7 +62,7 @@ const AutoWrapAllowanceTransactionButton: FC<{ token: VestingToken, isVisible: b
                   color="text.secondary"
                   translate="yes"
                 >
-                  You are approving Auto Wrap ERC-20 allowance for the underlying token.
+                  You are approving Auto-Wrap ERC-20 allowance for the underlying token.
                 </Typography>
               );
 
@@ -70,12 +70,13 @@ const AutoWrapAllowanceTransactionButton: FC<{ token: VestingToken, isVisible: b
                 signer,
                 config: {
                   ...config,
-                  chainId: network.id,
+                  chainId: network.id
                 },
+                transactionTitle: TX_TITLE
               }).unwrap();
             }}
           >
-            {BUTTON_TITLE}
+            {TX_TITLE}
           </TransactionButton>
         )
       }

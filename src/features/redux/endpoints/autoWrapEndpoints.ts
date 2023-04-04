@@ -109,7 +109,7 @@ const isAutoWrapAllowanceConfiguredEndpoint = (builder: RpcEndpointBuilder) =>
       const allowance = await tokenContract.allowance(arg.accountAddress, strategy.address);
 
       return {
-        data: isCloseToUnlimitedTokenAllowance(allowance), // Meh... We could also check that allowance is not 0.
+        data: !allowance.isZero(), // Meh... We check that there has been some allowance interaction.
       };
     },
     providesTags: (_result, _error, arg) => [

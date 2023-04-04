@@ -7,6 +7,7 @@ import {
   registerNewTransactionAndReturnQueryFnResult,
   RpcEndpointBuilder,
   TransactionInfo,
+  TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
 import { WriteContractPreparedArgs, writeContract } from "@wagmi/core";
 import { BigNumber, Overrides, Signer } from "ethers";
@@ -34,8 +35,8 @@ declare module "@superfluid-finance/sdk-redux" {
     "Create Schedule": true;
     "Modify Schedule": true;
     "Delete Schedule": true;
-    "Approve Auto Wrap": true;
-    "Configure Auto Wrap": true;
+    "Approve Auto-Wrap": true;
+    "Configure Auto-Wrap": true;
   }
 }
 
@@ -54,15 +55,16 @@ const writeContractEndpoint = (builder: RpcEndpointBuilder) =>
       config: WriteContractPreparedArgs<unknown[], string> & {
         chainId: number;
       };
+      transactionTitle: TransactionTitle,
     }
   >({
-    queryFn: async ({ signer, config }, { dispatch }) => {
+    queryFn: async ({ signer, config, transactionTitle }, { dispatch }) => {
       const result = await writeContract(config);
       return registerNewTransactionAndReturnQueryFnResult({
         dispatch,
         signerAddress: await signer.getAddress(),
         chainId: config.chainId,
-        title: "Approve Allowance",
+        title: transactionTitle,
         transactionResponse: {
           chainId: config.chainId,
           ...result,
