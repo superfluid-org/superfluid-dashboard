@@ -38,6 +38,14 @@ const GranularityWordMap: Record<string, UnitOfTime> = {
     "Yearly": UnitOfTime.Year,
 };
 
+const ApiWordMap: Record<string, string> = {
+    "Hourly": "hour",
+    "Daily": "day",
+    "Weekly": "week",
+    "Monthly": "month",
+    "Yearly": "year",
+};
+
 const allColumns = ["date", "startDate", "amount", "counterparty", "counterpartyAddress", "tokenSymbol", "network", "transaction", "sender", "receiver", "transactionHash", "tokenAddress", "tokenName"]
 
 export class ExportPage extends BasePage {
@@ -92,8 +100,8 @@ export class ExportPage extends BasePage {
         cy.intercept("GET", EXPORTING_ENDPOINT, (req) => {
             req.query.start = "1672524000"
             req.query.end = "1675202399"
-            expect(req.query.priceGranularity).to.eq(GranularityWordMap[period].toString())
-            expect(req.query.virtualization).to.eq(GranularityWordMap[period].toString())
+            expect(req.query.priceGranularity).to.eq(ApiWordMap[period].toString())
+            expect(req.query.virtualization).to.eq(ApiWordMap[period].toString())
             req.continue((res) => {
 
             })
