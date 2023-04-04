@@ -208,15 +208,13 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                       variant="textContained"
                       size="xxs"
                       onClick={() => {
-                        const isBalanceFlowing =
-                          realtimeBalance.flowRate !== "0";
-
                         // If the balance is flowing, subtract 3 minutes from the balance to account for the time it takes to send the transaction and also the clock skew.
-                        const flowingBalanceSkew = isBalanceFlowing
-                          ? BigNumber.from(realtimeBalance.flowRate)
-                              .abs()
-                              .mul(180)
-                          : BigNumber.from(0);
+                        // Note: 0 multiplied by 3 minutes is still 0.
+                        const flowingBalanceSkew = BigNumber.from(
+                          realtimeBalance.flowRate
+                        )
+                          .abs()
+                          .mul(180);
 
                         const maxBalance = calculateCurrentBalance({
                           flowRateWei: realtimeBalance.flowRate,
