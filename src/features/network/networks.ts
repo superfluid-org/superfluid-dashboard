@@ -73,7 +73,7 @@ export const vestingSubgraphUrls = {
   polygon:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-polygon-mainnet",
   mumbai:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-polygon-mumbai",
+    "https://api.thegraph.com/subgraphs/name/tokdaniel/vesting-v1-mumbai-test",
   arbitrum:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-arbitrum-one",
   optimism:
@@ -90,7 +90,7 @@ export const vestingContractAddresses = {
   gnosis: "0x0170FFCC75d178d426EBad5b1a31451d00Ddbd0D",
   goerli: "0xF9240F930d847F70ad900aBEE8949F25649Bf24a",
   polygon: "0xcFE6382B33F2AdaFbE46e6A26A88E0182ae32b0c",
-  mumbai: "0x3962EE56c9f7176215D149938BA685F91aBB633B",
+  mumbai: "0x5E930Ad6602186790ba4dF261e23CdC3Eab3DF91",
   arbitrum: "0x55c8fc400833eEa791087cF343Ff2409A39DeBcC",
   optimism: "0x65377d4dfE9c01639A41952B5083D58964782892",
   avalancheC: "0x3fA8B653F9abf91428800C0ba0F8D145a71F97A1",
@@ -114,7 +114,7 @@ export const flowSchedulerSubgraphUrls = {
   polygon:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-polygon-mainnet",
   mumbai:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-polygon-mumbai",
+    "https://api.thegraph.com/subgraphs/name/tokdaniel/scheduling-v1-mumbai-test",
   gnosis:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-xdai-mainnet",
 } as const;
@@ -127,7 +127,7 @@ export const flowSchedulerContractAddresses = {
   ethereum: "0xAA0cD305eD020137E302CeCede7b18c0A05aCCDA",
   optimism: "0x55c8fc400833eEa791087cF343Ff2409A39DeBcC",
   polygon: "0x55F7758dd99d5e185f4CC08d4Ad95B71f598264D",
-  mumbai: "0x59A3Ba9d34c387FB70b4f4e4Fbc9eD7519194139",
+  mumbai: "0x2B122991734D363Fd6534C10A1562e4148E96403",
   gnosis: "0x9cC7fc484fF588926149577e9330fA5b2cA74336",
 } as const;
 
