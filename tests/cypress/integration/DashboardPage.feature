@@ -60,7 +60,4 @@ Feature: Dashboard Page test cases
     And User uses view mode to look at "ongoingStreamAccount"
     And User waits for balances to load
     And User clicks on "polygon" "MATICx" row
-    And Cancel button is disabled on all streams on "polygon"
-    And User hovers on the first "polygon" stream cancel button
-    #TODO: Currently not handled by the UI , but we should show something like that
-    #Then A tooltip asking user to stop using view mode is shown
+    Then There are no cancel or modify buttons in the last stream row
