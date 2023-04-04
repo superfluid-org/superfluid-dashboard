@@ -31,6 +31,7 @@ import { TokenDialogButton } from "./TokenDialogButton";
 import { useTokenPairQuery } from "./useTokenPairQuery";
 import { WrapInputCard } from "./WrapInputCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
+import { BigNumber } from "ethers";
 
 interface TabUnwrapProps {
   onSwitchMode: () => void;
@@ -101,6 +102,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
           }
         : skipToken
     );
+  const realtimeBalance = realtimeBalanceQuery.currentData;
 
   const amountWei = parseAmountOrZero(
     amount ? { value: amount, decimals: 18 } : undefined
@@ -196,7 +198,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                 tokenAddress={tokenPair.superTokenAddress}
                 TypographyProps={{ color: "text.secondary" }}
               />
-              {realtimeBalanceQuery.currentData && (
+              {realtimeBalance && (
                 <Controller
                   control={control}
                   name="data.amountDecimal"
@@ -206,18 +208,23 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                       variant="textContained"
                       size="xxs"
                       onClick={() => {
-                        const currentBalanceBigNumber = calculateCurrentBalance(
-                          {
-                            flowRateWei:
-                              realtimeBalanceQuery.currentData!.flowRate,
-                            balanceWei:
-                              realtimeBalanceQuery.currentData!.balance,
-                            balanceTimestamp:
-                              realtimeBalanceQuery.currentData!
-                                .balanceTimestamp,
-                          }
-                        );
-                        return onChange(formatEther(currentBalanceBigNumber));
+                        const isBalanceFlowing =
+                          realtimeBalance.flowRate !== "0";
+
+                        // If the balance is flowing, subtract 3 minutes from the balance to account for the time it takes to send the transaction and also the clock skew.
+                        const flowingBalanceSkew = isBalanceFlowing
+                          ? BigNumber.from(realtimeBalance.flowRate)
+                              .abs()
+                              .mul(180)
+                          : BigNumber.from(0);
+
+                        const maxBalance = calculateCurrentBalance({
+                          flowRateWei: realtimeBalance.flowRate,
+                          balanceWei: realtimeBalance.balance,
+                          balanceTimestamp: realtimeBalance.balanceTimestamp,
+                        }).sub(flowingBalanceSkew);
+
+                        return onChange(formatEther(maxBalance));
                       }}
                       onBlur={onBlur}
                     >
