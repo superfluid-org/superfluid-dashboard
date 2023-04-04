@@ -1,4 +1,10 @@
-import { Chip, Stack, Typography } from "@mui/material";
+import {
+  Chip,
+  Stack,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { Address, Token } from "@superfluid-finance/sdk-core";
 import { FC } from "react";
 import { useAccount } from "wagmi";
@@ -21,27 +27,40 @@ interface CounterpartyAddressProps {
 const CounterpartyAddress: FC<CounterpartyAddressProps> = ({
   title,
   address,
-}) => (
-  <Stack direction="row" alignItems="center" gap={1}>
-    <Typography variant="body1" color="text.secondary" translate="yes">
-      {title}
-    </Typography>
-    <Stack direction="row" alignItems="center">
-      <Typography variant="h6" color="text.secondary">
-        <AddressName address={address} />
+}) => {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
+  return (
+    <Stack
+      direction={isBelowMd ? "column" : "row"}
+      alignItems={isBelowMd ? "start" : "center"}
+      gap={isBelowMd ? 0 : 1}
+    >
+      <Typography
+        variant={isBelowMd ? "body2" : "body1"}
+        color="text.secondary"
+        translate="yes"
+      >
+        {title}
       </Typography>
-      <CopyIconBtn
-        description="Copy address to clipboard"
-        IconButtonProps={{ size: "small" }}
-        TooltipProps={{
-          arrow: true,
-          placement: "top",
-        }}
-        copyText={address}
-      />
+      <Stack direction="row" alignItems="center">
+        <Typography variant={isBelowMd ? "h7" : "h6"} color="text.secondary">
+          <AddressName address={address} />
+        </Typography>
+        <CopyIconBtn
+          description="Copy address to clipboard"
+          IconButtonProps={{ size: "small" }}
+          TooltipProps={{
+            arrow: true,
+            placement: "top",
+          }}
+          copyText={address}
+        />
+      </Stack>
     </Stack>
-  </Stack>
-);
+  );
+};
 
 interface VestingDetailsHeaderProps {
   network: Network;
@@ -54,6 +73,9 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
   vestingSchedule,
   token,
 }) => {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
   const { address: accountAddress } = useAccount();
   const navigateBack = useNavigateBack("/vesting");
 
@@ -97,8 +119,15 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
       <Stack
         direction="row"
         alignItems="center"
-        gap={2}
-        sx={{ mt: 1.5, mb: 3.5, ml: 6 }}
+        gap={isBelowMd ? 1 : 2}
+        sx={{
+          mt: 1.5,
+          mb: 3.5,
+          ml: 6,
+          [theme.breakpoints.down("md")]: {
+            ml: 0,
+          },
+        }}
       >
         <CounterpartyAddress title="Sender:" address={sender} />
         <CounterpartyAddress title="Receiver:" address={receiver} />

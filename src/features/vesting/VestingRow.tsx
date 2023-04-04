@@ -4,6 +4,8 @@ import {
   TableCell,
   TableRow,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { format, fromUnixTime } from "date-fns";
 import { BigNumber } from "ethers";
@@ -39,13 +41,15 @@ const VestingRow: FC<VestingRowProps> = ({
     receiver,
     sender,
     cliffAmount,
-    cliffDate,
     flowRate,
     endDate,
     startDate,
     pendingCreate,
     cliffAndFlowDate,
   } = vestingSchedule;
+
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const pendingDelete = usePendingVestingScheduleDelete(
     {
@@ -88,58 +92,109 @@ const VestingRow: FC<VestingRowProps> = ({
             }}
             BlockiesProps={{ size: 8, scale: 3 }}
           />
-          <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
-            <Typography data-cy={"receiver-sender"} variant="h7">
-              <AddressName address={isOutgoing ? receiver : sender} />
+          <Stack direction="column">
+            <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
+              <Typography data-cy={"receiver-sender"} variant="h7">
+                <AddressName address={isOutgoing ? receiver : sender} />
+              </Typography>
+            </AddressCopyTooltip>
+            {isBelowMd && (
+              <>
+                {pendingDelete ? (
+                  <PendingProgress
+                    pendingUpdate={pendingDelete}
+                    transactingText="Deleting..."
+                  />
+                ) : pendingCreate ? (
+                  <PendingProgress
+                    pendingUpdate={pendingDelete}
+                    transactingText="Creating..."
+                  />
+                ) : (
+                  <VestingStatus
+                    vestingSchedule={vestingSchedule}
+                    TypographyProps={{ variant: "body2" }}
+                  />
+                )}
+              </>
+            )}
+          </Stack>
+        </Stack>
+      </TableCell>
+      {!isBelowMd ? (
+        <>
+          <TableCell data-cy={"allocated-amount"}>
+            <Stack direction="row" alignItems="center" gap={1}>
+              <TokenIcon
+                isSuper
+                size={26}
+                tokenSymbol={tokenQuery.data?.symbol}
+                isLoading={tokenQuery.isLoading}
+              />
+              <Typography variant="body1mono">
+                <Amount wei={totalAmount} /> {tokenQuery.data?.symbol}
+              </Typography>
+            </Stack>
+          </TableCell>
+          <TableCell data-cy={"vested-amount"}>
+            <Typography variant="body1mono">
+              <VestedBalance vestingSchedule={vestingSchedule}>
+                {" "}
+                {tokenQuery.data?.symbol}
+              </VestedBalance>
             </Typography>
-          </AddressCopyTooltip>
-        </Stack>
-      </TableCell>
-      <TableCell data-cy={"allocated-amount"}>
-        <Stack direction="row" alignItems="center" gap={1}>
-          <TokenIcon
-            isSuper
-            size={26}
-            tokenSymbol={tokenQuery.data?.symbol}
-            isLoading={tokenQuery.isLoading}
-          />
-          <Typography variant="body1mono">
-            <Amount wei={totalAmount} /> {tokenQuery.data?.symbol}
-          </Typography>
-        </Stack>
-      </TableCell>
-      <TableCell data-cy={"vested-amount"}>
-        <Typography variant="body1mono">
-          <VestedBalance vestingSchedule={vestingSchedule}>
-            {" "}
-            {tokenQuery.data?.symbol}
-          </VestedBalance>
-        </Typography>
-      </TableCell>
-      <TableCell sx={{ pr: 2 }}>
-        <ListItemText
-          data-cy={"start-end-dates"}
-          primary={format(fromUnixTime(startDate), "LLL d, yyyy HH:mm")}
-          secondary={format(fromUnixTime(endDate), "LLL d, yyyy HH:mm")}
-          primaryTypographyProps={{ variant: "body2" }}
-          secondaryTypographyProps={{ color: "text.primary" }}
-        />
-      </TableCell>
-      <TableCell sx={{ pl: 0 }}>
-        {pendingDelete ? (
-          <PendingProgress
-            pendingUpdate={pendingDelete}
-            transactingText="Deleting..."
-          />
-        ) : pendingCreate ? (
-          <PendingProgress
-            pendingUpdate={pendingDelete}
-            transactingText="Creating..."
-          />
-        ) : (
-          <VestingStatus vestingSchedule={vestingSchedule} />
-        )}
-      </TableCell>
+          </TableCell>
+          <TableCell sx={{ pr: 2 }}>
+            <ListItemText
+              data-cy={"start-end-dates"}
+              primary={format(fromUnixTime(startDate), "LLL d, yyyy HH:mm")}
+              secondary={format(fromUnixTime(endDate), "LLL d, yyyy HH:mm")}
+              primaryTypographyProps={{ variant: "body2" }}
+              secondaryTypographyProps={{ color: "text.primary" }}
+            />
+          </TableCell>
+          <TableCell sx={{ pl: 0 }}>
+            {pendingDelete ? (
+              <PendingProgress
+                pendingUpdate={pendingDelete}
+                transactingText="Deleting..."
+              />
+            ) : pendingCreate ? (
+              <PendingProgress
+                pendingUpdate={pendingDelete}
+                transactingText="Creating..."
+              />
+            ) : (
+              <VestingStatus vestingSchedule={vestingSchedule} />
+            )}
+          </TableCell>
+        </>
+      ) : (
+        <TableCell align="right">
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="end"
+            gap={1.5}
+          >
+            <Stack direction="column" alignItems="end">
+              <Typography variant="h6mono">
+                <VestedBalance vestingSchedule={vestingSchedule} />
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {tokenQuery.data?.symbol}
+              </Typography>
+            </Stack>
+
+            <TokenIcon
+              isSuper
+              size={26}
+              tokenSymbol={tokenQuery.data?.symbol}
+              isLoading={tokenQuery.isLoading}
+            />
+          </Stack>
+        </TableCell>
+      )}
     </TableRow>
   );
 };
