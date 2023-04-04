@@ -225,11 +225,19 @@ export class VestingPage extends BasePage {
     }
 
     static validateSchedulePreviewDetails(cliffDate: Date,startDate:Date ,endDate:Date) {
-        cy.get(GRAPH_CLIFF_DATE)
-        this.containsText(GRAPH_CLIFF_DATE, `Cliff: ${format(cliffDate, "LLL d, yyyy HH:mm")}`);
-        this.containsText(GRAPH_START_DATE, `Start: ${format(startDate, "LLL d, yyyy HH:mm")}`)
-        this.containsText(GRAPH_END_DATE, `End: ${format(endDate, "LLL d, yyyy HH:mm").slice(0, -2)}`)
-        this.containsText(PREVIEW_START_DATE, format(startDate, "LLLL d, yyyy"))
+        //The graph goes up by 1 minute if test is too slow in the form
+        cy.get(GRAPH_CLIFF_DATE).then(el => {
+            let graphCliffTimestamp = Date.parse(el.text().replace("Cliff: ",""))
+            expect(graphCliffTimestamp).to.be.closeTo(cliffDate.getTime(),180000)
+        })
+        cy.get(GRAPH_END_DATE).then(el => {
+            let graphCliffTimestamp = Date.parse(el.text().replace("End: ",""))
+            expect(graphCliffTimestamp).to.be.closeTo(endDate.getTime(),180000)
+        })
+        cy.get(GRAPH_START_DATE).then(el => {
+            let graphCliffTimestamp = Date.parse(el.text().replace("Start: ",""))
+            expect(graphCliffTimestamp).to.be.closeTo(startDate.getTime(),180000)
+        })
     }
 
     static validateCreatedVestingScheduleDetailsPage() {

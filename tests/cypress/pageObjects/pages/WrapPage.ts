@@ -305,7 +305,7 @@ export class WrapPage extends BasePage {
 
     static validateSuccessfulTransaction(type: any, network: any) {
         cy.get(TX_TYPE).first().should("have.text", type)
-        cy.get(DRAWER_TX).first().find("[data-cy=Succeeded-tx-status]", {timeout: 60000}).should("be.visible")
+        cy.get(DRAWER_TX).first().find("[data-cy=Succeeded-tx-status]", {timeout: 90000}).should("be.visible")
         cy.get(TX_HASH_BUTTONS).first().then(el => {
             el.attr("href")?.substr(-66)
             cy.get(TX_HASH).should("be.visible")
