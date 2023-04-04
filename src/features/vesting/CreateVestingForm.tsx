@@ -456,7 +456,13 @@ export const CreateVestingForm: FC<{
           </FormGroup>
         </Box>
 
-        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: isBelowMd ? "1fr" : "1fr 1fr",
+            gap: 2,
+          }}
+        >
           <FormGroup>
             <Stack
               direction="row"
@@ -488,7 +494,13 @@ export const CreateVestingForm: FC<{
         </Stack>
 
         {cliffEnabled && (
-          <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: isBelowMd ? "1fr" : "1fr 1fr",
+              gap: 2,
+            }}
+          >
             <FormGroup>
               <Stack
                 direction="row"

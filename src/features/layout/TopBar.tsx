@@ -68,6 +68,7 @@ const CustomAppBar = styled(AppBar, {
 export default memo(function TopBar() {
   const theme = useTheme();
   const isBelowLg = useMediaQuery(theme.breakpoints.down("lg"));
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const { isImpersonated } = useImpersonation();
 
@@ -97,7 +98,7 @@ export default memo(function TopBar() {
 
         <Box flex={1} />
 
-        <Stack direction="row" spacing={2} alignItems="center">
+        <Stack direction="row" gap={isBelowMd ? 1 : 2} alignItems="center">
           {isBelowLg && !isImpersonated && <ConnectWallet small />}
           <ImpersonationChip />
           <SelectNetwork />
