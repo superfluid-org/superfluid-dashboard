@@ -141,7 +141,7 @@ export class SendPage extends BasePage {
 
     static validateStreamEndingAndAmountPerSecond() {
         this.containsText(STREAM_ENDS_ON, "Never");
-        this.containsText(AMOUNT_PER_SECOND, "0.000000385802469135");
+        this.containsText(AMOUNT_PER_SECOND, "0.000000380517503805");
     }
 
     static checkIfStreamPreviewIsCorrectWhenUserNotConnected() {

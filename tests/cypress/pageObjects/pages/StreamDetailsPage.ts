@@ -91,7 +91,6 @@ export class StreamDetailsPage extends BasePage {
             this.hasText(BUFFER, `${ongoingStream.buffer} ${ongoingStream.token}`)
             this.hasText(NETWORK_NAME, ongoingStream.networkName)
             this.hasText(TX_HASH, BasePage.shortenHex(ongoingStream.txHash))
-            this.containsText(PROJECTED_LIQUIDATION, ongoingStream.projectedLiquidation.slice(0, -1))
             this.hasText(AMOUNT_PER_MONTH, `${ongoingStream.amountPerMonth} ${ongoingStream.token}`)
             //Asserting without last 4 decimals
             //because the calculation can be a little off from the animation and test would fail
@@ -101,6 +100,7 @@ export class StreamDetailsPage extends BasePage {
                     1e21
                 ).toString().substring(0, 9)
             );
+            this.containsText(PROJECTED_LIQUIDATION, ongoingStream.projectedLiquidation.slice(0, -1))
         })
     }
 

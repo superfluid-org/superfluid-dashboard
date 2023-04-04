@@ -52,18 +52,18 @@
         "tokenName": "Super fDAI Fake Token",
         "liquidationDate": "March 31st, 2036",
         "token": "fDAIx",
-        "netFlowRate": "-1/mo",
-        "inFlow": "+4/mo",
-        "outFlow": "-5/mo",
+        "netFlowRate": "-1.0139/mo",
+        "inFlow": "+4.0556/mo",
+        "outFlow": "-5.0694/mo",
         "streams": [
           {
             "fromTo": "0x618a...DE40",
-            "flowRate": "-5/mo",
+            "flowRate": "-5.0694/mo",
             "endDate": "2 Jul. 2021 07:22"
           },
           {
             "fromTo": "0xcb86...42D8",
-            "flowRate": "+4/mo",
+            "flowRate": "+4.0556/mo",
             "endDate": "2 Jul. 2021 07:28"
           },
           {
@@ -98,14 +98,14 @@
     "ongoingStreamsAccount": {
       "tokenValues": {
         "token": "xDAIx",
-        "netFlowRate": "-0.02/mo",
+        "netFlowRate": "-0.020278/mo",
         "inFlow": "+0/mo",
-        "outFlow": "-0.02/mo",
+        "outFlow": "-0.020278/mo",
         "tokenAddress": "0x59988e47a3503aafaa0368b9def095c818fdca01",
         "streams": [
           {
             "fromTo": "0x618a...DE40",
-            "flowRate": "-0.02/mo",
+            "flowRate": "-0.020278/mo",
             "endDate": "2 Jul. 2021 07:54"
           },
           {
@@ -152,7 +152,7 @@
         "token": "MATICx",
         "netFlowRate": "-0.005/mo",
         "inFlow": "+0.005/mo",
-        "outFlow": "-0.01/mo",
+        "outFlow": "-0.010139/mo",
         "tokenAddress": "0x3aD736904E9e65189c3000c7DD2c8AC8bB7cD4e3",
         "streams": [
           {
@@ -162,7 +162,7 @@
           },
           {
             "fromTo": "0x618a...DE40",
-            "flowRate": "-0.01/mo",
+            "flowRate": "-0.010139/mo",
             "endDate": "2 Jul. 2021"
           }
         ]
@@ -198,18 +198,18 @@
     "ongoingStreamsAccount": {
       "tokenValues": {
         "token": "fDAIx",
-        "netFlowRate": "-1/mo",
-        "inFlow": "+4/mo",
-        "outFlow": "-5/mo",
+        "netFlowRate": "-1.0139/mo",
+        "inFlow": "+4.0556/mo",
+        "outFlow": "-5.0694/mo",
         "streams": [
           {
             "fromTo": "0xcb86...42D8",
-            "flowRate": "+4/mo",
+            "flowRate": "+4.0556/mo",
             "endDate": "2 Jul. 2021"
           },
           {
             "fromTo": "0x618a...DE40",
-            "flowRate": "-5/mo",
+            "flowRate": "-5.0694/mo",
             "endDate": "2 Jul. 2021"
           }
         ]
@@ -245,9 +245,9 @@
     "ongoingStreamsAccount": {
       "tokenValues": {
         "token": "fDAIx",
-        "netFlowRate": "-1/mo",
-        "inFlow": "+4/mo",
-        "outFlow": "-5/mo",
+        "netFlowRate": "-1.0139/mo",
+        "inFlow": "+4.0556/mo",
+        "outFlow": "-5.0694/mo",
         "streams": [
           {
             "fromTo": "0x618a...DE40",
@@ -256,12 +256,12 @@
           },
           {
             "fromTo": "0xad97...8a19",
-            "flowRate": "+4/mo",
+            "flowRate": "+4.0556/mo",
             "endDate": "30 Dec. 2021"
           },
           {
             "fromTo": "0x618a...DE40",
-            "flowRate": "-5/mo",
+            "flowRate": "-5.0694/mo",
             "endDate": "21 Dec. 2021"
           }
         ]
@@ -292,12 +292,12 @@
         "token": "DAIx",
         "netFlowRate": "-0.01000000/mo",
         "inFlow": "+0.03/mo",
-        "outFlow": "-0.02/mo",
+        "outFlow": "-0.020278/mo",
         "tokenAddress": "0x7d342726B69C28D942ad8BfE6Ac81b972349d524",
         "streams": [
           {
             "fromTo": "0xf9ce...3ff2",
-            "flowRate": "-0.02/mo",
+            "flowRate": "-0.020278/mo",
             "endDate": "5 Apr. 2022"
           },
           {
