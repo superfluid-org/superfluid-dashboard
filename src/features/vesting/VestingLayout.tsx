@@ -19,7 +19,7 @@ import {
 import NetworkSwitchLink from "../network/NetworkSwitchLink";
 import ReduxPersistGate from "../redux/ReduxPersistGate";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import VestingHeader from "./VestingHeader";
+import SimpleVestingHeader from "./SimpleVestingHeader";
 
 const VESTING_SUPPORTED_NETWORK_IDS = vestingSupportedNetworks.map(
   (network) => network.id
@@ -153,8 +153,15 @@ const UnlockVestingCard = () => {
 
   return (
     <Card component={Stack} sx={{ p: 3, pt: 8 }} alignItems="center">
-      <Typography variant="h4">Unlock Vesting with Superfluid</Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 5 }}>
+      <Typography variant="h4" textAlign="center">
+        Unlock Vesting with Superfluid
+      </Typography>
+      <Typography
+        variant="body1"
+        color="text.secondary"
+        textAlign="center"
+        sx={{ mb: 5 }}
+      >
         Provide your Access Code or try out Vesting Schedule on Mumbai Testnet.
       </Typography>
       <Stack
@@ -179,7 +186,7 @@ const UnlockVestingCard = () => {
           Try out on Mumbai Testnet
         </Button>
       </Stack>
-      <Typography variant="body1" color="text.secondary">
+      <Typography variant="body1" color="text.secondary" textAlign="center">
         Want to Vest tokens? Apply for the access code{" "}
         <Link
           data-cy="vesting-form-link"
@@ -207,11 +214,7 @@ const VestingLayout: FC<PropsWithChildren> = ({ children }) => {
   if (!visibleAddress) {
     return (
       <Container maxWidth="lg">
-        <VestingHeader hideCreate>
-          <Typography component="h1" variant="h4">
-            Vesting
-          </Typography>
-        </VestingHeader>
+        <SimpleVestingHeader />
         <NotConnectedCard />
       </Container>
     );
@@ -220,11 +223,7 @@ const VestingLayout: FC<PropsWithChildren> = ({ children }) => {
   if (!isVestingEnabled && !network.testnet) {
     return (
       <Container maxWidth="lg">
-        <VestingHeader hideCreate>
-          <Typography component="h1" variant="h4">
-            Vesting
-          </Typography>
-        </VestingHeader>
+        <SimpleVestingHeader />
         <UnlockVestingCard />
       </Container>
     );
@@ -233,11 +232,7 @@ const VestingLayout: FC<PropsWithChildren> = ({ children }) => {
   if (!networkSupported) {
     return (
       <Container maxWidth="lg">
-        <VestingHeader hideCreate>
-          <Typography component="h1" variant="h4">
-            Vesting
-          </Typography>
-        </VestingHeader>
+        <SimpleVestingHeader />
         <VestingNotSupportedCard />
       </Container>
     );

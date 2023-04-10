@@ -46,7 +46,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
       justifyContent="space-between"
       spacing={1}
     >
-      <Typography variant="body1" color="secondary">
+      <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
         {whitelisted ? (
           <>
             Your wallet address <strong>is</strong> on the allowlist.
@@ -60,7 +60,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
 
       {network.vestingContractAddress && (
         <Stack direction="row" alignItems="center" gap={0.5}>
-          <Typography variant="body1" color="secondary">
+          <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
             Vesting Smart Contract
           </Typography>
           <Stack

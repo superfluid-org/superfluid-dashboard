@@ -1,5 +1,7 @@
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import {
   Chip,
+  IconButton,
   Stack,
   Typography,
   useMediaQuery,
@@ -17,7 +19,6 @@ import TokenIcon from "../token/TokenIcon";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { DeleteVestingTransactionButton } from "./DeleteVestingTransactionButton";
 import { VestingSchedule } from "./types";
-import VestingHeader from "./VestingHeader";
 
 interface CounterpartyAddressProps {
   title: string;
@@ -86,36 +87,47 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
 
   return (
     <>
-      <VestingHeader
-        onBack={navigateBack}
-        sx={{ mb: 0 }}
-        actions={
-          canDelete && (
-            <ConnectionBoundary expectedNetwork={network}>
-              <DeleteVestingTransactionButton
-                superTokenAddress={superToken}
-                senderAddress={sender}
-                receiverAddress={receiver}
-              />
-            </ConnectionBoundary>
-          )
-        }
-      >
-        <Stack direction="column">
+      <Stack gap={3}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 0 }}
+        >
           <Stack direction="row" alignItems="center" gap={2}>
-            <TokenIcon isSuper tokenSymbol={token.symbol} />
-            <Typography component="h1" variant="h4">
-              Vesting {token.symbol}
-            </Typography>
-            <Chip
-              size="small"
-              label={network.name}
-              translate="no"
-              avatar={<NetworkIcon network={network} size={18} fontSize={14} />}
-            />
+            <IconButton color="inherit" onClick={navigateBack}>
+              <ArrowBackRoundedIcon />
+            </IconButton>
+            <Stack direction="column">
+              <Stack direction="row" alignItems="center" gap={2}>
+                <TokenIcon isSuper tokenSymbol={token.symbol} />
+                <Typography component="h1" variant="h4">
+                  Vesting {token.symbol}
+                </Typography>
+                <Chip
+                  size="small"
+                  label={network.name}
+                  translate="no"
+                  avatar={
+                    <NetworkIcon network={network} size={18} fontSize={14} />
+                  }
+                />
+              </Stack>
+            </Stack>
           </Stack>
+          {canDelete && !isBelowMd && (
+            <Stack direction="row" alignItems="center" gap={1}>
+              <ConnectionBoundary expectedNetwork={network}>
+                <DeleteVestingTransactionButton
+                  superTokenAddress={superToken}
+                  senderAddress={sender}
+                  receiverAddress={receiver}
+                />
+              </ConnectionBoundary>
+            </Stack>
+          )}
         </Stack>
-      </VestingHeader>
+      </Stack>
       <Stack
         direction="row"
         alignItems="center"
@@ -131,6 +143,19 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
       >
         <CounterpartyAddress title="Sender:" address={sender} />
         <CounterpartyAddress title="Receiver:" address={receiver} />
+
+        {canDelete && isBelowMd && (
+          <Stack direction="row" justifyContent="end" flex={1}>
+            <ConnectionBoundary expectedNetwork={network}>
+              <DeleteVestingTransactionButton
+                superTokenAddress={superToken}
+                senderAddress={sender}
+                receiverAddress={receiver}
+                TransactionButtonProps={{ ButtonProps: { size: "small" } }}
+              />
+            </ConnectionBoundary>
+          </Stack>
+        )}
       </Stack>
     </>
   );

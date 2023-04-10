@@ -99,7 +99,9 @@ export default memo(function TopBar() {
         <Box flex={1} />
 
         <Stack direction="row" gap={isBelowMd ? 1 : 2} alignItems="center">
-          {isBelowLg && !isImpersonated && <ConnectWallet small />}
+          {isBelowLg && !isImpersonated && (
+            <ConnectWallet ButtonProps={{ size: "small" }} />
+          )}
           <ImpersonationChip />
           <SelectNetwork />
           <NotificationsBell />

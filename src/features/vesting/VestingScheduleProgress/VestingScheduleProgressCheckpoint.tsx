@@ -6,18 +6,42 @@ interface VestingScheduleProgressCheckpointProps {
   titles: string[];
   targetDate: Date;
   dateNow: Date;
+  nth: number;
   dataCy?: string;
 }
 
 const VestingScheduleProgressCheckpoint: FC<
   VestingScheduleProgressCheckpointProps
-> = ({ titles, targetDate, dateNow, dataCy }) => {
+> = ({ titles, targetDate, dateNow, nth, dataCy }) => {
   const theme = useTheme();
   const isActive = useMemo(() => targetDate <= dateNow, [targetDate, dateNow]);
 
   return (
-    <Stack data-cy={dataCy} alignItems="center">
-      <Stack sx={{ position: "relative", width: "100%", alignItems: "center" }}>
+    <Stack
+      data-cy={dataCy}
+      sx={{
+        [theme.breakpoints.up("md")]: {
+          gridColumn: `${nth}/${nth + 1}`,
+          gridRow: "1/2",
+        },
+        [theme.breakpoints.down("md")]: {
+          gridRow: `${nth}/${nth + 1}`,
+          gridColumn: "1/2",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 1,
+        },
+      }}
+    >
+      <Stack
+        sx={{
+          position: "relative",
+          [theme.breakpoints.up("md")]: {
+            width: "100%",
+            alignItems: "center",
+          },
+        }}
+      >
         <Box
           sx={{
             background: isActive
@@ -29,7 +53,14 @@ const VestingScheduleProgressCheckpoint: FC<
           }}
         />
       </Stack>
-      <Stack sx={{ mt: 1 }} alignItems="center">
+      <Stack
+        sx={{
+          [theme.breakpoints.up("md")]: {
+            mt: 1,
+            alignItems: "center",
+          },
+        }}
+      >
         {titles.map((title) => (
           <Typography
             key={title}
@@ -40,11 +71,10 @@ const VestingScheduleProgressCheckpoint: FC<
             {title}
           </Typography>
         ))}
+        <Typography data-cy={`${dataCy}-date`} variant="h6">
+          {format(targetDate, "MMM do, yyyy HH:mm")}
+        </Typography>
       </Stack>
-
-      <Typography data-cy={`${dataCy}-date`} variant="h6">
-        {format(targetDate, "MMM do, yyyy HH:mm")}
-      </Typography>
     </Stack>
   );
 };

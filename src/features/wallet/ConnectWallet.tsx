@@ -3,6 +3,7 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { LoadingButton } from "@mui/lab";
 import {
   Button,
+  ButtonProps,
   IconButton,
   ListItem,
   ListItemAvatar,
@@ -104,10 +105,12 @@ const MobileAccountInfo: FC<AccountInfoProps> = ({
 );
 
 interface ConnectWalletProps {
-  small?: boolean;
+  ButtonProps?: ButtonProps;
 }
 
-const ConnectWallet: FC<ConnectWalletProps> = ({ small = false }) => {
+const ConnectWallet: FC<ConnectWalletProps> = ({
+  ButtonProps = { size: "xl" },
+}) => {
   const theme = useTheme();
   const isAboveMd = useMediaQuery(theme.breakpoints.up("md"));
 
@@ -154,14 +157,19 @@ const ConnectWallet: FC<ConnectWalletProps> = ({ small = false }) => {
       data-cy={"connect-wallet-button"}
       loading={!mounted || isAutoConnecting}
       variant="contained"
-      size={small ? "small" : "xl"}
+      {...ButtonProps}
       onClick={() => {
         openConnectModal();
         stopImpersonation();
       }}
     >
       <AccountBalanceWalletOutlinedIcon
-        sx={{ mr: 1, ...(small ? { width: "22px", height: "22px" } : {}) }}
+        sx={{
+          mr: 1,
+          ...(ButtonProps.size === "small"
+            ? { width: "22px", height: "22px" }
+            : {}),
+        }}
       />
       Connect Wallet
     </LoadingButton>
