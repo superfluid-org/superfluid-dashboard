@@ -32,6 +32,7 @@ import {
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { getSuperTokenType } from "../../redux/endpoints/adHocSubgraphEndpoints";
 import { TokenType } from "../../redux/endpoints/tokenTypes";
+import RemoveCircleRoundedIcon from "@mui/icons-material/RemoveCircleRounded";
 
 export const VestingSchedulerAllowanceRowSkeleton = () => (
   <TableRow>
@@ -107,31 +108,31 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
       selectFromResult: ({ data, isLoading }) => ({
         token: data,
         isTokenLoading: isLoading,
-        tokenType: data ? getSuperTokenType({
-          network,
-          address: data.id,
-          underlyingAddress: data.underlyingAddress,
-        }) : undefined
+        tokenType: data
+          ? getSuperTokenType({
+              network,
+              address: data.id,
+              underlyingAddress: data.underlyingAddress,
+            })
+          : undefined,
       }),
     }
   );
 
-  const isAutoWrappable = tokenType && tokenType === TokenType.WrapperSuperToken;
+  const isAutoWrappable =
+    tokenType && tokenType === TokenType.WrapperSuperToken;
 
-  // TODO(KK)
-  const {
-    data: isAutoWrapAllowanceConfigured,
-    isLoading: isAutoWrapAllowanceLoading,
-  } = rpcApi.useIsAutoWrapAllowanceConfiguredQuery(
-    network.autoWrap && token && isAutoWrappable
-      ? {
-          chainId: network.id,
-          accountAddress: senderAddress,
-          superTokenAddress: token.id,
-          underlyingTokenAddress: token.underlyingAddress,
-        }
-      : skipToken
-  );
+  const { data: isAutoWrapEnabled, isLoading: isAutoWrapEnabledLoading } =
+    rpcApi.useIsAutoWrapStrategyConfiguredQuery(
+      network.autoWrap && token && isAutoWrappable
+        ? {
+            chainId: network.id,
+            accountAddress: senderAddress,
+            superTokenAddress: token.id,
+            underlyingTokenAddress: token.underlyingAddress,
+          }
+        : skipToken
+    );
 
   const vestingSchedulerAllowancesQuery =
     rpcApi.useGetVestingSchedulerAllowancesQuery({
@@ -243,15 +244,17 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
         </TableCell>
         {network.autoWrap && (
           <TableCell align="center">
-            {isAutoWrapAllowanceConfigured ? (
+            {isAutoWrapEnabledLoading ? (
+              <Skeleton variant="circular" width={24} height={24} />
+            ) : isAutoWrapEnabled ? (
               <CheckCircleRoundedIcon
                 data-cy={`${tokenSymbol}-auto-wrap-status`}
                 color="primary"
               />
             ) : (
-              <CancelRoundedIcon
+              <RemoveCircleRoundedIcon
                 data-cy={`${tokenSymbol}-auto-wrap-status`}
-                color="error"
+                color="warning"
               />
             )}
           </TableCell>

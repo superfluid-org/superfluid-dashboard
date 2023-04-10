@@ -26,7 +26,6 @@ const AutoWrapAllowanceTransactionButton: FC<{ token: VestingToken, isVisible: b
     "data.setupAutoWrap"
   ]);
 
-  // TODO(KK): Check whether there's an underlying token properly...
   const { data: signer } = useSigner();
   const { config } = usePrepareErc20Approve({
     enabled: setupAutoWrap && !!network.autoWrap, // TODO(KK): any other conditions to add here?
