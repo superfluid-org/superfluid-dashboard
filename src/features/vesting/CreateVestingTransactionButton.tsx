@@ -102,7 +102,7 @@ export const CreateVestingTransactionButton: FC<{
               )()
             }
           >
-            Create the Vesting Schedule
+            Create Vesting Schedule
           </TransactionButton>
         )
       }
