@@ -3,7 +3,7 @@ import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { constants } from "ethers";
 import { FC, memo } from "react";
 import { useFormContext } from "react-hook-form";
-import { erc20ABI, usePrepareContractWrite, useSigner } from "wagmi";
+import { useSigner } from "wagmi";
 import { usePrepareErc20Approve } from "../../generated";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi } from "../redux/store";
@@ -12,7 +12,7 @@ import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { VestingToken } from "./CreateVestingSection";
 
-const TX_TITLE: TransactionTitle = "Approve Auto-Wrap" 
+const TX_TITLE: TransactionTitle = "Authorize Auto-Wrap" 
 
 const AutoWrapAllowanceTransactionButton: FC<{ token: VestingToken, isVisible: boolean }> = ({
   token,
