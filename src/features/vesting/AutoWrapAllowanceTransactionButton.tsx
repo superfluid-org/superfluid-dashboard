@@ -1,9 +1,9 @@
 import { Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
-import { constants } from "ethers";
+import { BigNumber, Overrides, constants } from "ethers";
 import { FC, memo } from "react";
 import { useFormContext } from "react-hook-form";
-import { useSigner } from "wagmi";
+import { useQuery, useSigner } from "wagmi";
 import { usePrepareErc20Approve } from "../../generated";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi } from "../redux/store";
@@ -11,6 +11,7 @@ import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary"
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { VestingToken } from "./CreateVestingSection";
+import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 
 const TX_TITLE: TransactionTitle = "Authorize Auto-Wrap" 
 
@@ -27,6 +28,19 @@ const AutoWrapAllowanceTransactionButton: FC<{ token: VestingToken, isVisible: b
   ]);
 
   const { data: signer } = useSigner();
+
+  const getGasOverrides = useGetTransactionOverrides();
+  const { data: overrides } = useQuery(["gasOverrides", TX_TITLE, network.id], async () => {
+    const overrides_ = await getGasOverrides(network);
+    return {
+      ...overrides_,
+      gasPrice: overrides_.gasPrice ? BigNumber.from(overrides_.gasPrice) : undefined,
+      gasLimit: overrides_.gasLimit ? BigNumber.from(overrides_.gasLimit) : undefined,
+      maxFeePerGas: overrides_.maxFeePerGas ? BigNumber.from(overrides_.maxFeePerGas) : undefined,
+      maxPriorityFeePerGas: overrides_.maxPriorityFeePerGas ? BigNumber.from(overrides_.maxPriorityFeePerGas) : undefined
+    }
+  });
+
   const { config } = usePrepareErc20Approve({
     enabled: setupAutoWrap && !!network.autoWrap, // TODO(KK): any other conditions to add here?
     address: token.underlyingAddress as `0x${string}`,
@@ -36,7 +50,7 @@ const AutoWrapAllowanceTransactionButton: FC<{ token: VestingToken, isVisible: b
     ],
     signer: signer,
     chainId: network.id,
-    overrides: {}, // TODO: overrides
+    overrides
   });
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();

@@ -3,7 +3,7 @@ import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { BigNumber } from "ethers";
 import { FC, memo } from "react";
 import { useFormContext } from "react-hook-form";
-import { useSigner } from "wagmi";
+import { useQuery, useSigner } from "wagmi";
 import { usePrepareAutoWrapManagerCreateWrapSchedule } from "../../generated";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi } from "../redux/store";
@@ -11,6 +11,7 @@ import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary"
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { VestingToken } from "./CreateVestingSection";
+import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 
 const TX_TITLE: TransactionTitle = "Enable Auto-Wrap";
 
@@ -31,8 +32,19 @@ const AutoWrapStrategyTransactionButton: FC<{
   // { name: 'lowerLimit', internalType: 'uint64', type: 'uint64' },
   // { name: 'upperLimit', internalType: 'uint64', type: 'uint64' },
 
+  const getGasOverrides = useGetTransactionOverrides();
+  const { data: overrides } = useQuery(["gasOverrides", TX_TITLE, network.id], async () => {
+    const overrides_ = await getGasOverrides(network);
+    return {
+      ...overrides_,
+      gasPrice: overrides_.gasPrice ? BigNumber.from(overrides_.gasPrice) : undefined,
+      gasLimit: overrides_.gasLimit ? BigNumber.from(overrides_.gasLimit) : undefined,
+      maxFeePerGas: overrides_.maxFeePerGas ? BigNumber.from(overrides_.maxFeePerGas) : undefined,
+      maxPriorityFeePerGas: overrides_.maxPriorityFeePerGas ? BigNumber.from(overrides_.maxPriorityFeePerGas) : undefined
+    }
+  });
+
   // TODO(KK): handle errors
-  // TODO(KK): Check whether there's an underlying token properly...
   // TODO(KK): Any better way to handle any's and bangs?
   const { config } = usePrepareAutoWrapManagerCreateWrapSchedule({
     chainId: network.id as any,
@@ -46,6 +58,7 @@ const AutoWrapStrategyTransactionButton: FC<{
       BigNumber.from(network.autoWrap!.upperLimit),
     ],
     signer: signer,
+    overrides
   });
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
