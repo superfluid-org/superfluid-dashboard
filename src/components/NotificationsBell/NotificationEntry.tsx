@@ -71,10 +71,10 @@ const NotificationEntry: FC<NotificationProps> = ({
         />
       )}
 
-      <Stack p={2} justifyContent="center">
+      <Stack data-cy={"notification"} p={2} justifyContent="center">
         <Stack direction="row" gap={0.5}>
           {!seen && type === "new" && (
-            <Box py={1}>
+            <Box data-cy="new-notif-dot" py={1}>
               <Dot />
             </Box>
           )}
@@ -83,11 +83,11 @@ const NotificationEntry: FC<NotificationProps> = ({
             <Stack direction="row" justifyContent="space-between">
               <Stack direction="row" alignItems="center" gap={1}>
                 {getNotificationIcon(notification.message.parsed)}
-                <Typography variant="h6"> {notification.title}</Typography>
+                <Typography data-cy="notification-title" variant="h6"> {notification.title}</Typography>
               </Stack>
             </Stack>
             <Stack pl={4} gap={1}>
-              <Typography variant="body2" sx={{ color: "GrayText" }}>
+              <Typography data-cy="notification-message" variant="body2" sx={{ color: "GrayText" }}>
                 {createMessage(notification.message)}
               </Typography>
             </Stack>
@@ -104,7 +104,7 @@ const NotificationEntry: FC<NotificationProps> = ({
                   token: notification.message.parsed.tokenAddress,
                 })}
               >
-                <Button sx={{ width: 120 }} variant="contained">
+                <Button data-cy={"wrap-tokens-button"} sx={{ width: 120 }} variant="contained">
                   Wrap tokens
                 </Button>
               </Link>
@@ -121,7 +121,7 @@ const NotificationEntry: FC<NotificationProps> = ({
           className="archive-cta"
         >
           <Divider />
-          <Button sx={{ borderRadius: 0 }} onClick={archive(notification.id)}>
+          <Button data-cy="archive-button" sx={{ borderRadius: 0 }} onClick={archive(notification.id)}>
             Archive
           </Button>
         </Stack>

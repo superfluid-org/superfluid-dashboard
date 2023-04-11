@@ -88,7 +88,7 @@ const NotificationList: FC<NotificationListProps> = ({
       ))}
     </>
   ) : (
-    <Typography variant="body1" p={1.5}>
+    <Typography data-cy={"empty-notifs-message"} variant="body1" p={1.5}>
       {channels.PUSH.subscription.isSubscribed
         ? `You don't have any ${activeTab} notifications.`
         : "You are not subscribed. Check settings to enable notifications"}
