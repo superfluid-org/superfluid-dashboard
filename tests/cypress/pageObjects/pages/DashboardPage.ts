@@ -1,8 +1,7 @@
 import {BasePage} from "../BasePage";
 import {mainNetworks, networksBySlug, testNetworks,} from "../../superData/networks";
-import {Common} from "./Common";
+import {Common,CONNECT_WALLET_BUTTON} from "./Common";
 
-const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet-button]";
 const NETWORK_SNAPSHOT_TABLE_APPENDIX = "-token-snapshot-table]";
 const TOKEN_SYMBOLS = "[data-cy=token-symbol]";
 const TOKEN_BALANCES = "[data-cy=balance]";
@@ -27,6 +26,10 @@ const STREAM_ROWS = "[data-cy=stream-row]"
 const ALL_BALANCE_ROWS = "[data-cy*=-cell]"
 const MODIFY_STREAM_BUTTON = "[data-cy=modify-stream-tooltip]"
 const SWITCH_NETWORK_BUTTON = "[data-cy=switch-network-tooltip]"
+const FAUCET_MESSAGE_CONTAINER = "[data-cy=dashboard-faucet-message]"
+const FAUCET_CLAIM_BUTTON = "[data-cy=dashboard-claim-button]"
+const FAUCET_MESSAGE_TITLE = `${FAUCET_MESSAGE_CONTAINER} h5`
+const FAUCET_MESSAGE_DESCRIPTION = `${FAUCET_MESSAGE_CONTAINER} p`
 
 export class DashboardPage extends BasePage {
     static checkIfDashboardConnectIsVisible() {
@@ -263,6 +266,7 @@ export class DashboardPage extends BasePage {
     static validateTokenTotalNetFlowRates(token: string, network: string, amounts: string) {
         //Input the amounts in order seperating with a comma, e.g. 1,-1,2 = 1 net , -1 outflow , 1 inflow
         let flowValues = amounts === "-" ? amounts : amounts.split(",")
+        cy.get(`[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell]`,{timeout:30000}).should("be.visible")
         if(amounts === "-") {
             this.hasText(
                 `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${NO_NET_FLOW_VALUE}`,
@@ -296,5 +300,19 @@ export class DashboardPage extends BasePage {
     static validateCancelAndEditButtonsAreVisible() {
         this.isVisible(CANCEL_BUTTONS)
         this.isVisible(EDIT_BUTTONS)
+    }
+
+    static validateThatFaucetMessageIsShown() {
+        this.isVisible(FAUCET_MESSAGE_CONTAINER)
+        this.hasText(FAUCET_MESSAGE_TITLE,"Get Testnet Tokens")
+        this.hasText(FAUCET_MESSAGE_DESCRIPTION,"Claim tokens from our free testnet faucet to try out streaming payments.")
+    }
+
+    static openFaucetView() {
+        this.click(FAUCET_CLAIM_BUTTON)
+    }
+
+    static validateNoFaucetMessageExists() {
+        this.doesNotExist(FAUCET_MESSAGE_CONTAINER)
     }
 }

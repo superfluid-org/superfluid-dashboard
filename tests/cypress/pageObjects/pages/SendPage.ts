@@ -1,7 +1,7 @@
 import {BasePage, UnitOfTime} from "../BasePage";
 import {WrapPage} from "./WrapPage";
 import {networksBySlug} from "../../superData/networks";
-import {Common} from "./Common";
+import {Common,CONNECT_WALLET_BUTTON} from "./Common";
 
 const SEND_BUTTON = "[data-cy=send-transaction-button]";
 const RECEIVER_BUTTON = "[data-cy=address-button]";
@@ -38,7 +38,6 @@ const TOKEN_SELECT_BALANCE = "[data-cy=token-balance] span";
 const BALANCE_WRAP_BUTTON = "[data-cy=balance-wrap-button]";
 const PREVIEW_BALANCE = "[data-cy=balance]";
 const TOKEN_NO_SEARCH_RESULTS = "[data-cy=token-search-no-results]";
-const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet]";
 const DIALOG = "[role=dialog]"
 const DIALOG_CONTENT = "[data-cy=dialog-content]"
 const APPROVAL_MESSAGE = "[data-cy=approval-message]"
