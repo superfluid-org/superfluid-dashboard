@@ -82,6 +82,7 @@ const NotificationSettings: FC = () => {
               Notifications
             </Typography>
             <LoadingButton
+              data-cy={"notification-button"}
               variant="contained"
               onClick={channels.PUSH.onToggle}
               loading={channels.PUSH.subscription.isLoading}
@@ -114,7 +115,7 @@ const NotificationSettings: FC = () => {
           <Blockies seed={address.toLowerCase()} />
         </Avatar>
         <Stack direction="row">
-          <Typography variant="body1">
+          <Typography data-cy={"wallet-address"} variant="body1">
             {isBelowMd ? shortenHex(address) : address}
           </Typography>
           <CopyIconBtn IconButtonProps={{ size: "small" }} copyText={address} />

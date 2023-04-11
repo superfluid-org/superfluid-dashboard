@@ -56,6 +56,7 @@ const NotificationHeader: FC<NotificationHeaderProps> = ({
           sx={{ minHeight: "inherit" }}
         >
           <Tab
+            data-cy={"new-tab"}
             value="new"
             label="New"
             sx={{
@@ -65,6 +66,7 @@ const NotificationHeader: FC<NotificationHeaderProps> = ({
             }}
           />
           <Tab
+            data-cy={"archive-tab"}
             value="archive"
             label="Archive"
             sx={{
