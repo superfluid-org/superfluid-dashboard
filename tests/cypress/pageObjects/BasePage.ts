@@ -1,4 +1,6 @@
 import {default as Wallet} from "ethereumjs-wallet";
+import format from "date-fns/format";
+
 
 export enum UnitOfTime {
     Second = 1,
@@ -153,7 +155,19 @@ export class BasePage {
     static getDayTimestamp(days:number) {
         let today = new Date()
         let timestamp = today.setDate(today.getDate() + days)
-        return (timestamp.valueOf() / 1000).toFixed()
+        return Number((timestamp.valueOf() / 1000).toFixed())
+    }
+
+    static getNotificationDateString(date: Date) {
+        return date.toLocaleString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+            timeZone: 'UTC'
+        })
     }
 
     static generateNewWallet() {
@@ -168,4 +182,7 @@ export class BasePage {
         return privateKey
     }
 
+    static getNotifDateAssertStringFromDate(date:Date) {
+        return format(Number((date.getTime() / 1000).toFixed(0)) * 1000, "yyyy/MM/dd HH:mm")
+    }
 }

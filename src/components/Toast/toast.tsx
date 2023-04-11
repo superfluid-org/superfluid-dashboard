@@ -32,13 +32,13 @@ export const ToastProvider = () => {
 };
 
 const Toast: FC<ToastProps> = ({ title, message }) => (
-  <Stack>
+  <Stack data-cy={"notif-toast"}>
     <Stack direction="row" alignItems="center" gap={0.5}>
       {getNotificationIcon(message.parsed)}
-      <Typography variant="h6"> {title}</Typography>
+      <Typography data-cy="toast-notification-title" variant="h6"> {title}</Typography>
     </Stack>
 
-    <Typography variant="body1">{createMessage(message)}</Typography>
+    <Typography data-cy="toast-notification-message" variant="body1">{createMessage(message)}</Typography>
   </Stack>
 );
 
