@@ -243,8 +243,8 @@ export class VestingPage extends BasePage {
     static validateCreatedVestingScheduleDetailsPage() {
         this.hasText(DETAILS_VESTED_SO_FAR_AMOUNT, "0 ")
         this.hasText(DETAILS_VESTED_TOKEN_SYMBOL, "fUSDCx")
-        this.hasText("[data-cy=fUSDCx-cliff-amount]", "50 fUSDCx")
-        this.hasText("[data-cy=fUSDCx-allocated]", "100 fUSDCx")
+        this.hasText("[data-cy=fUSDCx-cliff-amount]", "50fUSDCx")
+        this.hasText("[data-cy=fUSDCx-allocated]", "100fUSDCx")
         cy.fixture("vestingData").then(data => {
             let schedule = data.goerli.fUSDCx.schedule
             this.hasText(DETAILS_SCHEDULED_DATE ,format((schedule.createdAt * 1000), "MMM do, yyyy HH:mm") )
@@ -484,7 +484,7 @@ export class VestingPage extends BasePage {
             let schedule = data.polygon.USDCx.schedule
             let stream = data.polygon.USDCx.vestingStream
             let totalVestedAmount = (schedule.cliffAmount / 1e18 + (((Date.now() - stream.startedAtUnix) * stream.flowRate) / 1e21)).toString().substring(0, 8)
-            this.hasText(`[data-cy=${stream.token.symbol}-total-allocated]` , `${schedule.totalAllocated} ${stream.token.symbol}`)
+            this.hasText(`[data-cy=${stream.token.symbol}-total-allocated]` , `${schedule.totalAllocated}${stream.token.symbol}`)
             this.containsText(`[data-cy=${stream.token.symbol}-total-vested]` , totalVestedAmount )
         })
         //Make sure deleted schedules don't get shown in the aggregate stats
