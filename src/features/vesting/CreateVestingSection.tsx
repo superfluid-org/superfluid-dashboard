@@ -6,20 +6,20 @@ import {
   StepLabel,
   Stepper,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { Token } from "@superfluid-finance/sdk-core";
 import { FC, PropsWithChildren, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
-import {
-  PartialVestingForm,
-} from "./CreateVestingFormProvider";
+import { PartialVestingForm } from "./CreateVestingFormProvider";
 import { CreateVestingPreview } from "./CreateVestingPreview";
 import { CreateVestingForm } from "./CreateVestingForm";
 import { useRouter } from "next/router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useVestingToken } from "./useVestingToken";
+import NetworkBadge from "../network/NetworkBadge";
 
 export type VestingToken = Token & SuperTokenMinimal;
 
@@ -31,6 +31,8 @@ export enum CreateVestingCardView {
 }
 
 export const CreateVestingSection: FC<PropsWithChildren> = () => {
+  const theme = useTheme();
+
   const { watch } = useFormContext<PartialVestingForm>();
   const [superTokenAddress] = watch(["data.superTokenAddress"]);
 
@@ -86,9 +88,25 @@ export const CreateVestingSection: FC<PropsWithChildren> = () => {
         sx={{ mb: 3 }}
       >
         {BackButton}
-        <Typography component="h2" variant="h5">
+        <Typography component="h2" variant="h5" flex={1}>
           Create a Vesting Schedule
         </Typography>
+
+        <NetworkBadge
+          network={network}
+          sx={{
+            [theme.breakpoints.up("md")]: {
+              position: "absolute",
+              top: 0,
+              right: theme.spacing(3.5),
+            },
+          }}
+          NetworkIconProps={{
+            size: 32,
+            fontSize: 18,
+            sx: { [theme.breakpoints.down("md")]: { borderRadius: 1 } },
+          }}
+        />
       </Stack>
 
       {StepperContainer}

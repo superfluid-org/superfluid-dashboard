@@ -64,7 +64,7 @@ export const VestingDataCardContent: FC<VestingDataCardProps> = ({
           data-cy={`${dataCy}-fiat`}
           variant="h6"
           color="text.secondary"
-          sx={{ ml: 6 }}
+          sx={{ ml: 6, [theme.breakpoints.down("md")]: { ml: 5.5 } }}
         >
           {fiatAmount}
         </Typography>

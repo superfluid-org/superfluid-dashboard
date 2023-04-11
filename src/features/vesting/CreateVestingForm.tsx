@@ -310,7 +310,13 @@ export const CreateVestingForm: FC<{
       name="data.vestingPeriod"
       render={({ field: { value, onChange, onBlur } }) => {
         return (
-          <Box sx={{ display: "grid", gridTemplateColumns: "2fr 1fr" }}>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "2fr 1fr",
+              alignItems: "stretch",
+            }}
+          >
             <TextField
               data-cy={"total-period-input"}
               value={value.numerator}
@@ -445,7 +451,13 @@ export const CreateVestingForm: FC<{
           {ReceiverController}
         </FormGroup>
 
-        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: isBelowMd ? "1fr" : "1fr 1fr",
+            gap: 2.5,
+          }}
+        >
           <FormGroup>
             <FormLabel>{VestingFormLabels.SuperToken}</FormLabel>
             {TokenController}
@@ -460,7 +472,7 @@ export const CreateVestingForm: FC<{
           sx={{
             display: "grid",
             gridTemplateColumns: isBelowMd ? "1fr" : "1fr 1fr",
-            gap: 2,
+            gap: 2.5,
           }}
         >
           <FormGroup>

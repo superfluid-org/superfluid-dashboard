@@ -42,16 +42,6 @@ const CreateVestingSchedulePage: NextPageWithLayout = () => {
             },
           }}
         >
-          <NetworkBadge
-            network={network}
-            sx={{ position: "absolute", top: 0, right: theme.spacing(3.5) }}
-            NetworkIconProps={{
-              size: 32,
-              fontSize: 18,
-              sx: { [theme.breakpoints.down("md")]: { borderRadius: 1 } },
-            }}
-          />
-
           <ConnectionBoundary>
             <CreateVestingFormProvider>
               {(isInitialized) =>

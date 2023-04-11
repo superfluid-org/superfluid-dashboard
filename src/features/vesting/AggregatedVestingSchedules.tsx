@@ -61,6 +61,7 @@ const VestingTokenAggregationRow: FC<VestingTokenAggregationRowProps> = ({
         sx={{
           display: "grid",
           gridTemplateColumns: "1fr auto 1fr",
+          alignItems: "stretch",
         }}
       >
         <Box
@@ -83,7 +84,7 @@ const VestingTokenAggregationRow: FC<VestingTokenAggregationRowProps> = ({
             dataCy={`${token?.symbol}-total-allocated`}
           />
         </Box>
-        <Divider orientation="vertical" />
+        <Divider orientation="vertical" sx={{ height: "auto" }} />
         <Box
           sx={{
             px: 4,
