@@ -45,6 +45,28 @@ const ACCESS_CODE_MESSAGE = "[data-cy=access-code-error-msg]";
 const VESTING_ACCESS_CODE_BUTTON = "[data-cy=more-vesting-code-btn]";
 const STREAM_ROWS = "[data-cy=stream-row]"
 const TIMER_ICONS = "[data-testid=TimerOutlinedIcon]"
+const NOTIFICATIONS_BUTTON = "[data-testid=NotificationsIcon]"
+const NOTIF_SETTINGS_BUTTON = "[data-testid=SettingsOutlinedIcon]"
+const NOTIF_ARCHIVE_BUTTON = "[data-cy=archive-button]"
+const NOTIF_BADGE = "[aria-describedby=notifications-bell] span span"
+const NOTIF_MESSAGE = "[data-cy=notification-message]"
+const NOTIF_TITLE = "[data-cy=notification-title]"
+const EMPTY_NOTIF_MESSAGE = "[data-cy=empty-notifs-message]"
+const NOTIF_NO_WALLET_MESSAGE = "[data-cy=notif-no-wallet]"
+const NOTIFICATION_MODAL = "#notifications-bell"
+const NEW_NOTIF_DOT = "[data-cy=new-notif-dot]"
+const LIQUIDATED_ICON = "[data-testid=CancelIcon]"
+const WARNING_ICON = "[data-testid=ErrorIcon]"
+const INFO_ICON = "[data-testid=InfoIcon]"
+const TOAST_MESSAGE = "[data-cy=toast-notification-message]"
+const TOAST_TITLE = "[data-cy=toast-notification-title]"
+const TOAST_CLOSE_BUTTON = "button[aria-label=close]"
+const NOTIF_WRAP_TOKEN_BUTTON = "[data-cy=wrap-tokens-button]"
+
+const NEW_NOTIF_DATE = new Date(Date.now())
+const NEW_NOTIF_STRING_DATE = BasePage.getNotificationDateString(NEW_NOTIF_DATE)
+const OLD_NOTIF_DATE = new Date(1000 * BasePage.getDayTimestamp(-30))
+const OLD_DATE_STRING = BasePage.getNotificationDateString(OLD_NOTIF_DATE)
 
 export class Common extends BasePage {
   static clickNavBarButton(button: string) {
@@ -79,6 +101,9 @@ export class Common extends BasePage {
             break;
           case "bridge page":
             this.visitPage("/bridge", account, network);
+            break;
+          case "settings page":
+            this.visitPage("/settings", account, network);
             break;
           case "ended stream details page":
             this.visitPage(
@@ -287,7 +312,7 @@ export class Common extends BasePage {
 
   static changeVisibleNetworksTo(type: string) {
     let clickableButton =
-      type === "testnet" ? TESTNETS_BUTTON : MAINNETS_BUTTON;
+        type === "testnet" ? TESTNETS_BUTTON : MAINNETS_BUTTON;
     this.click(NETWORK_SELECTION_BUTTON);
     this.click(clickableButton);
     this.click(DROPDOWN_BACKDROP);
@@ -504,5 +529,298 @@ export class Common extends BasePage {
     cy.contains(SENDER_RECEIVER_ADDRESSES,this.shortenHex(address)).parents(STREAM_ROWS).find(STREAM_FLOW_RATES).should("have.text",`${flowRate}/mo`)
     cy.contains(SENDER_RECEIVER_ADDRESSES,this.shortenHex(address)).parents(STREAM_ROWS).find(START_END_DATES).should("have.text",startEndDate)
     cy.contains(SENDER_RECEIVER_ADDRESSES,this.shortenHex(address)).parents(STREAM_ROWS).find(TIMER_ICONS).should("be.visible")
+  }
+
+  static mockNotificationRequestsTo(type: string) {
+    cy.intercept("GET", "**/feeds**", (req) => {
+      req.continue(res => {
+        switch (type.toLowerCase()) {
+          case "liquidated":
+            res.body = {
+              feeds: [{
+                "payload_id": 3769521,
+                "sender": "0xa947E9cFc724f05D83b995e53572c4bcCB00D7Aa",
+                "epoch": NEW_NOTIF_DATE.toISOString(),
+                "payload": {
+                  "data": {
+                    "app": "Superfluid",
+                    "sid": "40196540",
+                    "url": "https://app.superfluid.finance",
+                    "acta": "https://app.superfluid.finance/",
+                    "aimg": "",
+                    "amsg": `Your TDLx(TDLx) on network Polygon was liquidated (at ${NEW_NOTIF_STRING_DATE}).[timestamp: ${NEW_NOTIF_DATE.getTime() / 100}]`,
+                    "asub": "Liquidated",
+                    "icon": "https://gateway.ipfs.io/ipfs/bafybeiew4vxj6npyn5j5ck6co64bla4zqfbgrk7mjbdxqv6vbyioei3b2y/QmaFbcUvWdxnbHNLMe9goScf9A5YX8uE7nryetdaEnaPWA",
+                    "type": 3,
+                    "epoch": NEW_NOTIF_DATE.getTime() / 100,
+                    "etime": null,
+                    "hidden": "0",
+                    "sectype": null,
+                    "additionalMeta": null
+                  },
+                  "recipients": {"eip155:0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2": null},
+                  "notification": {
+                    "body": `type:liquidation,network:polygon,symbol:TDLx,token:TDLx,tokenAddress:0xa794221d92d77490ff319e95da1461bdf2bd3953,liquidation:${(NEW_NOTIF_DATE.getTime() / 1000).toFixed(0)}`,
+                    "title": "Superfluid - Liquidated"
+                  },
+                  "verificationProof": "eip712v2:0x1e2bb5e08b056882baa8e4bbc664c60c058bd9d27082b11b94bc888e77ddad0f667b360304f56626f7e6f908d0051ca7e684cfe5d3c6acce65bce9a75317447b1c::uid::8572f30d-d652-4516-9e2f-914d47b3d989"
+                },
+                "source": "ETH_MAINNET",
+                "etime": null
+              }]
+            }
+            break;
+          case "old notification":
+            res.body = {
+              feeds: [{
+                "payload_id": 3769521,
+                "sender": "0xa947E9cFc724f05D83b995e53572c4bcCB00D7Aa",
+                "epoch": OLD_NOTIF_DATE.toISOString(),
+                "payload": {
+                  "data": {
+                    "app": "Superfluid",
+                    "sid": "40196540",
+                    "url": "https://app.superfluid.finance",
+                    "acta": "https://app.superfluid.finance/",
+                    "aimg": "",
+                    "amsg": `Your TDLx(TDLx) on network Polygon is about to be liquidated in less than 7 days(at ${OLD_DATE_STRING}).[timestamp: ${OLD_NOTIF_DATE.getTime() / 100}]`,
+                    "asub": "Liquidation Risk",
+                    "icon": "https://gateway.ipfs.io/ipfs/bafybeiew4vxj6npyn5j5ck6co64bla4zqfbgrk7mjbdxqv6vbyioei3b2y/QmaFbcUvWdxnbHNLMe9goScf9A5YX8uE7nryetdaEnaPWA",
+                    "type": 3,
+                    "epoch": OLD_NOTIF_DATE.getTime() / 100,
+                    "etime": null,
+                    "hidden": "0",
+                    "sectype": null,
+                    "additionalMeta": null
+                  },
+                  "recipients": {"eip155:0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2": null},
+                  "notification": {
+                    "body": `type:liquidation-risk-7day,network:polygon,symbol:TDLx,token:TDLx,tokenAddress:0xa794221d92d77490ff319e95da1461bdf2bd3953,liquidation:${(OLD_NOTIF_DATE.getTime() / 1000).toFixed(0)}`,
+                    "title": "Superfluid - Liquidation Risk"
+                  },
+                  "verificationProof": "eip712v2:0x1e2bb5e08b056882baa8e4bbc664c60c058bd9d27082b11b94bc888e77ddad0f667b360304f56626f7e6f908d0051ca7e684cfe5d3c6acce65bce9a75317447b1c::uid::8572f30d-d652-4516-9e2f-914d47b3d989"
+                },
+                "source": "ETH_MAINNET",
+                "etime": null
+              }]
+            }
+            break;
+          case "liquidation risk":
+            res.body = {
+              feeds: [{
+                "payload_id": 3769521,
+                "sender": "0xa947E9cFc724f05D83b995e53572c4bcCB00D7Aa",
+                "epoch": NEW_NOTIF_DATE.toISOString(),
+                "payload": {
+                  "data": {
+                    "app": "Superfluid",
+                    "sid": "40196540",
+                    "url": "https://app.superfluid.finance",
+                    "acta": "https://app.superfluid.finance/",
+                    "aimg": "",
+                    "amsg": `Your TDLx(TDLx) on network Polygon is about to be liquidated in less than 7 days(at ${NEW_NOTIF_STRING_DATE}).[timestamp: ${NEW_NOTIF_DATE.getTime() / 100}]`,
+                    "asub": "Liquidation Risk",
+                    "icon": "https://gateway.ipfs.io/ipfs/bafybeiew4vxj6npyn5j5ck6co64bla4zqfbgrk7mjbdxqv6vbyioei3b2y/QmaFbcUvWdxnbHNLMe9goScf9A5YX8uE7nryetdaEnaPWA",
+                    "type": 3,
+                    "epoch": NEW_NOTIF_DATE.getTime() / 100,
+                    "etime": null,
+                    "hidden": "0",
+                    "sectype": null,
+                    "additionalMeta": null
+                  },
+                  "recipients": {"eip155:0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2": null},
+                  "notification": {
+                    "body": `type:liquidation-risk-7day,network:polygon,symbol:TDLx,token:TDLx,tokenAddress:0xa794221d92d77490ff319e95da1461bdf2bd3953,liquidation:${(NEW_NOTIF_DATE.getTime() / 1000).toFixed(0)}`,
+                    "title": "Superfluid - Liquidation Risk"
+                  },
+                  "verificationProof": "eip712v2:0x1e2bb5e08b056882baa8e4bbc664c60c058bd9d27082b11b94bc888e77ddad0f667b360304f56626f7e6f908d0051ca7e684cfe5d3c6acce65bce9a75317447b1c::uid::8572f30d-d652-4516-9e2f-914d47b3d989"
+                },
+                "source": "ETH_MAINNET",
+                "etime": null
+              }]
+            }
+            break;
+          case "urgent liquidation risk":
+            res.body = {
+              feeds: [{
+                "payload_id": 3769521,
+                "sender": "0xa947E9cFc724f05D83b995e53572c4bcCB00D7Aa",
+                "epoch": NEW_NOTIF_DATE.toISOString(),
+                "payload": {
+                  "data": {
+                    "app": "Superfluid",
+                    "sid": "40196540",
+                    "url": "https://app.superfluid.finance",
+                    "acta": "https://app.superfluid.finance/",
+                    "aimg": "",
+                    "amsg": `Your TDLx(TDLx) on network Polygon is about to be liquidated in less than 7 days(at ${NEW_NOTIF_STRING_DATE}).[timestamp: ${NEW_NOTIF_DATE.getTime() / 100}]`,
+                    "asub": "Urgent Liquidation Risk",
+                    "icon": "https://gateway.ipfs.io/ipfs/bafybeiew4vxj6npyn5j5ck6co64bla4zqfbgrk7mjbdxqv6vbyioei3b2y/QmaFbcUvWdxnbHNLMe9goScf9A5YX8uE7nryetdaEnaPWA",
+                    "type": 3,
+                    "epoch": NEW_NOTIF_DATE.getTime() / 100,
+                    "etime": null,
+                    "hidden": "0",
+                    "sectype": null,
+                    "additionalMeta": null
+                  },
+                  "recipients": {"eip155:0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2": null},
+                  "notification": {
+                    "body": `type:liquidation-risk-2day,network:polygon,symbol:TDLx,token:TDLx,tokenAddress:0xa794221d92d77490ff319e95da1461bdf2bd3953,liquidation:${(NEW_NOTIF_DATE.getTime() / 1000).toFixed(0)}`,
+                    "title": "Superfluid - Urgent Liquidation Risk"
+                  },
+                  "verificationProof": "eip712v2:0x1e2bb5e08b056882baa8e4bbc664c60c058bd9d27082b11b94bc888e77ddad0f667b360304f56626f7e6f908d0051ca7e684cfe5d3c6acce65bce9a75317447b1c::uid::8572f30d-d652-4516-9e2f-914d47b3d989"
+                },
+                "source": "ETH_MAINNET",
+                "etime": null
+              }]
+            }
+            break;
+          case "outdated format":
+            res.body = {
+              feeds: [{
+                "payload_id": 3769521,
+                "sender": "0xa947E9cFc724f05D83b995e53572c4bcCB00D7Aa",
+                "epoch": NEW_NOTIF_DATE.toISOString(),
+                "payload": {
+                  "data": {
+                    "app": "Superfluid",
+                    "sid": "40196540",
+                    "url": "https://app.superfluid.finance",
+                    "acta": "https://app.superfluid.finance/",
+                    "aimg": "",
+                    "amsg": `Some Test message`,
+                    "asub": "What happens with outdated formats?",
+                    "icon": "https://gateway.ipfs.io/ipfs/bafybeiew4vxj6npyn5j5ck6co64bla4zqfbgrk7mjbdxqv6vbyioei3b2y/QmaFbcUvWdxnbHNLMe9goScf9A5YX8uE7nryetdaEnaPWA",
+                    "type": 3,
+                    "epoch": NEW_NOTIF_DATE.getTime() / 100,
+                    "etime": null,
+                    "hidden": "0",
+                    "sectype": null,
+                    "additionalMeta": null
+                  },
+                  "recipients": {"eip155:0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2": null},
+                  "notification": {
+                    "body": `This is an outdated format aka something that is not explicitly handled`,
+                    "title": "Outdated Format"
+                  },
+                  "verificationProof": "eip712v2:0x1e2bb5e08b056882baa8e4bbc664c60c058bd9d27082b11b94bc888e77ddad0f667b360304f56626f7e6f908d0051ca7e684cfe5d3c6acce65bce9a75317447b1c::uid::8572f30d-d652-4516-9e2f-914d47b3d989"
+                },
+                "source": "ETH_MAINNET",
+                "etime": null
+              }]
+            }
+            break;
+          default:
+            throw new Error(`Unknown notification type: ${type}`)
+        }
+      })
+    })
+  }
+
+  static clickNotificationButton() {
+    this.click(NOTIFICATIONS_BUTTON)
+  }
+
+  static validateNoNewNotificationsMessage(tab: string) {
+    this.hasText(EMPTY_NOTIF_MESSAGE, `You don't have any ${tab} notifications.`)
+  }
+
+  static switchNotificationTabTo(tab: string) {
+    this.click(`[data-cy=${tab}-tab]`)
+  }
+
+  static validateNotSubscribedMessage() {
+    this.hasText(EMPTY_NOTIF_MESSAGE, "You are not subscribed. Check settings to enable notifications")
+  }
+
+  static validateConnectWalletButtonInNotifModal() {
+    this.hasText(NOTIF_NO_WALLET_MESSAGE, "Connect your wallet to check your notifications.")
+    this.isVisible(`${NOTIFICATION_MODAL} ${CONNECT_WALLET_BUTTON}`)
+  }
+
+  static validateNotificationToast(type: string) {
+    this.validateNotifTitleAndMessage(TOAST_MESSAGE, TOAST_TITLE, type , true)
+  }
+
+  static validateNotificationBadge(amount: string) {
+    if (amount === "0") {
+      this.isNotVisible(NOTIF_BADGE)
+    } else {
+      this.hasText(NOTIF_BADGE, amount)
+    }
+  }
+
+  static archiveLastNotification() {
+    //One of the rare cases where triggering mouseevents or invoking show function does not make the element visible
+    cy.get(NOTIF_ARCHIVE_BUTTON).first().click({force: true})
+  }
+
+  static validateArchivedNotification(type: string) {
+    this.validateNotifTitleAndMessage(NOTIF_MESSAGE, NOTIF_TITLE, type , true)
+  }
+
+  static validateNewNotification(type: string) {
+    this.isVisible(NEW_NOTIF_DOT)
+    this.validateNotifTitleAndMessage(NOTIF_MESSAGE, NOTIF_TITLE, type , false)
+  }
+
+  static validateReadNotification(type: string) {
+    this.doesNotExist(NEW_NOTIF_DOT)
+    this.validateNotifTitleAndMessage(NOTIF_MESSAGE, NOTIF_TITLE, type , false)
+  }
+
+  static validateNotifTitleAndMessage(messageSelector: string, titleSelector: string, type: string , archivedOrToast: boolean) {
+    const ASSERT_STRING = type.toLowerCase() === "old notification" ? this.getNotifDateAssertStringFromDate(OLD_NOTIF_DATE) : this.getNotifDateAssertStringFromDate(NEW_NOTIF_DATE)
+    switch (type.toLowerCase()) {
+      case "liquidated":
+        this.hasText(titleSelector, ` ${type}`)
+        this.isVisible(LIQUIDATED_ICON)
+        this.hasText(messageSelector, `Your TDLx on Polygon was liquidated at ${ASSERT_STRING}.`)
+        this.validateNoWrapButtonsInNotifModal()
+        break;
+      case "old notification":
+        this.hasText(titleSelector, ` Liquidation Risk`)
+        this.isVisible(WARNING_ICON)
+        this.validateNoWrapButtonsInNotifModal()
+        this.hasText(messageSelector, `Your TDLx on Polygon is about to be liquidated at ${ASSERT_STRING}.`)
+        break;
+      case "liquidation risk":
+        this.hasText(titleSelector, ` ${type}`)
+        this.isVisible(WARNING_ICON)
+        if(!archivedOrToast) {
+          this.validateWrapButtonsInNotifModal()
+        }
+        this.hasText(messageSelector, `Your TDLx on Polygon is about to be liquidated at ${ASSERT_STRING}.`)
+        break;
+      case "urgent liquidation risk":
+        this.hasText(titleSelector, ` ${type}`)
+        this.isVisible(WARNING_ICON)
+        if(!archivedOrToast) {
+          this.validateWrapButtonsInNotifModal()
+        }
+        this.hasText(messageSelector, `Your TDLx on Polygon is about to be liquidated at ${ASSERT_STRING}.`)
+        break;
+      case "outdated format":
+        this.isVisible(INFO_ICON)
+        this.hasText(messageSelector, "This is an outdated format aka something that is not explicitly handled")
+        this.validateNoWrapButtonsInNotifModal()
+        break;
+    }
+  }
+
+  static validateWrapButtonsInNotifModal() {
+    this.isVisible(NOTIF_WRAP_TOKEN_BUTTON)
+  }
+
+  static clickWrapButtonInNotifModal() {
+    this.click(NOTIF_WRAP_TOKEN_BUTTON)
+  }
+
+  static validateNoWrapButtonsInNotifModal() {
+    this.doesNotExist(NOTIF_WRAP_TOKEN_BUTTON)
+  }
+
+  static clickNotificationSettingsButton() {
+    this.click(NOTIF_SETTINGS_BUTTON)
   }
 }
