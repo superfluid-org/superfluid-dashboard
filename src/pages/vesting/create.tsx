@@ -9,10 +9,32 @@ import CreateVestingFormProvider from "../../features/vesting/CreateVestingFormP
 import { CreateVestingSection } from "../../features/vesting/CreateVestingSection";
 import VestingLayout from "../../features/vesting/VestingLayout";
 import { NextPageWithLayout } from "../_app";
+import { platformApi } from "../../features/redux/platformApi/platformApi";
+import { useAccount } from "wagmi";
+import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 const CreateVestingSchedulePage: NextPageWithLayout = () => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
+  const { address: accountAddress } = useAccount();
+
+  const { isPlatformWhitelisted, isLoading: isWhitelistLoading } =
+    platformApi.useIsAccountWhitelistedQuery(
+      accountAddress && network?.platformUrl
+        ? {
+            chainId: network.id,
+            baseUrl: network.platformUrl,
+            account: accountAddress?.toLowerCase(),
+          }
+        : skipToken,
+      {
+        selectFromResult: (queryResult) => ({
+          ...queryResult,
+          isPlatformWhitelisted: !!queryResult.data,
+        }),
+      }
+    );
 
   return (
     <Container key={`${network.slugName}`} maxWidth="md">
@@ -45,7 +67,11 @@ const CreateVestingSchedulePage: NextPageWithLayout = () => {
           <ConnectionBoundary>
             <CreateVestingFormProvider>
               {(isInitialized) =>
-                isInitialized ? <CreateVestingSection /> : <BigLoader />
+                isInitialized && !isWhitelistLoading ? (
+                  <CreateVestingSection whitelisted={isPlatformWhitelisted} />
+                ) : (
+                  <BigLoader />
+                )
               }
             </CreateVestingFormProvider>
           </ConnectionBoundary>
