@@ -1,9 +1,11 @@
 import {BasePage} from "../BasePage";
-import {mainNetworks, testNetworks} from "../../superData/networks";
+import {mainNetworks, networksBySlug, testNetworks} from "../../superData/networks";
 import {Common} from "./Common";
 import {format} from "date-fns";
 
 const ACTIVITY_TYPE = "[data-cy=activity]"
+const ACTIVITY_NAME = `${ACTIVITY_TYPE} h6`
+const ACTIVITY_TIME = `${ACTIVITY_TYPE} span`
 const ACTIVITY_AMOUNT = "[data-cy=amount]"
 const AMOUNT_TO_FROM = "[data-cy=amountToFrom]"
 const ALL_ROWS = "[data-cy*=-row]"
@@ -142,4 +144,23 @@ export class ActivityPage extends BasePage {
         this.isVisible(`[data-cy=${network}-row]`)
     }
 
+    static mockActivityRequestTo(activity:string,network:string) {
+        cy.fixture("activityHistoryEvents").then(events => {
+        cy.intercept("POST",`*protocol-**-${networksBySlug.get(network).v1ShortName}`, (req => {
+            if(req.body.operationName === "events") {
+                req.continue(res => {
+                    if(!events[activity]) {
+                        throw new Error(`Unknown activity type: ${activity}`)
+                    }
+                    res.body.data.events = events[activity]
+                })
+            }
+        }))
+        })
+    }
+
+    static validateMockedActivityHistoryEntry(activity:string,network:string) {
+        this.hasText(ACTIVITY_NAME,activity)
+        this.isVisible(`[data-cy=${networksBySlug.get(network).id}-icon]`)
+    }
 }
