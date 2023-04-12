@@ -196,8 +196,7 @@ export class Common extends BasePage {
     if (personas.includes(persona)) {
       let chosenPersona = personas.findIndex((el) => el === persona) + 1;
       usedAccountPrivateKey = Cypress.env(`TX_ACCOUNT_PRIVATE_KEY${chosenPersona}`)
-    }
-    if (persona === "NewRandomWallet") {
+    } else if (persona === "NewRandomWallet") {
       usedAccountPrivateKey = this.generateNewWallet()
     } else {
       usedAccountPrivateKey = persona === "staticBalanceAccount"
