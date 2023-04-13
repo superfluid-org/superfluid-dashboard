@@ -138,7 +138,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
                   title="The stream flow rate allowance needed by the contract for creating Superfluid flows."
                 />
               </TableCell>
-              {network.autoWrap && <TableCell>Auto Wrap</TableCell>}
+              {network.autoWrap && <TableCell>Auto-Wrap</TableCell>}
               <TableCell width="60px" />
             </TableRow>
           </TableHead>

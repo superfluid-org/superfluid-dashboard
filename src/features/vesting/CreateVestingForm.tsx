@@ -544,6 +544,13 @@ const CreateVestingForm: FC<{
           </Box>
         )}
 
+        {isAutoWrapVisible && (
+          <Stack direction="row" alignItems="center">
+            {AutoWrapController}
+            <TooltipIcon title="Auto-Wrap will handle low balances to cover all streams in a selected token." />
+          </Stack>
+        )}
+
         {!(setupAutoWrap && !cliffEnabled) && (
           <Alert severity="warning">
             {cliffEnabled ? (
@@ -582,15 +589,6 @@ const CreateVestingForm: FC<{
             )}
           </Alert>
         )}
-
-        <Stack direction="row" alignItems="center">
-          {isAutoWrapVisible && (
-            <>
-              {AutoWrapController}
-              <TooltipIcon title="Auto Wrap will handle low balances to cover all streams in a selected token." />
-            </>
-          )}
-        </Stack>
       </Stack>
 
       <Stack gap={1}>{PreviewVestingScheduleButton}</Stack>

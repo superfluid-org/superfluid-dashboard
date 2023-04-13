@@ -61,7 +61,7 @@ export const getAutoWrap = (
   const doesNetworkSupportContract = networkContractAddresses;
   if (!doesNetworkSupportContract) {
     throw new Error(
-      `Auto Wrap not available for network [${chainId}:${network?.name}].`
+      `Auto-Wrap not available for network [${chainId}:${network?.name}].`
     );
   }
 
