@@ -41,6 +41,12 @@ export interface DeleteVestingSchedule extends BaseSuperTokenMutation {
   deleteFlow: boolean;
 }
 
+export interface ExecuteVestingCliff extends BaseSuperTokenMutation {
+  chainId: number;
+  senderAddress: string;
+  receiverAddress: string;
+}
+
 interface GetVestingSchedule extends BaseQuery<RpcVestingSchedule | null> {
   superTokenAddress: string;
   senderAddress: string;
@@ -133,7 +139,9 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
         .add(flowRateBigNumber.mul(START_DATE_VALID_AFTER_IN_SECONDS))
         .add(flowRateBigNumber.mul(END_DATE_VALID_BEFORE_IN_SECONDS));
 
-      const newTokenAllowance = isCloseToUnlimitedTokenAllowance(existingTokenAllowance)
+      const newTokenAllowance = isCloseToUnlimitedTokenAllowance(
+        existingTokenAllowance
+      )
         ? existingTokenAllowance
         : existingTokenAllowance.add(maximumNeededTokenAllowance);
 
@@ -412,6 +420,28 @@ export const vestingSchedulerMutationEndpoints = {
         };
       },
     }),
+    executeVestingCliff: builder.mutation<TransactionInfo, ExecuteVestingCliff>(
+      {
+        queryFn: async (
+          {
+            chainId,
+            signer,
+            superTokenAddress,
+            senderAddress,
+            receiverAddress,
+            ...arg
+          },
+          { dispatch }
+        ) => {
+          return {
+            data: {
+              chainId,
+              hash: "",
+            },
+          };
+        },
+      }
+    ),
   }),
 };
 
@@ -497,14 +527,12 @@ export const vestingSchedulerQueryEndpoints = {
           providerOrSigner: framework.settings.provider,
         });
 
-        const {
-          flowRateAllowance,
-          permissions: flowOperatorPermissions,
-        } = await superToken.getFlowOperatorData({
-          sender: senderAddress,
-          flowOperator: vestingScheduler.address,
-          providerOrSigner: framework.settings.provider,
-        });
+        const { flowRateAllowance, permissions: flowOperatorPermissions } =
+          await superToken.getFlowOperatorData({
+            sender: senderAddress,
+            flowOperator: vestingScheduler.address,
+            providerOrSigner: framework.settings.provider,
+          });
 
         return {
           data: {

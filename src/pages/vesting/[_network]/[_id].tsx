@@ -1,7 +1,9 @@
 import {
   Box,
+  Button,
   Card,
   Container,
+  Divider,
   Stack,
   Typography,
   useMediaQuery,
@@ -11,7 +13,7 @@ import { skipToken } from "@reduxjs/toolkit/dist/query/react";
 import { FlowUpdatedEvent, TransferEvent } from "@superfluid-finance/sdk-core";
 import { isString, orderBy } from "lodash";
 import { useRouter } from "next/router";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import withStaticSEO from "../../../components/SEO/withStaticSEO";
 import ActivityTable from "../../../features/activityHistory/ActivityTable";
 import TimeUnitFilter, {
@@ -43,6 +45,7 @@ import { calculateVestingScheduleAllocated } from "../../../utils/vestingUtils";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import Page404 from "../../404";
 import { NextPageWithLayout } from "../../_app";
+import VestingManualOverridesBlock from "../../../features/vesting/VestingManualOverridesBlock";
 
 interface VestingLegendItemProps {
   title: string;
@@ -398,6 +401,8 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
           <Stack gap={2}>
             <Typography variant="h5">Schedule</Typography>
             <VestingScheduleProgress vestingSchedule={vestingSchedule} />
+
+            <VestingManualOverridesBlock />
           </Stack>
         </Card>
 
