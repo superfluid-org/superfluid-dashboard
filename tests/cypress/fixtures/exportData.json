@@ -67,6 +67,40 @@
       ]
     },
     {
+      "id": "0x98a63f98e9b952b5c6ccba47c631461388e78d7a-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0xeb5748f9798b11af79f892f344f585e3a88aa784-0.0-0.0",
+      "flowRate": "15489999991",
+      "startedAtTimestamp": "1659536137",
+      "startedAtBlockNumber": "31475327",
+      "stoppedAtTimestamp": "1680530942",
+      "stoppedAtBlockNumber": "41097749",
+      "totalAmountStreamed": "325209529261046755",
+      "chainId": 137,
+      "token": {
+        "id": "0xeb5748f9798b11af79f892f344f585e3a88aa784",
+        "symbol": "idleWETHx",
+        "name": "Super IdleWETH [Best yield]",
+        "underlyingAddress": "0xfda25d931258df948ffecb66b5518299df6527c4"
+      },
+      "sender": "0x98a63f98e9b952b5c6ccba47c631461388e78d7a",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x4715af235e1ce1c4e54e6094a99618227217ccef1d22155723e24c79746a489b",
+      "stoppedAtEvent": "0xb7b8a1c30830d5077dcdc6ff00aff727dd427e7a91775ac2b9e11d2ffc07893f",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "111512509935209",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675202399,
+          "amount": "41376872485959209",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
       "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x1305f6b6df9dc47159d12eb7ac2804d4a33173c2-2.0-3.0",
       "flowRate": "14880952380",
       "startedAtTimestamp": "1674745990",
@@ -264,39 +298,6 @@
           "startTime": 1674746068,
           "endTime": 1675202399,
           "amount": "-6790639880517780",
-          "amountFiat": "0"
-        }
-      ]
-    },
-    {
-      "id": "0x98a63f98e9b952b5c6ccba47c631461388e78d7a-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0xeb5748f9798b11af79f892f344f585e3a88aa784-0.0-0.0",
-      "flowRate": "15489999991",
-      "startedAtTimestamp": "1659536137",
-      "startedAtBlockNumber": "31475327",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 137,
-      "token": {
-        "id": "0xeb5748f9798b11af79f892f344f585e3a88aa784",
-        "symbol": "idleWETHx",
-        "name": "Super IdleWETH [Best yield]",
-        "underlyingAddress": "0xfda25d931258df948ffecb66b5518299df6527c4"
-      },
-      "sender": "0x98a63f98e9b952b5c6ccba47c631461388e78d7a",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0x4715af235e1ce1c4e54e6094a99618227217ccef1d22155723e24c79746a489b",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "111512509935209",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1675202399,
-          "amount": "41376872485959209",
           "amountFiat": "0"
         }
       ]
@@ -994,6 +995,220 @@
       ]
     },
     {
+      "id": "0x98a63f98e9b952b5c6ccba47c631461388e78d7a-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0xeb5748f9798b11af79f892f344f585e3a88aa784-0.0-0.0",
+      "flowRate": "15489999991",
+      "startedAtTimestamp": "1659536137",
+      "startedAtBlockNumber": "31475327",
+      "stoppedAtTimestamp": "1680530942",
+      "stoppedAtBlockNumber": "41097749",
+      "totalAmountStreamed": "325209529261046755",
+      "chainId": 137,
+      "token": {
+        "id": "0xeb5748f9798b11af79f892f344f585e3a88aa784",
+        "symbol": "idleWETHx",
+        "name": "Super IdleWETH [Best yield]",
+        "underlyingAddress": "0xfda25d931258df948ffecb66b5518299df6527c4"
+      },
+      "sender": "0x98a63f98e9b952b5c6ccba47c631461388e78d7a",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x4715af235e1ce1c4e54e6094a99618227217ccef1d22155723e24c79746a489b",
+      "stoppedAtEvent": "0xb7b8a1c30830d5077dcdc6ff00aff727dd427e7a91775ac2b9e11d2ffc07893f",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "111512509935209",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1672617599,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1672617600,
+          "endTime": 1672703999,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1672704000,
+          "endTime": 1672790399,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1672790400,
+          "endTime": 1672876799,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1672876800,
+          "endTime": 1672963199,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1672963200,
+          "endTime": 1673049599,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673049600,
+          "endTime": 1673135999,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673136000,
+          "endTime": 1673222399,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673222400,
+          "endTime": 1673308799,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673308800,
+          "endTime": 1673395199,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673395200,
+          "endTime": 1673481599,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673481600,
+          "endTime": 1673567999,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673568000,
+          "endTime": 1673654399,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673654400,
+          "endTime": 1673740799,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673740800,
+          "endTime": 1673827199,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673827200,
+          "endTime": 1673913599,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673913600,
+          "endTime": 1673999999,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674000000,
+          "endTime": 1674086399,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674086400,
+          "endTime": 1674172799,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674172800,
+          "endTime": 1674259199,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674259200,
+          "endTime": 1674345599,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674345600,
+          "endTime": 1674431999,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674432000,
+          "endTime": 1674518399,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674518400,
+          "endTime": 1674604799,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674604800,
+          "endTime": 1674691199,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674691200,
+          "endTime": 1674777599,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674777600,
+          "endTime": 1674863999,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674864000,
+          "endTime": 1674950399,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674950400,
+          "endTime": 1675036799,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1675036800,
+          "endTime": 1675123199,
+          "amount": "1338320509222409",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1675123200,
+          "endTime": 1675202399,
+          "amount": "1226792509287209",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
       "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x1305f6b6df9dc47159d12eb7ac2804d4a33173c2-2.0-3.0",
       "flowRate": "14880952380",
       "startedAtTimestamp": "1674745990",
@@ -1557,219 +1772,6 @@
           "startTime": 1675123200,
           "endTime": 1675202399,
           "amount": "-1178556547543620",
-          "amountFiat": "0"
-        }
-      ]
-    },
-    {
-      "id": "0x98a63f98e9b952b5c6ccba47c631461388e78d7a-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0xeb5748f9798b11af79f892f344f585e3a88aa784-0.0-0.0",
-      "flowRate": "15489999991",
-      "startedAtTimestamp": "1659536137",
-      "startedAtBlockNumber": "31475327",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 137,
-      "token": {
-        "id": "0xeb5748f9798b11af79f892f344f585e3a88aa784",
-        "symbol": "idleWETHx",
-        "name": "Super IdleWETH [Best yield]",
-        "underlyingAddress": "0xfda25d931258df948ffecb66b5518299df6527c4"
-      },
-      "sender": "0x98a63f98e9b952b5c6ccba47c631461388e78d7a",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0x4715af235e1ce1c4e54e6094a99618227217ccef1d22155723e24c79746a489b",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "111512509935209",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1672617599,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1672617600,
-          "endTime": 1672703999,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1672704000,
-          "endTime": 1672790399,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1672790400,
-          "endTime": 1672876799,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1672876800,
-          "endTime": 1672963199,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1672963200,
-          "endTime": 1673049599,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673049600,
-          "endTime": 1673135999,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673136000,
-          "endTime": 1673222399,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673222400,
-          "endTime": 1673308799,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673308800,
-          "endTime": 1673395199,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673395200,
-          "endTime": 1673481599,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673481600,
-          "endTime": 1673567999,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673568000,
-          "endTime": 1673654399,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673654400,
-          "endTime": 1673740799,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673740800,
-          "endTime": 1673827199,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673827200,
-          "endTime": 1673913599,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673913600,
-          "endTime": 1673999999,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674000000,
-          "endTime": 1674086399,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674086400,
-          "endTime": 1674172799,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674172800,
-          "endTime": 1674259199,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674259200,
-          "endTime": 1674345599,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674345600,
-          "endTime": 1674431999,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674432000,
-          "endTime": 1674518399,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674518400,
-          "endTime": 1674604799,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674604800,
-          "endTime": 1674691199,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674691200,
-          "endTime": 1674777599,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674777600,
-          "endTime": 1674863999,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674864000,
-          "endTime": 1674950399,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674950400,
-          "endTime": 1675036799,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1675036800,
-          "endTime": 1675123199,
-          "amount": "1338320509222409",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1675123200,
-          "endTime": 1675202399,
-          "amount": "1226792509287209",
           "amountFiat": "0"
         }
       ]
@@ -3595,6 +3597,64 @@
       ]
     },
     {
+      "id": "0x98a63f98e9b952b5c6ccba47c631461388e78d7a-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0xeb5748f9798b11af79f892f344f585e3a88aa784-0.0-0.0",
+      "flowRate": "15489999991",
+      "startedAtTimestamp": "1659536137",
+      "startedAtBlockNumber": "31475327",
+      "stoppedAtTimestamp": "1680530942",
+      "stoppedAtBlockNumber": "41097749",
+      "totalAmountStreamed": "325209529261046755",
+      "chainId": 137,
+      "token": {
+        "id": "0xeb5748f9798b11af79f892f344f585e3a88aa784",
+        "symbol": "idleWETHx",
+        "name": "Super IdleWETH [Best yield]",
+        "underlyingAddress": "0xfda25d931258df948ffecb66b5518299df6527c4"
+      },
+      "sender": "0x98a63f98e9b952b5c6ccba47c631461388e78d7a",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x4715af235e1ce1c4e54e6094a99618227217ccef1d22155723e24c79746a489b",
+      "stoppedAtEvent": "0xb7b8a1c30830d5077dcdc6ff00aff727dd427e7a91775ac2b9e11d2ffc07893f",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "111512509935209",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1673135999,
+          "amount": "9368336504556809",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673136000,
+          "endTime": 1673740799,
+          "amount": "9368336504556809",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673740800,
+          "endTime": 1674345599,
+          "amount": "9368336504556809",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674345600,
+          "endTime": 1674950399,
+          "amount": "9368336504556809",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674950400,
+          "endTime": 1675202399,
+          "amount": "3903464507732009",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
       "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x1305f6b6df9dc47159d12eb7ac2804d4a33173c2-2.0-3.0",
       "flowRate": "14880952380",
       "startedAtTimestamp": "1674745990",
@@ -3852,63 +3912,6 @@
           "startTime": 1674950400,
           "endTime": 1675202399,
           "amount": "-3749985118807620",
-          "amountFiat": "0"
-        }
-      ]
-    },
-    {
-      "id": "0x98a63f98e9b952b5c6ccba47c631461388e78d7a-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0xeb5748f9798b11af79f892f344f585e3a88aa784-0.0-0.0",
-      "flowRate": "15489999991",
-      "startedAtTimestamp": "1659536137",
-      "startedAtBlockNumber": "31475327",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 137,
-      "token": {
-        "id": "0xeb5748f9798b11af79f892f344f585e3a88aa784",
-        "symbol": "idleWETHx",
-        "name": "Super IdleWETH [Best yield]",
-        "underlyingAddress": "0xfda25d931258df948ffecb66b5518299df6527c4"
-      },
-      "sender": "0x98a63f98e9b952b5c6ccba47c631461388e78d7a",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0x4715af235e1ce1c4e54e6094a99618227217ccef1d22155723e24c79746a489b",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "111512509935209",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1673135999,
-          "amount": "9368336504556809",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673136000,
-          "endTime": 1673740799,
-          "amount": "9368336504556809",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673740800,
-          "endTime": 1674345599,
-          "amount": "9368336504556809",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674345600,
-          "endTime": 1674950399,
-          "amount": "9368336504556809",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674950400,
-          "endTime": 1675202399,
-          "amount": "3903464507732009",
           "amountFiat": "0"
         }
       ]
@@ -4438,6 +4441,40 @@
       ]
     },
     {
+      "id": "0x98a63f98e9b952b5c6ccba47c631461388e78d7a-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0xeb5748f9798b11af79f892f344f585e3a88aa784-0.0-0.0",
+      "flowRate": "15489999991",
+      "startedAtTimestamp": "1659536137",
+      "startedAtBlockNumber": "31475327",
+      "stoppedAtTimestamp": "1680530942",
+      "stoppedAtBlockNumber": "41097749",
+      "totalAmountStreamed": "325209529261046755",
+      "chainId": 137,
+      "token": {
+        "id": "0xeb5748f9798b11af79f892f344f585e3a88aa784",
+        "symbol": "idleWETHx",
+        "name": "Super IdleWETH [Best yield]",
+        "underlyingAddress": "0xfda25d931258df948ffecb66b5518299df6527c4"
+      },
+      "sender": "0x98a63f98e9b952b5c6ccba47c631461388e78d7a",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x4715af235e1ce1c4e54e6094a99618227217ccef1d22155723e24c79746a489b",
+      "stoppedAtEvent": "0xb7b8a1c30830d5077dcdc6ff00aff727dd427e7a91775ac2b9e11d2ffc07893f",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "111512509935209",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675202399,
+          "amount": "41376872485959209",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
       "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x1305f6b6df9dc47159d12eb7ac2804d4a33173c2-2.0-3.0",
       "flowRate": "14880952380",
       "startedAtTimestamp": "1674745990",
@@ -4635,39 +4672,6 @@
           "startTime": 1674746068,
           "endTime": 1675202399,
           "amount": "-6790639880517780",
-          "amountFiat": "0"
-        }
-      ]
-    },
-    {
-      "id": "0x98a63f98e9b952b5c6ccba47c631461388e78d7a-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0xeb5748f9798b11af79f892f344f585e3a88aa784-0.0-0.0",
-      "flowRate": "15489999991",
-      "startedAtTimestamp": "1659536137",
-      "startedAtBlockNumber": "31475327",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 137,
-      "token": {
-        "id": "0xeb5748f9798b11af79f892f344f585e3a88aa784",
-        "symbol": "idleWETHx",
-        "name": "Super IdleWETH [Best yield]",
-        "underlyingAddress": "0xfda25d931258df948ffecb66b5518299df6527c4"
-      },
-      "sender": "0x98a63f98e9b952b5c6ccba47c631461388e78d7a",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0x4715af235e1ce1c4e54e6094a99618227217ccef1d22155723e24c79746a489b",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "111512509935209",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1675202399,
-          "amount": "41376872485959209",
           "amountFiat": "0"
         }
       ]
@@ -5020,6 +5024,34 @@
       ]
     },
     {
+      "id": "0x98a63f98e9b952b5c6ccba47c631461388e78d7a-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0xeb5748f9798b11af79f892f344f585e3a88aa784-0.0-0.0",
+      "flowRate": "15489999991",
+      "startedAtTimestamp": "1659536137",
+      "startedAtBlockNumber": "31475327",
+      "stoppedAtTimestamp": "1680530942",
+      "stoppedAtBlockNumber": "41097749",
+      "totalAmountStreamed": "325209529261046755",
+      "chainId": 137,
+      "token": {
+        "id": "0xeb5748f9798b11af79f892f344f585e3a88aa784",
+        "symbol": "idleWETHx",
+        "name": "Super IdleWETH [Best yield]",
+        "underlyingAddress": "0xfda25d931258df948ffecb66b5518299df6527c4"
+      },
+      "sender": "0x98a63f98e9b952b5c6ccba47c631461388e78d7a",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x4715af235e1ce1c4e54e6094a99618227217ccef1d22155723e24c79746a489b",
+      "stoppedAtEvent": "0xb7b8a1c30830d5077dcdc6ff00aff727dd427e7a91775ac2b9e11d2ffc07893f",
+      "virtualPeriods": [
+        {
+          "startTime": 1672531200,
+          "endTime": 1675209599,
+          "amount": "41488400485894409",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
       "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x1305f6b6df9dc47159d12eb7ac2804d4a33173c2-2.0-3.0",
       "flowRate": "14880952380",
       "startedAtTimestamp": "1674745990",
@@ -5351,33 +5383,6 @@
           "startTime": 1674746068,
           "endTime": 1675209599,
           "amount": "-6897782737653780",
-          "amountFiat": "0"
-        }
-      ]
-    },
-    {
-      "id": "0x98a63f98e9b952b5c6ccba47c631461388e78d7a-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0xeb5748f9798b11af79f892f344f585e3a88aa784-0.0-0.0",
-      "flowRate": "15489999991",
-      "startedAtTimestamp": "1659536137",
-      "startedAtBlockNumber": "31475327",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 137,
-      "token": {
-        "id": "0xeb5748f9798b11af79f892f344f585e3a88aa784",
-        "symbol": "idleWETHx",
-        "name": "Super IdleWETH [Best yield]",
-        "underlyingAddress": "0xfda25d931258df948ffecb66b5518299df6527c4"
-      },
-      "sender": "0x98a63f98e9b952b5c6ccba47c631461388e78d7a",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0x4715af235e1ce1c4e54e6094a99618227217ccef1d22155723e24c79746a489b",
-      "virtualPeriods": [
-        {
-          "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "41488400485894409",
           "amountFiat": "0"
         }
       ]

@@ -137,7 +137,7 @@ const NotificationsBell: FC = () => {
             />
           ) : (
             <Stack p={2} gap={1}>
-              <Typography variant="body1" align="center">
+              <Typography data-cy={"notif-no-wallet"} variant="body1" align="center">
                 Connect your wallet to check your notifications.
               </Typography>
               <ConnectWallet />
