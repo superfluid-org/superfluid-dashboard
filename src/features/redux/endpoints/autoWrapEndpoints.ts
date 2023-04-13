@@ -5,7 +5,6 @@ import {
 } from "@superfluid-finance/sdk-redux";
 import { constants } from "ethers";
 import { getAutoWrap } from "../../../eth-sdk/getEthSdk";
-import { isCloseToUnlimitedTokenAllowance } from "../../../utils/isCloseToUnlimitedAllowance";
 import { rpcApiBase } from "../store";
 
 export type WrapSchedule = {

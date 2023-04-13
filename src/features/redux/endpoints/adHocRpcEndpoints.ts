@@ -10,7 +10,7 @@ import {
   TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
 import { WriteContractPreparedArgs, writeContract } from "@wagmi/core";
-import { BigNumber, Overrides, Signer } from "ethers";
+import { Overrides, Signer } from "ethers";
 import {
   balanceFetcher,
   BalanceQueryParams,
@@ -55,10 +55,11 @@ const writeContractEndpoint = (builder: RpcEndpointBuilder) =>
       config: WriteContractPreparedArgs<unknown[], string> & {
         chainId: number;
       };
+      transactionExtraData?: Record<string, unknown>;
       transactionTitle: TransactionTitle,
     }
   >({
-    queryFn: async ({ signer, config, transactionTitle }, { dispatch }) => {
+    queryFn: async ({ signer, config, transactionTitle, transactionExtraData }, { dispatch }) => {
       const result = await writeContract(config);
       return registerNewTransactionAndReturnQueryFnResult({
         dispatch,
@@ -67,39 +68,15 @@ const writeContractEndpoint = (builder: RpcEndpointBuilder) =>
         title: transactionTitle,
         transactionResponse: {
           chainId: config.chainId,
-          ...result,
-          confirmations: 0,
-          data: "",
-          from: "",
-          gasLimit: BigNumber.from("0"),
-          nonce: 0,
-          value: BigNumber.from("0"),
+          ...result
         },
-        extraData: undefined,
+        extraData: transactionExtraData,
       });
-    },
-  });
-
-
-const allowanceEndpoint = (builder: RpcEndpointBuilder) =>
-  builder.query<
-    unknown,
-    {
-      chainId: number,
-      tokenAddress: string,
-    }
-  >({
-    queryFn: async () => {
-
-      return {
-        data: {} as unknown
-      }
     },
   });
 
 export const adHocRpcEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
-    allowance: allowanceEndpoint(builder),
     writeContract: writeContractEndpoint(builder),
     getActiveFlow: builder.query<
       // TODO(KK): Create equivalent endpoint in the SDK
