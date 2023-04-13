@@ -64,3 +64,5 @@ export const useAnalytics = () => {
 
   return { ...analyticsBrowser, identify, txAnalytics, instanceDetails };
 };
+
+export type TxAnalyticsFn = ReturnType<typeof useAnalytics>["txAnalytics"]; 

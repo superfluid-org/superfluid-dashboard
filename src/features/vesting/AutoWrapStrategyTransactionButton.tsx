@@ -25,13 +25,6 @@ const AutoWrapStrategyTransactionButton: FC<{
   const { watch } = useFormContext<ValidVestingForm>();
   const [setupAutoWrap] = watch(["data.setupAutoWrap"]);
 
-  // { name: 'superToken', internalType: 'address', type: 'address' },
-  // { name: 'strategy', internalType: 'address', type: 'address' },
-  // { name: 'liquidityToken', internalType: 'address', type: 'address' },
-  // { name: 'expiry', internalType: 'uint64', type: 'uint64' },
-  // { name: 'lowerLimit', internalType: 'uint64', type: 'uint64' },
-  // { name: 'upperLimit', internalType: 'uint64', type: 'uint64' },
-
   const getGasOverrides = useGetTransactionOverrides();
   const { data: overrides } = useQuery(["gasOverrides", TX_TITLE, network.id], async () => {
     const overrides_ = await getGasOverrides(network);
@@ -44,18 +37,25 @@ const AutoWrapStrategyTransactionButton: FC<{
     }
   });
 
-  // TODO(KK): handle errors
-  // TODO(KK): Any better way to handle any's and bangs?
+const primaryArgs = {
+  superToken: token.address as `0x${string}`,
+  strategy: network.autoWrap!.strategyContractAddress,
+  liquidityToken: token.underlyingAddress as `0x${string}`,
+  expiry: BigNumber.from("3000000000"),
+  lowerLimit: BigNumber.from(network.autoWrap!.lowerLimit),
+  upperLimit: BigNumber.from(network.autoWrap!.upperLimit),
+}
+
   const { config } = usePrepareAutoWrapManagerCreateWrapSchedule({
     chainId: network.id as any,
     enabled: setupAutoWrap, // TODO(KK): any other conditions to add here?
     args: [
-      token.address as `0x${string}`,
-      network.autoWrap!.strategyContractAddress, // TODO: guard somewhere
-      token.underlyingAddress as `0x${string}`, // TODO(KK): guard
-      BigNumber.from("3000000000"),
-      BigNumber.from(network.autoWrap!.lowerLimit),
-      BigNumber.from(network.autoWrap!.upperLimit),
+      primaryArgs.superToken,
+      primaryArgs.strategy,
+      primaryArgs.liquidityToken,
+      primaryArgs.expiry,
+      primaryArgs.lowerLimit,
+      primaryArgs.upperLimit
     ],
     signer: signer,
     overrides
@@ -70,6 +70,7 @@ const AutoWrapStrategyTransactionButton: FC<{
         getOverrides,
         setDialogLoadingInfo,
         setDialogSuccessActions,
+        txAnalytics
       }) =>
         isVisible && (
           <TransactionButton
@@ -90,7 +91,10 @@ const AutoWrapStrategyTransactionButton: FC<{
                   chainId: network.id
                 },
                 transactionTitle: TX_TITLE
-              }).unwrap();
+              })
+              .unwrap()
+              .then(...txAnalytics("Enable Auto-Wrap", primaryArgs))
+              .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}
           >
             {TX_TITLE}
