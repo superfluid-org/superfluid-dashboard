@@ -348,6 +348,7 @@ export class VestingPage extends BasePage {
 
     static validateVestingRowStatus(status: string) {
         if (status === "Deleted") {
+            cy.get(TABLE_VESTING_STATUS).should("be.visible")
             cy.contains("Deleted").click()
         }
         cy.get(TABLE_VESTING_STATUS).first().should("have.text", status)
