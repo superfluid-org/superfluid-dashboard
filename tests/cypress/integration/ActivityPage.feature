@@ -46,25 +46,25 @@ Feature: Activity History Page tests
     And User clicks on the "arbitrum-one" toggle
     Then Activity rows for "arbitrum-one" are visible
 
-  @only @mocked
+  @mocked
   Scenario Outline: <activity> shown in the activity history page
     Given Activity history request is mocked to "<activity>" on "polygon"
     Given "Activity History Page" is open using view mode to look at "staticBalanceAccount"
     Then Mocked "<activity>" entry on "polygon" is shown in the activity history
     Examples:
       | activity              |
-#      | Liquidated            |
-#      | Wrap                  |
-#      | Send Stream           |
-#      | Unwrap                |
-#      | Receive Transfer      |
-#      | Stream Updated        |
-#      | Receive Stream        |
-#      | Stream Cancelled      |
-#      | Subscription Approved |
+      | Liquidated            |
+      | Receive Stream        |
+      | Stream Cancelled      |
+      | Send Stream           |
+      | Wrap                  |
+      | Unwrap                |
+      | Receive Transfer      |
+      | Send Transfer         |
+      | Stream Updated        |
+      | Subscription Approved |
       | Subscription Updated  |
       | Subscription Rejected |
       | Index Created         |
-      | Send Transfer         |
-    #Send Distribution
-    #Distribution Claimed
+      | Send Distribution     |
+      | Distribution Claimed  |
