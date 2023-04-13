@@ -91,6 +91,7 @@ const SubscriptionApprovedActivityRow: FC<
         <ListItem sx={{ p: 0 }}>
           <ActivityIcon icon={CheckRoundedIcon} />
           <ListItemText
+            data-cy={"activity"}
             primary="Subscription Approved"
             secondary={format(timestamp * 1000, dateFormat)}
             primaryTypographyProps={{
@@ -117,6 +118,7 @@ const SubscriptionApprovedActivityRow: FC<
                 />
               </ListItemAvatar>
               <ListItemText
+                data-cy={"amount"}
                 primary={
                   <>
                     {amountReceived && (
@@ -143,6 +145,7 @@ const SubscriptionApprovedActivityRow: FC<
                 <AddressAvatar address={isPublisher ? subscriber : publisher} />
               </ListItemAvatar>
               <ListItemText
+                data-cy={"amountToFrom"}
                 primary={isPublisher ? "Subscriber" : "Publisher"}
                 secondary={
                   <AddressCopyTooltip

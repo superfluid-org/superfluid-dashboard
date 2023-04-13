@@ -160,7 +160,67 @@ export class ActivityPage extends BasePage {
     }
 
     static validateMockedActivityHistoryEntry(activity:string,network:string) {
-        this.hasText(ACTIVITY_NAME,activity)
+        cy.get(ACTIVITY_NAME).last().should("have.text",activity)
         this.isVisible(`[data-cy=${networksBySlug.get(network).id}-icon]`)
+        this.isVisible(TX_HASH_LINKS)
+        this.hasAttributeWithValue(TX_HASH_LINKS,"href","https://polygonscan.com/tx/testTransactionHash")
+        switch (activity) {
+            case "Liquidated":
+                cy.get(ACTIVITY_NAME).first().should("have.text","Send Transfer")
+                cy.get(ACTIVITY_AMOUNT).first().should("have.text","1 TDLx")
+                cy.get(AMOUNT_TO_FROM).first().should("have.text",`To${this.shortenHex("0x2597c6abba5724fb99f343abddd4569ee4223179")}`)
+                cy.get(ACTIVITY_AMOUNT).last().should("have.text","-")
+                cy.get(AMOUNT_TO_FROM).last().should("have.text",`To${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+            case "Wrap":
+                this.hasText(ACTIVITY_AMOUNT,"-1 TDL")
+                this.hasText(AMOUNT_TO_FROM,"+1 TDLx")
+                break;
+            case "Send Stream":
+                this.hasText(ACTIVITY_AMOUNT,"1 TDLx/mo")
+                this.hasText(AMOUNT_TO_FROM,`To${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+            case "Unwrap":
+                this.hasText(ACTIVITY_AMOUNT,"-1 TDLx")
+                this.hasText(AMOUNT_TO_FROM,"+1 TDL")
+                break;
+            case "Receive Transfer":
+                this.hasText(ACTIVITY_AMOUNT,"1 TDLx")
+                this.hasText(AMOUNT_TO_FROM,`From${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+            case "Stream Updated":
+                this.hasText(ACTIVITY_AMOUNT,"1 TDLx/mo")
+                this.hasText(AMOUNT_TO_FROM,`To${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+            case "Receive Stream":
+                this.hasText(ACTIVITY_AMOUNT,"1 TDLx/mo")
+                this.hasText(AMOUNT_TO_FROM,`From${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+            case "Stream Cancelled":
+                this.hasText(ACTIVITY_AMOUNT,"0 TDLx/mo")
+                this.hasText(AMOUNT_TO_FROM,`To${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+            case "Subscription Approved":
+                this.hasText(ACTIVITY_AMOUNT," TDLx")
+                this.hasText(AMOUNT_TO_FROM,`Publisher${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+            case "Subscription Updated":
+                this.hasText(ACTIVITY_AMOUNT,"+100 units")
+                this.hasText(AMOUNT_TO_FROM,`Publisher${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+            case "Subscription Rejected":
+                this.hasText(ACTIVITY_AMOUNT,"TDLx")
+                this.hasText(AMOUNT_TO_FROM,`Publisher${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+            case "Index Created":
+                this.hasText(ACTIVITY_AMOUNT,"TDLx")
+                this.doesNotExist(AMOUNT_TO_FROM)
+                break;
+            case "Send Transfer":
+                this.hasText(ACTIVITY_AMOUNT,"1 TDLx")
+                this.hasText(AMOUNT_TO_FROM,`To${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+
+        }
     }
 }

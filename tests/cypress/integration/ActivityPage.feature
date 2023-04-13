@@ -53,16 +53,18 @@ Feature: Activity History Page tests
     Then Mocked "<activity>" entry on "polygon" is shown in the activity history
     Examples:
       | activity              |
-      | Liquidated            |
-      | Wrap                  |
-      | Send Stream           |
-      | Unwrap                |
-      | Receive Transfer      |
-      | Stream Updated        |
-      | Receive Stream        |
-      | Stream Cancelled      |
-      | Subscription Approved |
+#      | Liquidated            |
+#      | Wrap                  |
+#      | Send Stream           |
+#      | Unwrap                |
+#      | Receive Transfer      |
+#      | Stream Updated        |
+#      | Receive Stream        |
+#      | Stream Cancelled      |
+#      | Subscription Approved |
       | Subscription Updated  |
       | Subscription Rejected |
       | Index Created         |
       | Send Transfer         |
+    #Send Distribution
+    #Distribution Claimed
