@@ -26,13 +26,13 @@ export const DeleteVestingTransactionButton: FC<{
   senderAddress: string;
   receiverAddress: string;
   TransactionBoundaryProps?: TransactionBoundaryProps;
-  TransactionButtonProps?: TransactionButtonProps;
+  TransactionButtonProps?: Partial<TransactionButtonProps>;
 }> = ({
   superTokenAddress,
   senderAddress,
   receiverAddress,
   TransactionBoundaryProps,
-  TransactionButtonProps,
+  TransactionButtonProps = {},
 }) => {
   const { txAnalytics } = useAnalytics();
   const [deleteVestingSchedule, deleteVestingScheduleResult] =
@@ -76,6 +76,8 @@ export const DeleteVestingTransactionButton: FC<{
   });
   const isButtonVisible = !!activeVestingSchedule && !isBeingDeleted;
 
+  const { ButtonProps = {}, ...RestTxButtonProps } = TransactionButtonProps;
+
   return (
     <TransactionBoundary
       {...TransactionBoundaryProps}
@@ -84,7 +86,7 @@ export const DeleteVestingTransactionButton: FC<{
       {({ getOverrides, setDialogLoadingInfo, setDialogSuccessActions }) =>
         isButtonVisible && (
           <TransactionButton
-            {...TransactionButtonProps}
+            {...RestTxButtonProps}
             dataCy={"delete-schedule-button"}
             ButtonProps={{
               variant: "textContained",
@@ -92,6 +94,7 @@ export const DeleteVestingTransactionButton: FC<{
               size: "medium",
               fullWidth: false,
               startIcon: <CloseRoundedIcon />,
+              ...ButtonProps,
             }}
             onClick={async (signer) => {
               const shouldDeleteActiveFlow =

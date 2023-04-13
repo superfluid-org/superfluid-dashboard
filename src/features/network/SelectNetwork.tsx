@@ -44,7 +44,8 @@ export default memo(function SelectNetwork() {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { availableMainNetworks, availableTestNetworks } = useAvailableNetworks();
+  const { availableMainNetworks, availableTestNetworks } =
+    useAvailableNetworks();
 
   const { address: accountAddress } = useAccount();
   const { switchNetwork } = useSwitchNetwork();
@@ -103,8 +104,8 @@ export default memo(function SelectNetwork() {
           {selectedNetwork.name}
         </Button>
       ) : (
-        <IconButton onClick={handleOpen}>
-          <NetworkIcon network={selectedNetwork} size={30} fontSize={16} />
+        <IconButton onClick={handleOpen} size="small">
+          <NetworkIcon network={selectedNetwork} size={28} fontSize={16} />
         </IconButton>
       )}
 

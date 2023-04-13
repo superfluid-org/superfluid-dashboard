@@ -14,9 +14,6 @@ import { RootState } from "../redux/store";
 export enum Flag {
   TestTokensReceived = "test-tokens-received",
   TokenAdded = "token-added",
-  VestingFeature = "vesting-feature",
-  MainnetFeature = "mainnet-feature",
-  FlowSchedulerFeature = "flow-scheduler-feature",
 }
 
 interface BaseFlag<T> {
@@ -37,20 +34,7 @@ export interface TokenAddedFlag extends BaseFlag<Flag.TokenAdded> {
   walletId: string;
 }
 
-interface VestingFeatureFlag extends BaseFlag<Flag.VestingFeature> {
-  id: Flag.VestingFeature;
-}
-
-interface MainnetFeatureFlag extends BaseFlag<Flag.MainnetFeature> {}
-
-interface FlowSchedulerFeatureFlag
-  extends BaseFlag<Flag.FlowSchedulerFeature> {}
-
-type FlagType =
-  | TestTokensReceivedFlag
-  | TokenAddedFlag
-  | VestingFeatureFlag
-  | MainnetFeatureFlag;
+type FlagType = TestTokensReceivedFlag | TokenAddedFlag;
 
 /**
  * Account flags are used to store simple boolean type account data.
@@ -95,17 +79,6 @@ export const flagsSlice = createSlice({
         } as TokenAddedFlag,
       }),
     },
-
-    // TODO: We should merge logic for these simple feature flags
-    enableVestingFeature: {
-      reducer: adapter.upsertOne,
-      prepare: () => ({
-        payload: {
-          id: Flag.VestingFeature,
-          type: Flag.VestingFeature,
-        } as VestingFeatureFlag,
-      }),
-    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -132,11 +105,8 @@ export const flagsSlice = createSlice({
   },
 });
 
-export const {
-  addTestTokensReceivedFlag,
-  addTokenAddedFlag,
-  enableVestingFeature,
-} = flagsSlice.actions;
+export const { addTestTokensReceivedFlag, addTokenAddedFlag } =
+  flagsSlice.actions;
 
 const selectSelf = (state: RootState): EntityState<FlagType> => state.flags;
 

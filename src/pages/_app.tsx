@@ -4,10 +4,11 @@ import { AppProps } from "next/app";
 import Head from "next/head";
 import { ReactElement, ReactNode, useEffect } from "react";
 import { hotjar } from "react-hotjar";
+import "react-toastify/dist/ReactToastify.css";
 import MonitorContext from "../components/MonitorContext/MonitorContext";
+import { ToastProvider } from "../components/Toast/toast";
 import { AnalyticsProvider } from "../features/analytics/AnalyticsProvider";
 import { AutoConnectProvider } from "../features/autoConnect/AutoConnect";
-import { FeatureFlagProvider } from "../features/featureFlags/FeatureFlagContext";
 import { ImpersonationProvider } from "../features/impersonation/ImpersonationContext";
 import IntercomProvider from "../features/intercom/IntercomProvider";
 import Layout from "../features/layout/Layout";
@@ -17,9 +18,9 @@ import { ActiveNetworksProvider } from "../features/network/ActiveNetworksContex
 import { AvailableNetworksProvider } from "../features/network/AvailableNetworksContext";
 import { ExpectedNetworkProvider } from "../features/network/ExpectedNetworkContext";
 import ReduxProvider from "../features/redux/ReduxProvider";
-import createEmotionCache from "../features/theme/createEmotionCache";
 import MuiProvider from "../features/theme/MuiProvider";
 import NextThemesProvider from "../features/theme/NextThemesProvider";
+import createEmotionCache from "../features/theme/createEmotionCache";
 import { TransactionRestorationContextProvider } from "../features/transactionRestoration/TransactionRestorationContext";
 import ConnectButtonProvider from "../features/wallet/ConnectButtonProvider";
 import { VisibleAddressProvider } from "../features/wallet/VisibleAddressContext";
@@ -27,12 +28,8 @@ import WagmiManager, {
   RainbowKitManager,
 } from "../features/wallet/WagmiManager";
 import { initializeSuperfluidDashboardGlobalObject } from "../global";
-import config from "../utils/config";
 import { IsCypress } from "../utils/SSRUtils";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer } from "react-toastify";
-import { useTheme } from "@mui/material";
-import { ToastProvider } from "../components/Toast/toast";
+import config from "../utils/config";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -71,8 +68,6 @@ export default function MyApp(props: AppPropsWithLayout) {
     []
   );
 
-  const theme = useTheme();
-
   return (
     <NextThemesProvider>
       <CacheProvider value={emotionCache}>
@@ -82,43 +77,41 @@ export default function MyApp(props: AppPropsWithLayout) {
         <WagmiManager>
           <AutoConnectProvider>
             <ReduxProvider>
-              <FeatureFlagProvider>
-                <AvailableNetworksProvider>
-                  <ImpersonationProvider>
-                    <ExpectedNetworkProvider>
-                      <ActiveNetworksProvider>
-                        <MuiProvider>
-                          {(_muiTheme) => (
-                            <RainbowKitManager>
-                              <ConnectButtonProvider>
-                                <VisibleAddressProvider>
-                                  <TransactionRestorationContextProvider>
-                                    <LayoutContextProvider>
-                                      <AnalyticsProvider>
-                                        <ToastProvider />
-                                        <IntercomProvider>
-                                          <MonitorContext />
-                                          <Layout>
-                                            <MinigameProvider>
-                                              {getLayout(
-                                                <Component {...pageProps} />
-                                              )}
-                                            </MinigameProvider>
-                                          </Layout>
-                                        </IntercomProvider>
-                                      </AnalyticsProvider>
-                                    </LayoutContextProvider>
-                                  </TransactionRestorationContextProvider>
-                                </VisibleAddressProvider>
-                              </ConnectButtonProvider>
-                            </RainbowKitManager>
-                          )}
-                        </MuiProvider>
-                      </ActiveNetworksProvider>
-                    </ExpectedNetworkProvider>
-                  </ImpersonationProvider>
-                </AvailableNetworksProvider>
-              </FeatureFlagProvider>
+              <AvailableNetworksProvider>
+                <ImpersonationProvider>
+                  <ExpectedNetworkProvider>
+                    <ActiveNetworksProvider>
+                      <MuiProvider>
+                        {(_muiTheme) => (
+                          <RainbowKitManager>
+                            <ConnectButtonProvider>
+                              <VisibleAddressProvider>
+                                <TransactionRestorationContextProvider>
+                                  <LayoutContextProvider>
+                                    <AnalyticsProvider>
+                                      <ToastProvider />
+                                      <IntercomProvider>
+                                        <MonitorContext />
+                                        <Layout>
+                                          <MinigameProvider>
+                                            {getLayout(
+                                              <Component {...pageProps} />
+                                            )}
+                                          </MinigameProvider>
+                                        </Layout>
+                                      </IntercomProvider>
+                                    </AnalyticsProvider>
+                                  </LayoutContextProvider>
+                                </TransactionRestorationContextProvider>
+                              </VisibleAddressProvider>
+                            </ConnectButtonProvider>
+                          </RainbowKitManager>
+                        )}
+                      </MuiProvider>
+                    </ActiveNetworksProvider>
+                  </ExpectedNetworkProvider>
+                </ImpersonationProvider>
+              </AvailableNetworksProvider>
             </ReduxProvider>
           </AutoConnectProvider>
         </WagmiManager>

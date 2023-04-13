@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Stack,
   TableCell,
@@ -16,12 +17,14 @@ interface TableFilterOption<T extends Key> {
 interface TableFilterRowProps<T extends Key> {
   value: T;
   options: TableFilterOption<T>[];
+  colSpan: number;
   onChange: (newValue: T) => void;
 }
 
 function TableFilterRow<T extends Key>({
   value,
   options,
+  colSpan,
   onChange,
 }: TableFilterRowProps<T>) {
   const theme = useTheme();
@@ -36,8 +39,22 @@ function TableFilterRow<T extends Key>({
 
   return (
     <TableRow>
-      <TableCell colSpan={6}>
-        <Stack direction="row" alignItems="center" gap={1}>
+      <TableCell
+        colSpan={colSpan}
+        sx={{ [theme.breakpoints.down("md")]: { p: 0 } }}
+      >
+        <Stack
+          direction="row"
+          alignItems="center"
+          gap={1}
+          sx={{
+            overflowX: "auto",
+            [theme.breakpoints.down("md")]: {
+              px: 2,
+              py: 1,
+            },
+          }}
+        >
           {options.map((option) => (
             <Button
               key={option.value}

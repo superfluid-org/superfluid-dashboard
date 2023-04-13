@@ -303,7 +303,13 @@ const CreateVestingForm: FC<{
       name="data.vestingPeriod"
       render={({ field: { value, onChange, onBlur } }) => {
         return (
-          <Box sx={{ display: "grid", gridTemplateColumns: "2fr 1fr" }}>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "2fr 1fr",
+              alignItems: "stretch",
+            }}
+          >
             <TextField
               data-cy={"total-period-input"}
               value={value.numerator}
@@ -474,7 +480,13 @@ const CreateVestingForm: FC<{
           {ReceiverController}
         </FormGroup>
 
-        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: isBelowMd ? "1fr" : "1fr 1fr",
+            gap: 2.5,
+          }}
+        >
           <FormGroup>
             <FormLabel>{VestingFormLabels.SuperToken}</FormLabel>
             {TokenController}
@@ -485,7 +497,13 @@ const CreateVestingForm: FC<{
           </FormGroup>
         </Box>
 
-        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: isBelowMd ? "1fr" : "1fr 1fr",
+            gap: 2.5,
+          }}
+        >
           <FormGroup>
             <Stack
               direction="row"
@@ -517,7 +535,13 @@ const CreateVestingForm: FC<{
         </Stack>
 
         {cliffEnabled && (
-          <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: isBelowMd ? "1fr" : "1fr 1fr",
+              gap: 2,
+            }}
+          >
             <FormGroup>
               <Stack
                 direction="row"

@@ -224,12 +224,7 @@ export class Common extends BasePage {
       //The nextjs error is annoying when developing test cases in dev mode
       cy.get("nextjs-portal").shadow().find("[aria-label=Close]").click();
     }
-    if (Cypress.env("vesting")) {
-      this.clickNavBarButton("vesting")
-      this.click(VESTING_CODE_BUTTON);
-      this.type(ACCESS_CODE_INPUT, "98S_VEST");
-      this.click(ACCESS_CODE_SUBMIT);
-    }
+
     this.changeNetwork(selectedNetwork);
     let workaroundNetwork =
         selectedNetwork === "goerli" ? "avalanche-fuji" : "goerli";

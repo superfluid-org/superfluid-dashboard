@@ -1,12 +1,16 @@
-import { Typography } from "@mui/material";
+import { Typography, TypographyProps } from "@mui/material";
 import { FC, useMemo } from "react";
 import { VestingSchedule } from "./types";
 
 interface VestingStatusProps {
   vestingSchedule: VestingSchedule;
+  TypographyProps?: Partial<TypographyProps>;
 }
 
-const VestingStatus: FC<VestingStatusProps> = ({ vestingSchedule }) => {
+const VestingStatus: FC<VestingStatusProps> = ({
+  vestingSchedule,
+  TypographyProps = {},
+}) => {
   const { status } = vestingSchedule;
 
   const color = useMemo(() => {
@@ -28,7 +32,13 @@ const VestingStatus: FC<VestingStatusProps> = ({ vestingSchedule }) => {
   }, [status]);
 
   return (
-    <Typography data-cy={"vesting-status"} variant="h7" component="span" color={color}>
+    <Typography
+      data-cy={"vesting-status"}
+      variant="h7"
+      component="span"
+      color={color}
+      {...TypographyProps}
+    >
       {vestingSchedule.status.title}
     </Typography>
   );

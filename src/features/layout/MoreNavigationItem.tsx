@@ -1,22 +1,17 @@
 import AssessmentRoundedIcon from "@mui/icons-material/AssessmentRounded";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import QrCodeRoundedIcon from "@mui/icons-material/QrCodeRounded";
 import ShowerRoundedIcon from "@mui/icons-material/ShowerRounded";
 import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
   Popover,
-  Typography,
   useTheme,
 } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import { FC, MouseEvent, useState } from "react";
-import AppCurrencySelect from "../../components/CurrencySelect/AppCurrencySelect";
-import PrimaryLink from "../common/Link";
-import { useLayoutContext } from "./LayoutContext";
 
 interface MenuItemImageProps {
   src: string;
@@ -39,7 +34,6 @@ const MenuItemImage: FC<MenuItemImageProps> = ({ src, alt }) => (
 const MoreNavigationItem: FC = () => {
   const theme = useTheme();
 
-  const { setAccessCodeDialogContent } = useLayoutContext();
   const [moreMenuAnchor, setMoreMenuAnchor] = useState<HTMLElement | null>(
     null
   );

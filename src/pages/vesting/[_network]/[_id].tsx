@@ -116,12 +116,15 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
 
   const [graphFilter, setGraphFilter] = useState(TimeUnitFilterType.All);
 
-  const vestingScheduleQuery = vestingSubgraphApi.useGetVestingScheduleQuery({
-    chainId: network.id,
-    id,
-  }, {
-    refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
-  });
+  const vestingScheduleQuery = vestingSubgraphApi.useGetVestingScheduleQuery(
+    {
+      chainId: network.id,
+      id,
+    },
+    {
+      refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
+    }
+  );
 
   const vestingSchedule = vestingScheduleQuery.data?.vestingSchedule;
   const now = dateNowSeconds();
@@ -356,7 +359,11 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
           />
         </Card>
 
-        <Stack direction="row" alignItems="stretch" gap={3}>
+        <Stack
+          direction={isBelowMd ? "column" : "row"}
+          alignItems="stretch"
+          gap={3}
+        >
           <VestingDataCard
             title="Tokens Allocated"
             dataCy={`${token.symbol}-allocated`}

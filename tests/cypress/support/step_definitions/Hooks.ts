@@ -13,15 +13,6 @@ Before({ tags: "@rejected" }, function () {
     Cypress.env("rejected" , true)
 });
 
-//Enable hidden vesting feature
-Before({ tags: "@vesting and not @NoCode" }, function () {
-    Cypress.env("vesting" , true)
-});
-
-Before({ tags: "@NoCode" }, function () {
-    Cypress.env("vesting" , false)
-});
-
 Before({tags: "@scheduling"} , () => {
     Cypress.env("scheduling" , true)
 })

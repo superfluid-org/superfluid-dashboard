@@ -1,7 +1,10 @@
-import { Container, Typography } from "@mui/material";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import { Button, Container, Stack, Typography } from "@mui/material";
+import NextLink from "next/link";
 import { ReactElement } from "react";
+import { useAccount } from "wagmi";
 import withStaticSEO from "../components/SEO/withStaticSEO";
-import VestingHeader from "../features/vesting/VestingHeader";
+import SimpleVestingHeader from "../features/vesting/SimpleVestingHeader";
 import VestingLayout from "../features/vesting/VestingLayout";
 import VestingScheduleTables from "../features/vesting/VestingScheduleTables";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
@@ -12,12 +15,7 @@ const VestingPage: NextPageWithLayout = () => {
 
   return (
     <Container maxWidth="lg">
-      <VestingHeader>
-        <Typography component="h1" variant="h4">
-          Vesting
-        </Typography>
-      </VestingHeader>
-
+      <SimpleVestingHeader />
       {visibleAddress && <VestingScheduleTables />}
     </Container>
   );
