@@ -62,10 +62,11 @@ const SCHEDULE_CLIFF_END = "[data-cy=cliff-end]"
 const SCHEDULE_VESTING_START = "[data-cy=vesting-start]"
 const SCHEDULE_VESTING_END = "[data-cy=vesting-end]"
 const ACCESS_CODE_BUTTON = "[data-cy=vesting-code-button]"
-const TRY_MUMBAI_BUTTON = "[data-cy=try-on-mumbai-button]"
-const VESTING_FORM_LINK = "[data-cy=vesting-form-link]"
+const TRY_MUMBAI_BUTTON = "[data-cy=polygon-mumbai-link]"
 const TOPUP_WARNING_TITLE = "[data-cy=top-up-alert-title]"
 const TOPUP_WARNING_TEXT = "[data-cy=top-up-alert-text]"
+const ALLOWLIST_MESSAGE = "[data-cy=allowlist-message]"
+const ALLOWLIST_LINK = "[data-cy=allowlist-link]"
 
 //Strings
 const NO_CREATED_TITLE_STRING = "No Sent Vesting Schedules"
@@ -492,11 +493,10 @@ export class VestingPage extends BasePage {
         cy.get("[data-cy=DAIx-total-vested]").should("not.exist")
     }
 
-    static validateNoCodeUnlockScreen() {
-        cy.contains("Unlock Vesting with Superfluid").should("be.visible")
-        cy.contains("Provide your Access Code or try out Vesting Schedule on Mumbai Testnet.").should("be.visible")
-        this.hasAttributeWithValue(VESTING_FORM_LINK,"href","https://use.superfluid.finance/vesting")
-        this.isVisible(ACCESS_CODE_BUTTON)
+    static validateAllowListMessage() {
+        this.hasText(ALLOWLIST_MESSAGE,"You are not on the allow list.If you want to create vesting schedules, Apply for access or try it out on Polygon Mumbai.")
+        this.isVisible(ALLOWLIST_LINK)
+        this.hasAttributeWithValue(ALLOWLIST_LINK,"href","https://use.superfluid.finance/vesting")
         this.isVisible(TRY_MUMBAI_BUTTON)
     }
 

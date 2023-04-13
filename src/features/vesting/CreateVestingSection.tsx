@@ -134,8 +134,6 @@ export const CreateVestingSection: FC<CreateVestingSectionProps> = ({
     </Stepper>
   );
 
-  console.log({ whitelisted });
-
   return (
     <Box>
       <Stack

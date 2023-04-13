@@ -112,8 +112,8 @@ Given(/^Vesting schedule progress is mocked to (.*)$/, function (status:string) 
 Then(/^Total stats for the sent vesting schedules are shown correctly$/, function () {
     VestingPage.validateAggregateStats()
 });
-Then(/^Unlock Vesting with Superfluid screen is visible$/, function () {
-    VestingPage.validateNoCodeUnlockScreen()
+Then(/^Vesting allowlist message is shown$/, function () {
+    VestingPage.validateAllowListMessage()
 });
 Then(/^User tries out vesting on Mumbai testnet$/, function () {
     VestingPage.clickOnTryOnMumbaiButton()
