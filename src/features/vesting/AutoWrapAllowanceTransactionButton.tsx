@@ -12,6 +12,7 @@ import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { VestingToken } from "./CreateVestingSection";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
+import { convertOverridesForWagmi } from "../../utils/convertOverridesForWagmi";
 
 const TX_TITLE: TransactionTitle = "Authorize Auto-Wrap";
 
@@ -28,38 +29,18 @@ const AutoWrapAllowanceTransactionButton: FC<{
   const getGasOverrides = useGetTransactionOverrides();
   const { data: overrides } = useQuery(
     ["gasOverrides", TX_TITLE, network.id],
-    async () => {
-      const overrides_ = await getGasOverrides(network);
-      return {
-        ...overrides_,
-        gasPrice: overrides_.gasPrice
-          ? BigNumber.from(overrides_.gasPrice)
-          : undefined,
-        gasLimit: overrides_.gasLimit
-          ? BigNumber.from(overrides_.gasLimit)
-          : undefined,
-        maxFeePerGas: overrides_.maxFeePerGas
-          ? BigNumber.from(overrides_.maxFeePerGas)
-          : undefined,
-        maxPriorityFeePerGas: overrides_.maxPriorityFeePerGas
-          ? BigNumber.from(overrides_.maxPriorityFeePerGas)
-          : undefined,
-      };
-    }
+    async () => convertOverridesForWagmi(await getGasOverrides(network))
   );
 
   const primaryArgs = {
     spender: network.autoWrap!.strategyContractAddress,
     amount: constants.MaxUint256,
-  }
+  };
 
   const { config } = usePrepareErc20Approve({
     enabled: setupAutoWrap && !!network.autoWrap, // TODO(KK): any other conditions to add here?
     address: token.underlyingAddress as `0x${string}`,
-    args: [
-      primaryArgs.spender,
-      primaryArgs.amount,
-    ],
+    args: [primaryArgs.spender, primaryArgs.amount],
     signer: signer,
     chainId: network.id,
     overrides,
@@ -74,7 +55,7 @@ const AutoWrapAllowanceTransactionButton: FC<{
         getOverrides,
         setDialogLoadingInfo,
         setDialogSuccessActions,
-        txAnalytics
+        txAnalytics,
       }) =>
         isVisible && (
           <TransactionButton
@@ -98,7 +79,9 @@ const AutoWrapAllowanceTransactionButton: FC<{
                 transactionTitle: TX_TITLE,
               })
                 .unwrap()
-                .then(...txAnalytics("Approve Auto-Wrap Allowance", primaryArgs))
+                .then(
+                  ...txAnalytics("Approve Auto-Wrap Allowance", primaryArgs)
+                )
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}
           >

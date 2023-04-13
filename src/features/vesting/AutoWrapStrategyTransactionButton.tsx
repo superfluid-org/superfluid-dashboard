@@ -12,6 +12,7 @@ import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { VestingToken } from "./CreateVestingSection";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
+import { convertOverridesForWagmi } from "../../utils/convertOverridesForWagmi";
 
 const TX_TITLE: TransactionTitle = "Enable Auto-Wrap";
 
@@ -26,25 +27,19 @@ const AutoWrapStrategyTransactionButton: FC<{
   const [setupAutoWrap] = watch(["data.setupAutoWrap"]);
 
   const getGasOverrides = useGetTransactionOverrides();
-  const { data: overrides } = useQuery(["gasOverrides", TX_TITLE, network.id], async () => {
-    const overrides_ = await getGasOverrides(network);
-    return {
-      ...overrides_,
-      gasPrice: overrides_.gasPrice ? BigNumber.from(overrides_.gasPrice) : undefined,
-      gasLimit: overrides_.gasLimit ? BigNumber.from(overrides_.gasLimit) : undefined,
-      maxFeePerGas: overrides_.maxFeePerGas ? BigNumber.from(overrides_.maxFeePerGas) : undefined,
-      maxPriorityFeePerGas: overrides_.maxPriorityFeePerGas ? BigNumber.from(overrides_.maxPriorityFeePerGas) : undefined
-    }
-  });
+  const { data: overrides } = useQuery(
+    ["gasOverrides", TX_TITLE, network.id],
+    async () => convertOverridesForWagmi(await getGasOverrides(network))
+  );
 
-const primaryArgs = {
-  superToken: token.address as `0x${string}`,
-  strategy: network.autoWrap!.strategyContractAddress,
-  liquidityToken: token.underlyingAddress as `0x${string}`,
-  expiry: BigNumber.from("3000000000"),
-  lowerLimit: BigNumber.from(network.autoWrap!.lowerLimit),
-  upperLimit: BigNumber.from(network.autoWrap!.upperLimit),
-}
+  const primaryArgs = {
+    superToken: token.address as `0x${string}`,
+    strategy: network.autoWrap!.strategyContractAddress,
+    liquidityToken: token.underlyingAddress as `0x${string}`,
+    expiry: BigNumber.from("3000000000"),
+    lowerLimit: BigNumber.from(network.autoWrap!.lowerLimit),
+    upperLimit: BigNumber.from(network.autoWrap!.upperLimit),
+  };
 
   const { config } = usePrepareAutoWrapManagerCreateWrapSchedule({
     chainId: network.id as any,
@@ -55,10 +50,10 @@ const primaryArgs = {
       primaryArgs.liquidityToken,
       primaryArgs.expiry,
       primaryArgs.lowerLimit,
-      primaryArgs.upperLimit
+      primaryArgs.upperLimit,
     ],
     signer: signer,
-    overrides
+    overrides,
   });
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
@@ -70,7 +65,7 @@ const primaryArgs = {
         getOverrides,
         setDialogLoadingInfo,
         setDialogSuccessActions,
-        txAnalytics
+        txAnalytics,
       }) =>
         isVisible && (
           <TransactionButton
@@ -80,7 +75,8 @@ const primaryArgs = {
 
               setDialogLoadingInfo(
                 <Typography variant="h5" color="text.secondary" translate="yes">
-                  You are enabling Auto-Wrap to top up your {token.symbol} tokens when balance reaches low.
+                  You are enabling Auto-Wrap to top up your {token.symbol}{" "}
+                  tokens when balance reaches low.
                 </Typography>
               );
 
@@ -88,13 +84,13 @@ const primaryArgs = {
                 signer,
                 config: {
                   ...config,
-                  chainId: network.id
+                  chainId: network.id,
                 },
-                transactionTitle: TX_TITLE
+                transactionTitle: TX_TITLE,
               })
-              .unwrap()
-              .then(...txAnalytics("Enable Auto-Wrap", primaryArgs))
-              .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
+                .unwrap()
+                .then(...txAnalytics("Enable Auto-Wrap", primaryArgs))
+                .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}
           >
             {TX_TITLE}
