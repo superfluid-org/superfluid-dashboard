@@ -4,7 +4,7 @@ import { BigNumber } from "ethers";
 import { FC, memo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useQuery, useSigner } from "wagmi";
-import { usePrepareAutoWrapManagerCreateWrapSchedule } from "../../generated";
+import { autoWrapManagerAddress, usePrepareAutoWrapManagerCreateWrapSchedule } from "../../generated";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi } from "../redux/store";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
@@ -42,8 +42,7 @@ const AutoWrapStrategyTransactionButton: FC<{
   };
 
   const { config } = usePrepareAutoWrapManagerCreateWrapSchedule({
-    chainId: network.id as any,
-    enabled: setupAutoWrap, // TODO(KK): any other conditions to add here?
+    enabled: setupAutoWrap && !!network.autoWrap,
     args: [
       primaryArgs.superToken,
       primaryArgs.strategy,
@@ -52,7 +51,8 @@ const AutoWrapStrategyTransactionButton: FC<{
       primaryArgs.lowerLimit,
       primaryArgs.upperLimit,
     ],
-    signer: signer,
+    chainId: network.id as keyof typeof autoWrapManagerAddress,
+    signer,
     overrides,
   });
 

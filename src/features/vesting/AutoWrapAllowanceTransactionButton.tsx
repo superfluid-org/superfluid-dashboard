@@ -40,9 +40,9 @@ const AutoWrapAllowanceTransactionButton: FC<{
   const { config } = usePrepareErc20Approve({
     enabled: setupAutoWrap && !!network.autoWrap, // TODO(KK): any other conditions to add here?
     address: token.underlyingAddress as `0x${string}`,
-    args: [primaryArgs.spender, primaryArgs.amount],
-    signer: signer,
     chainId: network.id,
+    args: [primaryArgs.spender, primaryArgs.amount],
+    signer,
     overrides,
   });
 
