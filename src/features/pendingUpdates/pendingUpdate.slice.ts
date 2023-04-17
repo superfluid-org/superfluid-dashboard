@@ -12,6 +12,10 @@ import {
 import { PendingUpdate } from "./PendingUpdate";
 import { PendingVestingSchedule } from "./PendingVestingSchedule";
 import { PendingVestingScheduleDeletion as PendingVestingScheduleDelete } from "./PendingVestingScheduleDelete";
+import {
+  PendingVestingCliffExecution,
+  PendingVestingEndExecution,
+} from "./PendingVestingExecution";
 
 export const pendingUpdateAdapter = createEntityAdapter<PendingUpdate>({
   selectId: (x) => x.id,
@@ -91,7 +95,7 @@ export const pendingUpdateSlice = createSlice({
           superTokenAddress,
           receiverAddress,
           flowRateWei,
-          userDataBytes
+          userDataBytes,
         } = action.meta.arg.originalArgs;
         if (senderAddress) {
           const timestamp = dateNowSeconds();
@@ -109,7 +113,7 @@ export const pendingUpdateSlice = createSlice({
             streamedUntilUpdatedAt: "0",
             currentFlowRate: flowRateWei,
             relevantSubgraph: "Protocol",
-            userData: userDataBytes ?? "0x"
+            userData: userDataBytes ?? "0x",
           };
           pendingUpdateAdapter.addOne(state, pendingUpdate);
         }
@@ -317,6 +321,46 @@ export const pendingUpdateSlice = createSlice({
           id: transactionHash,
           superTokenAddress,
           pendingType: "VestingScheduleDelete",
+          timestamp: dateNowSeconds(),
+          relevantSubgraph: "Vesting",
+        };
+        pendingUpdateAdapter.addOne(state, pendingUpdate);
+      }
+    );
+    builder.addMatcher(
+      rpcApi.endpoints.executeCliffAndFlow.matchFulfilled,
+      (state, action) => {
+        const { chainId, hash: transactionHash } = action.payload;
+        const { senderAddress, superTokenAddress, receiverAddress } =
+          action.meta.arg.originalArgs;
+        const pendingUpdate: PendingVestingCliffExecution = {
+          chainId,
+          transactionHash,
+          senderAddress,
+          receiverAddress,
+          id: transactionHash,
+          superTokenAddress,
+          pendingType: "VestingExecuteCliff",
+          timestamp: dateNowSeconds(),
+          relevantSubgraph: "Vesting",
+        };
+        pendingUpdateAdapter.addOne(state, pendingUpdate);
+      }
+    );
+    builder.addMatcher(
+      rpcApi.endpoints.executeEndVesting.matchFulfilled,
+      (state, action) => {
+        const { chainId, hash: transactionHash } = action.payload;
+        const { senderAddress, superTokenAddress, receiverAddress } =
+          action.meta.arg.originalArgs;
+        const pendingUpdate: PendingVestingEndExecution = {
+          chainId,
+          transactionHash,
+          senderAddress,
+          receiverAddress,
+          id: transactionHash,
+          superTokenAddress,
+          pendingType: "VestingExecuteEnd",
           timestamp: dateNowSeconds(),
           relevantSubgraph: "Vesting",
         };

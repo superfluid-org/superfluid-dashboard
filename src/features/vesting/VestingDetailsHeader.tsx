@@ -19,6 +19,7 @@ import TokenIcon from "../token/TokenIcon";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { DeleteVestingTransactionButton } from "./DeleteVestingTransactionButton";
 import { VestingSchedule } from "./types";
+import NetworkBadge from "../network/NetworkBadge";
 
 interface CounterpartyAddressProps {
   title: string;
@@ -87,31 +88,51 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
 
   return (
     <>
-      <Stack gap={3}>
+      <Stack gap={3} flex={1}>
         <Stack
           direction="row"
           justifyContent="space-between"
           alignItems="center"
-          sx={{ mb: 0 }}
+          sx={{ mb: 0, width: "100%" }}
         >
-          <Stack direction="row" alignItems="center" gap={2}>
+          <Stack
+            direction="row"
+            alignItems="center"
+            gap={2}
+            sx={{ width: "100%" }}
+          >
             <IconButton color="inherit" onClick={navigateBack}>
               <ArrowBackRoundedIcon />
             </IconButton>
-            <Stack direction="column">
+            <Stack direction="column" flex={1}>
               <Stack direction="row" alignItems="center" gap={2}>
                 <TokenIcon isSuper tokenSymbol={token.symbol} />
-                <Typography component="h1" variant="h4">
+                <Typography
+                  component="h1"
+                  variant="h4"
+                  sx={{ [theme.breakpoints.down("md")]: { flex: 1 } }}
+                >
                   Vesting {token.symbol}
                 </Typography>
-                <Chip
-                  size="small"
-                  label={network.name}
-                  translate="no"
-                  avatar={
-                    <NetworkIcon network={network} size={18} fontSize={14} />
-                  }
-                />
+                {isBelowMd ? (
+                  <NetworkBadge
+                    network={network}
+                    NetworkIconProps={{
+                      sx: {
+                        [theme.breakpoints.down("md")]: { borderRadius: 1 },
+                      },
+                    }}
+                  />
+                ) : (
+                  <Chip
+                    size="small"
+                    label={network.name}
+                    translate="no"
+                    avatar={
+                      <NetworkIcon network={network} size={18} fontSize={14} />
+                    }
+                  />
+                )}
               </Stack>
             </Stack>
           </Stack>

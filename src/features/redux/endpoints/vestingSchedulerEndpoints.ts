@@ -41,7 +41,7 @@ export interface DeleteVestingSchedule extends BaseSuperTokenMutation {
   deleteFlow: boolean;
 }
 
-export interface ExecuteVestingCliff extends BaseSuperTokenMutation {
+export interface ManualVestingExecution extends BaseSuperTokenMutation {
   chainId: number;
   senderAddress: string;
   receiverAddress: string;
@@ -420,28 +420,93 @@ export const vestingSchedulerMutationEndpoints = {
         };
       },
     }),
-    executeVestingCliff: builder.mutation<TransactionInfo, ExecuteVestingCliff>(
-      {
-        queryFn: async (
-          {
-            chainId,
-            signer,
-            superTokenAddress,
-            senderAddress,
-            receiverAddress,
-            ...arg
-          },
-          { dispatch }
-        ) => {
-          return {
-            data: {
-              chainId,
-              hash: "",
-            },
-          };
+    executeCliffAndFlow: builder.mutation<
+      TransactionInfo,
+      ManualVestingExecution
+    >({
+      queryFn: async (
+        {
+          chainId,
+          signer,
+          superTokenAddress,
+          senderAddress,
+          receiverAddress,
+          ...arg
         },
-      }
-    ),
+        { dispatch }
+      ) => {
+        const signerAddress = await signer.getAddress();
+        const vestingScheduler = getVestingScheduler(chainId, signer);
+
+        const transactionResponse = await vestingScheduler.executeCliffAndFlow(
+          superTokenAddress,
+          senderAddress,
+          receiverAddress,
+          arg.overrides
+        );
+
+        await registerNewTransaction({
+          transactionResponse,
+          chainId,
+          dispatch,
+          signer: signerAddress,
+          title: "Execute Cliff",
+          extraData: arg.transactionExtraData,
+          waitForConfirmation: !!arg.waitForConfirmation,
+        });
+
+        return {
+          data: {
+            chainId,
+            hash: transactionResponse.hash,
+          },
+        };
+      },
+    }),
+    executeEndVesting: builder.mutation<
+      TransactionInfo,
+      ManualVestingExecution
+    >({
+      queryFn: async (
+        {
+          chainId,
+          signer,
+          superTokenAddress,
+          senderAddress,
+          receiverAddress,
+          ...arg
+        },
+        { dispatch }
+      ) => {
+        const signerAddress = await signer.getAddress();
+
+        const vestingScheduler = getVestingScheduler(chainId, signer);
+
+        const transactionResponse = await vestingScheduler.executeEndVesting(
+          superTokenAddress,
+          senderAddress,
+          receiverAddress,
+          arg.overrides
+        );
+
+        await registerNewTransaction({
+          transactionResponse,
+          chainId,
+          dispatch,
+          signer: signerAddress,
+          title: "Execute Vesting End",
+          extraData: arg.transactionExtraData,
+          waitForConfirmation: !!arg.waitForConfirmation,
+        });
+
+        return {
+          data: {
+            chainId,
+            hash: transactionResponse.hash,
+          },
+        };
+      },
+    }),
   }),
 };
 

@@ -402,7 +402,10 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
             <Typography variant="h5">Schedule</Typography>
             <VestingScheduleProgress vestingSchedule={vestingSchedule} />
 
-            <VestingManualOverridesBlock />
+            <VestingManualOverridesBlock
+              vestingSchedule={vestingSchedule}
+              network={network}
+            />
           </Stack>
         </Card>
 

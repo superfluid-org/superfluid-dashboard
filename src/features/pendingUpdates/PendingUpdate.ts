@@ -16,7 +16,9 @@ export interface PendingUpdate {
     | "IndexSubscriptionApprove"
     | "IndexSubscriptionRevoke"
     | "VestingScheduleCreate"
-    | "VestingScheduleDelete";
+    | "VestingScheduleDelete"
+    | "VestingExecuteCliff"
+    | "VestingExecuteEnd";
   transactionHash: string;
   chainId: number;
   timestamp: number;
