@@ -331,7 +331,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                         />
                       )}
                     </TableCell>
-                    <TableCell width="220px">
+                    <TableCell width="200px">
                       <ListItemText
                         data-cy={`${tokenSymbol}-current-allowance`}
                         primary="Current"
@@ -356,7 +356,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                         }
                       />
                     </TableCell>
-                    <TableCell width="260px">
+                    <TableCell width="220px">
                       <ListItemText
                         primary="Current"
                         data-cy={`${tokenSymbol}-current-permissions`}
@@ -368,7 +368,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                         secondary={requiredPermissionsString}
                       />
                     </TableCell>
-                    <TableCell width="350px">
+                    <TableCell width={network.autoWrap ? "380px" : "280px"}>
                       <ListItemText
                         data-cy={`${tokenSymbol}-current-flow-allowance`}
                         primary="Current"
@@ -397,7 +397,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                         }
                       />
                     </TableCell>
-                    {network.autoWrap && <TableCell />}
+                    <TableCell width="100px" />
                   </TableRow>
                 </TableBody>
               </Table>

@@ -143,39 +143,43 @@ const VestingSchedulerAllowancesTable: FC = () => {
               <TableCell>Token</TableCell>
               {!isBelowMd && (
                 <>
-                  <TableCell data-cy="allowance-cell" width="220px">
+                  <TableCell data-cy="allowance-cell" width="200px">
                     Token Allowance
                     <TooltipWithIcon
                       IconProps={{ sx: { ml: 0.5 } }}
                       title="The token allowance needed by the contract for cliff & compensation transfers."
                     />
                   </TableCell>
-                  <TableCell data-cy="operator-permissions-cell" width="260px">
+                  <TableCell data-cy="operator-permissions-cell" width="220px">
                     Stream Permissions
                     <TooltipWithIcon
                       IconProps={{ sx: { ml: 0.5 } }}
                       title="The stream permissions needed by the contract for creating & deletion of Superfluid flows."
                     />
                   </TableCell>
-                  <TableCell data-cy="flow-allowance-cell" width="250px">
+                  <TableCell
+                    data-cy="flow-allowance-cell"
+                    width={network.autoWrap ? "220px" : "280px"}
+                  >
                     Stream Allowance
                     <TooltipWithIcon
                       IconProps={{ sx: { ml: 0.5 } }}
                       title="The stream flow rate allowance needed by the contract for creating Superfluid flows."
                     />
                   </TableCell>
+                  {network.autoWrap && (
+                    <TableCell width="160px">
+                      Auto-Wrap
+                      <TooltipWithIcon
+                        IconProps={{ sx: { ml: 0.5 } }}
+                        title={VestingTooltips.AutoWrap}
+                      />
+                    </TableCell>
+                  )}
                 </>
               )}
-              {network.autoWrap && (
-                <TableCell>
-                  Auto-Wrap{" "}
-                  <TooltipWithIcon
-                    IconProps={{ sx: { ml: 0.5 } }}
-                    title={VestingTooltips.AutoWrap}
-                  />
-                </TableCell>
-              )}
-              <TableCell width="60px" />
+
+              <TableCell width={isBelowMd ? "68px" : "100px"} />
             </TableRow>
           </TableHead>
           <TableBody>
