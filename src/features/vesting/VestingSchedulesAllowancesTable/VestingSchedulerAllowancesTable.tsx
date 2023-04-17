@@ -15,7 +15,7 @@ import { groupBy, uniq } from "lodash";
 import { FC, useMemo } from "react";
 import NoContentPaper from "../../../components/NoContent/NoContentPaper";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
-import TooltipIcon from "../../common/TooltipIcon";
+import TooltipWithIcon from "../../common/TooltipWithIcon";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { rpcApi } from "../../redux/store";
 import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
@@ -24,6 +24,7 @@ import { calculateRequiredAccessForActiveVestingSchedule } from "./calculateRequ
 import VestingSchedulerAllowanceRow, {
   VestingSchedulerAllowanceRowSkeleton,
 } from "./VestingSchedulerAllowanceRow";
+import { VestingTooltips } from "../CreateVestingForm";
 
 const VestingSchedulerAllowancesTable: FC = () => {
   const theme = useTheme();
@@ -144,28 +145,36 @@ const VestingSchedulerAllowancesTable: FC = () => {
                 <>
                   <TableCell data-cy="allowance-cell" width="220px">
                     Token Allowance
-                    <TooltipIcon
+                    <TooltipWithIcon
                       IconProps={{ sx: { ml: 0.5 } }}
                       title="The token allowance needed by the contract for cliff & compensation transfers."
                     />
                   </TableCell>
                   <TableCell data-cy="operator-permissions-cell" width="260px">
                     Stream Permissions
-                    <TooltipIcon
+                    <TooltipWithIcon
                       IconProps={{ sx: { ml: 0.5 } }}
                       title="The stream permissions needed by the contract for creating & deletion of Superfluid flows."
                     />
                   </TableCell>
                   <TableCell data-cy="flow-allowance-cell" width="250px">
                     Stream Allowance
-                    <TooltipIcon
+                    <TooltipWithIcon
                       IconProps={{ sx: { ml: 0.5 } }}
                       title="The stream flow rate allowance needed by the contract for creating Superfluid flows."
                     />
                   </TableCell>
                 </>
               )}
-              {network.autoWrap && <TableCell>Auto-Wrap</TableCell>}
+              {network.autoWrap && (
+                <TableCell>
+                  Auto-Wrap{" "}
+                  <TooltipWithIcon
+                    IconProps={{ sx: { ml: 0.5 } }}
+                    title={VestingTooltips.AutoWrap}
+                  />
+                </TableCell>
+              )}
               <TableCell width="60px" />
             </TableRow>
           </TableHead>

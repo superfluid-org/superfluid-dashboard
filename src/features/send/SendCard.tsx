@@ -48,7 +48,7 @@ import {
 } from "../../utils/tokenUtils";
 import { useAnalytics } from "../analytics/useAnalytics";
 import Link from "../common/Link";
-import TooltipIcon from "../common/TooltipIcon";
+import TooltipWithIcon from "../common/TooltipWithIcon";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import NetworkBadge from "../network/NetworkBadge";
@@ -995,7 +995,7 @@ export default memo(function SendCard() {
             sx={{ mr: 0.75 }}
           >
             <FormLabel>Receiver Wallet Address</FormLabel>
-            <TooltipIcon title="Must not be an exchange address" />
+            <TooltipWithIcon title="Must not be an exchange address" />
           </Stack>
           {ReceiverAddressController}
         </Box>
@@ -1021,7 +1021,7 @@ export default memo(function SendCard() {
               sx={{ mr: 0.75 }}
             >
               <FormLabel>Flow Rate</FormLabel>
-              <TooltipIcon title="Flow rate is the velocity of tokens being streamed." />
+              <TooltipWithIcon title="Flow rate is the velocity of tokens being streamed." />
             </Stack>
             {FlowRateController}
           </Box>
@@ -1034,7 +1034,7 @@ export default memo(function SendCard() {
               label={
                 <Stack direction="row" alignItems="center" gap={0.75}>
                   Stream Scheduling
-                  <TooltipIcon title="Schedule start and end dates for future or fixed-duration streams" />
+                  <TooltipWithIcon title="Schedule start and end dates for future or fixed-duration streams" />
                 </Stack>
               }
             />
@@ -1063,7 +1063,7 @@ export default memo(function SendCard() {
                       flex={1}
                     >
                       <FormLabel>Start Date</FormLabel>
-                      <TooltipIcon title="The date when stream scheduler tries to start the stream." />
+                      <TooltipWithIcon title="The date when stream scheduler tries to start the stream." />
                     </Stack>
                     {StartDateController}
                   </Stack>
@@ -1076,7 +1076,7 @@ export default memo(function SendCard() {
                       flex={1}
                     >
                       <FormLabel>End Date</FormLabel>
-                      <TooltipIcon title="The date when stream scheduler tries to cancel the stream." />
+                      <TooltipWithIcon title="The date when stream scheduler tries to cancel the stream." />
                     </Stack>
                     {EndDateController}
                   </Stack>
@@ -1095,7 +1095,7 @@ export default memo(function SendCard() {
                     flex={1}
                   >
                     <FormLabel>Total Stream</FormLabel>
-                    <TooltipIcon title="The approximate amount that will be streamed until the scheduler cancels the stream." />
+                    <TooltipWithIcon title="The approximate amount that will be streamed until the scheduler cancels the stream." />
                   </Stack>
                   {TotalStreamedController}
                 </Stack>

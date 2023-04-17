@@ -23,7 +23,7 @@ import {
   getPrettyEtherFlowRate,
   parseEtherOrZero,
 } from "../../utils/tokenUtils";
-import TooltipIcon from "../common/TooltipIcon";
+import TooltipWithIcon from "../common/TooltipWithIcon";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { rpcApi } from "../redux/store";
@@ -355,7 +355,7 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
             label={
               <Typography variant="body2" translate="yes">
                 Upfront buffer{` `}
-                <TooltipIcon
+                <TooltipWithIcon
                   title={`A minimum buffer or ${
                     network.bufferTimeInMinutes / 60
                   } hour flow rate is taken when starting a stream and returned when you manually cancel it.`}

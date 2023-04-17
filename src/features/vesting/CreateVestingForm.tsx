@@ -22,10 +22,10 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { add } from "date-fns";
-import { FC, memo, useCallback, useMemo } from "react";
+import { FC, memo, useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
-import TooltipIcon from "../common/TooltipIcon";
+import TooltipWithIcon from "../common/TooltipWithIcon";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
@@ -52,6 +52,11 @@ export enum VestingFormLabels {
   SuperToken = "Super Token",
   TotalVestingPeriod = "Total Vesting Period",
   TotalVestedAmount = "Total Vested Amount",
+  AutoWrap = "Allow for automatic wrapping",
+}
+
+export enum VestingTooltips {
+  AutoWrap = "Auto-Wrap will handle low balances to cover all streams in a selected token.",
 }
 
 const CreateVestingForm: FC<{
@@ -427,7 +432,7 @@ const CreateVestingForm: FC<{
       name="data.setupAutoWrap"
       render={({ field: { value, onChange, onBlur } }) => (
         <FormControlLabel
-          label="Allow for automatic wrapping"
+          label={VestingFormLabels.AutoWrap}
           control={
             <Checkbox checked={!!value} onChange={onChange} onBlur={onBlur} />
           }
@@ -475,7 +480,7 @@ const CreateVestingForm: FC<{
             justifyContent="space-between"
           >
             <FormLabel>{VestingFormLabels.Receiver}</FormLabel>
-            <TooltipIcon title="Must not be an exchange address" />
+            <TooltipWithIcon title="Must not be an exchange address" />
           </Stack>
           {ReceiverController}
         </FormGroup>
@@ -511,7 +516,7 @@ const CreateVestingForm: FC<{
               justifyContent="space-between"
             >
               <FormLabel>{VestingFormLabels.TotalVestedAmount}</FormLabel>
-              <TooltipIcon title="Set the total amount to be vested" />
+              <TooltipWithIcon title="Set the total amount to be vested" />
             </Stack>
             {VestingAmountController}
           </FormGroup>
@@ -523,7 +528,7 @@ const CreateVestingForm: FC<{
               justifyContent="space-between"
             >
               <FormLabel>{VestingFormLabels.TotalVestingPeriod}</FormLabel>
-              <TooltipIcon title="Set the total length of time for vesting" />
+              <TooltipWithIcon title="Set the total length of time for vesting" />
             </Stack>
             {VestingPeriodController}
           </FormGroup>
@@ -531,7 +536,7 @@ const CreateVestingForm: FC<{
 
         <Stack direction="row" alignItems="center">
           {CliffEnabledController}
-          <TooltipIcon title="Set the cliff date and amount to be granted." />
+          <TooltipWithIcon title="Set the cliff date and amount to be granted." />
         </Stack>
 
         {cliffEnabled && (
@@ -549,7 +554,7 @@ const CreateVestingForm: FC<{
                 justifyContent="space-between"
               >
                 <FormLabel>{VestingFormLabels.CliffAmount}</FormLabel>
-                <TooltipIcon title="Set the amount to be vested at the cliff" />
+                <TooltipWithIcon title="Set the amount to be vested at the cliff" />
               </Stack>
               {CliffAmountController}
             </FormGroup>
@@ -561,7 +566,7 @@ const CreateVestingForm: FC<{
                 justifyContent="space-between"
               >
                 <FormLabel>{VestingFormLabels.CliffPeriod}</FormLabel>
-                <TooltipIcon title="Set the time until the cliff from the start date" />
+                <TooltipWithIcon title="Set the time until the cliff from the start date" />
               </Stack>
               {CliffPeriodController}
             </FormGroup>
@@ -571,7 +576,7 @@ const CreateVestingForm: FC<{
         {isAutoWrapVisible && (
           <Stack direction="row" alignItems="center">
             {AutoWrapController}
-            <TooltipIcon title="Auto-Wrap will handle low balances to cover all streams in a selected token." />
+            <TooltipWithIcon title={VestingTooltips.AutoWrap} />
           </Stack>
         )}
 
