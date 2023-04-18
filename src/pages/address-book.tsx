@@ -19,7 +19,6 @@ import { Address } from "@superfluid-finance/sdk-core";
 import { NextPage } from "next";
 import { parse, unparse } from "papaparse";
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
-import { useAccount } from "wagmi";
 import AddressSearchDialog from "../components/AddressSearchDialog/AddressSearchDialog";
 import DownloadButton from "../components/DownloadButton/DownloadButton";
 import ReadFileButton from "../components/ReadFileButton/ReadFileButton";
@@ -45,13 +44,14 @@ import StreamActiveFilter, {
   StreamActiveType,
 } from "../features/streamsTable/StreamActiveFilter";
 import { getAddress } from "../utils/memoizedEthersUtils";
+import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 
 const AddressBook: NextPage = () => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { address: accountAddress } = useAccount();
+  const { visibleAddress } = useVisibleAddress(); 
   const { network } = useExpectedNetwork();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
@@ -68,11 +68,11 @@ const AddressBook: NextPage = () => {
   );
 
   const incomingStreamsQuery = subgraphApi.useStreamsQuery(
-    accountAddress
+    visibleAddress
       ? {
           chainId: network.id,
           filter: {
-            sender: accountAddress.toLowerCase(),
+            sender: visibleAddress.toLowerCase(),
             currentFlowRate_gt: "0",
           },
           pagination: {
@@ -88,11 +88,11 @@ const AddressBook: NextPage = () => {
   );
 
   const outgoingStreamsQuery = subgraphApi.useStreamsQuery(
-    accountAddress
+    visibleAddress
       ? {
           chainId: network.id,
           filter: {
-            receiver: accountAddress.toLowerCase(),
+            receiver: visibleAddress.toLowerCase(),
             currentFlowRate_gt: "0",
           },
           pagination: {

@@ -34,6 +34,7 @@ import shortenHex from "../../utils/shortenHex";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { useAppDispatch } from "../redux/store";
 import { updateAddressBookEntry } from "./addressBook.slice";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 interface AddressBookRowProps {
   address: Address;
@@ -58,7 +59,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const dispatch = useAppDispatch();
 
-  const { address: currentAccountAddress } = useAccount();
+  const { visibleAddress } = useVisibleAddress();
 
   const [editableName, setEditableName] = useState(name);
   const [isEditing, setIsEditing] = useState(false);
@@ -183,7 +184,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
         </AddressCopyTooltip>
       </TableCell>
       <TableCell data-cy={"active-streams"}>
-        {!!currentAccountAddress ? (
+        {!!visibleAddress ? (
           <>
             {streamsLoading ? <Skeleton width="30px" /> : activeStreams.length}
           </>

@@ -63,6 +63,7 @@ import {
 } from "../../../utils/tokenUtils";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import Page404 from "../../404";
+import { useVisibleAddress } from "../../../features/wallet/VisibleAddressContext";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -314,7 +315,7 @@ const StreamPageContent: FC<{
 }> = ({ network, streamId }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-  const { address: accountAddress } = useAccount();
+  const { visibleAddress } = useVisibleAddress();
   const navigateBack = useNavigateBack();
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -477,7 +478,7 @@ const StreamPageContent: FC<{
   } = scheduledStream;
 
   const isActive = currentFlowRate !== "0";
-  const isOutgoing = accountAddress?.toLowerCase() === sender.toLowerCase();
+  const isOutgoing = visibleAddress?.toLowerCase() === sender.toLowerCase();
 
   // TODO: This container max width should be configured in theme. Something between small and medium
   return (
@@ -521,7 +522,7 @@ const StreamPageContent: FC<{
               </Box>
 
               <Stack direction="row" justifyContent="flex-end" gap={1}>
-                {!!accountAddress && (
+                {!!visibleAddress && (
                   <>
                     {isOutgoing && (
                       <ModifyStreamButton
