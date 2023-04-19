@@ -6,6 +6,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { BigNumber } from "ethers";
@@ -24,6 +26,9 @@ import VestingSchedulerAllowanceRow, {
 } from "./VestingSchedulerAllowanceRow";
 
 const VestingSchedulerAllowancesTable: FC = () => {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
   const { network } = useExpectedNetwork();
   const { visibleAddress: senderAddress } = useVisibleAddress();
 
@@ -112,32 +117,54 @@ const VestingSchedulerAllowancesTable: FC = () => {
 
   return (
     <ConnectionBoundary>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }}>
+      <TableContainer
+        component={Paper}
+        sx={{
+          [theme.breakpoints.down("md")]: {
+            mx: -2,
+            width: "auto",
+            borderRadius: 0,
+            border: "none",
+            borderBottom: `1px solid ${theme.palette.divider}`,
+            boxShadow: "none",
+          },
+        }}
+      >
+        <Table
+          sx={{
+            [theme.breakpoints.down("md")]: {
+              tableLayout: "fixed",
+            },
+          }}
+        >
           <TableHead>
             <TableRow>
               <TableCell>Token</TableCell>
-              <TableCell data-cy="allowance-cell" width="220px">
-                Token Allowance
-                <TooltipIcon
-                  IconProps={{ sx: { ml: 0.5 } }}
-                  title="The token allowance needed by the contract for cliff & compensation transfers."
-                />
-              </TableCell>
-              <TableCell data-cy="operator-permissions-cell" width="260px">
-                Stream Permissions
-                <TooltipIcon
-                  IconProps={{ sx: { ml: 0.5 } }}
-                  title="The stream permissions needed by the contract for creating & deletion of Superfluid flows."
-                />
-              </TableCell>
-              <TableCell data-cy="flow-allowance-cell" width="250px">
-                Stream Allowance
-                <TooltipIcon
-                  IconProps={{ sx: { ml: 0.5 } }}
-                  title="The stream flow rate allowance needed by the contract for creating Superfluid flows."
-                />
-              </TableCell>
+              {!isBelowMd && (
+                <>
+                  <TableCell data-cy="allowance-cell" width="220px">
+                    Token Allowance
+                    <TooltipIcon
+                      IconProps={{ sx: { ml: 0.5 } }}
+                      title="The token allowance needed by the contract for cliff & compensation transfers."
+                    />
+                  </TableCell>
+                  <TableCell data-cy="operator-permissions-cell" width="260px">
+                    Stream Permissions
+                    <TooltipIcon
+                      IconProps={{ sx: { ml: 0.5 } }}
+                      title="The stream permissions needed by the contract for creating & deletion of Superfluid flows."
+                    />
+                  </TableCell>
+                  <TableCell data-cy="flow-allowance-cell" width="250px">
+                    Stream Allowance
+                    <TooltipIcon
+                      IconProps={{ sx: { ml: 0.5 } }}
+                      title="The stream flow rate allowance needed by the contract for creating Superfluid flows."
+                    />
+                  </TableCell>
+                </>
+              )}
               <TableCell width="60px" />
             </TableRow>
           </TableHead>
@@ -168,9 +195,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
                     requiredFlowOperatorPermissions={
                       requiredFlowOperatorPermissions
                     }
-                    requiredFlowRateAllowance={
-                      requiredFlowRateAllowance
-                    }
+                    requiredFlowRateAllowance={requiredFlowRateAllowance}
                   />
                 )
               )

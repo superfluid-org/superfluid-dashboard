@@ -173,3 +173,6 @@ Then(/^"([^"]*)" is selected as the token to unwrap$/, function (token:string) {
     WrapPage.validateTokenSelectedForUnwrapping(token)
 
 });
+Then(/^"([^"]*)" is selected as the token to wrap and it has underlying balance of "([^"]*)"$/, function (token:string,balance:string) {
+    WrapPage.validateSelectedTokenAndBalanceForWrapping(token,balance)
+});

@@ -16,6 +16,7 @@ import WarningDialog from "../send/WarningDialog";
 const ClaimTokensBtn = () => (
   <Link href="/?showFaucet=true" passHref>
     <Button
+      data-cy={"dashboard-claim-button"}
       variant="contained"
       color="primary"
       href="/?showFaucet=true"
@@ -54,6 +55,7 @@ const FaucetCard: FC = () => {
           <MoveToInboxRoundedIcon fontSize="large" color="primary" />
         </ListItemIcon>
         <ListItemText
+          data-cy={"dashboard-faucet-message"}
           primary="Get Testnet Tokens"
           secondary="Claim tokens from our free testnet faucet to try out streaming payments."
           primaryTypographyProps={{ variant: "h5" }}

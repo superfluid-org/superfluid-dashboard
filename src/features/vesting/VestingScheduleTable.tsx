@@ -10,7 +10,6 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -25,42 +24,66 @@ import { VestingSchedule } from "./types";
 import VestingRow from "./VestingRow";
 
 const VestingScheduleRowSkeleton = () => {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
   return (
     <TableRow>
       <TableCell>
         <Stack direction="row" alignItems="center" gap={1.5}>
-          <Skeleton variant="circular" width={24} height={24} />
-          <Skeleton variant="rectangular" width={36} height={36} />
-          <Typography variant="h7">
-            <Skeleton width={80} />
-          </Typography>
+          <Skeleton variant="rounded" width={24} height={24} />
+          <Stack>
+            <Skeleton width={90} />
+            {isBelowMd && <Skeleton width={60} />}
+          </Stack>
         </Stack>
       </TableCell>
-      <TableCell sx={{ py: 0.5 }}>
-        <Stack direction="row" alignItems="center" gap={1.5}>
-          <Skeleton variant="circular" width={36} height={36} />
-          <ListItemText primary={<Skeleton width={80} />} />
-        </Stack>
-      </TableCell>
-      <TableCell>
-        <ListItemText
-          primary={<Skeleton width={80} />}
-          secondary={<Skeleton width={80} />}
-        />
-      </TableCell>
-      <TableCell>
-        <ListItemText
-          primary={<Skeleton width={80} />}
-          secondary={<Skeleton width={80} />}
-        />
-      </TableCell>
-      <TableCell>
-        <ListItemText
-          primary={<Skeleton width={80} />}
-          secondary={<Skeleton width={80} />}
-          primaryTypographyProps={{ variant: "body2", color: "text.secondary" }}
-        />
-      </TableCell>
+      {!isBelowMd ? (
+        <>
+          <TableCell sx={{ py: 0.5 }}>
+            <Stack direction="row" alignItems="center" gap={1.5}>
+              <Skeleton variant="circular" width={26} height={26} />
+              <ListItemText primary={<Skeleton width={80} />} />
+            </Stack>
+          </TableCell>
+          <TableCell>
+            <ListItemText
+              primary={<Skeleton width={80} />}
+              secondary={<Skeleton width={80} />}
+            />
+          </TableCell>
+          <TableCell sx={{ pr: 2 }}>
+            <ListItemText
+              primary={<Skeleton width={120} />}
+              secondary={<Skeleton width={120} />}
+            />
+          </TableCell>
+          <TableCell sx={{ pl: 0 }}>
+            <ListItemText
+              primary={<Skeleton width={80} />}
+              secondary={<Skeleton width={80} />}
+            />
+          </TableCell>
+        </>
+      ) : (
+        <TableCell>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="end"
+            gap={1.5}
+          >
+            <Stack direction="column" alignItems="end">
+              <Stack direction="row" gap={0.5}>
+                <Skeleton width={40} />
+                <Skeleton width={40} />
+              </Stack>
+              <Skeleton width={50} />
+            </Stack>
+            <Skeleton variant="circular" width={26} height={26} />
+          </Stack>
+        </TableCell>
+      )}
     </TableRow>
   );
 };
@@ -168,29 +191,44 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
         },
       }}
     >
-      <Table>
+      <Table
+        sx={{
+          [theme.breakpoints.down("md")]: {
+            tableLayout: "fixed",
+          },
+        }}
+      >
         <TableHead>
-          {incoming && <NetworkHeadingRow colSpan={6} network={network} />}
+          {incoming && (
+            <NetworkHeadingRow colSpan={isBelowMd ? 2 : 6} network={network} />
+          )}
           <TableFilterRow
             value={statusFilter}
             options={StatusFilterOptions}
+            colSpan={isBelowMd ? 2 : 6}
             onChange={onVestingStatusFilterChange}
           />
-          <TableRow>
-            <TableCell>{incoming ? "Sender" : "Receiver"}</TableCell>
-            <TableCell>Allocated</TableCell>
-            <TableCell>Vested</TableCell>
-            <TableCell sx={{ pr: 2 }}>Vesting Start / End</TableCell>
-            <TableCell width="140px" sx={{ pr: 2, pl: 0 }}>
-              Status
-            </TableCell>
-          </TableRow>
+          {!isBelowMd && (
+            <TableRow>
+              <TableCell>{incoming ? "Sender" : "Receiver"}</TableCell>
+              <TableCell>Allocated</TableCell>
+              <TableCell>Vested</TableCell>
+              <TableCell sx={{ pr: 2 }}>Vesting Start / End</TableCell>
+              <TableCell width="140px" sx={{ pr: 2, pl: 0 }}>
+                Status
+              </TableCell>
+            </TableRow>
+          )}
         </TableHead>
         <TableBody>
           {isLoading ? (
-            <VestingScheduleRowSkeleton />
+            <>
+              <VestingScheduleRowSkeleton />
+              <VestingScheduleRowSkeleton />
+              <VestingScheduleRowSkeleton />
+            </>
           ) : filteredVestingSchedules.length === 0 ? (
-            <EmptyRow span={6} />
+            <EmptyRow span={isBelowMd ? 2 : 6} />
           ) : (
             filteredVestingSchedules
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)

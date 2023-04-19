@@ -1,4 +1,4 @@
-import { Box, useTheme } from "@mui/material";
+import { Box, useTheme, useThemeProps } from "@mui/material";
 import { fromUnixTime } from "date-fns";
 import { FC, memo, useMemo } from "react";
 import useTimer from "../../../hooks/useTimer";
@@ -35,30 +35,54 @@ const VestingProgress: FC<VestingProgressProps> = ({
     <Box
       sx={{
         position: "relative",
-        gridColumn: `${nth}/${nth + 2}`,
-        bottom: "-5px",
+        [theme.breakpoints.up("md")]: {
+          bottom: "-5px",
+          gridColumn: `${nth}/${nth + 2}`,
+          gridRow: "1/2",
+        },
+        [theme.breakpoints.down("md")]: {
+          right: "-5px",
+          gridColumn: "1/2",
+          gridRow: `${nth}/${nth + 2}`,
+        },
       }}
     >
       <Box
         data-cy={"total-progress-line"}
         sx={{
           background: theme.palette.divider,
-          width: `calc(100% - 180px)`,
-          height: "2px",
           position: "absolute",
-          left: "90px",
-          top: "calc(50% - 1px)",
+          [theme.breakpoints.up("md")]: {
+            width: `calc(100% - 180px)`,
+            height: "2px",
+            left: "90px",
+            top: "-1px",
+          },
+          [theme.breakpoints.down("md")]: {
+            height: `calc(100% - 100px)`,
+            width: "2px",
+            top: "50px",
+            left: "-1px",
+          },
         }}
       />
       <Box
         data-cy={"actual-progress-line"}
         sx={{
           background: theme.palette.primary.main,
-          width: `calc(calc(100% - 180px) * ${progress})`,
-          height: "2px",
           position: "absolute",
-          left: "90px",
-          top: "calc(50% - 1px)",
+          [theme.breakpoints.up("md")]: {
+            width: `calc(calc(100% - 180px) * ${progress})`,
+            height: "2px",
+            left: "90px",
+            top: "-1px",
+          },
+          [theme.breakpoints.down("md")]: {
+            height: `calc(calc(100% - 100px) * ${progress})`,
+            width: "2px",
+            top: "50px",
+            left: "-1px",
+          },
         }}
       />
     </Box>
@@ -72,6 +96,8 @@ interface VestingScheduleProgressProps {
 const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
   vestingSchedule,
 }) => {
+  const theme = useTheme();
+
   const {
     createdAt: unixCreatedAt,
     startDate: unixStartDate,
@@ -102,8 +128,13 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumns: `repeat(${cliffDate ? 4 : 3}, 170px)`,
         justifyContent: "space-between",
+        [theme.breakpoints.up("md")]: {
+          gridTemplateColumns: `repeat(${cliffDate ? 4 : 3}, 170px)`,
+        },
+        [theme.breakpoints.down("md")]: {
+          gridTemplateRows: `repeat(${cliffDate ? 4 : 3}, 90px)`,
+        },
       }}
     >
       <VestingProgress
@@ -141,6 +172,7 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
         titles={["Vesting Scheduled"]}
         targetDate={createdAt}
         dateNow={dateNow}
+        nth={1}
         dataCy={"vesting-scheduled"}
       />
 
@@ -149,6 +181,7 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
           titles={["Vesting Starts", "Stream Starts"]}
           targetDate={cliffAndFlowDate}
           dateNow={dateNow}
+          nth={2}
           dataCy={"vesting-start"}
         />
       ) : (
@@ -157,12 +190,14 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
             titles={["Vesting Starts"]}
             targetDate={startDate}
             dateNow={dateNow}
+            nth={2}
             dataCy={"cliff-start"}
           />
           <VestingScheduleProgressCheckpoint
             titles={["Cliff Vested", "Stream starts"]}
             targetDate={cliffDate}
             dateNow={dateNow}
+            nth={3}
             dataCy={"cliff-end"}
           />
         </>
@@ -172,6 +207,7 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
         titles={["Vesting Ends"]}
         targetDate={endDate}
         dateNow={dateNow}
+        nth={cliffDate ? 4 : 3}
         dataCy={"vesting-end"}
       />
     </Box>

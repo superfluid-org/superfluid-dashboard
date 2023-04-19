@@ -42,6 +42,68 @@ Feature: Common element test cases
     And User closes the access code dialog
     And User opens the dashboard network selection dropdown
 
+  Scenario: Connect wallet button in faucet view
+    Given "Dashboard page" is open without connecting a wallet
+    And User opens the navigation more menu
+    And User opens the faucet view from the navigation menu
+    Then Connect wallet button is visible in the faucet menu
+
+  Scenario: Stop viewing an address button in faucet view
+    Given "Dashboard page" is open without connecting a wallet
+    And User uses view mode to look at "ongoingStreamAccount"
+    And User waits for balances to load
+    And User opens the navigation more menu
+    And User opens the faucet view from the navigation menu
+    Then The stop viewing as an address button is visible
+    And User clicks on the stop viewing as an address button
+    Then Connect wallet button is visible in the faucet menu
+
+  Scenario: Change network to Mumbai button in faucet view
+    Given "Dashboard Page" is open with "john" connected on "goerli"
+    And User opens the navigation more menu
+    And User opens the faucet view from the navigation menu
+    Then Switch to Mumbai button is visible in the faucet menu
+    And User clicks on the switch network to button
+    And User closes the presentation dialog
+    Then "Polygon Mumbai" is the selected network in the dashboard
+
+  Scenario: Claiming faucet tokens
+    Given "Dashboard Page" is open with "NewRandomWallet" connected on "polygon-mumbai"
+    And User opens the navigation more menu
+    And User opens the faucet view from the navigation menu
+    And The new wallet address is visible in the faucet menu
+    And User clicks the claim tokens button
+    Then Successfully claimed tokens message is shown
+    And User clicks on the go to dashboard page button
+    And The transaction drawer shows a pending "Claim Tokens" transaction on "polygon-mumbai"
+    And The transaction drawer shows a succeeded "Claim Tokens" transaction on "polygon-mumbai"
+    Then The netflow and incomming/outgoing amounts in the dashboard page for "fDAIx" on "polygon-mumbai" are "+1521/mo,-0/mo,+1521/mo"
+    Then The netflow and incomming/outgoing amounts in the dashboard page for "fUSDCx" on "polygon-mumbai" are "+1521/mo,-0/mo,+1521/mo"
+    And User clicks on the "wrap-unwrap" navigation button
+    Then "MATIC" is selected as the token to wrap and it has underlying balance of "0.1"
+    And User sends back the remaining MATIC to the faucet
+
+  @mocked
+  Scenario: Something went wrong message in the faucet menu
+    Given Faucet requests are mocked to an error state
+    Given "Dashboard Page" is open with "john" connected on "polygon-mumbai"
+    And User opens the navigation more menu
+    And User opens the faucet view from the navigation menu
+    And User clicks the claim tokens button
+    Then Something went wrong message is shown in the faucet menu
+
+  Scenario: Tokens already claimed buttons in the faucet menu
+    Given "Dashboard Page" is open with "john" connected on "polygon-mumbai"
+    And User opens the navigation more menu
+    And User opens the faucet view from the navigation menu
+    And User clicks the claim tokens button
+    Then You have already claimed tokens message is shown
+    And User clicks on the wrap into super tokens button
+    Then Wrap/Unwrap page is open and the wrap container is visible
+    And User opens the navigation more menu
+    And User opens the faucet view from the navigation menu
+    Then The claim token is disabled and shows Tokens claimed message
+    
   Scenario: No new notifications message
     Given "Settings Page" is open with "alice" connected on "ethereum"
     And User opens the notifications modal
@@ -101,4 +163,3 @@ Feature: Common element test cases
     Then No "new" notifications message is shown
     And User switches to the "archive" notification tab
     And Archived "Old notification" notification is shown
-    And No wrap button is visible in the notifications modal

@@ -1,4 +1,4 @@
-import { Box, Paper, Stack, Typography } from "@mui/material";
+import { Box, Paper, Stack, Typography, useTheme } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import { Address } from "@superfluid-finance/sdk-core";
 import groupBy from "lodash/fp/groupBy";
@@ -31,6 +31,7 @@ const VestingTokenAggregationRow: FC<VestingTokenAggregationRowProps> = ({
   vestingSchedules,
   network,
 }) => {
+  const theme = useTheme();
   const tokenQuery = useVestingToken(network, tokenAddress);
   const tokenPrice = useTokenPrice(network.id, tokenAddress);
   const token = tokenQuery.data;
@@ -56,10 +57,25 @@ const VestingTokenAggregationRow: FC<VestingTokenAggregationRowProps> = ({
   return (
     <>
       <Divider />
-      <Box sx={{ display: "grid", gridTemplateColumns: "1fr auto 1fr" }}>
-        <Box sx={{ px: 4, py: 2.5 }}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "1fr auto 1fr",
+          alignItems: "stretch",
+        }}
+      >
+        <Box
+          sx={{
+            px: 4,
+            py: 2.5,
+            [theme.breakpoints.down("md")]: {
+              px: 2,
+              py: 1,
+            },
+          }}
+        >
           <VestingDataCardContent
-            title="Total Tokens Allocated"
+            title="Total Allocated"
             tokenSymbol={token?.symbol || ""}
             tokenAmount={<Amount wei={allocated} />}
             fiatAmount={
@@ -68,8 +84,17 @@ const VestingTokenAggregationRow: FC<VestingTokenAggregationRowProps> = ({
             dataCy={`${token?.symbol}-total-allocated`}
           />
         </Box>
-        <Divider orientation="vertical" />
-        <Box sx={{ px: 4, py: 2.5 }}>
+        <Divider orientation="vertical" sx={{ height: "auto" }} />
+        <Box
+          sx={{
+            px: 4,
+            py: 2.5,
+            [theme.breakpoints.down("md")]: {
+              px: 2,
+              py: 1,
+            },
+          }}
+        >
           <VestingDataCardContent
             title="Total Vested"
             tokenSymbol={token?.symbol || ""}
@@ -82,14 +107,14 @@ const VestingTokenAggregationRow: FC<VestingTokenAggregationRowProps> = ({
             }
             dataCy={`${token?.symbol}-total-vested`}
             fiatAmount={
-                tokenPrice && (
-                    <FlowingFiatBalance
-                        balance={aggregatedTokenBalance.balance}
-                        flowRate={aggregatedTokenBalance.totalNetFlowRate}
-                        balanceTimestamp={aggregatedTokenBalance.timestamp}
-                        price={tokenPrice}
-                    />
-                )
+              tokenPrice && (
+                <FlowingFiatBalance
+                  balance={aggregatedTokenBalance.balance}
+                  flowRate={aggregatedTokenBalance.totalNetFlowRate}
+                  balanceTimestamp={aggregatedTokenBalance.timestamp}
+                  price={tokenPrice}
+                />
+              )
             }
           />
         </Box>
@@ -107,14 +132,38 @@ const AggregatedVestingSchedules: FC<AggregatedVestingSchedulesProps> = ({
   vestingSchedules,
   network,
 }) => {
+  const theme = useTheme();
   const vestingSchedulesByTokenAddress = useMemo(
     () => groupBy((schedule) => schedule.superToken, vestingSchedules),
     [vestingSchedules]
   );
 
   return (
-    <Paper component={Stack} sx={{ flex: 1 }}>
-      <Stack direction="row" alignItems="center" gap={2} sx={{ py: 3, px: 4 }}>
+    <Paper
+      component={Stack}
+      sx={{
+        flex: 1,
+        [theme.breakpoints.down("md")]: {
+          mx: -2,
+          borderRadius: 0,
+          border: "none",
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          boxShadow: "none",
+        },
+      }}
+    >
+      <Stack
+        direction="row"
+        alignItems="center"
+        gap={2}
+        sx={{
+          py: 3,
+          px: 4,
+          [theme.breakpoints.down("md")]: {
+            p: 2,
+          },
+        }}
+      >
         <NetworkIcon network={network} />
         <Typography
           data-cy="network-name"

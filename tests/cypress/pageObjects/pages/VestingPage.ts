@@ -1,7 +1,7 @@
 import {BasePage,wordTimeUnitMap} from "../BasePage";
 import { format } from "date-fns";
 import {SendPage} from "./SendPage";
-import {Common} from "./Common";
+import {Common,CHANGE_NETWORK_BUTTON} from "./Common";
 
 const NO_CREATED_TITLE = "[data-cy=no-created-schedules-title]"
 const NO_CREATED_DESC = "[data-cy=no-created-schedules-description]"
@@ -23,7 +23,6 @@ const TOTAL_PERIOD_UNIT = "[data-cy=total-period-unit]"
 const TOTAL_PERIOD_SELECTED_UNIT = `${TOTAL_PERIOD_UNIT} div`
 const LOADING_SKELETONS = "[class*=MuiSkeleton]"
 const DELETE_SCHEDULE_BUTTON = "[data-cy=delete-schedule-button]"
-const CHANGE_NETWORK_BUTTON = "[data-cy=change-network-button]"
 const FORWARD_BUTTON = "[data-testid=ArrowForwardIcon]"
 const BACK_BUTTON = "[data-testid=ArrowBackIcon]"
 const VESTING_ROWS = "[data-cy=vesting-row]"
@@ -62,10 +61,11 @@ const SCHEDULE_CLIFF_END = "[data-cy=cliff-end]"
 const SCHEDULE_VESTING_START = "[data-cy=vesting-start]"
 const SCHEDULE_VESTING_END = "[data-cy=vesting-end]"
 const ACCESS_CODE_BUTTON = "[data-cy=vesting-code-button]"
-const TRY_MUMBAI_BUTTON = "[data-cy=try-on-mumbai-button]"
-const VESTING_FORM_LINK = "[data-cy=vesting-form-link]"
+const TRY_MUMBAI_BUTTON = "[data-cy=polygon-mumbai-link]"
 const TOPUP_WARNING_TITLE = "[data-cy=top-up-alert-title]"
 const TOPUP_WARNING_TEXT = "[data-cy=top-up-alert-text]"
+const ALLOWLIST_MESSAGE = "[data-cy=allowlist-message]"
+const ALLOWLIST_LINK = "[data-cy=allowlist-link]"
 
 //Strings
 const NO_CREATED_TITLE_STRING = "No Sent Vesting Schedules"
@@ -243,8 +243,8 @@ export class VestingPage extends BasePage {
     static validateCreatedVestingScheduleDetailsPage() {
         this.hasText(DETAILS_VESTED_SO_FAR_AMOUNT, "0 ")
         this.hasText(DETAILS_VESTED_TOKEN_SYMBOL, "fUSDCx")
-        this.hasText("[data-cy=fUSDCx-cliff-amount]", "50 fUSDCx")
-        this.hasText("[data-cy=fUSDCx-allocated]", "100 fUSDCx")
+        this.hasText("[data-cy=fUSDCx-cliff-amount]", "50fUSDCx")
+        this.hasText("[data-cy=fUSDCx-allocated]", "100fUSDCx")
         cy.fixture("vestingData").then(data => {
             let schedule = data.goerli.fUSDCx.schedule
             this.hasText(DETAILS_SCHEDULED_DATE ,format((schedule.createdAt * 1000), "MMM do, yyyy HH:mm") )
@@ -347,6 +347,7 @@ export class VestingPage extends BasePage {
 
     static validateVestingRowStatus(status: string) {
         if (status === "Deleted") {
+            cy.get(TABLE_VESTING_STATUS).should("be.visible")
             cy.contains("Deleted").click()
         }
         this.hasText(TABLE_VESTING_STATUS,status,0)
@@ -481,7 +482,7 @@ export class VestingPage extends BasePage {
             let schedule = data.polygon.USDCx.schedule
             let stream = data.polygon.USDCx.vestingStream
             let totalVestedAmount = (schedule.cliffAmount / 1e18 + (((Date.now() - stream.startedAtUnix) * stream.flowRate) / 1e21)).toString().substring(0, 8)
-            this.hasText(`[data-cy=${stream.token.symbol}-total-allocated]` , `${schedule.totalAllocated} ${stream.token.symbol}`)
+            this.hasText(`[data-cy=${stream.token.symbol}-total-allocated]` , `${schedule.totalAllocated}${stream.token.symbol}`)
             this.containsText(`[data-cy=${stream.token.symbol}-total-vested]` , totalVestedAmount )
         })
         //Make sure deleted schedules don't get shown in the aggregate stats
@@ -489,11 +490,10 @@ export class VestingPage extends BasePage {
         this.doesNotExist("[data-cy=DAIx-total-vested]")
     }
 
-    static validateNoCodeUnlockScreen() {
-        cy.contains("Unlock Vesting with Superfluid").should("be.visible")
-        cy.contains("Provide your Access Code or try out Vesting Schedule on Mumbai Testnet.").should("be.visible")
-        this.hasAttributeWithValue(VESTING_FORM_LINK,"href","https://use.superfluid.finance/vesting")
-        this.isVisible(ACCESS_CODE_BUTTON)
+    static validateAllowListMessage() {
+        this.hasText(ALLOWLIST_MESSAGE,"You are not on the allow list.If you want to create vesting schedules, Apply for access or try it out on Polygon Mumbai.")
+        this.isVisible(ALLOWLIST_LINK)
+        this.hasAttributeWithValue(ALLOWLIST_LINK,"href","https://use.superfluid.finance/vesting")
         this.isVisible(TRY_MUMBAI_BUTTON)
     }
 

@@ -1,25 +1,16 @@
 import { Box, Container, useTheme } from "@mui/material";
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
 import Paper from "@mui/material/Paper";
-import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { FC, Fragment, PropsWithChildren, useCallback, useMemo } from "react";
-import { useAccount, useSwitchNetwork } from "wagmi";
+import { FC, Fragment, PropsWithChildren, useMemo } from "react";
 import ConnectOrImpersonate from "../../components/ConnectOrImpersonate/ConnectOrImpersonate";
 import Link from "../common/Link";
-import { useFeatureFlags } from "../featureFlags/FeatureFlagContext";
-import { useLayoutContext } from "../layout/LayoutContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import {
-  networkDefinition,
-  vestingSupportedNetworks,
-} from "../network/networks";
 import NetworkSwitchLink from "../network/NetworkSwitchLink";
+import { vestingSupportedNetworks } from "../network/networks";
 import ReduxPersistGate from "../redux/ReduxPersistGate";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import VestingHeader from "./VestingHeader";
+import SimpleVestingHeader from "./SimpleVestingHeader";
 
 const VESTING_SUPPORTED_NETWORK_IDS = vestingSupportedNetworks.map(
   (network) => network.id
@@ -124,78 +115,7 @@ const NotConnectedCard = () => {
   );
 };
 
-const UnlockVestingCard = () => {
-  const { setAccessCodeDialogContent } = useLayoutContext();
-  const { setExpectedNetwork } = useExpectedNetwork();
-  const { switchNetwork } = useSwitchNetwork();
-  const { address: accountAddress } = useAccount();
-
-  const openVestingAccessCodeDialog = () => {
-    setAccessCodeDialogContent({
-      title: "Access Vesting",
-      description: (
-        <Typography>
-          Unlock Vesting by entering your unique access code. With this feature,
-          you&apos;ll be able to set up vesting schedules and track your vesting
-          assets.
-        </Typography>
-      ),
-    });
-  };
-
-  const switchToMumbai = useCallback(() => {
-    setExpectedNetwork(networkDefinition.polygonMumbai.id);
-
-    if (accountAddress && switchNetwork) {
-      switchNetwork(networkDefinition.polygonMumbai.id);
-    }
-  }, [setExpectedNetwork, switchNetwork, accountAddress]);
-
-  return (
-    <Card component={Stack} sx={{ p: 3, pt: 8 }} alignItems="center">
-      <Typography variant="h4">Unlock Vesting with Superfluid</Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 5 }}>
-        Provide your Access Code or try out Vesting Schedule on Mumbai Testnet.
-      </Typography>
-      <Stack
-        gap={1.5}
-        sx={{ mb: 2.5, maxWidth: "400px", width: "100%" }}
-        alignItems="stretch"
-      >
-        <Button
-          data-cy={"vesting-code-button"}
-          variant="contained"
-          size="large"
-          onClick={openVestingAccessCodeDialog}
-        >
-          Enter Access Code
-        </Button>
-        <Button
-          data-cy={"try-on-mumbai-button"}
-          variant="outlined"
-          size="large"
-          onClick={switchToMumbai}
-        >
-          Try out on Mumbai Testnet
-        </Button>
-      </Stack>
-      <Typography variant="body1" color="text.secondary">
-        Want to Vest tokens? Apply for the access code{" "}
-        <Link
-          data-cy="vesting-form-link"
-          href="https://use.superfluid.finance/vesting"
-          target="_blank"
-        >
-          here
-        </Link>
-        .
-      </Typography>
-    </Card>
-  );
-};
-
 const VestingLayout: FC<PropsWithChildren> = ({ children }) => {
-  const { isVestingEnabled } = useFeatureFlags();
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
 
@@ -207,25 +127,8 @@ const VestingLayout: FC<PropsWithChildren> = ({ children }) => {
   if (!visibleAddress) {
     return (
       <Container maxWidth="lg">
-        <VestingHeader hideCreate>
-          <Typography component="h1" variant="h4">
-            Vesting
-          </Typography>
-        </VestingHeader>
+        <SimpleVestingHeader />
         <NotConnectedCard />
-      </Container>
-    );
-  }
-
-  if (!isVestingEnabled && !network.testnet) {
-    return (
-      <Container maxWidth="lg">
-        <VestingHeader hideCreate>
-          <Typography component="h1" variant="h4">
-            Vesting
-          </Typography>
-        </VestingHeader>
-        <UnlockVestingCard />
       </Container>
     );
   }
@@ -233,11 +136,7 @@ const VestingLayout: FC<PropsWithChildren> = ({ children }) => {
   if (!networkSupported) {
     return (
       <Container maxWidth="lg">
-        <VestingHeader hideCreate>
-          <Typography component="h1" variant="h4">
-            Vesting
-          </Typography>
-        </VestingHeader>
+        <SimpleVestingHeader />
         <VestingNotSupportedCard />
       </Container>
     );

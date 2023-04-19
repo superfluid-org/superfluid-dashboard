@@ -150,8 +150,14 @@ const WhitelistTransparentBox = () => (
     }}
   >
     <Box sx={{ px: 4, pb: 3, textAlign: "center" }}>
-      <Typography data-cy="allowlist-message" variant="h5">You are not on the allow list.</Typography>
-      <Typography data-cy="allowlist-message" sx={{ maxWidth: "410px" }} variant="body1">
+      <Typography data-cy="allowlist-message" variant="h5">
+        You are not on the allow list.
+      </Typography>
+      <Typography
+        data-cy="allowlist-message"
+        sx={{ maxWidth: "410px" }}
+        variant="body1"
+      >
         If you want to set start and end dates for your streams,{" "}
         <Link
           data-cy={"allowlist-link"}
@@ -939,6 +945,7 @@ export default memo(function SendCard() {
       elevation={1}
       sx={{
         maxWidth: "600px",
+        width: "100%",
         position: "relative",
         [theme.breakpoints.down("md")]: {
           boxShadow: "none",

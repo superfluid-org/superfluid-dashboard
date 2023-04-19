@@ -5,6 +5,8 @@ import {
   Stack,
   Tooltip,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC, useMemo } from "react";
@@ -33,61 +35,69 @@ interface ExecutionWhitelistInfoProps {
 const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
   whitelisted,
   network,
-}) => (
-  <Stack
-    direction="row"
-    alignItems="center"
-    justifyContent="space-between"
-    spacing={1}
-  >
-    <Typography variant="body1" color="secondary">
-      {whitelisted ? (
-        <>
-          Your wallet address <strong>is</strong> on the allowlist.
-        </>
-      ) : (
-        <>
-          Your wallet address is <strong>not</strong> on the allowlist.
-        </>
-      )}
-    </Typography>
+}) => {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-    {network.vestingContractAddress && (
-      <Stack direction="row" alignItems="center" gap={0.5}>
-        <Typography variant="body1" color="secondary">
-          Vesting Smart Contract
-        </Typography>
-        <Stack
-          data-cy="vesting-contract-buttons"
-          direction="row"
-          alignItems="center"
-        >
-          <CopyIconBtn
-            TooltipProps={{ placement: "top" }}
-            copyText={getAddress(network.vestingContractAddress)}
-            description="Copy address to clipboard"
-            IconButtonProps={{ size: "small" }}
-          />
-          <Tooltip arrow title="View on blockchain explorer" placement="top">
-            <NextLinkComposed
-              passHref
-              to={network.getLinkForAddress(network.vestingContractAddress)}
-              target="_blank"
-            >
-              <IconButton size="small">
-                <LaunchRoundedIcon color="inherit" />
-              </IconButton>
-            </NextLinkComposed>
-          </Tooltip>
+  return (
+    <Stack
+      direction={isBelowMd ? "column" : "row"}
+      alignItems={isBelowMd ? "start" : "center"}
+      justifyContent="space-between"
+      spacing={1}
+    >
+      <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
+        {whitelisted ? (
+          <>
+            Your wallet address <strong>is</strong> on the allowlist.
+          </>
+        ) : (
+          <>
+            Your wallet address is <strong>not</strong> on the allowlist.
+          </>
+        )}
+      </Typography>
+
+      {network.vestingContractAddress && (
+        <Stack direction="row" alignItems="center" gap={0.5}>
+          <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
+            Vesting Smart Contract
+          </Typography>
+          <Stack
+            data-cy="vesting-contract-buttons"
+            direction="row"
+            alignItems="center"
+          >
+            <CopyIconBtn
+              TooltipProps={{ placement: "top" }}
+              copyText={getAddress(network.vestingContractAddress)}
+              description="Copy address to clipboard"
+              IconButtonProps={{ size: "small" }}
+            />
+            <Tooltip arrow title="View on blockchain explorer" placement="top">
+              <NextLinkComposed
+                passHref
+                to={network.getLinkForAddress(network.vestingContractAddress)}
+                target="_blank"
+              >
+                <IconButton size="small">
+                  <LaunchRoundedIcon color="inherit" />
+                </IconButton>
+              </NextLinkComposed>
+            </Tooltip>
+          </Stack>
         </Stack>
-      </Stack>
-    )}
-  </Stack>
-);
+      )}
+    </Stack>
+  );
+};
 
 interface VestingScheduleTablesProps {}
 
 const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
   const { visibleAddress } = useVisibleAddress();
   const { network } = useExpectedNetwork();
 
@@ -221,7 +231,7 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
             )}
           </Typography>
           {vestingSchedulesLoading || mappedSentVestingSchedules.length > 0 ? (
-            <Stack gap={3.5}>
+            <Stack gap={isBelowMd ? 0 : 3.5}>
               <AggregatedVestingSchedules
                 vestingSchedules={notDeletedSentVestingSchedules}
                 network={network}

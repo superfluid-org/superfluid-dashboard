@@ -1,5 +1,5 @@
-import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import PersonSearchRoundedIcon from "@mui/icons-material/PersonSearchRounded";
 import {
   Button,
@@ -8,6 +8,7 @@ import {
   IconButton,
   Stack,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { FC, useCallback, useEffect, useState } from "react";
@@ -28,6 +29,8 @@ interface AccountModalProps {
 
 const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
   const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const isBelowSm = useMediaQuery(theme.breakpoints.down("sm"));
 
   const { address } = useAccount();
   const { disconnectAsync } = useDisconnect();
@@ -96,7 +99,16 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
             </IconButton>
           </DialogTitle>
           {address && (
-            <DialogContent sx={{ px: 5, pt: 0, pb: 3.5 }}>
+            <DialogContent
+              sx={{
+                px: 5,
+                pt: 0,
+                pb: 3.5,
+                [theme.breakpoints.down("md")]: {
+                  px: 3,
+                },
+              }}
+            >
               <Stack alignItems="center">
                 <AddressAvatar address={address} />
                 <Typography variant="h4" component="span" sx={{ mt: 1.5 }}>
@@ -116,7 +128,7 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
                   ButtonProps={{
                     variant: "outlined",
                     color: "secondary",
-                    size: "large",
+                    size: isBelowMd ? "medium" : "large",
                     sx: { flex: 1 },
                   }}
                 />
@@ -124,7 +136,7 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
                 <Button
                   variant="outlined"
                   color="secondary"
-                  size="large"
+                  size={isBelowMd ? "medium" : "large"}
                   endIcon={<LogoutRoundedIcon />}
                   sx={{ flex: 1 }}
                   onClick={onDisconnect}
@@ -133,18 +145,25 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
                 </Button>
               </Stack>
 
-              <Typography variant="h6">View as any wallet</Typography>
+              <Typography variant={isBelowMd ? "h7" : "h6"}>
+                View as any wallet
+              </Typography>
 
               <Stack
                 direction="row"
                 alignItems="center"
                 gap={1.25}
-                sx={{ mt: 2 }}
+                sx={{
+                  mt: 2,
+                  [theme.breakpoints.down("md")]: {
+                    mt: 1,
+                  },
+                }}
               >
                 <Button
                   variant="outlined"
                   color="secondary"
-                  size="large"
+                  size={isBelowMd ? "medium" : "large"}
                   fullWidth
                   startIcon={<PersonSearchRoundedIcon />}
                   onClick={openAddressSearch}
@@ -159,7 +178,7 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
         <AddressSearchDialogContent
           title="Select Address To View"
           open={addressSearchOpen}
-          onClose={handleClose}
+          onClose={isBelowSm ? undefined : handleClose}
           onBack={closeAddressSearch}
           onSelectAddress={onImpersonate}
           index={<AddressSearchIndex onSelectAddress={onImpersonate} />}

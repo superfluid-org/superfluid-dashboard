@@ -1,10 +1,9 @@
+import { customAlphabet } from "nanoid";
 import { useMemo } from "react";
 import { useAccount, useNetwork } from "wagmi";
+import { useAutoConnect } from "../autoConnect/AutoConnect";
 import { useLayoutContext } from "../layout/LayoutContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { useAutoConnect } from "../autoConnect/AutoConnect";
-import { customAlphabet } from "nanoid";
-import { useVestingEnabled } from "../flags/flagsHooks";
 
 export const supportId = customAlphabet("6789BCDFGHJKLMNPQRTWbcdfghjkmnpqrtwz")(
   8
@@ -20,12 +19,6 @@ export type AppInstanceDetails = {
       isTestnet: boolean;
     };
     wallet: UnconnectedWalletDetails | ConnectedWalletDetails;
-    enabledFeatures:
-      | {
-          vesting?: boolean;
-          mainnet?: boolean;
-        }
-      | undefined;
   };
 };
 
@@ -60,8 +53,6 @@ export const useAppInstanceDetails = () => {
     address: activeAccountAddress,
   } = useAccount();
 
-  const isVestingEnabled = useVestingEnabled();
-
   const deps = [
     expectedNetwork,
     isConnected,
@@ -70,7 +61,6 @@ export const useAppInstanceDetails = () => {
     activeAccountAddress,
     isAutoConnectedRef,
     transactionDrawerOpen,
-    isVestingEnabled,
   ];
 
   return useMemo<AppInstanceDetails>(() => {
@@ -99,20 +89,11 @@ export const useAppInstanceDetails = () => {
         : { isConnected: false }),
     };
 
-    const isAnyFeatureEnabled = isVestingEnabled;
-    const featuresObj: AppInstanceDetails["appInstance"]["enabledFeatures"] =
-      isAnyFeatureEnabled
-        ? {
-            ...(isVestingEnabled ? { vesting: true } : {}),
-          }
-        : undefined;
-
     return {
       appInstance: {
         supportId: supportId,
         expectedNetwork: networkObj,
         wallet: walletObj,
-        enabledFeatures: featuresObj,
       },
     };
   }, deps);
