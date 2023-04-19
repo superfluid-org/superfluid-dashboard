@@ -1,7 +1,7 @@
 import {BasePage, UnitOfTime} from "../BasePage";
 import {WrapPage} from "./WrapPage";
 import {networksBySlug} from "../../superData/networks";
-import {Common} from "./Common";
+import {Common, TOKEN_ANIMATION, TOKEN_BALANCE} from "./Common";
 
 const SEND_BUTTON = "[data-cy=send-transaction-button]";
 const RECEIVER_BUTTON = "[data-cy=address-button]";
@@ -34,7 +34,7 @@ const ADDRESS_BUTTON_TEXT = "[data-cy=address-button]";
 const CHOSEN_ENS_ADDRESS = "[data-cy=address-button] span p";
 const TOKEN_SELECT_NAME = "[data-cy=token-symbol-and-name] p";
 const TOKEN_SELECT_SYMBOL = "[data-cy=token-symbol-and-name] h6";
-const TOKEN_SELECT_BALANCE = "[data-cy=token-balance] span";
+const TOKEN_SELECT_BALANCE = `${TOKEN_BALANCE} span`;
 const BALANCE_WRAP_BUTTON = "[data-cy=balance-wrap-button]";
 const PREVIEW_BALANCE = "[data-cy=balance]";
 const TOKEN_NO_SEARCH_RESULTS = "[data-cy=token-search-no-results]";
@@ -91,9 +91,7 @@ export class SendPage extends BasePage {
         cy.fixture("networkSpecificData").then((networkSpecificData) => {
             networkSpecificData[network].staticBalanceAccount.recentReceivers.forEach(
                 (receiver: any, index: number) => {
-                    cy.get(RECENT_ENTRIES)
-                        .eq(index)
-                        .should("have.text", receiver.address);
+                    this.hasText(RECENT_ENTRIES,receiver.address,index)
                 }
             );
         });
@@ -234,16 +232,16 @@ export class SendPage extends BasePage {
             networkSpecificData[network][account].tokenValues.forEach(
                 (values: any) => {
                     let specificToken = `[data-cy=${values.token}-list-item] `;
-                    this.scrollToAndhasText(
+                    this.scrollToAndHasText(
                         specificToken + TOKEN_SELECT_SYMBOL,
                         values.token
                     );
-                    this.scrollToAndhasText(
+                    this.scrollToAndHasText(
                         specificToken + TOKEN_SELECT_NAME,
                         values.tokenName
                     );
                     let assertableBalance = Number.isInteger(parseFloat(values.balance)) ? values.balance : parseFloat(values.balance).toFixed(4)
-                    this.scrollToAndhasText(
+                    this.scrollToAndHasText(
                         specificToken + TOKEN_SELECT_BALANCE,
                         `${assertableBalance} `
                     );
@@ -254,7 +252,7 @@ export class SendPage extends BasePage {
 
     static verifyAllSupertokenAnimations() {
         cy.get("[data-cy*=list-item]").each((el) => {
-            cy.wrap(el).find("[data-cy=animation]").should("exist");
+            cy.wrap(el).find(TOKEN_ANIMATION).should("exist");
         });
     }
 
@@ -306,7 +304,7 @@ export class SendPage extends BasePage {
 
     static validateSortedTokensByAmount() {
         let balances: any[] = [];
-        cy.get("[data-cy=token-balance]").each((balance) => {
+        cy.get(TOKEN_BALANCE).each((balance) => {
             balances.push(parseFloat(balance.text().replace("$", "")));
         });
         cy.wrap(balances).then((array) => {
@@ -318,8 +316,8 @@ export class SendPage extends BasePage {
     }
 
     static waitForTokenBalancesToLoad() {
-        this.exists("[data-cy=animation]");
-        cy.get("[data-cy=token-balance]").eq(0).should("have.text", "0 ");
+        this.exists(TOKEN_ANIMATION);
+        this.hasText(TOKEN_BALANCE,"0 ",0)
     }
 
     static clickAddressButton() {
@@ -335,12 +333,12 @@ export class SendPage extends BasePage {
                     selectedToken = token
                 }
         this.click(RECEIVER_BUTTON);
-        cy.get(RECENT_ENTRIES,{timeout:30000}).should("be.visible")
+        this.isVisible(RECENT_ENTRIES,undefined,{timeout:30000})
         this.type(ADDRESS_DIALOG_INPUT, address);
         this.clear(`${FLOW_RATE_INPUT} input`)
         this.type(FLOW_RATE_INPUT, amount);
         this.click(SELECT_TOKEN_BUTTON);
-        cy.get(`[data-cy="${selectedToken}-list-item"]`, {timeout: 60000}).click()
+        this.click(`[data-cy="${selectedToken}-list-item"]`,undefined,{timeout:60000})
         this.click(TIME_UNIT_SELECTION_BUTTON)
         this.click(`[data-value=${UnitOfTime[timeUnit[0].toUpperCase() + timeUnit.substring(1)]!}]`)
         this.click(RISK_CHECKBOX)
@@ -363,7 +361,7 @@ export class SendPage extends BasePage {
     }
 
     static checkNewStreamBrodcastedDialogs() {
-        cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
+        this.isVisible(TX_BROADCASTED_ICON,undefined,{timeout: 60000})
         this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
         this.isVisible(SEND_MORE_STREAMS_BUTTON)
         this.isVisible(GO_TO_TOKENS_PAGE_BUTTON)
@@ -391,9 +389,9 @@ export class SendPage extends BasePage {
                     this.click(CANCEL_STREAM_BUTTON)
                     WrapPage.clickOkButton()
                     this.isVisible(`${TX_DRAWER_BUTTON} span`)
-                    cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
+                    this.isNotVisible(`${TX_DRAWER_BUTTON} span`,undefined,{timeout: 60000})
                     this.inputStreamDetails("1", "fDAIx", "month", data.accountWithLotsOfData)
-                    cy.get(SEND_OR_MOD_STREAM,{timeout:30000}).should("have.text","Send Stream")
+                    this.hasText(SEND_OR_MOD_STREAM,"Send Stream",undefined,{timeout:30000})
                     this.clear(FLOW_RATE_INPUT)
                     this.type(FLOW_RATE_INPUT, "1")
                     this.click(RISK_CHECKBOX)
@@ -413,9 +411,9 @@ export class SendPage extends BasePage {
                 this.overrideNextGasPrice()
                 this.click(SEND_BUTTON)
                 this.isVisible(GO_TO_TOKENS_PAGE_BUTTON)
-                cy.get(CLOSE_DIALOG_BUTTON, {timeout: 60000}).last().click()
+                this.click(CLOSE_DIALOG_BUTTON,-1,{timeout: 60000})
                 this.isVisible(`${TX_DRAWER_BUTTON} span`)
-                cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 90000}).should("not.be.visible")
+                this.isNotVisible(`${TX_DRAWER_BUTTON} span`,undefined,{timeout: 90000})
                 this.inputStreamDetails("2", "fDAIx", "month", data.accountWithLotsOfData)
                 this.hasText(SEND_OR_MOD_STREAM, "Modify Stream")
             }
@@ -425,14 +423,14 @@ export class SendPage extends BasePage {
                     this.click(CANCEL_STREAM_BUTTON)
                     WrapPage.clickOkButton()
                     this.isVisible(`${TX_DRAWER_BUTTON} span`)
-                    cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
+                    this.isNotVisible(`${TX_DRAWER_BUTTON} span`,undefined,{timeout: 60000})
                     this.inputStreamDetails("1", "fDAIx", "month", data.accountWithLotsOfData)
                     this.hasText(SEND_OR_MOD_STREAM, "Send Stream")
                     this.overrideNextGasPrice()
                     this.click(SEND_BUTTON)
                     this.click(CLOSE_DIALOG_BUTTON)
                     this.isVisible(`${TX_DRAWER_BUTTON} span`)
-                    cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
+                    this.isNotVisible(`${TX_DRAWER_BUTTON} span`,undefined,{timeout: 60000})
                     this.inputStreamDetails("2", "fDAIx", "month", data.accountWithLotsOfData)
                 }
             }
@@ -445,7 +443,7 @@ export class SendPage extends BasePage {
         this.overrideNextGasPrice()
         this.isVisible(PREVIEW_UPFRONT_BUFFER)
         this.isNotDisabled(SEND_BUTTON)
-        cy.get(SEND_BUTTON).should("be.enabled")
+        this.isEnabled(SEND_BUTTON)
         this.click(SEND_BUTTON)
         this.isVisible(LOADING_SPINNER)
         this.exists(`${SEND_BUTTON} ${LOADING_SPINNER}`)
@@ -454,7 +452,7 @@ export class SendPage extends BasePage {
     }
 
     static validateBroadcastedDialogsAfterModifyingStream() {
-        cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
+        this.isVisible(TX_BROADCASTED_ICON,undefined,{timeout: 60000})
         this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
         this.isVisible(GO_TO_TOKENS_PAGE_BUTTON)
         this.doesNotExist(`${SEND_BUTTON} ${LOADING_SPINNER}`)
@@ -468,9 +466,9 @@ export class SendPage extends BasePage {
                 this.overrideNextGasPrice()
                 this.click(SEND_BUTTON)
                 this.isVisible(GO_TO_TOKENS_PAGE_BUTTON)
-                cy.get(CLOSE_DIALOG_BUTTON, {timeout: 60000}).last().click()
+                this.click(CLOSE_DIALOG_BUTTON,-1,{timeout: 60000})
                 this.isVisible(`${TX_DRAWER_BUTTON} span`)
-                cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
+                this.isNotVisible(`${TX_DRAWER_BUTTON} span`,undefined,{timeout: 60000})
                 this.inputStreamDetails("2", "fDAIx", "month",data.accountWithLotsOfData)
                 this.hasText(SEND_OR_MOD_STREAM, "Modify Stream")
             }
@@ -481,7 +479,7 @@ export class SendPage extends BasePage {
     static cancelStreamAndVerifyApprovalDialogs(network:string) {
         let selectedNetwork = network === "selected network" ? Cypress.env("network") : network
         this.overrideNextGasPrice()
-        cy.get(CANCEL_STREAM_BUTTON, {timeout:30000}).should("not.have.attr", "disabled");
+        this.isDisabled(CANCEL_STREAM_BUTTON,undefined,{timeout:30000})
         this.click(CANCEL_STREAM_BUTTON)
         this.isVisible(LOADING_SPINNER)
         this.exists(`${CANCEL_STREAM_BUTTON} ${LOADING_SPINNER}`)
@@ -490,7 +488,7 @@ export class SendPage extends BasePage {
     }
 
     static verifyDialogAfterBroadcastingCancelledStream() {
-        cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
+        this.isVisible(TX_BROADCASTED_ICON,undefined,{timeout: 60000})
         this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
         this.isVisible(OK_BUTTON)
         this.doesNotExist(`${CANCEL_STREAM_BUTTON} ${LOADING_SPINNER}`)
@@ -522,11 +520,11 @@ export class SendPage extends BasePage {
     }
 
     static validateEndDateBorderIsRed() {
-        cy.get(END_DATE_BORDER).should("have.css","border-color" , "rgb(210, 37, 37)")
+        this.hasCSS(END_DATE_BORDER,"border-color","rgb(210, 37, 37)")
     }
 
     static validateStartDateBorderIsRed() {
-        cy.get(START_DATE_BORDER).should("have.css","border-color" , "rgb(210, 37, 37)")
+        this.hasCSS(START_DATE_BORDER,"border-color","rgb(210, 37, 37)")
     }
 
     static validateVisibleAllowlistMessage() {

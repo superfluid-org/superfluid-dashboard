@@ -1,14 +1,25 @@
 Feature: Activity History Page tests
 
-  @skip
   Scenario: Activity history page entries shown for all networks in the correct order
+    Given Activity history request is mocked to "all activities" on "polygon"
     Given "Activity History Page" is open using view mode to look at "staticBalanceAccount"
     #Possible reworks comming up so didn't spend time on making it dynamic
-    And User changes the activity history filter to 15 months before
-    And User closes the dropdown
-    And Activity history data for "staticBalanceAccount" is shown correctly on "mainnet"
-    And User changes the visible networks to "testnet"
-    And Activity history data for "staticBalanceAccount" is shown correctly on "testnet"
+    Then Mocked activity history entries are visible in this order
+      | Liquidated            |
+      | Receive Stream        |
+      | Stream Cancelled      |
+      | Send Stream           |
+      | Wrap                  |
+      | Unwrap                |
+      | Receive Transfer      |
+      | Send Transfer         |
+      | Stream Updated        |
+      | Subscription Approved |
+      | Subscription Updated  |
+      | Subscription Rejected |
+      | Index Created         |
+      | Send Distribution     |
+      | Distribution Claimed  |
 
   Scenario: No activity history message shown
     Given "Activity history page" is open without connecting a wallet

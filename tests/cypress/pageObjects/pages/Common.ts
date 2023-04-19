@@ -12,6 +12,8 @@ export const ACCESS_CODE_BUTTON = "[data-cy=more-access-code-btn]";
 export const ACCESS_CODE_INPUT = "[data-cy=access-code-input]";
 export const ACCESS_CODE_SUBMIT = "[data-cy=submit-access-code]";
 export const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet-button]";
+export const TOKEN_ANIMATION = "[data-cy=animation]"
+export const TOKEN_BALANCE = "[data-cy=token-balance]"
 const VESTING_CODE_BUTTON = "[data-cy=vesting-code-button]"
 const NAVIGATION_BUTTON_PREFIX = "[data-cy=nav-";
 const NAVIGATION_DRAWER = "[data-cy=navigation-drawer]";
@@ -270,15 +272,9 @@ export class Common extends BasePage {
         network
       ].ongoingStreamsAccount.tokenValues.streams.forEach(
         (stream: any, index: number) => {
-          cy.get(`${selector} ${STREAM_FLOW_RATES}`)
-            .eq(index)
-            .should("have.text", stream.flowRate);
-          cy.get(`${selector} ${SENDER_RECEIVER_ADDRESSES}`)
-            .eq(index)
-            .should("have.text", stream.fromTo);
-          cy.get(`${selector} ${START_END_DATES}`)
-            .eq(index)
-            .should("have.text", stream.endDate);
+          this.hasText(`${selector} ${STREAM_FLOW_RATES}`,stream.flowRate,index)
+          this.hasText(`${selector} ${SENDER_RECEIVER_ADDRESSES}`,stream.fromTo,index)
+          this.hasText(`${selector} ${START_END_DATES}`,stream.endDate,index)
         }
       );
     });
@@ -675,7 +671,7 @@ export class Common extends BasePage {
 
   static archiveLastNotification() {
     //One of the rare cases where triggering mouseevents or invoking show function does not make the element visible
-    cy.get(NOTIF_ARCHIVE_BUTTON).first().click({force: true})
+    this.forceClick(NOTIF_ARCHIVE_BUTTON,0)
   }
 
   static validateArchivedNotification(type: string) {

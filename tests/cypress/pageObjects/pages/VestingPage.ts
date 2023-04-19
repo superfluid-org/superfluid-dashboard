@@ -109,7 +109,7 @@ export class VestingPage extends BasePage {
     }
 
     static validateFormError(error: string) {
-        cy.get(FORM_ERROR).first().should("have.text",error)
+        this.hasText(FORM_ERROR,error,0)
         this.isDisabled(PREVIEW_SCHEDULE_BUTTON)
     }
 
@@ -157,8 +157,8 @@ export class VestingPage extends BasePage {
             if (body.find(FORWARD_BUTTON).length > 0) {
                 this.clickFirstVisible(VESTING_ROWS)
                 this.clickFirstVisible(DELETE_SCHEDULE_BUTTON)
-                cy.get(OK_BUTTON, {timeout: 45000}).should("be.visible").click()
-                cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
+                this.isVisible(OK_BUTTON,undefined,{timeout: 45000}).click()
+                this.isNotVisible(`${TX_DRAWER_BUTTON} span`,undefined,{timeout: 60000})
                 this.doesNotExist(FORWARD_BUTTON)
                 this.doesNotExist(VESTING_ROWS)
             }
@@ -179,18 +179,18 @@ export class VestingPage extends BasePage {
         this.hasText(TABLE_RECEIVER_SENDER , this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"))
         this.hasText(TABLE_ALLOCATED_AMOUNT , "2 fTUSDx")
         this.hasText(VESTED_AMOUNT , "1 fTUSDx")
-        cy.get(TABLE_START_END_DATES).first().should("contain.text" , format(startDate, "LLL d, yyyy"))
-        cy.get(TABLE_START_END_DATES).last().should("contain.text", format(endDate,"LLL d, yyyy"))
+        this.hasText(TABLE_START_END_DATES,format(startDate, "LLL d, yyyy"),0)
+        this.hasText(TABLE_START_END_DATES,format(endDate,"LLL d, yyyy"),-1)
         this.doesNotExist(PENDING_MESSAGE)
     }
 
     static clickCreateScheduleButton() {
-        cy.get(LOADING_SKELETONS, {timeout: 45000}).should("not.exist")
+        this.doesNotExist(LOADING_SKELETONS,undefined,{timeout: 45000})
         this.click(CREATE_VESTING_SCHEDULE_BUTTON)
     }
 
     static openLastCreatedSchedule() {
-        cy.get(LOADING_SKELETONS, {timeout: 45000}).should("not.exist")
+        this.doesNotExist(LOADING_SKELETONS,undefined,{timeout: 45000})
         this.clickFirstVisible(VESTING_ROWS)
     }
 
@@ -216,12 +216,12 @@ export class VestingPage extends BasePage {
     }
 
     static validateCreatedVestingSchedule() {
-        cy.get(TABLE_VESTING_STATUS).first().should("have.text","Scheduled")
-        cy.get(TABLE_RECEIVER_SENDER).first().should("have.text",this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"))
-        cy.get(TABLE_ALLOCATED_AMOUNT).first().should("have.text","100 fUSDCx")
-        cy.get(VESTED_AMOUNT).first().should("have.text","0  fUSDCx")
-        cy.get(TABLE_START_END_DATES).first().should("contain.text" , format(staticStartDate, "LLL d, yyyy"))
-        cy.get(TABLE_START_END_DATES).last().should("contain.text", format(staticEndDate,"LLL d, yyyy"))
+        this.hasText(TABLE_VESTING_STATUS,"Scheduled",0)
+        this.hasText(TABLE_RECEIVER_SENDER,this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"),0)
+        this.hasText(TABLE_ALLOCATED_AMOUNT,"100 fUSDCx",0)
+        this.hasText(VESTED_AMOUNT,"0  fUSDCx",0)
+        this.containsText(TABLE_START_END_DATES,format(staticStartDate, "LLL d, yyyy"),0)
+        this.containsText(TABLE_START_END_DATES,format(staticEndDate, "LLL d, yyyy"),-1)
     }
 
     static validateSchedulePreviewDetails(cliffDate: Date,startDate:Date ,endDate:Date) {
@@ -273,9 +273,9 @@ export class VestingPage extends BasePage {
 
     static validateTokenPermissionIcons(token: string, color: string) {
         let rgbValue = color === "green" ? "rgb(16, 187, 53)" : "rgb(210, 37, 37)"
-        cy.get(`[data-cy=${token}-allowance-status]`, {timeout:30000}).should("have.css","color" , rgbValue)
-        cy.get(`[data-cy=${token}-permission-status]`).should("have.css","color" , rgbValue)
-        cy.get(`[data-cy=${token}-flow-allowance-status]`).should("have.css","color" , rgbValue)
+        this.hasCSS(`[data-cy=${token}-allowance-status]`,"color",rgbValue,undefined,{timeout:30000})
+        this.hasCSS(`[data-cy=${token}-permission-status]`,"color",rgbValue)
+        this.hasCSS(`[data-cy=${token}-flow-allowance-status]`,"color",rgbValue)
     }
 
     static openTokenPermissionRow(token: string) {
@@ -349,25 +349,25 @@ export class VestingPage extends BasePage {
         if (status === "Deleted") {
             cy.contains("Deleted").click()
         }
-        cy.get(TABLE_VESTING_STATUS).first().should("have.text", status)
+        this.hasText(TABLE_VESTING_STATUS,status,0)
     }
 
     static validateScheduleBarElements(greenOnes: string[], greyOnes: string[], barPercentage: number) {
         greenOnes.forEach((greenOne, i) => {
-            cy.get(`${greenOne} div div`).should("have.css", "background", "rgb(16, 187, 53) none repeat scroll 0% 0% / auto padding-box border-box")
+            this.hasCSS(`${greenOne} div div`,"background","rgb(16, 187, 53) none repeat scroll 0% 0% / auto padding-box border-box")
             if (greyOnes.length === 0 && i === greenOnes.length - 1) {
                 return;
             }
             cy.get("[data-cy=total-progress-line]").eq(i).then(el => {
                 let expectedWidth = i === (greenOnes.length - 1) ? (el.width() / 100 * barPercentage) : el.width()
-                cy.get("[data-cy=actual-progress-line]").eq(i).invoke("width").should("be.closeTo", expectedWidth, 1)
-                cy.get("[data-cy=actual-progress-line]").eq(i).should("be.visible")
+                this.get("[data-cy=actual-progress-line]",i).invoke("width").should("be.closeTo", expectedWidth, 1)
+                this.isVisible("[data-cy=actual-progress-line]",i)
 
             })
         })
         greyOnes.forEach((greyOne, i) => {
             if (greyOne) {
-                cy.get(`${greyOne} div div`).should("have.css", "background", "rgba(0, 0, 0, 0.12) none repeat scroll 0% 0% / auto padding-box border-box")
+                this.hasCSS(`${greyOne} div div`,"background","rgba(0, 0, 0, 0.12) none repeat scroll 0% 0% / auto padding-box border-box")
             }
         })
     }
@@ -394,9 +394,6 @@ export class VestingPage extends BasePage {
     }
 
     static mockProgressTo(status: string) {
-        let today = BasePage.getDayTimestamp(0)
-        let yesterday = BasePage.getDayTimestamp(-1)
-
         cy.intercept("POST", "**vesting-v1**", (req => {
             req.continue((res) => {
                 if (req.body.variables._0_id) {
@@ -488,8 +485,8 @@ export class VestingPage extends BasePage {
             this.containsText(`[data-cy=${stream.token.symbol}-total-vested]` , totalVestedAmount )
         })
         //Make sure deleted schedules don't get shown in the aggregate stats
-        cy.get("[data-cy=DAIx-total-allocated]").should("not.exist")
-        cy.get("[data-cy=DAIx-total-vested]").should("not.exist")
+        this.doesNotExist("[data-cy=DAIx-total-allocated]")
+        this.doesNotExist("[data-cy=DAIx-total-vested]")
     }
 
     static validateNoCodeUnlockScreen() {

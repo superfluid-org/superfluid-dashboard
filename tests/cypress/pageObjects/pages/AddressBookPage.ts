@@ -26,11 +26,11 @@ export class AddressBookPage extends BasePage {
     }
 
     static validateLastAddressBookName(name: string) {
-        cy.get(ADDRESS_NAMES).last().should("have.text", name)
+        this.hasText(ADDRESS_NAMES,name,-1)
     }
 
     static editLastEntry(name: string) {
-        cy.get(ADDRESS_NAMES).last().trigger("mouseover")
+        this.trigger(ADDRESS_NAMES,"mousover",-1)
         this.click(EDIT_BUTTON)
         this.clear(EDIT_INPUT)
         this.type(EDIT_INPUT, name)
@@ -41,7 +41,7 @@ export class AddressBookPage extends BasePage {
         this.click(REMOVE_ADDRESS_BUTTON)
         this.hasText(REMOVE_ADDRESS_BUTTON, "Confirm removing (0)")
         this.isDisabled(REMOVE_ADDRESS_BUTTON)
-        cy.get(REMOVE_CHECKBOX).last().click()
+        this.click(REMOVE_CHECKBOX,-1)
         this.hasText(REMOVE_ADDRESS_BUTTON, "Confirm removing (1)")
         this.click(REMOVE_ADDRESS_BUTTON)
     }

@@ -1,4 +1,4 @@
-import {Given, Then} from "@badeball/cypress-cucumber-preprocessor";
+import {DataTable, Given, Then} from "@badeball/cypress-cucumber-preprocessor";
 import {ActivityPage} from "../../pageObjects/pages/ActivityPage";
 
 
@@ -44,4 +44,7 @@ Given(/^Activity history request is mocked to "([^"]*)" on "([^"]*)"$/, function
 });
 Then(/^Mocked "([^"]*)" entry on "([^"]*)" is shown in the activity history$/, function (activity: string, network: string) {
     ActivityPage.validateMockedActivityHistoryEntry(activity, network)
+});
+Then(/^Mocked activity history entries are visible in this order$/, function (entries:DataTable) {
+    ActivityPage.validateActivityHistoryOrder(entries)
 });

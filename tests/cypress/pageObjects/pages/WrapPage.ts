@@ -1,6 +1,7 @@
 import {BasePage} from "../BasePage";
 import {networksBySlug} from "../../superData/networks";
 import {format} from "date-fns";
+import {TOKEN_ANIMATION,TOKEN_BALANCE} from "./Common"
 
 const WRAP_TAB = "[data-cy=wrap-toggle]";
 const UNWRAP_TAB = "[data-cy=unwrap-toggle]";
@@ -20,7 +21,6 @@ const UNDERLYING_BALANCE = "[data-cy=underlying-balance]";
 const SUPER_TOKEN_BALANCE = "[data-cy=balance]";
 const TOKEN_SELECT_NAME = "[data-cy=token-symbol-and-name] p";
 const TOKEN_SELECT_SYMBOL = "[data-cy=token-symbol-and-name] h6";
-const TOKEN_SELECT_BALANCE = "[data-cy=token-balance]";
 const APPROVAL_MESSAGE = "[data-cy=approval-message]";
 const TX_NETWORK = "[data-cy=tx-network]"
 const WRAP_MESSAGE = "[data-cy=wrap-message]"
@@ -148,21 +148,21 @@ export class WrapPage extends BasePage {
                     let specificToken =
                         `[data-cy=${values.underlyingTokenSymbol}-list-item] `;
                     if (values.underlyingBalance) {
-                        this.scrollToAndhasText(
+                        this.scrollToAndHasText(
                             specificToken + TOKEN_SELECT_SYMBOL,
                             values.underlyingTokenSymbol
                         );
-                        this.scrollToAndhasText(
+                        this.scrollToAndHasText(
                             specificToken + TOKEN_SELECT_NAME,
                             values.underlyingTokenName
                         );
                         if (values.balance === "0") {
-                            this.scrollToAndhasText(
-                                specificToken + TOKEN_SELECT_BALANCE,
+                            this.scrollToAndHasText(
+                                specificToken + TOKEN_BALANCE,
                                 "0"
                             );
                         } else {
-                            cy.get(specificToken + TOKEN_SELECT_BALANCE)
+                            cy.get(specificToken + TOKEN_BALANCE)
                                 .scrollIntoView()
                                 .invoke("text")
                                 .should((text) => {
@@ -180,7 +180,7 @@ export class WrapPage extends BasePage {
 
     static validateNoAnimationsInUnderlyingTokenSelection() {
         cy.get("[data-cy*=list-item]").each((el) => {
-            cy.wrap(el).find("[data-cy=animation]").should("not.exist");
+            cy.wrap(el).find(TOKEN_ANIMATION).should("not.exist");
         });
     }
 
@@ -192,7 +192,7 @@ export class WrapPage extends BasePage {
             } else {
                 selectedToken = token
             }
-            cy.get(`[data-cy="${selectedToken}-list-item"]`, {timeout: 60000}).click()
+            this.click(`[data-cy="${selectedToken}-list-item"]`,undefined,{timeout:60000})
         })
     }
 
@@ -201,18 +201,18 @@ export class WrapPage extends BasePage {
             networkSpecificData[network].staticBalanceAccount.tokenValues.forEach(
                 (values: any) => {
                     let specificToken = `[data-cy=${values.token}-list-item] `;
-                    this.scrollToAndhasText(
+                    this.scrollToAndHasText(
                         specificToken + TOKEN_SELECT_SYMBOL,
                         values.token
                     );
-                    this.scrollToAndhasText(
+                    this.scrollToAndHasText(
                         specificToken + TOKEN_SELECT_NAME,
                         values.tokenName
                     );
                     if (values.balance === "0") {
-                        this.scrollToAndhasText(specificToken + TOKEN_SELECT_BALANCE, "0");
+                        this.scrollToAndHasText(specificToken + TOKEN_BALANCE, "0");
                     } else {
-                        cy.get(specificToken + TOKEN_SELECT_BALANCE)
+                        cy.get(specificToken + TOKEN_BALANCE)
                             .scrollIntoView()
                             .invoke("text")
                             .should((text) => {
@@ -228,7 +228,7 @@ export class WrapPage extends BasePage {
     }
 
     static rememberBalanceBeforeAndWrapToken() {
-        cy.get(UPGRADE_BUTTON,{timeout:30000}).should("not.be.disabled")
+        this.isNotDisabled(UPGRADE_BUTTON,undefined,{timeout:30000})
         cy.get(SELECT_TOKEN_BUTTON).then(el => {
             cy.wrap(el.text()).as("lastWrappedToken")
         })
@@ -279,7 +279,7 @@ export class WrapPage extends BasePage {
     }
 
     static validateWrapTxBroadcastedDialog() {
-        cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
+        this.isVisible(TX_BROADCASTED_ICON,undefined,{timeout:60000})
         this.isVisible(WRAP_MORE_TOKENS_BUTTON)
         this.isVisible(GO_TO_TOKENS_PAGE_BUTTON)
         this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
@@ -290,31 +290,31 @@ export class WrapPage extends BasePage {
     }
 
     static validatePendingTransaction(type: string, network: string) {
-        cy.get(TX_TYPE).first().should("contain.text", type)
-        cy.get(DRAWER_TX).first().find("[data-cy=Pending-tx-status]").should("be.visible")
+        this.containsText(TX_TYPE,type,0)
+        this.get(DRAWER_TX,0).find("[data-cy=Pending-tx-status]").should("be.visible")
         cy.get(TX_HASH_BUTTONS).first().then(el => {
             el.attr("href")?.substr(-66)
-            cy.get(TX_HASH).should("be.visible")
-            cy.get(TX_HASH).first().should("have.text", BasePage.shortenHex(el.attr("href")!.substr(-66)))
+            this.isVisible(TX_HASH)
+            this.hasText(TX_HASH,BasePage.shortenHex(el.attr("href")!.substr(-66)),0)
         })
         this.isVisible(PROGRESS_LINE)
-        cy.get(TX_DATE).first().should("have.text", `${format(Date.now(), "d MMM")} •`)
-        cy.get(`${TX_NETWORK_BADGES}${networksBySlug.get(network)!.id}]`).first().should("have.attr", "aria-label", networksBySlug.get(network)!.name)
-        cy.get(`${TX_NETWORK_BADGES}${networksBySlug.get(network)!.id}]`).first().should("be.visible")
+        this.hasText(TX_DATE,`${format(Date.now(), "d MMM")} •`,0)
+        this.hasAttributeWithValue(`${TX_NETWORK_BADGES}${networksBySlug.get(network)!.id}]`,"aria-label",networksBySlug.get(network)!.name,0)
+        this.isVisible(`${TX_NETWORK_BADGES}${networksBySlug.get(network)!.id}]`,0)
     }
 
     static validateSuccessfulTransaction(type: any, network: any) {
-        cy.get(TX_TYPE).first().should("have.text", type)
+        this.hasText(TX_TYPE,type,0)
         cy.get(DRAWER_TX).first().find("[data-cy=Succeeded-tx-status]", {timeout: 90000}).should("be.visible")
         cy.get(TX_HASH_BUTTONS).first().then(el => {
             el.attr("href")?.substr(-66)
-            cy.get(TX_HASH).should("be.visible")
-            cy.get(TX_HASH).first().should("have.text", BasePage.shortenHex(el.attr("href")!.substr(-66)))
+            this.isVisible(TX_HASH)
+            this.hasText(TX_HASH,BasePage.shortenHex(el.attr("href")!.substr(-66)),0)
         })
         this.doesNotExist(PROGRESS_LINE)
-        cy.get(TX_DATE).first().should("have.text", `${format(Date.now(), "d MMM")} •`)
-        cy.get(`${TX_NETWORK_BADGES}${networksBySlug.get(network)!.id}]`).first().should("have.attr", "aria-label", networksBySlug.get(network)!.name)
-        cy.get(`${TX_NETWORK_BADGES}${networksBySlug.get(network)!.id}]`).first().should("be.visible")
+        this.hasText(TX_DATE,`${format(Date.now(), "d MMM")} •`,0)
+        this.hasAttributeWithValue(`${TX_NETWORK_BADGES}${networksBySlug.get(network)!.id}]`,"aria-label",networksBySlug.get(network)!.name,0)
+        this.isVisible(`${TX_NETWORK_BADGES}${networksBySlug.get(network)!.id}]`,0)
     }
 
     static validateBalanceAfterWrapping(token: string, network: string, amount: string) {
@@ -332,7 +332,7 @@ export class WrapPage extends BasePage {
         cy.get("@superTokenBalanceBeforeUnwrap").then((balanceBefore: any) => {
             let expectedAmount = (parseFloat(balanceBefore) - parseFloat(amount)).toFixed(1).toString()
             cy.wrap(expectedAmount).as("expectedSuperTokenBalance")
-            cy.get(`[data-cy=${network}-token-snapshot-table] [data-cy=${token}-cell] [data-cy=balance]` , {timeout: 30000}).should("not.have.text",balanceBefore)
+            this.doesNotHaveText(`[data-cy=${network}-token-snapshot-table] [data-cy=${token}-cell] [data-cy=balance]`,balanceBefore,undefined,{timeout: 30000})
             cy.get(`[data-cy=${network}-token-snapshot-table] [data-cy=${token}-cell] [data-cy=balance]`).then(el => {
                 cy.wrap(parseFloat(el.text()).toFixed(1)).should("equal", expectedAmount)
             })
@@ -357,8 +357,8 @@ export class WrapPage extends BasePage {
     }
 
     static validateUnderlyingBalanceAfterTx(balanceBefore:any,expectedAmount:string) {
-        cy.get(UNDERLYING_BALANCE).should("contain.text",balanceBefore.toString().charAt(0))
-        cy.get(UNDERLYING_BALANCE).should("not.have.text",`Balance: ${balanceBefore}`)
+        this.containsText(UNDERLYING_BALANCE,balanceBefore.toString().charAt(0))
+        this.doesNotHaveText(UNDERLYING_BALANCE,`Balance: ${balanceBefore}`)
         cy.get(UNDERLYING_BALANCE).then(el => {
             cy.wrap(parseFloat(el.text().split("Balance: ")[1])).should("be.closeTo" , parseFloat(expectedAmount), 0.05)
         })
@@ -377,7 +377,7 @@ export class WrapPage extends BasePage {
 
     static validateUnwrapTxBroadcastedMessage() {
         this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
-        cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
+        this.isVisible(TX_BROADCASTED_ICON,undefined,{timeout:60000})
         this.isVisible(OK_BUTTON)
     }
 
@@ -412,7 +412,7 @@ export class WrapPage extends BasePage {
     static approveTokenSpending(token: string) {
         cy.fixture("rejectedCaseTokens").then(tokens => {
             let selectedToken = token.startsWith("Token") ? tokens[Cypress.env("network")][token] : token;
-            cy.get(APPROVE_ALLOWANCE_BUTTON, {timeout: 60000}).should("be.visible")
+            this.isVisible(APPROVE_ALLOWANCE_BUTTON,undefined,{timeout:60000})
             this.hasText(APPROVE_ALLOWANCE_BUTTON, `Allow Superfluid Protocol to wrap your ${selectedToken}`)
             this.click(APPROVE_ALLOWANCE_BUTTON)
         })
@@ -432,16 +432,16 @@ export class WrapPage extends BasePage {
     }
 
     static isRestoreButtonVisible() {
-        cy.get(DRAWER_TX).first().find(RESTORE_BUTTONS).should("be.visible")
+        this.get(DRAWER_TX,0).find(RESTORE_BUTTONS).should("be.visible")
     }
 
     static doesRestoreButtonExist() {
-        cy.get(DRAWER_TX).first().find(RESTORE_BUTTONS).should("not.exist")
+        this.get(DRAWER_TX,0).find(RESTORE_BUTTONS).should("not.exist")
     }
 
     static approveTokenIfNeeded(token: string, network: string, amount: string) {
-        cy.get(MAX_BUTTON).should("be.visible")
-        cy.get(MAIN_BUTTONS).should("be.enabled")
+        this.isVisible(MAX_BUTTON)
+        this.isEnabled(MAIN_BUTTONS)
         cy.get(MAIN_BUTTONS).first().then(el => {
             if (el.text() === `Allow Superfluid Protocol to wrap your ${token}`) {
                 this.approveTokenSpending(token)
@@ -458,8 +458,8 @@ export class WrapPage extends BasePage {
 
     static validateWrapPageNativeTokenBalance(token: string, account: string, network: string) {
         cy.fixture("nativeTokenBalances").then(fixture => {
-            cy.get(UNDERLYING_BALANCE , {timeout: 60000}).should("have.text",`Balance: ${fixture[account][network][token].underlyingBalance}`)
-            cy.get(SUPER_TOKEN_BALANCE , {timeout: 60000}).should("have.text",`${fixture[account][network][token].superTokenBalance} `)
+            this.hasText(UNDERLYING_BALANCE,`Balance: ${fixture[account][network][token].underlyingBalance}`,undefined,{timeout:60000})
+            this.hasText(SUPER_TOKEN_BALANCE,`${fixture[account][network][token].superTokenBalance} `,undefined,{timeout:60000})
         })
     }
 
@@ -470,8 +470,8 @@ export class WrapPage extends BasePage {
     static validateNativeTokenBalanceInTokenList(token: string, account: string, network: string) {
         cy.fixture("nativeTokenBalances").then(fixture => {
             let expectedString = fixture[account][network][token].underlyingBalance === "0" ? fixture[account][network][token].underlyingBalance : `~${fixture[account][network][token].underlyingBalance}`
-            cy.get(`[data-cy=${token}-list-item]`).scrollIntoView()
-            this.hasText(`[data-cy=${token}-list-item] ${TOKEN_SELECT_BALANCE}`, expectedString)
+            this.get(`[data-cy=${token}-list-item]`).scrollIntoView()
+            this.hasText(`[data-cy=${token}-list-item] ${TOKEN_BALANCE}`, expectedString)
         })
     }
 

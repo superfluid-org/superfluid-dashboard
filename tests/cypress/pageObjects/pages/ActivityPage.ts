@@ -2,6 +2,7 @@ import {BasePage} from "../BasePage";
 import {mainNetworks, networksBySlug, testNetworks} from "../../superData/networks";
 import {Common} from "./Common";
 import {format} from "date-fns";
+import {DataTable} from "@badeball/cypress-cucumber-preprocessor";
 
 const ACTIVITY_TYPE = "[data-cy=activity]"
 const ACTIVITY_NAME = `${ACTIVITY_TYPE} h6`
@@ -32,6 +33,7 @@ const RECEIVE_ICON = "[data-testid=ArrowBackRoundedIcon]"
 const SEND_ICON = "[data-testid=ArrowForwardRoundedIcon]"
 const WRAP_UNWRAP_ICON = "[data-testid=SwapVertIcon]"
 const LIQUIDATED_ICON = "[data-testid=PriorityHighIcon]"
+const NOW_TIMESTAMP = Date.now()
 
 type ActivityData = {
     amount: string;
@@ -47,13 +49,13 @@ export class ActivityPage extends BasePage {
     static saveActivityHistoryData() {
         let activityHistoryData: any = {account: {}}
         Common.closeDropdown()
-        cy.get(SKELETON_ROW).should("not.exist", {timeout: 60000})
+        this.doesNotExist(SKELETON_ROW,0,{timeout: 60000})
         cy.wait(30000)
         mainNetworks.forEach(network => {
             this.recordNetworkData(network, activityHistoryData)
         })
         Common.changeVisibleNetworksTo("testnet")
-        cy.get(SKELETON_ROW).should("not.exist", {timeout: 60000})
+        this.doesNotExist(SKELETON_ROW,0,{timeout: 60000})
         cy.wait(30000)
         testNetworks.forEach(network => {
             this.recordNetworkData(network, activityHistoryData)
@@ -97,13 +99,13 @@ export class ActivityPage extends BasePage {
             testAbleNetworks.forEach(network => {
                 if (data[account][network.slugName][0]) {
                     //The entries load faster than the amounts shown, check to make sure all are loaded
-                    cy.get(`[data-cy=${network.slugName}-row] ${ACTIVITY_AMOUNT}`, {timeout: 60000}).should("have.length", data[account][network.slugName].length)
+                    this.hasLength(`[data-cy=${network.slugName}-row] ${ACTIVITY_AMOUNT}`,data[account][network.slugName].length,0,{timeout: 60000})
                     data[account][network.slugName].forEach((activity: ActivityData, index: number) => {
-                        cy.get(`[data-cy=${network.slugName}-row] ${ACTIVITY_AMOUNT}`).eq(index).should("have.text", activity.amount)
-                        cy.get(`[data-cy=${network.slugName}-row] ${ACTIVITY_TYPE}`).eq(index).find("span").first().should("have.text", activity.activity)
-                        cy.get(`[data-cy=${network.slugName}-row] ${AMOUNT_TO_FROM}`).eq(index).should("have.text", activity.amountToFrom)
-                        cy.get(`[data-cy=${network.slugName}-row] ${ACTIVITY_TYPE}`).eq(index).find("span").last().should("have.text", format(activity.timestamp * 1000, "HH:mm"))
-                        cy.get(`[data-cy=${network.slugName}-row] ${TX_HASH_LINKS}`).eq(index).should("have.attr", "href", network.getLinkForTransaction(activity.txHash!))
+                        this.hasText(`[data-cy=${network.slugName}-row] ${ACTIVITY_AMOUNT}`,activity.amount,index)
+                        this.get(`[data-cy=${network.slugName}-row] ${ACTIVITY_TYPE}`,index).find("span").first().should("have.text", activity.activity)
+                        this.hasText(`[data-cy=${network.slugName}-row] ${AMOUNT_TO_FROM}`,activity.amountToFrom,index)
+                        this.get(`[data-cy=${network.slugName}-row] ${ACTIVITY_TYPE}`,index).find("span").last().should("have.text", format(activity.timestamp * 1000, "HH:mm"))
+                        this.hasAttributeWithValue(`[data-cy=${network.slugName}-row] ${TX_HASH_LINKS}`,"href",network.getLinkForTransaction(activity.txHash!),index)
                     })
                 }
             })
@@ -136,7 +138,7 @@ export class ActivityPage extends BasePage {
     }
 
     static validateActivityVisibleByAddress(address: string) {
-        cy.get(AMOUNT_TO_FROM).should("have.length", 2)
+        this.hasLength(AMOUNT_TO_FROM,2)
         cy.get(AMOUNT_TO_FROM).each(el => {
             cy.wrap(el).should("have.text", `From${BasePage.shortenHex(address)}`)
         })
@@ -156,14 +158,26 @@ export class ActivityPage extends BasePage {
     }
 
     static mockActivityRequestTo(activity:string,network:string) {
-        cy.fixture("activityHistoryEvents").then(events => {
+        cy.fixture("activityHistoryEvents").then(activities => {
         cy.intercept("POST",`*protocol-**-${networksBySlug.get(network).v1ShortName}`, (req => {
             if(req.body.operationName === "events") {
                 req.continue(res => {
-                    if(!events[activity]) {
+                    if(activity == "all activities") {
+                        let allEvents = []
+                        activities.forEach((event,i) => {
+                            event.timestamp = NOW_TIMESTAMP + i * 60000
+                            allEvents.push(event)
+                        })
+                        res.body.data.events = allEvents
+                    } else {
+                    if(!activities[activity]) {
                         throw new Error(`Unknown activity type: ${activity}`)
                     }
-                    res.body.data.events = events[activity]
+                    res.body.data.events = activities[activity]
+                    res.body.data.events.forEach(event => {
+                        event.timestamp = NOW_TIMESTAMP
+                    })
+                }
                 })
             }
         }))
@@ -171,18 +185,19 @@ export class ActivityPage extends BasePage {
     }
 
     static validateMockedActivityHistoryEntry(activity:string,network:string) {
-        cy.get(ACTIVITY_NAME).last().should("have.text",activity)
+        this.hasText(ACTIVITY_NAME,activity,-1)
         this.isVisible(`[data-cy=${networksBySlug.get(network).id}-icon]`)
         this.isVisible(TX_HASH_LINKS)
         this.hasAttributeWithValue(TX_HASH_LINKS, "href", networksBySlug.get(network).getLinkForTransaction("testTransactionHash"))
+        this.containsText(ACTIVITY_TIME,format(NOW_TIMESTAMP * 1000, "HH:mm"))
         switch (activity) {
             case "Liquidated":
                 this.isVisible(LIQUIDATED_ICON)
-                cy.get(ACTIVITY_NAME).first().should("have.text", "Send Transfer")
-                cy.get(ACTIVITY_AMOUNT).first().should("have.text","1 TDLx")
-                cy.get(AMOUNT_TO_FROM).first().should("have.text",`To${this.shortenHex("0x2597c6abba5724fb99f343abddd4569ee4223179")}`)
-                cy.get(ACTIVITY_AMOUNT).last().should("have.text","-")
-                cy.get(AMOUNT_TO_FROM).last().should("have.text",`To${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                this.hasText(ACTIVITY_NAME,"Send Transfer",0)
+                this.hasText(ACTIVITY_AMOUNT,"1 TDLx",0)
+                this.hasText(AMOUNT_TO_FROM,`To${this.shortenHex("0x2597c6abba5724fb99f343abddd4569ee4223179")}`,0)
+                this.hasText(ACTIVITY_AMOUNT,"-",-1)
+                this.hasText(AMOUNT_TO_FROM,`To${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`,-1)
                 break;
             case "Wrap":
                 this.isVisible(WRAP_UNWRAP_ICON)
@@ -254,5 +269,12 @@ export class ActivityPage extends BasePage {
                 this.hasText(AMOUNT_TO_FROM, `Publisher${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
                 break;
         }
+    }
+
+    static validateActivityHistoryOrder(entries: DataTable) {
+        entries.raw().forEach(entry => {
+            console.log(entry[0])
+        })
+
     }
 }

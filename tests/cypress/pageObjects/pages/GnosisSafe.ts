@@ -62,11 +62,11 @@ export class GnosisSafe extends BasePage {
         cy.get(GNOSIS_BUTTONS,{timeout: 30000}).contains("Continue").click()
         cy.wait(1000)
         cy.get(".MuiTypography-root > .MuiBox-root").should("not.be.visible")
-        cy.get(GNOSIS_WARNING_CHECKBOX).click()
+        this.click(GNOSIS_WARNING_CHECKBOX)
         cy.wait(1000)
         cy.get(GNOSIS_BUTTONS).contains("Continue").click()
-        cy.get(LOADING_SPINNER).should("be.visible")
-        cy.get(LOADING_SPINNER).should("not.exist")
+        this.isVisible(LOADING_SPINNER)
+        this.doesNotExist(LOADING_SPINNER)
     }
 
     static validateThatDashboardLoaded() {
@@ -96,7 +96,7 @@ export class GnosisSafe extends BasePage {
 
     static addCustomSuperfluidApp() {
         cy.get(GNOSIS_BUTTONS).contains("Add custom app").click()
-        cy.get(CUSTOM_APP_URL_FIELD).type(Cypress.config("baseUrl"))
+        this.type(CUSTOM_APP_URL_FIELD,Cypress.config("baseUrl"))
     }
 
     static validateSuperfluidManifestAndAddApp() {

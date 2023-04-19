@@ -41,16 +41,8 @@ export class DashboardPage extends BasePage {
             cy.fixture("networkSpecificData").then((networkSpecificData) => {
                 networkSpecificData[network.slugName][account].tokenValues.forEach(
                     (tokenValues: any, index: number) => {
-                        cy.get(
-                            `[data-cy=${network.slugName}${NETWORK_SNAPSHOT_TABLE_APPENDIX} ${TOKEN_SYMBOLS}`
-                        )
-                            .eq(index)
-                            .should("have.text", tokenValues.token);
-                        cy.get(
-                            `[data-cy=${network.slugName}${NETWORK_SNAPSHOT_TABLE_APPENDIX} ${TOKEN_BALANCES}`
-                        )
-                            .eq(index)
-                            .should("have.text", `${parseFloat(tokenValues.balance).toFixed(0)} `);
+                        this.hasText(`[data-cy=${network.slugName}${NETWORK_SNAPSHOT_TABLE_APPENDIX} ${TOKEN_SYMBOLS}`,tokenValues.token,index)
+                        this.hasText(`[data-cy=${network.slugName}${NETWORK_SNAPSHOT_TABLE_APPENDIX} ${TOKEN_BALANCES}`,`${parseFloat(tokenValues.balance).toFixed(0)} `,index)
                     }
                 );
             });
@@ -76,7 +68,7 @@ export class DashboardPage extends BasePage {
 
     static waitForBalancesToLoad() {
         this.isVisible(LOADING_SKELETONS);
-        cy.get(LOADING_SKELETONS, {timeout: 60000}).should("not.exist")
+        this.doesNotExist(LOADING_SKELETONS,undefined,{timeout: 60000})
     }
 
     static clickTokenStreamRow(network: string, token: string) {
@@ -136,18 +128,14 @@ export class DashboardPage extends BasePage {
                 `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${networkSpecificData[
                     network
                     ].ongoingStreamsAccount.tokenValues.tokenAddress.toLowerCase()}-streams-table] ${STREAM_ROWS} ${CANCEL_BUTTONS}`
-            ).each((button: any) => {
+            ).each((button: JQuery<HTMLElement>) => {
                 cy.wrap(button).should("have.attr", "disabled");
             });
         });
     }
 
     static hoverOnFirstCancelButton(network: string) {
-        cy.get(
-            `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} ${SWITCH_NETWORK_BUTTON}`
-        )
-            .first()
-            .trigger("mouseover");
+        this.trigger(`[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} ${SWITCH_NETWORK_BUTTON}`,"mouseover",0)
     }
 
     static validateChangeNetworkTooltip(network: string) {
@@ -170,11 +158,10 @@ export class DashboardPage extends BasePage {
                     .tokenAddress.toLowerCase();
             let expectedAmount = parseInt(amount);
             let lastRowData: string[] = [];
-            cy.get(`[data-cy="${tokenAddress}-streams-table"] ${STREAM_ROWS}`)
-                .should("have.length", expectedAmount)
+            this.hasLength(`[data-cy="${tokenAddress}-streams-table"] ${STREAM_ROWS}`,expectedAmount)
                 .and(($el) => {
-                    lastRowData.push($el.text());
-                });
+                lastRowData.push($el.text());
+            });
             cy.wrap(lastRowData).as("lastStreamRows");
             cy.log("@lastStreamRows", lastRowData);
         });
@@ -234,7 +221,7 @@ export class DashboardPage extends BasePage {
                 selectedToken = token
             }
             let selectedNetwork = network === "selected network" ? Cypress.env("network") : network
-            cy.get(`[data-cy=${selectedNetwork}${NETWORK_SNAPSHOT_TABLE_APPENDIX}`, {timeout: 45000}).should("be.visible")
+            this.isVisible(`[data-cy=${selectedNetwork}${NETWORK_SNAPSHOT_TABLE_APPENDIX}`,undefined,{timeout:45000})
             this.click(
                 `[data-cy=${selectedNetwork}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy="${selectedToken}-cell"]`
             );

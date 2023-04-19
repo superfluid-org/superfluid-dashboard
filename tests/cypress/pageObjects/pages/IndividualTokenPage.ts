@@ -1,9 +1,8 @@
 import {BasePage} from "../BasePage";
 import {format} from "date-fns";
 import {networksBySlug} from "../../superData/networks";
-import {Common} from "./Common";
+import {Common,TOKEN_ANIMATION,TOKEN_BALANCE} from "./Common";
 
-const TOKEN_BALANCE = "[data-cy=token-balance]"
 const TOKEN_GRAPH = "[data-cy=token-graph]"
 const LIQUIDATION_DATE = "[data-cy=liquidation-date]"
 const STREAM_ROWS = "[data-cy=stream-row]"
@@ -44,7 +43,6 @@ const NO_DATA_MESSAGE = "[data-cy=no-data-message]"
 const HEADER_SYMBOL = "[data-cy=token-header] [data-cy=token-symbol]"
 const HEADER_NAME = "[data-cy=token-header] [data-cy=token-name]"
 const TOKEN_ICON = "[data-cy=token-icon] img"
-const TOKEN_ANIMATION = "[data-cy=animation]"
 const TOKEN_CONTAINER = "[data-cy=token-container-by-graph]"
 const GRAPH_BALANCE_SYMBOL = `${TOKEN_CONTAINER} [data-cy=token-symbol]`
 const TRANSFER_ROWS = "[data-cy=transfer-row]"
@@ -72,19 +70,19 @@ export class IndividualTokenPage extends BasePage {
     }
 
     static validateStreamTableFirstRowValues(address: string, sendOrReceive: string, ongoing: string, amount: string, fromTo: string) {
-        cy.get(`${STREAM_ROWS} ${SENDER_RECEIVER_ADDRESSES}`).first().should("have.text", BasePage.shortenHex(address))
+        this.hasText(`${STREAM_ROWS} ${SENDER_RECEIVER_ADDRESSES}`,BasePage.shortenHex(address),0)
         let plusOrMinus;
         if (sendOrReceive === "receiving") {
             plusOrMinus = "-"
-            cy.get(STREAM_ROWS).first().find(SENDING_ICON).should("be.visible")
+            this.get(STREAM_ROWS,0).find(SENDING_ICON).should("be.visible")
         } else {
             plusOrMinus = "+"
-            cy.get(STREAM_ROWS).first().find(RECEIVING_ICON).should("be.visible")
+            this.get(STREAM_ROWS,0).find(RECEIVING_ICON).should("be.visible")
         }
         let flowRateString = parseInt(amount) > 0 ? `${plusOrMinus + amount}/mo` : "-"
-        cy.get(`${STREAM_ROWS} ${STREAM_FLOW_RATES}`).first({timeout: 60000}).should("have.text", flowRateString)
+        this.hasText(`${STREAM_ROWS} ${STREAM_FLOW_RATES}`,flowRateString,0,{timeout: 60000})
         let fromToDate = fromTo === "now" ? format((Date.now()), "d MMM. yyyy") : format(parseInt(fromTo) * 1000, "d MMM. yyyy")
-        cy.get(`${STREAM_ROWS} ${START_END_DATES}`).first().should("contain.text",  fromToDate)
+        this.containsText(`${STREAM_ROWS} ${START_END_DATES}`,fromToDate,0)
     }
 
     static validateFirstStreamRowPendingMessage(message: string) {
@@ -104,15 +102,15 @@ export class IndividualTokenPage extends BasePage {
     }
 
     static openDistributionTab() {
-        cy.get(DISTRIBUTIONS_TAB, {timeout: 30000}).click()
+        this.click(DISTRIBUTIONS_TAB,undefined,{timeout: 30000})
     }
 
     static validateLastDistributionRow(address: string, amount: string, status: string, when: string) {
-        cy.get(PUBLISHERS).first().should("have.text", BasePage.shortenHex(address))
-        cy.get(AMOUNT_RECEIVED).first().should("have.text", amount)
-        cy.get(STATUS).first().should("have.text", status)
+        this.hasText(PUBLISHERS,BasePage.shortenHex(address),0)
+        this.hasText(AMOUNT_RECEIVED,amount,0)
+        this.hasText(STATUS,status,0)
         let fromToDate = when === "now" ? format((Date.now()), "d MMM. yyyy") : when
-        cy.get(LAST_UPDATED_AT).first().should("have.text", fromToDate)
+        this.hasText(LAST_UPDATED_AT,fromToDate,0)
     }
 
     static approveLastIndex() {
@@ -125,7 +123,7 @@ export class IndividualTokenPage extends BasePage {
 
     static validateApprovalDialogAndCloseIt(network: string) {
         this.validateApprovalTransactionDialog(network)
-        cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
+        this.isVisible(TX_BROADCASTED_ICON,undefined,{timeout: 60000})
         this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
         this.isVisible(OK_BUTTON)
         this.click(OK_BUTTON)
@@ -143,7 +141,7 @@ export class IndividualTokenPage extends BasePage {
 
     static validateRevokeDialogAndCloseIt(network: string) {
         this.validateRevokeTransactionDialog(network)
-        cy.get(TX_BROADCASTED_ICON, {timeout: 60000}).should("be.visible")
+        this.isVisible(TX_BROADCASTED_ICON,undefined,{timeout: 60000})
         this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted")
         this.isVisible(OK_BUTTON)
         this.click(OK_BUTTON)
@@ -172,9 +170,9 @@ export class IndividualTokenPage extends BasePage {
         cy.get("body").then(body => {
             if (body.find(REVOKE_BUTTON).length > 0) {
                 this.click(REVOKE_BUTTON)
-                cy.get(OK_BUTTON, {timeout: 45000}).should("be.visible").click()
-                cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
-                cy.get(STATUS, {timeout: 60000}).should("have.text", "Awaiting Approval")
+                this.isVisible(OK_BUTTON,undefined,{timeout: 45000}).click()
+                this.isNotVisible(`${TX_DRAWER_BUTTON} span`,undefined, {timeout: 60000})
+                this.hasText(STATUS,"Awaiting Approval",undefined,{timeout: 60000})
             }
         })
     }
@@ -184,9 +182,9 @@ export class IndividualTokenPage extends BasePage {
         cy.get("body").then(body => {
             if (body.find(APPROVE_BUTTON).length > 0) {
                 this.click(APPROVE_BUTTON)
-                cy.get(OK_BUTTON, {timeout: 45000}).should("be.visible").click()
-                cy.get(`${TX_DRAWER_BUTTON} span`, {timeout: 60000}).should("not.be.visible")
-                cy.get(STATUS, {timeout: 60000}).should("have.text", "Approved")
+                this.isVisible(OK_BUTTON,undefined,{timeout: 45000}).click()
+                this.isNotVisible(`${TX_DRAWER_BUTTON} span`,undefined, {timeout: 60000})
+                this.hasText(STATUS,"Approved",undefined,{timeout: 60000})
             }
         })
     }
@@ -270,7 +268,7 @@ export class IndividualTokenPage extends BasePage {
     static validateTransferTable(transfers: Transfer[]) {
         transfers.forEach((transfer: Transfer, index: number) => {
             let expectedArrowIcon = transfer.amount >= 0 ? INCOMING_ARROW : OUTGOING_ARROW
-            cy.get(TRANSFER_ROWS).should("have.length", transfers.length)
+            this.hasLength(TRANSFER_ROWS,transfers.length)
             cy.get(TRANSFER_ROWS).eq(index).find(expectedArrowIcon).should("be.visible")
             cy.get(TRANSFER_ROWS).eq(index).find(SENDER_RECEIVER_ADDRESSES).should("have.text", this.shortenHex(transfer.toFrom))
             cy.get(TRANSFER_ROWS).eq(index).find(TRANSFER_AMOUNTS).should("have.text", Math.abs(transfer.amount))

@@ -75,7 +75,7 @@ export class ExportPage extends BasePage {
 
     static validateSelectedAddressAmount(amount: string) {
         let expectedText = amount === "0" ? "Select address(es)" : `${amount} address(es) selected`
-        cy.get(ADDRESS_BUTTONS).first().should("have.text", expectedText)
+        this.hasText(ADDRESS_BUTTONS,expectedText,0)
     }
 
     static validatePreviewButtonIsEnabled() {
@@ -167,7 +167,7 @@ export class ExportPage extends BasePage {
             case "all columns":
                 //Reversing because the first columns aren't rendered when looking from the last
                 allColumns.reverse().forEach((column) => {
-                    cy.get(`.MuiDataGrid-cell[data-field=${column}]`).first().scrollIntoView()
+                    this.get(`.MuiDataGrid-cell[data-field=${column}]`,0).scrollIntoView()
                     cy.get(`.MuiDataGrid-cell[data-field=${column}]`).each((row, i) => {
                         cy.fixture("exportData.json").then(data => {
                             expect(row).to.have.text(data[type][column][i])
@@ -182,13 +182,13 @@ export class ExportPage extends BasePage {
     }
 
     static changeExportStartDate(date: string) {
-        cy.get(DATE_RANGES).first().clear()
-        cy.get(DATE_RANGES).first().type(date)
+        this.clear(DATE_RANGES,0)
+        this.type(DATE_RANGES,date,0)
     }
 
     static changeExportEndDate(date: string) {
         //When typing the end date messes up cypress because it autofills 0s for years
-        cy.get(DATE_RANGES).last().click()
+        this.click(DATE_RANGES,-1)
     }
 
     static enableAllPreviewColumns() {
@@ -197,15 +197,16 @@ export class ExportPage extends BasePage {
         //Checkboxes get magically disabled without waiting,
         //Force clicking because mouse events not triggering the three dots to appear
         cy.wait(2000)
-        cy.get(HEADER_TRIPLE_DOTS).first().click({force: true})
+        this.forceClick(HEADER_TRIPLE_DOTS,0)
         this.clickFirstVisible(HEADER_TRIPLE_DOTS)
         cy.get(FILTER_OPTIONS).contains("Show columns").click()
         cy.get(COLUMN_CHECKBOXES).each(checkbox => {
             if (!checkbox.attr("checked")) {
                 cy.wrap(checkbox).click()
             }
-            cy.get(`.MuiDataGrid-cell[data-field=${checkbox.attr("name")}]`).first().scrollIntoView()
-            cy.get(`.MuiDataGrid-cell[data-field=${checkbox.attr("name")}]`).should("be.visible").and("have.length", 8)
+            this.get(`.MuiDataGrid-cell[data-field=${checkbox.attr("name")}]`,0).scrollIntoView()
+            this.isVisible(`.MuiDataGrid-cell[data-field=${checkbox.attr("name")}]`)
+            this.hasLength(`.MuiDataGrid-cell[data-field=${checkbox.attr("name")}]`,8)
         })
     }
 
@@ -215,12 +216,12 @@ export class ExportPage extends BasePage {
 
     static validateNoDataShownInThePreview() {
         allColumns.forEach(column => {
-            cy.get(`[data-field=${column}]`).should("not.exist")
+            this.doesNotExist(`[data-field=${column}]`)
         })
     }
 
     static clickPreviewColumn(column: string) {
-        cy.get(`.MuiDataGrid-columnHeader[data-field=${column}]`).click()
+        this.click(`.MuiDataGrid-columnHeader[data-field=${column}]`)
     }
 
     static validateColumnSorting(column: string, ascdesc: string) {
@@ -239,12 +240,12 @@ export class ExportPage extends BasePage {
     }
 
     static addCustomFilter(column: string, operator: string, value: string) {
-        cy.get(HEADER_TRIPLE_DOTS).first().click({force: true})
+        this.forceClick(HEADER_TRIPLE_DOTS,0)
         this.clickFirstVisible(HEADER_TRIPLE_DOTS)
         cy.get(FILTER_OPTIONS).contains("Filter").click()
-        cy.get(FILTER_SELECT_FIELDS).eq(1).select(column)
-        cy.get(FILTER_SELECT_FIELDS).last().select(operator)
-        cy.get(FILTER_INPUT_FIELDS).type(value)
+        this.select(FILTER_SELECT_FIELDS,column,1)
+        this.select(FILTER_SELECT_FIELDS,operator,-1)
+        this.type(FILTER_INPUT_FIELDS,value)
     }
 
     static validateFilteredRows(column: string, value: string) {
@@ -264,12 +265,12 @@ export class ExportPage extends BasePage {
     }
 
     static searchForCounterPartyAddress(address: string) {
-        cy.get(ADDRESS_BUTTONS).last().click()
-        cy.get(ADDRESS_INPUT).type(address)
+        this.click(ADDRESS_BUTTONS,-1)
+        this.type(ADDRESS_INPUT,address)
     }
 
     static changeEndDateWithUI(month: string, year: string) {
-        cy.get(DATE_PICKER_ICONS).last().click()
+        this.click(DATE_PICKER_ICONS,-1)
         cy.get(DATE_PICKER_YEAR_BUTTONS).contains(year).click()
         cy.get(DATE_PICKER_MONTH_BUTTONS).contains(month).click()
     }

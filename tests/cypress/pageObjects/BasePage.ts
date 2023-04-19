@@ -34,120 +34,122 @@ export class BasePage {
         )}`;
     }
 
-    static click(selector: string, index: number = 0) {
+    static get(selector:string,index?:number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
         if(index){
-            cy.get(selector).eq(index).click();
+            return cy.get(selector).eq(index,options)
         }
-        cy.get(selector).click()
+        return cy.get(selector,options)
     }
 
-    static clickVisible(selector: string) {
-        cy.get(selector).filter(":visible").click();
+    static click(selector: string,index?: number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+        this.get(selector,index,options).click()
     }
 
-    static clickFirstVisible(selector: string) {
-        cy.get(selector).filter(":visible").first().click();
+    static forceClick(selector: string,index?: number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+        this.get(selector,index,options).click({force:true})
     }
 
-    static scrollToAndClick(selector: string) {
-        cy.get(selector).scrollIntoView().click();
+    static select(selector: string,selectionOption:string,index?: number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+        this.get(selector,index,options).select(selectionOption)
     }
 
-    static type(selector: string, text: string | number) {
-        cy.get(selector).filter(":visible").type(text.toString());
+    static clickFirstVisible(selector: string,index?:number ,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+        return this.get(selector,index,options).filter(":visible").first().click();
+    }
+
+    static type(selector: string, text: string | number,index?:number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+        return this.get(selector,index,options).filter(":visible").type(text.toString());
     }
 
     static hasText(
         selector: string,
-        text?: JQuery<HTMLElement> | string | string[] | number
+        text?: JQuery<HTMLElement> | string | string[] | number,
+        index?:number,
+    options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>
     ) {
-        cy.get(selector).filter(":visible").should("have.text", text);
+        return this.get(selector,index,options).filter(":visible").should("have.text", text);
     }
 
-    static check(selector: string) {
-        cy.get(selector).check();
+    static doesNotHaveText(
+        selector: string,
+        text?: JQuery<HTMLElement> | string | string[] | number,
+        index?:number,
+        options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>
+    ) {
+        return this.get(selector,index,options).filter(":visible").should("not.have.text", text);
     }
 
-    static scrollToAndhasText(selector: string, text: string) {
-        cy.get(selector).scrollIntoView().should("have.text", text);
+    static check(selector: string,index?:number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+        return this.get(selector,index,options).check();
     }
 
-    static doesNotExist(selector: string) {
-        cy.get(selector).should("not.exist");
+    static scrollToAndHasText(selector: string, text: string, index?:number, options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+       return this.get(selector,index,options).scrollIntoView().should("have.text", text);
     }
 
-    static exists(selector: string) {
-        cy.get(selector).should("exist");
+    static doesNotExist(selector: string,index?: number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+        return this.get(selector,index,options).should("not.exist");
     }
 
-    static isVisible(selector: string) {
-        cy.get(selector).should("be.visible");
+    static exists(selector: string,index?:number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+       return this.get(selector,index,options).should("exist");
     }
 
-    static isNotVisible(selector: string) {
-        cy.get(selector).should("not.be.visible");
+    static isVisible(selector: string,index?:number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+        return this.get(selector,index,options).should("be.visible");
     }
 
-    static isFocused(selector: string) {
-        cy.get(selector).should("have.focus");
+    static isNotVisible(selector: string,index?:number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+        return this.get(selector,index,options).should("not.be.visible");
     }
 
-    static isNotDisabled(selector: string) {
-        cy.get(selector).should("not.have.attr", "disabled");
+    static isNotDisabled(selector: string,index?:number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+       return this.get(selector,index,options).should("not.have.attr", "disabled");
     }
 
-    static isDisabled(selector: string) {
-        cy.get(selector).should("have.attr", "disabled");
+    static isEnabled(selector: string,index?:number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+        return this.get(selector,index,options).should("be.enabled");
     }
 
-    static selectOption(selector: string, option: string) {
-        cy.get(selector).filter(":visible").select(option);
+    static isDisabled(selector: string,index?:number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+        return this.get(selector,index,options).should("have.attr", "disabled");
     }
 
-    static validatePageUrl(appendix: string) {
-        cy.url().should("eq", Cypress.config().baseUrl + appendix);
+    static containsText(selector: string, text: string,index?:number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+       return this.get(selector,index,options).should("contain.text", text);
     }
 
-    static containsValue(selector: string, value: string) {
-        cy.get(selector).should("contain.value", value);
+    static contains(selector: string, number: string,index?:number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+       return this.get(selector,index,options).should("contain", number);
     }
 
-    static containsText(selector: string, text: string) {
-        cy.get(selector).should("contain.text", text);
+    static clear(selector: string,index?:number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+        return this.get(selector,index,options).filter(":visible").clear();
     }
 
-    static contains(selector: string, number: string) {
-        cy.get(selector).should("contain", number);
+    static hasCSS(selector: string,value:string, match: string,index?:number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+        return this.get(selector,index,options).should("have.css", value,match);
     }
 
-    static clear(selector: string) {
-        cy.get(selector).filter(":visible").clear();
+    static hasLength(selector: string, length: number,index?:number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+        return this.get(selector,index,options).should("have.length", length);
     }
 
-    static hasLength(selector: string, length: number) {
-        cy.get(selector).should("have.length", length);
+    static hasValue(selector: string, value: string,index?:number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+        return this.get(selector,index,options).should("have.value", value);
     }
 
-    static hasValue(selector: string, value: string) {
-        cy.get(selector).should("have.value", value);
+    static trigger(selector: string, event: string,index?:number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
+        return this.get(selector,index,options).trigger(event)
     }
 
     static hasAttributeWithValue(
         selector: string,
         attribute: string,
         value: string
+        ,index?:number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>
     ) {
-        cy.get(selector).should("have.attr", attribute, value);
-    }
-
-    static getShortenedAddress(address: JQuery<HTMLElement> | string, chars = 4) {
-        return (
-            `${address.slice(0, chars + 2)}...${address.slice(address.length - chars, address.length)}`
-        );
-    }
-
-    static getShortenedHashAddress(hash: string, chars = 6) {
-        return `${hash.slice(0, chars)}...`;
+        return this.get(selector,index,options).should("have.attr", attribute, value);
     }
 
     static getDayTimestamp(days:number) {
