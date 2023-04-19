@@ -144,9 +144,6 @@ export class BasePage {
     static trigger(selector: string, event: string,index?:number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
         return this.get(selector,index,options).trigger(event)
     }
-    static hasValue(selector: string, value: JQuery<HTMLElement> | string ,index?:number,options?: Partial<Cypress.Loggable & Cypress.Timeoutable & Cypress.Withinable & Cypress.Shadow>) {
-        return this.get(selector,index,options).should("have.value", value);
-    }
 
     static hasAttributeWithValue(
         selector: string,
