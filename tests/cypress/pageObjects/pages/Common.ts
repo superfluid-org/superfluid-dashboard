@@ -553,7 +553,7 @@ export class Common extends BasePage {
 
   static validateNewWalletAddress() {
     cy.get("@newWalletPublicKey").then(address => {
-      this.hasValue(FAUCET_WALLET_ADDRESS , address)
+      this.hasValue(FAUCET_WALLET_ADDRESS , address.toString())
     })
   }
 
