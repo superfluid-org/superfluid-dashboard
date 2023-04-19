@@ -53,3 +53,6 @@ Feature: Test cases that run indefinitely on all supported networks
       | avalanche      |
       | bsc            |
       | celo           |
+
+  Scenario: Testnet faucet fund check
+    Given The faucet contract has got enough funds to send to people

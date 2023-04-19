@@ -40,6 +40,7 @@ const PrefilledAddressInput: FC<PrefilledAddressInputProps> = ({ address }) => {
     <FormGroup>
       <FormLabel>Connected Wallet Address</FormLabel>
       <TextField
+        data-cy={"connected-address"}
         value={addressName.name || addressName.addressChecksummed}
         disabled
       />
@@ -87,8 +88,8 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
       PaperProps={{ sx: { borderRadius: "20px", maxWidth: 520 } }}
     >
       <DialogTitle sx={{ p: 4 }}>
-        <Typography variant="h4">Get Testnet Tokens</Typography>
-        <Typography>
+        <Typography data-cy={"faucet-title"} variant="h4">Get Testnet Tokens</Typography>
+        <Typography data-cy={"faucet-message"}>
           This faucet sends you a bunch of tokens to wrap and streams to try out
           Superfluid.
         </Typography>
@@ -102,17 +103,12 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
             gap={0.5}
           >
             <TokenChip
-              symbol="ETH"
+              symbol="MATIC"
               ChipProps={{ size: isBelowMd ? "small" : "medium" }}
               IconProps={{ size: isBelowMd ? 18 : 24 }}
             />
             <TokenChip
               symbol="fUSDC"
-              ChipProps={{ size: isBelowMd ? "small" : "medium" }}
-              IconProps={{ size: isBelowMd ? 18 : 24 }}
-            />
-            <TokenChip
-              symbol="fTUSD"
               ChipProps={{ size: isBelowMd ? "small" : "medium" }}
               IconProps={{ size: isBelowMd ? 18 : 24 }}
             />
@@ -126,17 +122,17 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
           {accountAddress && <PrefilledAddressInput address={accountAddress} />}
 
           {claimTestTokensResponse.isError && (
-            <Alert severity="error">
+            <Alert data-cy="faucet-error" severity="error">
               <AlertTitle>
                 {claimTestTokensResponse.error === 405
-                  ? "You’ve already claimed tokens from another source using this address"
+                  ? "You’ve already claimed tokens from the faucet using this address"
                   : "Something went wrong, please try again"}
               </AlertTitle>
             </Alert>
           )}
 
           {claimTestTokensResponse.isSuccess && (
-            <Alert severity="success">
+            <Alert data-cy="faucet-success" severity="success">
               <AlertTitle>
                 Streams opened and testnet tokens successfully sent
               </AlertTitle>
@@ -158,6 +154,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
                   claimTestTokensResponse.isSuccess
                 ) && (
                   <LoadingButton
+                    data-cy={"claim-button"}
                     size="xl"
                     fullWidth
                     loading={claimTestTokensResponse.isLoading}
@@ -171,6 +168,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
 
                 {hasClaimedTokens && claimTestTokensResponse.isSuccess && (
                   <Button
+                    data-cy={"open-dashboard-button"}
                     size="xl"
                     fullWidth
                     variant="contained"
@@ -183,6 +181,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
                 {hasClaimedTokens && claimTestTokensResponse.isError && (
                   <Link href="/wrap">
                     <Button
+                      data-cy={"wrap-button"}
                       size="xl"
                       fullWidth
                       variant="contained"

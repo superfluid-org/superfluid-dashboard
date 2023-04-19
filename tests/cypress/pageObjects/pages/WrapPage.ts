@@ -1,6 +1,7 @@
 import {BasePage} from "../BasePage";
 import {networksBySlug} from "../../superData/networks";
 import {format} from "date-fns";
+import {CONNECT_WALLET_BUTTON,CHANGE_NETWORK_BUTTON} from "./Common"
 
 const WRAP_TAB = "[data-cy=wrap-toggle]";
 const UNWRAP_TAB = "[data-cy=unwrap-toggle]";
@@ -13,9 +14,7 @@ const UNWRAP_PREVIEW = "[data-cy=unwrap-amount-preview] input";
 const TOKEN_PAIR = "[data-cy=token-pair]";
 const UPGRADE_BUTTON = "[data-cy=upgrade-button]";
 const DOWNGRADE_BUTTON = "[data-cy=downgrade-button]";
-const CHANGE_NETWORK_BUTTON = "[data-cy=change-network-button]";
 const STOP_VIEWING_BUTTON = "[data-cy=view-mode-button]";
-const CONNECT_WALLET = "[data-cy=connect-wallet]";
 const UNDERLYING_BALANCE = "[data-cy=underlying-balance]";
 const SUPER_TOKEN_BALANCE = "[data-cy=balance]";
 const TOKEN_SELECT_NAME = "[data-cy=token-symbol-and-name] p";
@@ -115,7 +114,7 @@ export class WrapPage extends BasePage {
     }
 
     static connectWalletButtonIsVisible() {
-        this.isVisible(CONNECT_WALLET);
+        this.isVisible(CONNECT_WALLET_BUTTON);
     }
 
     static verifyWrapPageSelectedToken(token: string) {
@@ -485,5 +484,10 @@ export class WrapPage extends BasePage {
         this.hasText(SELECTED_TOKEN, token)
         this.doesNotExist(WRAP_INPUT)
         this.isVisible(UNWRAP_INPUT)
+    }
+
+    static validateSelectedTokenAndBalanceForWrapping(token: string, balance: string) {
+        this.hasText(SELECT_TOKEN_BUTTON,token)
+        this.hasText(UNDERLYING_BALANCE,`Balance: ${balance}`)
     }
 }

@@ -1,8 +1,9 @@
 import {BasePage, wordTimeUnitMap} from "../BasePage";
 import { networksBySlug, superfluidRpcUrls } from "../../superData/networks";
-import { ethers } from "ethers";
+import {BigNumber, ethers} from "ethers";
 import HDWalletProvider from "@truffle/hdwallet-provider";
 import {MockProvider} from "@rsksmart/mock-web3-provider";
+import Web3 from "web3";
 
 export const TOP_BAR_NETWORK_BUTTON = "[data-cy=top-bar-network-button]";
 export const CONNECTED_WALLET = "[data-cy=wallet-connection-status] h6";
@@ -12,6 +13,7 @@ export const ACCESS_CODE_BUTTON = "[data-cy=more-access-code-btn]";
 export const ACCESS_CODE_INPUT = "[data-cy=access-code-input]";
 export const ACCESS_CODE_SUBMIT = "[data-cy=submit-access-code]";
 export const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet-button]";
+export const CHANGE_NETWORK_BUTTON = "[data-cy=change-network-button]"
 const VESTING_CODE_BUTTON = "[data-cy=vesting-code-button]"
 const NAVIGATION_BUTTON_PREFIX = "[data-cy=nav-";
 const NAVIGATION_DRAWER = "[data-cy=navigation-drawer]";
@@ -45,6 +47,16 @@ const ACCESS_CODE_MESSAGE = "[data-cy=access-code-error-msg]";
 const VESTING_ACCESS_CODE_BUTTON = "[data-cy=more-vesting-code-btn]";
 const STREAM_ROWS = "[data-cy=stream-row]"
 const TIMER_ICONS = "[data-testid=TimerOutlinedIcon]"
+const FAUCET_BUTTON = "[data-cy=more-faucet-btn]";
+const CLAIM_TOKENS_BUTTON = "[data-cy=claim-button]"
+const FAUCET_SUCCESS_MESSAGE = "[data-cy=faucet-success]"
+const FAUCET_ERROR_MESSAGE = "[data-cy=faucet-error]"
+const FAUCET_GO_TO_DASHBOARD = "[data-cy=open-dashboard-button]"
+const FAUCET_WRAP_BUTTON = "[data-cy=wrap-button]"
+const MUI_PRESENTATION = ".MuiDialog-root [role=presentation]"
+const FAUCET_WALLET_ADDRESS = "[data-cy=connected-address] input"
+const TOKEN_CHIPS = ".MuiChip-root"
+const FAUCET_CONTRACT_ADDRESS = "0x74CDF863b00789c29734F8dFd9F83423Bc55E4cE"
 const NOTIFICATIONS_BUTTON = "[data-testid=NotificationsIcon]"
 const NOTIF_SETTINGS_BUTTON = "[data-testid=SettingsOutlinedIcon]"
 const NOTIF_ARCHIVE_BUTTON = "[data-cy=archive-button]"
@@ -180,10 +192,12 @@ export class Common extends BasePage {
     let usedAccountPrivateKey;
     let personas = ["alice", "bob", "dan", "john"];
     let selectedNetwork =
-      network === "selected network" ? Cypress.env("network") : network;
-    if(personas.includes(persona)) {
+        network === "selected network" ? Cypress.env("network") : network;
+    if (personas.includes(persona)) {
       let chosenPersona = personas.findIndex((el) => el === persona) + 1;
       usedAccountPrivateKey = Cypress.env(`TX_ACCOUNT_PRIVATE_KEY${chosenPersona}`)
+    } else if (persona === "NewRandomWallet") {
+      usedAccountPrivateKey = this.generateNewWallet()
     } else {
       usedAccountPrivateKey = persona === "staticBalanceAccount"
           ? Cypress.env("STATIC_BALANCE_ACCOUNT_PRIVATE_KEY")
@@ -238,7 +252,7 @@ export class Common extends BasePage {
   }
 
   static clickConnectWallet() {
-    this.clickFirstVisible("[data-cy=connect-wallet-button]");
+    this.clickFirstVisible(CONNECT_WALLET_BUTTON);
   }
 
   static clickInjectedWallet() {
@@ -525,6 +539,123 @@ export class Common extends BasePage {
     cy.contains(SENDER_RECEIVER_ADDRESSES,this.shortenHex(address)).parents(STREAM_ROWS).find(START_END_DATES).should("have.text",startEndDate)
     cy.contains(SENDER_RECEIVER_ADDRESSES,this.shortenHex(address)).parents(STREAM_ROWS).find(TIMER_ICONS).should("be.visible")
   }
+
+    static openFaucetMenu() {
+        this.click(FAUCET_BUTTON)
+    }
+
+  static validateConnectWalletButtonInFaucetMenu() {
+    this.isVisible(`[role=dialog] ${CONNECT_WALLET_BUTTON}`)
+  }
+
+  static validateSwitchNetworkButtonInFaucetMenu() {
+    this.isVisible(CHANGE_NETWORK_BUTTON)
+    this.hasText(CHANGE_NETWORK_BUTTON,"Change Network to Polygon Mumbai")
+  }
+
+  static clickSwitchNetworkButton() {
+    this.click(CHANGE_NETWORK_BUTTON)
+  }
+
+  static validateSelectedNetwork(networkName: string) {
+    this.containsText(TOP_BAR_NETWORK_BUTTON,networkName)
+  }
+
+  static mockFaucetRequestsToFailure() {
+    cy.intercept("OPTIONS","**fund-me-on-multi-network",{statusCode: 500 , body: {}})
+  }
+
+  static clickClaimTokensButton() {
+    this.click(CLAIM_TOKENS_BUTTON)
+  }
+
+  static validateDisabledClaimTokensButton() {
+    this.isDisabled(CLAIM_TOKENS_BUTTON)
+    this.hasText(CLAIM_TOKENS_BUTTON,"Tokens Claimed")
+  }
+
+  static validateFaucetSuccessMessage() {
+    this.hasText(FAUCET_SUCCESS_MESSAGE ,"Streams opened and testnet tokens successfully sent")
+  }
+
+  static clickFaucetGoToDashboardButton() {
+    this.click(FAUCET_GO_TO_DASHBOARD)
+  }
+
+  static async sendBackNotMintableFaucetTokens() {
+    const web3 = new Web3(networksBySlug.get("polygon-mumbai").superfluidRpcUrl);
+
+    cy.get("@newWalletPublicKey").then(fromAddress => {
+      cy.get("@newWalletPrivateKey").then(async privateKey => {
+        const gasPrice = web3.utils.toWei('50', 'gwei'); //Didis recommendation
+        const gasLimit = 23000 //Takes a little bit more than a normal 21k transfer because contracts deposit function
+        // @ts-ignore
+        const balance = BigNumber.from(await web3.eth.getBalance(fromAddress))
+        const valueToSend = balance.sub(BigNumber.from(gasPrice).mul(BigNumber.from(gasLimit)))
+
+    const txObj = {
+          from: fromAddress,
+          to: FAUCET_CONTRACT_ADDRESS,
+          value: valueToSend,
+          gasPrice: gasPrice,
+          gasLimit: gasLimit,
+        };
+
+        cy.wrap(null,{log:false}).then(() => {
+          // @ts-ignore
+          return web3.eth.accounts.signTransaction(txObj, privateKey)
+              .then(async signedTx => {
+                await web3.eth.sendSignedTransaction(signedTx.rawTransaction).then(tx => {
+                  cy.log(`Matic recycled, transaction hash: ${tx.transactionHash}`)
+                })
+              });
+          })
+      })
+    })
+  }
+
+  static validateYouHaveAlreadyClaimedTokensMessage() {
+    this.isVisible(FAUCET_ERROR_MESSAGE)
+    this.hasText(FAUCET_ERROR_MESSAGE,"You’ve already claimed tokens from the faucet using this address")
+  }
+
+  static clickFaucetMenuWrapButton() {
+    this.click(FAUCET_WRAP_BUTTON)
+  }
+
+  static validateSomethingWentWrongMessageInFaucet() {
+    this.isVisible(FAUCET_ERROR_MESSAGE)
+    this.hasText(FAUCET_ERROR_MESSAGE,"Something went wrong, please try again")
+  }
+
+  static closePresentationDialog() {
+    this.click(MUI_PRESENTATION)
+  }
+
+  static validateNewWalletAddress() {
+    cy.get("@newWalletPublicKey").then(address => {
+      this.hasValue(FAUCET_WALLET_ADDRESS , address)
+    })
+  }
+
+  static checkFaucetContractBalance() {
+    const web3 = new Web3(networksBySlug.get("polygon-mumbai").superfluidRpcUrl);
+    cy.wrap(null,{log:false}).then(() => {
+      return web3.eth.getBalance(FAUCET_CONTRACT_ADDRESS).then(balance => {
+        expect(parseInt(balance)).to.be.greaterThan(1e19)
+      })
+    })
+
+      }
+
+    static validateOpenFaucetView() {
+    const FAUCET_TOKENS = ["MATIC","fUSDC","fDAI"]
+        this.isVisible(CLAIM_TOKENS_BUTTON)
+      FAUCET_TOKENS.forEach(token => {
+        this.containsText(TOKEN_CHIPS,token)
+      })
+      this.isVisible(FAUCET_WALLET_ADDRESS)
+    }
 
   static mockNotificationRequestsTo(type: string) {
     cy.intercept("GET", "**/feeds**", (req) => {

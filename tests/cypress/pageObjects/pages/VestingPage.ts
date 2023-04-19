@@ -1,7 +1,7 @@
 import {BasePage,wordTimeUnitMap} from "../BasePage";
 import { format } from "date-fns";
 import {SendPage} from "./SendPage";
-import {Common} from "./Common";
+import {Common,CHANGE_NETWORK_BUTTON} from "./Common";
 
 const NO_CREATED_TITLE = "[data-cy=no-created-schedules-title]"
 const NO_CREATED_DESC = "[data-cy=no-created-schedules-description]"
@@ -23,7 +23,6 @@ const TOTAL_PERIOD_UNIT = "[data-cy=total-period-unit]"
 const TOTAL_PERIOD_SELECTED_UNIT = `${TOTAL_PERIOD_UNIT} div`
 const LOADING_SKELETONS = "[class*=MuiSkeleton]"
 const DELETE_SCHEDULE_BUTTON = "[data-cy=delete-schedule-button]"
-const CHANGE_NETWORK_BUTTON = "[data-cy=change-network-button]"
 const FORWARD_BUTTON = "[data-testid=ArrowForwardIcon]"
 const BACK_BUTTON = "[data-testid=ArrowBackIcon]"
 const VESTING_ROWS = "[data-cy=vesting-row]"

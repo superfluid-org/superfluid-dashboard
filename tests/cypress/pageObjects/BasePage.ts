@@ -1,4 +1,6 @@
+import {default as Wallet} from "ethereumjs-wallet";
 import format from "date-fns/format";
+
 
 export enum UnitOfTime {
     Second = 1,
@@ -128,7 +130,7 @@ export class BasePage {
         cy.get(selector).should("have.length", length);
     }
 
-    static hasValue(selector: string, value: string) {
+    static hasValue(selector: string, value: JQuery<HTMLElement> | string ) {
         cy.get(selector).should("have.value", value);
     }
 
@@ -166,6 +168,18 @@ export class BasePage {
             hour12: false,
             timeZone: 'UTC'
         })
+    }
+
+    static generateNewWallet() {
+        const { default: Wallet } = require('ethereumjs-wallet');
+        const wallet = Wallet.generate();
+        const privateKey = wallet.getPrivateKeyString();
+        const publicKey = wallet.getChecksumAddressString()
+        cy.wrap(privateKey).as("newWalletPrivateKey")
+        cy.wrap(publicKey).as("newWalletPublicKey")
+        cy.log(`Public key:${publicKey}`)
+        cy.log(`Private key:${privateKey}`)
+        return privateKey
     }
 
     static getNotifDateAssertStringFromDate(date:Date) {

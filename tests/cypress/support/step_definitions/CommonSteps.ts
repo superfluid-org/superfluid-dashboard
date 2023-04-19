@@ -157,14 +157,68 @@ Given(/^HDWallet transactions are rejected$/, function () {
 Given(/^Dashboard is open with a mocked connection to "([^"]*)" on "([^"]*)"$/, function (account:string,network:string) {
     Common.mockConnectionTo(account,network)
 });
-Given(/^Superfluid RPCs are not more then (\d+) minutes behind on (.*)$/, function (minutes:number,network:string) {
-    Common.checkThatSuperfluidRPCisNotBehind(minutes,network)
+Given(/^Superfluid RPCs are not more then (\d+) minutes behind on (.*)$/, function (minutes: number, network: string) {
+    Common.checkThatSuperfluidRPCisNotBehind(minutes, network)
 });
 Given(/^The graph is not more then (\d+) minutes behind on (.*)$/, function (minutes: number, network: string) {
     Common.checkThatTheGraphIsNotBehind(minutes, network)
 });
 Then(/^The stream row to "([^"]*)" has a flow rate of "([^"]*)" and dates to "([^"]*)"$/, function (address: string, flowRate: number, startEndDate: string) {
     Common.validateScheduledStreamRow(address, flowRate, startEndDate)
+});
+Given(/^User opens the faucet view from the navigation menu$/, function () {
+    Common.openFaucetMenu()
+});
+Then(/^Connect wallet button is visible in the faucet menu$/, function () {
+    Common.validateConnectWalletButtonInFaucetMenu()
+});
+Then(/^Switch to Mumbai button is visible in the faucet menu$/, function () {
+    Common.validateSwitchNetworkButtonInFaucetMenu()
+});
+Then(/^User clicks on the switch network to button$/, function () {
+    Common.clickSwitchNetworkButton()
+});
+Then(/^"([^"]*)" is the selected network in the dashboard$/, function (networkName: string) {
+    Common.validateSelectedNetwork(networkName)
+});
+Given(/^Faucet requests are mocked to an error state$/, function () {
+    Common.mockFaucetRequestsToFailure()
+});
+Given(/^User clicks the claim tokens button$/, function () {
+    Common.clickClaimTokensButton()
+});
+Then(/^The claim token is disabled and shows Tokens claimed message$/, function () {
+    Common.validateDisabledClaimTokensButton()
+});
+Then(/^Successfully claimed tokens message is shown$/, function () {
+    Common.validateFaucetSuccessMessage()
+});
+Then(/^User clicks on the go to dashboard page button$/, function () {
+    Common.clickFaucetGoToDashboardButton()
+});
+Then(/^User sends back the remaining MATIC to the faucet$/, function () {
+    Common.sendBackNotMintableFaucetTokens()
+});
+Then(/^You have already claimed tokens message is shown$/, function () {
+    Common.validateYouHaveAlreadyClaimedTokensMessage()
+});
+Then(/^User clicks on the wrap into super tokens button$/, function () {
+    Common.clickFaucetMenuWrapButton()
+});
+Then(/^Something went wrong message is shown in the faucet menu$/, function () {
+    Common.validateSomethingWentWrongMessageInFaucet()
+});
+Then(/^User closes the presentation dialog$/, function () {
+    Common.closePresentationDialog()
+});
+Given(/^The new wallet address is visible in the faucet menu$/, function () {
+    Common.validateNewWalletAddress()
+});
+Given(/^The faucet contract has got enough funds to send to people$/, function () {
+    Common.checkFaucetContractBalance()
+});
+Then(/^Faucet view is visible$/, function () {
+    Common.validateOpenFaucetView()
 });
 Given(/^User opens the notifications modal$/, function () {
     Common.clickNotificationButton()

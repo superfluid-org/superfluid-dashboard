@@ -110,3 +110,13 @@ Given(/^There are (\d+) stream rows visible$/, (amount: number) => {
 Then(/^Cancel and Edit buttons are visible$/, function () {
     DashboardPage.validateCancelAndEditButtonsAreVisible()
 });
+Then(/^Dashboard page faucet message is shown$/, function () {
+    DashboardPage.validateThatFaucetMessageIsShown()
+});
+Then(/^User opens the faucet view from the dashboard page$/, function () {
+    DashboardPage.openFaucetView()
+});
+
+Then(/^Dashboard page faucet message does not exist$/, function () {
+    DashboardPage.validateNoFaucetMessageExists()
+});

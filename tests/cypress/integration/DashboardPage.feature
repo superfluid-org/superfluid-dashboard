@@ -61,3 +61,13 @@ Feature: Dashboard Page test cases
     And User waits for balances to load
     And User clicks on "polygon" "MATICx" row
     Then There are no cancel or modify buttons in the last stream row
+
+  Scenario: Testnet faucet message in the dashboard page for user with no super tokens
+    Given "Dashboard Page" is open with "NewRandomWallet" connected on "polygon-mumbai"
+    Then Dashboard page faucet message is shown
+    And User opens the faucet view from the dashboard page
+    Then Faucet view is visible
+
+  Scenario: Testnet faucet message not shown for users with tokens
+    Given "Dashboard Page" is open with "john" connected on "polygon-mumbai"
+    Then Dashboard page faucet message does not exist
