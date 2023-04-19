@@ -37,15 +37,14 @@ Feature: Wrap page test cases
     And User inputs "0.8" into the unwrap field
     And Change network button is visible with a message asking user to switch to "polygon"
 
-
   Scenario: View mode warnings in wrap page
     Given "Dashboard Page" is open without connecting a wallet
     And User uses view mode to look at "ongoingStreamAccount"
     And User clicks on the "wrap-unwrap" navigation button
-    And User inputs "1" into the wrap field
+    And User inputs "0.001" into the wrap field
     Then The stop viewing as an address button is visible
     And User switches to unwrap tab
-    And User inputs "1" into the unwrap field
+    And User inputs "0.1" into the unwrap field
     Then The stop viewing as an address button is visible
     And User clicks on the stop viewing as an address button
     Then Connect wallet button is visible in the wrap/unwrap page

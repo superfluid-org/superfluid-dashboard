@@ -939,7 +939,7 @@ export class Common extends BasePage {
   }
 
   static clickWrapButtonInNotifModal() {
-    this.click(NOTIF_WRAP_TOKEN_BUTTON)
+    this.clickFirstVisible(NOTIF_WRAP_TOKEN_BUTTON)
   }
 
   static validateNoWrapButtonsInNotifModal() {
