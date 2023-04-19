@@ -1,15 +1,29 @@
+import * as chain from '@wagmi/chains'
+
 export const autoWrapManagerAddresses = {
-  [137]: "0x2581c27E7f6D6AF452E63fCe884EDE3EDd716b32",
-  [56]: "0x2AcdD61ac1EFFe1535109449c31889bdE8d7f325",
-  [5]: "0x0B82D14E9616ca4d260E77454834AdCf5887595F",
-  [80001]: "0x3eAB3c6207F488E475b7955B631B564F0E6317B9",
+  [chain.polygon.id]: "0x2581c27E7f6D6AF452E63fCe884EDE3EDd716b32",
+  [chain.bsc.id]: "0x2AcdD61ac1EFFe1535109449c31889bdE8d7f325",
+  [chain.goerli.id]: "0x0B82D14E9616ca4d260E77454834AdCf5887595F",
+  [chain.polygonMumbai.id]: "0x3eAB3c6207F488E475b7955B631B564F0E6317B9",
+  [chain.avalancheFuji.id]: "0x30aE282CF477E2eF28B14d0125aCEAd57Fe1d7a1",
+  [chain.avalanche.id]: "0x8082e58681350876aFe8f52d3Bf8672034A03Db0",
+  [chain.optimism.id]: "0x1fA76f2Cd0C3fe6c399A80111408d9C42C0CAC23",
+  [chain.arbitrum.id]: "0xf01825eAFAe5CD1Dab5593EFAF218efC8968D272",
+  [chain.mainnet.id]: "0x30aE282CF477E2eF28B14d0125aCEAd57Fe1d7a1",
+  [chain.gnosis.id]: "0x8082e58681350876aFe8f52d3Bf8672034A03Db0",
 } as const;
 
 export const autoWrapStrategyAddresses = {
-  [137]: "0xb4afa36BAd8c76976Dc77a21c9Ad711EF720eE4b",
-  [56]: "0x9e308cb079ae130790F604b1030cDf386670f199",
-  [5]: "0xea49af829d3e28d3ec49e0e0a0ba1e7860a56f60",
-  [80001]: "0x544728AFDBeEafBeC9e1329031788edb53017bC4",
+  [chain.polygon.id]: "0xb4afa36BAd8c76976Dc77a21c9Ad711EF720eE4b",
+  [chain.bsc.id]: "0x9e308cb079ae130790F604b1030cDf386670f199",
+  [chain.goerli.id]: "0xea49af829d3e28d3ec49e0e0a0ba1e7860a56f60",
+  [chain.polygonMumbai.id]: "0x544728AFDBeEafBeC9e1329031788edb53017bC4",
+  [chain.avalancheFuji.id]: "0x1D65c6d3AD39d454Ea8F682c49aE7744706eA96d",
+  [chain.avalanche.id]: "0x51FBAbD31A615E14b1bC12E9d887f60997264a4E",
+  [chain.optimism.id]: "0x0Cf060a501c0040e9CCC708eFE94079F501c6Bb4",
+  [chain.arbitrum.id]: "0x342076aA957B0ec8bC1d3893af719b288eA31e61",
+  [chain.mainnet.id]: "0x1D65c6d3AD39d454Ea8F682c49aE7744706eA96d",
+  [chain.gnosis.id]: "0x51FBAbD31A615E14b1bC12E9d887f60997264a4E",
 } as const;
 
 export const flowSchedulerContractAddresses = {

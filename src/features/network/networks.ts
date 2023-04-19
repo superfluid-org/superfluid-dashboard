@@ -178,6 +178,12 @@ export const networkDefinition = {
     vestingContractAddress: vestingContractAddresses.gnosis,
     vestingSubgraphUrl: vestingSubgraphUrls.gnosis,
     platformUrl: superfluidPlatformUrls.gnosis,
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.gnosis.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.gnosis.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 7),
+    },
   } as const,
   polygon: {
     ...chain.polygon,
@@ -307,6 +313,12 @@ export const networkDefinition = {
     vestingContractAddress: undefined,
     vestingSubgraphUrl: undefined,
     platformUrl: undefined,
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.avalancheFuji.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.avalancheFuji.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 7),
+    },
   } as const,
   optimism: {
     ...chain.optimism,
@@ -343,6 +355,12 @@ export const networkDefinition = {
     vestingContractAddress: vestingContractAddresses.optimism,
     vestingSubgraphUrl: vestingSubgraphUrls.optimism,
     platformUrl: superfluidPlatformUrls.optimism,
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.optimism.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.optimism.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 7),
+    },
   } as const,
   arbitrum: {
     ...chain.arbitrum,
@@ -379,6 +397,12 @@ export const networkDefinition = {
     vestingContractAddress: vestingContractAddresses.arbitrum,
     vestingSubgraphUrl: vestingSubgraphUrls.arbitrum,
     platformUrl: superfluidPlatformUrls.arbitrum,
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.arbitrum.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.arbitrum.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 7),
+    },
   } as const,
   avalancheC: {
     name: "Avalanche C",
@@ -426,6 +450,12 @@ export const networkDefinition = {
     vestingContractAddress: vestingContractAddresses.avalancheC,
     vestingSubgraphUrl: vestingSubgraphUrls.avalancheC,
     platformUrl: superfluidPlatformUrls.avalancheC,
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.avalanche.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.avalanche.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 7),
+    },
   } as const,
   bsc: {
     ...chain.bsc,
@@ -512,6 +542,12 @@ export const networkDefinition = {
     vestingContractAddress: vestingContractAddresses.ethereum,
     vestingSubgraphUrl: vestingSubgraphUrls.ethereum,
     platformUrl: superfluidPlatformUrls.ethereum,
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.mainnet.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.mainnet.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 7),
+    },
   } as const,
   celoMainnet: {
     ...chain.celo,
