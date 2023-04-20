@@ -546,7 +546,7 @@ export const networkDefinition = {
       managerContractAddress: autoWrapManagerAddresses[chain.mainnet.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.mainnet.id],
       lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
-      upperLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 28),
     },
   } as const,
   celoMainnet: {
