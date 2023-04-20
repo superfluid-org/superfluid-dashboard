@@ -569,18 +569,20 @@ export class Common extends BasePage {
         };
 
         cy.wrap(null, { log: false }).then(() => {
-          // @ts-ignore
-          return web3.eth.accounts
-            .signTransaction(txObj, privateKey)
-            .then(async (signedTx) => {
-              await web3.eth
-                .sendSignedTransaction(signedTx.rawTransaction)
-                .then((tx) => {
-                  cy.log(
-                    `Matic recycled, transaction hash: ${tx.transactionHash}`
-                  );
-                });
-            });
+          return (
+            web3.eth.accounts
+              //@ts-ignore
+              .signTransaction(txObj, privateKey)
+              .then(async (signedTx) => {
+                await web3.eth
+                  .sendSignedTransaction(signedTx.rawTransaction)
+                  .then((tx) => {
+                    cy.log(
+                      `Matic recycled, transaction hash: ${tx.transactionHash}`
+                    );
+                  });
+              })
+          );
         });
       });
     });
