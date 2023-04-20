@@ -155,6 +155,9 @@ fabric.properties
 # https://plugins.jetbrains.com/plugin/12206-codestream
 .idea/codestream.xml
 
+# Prettier plugin
+.idea/prettier.xml
+
 # End of https://www.toptal.com/developers/gitignore/api/react,nextjs,webstorm,visualstudiocode,dotenv
 
 # Sentry
