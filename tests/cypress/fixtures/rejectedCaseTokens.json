@@ -48,6 +48,16 @@
     "TokenOne": "DAI",
     "TokenTwo": "USDC",
     "TokenGas": "ETH"
+  },
+  "optimism-goerli": {
+    "TokenOne": "fDAI",
+    "TokenTwo": "fUSDC",
+    "TokenGas": "ETH"
+  },
+  "arbitrum-goerli": {
+    "TokenOne": "fDAI",
+    "TokenTwo": "fUSDC",
+    "TokenGas": "ETH"
   }
 
 }

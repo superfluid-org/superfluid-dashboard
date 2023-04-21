@@ -572,7 +572,7 @@ export class SendPage extends BasePage {
     }
 
     static isSchedulingSupported(fn: () => void) {
-        if (["polygon-mumbai","avalanche-fuji"].includes(Cypress.env("network")) && Cypress.env("scheduling")) {
+        if (["arbitrum-goerli","optimism-goerli","avalanche-fuji"].includes(Cypress.env("network")) && Cypress.env("scheduling")) {
             cy.log(`Skipping the step because ${Cypress.env("network")} is not supported`)
             return
         } else {

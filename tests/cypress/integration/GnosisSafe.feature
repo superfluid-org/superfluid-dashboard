@@ -16,6 +16,7 @@ Feature: Gnosis safe test cases
       | avalanche    |
       | optimism     |
       | goerli       |
+      | celo         |
 
   Scenario Outline: Gnosis safe - adding superfluid as a custom app <network>
     Given Gnosis safe custom app page is open on "<network>"
@@ -32,3 +33,4 @@ Feature: Gnosis safe test cases
       | avalanche    |
       | optimism     |
       | goerli       |
+      | celo         |

@@ -18,10 +18,12 @@ const networkGasTokenSymbols =  {
     56: "BNBx",
     100: "xDAIx",
     137: "MATICx",
+    420: "ETHx",
     42161: "ETHx",
     43113: "AVAXx",
     43114: "AVAXx",
-    80001: "MATICx"
+    80001: "MATICx",
+    421613: "ETHx",
 }
 
 function checkArgs() {
@@ -144,16 +146,16 @@ async function main() {
                 amount: upgradeAmount.toString(),
                 receiver: tokenTwo.address
             }).exec(signer)
+            console.log(`Approving the use of ${ethers.utils.parseUnits(upgradeAmount.toString())} ${args.tokenTwo}`)
+            await approvalTxn.wait()
+            const upgradeTx = await tokenTwo.upgrade({amount: upgradeAmount.toString().toString()}).exec(signer)
+            console.log(`Upgrading ${ethers.utils.parseUnits(upgradeAmount.toString())} ${args.tokenTwo} , to get 0.1 ${args.tokenTwo}`)
+            await upgradeTx.wait()
             const overApprovalTxn = await tokenTwo.underlyingToken.approve({
                 amount: upgradeAmount.toString(),
                 receiver: tokenTwo.address
             }).exec(signer)
-            console.log(`Approving the use of ${ethers.utils.parseUnits(upgradeAmount.toString())} ${args.tokenTwo}`)
-            await approvalTxn.wait()
             await overApprovalTxn.wait()
-            const upgradeTx = await tokenTwo.upgrade({amount: upgradeAmount.toString().toString()}).exec(signer)
-            console.log(`Upgrading ${ethers.utils.parseUnits(upgradeAmount.toString())} ${args.tokenTwo} , to get 0.1 ${args.tokenTwo}`)
-            upgradeTx.wait()
         } else {
             console.log(`${args.tokenTwo} balance already sufficient, not upgrading`)
         }
