@@ -7,7 +7,6 @@ import {
 import { Address } from "@superfluid-finance/sdk-core";
 import { getAddress } from "../../utils/memoizedEthersUtils";
 import { RootState } from "../redux/store";
-import { hashMessage } from "ethers/lib/utils.js";
 
 export interface AddressBookEntry {
   address: Address;
@@ -16,7 +15,7 @@ export interface AddressBookEntry {
 }
 
 export const adapter = createEntityAdapter<AddressBookEntry>({
-  selectId: (x) => x.address,
+  selectId: (x) => getAddress(x.address),
 });
 
 export const addressBookSlice = createSlice({
