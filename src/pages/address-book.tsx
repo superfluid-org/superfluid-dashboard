@@ -56,7 +56,7 @@ const AddressBook: NextPage = () => {
 
   const { address: accountAddress } = useAccount();
   const { network } = useExpectedNetwork();
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState({ address: 0, contract: 0 });
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedAddresses, setSelectedAddresses] = useState<string[]>([]);
@@ -114,14 +114,14 @@ const AddressBook: NextPage = () => {
 
   const onAddressesFilterChange = (newAddressesFilter: Address[]) => {
     setAddressesFilter(newAddressesFilter);
-    setPage(0);
+    setPage((page) => ({ ...page, address: 0 }));
   };
 
   // Stream active filter
 
   const onStreamActiveFilterChange = (filter: StreamActiveType) => {
     setStreamActiveFilter(filter);
-    setPage(0);
+    setPage((page) => ({ ...page, address: 0 }));
   };
 
   // Adding new address
@@ -141,12 +141,12 @@ const AddressBook: NextPage = () => {
   // Pagination
 
   const handleChangePage = (_e: unknown, newPage: number) => {
-    setPage(newPage);
+    setPage((page) => ({ ...page, address: newPage }));
   };
 
   const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    setPage((page) => ({ ...page, address: 0 }));
   };
 
   // Importing address book
@@ -271,13 +271,21 @@ const AddressBook: NextPage = () => {
   );
 
   const paginatedAddresses = useMemo(
-    () => filteredAddresses.slice(page * rowsPerPage, (page + 1) * rowsPerPage),
-    [page, rowsPerPage, filteredAddresses]
+    () =>
+      filteredAddresses.slice(
+        page.address * rowsPerPage,
+        (page.address + 1) * rowsPerPage
+      ),
+    [page.address, rowsPerPage, filteredAddresses]
   );
 
   const paginatedContracts = useMemo(
-    () => filteredContracts.slice(page * rowsPerPage, (page + 1) * rowsPerPage),
-    [page, rowsPerPage, filteredContracts]
+    () =>
+      filteredContracts.slice(
+        page.contract * rowsPerPage,
+        (page.contract + 1) * rowsPerPage
+      ),
+    [page.contract, rowsPerPage, filteredContracts]
   );
   // Deleting addresses
 
@@ -308,11 +316,11 @@ const AddressBook: NextPage = () => {
 
     // If all entries on the last page are removed then move one page back.
     if (
-      page > 0 &&
-      Math.ceil(filteredEntries.length / rowsPerPage) - 1 === page &&
+      page.address > 0 &&
+      Math.ceil(filteredEntries.length / rowsPerPage) - 1 === page.address &&
       selectedAddresses.length === paginatedAddresses.length
     ) {
-      setPage(page - 1);
+      setPage((page) => ({ ...page, address: page.address - 1 }));
     }
   }, [
     selectedAddresses,
@@ -561,7 +569,7 @@ const AddressBook: NextPage = () => {
                 component="div"
                 count={filteredEntries.length}
                 rowsPerPage={rowsPerPage}
-                page={page}
+                page={page.address}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 sx={{
@@ -642,7 +650,7 @@ const AddressBook: NextPage = () => {
                 component="div"
                 count={filteredEntries.length}
                 rowsPerPage={rowsPerPage}
-                page={page}
+                page={page.address}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 sx={{
