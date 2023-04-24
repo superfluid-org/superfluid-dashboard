@@ -2,9 +2,7 @@ Feature: Activity History Page tests
 
   @skip
   Scenario: Activity history page entries shown for all networks in the correct order
-    Given "Dashboard Page" is open without connecting a wallet
-    And User uses view mode to look at "staticBalanceAccount"
-    And User clicks on the "history" navigation button
+    Given "Activity History Page" is open using view mode to look at "staticBalanceAccount"
     #Possible reworks comming up so didn't spend time on making it dynamic
     And User changes the activity history filter to 15 months before
     And User closes the dropdown
@@ -18,9 +16,7 @@ Feature: Activity History Page tests
 
   @skip
   Scenario: Enabling and disabling filters
-    Given "Dashboard Page" is open without connecting a wallet
-    And User uses view mode to look at "staticBalanceAccount"
-    And User clicks on the "history" navigation button
+    Given "Activity History Page" is open using view mode to look at "staticBalanceAccount"
     And User changes the activity history filter to 10 months before
     And User closes the dropdown
     And User opens activity filter
@@ -32,9 +28,7 @@ Feature: Activity History Page tests
     Then Activity history entries with "Wrap" are visible
 
   Scenario: Filtering entries by address
-    Given "Dashboard Page" is open without connecting a wallet
-    And User uses view mode to look at "staticBalanceAccount"
-    And User clicks on the "history" navigation button
+    Given "Activity History Page" is open using view mode to look at "staticBalanceAccount"
     And User changes the activity history filter to 15 months before
     And User closes the dropdown
     And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
@@ -42,9 +36,7 @@ Feature: Activity History Page tests
     Then Only the activity history entries with "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" are shown
 
   Scenario: Enabling and disabling networks visible
-    Given "Dashboard Page" is open without connecting a wallet
-    And User uses view mode to look at "staticBalanceAccount"
-    And User clicks on the "history" navigation button
+    Given "Activity History Page" is open using view mode to look at "staticBalanceAccount"
     And User changes the activity history filter to 15 months before
     And User closes the dropdown
     And Activity rows for "arbitrum-one" are visible
@@ -54,3 +46,25 @@ Feature: Activity History Page tests
     And User clicks on the "arbitrum-one" toggle
     Then Activity rows for "arbitrum-one" are visible
 
+  @mocked
+  Scenario Outline: <activity> shown in the activity history page
+    Given Activity history request is mocked to "<activity>" on "polygon"
+    Given "Activity History Page" is open using view mode to look at "staticBalanceAccount"
+    Then Mocked "<activity>" entry on "polygon" is shown in the activity history
+    Examples:
+      | activity              |
+      | Liquidated            |
+      | Receive Stream        |
+      | Stream Cancelled      |
+      | Send Stream           |
+      | Wrap                  |
+      | Unwrap                |
+      | Receive Transfer      |
+      | Send Transfer         |
+      | Stream Updated        |
+      | Subscription Approved |
+      | Subscription Updated  |
+      | Subscription Rejected |
+      | Index Created         |
+      | Send Distribution     |
+      | Distribution Claimed  |

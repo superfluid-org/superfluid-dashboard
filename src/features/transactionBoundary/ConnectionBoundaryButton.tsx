@@ -1,6 +1,5 @@
 import { LoadingButton } from "@mui/lab";
 import { Button, ButtonProps } from "@mui/material";
-import { switchNetwork } from "@wagmi/core";
 import { FC, PropsWithChildren } from "react";
 import { useConnectionBoundary } from "./ConnectionBoundary";
 

@@ -90,86 +90,9 @@ export class Common extends BasePage {
     account?: string,
     network?: string
   ) {
-    cy.fixture("streamData").then((streamData) => {
-      cy.fixture("vestingData").then((vestingData) => {
-        switch (page.toLowerCase()) {
-          case "dashboard page":
-            this.visitPage(`/`, account, network);
-            break;
-          case "wrap page":
-            this.visitPage("/wrap", account, network);
-            break;
-          case "send page":
-            this.visitPage("/send", account, network);
-            break;
-          case "ecosystem page":
-            this.visitPage("/ecosystem", account, network);
-            break;
-          case "address book page":
-            this.visitPage("/address-book", account, network);
-            break;
-          case "activity history page":
-            this.visitPage("/history", account, network);
-            break;
-          case "bridge page":
-            this.visitPage("/bridge", account, network);
-            break;
-          case "settings page":
-            this.visitPage("/settings", account, network);
-            break;
-          case "ended stream details page":
-            this.visitPage(
-              streamData["staticBalanceAccount"]["polygon"][0].v2Link,
-              account,
-              network
-            );
-            break;
-          case "ongoing stream details page":
-            this.visitPage(
-              streamData["ongoingStreamAccount"]["polygon"][0].v2Link,
-              account,
-              network
-            );
-            break;
-          case "invalid stream details page":
-            this.visitPage(
-              "/stream/polygon/testing-testing-testing",
-              account,
-              network
-            );
-            break;
-          case "v1 ended stream details page":
-            this.visitPage(
-              streamData["staticBalanceAccount"]["polygon"][0].v1Link,
-              account,
-              network
-            );
-            break;
-          case "close-ended stream details page":
-            this.visitPage(
-              streamData["accountWithLotsOfData"]["goerli"][0].v2Link,
-              account,
-              network
-            );
-            break;
-          case "vesting details page":
-            this.visitPage(
-              `/vesting/goerli/${vestingData.goerli.fUSDCx.schedule.id}`
-            );
-            break;
-          case "vesting stream details page":
-            this.visitPage(
-              `/stream/polygon/${vestingData.polygon.USDCx.vestingStream.id}`
-            );
-            break;
-          case "accounting export page":
-            this.visitPage(`/accounting`);
-            break;
-          default:
-            throw new Error(`Hmm, you haven't set up the link for : ${page}`);
-        }
-      });
-    });
+    this.getPageUrlByName(page.toLowerCase()).then(url => {
+      this.visitPage(url, account, network);
+    })
     if (Cypress.env("dev")) {
       //The nextjs error is annoying when developing test cases in dev mode
       cy.get("nextjs-portal").shadow().find("[aria-label=Close]").click();
@@ -939,7 +862,7 @@ export class Common extends BasePage {
   }
 
   static clickWrapButtonInNotifModal() {
-    this.click(NOTIF_WRAP_TOKEN_BUTTON)
+    this.clickFirstVisible(NOTIF_WRAP_TOKEN_BUTTON)
   }
 
   static validateNoWrapButtonsInNotifModal() {
@@ -948,5 +871,42 @@ export class Common extends BasePage {
 
   static clickNotificationSettingsButton() {
     this.click(NOTIF_SETTINGS_BUTTON)
+  }
+
+  static getPageUrlByName(name:string) {
+    return cy.fixture("streamData").then((streamData) => {
+      cy.fixture("vestingData").then((vestingData) => {
+       const pagesAliases = {
+          "dashboard page": "/",
+          "wrap page": "/wrap",
+          "send page": "/send",
+          "ecosystem page": "/ecosystem",
+          "address book page": "/address-book",
+          "activity history page": "/history",
+          "bridge page": "/bridge",
+          "settings page": "/settings",
+          "accounting export page": "/accounting",
+          "invalid stream details page":"/stream/polygon/testing-testing-testing",
+          "ended stream details page": streamData["staticBalanceAccount"]["polygon"][0].v2Link,
+          "ongoing stream details page":streamData["ongoingStreamAccount"]["polygon"][0].v2Link,
+          "v1 ended stream details page":streamData["staticBalanceAccount"]["polygon"][0].v1Link,
+          "close-ended stream details page":streamData["accountWithLotsOfData"]["goerli"][0].v2Link,
+          "vesting details page":`/vesting/goerli/${vestingData.goerli.fUSDCx.schedule.id}`,
+          "vesting stream details page":`/stream/polygon/${vestingData.polygon.USDCx.vestingStream.id}`
+        }
+        if(pagesAliases[name] === undefined) {
+          throw new Error(`Hmm, you haven't set up the link for : ${name}`);
+        }
+        return pagesAliases[name]
+      })
+    })
+  }
+
+  static openViewModePage(page: string, account: string) {
+    cy.fixture("commonData").then(data => {
+      this.getPageUrlByName(page.toLowerCase()).then(url => {
+        cy.visit(`${url}?view=${data[account]}`)
+      })
+    })
   }
 }

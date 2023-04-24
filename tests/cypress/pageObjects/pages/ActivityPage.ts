@@ -1,9 +1,11 @@
 import {BasePage} from "../BasePage";
-import {mainNetworks, testNetworks} from "../../superData/networks";
+import {mainNetworks, networksBySlug, testNetworks} from "../../superData/networks";
 import {Common} from "./Common";
 import {format} from "date-fns";
 
 const ACTIVITY_TYPE = "[data-cy=activity]"
+const ACTIVITY_NAME = `${ACTIVITY_TYPE} h6`
+const ACTIVITY_TIME = `${ACTIVITY_TYPE} span`
 const ACTIVITY_AMOUNT = "[data-cy=amount]"
 const AMOUNT_TO_FROM = "[data-cy=amountToFrom]"
 const ALL_ROWS = "[data-cy*=-row]"
@@ -19,12 +21,23 @@ const NO_ACTIVITY_TEXT = "[data-cy=no-history-text]"
 const ACTIVITY_FILTER = "[data-cy=activity-filter-button]"
 const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet-button]"
 
+const DISTRIBUTION_ICON = "[data-testid=CallSplitRoundedIcon]"
+const SUBSCRIPTION_APPROVED_ICON = "[data-testid=CheckRoundedIcon]"
+const SUBSCRIPTION_REJECTED_ICON = "[data-testid=NotInterestedRoundedIcon]"
+const SUBSCRIPTION_UPDATED_ICON = "[data-testid=PercentRoundedIcon]"
+const INDEX_CREATED_ICON = "[data-testid=AddRoundedIcon]"
+const STREAM_CANCELLED_ICON = "[data-testid=CloseRoundedIcon]"
+const STREAM_UPDATED_ICON = "[data-testid=EditRoundedIcon]"
+const RECEIVE_ICON = "[data-testid=ArrowBackRoundedIcon]"
+const SEND_ICON = "[data-testid=ArrowForwardRoundedIcon]"
+const WRAP_UNWRAP_ICON = "[data-testid=SwapVertIcon]"
+const LIQUIDATED_ICON = "[data-testid=PriorityHighIcon]"
 
 type ActivityData = {
     amount: string;
     activity: string;
     amountToFrom: string;
-    timestamp:number;
+    timestamp: number;
     txHash: string | undefined;
 }
 
@@ -142,4 +155,104 @@ export class ActivityPage extends BasePage {
         this.isVisible(`[data-cy=${network}-row]`)
     }
 
+    static mockActivityRequestTo(activity:string,network:string) {
+        cy.fixture("activityHistoryEvents").then(events => {
+        cy.intercept("POST",`*protocol-**-${networksBySlug.get(network).v1ShortName}`, (req => {
+            if(req.body.operationName === "events") {
+                req.continue(res => {
+                    if(!events[activity]) {
+                        throw new Error(`Unknown activity type: ${activity}`)
+                    }
+                    res.body.data.events = events[activity]
+                })
+            }
+        }))
+        })
+    }
+
+    static validateMockedActivityHistoryEntry(activity:string,network:string) {
+        cy.get(ACTIVITY_NAME).last().should("have.text",activity)
+        this.isVisible(`[data-cy=${networksBySlug.get(network).id}-icon]`)
+        this.isVisible(TX_HASH_LINKS)
+        this.hasAttributeWithValue(TX_HASH_LINKS, "href", networksBySlug.get(network).getLinkForTransaction("testTransactionHash"))
+        switch (activity) {
+            case "Liquidated":
+                this.isVisible(LIQUIDATED_ICON)
+                cy.get(ACTIVITY_NAME).first().should("have.text", "Send Transfer")
+                cy.get(ACTIVITY_AMOUNT).first().should("have.text","1 TDLx")
+                cy.get(AMOUNT_TO_FROM).first().should("have.text",`To${this.shortenHex("0x2597c6abba5724fb99f343abddd4569ee4223179")}`)
+                cy.get(ACTIVITY_AMOUNT).last().should("have.text","-")
+                cy.get(AMOUNT_TO_FROM).last().should("have.text",`To${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+            case "Wrap":
+                this.isVisible(WRAP_UNWRAP_ICON)
+                this.hasText(ACTIVITY_AMOUNT, "-1 TDL")
+                this.hasText(AMOUNT_TO_FROM,"+1 TDLx")
+                break;
+            case "Send Stream":
+                this.isVisible(SEND_ICON)
+                this.hasText(ACTIVITY_AMOUNT, "1 TDLx/mo")
+                this.hasText(AMOUNT_TO_FROM,`To${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+            case "Unwrap":
+                this.isVisible(WRAP_UNWRAP_ICON)
+                this.hasText(ACTIVITY_AMOUNT, "-1 TDLx")
+                this.hasText(AMOUNT_TO_FROM,"+1 TDL")
+                break;
+            case "Receive Transfer":
+                this.hasText(ACTIVITY_AMOUNT,"1 TDLx")
+                this.hasText(AMOUNT_TO_FROM,`From${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+            case "Stream Updated":
+                this.isVisible(STREAM_UPDATED_ICON)
+                this.hasText(ACTIVITY_AMOUNT, "1 TDLx/mo")
+                this.hasText(AMOUNT_TO_FROM,`To${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+            case "Receive Stream":
+                this.isVisible(RECEIVE_ICON)
+                this.hasText(ACTIVITY_AMOUNT, "1 TDLx/mo")
+                this.hasText(AMOUNT_TO_FROM,`From${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+            case "Stream Cancelled":
+                this.isVisible(STREAM_CANCELLED_ICON)
+                this.hasText(ACTIVITY_AMOUNT, "0 TDLx/mo")
+                this.hasText(AMOUNT_TO_FROM,`To${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+            case "Subscription Approved":
+                this.isVisible(SUBSCRIPTION_APPROVED_ICON)
+                this.hasText(ACTIVITY_AMOUNT, " TDLx")
+                this.hasText(AMOUNT_TO_FROM,`Publisher${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+            case "Subscription Updated":
+                this.isVisible(SUBSCRIPTION_UPDATED_ICON)
+                this.hasText(ACTIVITY_AMOUNT, "+100 units")
+                this.hasText(AMOUNT_TO_FROM,`Publisher${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+            case "Subscription Rejected":
+                this.isVisible(SUBSCRIPTION_REJECTED_ICON)
+                this.hasText(ACTIVITY_AMOUNT, "TDLx")
+                this.hasText(AMOUNT_TO_FROM,`Publisher${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+            case "Index Created":
+                this.isVisible(INDEX_CREATED_ICON)
+                this.hasText(ACTIVITY_AMOUNT, "TDLx")
+                this.doesNotExist(AMOUNT_TO_FROM)
+                break;
+            case "Send Transfer":
+                this.isVisible(SEND_ICON)
+                this.hasText(ACTIVITY_AMOUNT, "1 TDLx")
+                this.hasText(AMOUNT_TO_FROM, `To${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+            case "Send Distribution":
+                this.isVisible(DISTRIBUTION_ICON)
+                this.hasText(ACTIVITY_AMOUNT, "-489 TDLx")
+                this.hasText(AMOUNT_TO_FROM, `Approved: 69 TDLxPending: 420 TDLx`)
+                break;
+            case "Distribution Claimed":
+                this.isVisible(DISTRIBUTION_ICON)
+                this.hasText(ACTIVITY_AMOUNT, "+1 TDLx")
+                this.hasText(AMOUNT_TO_FROM, `Publisher${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`)
+                break;
+        }
+    }
 }

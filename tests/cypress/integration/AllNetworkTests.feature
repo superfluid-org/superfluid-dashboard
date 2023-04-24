@@ -2,9 +2,7 @@
 Feature: Test cases that run indefinitely on all supported networks
 
   Scenario Outline: Smoke testing RPC and Graph in Wrap page on <network>
-    Given "Dashboard Page" is open without connecting a wallet
-    Given User uses view mode to look at "staticBalanceAccount"
-    And User clicks on the "wrap-unwrap" navigation button
+    Given "Wrap Page" is open using view mode to look at "staticBalanceAccount"
     And User changes their network to "<network>"
     Then The native token "<token>" balance for "staticBalanceAccount" on "<network>" is shown under the token selection button
     And User opens the token selection in the wrap page

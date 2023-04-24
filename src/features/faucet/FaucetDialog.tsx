@@ -16,7 +16,6 @@ import {
 import { Address } from "@superfluid-finance/sdk-core";
 import Link from "next/link";
 import { FC, useCallback } from "react";
-import { useAccount } from "wagmi";
 import useAddressName from "../../hooks/useAddressName";
 import { getAddress } from "../../utils/memoizedEthersUtils";
 import ResponsiveDialog from "../common/ResponsiveDialog";
@@ -28,6 +27,7 @@ import TokenChip from "../token/TokenChip";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import ConnectionBoundaryButton from "../transactionBoundary/ConnectionBoundaryButton";
 import faucetApi from "./faucetApi.slice";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 interface PrefilledAddressInputProps {
   address: Address;
@@ -53,7 +53,7 @@ interface FaucetDialogProps {
 }
 
 const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
-  const { address: accountAddress } = useAccount();
+  const { visibleAddress } = useVisibleAddress();
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { setTransactionDrawerOpen } = useLayoutContext();
@@ -61,25 +61,25 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
     faucetApi.useLazyClaimTestTokensQuery();
 
   const hasClaimedTokens = useHasFlag(
-    accountAddress
+    visibleAddress
       ? {
           type: Flag.TestTokensReceived,
           chainId: networkDefinition.polygonMumbai.id,
-          account: getAddress(accountAddress),
+          account: getAddress(visibleAddress),
         }
       : undefined
   );
 
   const claimTokens = useCallback(() => {
-    if (accountAddress) {
+    if (visibleAddress) {
       claimTestTokensTrigger({
         chainId: networkDefinition.polygonMumbai.id,
-        account: accountAddress,
+        account: visibleAddress,
       }).then((response) => {
         if (response.isSuccess) setTransactionDrawerOpen(true);
       });
     }
-  }, [accountAddress, claimTestTokensTrigger, setTransactionDrawerOpen]);
+  }, [visibleAddress, claimTestTokensTrigger, setTransactionDrawerOpen]);
 
   return (
     <ResponsiveDialog
@@ -119,7 +119,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
             />
           </Stack>
 
-          {accountAddress && <PrefilledAddressInput address={accountAddress} />}
+          {visibleAddress && <PrefilledAddressInput address={visibleAddress} />}
 
           {claimTestTokensResponse.isError && (
             <Alert data-cy="faucet-error" severity="error">

@@ -39,3 +39,9 @@ Then(/^No "([^"]*)" activity rows are visible$/, (network: string) => {
 Then(/^Activity rows for "([^"]*)" are visible$/, (network: string) => {
     ActivityPage.validateActivityVisibleByNetwork(network)
 });
+Given(/^Activity history request is mocked to "([^"]*)" on "([^"]*)"$/, function (activity: string, network: string) {
+    ActivityPage.mockActivityRequestTo(activity, network)
+});
+Then(/^Mocked "([^"]*)" entry on "([^"]*)" is shown in the activity history$/, function (activity: string, network: string) {
+    ActivityPage.validateMockedActivityHistoryEntry(activity, network)
+});

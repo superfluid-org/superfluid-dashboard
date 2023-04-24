@@ -44,6 +44,7 @@ const IndexCreatedActivityRow: FC<IndexCreatedActivityRowProps> = ({
         <ListItem sx={{ p: 0 }}>
           <ActivityIcon icon={AddRoundedIcon} />
           <ListItemText
+            data-cy={"activity"}
             primary="Index Created"
             secondary={format(timestamp * 1000, dateFormat)}
             primaryTypographyProps={{
@@ -70,7 +71,7 @@ const IndexCreatedActivityRow: FC<IndexCreatedActivityRowProps> = ({
                   isLoading={tokenQuery.isLoading}
                 />
               </ListItemAvatar>
-              <ListItemText primary={tokenQuery.data?.symbol} />
+              <ListItemText data-cy={"amount"} primary={tokenQuery.data?.symbol} />
             </ListItem>
           </TableCell>
           <TableCell></TableCell>

@@ -84,6 +84,7 @@ const IndexUpdatedActivityRow: FC<IndexUpdatedActivityRowProps> = ({
             }}
           />
           <ListItemText
+            data-cy={"activity"}
             primary="Send Distribution"
             secondary={format(timestamp * 1000, dateFormat)}
             primaryTypographyProps={{
@@ -110,6 +111,7 @@ const IndexUpdatedActivityRow: FC<IndexUpdatedActivityRowProps> = ({
                 />
               </ListItemAvatar>
               <ListItemText
+                data-cy={"amount"}
                 primary={
                   <>
                     -
@@ -132,6 +134,7 @@ const IndexUpdatedActivityRow: FC<IndexUpdatedActivityRowProps> = ({
           <TableCell>
             <ListItem sx={{ p: 0 }}>
               <ListItemText
+                data-cy={"amountToFrom"}
                 primary={
                   <>
                     <span translate="yes">Approved: </span>

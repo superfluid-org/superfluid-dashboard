@@ -26,7 +26,7 @@ export const MinigameProvider: FC<PropsWithChildren> = ({ children }) => {
   const [cosmetics, setCosmetics] = useState<MinigameCosmetics>(0);
   const { isImpersonated } = useImpersonation();
 
-  const { isConnected, address: connectedAccountAddress } = useAccount();
+  const { isConnected, address: connectedAccountAddress } = useAccount(); // Don't use "visible address" here.
   useEffect(() => {
     setCosmetics(0); // Reset level.
   }, [connectedAccountAddress]);

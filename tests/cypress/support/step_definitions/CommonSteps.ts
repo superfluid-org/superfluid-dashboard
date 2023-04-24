@@ -274,3 +274,6 @@ Then(/^No "([^"]*)" notifications message is shown$/, function (tab:string) {
 Given(/^User clicks on the notification settings button$/, function () {
     Common.clickNotificationSettingsButton()
 });
+Given(/^"([^"]*)" is open using view mode to look at "([^"]*)"$/, function (page:string,account:string) {
+    Common.openViewModePage(page,account)
+});

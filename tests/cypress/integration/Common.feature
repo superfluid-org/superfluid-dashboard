@@ -103,9 +103,9 @@ Feature: Common element test cases
     And User opens the navigation more menu
     And User opens the faucet view from the navigation menu
     Then The claim token is disabled and shows Tokens claimed message
-    
+
   Scenario: No new notifications message
-    Given "Settings Page" is open with "alice" connected on "ethereum"
+    Given "Settings Page" is open with "dan" connected on "ethereum"
     And User opens the notifications modal
     Then No "new" notifications message is shown
     And User switches to the "archive" notification tab
@@ -123,10 +123,10 @@ Feature: Common element test cases
     And User opens the notifications modal
     Then Connect wallet button is visible in the notification modal
 
-  @only @mocked
+  @mocked
   Scenario Outline: Receiving opening and archiving a notification
     Given Notifications requests are mocked to "<notification>"
-    Given "Settings Page" is open with "alice" connected on "ethereum"
+    Given "Settings Page" is open with "dan" connected on "ethereum"
     Then Notification toast is visible for "<notification>"
     And Notification badge shows "1" new notification
     And User opens the notifications modal
@@ -158,7 +158,7 @@ Feature: Common element test cases
   @mocked
   Scenario: Notifications automatically archived if older than a month
     Given Notifications requests are mocked to "Old notification"
-    Given "Settings Page" is open with "alice" connected on "goerli"
+    Given "Settings Page" is open with "dan" connected on "goerli"
     And User opens the notifications modal
     Then No "new" notifications message is shown
     And User switches to the "archive" notification tab
