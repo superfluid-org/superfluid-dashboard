@@ -34,6 +34,8 @@ import shortenHex from "../../utils/shortenHex";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { useAppDispatch } from "../redux/store";
 import { updateAddressBookEntry } from "./addressBook.slice";
+import { allNetworks, findNetworkOrThrow } from "../network/networks";
+import NetworkIcon from "../network/NetworkIcon";
 
 interface AddressBookRowProps {
   address: Address;
@@ -42,6 +44,7 @@ interface AddressBookRowProps {
   selectable?: boolean;
   streams: Stream[];
   streamsLoading?: boolean;
+  networkIds?: number[];
   onSelect: (isSelected: boolean) => void;
 }
 
@@ -52,6 +55,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   selectable,
   streams,
   streamsLoading,
+  networkIds,
   onSelect,
 }) => {
   const theme = useTheme();
@@ -176,7 +180,21 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
           </Stack>
         </Stack>
       </TableCell>
-      <TableCell data-cy={"ens-name"}>{ensName || "-"}</TableCell>
+
+      <TableCell>
+        {networkIds?.length ? (
+          <Stack direction="row" gap={1}>
+            {networkIds.map((networkId) => (
+              <NetworkIcon
+                network={findNetworkOrThrow(allNetworks, networkId)}
+              />
+            ))}
+          </Stack>
+        ) : (
+          ensName || "-"
+        )}
+      </TableCell>
+
       <TableCell data-cy={"actual-address"}>
         <AddressCopyTooltip address={address}>
           <span>{shortenHex(address, 6)}</span>

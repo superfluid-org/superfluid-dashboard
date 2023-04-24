@@ -38,6 +38,7 @@
     "@sentry/nextjs": "^7.43.0",
     "@superfluid-finance/sdk-core": "0.6.4-dev.d1ef94b.0",
     "@superfluid-finance/sdk-redux": "^0.4.0",
+    "@types/react-dom": "^18.0.11",
     "axios": "^1.3.4",
     "chart.js": "^3.9.1",
     "date-fns": "^2.29.3",

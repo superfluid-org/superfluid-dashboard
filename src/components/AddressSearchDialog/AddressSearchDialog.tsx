@@ -29,7 +29,10 @@ import {
   useMemo,
   useState,
 } from "react";
-import { addressBookSelectors } from "../../features/addressBook/addressBook.slice";
+import {
+  AddressBookEntry,
+  addressBookSelectors,
+} from "../../features/addressBook/addressBook.slice";
 import ResponsiveDialog from "../../features/common/ResponsiveDialog";
 import { ensApi } from "../../features/ens/ensApi.slice";
 import { useAppSelector } from "../../features/redux/store";
@@ -37,6 +40,11 @@ import useAddressName from "../../hooks/useAddressName";
 import { getAddress, isAddress } from "../../utils/memoizedEthersUtils";
 import shortenHex from "../../utils/shortenHex";
 import AddressAvatar from "../Avatar/AddressAvatar";
+import { wagmiRpcProvider } from "../../features/wallet/WagmiManager";
+import { allNetworks, Network } from "../../features/network/networks";
+import NetworkBadge from "../../features/network/NetworkBadge";
+import { tryFindNetwork } from "../../features/network/networks";
+import NetworkIcon from "../../features/network/NetworkIcon";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
@@ -48,6 +56,7 @@ interface AddressListItemProps {
   dataCy?: string;
   onClick: () => void;
   showRemove?: boolean;
+  displayAvatar?: boolean;
 }
 
 export const AddressListItem: FC<AddressListItemProps> = ({
@@ -58,6 +67,7 @@ export const AddressListItem: FC<AddressListItemProps> = ({
   onClick,
   namePlaceholder,
   showRemove = false,
+  displayAvatar = true,
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -71,9 +81,12 @@ export const AddressListItem: FC<AddressListItemProps> = ({
       selected={selected}
       disabled={disabled}
     >
-      <ListItemAvatar>
-        <AddressAvatar address={checksumHex} />
-      </ListItemAvatar>
+      {displayAvatar && (
+        <ListItemAvatar>
+          <AddressAvatar address={checksumHex} />
+        </ListItemAvatar>
+      )}
+
       <ListItemText
         {...(dataCy ? { "data-cy": dataCy } : {})}
         primary={
@@ -102,7 +115,7 @@ export type AddressSearchDialogProps = {
   addresses?: Address[];
   onClose?: () => void;
   onBack?: () => void;
-  onSelectAddress: (address: string) => void;
+  onSelectAddress: (...params: AddressBookEntry[]) => void;
   showAddressBook?: boolean;
   disableAutoselect?: boolean;
   disabledAddresses?: Address[];
@@ -125,6 +138,10 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
   const theme = useTheme();
 
   const [searchTermVisible, setSearchTermVisible] = useState("");
+  const [name, setName] = useState("");
+  const [foundContracts, setFoundContracts] = useState<
+    { address: string; network: Network; code: string }[]
+  >([]);
   const [searchTermDebounced, _setSearchTermDebounced] =
     useState(searchTermVisible);
 
@@ -141,7 +158,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
 
       const searchTermTrimmed = searchTerm.trim();
       if (isAddress(searchTermTrimmed) && !disableAutoselect) {
-        onSelectAddress(getAddress(searchTermTrimmed));
+        onSelectAddress({ address: getAddress(searchTermTrimmed) });
       }
 
       setSearchTermDebounced(searchTermTrimmed);
@@ -154,6 +171,32 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
     ]
   );
 
+  useEffect(() => {
+    const effect = async () => {
+      const searchTermTrimmed = searchTermVisible.trim();
+
+      if (!searchTermTrimmed || !isAddress(searchTermTrimmed)) return;
+      const result = (
+        await Promise.all(
+          allNetworks.map(async (network) => {
+            const provider = wagmiRpcProvider({ chainId: network.id });
+
+            const code = await provider.getCode(searchTermTrimmed);
+
+            return {
+              network,
+              code,
+              address: searchTermTrimmed,
+            };
+          })
+        )
+      ).filter(({ code }) => code !== "0x");
+
+      setFoundContracts(result);
+    };
+    effect();
+  }, [searchTermVisible]);
+
   const [openCounter, setOpenCounter] = useState(0);
 
   useEffect(() => {
@@ -161,6 +204,8 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
       setOpenCounter(openCounter + 1);
       setSearchTermVisible(""); // Reset the search term when the dialog opens, not when it closes (because then there would be noticable visual clearing of the field). It's smoother UI to do it on opening.
       setSearchTermDebounced(""); // Reset the search term when the dialog opens, not when it closes (because then there would be noticable visual clearing of the field). It's smoother UI to do it on opening.
+      setFoundContracts([]);
+      setName("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
@@ -182,6 +227,8 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
 
   const searchSynced = searchTermDebounced === searchTermVisible.trim();
 
+  console.log({ searchTermVisible, foundContracts });
+
   return (
     <>
       <DialogTitle sx={{ p: 3 }}>
@@ -200,21 +247,33 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
             </IconButton>
           )}
         </Stack>
-        <TextField
-          data-cy={"address-dialog-input"}
-          autoComplete="off"
-          fullWidth
-          autoFocus
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Address or ENS"
-          value={searchTermVisible}
-        />
+        <Stack direction="column" gap={2}>
+          <TextField
+            data-cy={"address-dialog-input"}
+            autoComplete="off"
+            fullWidth
+            autoFocus
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Address or ENS"
+            value={searchTermVisible}
+          />
+
+          <TextField
+            data-cy={"name-dialog-input"}
+            autoComplete="off"
+            fullWidth
+            autoFocus
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Name (optional)"
+            value={name}
+          />
+        </Stack>
       </DialogTitle>
       <DialogContent dividers={false} sx={{ p: 0 }}>
         {!searchTermVisible ? (
           index
         ) : (
-          <List sx={{ pt: 0 }}>
+          <List sx={{ pt: 0, pb: 0 }}>
             {showEns ? (
               <>
                 <ListSubheader sx={{ px: 3 }}>ENS</ListSubheader>
@@ -236,7 +295,12 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                         selected={addresses.includes(ensData.address)}
                         disabled={disabledAddresses.includes(ensData.address)}
                         address={ensData.address}
-                        onClick={() => onSelectAddress(ensData.address)}
+                        onClick={() =>
+                          onSelectAddress({
+                            address: ensData.address,
+                            name,
+                          })
+                        }
                         namePlaceholder={ensData.name}
                       />
                     ) : (
@@ -249,7 +313,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
               </>
             ) : null}
 
-            {checksummedSearchedAddress && (
+            {checksummedSearchedAddress && foundContracts.length === 0 && (
               <>
                 <ListSubheader sx={{ px: 3 }}>Search</ListSubheader>
                 <AddressListItem
@@ -260,8 +324,49 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                     checksummedSearchedAddress
                   )}
                   address={checksummedSearchedAddress}
-                  onClick={() => onSelectAddress(checksummedSearchedAddress)}
+                  onClick={() =>
+                    onSelectAddress({
+                      address: checksummedSearchedAddress,
+                      name,
+                    })
+                  }
                 />
+              </>
+            )}
+
+            {foundContracts.length > 0 && (
+              <>
+                <ListSubheader sx={{ px: 3 }}>Contracts</ListSubheader>
+                {foundContracts.map(({ network, address, code }) => (
+                  <Stack direction="row" alignItems="center" pl={2}>
+                    <NetworkIcon network={network} />
+
+                    <AddressListItem
+                      dataCy={"contract-entry"}
+                      selected={addresses.includes(address)}
+                      disabled={disabledAddresses.includes(address)}
+                      address={address}
+                      onClick={() => {}}
+                      displayAvatar={false}
+                    />
+                  </Stack>
+                ))}
+                {foundContracts.length > 1 && (
+                  <Button
+                    fullWidth
+                    onClick={() => {
+                      onSelectAddress({
+                        address: foundContracts[0].address,
+                        associatedNetworks: foundContracts.map(
+                          ({ network }) => network.id
+                        ),
+                        name,
+                      });
+                    }}
+                  >
+                    Add all
+                  </Button>
+                )}
               </>
             )}
 
@@ -280,7 +385,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                     selected={addresses.includes(address)}
                     disabled={disabledAddresses.includes(address)}
                     address={address}
-                    onClick={() => onSelectAddress(address)}
+                    onClick={() => onSelectAddress({ address })}
                     namePlaceholder={name}
                   />
                 ))}
@@ -316,7 +421,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                   selected
                   showRemove
                   address={address}
-                  onClick={() => onSelectAddress(address)}
+                  onClick={() => onSelectAddress({ address })}
                 />
               ))}
             </List>

@@ -75,7 +75,7 @@ export default memo(function AddressSearchIndex({
             selected={addresses.includes(address)}
             key={address}
             address={address}
-            onClick={() => onSelectAddress(address)}
+            onClick={() => onSelectAddress({ address })}
             disabled={disabledAddresses.includes(address)}
           />
         ))}
