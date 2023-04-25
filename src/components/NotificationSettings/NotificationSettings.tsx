@@ -21,6 +21,7 @@ import { useNotificationChannels } from "../../hooks/useNotificationChannels";
 import Link from "next/link";
 import shortenHex from "../../utils/shortenHex";
 import { LoadingButton } from "@mui/lab";
+import { useImpersonation } from "../../features/impersonation/ImpersonationContext";
 
 const NoWalletConnected: FC = () => {
   const theme = useTheme();
@@ -68,6 +69,7 @@ const NotificationSettings: FC = () => {
 
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const { isImpersonated } = useImpersonation();
 
   if (!address) {
     return <NoWalletConnected />;
@@ -81,7 +83,9 @@ const NotificationSettings: FC = () => {
             <Typography component="h1" variant="h5">
               Notifications
             </Typography>
+
             <LoadingButton
+              disabled={isImpersonated}
               data-cy={"notification-button"}
               variant="contained"
               onClick={channels.PUSH.onToggle}

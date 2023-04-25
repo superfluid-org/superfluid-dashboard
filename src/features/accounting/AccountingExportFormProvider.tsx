@@ -8,6 +8,7 @@ import { CurrencyCode } from "../../utils/currencyUtils";
 import { testAddresses } from "../../utils/yupUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { UnitOfTime } from "../send/FlowRateInput";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 type Nullable<T> = { [K in keyof T]: T[K] | null };
 
@@ -46,7 +47,7 @@ export interface StreamingFormProviderProps {
 const AccountingExportFormProvider: FC<
   PropsWithChildren<StreamingFormProviderProps>
 > = ({ children, initialFormValues }) => {
-  const { address: accountAddress } = useAccount();
+  const { visibleAddress } = useVisibleAddress();
   const { network } = useExpectedNetwork();
 
   const formSchema = useMemo(
@@ -81,7 +82,7 @@ const AccountingExportFormProvider: FC<
         await primaryValidation.validate(values);
         return true;
       }),
-    [network, accountAddress]
+    [network, visibleAddress]
   );
 
   const formMethods = useForm<PartialAccountingExportForm>({
@@ -120,7 +121,7 @@ const AccountingExportFormProvider: FC<
 
   useEffect(() => {
     if (formState.isDirty) trigger();
-  }, [accountAddress]);
+  }, [visibleAddress]);
 
   return isInitialized ? (
     <FormProvider {...formMethods}>{children}</FormProvider>

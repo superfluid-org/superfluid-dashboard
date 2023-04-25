@@ -4,6 +4,7 @@ import { SignerType } from "@pushprotocol/restapi";
 import { pushApi } from "../features/notifications/pushApi.slice";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { isProduction } from "../utils/config";
+
 export const superfluidChannelAddress =
   process.env.NEXT_PUBLIC_PUSH_SUPERFLUID_CHANNEL ?? "";
 
