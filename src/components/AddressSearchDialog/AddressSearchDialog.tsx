@@ -201,8 +201,6 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
     effect();
   }, [searchTermVisible]);
 
-  console.log(isContractDetectionLoading);
-
   const [openCounter, setOpenCounter] = useState(0);
 
   useEffect(() => {
