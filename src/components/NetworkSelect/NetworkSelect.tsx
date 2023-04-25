@@ -6,7 +6,11 @@ import ListItemText from "@mui/material/ListItemText";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Checkbox from "@mui/material/Checkbox";
 import { FC, useState } from "react";
-import { allNetworks, Network } from "../../features/network/networks";
+import {
+  allNetworks,
+  findNetworkOrThrow,
+  Network,
+} from "../../features/network/networks";
 import NetworkIcon from "../../features/network/NetworkIcon";
 import { Stack, colors } from "@mui/material";
 
@@ -35,7 +39,7 @@ const NetworkSelect: FC<NetworkSelectProps> = ({
     } = event;
 
     const selectedNetworks = allNetworks.filter((network) =>
-      value.includes(network.name)
+      value.includes(network.slugName)
     );
 
     onSelect(selectedNetworks);
@@ -53,7 +57,7 @@ const NetworkSelect: FC<NetworkSelectProps> = ({
           m: 0,
           p: 0,
           '&[data-shrink="true"]': {
-            px: 1,
+            display: "none",
           },
         }}
       >
@@ -62,16 +66,29 @@ const NetworkSelect: FC<NetworkSelectProps> = ({
       <Select
         id="network-select"
         multiple
-        value={selectedNetworks.map((network) => network.name)}
+        value={selectedNetworks.map((network) => network.slugName)}
         onChange={handleChange}
         input={<OutlinedInput placeholder="Select Networks" />}
-        renderValue={(selected) => selected.join(", ")}
+        renderValue={(selected) => (
+          <Stack direction="row" gap={1}>
+            {selected.map((n, i) => {
+              const network = findNetworkOrThrow(allNetworks, n);
+              return (
+                <Stack direction="row" alignItems="center" gap={0.5}>
+                  <NetworkIcon size={20} network={network} />
+                  {network.name}
+                  {i !== selected.length - 1 && ","}
+                </Stack>
+              );
+            })}
+          </Stack>
+        )}
         MenuProps={MenuProps}
       >
         {allNetworks.map((network) => (
           <MenuItem
             key={`${network.id}`}
-            value={network.name}
+            value={network.slugName}
             sx={{ justifyContent: "space-between" }}
           >
             <Stack direction="row" gap={1} alignItems="center">
