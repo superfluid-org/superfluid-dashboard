@@ -97,7 +97,7 @@ const NetworkSelect: FC<NetworkSelectProps> = ({
             sx={{ justifyContent: "space-between" }}
           >
             <Stack direction="row" gap={1} alignItems="center">
-              <NetworkIcon network={network} />
+              <NetworkIcon size={20} network={network} />
               <ListItemText primary={network.name} />
             </Stack>
 
