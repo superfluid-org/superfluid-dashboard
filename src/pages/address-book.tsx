@@ -261,12 +261,12 @@ const AddressBook: NextPage = () => {
   );
 
   const filteredAddresses = useMemo(
-    () => filteredEntries.filter((entry) => !entry.associatedNetworks),
+    () => filteredEntries.filter((entry) => !entry.isContract),
     [filteredEntries]
   );
 
   const filteredContracts = useMemo(
-    () => filteredEntries.filter((entry) => entry.associatedNetworks),
+    () => filteredEntries.filter((entry) => entry.isContract),
     [filteredEntries]
   );
 
@@ -333,6 +333,8 @@ const AddressBook: NextPage = () => {
 
   const streamsLoading =
     incomingStreamsQuery.isLoading || outgoingStreamsQuery.isLoading;
+
+  console.log(paginatedAddresses);
 
   return (
     <Container maxWidth="lg">
@@ -541,27 +543,29 @@ const AddressBook: NextPage = () => {
                   </TableHead>
                 )}
                 <TableBody>
-                  {paginatedAddresses.map(({ address, name, streams }) =>
-                    isBelowMd ? (
-                      <AddressBookMobileRow
-                        key={address}
-                        address={address}
-                        selected={selectedAddresses.includes(address)}
-                        selectable={isDeleting}
-                        onSelect={setRowSelected(address)}
-                      />
-                    ) : (
-                      <AddressBookRow
-                        key={address}
-                        address={address}
-                        name={name}
-                        selected={selectedAddresses.includes(address)}
-                        selectable={isDeleting}
-                        onSelect={setRowSelected(address)}
-                        streams={streams}
-                        streamsLoading={streamsLoading}
-                      />
-                    )
+                  {paginatedAddresses.map(
+                    ({ address, name, associatedNetworks, streams }) =>
+                      isBelowMd ? (
+                        <AddressBookMobileRow
+                          key={address}
+                          address={address}
+                          selected={selectedAddresses.includes(address)}
+                          selectable={isDeleting}
+                          onSelect={setRowSelected(address)}
+                        />
+                      ) : (
+                        <AddressBookRow
+                          key={address}
+                          address={address}
+                          name={name}
+                          selected={selectedAddresses.includes(address)}
+                          selectable={isDeleting}
+                          onSelect={setRowSelected(address)}
+                          streams={streams}
+                          streamsLoading={streamsLoading}
+                          networkIds={associatedNetworks}
+                        />
+                      )
                   )}
                 </TableBody>
               </Table>

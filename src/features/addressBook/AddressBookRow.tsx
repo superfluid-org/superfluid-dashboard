@@ -35,7 +35,7 @@ import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { useAppDispatch } from "../redux/store";
 import { updateAddressBookEntry } from "./addressBook.slice";
 import { allNetworks, findNetworkOrThrow } from "../network/networks";
-import NetworkIcon from "../network/NetworkIcon";
+import NetworkBadge from "../network/NetworkBadge";
 
 interface AddressBookRowProps {
   address: Address;
@@ -184,17 +184,19 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
       </TableCell>
 
       <TableCell>
-        {networkIds?.length ? (
-          <Stack direction="row" gap={1}>
-            {networkIds.map((networkId) => (
-              <NetworkIcon
-                network={findNetworkOrThrow(allNetworks, networkId)}
-              />
-            ))}
-          </Stack>
-        ) : (
-          "-"
-        )}
+        <Box sx={{ overflow: "auto", scrollbarWidth: "none" }}>
+          {networkIds?.length ? (
+            <Stack direction="row" gap={1}>
+              {networkIds.map((networkId) => (
+                <NetworkBadge
+                  network={findNetworkOrThrow(allNetworks, networkId)}
+                />
+              ))}
+            </Stack>
+          ) : (
+            "-"
+          )}
+        </Box>
       </TableCell>
 
       {!isContract && <TableCell>{ensName || "-"}</TableCell>}

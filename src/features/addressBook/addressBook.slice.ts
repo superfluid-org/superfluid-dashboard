@@ -12,6 +12,7 @@ export interface AddressBookEntry {
   address: Address;
   name?: string;
   associatedNetworks?: number[];
+  isContract?: boolean;
 }
 
 export const adapter = createEntityAdapter<AddressBookEntry>({
@@ -31,6 +32,7 @@ export const addressBookSlice = createSlice({
           ...payload,
           address: getAddress(payload.address),
           associatedNetworks: payload.associatedNetworks,
+          isContract: payload.isContract,
         },
         ...adapterSelectors.selectAll(state),
       ]),
@@ -44,6 +46,7 @@ export const addressBookSlice = createSlice({
           ...newEntry,
           address: getAddress(newEntry.address),
           associatedNetworks: newEntry.associatedNetworks,
+          isContract: newEntry.isContract,
         }))
       ),
 

@@ -305,6 +305,9 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                           onSelectAddress({
                             address: ensData.address,
                             name,
+                            associatedNetworks: selectedNetworks.map(
+                              ({ id }) => id
+                            ),
                           })
                         }
                         namePlaceholder={ensData.name}
@@ -333,6 +336,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                   onClick={() =>
                     onSelectAddress({
                       address: checksummedSearchedAddress,
+                      associatedNetworks: selectedNetworks.map(({ id }) => id),
                       name,
                     })
                   }
@@ -366,6 +370,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                         ({ network }) => network.id
                       ),
                       name,
+                      isContract: true,
                     });
                   }}
                 >

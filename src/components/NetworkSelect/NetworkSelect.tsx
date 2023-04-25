@@ -8,7 +8,7 @@ import Checkbox from "@mui/material/Checkbox";
 import { FC, useState } from "react";
 import { allNetworks, Network } from "../../features/network/networks";
 import NetworkIcon from "../../features/network/NetworkIcon";
-import { colors } from "@mui/material";
+import { Stack, colors } from "@mui/material";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -69,14 +69,21 @@ const NetworkSelect: FC<NetworkSelectProps> = ({
         MenuProps={MenuProps}
       >
         {allNetworks.map((network) => (
-          <MenuItem key={`${network.id}`} value={network.name}>
+          <MenuItem
+            key={`${network.id}`}
+            value={network.name}
+            sx={{ justifyContent: "space-between" }}
+          >
+            <Stack direction="row" gap={1} alignItems="center">
+              <NetworkIcon network={network} />
+              <ListItemText primary={network.name} />
+            </Stack>
+
             <Checkbox
               checked={Boolean(
                 selectedNetworks.find((n) => n.id === network.id)
               )}
             />
-            <ListItemText primary={network.name} />
-            <NetworkIcon network={network} />
           </MenuItem>
         ))}
       </Select>
