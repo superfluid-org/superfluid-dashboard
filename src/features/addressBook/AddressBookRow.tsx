@@ -34,6 +34,7 @@ import { useAppDispatch } from "../redux/store";
 import { updateAddressBookEntry } from "./addressBook.slice";
 import { allNetworks, findNetworkOrThrow } from "../network/networks";
 import NetworkIcon from "../network/NetworkIcon";
+import zIndex from "@mui/material/styles/zIndex";
 
 interface AddressBookRowProps {
   address: Address;
@@ -182,11 +183,12 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
       <TableCell>
         <Box sx={{ overflow: "auto", scrollbarWidth: "none" }}>
           {networkIds?.length ? (
-            <Stack direction="row" gap={1}>
-              {networkIds.map((networkId) => (
+            <Stack direction="row">
+              {networkIds.map((networkId, i) => (
                 <NetworkIcon
+                  sx={{ transform: `translateX(${-i * 10}px)` }}
                   size={24}
-                  key={networkId}
+                  key={`icon-${networkId}`}
                   network={findNetworkOrThrow(allNetworks, networkId)}
                 />
               ))}
