@@ -193,8 +193,6 @@ const AddressBook: NextPage = () => {
         Promise.resolve([])
       );
 
-      console.log(mappedData);
-
       insertImportedAddresses(mappedData);
     } catch (e) {
       console.error(

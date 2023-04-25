@@ -142,6 +142,8 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
   const [foundContracts, setFoundContracts] = useState<
     { address: string; network: Network; code: string }[]
   >([]);
+  const [isContractDetectionLoading, setIsContractDetectionLoading] =
+    useState(false);
   const [searchTermDebounced, _setSearchTermDebounced] =
     useState(searchTermVisible);
 
@@ -176,6 +178,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
       const searchTermTrimmed = searchTermVisible.trim();
 
       if (!searchTermTrimmed || !isAddress(searchTermTrimmed)) return;
+      setIsContractDetectionLoading(true);
       const result = (
         await Promise.all(
           allNetworks.map(async (network) => {
@@ -192,10 +195,13 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
         )
       ).filter(({ code }) => code !== "0x");
 
+      setIsContractDetectionLoading(false);
       setFoundContracts(result);
     };
     effect();
   }, [searchTermVisible]);
+
+  console.log(isContractDetectionLoading);
 
   const [openCounter, setOpenCounter] = useState(0);
 
@@ -215,18 +221,12 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
     addressBookSelectors.searchAddressBookEntries(state, searchTermDebounced)
   );
 
-  const ensQuery = ensApi.useResolveNameQuery(searchTermDebounced);
-  const ensData = ensQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!ensQuery.data` means that the data is not undefined nor null.
-  const showEns = !!searchTermDebounced && !isAddress(searchTermDebounced);
-
   const checksummedSearchedAddress = useMemo(() => {
     if (!!searchTermDebounced && isAddress(searchTermDebounced)) {
       return getAddress(searchTermDebounced);
     }
     return null;
   }, [searchTermDebounced]);
-
-  const searchSynced = searchTermDebounced === searchTermVisible.trim();
 
   return (
     <>
@@ -321,7 +321,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
         )}
         <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
           <Button
-            disabled={!Boolean(searchTermVisible)}
+            disabled={isContractDetectionLoading || !Boolean(searchTermVisible)}
             sx={{ width: 400 }}
             variant="contained"
             onClick={() => {
