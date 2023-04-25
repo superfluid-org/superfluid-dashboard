@@ -79,7 +79,12 @@ const NetworkSelect: FC<NetworkSelectProps> = ({
             {selected.map((n, i) => {
               const network = findNetworkOrThrow(allNetworks, n);
               return (
-                <Stack direction="row" alignItems="center" gap={0.5}>
+                <Stack
+                  key={`MuiStack-${network.name}`}
+                  direction="row"
+                  alignItems="center"
+                  gap={0.5}
+                >
                   <NetworkIcon size={20} network={network} />
                   {network.name}
                   {i !== selected.length - 1 && ","}

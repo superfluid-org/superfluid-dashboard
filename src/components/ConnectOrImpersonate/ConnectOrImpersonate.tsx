@@ -27,7 +27,7 @@ const ConnectOrImpersonate: FC<ConnectOrImpersonateProps> = ({}) => {
   const closeAddressSearchDialog = () => setAddressSearchOpen(false);
 
   const onImpersonate = useCallback(
-    (address: string) => impersonate(address),
+    ({ address }: { address: string }) => impersonate(address),
     [impersonate]
   );
 

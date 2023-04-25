@@ -61,7 +61,6 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   onSelect,
 }) => {
   const theme = useTheme();
-  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const dispatch = useAppDispatch();
 
   const { address: currentAccountAddress } = useAccount();
@@ -189,6 +188,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
             <Stack direction="row" gap={1}>
               {networkIds.map((networkId) => (
                 <NetworkBadge
+                  key={networkId}
                   network={findNetworkOrThrow(allNetworks, networkId)}
                 />
               ))}

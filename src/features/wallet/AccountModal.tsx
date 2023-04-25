@@ -71,8 +71,8 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
   }, [handleClose, disconnectAsync, theme]);
 
   const onImpersonate = useCallback(
-    (viewAddress: string) => {
-      impersonate(viewAddress);
+    ({ address }: { address: string }) => {
+      impersonate(address);
       handleClose();
     },
     [impersonate, handleClose]

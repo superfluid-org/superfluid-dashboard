@@ -25,7 +25,7 @@ export default memo(function AddressSearchIndex({
         <AddressListItem
           key={impersonation.address}
           address={impersonation.address}
-          onClick={() => onSelectAddress(impersonation.address)}
+          onClick={() => onSelectAddress({ address: impersonation.address })}
         />
       ))}
     </List>

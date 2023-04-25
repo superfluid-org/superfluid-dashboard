@@ -38,7 +38,7 @@ export default memo(function AddressSearch({
     onChange(null);
   };
 
-  const onSelectAddress = (address: string) => {
+  const onSelectAddress = ({ address }: { address: string }) => {
     setDialogOpen(false);
     onChange(address);
     onBlur();
