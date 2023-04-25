@@ -1,6 +1,7 @@
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import {
+  Box,
   Button,
   debounce,
   DialogActions,
@@ -42,9 +43,6 @@ import shortenHex from "../../utils/shortenHex";
 import AddressAvatar from "../Avatar/AddressAvatar";
 import { wagmiRpcProvider } from "../../features/wallet/WagmiManager";
 import { allNetworks, Network } from "../../features/network/networks";
-import NetworkBadge from "../../features/network/NetworkBadge";
-import { tryFindNetwork } from "../../features/network/networks";
-import NetworkIcon from "../../features/network/NetworkIcon";
 import NetworkSelect from "../NetworkSelect/NetworkSelect";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
@@ -248,31 +246,49 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
             </IconButton>
           )}
         </Stack>
-        <Stack direction="column" gap={2}>
-          <TextField
-            data-cy={"address-dialog-input"}
-            autoComplete="off"
-            fullWidth
-            autoFocus
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Address or ENS"
-            value={searchTermVisible}
-          />
-          <TextField
-            data-cy={"name-dialog-input"}
-            autoComplete="off"
-            fullWidth
-            autoFocus
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Name (optional)"
-            value={name}
-          />
-          {checksummedSearchedAddress && foundContracts.length === 0 && (
-            <NetworkSelect
-              selectedNetworks={selectedNetworks}
-              onSelect={setSelectedNetworks}
+        <Stack direction="column" gap={1}>
+          <Stack>
+            <Typography sx={{ m: 1 }} variant="h6">
+              {foundContracts.length > 0 ? "Contract " : ""} Address
+            </Typography>
+            <TextField
+              data-cy={"address-dialog-input"}
+              autoComplete="off"
+              fullWidth
+              autoFocus
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Address or ENS"
+              value={searchTermVisible}
             />
-          )}
+          </Stack>
+          <Stack>
+            <Typography sx={{ m: 1 }} variant="h6">
+              Name
+            </Typography>
+            <TextField
+              data-cy={"name-dialog-input"}
+              autoComplete="off"
+              fullWidth
+              autoFocus
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Name (optional)"
+              value={name}
+            />
+          </Stack>
+          <Stack>
+            <Typography sx={{ m: 1 }} variant="h6">
+              Network
+            </Typography>
+            <NetworkSelect
+              selectedNetworks={
+                foundContracts.length === 0
+                  ? selectedNetworks
+                  : foundContracts.map(({ network }) => network)
+              }
+              onSelect={setSelectedNetworks}
+              readonly={foundContracts.length > 0}
+            />
+          </Stack>
         </Stack>
       </DialogTitle>
       <DialogContent dividers={false} sx={{ p: 0 }}>
@@ -280,105 +296,6 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
           index
         ) : (
           <List sx={{ pt: 0, pb: 0 }}>
-            {showEns ? (
-              <>
-                <ListSubheader sx={{ px: 3 }}>ENS</ListSubheader>
-                {(ensQuery.isFetching || !searchSynced) && (
-                  <ListItem sx={LIST_ITEM_STYLE}>
-                    <ListItemText translate="yes" primary="Loading..." />
-                  </ListItem>
-                )}
-                {ensQuery.isError && (
-                  <ListItem sx={LIST_ITEM_STYLE}>
-                    <ListItemText translate="yes" primary="Error" />
-                  </ListItem>
-                )}
-                {!ensQuery.isLoading && !ensQuery.isFetching && searchSynced && (
-                  <>
-                    {!!ensData ? (
-                      <AddressListItem
-                        dataCy={"ens-entry"}
-                        selected={addresses.includes(ensData.address)}
-                        disabled={disabledAddresses.includes(ensData.address)}
-                        address={ensData.address}
-                        onClick={() =>
-                          onSelectAddress({
-                            address: ensData.address,
-                            name,
-                            associatedNetworks: selectedNetworks.map(
-                              ({ id }) => id
-                            ),
-                          })
-                        }
-                        namePlaceholder={ensData.name}
-                      />
-                    ) : (
-                      <ListItem sx={LIST_ITEM_STYLE}>
-                        <ListItemText translate="yes" primary="No results" />
-                      </ListItem>
-                    )}
-                  </>
-                )}
-              </>
-            ) : null}
-
-            {checksummedSearchedAddress && foundContracts.length === 0 && (
-              <>
-                <ListSubheader sx={{ px: 3 }}>Search</ListSubheader>
-                <AddressListItem
-                  dataCy={"search-entry"}
-                  key={checksummedSearchedAddress}
-                  selected={addresses.includes(checksummedSearchedAddress)}
-                  disabled={disabledAddresses.includes(
-                    checksummedSearchedAddress
-                  )}
-                  address={checksummedSearchedAddress}
-                  onClick={() =>
-                    onSelectAddress({
-                      address: checksummedSearchedAddress,
-                      associatedNetworks: selectedNetworks.map(({ id }) => id),
-                      name,
-                    })
-                  }
-                />
-              </>
-            )}
-
-            {foundContracts.length > 0 && (
-              <>
-                <ListSubheader sx={{ px: 3 }}>Contracts</ListSubheader>
-                {foundContracts.map(({ network, address, code }) => (
-                  <Stack direction="row" alignItems="center" pl={2}>
-                    <NetworkIcon network={network} />
-
-                    <AddressListItem
-                      dataCy={"contract-entry"}
-                      selected={addresses.includes(address)}
-                      disabled={disabledAddresses.includes(address)}
-                      address={address}
-                      onClick={() => {}}
-                      displayAvatar={false}
-                    />
-                  </Stack>
-                ))}
-                <Button
-                  fullWidth
-                  onClick={() => {
-                    onSelectAddress({
-                      address: foundContracts[0].address,
-                      associatedNetworks: foundContracts.map(
-                        ({ network }) => network.id
-                      ),
-                      name,
-                      isContract: true,
-                    });
-                  }}
-                >
-                  Add
-                </Button>
-              </>
-            )}
-
             {showAddressBook && (
               <>
                 <ListSubheader sx={{ px: 3 }}>Address Book</ListSubheader>
@@ -402,6 +319,26 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
             )}
           </List>
         )}
+        <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
+          <Button
+            disabled={!Boolean(searchTermVisible)}
+            sx={{ width: 400 }}
+            variant="contained"
+            onClick={() => {
+              onSelectAddress({
+                address:
+                  foundContracts[0]?.address ?? checksummedSearchedAddress,
+                associatedNetworks: foundContracts.map(
+                  ({ network }) => network.id
+                ),
+                name,
+                isContract: foundContracts.length > 0,
+              });
+            }}
+          >
+            Save
+          </Button>
+        </Box>
       </DialogContent>
       {showSelected && addresses.length > 0 && (
         <>

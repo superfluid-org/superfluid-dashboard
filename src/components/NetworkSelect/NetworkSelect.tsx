@@ -27,13 +27,17 @@ const MenuProps = {
 type NetworkSelectProps = {
   selectedNetworks: Network[];
   onSelect: (network: Network[]) => void;
+  readonly?: boolean;
 };
 
 const NetworkSelect: FC<NetworkSelectProps> = ({
   selectedNetworks,
   onSelect,
+  readonly,
 }) => {
   const handleChange = (event: SelectChangeEvent<string[]>) => {
+    if (readonly) return;
+
     const {
       target: { value },
     } = event;

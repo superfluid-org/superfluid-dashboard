@@ -10,7 +10,6 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  TextField,
   Typography,
   useMediaQuery,
   useTheme,
@@ -48,6 +47,7 @@ import StreamActiveFilter, {
 } from "../features/streamsTable/StreamActiveFilter";
 import { getAddress } from "../utils/memoizedEthersUtils";
 import { allNetworks } from "../features/network/networks";
+import { wagmiRpcProvider } from "../features/wallet/WagmiManager";
 
 const AddressBook: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -159,27 +159,37 @@ const AddressBook: NextPage = () => {
       const { data: parsedCSV } = parse<{
         address: string;
         name?: string;
+        chainid: string;
       }>(contents, {
         header: true,
         transformHeader: (header: string) => header.toLowerCase(),
       });
 
-      const mappedData: AddressBookEntry[] = parsedCSV.reduce(
-        (mappedData: AddressBookEntry[], item, index) => {
+      const mappedData: AddressBookEntry[] = await parsedCSV.reduce(
+        async (mappedData: Promise<AddressBookEntry[]>, item, index) => {
+          const result = await mappedData;
           try {
+            const chainId = Number(item.chainid);
             const parsedItem = {
               name: item.name,
               address: getAddress(item.address),
+              associatedNetworks: [chainId],
             };
 
-            return [...mappedData, parsedItem];
+            // const provider = wagmiRpcProvider({
+            //   chainId,
+            // });
+
+            // const isContract await provider.getCode(parsedItem.address);
+
+            return [...result, parsedItem];
           } catch (e) {
             // Using index + 2 here because the first row is for titles
             console.error(`Failed to parse row ${index + 2}!`, e);
             return mappedData;
           }
         },
-        []
+        Promise.resolve([])
       );
 
       insertImportedAddresses(mappedData);
