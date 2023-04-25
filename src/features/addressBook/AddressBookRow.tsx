@@ -14,8 +14,6 @@ import {
   TableRow,
   Tooltip,
   Typography,
-  useMediaQuery,
-  useTheme,
 } from "@mui/material";
 import { Address, Stream } from "@superfluid-finance/sdk-core";
 import {
@@ -35,7 +33,7 @@ import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { useAppDispatch } from "../redux/store";
 import { updateAddressBookEntry } from "./addressBook.slice";
 import { allNetworks, findNetworkOrThrow } from "../network/networks";
-import NetworkBadge from "../network/NetworkBadge";
+import NetworkIcon from "../network/NetworkIcon";
 
 interface AddressBookRowProps {
   address: Address;
@@ -60,7 +58,6 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   isContract = false,
   onSelect,
 }) => {
-  const theme = useTheme();
   const dispatch = useAppDispatch();
 
   const { address: currentAccountAddress } = useAccount();
@@ -187,7 +184,8 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
           {networkIds?.length ? (
             <Stack direction="row" gap={1}>
               {networkIds.map((networkId) => (
-                <NetworkBadge
+                <NetworkIcon
+                  size={24}
                   key={networkId}
                   network={findNetworkOrThrow(allNetworks, networkId)}
                 />
@@ -199,7 +197,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
         </Box>
       </TableCell>
 
-      {!isContract && <TableCell>{ensName || "-"}</TableCell>}
+      <TableCell>{ensName || "-"}</TableCell>
 
       <TableCell data-cy={"actual-address"}>
         <AddressCopyTooltip address={address}>

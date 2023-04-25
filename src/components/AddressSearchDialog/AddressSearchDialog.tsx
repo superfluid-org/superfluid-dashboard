@@ -326,9 +326,10 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
               onSelectAddress({
                 address:
                   foundContracts[0]?.address ?? checksummedSearchedAddress,
-                associatedNetworks: foundContracts.map(
-                  ({ network }) => network.id
-                ),
+                associatedNetworks:
+                  foundContracts.length > 0
+                    ? foundContracts.map(({ network }) => network.id)
+                    : selectedNetworks.map(({ id }) => id),
                 name,
                 isContract: foundContracts.length > 0,
               });
