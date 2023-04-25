@@ -62,7 +62,7 @@ export const INVEST_IN_REALTIME = [
     href: "https://ricochet-exchange.eth.limo/",
     description: `An exchange for effortless real-time crypto investing and streaming`,
     icon: "/icons/ecosystem/ricochet.svg",
-    chains: [networkDefinition.polygon.id],
+    chains: [networkDefinition.polygon.id, networkDefinition.optimism.id],
     colors: {
       primary: "#1B2733",
       secondary: "#254D5A",
