@@ -45,6 +45,7 @@ import { allNetworks, Network } from "../../features/network/networks";
 import NetworkBadge from "../../features/network/NetworkBadge";
 import { tryFindNetwork } from "../../features/network/networks";
 import NetworkIcon from "../../features/network/NetworkIcon";
+import NetworkSelect from "../NetworkSelect/NetworkSelect";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
@@ -138,6 +139,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
   const theme = useTheme();
 
   const [searchTermVisible, setSearchTermVisible] = useState("");
+  const [selectedNetworks, setSelectedNetworks] = useState<Network[]>([]);
   const [name, setName] = useState("");
   const [foundContracts, setFoundContracts] = useState<
     { address: string; network: Network; code: string }[]
@@ -205,6 +207,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
       setSearchTermVisible(""); // Reset the search term when the dialog opens, not when it closes (because then there would be noticable visual clearing of the field). It's smoother UI to do it on opening.
       setSearchTermDebounced(""); // Reset the search term when the dialog opens, not when it closes (because then there would be noticable visual clearing of the field). It's smoother UI to do it on opening.
       setFoundContracts([]);
+      setSelectedNetworks([]);
       setName("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -226,8 +229,6 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
   }, [searchTermDebounced]);
 
   const searchSynced = searchTermDebounced === searchTermVisible.trim();
-
-  console.log({ searchTermVisible, foundContracts });
 
   return (
     <>
@@ -257,7 +258,6 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
             placeholder="Address or ENS"
             value={searchTermVisible}
           />
-
           <TextField
             data-cy={"name-dialog-input"}
             autoComplete="off"
@@ -267,6 +267,12 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
             placeholder="Name (optional)"
             value={name}
           />
+          {checksummedSearchedAddress && foundContracts.length === 0 && (
+            <NetworkSelect
+              selectedNetworks={selectedNetworks}
+              onSelect={setSelectedNetworks}
+            />
+          )}
         </Stack>
       </DialogTitle>
       <DialogContent dividers={false} sx={{ p: 0 }}>
@@ -351,22 +357,20 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                     />
                   </Stack>
                 ))}
-                {foundContracts.length > 1 && (
-                  <Button
-                    fullWidth
-                    onClick={() => {
-                      onSelectAddress({
-                        address: foundContracts[0].address,
-                        associatedNetworks: foundContracts.map(
-                          ({ network }) => network.id
-                        ),
-                        name,
-                      });
-                    }}
-                  >
-                    Add all
-                  </Button>
-                )}
+                <Button
+                  fullWidth
+                  onClick={() => {
+                    onSelectAddress({
+                      address: foundContracts[0].address,
+                      associatedNetworks: foundContracts.map(
+                        ({ network }) => network.id
+                      ),
+                      name,
+                    });
+                  }}
+                >
+                  Add
+                </Button>
               </>
             )}
 

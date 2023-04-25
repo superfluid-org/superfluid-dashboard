@@ -45,6 +45,7 @@ interface AddressBookRowProps {
   streams: Stream[];
   streamsLoading?: boolean;
   networkIds?: number[];
+  isContract: boolean;
   onSelect: (isSelected: boolean) => void;
 }
 
@@ -56,6 +57,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   streams,
   streamsLoading,
   networkIds,
+  isContract,
   onSelect,
 }) => {
   const theme = useTheme();
@@ -191,9 +193,11 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
             ))}
           </Stack>
         ) : (
-          ensName || "-"
+          "-"
         )}
       </TableCell>
+
+      {!isContract && <TableCell>{ensName || "-"}</TableCell>}
 
       <TableCell data-cy={"actual-address"}>
         <AddressCopyTooltip address={address}>
