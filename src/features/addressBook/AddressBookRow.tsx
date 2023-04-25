@@ -45,7 +45,7 @@ interface AddressBookRowProps {
   streams: Stream[];
   streamsLoading?: boolean;
   networkIds?: number[];
-  isContract: boolean;
+  isContract?: boolean;
   onSelect: (isSelected: boolean) => void;
 }
 
@@ -57,7 +57,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   streams,
   streamsLoading,
   networkIds,
-  isContract,
+  isContract = false,
   onSelect,
 }) => {
   const theme = useTheme();

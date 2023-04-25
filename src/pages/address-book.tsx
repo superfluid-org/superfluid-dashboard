@@ -640,6 +640,7 @@ const AddressBook: NextPage = () => {
                           onSelect={setRowSelected(address)}
                           streams={streams}
                           streamsLoading={streamsLoading}
+                          isContract
                           networkIds={associatedNetworks}
                         />
                       )
