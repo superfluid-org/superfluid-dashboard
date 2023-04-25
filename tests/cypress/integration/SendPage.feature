@@ -75,14 +75,15 @@ Feature: Send Page test cases
     And User accepts the risk warning
     And Change network button is visible with a message asking user to switch to "gnosis"
 
-   Scenario: Ethereum mainnet uses minimum deposit instead of 4 hours of flow
-     Given Transactional account john is connected to the dashboard on ethereum
-     And User clicks on the "send" navigation button
-     And User fills all stream inputs "with" a wallet connected
-     Then The start stream button is disabled
-     And The preview buffer amount shown and warning sections shows 69 tokens are needed for the buffer
+  Scenario: Ethereum mainnet uses minimum deposit instead of 4 hours of flow
+    Given Transactional account john is connected to the dashboard on ethereum
+    And User clicks on the "send" navigation button
+    And User fills all stream inputs "with" a wallet connected
+    Then The start stream button is disabled
+    And The preview buffer amount shown and warning sections shows 69 tokens are needed for the buffer
 
-  @skip @MikkSaidHeWillTakeAlook
+  @skip
+  @MikkSaidHeWillTakeAlook
   Scenario: Tokens getting sorted by amount in the token selection screen
     Given "Dashboard Page" is open without connecting a wallet
     And User uses view mode to look at "accountWithLotsOfData"
@@ -171,6 +172,7 @@ Feature: Send Page test cases
 
   Scenario: Modifying a streams start date
     Given HDWallet transactions are rejected
+
     Given "Send Page" is open with "john" connected on "goerli"
     And User inputs all the details to send "2" "TDLx" per "month" to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B"
     And User inputs a date "1" "year" into the future into the stream start date
@@ -181,6 +183,7 @@ Feature: Send Page test cases
 
   Scenario: Modifying a stream with just end date
     Given HDWallet transactions are rejected
+
     Given "Send Page" is open with "john" connected on "goerli"
     And User inputs all the details to send "1" "TDLx" per "month" to "0x9B6157d44134b21D934468B8bf709294cB298aa7"
     And Stream start date field is disabled
@@ -192,6 +195,7 @@ Feature: Send Page test cases
 
   Scenario: Modifying a stream with start and end date ( not started yet )
     Given HDWallet transactions are rejected
+
     Given "Send Page" is open with "john" connected on "goerli"
     And User inputs all the details to send "1" "TDLx" per "month" to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4"
     And User inputs a date "1" "year" into the future into the stream start date
@@ -203,6 +207,7 @@ Feature: Send Page test cases
 
   Scenario: Cancelling a scheduled stream - just end date
     Given HDWallet transactions are rejected
+
     Given "Send Page" is open with "john" connected on "goerli"
     And User inputs all the details to send "1" "TDLx" per "month" to "0x9B6157d44134b21D934468B8bf709294cB298aa7"
     And User tries to cancel the stream and the first transaction dialogs are visible on "goerli"
@@ -210,6 +215,7 @@ Feature: Send Page test cases
 
   Scenario: Cancelling a scheduled stream - just start date
     Given HDWallet transactions are rejected
+
     Given "Send Page" is open with "john" connected on "goerli"
     And User inputs all the details to send "1" "TDLx" per "month" to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B"
     And User tries to cancel the stream and the first transaction dialogs are visible on "goerli"
@@ -217,6 +223,7 @@ Feature: Send Page test cases
 
   Scenario: Cancelling a scheduled stream - start and end date ( Not started )
     Given HDWallet transactions are rejected
+
     Given "Send Page" is open with "john" connected on "goerli"
     And User inputs all the details to send "1" "TDLx" per "month" to "0x9B6157d44134b21D934468B8bf709294cB298aa7"
     And User tries to cancel the stream and the first transaction dialogs are visible on "goerli"
@@ -231,11 +238,12 @@ Feature: Send Page test cases
     And The stream start date is set to "12/31/2024 22:00"
     And The stream end date is set to "01/30/2025 22:00"
 
-  #TODO: Test cases that are broken/will get changed or no functionality yet
-  #Scenario: Stream details page for a stream with just start date
-  #Scenario: Stream details page for a stream with start and end date ( Not started yet )
-  #Scenario: Searching for a recent receiver
-  #Not working atm, create test case when fixed
-  #Scenario: Changing time units in the send page
-  #Rounding is kind of off atm, and there is no rounding solution for now,
-  #There is a test case to check the previews, but will create the case with changing time units when it works precisely
+
+#TODO: Test cases that are broken/will get changed or no functionality yet
+#Scenario: Stream details page for a stream with just start date
+#Scenario: Stream details page for a stream with start and end date ( Not started yet )
+#Scenario: Searching for a recent receiver
+#Not working atm, create test case when fixed
+#Scenario: Changing time units in the send page
+#Rounding is kind of off atm, and there is no rounding solution for now,
+#There is a test case to check the previews, but will create the case with changing time units when it works precisely

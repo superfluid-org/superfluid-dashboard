@@ -8,6 +8,7 @@ Feature: Test cases that run indefinitely on all supported networks
     And User opens the token selection in the wrap page
     And The could not find any tokens message is not shown
     Then The native token "<token>" balance for "staticBalanceAccount" on "<network>" in the token list
+
     Examples:
       | network        | token |
       | goerli         | ETH   |
@@ -19,11 +20,11 @@ Feature: Test cases that run indefinitely on all supported networks
       | arbitrum-one   | ETH   |
       | avalanche      | AVAX  |
       | bsc            | BNB   |
-      | celo            | CELO   |
-
+      | celo           | CELO  |
 
   Scenario Outline: Superfluid RPCS are not behind on <network>
     Given Superfluid RPCs are not more then 10 minutes behind on <network>
+
     Examples:
       | network        |
       | goerli         |
@@ -39,6 +40,7 @@ Feature: Test cases that run indefinitely on all supported networks
 
   Scenario Outline: The graph is not behind on <network>
     Given The graph is not more then 10 minutes behind on <network>
+
     Examples:
       | network        |
       | goerli         |

@@ -33,10 +33,10 @@ Feature: Stream details page test cases
     And User opens "polygon" "MATICx" individual token page
     And User opens the first visible stream details page from the table
     And Ongoing stream data is shown correctly
-#    Enable these steps once it gets fixed
-#    And User clicks on the back button
-#    Then Individual token page is open
 
+  #    Enable these steps once it gets fixed
+  #    And User clicks on the back button
+  #    Then Individual token page is open
   Scenario: Stream details page supporting v1 links
     Given "v1 Ended stream details page" is open without connecting a wallet
     Then Ended stream data is shown correctly
@@ -65,8 +65,9 @@ Feature: Stream details page test cases
     And The streamed amount is flowing
     And Vesting stream data is shown correctly
 
-  #TODO once a better solution for connecting the wallet is done or cancel button
-  #And Once wrap/unwrap buttons and liquidation info gets added to the page
+
+#TODO once a better solution for connecting the wallet is done or cancel button
+#And Once wrap/unwrap buttons and liquidation info gets added to the page
 #  Scenario: Stream details page wrap/unwrap buttons
 #  Scenario: Stream details page cancel button
 #  Scenario: Liquidated stream details page

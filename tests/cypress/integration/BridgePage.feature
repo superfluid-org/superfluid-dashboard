@@ -44,7 +44,7 @@ Feature: Bridge page test cases (Li-Fi widget)
     And User disconnects their wallet from the dashboard
     And History button is not visible
 
-    #There was a bug that froze the whole bridge when choosing a token without an icon
+  #There was a bug that froze the whole bridge when choosing a token without an icon
   Scenario: Choosing a token with a default icon does not crash the page
     Given "Dashboard page" is open without connecting a wallet
     And User clicks on the "bridge" navigation button
