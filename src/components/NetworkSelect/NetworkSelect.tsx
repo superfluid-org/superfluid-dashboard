@@ -70,6 +70,7 @@ const NetworkSelect: FC<NetworkSelectProps> = ({
       <Select
         id="network-select"
         multiple
+        disabled={readonly}
         value={selectedNetworks.map((network) => network.slugName)}
         onChange={handleChange}
         input={<OutlinedInput placeholder="Select Networks" />}
