@@ -35,7 +35,7 @@ const GnosisSafePrefixByNetworkSlug = {
     "avalanche": "avax:",
     "optimism": "oeth:",
     "goerli": "gor:",
-    "celo:": "celo:"
+    "celo": "celo:"
 }
 
 const GnosisSafeAddressesPerNetwork = {
