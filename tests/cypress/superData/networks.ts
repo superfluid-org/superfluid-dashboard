@@ -67,7 +67,7 @@ export const networkDefinition: {
   avalancheC: Network;
   bsc: Network;
   ethereum: Network;
-  celoMainnet: Network,
+  celoMainnet: Network;
   optimismGoerli: Network;
   arbitrumGoerli: Network;
 } = {
@@ -368,11 +368,11 @@ export const networkDefinition: {
     color: "#FCFF52",
     superfluidRpcUrl: superfluidRpcUrls["celo-mainnet"],
     subgraphUrl:
-        "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-celo-mainnet",
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-celo-mainnet",
     getLinkForTransaction: (txHash: string): string =>
-        `https://celoscan.io/tx/${txHash}`,
+      `https://celoscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
-        `https://celoscan.io/address/${address}`,
+      `https://celoscan.io/address/${address}`,
     nativeCurrency: {
       ...ensureDefined(chain.celo.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,
@@ -395,11 +395,11 @@ export const networkDefinition: {
     color: "#ff0320",
     superfluidRpcUrl: superfluidRpcUrls["optimism-goerli"],
     subgraphUrl:
-        "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-goerli",
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-goerli",
     getLinkForTransaction: (txHash: string): string =>
-        `https://goerli-optimism.etherscan.io/tx/${txHash}`,
+      `https://goerli-optimism.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
-        `https://goerli-optimism.etherscan.io/address/${address}`,
+      `https://goerli-optimism.etherscan.io/address/${address}`,
     nativeCurrency: {
       ...ensureDefined(chain.optimismGoerli.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,
@@ -422,11 +422,11 @@ export const networkDefinition: {
     color: "#2b374b",
     superfluidRpcUrl: superfluidRpcUrls["arbitrum-goerli"],
     subgraphUrl:
-        "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-goerli",
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-goerli",
     getLinkForTransaction: (txHash: string): string =>
-        `https://goerli.arbiscan.io/tx/${txHash}`,
+      `https://goerli.arbiscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
-        `https://goerli.arbiscan.io/address/${address}`,
+      `https://goerli.arbiscan.io/address/${address}`,
     nativeCurrency: {
       ...ensureDefined(chain.arbitrumGoerli.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,

@@ -1,67 +1,73 @@
-import {Given,Then} from "@badeball/cypress-cucumber-preprocessor";
-import {BridgePage} from "../../pageObjects/pages/BridgePage";
+import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";
+import { BridgePage } from "../../pageObjects/pages/BridgePage";
 
-Given(/^User chooses "([^"]*)" token to swap "([^"]*)" on "([^"]*)"$/, (token:string,toFrom:string,network:string) => {
-    BridgePage.chooseTokenToSwapFromTo(token,toFrom,network)
-});
+Given(
+  /^User chooses "([^"]*)" token to swap "([^"]*)" on "([^"]*)"$/,
+  (token: string, toFrom: string, network: string) => {
+    BridgePage.chooseTokenToSwapFromTo(token, toFrom, network);
+  }
+);
 
 Given(/^Connect wallet button is visible$/, () => {
-    BridgePage.validateConnectWalletButton()
+  BridgePage.validateConnectWalletButton();
 });
 
-Given(/^User inputs "([^"]*)" into the swap amount$/,  (amount:string) => {
-    BridgePage.inputSwapAmount(amount)
+Given(/^User inputs "([^"]*)" into the swap amount$/, (amount: string) => {
+  BridgePage.inputSwapAmount(amount);
 });
 
-Given(/^Token swapping route for is correctly shown$/,  () => {
-    BridgePage.validateSwapRoute()
+Given(/^Token swapping route for is correctly shown$/, () => {
+  BridgePage.validateSwapRoute();
 });
-Given(/^The You pay section shows the correct token and network icons$/,  () => {
-    BridgePage.validateYouPayTokenIcons()
-});
-
-Given(/^Review swap button is disabled$/,  () => {
-    BridgePage.validateReviewSwapButtonWithoutBalance()
-});
-Given(/^Not enough funds error is shown$/,  () => {
-    BridgePage.validateNotEnoughFundsError()
+Given(/^The You pay section shows the correct token and network icons$/, () => {
+  BridgePage.validateYouPayTokenIcons();
 });
 
-Given(/^Not enough gas funds error is shown$/,  () => {
-    BridgePage.validateNotEnoughGasFundsError()
+Given(/^Review swap button is disabled$/, () => {
+  BridgePage.validateReviewSwapButtonWithoutBalance();
+});
+Given(/^Not enough funds error is shown$/, () => {
+  BridgePage.validateNotEnoughFundsError();
 });
 
-Given(/^User clicks on the history button$/,  () => {
-    BridgePage.clickOnHistoryPageButton()
+Given(/^Not enough gas funds error is shown$/, () => {
+  BridgePage.validateNotEnoughGasFundsError();
 });
 
-Then(/^No history message is shown$/,  () => {
-    BridgePage.validateNoHistoryMessage()
+Given(/^User clicks on the history button$/, () => {
+  BridgePage.clickOnHistoryPageButton();
 });
 
-Then(/^LiFi bridge inputs are visible$/,  () => {
-    BridgePage.validateFromToInputsVisible()
+Then(/^No history message is shown$/, () => {
+  BridgePage.validateNoHistoryMessage();
 });
 
-Given(/^History button is not visible$/,  () => {
-    BridgePage.validateNoHistoryButtonWhenNotConnected()
+Then(/^LiFi bridge inputs are visible$/, () => {
+  BridgePage.validateFromToInputsVisible();
 });
 
-Given(/^User clicks on the connect wallet button in the lifi widget$/,  () => {
-    BridgePage.clickConnectWalletButton()
+Given(/^History button is not visible$/, () => {
+  BridgePage.validateNoHistoryButtonWhenNotConnected();
 });
-Given(/^User opens the lifi widget settings$/,  () => {
-    BridgePage.openLifiSettings()
+
+Given(/^User clicks on the connect wallet button in the lifi widget$/, () => {
+  BridgePage.clickConnectWalletButton();
 });
-Given(/^Lifi widget settings are visible$/,  () => {
-    BridgePage.verifyLifiSettingsFields()
+Given(/^User opens the lifi widget settings$/, () => {
+  BridgePage.openLifiSettings();
+});
+Given(/^Lifi widget settings are visible$/, () => {
+  BridgePage.verifyLifiSettingsFields();
 });
 Given(/^User opens the token selection in the bridge page$/, function () {
-    BridgePage.openTokenSelection()
+  BridgePage.openTokenSelection();
 });
-Then(/^Only Superfluid supported networks are shown as available options$/, function () {
-    BridgePage.validateOnlySupportedNetworksShown()
-});
+Then(
+  /^Only Superfluid supported networks are shown as available options$/,
+  function () {
+    BridgePage.validateOnlySupportedNetworksShown();
+  }
+);
 Then(/^Ethereum mainnet is shown in the network list$/, function () {
-    BridgePage.validateMainnetVisibleInNetworksList()
+  BridgePage.validateMainnetVisibleInNetworksList();
 });

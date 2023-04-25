@@ -168,6 +168,8 @@ cypress/videos
 cypress/downloads
 cypress.env.json
 
+# Prettier plugin
+.idea/prettier.xml
 
 # Netlify
 .netlify
