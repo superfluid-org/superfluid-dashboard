@@ -159,7 +159,7 @@ const AddressBook: NextPage = () => {
       const { data: parsedCSV } = parse<{
         address: string;
         name?: string;
-        chainid: string;
+        chainid?: string;
       }>(contents, {
         header: true,
         transformHeader: (header: string) => header.toLowerCase(),
@@ -169,18 +169,19 @@ const AddressBook: NextPage = () => {
         async (mappedData: Promise<AddressBookEntry[]>, item, index) => {
           const result = await mappedData;
           try {
-            const chainId = Number(item.chainid);
+            const chainIds = item.chainid?.split(" ").map(Number) ?? [];
             const parsedItem = {
               name: item.name,
               address: getAddress(item.address),
-              associatedNetworks: [chainId],
+              associatedNetworks: chainIds,
+              isContract: false,
             };
 
-            // const provider = wagmiRpcProvider({
-            //   chainId,
-            // });
+            const provider = wagmiRpcProvider({ chainId: chainIds[0] });
 
-            // const isContract await provider.getCode(parsedItem.address);
+            if ((await provider.getCode(parsedItem.address)) !== "0x") {
+              parsedItem.isContract = true;
+            }
 
             return [...result, parsedItem];
           } catch (e) {
@@ -191,6 +192,8 @@ const AddressBook: NextPage = () => {
         },
         Promise.resolve([])
       );
+
+      console.log(mappedData);
 
       insertImportedAddresses(mappedData);
     } catch (e) {
@@ -343,8 +346,6 @@ const AddressBook: NextPage = () => {
 
   const streamsLoading =
     incomingStreamsQuery.isLoading || outgoingStreamsQuery.isLoading;
-
-  console.log(paginatedAddresses);
 
   return (
     <Container maxWidth="lg">
