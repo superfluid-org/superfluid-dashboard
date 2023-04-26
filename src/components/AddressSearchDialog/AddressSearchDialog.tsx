@@ -298,7 +298,6 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                   data-cy={"name-dialog-input"}
                   autoComplete="off"
                   fullWidth
-                  autoFocus
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Name (optional)"
                   value={name}
@@ -424,7 +423,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                 !Boolean(searchTermVisible) ||
                 (!ensData && !checksummedSearchedAddress)
               }
-              sx={{ width: 400 }}
+              fullWidth
               variant="contained"
               onClick={() => {
                 onSelectAddress({
