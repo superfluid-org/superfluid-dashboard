@@ -95,24 +95,26 @@ const NetworkSelect: FC<NetworkSelectProps> = ({
         )}
         MenuProps={MenuProps}
       >
-        {allNetworks.map((network) => (
-          <MenuItem
-            key={`${network.id}`}
-            value={network.slugName}
-            sx={{ justifyContent: "space-between" }}
-          >
-            <Stack direction="row" gap={1} alignItems="center">
-              <NetworkIcon size={20} network={network} />
-              <ListItemText primary={network.name} />
-            </Stack>
+        {allNetworks
+          .filter(({ testnet }) => !testnet)
+          .map((network) => (
+            <MenuItem
+              key={`${network.id}`}
+              value={network.slugName}
+              sx={{ justifyContent: "space-between" }}
+            >
+              <Stack direction="row" gap={1} alignItems="center">
+                <NetworkIcon size={20} network={network} />
+                <ListItemText primary={network.name} />
+              </Stack>
 
-            <Checkbox
-              checked={Boolean(
-                selectedNetworks.find((n) => n.id === network.id)
-              )}
-            />
-          </MenuItem>
-        ))}
+              <Checkbox
+                checked={Boolean(
+                  selectedNetworks.find((n) => n.id === network.id)
+                )}
+              />
+            </MenuItem>
+          ))}
       </Select>
     </FormControl>
   );
