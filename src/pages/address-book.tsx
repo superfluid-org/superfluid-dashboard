@@ -554,7 +554,7 @@ const AddressBook: NextPage = () => {
                       <TableCell width="150px" sx={{ pl: 10 }}>
                         Name
                       </TableCell>
-                      <TableCell width="130px">Address</TableCell>
+                      <TableCell width="145px">Address</TableCell>
                       <TableCell width="150px">Networks</TableCell>
                       <TableCell width="160px">Active Streams</TableCell>
                       <TableCell width="88px" />
@@ -637,7 +637,7 @@ const AddressBook: NextPage = () => {
                       <TableCell width="150px" sx={{ pl: 10 }}>
                         Name
                       </TableCell>
-                      <TableCell width="130px">Address</TableCell>
+                      <TableCell width="145px">Address</TableCell>
                       <TableCell width="150px">Networks</TableCell>
                       <TableCell width="160px">Active Streams</TableCell>
                       <TableCell width="88px" />

@@ -199,7 +199,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
               alignItems="center"
               justifyContent="space-between"
             >
-              {shortenHex(address, 6)}{" "}
+              <Typography variant="body1">{shortenHex(address, 6)} </Typography>
               <CopyIconBtn
                 IconButtonProps={{ size: "small" }}
                 copyText={address}
@@ -207,7 +207,11 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
             </Stack>
           </WideTooltip>
 
-          {ensName && <Typography variant="tooltip">{ensName}</Typography>}
+          {ensName && (
+            <Typography variant="tooltip" sx={{ fontSize: 12 }}>
+              {ensName}
+            </Typography>
+          )}
         </Stack>
       </TableCell>
 
