@@ -247,7 +247,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
         <Stack direction="column" gap={1}>
           <Stack>
             <Typography sx={{ m: 1 }} variant="h6">
-              {foundContracts.length > 0 ? "Contract " : ""} Address
+              {foundContracts.length > 0 ? "Contract " : "Wallet"} Address
             </Typography>
             <TextField
               data-cy={"address-dialog-input"}
