@@ -56,8 +56,8 @@ const AddressBook: NextPage = () => {
 
   const { address: accountAddress } = useAccount();
   const { network } = useExpectedNetwork();
-  const [page, setPage] = useState({ address: 0, contract: 0 });
-  const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [page, setPage] = useState({ wallet: 0, contract: 0 });
+  const [rowsPerPage, setRowsPerPage] = useState({ wallet: 25, contract: 25 });
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedAddresses, setSelectedAddresses] = useState<string[]>([]);
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -140,14 +140,20 @@ const AddressBook: NextPage = () => {
 
   // Pagination
 
-  const handleChangePage = (_e: unknown, newPage: number) => {
-    setPage((page) => ({ ...page, address: newPage }));
-  };
+  const handleChangePage =
+    (table: "wallet" | "contract") => (_e: unknown, newPage: number) => {
+      setPage((page) => ({ ...page, [table]: newPage }));
+    };
 
-  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage((page) => ({ ...page, address: 0 }));
-  };
+  const handleChangeRowsPerPage =
+    (table: "wallet" | "contract") =>
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setRowsPerPage((rowsPerPage) => ({
+        ...rowsPerPage,
+        [table]: parseInt(event.target.value, 10),
+      }));
+      setPage((page) => ({ ...page, address: 0 }));
+    };
 
   // Importing address book
 
@@ -284,17 +290,17 @@ const AddressBook: NextPage = () => {
   const paginatedAddresses = useMemo(
     () =>
       filteredAddresses.slice(
-        page.address * rowsPerPage,
-        (page.address + 1) * rowsPerPage
+        page.wallet * rowsPerPage.wallet,
+        (page.wallet + 1) * rowsPerPage.wallet
       ),
-    [page.address, rowsPerPage, filteredAddresses]
+    [page.wallet, rowsPerPage, filteredAddresses]
   );
 
   const paginatedContracts = useMemo(
     () =>
       filteredContracts.slice(
-        page.contract * rowsPerPage,
-        (page.contract + 1) * rowsPerPage
+        page.contract * rowsPerPage.contract,
+        (page.contract + 1) * rowsPerPage.contract
       ),
     [page.contract, rowsPerPage, filteredContracts]
   );
@@ -327,11 +333,12 @@ const AddressBook: NextPage = () => {
 
     // If all entries on the last page are removed then move one page back.
     if (
-      page.address > 0 &&
-      Math.ceil(filteredEntries.length / rowsPerPage) - 1 === page.address &&
+      page.wallet > 0 &&
+      Math.ceil(filteredEntries.length / rowsPerPage.wallet) - 1 ===
+        page.wallet &&
       selectedAddresses.length === paginatedAddresses.length
     ) {
-      setPage((page) => ({ ...page, address: page.address - 1 }));
+      setPage((page) => ({ ...page, address: page.wallet - 1 }));
     }
   }, [
     selectedAddresses,
@@ -581,15 +588,15 @@ const AddressBook: NextPage = () => {
               <TablePagination
                 rowsPerPageOptions={[5, 10, 25]}
                 component="div"
-                count={filteredEntries.length}
-                rowsPerPage={rowsPerPage}
-                page={page.address}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
+                count={filteredAddresses.length}
+                rowsPerPage={rowsPerPage.wallet}
+                page={page.wallet}
+                onPageChange={handleChangePage("wallet")}
+                onRowsPerPageChange={handleChangeRowsPerPage("wallet")}
                 sx={{
                   "> *": {
                     visibility:
-                      filteredEntries.length <= rowsPerPage
+                      filteredEntries.length <= rowsPerPage.wallet
                         ? "hidden"
                         : "visible",
                   },
@@ -664,15 +671,15 @@ const AddressBook: NextPage = () => {
               <TablePagination
                 rowsPerPageOptions={[5, 10, 25]}
                 component="div"
-                count={filteredEntries.length}
-                rowsPerPage={rowsPerPage}
-                page={page.address}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
+                count={filteredContracts.length}
+                rowsPerPage={rowsPerPage.contract}
+                page={page.contract}
+                onPageChange={handleChangePage("contract")}
+                onRowsPerPageChange={handleChangeRowsPerPage("contract")}
                 sx={{
                   "> *": {
                     visibility:
-                      filteredEntries.length <= rowsPerPage
+                      filteredEntries.length <= rowsPerPage.contract
                         ? "hidden"
                         : "visible",
                   },
