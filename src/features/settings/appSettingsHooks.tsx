@@ -12,5 +12,6 @@ export const useAppCurrency = (): Currency => {
 };
 
 export const useAppLastSuperfluidRunnerCosmetics = (): Number => {
-  return useMemo(() => useSetting("lastSuperfluidRunnerCosmetics") as Number, [useSetting("lastSuperfluidRunnerCosmetics")]);
+  const lastSuperfluidRunnerCosmetics = useSetting("lastSuperfluidRunnerCosmetics");
+  return useMemo(() => lastSuperfluidRunnerCosmetics as Number, [lastSuperfluidRunnerCosmetics]);
 };
