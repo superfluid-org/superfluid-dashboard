@@ -416,7 +416,9 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
             <LoadingButton
               loading={isContractDetectionLoading}
               disabled={
-                isContractDetectionLoading || !Boolean(searchTermVisible)
+                isContractDetectionLoading ||
+                !Boolean(searchTermVisible) ||
+                (!ensData && !checksummedSearchedAddress)
               }
               sx={{ width: 400 }}
               variant="contained"
