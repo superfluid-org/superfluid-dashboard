@@ -35,7 +35,6 @@ import {
   addressBookSelectors,
 } from "../../features/addressBook/addressBook.slice";
 import ResponsiveDialog from "../../features/common/ResponsiveDialog";
-import { ensApi } from "../../features/ens/ensApi.slice";
 import { useAppSelector } from "../../features/redux/store";
 import useAddressName from "../../hooks/useAddressName";
 import { getAddress, isAddress } from "../../utils/memoizedEthersUtils";
@@ -44,6 +43,7 @@ import AddressAvatar from "../Avatar/AddressAvatar";
 import { wagmiRpcProvider } from "../../features/wallet/WagmiManager";
 import { allNetworks, Network } from "../../features/network/networks";
 import NetworkSelect from "../NetworkSelect/NetworkSelect";
+import { LoadingButton } from "@mui/lab";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
@@ -318,7 +318,8 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
           </List>
         )}
         <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
-          <Button
+          <LoadingButton
+            loading={isContractDetectionLoading}
             disabled={isContractDetectionLoading || !Boolean(searchTermVisible)}
             sx={{ width: 400 }}
             variant="contained"
@@ -336,7 +337,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
             }}
           >
             Save
-          </Button>
+          </LoadingButton>
         </Box>
       </DialogContent>
       {showSelected && addresses.length > 0 && (
