@@ -418,7 +418,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
         {mode === "addressBook" && (
           <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
             <LoadingButton
-              loading={isContractDetectionLoading}
+              loading={isContractDetectionLoading || ensQuery.isFetching}
               disabled={
                 isContractDetectionLoading ||
                 !Boolean(searchTermVisible) ||
