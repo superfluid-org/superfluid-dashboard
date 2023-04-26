@@ -50,7 +50,7 @@ import NetworkSelect from "../NetworkSelect/NetworkSelect";
 import { LoadingButton } from "@mui/lab";
 import { ensApi } from "../../features/ens/ensApi.slice";
 import NetworkIcon from "../../features/network/NetworkIcon";
-import { useChainId } from "wagmi";
+import { useChainId, useProvider } from "wagmi";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
