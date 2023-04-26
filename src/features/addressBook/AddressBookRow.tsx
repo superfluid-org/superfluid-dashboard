@@ -32,7 +32,11 @@ import shortenHex from "../../utils/shortenHex";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { useAppDispatch } from "../redux/store";
 import { updateAddressBookEntry } from "./addressBook.slice";
-import { allNetworks, findNetworkOrThrow } from "../network/networks";
+import {
+  allNetworks,
+  findNetworkOrThrow,
+  tryFindNetwork,
+} from "../network/networks";
 import NetworkIcon from "../network/NetworkIcon";
 import zIndex from "@mui/material/styles/zIndex";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
@@ -194,14 +198,19 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
         <Box sx={{ overflow: "auto", scrollbarWidth: "none" }}>
           {networkIds?.length ? (
             <Stack direction="row">
-              {networkIds.map((networkId, i) => (
-                <NetworkIcon
-                  sx={{ transform: `translateX(${-i * 10}px)` }}
-                  size={24}
-                  key={`icon-${networkId}`}
-                  network={findNetworkOrThrow(allNetworks, networkId)}
-                />
-              ))}
+              {networkIds.map((networkId, i) => {
+                const network = tryFindNetwork(allNetworks, networkId);
+                return network ? (
+                  <NetworkIcon
+                    sx={{ transform: `translateX(${-i * 10}px)` }}
+                    size={24}
+                    key={`icon-${networkId}`}
+                    network={network}
+                  />
+                ) : (
+                  <></>
+                );
+              })}
             </Stack>
           ) : (
             "-"
