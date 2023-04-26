@@ -394,10 +394,14 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                       associatedNetworks?.includes(chainId)
                   )
                   .map(({ address, name, associatedNetworks }) => (
-                    <Stack direction="row" alignItems="center" pr={2}>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      pr={2}
+                      key={address}
+                    >
                       <AddressListItem
                         dataCy={"address-book-entry"}
-                        key={address}
                         selected={addresses.includes(address)}
                         disabled={disabledAddresses.includes(address)}
                         address={address}
