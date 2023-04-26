@@ -423,7 +423,9 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
               onClick={() => {
                 onSelectAddress({
                   address:
-                    foundContracts[0]?.address ?? checksummedSearchedAddress,
+                    foundContracts[0]?.address ??
+                    ensData?.address ??
+                    checksummedSearchedAddress,
                   associatedNetworks:
                     foundContracts.length > 0
                       ? foundContracts.map(({ network }) => network.id)
