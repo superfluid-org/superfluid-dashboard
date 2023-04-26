@@ -363,7 +363,7 @@ const AddressBook: NextPage = () => {
         onSelectAddress={onAddAddress}
         showAddressBook={false}
         disableAutoselect
-        showAddInputs
+        mode="addressBook"
       />
 
       <Stack gap={isBelowMd ? 2.5 : 4.5}>
@@ -555,7 +555,7 @@ const AddressBook: NextPage = () => {
                         Name
                       </TableCell>
                       <TableCell width="100px">Address</TableCell>
-                      <TableCell width="100px">Networks</TableCell>
+                      <TableCell width="150px">Networks</TableCell>
                       <TableCell width="160px">Active Streams</TableCell>
                       <TableCell width="88px" />
                     </TableRow>
@@ -638,7 +638,7 @@ const AddressBook: NextPage = () => {
                         Name
                       </TableCell>
                       <TableCell width="100px">Address</TableCell>
-                      <TableCell width="100px">Networks</TableCell>
+                      <TableCell width="150px">Networks</TableCell>
                       <TableCell width="160px">Active Streams</TableCell>
                       <TableCell width="88px" />
                     </TableRow>

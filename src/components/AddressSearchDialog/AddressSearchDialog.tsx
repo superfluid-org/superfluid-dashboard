@@ -120,7 +120,7 @@ export type AddressSearchDialogProps = {
   disableAutoselect?: boolean;
   disabledAddresses?: Address[];
   showSelected?: boolean;
-  showAddInputs?: boolean;
+  mode?: "addressBook" | "addressSearch";
 };
 
 export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
@@ -135,7 +135,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
   disableAutoselect = false,
   disabledAddresses = [],
   showSelected = false,
-  showAddInputs = false,
+  mode = "addressSearch",
 }) => {
   const theme = useTheme();
 
@@ -178,7 +178,10 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
 
   const ensQuery = ensApi.useResolveNameQuery(searchTermDebounced);
   const ensData = ensQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!ensQuery.data` means that the data is not undefined nor null.
-  const showEns = !!searchTermDebounced && !isAddress(searchTermDebounced);
+  const showEns =
+    !!searchTermDebounced &&
+    !isAddress(searchTermDebounced) &&
+    mode === "addressSearch";
 
   useEffect(() => {
     const effect = async () => {
@@ -268,7 +271,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
               value={searchTermVisible}
             />
           </Stack>
-          {showAddInputs && (
+          {mode === "addressBook" && (
             <>
               <Stack>
                 <Typography sx={{ m: 1 }} variant="h6">
@@ -342,6 +345,23 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                 )}
               </>
             ) : null}
+            {mode === "addressSearch" && checksummedSearchedAddress && (
+              <>
+                <ListSubheader sx={{ px: 3 }}>Search</ListSubheader>
+                <AddressListItem
+                  dataCy={"search-entry"}
+                  key={checksummedSearchedAddress}
+                  selected={addresses.includes(checksummedSearchedAddress)}
+                  disabled={disabledAddresses.includes(
+                    checksummedSearchedAddress
+                  )}
+                  address={checksummedSearchedAddress}
+                  onClick={() =>
+                    onSelectAddress({ address: checksummedSearchedAddress })
+                  }
+                />
+              </>
+            )}
             {showAddressBook && (
               <>
                 <ListSubheader sx={{ px: 3 }}>Address Book</ListSubheader>
@@ -365,7 +385,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
             )}
           </List>
         )}
-        {showAddInputs && (
+        {mode === "addressBook" && (
           <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
             <LoadingButton
               loading={isContractDetectionLoading}
@@ -452,7 +472,7 @@ export default memo(function AddressSearchDialog({
   disableAutoselect,
   disabledAddresses,
   showSelected,
-  showAddInputs,
+  mode,
 }: AddressSearchDialogProps) {
   const handleClose = useCallback(() => {
     if (onClose) onClose();
@@ -474,7 +494,7 @@ export default memo(function AddressSearchDialog({
         showAddressBook={showAddressBook}
         disableAutoselect={disableAutoselect}
         disabledAddresses={disabledAddresses}
-        showAddInputs={showAddInputs}
+        mode={mode}
         showSelected={showSelected}
         onSelectAddress={onSelectAddress}
         onClose={onClose}
