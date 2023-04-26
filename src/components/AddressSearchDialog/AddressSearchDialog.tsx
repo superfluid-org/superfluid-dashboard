@@ -41,10 +41,16 @@ import { getAddress, isAddress } from "../../utils/memoizedEthersUtils";
 import shortenHex from "../../utils/shortenHex";
 import AddressAvatar from "../Avatar/AddressAvatar";
 import { wagmiRpcProvider } from "../../features/wallet/WagmiManager";
-import { allNetworks, Network } from "../../features/network/networks";
+import {
+  allNetworks,
+  Network,
+  tryFindNetwork,
+} from "../../features/network/networks";
 import NetworkSelect from "../NetworkSelect/NetworkSelect";
 import { LoadingButton } from "@mui/lab";
 import { ensApi } from "../../features/ens/ensApi.slice";
+import NetworkIcon from "../../features/network/NetworkIcon";
+import { useChainId } from "wagmi";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
@@ -57,6 +63,7 @@ interface AddressListItemProps {
   onClick: () => void;
   showRemove?: boolean;
   displayAvatar?: boolean;
+  networkIds?: number[];
 }
 
 export const AddressListItem: FC<AddressListItemProps> = ({
@@ -68,6 +75,7 @@ export const AddressListItem: FC<AddressListItemProps> = ({
   namePlaceholder,
   showRemove = false,
   displayAvatar = true,
+  networkIds,
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -104,6 +112,13 @@ export const AddressListItem: FC<AddressListItemProps> = ({
           <CloseRoundedIcon sx={{ color: theme.palette.text.secondary }} />
         </IconButton>
       )}
+      {networkIds?.map((network) => {
+        const listItemNetwork = tryFindNetwork(allNetworks, network);
+
+        return listItemNetwork ? (
+          <NetworkIcon network={listItemNetwork} size={28} />
+        ) : null;
+      })}
     </ListItemButton>
   );
 };
@@ -138,6 +153,8 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
   mode = "addressSearch",
 }) => {
   const theme = useTheme();
+
+  const chainId = useChainId();
 
   const [searchTermVisible, setSearchTermVisible] = useState("");
   const [selectedNetworks, setSelectedNetworks] = useState<Network[]>([]);
@@ -370,17 +387,26 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                     <ListItemText translate="yes" primary="No results" />
                   </ListItem>
                 )}
-                {addressBookResults.map(({ address, name }) => (
-                  <AddressListItem
-                    dataCy={"address-book-entry"}
-                    key={address}
-                    selected={addresses.includes(address)}
-                    disabled={disabledAddresses.includes(address)}
-                    address={address}
-                    onClick={() => onSelectAddress({ address })}
-                    namePlaceholder={name}
-                  />
-                ))}
+                {addressBookResults
+                  .filter(
+                    ({ associatedNetworks }) =>
+                      !associatedNetworks ||
+                      associatedNetworks?.includes(chainId)
+                  )
+                  .map(({ address, name, associatedNetworks }) => (
+                    <Stack direction="row" alignItems="center" pr={2}>
+                      <AddressListItem
+                        dataCy={"address-book-entry"}
+                        key={address}
+                        selected={addresses.includes(address)}
+                        disabled={disabledAddresses.includes(address)}
+                        address={address}
+                        onClick={() => onSelectAddress({ address })}
+                        namePlaceholder={name}
+                        networkIds={associatedNetworks}
+                      />
+                    </Stack>
+                  ))}
               </>
             )}
           </List>
