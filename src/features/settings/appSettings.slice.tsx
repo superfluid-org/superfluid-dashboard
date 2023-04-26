@@ -5,9 +5,10 @@ import { RootState } from "../redux/store";
 
 export interface AppSettingsState {
   currencyCode: CurrencyCode;
+  lastSuperfluidRunnerCosmetics: Number
 }
 
-const initialState: AppSettingsState = { currencyCode: CurrencyCode.USD };
+const initialState: AppSettingsState = { currencyCode: CurrencyCode.USD, lastSuperfluidRunnerCosmetics: 1 };
 
 const appSettingsSlice = createSlice({
   name: "appSettings",

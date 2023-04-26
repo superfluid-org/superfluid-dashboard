@@ -26,13 +26,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC, useEffect, useMemo, useState } from "react";
-import { useAccount } from "wagmi";
 import AddressAvatar from "../../../components/Avatar/AddressAvatar";
 import CopyTooltip from "../../../components/CopyTooltip/CopyTooltip";
 import SEO from "../../../components/SEO/SEO";
 import withStaticSEO from "../../../components/SEO/withStaticSEO";
-import Minigame from "../../../features/minigame/MinigameContainer";
-import { useMinigame } from "../../../features/minigame/MinigameContext";
 import NetworkIcon from "../../../features/network/NetworkIcon";
 import {
   allNetworks,
@@ -318,10 +315,6 @@ const StreamPageContent: FC<{
   const { visibleAddress } = useVisibleAddress();
   const navigateBack = useNavigateBack();
 
-  const [isPlaying, setIsPlaying] = useState(false);
-  const { isAllowedToPlay } = useMinigame();
-  const onPlay = () => (isAllowedToPlay ? setIsPlaying(true) : void 0);
-
   const [senderAddress = "", receiverAddress, tokenAddress = ""] =
     streamId.split("-");
 
@@ -481,11 +474,7 @@ const StreamPageContent: FC<{
   const isOutgoing = visibleAddress?.toLowerCase() === sender.toLowerCase();
 
   // TODO: This container max width should be configured in theme. Something between small and medium
-  return (
-    <SEO ogUrl={urlToShare}>
-      {isAllowedToPlay && isPlaying ? (
-        <Minigame />
-      ) : (
+  return <SEO ogUrl={urlToShare}>
         <Container maxWidth="lg">
           <Stack
             alignItems="center"
@@ -660,10 +649,9 @@ const StreamPageContent: FC<{
                   sx={{
                     mx: -0.25,
                     height: isBelowMd ? 24 : 48,
-                    zIndex: isAllowedToPlay ? 1 : -1,
-                    cursor: isAllowedToPlay ? "pointer" : "auto",
+                    zIndex:  -1,
+                    cursor: "auto",
                   }}
-                  onClick={onPlay}
                 >
                   <Image
                     unoptimized
@@ -918,9 +906,7 @@ const StreamPageContent: FC<{
             />
           </Stack>
         </Container>
-      )}
     </SEO>
-  );
 };
 
 export default withStaticSEO(
