@@ -549,10 +549,11 @@ const AddressBook: NextPage = () => {
                 {!isBelowMd && (
                   <TableHead>
                     <TableRow>
-                      <TableCell sx={{ pl: 10 }}>Name</TableCell>
-                      <TableCell width="200px">Networks</TableCell>
-                      <TableCell width="200px">ENS Name</TableCell>
-                      <TableCell width="200px">Address</TableCell>
+                      <TableCell width="150px" sx={{ pl: 10 }}>
+                        Name
+                      </TableCell>
+                      <TableCell width="100px">Address</TableCell>
+                      <TableCell width="100px">Networks</TableCell>
                       <TableCell width="160px">Active Streams</TableCell>
                       <TableCell width="88px" />
                     </TableRow>
@@ -631,10 +632,11 @@ const AddressBook: NextPage = () => {
                 {!isBelowMd && (
                   <TableHead>
                     <TableRow>
-                      <TableCell sx={{ pl: 10 }}>Name</TableCell>
-                      <TableCell width="200px">Networks</TableCell>
-                      <TableCell width="200px">ENS Name</TableCell>
-                      <TableCell width="200px">Address</TableCell>
+                      <TableCell width="150px" sx={{ pl: 10 }}>
+                        Name
+                      </TableCell>
+                      <TableCell width="100px">Address</TableCell>
+                      <TableCell width="100px">Networks</TableCell>
                       <TableCell width="160px">Active Streams</TableCell>
                       <TableCell width="88px" />
                     </TableRow>

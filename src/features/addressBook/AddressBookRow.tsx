@@ -181,6 +181,15 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
         </Stack>
       </TableCell>
 
+      <TableCell data-cy={"actual-address"}>
+        <Stack direction="column">
+          <AddressCopyTooltip address={address}>
+            <span>{shortenHex(address, 6)}</span>
+          </AddressCopyTooltip>
+          {ensName && <Typography variant="tooltip">{ensName}</Typography>}
+        </Stack>
+      </TableCell>
+
       <TableCell>
         <Box sx={{ overflow: "auto", scrollbarWidth: "none" }}>
           {networkIds?.length ? (
@@ -200,13 +209,6 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
         </Box>
       </TableCell>
 
-      <TableCell>{ensName || "-"}</TableCell>
-
-      <TableCell data-cy={"actual-address"}>
-        <AddressCopyTooltip address={address}>
-          <span>{shortenHex(address, 6)}</span>
-        </AddressCopyTooltip>
-      </TableCell>
       <TableCell data-cy={"active-streams"}>
         {!!visibleAddress ? (
           <>
