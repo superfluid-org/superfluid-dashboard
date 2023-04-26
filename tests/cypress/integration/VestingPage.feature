@@ -117,13 +117,14 @@ Feature: Vesting page test cases
     And Preview of the vesting schedule is shown correctly
     And User creates the vesting schedule
     And Transaction rejected error is shown
-#   And The first vesting row in the table shows "Creating..." pending transaction status
-#   And The first vesting row in the table shows "Syncing..." pending transaction status
-#   And The restore button is not visible for the last transaction
-#   And The newly created vesting schedule is visible in the table
 
+  #   And The first vesting row in the table shows "Creating..." pending transaction status
+  #   And The first vesting row in the table shows "Syncing..." pending transaction status
+  #   And The restore button is not visible for the last transaction
+  #   And The newly created vesting schedule is visible in the table
   Scenario: Deleting a vesting schedule
     Given HDWallet transactions are rejected
+
     Given Transactional account john is connected to the dashboard on goerli
     And User clicks on the "vesting" navigation button
     And User opens the last vesting schedule they have created
@@ -148,11 +149,10 @@ Feature: Vesting page test cases
     And User opens the last vesting schedule they have created
     And Vesting details page is shown correctly for the created schedule
 
-#  Scenario: Vesting schedules only available on Mainnet,Polygon,BNB and Goerli
-#    Given Transactional account john is connected to the dashboard on polygon-mumbai
-#    Then User sees network not supported screen in the vesting page
-#    And Mainnet network link is disabled
-
+  #  Scenario: Vesting schedules only available on Mainnet,Polygon,BNB and Goerli
+  #    Given Transactional account john is connected to the dashboard on polygon-mumbai
+  #    Then User sees network not supported screen in the vesting page
+  #    And Mainnet network link is disabled
   Scenario: Network not supported screen in vesting page
     Given Transactional account john is connected to the dashboard on avalanche-fuji
     And User clicks on the "vesting" navigation button
@@ -171,9 +171,11 @@ Feature: Vesting page test cases
   @mocked
   Scenario Outline: Vesting schedule statuses - <status>
     Given Vesting schedule status is mocked to <status>
+
     Given Transactional account john is connected to the dashboard on goerli
     And User clicks on the "vesting" navigation button
     Then The first vesting row in the table shows <status>
+
     Examples:
       | status         |
       | Transfer Error |
@@ -189,15 +191,17 @@ Feature: Vesting page test cases
   @mocked
   Scenario Outline: Schedule progress bar showing correctly for a scheduled vesting
     Given Vesting schedule progress is mocked to <state>
+
     Given Transactional account john is connected to the dashboard on goerli
     And User clicks on the "vesting" navigation button
     And User opens the last vesting schedule they have created
     Then The schedule bar is correctly shown when it is in <state>
+
     Examples:
       | state           |
       | Scheduled       |
-      | Vesting Started   |
-      | Cliff vested     |
+      | Vesting Started |
+      | Cliff vested    |
       | Vesting ended   |
 
   Scenario: Vesting schedule aggregate stats
@@ -211,25 +215,24 @@ Feature: Vesting page test cases
 
   Scenario: Token approval shown correctly when the schedule has ended
     Given "Dashboard Page" is open without connecting a wallet
+
     Given User uses view mode to look at "accountWithLotsOfData"
     And User clicks on the "vesting" navigation button
     And "StIbAlluoUSD" permissions icons are all "green"
     And User opens "StIbAlluoUSD" permission table row
     Then All current and recommended permissions are correctly showed for "StIbAlluoUSD"
 
-   Scenario: Vesting schedule allowlist message - Try out on Mumbai testnet button
-      Given Transactional account alice is connected to the dashboard on polygon
-      And User clicks on the "vesting" navigation button
-      And User clicks on the create vesting schedule button
-      Then Vesting allowlist message is shown
-      And User tries out vesting on Mumbai testnet
-      And User inputs "3" as the total vested amount
-      And User inputs "4" "year" as the total vesting period
+  Scenario: Vesting schedule allowlist message - Try out on Mumbai testnet button
+    Given Transactional account alice is connected to the dashboard on polygon
+    And User clicks on the "vesting" navigation button
+    And User clicks on the create vesting schedule button
+    Then Vesting allowlist message is shown
+    And User tries out vesting on Mumbai testnet
+    And User inputs "3" as the total vested amount
+    And User inputs "4" "year" as the total vesting period
 
   Scenario: Vesting schedule allowlist message for a user who is not allowlisted
     Given Transactional account alice is connected to the dashboard on polygon
     And User clicks on the "vesting" navigation button
     And User clicks on the create vesting schedule button
     Then Vesting allowlist message is shown
-
-

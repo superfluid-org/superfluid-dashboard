@@ -1,5 +1,5 @@
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
+import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import {
   ListItem,
   ListItemAvatar,
@@ -64,7 +64,7 @@ const TransferActivityRow: FC<TransferActivityRowProps> = ({
     <TableRow data-cy={`${network.slugName}-row`}>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ActivityIcon icon={isOutgoing ? ArrowForwardIcon : ArrowBackIcon} />
+          <ActivityIcon icon={isOutgoing ? ArrowForwardRoundedIcon : ArrowBackRoundedIcon} />
           <ListItemText
             data-cy={"activity"}
             primary={isOutgoing ? "Send Transfer" : "Receive Transfer"}

@@ -19,7 +19,11 @@
     "date-fns": "^2.29.3",
     "ethereumjs-wallet": "^1.0.2",
     "ethers": "^5.7.2",
+    "husky": "^8.0.0",
+    "lint-staged": "^13.2.1",
     "lodash": "^4.17.21",
+    "prettier": "^2.8.7",
+    "prettier-plugin-gherkin": "^1.1.1",
     "stream-browserify": "^3.0.0",
     "ts-loader": "^9.4.2",
     "typescript": "^4.9.5",
@@ -30,5 +34,14 @@
     "nonGlobalStepDefinitions": false,
     "omitFiltered": true,
     "filterSpecs": true
+  },
+  "scripts": {
+    "lint:check-no-focused-tests": "grep -FR @only cypress/integration || { echo 'No test is focused.';exit 0; } && { echo '✘ You have focused tests.'; exit 1; }",
+    "prepare": "cd .. && husky install tests/.husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,feature,json,js}": [
+      "prettier --write"
+    ]
   }
 }

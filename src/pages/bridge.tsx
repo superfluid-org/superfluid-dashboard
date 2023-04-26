@@ -122,7 +122,7 @@ const Bridge: NextPage = () => {
           letterSpacing: "0.17px",
         },
       }}
-    >
+    > 
       <LiFiWidgetDynamic config={widgetConfig} />
     </Container>
   );

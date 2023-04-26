@@ -4,7 +4,8 @@ Feature: Dashboard Page test cases
     Given "Dashboard Page" is open without connecting a wallet
     Then Dashboard page is open when wallet of the user is not connected
 
-  @broken @skip
+  @broken
+  @skip
   Scenario: Dashboard page showing correct wallet balances for account with no streams
     Given "Dashboard Page" is open with "staticBalanceAccount" connected on "polygon"
     And User connects their wallet to the dashboard
@@ -56,8 +57,7 @@ Feature: Dashboard Page test cases
     And User switches to the next page for the "xDAIx" token and new results are shown
 
   Scenario: View mode warnings in dashboard page
-    Given "Dashboard Page" is open without connecting a wallet
-    And User uses view mode to look at "ongoingStreamAccount"
+    Given "Dashboard Page" is open using view mode to look at "ongoingStreamAccount"
     And User waits for balances to load
     And User clicks on "polygon" "MATICx" row
     Then There are no cancel or modify buttons in the last stream row

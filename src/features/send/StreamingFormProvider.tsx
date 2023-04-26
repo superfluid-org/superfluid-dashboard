@@ -14,6 +14,7 @@ import { formRestorationOptions } from "../transactionRestoration/transactionRes
 import { calculateTotalAmountWei, UnitOfTime } from "./FlowRateInput";
 import { SCHEDULE_START_END_MIN_DIFF_S } from "./SendCard";
 import useCalculateBufferInfo from "./useCalculateBufferInfo";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 export type ValidStreamingForm = {
   data: {
@@ -64,7 +65,7 @@ export interface StreamingFormProviderProps {
 const StreamingFormProvider: FC<
   PropsWithChildren<StreamingFormProviderProps>
 > = ({ children, initialFormValues }) => {
-  const { address: accountAddress } = useAccount();
+  const { visibleAddress } = useVisibleAddress();
   const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryActiveFlow] = rpcApi.useLazyGetActiveFlowQuery();
@@ -156,19 +157,19 @@ const StreamingFormProvider: FC<
           validForm.data;
 
         if (
-          accountAddress &&
-          accountAddress.toLowerCase() === receiverAddress.toLowerCase()
+          visibleAddress &&
+          visibleAddress.toLowerCase() === receiverAddress.toLowerCase()
         ) {
           handleHigherOrderValidationError({
             message: `You can't stream to yourself.`,
           });
         }
 
-        if (accountAddress && tokenAddress && receiverAddress) {
+        if (visibleAddress && tokenAddress && receiverAddress) {
           const [realtimeBalance, activeFlow] = await Promise.all([
             queryRealtimeBalance(
               {
-                accountAddress,
+                accountAddress: visibleAddress,
                 chainId: network.id,
                 tokenAddress: tokenAddress,
               },
@@ -179,7 +180,7 @@ const StreamingFormProvider: FC<
                 tokenAddress,
                 receiverAddress,
                 chainId: network.id,
-                senderAddress: accountAddress,
+                senderAddress: visibleAddress,
               },
               true
             ).unwrap(),
@@ -234,7 +235,7 @@ const StreamingFormProvider: FC<
 
         return true;
       }),
-    [network, accountAddress, calculateBufferInfo]
+    [network, visibleAddress, calculateBufferInfo]
   );
 
   const formMethods = useForm<PartialStreamingForm>({
@@ -312,7 +313,7 @@ const StreamingFormProvider: FC<
     if (formState.isDirty) {
       trigger();
     }
-  }, [accountAddress]);
+  }, [visibleAddress]);
 
   return isInitialized ? (
     <FormProvider {...formMethods}>{children}</FormProvider>

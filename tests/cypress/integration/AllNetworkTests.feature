@@ -2,14 +2,13 @@
 Feature: Test cases that run indefinitely on all supported networks
 
   Scenario Outline: Smoke testing RPC and Graph in Wrap page on <network>
-    Given "Dashboard Page" is open without connecting a wallet
-    Given User uses view mode to look at "staticBalanceAccount"
-    And User clicks on the "wrap-unwrap" navigation button
+    Given "Wrap Page" is open using view mode to look at "staticBalanceAccount"
     And User changes their network to "<network>"
     Then The native token "<token>" balance for "staticBalanceAccount" on "<network>" is shown under the token selection button
     And User opens the token selection in the wrap page
     And The could not find any tokens message is not shown
     Then The native token "<token>" balance for "staticBalanceAccount" on "<network>" in the token list
+
     Examples:
       | network        | token |
       | goerli         | ETH   |
@@ -21,11 +20,11 @@ Feature: Test cases that run indefinitely on all supported networks
       | arbitrum-one   | ETH   |
       | avalanche      | AVAX  |
       | bsc            | BNB   |
-      | celo            | CELO   |
-
+      | celo           | CELO  |
 
   Scenario Outline: Superfluid RPCS are not behind on <network>
     Given Superfluid RPCs are not more then 10 minutes behind on <network>
+
     Examples:
       | network        |
       | goerli         |
@@ -41,6 +40,7 @@ Feature: Test cases that run indefinitely on all supported networks
 
   Scenario Outline: The graph is not behind on <network>
     Given The graph is not more then 10 minutes behind on <network>
+
     Examples:
       | network        |
       | goerli         |

@@ -44,7 +44,6 @@ Feature: Token page test cases
     And User clicks on the unwrap button in the token page
     Then "fDAIx" is selected as the token to unwrap
 
-
   Scenario: Distributions table no data message
     Given "Dashboard Page" is open without connecting a wallet
     And User uses view mode to look at "staticBalanceAccount"

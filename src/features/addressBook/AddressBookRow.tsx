@@ -35,6 +35,7 @@ import { updateAddressBookEntry } from "./addressBook.slice";
 import { allNetworks, findNetworkOrThrow } from "../network/networks";
 import NetworkIcon from "../network/NetworkIcon";
 import zIndex from "@mui/material/styles/zIndex";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 interface AddressBookRowProps {
   address: Address;
@@ -61,7 +62,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  const { address: currentAccountAddress } = useAccount();
+  const { visibleAddress } = useVisibleAddress();
 
   const [editableName, setEditableName] = useState(name);
   const [isEditing, setIsEditing] = useState(false);
@@ -207,7 +208,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
         </AddressCopyTooltip>
       </TableCell>
       <TableCell data-cy={"active-streams"}>
-        {!!currentAccountAddress ? (
+        {!!visibleAddress ? (
           <>
             {streamsLoading ? <Skeleton width="30px" /> : activeStreams.length}
           </>
