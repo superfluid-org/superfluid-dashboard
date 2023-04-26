@@ -112,13 +112,6 @@ export const AddressListItem: FC<AddressListItemProps> = ({
           <CloseRoundedIcon sx={{ color: theme.palette.text.secondary }} />
         </IconButton>
       )}
-      {networkIds?.map((network) => {
-        const listItemNetwork = tryFindNetwork(allNetworks, network);
-
-        return listItemNetwork ? (
-          <NetworkIcon network={listItemNetwork} size={28} />
-        ) : null;
-      })}
     </ListItemButton>
   );
 };
