@@ -44,6 +44,7 @@ import { wagmiRpcProvider } from "../../features/wallet/WagmiManager";
 import { allNetworks, Network } from "../../features/network/networks";
 import NetworkSelect from "../NetworkSelect/NetworkSelect";
 import { LoadingButton } from "@mui/lab";
+import { ensApi } from "../../features/ens/ensApi.slice";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
@@ -119,6 +120,7 @@ export type AddressSearchDialogProps = {
   disableAutoselect?: boolean;
   disabledAddresses?: Address[];
   showSelected?: boolean;
+  showAddInputs?: boolean;
 };
 
 export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
@@ -133,6 +135,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
   disableAutoselect = false,
   disabledAddresses = [],
   showSelected = false,
+  showAddInputs = false,
 }) => {
   const theme = useTheme();
 
@@ -172,6 +175,10 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
       setSearchTermDebounced,
     ]
   );
+
+  const ensQuery = ensApi.useResolveNameQuery(searchTermDebounced);
+  const ensData = ensQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!ensQuery.data` means that the data is not undefined nor null.
+  const showEns = !!searchTermDebounced && !isAddress(searchTermDebounced);
 
   useEffect(() => {
     const effect = async () => {
@@ -226,6 +233,8 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
     return null;
   }, [searchTermDebounced]);
 
+  const searchSynced = searchTermDebounced === searchTermVisible.trim();
+
   return (
     <>
       <DialogTitle sx={{ p: 3 }}>
@@ -259,34 +268,38 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
               value={searchTermVisible}
             />
           </Stack>
-          <Stack>
-            <Typography sx={{ m: 1 }} variant="h6">
-              Name
-            </Typography>
-            <TextField
-              data-cy={"name-dialog-input"}
-              autoComplete="off"
-              fullWidth
-              autoFocus
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Name (optional)"
-              value={name}
-            />
-          </Stack>
-          <Stack>
-            <Typography sx={{ m: 1 }} variant="h6">
-              Network
-            </Typography>
-            <NetworkSelect
-              selectedNetworks={
-                foundContracts.length === 0
-                  ? selectedNetworks
-                  : foundContracts.map(({ network }) => network)
-              }
-              onSelect={setSelectedNetworks}
-              readonly={foundContracts.length > 0}
-            />
-          </Stack>
+          {showAddInputs && (
+            <>
+              <Stack>
+                <Typography sx={{ m: 1 }} variant="h6">
+                  Name
+                </Typography>
+                <TextField
+                  data-cy={"name-dialog-input"}
+                  autoComplete="off"
+                  fullWidth
+                  autoFocus
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Name (optional)"
+                  value={name}
+                />
+              </Stack>
+              <Stack>
+                <Typography sx={{ m: 1 }} variant="h6">
+                  Network
+                </Typography>
+                <NetworkSelect
+                  selectedNetworks={
+                    foundContracts.length === 0
+                      ? selectedNetworks
+                      : foundContracts.map(({ network }) => network)
+                  }
+                  onSelect={setSelectedNetworks}
+                  readonly={foundContracts.length > 0}
+                />
+              </Stack>
+            </>
+          )}
         </Stack>
       </DialogTitle>
       <DialogContent dividers={false} sx={{ p: 0 }}>
@@ -294,6 +307,41 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
           index
         ) : (
           <List sx={{ pt: 0, pb: 0 }}>
+            {showEns ? (
+              <>
+                <ListSubheader sx={{ px: 3 }}>ENS</ListSubheader>
+                {(ensQuery.isFetching || !searchSynced) && (
+                  <ListItem sx={LIST_ITEM_STYLE}>
+                    <ListItemText translate="yes" primary="Loading..." />
+                  </ListItem>
+                )}
+                {ensQuery.isError && (
+                  <ListItem sx={LIST_ITEM_STYLE}>
+                    <ListItemText translate="yes" primary="Error" />
+                  </ListItem>
+                )}
+                {!ensQuery.isLoading && !ensQuery.isFetching && searchSynced && (
+                  <>
+                    {!!ensData ? (
+                      <AddressListItem
+                        dataCy={"ens-entry"}
+                        selected={addresses.includes(ensData.address)}
+                        disabled={disabledAddresses.includes(ensData.address)}
+                        address={ensData.address}
+                        onClick={() =>
+                          onSelectAddress({ address: ensData.address })
+                        }
+                        namePlaceholder={ensData.name}
+                      />
+                    ) : (
+                      <ListItem sx={LIST_ITEM_STYLE}>
+                        <ListItemText translate="yes" primary="No results" />
+                      </ListItem>
+                    )}
+                  </>
+                )}
+              </>
+            ) : null}
             {showAddressBook && (
               <>
                 <ListSubheader sx={{ px: 3 }}>Address Book</ListSubheader>
@@ -317,28 +365,32 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
             )}
           </List>
         )}
-        <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
-          <LoadingButton
-            loading={isContractDetectionLoading}
-            disabled={isContractDetectionLoading || !Boolean(searchTermVisible)}
-            sx={{ width: 400 }}
-            variant="contained"
-            onClick={() => {
-              onSelectAddress({
-                address:
-                  foundContracts[0]?.address ?? checksummedSearchedAddress,
-                associatedNetworks:
-                  foundContracts.length > 0
-                    ? foundContracts.map(({ network }) => network.id)
-                    : selectedNetworks.map(({ id }) => id),
-                name,
-                isContract: foundContracts.length > 0,
-              });
-            }}
-          >
-            Save
-          </LoadingButton>
-        </Box>
+        {showAddInputs && (
+          <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
+            <LoadingButton
+              loading={isContractDetectionLoading}
+              disabled={
+                isContractDetectionLoading || !Boolean(searchTermVisible)
+              }
+              sx={{ width: 400 }}
+              variant="contained"
+              onClick={() => {
+                onSelectAddress({
+                  address:
+                    foundContracts[0]?.address ?? checksummedSearchedAddress,
+                  associatedNetworks:
+                    foundContracts.length > 0
+                      ? foundContracts.map(({ network }) => network.id)
+                      : selectedNetworks.map(({ id }) => id),
+                  name,
+                  isContract: foundContracts.length > 0,
+                });
+              }}
+            >
+              Save
+            </LoadingButton>
+          </Box>
+        )}
       </DialogContent>
       {showSelected && addresses.length > 0 && (
         <>
@@ -400,6 +452,7 @@ export default memo(function AddressSearchDialog({
   disableAutoselect,
   disabledAddresses,
   showSelected,
+  showAddInputs,
 }: AddressSearchDialogProps) {
   const handleClose = useCallback(() => {
     if (onClose) onClose();
@@ -421,6 +474,7 @@ export default memo(function AddressSearchDialog({
         showAddressBook={showAddressBook}
         disableAutoselect={disableAutoselect}
         disabledAddresses={disabledAddresses}
+        showAddInputs={showAddInputs}
         showSelected={showSelected}
         onSelectAddress={onSelectAddress}
         onClose={onClose}

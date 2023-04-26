@@ -219,9 +219,10 @@ const AddressBook: NextPage = () => {
   const exportableAddressBookContent = useMemo(
     () =>
       unparse(
-        addressBookEntries.map(({ address, name }) => ({
+        addressBookEntries.map(({ address, name, associatedNetworks }) => ({
           ADDRESS: address,
           NAME: name,
+          CHAIN_ID: associatedNetworks?.join(" "),
         }))
       ),
     [addressBookEntries]
@@ -362,6 +363,7 @@ const AddressBook: NextPage = () => {
         onSelectAddress={onAddAddress}
         showAddressBook={false}
         disableAutoselect
+        showAddInputs
       />
 
       <Stack gap={isBelowMd ? 2.5 : 4.5}>
