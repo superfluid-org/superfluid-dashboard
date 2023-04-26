@@ -13,7 +13,10 @@ import {
   TableCell,
   TableRow,
   Tooltip,
+  TooltipProps,
   Typography,
+  styled,
+  tooltipClasses,
 } from "@mui/material";
 import { Address, Stream } from "@superfluid-finance/sdk-core";
 import {
@@ -24,22 +27,17 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useAccount } from "wagmi";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import useAddressName from "../../hooks/useAddressName";
 import shortenHex from "../../utils/shortenHex";
-import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { useAppDispatch } from "../redux/store";
 import { updateAddressBookEntry } from "./addressBook.slice";
-import {
-  allNetworks,
-  findNetworkOrThrow,
-  tryFindNetwork,
-} from "../network/networks";
+import { allNetworks, tryFindNetwork } from "../network/networks";
 import NetworkIcon from "../network/NetworkIcon";
-import zIndex from "@mui/material/styles/zIndex";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import CopyBtn from "../common/CopyBtn";
+import { CopyIconBtn } from "../common/CopyIconBtn";
 
 interface AddressBookRowProps {
   address: Address;
@@ -52,6 +50,14 @@ interface AddressBookRowProps {
   isContract?: boolean;
   onSelect: (isSelected: boolean) => void;
 }
+
+const WideTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))({
+  [`& .${tooltipClasses.tooltip}`]: {
+    maxWidth: 500,
+  },
+});
 
 const AddressBookRow: FC<AddressBookRowProps> = ({
   address,
@@ -187,9 +193,20 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
 
       <TableCell data-cy={"actual-address"}>
         <Stack direction="column">
-          <AddressCopyTooltip address={address}>
-            <span>{shortenHex(address, 6)}</span>
-          </AddressCopyTooltip>
+          <WideTooltip arrow title={address}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              {shortenHex(address, 6)}{" "}
+              <CopyIconBtn
+                IconButtonProps={{ size: "small" }}
+                copyText={address}
+              />
+            </Stack>
+          </WideTooltip>
+
           {ensName && <Typography variant="tooltip">{ensName}</Typography>}
         </Stack>
       </TableCell>
