@@ -45,9 +45,9 @@ import StreamActiveFilter, {
   StreamActiveType,
 } from "../features/streamsTable/StreamActiveFilter";
 import { getAddress } from "../utils/memoizedEthersUtils";
-import { allNetworks } from "../features/network/networks";
 import { wagmiRpcProvider } from "../features/wallet/WagmiManager";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
+import { LoadingButton } from "@mui/lab";
 
 const AddressBook: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -65,6 +65,7 @@ const AddressBook: NextPage = () => {
   const [streamActiveFilter, setStreamActiveFilter] = useState(
     StreamActiveType.All
   );
+  const [isImportInProgress, setIsImportInProgress] = useState(false);
 
   const addressBookEntries = useAppSelector((state) =>
     addressBookSelectors.selectAll(state.addressBook)
@@ -159,6 +160,7 @@ const AddressBook: NextPage = () => {
 
   const onImport = async (file: File) => {
     try {
+      setIsImportInProgress(true);
       const blob = new Blob([file], { type: "text/csv;charset=utf-8" });
       const contents = await blob.text();
 
@@ -199,6 +201,7 @@ const AddressBook: NextPage = () => {
         Promise.resolve([])
       );
 
+      setIsImportInProgress(false);
       insertImportedAddresses(mappedData);
     } catch (e) {
       console.error(
@@ -222,7 +225,7 @@ const AddressBook: NextPage = () => {
         addressBookEntries.map(({ address, name, associatedNetworks }) => ({
           ADDRESS: address,
           NAME: name,
-          CHAIN_ID: associatedNetworks?.join(" "),
+          CHAINID: associatedNetworks?.join(" "),
         }))
       ),
     [addressBookEntries]
@@ -376,13 +379,14 @@ const AddressBook: NextPage = () => {
             <>
               <ReadFileButton onLoaded={onImport} mimeType=".csv">
                 {({ selectFile }) => (
-                  <Button
+                  <LoadingButton
                     variant="outlined"
                     color="secondary"
                     onClick={selectFile}
+                    loading={isImportInProgress}
                   >
                     Import
-                  </Button>
+                  </LoadingButton>
                 )}
               </ReadFileButton>
 
