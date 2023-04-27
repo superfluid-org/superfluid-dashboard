@@ -199,11 +199,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
             justifyContent="space-between"
           >
             <WideTooltip arrow title={address}>
-              <Stack direction="row">
-                <Typography variant="body1">
-                  {shortenHex(address, 6)}{" "}
-                </Typography>
-              </Stack>
+              <Typography variant="body1">{shortenHex(address, 6)} </Typography>
             </WideTooltip>
             <CopyIconBtn
               IconButtonProps={{ size: "small" }}
