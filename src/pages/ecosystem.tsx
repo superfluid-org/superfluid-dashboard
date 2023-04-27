@@ -18,7 +18,7 @@ import { networkDefinition } from "../features/network/networks";
 const AUTOMATE_CRYPTO_PAYROLL: EcosystemApp[] = [
   {
     name: "Coinshift",
-    href: "https://coinshift.xyz/",
+    href: "https://docs.coinshift.xyz/transfer-funds/stream-payout",
     icon: "/icons/ecosystem/coinshift.svg",
     description: `A treasury management platform with efficient multi-sig tooling`,
     chains: [networkDefinition.polygon.id],
@@ -29,7 +29,7 @@ const AUTOMATE_CRYPTO_PAYROLL: EcosystemApp[] = [
   },
   {
     name: "Request Finance",
-    href: "https://www.request.finance/",
+    href: "https://www.request.finance/post/automated-recurring-invoice-payments",
     icon: "/icons/ecosystem/request.svg",
     description: `Manage and track crypto invoices, salaries, and expenses in one place`,
     chains: [
@@ -38,7 +38,6 @@ const AUTOMATE_CRYPTO_PAYROLL: EcosystemApp[] = [
       networkDefinition.gnosis.id,
       networkDefinition.polygon.id,
     ],
-    comingSoon: true,
     colors: {
       primary: "#1B52D0",
       secondary: "#5184F7",
