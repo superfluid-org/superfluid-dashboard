@@ -306,7 +306,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
         {!searchTermVisible ? (
           mode === "addressBook" ? (
             <AddressSearchIndex
-              onSelectAddress={({ address }) => setSearchTermVisible(address)}
+              onSelectAddress={({ address }) => setSearchTerm(address)}
             />
           ) : (
             <AddressSearchIndex
@@ -405,6 +405,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
             )}
           </List>
         )}
+        {null && console.log(searchTermVisible)}
         {mode === "addressBook" && (
           <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
             <LoadingButton
