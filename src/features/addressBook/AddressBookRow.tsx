@@ -229,7 +229,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
                     network={network}
                   />
                 ) : (
-                  <></>
+                  <>-</>
                 );
               })}
             </Stack>
