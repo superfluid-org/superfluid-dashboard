@@ -173,8 +173,6 @@ const AddressBook: NextPage = () => {
         transformHeader: (header: string) => header.toLowerCase(),
       });
 
-      console.log(parsedCSV);
-
       const mappedData: AddressBookEntry[] = await parsedCSV.reduce(
         async (mappedData: Promise<AddressBookEntry[]>, item, index) => {
           const result = await mappedData;
@@ -204,8 +202,6 @@ const AddressBook: NextPage = () => {
         },
         Promise.resolve([])
       );
-
-      console.log(mappedData);
 
       setIsImportInProgress(false);
       insertImportedAddresses(mappedData);
