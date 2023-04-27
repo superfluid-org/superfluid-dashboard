@@ -173,11 +173,15 @@ const AddressBook: NextPage = () => {
         transformHeader: (header: string) => header.toLowerCase(),
       });
 
+      console.log(parsedCSV);
+
       const mappedData: AddressBookEntry[] = await parsedCSV.reduce(
         async (mappedData: Promise<AddressBookEntry[]>, item, index) => {
           const result = await mappedData;
           try {
-            const chainIds = item.chainid?.split(" ").map(Number) ?? [];
+            const chainIds = item.chainid
+              ? item.chainid.split(" ").map(Number)
+              : [];
             const parsedItem = {
               name: item.name,
               address: getAddress(item.address),
@@ -200,6 +204,8 @@ const AddressBook: NextPage = () => {
         },
         Promise.resolve([])
       );
+
+      console.log(mappedData);
 
       setIsImportInProgress(false);
       insertImportedAddresses(mappedData);

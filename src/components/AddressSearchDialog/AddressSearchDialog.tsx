@@ -227,6 +227,8 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
     addressBookSelectors.searchAddressBookEntries(state, searchTermVisible)
   );
 
+  console.log(addressBookResults);
+
   const checksummedSearchedAddress = useMemo(() => {
     if (!!searchTermDebounced && isAddress(searchTermDebounced)) {
       return getAddress(searchTermDebounced);
