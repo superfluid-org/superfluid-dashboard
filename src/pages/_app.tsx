@@ -84,8 +84,8 @@ export default function MyApp(props: AppPropsWithLayout) {
                       <MuiProvider>
                         {(_muiTheme) => (
                           <RainbowKitManager>
-                            <ConnectButtonProvider>
-                              <VisibleAddressProvider>
+                            <VisibleAddressProvider>
+                              <ConnectButtonProvider>
                                 <TransactionRestorationContextProvider>
                                   <LayoutContextProvider>
                                     <AnalyticsProvider>
@@ -103,8 +103,8 @@ export default function MyApp(props: AppPropsWithLayout) {
                                     </AnalyticsProvider>
                                   </LayoutContextProvider>
                                 </TransactionRestorationContextProvider>
-                              </VisibleAddressProvider>
-                            </ConnectButtonProvider>
+                              </ConnectButtonProvider>
+                            </VisibleAddressProvider>
                           </RainbowKitManager>
                         )}
                       </MuiProvider>
