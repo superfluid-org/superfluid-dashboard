@@ -193,19 +193,23 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
 
       <TableCell data-cy={"actual-address"}>
         <Stack direction="column">
-          <WideTooltip arrow title={address}>
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-            >
-              <Typography variant="body1">{shortenHex(address, 6)} </Typography>
-              <CopyIconBtn
-                IconButtonProps={{ size: "small" }}
-                copyText={address}
-              />
-            </Stack>
-          </WideTooltip>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <WideTooltip arrow title={address}>
+              <Stack direction="row">
+                <Typography variant="body1">
+                  {shortenHex(address, 6)}{" "}
+                </Typography>
+              </Stack>
+            </WideTooltip>
+            <CopyIconBtn
+              IconButtonProps={{ size: "small" }}
+              copyText={address}
+            />
+          </Stack>
 
           {ensName && (
             <Typography variant="tooltip" sx={{ fontSize: 12 }}>
