@@ -81,7 +81,6 @@ export default memo(function AddressSearch({
 
       <AddressSearchDialog
         title={"Select a receiver"}
-        index={<AddressSearchIndex onSelectAddress={onSelectAddress} />}
         open={dialogOpen}
         onClose={() => {
           setDialogOpen(false);

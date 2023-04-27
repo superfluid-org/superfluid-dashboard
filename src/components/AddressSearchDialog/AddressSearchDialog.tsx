@@ -21,15 +21,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import {
-  FC,
-  memo,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { FC, memo, useCallback, useEffect, useMemo, useState } from "react";
 import {
   AddressBookEntry,
   addressBookSelectors,
@@ -49,8 +41,8 @@ import {
 import NetworkSelect from "../NetworkSelect/NetworkSelect";
 import { LoadingButton } from "@mui/lab";
 import { ensApi } from "../../features/ens/ensApi.slice";
-import NetworkIcon from "../../features/network/NetworkIcon";
-import { useChainId, useProvider } from "wagmi";
+import { useChainId } from "wagmi";
+import AddressSearchIndex from "../../features/send/AddressSearchIndex";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
@@ -63,7 +55,6 @@ interface AddressListItemProps {
   onClick: () => void;
   showRemove?: boolean;
   displayAvatar?: boolean;
-  networkIds?: number[];
 }
 
 export const AddressListItem: FC<AddressListItemProps> = ({
@@ -75,7 +66,6 @@ export const AddressListItem: FC<AddressListItemProps> = ({
   namePlaceholder,
   showRemove = false,
   displayAvatar = true,
-  networkIds,
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -119,7 +109,6 @@ export const AddressListItem: FC<AddressListItemProps> = ({
 export type AddressSearchDialogProps = {
   title: string;
   open: boolean;
-  index: ReactNode | null;
   addresses?: Address[];
   onClose?: () => void;
   onBack?: () => void;
@@ -138,7 +127,6 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
   onClose,
   onBack,
   title,
-  index,
   showAddressBook = true,
   disableAutoselect = false,
   disabledAddresses = [],
@@ -316,7 +304,17 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
       </DialogTitle>
       <DialogContent dividers={false} sx={{ p: 0 }}>
         {!searchTermVisible ? (
-          index
+          mode === "addressBook" ? (
+            <AddressSearchIndex
+              onSelectAddress={({ address }) => setSearchTermVisible(address)}
+            />
+          ) : (
+            <AddressSearchIndex
+              addresses={addresses}
+              disabledAddresses={disabledAddresses}
+              onSelectAddress={onSelectAddress}
+            />
+          )
         ) : (
           <List sx={{ pt: 0, pb: 0 }}>
             {showEns ? (
@@ -400,7 +398,6 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                         address={address}
                         onClick={() => onSelectAddress({ address })}
                         namePlaceholder={name}
-                        networkIds={associatedNetworks}
                       />
                     </Stack>
                   ))}
@@ -494,7 +491,6 @@ export default memo(function AddressSearchDialog({
   onClose,
   onBack,
   title,
-  index,
   showAddressBook,
   disableAutoselect,
   disabledAddresses,
@@ -517,7 +513,6 @@ export default memo(function AddressSearchDialog({
         open={open}
         addresses={addresses}
         title={title}
-        index={index}
         showAddressBook={showAddressBook}
         disableAutoselect={disableAutoselect}
         disabledAddresses={disabledAddresses}

@@ -360,7 +360,6 @@ const AddressBook: NextPage = () => {
     <Container maxWidth="lg">
       <AddressSearchDialog
         title={"Add an address"}
-        index={<AddressSearchIndex onSelectAddress={onAddAddress} />}
         open={showAddDialog}
         onClose={closeAddDialog}
         onSelectAddress={onAddAddress}

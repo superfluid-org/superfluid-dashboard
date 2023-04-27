@@ -89,7 +89,6 @@ const ConnectView: FC = () => {
               open={addressSearchOpen}
               onClose={closeAddressSearchDialog}
               onSelectAddress={onImpersonate}
-              index={<AddressSearchIndex onSelectAddress={onImpersonate} />}
             />
           </Stack>
         </Box>

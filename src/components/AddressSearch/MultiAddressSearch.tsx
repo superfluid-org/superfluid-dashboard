@@ -126,13 +126,6 @@ export default memo(function MultiAddressSearch({
         disableAutoselect
         showSelected
         title={dialogTitle}
-        index={
-          <AddressSearchIndex
-            addresses={addresses}
-            onSelectAddress={onSelectAddress}
-            disabledAddresses={disabledAddresses}
-          />
-        }
         addresses={addresses}
         disabledAddresses={disabledAddresses}
         open={dialogOpen}

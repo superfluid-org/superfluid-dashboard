@@ -181,7 +181,6 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
           onClose={isBelowSm ? undefined : handleClose}
           onBack={closeAddressSearch}
           onSelectAddress={onImpersonate}
-          index={<AddressSearchIndex onSelectAddress={onImpersonate} />}
         />
       )}
     </ResponsiveDialog>

@@ -58,7 +58,6 @@ const ConnectOrImpersonate: FC<ConnectOrImpersonateProps> = ({}) => {
             open={addressSearchOpen}
             onClose={closeAddressSearchDialog}
             onSelectAddress={onImpersonate}
-            index={<AddressSearchIndex onSelectAddress={onImpersonate} />}
           />
         </Stack>
       </Box>
