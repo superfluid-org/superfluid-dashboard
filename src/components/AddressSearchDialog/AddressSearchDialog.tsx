@@ -383,6 +383,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                   .filter(
                     ({ associatedNetworks }) =>
                       !associatedNetworks ||
+                      associatedNetworks.length === 0 ||
                       associatedNetworks?.includes(chainId)
                   )
                   .map(({ address, name, associatedNetworks }) => (
