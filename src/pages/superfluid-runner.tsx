@@ -18,12 +18,11 @@ const DisplayWarning: FC<PropsWithChildren<{}>> = ({}) => (
 )
 
 const SuperfluidRunner: NextPage = () => {
-
     const {isConnected} = useAccount();
 
     return (
         <>
-            <Minigame/>
+            <Minigame />
             {!isConnected && <DisplayWarning/>}
         </>
     );
