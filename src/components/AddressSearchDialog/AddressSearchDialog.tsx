@@ -236,6 +236,30 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
 
   const searchSynced = searchTermDebounced === searchTermVisible.trim();
 
+  const addressBookList = useMemo(
+    () =>
+      addressBookResults
+        .filter(
+          ({ associatedNetworks }) =>
+            !associatedNetworks ||
+            associatedNetworks.length === 0 ||
+            associatedNetworks?.includes(chainId)
+        )
+        .map(({ address, name }) => (
+          <Stack direction="row" alignItems="center" pr={2} key={address}>
+            <AddressListItem
+              dataCy={"address-book-entry"}
+              selected={addresses.includes(address)}
+              disabled={disabledAddresses.includes(address)}
+              address={address}
+              onClick={() => onSelectAddress({ address })}
+              namePlaceholder={name}
+            />
+          </Stack>
+        )),
+    [addressBookResults, addresses, chainId, disabledAddresses, onSelectAddress]
+  );
+
   return (
     <>
       <DialogTitle sx={{ p: 3 }}>
@@ -372,40 +396,17 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
             {showAddressBook && (
               <>
                 <ListSubheader sx={{ px: 3 }}>Address Book</ListSubheader>
-                {addressBookResults.length === 0 && (
+                {addressBookList.length > 0 ? (
+                  addressBookList
+                ) : (
                   <ListItem sx={LIST_ITEM_STYLE}>
                     <ListItemText translate="yes" primary="No results" />
                   </ListItem>
                 )}
-                {addressBookResults
-                  .filter(
-                    ({ associatedNetworks }) =>
-                      !associatedNetworks ||
-                      associatedNetworks.length === 0 ||
-                      associatedNetworks?.includes(chainId)
-                  )
-                  .map(({ address, name, associatedNetworks }) => (
-                    <Stack
-                      direction="row"
-                      alignItems="center"
-                      pr={2}
-                      key={address}
-                    >
-                      <AddressListItem
-                        dataCy={"address-book-entry"}
-                        selected={addresses.includes(address)}
-                        disabled={disabledAddresses.includes(address)}
-                        address={address}
-                        onClick={() => onSelectAddress({ address })}
-                        namePlaceholder={name}
-                      />
-                    </Stack>
-                  ))}
               </>
             )}
           </List>
         )}
-        {null && console.log(searchTermVisible)}
         {mode === "addressBook" && (
           <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
             <LoadingButton
