@@ -1,6 +1,5 @@
 //Set RPC url here pls
-const rpcUrl =
-  "";
+const rpcUrl = "";
 const Web3 = require("web3");
 const web3 = new Web3(rpcUrl);
 const contractABI = [
@@ -215,8 +214,6 @@ const tx = {
   gas: 200000,
   data: encodedABI,
 };
-
-
 
 web3.eth.accounts.signTransaction(tx, privateKey).then((signed) => {
   web3.eth
