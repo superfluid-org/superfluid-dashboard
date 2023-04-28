@@ -15,9 +15,10 @@ import {useAppLastSuperfluidRunnerCosmetics, useSetting} from "../settings/appSe
 const G_A_M_E__U_R_L__B_A_S_E_6_4 =
     "aHR0cHM6Ly9hc3Ryb2J1bm55LnN1cGVyZmx1aWQuZmluYW5jZS8=";
 
-type MinigameCosmetics = 1 | 2 | 3 | 4;
+export type MinigameCosmetics = 1 | 2 | 3 | 4;
 
 type MinigameContextValue = {
+    cosmetics: MinigameCosmetics,
     setCosmetics: (value: MinigameCosmetics) => void;
     getUrl: () => URL;
 };
@@ -25,14 +26,13 @@ type MinigameContextValue = {
 const MinigameContext = createContext<MinigameContextValue>(null!);
 
 export const MinigameProvider: FC<PropsWithChildren> = ({children}) => {
-    const lastSuperfluidRunnerCosmetics = useAppLastSuperfluidRunnerCosmetics();
+    const cosmetics = useAppLastSuperfluidRunnerCosmetics();
     const dispatch = useDispatch();
-
-    const [cosmetics, setCosmetics] = useState<MinigameCosmetics>(lastSuperfluidRunnerCosmetics as MinigameCosmetics);
 
     const {address: connectedAccountAddress} = useAccount(); // Don't use "visible address" here.
 
-    useEffect(() => {
+    const setCosmetics = useCallback((cosmetics: MinigameCosmetics) => {
+        console.log("I am ere.",cosmetics)
         dispatch(applySettings({lastSuperfluidRunnerCosmetics: cosmetics}));
     }, [cosmetics])
 
@@ -52,8 +52,7 @@ export const MinigameProvider: FC<PropsWithChildren> = ({children}) => {
         () => ({
             cosmetics,
             getUrl,
-            setCosmetics: (value: MinigameCosmetics) =>
-                value > cosmetics ? setCosmetics(value) : void 0,
+            setCosmetics,
         }),
         [cosmetics, setCosmetics, getUrl]
     );
