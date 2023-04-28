@@ -10,7 +10,8 @@ Feature: Wrap page test cases
     And User switches to wrap tab
     Then Connect wallet button is visible in the wrap/unwrap page
 
-  @broken @skip
+  @broken
+  @skip
   Scenario: Token balances shown for a user with a connected wallet
     Given "Wrap Page" is open with "staticBalanceAccount" connected on "polygon"
     And User connects their wallet to the dashboard

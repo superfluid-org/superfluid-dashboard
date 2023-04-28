@@ -1,5 +1,7 @@
-@ignoreDuringUI @rejected @numTestsKeptInMemory(0)
-Feature:Transactional rejected test cases
+@ignoreDuringUI
+@rejected
+@numTestsKeptInMemory(0)
+Feature: Transactional rejected test cases
 
   Scenario: Creating a new stream on selected network
     Given Transactional account john is connected to the dashboard on selected network

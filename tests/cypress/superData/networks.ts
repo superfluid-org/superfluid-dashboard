@@ -65,7 +65,7 @@ export const networkDefinition: {
   avalancheC: Network;
   bsc: Network;
   ethereum: Network;
-  celoMainnet: Network,
+  celoMainnet: Network;
 } = {
   goerli: {
     ...chain.goerli,
@@ -364,11 +364,11 @@ export const networkDefinition: {
     color: "#FCFF52",
     superfluidRpcUrl: superfluidRpcUrls["celo-mainnet"],
     subgraphUrl:
-        "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-celo-mainnet",
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-celo-mainnet",
     getLinkForTransaction: (txHash: string): string =>
-        `https://celoscan.io/tx/${txHash}`,
+      `https://celoscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
-        `https://celoscan.io/address/${address}`,
+      `https://celoscan.io/address/${address}`,
     nativeCurrency: {
       ...ensureDefined(chain.celo.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,

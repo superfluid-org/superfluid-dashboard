@@ -17,7 +17,7 @@ Feature: Common element test cases
     And User changes their network to "polygon"
     And The navigation drawer shows that "ongoingStreamAccount" is "Connected"
 
-  @skip #No more access code, but if we bring it back we have the steps
+  @skip
   Scenario: Using access code to see ethereum mainnet
     Given "Dashboard page" is open without connecting a wallet
     And User opens the dashboard network selection dropdown
@@ -31,7 +31,7 @@ Feature: Common element test cases
     And User opens the dashboard network selection dropdown
     And Ethereum mainnet is visible in the network selection dropdown
 
-  @skip #No more access code, but if we bring it back we have the steps
+  @skip
   Scenario: Submitting wrong access codes
     Given "Dashboard page" is open without connecting a wallet
     And User opens the navigation more menu
@@ -86,6 +86,7 @@ Feature: Common element test cases
   @mocked
   Scenario: Something went wrong message in the faucet menu
     Given Faucet requests are mocked to an error state
+
     Given "Dashboard Page" is open with "john" connected on "polygon-mumbai"
     And User opens the navigation more menu
     And User opens the faucet view from the navigation menu
@@ -126,6 +127,7 @@ Feature: Common element test cases
   @mocked
   Scenario Outline: Receiving opening and archiving a notification
     Given Notifications requests are mocked to "<notification>"
+
     Given "Settings Page" is open with "dan" connected on "ethereum"
     Then Notification toast is visible for "<notification>"
     And Notification badge shows "1" new notification
@@ -138,7 +140,8 @@ Feature: Common element test cases
     And User archives the last notification
     Then No "new" notifications message is shown
     And User switches to the "archive" notification tab
-    Then  Archived "<notification>" notification is shown
+    Then Archived "<notification>" notification is shown
+
     Examples:
       | notification            |
       | Liquidated              |
@@ -149,6 +152,7 @@ Feature: Common element test cases
   @mocked
   Scenario: Wrap buttons in liquidation warning messages
     Given Notifications requests are mocked to "Liquidation Risk"
+
     Given "Settings Page" is open with "alice" connected on "polygon"
     And User opens the notifications modal
     Then Wrap button is visible in the notifications modal
@@ -158,6 +162,7 @@ Feature: Common element test cases
   @mocked
   Scenario: Notifications automatically archived if older than a month
     Given Notifications requests are mocked to "Old notification"
+
     Given "Settings Page" is open with "dan" connected on "goerli"
     And User opens the notifications modal
     Then No "new" notifications message is shown

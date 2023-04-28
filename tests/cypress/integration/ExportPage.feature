@@ -23,6 +23,7 @@ Feature: Export Stream Data page test cases
     And User changes the price granularity to "<period>"
     And User changes the accounting period to "<period>"
     Then Export preview is correctly fetched from the accounting API for "<period>"
+
     Examples:
       | period  |
       | Daily   |
