@@ -1,188 +1,433 @@
-import {default as Wallet} from "ethereumjs-wallet";
+import { default as Wallet } from "ethereumjs-wallet";
 import format from "date-fns/format";
 
-
 export enum UnitOfTime {
-    Second = 1,
-    Minute = 60,
-    Hour = 3600,
-    Day = 86400,
-    Week = 604800,
-    Month = 2628000,
-    Year = 31536000
+  Second = 1,
+  Minute = 60,
+  Hour = 3600,
+  Day = 86400,
+  Week = 604800,
+  Month = 2628000,
+  Year = 31536000,
 }
 
 export const wordTimeUnitMap: Record<string, UnitOfTime> = {
-    "second": UnitOfTime.Second,
-    "minute": UnitOfTime.Minute,
-    "hour": UnitOfTime.Hour,
-    "day": UnitOfTime.Day,
-    "week": UnitOfTime.Week,
-    "month": UnitOfTime.Month,
-    "year": UnitOfTime.Year,
+  second: UnitOfTime.Second,
+  minute: UnitOfTime.Minute,
+  hour: UnitOfTime.Hour,
+  day: UnitOfTime.Day,
+  week: UnitOfTime.Week,
+  month: UnitOfTime.Month,
+  year: UnitOfTime.Year,
 };
 
 export class BasePage {
+  static ensureDefined<T>(value: T | undefined | null): T {
+    if (!value) throw Error("Value has to be defined.");
+    return value;
+  }
 
-    static ensureDefined<T>(value: T | undefined | null): T {
-        if (!value) throw Error('Value has to be defined.');
-        return value;
-    }
+  static shortenHex(address: string, length = 4) {
+    return `${address.substring(0, 2 + length)}...${address.substring(
+      address.length - length,
+      address.length
+    )}`;
+  }
 
-    static shortenHex(address: string, length = 4) {
-        return `${address.substring(0, 2 + length)}...${address.substring(
-            address.length - length,
-            address.length
-        )}`;
+  static get(
+    selector: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    if (index !== undefined) {
+      return cy.get(selector).eq(index, options);
     }
+    return cy.get(selector, options);
+  }
 
-    static click(selector: string, index: number = 0) {
-        if(index){
-            cy.get(selector).eq(index).click();
-        }
-        cy.get(selector).click()
-    }
+  static click(
+    selector: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    this.get(selector, index, options).click();
+  }
 
-    static clickVisible(selector: string) {
-        cy.get(selector).filter(":visible").click();
-    }
+  static forceClick(
+    selector: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    this.get(selector, index, options).click({ force: true });
+  }
 
-    static clickFirstVisible(selector: string) {
-        cy.get(selector).filter(":visible").first().click();
-    }
+  static select(
+    selector: string,
+    selectionOption: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    this.get(selector, index, options).select(selectionOption);
+  }
 
-    static scrollToAndClick(selector: string) {
-        cy.get(selector).scrollIntoView().click();
-    }
+  static clickFirstVisible(
+    selector: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options)
+      .filter(":visible")
+      .first()
+      .click();
+  }
 
-    static type(selector: string, text: string | number) {
-        cy.get(selector).filter(":visible").type(text.toString());
-    }
+  static type(
+    selector: string,
+    text: string | number,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options)
+      .filter(":visible")
+      .type(text.toString());
+  }
 
-    static hasText(
-        selector: string,
-        text?: JQuery<HTMLElement> | string | string[] | number
-    ) {
-        cy.get(selector).filter(":visible").should("have.text", text);
-    }
+  static hasText(
+    selector: string,
+    text?: JQuery<HTMLElement> | string | string[] | number,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options)
+      .filter(":visible")
+      .should("have.text", text);
+  }
 
-    static check(selector: string) {
-        cy.get(selector).check();
-    }
+  static doesNotHaveText(
+    selector: string,
+    text?: JQuery<HTMLElement> | string | string[] | number,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options)
+      .filter(":visible")
+      .should("not.have.text", text);
+  }
 
-    static scrollToAndhasText(selector: string, text: string) {
-        cy.get(selector).scrollIntoView().should("have.text", text);
-    }
+  static check(
+    selector: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options).check();
+  }
 
-    static doesNotExist(selector: string) {
-        cy.get(selector).should("not.exist");
-    }
+  static scrollToAndHasText(
+    selector: string,
+    text: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options)
+      .scrollIntoView()
+      .should("have.text", text);
+  }
 
-    static exists(selector: string) {
-        cy.get(selector).should("exist");
-    }
+  static doesNotExist(
+    selector: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options).should("not.exist");
+  }
 
-    static isVisible(selector: string) {
-        cy.get(selector).should("be.visible");
-    }
+  static exists(
+    selector: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options).should("exist");
+  }
 
-    static isNotVisible(selector: string) {
-        cy.get(selector).should("not.be.visible");
-    }
+  static isVisible(
+    selector: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options).should("be.visible");
+  }
 
-    static isFocused(selector: string) {
-        cy.get(selector).should("have.focus");
-    }
+  static isNotVisible(
+    selector: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options).should("not.be.visible");
+  }
 
-    static isNotDisabled(selector: string) {
-        cy.get(selector).should("not.have.attr", "disabled");
-    }
+  static isNotDisabled(
+    selector: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options).should(
+      "not.have.attr",
+      "disabled"
+    );
+  }
 
-    static isDisabled(selector: string) {
-        cy.get(selector).should("have.attr", "disabled");
-    }
+  static isEnabled(
+    selector: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options).should("be.enabled");
+  }
 
-    static selectOption(selector: string, option: string) {
-        cy.get(selector).filter(":visible").select(option);
-    }
+  static isDisabled(
+    selector: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options).should("have.attr", "disabled");
+  }
 
-    static validatePageUrl(appendix: string) {
-        cy.url().should("eq", Cypress.config().baseUrl + appendix);
-    }
+  static containsText(
+    selector: string,
+    text: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options).should("contain.text", text);
+  }
 
-    static containsValue(selector: string, value: string) {
-        cy.get(selector).should("contain.value", value);
-    }
+  static contains(
+    selector: string,
+    number: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options).should("contain", number);
+  }
 
-    static containsText(selector: string, text: string) {
-        cy.get(selector).should("contain.text", text);
-    }
+  static clear(
+    selector: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options).filter(":visible").clear();
+  }
 
-    static contains(selector: string, number: string) {
-        cy.get(selector).should("contain", number);
-    }
+  static hasCSS(
+    selector: string,
+    value: string,
+    match: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options).should("have.css", value, match);
+  }
 
-    static clear(selector: string) {
-        cy.get(selector).filter(":visible").clear();
-    }
+  static hasLength(
+    selector: string,
+    length: number,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options).should("have.length", length);
+  }
 
-    static hasLength(selector: string, length: number) {
-        cy.get(selector).should("have.length", length);
-    }
+  static hasValue(
+    selector: string,
+    value: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options).should("have.value", value);
+  }
 
-    static hasValue(selector: string, value: JQuery<HTMLElement> | string ) {
-        cy.get(selector).should("have.value", value);
-    }
+  static trigger(
+    selector: string,
+    event: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options).trigger(event);
+  }
 
-    static hasAttributeWithValue(
-        selector: string,
-        attribute: string,
-        value: string
-    ) {
-        cy.get(selector).should("have.attr", attribute, value);
-    }
+  static hasAttributeWithValue(
+    selector: string,
+    attribute: string,
+    value: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options).should(
+      "have.attr",
+      attribute,
+      value
+    );
+  }
 
-    static getShortenedAddress(address: JQuery<HTMLElement> | string, chars = 4) {
-        return (
-            `${address.slice(0, chars + 2)}...${address.slice(address.length - chars, address.length)}`
-        );
-    }
+  static getDayTimestamp(days: number) {
+    let today = new Date();
+    let timestamp = today.setDate(today.getDate() + days);
+    return Number((timestamp.valueOf() / 1000).toFixed());
+  }
 
-    static getShortenedHashAddress(hash: string, chars = 6) {
-        return `${hash.slice(0, chars)}...`;
-    }
+  static getNotificationDateString(date: Date) {
+    return date.toLocaleString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone: "UTC",
+    });
+  }
 
-    static getDayTimestamp(days:number) {
-        let today = new Date()
-        let timestamp = today.setDate(today.getDate() + days)
-        return Number((timestamp.valueOf() / 1000).toFixed())
-    }
+  static generateNewWallet() {
+    const { default: Wallet } = require("ethereumjs-wallet");
+    const wallet = Wallet.generate();
+    const privateKey = wallet.getPrivateKeyString();
+    const publicKey = wallet.getChecksumAddressString();
+    cy.wrap(privateKey).as("newWalletPrivateKey");
+    cy.wrap(publicKey).as("newWalletPublicKey");
+    cy.log(`Public key:${publicKey}`);
+    cy.log(`Private key:${privateKey}`);
+    return privateKey;
+  }
 
-    static getNotificationDateString(date: Date) {
-        return date.toLocaleString('en-US', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false,
-            timeZone: 'UTC'
-        })
-    }
-
-    static generateNewWallet() {
-        const { default: Wallet } = require('ethereumjs-wallet');
-        const wallet = Wallet.generate();
-        const privateKey = wallet.getPrivateKeyString();
-        const publicKey = wallet.getChecksumAddressString()
-        cy.wrap(privateKey).as("newWalletPrivateKey")
-        cy.wrap(publicKey).as("newWalletPublicKey")
-        cy.log(`Public key:${publicKey}`)
-        cy.log(`Private key:${privateKey}`)
-        return privateKey
-    }
-
-    static getNotifDateAssertStringFromDate(date:Date) {
-        return format(Number((date.getTime() / 1000).toFixed(0)) * 1000, "yyyy/MM/dd HH:mm")
-    }
+  static getNotifDateAssertStringFromDate(date: Date) {
+    return format(
+      Number((date.getTime() / 1000).toFixed(0)) * 1000,
+      "yyyy/MM/dd HH:mm"
+    );
+  }
 }

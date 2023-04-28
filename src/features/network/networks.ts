@@ -315,7 +315,8 @@ export const networkDefinition = {
     platformUrl: undefined,
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.avalancheFuji.id],
-      strategyContractAddress: autoWrapStrategyAddresses[chain.avalancheFuji.id],
+      strategyContractAddress:
+        autoWrapStrategyAddresses[chain.avalancheFuji.id],
       lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
       upperLimit: BigNumber.from(UnitOfTime.Day * 7),
     },
@@ -586,6 +587,74 @@ export const networkDefinition = {
     vestingSubgraphUrl: undefined,
     platformUrl: undefined,
   } as const,
+  optimismGoerli: {
+    ...chain.optimismGoerli,
+    blockExplorers: ensureDefined(chain.optimismGoerli.blockExplorers),
+    slugName: "optimism-goerli",
+    v1ShortName: "optimism goerli",
+    bufferTimeInMinutes: 240,
+    icon: "/icons/network/optimism.svg",
+    color: "#ff0320",
+    rpcUrls: {
+      ...chain.optimismGoerli.rpcUrls,
+      superfluid: { http: [superfluidRpcUrls["optimism-goerli"]] },
+    },
+    subgraphUrl:
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-goerli",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://goerli-optimism.etherscan.io/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://goerli-optimism.etherscan.io/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.optimismGoerli.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0xE01F8743677Da897F4e7De9073b57Bf034FC2433",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+    vestingContractAddress: undefined,
+    vestingSubgraphUrl: undefined,
+    platformUrl: undefined,
+  } as const,
+  arbitrumGoerli: {
+    ...chain.arbitrumGoerli,
+    blockExplorers: ensureDefined(chain.arbitrumGoerli.blockExplorers),
+    slugName: "arbitrum-goerli",
+    v1ShortName: "arbitrum goerli",
+    bufferTimeInMinutes: 240,
+    icon: "/icons/network/arbitrum.svg",
+    color: "#2b374b",
+    rpcUrls: {
+      ...chain.arbitrumGoerli.rpcUrls,
+      superfluid: { http: [superfluidRpcUrls["arbitrum-goerli"]] },
+    },
+    subgraphUrl:
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-goerli",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://goerli.arbiscan.io/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://goerli.arbiscan.io/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.arbitrumGoerli.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0xE01F8743677Da897F4e7De9073b57Bf034FC2433",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+    vestingContractAddress: undefined,
+    vestingSubgraphUrl: undefined,
+    platformUrl: undefined,
+  } as const,
 };
 
 export const allNetworks: Network[] = [
@@ -600,6 +669,8 @@ export const allNetworks: Network[] = [
   networkDefinition.avalancheC,
   networkDefinition.bsc,
   networkDefinition.celoMainnet,
+  networkDefinition.optimismGoerli,
+  networkDefinition.arbitrumGoerli,
 ];
 export const mainNetworks = allNetworks.filter((x) => !x.testnet);
 export const testNetworks = allNetworks.filter((x) => x.testnet);

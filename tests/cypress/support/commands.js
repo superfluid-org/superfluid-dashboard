@@ -1,2 +1,1 @@
-require('cypress-iframe')
-
+require("cypress-iframe");

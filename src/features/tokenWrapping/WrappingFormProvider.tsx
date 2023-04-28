@@ -26,6 +26,7 @@ import {
   SuperTokenUpgradeRestoration,
 } from "../transactionRestoration/transactionRestorations";
 import { useTokenPairsQuery } from "./useTokenPairsQuery";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 export type WrappingForm = {
   type: RestorationType.Wrap | RestorationType.Unwrap;
@@ -61,7 +62,8 @@ const WrappingFormProvider: FC<
   const { token: tokenQueryParam } = router.query;
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryUnderlyingBalance] = rpcApi.useLazyUnderlyingBalanceQuery();
-  const { address: accountAddress, connector: activeConnector } = useAccount();
+  const { visibleAddress } = useVisibleAddress();
+  const { connector: activeConnector } = useAccount();
 
   const tokenPairsQuery = useTokenPairsQuery({
     network,
@@ -97,7 +99,7 @@ const WrappingFormProvider: FC<
         const { superTokenAddress, underlyingTokenAddress } =
           validForm.data.tokenPair;
 
-        if (accountAddress) {
+        if (visibleAddress) {
           if (type === RestorationType.Wrap) {
             const { underlyingToken } =
               tokenPairsQuery.data.find(
@@ -124,7 +126,7 @@ The chain ID was: ${network.id}`);
             }
 
             const underlyingBalance = await queryUnderlyingBalance({
-              accountAddress,
+              accountAddress: visibleAddress,
               tokenAddress: underlyingTokenAddress,
               chainId: network.id,
             }).unwrap();
@@ -165,10 +167,10 @@ The chain ID was: ${network.id}`);
           }
 
           if (type === RestorationType.Unwrap) {
-            if (accountAddress) {
+            if (visibleAddress) {
               const realtimeBalance = await queryRealtimeBalance(
                 {
-                  accountAddress,
+                  accountAddress: visibleAddress,
                   chainId: network.id,
                   tokenAddress: validForm.data.tokenPair.superTokenAddress,
                 },
@@ -229,7 +231,7 @@ The chain ID was: ${network.id}`);
 
         return true;
       }),
-    [network, accountAddress, tokenPairsQuery.data]
+    [network, visibleAddress, tokenPairsQuery.data]
   );
 
   const networkDefaultTokenPair = getNetworkDefaultTokenPair(network);
@@ -320,7 +322,7 @@ The chain ID was: ${network.id}`);
     if (formState.isDirty) {
       trigger();
     }
-  }, [accountAddress]);
+  }, [visibleAddress]);
 
   return hasRestored ? (
     <FormProvider {...formMethods}>{children}</FormProvider>

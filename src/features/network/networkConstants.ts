@@ -1,4 +1,4 @@
-import * as chain from '@wagmi/chains'
+import * as chain from "@wagmi/chains";
 
 export const autoWrapManagerAddresses = {
   [chain.polygon.id]: "0x2581c27E7f6D6AF452E63fCe884EDE3EDd716b32",
@@ -104,6 +104,8 @@ export const superfluidRpcUrls = {
   bnbSmartChain: "https://rpc-endpoints.superfluid.dev/bsc-mainnet",
   ethereum: "https://rpc-endpoints.superfluid.dev/eth-mainnet",
   "celo-mainnet": "https://rpc-endpoints.superfluid.dev/celo-mainnet",
+  "optimism-goerli": "https://rpc-endpoints.superfluid.dev/optimism-goerli",
+  "arbitrum-goerli": "https://rpc-endpoints.superfluid.dev/arbitrum-goerli",
 } as const;
 
 export const superfluidPlatformUrls = {

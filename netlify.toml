@@ -93,3 +93,9 @@ for = "/*"
   to = "https://v1.superfluid.finance/static/:splat"
   status = 301
   force = false
+
+[[redirects]]
+  from = "/runner"
+  to = "/superfluid-runner"
+  status = 301
+  force = false

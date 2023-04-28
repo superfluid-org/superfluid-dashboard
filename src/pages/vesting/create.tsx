@@ -2,7 +2,6 @@ import { Box, Card, Container, useTheme } from "@mui/material";
 import { ReactElement } from "react";
 import withStaticSEO from "../../components/SEO/withStaticSEO";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
-import NetworkBadge from "../../features/network/NetworkBadge";
 import ConnectionBoundary from "../../features/transactionBoundary/ConnectionBoundary";
 import { BigLoader } from "../../features/vesting/BigLoader";
 import CreateVestingFormProvider from "../../features/vesting/CreateVestingFormProvider";
@@ -10,9 +9,8 @@ import { CreateVestingSection } from "../../features/vesting/CreateVestingSectio
 import VestingLayout from "../../features/vesting/VestingLayout";
 import { NextPageWithLayout } from "../_app";
 import { platformApi } from "../../features/redux/platformApi/platformApi";
-import { useAccount } from "wagmi";
-import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { useAccount } from "wagmi";
 
 const CreateVestingSchedulePage: NextPageWithLayout = () => {
   const theme = useTheme();
