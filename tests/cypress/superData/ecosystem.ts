@@ -3,7 +3,7 @@ import { networkDefinition } from "./networks";
 export const AUTOMATE_CRYPTO_PAYROLL = [
   {
     name: "Coinshift",
-    href: "https://coinshift.xyz/",
+    href: "https://docs.coinshift.xyz/transfer-funds/stream-payout",
     icon: "/icons/ecosystem/coinshift.svg",
     description: `A treasury management platform with efficient multi-sig tooling`,
     chains: [networkDefinition.polygon.id],
@@ -14,7 +14,7 @@ export const AUTOMATE_CRYPTO_PAYROLL = [
   },
   {
     name: "Request Finance",
-    href: "https://www.request.finance/",
+    href: "https://www.request.finance/post/automated-recurring-invoice-payments",
     icon: "/icons/ecosystem/request.svg",
     description: `Manage and track crypto invoices, salaries, and expenses in one place`,
     chains: [
@@ -23,7 +23,6 @@ export const AUTOMATE_CRYPTO_PAYROLL = [
       networkDefinition.gnosis.id,
       networkDefinition.polygon.id,
     ],
-    comingSoon: true,
     colors: {
       primary: "#1B52D0",
       secondary: "#5184F7",

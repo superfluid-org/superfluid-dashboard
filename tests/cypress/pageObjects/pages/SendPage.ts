@@ -648,7 +648,9 @@ export class SendPage extends BasePage {
 
   static isSchedulingSupported(fn: () => void) {
     if (
-      ["polygon-mumbai", "avalanche-fuji"].includes(Cypress.env("network")) &&
+      ["arbitrum-goerli", "optimism-goerli", "avalanche-fuji"].includes(
+        Cypress.env("network")
+      ) &&
       Cypress.env("scheduling")
     ) {
       cy.log(
