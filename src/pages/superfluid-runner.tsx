@@ -10,7 +10,7 @@ const DisplayWarning: FC<PropsWithChildren<{}>> = ({}) => (
     <Container maxWidth="lg" sx={{textAlign: "center"}}>
         <Alert severity="warning">
             <Typography data-cy={"superfluid-runner-game-alert-text"}>
-                To access in-game cosmetics, please connect your wallet before beginning the game.
+            To access and unlock in-game cosmetics, please connect your wallet before beginning the game.
             </Typography>
         </Alert>
     </Container>
