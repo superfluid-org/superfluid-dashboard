@@ -31,16 +31,31 @@ const addressApi = createApi({
               return { network, code };
             })
           )
-        )
-          .filter(({ code }) => code !== "0x")
-          .map(({ network }) => network);
+        ).reduce(
+          (acc, curr) => {
+            if (curr.code !== "0x")
+              return {
+                ...acc,
+                data: {
+                  isContract: true,
+                  associatedNetworks: [
+                    ...acc.data.associatedNetworks,
+                    curr.network.id,
+                  ],
+                },
+              };
 
-        return {
-          data: {
-            isContract: result.length > 0,
-            associatedNetworks: result.map((network) => network.id),
+            return acc;
           },
-        };
+          {
+            data: {
+              isContract: false,
+              associatedNetworks: [] as number[],
+            },
+          }
+        );
+
+        return result;
       },
     }),
   }),
