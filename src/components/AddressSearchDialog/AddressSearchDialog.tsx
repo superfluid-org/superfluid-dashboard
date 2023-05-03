@@ -112,7 +112,9 @@ export type AddressSearchDialogProps = {
   addresses?: Address[];
   onClose?: () => void;
   onBack?: () => void;
-  onSelectAddress: (...params: AddressBookEntry[]) => void;
+  onSelectAddress: (
+    ...params: ({ address: string } | AddressBookEntry)[]
+  ) => void;
   showAddressBook?: boolean;
   disableAutoselect?: boolean;
   disabledAddresses?: Address[];
