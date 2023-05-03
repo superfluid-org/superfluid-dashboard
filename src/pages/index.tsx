@@ -32,7 +32,7 @@ const ConnectView: FC = () => {
   const closeAddressSearchDialog = () => setAddressSearchOpen(false);
 
   const onImpersonate = useCallback(
-    (address: string) => impersonate(address),
+    ({ address }: { address: string }) => impersonate(address),
     [impersonate]
   );
 
@@ -89,7 +89,6 @@ const ConnectView: FC = () => {
               open={addressSearchOpen}
               onClose={closeAddressSearchDialog}
               onSelectAddress={onImpersonate}
-              index={<AddressSearchIndex onSelectAddress={onImpersonate} />}
             />
           </Stack>
         </Box>

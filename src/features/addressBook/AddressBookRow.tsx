@@ -13,9 +13,10 @@ import {
   TableCell,
   TableRow,
   Tooltip,
+  TooltipProps,
   Typography,
-  useMediaQuery,
-  useTheme,
+  styled,
+  tooltipClasses,
 } from "@mui/material";
 import { Address, Stream } from "@superfluid-finance/sdk-core";
 import {
@@ -26,15 +27,16 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useAccount } from "wagmi";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import useAddressName from "../../hooks/useAddressName";
 import shortenHex from "../../utils/shortenHex";
-import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { useAppDispatch } from "../redux/store";
 import { updateAddressBookEntry } from "./addressBook.slice";
+import { allNetworks, tryFindNetwork } from "../network/networks";
+import NetworkIcon from "../network/NetworkIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import { CopyIconBtn } from "../common/CopyIconBtn";
 
 interface AddressBookRowProps {
   address: Address;
@@ -43,8 +45,18 @@ interface AddressBookRowProps {
   selectable?: boolean;
   streams: Stream[];
   streamsLoading?: boolean;
+  chainIds?: number[];
+  isContract?: boolean;
   onSelect: (isSelected: boolean) => void;
 }
+
+const WideTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))({
+  [`& .${tooltipClasses.tooltip}`]: {
+    maxWidth: 500,
+  },
+});
 
 const AddressBookRow: FC<AddressBookRowProps> = ({
   address,
@@ -53,10 +65,10 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   selectable,
   streams,
   streamsLoading,
+  chainIds,
+  isContract = false,
   onSelect,
 }) => {
-  const theme = useTheme();
-  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const dispatch = useAppDispatch();
 
   const { visibleAddress } = useVisibleAddress();
@@ -177,12 +189,55 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
           </Stack>
         </Stack>
       </TableCell>
-      <TableCell data-cy={"ens-name"}>{ensName || "-"}</TableCell>
+
       <TableCell data-cy={"actual-address"}>
-        <AddressCopyTooltip address={address}>
-          <span>{shortenHex(address, 6)}</span>
-        </AddressCopyTooltip>
+        <Stack direction="column">
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <WideTooltip arrow title={address}>
+              <Typography variant="body1">{shortenHex(address, 6)} </Typography>
+            </WideTooltip>
+            <CopyIconBtn
+              IconButtonProps={{ size: "small" }}
+              copyText={address}
+            />
+          </Stack>
+
+          {ensName && (
+            <Typography variant="tooltip" sx={{ fontSize: 12 }}>
+              {ensName}
+            </Typography>
+          )}
+        </Stack>
       </TableCell>
+
+      <TableCell>
+        <Box sx={{ overflow: "auto", scrollbarWidth: "none" }}>
+          {chainIds?.length ? (
+            <Stack direction="row">
+              {chainIds.map((networkId, i) => {
+                const network = tryFindNetwork(allNetworks, networkId);
+                return network ? (
+                  <NetworkIcon
+                    sx={{ transform: `translateX(${-i * 10}px)` }}
+                    size={24}
+                    key={`icon-${networkId}`}
+                    network={network}
+                  />
+                ) : (
+                  "-"
+                );
+              })}
+            </Stack>
+          ) : (
+            "-"
+          )}
+        </Box>
+      </TableCell>
+
       <TableCell data-cy={"active-streams"}>
         {!!visibleAddress ? (
           <>

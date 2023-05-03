@@ -56,7 +56,7 @@ export default memo(function MultiAddressSearch({
     setDialogOpen(true);
   };
 
-  const onSelectAddress = (address: string) => {
+  const onSelectAddress = ({ address }: { address: string }) => {
     if (addresses.includes(address)) {
       onChange(addresses.filter((a: string) => a !== address));
     } else {
@@ -90,7 +90,11 @@ export default memo(function MultiAddressSearch({
       {addresses.length > 0 && (
         <List>
           {addresses.map((address) => (
-            <ListItemButton data-cy="selected-address" key={address} sx={{ px: 1 }}>
+            <ListItemButton
+              data-cy="selected-address"
+              key={address}
+              sx={{ px: 1 }}
+            >
               <ListItemAvatar>
                 <AddressAvatar
                   address={address}
@@ -106,7 +110,11 @@ export default memo(function MultiAddressSearch({
                 }
                 primaryTypographyProps={{ variant: "h7" }}
               />
-              <IconButton data-cy="remove-address-btn" onClick={removeAddress(address)} size="small">
+              <IconButton
+                data-cy="remove-address-btn"
+                onClick={removeAddress(address)}
+                size="small"
+              >
                 <CloseRoundedIcon />
               </IconButton>
             </ListItemButton>
@@ -118,13 +126,6 @@ export default memo(function MultiAddressSearch({
         disableAutoselect
         showSelected
         title={dialogTitle}
-        index={
-          <AddressSearchIndex
-            addresses={addresses}
-            onSelectAddress={onSelectAddress}
-            disabledAddresses={disabledAddresses}
-          />
-        }
         addresses={addresses}
         disabledAddresses={disabledAddresses}
         open={dialogOpen}

@@ -57,6 +57,7 @@ import {
   vestingSchedulerQueryEndpoints,
 } from "./endpoints/vestingSchedulerEndpoints";
 import { platformApi } from "./platformApi/platformApi";
+import addressBookRpcApi from "../addressBook/addressBookRpcApi.slice";
 import { autoWrapEndpoints_1of2, autoWrapEndpoints_2of2 } from "./endpoints/autoWrapEndpoints";
 
 export const rpcApiBase = initializeRpcApiSlice((options) =>
@@ -196,6 +197,7 @@ export const reduxStore = configureStore({
     [vestingSubgraphApi.reducerPath]: vestingSubgraphApi.reducer,
     [pushApi.reducerPath]: pushApi.reducer,
     [schedulingSubgraphApi.reducerPath]: schedulingSubgraphApi.reducer,
+    [addressBookRpcApi.reducerPath]: addressBookRpcApi.reducer,
 
     // Persisted slices
     appSettings: appSettingsPersistedReducer,
@@ -234,7 +236,8 @@ export const reduxStore = configureStore({
       .concat(faucetApi.middleware)
       .concat(tokenPriceApi.middleware)
       .concat(accountingApi.middleware)
-      .concat(pushApi.middleware),
+      .concat(pushApi.middleware)
+      .concat(addressBookRpcApi.middleware),
 });
 
 export const reduxPersistor = persistStore(reduxStore);

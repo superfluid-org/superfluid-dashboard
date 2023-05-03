@@ -24,6 +24,7 @@ import DownloadButton from "../components/DownloadButton/DownloadButton";
 import ReadFileButton from "../components/ReadFileButton/ReadFileButton";
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import {
+  adapter,
   addAddressBookEntries,
   addAddressBookEntry,
   AddressBookEntry,
@@ -44,17 +45,19 @@ import StreamActiveFilter, {
   StreamActiveType,
 } from "../features/streamsTable/StreamActiveFilter";
 import { getAddress } from "../utils/memoizedEthersUtils";
+import { wagmiRpcProvider } from "../features/wallet/WagmiManager";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
+import { LoadingButton } from "@mui/lab";
 
 const AddressBook: NextPage = () => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { visibleAddress } = useVisibleAddress(); 
+  const { visibleAddress } = useVisibleAddress();
   const { network } = useExpectedNetwork();
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [page, setPage] = useState({ wallet: 0, contract: 0 });
+  const [rowsPerPage, setRowsPerPage] = useState({ wallet: 25, contract: 25 });
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedAddresses, setSelectedAddresses] = useState<string[]>([]);
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -62,6 +65,7 @@ const AddressBook: NextPage = () => {
   const [streamActiveFilter, setStreamActiveFilter] = useState(
     StreamActiveType.All
   );
+  const [isImportInProgress, setIsImportInProgress] = useState(false);
 
   const addressBookEntries = useAppSelector((state) =>
     addressBookSelectors.selectAll(state.addressBook)
@@ -111,14 +115,14 @@ const AddressBook: NextPage = () => {
 
   const onAddressesFilterChange = (newAddressesFilter: Address[]) => {
     setAddressesFilter(newAddressesFilter);
-    setPage(0);
+    setPage((page) => ({ ...page, address: 0 }));
   };
 
   // Stream active filter
 
   const onStreamActiveFilterChange = (filter: StreamActiveType) => {
     setStreamActiveFilter(filter);
-    setPage(0);
+    setPage((page) => ({ ...page, address: 0 }));
   };
 
   // Adding new address
@@ -126,59 +130,80 @@ const AddressBook: NextPage = () => {
   const openAddDialog = () => setShowAddDialog(true);
   const closeAddDialog = () => setShowAddDialog(false);
 
-  const onAddAddress = (address: Address) => {
-    dispatch(
-      addAddressBookEntry({
-        address,
-      })
-    );
+  const onAddAddress = (...params: AddressBookEntry[]) => {
+    if (params.length === 1) {
+      dispatch(addAddressBookEntry(params[0]));
+    } else {
+      dispatch(addAddressBookEntries(params));
+    }
     closeAddDialog();
   };
 
   // Pagination
 
-  const handleChangePage = (_e: unknown, newPage: number) => {
-    setPage(newPage);
-  };
+  const handleChangePage =
+    (table: "wallet" | "contract") => (_e: unknown, newPage: number) => {
+      setPage((page) => ({ ...page, [table]: newPage }));
+    };
 
-  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+  const handleChangeRowsPerPage =
+    (table: "wallet" | "contract") =>
+    (event: ChangeEvent<HTMLInputElement>) => {
+      setRowsPerPage((rowsPerPage) => ({
+        ...rowsPerPage,
+        [table]: parseInt(event.target.value, 10),
+      }));
+      setPage((page) => ({ ...page, address: 0 }));
+    };
 
   // Importing address book
 
   const onImport = async (file: File) => {
     try {
+      setIsImportInProgress(true);
       const blob = new Blob([file], { type: "text/csv;charset=utf-8" });
       const contents = await blob.text();
 
-      const { data: parsedCSV } = parse<{ address: string; name?: string }>(
-        contents,
-        {
-          header: true,
-          transformHeader: (header: string) => header.toLowerCase(),
-        }
-      );
+      const { data: parsedCSV } = parse<{
+        address: string;
+        name?: string;
+        chainid?: string;
+      }>(contents, {
+        header: true,
+        transformHeader: (header: string) => header.toLowerCase(),
+      });
 
-      const mappedData: AddressBookEntry[] = parsedCSV.reduce(
-        (mappedData: AddressBookEntry[], item, index) => {
+      const mappedData: AddressBookEntry[] = await parsedCSV.reduce(
+        async (mappedData: Promise<AddressBookEntry[]>, item, index) => {
+          const result = await mappedData;
           try {
+            const chainIds = item.chainid
+              ? item.chainid.split(" ").map(Number)
+              : [];
             const parsedItem = {
               name: item.name,
               address: getAddress(item.address),
+              associatedNetworks: chainIds,
+              isContract: false,
             };
 
-            return [...mappedData, parsedItem];
+            const provider = wagmiRpcProvider({ chainId: chainIds[0] });
+
+            if ((await provider.getCode(parsedItem.address)) !== "0x") {
+              parsedItem.isContract = true;
+            }
+
+            return [...result, parsedItem];
           } catch (e) {
             // Using index + 2 here because the first row is for titles
             console.error(`Failed to parse row ${index + 2}!`, e);
             return mappedData;
           }
         },
-        []
+        Promise.resolve([])
       );
 
+      setIsImportInProgress(false);
       insertImportedAddresses(mappedData);
     } catch (e) {
       console.error(
@@ -199,9 +224,10 @@ const AddressBook: NextPage = () => {
   const exportableAddressBookContent = useMemo(
     () =>
       unparse(
-        addressBookEntries.map(({ address, name }) => ({
+        addressBookEntries.map(({ address, name, associatedNetworks }) => ({
           ADDRESS: address,
           NAME: name,
+          CHAINID: associatedNetworks?.join(" "),
         }))
       ),
     [addressBookEntries]
@@ -230,36 +256,60 @@ const AddressBook: NextPage = () => {
     addressBookEntries,
   ]);
 
-  const filteredEntries = useMemo(() => {
-    return mappedEntries
-      .filter(
-        (entry) =>
-          addressesFilter.length === 0 ||
-          addressesFilter.includes(entry.address)
-      )
-      .filter((entry) => {
-        switch (streamActiveFilter) {
-          case StreamActiveType.Active:
-            return entry.streams.some(
-              (stream) => stream.currentFlowRate !== "0"
-            );
+  const filteredEntries = useMemo(
+    () =>
+      mappedEntries
+        .filter(
+          (entry) =>
+            addressesFilter.length === 0 ||
+            addressesFilter.includes(entry.address)
+        )
+        .filter((entry) => {
+          switch (streamActiveFilter) {
+            case StreamActiveType.Active:
+              return entry.streams.some(
+                (stream) => stream.currentFlowRate !== "0"
+              );
 
-          case StreamActiveType.NoActive:
-            return !entry.streams.some(
-              (stream) => stream.currentFlowRate !== "0"
-            );
+            case StreamActiveType.NoActive:
+              return !entry.streams.some(
+                (stream) => stream.currentFlowRate !== "0"
+              );
 
-          default:
-            return true;
-        }
-      });
-  }, [mappedEntries, addressesFilter, streamActiveFilter]);
-
-  const paginatedEntries = useMemo(
-    () => filteredEntries.slice(page * rowsPerPage, (page + 1) * rowsPerPage),
-    [page, rowsPerPage, filteredEntries]
+            default:
+              return true;
+          }
+        }),
+    [mappedEntries, addressesFilter, streamActiveFilter]
   );
 
+  const filteredAddresses = useMemo(
+    () => filteredEntries.filter((entry) => !entry.isContract),
+    [filteredEntries]
+  );
+
+  const filteredContracts = useMemo(
+    () => filteredEntries.filter((entry) => entry.isContract),
+    [filteredEntries]
+  );
+
+  const paginatedAddresses = useMemo(
+    () =>
+      filteredAddresses.slice(
+        page.wallet * rowsPerPage.wallet,
+        (page.wallet + 1) * rowsPerPage.wallet
+      ),
+    [page.wallet, rowsPerPage, filteredAddresses]
+  );
+
+  const paginatedContracts = useMemo(
+    () =>
+      filteredContracts.slice(
+        page.contract * rowsPerPage.contract,
+        (page.contract + 1) * rowsPerPage.contract
+      ),
+    [page.contract, rowsPerPage, filteredContracts]
+  );
   // Deleting addresses
 
   const setRowSelected = (address: Address) => (isSelected: boolean) => {
@@ -278,21 +328,28 @@ const AddressBook: NextPage = () => {
   };
 
   const deleteEntries = useCallback(() => {
-    dispatch(removeAddressBookEntries(selectedAddresses));
+    dispatch(
+      removeAddressBookEntries(
+        filteredEntries
+          .filter((entry) => selectedAddresses.includes(entry.address))
+          .map(adapter.selectId)
+      )
+    );
     cancelDeleting();
 
     // If all entries on the last page are removed then move one page back.
     if (
-      page > 0 &&
-      Math.ceil(filteredEntries.length / rowsPerPage) - 1 === page &&
-      selectedAddresses.length === paginatedEntries.length
+      page.wallet > 0 &&
+      Math.ceil(filteredEntries.length / rowsPerPage.wallet) - 1 ===
+        page.wallet &&
+      selectedAddresses.length === paginatedAddresses.length
     ) {
-      setPage(page - 1);
+      setPage((page) => ({ ...page, address: page.wallet - 1 }));
     }
   }, [
     selectedAddresses,
     dispatch,
-    paginatedEntries,
+    paginatedAddresses,
     filteredEntries,
     rowsPerPage,
     page,
@@ -305,11 +362,12 @@ const AddressBook: NextPage = () => {
     <Container maxWidth="lg">
       <AddressSearchDialog
         title={"Add an address"}
-        index={<AddressSearchIndex onSelectAddress={onAddAddress} />}
         open={showAddDialog}
         onClose={closeAddDialog}
         onSelectAddress={onAddAddress}
         showAddressBook={false}
+        disableAutoselect
+        mode="addressBook"
       />
 
       <Stack gap={isBelowMd ? 2.5 : 4.5}>
@@ -322,13 +380,14 @@ const AddressBook: NextPage = () => {
             <>
               <ReadFileButton onLoaded={onImport} mimeType=".csv">
                 {({ selectFile }) => (
-                  <Button
+                  <LoadingButton
                     variant="outlined"
                     color="secondary"
                     onClick={selectFile}
+                    loading={isImportInProgress}
                   >
                     Import
-                  </Button>
+                  </LoadingButton>
                 )}
               </ReadFileButton>
 
@@ -472,75 +531,171 @@ const AddressBook: NextPage = () => {
           </Paper>
         )}
 
-        {filteredEntries.length > 0 && (
-          <TableContainer
-            component={Paper}
-            sx={{
-              [theme.breakpoints.down("md")]: {
-                borderLeft: 0,
-                borderRight: 0,
-                borderRadius: 0,
-                boxShadow: "none",
-                mx: -2,
-                width: "auto",
-              },
-            }}
-          >
-            <Table sx={{ tableLayout: "fixed" }}>
-              {!isBelowMd && (
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ pl: 10 }}>Name</TableCell>
-                    <TableCell width="200px">ENS Name</TableCell>
-                    <TableCell width="200px">Address</TableCell>
-                    <TableCell width="160px">Active Streams</TableCell>
-                    <TableCell width="88px" />
-                  </TableRow>
-                </TableHead>
-              )}
-              <TableBody>
-                {paginatedEntries.map(({ address, name, streams }) =>
-                  isBelowMd ? (
-                    <AddressBookMobileRow
-                      key={address}
-                      address={address}
-                      selected={selectedAddresses.includes(address)}
-                      selectable={isDeleting}
-                      onSelect={setRowSelected(address)}
-                    />
-                  ) : (
-                    <AddressBookRow
-                      key={address}
-                      address={address}
-                      name={name}
-                      selected={selectedAddresses.includes(address)}
-                      selectable={isDeleting}
-                      onSelect={setRowSelected(address)}
-                      streams={streams}
-                      streamsLoading={streamsLoading}
-                    />
-                  )
-                )}
-              </TableBody>
-            </Table>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={filteredEntries.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
+        {filteredAddresses.length > 0 && (
+          <>
+            <Typography
+              sx={{ marginBottom: isBelowMd ? -1.5 : -3.5 }}
+              variant="h6"
+            >
+              Wallet Addresses
+            </Typography>
+            <TableContainer
+              component={Paper}
               sx={{
-                "> *": {
-                  visibility:
-                    filteredEntries.length <= rowsPerPage
-                      ? "hidden"
-                      : "visible",
+                [theme.breakpoints.down("md")]: {
+                  borderLeft: 0,
+                  borderRight: 0,
+                  borderRadius: 0,
+                  boxShadow: "none",
+                  mx: -2,
+                  width: "auto",
                 },
               }}
-            />
-          </TableContainer>
+            >
+              <Table sx={{ tableLayout: "fixed" }}>
+                {!isBelowMd && (
+                  <TableHead>
+                    <TableRow>
+                      <TableCell width="150px" sx={{ pl: 10 }}>
+                        Name
+                      </TableCell>
+                      <TableCell width="145px">Address</TableCell>
+                      <TableCell width="150px">Networks</TableCell>
+                      <TableCell width="160px">Active Streams</TableCell>
+                      <TableCell width="88px" />
+                    </TableRow>
+                  </TableHead>
+                )}
+                <TableBody>
+                  {paginatedAddresses.map(
+                    ({ address, name, associatedNetworks, streams }) =>
+                      isBelowMd ? (
+                        <AddressBookMobileRow
+                          key={address}
+                          address={address}
+                          selected={selectedAddresses.includes(address)}
+                          selectable={isDeleting}
+                          onSelect={setRowSelected(address)}
+                        />
+                      ) : (
+                        <AddressBookRow
+                          key={address}
+                          address={address}
+                          name={name}
+                          selected={selectedAddresses.includes(address)}
+                          selectable={isDeleting}
+                          onSelect={setRowSelected(address)}
+                          streams={streams}
+                          streamsLoading={streamsLoading}
+                          chainIds={associatedNetworks}
+                        />
+                      )
+                  )}
+                </TableBody>
+              </Table>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                count={filteredAddresses.length}
+                rowsPerPage={rowsPerPage.wallet}
+                page={page.wallet}
+                onPageChange={handleChangePage("wallet")}
+                onRowsPerPageChange={handleChangeRowsPerPage("wallet")}
+                sx={{
+                  "> *": {
+                    visibility:
+                      filteredEntries.length <= rowsPerPage.wallet
+                        ? "hidden"
+                        : "visible",
+                  },
+                }}
+              />
+            </TableContainer>
+          </>
+        )}
+
+        {filteredContracts.length > 0 && (
+          <>
+            <Typography
+              sx={{ marginBottom: isBelowMd ? -1.5 : -3.5 }}
+              variant="h6"
+            >
+              Contract Addresses
+            </Typography>
+            <TableContainer
+              component={Paper}
+              sx={{
+                [theme.breakpoints.down("md")]: {
+                  borderLeft: 0,
+                  borderRight: 0,
+                  borderRadius: 0,
+                  boxShadow: "none",
+                  mx: -2,
+                  width: "auto",
+                },
+              }}
+            >
+              <Table sx={{ tableLayout: "fixed" }}>
+                {!isBelowMd && (
+                  <TableHead>
+                    <TableRow>
+                      <TableCell width="150px" sx={{ pl: 10 }}>
+                        Name
+                      </TableCell>
+                      <TableCell width="145px">Address</TableCell>
+                      <TableCell width="150px">Networks</TableCell>
+                      <TableCell width="160px">Active Streams</TableCell>
+                      <TableCell width="88px" />
+                    </TableRow>
+                  </TableHead>
+                )}
+                <TableBody>
+                  {paginatedContracts.map(
+                    ({ address, name, streams, associatedNetworks }) =>
+                      isBelowMd ? (
+                        <AddressBookMobileRow
+                          key={address}
+                          address={address}
+                          selected={selectedAddresses.includes(address)}
+                          selectable={isDeleting}
+                          onSelect={setRowSelected(address)}
+                        />
+                      ) : (
+                        <AddressBookRow
+                          key={address}
+                          address={address}
+                          name={name}
+                          selected={selectedAddresses.includes(address)}
+                          selectable={isDeleting}
+                          onSelect={setRowSelected(address)}
+                          streams={streams}
+                          streamsLoading={streamsLoading}
+                          isContract
+                          chainIds={associatedNetworks}
+                        />
+                      )
+                  )}
+                </TableBody>
+              </Table>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                count={filteredContracts.length}
+                rowsPerPage={rowsPerPage.contract}
+                page={page.contract}
+                onPageChange={handleChangePage("contract")}
+                onRowsPerPageChange={handleChangeRowsPerPage("contract")}
+                sx={{
+                  "> *": {
+                    visibility:
+                      filteredEntries.length <= rowsPerPage.contract
+                        ? "hidden"
+                        : "visible",
+                  },
+                }}
+              />
+            </TableContainer>
+          </>
         )}
       </Stack>
     </Container>

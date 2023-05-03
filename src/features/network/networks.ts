@@ -716,7 +716,7 @@ export const findNetworkOrThrow = (
 ): Network => {
   const network = tryFindNetwork(networks, value);
   if (!network) {
-    throw new Error("Network not found. This should never happen.");
+    throw new Error(`Network ${value}  not found. This should never happen.`);
   }
   return network;
 };
