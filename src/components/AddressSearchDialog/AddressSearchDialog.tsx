@@ -33,16 +33,12 @@ import { getAddress, isAddress } from "../../utils/memoizedEthersUtils";
 import shortenHex from "../../utils/shortenHex";
 import AddressAvatar from "../Avatar/AddressAvatar";
 import { wagmiRpcProvider } from "../../features/wallet/WagmiManager";
-import {
-  allNetworks,
-  Network,
-  tryFindNetwork,
-} from "../../features/network/networks";
+import { allNetworks, Network } from "../../features/network/networks";
 import NetworkSelect from "../NetworkSelect/NetworkSelect";
 import { LoadingButton } from "@mui/lab";
 import { ensApi } from "../../features/ens/ensApi.slice";
-import { useChainId } from "wagmi";
 import AddressSearchIndex from "../../features/send/AddressSearchIndex";
+import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
@@ -135,7 +131,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
 }) => {
   const theme = useTheme();
 
-  const chainId = useChainId();
+  const { network } = useExpectedNetwork();
 
   const [searchTermVisible, setSearchTermVisible] = useState("");
   const [selectedNetworks, setSelectedNetworks] = useState<Network[]>([]);
@@ -183,28 +179,30 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
 
   useEffect(() => {
     const effect = async () => {
-      const searchTermTrimmed = searchTermVisible.trim();
+      if (mode === "addressBook") {
+        const searchTermTrimmed = searchTermVisible.trim();
 
-      if (!searchTermTrimmed || !isAddress(searchTermTrimmed)) return;
-      setIsContractDetectionLoading(true);
-      const result = (
-        await Promise.all(
-          allNetworks.map(async (network) => {
-            const provider = wagmiRpcProvider({ chainId: network.id });
+        if (!searchTermTrimmed || !isAddress(searchTermTrimmed)) return;
+        setIsContractDetectionLoading(true);
+        const result = (
+          await Promise.all(
+            allNetworks.map(async (network) => {
+              const provider = wagmiRpcProvider({ chainId: network.id });
 
-            const code = await provider.getCode(searchTermTrimmed);
+              const code = await provider.getCode(searchTermTrimmed);
 
-            return {
-              network,
-              code,
-              address: searchTermTrimmed,
-            };
-          })
-        )
-      ).filter(({ code }) => code !== "0x");
+              return {
+                network,
+                code,
+                address: searchTermTrimmed,
+              };
+            })
+          )
+        ).filter(({ code }) => code !== "0x");
 
-      setIsContractDetectionLoading(false);
-      setFoundContracts(result);
+        setIsContractDetectionLoading(false);
+        setFoundContracts(result);
+      }
     };
     effect();
   }, [searchTermVisible]);
@@ -243,7 +241,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
           ({ associatedNetworks }) =>
             !associatedNetworks ||
             associatedNetworks.length === 0 ||
-            associatedNetworks?.includes(chainId)
+            associatedNetworks?.includes(network.id)
         )
         .map(({ address, name }) => (
           <Stack direction="row" alignItems="center" pr={2} key={address}>
@@ -257,7 +255,13 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
             />
           </Stack>
         )),
-    [addressBookResults, addresses, chainId, disabledAddresses, onSelectAddress]
+    [
+      addressBookResults,
+      addresses,
+      network.id,
+      disabledAddresses,
+      onSelectAddress,
+    ]
   );
 
   return (
