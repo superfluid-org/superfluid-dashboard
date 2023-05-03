@@ -3,8 +3,8 @@ import { allNetworks } from "../network/networks";
 import { wagmiRpcProvider } from "../wallet/WagmiManager";
 import { isAddress } from "../../utils/memoizedEthersUtils";
 
-const addressApi = createApi({
-  reducerPath: "addressApi",
+const addressBookRpcApi = createApi({
+  reducerPath: "addressBookRpcApi",
   baseQuery: fetchBaseQuery(),
   endpoints: (builder) => ({
     isContract: builder.query<
@@ -60,4 +60,4 @@ const addressApi = createApi({
   }),
 });
 
-export default addressApi;
+export default addressBookRpcApi;

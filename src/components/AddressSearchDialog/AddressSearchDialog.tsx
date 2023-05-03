@@ -42,7 +42,7 @@ import { LoadingButton } from "@mui/lab";
 import { ensApi } from "../../features/ens/ensApi.slice";
 import AddressSearchIndex from "../../features/send/AddressSearchIndex";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
-import addressApi from "../../features/addressBook/addressApi.slice";
+import addressBookRpcApi from "../../features/addressBook/addressBookRpcApi.slice";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
@@ -180,7 +180,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
     mode === "addressSearch";
 
   const { isFetching: isContractDetectionLoading, data: contractData } =
-    addressApi.useIsContractQuery(searchTermVisible);
+    addressBookRpcApi.useIsContractQuery(searchTermVisible);
 
   const [openCounter, setOpenCounter] = useState(0);
 
