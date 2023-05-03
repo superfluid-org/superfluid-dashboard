@@ -36,7 +36,6 @@ import { updateAddressBookEntry } from "./addressBook.slice";
 import { allNetworks, tryFindNetwork } from "../network/networks";
 import NetworkIcon from "../network/NetworkIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import CopyBtn from "../common/CopyBtn";
 import { CopyIconBtn } from "../common/CopyIconBtn";
 
 interface AddressBookRowProps {
@@ -46,7 +45,7 @@ interface AddressBookRowProps {
   selectable?: boolean;
   streams: Stream[];
   streamsLoading?: boolean;
-  networkIds?: number[];
+  chainIds?: number[];
   isContract?: boolean;
   onSelect: (isSelected: boolean) => void;
 }
@@ -66,7 +65,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   selectable,
   streams,
   streamsLoading,
-  networkIds,
+  chainIds,
   isContract = false,
   onSelect,
 }) => {
@@ -217,9 +216,9 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
 
       <TableCell>
         <Box sx={{ overflow: "auto", scrollbarWidth: "none" }}>
-          {networkIds?.length ? (
+          {chainIds?.length ? (
             <Stack direction="row">
-              {networkIds.map((networkId, i) => {
+              {chainIds.map((networkId, i) => {
                 const network = tryFindNetwork(allNetworks, networkId);
                 return network ? (
                   <NetworkIcon

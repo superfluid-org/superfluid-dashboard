@@ -52,7 +52,6 @@ const NetworkSelect: FC<NetworkSelectProps> = ({
   return (
     <FormControl fullWidth>
       <InputLabel
-        id="demo-multiple-checkbox-label"
         sx={{
           px: 4,
           background: "white",

@@ -11,7 +11,7 @@ import { RootState } from "../redux/store";
 export interface AddressBookEntry {
   address: Address;
   name?: string;
-  associatedNetworks?: number[];
+  associatedNetworks?: number[]; // Chain IDs
   isContract?: boolean;
 }
 

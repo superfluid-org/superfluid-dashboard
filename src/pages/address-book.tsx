@@ -587,7 +587,7 @@ const AddressBook: NextPage = () => {
                           onSelect={setRowSelected(address)}
                           streams={streams}
                           streamsLoading={streamsLoading}
-                          networkIds={associatedNetworks}
+                          chainIds={associatedNetworks}
                         />
                       )
                   )}
@@ -671,7 +671,7 @@ const AddressBook: NextPage = () => {
                           streams={streams}
                           streamsLoading={streamsLoading}
                           isContract
-                          networkIds={associatedNetworks}
+                          chainIds={associatedNetworks}
                         />
                       )
                   )}
