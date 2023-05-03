@@ -180,7 +180,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
     mode === "addressSearch";
 
   const { isFetching: isContractDetectionLoading, data: contractData } =
-    addressApi.endpoints.isContract.useQuery(searchTermVisible);
+    addressApi.useIsContractQuery(searchTermVisible);
 
   const [openCounter, setOpenCounter] = useState(0);
 

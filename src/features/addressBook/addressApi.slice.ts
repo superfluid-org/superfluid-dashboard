@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
-import { Network, allNetworks } from "../network/networks";
+import { allNetworks } from "../network/networks";
 import { wagmiRpcProvider } from "../wallet/WagmiManager";
 import { isAddress } from "../../utils/memoizedEthersUtils";
 
