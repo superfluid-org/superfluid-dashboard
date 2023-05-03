@@ -35,7 +35,6 @@ const addressApi = createApi({
           (acc, curr) => {
             if (curr.code !== "0x")
               return {
-                ...acc,
                 data: {
                   isContract: true,
                   associatedNetworks: [
