@@ -37,6 +37,7 @@ const GnosisSafePrefixByNetworkSlug = {
   avalanche: "avax:",
   optimism: "oeth:",
   goerli: "gor:",
+  celo: "celo:",
 };
 
 const GnosisSafeAddressesPerNetwork = {
@@ -48,6 +49,7 @@ const GnosisSafeAddressesPerNetwork = {
   avalanche: "0x0BBE3e9f2FB2813E1418ddAf647d64A70de697d0",
   optimism: "0x9Fa707BCCA8B7163da2A30143b70A9b8BE0d0788",
   goerli: "0x3277Ea3910A354621f144022647082E1E06fDe8a",
+  celo: "0x70fd86d7196813505ca9f9a77ef53Ab06A5ca603",
 };
 
 export class GnosisSafe extends BasePage {
