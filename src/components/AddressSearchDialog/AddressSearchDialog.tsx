@@ -32,13 +32,17 @@ import useAddressName from "../../hooks/useAddressName";
 import { getAddress, isAddress } from "../../utils/memoizedEthersUtils";
 import shortenHex from "../../utils/shortenHex";
 import AddressAvatar from "../Avatar/AddressAvatar";
-import { wagmiRpcProvider } from "../../features/wallet/WagmiManager";
-import { allNetworks, Network } from "../../features/network/networks";
+import {
+  allNetworks,
+  findNetworkOrThrow,
+  Network,
+} from "../../features/network/networks";
 import NetworkSelect from "../NetworkSelect/NetworkSelect";
 import { LoadingButton } from "@mui/lab";
 import { ensApi } from "../../features/ens/ensApi.slice";
 import AddressSearchIndex from "../../features/send/AddressSearchIndex";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
+import addressApi from "../../features/addressBook/addressApi.slice";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
@@ -138,11 +142,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
   const [searchTermVisible, setSearchTermVisible] = useState("");
   const [selectedNetworks, setSelectedNetworks] = useState<Network[]>([]);
   const [name, setName] = useState("");
-  const [foundContracts, setFoundContracts] = useState<
-    { address: string; network: Network; code: string }[]
-  >([]);
-  const [isContractDetectionLoading, setIsContractDetectionLoading] =
-    useState(false);
+
   const [searchTermDebounced, _setSearchTermDebounced] =
     useState(searchTermVisible);
 
@@ -179,35 +179,8 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
     !isAddress(searchTermDebounced) &&
     mode === "addressSearch";
 
-  useEffect(() => {
-    const effect = async () => {
-      if (mode === "addressBook") {
-        const searchTermTrimmed = searchTermVisible.trim();
-
-        if (!searchTermTrimmed || !isAddress(searchTermTrimmed)) return;
-        setIsContractDetectionLoading(true);
-        const result = (
-          await Promise.all(
-            allNetworks.map(async (network) => {
-              const provider = wagmiRpcProvider({ chainId: network.id });
-
-              const code = await provider.getCode(searchTermTrimmed);
-
-              return {
-                network,
-                code,
-                address: searchTermTrimmed,
-              };
-            })
-          )
-        ).filter(({ code }) => code !== "0x");
-
-        setIsContractDetectionLoading(false);
-        setFoundContracts(result);
-      }
-    };
-    effect();
-  }, [searchTermVisible]);
+  const { isFetching: isContractDetectionLoading, data: contractData } =
+    addressApi.endpoints.isContract.useQuery(searchTermVisible);
 
   const [openCounter, setOpenCounter] = useState(0);
 
@@ -216,7 +189,6 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
       setOpenCounter(openCounter + 1);
       setSearchTermVisible(""); // Reset the search term when the dialog opens, not when it closes (because then there would be noticable visual clearing of the field). It's smoother UI to do it on opening.
       setSearchTermDebounced(""); // Reset the search term when the dialog opens, not when it closes (because then there would be noticable visual clearing of the field). It's smoother UI to do it on opening.
-      setFoundContracts([]);
       setSelectedNetworks([]);
       setName("");
     }
@@ -287,7 +259,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
         <Stack direction="column" gap={1}>
           <Stack>
             <Typography sx={{ m: 1 }} variant="h6">
-              {foundContracts.length > 0 ? "Contract " : "Wallet"} Address
+              {contractData?.isContract ? "Contract " : "Wallet"} Address
             </Typography>
             <TextField
               data-cy={"address-dialog-input"}
@@ -320,12 +292,14 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                 </Typography>
                 <NetworkSelect
                   selectedNetworks={
-                    foundContracts.length === 0
-                      ? selectedNetworks
-                      : foundContracts.map(({ network }) => network)
+                    contractData?.isContract
+                      ? contractData?.associatedNetworks.map((id) =>
+                          findNetworkOrThrow(allNetworks, id)
+                        )
+                      : selectedNetworks
                   }
                   onSelect={setSelectedNetworks}
-                  readonly={foundContracts.length > 0}
+                  readonly={contractData?.isContract}
                 />
               </Stack>
             </>
@@ -420,22 +394,18 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
               disabled={
                 isContractDetectionLoading ||
                 !Boolean(searchTermVisible) ||
-                (!ensData && !checksummedSearchedAddress)
+                !(ensData || checksummedSearchedAddress)
               }
               fullWidth
               variant="contained"
               onClick={() => {
                 onSelectAddress({
-                  address:
-                    foundContracts[0]?.address ??
-                    ensData?.address ??
-                    checksummedSearchedAddress,
-                  associatedNetworks:
-                    foundContracts.length > 0
-                      ? foundContracts.map(({ network }) => network.id)
-                      : selectedNetworks.map(({ id }) => id),
+                  address: ensData?.address ?? checksummedSearchedAddress!,
+                  associatedNetworks: contractData?.isContract
+                    ? contractData.associatedNetworks
+                    : selectedNetworks.map(({ id }) => id),
                   name,
-                  isContract: foundContracts.length > 0,
+                  isContract: contractData?.isContract,
                 });
               }}
             >
