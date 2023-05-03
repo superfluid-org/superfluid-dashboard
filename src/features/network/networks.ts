@@ -130,8 +130,8 @@ export const networkDefinition = {
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.goerli.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.goerli.id],
-      lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
-      upperLimit: BigNumber.from(UnitOfTime.Day * 7),
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
   } as const,
   gnosis: {
@@ -181,8 +181,8 @@ export const networkDefinition = {
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.gnosis.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.gnosis.id],
-      lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
-      upperLimit: BigNumber.from(UnitOfTime.Day * 7),
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
   } as const,
   polygon: {
@@ -223,8 +223,8 @@ export const networkDefinition = {
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.polygon.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.polygon.id],
-      lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
-      upperLimit: BigNumber.from(UnitOfTime.Day * 7),
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
   } as const,
   polygonMumbai: {
@@ -265,8 +265,8 @@ export const networkDefinition = {
       managerContractAddress: autoWrapManagerAddresses[chain.polygonMumbai.id],
       strategyContractAddress:
         autoWrapStrategyAddresses[chain.polygonMumbai.id],
-      lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
-      upperLimit: BigNumber.from(UnitOfTime.Day * 7),
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
   } as const,
   avalancheFuji: {
@@ -317,8 +317,8 @@ export const networkDefinition = {
       managerContractAddress: autoWrapManagerAddresses[chain.avalancheFuji.id],
       strategyContractAddress:
         autoWrapStrategyAddresses[chain.avalancheFuji.id],
-      lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
-      upperLimit: BigNumber.from(UnitOfTime.Day * 7),
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
   } as const,
   optimism: {
@@ -359,8 +359,8 @@ export const networkDefinition = {
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.optimism.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.optimism.id],
-      lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
-      upperLimit: BigNumber.from(UnitOfTime.Day * 7),
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
   } as const,
   arbitrum: {
@@ -401,8 +401,8 @@ export const networkDefinition = {
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.arbitrum.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.arbitrum.id],
-      lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
-      upperLimit: BigNumber.from(UnitOfTime.Day * 7),
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
   } as const,
   avalancheC: {
@@ -454,8 +454,8 @@ export const networkDefinition = {
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.avalanche.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.avalanche.id],
-      lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
-      upperLimit: BigNumber.from(UnitOfTime.Day * 7),
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
   } as const,
   bsc: {
@@ -504,8 +504,8 @@ export const networkDefinition = {
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.bsc.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.bsc.id],
-      lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
-      upperLimit: BigNumber.from(UnitOfTime.Day * 7),
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
   } as const,
   ethereum: {
@@ -546,7 +546,7 @@ export const networkDefinition = {
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.mainnet.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.mainnet.id],
-      lowerLimit: BigNumber.from(UnitOfTime.Day * 2),
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
       upperLimit: BigNumber.from(UnitOfTime.Day * 28),
     },
   } as const,
