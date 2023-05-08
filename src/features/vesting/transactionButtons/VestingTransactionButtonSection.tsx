@@ -8,6 +8,7 @@ import { ValidVestingForm } from "../CreateVestingFormProvider";
 import { CreateVestingCardView, VestingToken } from "../CreateVestingSection";
 import { Network } from "../../network/networks";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { Stack, Step, StepLabel, Stepper } from "@mui/material";
 
 export interface VestingTransactionSectionProps {
   network: Network;
@@ -15,10 +16,16 @@ export interface VestingTransactionSectionProps {
   setView: (value: CreateVestingCardView) => void;
 }
 
+const autoWrapSteps = [
+  { label: "Auto-Wrap" },
+  { label: "Allowance" },
+  { label: "Create" },
+] as const;
+
 export function VestingTransactionButtonSection({
   token,
   network,
-  setView
+  setView,
 }: VestingTransactionSectionProps) {
   const { watch } = useFormContext<ValidVestingForm>();
 
@@ -64,23 +71,39 @@ export function VestingTransactionButtonSection({
       (!isAutoWrapStrategyConfiguredLoading && isAutoWrapStrategyConfigured)
   );
 
-  return (
-    <>
-      {setupAutoWrap && (
-        <>
-          <AutoWrapAllowanceTransactionButton
-            token={token}
-            isVisible={!isAutoWrapAllowanceOK}
-          />
-          <AutoWrapStrategyTransactionButton
-            token={token}
-            isVisible={isAutoWrapAllowanceOK && !isAutoWrapStrategyOK}
-          />
-        </>
-      )}
-      {isAutoWrapAllowanceOK && isAutoWrapStrategyOK && (
-        <CreateVestingTransactionButton setView={setView} />
-      )}
-    </>
-  );
+  if (!setupAutoWrap) {
+    return (
+      <CreateVestingTransactionButton setView={setView} isVisible={true} />
+    );
+  } else {
+    const activeStep = !isAutoWrapStrategyOK
+      ? 0
+      : !isAutoWrapAllowanceOK
+      ? 1
+      : 2;
+
+    return (
+      <Stack spacing={3}>
+        <Stepper activeStep={activeStep}>
+          {autoWrapSteps.map((step) => (
+            <Step key={step.label}>
+              <StepLabel>{step.label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+        <AutoWrapStrategyTransactionButton
+          token={token}
+          isVisible={activeStep == 0}
+        />
+        <AutoWrapAllowanceTransactionButton
+          token={token}
+          isVisible={activeStep == 1}
+        />
+        <CreateVestingTransactionButton
+          setView={setView}
+          isVisible={activeStep == 2}
+        />
+      </Stack>
+    );
+  }
 }

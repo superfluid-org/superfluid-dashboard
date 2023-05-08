@@ -14,15 +14,23 @@ import { calculateAdditionalDataFromValidVestingForm } from "../calculateAdditio
 import { ValidVestingForm } from "../CreateVestingFormProvider";
 import { CreateVestingCardView } from "../CreateVestingSection";
 
-export const CreateVestingTransactionButton: FC<{
+interface Props {
   setView: (value: CreateVestingCardView) => void;
-}> = ({ setView }) => {
+  isVisible: boolean;
+}
+
+export const CreateVestingTransactionButton: FC<Props> = ({
+  setView,
+  isVisible: _isVisible,
+}) => {
   const { txAnalytics } = useAnalytics();
   const [createVestingSchedule, createVestingScheduleResult] =
     rpcApi.useCreateVestingScheduleMutation();
 
   const { formState, handleSubmit } = useFormContext<ValidVestingForm>();
   const isDisabled = !formState.isValid || formState.isValidating;
+
+  const isVisible = !createVestingScheduleResult.isSuccess && _isVisible;
 
   return (
     <TransactionBoundary mutationResult={createVestingScheduleResult}>
@@ -32,7 +40,7 @@ export const CreateVestingTransactionButton: FC<{
         setDialogLoadingInfo,
         setDialogSuccessActions,
       }) =>
-        !createVestingScheduleResult.isSuccess && (
+        isVisible && (
           <TransactionButton
             dataCy={"create-schedule-tx-button"}
             disabled={isDisabled}
@@ -76,7 +84,7 @@ export const CreateVestingTransactionButton: FC<{
                   createVestingSchedule({
                     ...primaryArgs,
                     signer,
-                    overrides: await getOverrides()
+                    overrides: await getOverrides(),
                   })
                     .unwrap()
                     .then(

@@ -48,7 +48,6 @@ export const TransactionButton: FC<TransactionButtonProps> = ({
         color="primary"
         {...buttonProps}
         loading={mutationResult.isLoading || transaction?.status === "Pending"}
-        loadingPosition="start"
         disabled={!signer}
         onClick={() => {
           if (!signer) throw Error("Signer not defined.");

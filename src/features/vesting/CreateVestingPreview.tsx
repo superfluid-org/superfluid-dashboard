@@ -73,7 +73,7 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
         />
       </Box>
 
-      <Stack gap={2}>
+      <Stack gap={2} sx={{ mb: 2}}>
         <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
           <Stack>
             <Typography color="text.secondary">
