@@ -3,9 +3,9 @@ import {
   getFramework,
   RpcEndpointBuilder,
 } from "@superfluid-finance/sdk-redux";
-import { constants } from "ethers";
+import { BigNumber, constants } from "ethers";
 import { getAutoWrap } from "../../../eth-sdk/getEthSdk";
-import { rpcApiBase } from "../store";
+import { dateNowSeconds } from "../../../utils/dateUtils";
 
 export type WrapSchedule = {
   user: string;
@@ -43,10 +43,11 @@ const getActiveWrapScheduleEndpoint = (builder: RpcEndpointBuilder) =>
         lowerLimit: rawWrapSchedule.lowerLimit.toString(), // Should have been `number`, not `BigNumber`.
         upperLimit: rawWrapSchedule.upperLimit.toString(), // Should have been `number`, not `BigNumber`.
       };
+      const isExpired = rawWrapSchedule.expiry.lt(BigNumber.from(dateNowSeconds()));
 
       return {
         data:
-          rawWrapSchedule.strategy === constants.AddressZero
+          rawWrapSchedule.strategy === constants.AddressZero || isExpired
             ? null
             : wrapSchedule,
       };
@@ -59,56 +60,28 @@ const getActiveWrapScheduleEndpoint = (builder: RpcEndpointBuilder) =>
     ],
   });
 
-const isAutoWrapStrategyConfiguredEndpoint = (builder: RpcEndpointBuilder) =>
-  builder.query<boolean, GetWrapSchedule>({
-    queryFn: async (arg, { dispatch }) => {
-      const framework = await getFramework(arg.chainId);
-      const { strategy } = getAutoWrap(
-        arg.chainId,
-        framework.settings.provider
-      );
-
-      const getWrapSchedule = dispatch(
-        rpcApiBase.endpoints.getActiveWrapSchedule.initiate(arg, {
-          subscribe: true,
-        })
-      );
-      const wrapSchedule = await getWrapSchedule
-        .unwrap()
-        .finally(() => getWrapSchedule.unsubscribe());
-
-      const isStrategyConfigured =
-        wrapSchedule?.strategy.toLowerCase() === strategy.address.toLowerCase();
-
-      // NOTE: To be completely correct, other properties should be checked as well. For example, to check that it's not expired...
-
-      return {
-        data: isStrategyConfigured,
-      };
-    },
-    providesTags: (_result, _error, arg) => [
-      {
-        type: "GENERAL",
-        id: arg.chainId,
-      },
-    ],
-  });
-
-const isAutoWrapAllowanceConfiguredEndpoint = (builder: RpcEndpointBuilder) =>
-  builder.query<boolean, GetWrapSchedule>({
+const isAutoWrapAllowanceSufficientEndpoint = (builder: RpcEndpointBuilder) =>
+  builder.query<boolean, GetWrapSchedule & { upperLimit: string }>({
     queryFn: async (arg) => {
       const framework = await getFramework(arg.chainId);
-      const tokenContract = ERC20__factory.connect(arg.underlyingTokenAddress, framework.settings.provider);
+      const tokenContract = ERC20__factory.connect(
+        arg.underlyingTokenAddress,
+        framework.settings.provider
+      );
 
       const { strategy } = getAutoWrap(
         arg.chainId,
         framework.settings.provider
       );
 
-      const allowance = await tokenContract.allowance(arg.accountAddress, strategy.address);
+      const allowance = await tokenContract.allowance(
+        arg.accountAddress,
+        strategy.address
+      );
+      const upperLimit = BigNumber.from(arg.upperLimit);
 
       return {
-        data: !allowance.isZero(), // Meh... We check that there has been some allowance interaction.
+        data: allowance.gte(upperLimit),
       };
     },
     providesTags: (_result, _error, arg) => [
@@ -119,16 +92,10 @@ const isAutoWrapAllowanceConfiguredEndpoint = (builder: RpcEndpointBuilder) =>
     ],
   });
 
-export const autoWrapEndpoints_1of2 = {
+export const autoWrapEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
     getActiveWrapSchedule: getActiveWrapScheduleEndpoint(builder),
-    isAutoWrapAllowanceConfigured: isAutoWrapAllowanceConfiguredEndpoint(builder)
-  }),
-};
-
-export const autoWrapEndpoints_2of2 = {
-  endpoints: (builder: RpcEndpointBuilder) => ({
-    isAutoWrapStrategyConfigured:
-      isAutoWrapStrategyConfiguredEndpoint(builder),
+    isAutoWrapAllowanceSufficient:
+      isAutoWrapAllowanceSufficientEndpoint(builder),
   }),
 };

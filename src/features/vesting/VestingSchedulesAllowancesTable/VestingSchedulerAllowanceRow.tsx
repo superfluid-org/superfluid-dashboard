@@ -24,16 +24,15 @@ import {
   isCloseToUnlimitedFlowRateAllowance,
   isCloseToUnlimitedTokenAllowance,
 } from "../../../utils/isCloseToUnlimitedAllowance";
-import { useAnalytics } from "../../analytics/useAnalytics";
 import { Network } from "../../network/networks";
 import { rpcApi, subgraphApi } from "../../redux/store";
 import Amount from "../../token/Amount";
 import TokenIcon from "../../token/TokenIcon";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { getSuperTokenType } from "../../redux/endpoints/adHocSubgraphEndpoints";
 import { TokenType } from "../../redux/endpoints/tokenTypes";
 import RemoveCircleRoundedIcon from "@mui/icons-material/RemoveCircleRounded";
 import FixVestingPermissionsBtn from "./FixVestingPermissionsBtn";
+import useActiveAutoWrap from "../useActiveAutoWrap";
 
 export const VestingSchedulerAllowanceRowSkeleton = () => {
   const theme = useTheme();
@@ -132,19 +131,31 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   );
 
   const isAutoWrappable =
-    tokenType && tokenType === TokenType.WrapperSuperToken;
+    token && tokenType && tokenType === TokenType.WrapperSuperToken;
 
-  const { data: isAutoWrapEnabled, isLoading: isAutoWrapEnabledLoading } =
-    rpcApi.useIsAutoWrapStrategyConfiguredQuery(
-      network.autoWrap && token && isAutoWrappable
-        ? {
-            chainId: network.id,
-            accountAddress: senderAddress,
-            superTokenAddress: token.id,
-            underlyingTokenAddress: token.underlyingAddress,
-          }
-        : skipToken
-    );
+  const {
+    isAutoWrapLoading,
+    activeAutoWrapSchedule,
+    isAutoWrapAllowanceSufficient,
+  } = useActiveAutoWrap(
+    isAutoWrappable
+      ? {
+          chainId: network.id,
+          accountAddress: senderAddress,
+          superTokenAddress: token.id,
+          underlyingTokenAddress: token.underlyingAddress,
+        }
+      : "skip"
+  );
+
+  const isAutoWrapOK = Boolean(
+    activeAutoWrapSchedule && isAutoWrapAllowanceSufficient
+  );
+
+  const { address: currentAccountAddress } = useAccount();
+  const isSenderLooking =
+    currentAccountAddress &&
+    senderAddress.toLowerCase() === currentAccountAddress.toLowerCase();
 
   const vestingSchedulerAllowancesQuery =
     rpcApi.useGetVestingSchedulerAllowancesQuery({
@@ -152,14 +163,6 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
       tokenAddress: tokenAddress,
       senderAddress: senderAddress,
     });
-
-  const { txAnalytics } = useAnalytics();
-  const [fixAccess, fixAccessResult] = rpcApi.useFixAccessForVestingMutation();
-
-  const { address: currentAccountAddress } = useAccount();
-  const isSenderLooking =
-    currentAccountAddress &&
-    senderAddress.toLowerCase() === currentAccountAddress.toLowerCase();
 
   if (!vestingSchedulerAllowancesQuery.data) {
     return <VestingSchedulerAllowanceRowSkeleton />;
@@ -264,9 +267,9 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
             </TableCell>
             {network.autoWrap && (
               <TableCell align="center">
-                {isAutoWrapEnabledLoading ? (
+                {isAutoWrapLoading ? (
                   <Skeleton variant="circular" width={24} height={24} />
-                ) : isAutoWrapEnabled ? (
+                ) : isAutoWrapOK ? (
                   <CheckCircleRoundedIcon
                     data-cy={`${tokenSymbol}-auto-wrap-status`}
                     color="primary"

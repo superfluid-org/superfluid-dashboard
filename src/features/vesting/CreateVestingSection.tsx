@@ -2,8 +2,6 @@ import {
   Box,
   IconButton,
   Stack,
-  Step,
-  Stepper,
   Typography,
   useMediaQuery,
   useTheme,

@@ -29,8 +29,7 @@ import TooltipWithIcon from "../common/TooltipWithIcon";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
-import { TokenType } from "../redux/endpoints/tokenTypes";
-import { rpcApi, subgraphApi } from "../redux/store";
+import { subgraphApi } from "../redux/store";
 import AddressSearch from "../send/AddressSearch";
 import {
   timeUnitWordMap,
@@ -42,6 +41,7 @@ import { transactionButtonDefaultProps } from "../transactionBoundary/Transactio
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { PartialVestingForm } from "./CreateVestingFormProvider";
 import { CreateVestingCardView, VestingToken } from "./CreateVestingSection";
+import useActiveAutoWrap from "./useActiveAutoWrap";
 
 export enum VestingFormLabels {
   Receiver = "Receiver",
@@ -406,25 +406,30 @@ const CreateVestingForm: FC<{
   );
 
   const { visibleAddress } = useVisibleAddress();
+
+  const queryAutoWrap =
+    network.autoWrap && token && token.underlyingAddress && visibleAddress && token.address.toLowerCase() !== network.nativeCurrency.superToken.address.toLowerCase();
+
   const {
-    isLoading: isAutoWrapStatusLoading,
-    currentData: isAutoWrapConfigured,
-  } = rpcApi.useIsAutoWrapStrategyConfiguredQuery(
-    network.autoWrap && token && token.underlyingAddress && visibleAddress
+    isAutoWrapLoading,
+    activeAutoWrapSchedule,
+    isAutoWrapAllowanceSufficient,
+  } = useActiveAutoWrap(
+    queryAutoWrap
       ? {
           chainId: network.id,
           accountAddress: visibleAddress,
           superTokenAddress: token.address,
           underlyingTokenAddress: token.underlyingAddress,
         }
-      : skipToken
+      : "skip"
   );
 
-  const isAutoWrapVisible =
-    network.autoWrap &&
-    token?.type === TokenType.WrapperSuperToken &&
-    !isAutoWrapStatusLoading &&
-    !isAutoWrapConfigured;
+  const isAutoWrapInputVisible =
+    queryAutoWrap &&
+    !isAutoWrapLoading &&
+    !activeAutoWrapSchedule &&
+    !isAutoWrapAllowanceSufficient;
 
   const AutoWrapController = (
     <Controller
@@ -438,7 +443,7 @@ const CreateVestingForm: FC<{
           }
         />
       )}
-    ></Controller>
+    />
   );
 
   const PreviewVestingScheduleButton = (
@@ -573,7 +578,7 @@ const CreateVestingForm: FC<{
           </Box>
         )}
 
-        {isAutoWrapVisible && (
+        {isAutoWrapInputVisible && (
           <Stack direction="row" alignItems="center">
             {AutoWrapController}
             <TooltipWithIcon title={VestingTooltips.AutoWrap} />

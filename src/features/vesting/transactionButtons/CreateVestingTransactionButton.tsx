@@ -21,7 +21,7 @@ interface Props {
 
 export const CreateVestingTransactionButton: FC<Props> = ({
   setView,
-  isVisible: _isVisible,
+  isVisible: isVisible_,
 }) => {
   const { txAnalytics } = useAnalytics();
   const [createVestingSchedule, createVestingScheduleResult] =
@@ -30,7 +30,7 @@ export const CreateVestingTransactionButton: FC<Props> = ({
   const { formState, handleSubmit } = useFormContext<ValidVestingForm>();
   const isDisabled = !formState.isValid || formState.isValidating;
 
-  const isVisible = !createVestingScheduleResult.isSuccess && _isVisible;
+  const isVisible = !createVestingScheduleResult.isSuccess && isVisible_;
 
   return (
     <TransactionBoundary mutationResult={createVestingScheduleResult}>

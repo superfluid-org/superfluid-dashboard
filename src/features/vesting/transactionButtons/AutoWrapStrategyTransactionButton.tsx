@@ -19,7 +19,8 @@ const TX_TITLE: TransactionTitle = "Enable Auto-Wrap";
 const AutoWrapStrategyTransactionButton: FC<{
   token: VestingToken;
   isVisible: boolean;
-}> = ({ token, isVisible }) => {
+  isDisabled: boolean;
+}> = ({ token, isVisible, isDisabled: isDisabled_ }) => {
   const { data: signer } = useSigner();
   const { network } = useExpectedNetwork();
 
@@ -57,6 +58,7 @@ const AutoWrapStrategyTransactionButton: FC<{
   });
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
+  const isDisabled = isDisabled_ && !config;
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
@@ -69,7 +71,7 @@ const AutoWrapStrategyTransactionButton: FC<{
       }) =>
         isVisible && (
           <TransactionButton
-            disabled={!config}
+            disabled={isDisabled}
             onClick={async (signer) => {
               if (!config) throw new Error("This should never happen!");
 

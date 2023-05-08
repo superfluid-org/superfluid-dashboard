@@ -1,5 +1,4 @@
 import { useFormContext } from "react-hook-form";
-import { rpcApi } from "../../redux/store";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import AutoWrapAllowanceTransactionButton from "./AutoWrapAllowanceTransactionButton";
 import AutoWrapStrategyTransactionButton from "./AutoWrapStrategyTransactionButton";
@@ -7,8 +6,8 @@ import { CreateVestingTransactionButton } from "./CreateVestingTransactionButton
 import { ValidVestingForm } from "../CreateVestingFormProvider";
 import { CreateVestingCardView, VestingToken } from "../CreateVestingSection";
 import { Network } from "../../network/networks";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Stack, Step, StepLabel, Stepper } from "@mui/material";
+import useActiveAutoWrap from "../useActiveAutoWrap";
 
 export interface VestingTransactionSectionProps {
   network: Network;
@@ -34,9 +33,10 @@ export function VestingTransactionButtonSection({
   const { visibleAddress } = useVisibleAddress();
 
   const {
-    data: isAutoWrapAllowanceConfigured,
-    isLoading: isAutoWrapAllowanceLoading,
-  } = rpcApi.useIsAutoWrapAllowanceConfiguredQuery(
+    isAutoWrapLoading,
+    activeAutoWrapSchedule,
+    isAutoWrapAllowanceSufficient,
+  } = useActiveAutoWrap(
     setupAutoWrap && visibleAddress
       ? {
           chainId: network.id,
@@ -44,31 +44,7 @@ export function VestingTransactionButtonSection({
           superTokenAddress: token.address,
           underlyingTokenAddress: token.underlyingAddress,
         }
-      : skipToken
-  );
-
-  const isAutoWrapAllowanceOK = Boolean(
-    !setupAutoWrap ||
-      (!isAutoWrapAllowanceLoading && isAutoWrapAllowanceConfigured)
-  );
-
-  const {
-    data: isAutoWrapStrategyConfigured,
-    isLoading: isAutoWrapStrategyConfiguredLoading,
-  } = rpcApi.useIsAutoWrapStrategyConfiguredQuery(
-    setupAutoWrap && visibleAddress
-      ? {
-          chainId: network.id,
-          accountAddress: visibleAddress,
-          superTokenAddress: token.address,
-          underlyingTokenAddress: token.underlyingAddress,
-        }
-      : skipToken
-  );
-
-  const isAutoWrapStrategyOK = Boolean(
-    !setupAutoWrap ||
-      (!isAutoWrapStrategyConfiguredLoading && isAutoWrapStrategyConfigured)
+      : "skip"
   );
 
   if (!setupAutoWrap) {
@@ -76,9 +52,9 @@ export function VestingTransactionButtonSection({
       <CreateVestingTransactionButton setView={setView} isVisible={true} />
     );
   } else {
-    const activeStep = !isAutoWrapStrategyOK
+    const activeStep = !activeAutoWrapSchedule
       ? 0
-      : !isAutoWrapAllowanceOK
+      : !isAutoWrapAllowanceSufficient
       ? 1
       : 2;
 
@@ -94,10 +70,12 @@ export function VestingTransactionButtonSection({
         <AutoWrapStrategyTransactionButton
           token={token}
           isVisible={activeStep == 0}
+          isDisabled={isAutoWrapLoading}
         />
         <AutoWrapAllowanceTransactionButton
           token={token}
           isVisible={activeStep == 1}
+          isDisabled={isAutoWrapLoading}
         />
         <CreateVestingTransactionButton
           setView={setView}

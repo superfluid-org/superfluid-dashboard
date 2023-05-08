@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
-import { BigNumber, constants } from "ethers";
+import { constants } from "ethers";
 import { FC, memo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useQuery, useSigner } from "wagmi";
@@ -14,12 +14,13 @@ import { VestingToken } from "../CreateVestingSection";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
 
-const TX_TITLE: TransactionTitle = "Approve Allowance"
+const TX_TITLE: TransactionTitle = "Approve Allowance";
 
 const AutoWrapAllowanceTransactionButton: FC<{
   token: VestingToken;
   isVisible: boolean;
-}> = ({ token, isVisible }) => {
+  isDisabled: boolean;
+}> = ({ token, isVisible, isDisabled: isDisabled_ }) => {
   const { network } = useExpectedNetwork();
   const { watch } = useFormContext<ValidVestingForm>();
   const [setupAutoWrap] = watch(["data.setupAutoWrap"]);
@@ -49,11 +50,11 @@ const AutoWrapAllowanceTransactionButton: FC<{
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
 
   const underlyingTokenQuery = subgraphApi.useTokenQuery({
-      chainId: network.id,
-      id: token.underlyingAddress
-    }
-  );
+    chainId: network.id,
+    id: token.underlyingAddress,
+  });
   const underlyingToken = underlyingTokenQuery.data;
+  const isDisabled = isDisabled_ && !config;
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
@@ -66,7 +67,7 @@ const AutoWrapAllowanceTransactionButton: FC<{
       }) =>
         isVisible && (
           <TransactionButton
-            disabled={!config}
+            disabled={isDisabled}
             onClick={async (signer) => {
               if (!config) throw new Error("This should never happen!");
 
@@ -92,7 +93,7 @@ const AutoWrapAllowanceTransactionButton: FC<{
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}
           >
-            Approve {underlyingToken && underlyingToken.symbol} Allowance 
+            Approve {underlyingToken && underlyingToken.symbol} Allowance
           </TransactionButton>
         )
       }
