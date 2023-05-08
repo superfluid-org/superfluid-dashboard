@@ -3,7 +3,6 @@ import {
   IconButton,
   Stack,
   Step,
-  StepLabel,
   Stepper,
   Typography,
   useMediaQuery,
@@ -120,20 +119,6 @@ export const CreateVestingSection: FC<CreateVestingSectionProps> = ({
     </Box>
   );
 
-  const StepperContainer = (
-    <Stepper activeStep={view} sx={{ mt: 0, mb: 4 }}>
-      <Step key={CreateVestingCardView.Form}>
-        <StepLabel>Create</StepLabel>
-      </Step>
-      <Step key={CreateVestingCardView.Preview}>
-        <StepLabel>Preview</StepLabel>
-      </Step>
-      <Step key={CreateVestingCardView.Approving}>
-        <StepLabel>Approve</StepLabel>
-      </Step>
-    </Stepper>
-  );
-
   return (
     <Box>
       <Stack
@@ -164,8 +149,6 @@ export const CreateVestingSection: FC<CreateVestingSectionProps> = ({
           }}
         />
       </Stack>
-
-      {StepperContainer}
 
       <Box sx={{ position: "relative", mx: -1, px: 1 }}>
         {view === CreateVestingCardView.Form && (
