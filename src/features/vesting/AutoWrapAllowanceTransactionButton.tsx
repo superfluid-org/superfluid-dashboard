@@ -6,7 +6,7 @@ import { useFormContext } from "react-hook-form";
 import { useQuery, useSigner } from "wagmi";
 import { usePrepareErc20Approve } from "../../generated";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { rpcApi } from "../redux/store";
+import { rpcApi, subgraphApi } from "../redux/store";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
@@ -14,7 +14,7 @@ import { VestingToken } from "./CreateVestingSection";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { convertOverridesForWagmi } from "../../utils/convertOverridesForWagmi";
 
-const TX_TITLE: TransactionTitle = "Authorize Auto-Wrap";
+const TX_TITLE: TransactionTitle = "Approve Allowance"
 
 const AutoWrapAllowanceTransactionButton: FC<{
   token: VestingToken;
@@ -48,6 +48,13 @@ const AutoWrapAllowanceTransactionButton: FC<{
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
 
+  const underlyingTokenQuery = subgraphApi.useTokenQuery({
+      chainId: network.id,
+      id: token.underlyingAddress
+    }
+  );
+  const underlyingToken = underlyingTokenQuery.data;
+
   return (
     <TransactionBoundary mutationResult={mutationResult}>
       {({
@@ -76,7 +83,7 @@ const AutoWrapAllowanceTransactionButton: FC<{
                   ...config,
                   chainId: network.id,
                 },
-                transactionTitle: TX_TITLE,
+                transactionTitle: "Approve Allowance",
               })
                 .unwrap()
                 .then(
@@ -85,7 +92,7 @@ const AutoWrapAllowanceTransactionButton: FC<{
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}
           >
-            {TX_TITLE}
+            Approve {underlyingToken && underlyingToken.symbol} Allowance 
           </TransactionButton>
         )
       }

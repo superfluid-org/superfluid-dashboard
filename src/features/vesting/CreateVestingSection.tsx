@@ -179,7 +179,7 @@ export const CreateVestingSection: FC<CreateVestingSectionProps> = ({
             <CreateVestingPreview
               token={token}
               network={network}
-              setView={setView}
+              setView={setView} 
             />
           )}
 
