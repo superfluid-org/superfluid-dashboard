@@ -1,5 +1,4 @@
 import { Box, Stack, Typography } from "@mui/material";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
 import add from "date-fns/fp/add";
 import format from "date-fns/fp/format";
 import { FC, memo } from "react";
@@ -9,24 +8,14 @@ import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import NetworkIcon from "../network/NetworkIcon";
-import { Network } from "../network/networks";
-import { rpcApi } from "../redux/store";
 import { timeUnitWordMap } from "../send/FlowRateInput";
 import TokenIcon from "../token/TokenIcon";
-import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import AutoWrapAllowanceTransactionButton from "./AutoWrapAllowanceTransactionButton";
-import AutoWrapStrategyTransactionButton from "./AutoWrapStrategyTransactionButton";
 import { VestingFormLabels } from "./CreateVestingForm";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
-import { CreateVestingCardView, VestingToken } from "./CreateVestingSection";
-import { CreateVestingTransactionButton } from "./CreateVestingTransactionButton";
 import { VestingScheduleGraph } from "./VestingScheduleGraph";
+import { VestingTransactionButtonSection, VestingTransactionSectionProps } from "./VestingTransactionButtonSection";
 
-interface CreateVestingPreviewProps {
-  token: VestingToken;
-  network: Network;
-  setView: (value: CreateVestingCardView) => void;
-}
+interface CreateVestingPreviewProps extends VestingTransactionSectionProps {}
 
 const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
   token,
@@ -43,7 +32,6 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
     cliffAmountEther = "0",
     cliffPeriod,
     cliffEnabled,
-    setupAutoWrap,
   ] = watch([
     "data.receiverAddress",
     "data.totalAmountEther",
@@ -51,8 +39,7 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
     "data.vestingPeriod",
     "data.cliffAmountEther",
     "data.cliffPeriod",
-    "data.cliffEnabled",
-    "data.setupAutoWrap",
+    "data.cliffEnabled"
   ]);
 
   const { numerator: cliffNumerator = 0, denominator: cliffDenominator } =
@@ -72,46 +59,6 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
       seconds: vestingPeriod.numerator * vestingPeriod.denominator,
     },
     startDate
-  );
-
-  const { visibleAddress } = useVisibleAddress();
-
-  const {
-    data: isAutoWrapAllowanceConfigured,
-    isLoading: isAutoWrapAllowanceLoading,
-  } = rpcApi.useIsAutoWrapAllowanceConfiguredQuery(
-    setupAutoWrap && visibleAddress
-      ? {
-          chainId: network.id,
-          accountAddress: visibleAddress,
-          superTokenAddress: token.address,
-          underlyingTokenAddress: token.underlyingAddress,
-        }
-      : skipToken
-  );
-
-  const isAutoWrapAllowanceOK = Boolean(
-    !setupAutoWrap ||
-      (!isAutoWrapAllowanceLoading && isAutoWrapAllowanceConfigured)
-  );
-
-  const {
-    data: isAutoWrapStrategyConfigured,
-    isLoading: isAutoWrapStrategyConfiguredLoading,
-  } = rpcApi.useIsAutoWrapStrategyConfiguredQuery(
-    setupAutoWrap && visibleAddress
-      ? {
-          chainId: network.id,
-          accountAddress: visibleAddress,
-          superTokenAddress: token.address,
-          underlyingTokenAddress: token.underlyingAddress,
-        }
-      : skipToken
-  );
-
-  const isAutoWrapStrategyOK = Boolean(
-    !setupAutoWrap ||
-      (!isAutoWrapStrategyConfiguredLoading && isAutoWrapStrategyConfigured)
   );
 
   return (
@@ -225,22 +172,7 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
           </Box>
         )}
       </Stack>
-
-      {setupAutoWrap && (
-        <>
-          <AutoWrapAllowanceTransactionButton
-            token={token}
-            isVisible={!isAutoWrapAllowanceOK}
-          />
-          <AutoWrapStrategyTransactionButton
-            token={token}
-            isVisible={isAutoWrapAllowanceOK && !isAutoWrapStrategyOK}
-          />
-        </>
-      )}
-      {isAutoWrapAllowanceOK && isAutoWrapStrategyOK && (
-        <CreateVestingTransactionButton setView={setView} />
-      )}
+      <VestingTransactionButtonSection network={network} token={token} setView={setView}  />
     </Stack>
   );
 };
