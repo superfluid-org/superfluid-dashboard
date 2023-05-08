@@ -4,15 +4,15 @@ import { BigNumber } from "ethers";
 import { FC, memo } from "react";
 import { useFormContext } from "react-hook-form";
 import { useQuery, useSigner } from "wagmi";
-import { autoWrapManagerAddress, usePrepareAutoWrapManagerCreateWrapSchedule } from "../../generated";
-import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { rpcApi } from "../redux/store";
-import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
-import { TransactionButton } from "../transactionBoundary/TransactionButton";
-import { ValidVestingForm } from "./CreateVestingFormProvider";
-import { VestingToken } from "./CreateVestingSection";
-import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
-import { convertOverridesForWagmi } from "../../utils/convertOverridesForWagmi";
+import { autoWrapManagerAddress, usePrepareAutoWrapManagerCreateWrapSchedule } from "../../../generated";
+import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
+import { rpcApi } from "../../redux/store";
+import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
+import { TransactionButton } from "../../transactionBoundary/TransactionButton";
+import { ValidVestingForm } from "../CreateVestingFormProvider";
+import { VestingToken } from "../CreateVestingSection";
+import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
+import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
 
 const TX_TITLE: TransactionTitle = "Enable Auto-Wrap";
 

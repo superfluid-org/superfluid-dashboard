@@ -13,7 +13,7 @@ import TokenIcon from "../token/TokenIcon";
 import { VestingFormLabels } from "./CreateVestingForm";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { VestingScheduleGraph } from "./VestingScheduleGraph";
-import { VestingTransactionButtonSection, VestingTransactionSectionProps } from "./VestingTransactionButtonSection";
+import { VestingTransactionButtonSection, VestingTransactionSectionProps } from "./transactionButtons/VestingTransactionButtonSection";
 
 interface CreateVestingPreviewProps extends VestingTransactionSectionProps {}
 

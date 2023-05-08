@@ -1,24 +1,24 @@
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
-import { usePendingVestingScheduleDelete } from "../pendingUpdates/PendingVestingScheduleDelete";
-import { rpcApi } from "../redux/store";
-import { useConnectionBoundary } from "../transactionBoundary/ConnectionBoundary";
+import { usePendingVestingScheduleDelete } from "../../pendingUpdates/PendingVestingScheduleDelete";
+import { rpcApi } from "../../redux/store";
+import { useConnectionBoundary } from "../../transactionBoundary/ConnectionBoundary";
 import {
   TransactionBoundary,
   TransactionBoundaryProps,
-} from "../transactionBoundary/TransactionBoundary";
+} from "../../transactionBoundary/TransactionBoundary";
 import {
   TransactionButton,
   TransactionButtonProps,
-} from "../transactionBoundary/TransactionButton";
+} from "../../transactionBoundary/TransactionButton";
 import {
   TransactionDialogActions,
   TransactionDialogButton,
-} from "../transactionBoundary/TransactionDialog";
+} from "../../transactionBoundary/TransactionDialog";
 import Link from "next/link";
 import { Typography } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import { useAnalytics } from "../analytics/useAnalytics";
+import { useAnalytics } from "../../analytics/useAnalytics";
 import { useAccount } from "wagmi";
 
 export const DeleteVestingTransactionButton: FC<{

@@ -2,17 +2,17 @@ import { Typography } from "@mui/material";
 import Link from "next/link";
 import { FC } from "react";
 import { useFormContext } from "react-hook-form";
-import { useAnalytics } from "../analytics/useAnalytics";
-import { rpcApi } from "../redux/store";
-import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
-import { TransactionButton } from "../transactionBoundary/TransactionButton";
+import { useAnalytics } from "../../analytics/useAnalytics";
+import { rpcApi } from "../../redux/store";
+import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
+import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import {
   TransactionDialogActions,
   TransactionDialogButton,
-} from "../transactionBoundary/TransactionDialog";
-import { calculateAdditionalDataFromValidVestingForm } from "./calculateAdditionalDataFromValidVestingForm";
-import { ValidVestingForm } from "./CreateVestingFormProvider";
-import { CreateVestingCardView } from "./CreateVestingSection";
+} from "../../transactionBoundary/TransactionDialog";
+import { calculateAdditionalDataFromValidVestingForm } from "../calculateAdditionalDataFromValidVestingForm";
+import { ValidVestingForm } from "../CreateVestingFormProvider";
+import { CreateVestingCardView } from "../CreateVestingSection";
 
 export const CreateVestingTransactionButton: FC<{
   setView: (value: CreateVestingCardView) => void;

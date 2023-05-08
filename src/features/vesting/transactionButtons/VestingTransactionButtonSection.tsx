@@ -1,12 +1,12 @@
 import { useFormContext } from "react-hook-form";
-import { rpcApi } from "../redux/store";
-import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import { rpcApi } from "../../redux/store";
+import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import AutoWrapAllowanceTransactionButton from "./AutoWrapAllowanceTransactionButton";
 import AutoWrapStrategyTransactionButton from "./AutoWrapStrategyTransactionButton";
 import { CreateVestingTransactionButton } from "./CreateVestingTransactionButton";
-import { ValidVestingForm } from "./CreateVestingFormProvider";
-import { CreateVestingCardView, VestingToken } from "./CreateVestingSection";
-import { Network } from "../network/networks";
+import { ValidVestingForm } from "../CreateVestingFormProvider";
+import { CreateVestingCardView, VestingToken } from "../CreateVestingSection";
+import { Network } from "../../network/networks";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 export interface VestingTransactionSectionProps {
