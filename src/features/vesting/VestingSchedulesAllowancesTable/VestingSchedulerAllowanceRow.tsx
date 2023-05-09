@@ -31,7 +31,8 @@ import TokenIcon from "../../token/TokenIcon";
 import RemoveCircleRoundedIcon from "@mui/icons-material/RemoveCircleRounded";
 import FixVestingPermissionsBtn from "./FixVestingPermissionsBtn";
 import useActiveAutoWrap from "../useActiveAutoWrap";
-import { isAddress } from "../../../utils/memoizedEthersUtils";
+import { getSuperTokenType } from "../../redux/endpoints/adHocSubgraphEndpoints";
+import { TokenType } from "../../redux/endpoints/tokenTypes";
 
 export const VestingSchedulerAllowanceRowSkeleton = () => {
   const theme = useTheme();
@@ -116,8 +117,11 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
 
   const isAutoWrappable =
     token &&
-    !token.isNativeAssetSuperToken &&
-    isAddress(token.underlyingAddress);
+    getSuperTokenType({
+      network,
+      address: token.id,
+      underlyingAddress: token.underlyingAddress,
+    }) === TokenType.WrapperSuperToken;
 
   const {
     isAutoWrapLoading,

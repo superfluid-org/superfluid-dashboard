@@ -42,6 +42,7 @@ import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { PartialVestingForm } from "./CreateVestingFormProvider";
 import { CreateVestingCardView, VestingToken } from "./CreateVestingSection";
 import useActiveAutoWrap from "./useActiveAutoWrap";
+import { TokenType } from "../redux/endpoints/tokenTypes";
 
 export enum VestingFormLabels {
   Receiver = "Receiver",
@@ -408,7 +409,14 @@ const CreateVestingForm: FC<{
   const { visibleAddress } = useVisibleAddress();
 
   const queryAutoWrap =
-    network.autoWrap && visibleAddress && token && token.underlyingAddress && !token.isNativeAssetSuperToken;
+    network.autoWrap &&
+    visibleAddress &&
+    token &&
+    getSuperTokenType({
+      network,
+      address: token.id,
+      underlyingAddress: token.underlyingAddress,
+    }) === TokenType.WrapperSuperToken;
 
   const {
     isAutoWrapLoading,
