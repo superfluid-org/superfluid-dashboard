@@ -2645,10 +2645,10 @@
   resolved "https://registry.yarnpkg.com/@nomiclabs/hardhat-ethers/-/hardhat-ethers-2.2.1.tgz#8057b43566a0e41abeb8142064a3c0d3f23dca86"
   integrity sha512-RHWYwnxryWR8hzRmU4Jm/q4gzvXpetUOJ4OPlwH2YARcDB+j79+yAYCwO0lN1SUOb4++oOTJEe6AWLEc42LIvg==
 
-"@openzeppelin/contracts@4.8.0":
-  version "4.8.0"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.8.0.tgz#6854c37df205dd2c056bdfa1b853f5d732109109"
-  integrity sha512-AGuwhRRL+NaKx73WKRNzeCxOCOCxpaqF+kp8TJ89QzAipSwZy/NoflkWaL9bywXFRhIzXt8j38sfF7KBKCPWLw==
+"@openzeppelin/contracts@4.8.2":
+  version "4.8.2"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.8.2.tgz#d815ade0027b50beb9bcca67143c6bcc3e3923d6"
+  integrity sha512-kEUOgPQszC0fSYWpbh2kT94ltOJwj1qfT2DWo+zVttmGmf97JZ99LspePNaeeaLhCImaHVeBbjaQFZQn7+Zc5g==
 
 "@peculiar/asn1-schema@^2.1.6", "@peculiar/asn1-schema@^2.3.0":
   version "2.3.6"
@@ -4052,15 +4052,15 @@
     "@stdlib/utils-constructor-name" "^0.0.x"
     "@stdlib/utils-global" "^0.0.x"
 
-"@superfluid-finance/ethereum-contracts@1.5.2":
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/@superfluid-finance/ethereum-contracts/-/ethereum-contracts-1.5.2.tgz#b82cd2e91c7a48c24072fc692496c5bfbb321fc2"
-  integrity sha512-3zFlobqB4x9LM77Fp8cxrD8AR4E1FYSjTJv1POdqACOgBFnRWASeI+nfQlIoRqaEWG6PJUauKhJKtHrw2I1Bpg==
+"@superfluid-finance/ethereum-contracts@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@superfluid-finance/ethereum-contracts/-/ethereum-contracts-1.6.0.tgz#8135b3f2bc6af6aa7900daac0f584699ca080acc"
+  integrity sha512-/AgQVWWvPVqhCiu9KHuF73EtCXSQ9OwVMehYCwTDAc2dbIi+1945VaUFtY07vSYlMSSeybuVta9m/I4NijW8Bg==
   dependencies:
     "@decentral.ee/web3-helpers" "0.5.3"
-    "@openzeppelin/contracts" "4.8.0"
+    "@openzeppelin/contracts" "4.8.2"
     "@superfluid-finance/js-sdk" "0.6.3"
-    "@truffle/contract" "4.5.23"
+    "@truffle/contract" "4.6.18"
     ethereumjs-tx "2.1.2"
     ethereumjs-util "7.1.5"
     stack-trace "0.0.10"
@@ -4079,23 +4079,23 @@
   version "1.1.2"
   resolved "git+https://github.com/superfluid-finance/metadata.git#2faa6fdf44616d5aaef0e1480535729bfe78d5e7"
 
-"@superfluid-finance/sdk-core@^0.6.3":
-  version "0.6.3"
-  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-core/-/sdk-core-0.6.3.tgz#2dd9d73f1deffff3f2d418c68e02abf764203b04"
-  integrity sha512-KtTTqc97P4oSnjmU2F47djP78SYP6vzenWmCqD/loI3aKfIuNdtZQyUeF+3iEg4CZEQaek9UqQSLQyRRX0SSRQ==
+"@superfluid-finance/sdk-core@^0.6.4":
+  version "0.6.4"
+  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-core/-/sdk-core-0.6.4.tgz#c11f140d0a7956f1e7182e4f811b90fb729be53e"
+  integrity sha512-9ZGz9KSd5DQrQRVMl4iJ3ONadopbFYBAEzDSkMKx98PugqRX20fOhF8XpklsyAt9O3Jc+EBd48qy0PhYkwBgjw==
   dependencies:
     "@nomiclabs/hardhat-ethers" "^2.2.1"
-    "@superfluid-finance/ethereum-contracts" "1.5.2"
+    "@superfluid-finance/ethereum-contracts" "1.6.0"
     "@superfluid-finance/metadata" "git+https://github.com/superfluid-finance/metadata.git"
     browserify "^17.0.0"
     graphql-request "^4.3.0"
     lodash "^4.17.21"
     tsify "^5.0.4"
 
-"@superfluid-finance/sdk-redux@0.5.1-dev.534493f.0":
-  version "0.5.1-dev.534493f.0"
-  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-redux/-/sdk-redux-0.5.1-dev.534493f.0.tgz#e2cd3470b5517ae9260a4072b38c7fd77d62e511"
-  integrity sha512-+En38q9skPC2xKoJWPtkIFMfJunt9DgJmWBsA3BGnCtBwnV5DcaiOFqjAY2Afrh33aZcPknLVE/wUA3U+UBXaw==
+"@superfluid-finance/sdk-redux@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-redux/-/sdk-redux-0.5.0.tgz#2ad322d4562b870d29852475c0d53e023d6459d6"
+  integrity sha512-MxxBtuOVxL4YWlCKHLhEqQyzMwvnpCWiJz1DrogpNjFTbwTB/3JcO/DbPzAp+KlGUqAEwPUUusIHstvrfvaT9g==
   dependencies:
     graphql-request "^5.0.0"
     lodash "^4.17.21"
@@ -4184,7 +4184,7 @@
     fast-check "3.1.1"
     web3-utils "1.8.2"
 
-"@truffle/blockchain-utils@^0.1.4":
+"@truffle/blockchain-utils@^0.1.4", "@truffle/blockchain-utils@^0.1.7":
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/@truffle/blockchain-utils/-/blockchain-utils-0.1.7.tgz#cf7923a3ae5b591ae4c2a5ee45994a310ccaf1ee"
   integrity sha512-1nibqGjEHC7KAyDThEFvbm2+EO8zAHee/VjCtxkYBE3ySwP50joh0QCEBjy7K/9z+icpMoDucfxmgaKToBFUgQ==
@@ -4213,7 +4213,7 @@
     "@truffle/error" "^0.2.0"
     colors "1.4.0"
 
-"@truffle/contract-schema@^3.4.9":
+"@truffle/contract-schema@^3.4.13", "@truffle/contract-schema@^3.4.9":
   version "3.4.13"
   resolved "https://registry.yarnpkg.com/@truffle/contract-schema/-/contract-schema-3.4.13.tgz#48447673f29380830f5821e8139ceefbbd545aac"
   integrity sha512-emG7upuryYFrsPDbHqeASPWXL824M1tinhQwSPG0phSoa3g+RX9fUNNN/VPmF3tSkXLWUMhRnb7ehxnaCuRbZg==
@@ -4241,7 +4241,27 @@
     web3-eth-abi "1.7.4"
     web3-utils "1.7.4"
 
-"@truffle/debug-utils@^6.0.33":
+"@truffle/contract@4.6.18":
+  version "4.6.18"
+  resolved "https://registry.yarnpkg.com/@truffle/contract/-/contract-4.6.18.tgz#096f82dbc05060acc9ed0bd8bb5811f497b8e3ad"
+  integrity sha512-x49EWZI16VMdYV8pH2LYM1AMFM3xAZ6ZFT2dG9Y71nIDZHdh+HKdlPSL40CqFtzpeoEk9UQoSJL99D/DXtpaog==
+  dependencies:
+    "@ensdomains/ensjs" "^2.1.0"
+    "@truffle/blockchain-utils" "^0.1.7"
+    "@truffle/contract-schema" "^3.4.13"
+    "@truffle/debug-utils" "^6.0.47"
+    "@truffle/error" "^0.2.0"
+    "@truffle/interface-adapter" "^0.5.31"
+    bignumber.js "^7.2.1"
+    debug "^4.3.1"
+    ethers "^4.0.32"
+    web3 "1.8.2"
+    web3-core-helpers "1.8.2"
+    web3-core-promievent "1.8.2"
+    web3-eth-abi "1.8.2"
+    web3-utils "1.8.2"
+
+"@truffle/debug-utils@^6.0.33", "@truffle/debug-utils@^6.0.47":
   version "6.0.48"
   resolved "https://registry.yarnpkg.com/@truffle/debug-utils/-/debug-utils-6.0.48.tgz#218caa0e00d95a03abadb05dfe63d621530e113a"
   integrity sha512-HdK/7eH5EFrcTPeZVEgKaKkkzuZ4xsrH8yw+EoLEsScLsOEuQeKynY61NctjuU93voATWrYmV99Sfb/MRq2i2g==
@@ -4267,6 +4287,15 @@
   version "0.5.31"
   resolved "https://registry.yarnpkg.com/@truffle/interface-adapter/-/interface-adapter-0.5.31.tgz#9e62e9ed1c1c07d50d9e1dcffd6ef24efc1230e7"
   integrity sha512-f5mOqbptQUUgHhBrBvWie4EUAUqHLN/wCBjFoP2N/QNcyvwGfdC3TSck9kjwIIFIgYgQQyAxQDGBQcjHryvxzg==
+  dependencies:
+    bn.js "^5.1.3"
+    ethers "^4.0.32"
+    web3 "1.8.2"
+
+"@truffle/interface-adapter@^0.5.31":
+  version "0.5.32"
+  resolved "https://registry.yarnpkg.com/@truffle/interface-adapter/-/interface-adapter-0.5.32.tgz#2ae896ea85a9d267abcd5d0139afc0f06ebc5745"
+  integrity sha512-7Hgmdb4nJUcWtq4vvgWY7Mr2RLOTOp5FZaWyMiFmjkcEEhDlezm2QstALWAXgT0W6q7tDmDBpw3vTIFenRhHBA==
   dependencies:
     bn.js "^5.1.3"
     ethers "^4.0.32"
