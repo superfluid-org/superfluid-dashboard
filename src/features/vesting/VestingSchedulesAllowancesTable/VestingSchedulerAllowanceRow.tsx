@@ -28,11 +28,10 @@ import { Network } from "../../network/networks";
 import { rpcApi, subgraphApi } from "../../redux/store";
 import Amount from "../../token/Amount";
 import TokenIcon from "../../token/TokenIcon";
-import { getSuperTokenType } from "../../redux/endpoints/adHocSubgraphEndpoints";
-import { TokenType } from "../../redux/endpoints/tokenTypes";
 import RemoveCircleRoundedIcon from "@mui/icons-material/RemoveCircleRounded";
 import FixVestingPermissionsBtn from "./FixVestingPermissionsBtn";
 import useActiveAutoWrap from "../useActiveAutoWrap";
+import { isAddress } from "../../../utils/memoizedEthersUtils";
 
 export const VestingSchedulerAllowanceRowSkeleton = () => {
   const theme = useTheme();
@@ -110,28 +109,15 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
 
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const { token, tokenType, isTokenLoading } = subgraphApi.useTokenQuery(
-    {
-      chainId: network.id,
-      id: tokenAddress,
-    },
-    {
-      selectFromResult: ({ data, isLoading }) => ({
-        token: data,
-        isTokenLoading: isLoading,
-        tokenType: data
-          ? getSuperTokenType({
-              network,
-              address: data.id,
-              underlyingAddress: data.underlyingAddress,
-            })
-          : undefined,
-      }),
-    }
-  );
+  const { data: token, isLoading: isTokenLoading } = subgraphApi.useTokenQuery({
+    chainId: network.id,
+    id: tokenAddress,
+  });
 
   const isAutoWrappable =
-    token && tokenType && tokenType === TokenType.WrapperSuperToken;
+    token &&
+    !token.isNativeAssetSuperToken &&
+    isAddress(token.underlyingAddress);
 
   const {
     isAutoWrapLoading,
@@ -149,7 +135,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   );
 
   const isAutoWrapOK = Boolean(
-    activeAutoWrapSchedule && isAutoWrapAllowanceSufficient
+    activeAutoWrapSchedule && isAutoWrapAllowanceSufficient && isAutoWrappable
   );
 
   const { address: currentAccountAddress } = useAccount();
@@ -274,12 +260,12 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                     data-cy={`${tokenSymbol}-auto-wrap-status`}
                     color="primary"
                   />
-                ) : (
+                ) : isAutoWrappable ? (
                   <RemoveCircleRoundedIcon
                     data-cy={`${tokenSymbol}-auto-wrap-status`}
                     color="warning"
                   />
-                )}
+                ) : null}
               </TableCell>
             )}
           </>

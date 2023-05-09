@@ -408,7 +408,7 @@ const CreateVestingForm: FC<{
   const { visibleAddress } = useVisibleAddress();
 
   const queryAutoWrap =
-    network.autoWrap && token && token.underlyingAddress && visibleAddress && token.address.toLowerCase() !== network.nativeCurrency.superToken.address.toLowerCase();
+    network.autoWrap && visibleAddress && token && token.underlyingAddress && !token.isNativeAssetSuperToken;
 
   const {
     isAutoWrapLoading,
