@@ -4,7 +4,6 @@ import {
   AlertTitle,
   Box,
   Button,
-  Checkbox,
   FormControlLabel,
   FormGroup,
   FormLabel,
@@ -53,7 +52,7 @@ export enum VestingFormLabels {
   SuperToken = "Super Token",
   TotalVestingPeriod = "Total Vesting Period",
   TotalVestedAmount = "Total Vested Amount",
-  AutoWrap = "Allow for automatic wrapping",
+  AutoWrap = "Enable Auto-Wrap",
 }
 
 export enum VestingTooltips {
@@ -447,7 +446,7 @@ const CreateVestingForm: FC<{
         <FormControlLabel
           label={VestingFormLabels.AutoWrap}
           control={
-            <Checkbox checked={!!value} onChange={onChange} onBlur={onBlur} />
+            <Switch checked={!!value} onChange={onChange} onBlur={onBlur} />
           }
         />
       )}
