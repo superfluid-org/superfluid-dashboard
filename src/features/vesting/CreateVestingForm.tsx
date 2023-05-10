@@ -56,7 +56,7 @@ export enum VestingFormLabels {
 }
 
 export enum VestingTooltips {
-  AutoWrap = "Auto-Wrap will handle low balances to cover all streams in a selected token.",
+  AutoWrap = "Auto-Wrap wraps your regular ERC-20 tokens to Super Tokens automatically, making it easy to send your streams without the need for manual token wrapping. All your current and future streams will have Auto-Wrap enabled for the selected token and network.",
 }
 
 const CreateVestingForm: FC<{
@@ -399,7 +399,6 @@ const CreateVestingForm: FC<{
             />
           }
           label="Add Cliff"
-          sx={{ mr: 1 }}
         />
       )}
     />
