@@ -4076,8 +4076,8 @@
     node-fetch "^2.6.7"
 
 "@superfluid-finance/metadata@git+https://github.com/superfluid-finance/metadata.git":
-  version "1.1.2"
-  resolved "git+https://github.com/superfluid-finance/metadata.git#2faa6fdf44616d5aaef0e1480535729bfe78d5e7"
+  version "1.1.5"
+  resolved "git+https://github.com/superfluid-finance/metadata.git#d99e52c1f1348040c0ea598797c76905c821ee9a"
 
 "@superfluid-finance/sdk-core@^0.6.4":
   version "0.6.4"
