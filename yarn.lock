@@ -4077,12 +4077,12 @@
 
 "@superfluid-finance/metadata@git+https://github.com/superfluid-finance/metadata.git":
   version "1.1.5"
-  resolved "git+https://github.com/superfluid-finance/metadata.git#d99e52c1f1348040c0ea598797c76905c821ee9a"
+  resolved "git+https://github.com/superfluid-finance/metadata.git#d56da7394a8f9895f1da5d955da245accc8d083d"
 
-"@superfluid-finance/sdk-core@^0.6.4":
-  version "0.6.4"
-  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-core/-/sdk-core-0.6.4.tgz#c11f140d0a7956f1e7182e4f811b90fb729be53e"
-  integrity sha512-9ZGz9KSd5DQrQRVMl4iJ3ONadopbFYBAEzDSkMKx98PugqRX20fOhF8XpklsyAt9O3Jc+EBd48qy0PhYkwBgjw==
+"@superfluid-finance/sdk-core@^0.6.5":
+  version "0.6.5"
+  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-core/-/sdk-core-0.6.5.tgz#f72459f20d2a9d882091daa85aa507f568466aaa"
+  integrity sha512-6Ef0v+uRezZQeXpggWw7O00VVkzc488548rt4c9VArobfn0MyMJ22DTuKrMzz7HjqTxTKlqvur9lfG+qx6jOLA==
   dependencies:
     "@nomiclabs/hardhat-ethers" "^2.2.1"
     "@superfluid-finance/ethereum-contracts" "1.6.0"
