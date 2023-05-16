@@ -1,4 +1,3 @@
-import { Overrides } from "ethers";
 import { parseUnits } from "ethers/lib/utils";
 import { Network } from "../features/network/networks";
 import gasApi, { GasRecommendation } from "../features/gas/gasApi.slice";
@@ -6,13 +5,14 @@ import { useCallback } from "react";
 import { useAccount } from "wagmi";
 import { merge } from "lodash";
 import { popGlobalGasOverrides } from "../global";
+import { GlobalGasOverrides } from "../typings/global";
 
 const useGetTransactionOverrides = () => {
   const [queryRecommendedGas] = gasApi.useLazyRecommendedGasQuery();
   const { connector: activeConnector } = useAccount();
 
   return useCallback(
-    async (network: Network): Promise<Overrides> => {
+    async (network: Network): Promise<GlobalGasOverrides> => {
       const gasQueryTimeout = new Promise<null>((response) =>
         setTimeout(() => response(null), 3000)
       );
@@ -22,7 +22,7 @@ const useGetTransactionOverrides = () => {
         gasQueryTimeout,
       ]);
 
-      const overrides: Overrides = {};
+      const overrides: GlobalGasOverrides = {};
 
       if (gasRecommendation) {
         overrides.maxPriorityFeePerGas = parseUnits(

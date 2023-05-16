@@ -3,13 +3,13 @@ import { SvgIconProps, Tooltip, useMediaQuery, useTheme } from "@mui/material";
 import { TooltipProps } from "@mui/material/Tooltip";
 import { FC, ReactNode } from "react";
 
-interface TooltipIconProps {
+interface TooltipWithIconProps {
   title: ReactNode;
   IconProps?: Partial<SvgIconProps>;
   TooltipProps?: Partial<TooltipProps>;
 }
 
-const TooltipIcon: FC<TooltipIconProps> = ({
+const TooltipWithIcon: FC<TooltipWithIconProps> = ({
   title,
   IconProps = { sx: {} },
   TooltipProps = {},
@@ -40,4 +40,4 @@ const TooltipIcon: FC<TooltipIconProps> = ({
   );
 };
 
-export default TooltipIcon;
+export default TooltipWithIcon;

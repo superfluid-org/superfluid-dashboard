@@ -1,7 +1,5 @@
 import {
   ERC20Token,
-  ERC20__factory,
-  Operation,
   WrapperSuperToken,
 } from "@superfluid-finance/sdk-core";
 import {
@@ -9,7 +7,9 @@ import {
   registerNewTransactionAndReturnQueryFnResult,
   RpcEndpointBuilder,
   TransactionInfo,
+  TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
+import { WriteContractPreparedArgs, writeContract } from "@wagmi/core";
 import { Overrides, Signer } from "ethers";
 import {
   balanceFetcher,
@@ -35,6 +35,7 @@ declare module "@superfluid-finance/sdk-redux" {
     "Create Schedule": true;
     "Modify Schedule": true;
     "Delete Schedule": true;
+    "Enable Auto-Wrap": true;
   }
 }
 
@@ -45,8 +46,37 @@ export interface Web3FlowInfo {
   owedDepositWei: string;
 }
 
+const writeContractEndpoint = (builder: RpcEndpointBuilder) =>
+  builder.mutation<
+    TransactionInfo,
+    {
+      signer: Signer;
+      config: WriteContractPreparedArgs<unknown[], string> & {
+        chainId: number;
+      };
+      transactionExtraData?: Record<string, unknown>;
+      transactionTitle: TransactionTitle,
+    }
+  >({
+    queryFn: async ({ signer, config, transactionTitle, transactionExtraData }, { dispatch }) => {
+      const result = await writeContract(config);
+      return registerNewTransactionAndReturnQueryFnResult({
+        dispatch,
+        signerAddress: await signer.getAddress(),
+        chainId: config.chainId,
+        title: transactionTitle,
+        transactionResponse: {
+          chainId: config.chainId,
+          ...result
+        },
+        extraData: transactionExtraData,
+      });
+    },
+  });
+
 export const adHocRpcEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
+    writeContract: writeContractEndpoint(builder),
     getActiveFlow: builder.query<
       // TODO(KK): Create equivalent endpoint in the SDK
       Web3FlowInfo | null,
@@ -173,7 +203,6 @@ export const adHocRpcEndpoints = {
         chainId: number;
         superTokenAddress: string;
         amountWei: string;
-        waitForConfirmation?: boolean;
         transactionExtraData?: Record<string, unknown>;
         signer: Signer;
         overrides: Overrides;
@@ -202,8 +231,7 @@ export const adHocRpcEndpoints = {
         return await registerNewTransactionAndReturnQueryFnResult({
           transactionResponse,
           chainId: arg.chainId,
-          signer: await arg.signer.getAddress(),
-          waitForConfirmation: !!arg.waitForConfirmation,
+          signerAddress: await arg.signer.getAddress(),
           dispatch: queryApi.dispatch,
           title: "Approve Allowance",
           extraData: arg.transactionExtraData,

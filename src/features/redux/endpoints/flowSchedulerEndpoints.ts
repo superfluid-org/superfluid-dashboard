@@ -91,7 +91,7 @@ export const flowSchedulerEndpoints = {
       providesTags: (_result, _error, arg) => [
         {
           type: "GENERAL",
-          id: arg.chainId.toString(),
+          id: arg.chainId,
         },
       ],
     }),
@@ -329,8 +329,7 @@ export const flowSchedulerEndpoints = {
           dispatch,
           chainId,
           transactionResponse,
-          waitForConfirmation: !!arg.waitForConfirmation,
-          signer: signerAddress,
+          signerAddress,
           extraData: {
             subTransactionTitles,
             ...(arg.transactionExtraData ?? {}),
@@ -451,8 +450,7 @@ export const flowSchedulerEndpoints = {
           dispatch,
           chainId,
           transactionResponse,
-          waitForConfirmation: !!arg.waitForConfirmation,
-          signer: signerAddress,
+          signerAddress,
           extraData: {
             subTransactionTitles,
             ...(arg.transactionExtraData ?? {}),

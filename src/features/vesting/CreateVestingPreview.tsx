@@ -1,33 +1,23 @@
-import {
-  Box,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import add from "date-fns/fp/add";
 import format from "date-fns/fp/format";
-import { FC } from "react";
+import { FC, memo } from "react";
 import { useFormContext } from "react-hook-form";
 import AddressName from "../../components/AddressName/AddressName";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import NetworkIcon from "../network/NetworkIcon";
-import { Network } from "../network/networks";
 import { timeUnitWordMap } from "../send/FlowRateInput";
 import TokenIcon from "../token/TokenIcon";
 import { VestingFormLabels } from "./CreateVestingForm";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
-import { CreateVestingCardView, VestingToken } from "./CreateVestingSection";
-import { CreateVestingTransactionButton } from "./CreateVestingTransactionButton";
 import { VestingScheduleGraph } from "./VestingScheduleGraph";
+import { VestingTransactionButtonSection, VestingTransactionSectionProps } from "./transactionButtons/VestingTransactionButtonSection";
 
-interface CreateVestingPreviewProps {
-  token: VestingToken;
-  network: Network;
-  setView: (value: CreateVestingCardView) => void;
-}
+interface CreateVestingPreviewProps extends VestingTransactionSectionProps {}
 
-export const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
+const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
   token,
   network,
   setView,
@@ -49,7 +39,7 @@ export const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
     "data.vestingPeriod",
     "data.cliffAmountEther",
     "data.cliffPeriod",
-    "data.cliffEnabled",
+    "data.cliffEnabled"
   ]);
 
   const { numerator: cliffNumerator = 0, denominator: cliffDenominator } =
@@ -83,7 +73,7 @@ export const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
         />
       </Box>
 
-      <Stack gap={2}>
+      <Stack gap={2} sx={{ mb: 2}}>
         <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
           <Stack>
             <Typography color="text.secondary">
@@ -182,7 +172,9 @@ export const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
           </Box>
         )}
       </Stack>
-      <CreateVestingTransactionButton setView={setView} />
+      <VestingTransactionButtonSection network={network} token={token} setView={setView}  />
     </Stack>
   );
 };
+
+export default memo(CreateVestingPreview);

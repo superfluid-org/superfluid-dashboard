@@ -27,7 +27,7 @@ Feature: Vesting page test cases
         And User inputs "2" "year" as the cliff period
         And User inputs "3" as the total vested amount
         And User inputs "4" "year" as the total vesting period
-        Then "Can not vest to yourself." error is shown in the form
+        Then "You can’t vest to yourself. Choose a different wallet." error is shown in the form
 
     Scenario: Creation form - Cliff amount has to be less than total amount
         Given Transactional account bob is connected to the dashboard on goerli

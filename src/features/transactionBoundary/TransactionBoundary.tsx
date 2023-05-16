@@ -20,6 +20,7 @@ import { Network } from "../network/networks";
 import { useAppSelector } from "../redux/store";
 import { useConnectionBoundary } from "./ConnectionBoundary";
 import { TransactionDialog } from "./TransactionDialog";
+import { TxAnalyticsFn, useAnalytics } from "../analytics/useAnalytics";
 
 interface TransactionBoundaryContextValue {
   signer: Signer | null | undefined;
@@ -32,6 +33,7 @@ interface TransactionBoundaryContextValue {
   getOverrides: () => Promise<Overrides>;
   transaction: TrackedTransaction | undefined;
   network: Network;
+  txAnalytics: TxAnalyticsFn;
 }
 
 const TransactionBoundaryContext =
@@ -55,6 +57,7 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
   const { data: signer } = useSigner();
   const { expectedNetwork } = useConnectionBoundary();
   const getTransactionOverrides = useGetTransactionOverrides();
+  const { txAnalytics } = useAnalytics();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogLoadingInfo, setDialogLoadingInfo] = useState<ReactNode>(null);
@@ -78,6 +81,7 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
       getOverrides: () => getTransactionOverrides(expectedNetwork),
       transaction: trackedTransaction,
       network: expectedNetwork,
+      txAnalytics,
     }),
     [
       signer,
@@ -88,6 +92,7 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
       getTransactionOverrides,
       trackedTransaction,
       expectedNetwork,
+      txAnalytics
     ]
   );
 

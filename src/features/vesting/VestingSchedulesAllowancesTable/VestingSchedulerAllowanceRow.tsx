@@ -24,12 +24,15 @@ import {
   isCloseToUnlimitedFlowRateAllowance,
   isCloseToUnlimitedTokenAllowance,
 } from "../../../utils/isCloseToUnlimitedAllowance";
-import { useAnalytics } from "../../analytics/useAnalytics";
 import { Network } from "../../network/networks";
 import { rpcApi, subgraphApi } from "../../redux/store";
 import Amount from "../../token/Amount";
 import TokenIcon from "../../token/TokenIcon";
+import RemoveCircleRoundedIcon from "@mui/icons-material/RemoveCircleRounded";
 import FixVestingPermissionsBtn from "./FixVestingPermissionsBtn";
+import useActiveAutoWrap from "../useActiveAutoWrap";
+import { getSuperTokenType } from "../../redux/endpoints/adHocSubgraphEndpoints";
+import { TokenType } from "../../redux/endpoints/tokenTypes";
 
 export const VestingSchedulerAllowanceRowSkeleton = () => {
   const theme = useTheme();
@@ -107,10 +110,42 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
 
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const tokenQuery = subgraphApi.useTokenQuery({
+  const { data: token, isLoading: isTokenLoading } = subgraphApi.useTokenQuery({
     chainId: network.id,
     id: tokenAddress,
   });
+
+  const isAutoWrappable =
+    token &&
+    getSuperTokenType({
+      network,
+      address: token.id,
+      underlyingAddress: token.underlyingAddress,
+    }) === TokenType.WrapperSuperToken;
+
+  const {
+    isAutoWrapLoading,
+    activeAutoWrapSchedule,
+    isAutoWrapAllowanceSufficient,
+  } = useActiveAutoWrap(
+    isAutoWrappable
+      ? {
+          chainId: network.id,
+          accountAddress: senderAddress,
+          superTokenAddress: token.id,
+          underlyingTokenAddress: token.underlyingAddress,
+        }
+      : "skip"
+  );
+
+  const isAutoWrapOK = Boolean(
+    activeAutoWrapSchedule && isAutoWrapAllowanceSufficient && isAutoWrappable
+  );
+
+  const { address: currentAccountAddress } = useAccount();
+  const isSenderLooking =
+    currentAccountAddress &&
+    senderAddress.toLowerCase() === currentAccountAddress.toLowerCase();
 
   const vestingSchedulerAllowancesQuery =
     rpcApi.useGetVestingSchedulerAllowancesQuery({
@@ -118,14 +153,6 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
       tokenAddress: tokenAddress,
       senderAddress: senderAddress,
     });
-
-  const { txAnalytics } = useAnalytics();
-  const [fixAccess, fixAccessResult] = rpcApi.useFixAccessForVestingMutation();
-
-  const { address: currentAccountAddress } = useAccount();
-  const isSenderLooking =
-    currentAccountAddress &&
-    senderAddress.toLowerCase() === currentAccountAddress.toLowerCase();
 
   if (!vestingSchedulerAllowancesQuery.data) {
     return <VestingSchedulerAllowanceRowSkeleton />;
@@ -155,13 +182,12 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
     requiredFlowOperatorPermissions
   );
 
-  const token = tokenQuery.data;
   const tokenSymbol = token?.symbol || "";
 
   return (
     <>
       <TableRow
-        data-cy={`${tokenQuery.data?.symbol}-row`}
+        data-cy={`${tokenSymbol}-row`}
         sx={
           isLast && !isExpanded
             ? {
@@ -177,7 +203,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
             <TokenIcon
               isSuper
               tokenSymbol={tokenSymbol}
-              isLoading={tokenQuery.isLoading}
+              isLoading={isTokenLoading}
             />
             <ListItemText primary={tokenSymbol} />
           </Stack>
@@ -229,6 +255,23 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                 )}
               </Stack>
             </TableCell>
+            {network.autoWrap && (
+              <TableCell align="center">
+                {isAutoWrapLoading ? (
+                  <Skeleton variant="circular" width={24} height={24} />
+                ) : isAutoWrapOK ? (
+                  <CheckCircleRoundedIcon
+                    data-cy={`${tokenSymbol}-auto-wrap-status`}
+                    color="primary"
+                  />
+                ) : isAutoWrappable ? (
+                  <RemoveCircleRoundedIcon
+                    data-cy={`${tokenSymbol}-auto-wrap-status`}
+                    color="warning"
+                  />
+                ) : null}
+              </TableCell>
+            )}
           </>
         )}
         <TableCell>
@@ -237,21 +280,19 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
           </IconButton>
         </TableCell>
       </TableRow>
-      <TableRow
-        sx={
-          isLast || !isExpanded
-            ? { ".MuiTableCell-root": { border: "none" } }
-            : {}
-        }
-      >
+      <TableRow>
         <TableCell
-          colSpan={isBelowMd ? 2 : 5}
+          colSpan={isBelowMd ? 2 : 6}
           sx={{
             minHeight: 0,
             p: 0,
             [theme.breakpoints.down("md")]: {
               p: 0,
             },
+            transition: theme.transitions.create("border-width", {
+              duration: theme.transitions.duration.standard,
+            }),
+            ...(isLast || !isExpanded ? { borderWidth: "0" } : {}),
           }}
         >
           <Collapse
@@ -283,7 +324,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                         />
                       )}
                     </TableCell>
-                    <TableCell width="220px">
+                    <TableCell width="200px">
                       <ListItemText
                         data-cy={`${tokenSymbol}-current-allowance`}
                         primary="Current"
@@ -308,7 +349,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                         }
                       />
                     </TableCell>
-                    <TableCell width="260px">
+                    <TableCell width="220px">
                       <ListItemText
                         primary="Current"
                         data-cy={`${tokenSymbol}-current-permissions`}
@@ -320,7 +361,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                         secondary={requiredPermissionsString}
                       />
                     </TableCell>
-                    <TableCell width="350px">
+                    <TableCell width={network.autoWrap ? "380px" : "280px"}>
                       <ListItemText
                         data-cy={`${tokenSymbol}-current-flow-allowance`}
                         primary="Current"
@@ -349,6 +390,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                         }
                       />
                     </TableCell>
+                    <TableCell width="100px" />
                   </TableRow>
                 </TableBody>
               </Table>

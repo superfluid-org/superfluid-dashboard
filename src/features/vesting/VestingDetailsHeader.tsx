@@ -17,7 +17,7 @@ import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
 import TokenIcon from "../token/TokenIcon";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
-import { DeleteVestingTransactionButton } from "./DeleteVestingTransactionButton";
+import { DeleteVestingTransactionButton } from "./transactionButtons/DeleteVestingTransactionButton";
 import { VestingSchedule } from "./types";
 
 interface CounterpartyAddressProps {
