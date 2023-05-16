@@ -475,7 +475,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                       .unwrap()
                       .then(...txAnalytics("Approve Allowance", primaryArgs))
                       .then(() => setTransactionDrawerOpen(true))
-                      .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
+                      .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
                   }}
                 >
                   Allow Superfluid Protocol to wrap your{" "}
@@ -552,13 +552,12 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                       restoration,
                     },
                     signer,
-                    overrides,
-                    waitForConfirmation: false,
+                    overrides
                   })
                     .unwrap()
                     .then(...txAnalytics("Wrap", primaryArgs))
                     .then(() => resetForm())
-                    .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
+                    .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
 
                   setDialogSuccessActions(
                     <TransactionDialogActions>

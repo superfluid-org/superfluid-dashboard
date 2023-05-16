@@ -1,6 +1,5 @@
 import { LoadingButton } from "@mui/lab";
 import { Button, ButtonProps } from "@mui/material";
-import { switchNetwork } from "@wagmi/core";
 import { FC, PropsWithChildren } from "react";
 import { useConnectionBoundary } from "./ConnectionBoundary";
 
@@ -40,7 +39,7 @@ const ConnectionBoundaryButton: FC<
   if (!(isConnected || (isImpersonated && allowImpersonation))) {
     return (
       <LoadingButton
-        data-cy={"connect-wallet"}
+        data-cy={"connect-wallet-button"}
         {...ButtonProps}
         loading={isConnecting}
         color="primary"

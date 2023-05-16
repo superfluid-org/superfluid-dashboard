@@ -191,8 +191,7 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
         dispatch,
         chainId,
         transactionResponse,
-        waitForConfirmation: !!arg.waitForConfirmation,
-        signer: signerAddress,
+        signerAddress,
         extraData: {
           subTransactionTitles,
           ...(arg.transactionExtraData ?? {}),
@@ -227,8 +226,7 @@ export const vestingSchedulerMutationEndpoints = {
           requiredTokenAllowanceWei,
           requiredFlowOperatorPermissions,
           requiredFlowRateAllowanceWei,
-          transactionExtraData,
-          waitForConfirmation,
+          transactionExtraData
         },
         { dispatch }
       ) => {
@@ -318,13 +316,12 @@ export const vestingSchedulerMutationEndpoints = {
           transactionResponse,
           chainId,
           dispatch,
-          signer: signerAddress,
+          signerAddress,
           title: "Fix Access for Vesting",
           extraData: {
             subTransactionTitles,
             ...(transactionExtraData ?? {}),
-          },
-          waitForConfirmation: !!waitForConfirmation,
+          }
         });
 
         return {
@@ -348,7 +345,6 @@ export const vestingSchedulerMutationEndpoints = {
           senderAddress,
           receiverAddress,
           overrides,
-          waitForConfirmation,
           transactionExtraData,
           deleteFlow,
         },
@@ -402,13 +398,12 @@ export const vestingSchedulerMutationEndpoints = {
           transactionResponse,
           chainId,
           dispatch,
-          signer: signerAddress,
+          signerAddress,
           title: "Delete Vesting Schedule",
           extraData: {
             subTransactionTitles,
             ...(transactionExtraData ?? {}),
-          },
-          waitForConfirmation: !!waitForConfirmation,
+          }
         });
 
         return {
@@ -575,7 +570,7 @@ export const vestingSchedulerQueryEndpoints = {
       providesTags: (_result, _error, arg) => [
         {
           type: "GENERAL",
-          id: arg.chainId.toString(),
+          id: arg.chainId,
         },
       ],
       queryFn: async ({ chainId, tokenAddress, senderAddress }) => {
@@ -615,7 +610,7 @@ export const vestingSchedulerQueryEndpoints = {
       providesTags: (_result, _error, arg) => [
         {
           type: "GENERAL",
-          id: arg.chainId.toString(),
+          id: arg.chainId,
         },
       ],
       queryFn: async ({

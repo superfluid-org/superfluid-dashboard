@@ -50,6 +50,7 @@ const SubscriptionRevokedActivityRow: FC<
         <ListItem sx={{ p: 0 }}>
           <ActivityIcon icon={NotInterestedRoundedIcon} />
           <ListItemText
+            data-cy={"activity"}
             primary="Subscription Rejected"
             secondary={format(timestamp * 1000, dateFormat)}
             primaryTypographyProps={{
@@ -75,7 +76,7 @@ const SubscriptionRevokedActivityRow: FC<
                   isLoading={tokenQuery.isLoading}
                 />
               </ListItemAvatar>
-              <ListItemText primary={tokenQuery.data?.symbol} />
+              <ListItemText data-cy={"amount"} primary={tokenQuery.data?.symbol} />
             </ListItem>
           </TableCell>
           <TableCell>
@@ -84,6 +85,7 @@ const SubscriptionRevokedActivityRow: FC<
                 <AddressAvatar address={isPublisher ? subscriber : publisher} />
               </ListItemAvatar>
               <ListItemText
+                data-cy={"amountToFrom"}
                 primary={isPublisher ? "Subscriber" : "Publisher"}
                 secondary={
                   <AddressCopyTooltip

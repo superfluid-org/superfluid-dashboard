@@ -38,7 +38,7 @@ export default memo(function AddressSearch({
     onChange(null);
   };
 
-  const onSelectAddress = (address: string) => {
+  const onSelectAddress = ({ address }: { address: string }) => {
     setDialogOpen(false);
     onChange(address);
     onBlur();
@@ -81,7 +81,6 @@ export default memo(function AddressSearch({
 
       <AddressSearchDialog
         title={"Select a receiver"}
-        index={<AddressSearchIndex onSelectAddress={onSelectAddress} />}
         open={dialogOpen}
         onClose={() => {
           setDialogOpen(false);

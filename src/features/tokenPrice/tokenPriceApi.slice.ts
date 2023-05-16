@@ -36,7 +36,7 @@ const tokenPriceApi = createApi({
       query: () => "https://open.er-api.com/v6/latest/USD",
       transformResponse: (response: ExchangeRateResponse) => response.rates,
     }),
-    getSupportedNetworkIDs: builder.query<number[], void>({
+    getSupportedChainIds: builder.query<number[], void>({
       query: () => ({
         url: `${LIFI_API_URL}/chains`,
       }),

@@ -8,7 +8,7 @@ import {
   Middleware,
   MiddlewareAPI,
 } from "@reduxjs/toolkit";
-import { setupListeners } from "@reduxjs/toolkit/query";
+import { defaultSerializeQueryArgs, setupListeners } from "@reduxjs/toolkit/query";
 import * as Sentry from "@sentry/react";
 import {
   allRpcEndpoints,
@@ -57,6 +57,8 @@ import {
   vestingSchedulerQueryEndpoints,
 } from "./endpoints/vestingSchedulerEndpoints";
 import { platformApi } from "./platformApi/platformApi";
+import addressBookRpcApi from "../addressBook/addressBookRpcApi.slice";
+import { autoWrapEndpoints } from "./endpoints/autoWrapEndpoints";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({
@@ -71,7 +73,8 @@ export const rpcApi = initializeRpcApiSlice((options) =>
   .injectEndpoints(adHocRpcEndpoints)
   .injectEndpoints(flowSchedulerEndpoints)
   .injectEndpoints(vestingSchedulerMutationEndpoints)
-  .injectEndpoints(vestingSchedulerQueryEndpoints);
+  .injectEndpoints(vestingSchedulerQueryEndpoints)
+  .injectEndpoints(autoWrapEndpoints);
 
 export const subgraphApi = initializeSubgraphApiSlice((options) =>
   createApiWithReactHooks({
@@ -191,6 +194,7 @@ export const reduxStore = configureStore({
     [vestingSubgraphApi.reducerPath]: vestingSubgraphApi.reducer,
     [pushApi.reducerPath]: pushApi.reducer,
     [schedulingSubgraphApi.reducerPath]: schedulingSubgraphApi.reducer,
+    [addressBookRpcApi.reducerPath]: addressBookRpcApi.reducer,
 
     // Persisted slices
     appSettings: appSettingsPersistedReducer,
@@ -229,7 +233,8 @@ export const reduxStore = configureStore({
       .concat(faucetApi.middleware)
       .concat(tokenPriceApi.middleware)
       .concat(accountingApi.middleware)
-      .concat(pushApi.middleware),
+      .concat(pushApi.middleware)
+      .concat(addressBookRpcApi.middleware),
 });
 
 export const reduxPersistor = persistStore(reduxStore);

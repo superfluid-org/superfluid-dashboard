@@ -11,9 +11,11 @@ import { RootState } from "../redux/store";
 export interface AddressBookEntry {
   address: Address;
   name?: string;
+  associatedNetworks?: number[]; // Chain IDs
+  isContract?: boolean;
 }
 
-const adapter = createEntityAdapter<AddressBookEntry>({
+export const adapter = createEntityAdapter<AddressBookEntry>({
   selectId: (x) => getAddress(x.address),
 });
 
@@ -29,6 +31,8 @@ export const addressBookSlice = createSlice({
         {
           ...payload,
           address: getAddress(payload.address),
+          associatedNetworks: payload.associatedNetworks,
+          isContract: payload.isContract,
         },
         ...adapterSelectors.selectAll(state),
       ]),
@@ -41,6 +45,8 @@ export const addressBookSlice = createSlice({
         payload.map((newEntry) => ({
           ...newEntry,
           address: getAddress(newEntry.address),
+          associatedNetworks: newEntry.associatedNetworks,
+          isContract: newEntry.isContract,
         }))
       ),
 

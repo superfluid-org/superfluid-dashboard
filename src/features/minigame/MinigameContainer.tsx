@@ -13,13 +13,13 @@ export default forwardRef<HTMLIFrameElement>(function MinigameContainer(
       component="iframe"
       ref={ref}
       sx={{
+        backgroundColor: "transparent",
         border: "0",
-        height: "95%",
+        height: "75%",
         width: "100%",
       }}
       src={getUrl().toString()}
       allowFullScreen={true}
-      allowTransparency={true}
     />
   );
 });

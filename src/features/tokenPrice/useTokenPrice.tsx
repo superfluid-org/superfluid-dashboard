@@ -9,9 +9,9 @@ const useTokenPrice = (chainId: number, token?: Address) => {
   const currency = useAppCurrency();
 
   const exchangeRatesResponse = tokenPriceApi.useGetUSDExchangeRateQuery();
-  const supportedNetworks = tokenPriceApi.useGetSupportedNetworkIDsQuery();
+  const supportedNetworksQuery = tokenPriceApi.useGetSupportedChainIdsQuery();
 
-  const isChainSupported = (supportedNetworks.data || []).includes(chainId);
+  const isChainSupported = (supportedNetworksQuery.data || []).includes(chainId);
   const tokenPriceResponse = tokenPriceApi.useGetTokenDataQuery(
     isChainSupported && token
       ? {

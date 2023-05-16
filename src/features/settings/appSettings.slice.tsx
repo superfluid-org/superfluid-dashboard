@@ -2,12 +2,14 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { CurrencyCode } from "../../utils/currencyUtils";
 import { RootState } from "../redux/store";
+import {MinigameCosmetics} from "../minigame/MinigameContext";
 
 export interface AppSettingsState {
   currencyCode: CurrencyCode;
+  lastSuperfluidRunnerCosmetics: MinigameCosmetics
 }
 
-const initialState: AppSettingsState = { currencyCode: CurrencyCode.USD };
+const initialState: AppSettingsState = { currencyCode: CurrencyCode.USD, lastSuperfluidRunnerCosmetics: 1 };
 
 const appSettingsSlice = createSlice({
   name: "appSettings",

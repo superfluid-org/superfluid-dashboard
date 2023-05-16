@@ -57,12 +57,11 @@ const FixVestingPermissionsBtn: FC<FixVestingPermissionsBtnProps> = ({
 
       fixAccess({
         ...primaryArgs,
-        signer,
-        waitForConfirmation: false,
+        signer
       })
         .unwrap()
         .then(...txAnalytics("Fix Access for Vesting", primaryArgs))
-        .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
+        .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
     },
     [
       fixAccess,

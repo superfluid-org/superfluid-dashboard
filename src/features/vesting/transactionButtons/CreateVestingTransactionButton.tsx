@@ -2,27 +2,35 @@ import { Typography } from "@mui/material";
 import Link from "next/link";
 import { FC } from "react";
 import { useFormContext } from "react-hook-form";
-import { useAnalytics } from "../analytics/useAnalytics";
-import { rpcApi } from "../redux/store";
-import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
-import { TransactionButton } from "../transactionBoundary/TransactionButton";
+import { useAnalytics } from "../../analytics/useAnalytics";
+import { rpcApi } from "../../redux/store";
+import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
+import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import {
   TransactionDialogActions,
   TransactionDialogButton,
-} from "../transactionBoundary/TransactionDialog";
-import { calculateAdditionalDataFromValidVestingForm } from "./calculateAdditionalDataFromValidVestingForm";
-import { ValidVestingForm } from "./CreateVestingFormProvider";
-import { CreateVestingCardView } from "./CreateVestingSection";
+} from "../../transactionBoundary/TransactionDialog";
+import { calculateAdditionalDataFromValidVestingForm } from "../calculateAdditionalDataFromValidVestingForm";
+import { ValidVestingForm } from "../CreateVestingFormProvider";
+import { CreateVestingCardView } from "../CreateVestingSection";
 
-export const CreateVestingTransactionButton: FC<{
+interface Props {
   setView: (value: CreateVestingCardView) => void;
-}> = ({ setView }) => {
+  isVisible: boolean;
+}
+
+export const CreateVestingTransactionButton: FC<Props> = ({
+  setView,
+  isVisible: isVisible_,
+}) => {
   const { txAnalytics } = useAnalytics();
   const [createVestingSchedule, createVestingScheduleResult] =
     rpcApi.useCreateVestingScheduleMutation();
 
   const { formState, handleSubmit } = useFormContext<ValidVestingForm>();
   const isDisabled = !formState.isValid || formState.isValidating;
+
+  const isVisible = !createVestingScheduleResult.isSuccess && isVisible_;
 
   return (
     <TransactionBoundary mutationResult={createVestingScheduleResult}>
@@ -32,7 +40,7 @@ export const CreateVestingTransactionButton: FC<{
         setDialogLoadingInfo,
         setDialogSuccessActions,
       }) =>
-        !createVestingScheduleResult.isSuccess && (
+        isVisible && (
           <TransactionButton
             dataCy={"create-schedule-tx-button"}
             disabled={isDisabled}
@@ -77,7 +85,6 @@ export const CreateVestingTransactionButton: FC<{
                     ...primaryArgs,
                     signer,
                     overrides: await getOverrides(),
-                    waitForConfirmation: false,
                   })
                     .unwrap()
                     .then(
@@ -103,7 +110,7 @@ export const CreateVestingTransactionButton: FC<{
               )()
             }
           >
-            Create the Vesting Schedule
+            Create Vesting Schedule
           </TransactionButton>
         )
       }

@@ -97,6 +97,7 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivityRowProps> = ({
         <ListItem sx={{ p: 0 }}>
           <ActivityIcon icon={PercentRoundedIcon} />
           <ListItemText
+            data-cy={"activity"}
             primary="Subscription Updated"
             secondary={format(timestamp * 1000, dateFormat)}
             primaryTypographyProps={{
@@ -122,6 +123,7 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivityRowProps> = ({
                 />
               </ListItemAvatar>
               <ListItemText
+                data-cy={"amount"}
                 primary={unitsPercentageString}
                 secondary={unitsDiffString}
                 primaryTypographyProps={{
@@ -141,6 +143,7 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivityRowProps> = ({
                 <AddressAvatar address={isPublisher ? subscriber : publisher} />
               </ListItemAvatar>
               <ListItemText
+                data-cy={"amountToFrom"}
                 primary={isPublisher ? "Subscriber" : "Publisher"}
                 secondary={
                   <AddressCopyTooltip

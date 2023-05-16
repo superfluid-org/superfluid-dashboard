@@ -49,6 +49,8 @@ export const superfluidRpcUrls = {
   ethereum: "https://rpc-endpoints.superfluid.dev/eth-mainnet",
   bsc: "https://rpc-endpoints.superfluid.dev/bsc-mainnet",
   "celo-mainnet": "https://rpc-endpoints.superfluid.dev/celo-mainnet",
+  "optimism-goerli": "https://rpc-endpoints.superfluid.dev/optimism-goerli",
+  "arbitrum-goerli": "https://rpc-endpoints.superfluid.dev/arbitrum-goerli",
 };
 
 export const networkDefinition: {
@@ -65,7 +67,9 @@ export const networkDefinition: {
   avalancheC: Network;
   bsc: Network;
   ethereum: Network;
-  celoMainnet: Network,
+  celoMainnet: Network;
+  optimismGoerli: Network;
+  arbitrumGoerli: Network;
 } = {
   goerli: {
     ...chain.goerli,
@@ -364,11 +368,11 @@ export const networkDefinition: {
     color: "#FCFF52",
     superfluidRpcUrl: superfluidRpcUrls["celo-mainnet"],
     subgraphUrl:
-        "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-celo-mainnet",
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-celo-mainnet",
     getLinkForTransaction: (txHash: string): string =>
-        `https://celoscan.io/tx/${txHash}`,
+      `https://celoscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
-        `https://celoscan.io/address/${address}`,
+      `https://celoscan.io/address/${address}`,
     nativeCurrency: {
       ...ensureDefined(chain.celo.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,
@@ -378,6 +382,60 @@ export const networkDefinition: {
         symbol: "CELOx",
         address: "0x671425ae1f272bc6f79bec3ed5c4b00e9c628240",
         name: "Super Celo",
+        decimals: 18,
+      },
+    },
+  },
+  optimismGoerli: {
+    ...chain.optimismGoerli,
+    slugName: "optimism-goerli",
+    v1ShortName: "optimism goerli",
+    bufferTimeInMinutes: 240,
+    icon: "/icons/network/optimism.svg",
+    color: "#ff0320",
+    superfluidRpcUrl: superfluidRpcUrls["optimism-goerli"],
+    subgraphUrl:
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-goerli",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://goerli-optimism.etherscan.io/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://goerli-optimism.etherscan.io/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.optimismGoerli.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0xE01F8743677Da897F4e7De9073b57Bf034FC2433",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+  },
+  arbitrumGoerli: {
+    ...chain.arbitrumGoerli,
+    slugName: "arbitrum-goerli",
+    v1ShortName: "arbitrum goerli",
+    bufferTimeInMinutes: 240,
+    icon: "/icons/network/arbitrum.svg",
+    color: "#2b374b",
+    superfluidRpcUrl: superfluidRpcUrls["arbitrum-goerli"],
+    subgraphUrl:
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-goerli",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://goerli.arbiscan.io/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://goerli.arbiscan.io/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.arbitrumGoerli.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0xE01F8743677Da897F4e7De9073b57Bf034FC2433",
+        name: "Super ETH",
         decimals: 18,
       },
     },
@@ -396,6 +454,8 @@ export const networks: Network[] = [
   networkDefinition.bsc,
   networkDefinition.ethereum,
   networkDefinition.celoMainnet,
+  networkDefinition.optimismGoerli,
+  networkDefinition.arbitrumGoerli,
 ];
 
 export const getNetworkDefaultTokenPair = memoize(
@@ -420,7 +480,7 @@ export const networksBySlug = new Map(networks.map((x) => [x.slugName, x]));
 
 export const mainNetworks = networks.filter((network) => !network.testnet);
 export const testNetworks = networks.filter((network) => network.testnet);
-export const networkIDs = networks.map((network) => network.id);
+export const chainIds = networks.map((network) => network.id);
 
 export const findNetworkByChainId = memoize((chainId: number) =>
   networks.find((network) => network.id === chainId)

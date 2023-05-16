@@ -1,3 +1,5 @@
+import sfMeta from "@superfluid-finance/metadata";
+import { BigNumber, BigNumberish } from "ethers";
 import { isString } from "lodash";
 import memoize from "lodash/memoize";
 import * as chain from "wagmi/chains";
@@ -9,7 +11,17 @@ import {
   TokenMinimal,
   TokenType,
 } from "../redux/endpoints/tokenTypes";
-import sfMeta from "@superfluid-finance/metadata";
+import { UnitOfTime } from "../send/FlowRateInput";
+import {
+  autoWrapManagerAddresses,
+  autoWrapStrategyAddresses,
+  flowSchedulerContractAddresses,
+  flowSchedulerSubgraphUrls,
+  superfluidPlatformUrls,
+  superfluidRpcUrls,
+  vestingContractAddresses,
+  vestingSubgraphUrls,
+} from "./networkConstants";
 
 // id == chainId
 // name == displayName
@@ -35,101 +47,13 @@ export type Network = Chain & {
   vestingContractAddress: `0x${string}` | undefined;
   vestingSubgraphUrl: `https://${string}` | undefined;
   platformUrl: string | undefined;
+  autoWrap?: {
+    managerContractAddress: `0x${string}`;
+    strategyContractAddress: `0x${string}`;
+    lowerLimit: BigNumberish;
+    upperLimit: BigNumberish;
+  };
 };
-
-export const superfluidRpcUrls = {
-  goerli: "https://rpc-endpoints.superfluid.dev/eth-goerli",
-  gnosis: "https://rpc-endpoints.superfluid.dev/xdai-mainnet",
-  polygon: "https://rpc-endpoints.superfluid.dev/polygon-mainnet",
-  polygonMumbai: "https://rpc-endpoints.superfluid.dev/polygon-mumbai",
-  arbitrum: "https://rpc-endpoints.superfluid.dev/arbitrum-one",
-  optimism: "https://rpc-endpoints.superfluid.dev/optimism-mainnet",
-  avalancheFuji: "https://rpc-endpoints.superfluid.dev/avalanche-fuji",
-  avalancheC: "https://rpc-endpoints.superfluid.dev/avalanche-c",
-  bnbSmartChain: "https://rpc-endpoints.superfluid.dev/bsc-mainnet",
-  ethereum: "https://rpc-endpoints.superfluid.dev/eth-mainnet",
-  "celo-mainnet": "https://rpc-endpoints.superfluid.dev/celo-mainnet",
-} as const;
-
-export const superfluidPlatformUrls = {
-  goerli: "https://prod-goerli-platform-service.dev.superfluid.dev",
-  gnosis: "https://prod-xdai-mainnet-platform-service.prod.superfluid.dev",
-  polygon: "https://prod-polygon-mainnet-platform-service.prod.superfluid.dev",
-  mumbai: "https://prod-polygon-mumbai-platform-service.dev.superfluid.dev",
-  arbitrum: "https://prod-arbitrum-one-platform-service.prod.superfluid.dev",
-  optimism:
-    "https://prod-optimism-mainnet-platform-service.prod.superfluid.dev",
-  avalancheC: "https://prod-avalanche-c-platform-service.prod.superfluid.dev",
-  bnbSmartChain:
-    "https://prod-bsc-mainnet-platform-service.prod.superfluid.dev",
-  ethereum: "https://prod-eth-mainnet-platform-service.prod.superfluid.dev",
-} as const;
-
-export const vestingSubgraphUrls = {
-  gnosis:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-xdai-mainnet",
-  goerli:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-eth-goerli",
-  polygon:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-polygon-mainnet",
-  mumbai:
-    "https://api.thegraph.com/subgraphs/name/tokdaniel/vesting-v1-mumbai-test",
-  arbitrum:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-arbitrum-one",
-  optimism:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-optimism-mainnet",
-  avalancheC:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-avalanche-c",
-  bnbSmartChain:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-bsc-mainnet",
-  ethereum:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-eth-mainnet",
-} as const;
-
-export const vestingContractAddresses = {
-  gnosis: "0x0170FFCC75d178d426EBad5b1a31451d00Ddbd0D",
-  goerli: "0xF9240F930d847F70ad900aBEE8949F25649Bf24a",
-  polygon: "0xcFE6382B33F2AdaFbE46e6A26A88E0182ae32b0c",
-  mumbai: "0x5E930Ad6602186790ba4dF261e23CdC3Eab3DF91",
-  arbitrum: "0x55c8fc400833eEa791087cF343Ff2409A39DeBcC",
-  optimism: "0x65377d4dfE9c01639A41952B5083D58964782892",
-  avalancheC: "0x3fA8B653F9abf91428800C0ba0F8D145a71F97A1",
-  bnbSmartChain: "0x9B91c27f78376383003C6A12Ad12B341d016C5b9",
-  ethereum: "0x39D5cBBa9adEBc25085a3918d36D5325546C001B",
-} as const;
-
-export const flowSchedulerSubgraphUrls = {
-  goerli:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-eth-goerli",
-  arbitrum:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-arbitrum-one",
-  avalancheC:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-avalanche-c",
-  bnbSmartChain:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-bsc-mainnet",
-  ethereum:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-eth-mainnet",
-  optimism:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-optimism-mainnet",
-  polygon:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-polygon-mainnet",
-  mumbai:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-polygon-mumbai",
-  gnosis:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-xdai-mainnet",
-} as const;
-
-export const flowSchedulerContractAddresses = {
-  goerli: "0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca",
-  arbitrum: "0x3fA8B653F9abf91428800C0ba0F8D145a71F97A1",
-  avalancheC: "0xF7AfF590E9DE493D7ACb421Fca7f1E35C1ad4Ce5",
-  bnbSmartChain: "0x2f9e2A2A59405682d4F86779275CF5525AD7eC2B",
-  ethereum: "0xAA0cD305eD020137E302CeCede7b18c0A05aCCDA",
-  optimism: "0x55c8fc400833eEa791087cF343Ff2409A39DeBcC",
-  polygon: "0x55F7758dd99d5e185f4CC08d4Ad95B71f598264D",
-  mumbai: "0x59A3Ba9d34c387FB70b4f4e4Fbc9eD7519194139",
-  gnosis: "0x9cC7fc484fF588926149577e9330fA5b2cA74336",
-} as const;
 
 const blockExplorers = {
   blockscout: {
@@ -166,26 +90,9 @@ const blockExplorers = {
       url: "https://celoscan.io/",
     },
   },
-};
+} as const;
 
-export const networkDefinition: {
-  goerli: Network & {
-    flowSchedulerContractAddress: `0x${string}`;
-    platformUrl: string;
-  };
-  gnosis: Network;
-  polygon: Network;
-  polygonMumbai: Network;
-  avalancheFuji: Network;
-  optimism: Network;
-  arbitrum: Network;
-  avalancheC: Network;
-  bsc: Network;
-  ethereum: Network & {
-    vestingContractAddress: `0x${string}`;
-  };
-  celoMainnet: Network;
-} = {
+export const networkDefinition = {
   goerli: {
     ...chain.goerli,
     blockExplorers: ensureDefined(chain.goerli.blockExplorers),
@@ -220,7 +127,13 @@ export const networkDefinition: {
     vestingContractAddress: vestingContractAddresses.goerli,
     vestingSubgraphUrl: vestingSubgraphUrls.goerli,
     platformUrl: superfluidPlatformUrls.goerli,
-  },
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.goerli.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.goerli.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
+    },
+  } as const,
   gnosis: {
     name: "Gnosis Chain",
     blockExplorers: {
@@ -265,7 +178,13 @@ export const networkDefinition: {
     vestingContractAddress: vestingContractAddresses.gnosis,
     vestingSubgraphUrl: vestingSubgraphUrls.gnosis,
     platformUrl: superfluidPlatformUrls.gnosis,
-  },
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.gnosis.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.gnosis.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
+    },
+  } as const,
   polygon: {
     ...chain.polygon,
     blockExplorers: ensureDefined(chain.polygon.blockExplorers),
@@ -301,7 +220,13 @@ export const networkDefinition: {
     vestingContractAddress: vestingContractAddresses.polygon,
     vestingSubgraphUrl: vestingSubgraphUrls.polygon,
     platformUrl: superfluidPlatformUrls.polygon,
-  },
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.polygon.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.polygon.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
+    },
+  } as const,
   polygonMumbai: {
     ...chain.polygonMumbai,
     blockExplorers: ensureDefined(chain.polygonMumbai.blockExplorers),
@@ -336,7 +261,14 @@ export const networkDefinition: {
     vestingContractAddress: vestingContractAddresses.mumbai,
     vestingSubgraphUrl: vestingSubgraphUrls.mumbai,
     platformUrl: superfluidPlatformUrls.mumbai,
-  },
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.polygonMumbai.id],
+      strategyContractAddress:
+        autoWrapStrategyAddresses[chain.polygonMumbai.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
+    },
+  } as const,
   avalancheFuji: {
     name: "Fuji (C-Chain)",
     slugName: "avalanche-fuji",
@@ -371,7 +303,7 @@ export const networkDefinition: {
       superToken: {
         type: TokenType.NativeAssetSuperToken,
         symbol: "AVAXx",
-        address: "0x5735c32c38f5af0fb04a7c77c832ba4d7abffec8",
+        address: "0xffd0f6d73ee52c68bf1b01c8afa2529c97ca17f3",
         name: "Super AVAX",
         decimals: 18,
       },
@@ -381,7 +313,14 @@ export const networkDefinition: {
     vestingContractAddress: undefined,
     vestingSubgraphUrl: undefined,
     platformUrl: undefined,
-  },
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.avalancheFuji.id],
+      strategyContractAddress:
+        autoWrapStrategyAddresses[chain.avalancheFuji.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
+    },
+  } as const,
   optimism: {
     ...chain.optimism,
     blockExplorers: ensureDefined(chain.optimism.blockExplorers),
@@ -417,7 +356,13 @@ export const networkDefinition: {
     vestingContractAddress: vestingContractAddresses.optimism,
     vestingSubgraphUrl: vestingSubgraphUrls.optimism,
     platformUrl: superfluidPlatformUrls.optimism,
-  },
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.optimism.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.optimism.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
+    },
+  } as const,
   arbitrum: {
     ...chain.arbitrum,
     blockExplorers: ensureDefined(chain.arbitrum.blockExplorers),
@@ -453,7 +398,13 @@ export const networkDefinition: {
     vestingContractAddress: vestingContractAddresses.arbitrum,
     vestingSubgraphUrl: vestingSubgraphUrls.arbitrum,
     platformUrl: superfluidPlatformUrls.arbitrum,
-  },
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.arbitrum.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.arbitrum.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
+    },
+  } as const,
   avalancheC: {
     name: "Avalanche C",
     slugName: "avalanche",
@@ -500,14 +451,19 @@ export const networkDefinition: {
     vestingContractAddress: vestingContractAddresses.avalancheC,
     vestingSubgraphUrl: vestingSubgraphUrls.avalancheC,
     platformUrl: superfluidPlatformUrls.avalancheC,
-  },
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.avalanche.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.avalanche.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
+    },
+  } as const,
   bsc: {
+    ...chain.bsc,
     name: "BNB Smart Chain",
     slugName: "bsc",
     v1ShortName: "bsc-mainnet",
     network: "bnb-smart-chain",
-    id: 56,
-    testnet: false,
     bufferTimeInMinutes: 240,
     icon: "/icons/network/bnb.svg",
     color: "#F0B90B",
@@ -545,7 +501,13 @@ export const networkDefinition: {
     vestingContractAddress: vestingContractAddresses.bnbSmartChain,
     vestingSubgraphUrl: vestingSubgraphUrls.bnbSmartChain,
     platformUrl: superfluidPlatformUrls.bnbSmartChain,
-  },
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.bsc.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.bsc.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
+    },
+  } as const,
   ethereum: {
     ...chain.mainnet,
     blockExplorers: ensureDefined(chain.mainnet.blockExplorers),
@@ -581,7 +543,13 @@ export const networkDefinition: {
     vestingContractAddress: vestingContractAddresses.ethereum,
     vestingSubgraphUrl: vestingSubgraphUrls.ethereum,
     platformUrl: superfluidPlatformUrls.ethereum,
-  },
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.mainnet.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.mainnet.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 28),
+    },
+  } as const,
   celoMainnet: {
     ...chain.celo,
     blockExplorers: {
@@ -618,7 +586,75 @@ export const networkDefinition: {
     vestingContractAddress: undefined,
     vestingSubgraphUrl: undefined,
     platformUrl: undefined,
-  },
+  } as const,
+  optimismGoerli: {
+    ...chain.optimismGoerli,
+    blockExplorers: ensureDefined(chain.optimismGoerli.blockExplorers),
+    slugName: "optimism-goerli",
+    v1ShortName: "optimism goerli",
+    bufferTimeInMinutes: 240,
+    icon: "/icons/network/optimism.svg",
+    color: "#ff0320",
+    rpcUrls: {
+      ...chain.optimismGoerli.rpcUrls,
+      superfluid: { http: [superfluidRpcUrls["optimism-goerli"]] },
+    },
+    subgraphUrl:
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-goerli",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://goerli-optimism.etherscan.io/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://goerli-optimism.etherscan.io/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.optimismGoerli.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0xE01F8743677Da897F4e7De9073b57Bf034FC2433",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+    vestingContractAddress: undefined,
+    vestingSubgraphUrl: undefined,
+    platformUrl: undefined,
+  } as const,
+  arbitrumGoerli: {
+    ...chain.arbitrumGoerli,
+    blockExplorers: ensureDefined(chain.arbitrumGoerli.blockExplorers),
+    slugName: "arbitrum-goerli",
+    v1ShortName: "arbitrum goerli",
+    bufferTimeInMinutes: 240,
+    icon: "/icons/network/arbitrum.svg",
+    color: "#2b374b",
+    rpcUrls: {
+      ...chain.arbitrumGoerli.rpcUrls,
+      superfluid: { http: [superfluidRpcUrls["arbitrum-goerli"]] },
+    },
+    subgraphUrl:
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-goerli",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://goerli.arbiscan.io/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://goerli.arbiscan.io/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.arbitrumGoerli.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0xE01F8743677Da897F4e7De9073b57Bf034FC2433",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+    vestingContractAddress: undefined,
+    vestingSubgraphUrl: undefined,
+    platformUrl: undefined,
+  } as const,
 };
 
 export const allNetworks: Network[] = [
@@ -633,6 +669,8 @@ export const allNetworks: Network[] = [
   networkDefinition.avalancheC,
   networkDefinition.bsc,
   networkDefinition.celoMainnet,
+  networkDefinition.optimismGoerli,
+  networkDefinition.arbitrumGoerli,
 ];
 export const mainNetworks = allNetworks.filter((x) => !x.testnet);
 export const testNetworks = allNetworks.filter((x) => x.testnet);
@@ -678,7 +716,7 @@ export const findNetworkOrThrow = (
 ): Network => {
   const network = tryFindNetwork(networks, value);
   if (!network) {
-    throw new Error("Network not found. This should never happen.");
+    throw new Error(`Network ${value}  not found. This should never happen.`);
   }
   return network;
 };

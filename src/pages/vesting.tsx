@@ -1,8 +1,5 @@
-import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import { Button, Container, Stack, Typography } from "@mui/material";
-import NextLink from "next/link";
+import { Container } from "@mui/material";
 import { ReactElement } from "react";
-import { useAccount } from "wagmi";
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import SimpleVestingHeader from "../features/vesting/SimpleVestingHeader";
 import VestingLayout from "../features/vesting/VestingLayout";

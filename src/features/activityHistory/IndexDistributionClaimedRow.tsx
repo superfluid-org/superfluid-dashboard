@@ -61,6 +61,7 @@ const IndexDistributionClaimedRow: FC<IndexDistributionClaimedRowProps> = ({
             }}
           />
           <ListItemText
+            data-cy={"activity"}
             primary="Distribution Claimed"
             secondary={format(timestamp * 1000, dateFormat)}
             primaryTypographyProps={{
@@ -88,6 +89,7 @@ const IndexDistributionClaimedRow: FC<IndexDistributionClaimedRowProps> = ({
                 />
               </ListItemAvatar>
               <ListItemText
+                data-cy={"amount"}
                 primary={
                   <>
                     +<Amount wei={amount} />
@@ -109,6 +111,7 @@ const IndexDistributionClaimedRow: FC<IndexDistributionClaimedRowProps> = ({
                 <AddressAvatar address={isPublisher ? subscriber : publisher} />
               </ListItemAvatar>
               <ListItemText
+                data-cy={"amountToFrom"}
                 primary={isPublisher ? "Subscriber" : "Publisher"}
                 secondary={
                   <AddressCopyTooltip
