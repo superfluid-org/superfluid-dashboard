@@ -58,6 +58,7 @@ import {
 } from "./endpoints/vestingSchedulerEndpoints";
 import { platformApi } from "./platformApi/platformApi";
 import addressBookRpcApi from "../addressBook/addressBookRpcApi.slice";
+import { accessSettingMutationEndpoints } from "./endpoints/accessSettingEndpoints";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({
@@ -72,6 +73,7 @@ export const rpcApi = initializeRpcApiSlice((options) =>
   .injectEndpoints(adHocRpcEndpoints)
   .injectEndpoints(flowSchedulerEndpoints)
   .injectEndpoints(vestingSchedulerMutationEndpoints)
+  .injectEndpoints(accessSettingMutationEndpoints)
   .injectEndpoints(vestingSchedulerQueryEndpoints);
 
 export const subgraphApi = initializeSubgraphApiSlice((options) =>

@@ -13,42 +13,25 @@ const gasApi = createApi({
   endpoints: (builder) => ({
     recommendedGas: builder.query<GasRecommendation | null, { chainId: number }>({
       queryFn: async ({ chainId }) => {
-        // Polygon
-        if (chainId === chain.polygon.id) {
-          const {
-            data: {
-              fast: { maxFee, maxPriorityFee },
-            },
-          } = await axios.get<MaticGasStationResponse>(
-            "https://gasstation-mainnet.matic.network/v2"
-          );
-          return {
-            data: {
-              maxFeeGwei: maxFee,
-              maxPriorityFeeGwei: maxPriorityFee,
-            } as GasRecommendation,
-          };
+        const endpointMap: { [key: number]: string } = {
+          [chain.polygon.id]: "https://gasstation-mainnet.matic.network/v2",
+          [chain.polygonMumbai.id]: "https://gasstation-mumbai.matic.today/v2",
+        };
+
+        const endpoint = endpointMap[chainId];
+
+        if (!endpoint) {
+          return { data: null };
         }
 
-        // Polygon Mumbai
-        if (chainId === chain.polygonMumbai.id) {
-          const {
-            data: {
-              fast: { maxFee, maxPriorityFee },
-            },
-          } = await axios.get<MaticGasStationResponse>(
-            "https://gasstation-mumbai.matic.today/v2"
-          );
-          return {
-            data: {
-              maxFeeGwei: maxFee,
-              maxPriorityFeeGwei: maxPriorityFee,
-            } as GasRecommendation,
-          };
-        }
+        const response = await axios.get<MaticGasStationResponse>(endpoint);
+        const { maxFee, maxPriorityFee } = response.data.fast;
 
         return {
-          data: null,
+          data: {
+            maxFeeGwei: maxFee,
+            maxPriorityFeeGwei: maxPriorityFee,
+          } as GasRecommendation,
         };
       },
     }),
