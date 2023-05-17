@@ -385,6 +385,7 @@ export default memo(function SendCard() {
   );
 
   const {
+    isExistingStreamFetching,
     existingStartTimestamp,
     existingEndTimestamp,
     existingFlowRate,
@@ -401,8 +402,8 @@ export default memo(function SendCard() {
     {
       selectFromResult: (result) => {
         const { startDate, endDate, flowRate } = result.data || {};
-
         return {
+          isExistingStreamFetching: result.isFetching,
           existingStartTimestamp: startDate || null,
           existingEndTimestamp: endDate || null,
           existingFlowRate: flowRate,
@@ -702,7 +703,7 @@ export default memo(function SendCard() {
     (!activeFlow && !scheduledStream && flowRateEther.amountEther !== "");
 
   const isSendDisabled =
-    formState.isValidating || !formState.isValid || !hasAnythingChanged;
+    formState.isValidating || !formState.isValid || !hasAnythingChanged || isExistingStreamFetching;
 
   const [upsertFlow, upsertFlowResult] =
     rpcApi.useUpsertFlowWithSchedulingMutation();
