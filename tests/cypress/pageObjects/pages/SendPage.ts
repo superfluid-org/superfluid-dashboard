@@ -369,8 +369,9 @@ export class SendPage extends BasePage {
         // @ts-ignore
         win.mockSigner.getGasPrice().then((gas) => {
           // @ts-ignore
-          win.superfluid_dashboard.advanced.nextGasOverrides.gasPrice =
-            gas._hex.toString() * 2;
+          win.superfluid_dashboard.advanced.nextGasOverrides.gasPrice = gas
+            .mul(2)
+            .toString();
           // @ts-ignore
           win.superfluid_dashboard.advanced.nextGasOverrides.gasLimit =
             "1000000";
