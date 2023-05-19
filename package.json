@@ -28,7 +28,7 @@
     "@lifi/widget": "^1.32.8",
     "@mui/icons-material": "^5.11.11",
     "@mui/lab": "^5.0.0-alpha.123",
-    "@mui/material": "^5.11.13",
+    "@mui/material": "^5.11.11",
     "@mui/x-data-grid": "^5.17.26",
     "@mui/x-date-pickers": "^5.0.20",
     "@pushprotocol/restapi": "0.7.5",
