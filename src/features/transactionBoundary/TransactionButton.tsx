@@ -26,7 +26,7 @@ export const TransactionButton: FC<TransactionButtonProps> = ({
   onClick,
   ButtonProps,
 }) => {
-  const { signer, mutationResult } = useTransactionBoundary();
+  const { signer, mutationResult, transaction } = useTransactionBoundary();
 
   const buttonProps: ButtonProps = {
     ...transactionButtonDefaultProps,
@@ -47,7 +47,7 @@ export const TransactionButton: FC<TransactionButtonProps> = ({
         {...(dataCy ? { "data-cy": dataCy } : {})}
         color="primary"
         {...buttonProps}
-        loading={mutationResult.isLoading}
+        loading={mutationResult.isLoading || transaction?.status === "Pending"}
         disabled={!signer}
         onClick={() => {
           if (!signer) throw Error("Signer not defined.");

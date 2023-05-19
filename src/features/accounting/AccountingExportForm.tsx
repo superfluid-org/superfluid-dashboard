@@ -19,7 +19,7 @@ import { FC } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import MultiAddressSearch from "../../components/AddressSearch/MultiAddressSearch";
 import CurrencySelect from "../../components/CurrencySelect/CurrencySelect";
-import TooltipIcon from "../common/TooltipIcon";
+import TooltipWithIcon from "../common/TooltipWithIcon";
 import { UnitOfTime } from "../send/FlowRateInput";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import ConnectionBoundaryButton from "../transactionBoundary/ConnectionBoundaryButton";
@@ -123,7 +123,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
             sx={{ mr: 0.75 }}
           >
             <FormLabel>View for addresses</FormLabel>
-            <TooltipIcon title="The address(es) you’re getting accounting data for." />
+            <TooltipWithIcon title="The address(es) you’re getting accounting data for." />
           </Stack>
           <Controller
             control={control}
@@ -151,7 +151,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
             sx={{ mr: 0.75 }}
           >
             <FormLabel>Counterparty addresses (optional)</FormLabel>
-            <TooltipIcon title="Must not be an exchange address. If no addresses are selected, all counterparties will be fetched." />
+            <TooltipWithIcon title="Must not be an exchange address. If no addresses are selected, all counterparties will be fetched." />
           </Stack>
           <Controller
             control={control}

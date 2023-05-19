@@ -60,12 +60,11 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
     flowDeleteTrigger({
       ...primaryArgs,
       signer,
-      waitForConfirmation: false,
       overrides: await getTransactionOverrides(network),
     })
       .unwrap()
       .then(...txAnalytics("Cancel Stream", primaryArgs))
-      .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
+      .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
   };
 
   const isSenderOrReceiverLooking = useMemo(

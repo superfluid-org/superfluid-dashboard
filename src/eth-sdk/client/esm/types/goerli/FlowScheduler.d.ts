@@ -158,7 +158,7 @@ export interface CreateFlowExecutedEventObject {
     startAmount: BigNumber;
     userData: string;
 }
-export declare type CreateFlowExecutedEvent = TypedEvent<[
+export type CreateFlowExecutedEvent = TypedEvent<[
     string,
     string,
     string,
@@ -168,7 +168,7 @@ export declare type CreateFlowExecutedEvent = TypedEvent<[
     BigNumber,
     string
 ], CreateFlowExecutedEventObject>;
-export declare type CreateFlowExecutedEventFilter = TypedEventFilter<CreateFlowExecutedEvent>;
+export type CreateFlowExecutedEventFilter = TypedEventFilter<CreateFlowExecutedEvent>;
 export interface DeleteFlowExecutedEventObject {
     superToken: string;
     sender: string;
@@ -176,14 +176,14 @@ export interface DeleteFlowExecutedEventObject {
     endDate: number;
     userData: string;
 }
-export declare type DeleteFlowExecutedEvent = TypedEvent<[
+export type DeleteFlowExecutedEvent = TypedEvent<[
     string,
     string,
     string,
     number,
     string
 ], DeleteFlowExecutedEventObject>;
-export declare type DeleteFlowExecutedEventFilter = TypedEventFilter<DeleteFlowExecutedEvent>;
+export type DeleteFlowExecutedEventFilter = TypedEventFilter<DeleteFlowExecutedEvent>;
 export interface FlowScheduleCreatedEventObject {
     superToken: string;
     sender: string;
@@ -195,7 +195,7 @@ export interface FlowScheduleCreatedEventObject {
     startAmount: BigNumber;
     userData: string;
 }
-export declare type FlowScheduleCreatedEvent = TypedEvent<[
+export type FlowScheduleCreatedEvent = TypedEvent<[
     string,
     string,
     string,
@@ -206,18 +206,18 @@ export declare type FlowScheduleCreatedEvent = TypedEvent<[
     BigNumber,
     string
 ], FlowScheduleCreatedEventObject>;
-export declare type FlowScheduleCreatedEventFilter = TypedEventFilter<FlowScheduleCreatedEvent>;
+export type FlowScheduleCreatedEventFilter = TypedEventFilter<FlowScheduleCreatedEvent>;
 export interface FlowScheduleDeletedEventObject {
     superToken: string;
     sender: string;
     receiver: string;
 }
-export declare type FlowScheduleDeletedEvent = TypedEvent<[
+export type FlowScheduleDeletedEvent = TypedEvent<[
     string,
     string,
     string
 ], FlowScheduleDeletedEventObject>;
-export declare type FlowScheduleDeletedEventFilter = TypedEventFilter<FlowScheduleDeletedEvent>;
+export type FlowScheduleDeletedEventFilter = TypedEventFilter<FlowScheduleDeletedEvent>;
 export interface FlowScheduler extends BaseContract {
     connect(signerOrProvider: Signer | Provider | string): this;
     attach(addressOrName: string): this;

@@ -21,10 +21,10 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { add } from "date-fns";
-import { FC, useCallback, useMemo } from "react";
+import { FC, memo, useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
-import TooltipIcon from "../common/TooltipIcon";
+import TooltipWithIcon from "../common/TooltipWithIcon";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
@@ -37,8 +37,11 @@ import {
 } from "../send/FlowRateInput";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
 import { transactionButtonDefaultProps } from "../transactionBoundary/TransactionButton";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { PartialVestingForm } from "./CreateVestingFormProvider";
 import { CreateVestingCardView, VestingToken } from "./CreateVestingSection";
+import useActiveAutoWrap from "./useActiveAutoWrap";
+import { TokenType } from "../redux/endpoints/tokenTypes";
 
 export enum VestingFormLabels {
   Receiver = "Receiver",
@@ -49,9 +52,14 @@ export enum VestingFormLabels {
   SuperToken = "Super Token",
   TotalVestingPeriod = "Total Vesting Period",
   TotalVestedAmount = "Total Vested Amount",
+  AutoWrap = "Enable Auto-Wrap",
 }
 
-export const CreateVestingForm: FC<{
+export enum VestingTooltips {
+  AutoWrap = "Auto-Wrap wraps your regular ERC-20 tokens to Super Tokens automatically, making it easy to send your streams without the need for manual token wrapping. All your current and future streams will have Auto-Wrap enabled for the selected token and network.",
+}
+
+const CreateVestingForm: FC<{
   token: VestingToken | undefined;
   setView: (value: CreateVestingCardView) => void;
 }> = ({ token, setView }) => {
@@ -79,29 +87,19 @@ export const CreateVestingForm: FC<{
     []
   );
 
-  const [
-    receiverAddress,
-    totalAmountEther,
-    startDate,
-    cliffAmountEther,
-    cliffEnabled,
-    vestingPeriod,
-  ] = watch([
-    "data.receiverAddress",
-    "data.totalAmountEther",
-    "data.startDate",
-    "data.cliffAmountEther",
+  const [cliffEnabled, vestingPeriod, setupAutoWrap] = watch([
     "data.cliffEnabled",
     "data.vestingPeriod",
+    "data.setupAutoWrap",
   ]);
 
   const ReceiverController = (
     <Controller
       control={control}
       name="data.receiverAddress"
-      render={({ field: { onChange, onBlur } }) => (
+      render={({ field: { value, onChange, onBlur } }) => (
         <AddressSearch
-          address={receiverAddress}
+          address={value}
           onChange={onChange}
           onBlur={onBlur}
           addressLength={isBelowMd ? "medium" : "long"}
@@ -401,7 +399,54 @@ export const CreateVestingForm: FC<{
             />
           }
           label="Add Cliff"
-          sx={{ mr: 1 }}
+        />
+      )}
+    />
+  );
+
+  const { visibleAddress } = useVisibleAddress();
+
+  const queryAutoWrap =
+    network.autoWrap &&
+    visibleAddress &&
+    token &&
+    getSuperTokenType({
+      network,
+      address: token.id,
+      underlyingAddress: token.underlyingAddress,
+    }) === TokenType.WrapperSuperToken;
+
+  const {
+    isAutoWrapLoading,
+    activeAutoWrapSchedule,
+    isAutoWrapAllowanceSufficient,
+  } = useActiveAutoWrap(
+    queryAutoWrap
+      ? {
+          chainId: network.id,
+          accountAddress: visibleAddress,
+          superTokenAddress: token.address,
+          underlyingTokenAddress: token.underlyingAddress,
+        }
+      : "skip"
+  );
+
+  const isAutoWrapInputVisible =
+    queryAutoWrap &&
+    !isAutoWrapLoading &&
+    !activeAutoWrapSchedule &&
+    !isAutoWrapAllowanceSufficient;
+
+  const AutoWrapController = (
+    <Controller
+      control={control}
+      name="data.setupAutoWrap"
+      render={({ field: { value, onChange, onBlur } }) => (
+        <FormControlLabel
+          label={VestingFormLabels.AutoWrap}
+          control={
+            <Switch checked={!!value} onChange={onChange} onBlur={onBlur} />
+          }
         />
       )}
     />
@@ -446,7 +491,7 @@ export const CreateVestingForm: FC<{
             justifyContent="space-between"
           >
             <FormLabel>{VestingFormLabels.Receiver}</FormLabel>
-            <TooltipIcon title="Must not be an exchange address" />
+            <TooltipWithIcon title="Must not be an exchange address" />
           </Stack>
           {ReceiverController}
         </FormGroup>
@@ -482,7 +527,7 @@ export const CreateVestingForm: FC<{
               justifyContent="space-between"
             >
               <FormLabel>{VestingFormLabels.TotalVestedAmount}</FormLabel>
-              <TooltipIcon title="Set the total amount to be vested" />
+              <TooltipWithIcon title="Set the total amount to be vested" />
             </Stack>
             {VestingAmountController}
           </FormGroup>
@@ -494,7 +539,7 @@ export const CreateVestingForm: FC<{
               justifyContent="space-between"
             >
               <FormLabel>{VestingFormLabels.TotalVestingPeriod}</FormLabel>
-              <TooltipIcon title="Set the total length of time for vesting" />
+              <TooltipWithIcon title="Set the total length of time for vesting" />
             </Stack>
             {VestingPeriodController}
           </FormGroup>
@@ -502,7 +547,7 @@ export const CreateVestingForm: FC<{
 
         <Stack direction="row" alignItems="center">
           {CliffEnabledController}
-          <TooltipIcon title="Set the cliff date and amount to be granted." />
+          <TooltipWithIcon title="Set the cliff date and amount to be granted." />
         </Stack>
 
         {cliffEnabled && (
@@ -520,7 +565,7 @@ export const CreateVestingForm: FC<{
                 justifyContent="space-between"
               >
                 <FormLabel>{VestingFormLabels.CliffAmount}</FormLabel>
-                <TooltipIcon title="Set the amount to be vested at the cliff" />
+                <TooltipWithIcon title="Set the amount to be vested at the cliff" />
               </Stack>
               {CliffAmountController}
             </FormGroup>
@@ -532,39 +577,63 @@ export const CreateVestingForm: FC<{
                 justifyContent="space-between"
               >
                 <FormLabel>{VestingFormLabels.CliffPeriod}</FormLabel>
-                <TooltipIcon title="Set the time until the cliff from the start date" />
+                <TooltipWithIcon title="Set the time until the cliff from the start date" />
               </Stack>
               {CliffPeriodController}
             </FormGroup>
           </Box>
         )}
 
-        <Alert severity="warning">
-          {cliffEnabled ? (
-            <>
-              <AlertTitle data-cy={"top-up-alert-title"}>
-                Don’t forget to top up for the vesting schedule!
-              </AlertTitle>
-              <Typography data-cy={"top-up-alert-text"}>
-                Remember to top up your Super Token balance in time for the
-                cliff amount and vesting stream.
-              </Typography>
-            </>
-          ) : (
-            <>
-              <AlertTitle data-cy={"top-up-alert-title"}>
-                Don’t forget to top up for the vesting schedule!
-              </AlertTitle>
-              <Typography data-cy={"top-up-alert-text"}>
-                Remember to top up your Super Token balance in time for the
-                vesting stream.
-              </Typography>
-            </>
-          )}
-        </Alert>
+        {isAutoWrapInputVisible && (
+          <Stack direction="row" alignItems="center">
+            {AutoWrapController}
+            <TooltipWithIcon title={VestingTooltips.AutoWrap} />
+          </Stack>
+        )}
+
+        {!(setupAutoWrap && !cliffEnabled) && (
+          <Alert severity="warning">
+            {cliffEnabled ? (
+              setupAutoWrap ? (
+                <>
+                  <AlertTitle data-cy={"top-up-alert-title"}>
+                    Don’t forget to top up for the cliff!
+                  </AlertTitle>
+                  <Typography data-cy={"top-up-alert-text"}>
+                    The auto-wrap will not take account of the vesting cliff.
+                    Remember to top up your Super Token balance for the cliff
+                    amount and the first week of a vesting stream.
+                  </Typography>
+                </>
+              ) : (
+                <>
+                  <AlertTitle data-cy={"top-up-alert-title"}>
+                    Don’t forget to top up for the vesting schedule!
+                  </AlertTitle>
+                  <Typography data-cy={"top-up-alert-text"}>
+                    Remember to top up your Super Token balance in time for the
+                    cliff amount and vesting stream.
+                  </Typography>
+                </>
+              )
+            ) : (
+              <>
+                <AlertTitle data-cy={"top-up-alert-title"}>
+                  Don’t forget to top up for the vesting schedule!
+                </AlertTitle>
+                <Typography data-cy={"top-up-alert-text"}>
+                  Remember to top up your Super Token balance in time for the
+                  vesting stream.
+                </Typography>
+              </>
+            )}
+          </Alert>
+        )}
       </Stack>
 
       <Stack gap={1}>{PreviewVestingScheduleButton}</Stack>
     </Stack>
   );
 };
+
+export default memo(CreateVestingForm);

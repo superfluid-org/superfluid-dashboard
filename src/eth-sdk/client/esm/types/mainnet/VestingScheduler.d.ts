@@ -169,7 +169,7 @@ export interface VestingCliffAndFlowExecutedEventObject {
     cliffAmount: BigNumber;
     flowDelayCompensation: BigNumber;
 }
-export declare type VestingCliffAndFlowExecutedEvent = TypedEvent<[
+export type VestingCliffAndFlowExecutedEvent = TypedEvent<[
     string,
     string,
     string,
@@ -178,7 +178,7 @@ export declare type VestingCliffAndFlowExecutedEvent = TypedEvent<[
     BigNumber,
     BigNumber
 ], VestingCliffAndFlowExecutedEventObject>;
-export declare type VestingCliffAndFlowExecutedEventFilter = TypedEventFilter<VestingCliffAndFlowExecutedEvent>;
+export type VestingCliffAndFlowExecutedEventFilter = TypedEventFilter<VestingCliffAndFlowExecutedEvent>;
 export interface VestingEndExecutedEventObject {
     superToken: string;
     sender: string;
@@ -187,7 +187,7 @@ export interface VestingEndExecutedEventObject {
     earlyEndCompensation: BigNumber;
     didCompensationFail: boolean;
 }
-export declare type VestingEndExecutedEvent = TypedEvent<[
+export type VestingEndExecutedEvent = TypedEvent<[
     string,
     string,
     string,
@@ -195,20 +195,20 @@ export declare type VestingEndExecutedEvent = TypedEvent<[
     BigNumber,
     boolean
 ], VestingEndExecutedEventObject>;
-export declare type VestingEndExecutedEventFilter = TypedEventFilter<VestingEndExecutedEvent>;
+export type VestingEndExecutedEventFilter = TypedEventFilter<VestingEndExecutedEvent>;
 export interface VestingEndFailedEventObject {
     superToken: string;
     sender: string;
     receiver: string;
     endDate: number;
 }
-export declare type VestingEndFailedEvent = TypedEvent<[
+export type VestingEndFailedEvent = TypedEvent<[
     string,
     string,
     string,
     number
 ], VestingEndFailedEventObject>;
-export declare type VestingEndFailedEventFilter = TypedEventFilter<VestingEndFailedEvent>;
+export type VestingEndFailedEventFilter = TypedEventFilter<VestingEndFailedEvent>;
 export interface VestingScheduleCreatedEventObject {
     superToken: string;
     sender: string;
@@ -219,7 +219,7 @@ export interface VestingScheduleCreatedEventObject {
     endDate: number;
     cliffAmount: BigNumber;
 }
-export declare type VestingScheduleCreatedEvent = TypedEvent<[
+export type VestingScheduleCreatedEvent = TypedEvent<[
     string,
     string,
     string,
@@ -229,18 +229,18 @@ export declare type VestingScheduleCreatedEvent = TypedEvent<[
     number,
     BigNumber
 ], VestingScheduleCreatedEventObject>;
-export declare type VestingScheduleCreatedEventFilter = TypedEventFilter<VestingScheduleCreatedEvent>;
+export type VestingScheduleCreatedEventFilter = TypedEventFilter<VestingScheduleCreatedEvent>;
 export interface VestingScheduleDeletedEventObject {
     superToken: string;
     sender: string;
     receiver: string;
 }
-export declare type VestingScheduleDeletedEvent = TypedEvent<[
+export type VestingScheduleDeletedEvent = TypedEvent<[
     string,
     string,
     string
 ], VestingScheduleDeletedEventObject>;
-export declare type VestingScheduleDeletedEventFilter = TypedEventFilter<VestingScheduleDeletedEvent>;
+export type VestingScheduleDeletedEventFilter = TypedEventFilter<VestingScheduleDeletedEvent>;
 export interface VestingScheduleUpdatedEventObject {
     superToken: string;
     sender: string;
@@ -248,14 +248,14 @@ export interface VestingScheduleUpdatedEventObject {
     oldEndDate: number;
     endDate: number;
 }
-export declare type VestingScheduleUpdatedEvent = TypedEvent<[
+export type VestingScheduleUpdatedEvent = TypedEvent<[
     string,
     string,
     string,
     number,
     number
 ], VestingScheduleUpdatedEventObject>;
-export declare type VestingScheduleUpdatedEventFilter = TypedEventFilter<VestingScheduleUpdatedEvent>;
+export type VestingScheduleUpdatedEventFilter = TypedEventFilter<VestingScheduleUpdatedEvent>;
 export interface VestingScheduler extends BaseContract {
     connect(signerOrProvider: Signer | Provider | string): this;
     attach(addressOrName: string): this;

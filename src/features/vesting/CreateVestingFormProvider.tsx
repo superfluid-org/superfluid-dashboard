@@ -24,6 +24,7 @@ import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { DevTool } from "@hookform/devtools";
+import { CreateVestingFormEffects } from "./CreateVestingFormEffects";
 
 export type ValidVestingForm = {
   data: {
@@ -41,6 +42,7 @@ export type ValidVestingForm = {
       numerator?: number;
       denominator: UnitOfTime;
     };
+    setupAutoWrap?: boolean;
   };
 };
 
@@ -60,6 +62,7 @@ export type PartialVestingForm = {
       numerator?: number | "";
       denominator: UnitOfTime;
     };
+    setupAutoWrap: boolean;
   };
 };
 
@@ -110,12 +113,13 @@ const CreateVestingFormProvider: FC<{
               .required()
               .test((x) => Object.values(UnitOfTime).includes(x as UnitOfTime)),
           }).required(),
+          setupAutoWrap: boolean().optional(),
         }),
       }),
     []
   );
 
-  const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
+  const { network } = useExpectedNetwork();
   const [getActiveVestingSchedule] =
     rpcApi.useLazyGetActiveVestingScheduleQuery();
   const { visibleAddress: senderAddress } = useVisibleAddress();
@@ -240,7 +244,7 @@ const CreateVestingFormProvider: FC<{
         if (senderAddress) {
           if (senderAddress.toLowerCase() === receiverAddress.toLowerCase()) {
             handleHigherOrderValidationError({
-              message: `Can not vest to yourself.`,
+              message: `You can’t vest to yourself. Choose a different wallet.`,
             });
           }
 
@@ -285,17 +289,14 @@ const CreateVestingFormProvider: FC<{
         },
         receiverAddress: null,
         cliffEnabled: false,
+        setupAutoWrap: false,
       },
     },
     resolver: yupResolver(formSchema),
     mode: "onChange",
   });
 
-  const { formState, clearErrors, setError, control } = formMethods;
-
-  useEffect(() => {
-    if (formState.isDirty) stopAutoSwitchToWalletNetwork();
-  }, [formState.isDirty, stopAutoSwitchToWalletNetwork]);
+  const { clearErrors, setError, control } = formMethods;
 
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -305,6 +306,7 @@ const CreateVestingFormProvider: FC<{
     <FormProvider {...formMethods}>
       <DevTool control={control} />
       {children(isInitialized)}
+      <CreateVestingFormEffects />
     </FormProvider>
   );
 };

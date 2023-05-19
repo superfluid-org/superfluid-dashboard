@@ -1,17 +1,12 @@
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {
   Box,
   IconButton,
   Stack,
-  Step,
-  StepLabel,
-  Stepper,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { Token } from "@superfluid-finance/sdk-core";
-import { useRouter } from "next/router";
 import { FC, PropsWithChildren, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import Link from "../common/Link";
@@ -20,9 +15,11 @@ import NetworkBadge from "../network/NetworkBadge";
 import NetworkSwitchLink from "../network/NetworkSwitchLink";
 import { networkDefinition } from "../network/networks";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
-import { CreateVestingForm } from "./CreateVestingForm";
 import { PartialVestingForm } from "./CreateVestingFormProvider";
-import { CreateVestingPreview } from "./CreateVestingPreview";
+import CreateVestingPreview from "./CreateVestingPreview";
+import CreateVestingForm from "./CreateVestingForm";
+import { useRouter } from "next/router";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useVestingToken } from "./useVestingToken";
 
 export type VestingToken = Token & SuperTokenMinimal;
@@ -120,20 +117,6 @@ export const CreateVestingSection: FC<CreateVestingSectionProps> = ({
     </Box>
   );
 
-  const StepperContainer = (
-    <Stepper activeStep={view} sx={{ mt: 0, mb: 4 }}>
-      <Step key={CreateVestingCardView.Form}>
-        <StepLabel>Create</StepLabel>
-      </Step>
-      <Step key={CreateVestingCardView.Preview}>
-        <StepLabel>Preview</StepLabel>
-      </Step>
-      <Step key={CreateVestingCardView.Approving}>
-        <StepLabel>Approve</StepLabel>
-      </Step>
-    </Stepper>
-  );
-
   return (
     <Box>
       <Stack
@@ -165,8 +148,6 @@ export const CreateVestingSection: FC<CreateVestingSectionProps> = ({
         />
       </Stack>
 
-      {StepperContainer}
-
       <Box sx={{ position: "relative", mx: -1, px: 1 }}>
         {view === CreateVestingCardView.Form && (
           <CreateVestingForm token={token} setView={setView} />
@@ -179,7 +160,7 @@ export const CreateVestingSection: FC<CreateVestingSectionProps> = ({
             <CreateVestingPreview
               token={token}
               network={network}
-              setView={setView}
+              setView={setView} 
             />
           )}
 

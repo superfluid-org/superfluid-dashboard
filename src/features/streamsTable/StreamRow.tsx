@@ -29,7 +29,7 @@ import {
 } from "../../hooks/streamSchedulingHooks";
 import { getStreamPagePath } from "../../pages/stream/[_network]/[_stream]";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
-import TooltipIcon from "../common/TooltipIcon";
+import TooltipWithIcon from "../common/TooltipWithIcon";
 import { Network } from "../network/networks";
 import { PendingOutgoingStream } from "../pendingUpdates/PendingOutgoingStream";
 import { UnitOfTime } from "../send/FlowRateInput";

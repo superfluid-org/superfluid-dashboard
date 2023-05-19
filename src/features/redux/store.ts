@@ -8,7 +8,7 @@ import {
   Middleware,
   MiddlewareAPI,
 } from "@reduxjs/toolkit";
-import { setupListeners } from "@reduxjs/toolkit/query";
+import { defaultSerializeQueryArgs, setupListeners } from "@reduxjs/toolkit/query";
 import * as Sentry from "@sentry/react";
 import {
   allRpcEndpoints,
@@ -58,6 +58,7 @@ import {
 } from "./endpoints/vestingSchedulerEndpoints";
 import { platformApi } from "./platformApi/platformApi";
 import addressBookRpcApi from "../addressBook/addressBookRpcApi.slice";
+import { autoWrapEndpoints } from "./endpoints/autoWrapEndpoints";
 import { accessSettingMutationEndpoints } from "./endpoints/accessSettingEndpoints";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
@@ -74,7 +75,8 @@ export const rpcApi = initializeRpcApiSlice((options) =>
   .injectEndpoints(flowSchedulerEndpoints)
   .injectEndpoints(vestingSchedulerMutationEndpoints)
   .injectEndpoints(accessSettingMutationEndpoints)
-  .injectEndpoints(vestingSchedulerQueryEndpoints);
+  .injectEndpoints(vestingSchedulerQueryEndpoints)
+  .injectEndpoints(autoWrapEndpoints);
 
 export const subgraphApi = initializeSubgraphApiSlice((options) =>
   createApiWithReactHooks({

@@ -45,7 +45,7 @@ const MonitorContext: FC = () => {
 
   const { reset, identify, page, track, instanceDetails } = useAnalytics();
   const [previousInstanceDetails, setPreviousInstanceDetails] =
-    useState(instanceDetails);
+    useState(instanceDetails);  
 
   useEffect(
     () =>
