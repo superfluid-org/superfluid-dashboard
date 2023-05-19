@@ -14,7 +14,6 @@ import SaveButton from "./SaveButton";
 import { subgraphApi } from "../redux/store";
 import AllowanceEditDialog from "./dialogs/AllowanceEditDialog";
 import ResponsiveDialog from "../common/ResponsiveDialog";
-import { FlowRateEther } from "../send/FlowRateInput";
 import { UnitOfTime } from "../send/FlowRateInput";
 import { BigNumber } from "ethers";
 
@@ -48,7 +47,7 @@ enum Permission {
 }
 
 const getCodeFromPermissions = (permissions: Permission[]): number => {
-  let permission = -1;
+  let permission = 0;
   permissions.forEach(action => {
     switch (action) {
       case Permission.CREATE:
@@ -58,10 +57,9 @@ const getCodeFromPermissions = (permissions: Permission[]): number => {
         permission |= Permission.UPDATE;
         break;
       case Permission.DELETE:
+      default:
         permission |= Permission.DELETE;
         break;
-      default:
-        throw new Error(`Unsupported action: ${action}`);
     }
   });
   return permission;
@@ -78,9 +76,6 @@ const getPermissionsFromCode = (permission: PermissionType): Permission[] => {
   if (permission & Permission.DELETE) {
     permissions.push(Permission.DELETE);
   }
-  if (permissions.length === 0) {
-    throw new Error(`Unsupported action code: ${permission}`);
-  }
   return permissions;
 }
 
@@ -94,15 +89,17 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
   flowRateAllowance,
 }) => {
 
+  const initialPermissionAndAllowances: PermissionAndAllowancesProps  = {
+    tokenAllowance: BigNumber.from(tokenAllowance),
+    flowOperatorPermissions: flowOperatorPermissions,
+    flowRateAllowance: {
+      amountEther: BigNumber.from(flowRateAllowance),
+      unitOfTime: UnitOfTime.Second
+    },
+  }
+
   const [permissionsAndAllowances, setPermissionsAndAllowances] = useState<PermissionAndAllowancesProps>(
-    {
-      tokenAllowance: BigNumber.from(tokenAllowance),
-      flowOperatorPermissions: flowOperatorPermissions,
-      flowRateAllowance: {
-        amountEther: BigNumber.from(flowRateAllowance),
-        unitOfTime: UnitOfTime.Second
-      },
-    }
+    initialPermissionAndAllowances
   );
 
   const [permissionCodes, setPermissionCodes] = useState(getPermissionsFromCode(permissionsAndAllowances.flowOperatorPermissions as PermissionType));
@@ -119,13 +116,16 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
 
   const handlePermissionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(event.target.value);
-    console.log( permissionCodes, value)
     const checked = event.target.checked;
     if (checked && !permissionCodes.includes(value)) {
-      setPermissionCodes([...permissionCodes, value]);
+      const newPermissions = [...permissionCodes, value];
+      setPermissionCodes(newPermissions);
+      updatedProperty("flowOperatorPermissions", getCodeFromPermissions(newPermissions))
     } else if (!checked && permissionCodes.includes(value)) {
       const index = permissionCodes.indexOf(value);
-      setPermissionCodes([...permissionCodes.slice(0, index), ...permissionCodes.slice(index + 1)]);
+      const newPermissions = [...permissionCodes.slice(0, index), ...permissionCodes.slice(index + 1)];
+      setPermissionCodes(newPermissions);
+      updatedProperty("flowOperatorPermissions", getCodeFromPermissions(newPermissions))
     }
   };
 
@@ -143,9 +143,6 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
       [key]: value,
     })
   };
-
-  const isRevokeAllowed = permissionsAndAllowances.flowOperatorPermissions !== -1 || permissionsAndAllowances.tokenAllowance.gt(0) || permissionsAndAllowances.flowRateAllowance.amountEther.gt(0);
-  console.log(isRevokeAllowed, permissionsAndAllowances)
 
   return <TableRow>
     <TableCell align="left">
@@ -188,32 +185,26 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
       </Stack>
     </TableCell>
     <TableCell>
-      <Stack direction="column" alignItems="center" gap={"10px"}>
-        <Stack direction="row" alignItems="center" gap={"14px"}>
+      <Stack direction="column" alignItems="center" gap={"2px"}>
+        <Stack direction="row" alignItems="center" gap={"10px"}>
           <Switch color="primary" checked={permissionCodes.includes(Permission.CREATE)} value={Permission.CREATE}
             onChange={handlePermissionChange} />
-          <Stack direction="row" alignItems="center" gap={"8px"}>
-            <Typography data-cy={"access-setting-address"} variant="h7">
-              Create
-            </Typography>
-          </Stack>
+          <Typography data-cy={"access-setting-address"} variant="h7">
+            Create
+          </Typography>
         </Stack>
-      </Stack>
-      <Stack direction="column" alignItems="center" gap={"10px"}>
-        <Stack direction="row" alignItems="center" gap={"14px"}>
-          <Switch color="primary" checked={permissionCodes.includes(Permission.UPDATE)} value={Permission.UPDATE}
-            onChange={handlePermissionChange} />
-          <Stack direction="row" alignItems="center" gap={"8px"}>
+        <Stack direction="row" alignItems="center" gap={"2px"}>
+          <Stack direction="row" alignItems="center" gap={"10px"}>
+            <Switch color="primary" checked={permissionCodes.includes(Permission.UPDATE)} value={Permission.UPDATE}
+              onChange={handlePermissionChange} />
             <Typography data-cy={"access-setting-address"} variant="h7">
               Update
             </Typography>
           </Stack>
         </Stack>
-      </Stack>
-      <Stack direction="column" alignItems="center" gap={"10px"}>
-        <Stack direction="row" alignItems="center" gap={"14px"}>
-          <Switch color="primary" checked={permissionCodes.includes(Permission.DELETE)} value={Permission.DELETE} onChange={handlePermissionChange} />
-          <Stack direction="row" alignItems="center" gap={"8px"}>
+        <Stack direction="row" alignItems="center" gap={"2px"}>
+          <Stack direction="row" alignItems="center" gap={"10px"}>
+            <Switch color="primary" checked={permissionCodes.includes(Permission.DELETE)} value={Permission.DELETE} onChange={handlePermissionChange} />
             <Typography data-cy={"access-setting-address"} variant="h7">
               Delete
             </Typography>
@@ -223,7 +214,7 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
     </TableCell>
     <TableCell>
       <Stack direction="row" alignItems="center" gap={0.5}>
-        <Amount decimals={tokenInfo?.decimals} decimalPlaces={9} wei={permissionsAndAllowances.flowRateAllowance.amountEther} >{` ${tokenInfo?.symbol}/ ${UnitOfTime[permissionsAndAllowances.flowRateAllowance.unitOfTime]}`}</Amount>
+        <Amount decimals={tokenInfo?.decimals} decimalPlaces={9} wei={permissionsAndAllowances.flowRateAllowance.amountEther} >{` ${tokenInfo?.symbol}/${UnitOfTime[permissionsAndAllowances.flowRateAllowance.unitOfTime]}`}</Amount>
         <EditIcon
           fontSize="inherit"
           sx={{
@@ -238,8 +229,21 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
     </TableCell>
     <TableCell>
       <Stack direction="column" alignItems="center" gap={0.8}>
-        <SaveButton network={network} operatorAddress={address} tokenAddress={token.address} key={`save-${address}-${token.address}`} permissionsAndAllowances={permissionsAndAllowances} />
-        {isRevokeAllowed && <RevokeButton network={network} operatorAddress={address} tokenAddress={token.address} key={`revoke-${address}-${token.address}`} />}
+         <SaveButton 
+            key={`save-${address}-${token.address}`}
+            network={network} 
+            operatorAddress={address} 
+            tokenAddress={token.address} 
+            editedPermissionAndAllowances={permissionsAndAllowances} 
+            initialPermissionAndAllowances={initialPermissionAndAllowances} 
+          />
+         <RevokeButton
+            key={`revoke-${address}-${token.address}`}
+            network={network}
+            operatorAddress={address}
+            tokenAddress={token.address}
+            permissionAndAllowances={initialPermissionAndAllowances}
+          />
       </Stack>
     </TableCell>
     {

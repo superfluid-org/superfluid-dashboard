@@ -85,14 +85,14 @@ const PermissionAndAllowances: FC = () => {
                         {!isBelowMd && (
                             <TableHead>
                                 <TableRow>
-                                    <TableCell width="136px" sx={{ pl: 10 }}>
+                                    <TableCell width="120px" sx={{ pl: 5 }}>
                                         Asset
                                     </TableCell>
-                                    <TableCell width="170px">Address</TableCell>
-                                    <TableCell width="170px">ERC-20 Allowance</TableCell>
-                                    <TableCell width="180px">Stream Permissions</TableCell>
-                                    <TableCell width="236px">Stream Allowance</TableCell>
-                                    <TableCell width="170px">Actions</TableCell>
+                                    <TableCell width="160px">Address</TableCell>
+                                    <TableCell width="159px">ERC-20 Allowance</TableCell>
+                                    <TableCell width="170px">Stream Permissions</TableCell>
+                                    <TableCell width="240px">Stream Allowance</TableCell>
+                                    <TableCell width="148px">Actions</TableCell>
                                 </TableRow>
                             </TableHead>
                         )}

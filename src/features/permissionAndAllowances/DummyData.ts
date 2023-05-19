@@ -66,7 +66,7 @@ export const AccountAccessSettingsRecords: AccountAccessSettings[] = [{
         },
         "flowRateAllowanceRemaining": "0",
         "allowance": "0",
-        "permissions": 5
+        "permissions": 0
     },
     {
         "id": "0x3962ee56c9f7176215d149938ba685f91abb633b-0x42bb40bf79730451b11f6de1cba222f17b87afd7-0x658e1b019f2f30c8089a9ae3ae5820f335bd9ce4",

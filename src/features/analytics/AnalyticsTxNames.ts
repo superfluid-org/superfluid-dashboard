@@ -12,4 +12,5 @@ export type AnalyticsTransactionNames =
   | "Fix Access for Vesting"
   | "Approve Auto-Wrap Allowance"
   | "Enable Auto-Wrap"
-  | "Revoked Access";
+  | "Revoked Access"
+  | "Updated Access";
