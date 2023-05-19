@@ -13,10 +13,13 @@ import NotificationSettings from "../components/NotificationSettings/Notificatio
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import { useAccount } from "wagmi";
 import NoWalletConnected from "../components/NoWalletConnected/NoWalletConnected";
-import PermissionAndAllowances from "../features/permissionAndAllowances/PermissionAndAllowances";
+import PermissionAndAllowancesTable from "../features/permissionAndAllowances/PermissionAndAllowancesTable";
+import PermissionAndAllowancesTables from "../features/permissionAndAllowances/PermissionAndAllowancesTables";
+import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 
 const SettingsPage: NextPage = () => {
   const { address } = useAccount();
+  const { visibleAddress } = useVisibleAddress();
 
   return (
     <Container maxWidth="lg">
@@ -29,7 +32,7 @@ const SettingsPage: NextPage = () => {
           </Typography>
           <Stack direction="column" gap={"30px"}>
             <NotificationSettings />
-            <PermissionAndAllowances />
+            {visibleAddress && <PermissionAndAllowancesTables address={visibleAddress} />}
           </Stack>
         </>
       )}

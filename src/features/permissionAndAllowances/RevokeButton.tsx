@@ -77,8 +77,8 @@ const RevokeButton: FC<RevokeButtonProps> = ({
       {({ setDialogLoadingInfo }) => (
         <TransactionButton
           ButtonProps={{
-            size: "small",
-            fullWidth: false,
+            size: "medium",
+            fullWidth: true,
             variant: "contained",
             sx: {
               color: theme.palette.primary.main,

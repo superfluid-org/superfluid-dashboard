@@ -84,8 +84,8 @@ const SaveButton: FC<SaveButtonProps> = ({
       {({ setDialogLoadingInfo, getOverrides }) => (
         <TransactionButton
           ButtonProps={{
-            size: "small",
-            fullWidth: false,
+            size: "medium",
+            fullWidth: true,
             variant: "contained",
           }}
           onClick={(signer) => onUpdatedPermissionAndAllowance(signer, setDialogLoadingInfo, getOverrides)}

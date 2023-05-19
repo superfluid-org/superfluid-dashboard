@@ -8,7 +8,6 @@ import AddressName from "../../components/AddressName/AddressName";
 import { useTheme } from "@emotion/react";
 import Amount from "../token/Amount";
 import EditIcon from "@mui/icons-material/Edit";
-import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import RevokeButton from "./RevokeButton";
 import SaveButton from "./SaveButton";
 import { subgraphApi } from "../redux/store";
@@ -16,6 +15,8 @@ import AllowanceEditDialog from "./dialogs/AllowanceEditDialog";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import { UnitOfTime } from "../send/FlowRateInput";
 import { BigNumber } from "ethers";
+import { Network } from "../network/networks";
+import { SnapshotRowSkeleton } from "./PermissionAndAllowancesLoadingTable";
 
 
 export type PermissionAndAllowancesProps = {
@@ -29,10 +30,8 @@ export type PermissionAndAllowancesProps = {
 
 interface PermissionAndAllowancesRowProps {
   address: Address;
-  accessSettingsLoading?: boolean;
-  token: {
-    address: string,
-  }
+  network: Network;
+  token: Address;
   tokenAllowance: string;
   flowOperatorPermissions: number;
   flowRateAllowance: string;
@@ -82,14 +81,14 @@ const getPermissionsFromCode = (permission: PermissionType): Permission[] => {
 
 const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
   address,
-  accessSettingsLoading,
+  network,
   token,
   tokenAllowance,
   flowOperatorPermissions,
   flowRateAllowance,
 }) => {
 
-  const initialPermissionAndAllowances: PermissionAndAllowancesProps  = {
+  const initialPermissionAndAllowances: PermissionAndAllowancesProps = {
     tokenAllowance: BigNumber.from(tokenAllowance),
     flowOperatorPermissions: flowOperatorPermissions,
     flowRateAllowance: {
@@ -108,11 +107,7 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
 
   const [editType, setEditType] = useState<"EDIT_ERC20" | "EDIT_STREAM">();
 
-  const { network } = useExpectedNetwork();
-
   const theme = useTheme();
-
-  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const handlePermissionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(event.target.value);
@@ -130,7 +125,7 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
   };
 
   const { data: tokenInfo } = subgraphApi.useTokenQuery({
-    id: token.address,
+    id: token,
     chainId: network.id,
   });
 
@@ -143,6 +138,8 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
       [key]: value,
     })
   };
+
+  const closeDialog = () => setDialogOpen(false);
 
   return <TableRow>
     <TableCell align="left">
@@ -170,8 +167,11 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
       </Stack>
     </TableCell>
     <TableCell>
-      <Stack direction="row" alignItems="center" gap={0.5}>
-        <Amount decimals={tokenInfo?.decimals} wei={permissionsAndAllowances.tokenAllowance} >{` ${tokenInfo?.symbol}`}</Amount>
+      {tokenInfo && <Stack direction="row" alignItems="center" gap={0.5}>
+        <Typography variant="h7" noWrap={true}>
+          <Amount decimals={tokenInfo?.decimals} wei={permissionsAndAllowances.tokenAllowance} >{` ${tokenInfo?.symbol}`}</Amount>
+        </Typography>
+
         <EditIcon
           fontSize="inherit"
           sx={{
@@ -182,7 +182,7 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
             setDialogOpen(true);
           }}
         ></EditIcon>
-      </Stack>
+      </Stack>}
     </TableCell>
     <TableCell>
       <Stack direction="column" alignItems="center" gap={"2px"}>
@@ -213,8 +213,11 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
       </Stack>
     </TableCell>
     <TableCell>
-      <Stack direction="row" alignItems="center" gap={0.5}>
-        <Amount decimals={tokenInfo?.decimals} decimalPlaces={9} wei={permissionsAndAllowances.flowRateAllowance.amountEther} >{` ${tokenInfo?.symbol}/${UnitOfTime[permissionsAndAllowances.flowRateAllowance.unitOfTime]}`}</Amount>
+      {tokenInfo && <Stack direction="row" alignItems="center" gap={0.5}>
+
+        <Typography variant="h7">
+          <Amount decimals={tokenInfo?.decimals} decimalPlaces={9} wei={permissionsAndAllowances.flowRateAllowance.amountEther} >{` ${tokenInfo?.symbol}/${UnitOfTime[permissionsAndAllowances.flowRateAllowance.unitOfTime]}`}</Amount>
+        </Typography>
         <EditIcon
           fontSize="inherit"
           sx={{
@@ -225,31 +228,31 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
             setDialogOpen(true);
           }}
         />
-      </Stack>
+      </Stack>}
     </TableCell>
     <TableCell>
       <Stack direction="column" alignItems="center" gap={0.8}>
-         <SaveButton 
-            key={`save-${address}-${token.address}`}
-            network={network} 
-            operatorAddress={address} 
-            tokenAddress={token.address} 
-            editedPermissionAndAllowances={permissionsAndAllowances} 
-            initialPermissionAndAllowances={initialPermissionAndAllowances} 
-          />
-         <RevokeButton
-            key={`revoke-${address}-${token.address}`}
-            network={network}
-            operatorAddress={address}
-            tokenAddress={token.address}
-            permissionAndAllowances={initialPermissionAndAllowances}
-          />
+        <SaveButton
+          key={`save-${address}-${token}`}
+          network={network}
+          operatorAddress={address}
+          tokenAddress={token}
+          editedPermissionAndAllowances={permissionsAndAllowances}
+          initialPermissionAndAllowances={initialPermissionAndAllowances}
+        />
+        <RevokeButton
+          key={`revoke-${address}-${token}`}
+          network={network}
+          operatorAddress={address}
+          tokenAddress={token}
+          permissionAndAllowances={initialPermissionAndAllowances}
+        />
       </Stack>
     </TableCell>
     {
       editType &&
       <ResponsiveDialog open={isDialogOpen} onClose={() => setDialogOpen(false)} PaperProps={{ sx: { borderRadius: "20px", maxHeight: "100%" } }} translate="yes">
-        <AllowanceEditDialog onSaveChanges={updatedProperty} onClose={() => setDialogOpen(false)} permissionsAndAllowances={permissionsAndAllowances} editType={editType}></AllowanceEditDialog>
+        <AllowanceEditDialog onSaveChanges={updatedProperty} onClose={closeDialog} permissionsAndAllowances={permissionsAndAllowances} editType={editType}></AllowanceEditDialog>
       </ResponsiveDialog>
     }
   </TableRow>

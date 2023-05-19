@@ -73,26 +73,8 @@ const FlowRateAllowanceEditFormProvider: FC<
             []
           ),
         });
-
         clearErrors("data");
         await primaryValidation.validate(values);
-        const validForm = values as ValidFlowRateAllowanceEditForm;
-
-        // # Higher order validation
-        const handleHigherOrderValidationError = ({
-          message,
-        }: {
-          message: string;
-        }) => {
-          setError("data", {
-            message: message,
-          });
-          throw context.createError({
-            path: "data",
-            message: message,
-          });
-        };
-
         return true;
       }),
     [network, visibleAddress]
