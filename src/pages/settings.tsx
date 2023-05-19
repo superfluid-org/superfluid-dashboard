@@ -13,7 +13,7 @@ import NotificationSettings from "../components/NotificationSettings/Notificatio
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import { useAccount } from "wagmi";
 import NoWalletConnected from "../components/NoWalletConnected/NoWalletConnected";
-import AccessSettings from "../features/accessSettings/AccessSettings";
+import PermissionAndAllowances from "../features/permissionAndAllowances/PermissionAndAllowances";
 
 const SettingsPage: NextPage = () => {
   const { address } = useAccount();
@@ -29,7 +29,7 @@ const SettingsPage: NextPage = () => {
           </Typography>
           <Stack direction="column" gap={"30px"}>
             <NotificationSettings />
-            <AccessSettings />
+            <PermissionAndAllowances />
           </Stack>
         </>
       )}

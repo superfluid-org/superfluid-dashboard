@@ -76,7 +76,7 @@ export const rpcApi = initializeRpcApiSlice((options) =>
   .injectEndpoints(vestingSchedulerMutationEndpoints)
   .injectEndpoints(accessSettingMutationEndpoints)
   .injectEndpoints(vestingSchedulerQueryEndpoints)
-  .injectEndpoints(autoWrapEndpoints);
+    .injectEndpoints(autoWrapEndpoints);
 
 export const subgraphApi = initializeSubgraphApiSlice((options) =>
   createApiWithReactHooks({

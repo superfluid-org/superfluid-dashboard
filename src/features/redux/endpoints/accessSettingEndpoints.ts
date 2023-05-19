@@ -30,7 +30,6 @@ export const accessSettingMutationEndpoints = {
           superTokenAddress,
           operatorAddress,
           transactionExtraData,
-          waitForConfirmation,
         },
         { dispatch }
       ) => {
@@ -88,7 +87,6 @@ export const accessSettingMutationEndpoints = {
             subTransactionTitles,
             ...(transactionExtraData ?? {}),
           },
-          waitForConfirmation: !!waitForConfirmation,
         });
 
         return {
