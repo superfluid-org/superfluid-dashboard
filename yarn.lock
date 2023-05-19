@@ -2400,20 +2400,6 @@
     prop-types "^15.8.1"
     react-is "^18.2.0"
 
-"@mui/base@5.0.0-beta.1":
-  version "5.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@mui/base/-/base-5.0.0-beta.1.tgz#53c4491b130747263c034e06a819d43f535424e9"
-  integrity sha512-xrkDCeu3JQE+JjJUnJnOrdQJMXwKhbV4AW+FRjMIj5i9cHK3BAuatG/iqbf1M+jklVWLk0KdbgioKwK+03aYbA==
-  dependencies:
-    "@babel/runtime" "^7.21.0"
-    "@emotion/is-prop-valid" "^1.2.0"
-    "@mui/types" "^7.2.4"
-    "@mui/utils" "^5.13.1"
-    "@popperjs/core" "^2.11.7"
-    clsx "^1.2.1"
-    prop-types "^15.8.1"
-    react-is "^18.2.0"
-
 "@mui/core-downloads-tracker@^5.11.13":
   version "5.13.1"
   resolved "https://registry.yarnpkg.com/@mui/core-downloads-tracker/-/core-downloads-tracker-5.13.1.tgz#ccfc3fd659c48379cec14cc60fb00bb711777d8f"
@@ -2436,20 +2422,6 @@
     "@mui/system" "^5.11.13"
     "@mui/types" "^7.2.3"
     "@mui/utils" "^5.11.13"
-    clsx "^1.2.1"
-    prop-types "^15.8.1"
-    react-is "^18.2.0"
-
-"@mui/lab@^5.0.0-alpha.123":
-  version "5.0.0-alpha.130"
-  resolved "https://registry.yarnpkg.com/@mui/lab/-/lab-5.0.0-alpha.130.tgz#03b226ed23c8d6fd918adbcd6b3a1f77318f3ae1"
-  integrity sha512-pBZGIVXCzafvu7nwjfuKA3MhFyXnB4CIexfr8X4qS0GOY0UcDkO5LemWeeBKGXK2IanbQN4toO5mv8kzQIbp9Q==
-  dependencies:
-    "@babel/runtime" "^7.21.0"
-    "@mui/base" "5.0.0-beta.1"
-    "@mui/system" "^5.13.1"
-    "@mui/types" "^7.2.4"
-    "@mui/utils" "^5.13.1"
     clsx "^1.2.1"
     prop-types "^15.8.1"
     react-is "^18.2.0"
@@ -2491,7 +2463,7 @@
     csstype "^3.1.2"
     prop-types "^15.8.1"
 
-"@mui/system@^5.11.13", "@mui/system@^5.13.1":
+"@mui/system@^5.11.13":
   version "5.13.1"
   resolved "https://registry.yarnpkg.com/@mui/system/-/system-5.13.1.tgz#2296e3269dc6baa5914ea28d0cc9534f7b03a7b5"
   integrity sha512-BsDUjhiO6ZVAvzKhnWBHLZ5AtPJcdT+62VjnRLyA4isboqDKLg4fmYIZXq51yndg/soDK9RkY5lYZwEDku13Ow==
@@ -2728,7 +2700,7 @@
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
-"@popperjs/core@^2.11.6", "@popperjs/core@^2.11.7":
+"@popperjs/core@^2.11.6":
   version "2.11.7"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.7.tgz#ccab5c8f7dc557a52ca3288c10075c9ccd37fff7"
   integrity sha512-Cr4OjIkipTtcXKjAsm8agyleBuDHvxzeBoa1v543lbv1YaIwQjESsVcmjiWiPEbC1FIeHOG/Op9kdCmAmiS3Kw==
