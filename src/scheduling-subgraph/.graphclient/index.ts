@@ -21,6 +21,7 @@ import { MeshStore, FsStoreStorageAdapter } from '@graphql-mesh/store';
 import { path as pathModule } from '@graphql-mesh/cross-helpers';
 import { ImportFn } from '@graphql-mesh/types';
 import type { SchedulingTypes } from './sources/scheduling/types';
+import * as importedModule$0 from "./sources/scheduling/introspectionSchema";
 export type Maybe<T> = T | null | undefined;
 export type InputMaybe<T> = T | null | undefined;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -260,9 +261,11 @@ export type CreateFlowExecutedEvent_OrderBy =
 
 export type CreateTask = Task & {
   id: Scalars['ID'];
+  type: TaskType;
+  createdAt: Scalars['BigInt'];
   executedAt?: Maybe<Scalars['BigInt']>;
   executionAt: Scalars['BigInt'];
-  expirationAt?: Maybe<Scalars['BigInt']>;
+  expirationAt: Scalars['BigInt'];
   cancelledAt?: Maybe<Scalars['BigInt']>;
   superToken: Scalars['Bytes'];
   sender: Scalars['Bytes'];
@@ -282,6 +285,18 @@ export type CreateTask_Filter = {
   id_lte?: InputMaybe<Scalars['ID']>;
   id_in?: InputMaybe<Array<Scalars['ID']>>;
   id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  type?: InputMaybe<TaskType>;
+  type_not?: InputMaybe<TaskType>;
+  type_in?: InputMaybe<Array<TaskType>>;
+  type_not_in?: InputMaybe<Array<TaskType>>;
+  createdAt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_not?: InputMaybe<Scalars['BigInt']>;
+  createdAt_gt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_lt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_gte?: InputMaybe<Scalars['BigInt']>;
+  createdAt_lte?: InputMaybe<Scalars['BigInt']>;
+  createdAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  createdAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   executedAt?: InputMaybe<Scalars['BigInt']>;
   executedAt_not?: InputMaybe<Scalars['BigInt']>;
   executedAt_gt?: InputMaybe<Scalars['BigInt']>;
@@ -384,6 +399,8 @@ export type CreateTask_Filter = {
 
 export type CreateTask_OrderBy =
   | 'id'
+  | 'type'
+  | 'createdAt'
   | 'executedAt'
   | 'executionAt'
   | 'expirationAt'
@@ -574,9 +591,11 @@ export type DeleteFlowExecutedEvent_OrderBy =
 
 export type DeleteTask = Task & {
   id: Scalars['ID'];
+  type: TaskType;
+  createdAt: Scalars['BigInt'];
   executedAt?: Maybe<Scalars['BigInt']>;
   executionAt: Scalars['BigInt'];
-  expirationAt?: Maybe<Scalars['BigInt']>;
+  expirationAt: Scalars['BigInt'];
   cancelledAt?: Maybe<Scalars['BigInt']>;
   superToken: Scalars['Bytes'];
   sender: Scalars['Bytes'];
@@ -592,6 +611,18 @@ export type DeleteTask_Filter = {
   id_lte?: InputMaybe<Scalars['ID']>;
   id_in?: InputMaybe<Array<Scalars['ID']>>;
   id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  type?: InputMaybe<TaskType>;
+  type_not?: InputMaybe<TaskType>;
+  type_in?: InputMaybe<Array<TaskType>>;
+  type_not_in?: InputMaybe<Array<TaskType>>;
+  createdAt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_not?: InputMaybe<Scalars['BigInt']>;
+  createdAt_gt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_lt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_gte?: InputMaybe<Scalars['BigInt']>;
+  createdAt_lte?: InputMaybe<Scalars['BigInt']>;
+  createdAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  createdAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   executedAt?: InputMaybe<Scalars['BigInt']>;
   executedAt_not?: InputMaybe<Scalars['BigInt']>;
   executedAt_gt?: InputMaybe<Scalars['BigInt']>;
@@ -662,6 +693,8 @@ export type DeleteTask_Filter = {
 
 export type DeleteTask_OrderBy =
   | 'id'
+  | 'type'
+  | 'createdAt'
   | 'executedAt'
   | 'executionAt'
   | 'expirationAt'
@@ -1551,14 +1584,20 @@ export type Subscription_MetaArgs = {
 
 export type Task = {
   id: Scalars['ID'];
+  type: TaskType;
+  createdAt: Scalars['BigInt'];
   executedAt?: Maybe<Scalars['BigInt']>;
   executionAt: Scalars['BigInt'];
-  expirationAt?: Maybe<Scalars['BigInt']>;
+  expirationAt: Scalars['BigInt'];
   cancelledAt?: Maybe<Scalars['BigInt']>;
   superToken: Scalars['Bytes'];
   sender: Scalars['Bytes'];
   receiver: Scalars['Bytes'];
 };
+
+export type TaskType =
+  | 'CREATE_FLOW'
+  | 'DELETE_FLOW';
 
 export type Task_Filter = {
   id?: InputMaybe<Scalars['ID']>;
@@ -1569,6 +1608,18 @@ export type Task_Filter = {
   id_lte?: InputMaybe<Scalars['ID']>;
   id_in?: InputMaybe<Array<Scalars['ID']>>;
   id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  type?: InputMaybe<TaskType>;
+  type_not?: InputMaybe<TaskType>;
+  type_in?: InputMaybe<Array<TaskType>>;
+  type_not_in?: InputMaybe<Array<TaskType>>;
+  createdAt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_not?: InputMaybe<Scalars['BigInt']>;
+  createdAt_gt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_lt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_gte?: InputMaybe<Scalars['BigInt']>;
+  createdAt_lte?: InputMaybe<Scalars['BigInt']>;
+  createdAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  createdAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   executedAt?: InputMaybe<Scalars['BigInt']>;
   executedAt_not?: InputMaybe<Scalars['BigInt']>;
   executedAt_gt?: InputMaybe<Scalars['BigInt']>;
@@ -1639,6 +1690,8 @@ export type Task_Filter = {
 
 export type Task_OrderBy =
   | 'id'
+  | 'type'
+  | 'createdAt'
   | 'executedAt'
   | 'executionAt'
   | 'expirationAt'
@@ -1726,6 +1779,8 @@ export type TokenSenderReceiverCursor_OrderBy =
   | 'id'
   | 'currentCreateFlowTask'
   | 'currentCreateFlowTask__id'
+  | 'currentCreateFlowTask__type'
+  | 'currentCreateFlowTask__createdAt'
   | 'currentCreateFlowTask__executedAt'
   | 'currentCreateFlowTask__executionAt'
   | 'currentCreateFlowTask__expirationAt'
@@ -1739,6 +1794,8 @@ export type TokenSenderReceiverCursor_OrderBy =
   | 'currentCreateFlowTask__flowRate'
   | 'currentDeleteFlowTask'
   | 'currentDeleteFlowTask__id'
+  | 'currentDeleteFlowTask__type'
+  | 'currentDeleteFlowTask__createdAt'
   | 'currentDeleteFlowTask__executedAt'
   | 'currentDeleteFlowTask__executionAt'
   | 'currentDeleteFlowTask__expirationAt'
@@ -1860,6 +1917,8 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
   info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
 
+
+
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   BigDecimal: ResolverTypeWrapper<Scalars['BigDecimal']>;
@@ -1897,6 +1956,7 @@ export type ResolversTypes = ResolversObject<{
   String: ResolverTypeWrapper<Scalars['String']>;
   Subscription: ResolverTypeWrapper<{}>;
   Task: ResolversTypes['CreateTask'] | ResolversTypes['DeleteTask'];
+  TaskType: TaskType;
   Task_filter: Task_Filter;
   Task_orderBy: Task_OrderBy;
   TokenSenderReceiverCursor: ResolverTypeWrapper<TokenSenderReceiverCursor>;
@@ -1994,9 +2054,11 @@ export type CreateFlowExecutedEventResolvers<ContextType = MeshContext, ParentTy
 
 export type CreateTaskResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['CreateTask'] = ResolversParentTypes['CreateTask']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['TaskType'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   executedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   executionAt?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  expirationAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  expirationAt?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   cancelledAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   superToken?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   sender?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
@@ -2028,9 +2090,11 @@ export type DeleteFlowExecutedEventResolvers<ContextType = MeshContext, ParentTy
 
 export type DeleteTaskResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['DeleteTask'] = ResolversParentTypes['DeleteTask']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['TaskType'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   executedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   executionAt?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  expirationAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  expirationAt?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   cancelledAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   superToken?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   sender?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
@@ -2136,9 +2200,11 @@ export type SubscriptionResolvers<ContextType = MeshContext, ParentType extends 
 export type TaskResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Task'] = ResolversParentTypes['Task']> = ResolversObject<{
   __resolveType: TypeResolveFn<'CreateTask' | 'DeleteTask', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['TaskType'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   executedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   executionAt?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  expirationAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  expirationAt?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   cancelledAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   superToken?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   sender?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
@@ -2194,13 +2260,14 @@ export type DirectiveResolvers<ContextType = MeshContext> = ResolversObject<{
 export type MeshContext = SchedulingTypes.Context & BaseMeshContext;
 
 
-const baseDir = pathModule.join(typeof __dirname === 'string' ? __dirname : '/', '..');
+import { fileURLToPath } from '@graphql-mesh/utils';
+const baseDir = pathModule.join(pathModule.dirname(fileURLToPath(import.meta.url)), '..');
 
 const importFn: ImportFn = <T>(moduleId: string) => {
   const relativeModuleId = (pathModule.isAbsolute(moduleId) ? pathModule.relative(baseDir, moduleId) : moduleId).split('\\').join('/').replace(baseDir + '/', '');
   switch(relativeModuleId) {
     case ".graphclient/sources/scheduling/introspectionSchema":
-      return import("./sources/scheduling/introspectionSchema") as T;
+      return Promise.resolve(importedModule$0) as T;
     
     default:
       return Promise.reject(new Error(`Cannot find module '${relativeModuleId}'.`));
@@ -2300,8 +2367,8 @@ const merger = new(BareMerger as any)({
   };
 }
 
-export function createBuiltMeshHTTPHandler(): MeshHTTPHandler<MeshContext> {
-  return createMeshHTTPHandler<MeshContext>({
+export function createBuiltMeshHTTPHandler<TServerContext = {}>(): MeshHTTPHandler<TServerContext> {
+  return createMeshHTTPHandler<TServerContext>({
     baseDir,
     getBuiltMesh: getBuiltGraphClient,
     rawServeConfig: undefined,

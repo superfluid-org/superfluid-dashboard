@@ -1,5 +1,7 @@
 import { defineConfig } from "@dethcrypto/eth-sdk";
 import {
+  autoWrapManagerAddresses,
+  autoWrapStrategyAddresses,
   flowSchedulerContractAddresses,
   vestingContractAddresses,
 } from "../features/network/networkConstants";
@@ -11,7 +13,9 @@ const ethSdkConfig = defineConfig({
     },
     mainnet: {
       vestingScheduler: vestingContractAddresses.ethereum, // Mainnet used as source of truth for the ABI of Vesting Scheduler.
-    },
+      autoWrapManager: autoWrapManagerAddresses[1],
+      autoWrapStrategy: autoWrapStrategyAddresses[1]
+    }
   },
   outputPath: "./src/eth-sdk/client",
 });

@@ -21,6 +21,7 @@ import { MeshStore, FsStoreStorageAdapter } from '@graphql-mesh/store';
 import { path as pathModule } from '@graphql-mesh/cross-helpers';
 import { ImportFn } from '@graphql-mesh/types';
 import type { VestingTypes } from './sources/vesting/types';
+import * as importedModule$0 from "./sources/vesting/introspectionSchema";
 export type Maybe<T> = T | undefined;
 export type InputMaybe<T> = T | undefined;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -606,7 +607,7 @@ export type Task = {
   type: TaskType;
   executedAt?: Maybe<Scalars['BigInt']>;
   executionAt: Scalars['BigInt'];
-  expirationAt?: Maybe<Scalars['BigInt']>;
+  expirationAt: Scalars['BigInt'];
   cancelledAt?: Maybe<Scalars['BigInt']>;
   failedAt?: Maybe<Scalars['BigInt']>;
   vestingSchedule: VestingSchedule;
@@ -2290,6 +2291,8 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
   info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
 
+
+
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   BigDecimal: ResolverTypeWrapper<Scalars['BigDecimal']>;
@@ -2473,7 +2476,7 @@ export type TaskResolvers<ContextType = MeshContext, ParentType extends Resolver
   type?: Resolver<ResolversTypes['TaskType'], ParentType, ContextType>;
   executedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   executionAt?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  expirationAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  expirationAt?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   cancelledAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   failedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   vestingSchedule?: Resolver<ResolversTypes['VestingSchedule'], ParentType, ContextType>;
@@ -2667,13 +2670,14 @@ export type DirectiveResolvers<ContextType = MeshContext> = ResolversObject<{
 export type MeshContext = VestingTypes.Context & BaseMeshContext;
 
 
-const baseDir = pathModule.join(typeof __dirname === 'string' ? __dirname : '/', '..');
+import { fileURLToPath } from '@graphql-mesh/utils';
+const baseDir = pathModule.join(pathModule.dirname(fileURLToPath(import.meta.url)), '..');
 
 const importFn: ImportFn = <T>(moduleId: string) => {
   const relativeModuleId = (pathModule.isAbsolute(moduleId) ? pathModule.relative(baseDir, moduleId) : moduleId).split('\\').join('/').replace(baseDir + '/', '');
   switch(relativeModuleId) {
     case ".graphclient/sources/vesting/introspectionSchema":
-      return import("./sources/vesting/introspectionSchema") as T;
+      return Promise.resolve(importedModule$0) as T;
     
     default:
       return Promise.reject(new Error(`Cannot find module '${relativeModuleId}'.`));
@@ -2767,8 +2771,8 @@ const merger = new(BareMerger as any)({
   };
 }
 
-export function createBuiltMeshHTTPHandler(): MeshHTTPHandler<MeshContext> {
-  return createMeshHTTPHandler<MeshContext>({
+export function createBuiltMeshHTTPHandler<TServerContext = {}>(): MeshHTTPHandler<TServerContext> {
+  return createMeshHTTPHandler<TServerContext>({
     baseDir,
     getBuiltMesh: getBuiltGraphClient,
     rawServeConfig: undefined,
