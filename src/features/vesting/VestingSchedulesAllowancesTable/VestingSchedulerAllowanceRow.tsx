@@ -33,6 +33,8 @@ import FixVestingPermissionsBtn from "./FixVestingPermissionsBtn";
 import useActiveAutoWrap from "../useActiveAutoWrap";
 import { getSuperTokenType } from "../../redux/endpoints/adHocSubgraphEndpoints";
 import { TokenType } from "../../redux/endpoints/tokenTypes";
+import DisableAutoWrapBtn from "./DisableAutoWrapBtn";
+import EnableAutoWrapBtn from "./EnableAutoWrapBtn";
 
 export const VestingSchedulerAllowanceRowSkeleton = () => {
   const theme = useTheme();
@@ -310,7 +312,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                       },
                     }}
                   >
-                    <TableCell>
+                    <TableCell width={"180px"}>
                       {showFixRequiredAccessButton && (
                         <FixVestingPermissionsBtn
                           network={network}
@@ -390,7 +392,18 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                         }
                       />
                     </TableCell>
-                    <TableCell width="100px" />
+                    <TableCell width={"160px"} align={"center"}>
+                      {network.autoWrap ? (
+                        isAutoWrapLoading ? (
+                          <Skeleton variant="rectangular" width={24} height={24} />
+                        ) : isAutoWrapOK ? (
+                          <DisableAutoWrapBtn network={network} senderAddress={senderAddress} tokenAddress={tokenAddress} />
+                        ) : isAutoWrappable ? (
+                          <EnableAutoWrapBtn network={network} senderAddress={senderAddress} tokenAddress={tokenAddress} />
+                        ) : null
+                      ) : null
+                    }</TableCell>
+                    <TableCell width={isBelowMd ? "68px" : "100px"} />
                   </TableRow>
                 </TableBody>
               </Table>
