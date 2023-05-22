@@ -253,7 +253,7 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
     </TableCell>
     {
       editType &&
-      <ResponsiveDialog open={isDialogOpen} onClose={() => setDialogOpen(false)} PaperProps={{ sx: { borderRadius: "20px", maxHeight: "100%" } }} translate="yes">
+      <ResponsiveDialog open={isDialogOpen} onClose={() => setDialogOpen(false)} PaperProps={{ sx: { borderRadius: "20px", maxHeight: "100%", width:  "auto" } }} translate="yes">
         <AllowanceEditDialog onSaveChanges={updatedProperty} onClose={closeDialog} permissionsAndAllowances={permissionsAndAllowances} editType={editType}></AllowanceEditDialog>
       </ResponsiveDialog>
     }

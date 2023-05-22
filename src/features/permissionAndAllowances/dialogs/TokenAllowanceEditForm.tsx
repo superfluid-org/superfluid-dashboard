@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
-import { Stack, FormGroup, Typography, TextField, Button } from '@mui/material';
+import {Stack, FormGroup, Typography, TextField, Button, Box} from '@mui/material';
 import { PartialEditERC20AllowanceAllowanceForm } from '../EditERC20AllowanceFormProvider';
 import EditDialogContent from './EditDialogContent';
 import EditDialogTitle from './EditDialogTitle';
@@ -40,9 +40,8 @@ const TokenAllowanceEditForm: FC<TokenAllowanceEditFormProps & EditDialogButtonP
   return hasUnsavedChanges ? (
     <UnsavedChangesConfirmationDialog onClose={onClose} onSaveChanges={handleOnSaveChangesBtnClick} />
   ) : (
-    <>
+    <Box sx={{width: "524px", height: "326px"}}>
       <EditDialogTitle onClose={handleOnCloseBtnClick}>
-        <Stack alignItems="center" direction="column" gap={1}>
           <EditIconWrapper>
             <EditRoundedIcon />
           </EditIconWrapper>
@@ -50,11 +49,9 @@ const TokenAllowanceEditForm: FC<TokenAllowanceEditFormProps & EditDialogButtonP
           <Typography variant="body1" color="secondary">
             Define transfer allowance cap for Super Tokens
           </Typography>
-        </Stack>
       </EditDialogTitle>
       <EditDialogContent>
-        <Stack component="form" gap={4}>
-          <Stack gap={2.5}>
+          <Stack gap={3}>
             <FormGroup>
               <Controller
                 control={control}
@@ -67,8 +64,6 @@ const TokenAllowanceEditForm: FC<TokenAllowanceEditFormProps & EditDialogButtonP
                 )}
               />
             </FormGroup>
-          </Stack>
-          <Stack gap={1}>
             <Button
               {...transactionButtonDefaultProps}
               disabled={!formState.isValid || formState.isValidating}
@@ -77,9 +72,8 @@ const TokenAllowanceEditForm: FC<TokenAllowanceEditFormProps & EditDialogButtonP
               Save changes
             </Button>
           </Stack>
-        </Stack>
       </EditDialogContent>
-    </>
+    </Box>
   );
 };
 

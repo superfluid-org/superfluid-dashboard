@@ -8,7 +8,7 @@ const EditDialogTitle: FC<PropsWithChildren & { onClose: () => void }> = ({ chil
     const theme = useTheme();
 
     return (
-        <Stack alignItems={"center"} component={DialogTitle} sx={{ p: 4 }}>
+        <Stack alignItems={"center"} component={DialogTitle} gap={0.5} sx={{ p: 3.5 }}>
             {children}
             <IconButton
                 aria-label="close"
