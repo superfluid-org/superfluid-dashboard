@@ -193,8 +193,10 @@ export class Common extends BasePage {
   static changeNetwork(network: string) {
     this.click(TOP_BAR_NETWORK_BUTTON);
     this.click(MAINNETS_BUTTON);
+    cy.wait(1000);
     if (networksBySlug.get(network)?.testnet) {
       this.click(TESTNETS_BUTTON);
+      cy.wait(1000);
     }
     this.click(`[data-cy=${network}-button]`);
   }
