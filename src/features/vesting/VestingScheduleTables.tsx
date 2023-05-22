@@ -33,7 +33,7 @@ interface ExecutionWhitelistInfoProps {
   network: Network;
 }
 
-const AutoWrapContactInfo: FC<{ network: Network }> = ({network}) => {
+const AutoWrapContractInfo: FC<{ network: Network }> = ({network}) => {
     if (!network || !network.autoWrap) return null;
 
     const theme = useTheme();
@@ -155,7 +155,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
         </Stack>
       )}
     </Stack>
-    <AutoWrapContactInfo network={network} />
+    <AutoWrapContractInfo network={network} />
   </Stack>
   );
 };
