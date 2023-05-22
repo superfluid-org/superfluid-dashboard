@@ -52,9 +52,9 @@ const moduleExports = {
     NEXT_PUBLIC_NETLIFY_CONTEXT: process.env.CONTEXT, // https://docs.netlify.com/configure-builds/environment-variables/#build-metadata
   },
   swcMinify: false, // Recommended by next-transpile-modules... BUT Chart.js has problems with it so it needs to be turned off: https://github.com/chartjs/Chart.js/issues/10673
-  productionBrowserSourceMaps: false, // Sentry will override this to `true`...
+  productionBrowserSourceMaps: true, // NOTE: If this is set to `false` then be careful -- Sentry might still override this to `true`...
   sentry: {
-    hideSourceMaps: true, // If this not specified then Sentry will expose the production source maps.
+    hideSourceMaps: false, // If this not specified as `true` then Sentry will expose the production source maps. We've decided to expose the source maps though.
   },
   // Modularize imports to prevent compilation of unused modules.
   // More info here: https://nextjs.org/docs/advanced-features/compiler
