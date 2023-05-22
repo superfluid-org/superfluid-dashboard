@@ -70,7 +70,7 @@ const PermissionAndAllowancesTables: FC<PermissionAndAllowancesTablesProps> = ({
                     </Stack>
             {!hasContent && !isLoading && (
                 <Stack gap={4}>
-                    {/* <TokenSnapshotEmptyCard /> */}
+                    {/* <PermissionAndAllowancesEmptyCard /> */}
                 </Stack>
             )}
             <Stack gap={4}>
