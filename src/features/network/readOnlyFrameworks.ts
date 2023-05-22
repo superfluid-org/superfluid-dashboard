@@ -11,7 +11,7 @@ const readOnlyFrameworks = allNetworks.map((network) => ({
         Framework.create({
           chainId: network.id,
           provider: wagmiRpcProvider({ chainId: network.id }),
-          customSubgraphQueriesEndpoint: network.subgraphUrl,
+          // customSubgraphQueriesEndpoint: network.fallbackSubgraphUrl, // Uncomment to use fallback Subgraph URL.
         }).catch(retry),
       {
         minTimeout: 500,
