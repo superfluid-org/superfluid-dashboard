@@ -34,10 +34,9 @@ interface ExecutionWhitelistInfoProps {
 }
 
 const AutoWrapContractInfo: FC<{ network: Network }> = ({network}) => {
-    if (!network || !network.autoWrap) return null;
-
     const theme = useTheme();
     const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+    if (!network || !network.autoWrap) return null;
     return <Box alignSelf={"flex-end"}>
         <Stack direction="row" gap={0.5}>
             <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
