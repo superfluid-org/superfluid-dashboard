@@ -43,12 +43,12 @@ const FlowRateAllowanceEditForm: FC<{ flowRateAllowance: string, unitOfTime: Uni
   ) : (
     <>
       <EditDialogTitle onClose={handleOnCloseBtnClick}>
-        <Stack alignItems="center" direction="column" gap={1}>
+        <Stack alignItems="center" direction="column">
           <EditIconWrapper>
             <EditRoundedIcon />
           </EditIconWrapper>
-          <Typography variant="h5">Modify Allowance</Typography>
-          <Typography variant="body1" color="secondary">
+          <Typography variant="h4">Modify Allowance</Typography>
+          <Typography variant="body1mono" color="secondary">
             Define flow rate allowance for Super Tokens
           </Typography>
         </Stack>

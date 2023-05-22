@@ -19,7 +19,10 @@ interface ERC20AllowanceEditProps {
 }
 
 const AllowanceEditDialog: FC<ERC20AllowanceEditProps & EditDialogButtonProp & { editType: "EDIT_ERC20" | "EDIT_STREAM" }> = ({ onClose, permissionsAndAllowances, editType, onSaveChanges: onSaveChanges }) => {
-    return <Stack component={"form"} gap={1}>
+    return <Stack component={"form"} gap={1} sx={{
+        width: "524px",
+        height: "326px",
+    }}>
         {editType === "EDIT_ERC20" && <TokenAllowanceEditDialog onClose={onClose} tokenAllowance={formatEther(permissionsAndAllowances.tokenAllowance)} onSaveChanges={onSaveChanges} />}
         {editType === "EDIT_STREAM" && <FlowRateAllowanceEditDialog onClose={onClose} flowRateAllowance={formatEther(permissionsAndAllowances.flowRateAllowance.amountEther)} unitOfTime={permissionsAndAllowances.flowRateAllowance.unitOfTime} onSaveChanges={onSaveChanges} />}
     </Stack>

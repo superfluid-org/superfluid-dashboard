@@ -59,15 +59,8 @@ const PermissionAndAllowancesTables: FC<PermissionAndAllowancesTablesProps> = ({
 
     return (
         <>
-            <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-                sx={{ mb: 2 }}
-                translate="yes"
-            >
-                <Stack>
-                    <Stack direction="column" gap={1}>
+           
+            <Stack direction="column" gap={1}>
                         <Typography variant={isBelowMd ? "h3" : "h4"} component="h1">
                             Permissions & Allowances
                         </Typography>
@@ -75,30 +68,11 @@ const PermissionAndAllowancesTables: FC<PermissionAndAllowancesTablesProps> = ({
                             Manage your Permissions and Allowances in one place.
                         </Typography>
                     </Stack>
-                </Stack>
-                {/* <Button
-                    data-cy={"network-selection-button"}
-                    ref={networkSelectionRef}
-                    variant="outlined"
-                    color="secondary"
-                    endIcon={<OpenIcon open={networkSelectionOpen} />}
-                    onClick={openNetworkSelection}
-                >
-                    All networks
-                </Button>
-                <NetworkSelectionFilter
-                    open={networkSelectionOpen}
-                    anchorEl={networkSelectionRef.current}
-                    onClose={closeNetworkSelection}
-                /> */}
-            </Stack>
-
             {!hasContent && !isLoading && (
                 <Stack gap={4}>
                     {/* <TokenSnapshotEmptyCard /> */}
                 </Stack>
             )}
-
             <Stack gap={4}>
                 {availableNetworks.map((network) => (
                     <PermissionAndAllowancesTable

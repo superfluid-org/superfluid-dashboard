@@ -60,7 +60,6 @@ const PermissionAndAllowancesTable: FC<PermissionAndAllowancesTableProps> = ({
                     result.data?.data
                         .map((snapshot) => ({
                             ...snapshot,
-                            isListed: true,
                         })) || [],
             }),
         }
@@ -111,39 +110,39 @@ const PermissionAndAllowancesTable: FC<PermissionAndAllowancesTableProps> = ({
         permissionAndAllowancesList.length === 0
     )
         return null;
-        
-    return (
-        <TableContainer
-            data-cy={network.slugName + "-permission-and-allowances-table"}
-            component={Paper}
-            sx={{
-                [theme.breakpoints.down("md")]: {
-                    mx: -2,
-                    width: "auto",
-                    borderRadius: 0,
-                    border: "none",
-                    borderBottom: `1px solid ${theme.palette.divider}`,
-                    boxShadow: "none",
-                },
-            }}
-        >
-            <Table sx={{ tableLayout: "fixed" }}>
 
-                <TableHead>
-                    <NetworkHeadingRow colSpan={5} network={network} />
-                    {!isBelowMd && <TableRow>
-                        <TableCell width="136px" sx={{ pl: 5 }}>
-                            Asset
-                        </TableCell>
-                        <TableCell width="183px">Address</TableCell>
-                        <TableCell width="186px">ERC-20 Allowance</TableCell>
-                        <TableCell width="183px">Stream Permissions</TableCell>
-                        <TableCell width="232px">Stream Allowance</TableCell>
-                        <TableCell width="148px">Actions</TableCell>
-                    </TableRow>
-                    }
-                </TableHead>
-                <TableBody>
+    return (
+            <TableContainer
+                data-cy={network.slugName + "-permission-and-allowances-table"}
+                component={Paper}
+                sx={{
+                    [theme.breakpoints.down("md")]: {
+                        mx: -2,
+                        width: "auto",
+                        borderRadius: 0,
+                        border: "none",
+                        borderBottom: `1px solid ${theme.palette.divider}`,
+                        boxShadow: "none",
+                    },
+                }}
+            >
+                <Table sx={{ tableLayout: "fixed" }}>
+
+                    <TableHead>
+                        <NetworkHeadingRow colSpan={5} network={network} />
+                        {!isBelowMd && <TableRow>
+                            <TableCell width="136px" sx={{ pl: 5 }}>
+                                Asset
+                            </TableCell>
+                            <TableCell width="183px">Address</TableCell>
+                            <TableCell width="186px">ERC-20 Allowance</TableCell>
+                            <TableCell width="183px">Stream Permissions</TableCell>
+                            <TableCell width="232px">Stream Allowance</TableCell>
+                            <TableCell width="148px">Actions</TableCell>
+                        </TableRow>
+                        }
+                    </TableHead>
+                    <TableBody>
                     <ConnectionBoundary expectedNetwork={network}>
                         {paginatedRecords.map(
                             ({ id, flowOperator, allowance, permissions, flowRateAllowanceRemaining, token }) =>
@@ -158,30 +157,30 @@ const PermissionAndAllowancesTable: FC<PermissionAndAllowancesTableProps> = ({
                                 />
                         )}
                     </ConnectionBoundary>
-                </TableBody>
-            </Table>
-            <TablePagination
-                style={{
-                    borderBottomLeftRadius: 50,
-                    borderBottomRightRadius: 50
-                }}
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={permissionAndAllowancesList.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage()}
-                onRowsPerPageChange={handleChangeRowsPerPage()}
-                sx={{
-                    "> *": {
-                        visibility:
-                            permissionAndAllowancesList.length <= rowsPerPage
-                                ? "hidden"
-                                : "visible",
-                    },
-                }}
-            />
-        </TableContainer>
+                    </TableBody>
+                </Table>
+                <TablePagination
+                    style={{
+                        borderBottomLeftRadius: 50,
+                        borderBottomRightRadius: 50
+                    }}
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={permissionAndAllowancesList.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage()}
+                    onRowsPerPageChange={handleChangeRowsPerPage()}
+                    sx={{
+                        "> *": {
+                            visibility:
+                                permissionAndAllowancesList.length <= rowsPerPage
+                                    ? "hidden"
+                                    : "visible",
+                        },
+                    }}
+                />
+            </TableContainer>
     );
 };
 

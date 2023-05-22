@@ -1,5 +1,5 @@
 import { Stack, Switch, TableCell, TableRow, Typography, useMediaQuery } from "@mui/material";
-import { FC, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { Address } from "@superfluid-finance/sdk-core";
 import TokenIcon from "../token/TokenIcon";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
@@ -87,29 +87,32 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
   flowOperatorPermissions,
   flowRateAllowance,
 }) => {
+  const initialPermissionAndAllowances = useMemo(() => {
+    return  {
+      tokenAllowance: BigNumber.from(tokenAllowance),
+      flowOperatorPermissions: flowOperatorPermissions,
+      flowRateAllowance: {
+        amountEther: BigNumber.from(flowRateAllowance),
+        unitOfTime: UnitOfTime.Second
+      },
+    }
+  },[tokenAllowance, flowOperatorPermissions, flowRateAllowance ]);
+  
+  const [permissionsAndAllowances, setPermissionsAndAllowances] = useState<PermissionAndAllowancesProps>(initialPermissionAndAllowances);
+  const [permissionCodes, setPermissionCodes] = useState(getPermissionsFromCode(initialPermissionAndAllowances.flowOperatorPermissions as PermissionType));
 
-  const initialPermissionAndAllowances: PermissionAndAllowancesProps = {
-    tokenAllowance: BigNumber.from(tokenAllowance),
-    flowOperatorPermissions: flowOperatorPermissions,
-    flowRateAllowance: {
-      amountEther: BigNumber.from(flowRateAllowance),
-      unitOfTime: UnitOfTime.Second
-    },
-  }
-
-  const [permissionsAndAllowances, setPermissionsAndAllowances] = useState<PermissionAndAllowancesProps>(
-    initialPermissionAndAllowances
-  );
-
-  const [permissionCodes, setPermissionCodes] = useState(getPermissionsFromCode(permissionsAndAllowances.flowOperatorPermissions as PermissionType));
+  useEffect(()=>{
+    setPermissionsAndAllowances(initialPermissionAndAllowances);
+    setPermissionCodes(getPermissionsFromCode(initialPermissionAndAllowances.flowOperatorPermissions as PermissionType));
+  },[
+    initialPermissionAndAllowances,
+  ])
 
   const [isDialogOpen, setDialogOpen] = useState(false);
 
   const [editType, setEditType] = useState<"EDIT_ERC20" | "EDIT_STREAM">();
 
-  const theme = useTheme();
-
-  const handlePermissionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePermissionChange =(event: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(event.target.value);
     const checked = event.target.checked;
     if (checked && !permissionCodes.includes(value)) {
@@ -129,7 +132,7 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
     chainId: network.id,
   });
 
-  const updatedProperty = <K extends keyof PermissionAndAllowancesProps>(
+  const updatedProperty = useCallback(<K extends keyof PermissionAndAllowancesProps>(
     key: K,
     value: PermissionAndAllowancesProps[K]
   ): void => {
@@ -137,7 +140,7 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
       ...permissionsAndAllowances,
       [key]: value,
     })
-  };
+  }, [permissionsAndAllowances]);
 
   const closeDialog = () => setDialogOpen(false);
 
@@ -214,7 +217,6 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
     </TableCell>
     <TableCell>
       {tokenInfo && <Stack direction="row" alignItems="center" gap={0.5}>
-
         <Typography variant="h7">
           <Amount decimals={tokenInfo?.decimals} decimalPlaces={9} wei={permissionsAndAllowances.flowRateAllowance.amountEther} >{` ${tokenInfo?.symbol}/${UnitOfTime[permissionsAndAllowances.flowRateAllowance.unitOfTime]}`}</Amount>
         </Typography>
