@@ -37,7 +37,7 @@ const AutoWrapContractInfo: FC<{ network: Network }> = ({network}) => {
     const theme = useTheme();
     const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
     if (!network || !network.autoWrap) return null;
-    return <Box alignSelf={"flex-end"}>
+    return <Box alignSelf={isBelowMd ? "flex-start" : "flex-end"}>
         <Stack direction="row" gap={0.5}>
             <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
                 Auto-Wrap Manager Smart Contract
