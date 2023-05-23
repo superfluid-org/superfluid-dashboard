@@ -35,7 +35,7 @@ const RevokeButton: FC<RevokeButtonProps> = ({
     ) => {
       setDialogLoadingInfo(
         <Typography variant="h5" color="text.secondary" translate="yes">
-          Access to the token is being revoked.
+          Permissions & Allowances to the token is being revoked.
         </Typography>
       );
 
@@ -51,7 +51,7 @@ const RevokeButton: FC<RevokeButtonProps> = ({
         signer,
       })
         .unwrap()
-        .then(...txAnalytics("Revoked Access", primaryArgs))
+        .then(...txAnalytics("Revoked Permissions & Allowances", primaryArgs))
         .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
     },
     [

@@ -66,7 +66,6 @@ const PermissionAndAllowancesTable: FC<PermissionAndAllowancesTableProps> = ({
     )
 
 
-
     const permissionAndAllowancesList = useMemo(
         () =>
             flowOperatorsQuery.flowOperators,

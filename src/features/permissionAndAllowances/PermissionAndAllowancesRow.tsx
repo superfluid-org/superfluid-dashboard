@@ -17,7 +17,7 @@ import { UnitOfTime } from "../send/FlowRateInput";
 import { BigNumber } from "ethers";
 import { Network } from "../network/networks";
 import { SnapshotRowSkeleton } from "./PermissionAndAllowancesLoadingTable";
-import { isCloseToUnlimitedFlowRateAllowance } from "../../utils/isCloseToUnlimitedAllowance";
+import { isCloseToUnlimitedFlowRateAllowance, isCloseToUnlimitedTokenAllowance } from "../../utils/isCloseToUnlimitedAllowance";
 
 
 export type PermissionAndAllowancesProps = {
@@ -173,7 +173,7 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
     <TableCell>
       {tokenInfo && <Stack direction="row" alignItems="center" gap={0.5}>
         <Typography variant="h6" noWrap={true}>
-          {isCloseToUnlimitedFlowRateAllowance(
+          {isCloseToUnlimitedTokenAllowance(
             permissionsAndAllowances.tokenAllowance
           ) ? (
             <span>Unlimited</span>
@@ -226,7 +226,15 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
     <TableCell>
       {tokenInfo && <Stack direction="row" alignItems="center" gap={0.5}>
         <Typography variant="h6">
-          <Amount decimals={tokenInfo?.decimals} decimalPlaces={9} wei={permissionsAndAllowances.flowRateAllowance.amountEther} >{` ${tokenInfo?.symbol}/${UnitOfTime[permissionsAndAllowances.flowRateAllowance.unitOfTime]}`}</Amount>
+        {isCloseToUnlimitedFlowRateAllowance(
+            permissionsAndAllowances.flowRateAllowance.amountEther
+          ) ? (
+            <span>Unlimited</span>
+          ) : (
+            <>
+              <Amount decimals={tokenInfo?.decimals} decimalPlaces={9} wei={permissionsAndAllowances.flowRateAllowance.amountEther} >{` ${tokenInfo?.symbol}/${UnitOfTime[permissionsAndAllowances.flowRateAllowance.unitOfTime]}`}</Amount>
+            </>
+          )}
         </Typography>
         <EditIcon
           fontSize="inherit"

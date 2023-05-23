@@ -34,15 +34,9 @@ const SaveButton: FC<SaveButtonProps> = ({
       setDialogLoadingInfo: (children: ReactNode) => void,
       getOverrides: () => Promise<Overrides>
     ) => {
-      if (!network.vestingContractAddress) {
-        throw new Error(
-          "No vesting contract configured for network. Should never happen!"
-        );
-      }
-
       setDialogLoadingInfo(
         <Typography variant="h5" color="text.secondary" translate="yes">
-          Access to the token is being revoked.
+          Updating token permissions & allowances
         </Typography>
       );
 
@@ -60,7 +54,7 @@ const SaveButton: FC<SaveButtonProps> = ({
         overrides: await getOverrides()
       })
         .unwrap()
-        .then(...txAnalytics("Updated Access", primaryArgs))
+        .then(...txAnalytics("Updated Permissions & Allowances", primaryArgs))
         .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
     },
     [
