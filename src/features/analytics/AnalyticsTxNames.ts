@@ -11,4 +11,5 @@ export type AnalyticsTransactionNames =
   | "Delete Vesting Schedule"
   | "Fix Access for Vesting"
   | "Approve Auto-Wrap Allowance"
-  | "Enable Auto-Wrap";
+  | "Enable Auto-Wrap"
+  | "Disable Auto-Wrap";

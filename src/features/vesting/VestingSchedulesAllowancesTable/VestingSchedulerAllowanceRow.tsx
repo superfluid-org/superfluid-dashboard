@@ -2,7 +2,13 @@ import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import {
   Box,
+  Button,
   Collapse,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  FormControlLabel,
   IconButton,
   ListItemText,
   Skeleton,
@@ -35,6 +41,9 @@ import { getSuperTokenType } from "../../redux/endpoints/adHocSubgraphEndpoints"
 import { TokenType } from "../../redux/endpoints/tokenTypes";
 import DisableAutoWrapBtn from "./DisableAutoWrapBtn";
 import EnableAutoWrapBtn from "./EnableAutoWrapBtn";
+import AutoWrapRevokeAllowanceTransactionButton from "../transactionButtons/AutoWrapRevokeAllowanceTransactionButton";
+import { VestingToken } from "../CreateVestingSection";
+import ResponsiveDialog from "../../common/ResponsiveDialog";
 
 export const VestingSchedulerAllowanceRowSkeleton = () => {
   const theme = useTheme();
@@ -111,6 +120,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isDialogOpen, setDialogOpen] = useState(false);
 
   const { data: token, isLoading: isTokenLoading } = subgraphApi.useTokenQuery({
     chainId: network.id,
@@ -132,11 +142,11 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   } = useActiveAutoWrap(
     isAutoWrappable
       ? {
-          chainId: network.id,
-          accountAddress: senderAddress,
-          superTokenAddress: token.id,
-          underlyingTokenAddress: token.underlyingAddress,
-        }
+        chainId: network.id,
+        accountAddress: senderAddress,
+        superTokenAddress: token.id,
+        underlyingTokenAddress: token.underlyingAddress,
+      }
       : "skip"
   );
 
@@ -186,6 +196,15 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
 
   const tokenSymbol = token?.symbol || "";
 
+  const EnableAutoWrapButton = () => <Button
+    data-cy={"ok-button"}
+    variant="contained"
+    size="medium"
+    onClick={() => setDialogOpen(true)}
+  >
+    Enable
+  </Button>
+
   return (
     <>
       <TableRow
@@ -193,10 +212,10 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
         sx={
           isLast && !isExpanded
             ? {
-                ".MuiTableCell-root": {
-                  borderBottom: "none",
-                },
-              }
+              ".MuiTableCell-root": {
+                borderBottom: "none",
+              },
+            }
             : {}
         }
       >
@@ -397,12 +416,12 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                         isAutoWrapLoading ? (
                           <Skeleton variant="rectangular" width={24} height={24} />
                         ) : isAutoWrapOK ? (
-                          <DisableAutoWrapBtn network={network} senderAddress={senderAddress} tokenAddress={tokenAddress} />
+                          <AutoWrapRevokeAllowanceTransactionButton key={`auto-wrap-revoke-${tokenSymbol}`} isDisabled={false} isVisible={true} token={token as VestingToken} />
                         ) : isAutoWrappable ? (
-                          <EnableAutoWrapBtn network={network} senderAddress={senderAddress} tokenAddress={tokenAddress} />
+                          <EnableAutoWrapButton />
                         ) : null
                       ) : null
-                    }</TableCell>
+                      }</TableCell>
                     <TableCell width={isBelowMd ? "68px" : "100px"} />
                   </TableRow>
                 </TableBody>
@@ -498,6 +517,23 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
           </Collapse>
         </TableCell>
       </TableRow>
+      <ResponsiveDialog
+      data-cy={"auto-wrap-enable-dialog"}
+      open={isDialogOpen}
+      onClose={() => setDialogOpen(false)}
+      PaperProps={{ sx: { borderRadius: "20px", maxWidth: 550 } }}
+    >
+      <DialogTitle>Enable Auto-Wrap</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Enable auto-wrap for this token?
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
+        <Button onClick={() => setDialogOpen(false)}>Enable</Button>
+      </DialogActions>
+    </ResponsiveDialog>
     </>
   );
 };
