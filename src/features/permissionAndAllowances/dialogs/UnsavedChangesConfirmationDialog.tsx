@@ -1,12 +1,9 @@
-import { Avatar, Button, Stack, Typography, alpha } from "@mui/material";
+import { Avatar, Button, Stack, Typography, alpha, useTheme, styled } from "@mui/material";
 import { ErrorRounded } from "@mui/icons-material";
-import styled from "@emotion/styled";
-import { useTheme } from "@emotion/react";
 import EditDialogTitle from "./EditDialogTitle";
 import EditDialogContent from "./EditDialogContent";
 import { transactionButtonDefaultProps } from "../../transactionBoundary/TransactionButton";
 import { FC } from "react";
-import { EditDialogButtonProp } from "./AllowanceEditDialog";
 
 export const EditIconWrapper = styled(Avatar)(({ theme }) => ({
   width: "50px",

@@ -1,4 +1,4 @@
-import { useTheme } from "@emotion/react";
+import { useTheme } from "@mui/material";
 import { DialogTitle, IconButton, Stack } from "@mui/material";
 import { FC, PropsWithChildren } from "react";
 import CloseIcon from "@mui/icons-material/Close";

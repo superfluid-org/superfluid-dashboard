@@ -1,14 +1,12 @@
 
-import { Typography, alpha } from "@mui/material";
+import { Typography, alpha, useTheme } from "@mui/material";
 import { Signer } from "@wagmi/core";
-import { BigNumber } from "ethers";
 import { FC, ReactNode, useCallback } from "react";
 import { Network } from "../network/networks";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { useAnalytics } from "../analytics/useAnalytics";
 import { rpcApi } from "../redux/store";
-import { useTheme } from "@emotion/react";
 import { PermissionAndAllowancesProps } from "./PermissionAndAllowancesRow";
 
 interface RevokeButtonProps {

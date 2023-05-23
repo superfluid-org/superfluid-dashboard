@@ -5,7 +5,7 @@ import TokenIcon from "../token/TokenIcon";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import AddressName from "../../components/AddressName/AddressName";
-import { useTheme } from "@emotion/react";
+import { useTheme } from "@mui/material";
 import Amount from "../token/Amount";
 import EditIcon from "@mui/icons-material/Edit";
 import RevokeButton from "./RevokeButton";
