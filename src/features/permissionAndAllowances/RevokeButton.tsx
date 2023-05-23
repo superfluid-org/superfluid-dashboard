@@ -25,12 +25,6 @@ const RevokeButton: FC<RevokeButtonProps> = ({
   permissionAndAllowances,
 }) => {
 
-  const isRevokeAllowed = permissionAndAllowances.flowOperatorPermissions !== 0 || permissionAndAllowances.tokenAllowance.gt(0) || permissionAndAllowances.flowRateAllowance.amountEther.gt(0);
-  
-  if (!isRevokeAllowed) {
-    return null;
-  }
-
   const { txAnalytics } = useAnalytics();
   const [revokePermissionAndAllowances, revokePermissionAndAllowancesResult] = rpcApi.useRevokePermissionAndAllowancesMutation();
 
@@ -71,6 +65,12 @@ const RevokeButton: FC<RevokeButtonProps> = ({
       operatorAddress,
     ]
   );
+
+  const isRevokeAllowed = permissionAndAllowances.flowOperatorPermissions !== 0 || permissionAndAllowances.tokenAllowance.gt(0) || permissionAndAllowances.flowRateAllowance.amountEther.gt(0);
+  
+  if (!isRevokeAllowed) {
+    return null;
+  }
 
   return (
     <TransactionBoundary mutationResult={revokePermissionAndAllowancesResult}>
