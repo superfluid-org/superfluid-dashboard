@@ -8,6 +8,7 @@
     "@babel/preset-typescript": "^7.21.0",
     "@badeball/cypress-cucumber-preprocessor": "^15.1.4",
     "@cypress/browserify-preprocessor": "^3.0.2",
+    "@cypress/code-coverage": "^3.10.5",
     "@cypress/webpack-preprocessor": "^5.17.0",
     "@rsksmart/mock-web3-provider": "1.0.0",
     "@truffle/hdwallet-provider": "^2.1.7",
@@ -28,7 +29,6 @@
     "stream-browserify": "^3.0.0",
     "ts-loader": "^9.4.2",
     "typescript": "^4.9.5",
-    "web3": "^1.10.0",
     "@superfluid-finance/sdk-core": "0.6.5",
     "web3-provider-engine": "^16.0.5",
     "webpack": "^5.75.0"
