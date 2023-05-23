@@ -37,8 +37,8 @@ const AutoWrapContractInfo: FC<{ network: Network }> = ({network}) => {
     const theme = useTheme();
     const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
     if (!network || !network.autoWrap) return null;
-    return <Box alignSelf={isBelowMd ? "flex-start" : "flex-end"}>
-        <Stack direction="row" gap={0.8}>
+    return <Stack alignSelf={isBelowMd ? "flex-start" : "flex-end"}>
+        <Stack direction="row" gap={0.5}>
             <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
                 Auto-Wrap Manager Smart Contract
             </Typography>
@@ -66,7 +66,7 @@ const AutoWrapContractInfo: FC<{ network: Network }> = ({network}) => {
                 </Tooltip>
             </Stack>
         </Stack>
-        <Stack direction="row" alignItems="center" gap={1}>
+        <Stack direction="row" gap={0.5}>
             <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
                 Auto-Wrap Strategy Smart Contract
             </Typography>
@@ -94,7 +94,7 @@ const AutoWrapContractInfo: FC<{ network: Network }> = ({network}) => {
                 </Tooltip>
             </Stack>
         </Stack>
-    </Box>
+    </Stack>
 }
 
 const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
@@ -108,7 +108,6 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
    <Stack>
       <Stack
       direction={isBelowMd ? "column" : "row"}
-      alignItems={isBelowMd ? "start" : "center"}
       justifyContent="space-between"
       spacing={1}
     >
@@ -123,6 +122,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
           </>
         )}
       </Typography>
+      <Stack direction="column" alignItems={isBelowMd ? "flex-start" : "flex-end"} gap={isBelowMd ? 0.5 : 0.2}>
       {network.vestingContractAddress && (
         <Stack direction="row" alignItems="center" gap={0.5}>
           <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
@@ -153,8 +153,9 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
           </Stack>
         </Stack>
       )}
+      <AutoWrapContractInfo network={network} />
+      </Stack>
     </Stack>
-    <AutoWrapContractInfo network={network} />
   </Stack>
   );
 };
