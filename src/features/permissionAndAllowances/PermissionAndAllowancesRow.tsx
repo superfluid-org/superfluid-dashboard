@@ -17,6 +17,7 @@ import { UnitOfTime } from "../send/FlowRateInput";
 import { BigNumber } from "ethers";
 import { Network } from "../network/networks";
 import { SnapshotRowSkeleton } from "./PermissionAndAllowancesLoadingTable";
+import { isCloseToUnlimitedFlowRateAllowance } from "../../utils/isCloseToUnlimitedAllowance";
 
 
 export type PermissionAndAllowancesProps = {
@@ -88,7 +89,7 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
   flowRateAllowance,
 }) => {
   const initialPermissionAndAllowances = useMemo(() => {
-    return  {
+    return {
       tokenAllowance: BigNumber.from(tokenAllowance),
       flowOperatorPermissions: flowOperatorPermissions,
       flowRateAllowance: {
@@ -96,15 +97,15 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
         unitOfTime: UnitOfTime.Second
       },
     }
-  },[tokenAllowance, flowOperatorPermissions, flowRateAllowance ]);
-  
+  }, [tokenAllowance, flowOperatorPermissions, flowRateAllowance]);
+
   const [permissionsAndAllowances, setPermissionsAndAllowances] = useState<PermissionAndAllowancesProps>(initialPermissionAndAllowances);
   const [permissionCodes, setPermissionCodes] = useState(getPermissionsFromCode(initialPermissionAndAllowances.flowOperatorPermissions as PermissionType));
 
-  useEffect(()=>{
+  useEffect(() => {
     setPermissionsAndAllowances(initialPermissionAndAllowances);
     setPermissionCodes(getPermissionsFromCode(initialPermissionAndAllowances.flowOperatorPermissions as PermissionType));
-  },[
+  }, [
     initialPermissionAndAllowances,
   ])
 
@@ -112,7 +113,7 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
 
   const [editType, setEditType] = useState<"EDIT_ERC20" | "EDIT_STREAM">();
 
-  const handlePermissionChange =(event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePermissionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(event.target.value);
     const checked = event.target.checked;
     if (checked && !permissionCodes.includes(value)) {
@@ -171,10 +172,17 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
     </TableCell>
     <TableCell>
       {tokenInfo && <Stack direction="row" alignItems="center" gap={0.5}>
-        <Typography variant="h7" noWrap={true}>
-          <Amount decimals={tokenInfo?.decimals} wei={permissionsAndAllowances.tokenAllowance} >{` ${tokenInfo?.symbol}`}</Amount>
+        <Typography variant="h6" noWrap={true}>
+          {isCloseToUnlimitedFlowRateAllowance(
+            permissionsAndAllowances.tokenAllowance
+          ) ? (
+            <span>Unlimited</span>
+          ) : (
+            <>
+              <Amount decimals={tokenInfo?.decimals} wei={permissionsAndAllowances.tokenAllowance} >{` ${tokenInfo?.symbol}`}</Amount>
+            </>
+          )}
         </Typography>
-
         <EditIcon
           fontSize="inherit"
           sx={{
@@ -217,7 +225,7 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
     </TableCell>
     <TableCell>
       {tokenInfo && <Stack direction="row" alignItems="center" gap={0.5}>
-        <Typography variant="h7">
+        <Typography variant="h6">
           <Amount decimals={tokenInfo?.decimals} decimalPlaces={9} wei={permissionsAndAllowances.flowRateAllowance.amountEther} >{` ${tokenInfo?.symbol}/${UnitOfTime[permissionsAndAllowances.flowRateAllowance.unitOfTime]}`}</Amount>
         </Typography>
         <EditIcon
@@ -253,7 +261,7 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
     </TableCell>
     {
       editType &&
-      <ResponsiveDialog open={isDialogOpen} onClose={() => setDialogOpen(false)} PaperProps={{ sx: { borderRadius: "20px", maxHeight: "100%", width:  "auto" } }} translate="yes">
+      <ResponsiveDialog open={isDialogOpen} onClose={() => setDialogOpen(false)} PaperProps={{ sx: { borderRadius: "20px", maxHeight: "100%", width: "auto" } }} translate="yes">
         <AllowanceEditDialog onSaveChanges={updatedProperty} onClose={closeDialog} permissionsAndAllowances={permissionsAndAllowances} editType={editType}></AllowanceEditDialog>
       </ResponsiveDialog>
     }
