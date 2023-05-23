@@ -9,7 +9,6 @@ Feature: Common element test cases
         And User clicks on the "send" navigation button
         Then Send page is open and the send container is visible
 
-    @only
     Scenario: Wallet connection status in the navigation drawer
         Given Dashboard is open with a mocked connection to "ongoingStreamAccount" on "polygon"
         And User connects their wallet to the dashboard
