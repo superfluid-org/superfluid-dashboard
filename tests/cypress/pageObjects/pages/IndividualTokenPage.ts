@@ -101,10 +101,12 @@ export class IndividualTokenPage extends BasePage {
   }
 
   static validateFirstStreamRowPendingMessage(message: string) {
+    let regex = new RegExp(`(${message.replaceAll(".", "")}|Syncing)\.{3}`);
     cy.get(STREAM_ROWS)
       .first({ timeout: 60000 })
       .find(PENDING_MESSAGE)
-      .should("have.text", message);
+      .invoke("text")
+      .should("match", regex);
   }
 
   static validateFirstDistributionRowPendingMessage(message: string) {

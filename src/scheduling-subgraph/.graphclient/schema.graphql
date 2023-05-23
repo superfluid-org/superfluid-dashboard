@@ -237,9 +237,11 @@ enum CreateFlowExecutedEvent_orderBy {
 
 type CreateTask implements Task {
   id: ID!
+  type: TaskType!
+  createdAt: BigInt!
   executedAt: BigInt
   executionAt: BigInt!
-  expirationAt: BigInt
+  expirationAt: BigInt!
   cancelledAt: BigInt
   superToken: Bytes!
   sender: Bytes!
@@ -259,6 +261,18 @@ input CreateTask_filter {
   id_lte: ID
   id_in: [ID!]
   id_not_in: [ID!]
+  type: TaskType
+  type_not: TaskType
+  type_in: [TaskType!]
+  type_not_in: [TaskType!]
+  createdAt: BigInt
+  createdAt_not: BigInt
+  createdAt_gt: BigInt
+  createdAt_lt: BigInt
+  createdAt_gte: BigInt
+  createdAt_lte: BigInt
+  createdAt_in: [BigInt!]
+  createdAt_not_in: [BigInt!]
   executedAt: BigInt
   executedAt_not: BigInt
   executedAt_gt: BigInt
@@ -361,6 +375,8 @@ input CreateTask_filter {
 
 enum CreateTask_orderBy {
   id
+  type
+  createdAt
   executedAt
   executionAt
   expirationAt
@@ -553,9 +569,11 @@ enum DeleteFlowExecutedEvent_orderBy {
 
 type DeleteTask implements Task {
   id: ID!
+  type: TaskType!
+  createdAt: BigInt!
   executedAt: BigInt
   executionAt: BigInt!
-  expirationAt: BigInt
+  expirationAt: BigInt!
   cancelledAt: BigInt
   superToken: Bytes!
   sender: Bytes!
@@ -571,6 +589,18 @@ input DeleteTask_filter {
   id_lte: ID
   id_in: [ID!]
   id_not_in: [ID!]
+  type: TaskType
+  type_not: TaskType
+  type_in: [TaskType!]
+  type_not_in: [TaskType!]
+  createdAt: BigInt
+  createdAt_not: BigInt
+  createdAt_gt: BigInt
+  createdAt_lt: BigInt
+  createdAt_gte: BigInt
+  createdAt_lte: BigInt
+  createdAt_in: [BigInt!]
+  createdAt_not_in: [BigInt!]
   executedAt: BigInt
   executedAt_not: BigInt
   executedAt_gt: BigInt
@@ -641,6 +671,8 @@ input DeleteTask_filter {
 
 enum DeleteTask_orderBy {
   id
+  type
+  createdAt
   executedAt
   executionAt
   expirationAt
@@ -1633,13 +1665,20 @@ type Subscription {
 
 interface Task {
   id: ID!
+  type: TaskType!
+  createdAt: BigInt!
   executedAt: BigInt
   executionAt: BigInt!
-  expirationAt: BigInt
+  expirationAt: BigInt!
   cancelledAt: BigInt
   superToken: Bytes!
   sender: Bytes!
   receiver: Bytes!
+}
+
+enum TaskType {
+  CREATE_FLOW
+  DELETE_FLOW
 }
 
 input Task_filter {
@@ -1651,6 +1690,18 @@ input Task_filter {
   id_lte: ID
   id_in: [ID!]
   id_not_in: [ID!]
+  type: TaskType
+  type_not: TaskType
+  type_in: [TaskType!]
+  type_not_in: [TaskType!]
+  createdAt: BigInt
+  createdAt_not: BigInt
+  createdAt_gt: BigInt
+  createdAt_lt: BigInt
+  createdAt_gte: BigInt
+  createdAt_lte: BigInt
+  createdAt_in: [BigInt!]
+  createdAt_not_in: [BigInt!]
   executedAt: BigInt
   executedAt_not: BigInt
   executedAt_gt: BigInt
@@ -1721,6 +1772,8 @@ input Task_filter {
 
 enum Task_orderBy {
   id
+  type
+  createdAt
   executedAt
   executionAt
   expirationAt
@@ -1809,6 +1862,8 @@ enum TokenSenderReceiverCursor_orderBy {
   id
   currentCreateFlowTask
   currentCreateFlowTask__id
+  currentCreateFlowTask__type
+  currentCreateFlowTask__createdAt
   currentCreateFlowTask__executedAt
   currentCreateFlowTask__executionAt
   currentCreateFlowTask__expirationAt
@@ -1822,6 +1877,8 @@ enum TokenSenderReceiverCursor_orderBy {
   currentCreateFlowTask__flowRate
   currentDeleteFlowTask
   currentDeleteFlowTask__id
+  currentDeleteFlowTask__type
+  currentDeleteFlowTask__createdAt
   currentDeleteFlowTask__executedAt
   currentDeleteFlowTask__executionAt
   currentDeleteFlowTask__expirationAt
