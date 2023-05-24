@@ -3,6 +3,20 @@ import { Network } from "../network/networks";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { subgraphApi } from "../redux/store";
 import { VestingToken } from "./CreateVestingSection";
+import { Token } from "@superfluid-finance/sdk-core";
+
+
+export const toVestingToken = (token: Token, network: Network)=> {
+  return {
+    ...token,
+    address: token.id,
+    type: getSuperTokenType({
+      network,
+      address: token.id,
+      underlyingAddress: token.underlyingAddress,
+    }),
+  } as VestingToken
+}
 
 export const useVestingToken = (
   network: Network,
@@ -19,15 +33,7 @@ export const useVestingToken = (
       selectFromResult: (result) => ({
         ...result,
         token: result.data
-          ? ({
-              ...result.data,
-              address: result.data.id,
-              type: getSuperTokenType({
-                network,
-                address: result.data.id,
-                underlyingAddress: result.data.underlyingAddress,
-              }),
-            } as VestingToken)
+          ? (toVestingToken(result.data, network))
           : undefined,
       }),
     }

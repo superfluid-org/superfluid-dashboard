@@ -11,11 +11,13 @@ import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { VestingToken } from "../CreateVestingSection";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
+import { Token } from "@superfluid-finance/sdk-core";
+import { toVestingToken } from "../useVestingToken";
 
 const TX_TITLE: TransactionTitle = "Disable Auto-Wrap";
 
-const AutoWrapRevokeAllowanceTransactionButton: FC<{
-  token: VestingToken;
+const DisableAutoWrapTransactionButton: FC<{
+  token: Token;
   isVisible: boolean;
   isDisabled: boolean;
 }> = ({ token, isVisible, isDisabled: isDisabled_ }) => {
@@ -23,6 +25,8 @@ const AutoWrapRevokeAllowanceTransactionButton: FC<{
 
   const { data: signer } = useSigner();
 
+  const vestingToken = toVestingToken(token, network);
+  
   const getGasOverrides = useGetTransactionOverrides();
   const { data: overrides } = useQuery(
     ["gasOverrides", TX_TITLE, network.id],
@@ -36,7 +40,7 @@ const AutoWrapRevokeAllowanceTransactionButton: FC<{
 
   const { config } = usePrepareErc20Approve({
     enabled: !!network.autoWrap, // TODO(KK): any other conditions to add here?
-    address: token.underlyingAddress as `0x${string}`,
+    address: vestingToken.underlyingAddress as `0x${string}`,
     chainId: network.id,
     args: [primaryArgs.spender, primaryArgs.amount],
     signer,
@@ -47,7 +51,7 @@ const AutoWrapRevokeAllowanceTransactionButton: FC<{
 
   const underlyingTokenQuery = subgraphApi.useTokenQuery({
     chainId: network.id,
-    id: token.underlyingAddress,
+    id: vestingToken.underlyingAddress,
   });
 
   const underlyingToken = underlyingTokenQuery.data;
@@ -99,4 +103,4 @@ const AutoWrapRevokeAllowanceTransactionButton: FC<{
   );
 };
 
-export default memo(AutoWrapRevokeAllowanceTransactionButton);
+export default memo(DisableAutoWrapTransactionButton);

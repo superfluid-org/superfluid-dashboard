@@ -2,14 +2,12 @@ import { Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { constants } from "ethers";
 import { FC, memo } from "react";
-import { useFormContext } from "react-hook-form";
 import { useQuery, useSigner } from "wagmi";
 import { usePrepareErc20Approve } from "../../../generated";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { rpcApi, subgraphApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
-import { ValidVestingForm } from "../CreateVestingFormProvider";
 import { VestingToken } from "../CreateVestingSection";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
@@ -22,8 +20,6 @@ const AutoWrapAllowanceTransactionButton: FC<{
   isDisabled: boolean;
 }> = ({ token, isVisible, isDisabled: isDisabled_ }) => {
   const { network } = useExpectedNetwork();
-  const { watch } = useFormContext<ValidVestingForm>();
-  const [setupAutoWrap] = watch(["data.setupAutoWrap"]);
 
   const { data: signer } = useSigner();
 
@@ -39,7 +35,7 @@ const AutoWrapAllowanceTransactionButton: FC<{
   };
 
   const { config } = usePrepareErc20Approve({
-    enabled: setupAutoWrap && !!network.autoWrap, // TODO(KK): any other conditions to add here?
+    enabled: isDisabled_ && !!network.autoWrap, // TODO(KK): any other conditions to add here?
     address: token.underlyingAddress as `0x${string}`,
     chainId: network.id,
     args: [primaryArgs.spender, primaryArgs.amount],
@@ -60,9 +56,7 @@ const AutoWrapAllowanceTransactionButton: FC<{
     <TransactionBoundary mutationResult={mutationResult}>
       {({
         network,
-        getOverrides,
         setDialogLoadingInfo,
-        setDialogSuccessActions,
         txAnalytics,
       }) =>
         isVisible && (
@@ -70,7 +64,6 @@ const AutoWrapAllowanceTransactionButton: FC<{
             disabled={isDisabled}
             onClick={async (signer) => {
               if (!config) throw new Error("This should never happen!");
-
               setDialogLoadingInfo(
                 <Typography variant="h5" color="text.secondary" translate="yes">
                   You are approving Auto-Wrap ERC-20 allowance for the
