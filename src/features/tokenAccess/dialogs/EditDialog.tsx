@@ -14,7 +14,7 @@ export interface EditDialogButtonProp {
 }
 
 interface ERC20AllowanceEditProps {
-  permissionsAndAllowances: TokenAccessProps;
+  editedAccess: TokenAccessProps;
 }
 
 const EditDialog: FC<
@@ -22,7 +22,7 @@ const EditDialog: FC<
     EditDialogButtonProp & { editType: "EDIT_ERC20" | "EDIT_STREAM" }
 > = ({
   onClose,
-  permissionsAndAllowances,
+  editedAccess,
   editType,
   onSaveChanges: onSaveChanges,
 }) => {
@@ -31,7 +31,7 @@ const EditDialog: FC<
       {editType === "EDIT_ERC20" && (
         <TokenAllowanceEditDialog
           onClose={onClose}
-          tokenAllowance={formatEther(permissionsAndAllowances.tokenAllowance)}
+          tokenAllowance={formatEther(editedAccess.tokenAllowance)}
           onSaveChanges={onSaveChanges}
         />
       )}
@@ -39,9 +39,9 @@ const EditDialog: FC<
         <FlowRateAllowanceEditDialog
           onClose={onClose}
           flowRateAllowance={formatEther(
-            permissionsAndAllowances.flowRateAllowance.amountEther
+            editedAccess.flowRateAllowance.amountEther
           )}
-          unitOfTime={permissionsAndAllowances.flowRateAllowance.unitOfTime}
+          unitOfTime={editedAccess.flowRateAllowance.unitOfTime}
           onSaveChanges={onSaveChanges}
         />
       )}

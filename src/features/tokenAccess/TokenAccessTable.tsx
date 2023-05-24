@@ -42,6 +42,9 @@ const TokenAccessTable: FC<Props> = ({
         chainId: network.id,
         filter: {
           sender: address,
+          flowRateAllowanceRemaining_gt: "0",
+          permissions_gt: 0,
+          allowance_gt: "0",
         },
         pagination: {
           take: Infinity,
@@ -113,7 +116,7 @@ const TokenAccessTable: FC<Props> = ({
               <TableCell width="186px">ERC-20 Allowance</TableCell>
               <TableCell width="183px">Stream Permissions</TableCell>
               <TableCell width="232px">Stream Allowance</TableCell>
-              <TableCell width="148px">Actions</TableCell>
+              <TableCell width="139px">Actions</TableCell>
             </TableRow>
           )}
         </TableHead>

@@ -1,4 +1,4 @@
-import { Stack, Switch, TableCell, TableRow, Typography } from "@mui/material";
+import { Button, Stack, Switch, TableCell, TableRow, Typography } from "@mui/material";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { Address } from "@superfluid-finance/sdk-core";
 import TokenIcon from "../token/TokenIcon";
@@ -12,13 +12,14 @@ import SaveButton from "./SaveButton";
 import { subgraphApi } from "../redux/store";
 import EditDialog from "./dialogs/EditDialog";
 import ResponsiveDialog from "../common/ResponsiveDialog";
-import { UnitOfTime } from "../send/FlowRateInput";
+import { UnitOfTime, timeUnitShortFormMap } from "../send/FlowRateInput";
 import { BigNumber } from "ethers";
 import { Network } from "../network/networks";
 import {
   isCloseToUnlimitedFlowRateAllowance,
   isCloseToUnlimitedTokenAllowance,
 } from "../../utils/isCloseToUnlimitedAllowance";
+import { useConnectionBoundary } from "../transactionBoundary/ConnectionBoundary";
 
 export type TokenAccessProps = {
   flowRateAllowance: {
@@ -77,6 +78,62 @@ interface Props {
   tokenAllowance: string;
   flowOperatorPermissions: number;
   flowRateAllowance: string;
+}
+
+const TokenAccessActionButtonSection: FC<
+  {
+    network: Network,
+    operatorAddress: string,
+    tokenAddress: string,
+    editedAccess: TokenAccessProps,
+    initialAccess: TokenAccessProps
+  }
+> = ({ network, operatorAddress, tokenAddress, editedAccess, initialAccess }) => {
+
+  const {
+    allowImpersonation,
+    isImpersonated,
+    isCorrectNetwork,
+    switchNetwork,
+  } = useConnectionBoundary();
+
+  if (isImpersonated && !allowImpersonation) {
+    return null
+  }
+
+  if (!isCorrectNetwork && !allowImpersonation) {
+    return (
+      <Button
+        data-cy={"change-network-button"}
+        color="primary"
+        disabled={!switchNetwork}
+        size="medium"
+        fullWidth={true}
+        variant= "contained"
+        onClick={() => switchNetwork?.()}
+      >
+        Change Network
+      </Button>
+    );
+  }
+
+  return <Stack direction="column" alignItems="center" gap={0.8}>
+    <SaveButton
+     key={`save-${operatorAddress}-${tokenAddress}-btn`}
+      network={network}
+      operatorAddress={operatorAddress}
+      tokenAddress={tokenAddress}
+      editedAccess={editedAccess}
+      initialAccess={initialAccess}
+    />
+    <RevokeButton
+     key={`revoke-${operatorAddress}-${tokenAddress}-btn`}
+      network={network}
+      operatorAddress={operatorAddress}
+      tokenAddress={tokenAddress}
+      access={initialAccess}
+    />
+  </Stack>
 }
 
 const TokenAccessRow: FC<Props> = ({
@@ -176,10 +233,10 @@ const TokenAccessRow: FC<Props> = ({
           gap={2}
         >
           <TokenIcon isSuper tokenSymbol={tokenInfo?.symbol} />
-          <Typography data-cy={"token-symbol"}>{tokenInfo?.symbol}</Typography>
+          <Typography variant="h6" data-cy={"token-symbol"}>{tokenInfo?.symbol}</Typography>
         </Stack>
       </TableCell>
-      <TableCell>
+      <TableCell align="left">
         <Stack direction="row" alignItems="center" gap={1.5}>
           <AddressAvatar
             address={address}
@@ -189,16 +246,16 @@ const TokenAccessRow: FC<Props> = ({
             BlockiesProps={{ size: 8, scale: 3 }}
           />
           <AddressCopyTooltip address={address}>
-            <Typography data-cy={"access-setting-address"} variant="h7">
+            <Typography data-cy={"access-setting-address"} variant="h6">
               <AddressName address={address} />
             </Typography>
           </AddressCopyTooltip>
         </Stack>
       </TableCell>
-      <TableCell>
+      <TableCell style={{ overflowWrap: "anywhere" }} align="left">
         {tokenInfo && (
           <Stack direction="row" alignItems="center" gap={0.5}>
-            <Typography variant="h6" noWrap={true}>
+            <Typography variant="h6">
               {isCloseToUnlimitedTokenAllowance(editedAccess.tokenAllowance) ? (
                 <span>Unlimited</span>
               ) : (
@@ -223,7 +280,7 @@ const TokenAccessRow: FC<Props> = ({
           </Stack>
         )}
       </TableCell>
-      <TableCell>
+      <TableCell align="left">
         <Stack direction="column" alignItems="center" gap={"2px"}>
           <Stack direction="row" alignItems="center" gap={"10px"}>
             <Switch
@@ -232,7 +289,7 @@ const TokenAccessRow: FC<Props> = ({
               value={Permission.CREATE}
               onChange={handlePermissionChange}
             />
-            <Typography variant="h7">Create</Typography>
+            <Typography variant="h6">Create</Typography>
           </Stack>
           <Stack direction="row" alignItems="center" gap={"2px"}>
             <Stack direction="row" alignItems="center" gap={"10px"}>
@@ -242,7 +299,7 @@ const TokenAccessRow: FC<Props> = ({
                 value={Permission.UPDATE}
                 onChange={handlePermissionChange}
               />
-              <Typography variant="h7">Update</Typography>
+              <Typography variant="h6">Update</Typography>
             </Stack>
           </Stack>
           <Stack direction="row" alignItems="center" gap={"2px"}>
@@ -253,12 +310,12 @@ const TokenAccessRow: FC<Props> = ({
                 value={Permission.DELETE}
                 onChange={handlePermissionChange}
               />
-              <Typography variant="h7">Delete</Typography>
+              <Typography variant="h6">Delete</Typography>
             </Stack>
           </Stack>
         </Stack>
       </TableCell>
-      <TableCell>
+      <TableCell align="left" style={{ overflowWrap: "anywhere" }}>
         {tokenInfo && (
           <Stack direction="row" alignItems="center" gap={0.5}>
             <Typography variant="h6">
@@ -271,9 +328,8 @@ const TokenAccessRow: FC<Props> = ({
                   <Amount
                     decimals={tokenInfo?.decimals}
                     wei={editedAccess.flowRateAllowance.amountEther}
-                  >{` ${tokenInfo?.symbol}/${
-                    UnitOfTime[editedAccess.flowRateAllowance.unitOfTime]
-                  }`}</Amount>
+                  >{` ${tokenInfo?.symbol}/ ${timeUnitShortFormMap[editedAccess.flowRateAllowance.unitOfTime]
+                    }`}</Amount>
                 </>
               )}
             </Typography>
@@ -290,24 +346,10 @@ const TokenAccessRow: FC<Props> = ({
           </Stack>
         )}
       </TableCell>
-      <TableCell>
-        <Stack direction="column" alignItems="center" gap={0.8}>
-          <SaveButton
-            key={`save-${address}-${token}`}
-            network={network}
-            operatorAddress={address}
-            tokenAddress={token}
-            editedAccess={editedAccess}
-            initialAccess={initialAccess}
-          />
-          <RevokeButton
-            key={`revoke-${address}-${token}`}
-            network={network}
-            operatorAddress={address}
-            tokenAddress={token}
-            access={initialAccess}
-          />
-        </Stack>
+      <TableCell align="left" sx={{
+        padding:"25px" 
+      }}>
+        <TokenAccessActionButtonSection key={`action-section-${address}-${token}`} editedAccess={editedAccess} initialAccess={initialAccess} network={network} operatorAddress={address} tokenAddress={token} />
       </TableCell>
       {editType && (
         <ResponsiveDialog
@@ -321,7 +363,7 @@ const TokenAccessRow: FC<Props> = ({
           <EditDialog
             onSaveChanges={updatedProperty}
             onClose={closeDialog}
-            permissionsAndAllowances={editedAccess}
+            editedAccess={editedAccess}
             editType={editType}
           ></EditDialog>
         </ResponsiveDialog>

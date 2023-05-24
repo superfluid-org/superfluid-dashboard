@@ -52,8 +52,7 @@ const TokenAccessTables: FC<Props> = ({
     [availableNetworks, fetchingStatuses]
   );
 
-  return (
-    <>
+  return !hasContent && !isLoading ? null : <>
       <Stack direction="column" gap={1}>
         <Typography variant={isBelowMd ? "h3" : "h4"} component="h1">
           Permissions & Allowances
@@ -62,9 +61,6 @@ const TokenAccessTables: FC<Props> = ({
           Manage your Permissions and Allowances in one place.
         </Typography>
       </Stack>
-      {!hasContent && !isLoading && (
-        <Stack gap={4}>{/* <PermissionAndAllowancesEmptyCard /> */}</Stack>
-      )}
       <Stack gap={4}>
         {availableNetworks.map((network) => (
           <TokenAccessTable
@@ -77,7 +73,6 @@ const TokenAccessTables: FC<Props> = ({
         {isLoading && <TokenAccessLoadingTable />}
       </Stack>
     </>
-  );
 };
 
 export default TokenAccessTables;
