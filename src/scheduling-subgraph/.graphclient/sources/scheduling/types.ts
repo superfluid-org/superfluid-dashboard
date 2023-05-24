@@ -239,9 +239,11 @@ export type CreateFlowExecutedEvent_orderBy =
 
 export type CreateTask = Task & {
   id: Scalars['ID'];
+  type: TaskType;
+  createdAt: Scalars['BigInt'];
   executedAt?: Maybe<Scalars['BigInt']>;
   executionAt: Scalars['BigInt'];
-  expirationAt?: Maybe<Scalars['BigInt']>;
+  expirationAt: Scalars['BigInt'];
   cancelledAt?: Maybe<Scalars['BigInt']>;
   superToken: Scalars['Bytes'];
   sender: Scalars['Bytes'];
@@ -261,6 +263,18 @@ export type CreateTask_filter = {
   id_lte?: InputMaybe<Scalars['ID']>;
   id_in?: InputMaybe<Array<Scalars['ID']>>;
   id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  type?: InputMaybe<TaskType>;
+  type_not?: InputMaybe<TaskType>;
+  type_in?: InputMaybe<Array<TaskType>>;
+  type_not_in?: InputMaybe<Array<TaskType>>;
+  createdAt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_not?: InputMaybe<Scalars['BigInt']>;
+  createdAt_gt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_lt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_gte?: InputMaybe<Scalars['BigInt']>;
+  createdAt_lte?: InputMaybe<Scalars['BigInt']>;
+  createdAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  createdAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   executedAt?: InputMaybe<Scalars['BigInt']>;
   executedAt_not?: InputMaybe<Scalars['BigInt']>;
   executedAt_gt?: InputMaybe<Scalars['BigInt']>;
@@ -363,6 +377,8 @@ export type CreateTask_filter = {
 
 export type CreateTask_orderBy =
   | 'id'
+  | 'type'
+  | 'createdAt'
   | 'executedAt'
   | 'executionAt'
   | 'expirationAt'
@@ -553,9 +569,11 @@ export type DeleteFlowExecutedEvent_orderBy =
 
 export type DeleteTask = Task & {
   id: Scalars['ID'];
+  type: TaskType;
+  createdAt: Scalars['BigInt'];
   executedAt?: Maybe<Scalars['BigInt']>;
   executionAt: Scalars['BigInt'];
-  expirationAt?: Maybe<Scalars['BigInt']>;
+  expirationAt: Scalars['BigInt'];
   cancelledAt?: Maybe<Scalars['BigInt']>;
   superToken: Scalars['Bytes'];
   sender: Scalars['Bytes'];
@@ -571,6 +589,18 @@ export type DeleteTask_filter = {
   id_lte?: InputMaybe<Scalars['ID']>;
   id_in?: InputMaybe<Array<Scalars['ID']>>;
   id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  type?: InputMaybe<TaskType>;
+  type_not?: InputMaybe<TaskType>;
+  type_in?: InputMaybe<Array<TaskType>>;
+  type_not_in?: InputMaybe<Array<TaskType>>;
+  createdAt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_not?: InputMaybe<Scalars['BigInt']>;
+  createdAt_gt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_lt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_gte?: InputMaybe<Scalars['BigInt']>;
+  createdAt_lte?: InputMaybe<Scalars['BigInt']>;
+  createdAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  createdAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   executedAt?: InputMaybe<Scalars['BigInt']>;
   executedAt_not?: InputMaybe<Scalars['BigInt']>;
   executedAt_gt?: InputMaybe<Scalars['BigInt']>;
@@ -641,6 +671,8 @@ export type DeleteTask_filter = {
 
 export type DeleteTask_orderBy =
   | 'id'
+  | 'type'
+  | 'createdAt'
   | 'executedAt'
   | 'executionAt'
   | 'expirationAt'
@@ -1530,14 +1562,20 @@ export type Subscription_metaArgs = {
 
 export type Task = {
   id: Scalars['ID'];
+  type: TaskType;
+  createdAt: Scalars['BigInt'];
   executedAt?: Maybe<Scalars['BigInt']>;
   executionAt: Scalars['BigInt'];
-  expirationAt?: Maybe<Scalars['BigInt']>;
+  expirationAt: Scalars['BigInt'];
   cancelledAt?: Maybe<Scalars['BigInt']>;
   superToken: Scalars['Bytes'];
   sender: Scalars['Bytes'];
   receiver: Scalars['Bytes'];
 };
+
+export type TaskType =
+  | 'CREATE_FLOW'
+  | 'DELETE_FLOW';
 
 export type Task_filter = {
   id?: InputMaybe<Scalars['ID']>;
@@ -1548,6 +1586,18 @@ export type Task_filter = {
   id_lte?: InputMaybe<Scalars['ID']>;
   id_in?: InputMaybe<Array<Scalars['ID']>>;
   id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  type?: InputMaybe<TaskType>;
+  type_not?: InputMaybe<TaskType>;
+  type_in?: InputMaybe<Array<TaskType>>;
+  type_not_in?: InputMaybe<Array<TaskType>>;
+  createdAt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_not?: InputMaybe<Scalars['BigInt']>;
+  createdAt_gt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_lt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_gte?: InputMaybe<Scalars['BigInt']>;
+  createdAt_lte?: InputMaybe<Scalars['BigInt']>;
+  createdAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  createdAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   executedAt?: InputMaybe<Scalars['BigInt']>;
   executedAt_not?: InputMaybe<Scalars['BigInt']>;
   executedAt_gt?: InputMaybe<Scalars['BigInt']>;
@@ -1618,6 +1668,8 @@ export type Task_filter = {
 
 export type Task_orderBy =
   | 'id'
+  | 'type'
+  | 'createdAt'
   | 'executedAt'
   | 'executionAt'
   | 'expirationAt'
@@ -1705,6 +1757,8 @@ export type TokenSenderReceiverCursor_orderBy =
   | 'id'
   | 'currentCreateFlowTask'
   | 'currentCreateFlowTask__id'
+  | 'currentCreateFlowTask__type'
+  | 'currentCreateFlowTask__createdAt'
   | 'currentCreateFlowTask__executedAt'
   | 'currentCreateFlowTask__executionAt'
   | 'currentCreateFlowTask__expirationAt'
@@ -1718,6 +1772,8 @@ export type TokenSenderReceiverCursor_orderBy =
   | 'currentCreateFlowTask__flowRate'
   | 'currentDeleteFlowTask'
   | 'currentDeleteFlowTask__id'
+  | 'currentDeleteFlowTask__type'
+  | 'currentDeleteFlowTask__createdAt'
   | 'currentDeleteFlowTask__executedAt'
   | 'currentDeleteFlowTask__executionAt'
   | 'currentDeleteFlowTask__expirationAt'

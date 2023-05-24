@@ -56,7 +56,7 @@ const CANCEL_STREAM_BUTTON = "[data-cy=cancel-stream-button]";
 const MODIFY_STREAM_BUTTON = "[data-cy=modify-stream-button]";
 const SEND_OR_MOD_STREAM = "[data-cy=send-or-modify-stream]";
 const ALL_BUTTONS = "[data-cy=send-card] [data-cy*=button]";
-const PREVIEW_BUFFER_LOSS = "[data-cy=buffer-loss]";
+const PREVIEW_BUFFER_LOSS = "[data-cy=preview-buffer-loss]";
 const TX_DRAWER_BUTTON = "[data-cy=tx-drawer-button]";
 const OK_BUTTON = "[data-cy=ok-button]";
 const RECEIVER_DIALOG = "[data-cy=receiver-dialog]";
@@ -337,6 +337,15 @@ export class SendPage extends BasePage {
       this.click(RECEIVER_BUTTON);
       this.isVisible(RECENT_ENTRIES, undefined, { timeout: 30000 });
       this.type(ADDRESS_DIALOG_INPUT, address);
+      cy.wait(2000);
+      cy.get("body").then((body) => {
+        if (body.find("[role=presentation]").length > 0) {
+          cy.get("[role=presentation]").click("bottomRight", {
+            multiple: true,
+          });
+        }
+      });
+      this.doesNotExist("[role=dialog]");
       this.clear(`${FLOW_RATE_INPUT} input`);
       this.type(FLOW_RATE_INPUT, amount);
       this.click(SELECT_TOKEN_BUTTON);
@@ -360,8 +369,9 @@ export class SendPage extends BasePage {
         // @ts-ignore
         win.mockSigner.getGasPrice().then((gas) => {
           // @ts-ignore
-          win.superfluid_dashboard.advanced.nextGasOverrides.gasPrice =
-            gas._hex.toString() * 4;
+          win.superfluid_dashboard.advanced.nextGasOverrides.gasPrice = gas
+            .mul(2)
+            .toString();
           // @ts-ignore
           win.superfluid_dashboard.advanced.nextGasOverrides.gasLimit =
             "1000000";
@@ -402,6 +412,7 @@ export class SendPage extends BasePage {
   static cancelStreamIfStillOngoing() {
     cy.fixture("commonData").then((data) => {
       this.isVisible(PREVIEW_BUFFER_LOSS);
+      cy.wait(1000);
       cy.get("body").then((body) => {
         if (body.find(CANCEL_STREAM_BUTTON).length > 0) {
           this.overrideNextGasPrice();
@@ -420,7 +431,16 @@ export class SendPage extends BasePage {
           this.hasText(SEND_OR_MOD_STREAM, "Send Stream", undefined, {
             timeout: 30000,
           });
-          this.clear(FLOW_RATE_INPUT);
+          cy.wait(2000);
+          cy.get("body").then((body) => {
+            if (body.find("[role=presentation]").length > 0) {
+              cy.get("[role=presentation]").click("bottomRight", {
+                multiple: true,
+              });
+            }
+          });
+          this.doesNotExist("[role=dialog]");
+          this.clear(`${FLOW_RATE_INPUT} input`);
           this.type(FLOW_RATE_INPUT, "1");
           this.click(RISK_CHECKBOX);
         }
@@ -432,14 +452,23 @@ export class SendPage extends BasePage {
     this.isVisible(PREVIEW_BUFFER_LOSS);
     cy.fixture("commonData").then((data) => {
       cy.get("body").then((body) => {
-        if (body.find(SEND_BUTTON).length > 0) {
-          this.clear(FLOW_RATE_INPUT);
+        if (body.find(SEND_BUTTON).length === 0) {
+          cy.wait(2000);
+          cy.get("body").then((body) => {
+            if (body.find("[role=presentation]").length > 0) {
+              cy.get("[role=presentation]").click("bottomRight", {
+                multiple: true,
+              });
+            }
+          });
+          this.doesNotExist("[role=dialog]");
+          this.clear(`${FLOW_RATE_INPUT} input`);
           this.type(FLOW_RATE_INPUT, "1");
           this.click(RISK_CHECKBOX);
           this.overrideNextGasPrice();
           this.click(SEND_BUTTON);
           this.isVisible(GO_TO_TOKENS_PAGE_BUTTON);
-          this.click(CLOSE_DIALOG_BUTTON, -1, { timeout: 60000 });
+          this.click(OTHER_CLOSE_DIALOG_BUTTON, -1, { timeout: 60000 });
           this.isVisible(`${TX_DRAWER_BUTTON} span`);
           this.isNotVisible(`${TX_DRAWER_BUTTON} span`, undefined, {
             timeout: 90000,
@@ -473,7 +502,7 @@ export class SendPage extends BasePage {
             this.hasText(SEND_OR_MOD_STREAM, "Send Stream");
             this.overrideNextGasPrice();
             this.click(SEND_BUTTON);
-            this.click(CLOSE_DIALOG_BUTTON);
+            this.click(OTHER_CLOSE_DIALOG_BUTTON);
             this.isVisible(`${TX_DRAWER_BUTTON} span`);
             this.isNotVisible(`${TX_DRAWER_BUTTON} span`, undefined, {
               timeout: 60000,
@@ -516,13 +545,14 @@ export class SendPage extends BasePage {
 
   static startStreamIfNecessary() {
     this.isVisible(PREVIEW_BUFFER_LOSS);
+    cy.wait(2000);
     cy.fixture("commonData").then((data) => {
       cy.get("body").then((body) => {
-        if (body.find(SEND_BUTTON).length > 0) {
+        if (body.find(CANCEL_STREAM_BUTTON).length < 1) {
           this.overrideNextGasPrice();
           this.click(SEND_BUTTON);
           this.isVisible(GO_TO_TOKENS_PAGE_BUTTON);
-          this.click(CLOSE_DIALOG_BUTTON, -1, { timeout: 60000 });
+          this.click(OTHER_CLOSE_DIALOG_BUTTON, -1, { timeout: 60000 });
           this.isVisible(`${TX_DRAWER_BUTTON} span`);
           this.isNotVisible(`${TX_DRAWER_BUTTON} span`, undefined, {
             timeout: 60000,

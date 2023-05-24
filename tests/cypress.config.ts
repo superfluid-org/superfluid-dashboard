@@ -8,6 +8,9 @@ async function setupNodeEvents(
   config: Cypress.PluginConfigOptions
 ): Promise<Cypress.PluginConfigOptions> {
   await addCucumberPreprocessorPlugin(on, config);
+  if (config.env.coverage) {
+    require("@cypress/code-coverage/task")(on, config);
+  }
 
   // Note: The "buffer" plugin and "crypto" / "stream" fallback are necessary because of "web3-provider-engine".
   on(

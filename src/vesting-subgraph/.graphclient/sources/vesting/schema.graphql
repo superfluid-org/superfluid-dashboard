@@ -694,7 +694,7 @@ type Task {
   type: TaskType!
   executedAt: BigInt
   executionAt: BigInt!
-  expirationAt: BigInt
+  expirationAt: BigInt!
   cancelledAt: BigInt
   failedAt: BigInt
   vestingSchedule: VestingSchedule!
