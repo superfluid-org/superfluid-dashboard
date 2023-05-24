@@ -3,14 +3,14 @@ import { Box, Button, FormGroup, Stack, Typography } from "@mui/material";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { FlowRateInput, UnitOfTime } from "../../send/FlowRateInput";
 import { Controller, useFormContext } from "react-hook-form";
-import { PartialEditStreamAllowanceForm } from "../EditStreamAllowanceFormProvider";
+import { PartialEditStreamAllowanceForm } from "../EditFlowRateAllowanceFormProvider";
 import { transactionButtonDefaultProps } from "../../transactionBoundary/TransactionButton";
 import EditDialogTitle from "./EditDialogTitle";
 import EditDialogContent from "./EditDialogContent";
 import UnsavedChangesConfirmationDialog, {
   EditIconWrapper,
 } from "./UnsavedChangesConfirmationDialog";
-import { EditDialogButtonProp } from "./AllowanceEditDialog";
+import { EditDialogButtonProp } from "./EditDialog";
 import { parseEtherOrZero } from "../../../utils/tokenUtils";
 
 const FlowRateAllowanceEditForm: FC<

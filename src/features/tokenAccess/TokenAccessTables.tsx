@@ -1,9 +1,9 @@
 import { Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, useCallback, useMemo, useState } from "react";
-import PermissionAndAllowancesTable from "./PermissionAndAllowancesTable";
+import TokenAccessTable from "./TokenAccessTable";
 import { useAvailableNetworks } from "../network/AvailableNetworksContext";
-import PermissionAndAllowancesLoadingTable from "./PermissionAndAllowancesLoadingTable";
+import TokenAccessLoadingTable from "./TokenAccessLoadingTable";
 
 export interface FetchingStatus {
   isLoading: boolean;
@@ -14,11 +14,11 @@ interface NetworkFetchingStatuses {
   [networkId: number]: FetchingStatus;
 }
 
-interface PermissionAndAllowancesTablesProps {
+interface Props {
   address: Address;
 }
 
-const PermissionAndAllowancesTables: FC<PermissionAndAllowancesTablesProps> = ({
+const TokenAccessTables: FC<Props> = ({
   address,
 }) => {
   const theme = useTheme();
@@ -67,17 +67,17 @@ const PermissionAndAllowancesTables: FC<PermissionAndAllowancesTablesProps> = ({
       )}
       <Stack gap={4}>
         {availableNetworks.map((network) => (
-          <PermissionAndAllowancesTable
+          <TokenAccessTable
             key={network.id}
             address={address}
             network={network}
             fetchingCallback={fetchingCallback}
           />
         ))}
-        {isLoading && <PermissionAndAllowancesLoadingTable />}
+        {isLoading && <TokenAccessLoadingTable />}
       </Stack>
     </>
   );
 };
 
-export default PermissionAndAllowancesTables;
+export default TokenAccessTables;

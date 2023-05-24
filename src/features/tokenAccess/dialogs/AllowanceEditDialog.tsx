@@ -1,20 +1,20 @@
 import { formatEther } from "ethers/lib/utils.js";
 import { FC } from "react";
 import { Stack } from "@mui/material";
-import { PermissionAndAllowancesProps } from "../PermissionAndAllowancesRow";
 import FlowRateAllowanceEditDialog from "./FlowRateAllowanceEditDialog";
 import TokenAllowanceEditDialog from "./TokenAllowanceEditDialog";
+import { TokenAccessProps } from "../TokenAccessRow";
 
 export interface EditDialogButtonProp {
   onClose: () => void;
-  onSaveChanges: <K extends keyof PermissionAndAllowancesProps>(
+  onSaveChanges: <K extends keyof TokenAccessProps>(
     key: K,
-    value: PermissionAndAllowancesProps[K]
+    value: TokenAccessProps[K]
   ) => void;
 }
 
 interface ERC20AllowanceEditProps {
-  permissionsAndAllowances: PermissionAndAllowancesProps;
+  permissionsAndAllowances: TokenAccessProps;
 }
 
 const AllowanceEditDialog: FC<

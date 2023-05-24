@@ -66,7 +66,7 @@ export const SnapshotRowSkeleton = () => {
   );
 };
 
-const PermissionAndAllowancesLoadingTable = () => {
+const TokenAccessLoadingTable = () => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -134,4 +134,4 @@ const PermissionAndAllowancesLoadingTable = () => {
   );
 };
 
-export default PermissionAndAllowancesLoadingTable;
+export default TokenAccessLoadingTable;

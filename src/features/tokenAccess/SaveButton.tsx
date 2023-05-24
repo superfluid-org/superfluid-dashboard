@@ -1,4 +1,3 @@
-
 import { Typography } from "@mui/material";
 import { Signer } from "@wagmi/core";
 import { Overrides } from "ethers";
@@ -8,27 +7,27 @@ import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary"
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { useAnalytics } from "../analytics/useAnalytics";
 import { rpcApi } from "../redux/store";
-import { PermissionAndAllowancesProps } from "./PermissionAndAllowancesRow";
+import { TokenAccessProps } from "./TokenAccessRow";
 
 interface SaveButtonProps {
   network: Network;
   tokenAddress: string;
   operatorAddress: string;
-  initialPermissionAndAllowances: PermissionAndAllowancesProps
-  editedPermissionAndAllowances: PermissionAndAllowancesProps
+  initialAccess: TokenAccessProps;
+  editedAccess: TokenAccessProps;
 }
 
 const SaveButton: FC<SaveButtonProps> = ({
   network,
   tokenAddress,
   operatorAddress,
-  initialPermissionAndAllowances,
-  editedPermissionAndAllowances
+  initialAccess,
+  editedAccess,
 }) => {
   const { txAnalytics } = useAnalytics();
-  const [updatePermissionAndAllowances, updatePermissionAndAllowancesResult] = rpcApi.useUpdatePermissionAndAllowancesMutation();
+  const [updateAccess, updateAccessResult] = rpcApi.useUpdateAccessMutation();
 
-  const onUpdatedPermissionAndAllowance = useCallback(
+  const onUpdate = useCallback(
     async (
       signer: Signer,
       setDialogLoadingInfo: (children: ReactNode) => void,
@@ -44,23 +43,23 @@ const SaveButton: FC<SaveButtonProps> = ({
         chainId: network.id,
         superTokenAddress: tokenAddress,
         operatorAddress: operatorAddress,
-        initialPermissionAndAllowances: initialPermissionAndAllowances,
-        editedPermissionAndAllowances: editedPermissionAndAllowances,
+        initialAccess,
+        editedAccess: editedAccess,
       };
 
-      updatePermissionAndAllowances({
+      updateAccess({
         ...primaryArgs,
         signer,
-        overrides: await getOverrides()
+        overrides: await getOverrides(),
       })
         .unwrap()
         .then(...txAnalytics("Updated Permissions & Allowances", primaryArgs))
         .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
     },
     [
-      updatePermissionAndAllowances,
-      initialPermissionAndAllowances, 
-      editedPermissionAndAllowances,
+      updateAccess,
+      initialAccess,
+      editedAccess,
       txAnalytics,
       network,
       tokenAddress,
@@ -68,13 +67,18 @@ const SaveButton: FC<SaveButtonProps> = ({
     ]
   );
 
-  const isEdited = initialPermissionAndAllowances.flowOperatorPermissions !== editedPermissionAndAllowances.flowOperatorPermissions ||
-    !initialPermissionAndAllowances.tokenAllowance.eq(editedPermissionAndAllowances.tokenAllowance) ||
-    !initialPermissionAndAllowances.flowRateAllowance.amountEther.eq(editedPermissionAndAllowances.flowRateAllowance.amountEther) ||
-    initialPermissionAndAllowances.flowRateAllowance.unitOfTime !== editedPermissionAndAllowances.flowRateAllowance.unitOfTime;
+  const isEdited =
+    initialAccess.flowOperatorPermissions !==
+      editedAccess.flowOperatorPermissions ||
+    !initialAccess.tokenAllowance.eq(editedAccess.tokenAllowance) ||
+    !initialAccess.flowRateAllowance.amountEther.eq(
+      editedAccess.flowRateAllowance.amountEther
+    ) ||
+    initialAccess.flowRateAllowance.unitOfTime !==
+      editedAccess.flowRateAllowance.unitOfTime;
 
   return (
-    <TransactionBoundary mutationResult={updatePermissionAndAllowancesResult}>
+    <TransactionBoundary mutationResult={updateAccessResult}>
       {({ setDialogLoadingInfo, getOverrides }) => (
         <TransactionButton
           ButtonProps={{
@@ -82,7 +86,9 @@ const SaveButton: FC<SaveButtonProps> = ({
             fullWidth: true,
             variant: "contained",
           }}
-          onClick={(signer) => onUpdatedPermissionAndAllowance(signer, setDialogLoadingInfo, getOverrides)}
+          onClick={(signer) =>
+            onUpdate(signer, setDialogLoadingInfo, getOverrides)
+          }
           disabled={!isEdited}
         >
           Save Changes

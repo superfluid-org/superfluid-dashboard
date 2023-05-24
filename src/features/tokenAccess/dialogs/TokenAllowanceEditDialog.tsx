@@ -1,7 +1,7 @@
-import { FC, PropsWithChildren, useState, useEffect } from "react";
-import TokenAllowanceEditFormProvider, { TokenAllowanceEditFormProviderProps as TokenAllowanceEditFormProviderProps } from "../EditERC20AllowanceFormProvider";
+import { FC, useState, useEffect } from "react";
+import EditTokenAllowanceFormProvider, { TokenAllowanceEditFormProviderProps as TokenAllowanceEditFormProviderProps } from "../EditTokenAllowanceFormProvider";
 import TokenAllowanceEditForm, { TokenAllowanceEditFormProps as TokenAllowanceEditFormProps } from "./TokenAllowanceEditForm";
-import { EditDialogButtonProp } from "./AllowanceEditDialog";
+import { EditDialogButtonProp } from "./EditDialog";
 
 const TokenAllowanceEditDialog: FC<TokenAllowanceEditFormProps & EditDialogButtonProp> = ({ onClose, tokenAllowance, onSaveChanges }) => {
   const [initialFormValues, setInitialFormValues] = useState<TokenAllowanceEditFormProviderProps["initialFormValues"] | undefined>();
@@ -17,9 +17,9 @@ const TokenAllowanceEditDialog: FC<TokenAllowanceEditFormProps & EditDialogButto
   }
 
   return (
-    <TokenAllowanceEditFormProvider initialFormValues={initialFormValues}>
+    <EditTokenAllowanceFormProvider initialFormValues={initialFormValues}>
       <TokenAllowanceEditForm onClose={onClose} tokenAllowance={tokenAllowance} onSaveChanges={onSaveChanges} />
-    </TokenAllowanceEditFormProvider>
+    </EditTokenAllowanceFormProvider>
   );
 };
 

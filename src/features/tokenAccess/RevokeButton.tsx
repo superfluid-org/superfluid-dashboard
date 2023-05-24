@@ -6,28 +6,27 @@ import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary"
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { useAnalytics } from "../analytics/useAnalytics";
 import { rpcApi } from "../redux/store";
-import { PermissionAndAllowancesProps } from "./PermissionAndAllowancesRow";
+import { TokenAccessProps } from "./TokenAccessRow";
 
 interface RevokeButtonProps {
   network: Network;
   tokenAddress: string;
   operatorAddress: string;
-  permissionAndAllowances: PermissionAndAllowancesProps;
+  access: TokenAccessProps;
 }
 
 const RevokeButton: FC<RevokeButtonProps> = ({
   network,
   tokenAddress,
   operatorAddress,
-  permissionAndAllowances,
+  access,
 }) => {
   const { txAnalytics } = useAnalytics();
-  const [revoke, revokeResult] =
-    rpcApi.useRevokePermissionAndAllowancesMutation();
+  const [revoke, revokeResult] = rpcApi.useRevokeAccessMutation();
 
   const theme = useTheme();
 
-  const onRevokeAccess = useCallback(
+  const onRevoke = useCallback(
     async (
       signer: Signer,
       setDialogLoadingInfo: (children: ReactNode) => void
@@ -42,7 +41,7 @@ const RevokeButton: FC<RevokeButtonProps> = ({
         chainId: network.id,
         superTokenAddress: tokenAddress,
         operatorAddress: operatorAddress,
-        permissionAndAllowances: permissionAndAllowances,
+        initialAccess: access,
       };
 
       revoke({
@@ -53,20 +52,13 @@ const RevokeButton: FC<RevokeButtonProps> = ({
         .then(...txAnalytics("Revoked Permissions & Allowances", primaryArgs))
         .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
     },
-    [
-      revoke,
-      permissionAndAllowances,
-      txAnalytics,
-      network,
-      tokenAddress,
-      operatorAddress,
-    ]
+    [revoke, access, txAnalytics, network, tokenAddress, operatorAddress]
   );
 
   const isRevokeAllowed =
-    permissionAndAllowances.flowOperatorPermissions !== 0 ||
-    permissionAndAllowances.tokenAllowance.gt(0) ||
-    permissionAndAllowances.flowRateAllowance.amountEther.gt(0);
+    access.flowOperatorPermissions !== 0 ||
+    access.tokenAllowance.gt(0) ||
+    access.flowRateAllowance.amountEther.gt(0);
 
   if (!isRevokeAllowed) {
     return null;
@@ -88,7 +80,7 @@ const RevokeButton: FC<RevokeButtonProps> = ({
               },
             },
           }}
-          onClick={(signer) => onRevokeAccess(signer, setDialogLoadingInfo)}
+          onClick={(signer) => onRevoke(signer, setDialogLoadingInfo)}
         >
           Revoke
         </TransactionButton>

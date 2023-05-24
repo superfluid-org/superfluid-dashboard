@@ -8,7 +8,7 @@ import NotificationSettings from "../components/NotificationSettings/Notificatio
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import { useAccount } from "wagmi";
 import NoWalletConnected from "../components/NoWalletConnected/NoWalletConnected";
-import PermissionAndAllowancesTables from "../features/permissionAndAllowances/PermissionAndAllowancesTables";
+import TokenAccessTables from "../features/tokenAccess/TokenAccessTables";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 
 const SettingsPage: NextPage = () => {
@@ -26,7 +26,7 @@ const SettingsPage: NextPage = () => {
           </Typography>
           <Stack direction="column" gap={"30px"}>
             <NotificationSettings />
-            {visibleAddress && <PermissionAndAllowancesTables address={visibleAddress} />}
+            {visibleAddress && <TokenAccessTables address={visibleAddress} />}
           </Stack>
         </>
       )}

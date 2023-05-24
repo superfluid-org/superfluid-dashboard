@@ -1,13 +1,13 @@
 import { FC, useState } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import {Stack, FormGroup, Typography, TextField, Button, Box} from '@mui/material';
-import { PartialEditERC20AllowanceAllowanceForm } from '../EditERC20AllowanceFormProvider';
+import { PartialTokenAllowanceForm } from '../EditTokenAllowanceFormProvider';
 import EditDialogContent from './EditDialogContent';
 import EditDialogTitle from './EditDialogTitle';
 import UnsavedChangesConfirmationDialog, { EditIconWrapper } from './UnsavedChangesConfirmationDialog';
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import { transactionButtonDefaultProps } from '../../transactionBoundary/TransactionButton';
-import { EditDialogButtonProp } from './AllowanceEditDialog';
+import { EditDialogButtonProp } from './EditDialog';
 import { parseEtherOrZero } from '../../../utils/tokenUtils';
 
 export type TokenAllowanceEditFormProps = {
@@ -15,7 +15,7 @@ export type TokenAllowanceEditFormProps = {
 };
 
 const TokenAllowanceEditForm: FC<TokenAllowanceEditFormProps & EditDialogButtonProp> = ({ onClose, onSaveChanges, tokenAllowance }) => {
-  const { control, formState, watch } = useFormContext<PartialEditERC20AllowanceAllowanceForm>();
+  const { control, formState, watch } = useFormContext<PartialTokenAllowanceForm>();
 
   const [hasUnsavedChanges, setUnsavedChanges] = useState<boolean>(false);
 

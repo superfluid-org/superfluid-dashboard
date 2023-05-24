@@ -7,7 +7,7 @@ import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { formRestorationOptions } from "../transactionRestoration/transactionRestorations";
 
-export type ValidTokenAllowanceEditForm = {
+export type ValidTokenAllowanceForm = {
   data: {
     tokenAllowance: string;
   };
@@ -19,19 +19,19 @@ const defaultFormValues = {
   },
 };
 
-export type PartialEditERC20AllowanceAllowanceForm = {
+export type PartialTokenAllowanceForm = {
   data: {
     tokenAllowance:
-      | ValidTokenAllowanceEditForm["data"]["tokenAllowance"]
+      | ValidTokenAllowanceForm["data"]["tokenAllowance"]
       | typeof defaultFormValues.data.tokenAllowance;
   };
 };
 
 export interface TokenAllowanceEditFormProviderProps {
-  initialFormValues: Partial<ValidTokenAllowanceEditForm["data"]>;
+  initialFormValues: Partial<ValidTokenAllowanceForm["data"]>;
 }
 
-const TokenAllowanceEditFormProvider: FC<
+const EditTokenAllowanceFormProvider: FC<
   PropsWithChildren<TokenAllowanceEditFormProviderProps>
 > = ({ children, initialFormValues }) => {
   const { visibleAddress } = useVisibleAddress();
@@ -53,7 +53,7 @@ const TokenAllowanceEditFormProvider: FC<
     [network, visibleAddress]
   );
 
-  const formMethods = useForm<ValidTokenAllowanceEditForm>({
+  const formMethods = useForm<ValidTokenAllowanceForm>({
     defaultValues: defaultFormValues,
     resolver: yupResolver(formSchema),
     mode: "onChange",
@@ -93,4 +93,4 @@ const TokenAllowanceEditFormProvider: FC<
   ) : null;
 };
 
-export default TokenAllowanceEditFormProvider;
+export default EditTokenAllowanceFormProvider;

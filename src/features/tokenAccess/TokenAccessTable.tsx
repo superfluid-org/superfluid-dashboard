@@ -12,20 +12,20 @@ import {
   TablePagination,
   TableRow,
 } from "@mui/material";
-import PermissionAndAllowancesRow from "./PermissionAndAllowancesRow";
+import TokenAccessRow from "./TokenAccessRow";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
-import { FetchingStatus } from "./PermissionAndAllowancesTables";
+import { FetchingStatus } from "./TokenAccessTables";
 import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
 import NetworkHeadingRow from "../../components/Table/NetworkHeadingRow";
 
-interface PermissionAndAllowancesTableProps {
+interface Props {
   address: Address;
   network: Network;
   fetchingCallback: (networkId: number, fetchingStatus: FetchingStatus) => void;
 }
 
-const PermissionAndAllowancesTable: FC<PermissionAndAllowancesTableProps> = ({
+const TokenAccessTable: FC<Props> = ({
   address,
   network,
   fetchingCallback,
@@ -128,7 +128,7 @@ const PermissionAndAllowancesTable: FC<PermissionAndAllowancesTableProps> = ({
                 flowRateAllowanceRemaining,
                 token,
               }) => (
-                <PermissionAndAllowancesRow
+                <TokenAccessRow
                   key={id}
                   network={network}
                   address={flowOperator}
@@ -165,4 +165,4 @@ const PermissionAndAllowancesTable: FC<PermissionAndAllowancesTableProps> = ({
   );
 };
 
-export default PermissionAndAllowancesTable;
+export default TokenAccessTable;

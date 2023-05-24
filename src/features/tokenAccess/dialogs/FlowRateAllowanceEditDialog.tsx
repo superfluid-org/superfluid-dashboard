@@ -1,10 +1,10 @@
 import { FC, useState, useEffect } from "react";
 import { UnitOfTime } from "../../send/FlowRateInput";
 import FlowRateAllowanceEditForm from "./FlowRateAllowanceEditForm";
-import FlowRateAllowanceEditFormProvider, {
+import EditFlowRateAllowanceFormProvider, {
   FlowRateAllowanceEditFormProviderProps as FlowRateAllowanceEditFormProviderProps,
-} from "../EditStreamAllowanceFormProvider";
-import { EditDialogButtonProp } from "./AllowanceEditDialog";
+} from "../EditFlowRateAllowanceFormProvider";
+import { EditDialogButtonProp } from "./EditDialog";
 
 const FlowRateAllowanceEditDialog: FC<
   { flowRateAllowance: string; unitOfTime: UnitOfTime } & EditDialogButtonProp
@@ -32,14 +32,14 @@ const FlowRateAllowanceEditDialog: FC<
   }
 
   return (
-    <FlowRateAllowanceEditFormProvider initialFormValues={initialFormValues}>
+    <EditFlowRateAllowanceFormProvider initialFormValues={initialFormValues}>
       <FlowRateAllowanceEditForm
         onClose={onClose}
         flowRateAllowance={flowRateAllowance}
         unitOfTime={unitOfTime}
         onSaveChanges={onSaveChanges}
       />
-    </FlowRateAllowanceEditFormProvider>
+    </EditFlowRateAllowanceFormProvider>
   );
 };
 

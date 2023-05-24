@@ -59,7 +59,7 @@ import {
 import { platformApi } from "./platformApi/platformApi";
 import addressBookRpcApi from "../addressBook/addressBookRpcApi.slice";
 import { autoWrapEndpoints } from "./endpoints/autoWrapEndpoints";
-import { permissionAndAllowancesMutationEndpoints } from "./endpoints/permissionAndAllowancesEndpoints";
+import { tokenAccessMutationEndpoints } from "./endpoints/tokenAccessEndpoints";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({
@@ -74,7 +74,7 @@ export const rpcApi = initializeRpcApiSlice((options) =>
   .injectEndpoints(adHocRpcEndpoints)
   .injectEndpoints(flowSchedulerEndpoints)
   .injectEndpoints(vestingSchedulerMutationEndpoints)
-  .injectEndpoints(permissionAndAllowancesMutationEndpoints)
+  .injectEndpoints(tokenAccessMutationEndpoints)
   .injectEndpoints(vestingSchedulerQueryEndpoints)
   .injectEndpoints(autoWrapEndpoints);
 

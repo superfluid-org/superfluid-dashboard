@@ -45,7 +45,7 @@ export interface FlowRateAllowanceEditFormProviderProps {
   initialFormValues: Partial<ValidFlowRateAllowanceEditForm["data"]>;
 }
 
-const FlowRateAllowanceEditFormProvider: FC<
+const EditFlowRateAllowanceFormProvider: FC<
   PropsWithChildren<FlowRateAllowanceEditFormProviderProps>
 > = ({ children, initialFormValues }) => {
   const { visibleAddress } = useVisibleAddress();
@@ -113,4 +113,4 @@ const FlowRateAllowanceEditFormProvider: FC<
   ) : null;
 };
 
-export default FlowRateAllowanceEditFormProvider;
+export default EditFlowRateAllowanceFormProvider;
