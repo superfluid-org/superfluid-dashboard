@@ -1,19 +1,19 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { FC, PropsWithChildren, ReactNode, useEffect, useMemo, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
 import {
-  mixed,
-  number,
-  object,
-  ObjectSchema,
-  string,
-} from "yup";
+  FC,
+  PropsWithChildren,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { mixed, number, object, ObjectSchema, string } from "yup";
 import { testEtherAmount } from "../../utils/yupUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { UnitOfTime } from "../send/FlowRateInput";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { formRestorationOptions } from "../transactionRestoration/transactionRestorations";
-
 
 export type ValidFlowRateAllowanceEditForm = {
   data: {
@@ -36,8 +36,8 @@ const defaultFormValues = {
 export type PartialEditStreamAllowanceForm = {
   data: {
     flowRateAllowance:
-    | ValidFlowRateAllowanceEditForm["data"]["flowRateAllowance"]
-    | typeof defaultFormValues.data.flowRateAllowance;
+      | ValidFlowRateAllowanceEditForm["data"]["flowRateAllowance"]
+      | typeof defaultFormValues.data.flowRateAllowance;
   };
 };
 
@@ -48,38 +48,31 @@ export interface FlowRateAllowanceEditFormProviderProps {
 const FlowRateAllowanceEditFormProvider: FC<
   PropsWithChildren<FlowRateAllowanceEditFormProviderProps>
 > = ({ children, initialFormValues }) => {
-
   const { visibleAddress } = useVisibleAddress();
 
   const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
 
   const formSchema = useMemo(
     () =>
-      object().test(async (values, context) => {
-        const primaryValidation: ObjectSchema<ValidFlowRateAllowanceEditForm> = object({
-          data: object().shape(
-            {
-              flowRateAllowance: object({
-                amountEther: string()
+      object({
+        data: object().shape(
+          {
+            flowRateAllowance: object({
+              amountEther: string()
                 .required()
                 .test(testEtherAmount({ notNegative: true, notZero: true })),
               unitOfTime: mixed<UnitOfTime>()
                 .required()
-                .test(
-                  (x) => Object.values(UnitOfTime).includes(x as UnitOfTime)
+                .test((x) =>
+                  Object.values(UnitOfTime).includes(x as UnitOfTime)
                 ),
-              }),
-            },
-            []
-          ),
-        });
-        clearErrors("data");
-        await primaryValidation.validate(values);
-        return true;
+            }),
+          },
+          []
+        ),
       }),
     [network, visibleAddress]
   );
-
 
   const formMethods = useForm<PartialEditStreamAllowanceForm>({
     defaultValues: defaultFormValues,
@@ -88,8 +81,7 @@ const FlowRateAllowanceEditFormProvider: FC<
   });
   const [isInitialized, setIsInitialized] = useState(!initialFormValues);
 
-  const { formState, setValue, trigger, clearErrors, setError, watch } =
-    formMethods;
+  const { formState, setValue, trigger, clearErrors } = formMethods;
 
   useEffect(() => {
     if (initialFormValues) {
@@ -97,7 +89,8 @@ const FlowRateAllowanceEditFormProvider: FC<
         "data",
         {
           flowRateAllowance:
-            initialFormValues.flowRateAllowance ?? defaultFormValues.data.flowRateAllowance,
+            initialFormValues.flowRateAllowance ??
+            defaultFormValues.data.flowRateAllowance,
         },
         formRestorationOptions
       );

@@ -1,19 +1,13 @@
 import {
   Typography,
-  Box,
   Container,
   Stack,
-  Divider,
-  useTheme,
-  useMediaQuery,
-  Paper,
 } from "@mui/material";
 import { NextPage } from "next";
 import NotificationSettings from "../components/NotificationSettings/NotificationSettings";
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import { useAccount } from "wagmi";
 import NoWalletConnected from "../components/NoWalletConnected/NoWalletConnected";
-import PermissionAndAllowancesTable from "../features/permissionAndAllowances/PermissionAndAllowancesTable";
 import PermissionAndAllowancesTables from "../features/permissionAndAllowances/PermissionAndAllowancesTables";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 

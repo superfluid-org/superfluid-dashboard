@@ -1,4 +1,3 @@
-
 import { Typography, alpha, useTheme } from "@mui/material";
 import { Signer } from "@wagmi/core";
 import { FC, ReactNode, useCallback } from "react";
@@ -13,7 +12,7 @@ interface RevokeButtonProps {
   network: Network;
   tokenAddress: string;
   operatorAddress: string;
-  permissionAndAllowances: PermissionAndAllowancesProps
+  permissionAndAllowances: PermissionAndAllowancesProps;
 }
 
 const RevokeButton: FC<RevokeButtonProps> = ({
@@ -22,9 +21,9 @@ const RevokeButton: FC<RevokeButtonProps> = ({
   operatorAddress,
   permissionAndAllowances,
 }) => {
-
   const { txAnalytics } = useAnalytics();
-  const [revokePermissionAndAllowances, revokePermissionAndAllowancesResult] = rpcApi.useRevokePermissionAndAllowancesMutation();
+  const [revoke, revokeResult] =
+    rpcApi.useRevokePermissionAndAllowancesMutation();
 
   const theme = useTheme();
 
@@ -46,7 +45,7 @@ const RevokeButton: FC<RevokeButtonProps> = ({
         permissionAndAllowances: permissionAndAllowances,
       };
 
-      revokePermissionAndAllowances({
+      revoke({
         ...primaryArgs,
         signer,
       })
@@ -55,7 +54,7 @@ const RevokeButton: FC<RevokeButtonProps> = ({
         .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
     },
     [
-      revokePermissionAndAllowances,
+      revoke,
       permissionAndAllowances,
       txAnalytics,
       network,
@@ -64,14 +63,17 @@ const RevokeButton: FC<RevokeButtonProps> = ({
     ]
   );
 
-  const isRevokeAllowed = permissionAndAllowances.flowOperatorPermissions !== 0 || permissionAndAllowances.tokenAllowance.gt(0) || permissionAndAllowances.flowRateAllowance.amountEther.gt(0);
-  
+  const isRevokeAllowed =
+    permissionAndAllowances.flowOperatorPermissions !== 0 ||
+    permissionAndAllowances.tokenAllowance.gt(0) ||
+    permissionAndAllowances.flowRateAllowance.amountEther.gt(0);
+
   if (!isRevokeAllowed) {
     return null;
   }
 
   return (
-    <TransactionBoundary mutationResult={revokePermissionAndAllowancesResult}>
+    <TransactionBoundary mutationResult={revokeResult}>
       {({ setDialogLoadingInfo }) => (
         <TransactionButton
           ButtonProps={{
@@ -84,7 +86,7 @@ const RevokeButton: FC<RevokeButtonProps> = ({
               "&:hover": {
                 color: theme.palette.common.white,
               },
-            }
+            },
           }}
           onClick={(signer) => onRevokeAccess(signer, setDialogLoadingInfo)}
         >

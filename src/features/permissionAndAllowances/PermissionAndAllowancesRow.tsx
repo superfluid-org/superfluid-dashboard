@@ -1,11 +1,10 @@
-import { Stack, Switch, TableCell, TableRow, Typography, useMediaQuery } from "@mui/material";
+import { Stack, Switch, TableCell, TableRow, Typography } from "@mui/material";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { Address } from "@superfluid-finance/sdk-core";
 import TokenIcon from "../token/TokenIcon";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import AddressName from "../../components/AddressName/AddressName";
-import { useTheme } from "@mui/material";
 import Amount from "../token/Amount";
 import EditIcon from "@mui/icons-material/Edit";
 import RevokeButton from "./RevokeButton";
@@ -16,9 +15,7 @@ import ResponsiveDialog from "../common/ResponsiveDialog";
 import { UnitOfTime } from "../send/FlowRateInput";
 import { BigNumber } from "ethers";
 import { Network } from "../network/networks";
-import { SnapshotRowSkeleton } from "./PermissionAndAllowancesLoadingTable";
 import { isCloseToUnlimitedFlowRateAllowance, isCloseToUnlimitedTokenAllowance } from "../../utils/isCloseToUnlimitedAllowance";
-
 
 export type PermissionAndAllowancesProps = {
   flowRateAllowance: {
@@ -79,7 +76,6 @@ const getPermissionsFromCode = (permission: PermissionType): Permission[] => {
   return permissions;
 }
 
-
 const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
   address,
   network,
@@ -99,11 +95,11 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
     }
   }, [tokenAllowance, flowOperatorPermissions, flowRateAllowance]);
 
-  const [permissionsAndAllowances, setPermissionsAndAllowances] = useState<PermissionAndAllowancesProps>(initialPermissionAndAllowances);
+  const [permissionAndAllowances, setPermissionAndAllowances] = useState<PermissionAndAllowancesProps>(initialPermissionAndAllowances);
   const [permissionCodes, setPermissionCodes] = useState(getPermissionsFromCode(initialPermissionAndAllowances.flowOperatorPermissions as PermissionType));
 
   useEffect(() => {
-    setPermissionsAndAllowances(initialPermissionAndAllowances);
+    setPermissionAndAllowances(initialPermissionAndAllowances);
     setPermissionCodes(getPermissionsFromCode(initialPermissionAndAllowances.flowOperatorPermissions as PermissionType));
   }, [
     initialPermissionAndAllowances,
@@ -137,11 +133,11 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
     key: K,
     value: PermissionAndAllowancesProps[K]
   ): void => {
-    setPermissionsAndAllowances({
-      ...permissionsAndAllowances,
+    setPermissionAndAllowances({
+      ...permissionAndAllowances,
       [key]: value,
     })
-  }, [permissionsAndAllowances]);
+  }, [permissionAndAllowances]);
 
   const closeDialog = () => setDialogOpen(false);
 
@@ -174,12 +170,12 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
       {tokenInfo && <Stack direction="row" alignItems="center" gap={0.5}>
         <Typography variant="h6" noWrap={true}>
           {isCloseToUnlimitedTokenAllowance(
-            permissionsAndAllowances.tokenAllowance
+            permissionAndAllowances.tokenAllowance
           ) ? (
             <span>Unlimited</span>
           ) : (
             <>
-              <Amount decimals={tokenInfo?.decimals} wei={permissionsAndAllowances.tokenAllowance} >{` ${tokenInfo?.symbol}`}</Amount>
+              <Amount decimals={tokenInfo?.decimals} wei={permissionAndAllowances.tokenAllowance} >{` ${tokenInfo?.symbol}`}</Amount>
             </>
           )}
         </Typography>
@@ -227,12 +223,12 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
       {tokenInfo && <Stack direction="row" alignItems="center" gap={0.5}>
         <Typography variant="h6">
         {isCloseToUnlimitedFlowRateAllowance(
-            permissionsAndAllowances.flowRateAllowance.amountEther
+            permissionAndAllowances.flowRateAllowance.amountEther
           ) ? (
             <span>Unlimited</span>
           ) : (
             <>
-              <Amount decimals={tokenInfo?.decimals} decimalPlaces={9} wei={permissionsAndAllowances.flowRateAllowance.amountEther} >{` ${tokenInfo?.symbol}/${UnitOfTime[permissionsAndAllowances.flowRateAllowance.unitOfTime]}`}</Amount>
+              <Amount decimals={tokenInfo?.decimals} wei={permissionAndAllowances.flowRateAllowance.amountEther} >{` ${tokenInfo?.symbol}/${UnitOfTime[permissionAndAllowances.flowRateAllowance.unitOfTime]}`}</Amount>
             </>
           )}
         </Typography>
@@ -255,7 +251,7 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
           network={network}
           operatorAddress={address}
           tokenAddress={token}
-          editedPermissionAndAllowances={permissionsAndAllowances}
+          editedPermissionAndAllowances={permissionAndAllowances}
           initialPermissionAndAllowances={initialPermissionAndAllowances}
         />
         <RevokeButton
@@ -270,7 +266,7 @@ const PermissionAndAllowancesRow: FC<PermissionAndAllowancesRowProps> = ({
     {
       editType &&
       <ResponsiveDialog open={isDialogOpen} onClose={() => setDialogOpen(false)} PaperProps={{ sx: { borderRadius: "20px", maxHeight: "100%", width: "auto" } }} translate="yes">
-        <AllowanceEditDialog onSaveChanges={updatedProperty} onClose={closeDialog} permissionsAndAllowances={permissionsAndAllowances} editType={editType}></AllowanceEditDialog>
+        <AllowanceEditDialog onSaveChanges={updatedProperty} onClose={closeDialog} permissionsAndAllowances={permissionAndAllowances} editType={editType}></AllowanceEditDialog>
       </ResponsiveDialog>
     }
   </TableRow>

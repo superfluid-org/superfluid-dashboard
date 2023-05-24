@@ -1,7 +1,7 @@
 
 import { Typography } from "@mui/material";
 import { Signer } from "@wagmi/core";
-import { BigNumber, Overrides } from "ethers";
+import { Overrides } from "ethers";
 import { FC, ReactNode, useCallback } from "react";
 import { Network } from "../network/networks";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
