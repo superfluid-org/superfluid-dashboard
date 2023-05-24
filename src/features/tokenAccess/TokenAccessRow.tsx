@@ -94,11 +94,23 @@ const TokenAccessActionButtonSection: FC<
     allowImpersonation,
     isImpersonated,
     isCorrectNetwork,
+    stopImpersonation,
     switchNetwork,
   } = useConnectionBoundary();
 
   if (isImpersonated && !allowImpersonation) {
-    return null
+    return (
+      <Button
+        data-cy={"view-mode-button"}
+        size="medium"
+        fullWidth={true}
+        variant= "contained"
+        color="warning"
+        onClick={stopImpersonation}
+      >
+        Stop viewing
+      </Button>
+    );
   }
 
   if (!isCorrectNetwork && !allowImpersonation) {
@@ -356,7 +368,7 @@ const TokenAccessRow: FC<Props> = ({
           open={isDialogOpen}
           onClose={() => setDialogOpen(false)}
           PaperProps={{
-            sx: { borderRadius: "20px", maxHeight: "100%", width: "auto" },
+            sx: { borderRadius: "20px", maxHeight: "100%", maxWidth: 526 },
           }}
           translate="yes"
         >

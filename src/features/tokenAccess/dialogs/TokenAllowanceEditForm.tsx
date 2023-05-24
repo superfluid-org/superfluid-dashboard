@@ -51,13 +51,13 @@ const TokenAllowanceEditForm: FC<TokenAllowanceEditFormProps & EditDialogButtonP
           </Typography>
       </EditDialogTitle>
       <EditDialogContent>
-          <Stack gap={3}>
+          <Stack gap={2.9}>
             <FormGroup>
               <Controller
                 control={control}
                 name="data.tokenAllowance"
                 render={({ field }) => (
-                  <TextField
+                  <TextField  sx={{marginTop: "1px"}}
                     data-cy="token-allowance-amount-input"
                     {...field}
                   />
