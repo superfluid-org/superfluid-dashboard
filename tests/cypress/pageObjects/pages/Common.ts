@@ -16,6 +16,8 @@ export const CONNECT_WALLET_BUTTON = "[data-cy=connect-wallet-button]";
 export const TOKEN_ANIMATION = "[data-cy=animation]";
 export const TOKEN_BALANCE = "[data-cy=token-balance]";
 export const CHANGE_NETWORK_BUTTON = "[data-cy=change-network-button]";
+export const DROPDOWN_BACKDROP = "[role=presentation]";
+export const LIQUIDATED_OR_CANCEL_ICON = "[data-testid=CancelIcon]";
 const VESTING_CODE_BUTTON = "[data-cy=vesting-code-button]";
 const NAVIGATION_BUTTON_PREFIX = "[data-cy=nav-";
 const NAVIGATION_DRAWER = "[data-cy=navigation-drawer]";
@@ -31,7 +33,6 @@ const ADDRESS_BOOK_RESULT_ADDRESS = "[data-cy=address-book-entry] p";
 const TESTNETS_BUTTON = "[data-cy=testnets-button]";
 const MAINNETS_BUTTON = "[data-cy=mainnets-button]";
 const NETWORK_SELECTION_BUTTON = "[data-cy=network-selection-button]";
-const DROPDOWN_BACKDROP = "[role=presentation]";
 const ERROR_PAGE_MESSAGE = "[data-cy=404-message]";
 const RETURN_TO_DASHBOARD_BUTTON = "[data-cy=return-to-dashboard-button]";
 const HELP_CENTER_LINK = "[data-cy=help-center-link]";
@@ -69,7 +70,6 @@ const EMPTY_NOTIF_MESSAGE = "[data-cy=empty-notifs-message]";
 const NOTIF_NO_WALLET_MESSAGE = "[data-cy=notif-no-wallet]";
 const NOTIFICATION_MODAL = "#notifications-bell";
 const NEW_NOTIF_DOT = "[data-cy=new-notif-dot]";
-const LIQUIDATED_ICON = "[data-testid=CancelIcon]";
 const WARNING_ICON = "[data-testid=ErrorIcon]";
 const INFO_ICON = "[data-testid=InfoIcon]";
 const TOAST_MESSAGE = "[data-cy=toast-notification-message]";
@@ -941,7 +941,7 @@ export class Common extends BasePage {
     switch (type.toLowerCase()) {
       case "liquidated":
         this.hasText(titleSelector, ` ${type}`);
-        this.isVisible(LIQUIDATED_ICON);
+        this.isVisible(LIQUIDATED_OR_CANCEL_ICON);
         this.hasText(
           messageSelector,
           `Your TDLx on Polygon was liquidated at ${ASSERT_STRING}.`
@@ -1018,6 +1018,7 @@ export class Common extends BasePage {
           "activity history page": "/history",
           "bridge page": "/bridge",
           "settings page": "/settings",
+          "vesting page": "/vesting",
           "accounting export page": "/accounting",
           "invalid stream details page":
             "/stream/polygon/testing-testing-testing",
@@ -1046,5 +1047,16 @@ export class Common extends BasePage {
         cy.visit(`${url}?view=${data[account]}`);
       });
     });
+  }
+
+  static validateAddressBookNamesInTables(names: string) {
+    let aliases = names.split(",");
+    aliases.forEach((name, index) => {
+      this.hasText(SENDER_RECEIVER_ADDRESSES, name, index, { timeout: 30000 });
+    });
+  }
+
+  static clearReceiverField() {
+    this.clear(ADDRESS_DIALOG_INPUT);
   }
 }

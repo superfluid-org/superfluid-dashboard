@@ -160,8 +160,8 @@ export class SendPage extends BasePage {
     this.hasText(`main ${CONNECT_WALLET_BUTTON}`, "Connect Wallet");
   }
 
-  static searchForReceiver(ensNameOrAddress: string) {
-    this.click(RECEIVER_BUTTON);
+  static searchForReceiver(ensNameOrAddress: string, index = 0) {
+    this.click(RECEIVER_BUTTON, index);
     this.type(ADDRESS_DIALOG_INPUT, ensNameOrAddress);
     cy.wrap(ensNameOrAddress).as("ensNameOrAddress");
   }

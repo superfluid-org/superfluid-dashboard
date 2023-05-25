@@ -338,3 +338,13 @@ Given(
     Common.openViewModePage(page, account);
   }
 );
+
+Then(
+  /^"([^"]*)" are visible in the table as the receivers or senders of streams$/,
+  function (names: string) {
+    Common.validateAddressBookNamesInTables(names);
+  }
+);
+Then(/^User clears the receiver input field$/, function () {
+  Common.clearReceiverField();
+});

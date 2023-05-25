@@ -61,6 +61,7 @@ import {
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import Page404 from "../../404";
 import { useVisibleAddress } from "../../../features/wallet/VisibleAddressContext";
+import AddressName from "../../../components/AddressName/AddressName";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -125,7 +126,7 @@ const StreamAccountCard: FC<StreamAccountCardProps> = ({
         />
         <ListItemText
           data-cy={"sender-and-receiver"}
-          primary={ensName || shortenHex(addressChecksummed, 4)}
+          primary={<AddressName address={address} />}
           secondary={!!ensName && shortenHex(addressChecksummed, 4)}
           primaryTypographyProps={{ variant: isBelowMd ? "h7" : "h6" }}
         />

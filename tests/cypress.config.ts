@@ -9,6 +9,14 @@ async function setupNodeEvents(
 ): Promise<Cypress.PluginConfigOptions> {
   await addCucumberPreprocessorPlugin(on, config);
 
+  const fs = require("fs");
+
+  on("task", {
+    downloads: (downloadspath) => {
+      return fs.readdirSync(downloadspath);
+    },
+  });
+
   // Note: The "buffer" plugin and "crypto" / "stream" fallback are necessary because of "web3-provider-engine".
   on(
     "file:preprocessor",
@@ -74,6 +82,7 @@ export default defineConfig({
     viewportWidth: 1450,
     defaultCommandTimeout: 10000,
     slowTestThreshold: 30000,
+    trashAssetsBeforeRuns: true,
     video: false,
     retries: {
       runMode: 2,

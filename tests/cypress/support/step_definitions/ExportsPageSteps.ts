@@ -152,3 +152,27 @@ Given(/^User exports the CSV$/, function () {
 Then(/^CSV contains the correct data$/, function () {
   ExportPage.validateDownloadedCSV();
 });
+Given(
+  /^Selected sections shows "([^"]*)" and address book entry is selected$/,
+  function (nameOrAddress: string) {
+    ExportPage.validateSelectedAddressBookEntry(nameOrAddress);
+  }
+);
+Given(
+  /^"([^"]*)" is shown as one of the counterparty addresses$/,
+  function (nameOrAddress: string) {
+    ExportPage.validateSelectedAddressInForm(nameOrAddress, 1);
+  }
+);
+Given(
+  /^"([^"]*)" is selected for the export$/,
+  function (nameOrAddress: string) {
+    ExportPage.validateSelectedAddressInForm(nameOrAddress, 0);
+  }
+);
+Given(
+  /^User selects "([^"]*)" from the address book section$/,
+  function (nameOrAddress: string) {
+    ExportPage.selectAddressFromAddressBookResults(nameOrAddress);
+  }
+);

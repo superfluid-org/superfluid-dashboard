@@ -387,4 +387,8 @@ export class ActivityPage extends BasePage {
       this.scrollToAndHasText(ACTIVITY_NAME, entry[0], i);
     });
   }
+
+  static validateAddressBookNameInActivityRow(name: string) {
+    this.containsText(AMOUNT_TO_FROM, name, undefined, { timeout: 30000 });
+  }
 }

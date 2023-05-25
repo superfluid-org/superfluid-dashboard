@@ -76,3 +76,12 @@ Then(/^Close\-ended stream data is shown correctly$/, function () {
 Then(/^Vesting stream data is shown correctly$/, function () {
   StreamDetailsPage.validateVestingStreamDetails();
 });
+Then(
+  /^"([^"]*)" is shown as the "([^"]*)" of the stream in the stream details page$/,
+  function (name: string, senderOrReceiver: string) {
+    StreamDetailsPage.validateSenderReceiverAddressBookNames(
+      name,
+      senderOrReceiver
+    );
+  }
+);

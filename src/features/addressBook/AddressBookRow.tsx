@@ -207,7 +207,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
           </Stack>
 
           {ensName && (
-            <Typography variant="tooltip" sx={{ fontSize: 12 }}>
+            <Typography data-cy={"ens-name"} variant="tooltip" sx={{ fontSize: 12 }}>
               {ensName}
             </Typography>
           )}
@@ -215,7 +215,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
       </TableCell>
 
       <TableCell>
-        <Box sx={{ overflow: "auto", scrollbarWidth: "none" }}>
+        <Box data-cy="networks" sx={{ overflow: "auto", scrollbarWidth: "none" }}>
           {chainIds?.length ? (
             <Stack direction="row">
               {chainIds.map((networkId, i) => {
