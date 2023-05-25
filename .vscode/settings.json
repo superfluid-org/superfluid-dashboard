@@ -1,9 +1,0 @@
-{
-    "files.autoSave": "afterDelay",
-    "cucumberautocomplete.stepRegExSymbol": "true",
-    "cucumberautocomplete.smartSnippets": true,
-    "cucumberautocomplete.steps": [
-        "**/tests/cypress/support/step_definitions/*.ts"
-    ],
-    "cucumberautocomplete.syncfeatures": "**/tests/cypress/integration/*.feature",
-}
