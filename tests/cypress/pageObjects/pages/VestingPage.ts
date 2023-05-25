@@ -393,8 +393,9 @@ export class VestingPage extends BasePage {
 
     cy.intercept("POST", "**vesting-v1**", (req) => {
       req.continue((res) => {
-        if (req.body.variables._0_where.sender) {
-          let schedule = res.body.data._0_vestingSchedules[0];
+        console.log(req.body);
+        if (req.body.variables.where.sender) {
+          let schedule = res.body.data.vestingSchedules[0];
           switch (status) {
             case "Cancel Error":
               schedule.failedAt = today;
@@ -525,8 +526,8 @@ export class VestingPage extends BasePage {
   static mockProgressTo(status: string) {
     cy.intercept("POST", "**vesting-v1**", (req) => {
       req.continue((res) => {
-        if (req.body.variables._0_id) {
-          let schedule = res.body.data._0_vestingSchedule;
+        if (req.body.variables.id) {
+          let schedule = res.body.data.vestingSchedule;
           switch (status) {
             case "Scheduled":
               schedule.cliffAndFlowDate = this.getDayTimestamp(2);

@@ -28,7 +28,7 @@ import { UnitOfTime } from "../send/FlowRateInput";
 export type Network = Chain & {
   slugName: string;
   v1ShortName: string | undefined;
-  subgraphUrl: string;
+  fallbackSubgraphUrl: string; // We'll normally use the Subgraph URL from the metadata package.
   getLinkForTransaction(txHash: string): string;
   getLinkForAddress(adderss: string): string;
   icon?: string;
@@ -104,7 +104,7 @@ export const networkDefinition = {
       ...chain.goerli.rpcUrls,
       superfluid: { http: [superfluidRpcUrls.goerli] },
     },
-    subgraphUrl:
+    fallbackSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli",
     getLinkForTransaction: (txHash: string): string =>
       `https://goerli.etherscan.io/tx/${txHash}`,
@@ -153,7 +153,7 @@ export const networkDefinition = {
       default: { http: ["https://rpc.gnosischain.com/"] },
       public: { http: ["https://rpc.gnosischain.com/"] },
     },
-    subgraphUrl:
+    fallbackSubgraphUrl:
       "https://subgraph.satsuma-prod.com/c5br3jaVlJI6/superfluid/xdai/api",
     getLinkForTransaction: (txHash: string): string =>
       `https://blockscout.com/xdai/mainnet/tx/${txHash}`,
@@ -197,7 +197,7 @@ export const networkDefinition = {
       ...chain.polygon.rpcUrls,
       superfluid: { http: [superfluidRpcUrls.polygon] },
     },
-    subgraphUrl:
+    fallbackSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-matic",
     getLinkForTransaction: (txHash: string): string =>
       `https://polygonscan.com/tx/${txHash}`,
@@ -238,7 +238,7 @@ export const networkDefinition = {
       ...chain.polygonMumbai.rpcUrls,
       superfluid: { http: [superfluidRpcUrls.polygonMumbai] },
     },
-    subgraphUrl:
+    fallbackSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-mumbai",
     getLinkForTransaction: (txHash: string): string =>
       `https://mumbai.polygonscan.com/tx/${txHash}`,
@@ -283,7 +283,7 @@ export const networkDefinition = {
       default: { http: ["https://api.avax-test.network/ext/C/rpc"] },
       public: { http: ["https://api.avax-test.network/ext/C/rpc"] },
     },
-    subgraphUrl:
+    fallbackSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-avalanche-fuji",
     getLinkForTransaction: (txHash: string): string =>
       `https://testnet.snowtrace.io/tx/${txHash}`,
@@ -333,7 +333,7 @@ export const networkDefinition = {
       ...chain.optimism.rpcUrls,
       superfluid: { http: [superfluidRpcUrls.optimism] },
     },
-    subgraphUrl:
+    fallbackSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-mainnet",
     getLinkForTransaction: (txHash: string): string =>
       `https://optimistic.etherscan.io/tx/${txHash}`,
@@ -375,7 +375,7 @@ export const networkDefinition = {
       ...chain.arbitrum.rpcUrls,
       superfluid: { http: [superfluidRpcUrls.arbitrum] },
     },
-    subgraphUrl:
+    fallbackSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-one",
     getLinkForTransaction: (txHash: string): string =>
       `https://arbiscan.io/tx/${txHash}`,
@@ -420,7 +420,7 @@ export const networkDefinition = {
       default: { http: ["https://api.avax.network/ext/bc/C/rpc"] },
       public: { http: ["https://api.avax.network/ext/bc/C/rpc"] },
     },
-    subgraphUrl:
+    fallbackSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-avalanche-c",
     getLinkForTransaction: (txHash: string): string =>
       `https://avascan.info/blockchain/c/tx/${txHash}`,
@@ -472,7 +472,7 @@ export const networkDefinition = {
       default: { http: ["https://bsc-dataseed1.binance.org"] },
       public: { http: ["https://bsc-dataseed1.binance.org"] },
     },
-    subgraphUrl:
+    fallbackSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-bsc-mainnet",
     getLinkForTransaction: (txHash: string): string =>
       `https://bscscan.com/tx/${txHash}`,
@@ -520,7 +520,7 @@ export const networkDefinition = {
       ...chain.mainnet.rpcUrls,
       superfluid: { http: [superfluidRpcUrls.ethereum] },
     },
-    subgraphUrl:
+    fallbackSubgraphUrl:
       "https://subgraph.satsuma-prod.com/c5br3jaVlJI6/superfluid/eth-mainnet/api",
     getLinkForTransaction: (txHash: string): string =>
       `https://etherscan.io/tx/${txHash}`,
@@ -565,7 +565,7 @@ export const networkDefinition = {
       ...chain.celo.rpcUrls,
       superfluid: { http: [superfluidRpcUrls["celo-mainnet"]] },
     },
-    subgraphUrl:
+    fallbackSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-celo-mainnet",
     getLinkForTransaction: (txHash: string): string =>
       `https://celoscan.io/tx/${txHash}`,
@@ -599,7 +599,7 @@ export const networkDefinition = {
       ...chain.optimismGoerli.rpcUrls,
       superfluid: { http: [superfluidRpcUrls["optimism-goerli"]] },
     },
-    subgraphUrl:
+    fallbackSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-goerli",
     getLinkForTransaction: (txHash: string): string =>
       `https://goerli-optimism.etherscan.io/tx/${txHash}`,
@@ -633,7 +633,7 @@ export const networkDefinition = {
       ...chain.arbitrumGoerli.rpcUrls,
       superfluid: { http: [superfluidRpcUrls["arbitrum-goerli"]] },
     },
-    subgraphUrl:
+    fallbackSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-goerli",
     getLinkForTransaction: (txHash: string): string =>
       `https://goerli.arbiscan.io/tx/${txHash}`,
