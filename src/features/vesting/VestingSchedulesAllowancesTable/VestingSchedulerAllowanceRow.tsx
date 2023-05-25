@@ -295,6 +295,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
     Enable
   </Button>
 
+
   return (
     <>
       <TableRow
@@ -501,7 +502,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                         }
                       />
                     </TableCell>
-                    <TableCell width={"160px"} align={"center"}>
+                    <TableCell width={"160px"} align={"center"} sx={{padding: "25px"}}>
                       {token && network.autoWrap ? (
                         isAutoWrapLoading ? (
                           <Skeleton variant="rectangular" width={24} height={24} />

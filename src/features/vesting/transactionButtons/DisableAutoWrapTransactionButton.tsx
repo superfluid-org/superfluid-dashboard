@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { constants } from "ethers";
 import { FC, memo } from "react";
@@ -13,6 +13,7 @@ import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverride
 import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
 import { Token } from "@superfluid-finance/sdk-core";
 import { toVestingToken } from "../useVestingToken";
+import { useConnectionBoundary } from "../../transactionBoundary/ConnectionBoundary";
 
 const TX_TITLE: TransactionTitle = "Disable Auto-Wrap";
 
@@ -56,6 +57,27 @@ const DisableAutoWrapTransactionButton: FC<{
 
   const underlyingToken = underlyingTokenQuery.data;
   const isDisabled = isDisabled_ && !config;
+
+  const {
+    allowImpersonation,
+    isImpersonated,
+    stopImpersonation,
+  } = useConnectionBoundary();
+
+  if (isImpersonated && !allowImpersonation) {
+    return (
+      <Button
+        data-cy={"view-mode-button"}
+        size="medium"
+        fullWidth={true}
+        variant="contained"
+        color="warning"
+        onClick={stopImpersonation}
+      >
+        Stop viewing
+      </Button>
+    );
+  }
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
