@@ -27,7 +27,7 @@ const DisableAutoWrapTransactionButton: FC<{
   const { data: signer } = useSigner();
 
   const vestingToken = toVestingToken(token, network);
-  
+
   const getGasOverrides = useGetTransactionOverrides();
   const { data: overrides } = useQuery(
     ["gasOverrides", TX_TITLE, network.id],
@@ -58,27 +58,6 @@ const DisableAutoWrapTransactionButton: FC<{
   const underlyingToken = underlyingTokenQuery.data;
   const isDisabled = isDisabled_ && !config;
 
-  const {
-    allowImpersonation,
-    isImpersonated,
-    stopImpersonation,
-  } = useConnectionBoundary();
-
-  if (isImpersonated && !allowImpersonation) {
-    return (
-      <Button
-        data-cy={"view-mode-button"}
-        size="medium"
-        fullWidth={true}
-        variant="contained"
-        color="warning"
-        onClick={stopImpersonation}
-      >
-        Stop viewing
-      </Button>
-    );
-  }
-
   return (
     <TransactionBoundary mutationResult={mutationResult}>
       {({
@@ -88,6 +67,12 @@ const DisableAutoWrapTransactionButton: FC<{
       }) =>
         isVisible && (
           <TransactionButton
+            ConnectionBoundaryButtonProps={
+              {
+                impersonationTitle: "Stop viewing",
+                changeNetworkTitle: "Change Network",
+              }
+            }
             disabled={isDisabled}
             ButtonProps={{
               size: "medium"

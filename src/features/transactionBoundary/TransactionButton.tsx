@@ -3,7 +3,7 @@ import { useTransactionBoundary } from "./TransactionBoundary";
 import { Button, ButtonProps } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { Signer } from "ethers";
-import ConnectionBoundaryButton from "./ConnectionBoundaryButton";
+import ConnectionBoundaryButton, { ConnectionBoundaryButtonProps } from "./ConnectionBoundaryButton";
 
 export const transactionButtonDefaultProps: ButtonProps = {
   fullWidth: true,
@@ -17,6 +17,7 @@ export interface TransactionButtonProps {
   disabled?: boolean;
   onClick: (signer: Signer) => Promise<void>; // TODO(KK): Longer-term, get rid of async to avoid wagmi's UX pitfalls
   ButtonProps?: ButtonProps;
+  ConnectionBoundaryButtonProps?: Partial<ConnectionBoundaryButtonProps>;
 }
 
 export const TransactionButton: FC<TransactionButtonProps> = ({
@@ -24,7 +25,8 @@ export const TransactionButton: FC<TransactionButtonProps> = ({
   dataCy,
   disabled,
   onClick,
-  ButtonProps,
+  ButtonProps = {},
+  ConnectionBoundaryButtonProps = {}
 }) => {
   const { signer, mutationResult, transaction } = useTransactionBoundary();
 
@@ -42,7 +44,7 @@ export const TransactionButton: FC<TransactionButtonProps> = ({
   }
 
   return (
-    <ConnectionBoundaryButton ButtonProps={buttonProps}>
+    <ConnectionBoundaryButton ButtonProps={buttonProps} {...ConnectionBoundaryButtonProps}>
       <LoadingButton
         {...(dataCy ? { "data-cy": dataCy } : {})}
         color="primary"
