@@ -20,6 +20,8 @@ import {
   isCloseToUnlimitedTokenAllowance,
 } from "../../utils/isCloseToUnlimitedAllowance";
 import { useConnectionBoundary } from "../transactionBoundary/ConnectionBoundary";
+import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION, ACL_UPDATE_PERMISSION } from "../redux/endpoints/flowSchedulerEndpoints";
+import { ACL_CREATE_PERMISSION_LABEL, ACL_DELETE_PERMISSION_LABEL, ACL_UPDATE_PERMISSION_LABEL, flowOperatorPermissionsToString } from "../../utils/flowOperatorPermissionsToString";
 
 export type TokenAccessProps = {
   flowRateAllowance: {
@@ -28,47 +30,6 @@ export type TokenAccessProps = {
   };
   flowOperatorPermissions: number;
   tokenAllowance: BigNumber;
-};
-
-type PermissionType = 1 | 2 | 3;
-
-enum Permission {
-  CREATE = 1,
-  UPDATE = 2,
-  DELETE = 4,
-}
-
-const getCodeFromPermissions = (permissions: Permission[]): number => {
-  let permission = 0;
-  permissions.forEach((action) => {
-    switch (action) {
-      case Permission.CREATE:
-        permission |= Permission.CREATE;
-        break;
-      case Permission.UPDATE:
-        permission |= Permission.UPDATE;
-        break;
-      case Permission.DELETE:
-      default:
-        permission |= Permission.DELETE;
-        break;
-    }
-  });
-  return permission;
-};
-
-const getPermissionsFromCode = (permission: PermissionType): Permission[] => {
-  const permissions: Permission[] = [];
-  if (permission & Permission.CREATE) {
-    permissions.push(Permission.CREATE);
-  }
-  if (permission & Permission.UPDATE) {
-    permissions.push(Permission.UPDATE);
-  }
-  if (permission & Permission.DELETE) {
-    permissions.push(Permission.DELETE);
-  }
-  return permissions;
 };
 
 interface Props {
@@ -104,7 +65,7 @@ const TokenAccessActionButtonSection: FC<
         data-cy={"view-mode-button"}
         size="medium"
         fullWidth={true}
-        variant= "contained"
+        variant="contained"
         color="warning"
         onClick={stopImpersonation}
       >
@@ -121,7 +82,7 @@ const TokenAccessActionButtonSection: FC<
         disabled={!switchNetwork}
         size="medium"
         fullWidth={true}
-        variant= "contained"
+        variant="contained"
         onClick={() => switchNetwork?.()}
       >
         Change Network
@@ -131,7 +92,7 @@ const TokenAccessActionButtonSection: FC<
 
   return <Stack direction="column" alignItems="center" gap={0.8}>
     <SaveButton
-     key={`save-${operatorAddress}-${tokenAddress}-btn`}
+      key={`save-${operatorAddress}-${tokenAddress}-btn`}
       network={network}
       operatorAddress={operatorAddress}
       tokenAddress={tokenAddress}
@@ -139,7 +100,7 @@ const TokenAccessActionButtonSection: FC<
       initialAccess={initialAccess}
     />
     <RevokeButton
-     key={`revoke-${operatorAddress}-${tokenAddress}-btn`}
+      key={`revoke-${operatorAddress}-${tokenAddress}-btn`}
       network={network}
       operatorAddress={operatorAddress}
       tokenAddress={tokenAddress}
@@ -147,6 +108,53 @@ const TokenAccessActionButtonSection: FC<
     />
   </Stack>
 }
+
+interface Permission {
+  name: string;
+  value: number;
+  label: string;
+}
+
+const permissions: Permission[] = [
+  { name: ACL_CREATE_PERMISSION_LABEL, value: ACL_CREATE_PERMISSION, label: ACL_CREATE_PERMISSION_LABEL },
+  { name: ACL_UPDATE_PERMISSION_LABEL, value: ACL_UPDATE_PERMISSION, label: ACL_UPDATE_PERMISSION_LABEL },
+  { name: ACL_DELETE_PERMISSION_LABEL, value: ACL_DELETE_PERMISSION, label: ACL_DELETE_PERMISSION_LABEL },
+];
+
+const PermissionSwitchComponent: FC<{
+  activePermissions: number,
+  updatedProperty: <K extends keyof TokenAccessProps>(
+    key: K,
+    value: TokenAccessProps[K]
+  ) => void
+}> = ({ updatedProperty, activePermissions }) => {
+
+  const handleChange = (permissionValue: number) => {
+    updatedProperty(
+      "flowOperatorPermissions", (activePermissions ^ permissionValue)
+    );
+  };
+
+  const isPermissionActive = (permissionValue: number) => (activePermissions & permissionValue) !== 0;
+
+  const renderSwitch = (permission: Permission) => (
+    <Stack key={permission.name} direction="row" alignItems="center">
+      <Switch
+        color="primary"
+        checked={isPermissionActive(permission.value)}
+        value={permission.name}
+        onChange={() => handleChange(permission.value)}
+      />
+      <Typography variant="h6">{permission.label}</Typography>
+    </Stack>
+  );
+
+  return (
+    <Stack direction="column">
+      {permissions.map(renderSwitch)}
+    </Stack>
+  );
+};
 
 const TokenAccessRow: FC<Props> = ({
   address,
@@ -170,50 +178,13 @@ const TokenAccessRow: FC<Props> = ({
   const [editedAccess, setEditedAccess] =
     useState<TokenAccessProps>(initialAccess);
 
-  const [permissionCodes, setPermissionCodes] = useState(
-    getPermissionsFromCode(
-      initialAccess.flowOperatorPermissions as PermissionType
-    )
-  );
-
   useEffect(() => {
     setEditedAccess(initialAccess);
-    setPermissionCodes(
-      getPermissionsFromCode(
-        initialAccess.flowOperatorPermissions as PermissionType
-      )
-    );
   }, [initialAccess]);
 
   const [isDialogOpen, setDialogOpen] = useState(false);
 
   const [editType, setEditType] = useState<"EDIT_ERC20" | "EDIT_STREAM">();
-
-  const handlePermissionChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = parseInt(event.target.value);
-    const checked = event.target.checked;
-    if (checked && !permissionCodes.includes(value)) {
-      const newPermissions = [...permissionCodes, value];
-      setPermissionCodes(newPermissions);
-      updatedProperty(
-        "flowOperatorPermissions",
-        getCodeFromPermissions(newPermissions)
-      );
-    } else if (!checked && permissionCodes.includes(value)) {
-      const index = permissionCodes.indexOf(value);
-      const newPermissions = [
-        ...permissionCodes.slice(0, index),
-        ...permissionCodes.slice(index + 1),
-      ];
-      setPermissionCodes(newPermissions);
-      updatedProperty(
-        "flowOperatorPermissions",
-        getCodeFromPermissions(newPermissions)
-      );
-    }
-  };
 
   const { data: tokenInfo } = subgraphApi.useTokenQuery({
     id: token,
@@ -293,39 +264,7 @@ const TokenAccessRow: FC<Props> = ({
         )}
       </TableCell>
       <TableCell align="left">
-        <Stack direction="column" alignItems="center" gap={"2px"}>
-          <Stack direction="row" alignItems="center" gap={"10px"}>
-            <Switch
-              color="primary"
-              checked={permissionCodes.includes(Permission.CREATE)}
-              value={Permission.CREATE}
-              onChange={handlePermissionChange}
-            />
-            <Typography variant="h6">Create</Typography>
-          </Stack>
-          <Stack direction="row" alignItems="center" gap={"2px"}>
-            <Stack direction="row" alignItems="center" gap={"10px"}>
-              <Switch
-                color="primary"
-                checked={permissionCodes.includes(Permission.UPDATE)}
-                value={Permission.UPDATE}
-                onChange={handlePermissionChange}
-              />
-              <Typography variant="h6">Update</Typography>
-            </Stack>
-          </Stack>
-          <Stack direction="row" alignItems="center" gap={"2px"}>
-            <Stack direction="row" alignItems="center" gap={"10px"}>
-              <Switch
-                color="primary"
-                checked={permissionCodes.includes(Permission.DELETE)}
-                value={Permission.DELETE}
-                onChange={handlePermissionChange}
-              />
-              <Typography variant="h6">Delete</Typography>
-            </Stack>
-          </Stack>
-        </Stack>
+        <PermissionSwitchComponent key={"permission-switch"} updatedProperty={updatedProperty} activePermissions={editedAccess.flowOperatorPermissions} />
       </TableCell>
       <TableCell align="left" style={{ overflowWrap: "anywhere" }}>
         {tokenInfo && (
@@ -359,7 +298,7 @@ const TokenAccessRow: FC<Props> = ({
         )}
       </TableCell>
       <TableCell align="left" sx={{
-        padding:"25px" 
+        padding: "25px"
       }}>
         <TokenAccessActionButtonSection key={`action-section-${address}-${token}`} editedAccess={editedAccess} initialAccess={initialAccess} network={network} operatorAddress={address} tokenAddress={token} />
       </TableCell>
