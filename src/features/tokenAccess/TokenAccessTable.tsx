@@ -101,7 +101,7 @@ const TokenAccessTable: FC<Props> = ({
     >
       <Table sx={{ tableLayout: "fixed" }}>
         <TableHead>
-          <NetworkHeadingRow colSpan={5} network={network} />
+          <NetworkHeadingRow colSpan={isBelowMd ? 0 : 6} network={network} />
           {!isBelowMd && (
             <TableRow>
               <TableCell width="136px" sx={{ pl: 5 }}>

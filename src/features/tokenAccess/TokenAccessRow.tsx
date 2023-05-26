@@ -1,4 +1,4 @@
-import { Button, Stack, Switch, TableCell, TableRow, Typography } from "@mui/material";
+import { Button, Stack, Switch, TableCell, TableRow, Typography, useMediaQuery } from "@mui/material";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { Address } from "@superfluid-finance/sdk-core";
 import TokenIcon from "../token/TokenIcon";
@@ -22,6 +22,8 @@ import {
 import { useConnectionBoundary } from "../transactionBoundary/ConnectionBoundary";
 import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION, ACL_UPDATE_PERMISSION } from "../redux/endpoints/flowSchedulerEndpoints";
 import { ACL_CREATE_PERMISSION_LABEL, ACL_DELETE_PERMISSION_LABEL, ACL_UPDATE_PERMISSION_LABEL, flowOperatorPermissionsToString } from "../../utils/flowOperatorPermissionsToString";
+import { useTheme } from "@mui/material/styles";
+
 
 export type TokenAccessProps = {
   flowRateAllowance: {
@@ -164,6 +166,10 @@ const TokenAccessRow: FC<Props> = ({
   flowOperatorPermissions,
   flowRateAllowance,
 }) => {
+  const theme = useTheme();
+
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
   const initialAccess = useMemo(() => {
     return {
       tokenAllowance: BigNumber.from(tokenAllowance),
@@ -186,7 +192,7 @@ const TokenAccessRow: FC<Props> = ({
 
   const [editType, setEditType] = useState<"EDIT_ERC20" | "EDIT_STREAM">();
 
-  const { data: tokenInfo } = subgraphApi.useTokenQuery({
+  const { data: tokenInfo, isLoading: isTokenLoading } = subgraphApi.useTokenQuery({
     id: token,
     chainId: network.id,
   });
@@ -206,7 +212,113 @@ const TokenAccessRow: FC<Props> = ({
 
   const closeDialog = () => setDialogOpen(false);
 
-  return (
+  return <>{isBelowMd ? <TableRow>
+    <TableCell> 
+    <Stack gap={2} sx={{ px: 2, py: 2 }}><Stack  direction="row" justifyContent="space-between" sx={{ width: "auto" }}>
+    <Typography variant="subtitle1">Asset</Typography>
+    <Stack
+          data-cy={"token-header"}
+          direction="row"
+          alignItems="center"
+          gap={2}
+        >
+          <TokenIcon 
+              isSuper
+              tokenSymbol={tokenInfo?.symbol}
+              isLoading={isTokenLoading}
+          />
+          <Typography variant="h6" data-cy={"token-symbol"}>{tokenInfo?.symbol}</Typography>
+        </Stack>
+    </Stack>
+    <Stack direction="row" justifyContent="space-between" sx={{ width: "auto" }}>
+    <Typography variant="subtitle1">Address</Typography>
+    <Stack direction="row" alignItems="center" gap={1.5}>
+          <AddressAvatar
+            address={address}
+            AvatarProps={{
+              sx: { width: "24px", height: "24px", borderRadius: "5px" },
+            }}
+            BlockiesProps={{ size: 8, scale: 3 }}
+          />
+          <AddressCopyTooltip address={address}>
+            <Typography data-cy={"access-setting-address"} variant="h6">
+              <AddressName address={address} />
+            </Typography>
+          </AddressCopyTooltip>
+        </Stack>
+    </Stack>
+    <Stack direction="row" justifyContent="space-between" sx={{ width: "auto" }}>
+    <Typography variant="subtitle1">ERC-20 Allowance</Typography>
+    {tokenInfo && (
+          <Stack direction="row" alignItems="center" gap={0.5}>
+            <EditIcon
+              fontSize="inherit"
+              sx={{
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                setEditType("EDIT_ERC20");
+                setDialogOpen(true);
+              }}
+            ></EditIcon>
+            <Typography variant="h6">
+              {isCloseToUnlimitedTokenAllowance(editedAccess.tokenAllowance) ? (
+                <span>Unlimited</span>
+              ) : (
+                <>
+                  <Amount
+                    decimals={tokenInfo?.decimals}
+                    wei={editedAccess.tokenAllowance}
+                  >{` ${tokenInfo?.symbol}`}</Amount>
+                </>
+              )}
+            </Typography>
+            
+          </Stack>
+        )}
+    </Stack>
+    <Stack direction="row" justifyContent="space-between" sx={{ width: "auto" }}>
+    <Typography variant="subtitle1">Stream Permissions</Typography>
+    <PermissionSwitchComponent key={"permission-switch"} updatedProperty={updatedProperty} activePermissions={editedAccess.flowOperatorPermissions} />
+    </Stack>
+    <Stack direction="row" justifyContent="space-between" sx={{ width: "auto" }}>
+    <Typography variant="subtitle1">Stream Allowance</Typography>
+    {tokenInfo && (
+          <Stack direction="row" alignItems="center" gap={0.5}>
+            <EditIcon
+              fontSize="inherit"
+              sx={{
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                setEditType("EDIT_STREAM");
+                setDialogOpen(true);
+              }}
+            />
+            <Typography variant="h6">
+              {isCloseToUnlimitedFlowRateAllowance(
+                editedAccess.flowRateAllowance.amountEther
+              ) ? (
+                <span>Unlimited</span>
+              ) : (
+                <>
+                  <Amount
+                    decimals={tokenInfo?.decimals}
+                    wei={editedAccess.flowRateAllowance.amountEther}
+                  >{` ${tokenInfo?.symbol}/ ${timeUnitShortFormMap[editedAccess.flowRateAllowance.unitOfTime]
+                    }`}</Amount>
+                </>
+              )}
+            </Typography>
+          </Stack>
+        )}
+    </Stack>
+    <Stack gap={2} direction="column">
+    <TokenAccessActionButtonSection key={`action-section-${address}-${token}`} editedAccess={editedAccess} initialAccess={initialAccess} network={network} operatorAddress={address} tokenAddress={token} />
+    </Stack></Stack>
+    </TableCell>
+    </TableRow>
+   :
     <TableRow>
       <TableCell align="left">
         <Stack
@@ -215,7 +327,11 @@ const TokenAccessRow: FC<Props> = ({
           alignItems="center"
           gap={2}
         >
-          <TokenIcon isSuper tokenSymbol={tokenInfo?.symbol} />
+          <TokenIcon 
+              isSuper
+              tokenSymbol={tokenInfo?.symbol}
+              isLoading={isTokenLoading}
+          />
           <Typography variant="h6" data-cy={"token-symbol"}>{tokenInfo?.symbol}</Typography>
         </Stack>
       </TableCell>
@@ -302,7 +418,9 @@ const TokenAccessRow: FC<Props> = ({
       }}>
         <TokenAccessActionButtonSection key={`action-section-${address}-${token}`} editedAccess={editedAccess} initialAccess={initialAccess} network={network} operatorAddress={address} tokenAddress={token} />
       </TableCell>
-      {editType && (
+    </TableRow>
+  }
+  {editType && (
         <ResponsiveDialog
           open={isDialogOpen}
           onClose={() => setDialogOpen(false)}
@@ -318,9 +436,9 @@ const TokenAccessRow: FC<Props> = ({
             editType={editType}
           ></EditDialog>
         </ResponsiveDialog>
-      )}
-    </TableRow>
-  );
+      )
+  }
+  </>;
 };
 
 export default TokenAccessRow;
