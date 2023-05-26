@@ -604,26 +604,6 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                   </Stack>
 
                 </Box>
-                <Box>
-                  <Stack direction="row"
-                    justifyContent="space-between"
-                    alignItems="center">
-                    {token && network.autoWrap ? (
-                      isAutoWrapLoading ? (
-                        <Skeleton variant="rectangular" width={24} height={24} />
-                      ) : isAutoWrapOK ? (
-                        <DisableAutoWrapTransactionButton 
-                          key={`auto-wrap-revoke-${tokenSymbol}`} 
-                          isDisabled={false} 
-                          isVisible={true} 
-                          token={token} />
-                      ) : isAutoWrappable ? (
-                        <EnableAutoWrapTransactionButton />
-                      ) : null
-                    ) : null
-                    }
-                  </Stack>
-                </Box>
               </Stack>
             )}
           </Collapse>
