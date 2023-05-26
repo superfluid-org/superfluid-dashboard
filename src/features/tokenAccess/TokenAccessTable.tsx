@@ -40,12 +40,7 @@ const TokenAccessTable: FC<Props> = ({
     subgraphApi.useFlowOperatorsQuery(
       {
         chainId: network.id,
-        filter: {
-          sender: address,
-          flowRateAllowanceRemaining_gt: "0",
-          permissions_gt: 0,
-          allowance_gt: "0",
-        },
+        filter: { and: [{ sender: address.toLowerCase()}, { or: [{ allowance_not: "0" }, { flowRateAllowanceRemaining_not: "0" }, { permissions_not: 0 }] }] },
         pagination: {
           take: Infinity,
           skip: 0,
