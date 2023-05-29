@@ -13,11 +13,13 @@ import { VestingSchedule } from "./types";
 interface ExecuteEndVestingButtonProps {
   vestingSchedule: VestingSchedule;
   network: Network;
+  disabled?: boolean;
 }
 
 const ExecuteEndVestingButton: FC<ExecuteEndVestingButtonProps> = ({
   vestingSchedule,
   network,
+  disabled,
 }) => {
   const { txAnalytics } = useAnalytics();
 
@@ -78,7 +80,9 @@ const ExecuteEndVestingButton: FC<ExecuteEndVestingButtonProps> = ({
                 );
                 executeVestingEnd(signer, getOverrides);
               }}
-              disabled={!(isConnected && signer && isCorrectNetwork)}
+              disabled={
+                disabled || !(isConnected && signer && isCorrectNetwork)
+              }
             >
               End
             </LoadingButton>

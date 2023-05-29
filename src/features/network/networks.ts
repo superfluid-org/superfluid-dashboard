@@ -258,6 +258,7 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.mumbai,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.mumbai,
+    // TODO: (MÕ) Remove hardcoded values after testing!!! This should not be merged to prod!
     vestingContractAddress: "0x5E930Ad6602186790ba4dF261e23CdC3Eab3DF91", // vestingContractAddresses.mumbai
     vestingSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/tokdaniel/vesting-v1-mumbai-test", // vestingSubgraphUrls.mumbai

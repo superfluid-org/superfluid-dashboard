@@ -46,6 +46,7 @@ import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi
 import Page404 from "../../404";
 import { NextPageWithLayout } from "../../_app";
 import VestingManualOverridesBlock from "../../../features/vesting/VestingManualOverridesBlock";
+import { useAccount } from "wagmi";
 
 interface VestingLegendItemProps {
   title: string;
@@ -114,6 +115,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
   id,
   network,
 }) => {
+  const { address: accountAddress } = useAccount();
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -402,10 +404,13 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
             <Typography variant="h5">Schedule</Typography>
             <VestingScheduleProgress vestingSchedule={vestingSchedule} />
 
-            <VestingManualOverridesBlock
-              vestingSchedule={vestingSchedule}
-              network={network}
-            />
+            {accountAddress?.toLowerCase() ===
+              vestingSchedule.sender.toLowerCase() && (
+              <VestingManualOverridesBlock
+                vestingSchedule={vestingSchedule}
+                network={network}
+              />
+            )}
           </Stack>
         </Card>
 

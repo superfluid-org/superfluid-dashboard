@@ -14,11 +14,12 @@ import { VestingSchedule } from "./types";
 interface ExecuteVestingCliffAndFlowButtonProps {
   vestingSchedule: VestingSchedule;
   network: Network;
+  disabled?: boolean;
 }
 
 const ExecuteVestingCliffAndFlowButton: FC<
   ExecuteVestingCliffAndFlowButtonProps
-> = ({ vestingSchedule, network }) => {
+> = ({ vestingSchedule, network, disabled }) => {
   const { txAnalytics } = useAnalytics();
   const getTransactionOverrides = useGetTransactionOverrides();
 
@@ -76,7 +77,9 @@ const ExecuteVestingCliffAndFlowButton: FC<
                 );
                 executeCliffAndFlow(signer);
               }}
-              disabled={!(isConnected && signer && isCorrectNetwork)}
+              disabled={
+                disabled || !(isConnected && signer && isCorrectNetwork)
+              }
             >
               Execute
             </LoadingButton>

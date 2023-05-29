@@ -1,19 +1,21 @@
 import {
   Box,
-  Typography,
-  Stack,
-  Button,
-  Divider,
   Collapse,
-  useTheme,
+  Divider,
+  Stack,
+  Typography,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { getUnixTime } from "date-fns";
 import { FC, PropsWithChildren, useCallback, useMemo, useState } from "react";
+import { useAccount } from "wagmi";
 import { Network } from "../network/networks";
+import { rpcApi } from "../redux/store";
+import ExecuteEndVestingButton from "./ExecuteEndVestingButton";
 import ExecuteVestingCliffAndFlowButton from "./ExecuteVestingCliffAndFlowButton";
 import { VestingSchedule } from "./types";
-import ExecuteEndVestingButton from "./ExecuteEndVestingButton";
-import { fromUnixTime, getUnixTime } from "date-fns";
 
 interface VestingManualActionProps extends PropsWithChildren {
   title: string;
@@ -50,42 +52,82 @@ const VestingManualOverridesBlock: FC<VestingManualOverridesBlockProps> = ({
   vestingSchedule,
   network,
 }) => {
+  const {
+    cliffAndFlowExecutedAt,
+    endExecutedAt,
+    cliffAndFlowDate,
+    endDate,
+    superToken,
+    sender,
+    receiver,
+  } = vestingSchedule;
+
+  const { address: accountAddress } = useAccount();
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const [expanded, setExpanded] = useState(true);
 
+  const shouldFetchActiveFlow =
+    accountAddress && accountAddress.toLowerCase() === sender.toLowerCase();
+
+  const { currentData: activeFlow } = rpcApi.useGetActiveFlowQuery(
+    shouldFetchActiveFlow
+      ? {
+          chainId: network.id,
+          tokenAddress: superToken,
+          senderAddress: sender,
+          receiverAddress: receiver,
+        }
+      : skipToken
+  );
+
+  const { data: vestingSchedulerConstants } =
+    rpcApi.useGetVestingSchedulerConstantsQuery({
+      chainId: network.id,
+    });
+
   const toggleExpanded = useCallback(() => {
     setExpanded(!expanded);
   }, [expanded, setExpanded]);
 
-  console.log({ vestingSchedule });
-  const {
-    cliffAndFlowExecutedAt,
-    cliffAndFlowExpirationAt,
-    endExecutedAt,
-    cliffAndFlowDate,
-    endDateValidAt,
-    endDate,
-  } = vestingSchedule;
+  const hasActiveFlow = !!activeFlow;
 
   const canExecuteCliff = useMemo(() => {
+    if (!vestingSchedulerConstants) return false;
+
     const currentUnix = getUnixTime(Date.now());
+    const startDateInvalidAfter =
+      cliffAndFlowDate +
+      vestingSchedulerConstants.START_DATE_VALID_AFTER_IN_SECONDS;
+
     return (
+      !hasActiveFlow &&
       !cliffAndFlowExecutedAt &&
       currentUnix > cliffAndFlowDate &&
-      currentUnix < cliffAndFlowExpirationAt
+      currentUnix < startDateInvalidAfter
     );
-  }, [cliffAndFlowExecutedAt, cliffAndFlowDate, cliffAndFlowExpirationAt]);
+  }, [
+    cliffAndFlowExecutedAt,
+    cliffAndFlowDate,
+    vestingSchedulerConstants,
+    hasActiveFlow,
+  ]);
 
   const canExecuteEnd = useMemo(() => {
-    const currentUnix = getUnixTime(Date.now());
-    return (
-      !endExecutedAt && currentUnix > endDateValidAt && currentUnix < endDate
-    );
-  }, [endExecutedAt, endDateValidAt, endDate]);
+    if (!vestingSchedulerConstants) return false;
 
-  console.log(fromUnixTime(endDateValidAt));
+    const currentUnix = getUnixTime(Date.now());
+    const endDateInvalidBefore =
+      endDate - vestingSchedulerConstants.END_DATE_VALID_BEFORE_IN_SECONDS;
+
+    return (
+      !endExecutedAt &&
+      currentUnix > endDateInvalidBefore &&
+      currentUnix < endDate
+    );
+  }, [endExecutedAt, endDate, vestingSchedulerConstants]);
+
   return (
     <>
       <Stack direction="row" alignItems="center">
@@ -111,6 +153,7 @@ const VestingManualOverridesBlock: FC<VestingManualOverridesBlockProps> = ({
             <ExecuteVestingCliffAndFlowButton
               vestingSchedule={vestingSchedule}
               network={network}
+              disabled={!canExecuteCliff}
             />
           </VestingManualAction>
 
@@ -130,6 +173,7 @@ const VestingManualOverridesBlock: FC<VestingManualOverridesBlockProps> = ({
             <ExecuteEndVestingButton
               vestingSchedule={vestingSchedule}
               network={network}
+              disabled={!canExecuteEnd}
             />
           </VestingManualAction>
         </Stack>
