@@ -226,7 +226,7 @@ export const vestingSchedulerMutationEndpoints = {
           requiredTokenAllowanceWei,
           requiredFlowOperatorPermissions,
           requiredFlowRateAllowanceWei,
-          transactionExtraData
+          transactionExtraData,
         },
         { dispatch }
       ) => {
@@ -321,7 +321,7 @@ export const vestingSchedulerMutationEndpoints = {
           extraData: {
             subTransactionTitles,
             ...(transactionExtraData ?? {}),
-          }
+          },
         });
 
         return {
@@ -403,7 +403,7 @@ export const vestingSchedulerMutationEndpoints = {
           extraData: {
             subTransactionTitles,
             ...(transactionExtraData ?? {}),
-          }
+          },
         });
 
         return {
@@ -444,10 +444,9 @@ export const vestingSchedulerMutationEndpoints = {
           transactionResponse,
           chainId,
           dispatch,
-          signer: signerAddress,
+          signerAddress,
           title: "Execute Cliff",
           extraData: arg.transactionExtraData,
-          waitForConfirmation: !!arg.waitForConfirmation,
         });
 
         return {
@@ -488,10 +487,9 @@ export const vestingSchedulerMutationEndpoints = {
           transactionResponse,
           chainId,
           dispatch,
-          signer: signerAddress,
+          signerAddress,
           title: "Execute Vesting End",
           extraData: arg.transactionExtraData,
-          waitForConfirmation: !!arg.waitForConfirmation,
         });
 
         return {

@@ -43,7 +43,6 @@ const ExecuteVestingCliffAndFlowButton: FC<
     executeVestingCliffAndFlowTrigger({
       ...primaryArgs,
       signer,
-      waitForConfirmation: false,
       overrides: await getTransactionOverrides(network),
     })
       .unwrap()

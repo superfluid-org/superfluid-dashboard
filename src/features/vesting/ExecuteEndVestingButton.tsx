@@ -1,8 +1,7 @@
 import { LoadingButton } from "@mui/lab";
 import { Typography } from "@mui/material";
-import { Signer } from "ethers";
+import { Overrides, Signer } from "ethers";
 import { FC } from "react";
-import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { useAnalytics } from "../analytics/useAnalytics";
 import { Network } from "../network/networks";
 import { usePendingVestingEndExecution } from "../pendingUpdates/PendingVestingExecution";
@@ -21,7 +20,6 @@ const ExecuteEndVestingButton: FC<ExecuteEndVestingButtonProps> = ({
   network,
 }) => {
   const { txAnalytics } = useAnalytics();
-  const getTransactionOverrides = useGetTransactionOverrides();
 
   const pendingEndExecution = usePendingVestingEndExecution({
     chainId: network.id,
@@ -33,7 +31,10 @@ const ExecuteEndVestingButton: FC<ExecuteEndVestingButtonProps> = ({
   const [executeEndVestingTrigger, executeEndVestingResult] =
     rpcApi.useExecuteEndVestingMutation();
 
-  const executeVestingEnd = async (signer: Signer) => {
+  const executeVestingEnd = async (
+    signer: Signer,
+    getOverrides: () => Promise<Overrides>
+  ) => {
     const primaryArgs = {
       superTokenAddress: vestingSchedule.superToken,
       senderAddress: vestingSchedule.sender,
@@ -44,8 +45,7 @@ const ExecuteEndVestingButton: FC<ExecuteEndVestingButtonProps> = ({
     executeEndVestingTrigger({
       ...primaryArgs,
       signer,
-      waitForConfirmation: false,
-      overrides: await getTransactionOverrides(network),
+      overrides: await getOverrides(),
     })
       .unwrap()
       .then(...txAnalytics("Execute Vesting End", primaryArgs))
@@ -56,7 +56,7 @@ const ExecuteEndVestingButton: FC<ExecuteEndVestingButtonProps> = ({
     <ConnectionBoundary expectedNetwork={network}>
       {({ isConnected, isCorrectNetwork }) => (
         <TransactionBoundary mutationResult={executeEndVestingResult}>
-          {({ mutationResult, signer, setDialogLoadingInfo }) => (
+          {({ mutationResult, signer, setDialogLoadingInfo, getOverrides }) => (
             <LoadingButton
               loading={!!pendingEndExecution || mutationResult.isLoading}
               fullWidth
@@ -76,7 +76,7 @@ const ExecuteEndVestingButton: FC<ExecuteEndVestingButtonProps> = ({
                     You are executing vesting end.
                   </Typography>
                 );
-                executeVestingEnd(signer);
+                executeVestingEnd(signer, getOverrides);
               }}
               disabled={!(isConnected && signer && isCorrectNetwork)}
             >

@@ -258,8 +258,9 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.mumbai,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.mumbai,
-    vestingContractAddress: vestingContractAddresses.mumbai,
-    vestingSubgraphUrl: vestingSubgraphUrls.mumbai,
+    vestingContractAddress: "0x5E930Ad6602186790ba4dF261e23CdC3Eab3DF91", // vestingContractAddresses.mumbai
+    vestingSubgraphUrl:
+      "https://api.thegraph.com/subgraphs/name/tokdaniel/vesting-v1-mumbai-test", // vestingSubgraphUrls.mumbai
     platformUrl: superfluidPlatformUrls.mumbai,
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.polygonMumbai.id],
