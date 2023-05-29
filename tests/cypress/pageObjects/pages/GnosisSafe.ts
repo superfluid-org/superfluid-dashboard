@@ -114,7 +114,7 @@ export class GnosisSafe extends BasePage {
   }
 
   static addCustomSuperfluidApp() {
-    cy.get(GNOSIS_BUTTONS).contains("Add custom app").click();
+    cy.get(GNOSIS_BUTTONS).contains("Add custom Safe App").click();
     this.type(CUSTOM_APP_URL_FIELD, Cypress.config("baseUrl"));
   }
 

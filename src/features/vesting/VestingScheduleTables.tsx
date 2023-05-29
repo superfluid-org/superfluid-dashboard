@@ -1,12 +1,13 @@
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 import {
-  IconButton,
-  Skeleton,
-  Stack,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-  useTheme,
+    Box,
+    IconButton,
+    Skeleton,
+    Stack,
+    Tooltip,
+    Typography,
+    useMediaQuery,
+    useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC, useMemo } from "react";
@@ -32,6 +33,70 @@ interface ExecutionWhitelistInfoProps {
   network: Network;
 }
 
+const AutoWrapContractInfo: FC<{ network: Network }> = ({network}) => {
+    const theme = useTheme();
+    const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+    if (!network || !network.autoWrap) return null;
+    return <Stack direction="column" alignSelf={isBelowMd ? "flex-start" : "flex-end"}>
+        <Stack direction="row" gap={0.5}>
+            <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
+                Auto-Wrap Manager Smart Contract
+            </Typography>
+            <Stack
+                data-cy="auto-wrap-manager-contract-buttons"
+                direction="row"
+                alignItems="center"
+            >
+                <CopyIconBtn
+                    TooltipProps={{placement: "top"}}
+                    copyText={getAddress(network.autoWrap.managerContractAddress)}
+                    description="Copy address to clipboard"
+                    IconButtonProps={{size: "small"}}
+                />
+                <Tooltip arrow title="View on blockchain explorer" placement="top">
+                    <NextLinkComposed
+                        passHref
+                        to={network.getLinkForAddress(network.autoWrap.managerContractAddress)}
+                        target="_blank"
+                    >
+                        <IconButton size="small">
+                            <LaunchRoundedIcon color="inherit"/>
+                        </IconButton>
+                    </NextLinkComposed>
+                </Tooltip>
+            </Stack>
+        </Stack>
+        <Stack direction="row" gap={0.8}>
+            <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
+                Auto-Wrap Strategy Smart Contract
+            </Typography>
+            <Stack
+                data-cy="auto-wrap-strategy-contract-buttons"
+                direction="row"
+                alignItems="center"
+            >
+                <CopyIconBtn
+                    TooltipProps={{placement: "top"}}
+                    copyText={getAddress(network.autoWrap.strategyContractAddress)}
+                    description="Copy address to clipboard"
+                    IconButtonProps={{size: "small"}}
+                />
+                <Tooltip arrow title="View on blockchain explorer" placement="top">
+                    <NextLinkComposed
+                        passHref
+                        to={network.getLinkForAddress(network.autoWrap.strategyContractAddress)}
+                        target="_blank"
+                    >
+                        <IconButton size="small">
+                            <LaunchRoundedIcon color="inherit"/>
+                        </IconButton>
+                    </NextLinkComposed>
+                </Tooltip>
+            </Stack>
+        </Stack>
+    </Stack>
+}
+
 const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
   whitelisted,
   network,
@@ -40,9 +105,9 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
-    <Stack
+   <Stack>
+      <Stack
       direction={isBelowMd ? "column" : "row"}
-      alignItems={isBelowMd ? "start" : "center"}
       justifyContent="space-between"
       spacing={1}
     >
@@ -57,7 +122,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
           </>
         )}
       </Typography>
-
+      <Stack direction="column" alignItems={isBelowMd ? "flex-start" : "flex-end"} gap={isBelowMd ? 0.5 : 0.2}>
       {network.vestingContractAddress && (
         <Stack direction="row" alignItems="center" gap={0.5}>
           <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
@@ -88,7 +153,10 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
           </Stack>
         </Stack>
       )}
+      <AutoWrapContractInfo network={network} />
+      </Stack>
     </Stack>
+  </Stack>
   );
 };
 

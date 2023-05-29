@@ -585,7 +585,7 @@ export type Task = {
   type: TaskType;
   executedAt?: Maybe<Scalars['BigInt']>;
   executionAt: Scalars['BigInt'];
-  expirationAt?: Maybe<Scalars['BigInt']>;
+  expirationAt: Scalars['BigInt'];
   cancelledAt?: Maybe<Scalars['BigInt']>;
   failedAt?: Maybe<Scalars['BigInt']>;
   vestingSchedule: VestingSchedule;

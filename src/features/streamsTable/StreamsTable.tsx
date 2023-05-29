@@ -198,7 +198,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
             task.receiver.toLowerCase() === visibleAddress?.toLowerCase()
         )
         .filter((task) => task.__typename === "CreateTask")
-        .map((task) => mapCreateTaskToScheduledStream(task as CreateTask)),
+        .map((task) => mapCreateTaskToScheduledStream(task as unknown as CreateTask)),
     [allTasks, visibleAddress]
   );
 
