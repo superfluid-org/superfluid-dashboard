@@ -12,7 +12,12 @@ export interface ConnectionBoundaryButtonProps {
 
 const ConnectionBoundaryButton: FC<
   PropsWithChildren<ConnectionBoundaryButtonProps>
-> = ({ children, ButtonProps, impersonationTitle = "Stop Viewing an Address", changeNetworkTitle }) => {
+> = ({
+  children,
+  ButtonProps,
+  impersonationTitle = "Stop Viewing an Address",
+  changeNetworkTitle,
+}) => {
   const {
     allowImpersonation,
     isImpersonated,
@@ -33,7 +38,7 @@ const ConnectionBoundaryButton: FC<
         color="warning"
         onClick={stopImpersonation}
       >
-        {impersonationTitle} 
+        {impersonationTitle}
       </Button>
     );
   }
@@ -61,7 +66,9 @@ const ConnectionBoundaryButton: FC<
         disabled={!switchNetwork}
         onClick={() => switchNetwork?.()}
       >
-        <span translate="no">{changeNetworkTitle || `Change Network to ${expectedNetwork.name}`}</span>
+        <span translate="no">
+          {changeNetworkTitle || `Change Network to ${expectedNetwork.name}`}
+        </span>
       </Button>
     );
   }

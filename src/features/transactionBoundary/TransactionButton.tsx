@@ -3,7 +3,9 @@ import { useTransactionBoundary } from "./TransactionBoundary";
 import { Button, ButtonProps } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { Signer } from "ethers";
-import ConnectionBoundaryButton, { ConnectionBoundaryButtonProps } from "./ConnectionBoundaryButton";
+import ConnectionBoundaryButton, {
+  ConnectionBoundaryButtonProps,
+} from "./ConnectionBoundaryButton";
 
 export const transactionButtonDefaultProps: ButtonProps = {
   fullWidth: true,
@@ -26,7 +28,7 @@ export const TransactionButton: FC<TransactionButtonProps> = ({
   disabled,
   onClick,
   ButtonProps = {},
-  ConnectionBoundaryButtonProps = {}
+  ConnectionBoundaryButtonProps = {},
 }) => {
   const { signer, mutationResult, transaction } = useTransactionBoundary();
 
@@ -44,7 +46,10 @@ export const TransactionButton: FC<TransactionButtonProps> = ({
   }
 
   return (
-    <ConnectionBoundaryButton ButtonProps={buttonProps} {...ConnectionBoundaryButtonProps}>
+    <ConnectionBoundaryButton
+      ButtonProps={buttonProps}
+      {...ConnectionBoundaryButtonProps}
+    >
       <LoadingButton
         {...(dataCy ? { "data-cy": dataCy } : {})}
         color="primary"

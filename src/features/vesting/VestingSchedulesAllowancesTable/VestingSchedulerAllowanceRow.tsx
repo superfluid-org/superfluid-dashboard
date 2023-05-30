@@ -295,7 +295,6 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
     Enable
   </Button>
 
-
   return (
     <>
       <TableRow
