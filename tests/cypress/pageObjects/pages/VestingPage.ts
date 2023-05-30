@@ -683,4 +683,17 @@ export class VestingPage extends BasePage {
       "Remember to top up your Super Token balance in time for the cliff amount and vesting stream."
     );
   }
+
+  static validateReceiverAddressBookNames(name: string) {
+    cy.get(TABLE_RECEIVER_SENDER).each((el) => {
+      expect(el.text()).to.eq(name);
+    });
+  }
+
+  static validateDetailsPageSenderReceivers(
+    senderOrReceiver,
+    nameOrAddress: string
+  ) {
+    this.hasText(`[data-cy=${senderOrReceiver}-address]`, nameOrAddress);
+  }
 }

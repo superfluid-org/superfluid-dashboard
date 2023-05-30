@@ -2,9 +2,11 @@ import { BasePage, UnitOfTime } from "../BasePage";
 
 const ADDRESS_BUTTONS = "[data-cy=address-button]";
 const ADDRESS_INPUT = "[data-cy=address-dialog-input]";
+const ADDRESS_BOOK_ENTRIES = "[data-cy=address-book-entry]";
 const SEARCH_ENTRIES = "[data-cy=search-entry]";
 const REMOVE_ADDRESS_BUTTON = "[data-cy=remove-address-btn]";
 const SELECTED_ADDRESSES = "[data-cy=list-selected-address]";
+const SELECTED_FORM_ADDRESSES = "[data-cy=selected-address]";
 const OK_BUTTON = "[data-cy=ok-button]";
 const SEARCH_ADDRESSES = "[data-cy=list-search-address]";
 const DATE_RANGES = "[data-cy=date-ranges] input";
@@ -315,5 +317,18 @@ export class ExportPage extends BasePage {
         }
       );
     });
+  }
+
+  static validateSelectedAddressBookEntry(nameOrAddress: string) {
+    cy.get(SELECTED_ADDRESSES).contains(nameOrAddress).should("be.visible");
+    cy.get(ADDRESS_BOOK_ENTRIES).contains(nameOrAddress).should("be.visible");
+  }
+
+  static validateSelectedAddressInForm(nameOrAddress: string, index = 0) {
+    this.hasText(SELECTED_FORM_ADDRESSES, nameOrAddress, index);
+  }
+
+  static selectAddressFromAddressBookResults(nameOrAddress: string) {
+    cy.contains(ADDRESS_BOOK_ENTRIES, nameOrAddress).click();
   }
 }

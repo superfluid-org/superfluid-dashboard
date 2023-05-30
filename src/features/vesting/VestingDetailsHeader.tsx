@@ -46,7 +46,7 @@ const CounterpartyAddress: FC<CounterpartyAddressProps> = ({
         {title}
       </Typography>
       <Stack direction="row" alignItems="center">
-        <Typography variant={isBelowMd ? "h7" : "h6"} color="text.secondary">
+        <Typography data-cy={`${title.replace(":","")}-address`} variant={isBelowMd ? "h7" : "h6"} color="text.secondary">
           <AddressName address={address} />
         </Typography>
         <CopyIconBtn

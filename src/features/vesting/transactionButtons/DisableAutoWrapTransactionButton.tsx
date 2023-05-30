@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { constants } from "ethers";
 import { FC, memo } from "react";
@@ -11,17 +11,22 @@ import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { VestingToken } from "../CreateVestingSection";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
+import { Token } from "@superfluid-finance/sdk-core";
+import { toVestingToken } from "../useVestingToken";
+import { useConnectionBoundary } from "../../transactionBoundary/ConnectionBoundary";
 
-const TX_TITLE: TransactionTitle = "Approve Allowance";
+const TX_TITLE: TransactionTitle = "Disable Auto-Wrap";
 
-const AutoWrapAllowanceTransactionButton: FC<{
-  token: VestingToken;
+const DisableAutoWrapTransactionButton: FC<{
+  token: Token;
   isVisible: boolean;
   isDisabled: boolean;
 }> = ({ token, isVisible, isDisabled: isDisabled_ }) => {
   const { network } = useExpectedNetwork();
 
   const { data: signer } = useSigner();
+
+  const vestingToken = toVestingToken(token, network);
 
   const getGasOverrides = useGetTransactionOverrides();
   const { data: overrides } = useQuery(
@@ -31,28 +36,28 @@ const AutoWrapAllowanceTransactionButton: FC<{
 
   const primaryArgs = {
     spender: network.autoWrap!.strategyContractAddress,
-    amount: constants.MaxUint256,
+    amount: constants.Zero,
   };
 
-  const disabled = isDisabled_ && !!network.autoWrap;
   const { config } = usePrepareErc20Approve(
-    disabled
-      ? undefined
-      : {
-          address: token.underlyingAddress as `0x${string}`,
+    network.autoWrap
+      ? {
+          address: vestingToken.underlyingAddress as `0x${string}`,
           chainId: network.id,
           args: [primaryArgs.spender, primaryArgs.amount],
           signer,
           overrides,
         }
+      : undefined
   );
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
 
   const underlyingTokenQuery = subgraphApi.useTokenQuery({
     chainId: network.id,
-    id: token.underlyingAddress,
+    id: vestingToken.underlyingAddress,
   });
+
   const underlyingToken = underlyingTokenQuery.data;
   const isDisabled = isDisabled_ && !config;
 
@@ -61,13 +66,21 @@ const AutoWrapAllowanceTransactionButton: FC<{
       {({ network, setDialogLoadingInfo, txAnalytics }) =>
         isVisible && (
           <TransactionButton
+            ConnectionBoundaryButtonProps={{
+              impersonationTitle: "Stop viewing",
+              changeNetworkTitle: "Change Network",
+            }}
             disabled={isDisabled}
+            ButtonProps={{
+              size: "medium",
+            }}
             onClick={async (signer) => {
               if (!config) throw new Error("This should never happen!");
+
               setDialogLoadingInfo(
                 <Typography variant="h5" color="text.secondary" translate="yes">
-                  You are approving Auto-Wrap ERC-20 allowance for the
-                  underlying token.
+                  You are revoking Auto-Wrap ERC-20 allowance for the underlying{" "}
+                  {underlyingToken && underlyingToken.symbol} token.
                 </Typography>
               );
 
@@ -77,16 +90,14 @@ const AutoWrapAllowanceTransactionButton: FC<{
                   ...config,
                   chainId: network.id,
                 },
-                transactionTitle: "Approve Allowance",
+                transactionTitle: "Disable Auto-Wrap",
               })
                 .unwrap()
-                .then(
-                  ...txAnalytics("Approve Auto-Wrap Allowance", primaryArgs)
-                )
+                .then(...txAnalytics("Disable Auto-Wrap", primaryArgs))
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}
           >
-            Approve {underlyingToken && underlyingToken.symbol} Allowance
+            Disable
           </TransactionButton>
         )
       }
@@ -94,4 +105,4 @@ const AutoWrapAllowanceTransactionButton: FC<{
   );
 };
 
-export default memo(AutoWrapAllowanceTransactionButton);
+export default memo(DisableAutoWrapTransactionButton);

@@ -184,3 +184,18 @@ Then(
     VestingPage.validateTopUpMessageWithCliff();
   }
 );
+Then(
+  /^The receivers shown in the vesting page are named "([^"]*)"$/,
+  function (nameOrAddress: string) {
+    VestingPage.validateReceiverAddressBookNames(nameOrAddress);
+  }
+);
+Then(
+  /^The "([^"]*)" shown in the vesting details page is "([^"]*)"$/,
+  function (senderOrReceiver: string, nameOrAddress: string) {
+    VestingPage.validateDetailsPageSenderReceivers(
+      senderOrReceiver,
+      nameOrAddress
+    );
+  }
+);

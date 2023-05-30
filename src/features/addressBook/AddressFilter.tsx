@@ -67,6 +67,7 @@ const AddressFilter: FC<AddressFilterProps> = ({
   return (
     <>
       <Button
+        data-cy={"address-filter"}
         variant="outlined"
         color="secondary"
         size={isBelowMd ? "small" : "medium"}
@@ -90,6 +91,7 @@ const AddressFilter: FC<AddressFilterProps> = ({
       >
         <Box sx={{ p: 3 }}>
           <TextField
+            data-cy={"address-filter-search-field"}
             fullWidth
             autoFocus
             size="small"
@@ -102,6 +104,7 @@ const AddressFilter: FC<AddressFilterProps> = ({
             <Stack gap={1} direction="row" flexWrap="wrap" sx={{ pt: 2.5 }}>
               {addressesFilter.map((address) => (
                 <Chip
+                  data-cy={"address-chip"}
                   key={address}
                   color="primary"
                   label={<AddressName address={address} length="short" />}
@@ -111,7 +114,7 @@ const AddressFilter: FC<AddressFilterProps> = ({
                 />
               ))}
 
-              <Chip label="Clear All" size="small" onClick={clearFilter} />
+              <Chip data-cy="clear-all-chip" label="Clear All" size="small" onClick={clearFilter} />
             </Stack>
           )}
         </Box>
@@ -119,7 +122,7 @@ const AddressFilter: FC<AddressFilterProps> = ({
         <ListSubheader>Address Book</ListSubheader>
         <List>
           {addressBookEntries.map(({ address }) => (
-            <ListItemButton key={address} onClick={onAddressToggled(address)}>
+            <ListItemButton data-cy="address" key={address} onClick={onAddressToggled(address)}>
               <ListItemAvatar>
                 <AddressAvatar address={address} />
               </ListItemAvatar>

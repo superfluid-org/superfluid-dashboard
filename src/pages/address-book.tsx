@@ -381,6 +381,7 @@ const AddressBook: NextPage = () => {
               <ReadFileButton onLoaded={onImport} mimeType=".csv">
                 {({ selectFile }) => (
                   <LoadingButton
+                    data-cy={"import-button"}
                     variant="outlined"
                     color="secondary"
                     onClick={selectFile}
@@ -398,6 +399,7 @@ const AddressBook: NextPage = () => {
               >
                 {({ download }) => (
                   <Button
+                    data-cy={"export-button"}
                     variant="outlined"
                     color="secondary"
                     onClick={download}
@@ -552,7 +554,7 @@ const AddressBook: NextPage = () => {
                 },
               }}
             >
-              <Table sx={{ tableLayout: "fixed" }}>
+              <Table data-cy="wallet-addresses" sx={{ tableLayout: "fixed" }}>
                 {!isBelowMd && (
                   <TableHead>
                     <TableRow>
@@ -635,7 +637,7 @@ const AddressBook: NextPage = () => {
                 },
               }}
             >
-              <Table sx={{ tableLayout: "fixed" }}>
+              <Table data-cy="contract-addresses" sx={{ tableLayout: "fixed" }}>
                 {!isBelowMd && (
                   <TableHead>
                     <TableRow>

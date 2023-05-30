@@ -380,7 +380,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                   addressBookList
                 ) : (
                   <ListItem sx={LIST_ITEM_STYLE}>
-                    <ListItemText translate="yes" primary="No results" />
+                    <ListItemText data-cy={"no-address-book-results"} translate="yes" primary="No results" />
                   </ListItem>
                 )}
               </>
@@ -390,6 +390,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
         {mode === "addressBook" && (
           <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
             <LoadingButton
+              data-cy={"save-button"}
               loading={isContractDetectionLoading || ensQuery.isFetching}
               disabled={
                 isContractDetectionLoading ||

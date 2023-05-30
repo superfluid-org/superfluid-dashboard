@@ -2,21 +2,30 @@ import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import {
   Box,
+  Button,
   Collapse,
+  DialogContent,
+  DialogTitle,
   IconButton,
   ListItemText,
   Skeleton,
   Stack,
+  Step,
+  StepLabel,
+  Stepper,
   Table,
   TableBody,
   TableCell,
   TableRow,
   Typography,
+  styled,
+  alpha,
   useMediaQuery,
+  Avatar,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { BigNumber } from "ethers";
-import { FC, useState } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import OpenIcon from "../../../components/OpenIcon/OpenIcon";
 import { flowOperatorPermissionsToString } from "../../../utils/flowOperatorPermissionsToString";
@@ -33,6 +42,26 @@ import FixVestingPermissionsBtn from "./FixVestingPermissionsBtn";
 import useActiveAutoWrap from "../useActiveAutoWrap";
 import { getSuperTokenType } from "../../redux/endpoints/adHocSubgraphEndpoints";
 import { TokenType } from "../../redux/endpoints/tokenTypes";
+import DisableAutoWrapTransactionButton from "../transactionButtons/DisableAutoWrapTransactionButton";
+import { VestingToken } from "../CreateVestingSection";
+import ResponsiveDialog from "../../common/ResponsiveDialog";
+import AutoWrapStrategyTransactionButton from "../transactionButtons/AutoWrapStrategyTransactionButton";
+import AutoWrapAllowanceTransactionButton from "../transactionButtons/AutoWrapAllowanceTransactionButton";
+import CloseIcon from "@mui/icons-material/Close";
+import { Token } from "@superfluid-finance/sdk-core";
+import { toVestingToken } from "../useVestingToken";
+
+export const EditIconWrapper = styled(Avatar)(({ theme }) => ({
+  width: "50px",
+  height: "50px",
+  backgroundColor: alpha(theme.palette.primary.main, 0.08),
+  color: theme.palette.primary.main,
+  borderColor: theme.palette.other.outline,
+  [theme.breakpoints.down("md")]: {
+    width: "32px",
+    height: "32px",
+  },
+}));
 
 export const VestingSchedulerAllowanceRowSkeleton = () => {
   const theme = useTheme();
@@ -96,6 +125,78 @@ interface VestingSchedulerAllowanceRowProps {
   requiredFlowRateAllowance: BigNumber;
 }
 
+
+const AutoWrapEnableDialogSection: FC<{ closeEnableAutoWrapDialog: () => void, isEnableAutoWrapDialogOpen: boolean, isActiveAutoWrapSchedule: boolean, isAutoWrapAllowanceSufficient: boolean, isAutoWrapLoading: boolean, token: Token, network: Network }> = (
+  { closeEnableAutoWrapDialog, isEnableAutoWrapDialogOpen, isAutoWrapAllowanceSufficient, isActiveAutoWrapSchedule, isAutoWrapLoading, token, network }) => {
+  const theme = useTheme();
+
+  const autoWrapSteps = [
+    { label: "Auto-Wrap" },
+    { label: "Allowance" },
+  ] as const;
+
+  const activeStep = useMemo(() => {
+    if (isActiveAutoWrapSchedule) {
+      return 0;
+    } else if (isAutoWrapAllowanceSufficient) {
+      return 1;
+    } else {
+      return 2;
+    }
+  }, [isActiveAutoWrapSchedule, isAutoWrapAllowanceSufficient]);
+
+  return <ResponsiveDialog
+    data-cy={"auto-wrap-enable-dialog"}
+    open={isEnableAutoWrapDialogOpen}
+    onClose={closeEnableAutoWrapDialog}
+    PaperProps={{ sx: { borderRadius: "20px", maxWidth: 550 } }}
+    keepMounted={true}
+  >
+    <DialogTitle>
+      <Stack alignItems={"center"} component={DialogTitle} gap={0.5} sx={{ p: 3.5 }}>
+        <Typography variant="h4">Enable Auto-Wrap</Typography>
+        <IconButton
+          aria-label="close"
+          onClick={closeEnableAutoWrapDialog}
+          sx={{
+            position: "absolute",
+            right: theme.spacing(3),
+            top: theme.spacing(3),
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </Stack>
+    </DialogTitle>
+    <DialogContent>
+      <Stack spacing={3}>
+        <Stepper activeStep={activeStep}>
+          {autoWrapSteps.map((step) => (
+            <Step key={step.label}>
+              <StepLabel>{step.label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+        <AutoWrapStrategyTransactionButton
+          token={toVestingToken(token, network)}
+          isVisible={activeStep == 0}
+          isDisabled={isAutoWrapLoading}
+        />
+        <AutoWrapAllowanceTransactionButton
+          token={toVestingToken(token, network)}
+          isVisible={activeStep == 1}
+          isDisabled={isAutoWrapLoading}
+        />
+        {activeStep == 2 &&
+            <Button fullWidth={true}
+                    data-cy={"enable-auto-wrap-button"}
+                    variant="contained"
+                    size="medium" onClick={closeEnableAutoWrapDialog}>Close</Button>}
+      </Stack>
+    </DialogContent>
+  </ResponsiveDialog>
+};
+
 const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   isLast,
   network,
@@ -109,6 +210,10 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isEnableAutoWrapDialogOpen, setEnableAutoWrapDialogOpen] = useState(false);
+
+  const openEnableAutoWrapDialog = useCallback(() => setEnableAutoWrapDialogOpen(true), [setEnableAutoWrapDialogOpen]);
+  const closeEnableAutoWrapDialog = useCallback(() => setEnableAutoWrapDialogOpen(false), [setEnableAutoWrapDialogOpen]);
 
   const { data: token, isLoading: isTokenLoading } = subgraphApi.useTokenQuery({
     chainId: network.id,
@@ -130,11 +235,11 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   } = useActiveAutoWrap(
     isAutoWrappable
       ? {
-          chainId: network.id,
-          accountAddress: senderAddress,
-          superTokenAddress: token.id,
-          underlyingTokenAddress: token.underlyingAddress,
-        }
+        chainId: network.id,
+        accountAddress: senderAddress,
+        superTokenAddress: token.id,
+        underlyingTokenAddress: token.underlyingAddress,
+      }
       : "skip"
   );
 
@@ -184,6 +289,16 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
 
   const tokenSymbol = token?.symbol || "";
 
+  const EnableAutoWrapTransactionButton = () => <Button
+    fullWidth={true}
+    data-cy={"enable-auto-wrap-button"}
+    variant="contained"
+    size="medium"
+    onClick={openEnableAutoWrapDialog}
+  >
+    Enable
+  </Button>
+
   return (
     <>
       <TableRow
@@ -191,10 +306,10 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
         sx={
           isLast && !isExpanded
             ? {
-                ".MuiTableCell-root": {
-                  borderBottom: "none",
-                },
-              }
+              ".MuiTableCell-root": {
+                borderBottom: "none",
+              },
+            }
             : {}
         }
       >
@@ -310,7 +425,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                       },
                     }}
                   >
-                    <TableCell>
+                    <TableCell width={"180px"}>
                       {showFixRequiredAccessButton && (
                         <FixVestingPermissionsBtn
                           network={network}
@@ -361,7 +476,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                         secondary={requiredPermissionsString}
                       />
                     </TableCell>
-                    <TableCell width={network.autoWrap ? "380px" : "280px"}>
+                    <TableCell width={network.autoWrap ? "220px" : "280px"}>
                       <ListItemText
                         data-cy={`${tokenSymbol}-current-flow-allowance`}
                         primary="Current"
@@ -390,7 +505,18 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                         }
                       />
                     </TableCell>
-                    <TableCell width="100px" />
+                    <TableCell width={"160px"} align={"center"} sx={{padding: "25px"}}>
+                      {token && network.autoWrap ? (
+                        isAutoWrapLoading ? (
+                          <Skeleton variant="rectangular" width={24} height={24} />
+                        ) : isAutoWrapOK ? (
+                          <DisableAutoWrapTransactionButton key={`auto-wrap-revoke-${tokenSymbol}`} isDisabled={false} isVisible={true} token={token as VestingToken} />
+                        ) : isAutoWrappable ? (
+                          <EnableAutoWrapTransactionButton />
+                        ) : null
+                      ) : null
+                      }</TableCell>
+                    <TableCell width={isBelowMd ? "68px" : "100px"} />
                   </TableRow>
                 </TableBody>
               </Table>
@@ -479,12 +605,22 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                       /sec
                     </Typography>
                   </Stack>
+
                 </Box>
               </Stack>
             )}
           </Collapse>
         </TableCell>
       </TableRow>
+      {token && <AutoWrapEnableDialogSection
+        key={"auto-wrap-enable-dialog-section"}
+        closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}
+        isEnableAutoWrapDialogOpen={isEnableAutoWrapDialogOpen}
+        isActiveAutoWrapSchedule={!activeAutoWrapSchedule as boolean}
+        isAutoWrapAllowanceSufficient={!isAutoWrapAllowanceSufficient as boolean}
+        isAutoWrapLoading={isAutoWrapLoading}
+        token={token}
+        network={network} />}
     </>
   );
 };

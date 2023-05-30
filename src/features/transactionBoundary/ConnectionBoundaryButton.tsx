@@ -3,14 +3,21 @@ import { Button, ButtonProps } from "@mui/material";
 import { FC, PropsWithChildren } from "react";
 import { useConnectionBoundary } from "./ConnectionBoundary";
 
-interface ConnectionBoundaryButtonProps {
+export interface ConnectionBoundaryButtonProps {
   dataCy?: string;
   ButtonProps?: ButtonProps;
+  impersonationTitle?: string;
+  changeNetworkTitle?: string;
 }
 
 const ConnectionBoundaryButton: FC<
   PropsWithChildren<ConnectionBoundaryButtonProps>
-> = ({ children, ButtonProps }) => {
+> = ({
+  children,
+  ButtonProps,
+  impersonationTitle = "Stop Viewing an Address",
+  changeNetworkTitle,
+}) => {
   const {
     allowImpersonation,
     isImpersonated,
@@ -31,7 +38,7 @@ const ConnectionBoundaryButton: FC<
         color="warning"
         onClick={stopImpersonation}
       >
-        Stop Viewing an Address
+        {impersonationTitle}
       </Button>
     );
   }
@@ -59,7 +66,9 @@ const ConnectionBoundaryButton: FC<
         disabled={!switchNetwork}
         onClick={() => switchNetwork?.()}
       >
-        <span translate="no">Change Network to {expectedNetwork.name}</span>
+        <span translate="no">
+          {changeNetworkTitle || `Change Network to ${expectedNetwork.name}`}
+        </span>
       </Button>
     );
   }

@@ -268,7 +268,7 @@ export class ActivityPage extends BasePage {
         this.hasText(ACTIVITY_AMOUNT, "-", -1);
         this.hasText(
           AMOUNT_TO_FROM,
-          `To${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`,
+          `To${this.shortenHex("0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9")}`,
           -1
         );
         break;
@@ -282,7 +282,7 @@ export class ActivityPage extends BasePage {
         this.hasText(ACTIVITY_AMOUNT, "1 TDLx/mo");
         this.hasText(
           AMOUNT_TO_FROM,
-          `To${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`
+          `To${this.shortenHex("0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9")}`
         );
         break;
       case "Unwrap":
@@ -294,7 +294,7 @@ export class ActivityPage extends BasePage {
         this.hasText(ACTIVITY_AMOUNT, "1 TDLx");
         this.hasText(
           AMOUNT_TO_FROM,
-          `From${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`
+          `From${this.shortenHex("0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9")}`
         );
         break;
       case "Stream Updated":
@@ -302,7 +302,7 @@ export class ActivityPage extends BasePage {
         this.hasText(ACTIVITY_AMOUNT, "1 TDLx/mo");
         this.hasText(
           AMOUNT_TO_FROM,
-          `To${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`
+          `To${this.shortenHex("0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9")}`
         );
         break;
       case "Receive Stream":
@@ -310,7 +310,7 @@ export class ActivityPage extends BasePage {
         this.hasText(ACTIVITY_AMOUNT, "1 TDLx/mo");
         this.hasText(
           AMOUNT_TO_FROM,
-          `From${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`
+          `From${this.shortenHex("0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9")}`
         );
         break;
       case "Stream Cancelled":
@@ -318,7 +318,7 @@ export class ActivityPage extends BasePage {
         this.hasText(ACTIVITY_AMOUNT, "0 TDLx/mo");
         this.hasText(
           AMOUNT_TO_FROM,
-          `To${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`
+          `To${this.shortenHex("0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9")}`
         );
         break;
       case "Subscription Approved":
@@ -327,7 +327,7 @@ export class ActivityPage extends BasePage {
         this.hasText(
           AMOUNT_TO_FROM,
           `Publisher${this.shortenHex(
-            "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"
+            "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9"
           )}`
         );
         break;
@@ -337,7 +337,7 @@ export class ActivityPage extends BasePage {
         this.hasText(
           AMOUNT_TO_FROM,
           `Publisher${this.shortenHex(
-            "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"
+            "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9"
           )}`
         );
         break;
@@ -347,7 +347,7 @@ export class ActivityPage extends BasePage {
         this.hasText(
           AMOUNT_TO_FROM,
           `Publisher${this.shortenHex(
-            "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"
+            "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9"
           )}`
         );
         break;
@@ -361,7 +361,7 @@ export class ActivityPage extends BasePage {
         this.hasText(ACTIVITY_AMOUNT, "1 TDLx");
         this.hasText(
           AMOUNT_TO_FROM,
-          `To${this.shortenHex("0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40")}`
+          `To${this.shortenHex("0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9")}`
         );
         break;
       case "Send Distribution":
@@ -375,7 +375,7 @@ export class ActivityPage extends BasePage {
         this.hasText(
           AMOUNT_TO_FROM,
           `Publisher${this.shortenHex(
-            "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"
+            "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9"
           )}`
         );
         break;
@@ -386,5 +386,9 @@ export class ActivityPage extends BasePage {
     entries.raw().forEach((entry, i) => {
       this.scrollToAndHasText(ACTIVITY_NAME, entry[0], i);
     });
+  }
+
+  static validateAddressBookNameInActivityRow(name: string) {
+    this.containsText(AMOUNT_TO_FROM, name, undefined, { timeout: 30000 });
   }
 }

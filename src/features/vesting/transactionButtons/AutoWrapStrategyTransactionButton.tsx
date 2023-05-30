@@ -2,14 +2,15 @@ import { Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { BigNumber } from "ethers";
 import { FC, memo } from "react";
-import { useFormContext } from "react-hook-form";
 import { useQuery, useSigner } from "wagmi";
-import { autoWrapManagerAddress, usePrepareAutoWrapManagerCreateWrapSchedule } from "../../../generated";
+import {
+  autoWrapManagerAddress,
+  usePrepareAutoWrapManagerCreateWrapSchedule,
+} from "../../../generated";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { rpcApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
-import { ValidVestingForm } from "../CreateVestingFormProvider";
 import { VestingToken } from "../CreateVestingSection";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
@@ -20,12 +21,13 @@ const AutoWrapStrategyTransactionButton: FC<{
   token: VestingToken;
   isVisible: boolean;
   isDisabled: boolean;
+  // TODO We can use callbacks to hide/show the parent modal.
+  // onSuccessCallback?: () => void;
+  // onFailureCallback?: () => void;
+  // onClickCallback?: () => void;
 }> = ({ token, isVisible, isDisabled: isDisabled_ }) => {
   const { data: signer } = useSigner();
   const { network } = useExpectedNetwork();
-
-  const { watch } = useFormContext<ValidVestingForm>();
-  const [setupAutoWrap] = watch(["data.setupAutoWrap"]);
 
   const getGasOverrides = useGetTransactionOverrides();
   const { data: overrides } = useQuery(
@@ -42,39 +44,36 @@ const AutoWrapStrategyTransactionButton: FC<{
     upperLimit: BigNumber.from(network.autoWrap!.upperLimit),
   };
 
-  const { config } = usePrepareAutoWrapManagerCreateWrapSchedule({
-    enabled: setupAutoWrap && !!network.autoWrap,
-    args: [
-      primaryArgs.superToken,
-      primaryArgs.strategy,
-      primaryArgs.liquidityToken,
-      primaryArgs.expiry,
-      primaryArgs.lowerLimit,
-      primaryArgs.upperLimit,
-    ],
-    chainId: network.id as keyof typeof autoWrapManagerAddress,
-    signer,
-    overrides,
-  });
+  const disabled = isDisabled_ && !!network.autoWrap;
+  const { config } = usePrepareAutoWrapManagerCreateWrapSchedule(
+    disabled
+      ? undefined
+      : {
+          args: [
+            primaryArgs.superToken,
+            primaryArgs.strategy,
+            primaryArgs.liquidityToken,
+            primaryArgs.expiry,
+            primaryArgs.lowerLimit,
+            primaryArgs.upperLimit,
+          ],
+          chainId: network.id as keyof typeof autoWrapManagerAddress,
+          signer,
+          overrides,
+        }
+  );
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
   const isDisabled = isDisabled_ && !config;
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
-      {({
-        network,
-        getOverrides,
-        setDialogLoadingInfo,
-        setDialogSuccessActions,
-        txAnalytics,
-      }) =>
+      {({ network, setDialogLoadingInfo, txAnalytics }) =>
         isVisible && (
           <TransactionButton
             disabled={isDisabled}
             onClick={async (signer) => {
               if (!config) throw new Error("This should never happen!");
-
               setDialogLoadingInfo(
                 <Typography variant="h5" color="text.secondary" translate="yes">
                   You are enabling Auto-Wrap to top up your {token.symbol}{" "}

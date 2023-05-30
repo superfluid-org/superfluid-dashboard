@@ -117,7 +117,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
   }
 
   return (
-    <ConnectionBoundary>
+    <ConnectionBoundary >
       <TableContainer
         component={Paper}
         sx={{
@@ -140,7 +140,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
         >
           <TableHead>
             <TableRow>
-              <TableCell>Token</TableCell>
+              <TableCell  width={"180px"}>Token</TableCell>
               {!isBelowMd && (
                 <>
                   <TableCell data-cy="allowance-cell" width="200px">

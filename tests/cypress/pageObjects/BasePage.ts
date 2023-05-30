@@ -183,6 +183,19 @@ export class BasePage {
       .should("have.text", text);
   }
 
+  static scrollTo(
+    selector: string,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options).scrollIntoView();
+  }
+
   static doesNotExist(
     selector: string,
     index?: number,

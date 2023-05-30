@@ -400,4 +400,15 @@ export class StreamDetailsPage extends BasePage {
       );
     });
   }
+
+  static validateSenderReceiverAddressBookNames(
+    name: string,
+    senderOrReceiver: string
+  ) {
+    if (senderOrReceiver.toLowerCase() === "sender") {
+      this.hasText(SENDER_AND_RECEIVER, name, 0);
+    } else {
+      this.hasText(SENDER_AND_RECEIVER, name, 1);
+    }
+  }
 }

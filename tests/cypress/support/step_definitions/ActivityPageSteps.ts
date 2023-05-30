@@ -78,3 +78,9 @@ Then(
     ActivityPage.validateActivityHistoryOrder(entries);
   }
 );
+Then(
+  /^The activity rows address shows up as "([^"]*)"$/,
+  function (name: string) {
+    ActivityPage.validateAddressBookNameInActivityRow(name);
+  }
+);

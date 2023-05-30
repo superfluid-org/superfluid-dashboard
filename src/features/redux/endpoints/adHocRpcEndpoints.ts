@@ -42,6 +42,7 @@ declare module "@superfluid-finance/sdk-redux" {
     "Update Permission and Allowances": true;
     "Update Token Allowance": true;
     "Update FlowOperator Permissions": true;
+    "Disable Auto-Wrap": true;
   }
 }
 
