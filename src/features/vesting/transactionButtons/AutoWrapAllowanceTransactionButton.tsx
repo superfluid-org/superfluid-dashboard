@@ -34,14 +34,18 @@ const AutoWrapAllowanceTransactionButton: FC<{
     amount: constants.MaxUint256,
   };
 
-  const { config } = usePrepareErc20Approve({
-    enabled: isDisabled_ && !!network.autoWrap, // TODO(KK): any other conditions to add here?
-    address: token.underlyingAddress as `0x${string}`,
-    chainId: network.id,
-    args: [primaryArgs.spender, primaryArgs.amount],
-    signer,
-    overrides,
-  });
+  const disabled = isDisabled_ && !!network.autoWrap;
+  const { config } = usePrepareErc20Approve(
+    disabled
+      ? undefined
+      : {
+          address: token.underlyingAddress as `0x${string}`,
+          chainId: network.id,
+          args: [primaryArgs.spender, primaryArgs.amount],
+          signer,
+          overrides,
+        }
+  );
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
 
@@ -54,11 +58,7 @@ const AutoWrapAllowanceTransactionButton: FC<{
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
-      {({
-        network,
-        setDialogLoadingInfo,
-        txAnalytics,
-      }) =>
+      {({ network, setDialogLoadingInfo, txAnalytics }) =>
         isVisible && (
           <TransactionButton
             disabled={isDisabled}

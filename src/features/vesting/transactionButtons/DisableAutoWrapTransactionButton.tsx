@@ -39,14 +39,17 @@ const DisableAutoWrapTransactionButton: FC<{
     amount: constants.Zero,
   };
 
-  const { config } = usePrepareErc20Approve({
-    enabled: !!network.autoWrap, // TODO(KK): any other conditions to add here?
-    address: vestingToken.underlyingAddress as `0x${string}`,
-    chainId: network.id,
-    args: [primaryArgs.spender, primaryArgs.amount],
-    signer,
-    overrides,
-  });
+  const { config } = usePrepareErc20Approve(
+    network.autoWrap
+      ? {
+          address: vestingToken.underlyingAddress as `0x${string}`,
+          chainId: network.id,
+          args: [primaryArgs.spender, primaryArgs.amount],
+          signer,
+          overrides,
+        }
+      : undefined
+  );
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
 
@@ -60,30 +63,24 @@ const DisableAutoWrapTransactionButton: FC<{
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
-      {({
-        network,
-        setDialogLoadingInfo,
-        txAnalytics,
-      }) =>
+      {({ network, setDialogLoadingInfo, txAnalytics }) =>
         isVisible && (
           <TransactionButton
-            ConnectionBoundaryButtonProps={
-              {
-                impersonationTitle: "Stop viewing",
-                changeNetworkTitle: "Change Network",
-              }
-            }
+            ConnectionBoundaryButtonProps={{
+              impersonationTitle: "Stop viewing",
+              changeNetworkTitle: "Change Network",
+            }}
             disabled={isDisabled}
             ButtonProps={{
-              size: "medium"
+              size: "medium",
             }}
             onClick={async (signer) => {
               if (!config) throw new Error("This should never happen!");
 
               setDialogLoadingInfo(
                 <Typography variant="h5" color="text.secondary" translate="yes">
-                  You are revoking Auto-Wrap ERC-20 allowance for the
-                  underlying {underlyingToken && underlyingToken.symbol} token.
+                  You are revoking Auto-Wrap ERC-20 allowance for the underlying{" "}
+                  {underlyingToken && underlyingToken.symbol} token.
                 </Typography>
               );
 
@@ -96,9 +93,7 @@ const DisableAutoWrapTransactionButton: FC<{
                 transactionTitle: "Disable Auto-Wrap",
               })
                 .unwrap()
-                .then(
-                  ...txAnalytics("Disable Auto-Wrap", primaryArgs)
-                )
+                .then(...txAnalytics("Disable Auto-Wrap", primaryArgs))
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}
           >

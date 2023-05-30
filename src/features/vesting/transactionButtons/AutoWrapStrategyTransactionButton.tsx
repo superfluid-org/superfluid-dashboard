@@ -3,7 +3,10 @@ import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { BigNumber } from "ethers";
 import { FC, memo } from "react";
 import { useQuery, useSigner } from "wagmi";
-import { autoWrapManagerAddress, usePrepareAutoWrapManagerCreateWrapSchedule } from "../../../generated";
+import {
+  autoWrapManagerAddress,
+  usePrepareAutoWrapManagerCreateWrapSchedule,
+} from "../../../generated";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { rpcApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
@@ -41,31 +44,31 @@ const AutoWrapStrategyTransactionButton: FC<{
     upperLimit: BigNumber.from(network.autoWrap!.upperLimit),
   };
 
-  const { config } = usePrepareAutoWrapManagerCreateWrapSchedule({
-    enabled: isDisabled_ && !!network.autoWrap,
-    args: [
-      primaryArgs.superToken,
-      primaryArgs.strategy,
-      primaryArgs.liquidityToken,
-      primaryArgs.expiry,
-      primaryArgs.lowerLimit,
-      primaryArgs.upperLimit,
-    ],
-    chainId: network.id as keyof typeof autoWrapManagerAddress,
-    signer,
-    overrides,
-  });
+  const disabled = isDisabled_ && !!network.autoWrap;
+  const { config } = usePrepareAutoWrapManagerCreateWrapSchedule(
+    disabled
+      ? undefined
+      : {
+          args: [
+            primaryArgs.superToken,
+            primaryArgs.strategy,
+            primaryArgs.liquidityToken,
+            primaryArgs.expiry,
+            primaryArgs.lowerLimit,
+            primaryArgs.upperLimit,
+          ],
+          chainId: network.id as keyof typeof autoWrapManagerAddress,
+          signer,
+          overrides,
+        }
+  );
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
   const isDisabled = isDisabled_ && !config;
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
-      {({
-        network,
-        setDialogLoadingInfo,
-        txAnalytics,
-      }) =>
+      {({ network, setDialogLoadingInfo, txAnalytics }) =>
         isVisible && (
           <TransactionButton
             disabled={isDisabled}
