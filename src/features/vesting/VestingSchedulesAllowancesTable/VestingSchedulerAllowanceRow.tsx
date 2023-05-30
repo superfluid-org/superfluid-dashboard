@@ -187,7 +187,11 @@ const AutoWrapEnableDialogSection: FC<{ closeEnableAutoWrapDialog: () => void, i
           isVisible={activeStep == 1}
           isDisabled={isAutoWrapLoading}
         />
-        {activeStep == 2 && <Button onClick={closeEnableAutoWrapDialog}>Close</Button>}
+        {activeStep == 2 &&
+            <Button fullWidth={true}
+                    data-cy={"enable-auto-wrap-button"}
+                    variant="contained"
+                    size="medium" onClick={closeEnableAutoWrapDialog}>Close</Button>}
       </Stack>
     </DialogContent>
   </ResponsiveDialog>
