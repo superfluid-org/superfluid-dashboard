@@ -290,7 +290,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
 
   const tokenSymbol = token?.symbol || "";
 
-  const EnableAutoWrapTransactionButton = ({ButtonProps?: ButtonProps}) => <Button
+  const EnableAutoWrapTransactionButton: FC<{ButtonProps?: ButtonProps}> = ({ButtonProps = {}}) => <Button
     fullWidth={true}
     data-cy={"enable-auto-wrap-button"}
     variant="contained"
