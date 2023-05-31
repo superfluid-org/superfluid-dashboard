@@ -1,4 +1,4 @@
-import { Button, Typography } from "@mui/material";
+import { Button, ButtonProps, Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { constants } from "ethers";
 import { FC, memo } from "react";
@@ -21,7 +21,8 @@ const DisableAutoWrapTransactionButton: FC<{
   token: Token;
   isVisible: boolean;
   isDisabled: boolean;
-}> = ({ token, isVisible, isDisabled: isDisabled_ }) => {
+  ButtonProps?: ButtonProps;
+}> = ({ token, isVisible, isDisabled: isDisabled_, ButtonProps = {} }) => {
   const { network } = useExpectedNetwork();
 
   const { data: signer } = useSigner();
@@ -73,6 +74,7 @@ const DisableAutoWrapTransactionButton: FC<{
             disabled={isDisabled}
             ButtonProps={{
               size: "medium",
+              ...ButtonProps
             }}
             onClick={async (signer) => {
               if (!config) throw new Error("This should never happen!");
