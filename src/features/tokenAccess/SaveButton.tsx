@@ -7,14 +7,16 @@ import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary"
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { useAnalytics } from "../analytics/useAnalytics";
 import { rpcApi } from "../redux/store";
-import { TokenAccessProps } from "./TokenAccessRow";
+import { TokenAccessProps } from "./dialogs/ModifyOrAddDialog";
 
 interface SaveButtonProps {
-  network: Network;
-  tokenAddress: string;
+  network: Network | undefined;
+  tokenAddress: string | undefined;
   operatorAddress: string;
   initialAccess: TokenAccessProps;
   editedAccess: TokenAccessProps;
+  disabled: boolean;
+  title: string;
 }
 
 const SaveButton: FC<SaveButtonProps> = ({
@@ -23,13 +25,17 @@ const SaveButton: FC<SaveButtonProps> = ({
   operatorAddress,
   initialAccess,
   editedAccess,
+  disabled,
+  title = "Save changes"
 }) => {
   const { txAnalytics } = useAnalytics();
   const [updateAccess, updateAccessResult] = rpcApi.useUpdateAccessMutation();
 
   const onUpdate = useCallback(
     async (
+      network: Network,
       signer: Signer,
+      tokenAddress: string,
       setDialogLoadingInfo: (children: ReactNode) => void,
       getOverrides: () => Promise<Overrides>
     ) => {
@@ -56,7 +62,7 @@ const SaveButton: FC<SaveButtonProps> = ({
         .then(...txAnalytics("Updated Permissions & Allowances", primaryArgs))
         .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
     },
-    [
+    [ disabled,
       updateAccess,
       initialAccess,
       editedAccess,
@@ -66,32 +72,28 @@ const SaveButton: FC<SaveButtonProps> = ({
       operatorAddress,
     ]
   );
-
-  const isEdited =
-    initialAccess.flowOperatorPermissions !==
-      editedAccess.flowOperatorPermissions ||
-    !initialAccess.tokenAllowance.eq(editedAccess.tokenAllowance) ||
-    !initialAccess.flowRateAllowance.amountEther.eq(
-      editedAccess.flowRateAllowance.amountEther
-    ) ||
-    initialAccess.flowRateAllowance.unitOfTime !==
-      editedAccess.flowRateAllowance.unitOfTime;
-
+  const _isDisabled = disabled || network === undefined || tokenAddress === undefined
+  
   return (
     <TransactionBoundary mutationResult={updateAccessResult}>
       {({ setDialogLoadingInfo, getOverrides }) => (
         <TransactionButton
+          ConnectionBoundaryButtonProps={{
+            impersonationTitle: "Stop viewing",
+            changeNetworkTitle: "Change Network",
+          }}
           ButtonProps={{
-            size: "medium",
+            size: "large",
             fullWidth: true,
             variant: "contained",
           }}
-          onClick={(signer) =>
-            onUpdate(signer, setDialogLoadingInfo, getOverrides)
+          onClick={async (signer) =>
+            !_isDisabled ? await onUpdate(network, signer, tokenAddress, setDialogLoadingInfo, getOverrides)
+              : void 0
           }
-          disabled={!isEdited}
+          disabled={_isDisabled}
         >
-          Save Changes
+          {title}
         </TransactionButton>
       )}
     </TransactionBoundary>

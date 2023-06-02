@@ -1,9 +1,11 @@
-import { Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { Button, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, useCallback, useMemo, useState } from "react";
 import TokenAccessTable from "./TokenAccessTable";
 import { useAvailableNetworks } from "../network/AvailableNetworksContext";
 import TokenAccessLoadingTable from "./TokenAccessLoadingTable";
+import { Add } from "@mui/icons-material";
+import { AddOrModifyDialogBoundary as ModifyOrAddDialogBoundary } from "./dialogs/ModifyOrAddTokenAccessBoundary";
 
 export interface FetchingStatus {
   isLoading: boolean;
@@ -52,27 +54,41 @@ const TokenAccessTables: FC<Props> = ({
     [availableNetworks, fetchingStatuses]
   );
 
-  return !hasContent && !isLoading ? null : <>
-      <Stack direction="column" gap={1}>
-        <Typography variant={isBelowMd ? "h3" : "h4"} component="h1">
-          Permissions & Allowances
-        </Typography>
-        <Typography variant="body1" color="secondary">
-          Manage your Permissions and Allowances in one place.
-        </Typography>
-      </Stack>
-      <Stack gap={4}>
-        {availableNetworks.map((network) => (
-          <TokenAccessTable
-            key={network.id}
-            address={address}
-            network={network}
-            fetchingCallback={fetchingCallback}
-          />
-        ))}
-        {isLoading && <TokenAccessLoadingTable />}
-      </Stack>
-    </>
+  return !hasContent && !isLoading ? null : <ModifyOrAddDialogBoundary>
+    {({ openDialog, setInitialFormValues }) => (
+      <>
+        <Stack direction="row" justifyContent="space-between" alignItems={"center"}>
+          <Stack direction="column">
+            <Typography variant={isBelowMd ? "h3" : "h4"} component="h1">
+              Permissions & Allowances
+            </Typography>
+            <Typography variant="body1" color="secondary">
+              Manage your Permissions and Allowances in one place.
+            </Typography>
+          </Stack>
+          <Button sx={{
+            height: "40px"
+          }} variant="contained" endIcon={<Add />} onClick={()=> {
+            openDialog()
+            setInitialFormValues({});
+          }}>Add</Button>
+        </Stack>
+        <Stack gap={4}>
+          {availableNetworks.map((network) => (
+            <TokenAccessTable
+              key={network.id}
+              address={address}
+              network={network}
+              fetchingCallback={fetchingCallback}
+            />
+          ))}
+          {isLoading && <TokenAccessLoadingTable />}
+        </Stack>
+      </>
+    )}</ModifyOrAddDialogBoundary>
 };
 
 export default TokenAccessTables;
+
+
+

@@ -116,7 +116,6 @@ const TokenAccessTable: FC<Props> = ({
           )}
         </TableHead>
         <TableBody>
-          <ConnectionBoundary expectedNetwork={network}>
             {paginatedRecords.map(
               ({
                 id,
@@ -137,7 +136,6 @@ const TokenAccessTable: FC<Props> = ({
                 />
               )
             )}
-          </ConnectionBoundary>
         </TableBody>
       </Table>
       <TablePagination

@@ -6,7 +6,7 @@ import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary"
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { useAnalytics } from "../analytics/useAnalytics";
 import { rpcApi } from "../redux/store";
-import { TokenAccessProps } from "./TokenAccessRow";
+import { TokenAccessProps } from "./dialogs/ModifyOrAddDialog";
 
 interface RevokeButtonProps {
   network: Network;
@@ -68,17 +68,14 @@ const RevokeButton: FC<RevokeButtonProps> = ({
     <TransactionBoundary mutationResult={revokeResult}>
       {({ setDialogLoadingInfo }) => (
         <TransactionButton
+          ConnectionBoundaryButtonProps={{
+            impersonationTitle: "Stop viewing",
+            changeNetworkTitle: "Change Network",
+          }}
           ButtonProps={{
-            size: "medium",
+            size: "large",
             fullWidth: true,
-            variant: "contained",
-            sx: {
-              color: theme.palette.primary.main,
-              backgroundColor: alpha(theme.palette.primary.main, 0.08),
-              "&:hover": {
-                color: theme.palette.common.white,
-              },
-            },
+            variant: "outlined",
           }}
           onClick={(signer) => onRevoke(signer, setDialogLoadingInfo)}
         >
