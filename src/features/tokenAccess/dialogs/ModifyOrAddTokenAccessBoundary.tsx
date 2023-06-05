@@ -8,8 +8,7 @@ import {
 } from "react";
 import { ModifyOrAddTokenAccessFormProviderProps } from "./ModifyOrAddTokenAccessFormProvider";
 import ResponsiveDialog from "../../common/ResponsiveDialog";
-import ModifyOrAddDialog from "./ModifyOrAddDialog";
-import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
+import ModifyOrAddTokenAccessDialog from "./ModifyOrAddTokenAccessDialog";
 
 interface ModifyOrAddTokenAccessBoundaryContextValue {
   openDialog: () => void;
@@ -36,17 +35,17 @@ export const AddOrModifyDialogBoundary: FC<ModifyOrAddTokenAccessBoundaryProps> 
 
   const [initialFormValues, setInitialFormValues] = useState<ModifyOrAddTokenAccessFormProviderProps["initialFormValues"]>({});
 
-  const contextValue = useMemo<ModifyOrAddTokenAccessBoundaryContextValue>(
-    () => ({
-      dialogOpen,
-      openDialog: () => setDialogOpen(true),
-      closeDialog: () => setDialogOpen(false),
-      setInitialFormValues,
-      initialFormValues,
-    }),
+  const contextValue = useMemo<ModifyOrAddTokenAccessBoundaryContextValue>(() => ({
+    dialogOpen,
+    openDialog: () => setDialogOpen(true),
+    closeDialog: () => setDialogOpen(false),
+    setInitialFormValues,
+    initialFormValues,
+  }),
     [
       dialogOpen,
       setInitialFormValues,
+      initialFormValues
     ]
   );
 
@@ -54,17 +53,15 @@ export const AddOrModifyDialogBoundary: FC<ModifyOrAddTokenAccessBoundaryProps> 
     <ModifyOrAddTokenAccessBoundaryContext.Provider value={contextValue}>
       {children(contextValue)}
       <ResponsiveDialog
-          open={dialogOpen}
-          onClose={() => setDialogOpen(false)}
-          PaperProps={{
-            sx: { borderRadius: "20px", maxHeight: "100%", maxWidth: 500 },
-          }}
-          translate="yes"
-        >
-<ConnectionBoundary expectedNetwork={initialFormValues.network}>
-          <ModifyOrAddDialog initialFormValues={initialFormValues} />
- </ConnectionBoundary>
-        </ResponsiveDialog>
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        PaperProps={{
+          sx: { borderRadius: "20px", maxHeight: "100%", maxWidth: 500 },
+        }}
+        translate="yes"
+      >
+        <ModifyOrAddTokenAccessDialog />
+      </ResponsiveDialog>
     </ModifyOrAddTokenAccessBoundaryContext.Provider>
   );
 };

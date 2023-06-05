@@ -29,8 +29,6 @@ const TOKEN_SIZE = 24;
 const TokenMenu: FC<{ network: Network; open: boolean; handleClose: () => void; anchorEl: HTMLElement | null, onChange: (token: Token) => void, token: Token | undefined }> = ({ network, anchorEl, open, handleClose, onChange, token }) => {
     const theme = useTheme();
     
-
-
     const networkCustomTokens = useNetworkCustomTokens(network.id);
     const listedSuperTokensQuery = subgraphApi.useTokensQuery({
         chainId: network.id,
@@ -120,7 +118,7 @@ const TokenItem: FC<ItemProps> = ({ token, selected, onClick }) => (
     </MenuItem>
 );
 
-const TokenSelect: FC<{ network: Network | undefined, token: Token | undefined, onChange: (token: Token) => void, placeholder?: string }> = ({ network, token, onChange, placeholder }) => {
+const TokenSelect: FC<{ network: Network | undefined, token: Token | undefined, onChange: (token: Token) => void, placeholder?: string, disabled:boolean }> = ({ network, token, onChange, placeholder, disabled }) => {
     const theme = useTheme();
     const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -135,6 +133,7 @@ const TokenSelect: FC<{ network: Network | undefined, token: Token | undefined, 
         <>
             {/* {!isBelowMd ? ( */}
                 <Button
+                    disabled={disabled}
                     variant="outlined"
                     color="secondary"
                     size="large"
@@ -154,7 +153,6 @@ const TokenSelect: FC<{ network: Network | undefined, token: Token | undefined, 
                         justifyContent: "flex-start",
                         ".MuiButton-startIcon > *:nth-of-type(1)": { fontSize: "16px" },
                         ".MuiButton-endIcon": { marginLeft: "auto" },
-
                     }}
                     translate="no"
                 >

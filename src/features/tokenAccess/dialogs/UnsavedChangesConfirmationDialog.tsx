@@ -2,8 +2,7 @@ import { Avatar, Button, Stack, Typography, alpha, useTheme, styled } from "@mui
 import { ErrorRounded } from "@mui/icons-material";
 import EditDialogTitle from "./EditDialogTitle";
 import EditDialogContent from "./EditDialogContent";
-import { transactionButtonDefaultProps } from "../../transactionBoundary/TransactionButton";
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 
 export const EditIconWrapper = styled(Avatar)(({ theme }) => ({
   width: "50px",
@@ -17,7 +16,7 @@ export const EditIconWrapper = styled(Avatar)(({ theme }) => ({
   },
 }));
 
-const UnsavedChangesConfirmationDialog: FC<{ onClose: () => void ,  onSaveChanges: () => void}> = ({ onSaveChanges, onClose }) => {
+const UnsavedChangesConfirmationDialog: FC<{ onClose: () => void, SaveButtonComponent: ReactNode }> = ({ SaveButtonComponent, onClose }) => {
   const theme = useTheme();
 
   return (
@@ -34,20 +33,12 @@ const UnsavedChangesConfirmationDialog: FC<{ onClose: () => void ,  onSaveChange
         </Stack>
       </EditDialogTitle>
       <EditDialogContent>
-        <Stack component="form" gap={2}>
-          <Button {...transactionButtonDefaultProps} onClick={onSaveChanges}>
-            Save changes
-          </Button>
+        <Stack gap={2}>
+          {SaveButtonComponent}
           <Button
-            {...transactionButtonDefaultProps}
-            sx={{
-              backgroundColor: theme.palette.common.white,
-              color: theme.palette.primary.main,
-              border: `1px solid ${alpha(theme.palette.primary.main, 1)}`,
-              "&:hover": {
-                color: theme.palette.common.white,
-              },
-            }}
+            size="large"
+            fullWidth={true}
+            variant="outlined"
             onClick={onClose}
           >
             Leave

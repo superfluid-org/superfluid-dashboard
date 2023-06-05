@@ -39,25 +39,55 @@ const TokenAccessRow: FC<Props> = ({
   flowRateAllowance,
 }) => {
   const theme = useTheme();
-
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-  const {openDialog, setInitialFormValues } = useModifyOrAddTokenAccessBoundary();
+  const { openDialog, setInitialFormValues } = useModifyOrAddTokenAccessBoundary();
 
-  const initialAccess = useMemo(() => {
-    return {
+  const [initialAccess, setInitialState] = useState({
+    tokenAllowance: BigNumber.from(tokenAllowance),
+    flowOperatorPermissions: flowOperatorPermissions,
+    flowRateAllowance: {
+      amountEther: BigNumber.from(flowRateAllowance),
+      unitOfTime: UnitOfTime.Second,
+    },
+  })
+
+  const { data: tokenInfo, isLoading: isTokenLoading } = subgraphApi.useTokenQuery({
+    id: token,
+    chainId: network.id,
+  });
+
+  useEffect(() => {
+    setInitialState({
       tokenAllowance: BigNumber.from(tokenAllowance),
       flowOperatorPermissions: flowOperatorPermissions,
       flowRateAllowance: {
         amountEther: BigNumber.from(flowRateAllowance),
         unitOfTime: UnitOfTime.Second,
       },
-    };
-  }, [tokenAllowance, flowOperatorPermissions, flowRateAllowance]);
-
-  const { data: tokenInfo, isLoading: isTokenLoading } = subgraphApi.useTokenQuery({
-    id: token,
-    chainId: network.id,
-  });
+    })
+    setInitialFormValues({
+      network: network,
+      token: tokenInfo ? {
+        address: tokenInfo.id,
+        decimals: tokenInfo.decimals,
+        isListed: tokenInfo.isListed,
+        name: tokenInfo.name,
+        symbol: tokenInfo.symbol,
+        type: getSuperTokenType({
+          network,
+          address: tokenInfo.id,
+          underlyingAddress: tokenInfo.underlyingAddress,
+        })
+      } as Token : undefined,
+      operatorAddress: address,
+      tokenAllowance: BigNumber.from(tokenAllowance),
+      flowPermissions: flowOperatorPermissions,
+      flowRateAllowance: {
+        amountEther: BigNumber.from(flowRateAllowance),
+        unitOfTime: UnitOfTime.Second,
+      },
+    });
+  }, [address,network, tokenInfo, tokenAllowance, flowOperatorPermissions, flowRateAllowance]);
 
   return <>{isBelowMd ? <TableRow>
     <TableCell>
@@ -147,22 +177,22 @@ const TokenAccessRow: FC<Props> = ({
             fullWidth={true}
             variant="contained"
             color="primary"
-            onClick={() =>{
+            onClick={() => {
               openDialog();
               setInitialFormValues({
                 network: network,
                 token: tokenInfo ? {
-                   address: tokenInfo.id,
-                   decimals: tokenInfo.decimals,
-                   isListed: tokenInfo.isListed,
-                   name: tokenInfo.name,
-                   symbol: tokenInfo.symbol,
-                   type: getSuperTokenType({
+                  address: tokenInfo.id,
+                  decimals: tokenInfo.decimals,
+                  isListed: tokenInfo.isListed,
+                  name: tokenInfo.name,
+                  symbol: tokenInfo.symbol,
+                  type: getSuperTokenType({
                     network,
                     address: tokenInfo.id,
                     underlyingAddress: tokenInfo.underlyingAddress,
                   })
-                  } as Token : undefined,
+                } as Token : undefined,
                 operatorAddress: address,
                 flowPermissions: initialAccess.flowOperatorPermissions,
                 flowRateAllowance: initialAccess.flowRateAllowance,
@@ -259,22 +289,22 @@ const TokenAccessRow: FC<Props> = ({
           fullWidth={true}
           variant="contained"
           color="primary"
-          onClick={() =>{
+          onClick={() => {
             openDialog();
             setInitialFormValues({
               network: network,
               token: tokenInfo ? {
-                 address: tokenInfo.id,
-                 decimals: tokenInfo.decimals,
-                 isListed: tokenInfo.isListed,
-                 name: tokenInfo.name,
-                 symbol: tokenInfo.symbol,
-                 type: getSuperTokenType({
+                address: tokenInfo.id,
+                decimals: tokenInfo.decimals,
+                isListed: tokenInfo.isListed,
+                name: tokenInfo.name,
+                symbol: tokenInfo.symbol,
+                type: getSuperTokenType({
                   network,
                   address: tokenInfo.id,
                   underlyingAddress: tokenInfo.underlyingAddress,
                 })
-                } as Token : undefined,
+              } as Token : undefined,
               operatorAddress: address,
               flowPermissions: initialAccess.flowOperatorPermissions,
               flowRateAllowance: initialAccess.flowRateAllowance,

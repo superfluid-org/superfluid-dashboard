@@ -6,6 +6,7 @@ import { useAvailableNetworks } from "../network/AvailableNetworksContext";
 import TokenAccessLoadingTable from "./TokenAccessLoadingTable";
 import { Add } from "@mui/icons-material";
 import { AddOrModifyDialogBoundary as ModifyOrAddDialogBoundary } from "./dialogs/ModifyOrAddTokenAccessBoundary";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 
 export interface FetchingStatus {
   isLoading: boolean;

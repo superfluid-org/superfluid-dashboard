@@ -7,7 +7,7 @@ import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary"
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { useAnalytics } from "../analytics/useAnalytics";
 import { rpcApi } from "../redux/store";
-import { TokenAccessProps } from "./dialogs/ModifyOrAddDialog";
+import { TokenAccessProps } from "./dialogs/ModifyOrAddTokenAccessDialog";
 
 interface SaveButtonProps {
   network: Network | undefined;
@@ -72,6 +72,7 @@ const SaveButton: FC<SaveButtonProps> = ({
       operatorAddress,
     ]
   );
+
   const _isDisabled = disabled || network === undefined || tokenAddress === undefined
   
   return (

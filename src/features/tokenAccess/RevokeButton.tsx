@@ -1,18 +1,19 @@
 import { Typography, alpha, useTheme } from "@mui/material";
 import { Signer } from "@wagmi/core";
-import { FC, ReactNode, useCallback } from "react";
+import { FC, ReactNode, useCallback, useEffect, useState } from "react";
 import { Network } from "../network/networks";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { useAnalytics } from "../analytics/useAnalytics";
 import { rpcApi } from "../redux/store";
-import { TokenAccessProps } from "./dialogs/ModifyOrAddDialog";
+import { TokenAccessProps } from "./dialogs/ModifyOrAddTokenAccessDialog";
 
 interface RevokeButtonProps {
   network: Network;
   tokenAddress: string;
   operatorAddress: string;
   access: TokenAccessProps;
+  onRevokButtonclick: () => void;
 }
 
 const RevokeButton: FC<RevokeButtonProps> = ({
@@ -20,11 +21,16 @@ const RevokeButton: FC<RevokeButtonProps> = ({
   tokenAddress,
   operatorAddress,
   access,
+  onRevokButtonclick,
 }) => {
   const { txAnalytics } = useAnalytics();
   const [revoke, revokeResult] = rpcApi.useRevokeAccessMutation();
 
-  const theme = useTheme();
+  useEffect(() => {
+    if (revokeResult.status === "fulfilled") {
+      onRevokButtonclick();
+    }
+  }, [revokeResult])
 
   const onRevoke = useCallback(
     async (
@@ -60,10 +66,6 @@ const RevokeButton: FC<RevokeButtonProps> = ({
     access.tokenAllowance.gt(0) ||
     access.flowRateAllowance.amountEther.gt(0);
 
-  if (!isRevokeAllowed) {
-    return null;
-  }
-
   return (
     <TransactionBoundary mutationResult={revokeResult}>
       {({ setDialogLoadingInfo }) => (
@@ -73,6 +75,7 @@ const RevokeButton: FC<RevokeButtonProps> = ({
             changeNetworkTitle: "Change Network",
           }}
           ButtonProps={{
+            disabled: isRevokeAllowed,
             size: "large",
             fullWidth: true,
             variant: "outlined",

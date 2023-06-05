@@ -38,7 +38,7 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
   </MenuItem>
 );
 
-const NetworkSelect:FC<{network: Network | undefined,  onChange: (network: Network) => void, placeholder?: string}> = ({network: selectedNetwork, onChange, placeholder})=> {
+const NetworkSelect:FC<{network: Network | undefined,  onChange: (network: Network) => void, placeholder?: string, disabled: boolean}> = ({network: selectedNetwork, onChange, placeholder, disabled})=> {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -68,8 +68,8 @@ const NetworkSelect:FC<{network: Network | undefined,  onChange: (network: Netwo
 
   return (
     <>
-      {/* {!isBelowMd ? ( */}
         <Button
+          disabled={disabled}
           variant="outlined"
           color="secondary"
           size="large"
@@ -89,12 +89,7 @@ const NetworkSelect:FC<{network: Network | undefined,  onChange: (network: Netwo
         >
           {selectedNetwork?.name || placeholder}
         </Button>
-      {/* ) : (
-        <IconButton onClick={handleOpen} size="small">
-        {selectedNetwork && <NetworkIcon network={selectedNetwork} size={28} fontSize={16} />}
-        </IconButton>
-      )} */}
-
+    
       <Menu
         anchorEl={anchorEl}
         open={open}

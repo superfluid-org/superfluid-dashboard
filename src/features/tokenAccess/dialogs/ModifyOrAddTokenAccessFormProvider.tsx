@@ -5,7 +5,6 @@ import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { mixed, number, object, string } from "yup";
 import { UnitOfTime } from "../../send/FlowRateInput";
-import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { testAddress, testEtherAmount } from "../../../utils/yupUtils";
 import { formRestorationOptions } from "../../transactionRestoration/transactionRestorations";
@@ -36,7 +35,7 @@ export type ValidModifyOrAddTokenAccessForm = {
     };
 };
 
-const defaultFormValues = {
+export const defaultFormValues = {
     data: {
         network: undefined,
         token: undefined,
@@ -82,8 +81,7 @@ const ModifyOrAddTokenAccessFormProvider: FC<
     PropsWithChildren<ModifyOrAddTokenAccessFormProviderProps>
 > = ({ children, initialFormValues }) => {
 
-    const { visibleAddress } = useVisibleAddress();
-    const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
+    const { stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
 
     const formSchema = useMemo(
         () =>
@@ -93,10 +91,10 @@ const ModifyOrAddTokenAccessFormProvider: FC<
                         token: object().required(),
                         operatorAddress: string().required().test(testAddress()),
                         network: object().required(),
-                    
                         tokenAllowance: string()
                             .required()
-                            .test(testEtherAmount({ notNegative: true })),
+                            .test(testEtherAmount({ notNegative: true }))
+                        ,
                         flowRateAllowance: object({
                             amountEther: string()
                                 .required()
@@ -107,12 +105,12 @@ const ModifyOrAddTokenAccessFormProvider: FC<
                                     Object.values(UnitOfTime).includes(x as UnitOfTime)
                                 ),
                         }),
-                        flowPermissions: number().required().min(1).max(7),
+                        flowPermissions: number().required(),
                     },
                     []
                 ),
             }),
-        [network, visibleAddress]
+        []
     );
 
     const formMethods = useForm<ValidModifyOrAddTokenAccessForm>({
@@ -144,7 +142,7 @@ const ModifyOrAddTokenAccessFormProvider: FC<
             );
             setIsInitialized(true);
         }
-    }, []);
+    }, [initialFormValues]);
 
     useEffect(() => {
         if (formState.isDirty) stopAutoSwitchToWalletNetwork();
@@ -154,7 +152,7 @@ const ModifyOrAddTokenAccessFormProvider: FC<
         if (formState.isDirty) {
             trigger();
         }
-    }, [visibleAddress]);
+    }, []);
 
     return isInitialized ? (
         <FormProvider {...formMethods}>{children}</FormProvider>
