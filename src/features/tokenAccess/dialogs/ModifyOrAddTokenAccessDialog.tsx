@@ -291,7 +291,7 @@ const ModifyOrEditForm: FC<{}> = () => {
                                 flowOperatorPermissions: flowPermissions,
                                 tokenAllowance: tokenAllowance,
                             }}
-                            onRevokButtonclick={closeDialog} 
+                            onRevokeButtonClick={closeDialog} 
                             />
                         }
                     </Stack>
