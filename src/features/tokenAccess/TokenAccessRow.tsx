@@ -1,5 +1,12 @@
-import { Button, Stack, TableCell, TableRow, Typography, useMediaQuery } from "@mui/material";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Button,
+  Stack,
+  TableCell,
+  TableRow,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
+import { FC, useEffect, useState } from "react";
 import { Address } from "@superfluid-finance/sdk-core";
 import TokenIcon from "../token/TokenIcon";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
@@ -16,10 +23,12 @@ import {
 } from "../../utils/isCloseToUnlimitedAllowance";
 import { flowOperatorPermissionsToString } from "../../utils/flowOperatorPermissionsToString";
 import { useTheme } from "@mui/material/styles";
-import { useModifyOrAddTokenAccessBoundary } from "./dialogs/ModifyOrAddTokenAccessBoundary";
+import {
+  AddOrModifyDialogBoundary,
+  useModifyOrAddTokenAccessBoundary,
+} from "./dialogs/ModifyOrAddTokenAccessBoundary";
 import { Token } from "./dialogs/ModifyOrAddTokenAccessFormProvider";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
-
 
 interface Props {
   address: Address;
@@ -40,7 +49,6 @@ const TokenAccessRow: FC<Props> = ({
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-  const { openDialog, setInitialFormValues } = useModifyOrAddTokenAccessBoundary();
 
   const [initialAccess, setInitialState] = useState({
     tokenAllowance: BigNumber.from(tokenAllowance),
@@ -49,12 +57,13 @@ const TokenAccessRow: FC<Props> = ({
       amountEther: BigNumber.from(flowRateAllowance),
       unitOfTime: UnitOfTime.Second,
     },
-  })
-
-  const { data: tokenInfo, isLoading: isTokenLoading } = subgraphApi.useTokenQuery({
-    id: token,
-    chainId: network.id,
   });
+
+  const { data: tokenInfo, isLoading: isTokenLoading } =
+    subgraphApi.useTokenQuery({
+      id: token,
+      chainId: network.id,
+    });
 
   useEffect(() => {
     setInitialState({
@@ -64,260 +73,313 @@ const TokenAccessRow: FC<Props> = ({
         amountEther: BigNumber.from(flowRateAllowance),
         unitOfTime: UnitOfTime.Second,
       },
-    })
-    setInitialFormValues({
-      network: network,
-      token: tokenInfo ? {
-        address: tokenInfo.id,
-        decimals: tokenInfo.decimals,
-        isListed: tokenInfo.isListed,
-        name: tokenInfo.name,
-        symbol: tokenInfo.symbol,
-        type: getSuperTokenType({
-          network,
-          address: tokenInfo.id,
-          underlyingAddress: tokenInfo.underlyingAddress,
-        })
-      } as Token : undefined,
-      operatorAddress: address,
-      tokenAllowance: BigNumber.from(tokenAllowance),
-      flowPermissions: flowOperatorPermissions,
-      flowRateAllowance: {
-        amountEther: BigNumber.from(flowRateAllowance),
-        unitOfTime: UnitOfTime.Second,
-      },
     });
-  }, [address,network, tokenInfo, tokenAllowance, flowOperatorPermissions, flowRateAllowance]);
+  }, [
+    address,
+    network,
+    tokenInfo,
+    tokenAllowance,
+    flowOperatorPermissions,
+    flowRateAllowance,
+  ]);
 
-  return <>{isBelowMd ? <TableRow>
-    <TableCell>
-      <Stack gap={2} sx={{ px: 2, py: 2 }}><Stack direction="row" justifyContent="space-between" sx={{ width: "auto" }}>
-        <Typography variant="subtitle1">Asset</Typography>
-        <Stack
-          data-cy={"token-header"}
-          direction="row"
-          alignItems="center"
-          gap={2}
-        >
-          <TokenIcon
-            isSuper
-            tokenSymbol={tokenInfo?.symbol}
-            isLoading={isTokenLoading}
-          />
-          <Typography variant="h6" data-cy={"token-symbol"}>{tokenInfo?.symbol}</Typography>
-        </Stack>
-      </Stack>
-        <Stack direction="row" justifyContent="space-between" sx={{ width: "auto" }}>
-          <Typography variant="subtitle1">Address</Typography>
-          <Stack direction="row" alignItems="center" gap={1.5}>
-            <AddressAvatar
-              address={address}
-              AvatarProps={{
-                sx: { width: "24px", height: "24px", borderRadius: "5px" },
-              }}
-              BlockiesProps={{ size: 8, scale: 3 }}
-            />
-            <AddressCopyTooltip address={address}>
-              <Typography data-cy={"access-setting-address"} variant="h6">
-                <AddressName address={address} />
-              </Typography>
-            </AddressCopyTooltip>
-          </Stack>
-        </Stack>
-        <Stack direction="row" justifyContent="space-between" sx={{ width: "auto" }}>
-          <Typography variant="subtitle1">ERC-20 Allowance</Typography>
-          {tokenInfo && (
-            <Stack direction="row" alignItems="center" gap={0.5}>
-              <Typography variant="h6">
-                {isCloseToUnlimitedTokenAllowance(initialAccess.tokenAllowance) ? (
-                  <span>Unlimited</span>
-                ) : (
-                  <>
-                    <Amount
-                      decimals={tokenInfo?.decimals}
-                      wei={initialAccess.tokenAllowance}
-                    >{` ${tokenInfo?.symbol}`}</Amount>
-                  </>
+  return (
+    <>
+      {isBelowMd ? (
+        <TableRow>
+          <TableCell>
+            <Stack gap={2} sx={{ px: 2, py: 2 }}>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                sx={{ width: "auto" }}
+              >
+                <Typography variant="subtitle1">Asset</Typography>
+                <Stack
+                  data-cy={"token-header"}
+                  direction="row"
+                  alignItems="center"
+                  gap={2}
+                >
+                  <TokenIcon
+                    isSuper
+                    tokenSymbol={tokenInfo?.symbol}
+                    isLoading={isTokenLoading}
+                  />
+                  <Typography variant="h6" data-cy={"token-symbol"}>
+                    {tokenInfo?.symbol}
+                  </Typography>
+                </Stack>
+              </Stack>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                sx={{ width: "auto" }}
+              >
+                <Typography variant="subtitle1">Address</Typography>
+                <Stack direction="row" alignItems="center" gap={1.5}>
+                  <AddressAvatar
+                    address={address}
+                    AvatarProps={{
+                      sx: {
+                        width: "24px",
+                        height: "24px",
+                        borderRadius: "5px",
+                      },
+                    }}
+                    BlockiesProps={{ size: 8, scale: 3 }}
+                  />
+                  <AddressCopyTooltip address={address}>
+                    <Typography data-cy={"access-setting-address"} variant="h6">
+                      <AddressName address={address} />
+                    </Typography>
+                  </AddressCopyTooltip>
+                </Stack>
+              </Stack>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                sx={{ width: "auto" }}
+              >
+                <Typography variant="subtitle1">ERC-20 Allowance</Typography>
+                {tokenInfo && (
+                  <Stack direction="row" alignItems="center" gap={0.5}>
+                    <Typography variant="h6">
+                      {isCloseToUnlimitedTokenAllowance(
+                        initialAccess.tokenAllowance
+                      ) ? (
+                        <span>Unlimited</span>
+                      ) : (
+                        <>
+                          <Amount
+                            decimals={tokenInfo?.decimals}
+                            wei={initialAccess.tokenAllowance}
+                          >{` ${tokenInfo?.symbol}`}</Amount>
+                        </>
+                      )}
+                    </Typography>
+                  </Stack>
                 )}
-              </Typography>
-
+              </Stack>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                sx={{ width: "auto" }}
+              >
+                <Typography variant="subtitle1">Stream Permissions</Typography>
+                <Typography variant="h6">
+                  {flowOperatorPermissionsToString(
+                    initialAccess.flowOperatorPermissions
+                  )}
+                </Typography>
+              </Stack>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                sx={{ width: "auto" }}
+              >
+                <Typography variant="subtitle1">Stream Allowance</Typography>
+                {tokenInfo && (
+                  <Stack direction="row" alignItems="center" gap={0.5}>
+                    <Typography variant="h6">
+                      {isCloseToUnlimitedFlowRateAllowance(
+                        initialAccess.flowRateAllowance.amountEther
+                      ) ? (
+                        <span>Unlimited</span>
+                      ) : (
+                        <>
+                          <Amount
+                            decimals={tokenInfo?.decimals}
+                            wei={initialAccess.flowRateAllowance.amountEther}
+                          >{` ${tokenInfo?.symbol}/ ${
+                            timeUnitShortFormMap[
+                              initialAccess.flowRateAllowance.unitOfTime
+                            ]
+                          }`}</Amount>
+                        </>
+                      )}
+                    </Typography>
+                  </Stack>
+                )}
+              </Stack>
+              <Stack gap={2} direction="column">
+                <AddOrModifyDialogBoundary>
+                  {({ openDialog, setInitialFormValues }) => (
+                    <Button
+                      data-cy={"modify-access-button"}
+                      size="medium"
+                      fullWidth={true}
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        openDialog();
+                        setInitialFormValues({
+                          network: network,
+                          token: tokenInfo
+                            ? ({
+                                address: tokenInfo.id,
+                                decimals: tokenInfo.decimals,
+                                isListed: tokenInfo.isListed,
+                                name: tokenInfo.name,
+                                symbol: tokenInfo.symbol,
+                                type: getSuperTokenType({
+                                  network,
+                                  address: tokenInfo.id,
+                                  underlyingAddress:
+                                    tokenInfo.underlyingAddress,
+                                }),
+                              } as Token)
+                            : undefined,
+                          operatorAddress: address,
+                          flowPermissions:
+                            initialAccess.flowOperatorPermissions,
+                          flowRateAllowance: initialAccess.flowRateAllowance,
+                          tokenAllowance: initialAccess.tokenAllowance,
+                        });
+                      }}
+                    >
+                      Modify
+                    </Button>
+                  )}
+                </AddOrModifyDialogBoundary>
+              </Stack>
             </Stack>
-          )}
-        </Stack>
-        <Stack direction="row" justifyContent="space-between" sx={{ width: "auto" }}>
-          <Typography variant="subtitle1">Stream Permissions</Typography>
-          <Typography variant="h6">{flowOperatorPermissionsToString(initialAccess.flowOperatorPermissions)}</Typography>
-        </Stack>
-        <Stack direction="row" justifyContent="space-between" sx={{ width: "auto" }}>
-          <Typography variant="subtitle1">Stream Allowance</Typography>
-          {tokenInfo && (
-            <Stack direction="row" alignItems="center" gap={0.5}>
-              <Typography variant="h6">
-                {isCloseToUnlimitedFlowRateAllowance(
-                  initialAccess.flowRateAllowance.amountEther
-                ) ? (
-                  <span>Unlimited</span>
-                ) : (
-                  <>
-                    <Amount
-                      decimals={tokenInfo?.decimals}
-                      wei={initialAccess.flowRateAllowance.amountEther}
-                    >{` ${tokenInfo?.symbol}/ ${timeUnitShortFormMap[initialAccess.flowRateAllowance.unitOfTime]
+          </TableCell>
+        </TableRow>
+      ) : (
+        <TableRow>
+          <TableCell align="left">
+            <Stack
+              data-cy={"token-header"}
+              direction="row"
+              alignItems="center"
+              gap={2}
+            >
+              <TokenIcon
+                isSuper
+                tokenSymbol={tokenInfo?.symbol}
+                isLoading={isTokenLoading}
+              />
+              <Typography variant="h6" data-cy={"token-symbol"}>
+                {tokenInfo?.symbol}
+              </Typography>
+            </Stack>
+          </TableCell>
+          <TableCell align="left">
+            <Stack direction="row" alignItems="center" gap={1.5}>
+              <AddressAvatar
+                address={address}
+                AvatarProps={{
+                  sx: { width: "24px", height: "24px", borderRadius: "5px" },
+                }}
+                BlockiesProps={{ size: 8, scale: 3 }}
+              />
+              <AddressCopyTooltip address={address}>
+                <Typography data-cy={"access-setting-address"} variant="h6">
+                  <AddressName address={address} />
+                </Typography>
+              </AddressCopyTooltip>
+            </Stack>
+          </TableCell>
+          <TableCell style={{ overflowWrap: "anywhere" }} align="left">
+            {tokenInfo && (
+              <Stack direction="row" alignItems="center" gap={0.5}>
+                <Typography variant="h6">
+                  {isCloseToUnlimitedTokenAllowance(
+                    initialAccess.tokenAllowance
+                  ) ? (
+                    <span>Unlimited</span>
+                  ) : (
+                    <>
+                      <Amount
+                        decimals={tokenInfo?.decimals}
+                        wei={initialAccess.tokenAllowance}
+                      >{` ${tokenInfo?.symbol}`}</Amount>
+                    </>
+                  )}
+                </Typography>
+              </Stack>
+            )}
+          </TableCell>
+          <TableCell align="left">
+            <Typography variant="h6">
+              {flowOperatorPermissionsToString(
+                initialAccess.flowOperatorPermissions
+              )}
+            </Typography>
+          </TableCell>
+          <TableCell align="left" style={{ overflowWrap: "anywhere" }}>
+            {tokenInfo && (
+              <Stack direction="row" alignItems="center" gap={0.5}>
+                <Typography variant="h6">
+                  {isCloseToUnlimitedFlowRateAllowance(
+                    initialAccess.flowRateAllowance.amountEther
+                  ) ? (
+                    <span>Unlimited</span>
+                  ) : (
+                    <>
+                      <Amount
+                        decimals={tokenInfo?.decimals}
+                        wei={initialAccess.flowRateAllowance.amountEther}
+                      >{` ${tokenInfo?.symbol}/ ${
+                        timeUnitShortFormMap[
+                          initialAccess.flowRateAllowance.unitOfTime
+                        ]
                       }`}</Amount>
-                  </>
-                )}
-              </Typography>
-            </Stack>
-          )}
-        </Stack>
-        <Stack gap={2} direction="column">
-          <Button
-            data-cy={"modify-access-button"}
-            size="medium"
-            fullWidth={true}
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              openDialog();
-              setInitialFormValues({
-                network: network,
-                token: tokenInfo ? {
-                  address: tokenInfo.id,
-                  decimals: tokenInfo.decimals,
-                  isListed: tokenInfo.isListed,
-                  name: tokenInfo.name,
-                  symbol: tokenInfo.symbol,
-                  type: getSuperTokenType({
-                    network,
-                    address: tokenInfo.id,
-                    underlyingAddress: tokenInfo.underlyingAddress,
-                  })
-                } as Token : undefined,
-                operatorAddress: address,
-                flowPermissions: initialAccess.flowOperatorPermissions,
-                flowRateAllowance: initialAccess.flowRateAllowance,
-                tokenAllowance: initialAccess.tokenAllowance
-              });
+                    </>
+                  )}
+                </Typography>
+              </Stack>
+            )}
+          </TableCell>
+          <TableCell
+            align="left"
+            sx={{
+              padding: "25px",
             }}
           >
-            Modify
-          </Button>
-        </Stack></Stack>
-    </TableCell>
-  </TableRow>
-    :
-    <TableRow>
-      <TableCell align="left">
-        <Stack
-          data-cy={"token-header"}
-          direction="row"
-          alignItems="center"
-          gap={2}
-        >
-          <TokenIcon
-            isSuper
-            tokenSymbol={tokenInfo?.symbol}
-            isLoading={isTokenLoading}
-          />
-          <Typography variant="h6" data-cy={"token-symbol"}>{tokenInfo?.symbol}</Typography>
-        </Stack>
-      </TableCell>
-      <TableCell align="left">
-        <Stack direction="row" alignItems="center" gap={1.5}>
-          <AddressAvatar
-            address={address}
-            AvatarProps={{
-              sx: { width: "24px", height: "24px", borderRadius: "5px" },
-            }}
-            BlockiesProps={{ size: 8, scale: 3 }}
-          />
-          <AddressCopyTooltip address={address}>
-            <Typography data-cy={"access-setting-address"} variant="h6">
-              <AddressName address={address} />
-            </Typography>
-          </AddressCopyTooltip>
-        </Stack>
-      </TableCell>
-      <TableCell style={{ overflowWrap: "anywhere" }} align="left">
-        {tokenInfo && (
-          <Stack direction="row" alignItems="center" gap={0.5}>
-            <Typography variant="h6">
-              {isCloseToUnlimitedTokenAllowance(initialAccess.tokenAllowance) ? (
-                <span>Unlimited</span>
-              ) : (
-                <>
-                  <Amount
-                    decimals={tokenInfo?.decimals}
-                    wei={initialAccess.tokenAllowance}
-                  >{` ${tokenInfo?.symbol}`}</Amount>
-                </>
+            <AddOrModifyDialogBoundary>
+              {({ openDialog, setInitialFormValues }) => (
+                <Button
+                  data-cy={"modify-access-button"}
+                  size="medium"
+                  fullWidth={true}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    openDialog();
+                    setInitialFormValues({
+                      network: network,
+                      token: tokenInfo
+                        ? ({
+                            address: tokenInfo.id,
+                            decimals: tokenInfo.decimals,
+                            isListed: tokenInfo.isListed,
+                            name: tokenInfo.name,
+                            symbol: tokenInfo.symbol,
+                            type: getSuperTokenType({
+                              network,
+                              address: tokenInfo.id,
+                              underlyingAddress: tokenInfo.underlyingAddress,
+                            }),
+                          } as Token)
+                        : undefined,
+                      operatorAddress: address,
+                      flowPermissions: initialAccess.flowOperatorPermissions,
+                      flowRateAllowance: initialAccess.flowRateAllowance,
+                      tokenAllowance: initialAccess.tokenAllowance,
+                    });
+                  }}
+                >
+                  Modify
+                </Button>
               )}
-            </Typography>
-          </Stack>
-        )}
-      </TableCell>
-      <TableCell align="left">
-        <Typography variant="h6">{flowOperatorPermissionsToString(initialAccess.flowOperatorPermissions)}</Typography>
-      </TableCell>
-      <TableCell align="left" style={{ overflowWrap: "anywhere" }}>
-        {tokenInfo && (
-          <Stack direction="row" alignItems="center" gap={0.5}>
-            <Typography variant="h6">
-              {isCloseToUnlimitedFlowRateAllowance(
-                initialAccess.flowRateAllowance.amountEther
-              ) ? (
-                <span>Unlimited</span>
-              ) : (
-                <>
-                  <Amount
-                    decimals={tokenInfo?.decimals}
-                    wei={initialAccess.flowRateAllowance.amountEther}
-                  >{` ${tokenInfo?.symbol}/ ${timeUnitShortFormMap[initialAccess.flowRateAllowance.unitOfTime]
-                    }`}</Amount>
-                </>
-              )}
-            </Typography>
-          </Stack>
-        )}
-      </TableCell>
-      <TableCell align="left" sx={{
-        padding: "25px"
-      }}>
-        <Button
-          data-cy={"modify-access-button"}
-          size="medium"
-          fullWidth={true}
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            openDialog();
-            setInitialFormValues({
-              network: network,
-              token: tokenInfo ? {
-                address: tokenInfo.id,
-                decimals: tokenInfo.decimals,
-                isListed: tokenInfo.isListed,
-                name: tokenInfo.name,
-                symbol: tokenInfo.symbol,
-                type: getSuperTokenType({
-                  network,
-                  address: tokenInfo.id,
-                  underlyingAddress: tokenInfo.underlyingAddress,
-                })
-              } as Token : undefined,
-              operatorAddress: address,
-              flowPermissions: initialAccess.flowOperatorPermissions,
-              flowRateAllowance: initialAccess.flowRateAllowance,
-              tokenAllowance: initialAccess.tokenAllowance
-            });
-          }}
-        >
-          Modify
-        </Button>
-      </TableCell>
-    </TableRow>
-  }
-  </>;
+            </AddOrModifyDialogBoundary>
+          </TableCell>
+        </TableRow>
+      )}
+    </>
+  );
 };
 
 export default TokenAccessRow;

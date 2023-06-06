@@ -13,7 +13,6 @@ import {
   TableRow,
 } from "@mui/material";
 import TokenAccessRow from "./TokenAccessRow";
-import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { FetchingStatus } from "./TokenAccessTables";
 import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
