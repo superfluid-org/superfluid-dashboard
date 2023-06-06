@@ -13,7 +13,7 @@ interface RevokeButtonProps {
   tokenAddress: string;
   operatorAddress: string;
   access: TokenAccessProps;
-  onRevokButtonclick: () => void;
+  onRevokeButtonClick: () => void;
 }
 
 const RevokeButton: FC<RevokeButtonProps> = ({
@@ -21,14 +21,14 @@ const RevokeButton: FC<RevokeButtonProps> = ({
   tokenAddress,
   operatorAddress,
   access,
-  onRevokButtonclick,
+  onRevokeButtonClick,
 }) => {
   const { txAnalytics } = useAnalytics();
   const [revoke, revokeResult] = rpcApi.useRevokeAccessMutation();
 
   useEffect(() => {
     if (revokeResult.status === "fulfilled") {
-      onRevokButtonclick();
+      onRevokeButtonClick();
     }
   }, [revokeResult])
 

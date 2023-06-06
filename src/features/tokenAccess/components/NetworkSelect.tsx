@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   Collapse,
-  IconButton,
   ListItemAvatar,
   Menu,
   MenuItem,
