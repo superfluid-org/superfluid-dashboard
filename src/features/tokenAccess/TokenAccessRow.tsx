@@ -25,7 +25,6 @@ import { flowOperatorPermissionsToString } from "../../utils/flowOperatorPermiss
 import { useTheme } from "@mui/material/styles";
 import {
   AddOrModifyDialogBoundary,
-  useModifyOrAddTokenAccessBoundary,
 } from "./dialogs/ModifyOrAddTokenAccessBoundary";
 import { Token } from "./dialogs/ModifyOrAddTokenAccessFormProvider";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
@@ -82,6 +81,28 @@ const TokenAccessRow: FC<Props> = ({
     flowOperatorPermissions,
     flowRateAllowance,
   ]);
+
+  const initialFormValues = {
+    network: network,
+    token: tokenInfo
+      ? ({
+          address: tokenInfo.id,
+          decimals: tokenInfo.decimals,
+          isListed: tokenInfo.isListed,
+          name: tokenInfo.name,
+          symbol: tokenInfo.symbol,
+          type: getSuperTokenType({
+            network,
+            address: tokenInfo.id,
+            underlyingAddress: tokenInfo.underlyingAddress,
+          }),
+        } as Token)
+      : undefined,
+    operatorAddress: address,
+    flowPermissions: initialAccess.flowOperatorPermissions,
+    flowRateAllowance: initialAccess.flowRateAllowance,
+    tokenAllowance: initialAccess.tokenAllowance,
+  };
 
   return (
     <>
@@ -191,7 +212,7 @@ const TokenAccessRow: FC<Props> = ({
                           <Amount
                             decimals={tokenInfo?.decimals}
                             wei={initialAccess.flowRateAllowance.amountEther}
-                          >{` ${tokenInfo?.symbol}/ ${
+                          >{` ${tokenInfo?.symbol}/${
                             timeUnitShortFormMap[
                               initialAccess.flowRateAllowance.unitOfTime
                             ]
@@ -203,40 +224,17 @@ const TokenAccessRow: FC<Props> = ({
                 )}
               </Stack>
               <Stack gap={2} direction="column">
-                <AddOrModifyDialogBoundary>
-                  {({ openDialog, setInitialFormValues }) => (
+                <AddOrModifyDialogBoundary
+                  initialFormValues={initialFormValues}
+                >
+                  {({ openDialog }) => (
                     <Button
                       data-cy={"modify-access-button"}
                       size="medium"
                       fullWidth={true}
                       variant="contained"
                       color="primary"
-                      onClick={() => {
-                        openDialog();
-                        setInitialFormValues({
-                          network: network,
-                          token: tokenInfo
-                            ? ({
-                                address: tokenInfo.id,
-                                decimals: tokenInfo.decimals,
-                                isListed: tokenInfo.isListed,
-                                name: tokenInfo.name,
-                                symbol: tokenInfo.symbol,
-                                type: getSuperTokenType({
-                                  network,
-                                  address: tokenInfo.id,
-                                  underlyingAddress:
-                                    tokenInfo.underlyingAddress,
-                                }),
-                              } as Token)
-                            : undefined,
-                          operatorAddress: address,
-                          flowPermissions:
-                            initialAccess.flowOperatorPermissions,
-                          flowRateAllowance: initialAccess.flowRateAllowance,
-                          tokenAllowance: initialAccess.tokenAllowance,
-                        });
-                      }}
+                      onClick={() => openDialog()}
                     >
                       Modify
                     </Button>
@@ -321,7 +319,7 @@ const TokenAccessRow: FC<Props> = ({
                       <Amount
                         decimals={tokenInfo?.decimals}
                         wei={initialAccess.flowRateAllowance.amountEther}
-                      >{` ${tokenInfo?.symbol}/ ${
+                      >{` ${tokenInfo?.symbol}/${
                         timeUnitShortFormMap[
                           initialAccess.flowRateAllowance.unitOfTime
                         ]
@@ -338,38 +336,17 @@ const TokenAccessRow: FC<Props> = ({
               padding: "25px",
             }}
           >
-            <AddOrModifyDialogBoundary>
-              {({ openDialog, setInitialFormValues }) => (
+            <AddOrModifyDialogBoundary
+              initialFormValues={initialFormValues}
+            >
+              {({ openDialog }) => (
                 <Button
                   data-cy={"modify-access-button"}
                   size="medium"
                   fullWidth={true}
                   variant="contained"
                   color="primary"
-                  onClick={() => {
-                    openDialog();
-                    setInitialFormValues({
-                      network: network,
-                      token: tokenInfo
-                        ? ({
-                            address: tokenInfo.id,
-                            decimals: tokenInfo.decimals,
-                            isListed: tokenInfo.isListed,
-                            name: tokenInfo.name,
-                            symbol: tokenInfo.symbol,
-                            type: getSuperTokenType({
-                              network,
-                              address: tokenInfo.id,
-                              underlyingAddress: tokenInfo.underlyingAddress,
-                            }),
-                          } as Token)
-                        : undefined,
-                      operatorAddress: address,
-                      flowPermissions: initialAccess.flowOperatorPermissions,
-                      flowRateAllowance: initialAccess.flowRateAllowance,
-                      tokenAllowance: initialAccess.tokenAllowance,
-                    });
-                  }}
+                  onClick={() => openDialog()}
                 >
                   Modify
                 </Button>

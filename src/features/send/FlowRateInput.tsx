@@ -205,7 +205,7 @@ export const FlowRateInput: FC<{
             value={unitOfTime}
             translate="yes"
           >
-            {`/ ${timeUnitWordMap[unitOfTime]}`}
+            {`/${timeUnitWordMap[unitOfTime]}`}
           </MenuItem>
         ))}
       </Select>

@@ -73,18 +73,15 @@ const TokenAccessTables: FC<Props> = ({ address }) => {
             Manage your Permissions and Allowances in one place.
           </Typography>
         </Stack>
-        <AddOrModifyDialogBoundary>
-          {({ openDialog, setInitialFormValues }) => (
+        <AddOrModifyDialogBoundary initialFormValues={{}}>
+          {({ openDialog }) => (
             <Button
               sx={{
                 height: "40px",
               }}
               variant="contained"
               endIcon={<Add />}
-              onClick={() => {
-                openDialog();
-                setInitialFormValues({});
-              }}
+              onClick={() => openDialog()}
             >
               Add
             </Button>

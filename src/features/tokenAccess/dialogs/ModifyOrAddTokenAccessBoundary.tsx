@@ -13,8 +13,7 @@ import ModifyOrAddTokenAccessDialog from "./ModifyOrAddTokenAccessDialog";
 interface ModifyOrAddTokenAccessBoundaryContextValue {
   openDialog: () => void;
   closeDialog: () => void;
-  setInitialFormValues: (initialFormValues: ModifyOrAddTokenAccessFormProviderProps["initialFormValues"]) => void;
-  initialFormValues: ModifyOrAddTokenAccessFormProviderProps["initialFormValues"]
+  initialFormValues: ModifyOrAddTokenAccessFormProviderProps["initialFormValues"];
 }
 
 const ModifyOrAddTokenAccessBoundaryContext =
@@ -24,28 +23,26 @@ export const useModifyOrAddTokenAccessBoundary = () =>
   useContext(ModifyOrAddTokenAccessBoundaryContext);
 
 export interface ModifyOrAddTokenAccessBoundaryProps {
-  children: (ModifyOrAddTokenAccessContext: ModifyOrAddTokenAccessBoundaryContextValue) => ReactNode;
+  children: (
+    ModifyOrAddTokenAccessContext: ModifyOrAddTokenAccessBoundaryContextValue
+  ) => ReactNode;
+  initialFormValues: ModifyOrAddTokenAccessFormProviderProps["initialFormValues"];
 }
 
-export const AddOrModifyDialogBoundary: FC<ModifyOrAddTokenAccessBoundaryProps> = ({
-  children,
-  ...props
-}) => {
+export const AddOrModifyDialogBoundary: FC<
+  ModifyOrAddTokenAccessBoundaryProps
+> = ({ children, initialFormValues, ...props }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const [initialFormValues, setInitialFormValues] = useState<ModifyOrAddTokenAccessFormProviderProps["initialFormValues"]>({});
-
-  const contextValue = useMemo<ModifyOrAddTokenAccessBoundaryContextValue>(() => ({
-    dialogOpen,
-    openDialog: () => setDialogOpen(true),
-    closeDialog: () => setDialogOpen(false),
-    setInitialFormValues,
-    initialFormValues,
-  }),
-    [
+  const contextValue = useMemo<ModifyOrAddTokenAccessBoundaryContextValue>(
+    () => ({
       dialogOpen,
-      setInitialFormValues,
-      initialFormValues
+      openDialog: () => setDialogOpen(true),
+      closeDialog: () => setDialogOpen(false),
+      initialFormValues,
+    }),
+    [dialogOpen, 
+      // initialFormValues // TODO(KK): Exclude for now. This will cause issues later.
     ]
   );
 
