@@ -10,7 +10,8 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import ModifyOrAddTokenAccessFormProvider, {
+import {
+  ModifyOrAddTokenAccessFormProviderProps,
   PartialModifyOrAddTokenAccessForm,
 } from "./ModifyOrAddTokenAccessFormProvider";
 import { useModifyOrAddTokenAccessBoundary } from "./ModifyOrAddTokenAccessBoundary";
@@ -107,11 +108,13 @@ const FlowPermissionSwitch: FC<{
   );
 };
 
-const ModifyOrEditForm: FC<{}> = () => {
+export const ModifyOrEditForm: FC<{
+  initialFormValues: ModifyOrAddTokenAccessFormProviderProps["initialFormValues"];
+}> = ({ initialFormValues }) => {
   const { control, formState, watch, setValue, trigger } =
     useFormContext<PartialModifyOrAddTokenAccessForm>();
 
-  const { initialFormValues, closeDialog } =
+  const { closeDialog } =
     useModifyOrAddTokenAccessBoundary();
 
   const theme = useTheme();
@@ -372,16 +375,3 @@ const ModifyOrEditForm: FC<{}> = () => {
     </ConnectionBoundary>
   );
 };
-
-const ModifyOrAddTokenAccessDialog: FC<{}> = ({}) => {
-  const { initialFormValues } = useModifyOrAddTokenAccessBoundary();
-  return (
-    <Stack component={"form"}>
-      <ModifyOrAddTokenAccessFormProvider initialFormValues={initialFormValues}>
-        <ModifyOrEditForm />
-      </ModifyOrAddTokenAccessFormProvider>
-    </Stack>
-  );
-};
-
-export default ModifyOrAddTokenAccessDialog;

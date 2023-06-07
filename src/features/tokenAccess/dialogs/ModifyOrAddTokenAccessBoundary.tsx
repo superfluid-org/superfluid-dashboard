@@ -6,14 +6,16 @@ import {
   useMemo,
   useState,
 } from "react";
-import { ModifyOrAddTokenAccessFormProviderProps } from "./ModifyOrAddTokenAccessFormProvider";
+import ModifyOrAddTokenAccessFormProvider, {
+  ModifyOrAddTokenAccessFormProviderProps,
+} from "./ModifyOrAddTokenAccessFormProvider";
 import ResponsiveDialog from "../../common/ResponsiveDialog";
-import ModifyOrAddTokenAccessDialog from "./ModifyOrAddTokenAccessDialog";
+import { ModifyOrEditForm } from "./ModifyOrEditForm";
+import { Stack } from "@mui/material";
 
 interface ModifyOrAddTokenAccessBoundaryContextValue {
   openDialog: () => void;
   closeDialog: () => void;
-  initialFormValues: ModifyOrAddTokenAccessFormProviderProps["initialFormValues"];
 }
 
 const ModifyOrAddTokenAccessBoundaryContext =
@@ -43,7 +45,6 @@ export const AddOrModifyDialogBoundary: FC<
     }),
     [
       dialogOpen,
-      // initialFormValues // TODO(KK): Exclude for now. This will cause issues later.
     ]
   );
 
@@ -58,7 +59,13 @@ export const AddOrModifyDialogBoundary: FC<
         }}
         translate="yes"
       >
-        <ModifyOrAddTokenAccessDialog />
+        <Stack component={"form"}>
+          <ModifyOrAddTokenAccessFormProvider
+            initialFormValues={initialFormValues}
+          >
+            <ModifyOrEditForm initialFormValues={initialFormValues} />
+          </ModifyOrAddTokenAccessFormProvider>
+        </Stack>
       </ResponsiveDialog>
     </ModifyOrAddTokenAccessBoundaryContext.Provider>
   );
