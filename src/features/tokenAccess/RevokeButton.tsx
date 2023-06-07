@@ -1,6 +1,5 @@
-import { Typography, alpha, useTheme } from "@mui/material";
-import { Signer } from "@wagmi/core";
-import { FC, ReactNode, useCallback, useEffect, useState } from "react";
+import { Typography } from "@mui/material";
+import { FC, useEffect } from "react";
 import { Network } from "../network/networks";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
@@ -26,40 +25,12 @@ const RevokeButton: FC<RevokeButtonProps> = ({
   const { txAnalytics } = useAnalytics();
   const [revoke, revokeResult] = rpcApi.useRevokeAccessMutation();
 
+  // TODO(KK): What is this for?
   useEffect(() => {
     if (revokeResult.status === "fulfilled") {
       onRevokeButtonClick();
     }
   }, [revokeResult]);
-
-  const onRevoke = useCallback(
-    async (
-      signer: Signer,
-      setDialogLoadingInfo: (children: ReactNode) => void
-    ) => {
-      setDialogLoadingInfo(
-        <Typography variant="h5" color="text.secondary" translate="yes">
-          Permissions & Allowances to the token is being revoked.
-        </Typography>
-      );
-
-      const primaryArgs = {
-        chainId: network.id,
-        superTokenAddress: tokenAddress,
-        operatorAddress: operatorAddress,
-        initialAccess: access,
-      };
-
-      revoke({
-        ...primaryArgs,
-        signer,
-      })
-        .unwrap()
-        .then(...txAnalytics("Revoked Permissions & Allowances", primaryArgs))
-        .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
-    },
-    [revoke, access, txAnalytics, network, tokenAddress, operatorAddress]
-  );
 
   const isRevokeAllowed =
     access.flowOperatorPermissions !== 0 ||
@@ -80,7 +51,30 @@ const RevokeButton: FC<RevokeButtonProps> = ({
             fullWidth: true,
             variant: "outlined",
           }}
-          onClick={(signer) => onRevoke(signer, setDialogLoadingInfo)}
+          onClick={async (signer) => {
+            setDialogLoadingInfo(
+              <Typography variant="h5" color="text.secondary" translate="yes">
+                Permissions & Allowances to the token is being revoked.
+              </Typography>
+            );
+
+            const primaryArgs = {
+              chainId: network.id,
+              superTokenAddress: tokenAddress,
+              operatorAddress: operatorAddress,
+              initialAccess: access,
+            };
+
+            revoke({
+              ...primaryArgs,
+              signer,
+            })
+              .unwrap()
+              .then(
+                ...txAnalytics("Revoked Permissions & Allowances", primaryArgs)
+              )
+              .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
+          }}
         >
           Revoke
         </TransactionButton>

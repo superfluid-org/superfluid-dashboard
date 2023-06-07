@@ -1,11 +1,8 @@
 import { Typography } from "@mui/material";
-import { Signer } from "@wagmi/core";
-import { Overrides } from "ethers";
-import { FC, ReactNode, useCallback } from "react";
+import { FC } from "react";
 import { Network } from "../network/networks";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
-import { useAnalytics } from "../analytics/useAnalytics";
 import { rpcApi } from "../redux/store";
 import { TokenAccessProps } from "./dialogs/UpsertTokenAccessForm";
 
@@ -25,62 +22,19 @@ const SaveButton: FC<SaveButtonProps> = ({
   operatorAddress,
   initialAccess,
   editedAccess,
-  disabled,
+  disabled: disabled_,
   title = "Save changes",
 }) => {
-  const { txAnalytics } = useAnalytics();
   const [updateAccess, updateAccessResult] = rpcApi.useUpdateAccessMutation();
 
-  const onUpdate = useCallback(
-    async (
-      network: Network,
-      signer: Signer,
-      tokenAddress: string,
-      setDialogLoadingInfo: (children: ReactNode) => void,
-      getOverrides: () => Promise<Overrides>
-    ) => {
-      setDialogLoadingInfo(
-        <Typography variant="h5" color="text.secondary" translate="yes">
-          Updating token permissions & allowances
-        </Typography>
-      );
-
-      const primaryArgs = {
-        chainId: network.id,
-        superTokenAddress: tokenAddress,
-        operatorAddress: operatorAddress,
-        initialAccess,
-        editedAccess: editedAccess,
-      };
-
-      updateAccess({
-        ...primaryArgs,
-        signer,
-        overrides: await getOverrides(),
-      })
-        .unwrap()
-        .then(...txAnalytics("Updated Permissions & Allowances", primaryArgs))
-        .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
-    },
-    [
-      disabled,
-      updateAccess,
-      initialAccess,
-      editedAccess,
-      txAnalytics,
-      network,
-      tokenAddress,
-      operatorAddress,
-    ]
-  );
-
-  const _isDisabled =
-    disabled || network === undefined || tokenAddress === undefined;
+  const isDisabled =
+    disabled_ || network === undefined || tokenAddress === undefined;
 
   return (
     <TransactionBoundary mutationResult={updateAccessResult}>
-      {({ setDialogLoadingInfo, getOverrides }) => (
+      {({ setDialogLoadingInfo, getOverrides, txAnalytics }) => (
         <TransactionButton
+          disabled={isDisabled}
           ConnectionBoundaryButtonProps={{
             impersonationTitle: "Stop viewing",
             changeNetworkTitle: "Change Network",
@@ -90,18 +44,38 @@ const SaveButton: FC<SaveButtonProps> = ({
             fullWidth: true,
             variant: "contained",
           }}
-          onClick={async (signer) =>
-            !_isDisabled
-              ? await onUpdate(
-                  network,
-                  signer,
-                  tokenAddress,
-                  setDialogLoadingInfo,
-                  getOverrides
-                )
-              : void 0
-          }
-          disabled={_isDisabled}
+          onClick={async (signer) => {
+            if (isDisabled) {
+              throw new Error(
+                "This should never happen as the button should be disabled."
+              );
+            }
+
+            setDialogLoadingInfo(
+              <Typography variant="h5" color="text.secondary" translate="yes">
+                Updating token permissions & allowances
+              </Typography>
+            );
+
+            const primaryArgs = {
+              chainId: network.id,
+              superTokenAddress: tokenAddress,
+              operatorAddress: operatorAddress,
+              initialAccess,
+              editedAccess,
+            };
+
+            updateAccess({
+              ...primaryArgs,
+              signer,
+              overrides: await getOverrides(),
+            })
+              .unwrap()
+              .then(
+                ...txAnalytics("Updated Permissions & Allowances", primaryArgs)
+              )
+              .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
+          }}
         >
           {title}
         </TransactionButton>

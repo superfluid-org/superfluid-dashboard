@@ -107,47 +107,37 @@ const UpsertTokenAccessFormProvider: FC<
     []
   );
 
+  const defaultValues = {
+    data: {
+      tokenAllowance:
+        initialFormValues.tokenAllowance ??
+        defaultFormValues.data.tokenAllowance,
+      flowRateAllowance:
+        initialFormValues.flowRateAllowance ??
+        defaultFormValues.data.flowRateAllowance,
+      flowPermissions:
+        initialFormValues.flowPermissions ??
+        defaultFormValues.data.flowPermissions,
+      network: initialFormValues.network ?? defaultFormValues.data.network,
+      operatorAddress:
+        initialFormValues.operatorAddress ??
+        defaultFormValues.data.operatorAddress,
+      token: initialFormValues.token ?? defaultFormValues.data.token,
+    },
+  };
+
   const formMethods = useForm<ValidUpsertTokenAccessForm>({
-    defaultValues: defaultFormValues,
+    defaultValues,
     resolver: yupResolver(formSchema),
     mode: "onChange",
   });
-  const [isInitialized, setIsInitialized] = useState(!initialFormValues);
 
-  const { setValue } = formMethods;
-
-  useEffect(() => {
-    if (initialFormValues) {
-      setValue(
-        "data",
-        {
-          tokenAllowance:
-            initialFormValues.tokenAllowance ??
-            defaultFormValues.data.tokenAllowance,
-          flowRateAllowance:
-            initialFormValues.flowRateAllowance ??
-            defaultFormValues.data.flowRateAllowance,
-          flowPermissions:
-            initialFormValues.flowPermissions ??
-            defaultFormValues.data.flowPermissions,
-          network: initialFormValues.network ?? defaultFormValues.data.network,
-          operatorAddress:
-            initialFormValues.operatorAddress ??
-            defaultFormValues.data.operatorAddress,
-          token: initialFormValues.token ?? defaultFormValues.data.token,
-        },
-        formRestorationOptions
-      );
-      setIsInitialized(true);
-    }
-  }, [initialFormValues]);
-
-  return isInitialized ? (
+  return (
     <FormProvider {...formMethods}>
       {children}
       <CommonFormEffects />
     </FormProvider>
-  ) : null;
+  );
 };
 
 export default UpsertTokenAccessFormProvider;
