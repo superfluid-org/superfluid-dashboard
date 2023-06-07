@@ -11,10 +11,10 @@ import {
   useTheme,
 } from "@mui/material";
 import {
-  ModifyOrAddTokenAccessFormProviderProps,
-  PartialModifyOrAddTokenAccessForm,
-} from "./ModifyOrAddTokenAccessFormProvider";
-import { useModifyOrAddTokenAccessBoundary } from "./ModifyOrAddTokenAccessBoundary";
+  UpsertTokenAccessFormProviderProps,
+  PartialUpsertTokenAccessForm,
+} from "./UpsertTokenAccessFormProvider";
+import { useUpsertTokenAccessDialog } from "./UpsertTokenAccessDialogProvider";
 import { FC, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import UnsavedChangesConfirmationDialog from "./UnsavedChangesConfirmationDialog";
@@ -108,14 +108,14 @@ const FlowPermissionSwitch: FC<{
   );
 };
 
-export const ModifyOrEditForm: FC<{
-  initialFormValues: ModifyOrAddTokenAccessFormProviderProps["initialFormValues"];
+export const UpsertTokenAccessForm: FC<{
+  initialFormValues: UpsertTokenAccessFormProviderProps["initialFormValues"];
 }> = ({ initialFormValues }) => {
   const { control, formState, watch, setValue, trigger } =
-    useFormContext<PartialModifyOrAddTokenAccessForm>();
+    useFormContext<PartialUpsertTokenAccessForm>();
 
   const { closeDialog } =
-    useModifyOrAddTokenAccessBoundary();
+    useUpsertTokenAccessDialog();
 
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -216,8 +216,7 @@ export const ModifyOrEditForm: FC<{
         <Box>
           <EditDialogTitle onClose={handleOnCloseBtnClick}>
             <Typography variant="h4">
-              {" "}
-              {isNewEntry ? "Add Permission" : "Modify Permission"}{" "}
+              {isNewEntry ? "Add Permission" : "Modify Permission"}
             </Typography>
           </EditDialogTitle>
           <EditDialogContent>

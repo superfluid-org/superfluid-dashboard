@@ -3,7 +3,6 @@ import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { mixed, number, object, string } from "yup";
 import { UnitOfTime } from "../../send/FlowRateInput";
-import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { testAddress, testEtherAmount } from "../../../utils/yupUtils";
 import { formRestorationOptions } from "../../transactionRestoration/transactionRestorations";
 import { Network } from "../../network/networks";
@@ -20,7 +19,7 @@ export interface Token {
   isListed: boolean;
 }
 
-export type ValidModifyOrAddTokenAccessForm = {
+export type ValidUpsertTokenAccessForm = {
   data: {
     network: Network | undefined;
     token: Token | undefined;
@@ -49,38 +48,36 @@ export const defaultFormValues = {
   },
 };
 
-export type PartialModifyOrAddTokenAccessForm = {
+export type PartialUpsertTokenAccessForm = {
   data: {
     network:
-      | ValidModifyOrAddTokenAccessForm["data"]["network"]
+      | ValidUpsertTokenAccessForm["data"]["network"]
       | typeof defaultFormValues.data.network;
     token:
-      | ValidModifyOrAddTokenAccessForm["data"]["token"]
+      | ValidUpsertTokenAccessForm["data"]["token"]
       | typeof defaultFormValues.data.token;
     operatorAddress:
-      | ValidModifyOrAddTokenAccessForm["data"]["operatorAddress"]
+      | ValidUpsertTokenAccessForm["data"]["operatorAddress"]
       | typeof defaultFormValues.data.operatorAddress;
     tokenAllowance:
-      | ValidModifyOrAddTokenAccessForm["data"]["tokenAllowance"]
+      | ValidUpsertTokenAccessForm["data"]["tokenAllowance"]
       | typeof defaultFormValues.data.tokenAllowance;
     flowRateAllowance:
-      | ValidModifyOrAddTokenAccessForm["data"]["flowRateAllowance"]
+      | ValidUpsertTokenAccessForm["data"]["flowRateAllowance"]
       | typeof defaultFormValues.data.flowRateAllowance;
     flowPermissions:
-      | ValidModifyOrAddTokenAccessForm["data"]["flowPermissions"]
+      | ValidUpsertTokenAccessForm["data"]["flowPermissions"]
       | typeof defaultFormValues.data.flowPermissions;
   };
 };
 
-export interface ModifyOrAddTokenAccessFormProviderProps {
-  initialFormValues: Partial<ValidModifyOrAddTokenAccessForm["data"]>;
+export interface UpsertTokenAccessFormProviderProps {
+  initialFormValues: Partial<ValidUpsertTokenAccessForm["data"]>;
 }
 
-const ModifyOrAddTokenAccessFormProvider: FC<
-  PropsWithChildren<ModifyOrAddTokenAccessFormProviderProps>
+const UpsertTokenAccessFormProvider: FC<
+  PropsWithChildren<UpsertTokenAccessFormProviderProps>
 > = ({ children, initialFormValues }) => {
-  const { stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
-
   const formSchema = useMemo(
     () =>
       object({
@@ -110,7 +107,7 @@ const ModifyOrAddTokenAccessFormProvider: FC<
     []
   );
 
-  const formMethods = useForm<ValidModifyOrAddTokenAccessForm>({
+  const formMethods = useForm<ValidUpsertTokenAccessForm>({
     defaultValues: defaultFormValues,
     resolver: yupResolver(formSchema),
     mode: "onChange",
@@ -153,4 +150,4 @@ const ModifyOrAddTokenAccessFormProvider: FC<
   ) : null;
 };
 
-export default ModifyOrAddTokenAccessFormProvider;
+export default UpsertTokenAccessFormProvider;

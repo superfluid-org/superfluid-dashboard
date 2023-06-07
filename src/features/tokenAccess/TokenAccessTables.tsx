@@ -11,7 +11,7 @@ import TokenAccessTable from "./TokenAccessTable";
 import { useAvailableNetworks } from "../network/AvailableNetworksContext";
 import TokenAccessLoadingTable from "./TokenAccessLoadingTable";
 import { Add } from "@mui/icons-material";
-import { AddOrModifyDialogBoundary } from "./dialogs/ModifyOrAddTokenAccessBoundary";
+import { UpsertTokenAccessDialogProvider } from "./dialogs/UpsertTokenAccessDialogProvider";
 
 export interface FetchingStatus {
   isLoading: boolean;
@@ -73,7 +73,7 @@ const TokenAccessTables: FC<Props> = ({ address }) => {
             Manage your Permissions and Allowances in one place.
           </Typography>
         </Stack>
-        <AddOrModifyDialogBoundary initialFormValues={{}}>
+        <UpsertTokenAccessDialogProvider initialFormValues={{}}>
           {({ openDialog }) => (
             <Button
               sx={{
@@ -86,7 +86,7 @@ const TokenAccessTables: FC<Props> = ({ address }) => {
               Add
             </Button>
           )}
-        </AddOrModifyDialogBoundary>
+        </UpsertTokenAccessDialogProvider>
       </Stack>
       <Stack gap={4}>
         {availableNetworks.map((network) => (

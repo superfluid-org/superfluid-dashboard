@@ -6,7 +6,7 @@ import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary"
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { useAnalytics } from "../analytics/useAnalytics";
 import { rpcApi } from "../redux/store";
-import { TokenAccessProps } from "./dialogs/ModifyOrEditForm";
+import { TokenAccessProps } from "./dialogs/UpsertTokenAccessForm";
 
 interface RevokeButtonProps {
   network: Network;

@@ -23,8 +23,8 @@ import {
 } from "../../utils/isCloseToUnlimitedAllowance";
 import { flowOperatorPermissionsToString } from "../../utils/flowOperatorPermissionsToString";
 import { useTheme } from "@mui/material/styles";
-import { AddOrModifyDialogBoundary } from "./dialogs/ModifyOrAddTokenAccessBoundary";
-import { Token } from "./dialogs/ModifyOrAddTokenAccessFormProvider";
+import { UpsertTokenAccessDialogProvider } from "./dialogs/UpsertTokenAccessDialogProvider";
+import { Token } from "./dialogs/UpsertTokenAccessFormProvider";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 
 interface Props {
@@ -222,7 +222,7 @@ const TokenAccessRow: FC<Props> = ({
                 )}
               </Stack>
               <Stack gap={2} direction="column">
-                <AddOrModifyDialogBoundary
+                <UpsertTokenAccessDialogProvider
                   initialFormValues={initialFormValues}
                 >
                   {({ openDialog }) => (
@@ -237,7 +237,7 @@ const TokenAccessRow: FC<Props> = ({
                       Modify
                     </Button>
                   )}
-                </AddOrModifyDialogBoundary>
+                </UpsertTokenAccessDialogProvider>
               </Stack>
             </Stack>
           </TableCell>
@@ -334,7 +334,7 @@ const TokenAccessRow: FC<Props> = ({
               padding: "25px",
             }}
           >
-            <AddOrModifyDialogBoundary initialFormValues={initialFormValues}>
+            <UpsertTokenAccessDialogProvider initialFormValues={initialFormValues}>
               {({ openDialog }) => (
                 <Button
                   data-cy={"modify-access-button"}
@@ -347,7 +347,7 @@ const TokenAccessRow: FC<Props> = ({
                   Modify
                 </Button>
               )}
-            </AddOrModifyDialogBoundary>
+            </UpsertTokenAccessDialogProvider>
           </TableCell>
         </TableRow>
       )}
