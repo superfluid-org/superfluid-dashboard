@@ -4,7 +4,7 @@ import { Network } from "../network/networks";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { rpcApi } from "../redux/store";
-import { TokenAccessProps } from "./dialogs/UpsertTokenAccessForm";
+import { TokenAccessProps } from "./dialog/UpsertTokenAccessForm";
 
 interface SaveButtonProps {
   network: Network | undefined;

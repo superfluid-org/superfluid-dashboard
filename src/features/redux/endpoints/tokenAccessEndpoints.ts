@@ -9,7 +9,7 @@ import {
 } from "@superfluid-finance/sdk-redux";
 import { BigNumber } from "ethers";
 import { UnitOfTime } from "../../send/FlowRateInput";
-import { TokenAccessProps } from "../../tokenAccess/dialogs/UpsertTokenAccessForm";
+import { TokenAccessProps } from "../../tokenAccess/dialog/UpsertTokenAccessForm";
 
 interface UpdateAccessMutation extends BaseSuperTokenMutation {
   operatorAddress: string;

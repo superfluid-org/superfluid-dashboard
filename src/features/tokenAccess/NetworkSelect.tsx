@@ -7,14 +7,13 @@ import {
   MenuItem,
   ToggleButton,
   ToggleButtonGroup,
-  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { FC, memo, MouseEvent, useEffect, useState } from "react";
-import { Network } from "../../network/networks";
-import { useAvailableNetworks } from "../../network/AvailableNetworksContext";
-import NetworkIcon from "../../network/NetworkIcon";
-import OpenIcon from "../../../components/OpenIcon/OpenIcon";
+import { Network } from "../network/networks";
+import { useAvailableNetworks } from "../network/AvailableNetworksContext";
+import NetworkIcon from "../network/NetworkIcon";
+import OpenIcon from "../../components/OpenIcon/OpenIcon";
 
 interface NetworkItemProps {
   network: Network;
@@ -37,9 +36,13 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
   </MenuItem>
 );
 
-const NetworkSelect:FC<{network: Network | undefined,  onChange: (network: Network) => void, placeholder?: string, disabled: boolean}> = ({network: selectedNetwork, onChange, placeholder, disabled})=> {
+const NetworkSelect: FC<{
+  network: Network | undefined;
+  onChange: (network: Network) => void;
+  placeholder?: string;
+  disabled: boolean;
+}> = ({ network: selectedNetwork, onChange, placeholder, disabled }) => {
   const theme = useTheme();
-  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const { availableMainNetworks, availableTestNetworks } =
     useAvailableNetworks();
@@ -67,28 +70,30 @@ const NetworkSelect:FC<{network: Network | undefined,  onChange: (network: Netwo
 
   return (
     <>
-        <Button
-          disabled={disabled}
-          variant="outlined"
-          color="secondary"
-          size="large"
-          fullWidth={true}
-          startIcon={
-            selectedNetwork && <NetworkIcon network={selectedNetwork!} size={24} fontSize={16} />
-          }
-          endIcon={<OpenIcon open={open} />}
-          onClick={handleOpen}
-          sx={{
-            minWidth: "200px",
-            justifyContent: "flex-start",
-            ".MuiButton-startIcon > *:nth-of-type(1)": { fontSize: "16px" },
-            ".MuiButton-endIcon": { marginLeft: "auto"},
-          }}
-          translate="no"
-        >
-          {selectedNetwork?.name || placeholder}
-        </Button>
-    
+      <Button
+        disabled={disabled}
+        variant="outlined"
+        color="secondary"
+        size="large"
+        fullWidth={true}
+        startIcon={
+          selectedNetwork && (
+            <NetworkIcon network={selectedNetwork!} size={24} fontSize={16} />
+          )
+        }
+        endIcon={<OpenIcon open={open} />}
+        onClick={handleOpen}
+        sx={{
+          minWidth: "200px",
+          justifyContent: "flex-start",
+          ".MuiButton-startIcon > *:nth-of-type(1)": { fontSize: "16px" },
+          ".MuiButton-endIcon": { marginLeft: "auto" },
+        }}
+        translate="no"
+      >
+        {selectedNetwork?.name || placeholder}
+      </Button>
+
       <Menu
         anchorEl={anchorEl}
         open={open}
@@ -104,7 +109,7 @@ const NetworkSelect:FC<{network: Network | undefined,  onChange: (network: Netwo
               key={network.id}
               onClick={() => {
                 onChange(network);
-                handleClose()
+                handleClose();
               }}
               selected={network.id === selectedNetwork?.id}
               network={network}
@@ -118,7 +123,7 @@ const NetworkSelect:FC<{network: Network | undefined,  onChange: (network: Netwo
               key={network.id}
               onClick={() => {
                 onChange(network);
-                handleClose()
+                handleClose();
               }}
               selected={network.id === selectedNetwork?.id}
               network={network}

@@ -18,8 +18,8 @@ import { useUpsertTokenAccessDialog } from "./UpsertTokenAccessDialogProvider";
 import { FC, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import UnsavedChangesConfirmationDialog from "./UnsavedChangesConfirmationDialog";
-import EditDialogTitle from "./EditDialogTitle";
-import EditDialogContent from "./EditDialogContent";
+import EditDialogTitle from "./DialogTitle";
+import EditDialogContent from "./DialogContent";
 import { FlowRateInput, UnitOfTime } from "../../send/FlowRateInput";
 import {
   ACL_CREATE_PERMISSION_LABEL,
@@ -31,8 +31,8 @@ import {
   ACL_DELETE_PERMISSION,
   ACL_UPDATE_PERMISSION,
 } from "../../redux/endpoints/flowSchedulerEndpoints";
-import NetworkSelect from "../components/NetworkSelect";
-import TokenSelect from "../components/TokenSelect";
+import NetworkSelect from "../NetworkSelect";
+import TokenSelect from "../TokenSelect";
 import RevokeButton from "../RevokeButton";
 import SaveButton from "../SaveButton";
 import { BigNumber } from "ethers";

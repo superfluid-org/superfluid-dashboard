@@ -8,8 +8,8 @@ import {
   styled,
 } from "@mui/material";
 import { ErrorRounded } from "@mui/icons-material";
-import EditDialogTitle from "./EditDialogTitle";
-import EditDialogContent from "./EditDialogContent";
+import EditDialogTitle from "./DialogTitle";
+import EditDialogContent from "./DialogContent";
 import { FC, ReactNode } from "react";
 
 export const EditIconWrapper = styled(Avatar)(({ theme }) => ({

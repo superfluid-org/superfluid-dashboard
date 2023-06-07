@@ -11,7 +11,7 @@ import TokenAccessTable from "./TokenAccessTable";
 import { useAvailableNetworks } from "../network/AvailableNetworksContext";
 import TokenAccessLoadingTable from "./TokenAccessLoadingTable";
 import { Add } from "@mui/icons-material";
-import { UpsertTokenAccessDialogProvider } from "./dialogs/UpsertTokenAccessDialogProvider";
+import { UpsertTokenAccessDialogProvider } from "./dialog/UpsertTokenAccessDialogProvider";
 
 export interface FetchingStatus {
   isLoading: boolean;

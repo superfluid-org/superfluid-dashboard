@@ -23,8 +23,8 @@ import {
 } from "../../utils/isCloseToUnlimitedAllowance";
 import { flowOperatorPermissionsToString } from "../../utils/flowOperatorPermissionsToString";
 import { useTheme } from "@mui/material/styles";
-import { UpsertTokenAccessDialogProvider } from "./dialogs/UpsertTokenAccessDialogProvider";
-import { Token } from "./dialogs/UpsertTokenAccessFormProvider";
+import { UpsertTokenAccessDialogProvider } from "./dialog/UpsertTokenAccessDialogProvider";
+import { Token } from "./dialog/UpsertTokenAccessFormProvider";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 
 interface Props {
