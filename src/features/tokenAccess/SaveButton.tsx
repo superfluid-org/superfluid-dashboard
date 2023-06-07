@@ -26,7 +26,7 @@ const SaveButton: FC<SaveButtonProps> = ({
   initialAccess,
   editedAccess,
   disabled,
-  title = "Save changes"
+  title = "Save changes",
 }) => {
   const { txAnalytics } = useAnalytics();
   const [updateAccess, updateAccessResult] = rpcApi.useUpdateAccessMutation();
@@ -62,7 +62,8 @@ const SaveButton: FC<SaveButtonProps> = ({
         .then(...txAnalytics("Updated Permissions & Allowances", primaryArgs))
         .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
     },
-    [ disabled,
+    [
+      disabled,
       updateAccess,
       initialAccess,
       editedAccess,
@@ -73,8 +74,9 @@ const SaveButton: FC<SaveButtonProps> = ({
     ]
   );
 
-  const _isDisabled = disabled || network === undefined || tokenAddress === undefined
-  
+  const _isDisabled =
+    disabled || network === undefined || tokenAddress === undefined;
+
   return (
     <TransactionBoundary mutationResult={updateAccessResult}>
       {({ setDialogLoadingInfo, getOverrides }) => (
@@ -89,7 +91,14 @@ const SaveButton: FC<SaveButtonProps> = ({
             variant: "contained",
           }}
           onClick={async (signer) =>
-            !_isDisabled ? await onUpdate(network, signer, tokenAddress, setDialogLoadingInfo, getOverrides)
+            !_isDisabled
+              ? await onUpdate(
+                  network,
+                  signer,
+                  tokenAddress,
+                  setDialogLoadingInfo,
+                  getOverrides
+                )
               : void 0
           }
           disabled={_isDisabled}

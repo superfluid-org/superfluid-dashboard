@@ -23,9 +23,7 @@ import {
 } from "../../utils/isCloseToUnlimitedAllowance";
 import { flowOperatorPermissionsToString } from "../../utils/flowOperatorPermissionsToString";
 import { useTheme } from "@mui/material/styles";
-import {
-  AddOrModifyDialogBoundary,
-} from "./dialogs/ModifyOrAddTokenAccessBoundary";
+import { AddOrModifyDialogBoundary } from "./dialogs/ModifyOrAddTokenAccessBoundary";
 import { Token } from "./dialogs/ModifyOrAddTokenAccessFormProvider";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 
@@ -336,9 +334,7 @@ const TokenAccessRow: FC<Props> = ({
               padding: "25px",
             }}
           >
-            <AddOrModifyDialogBoundary
-              initialFormValues={initialFormValues}
-            >
+            <AddOrModifyDialogBoundary initialFormValues={initialFormValues}>
               {({ openDialog }) => (
                 <Button
                   data-cy={"modify-access-button"}

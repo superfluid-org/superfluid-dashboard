@@ -1,4 +1,12 @@
-import { Avatar, Button, Stack, Typography, alpha, useTheme, styled } from "@mui/material";
+import {
+  Avatar,
+  Button,
+  Stack,
+  Typography,
+  alpha,
+  useTheme,
+  styled,
+} from "@mui/material";
 import { ErrorRounded } from "@mui/icons-material";
 import EditDialogTitle from "./EditDialogTitle";
 import EditDialogContent from "./EditDialogContent";
@@ -16,7 +24,10 @@ export const EditIconWrapper = styled(Avatar)(({ theme }) => ({
   },
 }));
 
-const UnsavedChangesConfirmationDialog: FC<{ onClose: () => void, SaveButtonComponent: ReactNode }> = ({ SaveButtonComponent, onClose }) => {
+const UnsavedChangesConfirmationDialog: FC<{
+  onClose: () => void;
+  SaveButtonComponent: ReactNode;
+}> = ({ SaveButtonComponent, onClose }) => {
   const theme = useTheme();
 
   return (
@@ -24,7 +35,10 @@ const UnsavedChangesConfirmationDialog: FC<{ onClose: () => void, SaveButtonComp
       <EditDialogTitle onClose={onClose}>
         <Stack alignItems="center" direction="column" gap={1}>
           <EditIconWrapper>
-            <ErrorRounded fontSize="large" sx={{ color: theme.palette.warning.main }} />
+            <ErrorRounded
+              fontSize="large"
+              sx={{ color: theme.palette.warning.main }}
+            />
           </EditIconWrapper>
           <Typography variant="h5">You have unsaved changes.</Typography>
           <Typography variant="body1" color="secondary">

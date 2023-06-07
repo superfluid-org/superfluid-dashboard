@@ -41,7 +41,8 @@ export const AddOrModifyDialogBoundary: FC<
       closeDialog: () => setDialogOpen(false),
       initialFormValues,
     }),
-    [dialogOpen, 
+    [
+      dialogOpen,
       // initialFormValues // TODO(KK): Exclude for now. This will cause issues later.
     ]
   );

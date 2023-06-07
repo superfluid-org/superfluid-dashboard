@@ -39,7 +39,18 @@ const TokenAccessTable: FC<Props> = ({
     subgraphApi.useFlowOperatorsQuery(
       {
         chainId: network.id,
-        filter: { and: [{ sender: address.toLowerCase()}, { or: [{ allowance_not: "0" }, { flowRateAllowanceRemaining_not: "0" }, { permissions_not: 0 }] }] },
+        filter: {
+          and: [
+            { sender: address.toLowerCase() },
+            {
+              or: [
+                { allowance_not: "0" },
+                { flowRateAllowanceRemaining_not: "0" },
+                { permissions_not: 0 },
+              ],
+            },
+          ],
+        },
         pagination: {
           take: Infinity,
           skip: 0,
@@ -115,26 +126,26 @@ const TokenAccessTable: FC<Props> = ({
           )}
         </TableHead>
         <TableBody>
-            {paginatedRecords.map(
-              ({
-                id,
-                flowOperator,
-                allowance,
-                permissions,
-                flowRateAllowanceRemaining,
-                token,
-              }) => (
-                <TokenAccessRow
-                  key={id}
-                  network={network}
-                  address={flowOperator}
-                  token={token}
-                  tokenAllowance={allowance}
-                  flowOperatorPermissions={permissions}
-                  flowRateAllowance={flowRateAllowanceRemaining}
-                />
-              )
-            )}
+          {paginatedRecords.map(
+            ({
+              id,
+              flowOperator,
+              allowance,
+              permissions,
+              flowRateAllowanceRemaining,
+              token,
+            }) => (
+              <TokenAccessRow
+                key={id}
+                network={network}
+                address={flowOperator}
+                token={token}
+                tokenAllowance={allowance}
+                flowOperatorPermissions={permissions}
+                flowRateAllowance={flowRateAllowanceRemaining}
+              />
+            )
+          )}
         </TableBody>
       </Table>
       <TablePagination

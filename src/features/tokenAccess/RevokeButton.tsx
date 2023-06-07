@@ -30,7 +30,7 @@ const RevokeButton: FC<RevokeButtonProps> = ({
     if (revokeResult.status === "fulfilled") {
       onRevokeButtonClick();
     }
-  }, [revokeResult])
+  }, [revokeResult]);
 
   const onRevoke = useCallback(
     async (
