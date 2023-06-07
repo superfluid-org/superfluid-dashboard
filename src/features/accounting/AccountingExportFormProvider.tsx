@@ -2,13 +2,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useAccount } from "wagmi";
 import { array, date, mixed, object, ObjectSchema } from "yup";
 import { CurrencyCode } from "../../utils/currencyUtils";
 import { testAddresses } from "../../utils/yupUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { UnitOfTime } from "../send/FlowRateInput";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import { CommonFormEffects } from "../common/CommonFormEffects";
 
 type Nullable<T> = { [K in keyof T]: T[K] | null };
 
@@ -119,12 +119,11 @@ const AccountingExportFormProvider: FC<
     }
   }, []);
 
-  useEffect(() => {
-    if (formState.isDirty) trigger();
-  }, [visibleAddress]);
-
   return isInitialized ? (
-    <FormProvider {...formMethods}>{children}</FormProvider>
+    <FormProvider {...formMethods}>
+      {children}
+      <CommonFormEffects />
+    </FormProvider>
   ) : null;
 };
 

@@ -1,12 +1,11 @@
 import { useFormContext } from "react-hook-form";
 import { PartialVestingForm } from "./CreateVestingFormProvider";
 import { useEffect } from "react";
-import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
+import { CommonFormEffects } from "../common/CommonFormEffects";
 
 export function CreateVestingFormEffects() {
   const {
     watch,
-    formState: { isDirty },
     resetField,
   } = useFormContext<PartialVestingForm>();
 
@@ -21,10 +20,5 @@ export function CreateVestingFormEffects() {
     [superTokenAddress]
   );
 
-  const { stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
-  useEffect(() => {
-    if (isDirty) stopAutoSwitchToWalletNetwork();
-  }, [isDirty, stopAutoSwitchToWalletNetwork]);
-
-  return null;
+  return <CommonFormEffects />;
 }

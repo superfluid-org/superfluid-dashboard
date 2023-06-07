@@ -21,8 +21,6 @@ import MultiAddressSearch from "../../components/AddressSearch/MultiAddressSearc
 import CurrencySelect from "../../components/CurrencySelect/CurrencySelect";
 import TooltipWithIcon from "../common/TooltipWithIcon";
 import { UnitOfTime } from "../send/FlowRateInput";
-import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
-import ConnectionBoundaryButton from "../transactionBoundary/ConnectionBoundaryButton";
 import {
   PartialAccountingExportForm,
   ValidAccountingExportForm,

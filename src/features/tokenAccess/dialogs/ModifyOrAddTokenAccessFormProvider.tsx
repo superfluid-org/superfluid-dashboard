@@ -9,6 +9,7 @@ import { formRestorationOptions } from "../../transactionRestoration/transaction
 import { Network } from "../../network/networks";
 import { TokenType } from "../../redux/endpoints/tokenTypes";
 import { BigNumber } from "ethers";
+import { CommonFormEffects } from "../../common/CommonFormEffects";
 
 export interface Token {
   type: TokenType;
@@ -116,7 +117,7 @@ const ModifyOrAddTokenAccessFormProvider: FC<
   });
   const [isInitialized, setIsInitialized] = useState(!initialFormValues);
 
-  const { formState, setValue, trigger } = formMethods;
+  const { setValue } = formMethods;
 
   useEffect(() => {
     if (initialFormValues) {
@@ -144,18 +145,11 @@ const ModifyOrAddTokenAccessFormProvider: FC<
     }
   }, [initialFormValues]);
 
-  useEffect(() => {
-    if (formState.isDirty) stopAutoSwitchToWalletNetwork();
-  }, [formState.isDirty, stopAutoSwitchToWalletNetwork]);
-
-  useEffect(() => {
-    if (formState.isDirty) {
-      trigger();
-    }
-  }, []);
-
   return isInitialized ? (
-    <FormProvider {...formMethods}>{children}</FormProvider>
+    <FormProvider {...formMethods}>
+      {children}
+      <CommonFormEffects />
+    </FormProvider>
   ) : null;
 };
 
