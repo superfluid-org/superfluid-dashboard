@@ -64,7 +64,7 @@ export default function MyApp(props: AppPropsWithLayout) {
   }, []);
 
   return (
-    // <NextThemesProvider>
+    <NextThemesProvider>
       <CacheProvider value={emotionCache}>
         <Head>
           <meta name="viewport" content="initial-scale=1, width=device-width" />
@@ -111,6 +111,6 @@ export default function MyApp(props: AppPropsWithLayout) {
           </AutoConnectProvider>
         </WagmiManager>
       </CacheProvider>
-    // </NextThemesProvider>
+    </NextThemesProvider>
   );
 }
