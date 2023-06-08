@@ -1,5 +1,5 @@
 import { Box, Tooltip, Link as MuiLink } from "@mui/material";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { FC } from "react";
 
 interface ShareButtonProps {

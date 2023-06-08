@@ -9,7 +9,7 @@ import {
   useMediaQuery,
   Link as MuiLink,
 } from "@mui/material";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import Link from "next/link";
 import { FC, useMemo } from "react";
 import NetworkIcon from "../network/NetworkIcon";

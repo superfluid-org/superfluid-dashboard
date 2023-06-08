@@ -13,7 +13,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import Link from "next/link";
 import { FC, PropsWithChildren, useState } from "react";
 import { useAccount } from "wagmi";
