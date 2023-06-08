@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { FC, useEffect, useState } from "react";
 import { NotificationTab } from "./NotificationsBell";
-import Link from "next/link";
+import Link from "../../features/common/Link";
 
 type NotificationHeaderProps = {
   activeTab: NotificationTab;

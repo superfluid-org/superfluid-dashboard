@@ -45,7 +45,7 @@ const BalanceCriticalIndicator: FC<BalanceCriticalIndicatorProps> = ({
             </Typography>
           </Typography>
 
-          <Link href={href} passHref>
+          <Link href={href} passHref legacyBehavior>
             <Button
               href={href}
               fullWidth

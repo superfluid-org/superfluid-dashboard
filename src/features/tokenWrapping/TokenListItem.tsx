@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import Link from "next/link";
+import NextLink from "next/link";
 import { FC } from "react";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
@@ -129,16 +129,17 @@ export const TokenListItem: FC<TokenListItemProps> = ({
             />
           ))}
         {showUpgrade && isWrappableSuperToken && (
-          <Link
+          <NextLink
             href={`/wrap?upgrade&token=${token.address}&network=${network.slugName}`}
             passHref
+            legacyBehavior
           >
             <Tooltip title="Wrap">
               <IconButton data-cy={"wrap-button"}>
                 <AddCircleOutline></AddCircleOutline>
               </IconButton>
             </Tooltip>
-          </Link>
+          </NextLink>
         )}
       </Typography>
     </ListItemButton>

@@ -805,6 +805,7 @@ export default memo(function SendCard() {
                       token: formData.tokenAddress,
                     })}
                     passHref
+                    legacyBehavior
                   >
                     <TransactionDialogButton
                       data-cy={"go-to-token-page-button"}
@@ -832,6 +833,7 @@ export default memo(function SendCard() {
                         token: formData.tokenAddress,
                       })}
                       passHref
+                      legacyBehavior
                     >
                       <TransactionDialogButton
                         data-cy="go-to-token-page-button"
@@ -1131,6 +1133,7 @@ export default memo(function SendCard() {
                 <NextLink
                   href={`/wrap?upgrade&token=${tokenAddress}&network=${network.slugName}`}
                   passHref
+                  legacyBehavior
                 >
                   <Tooltip title="Wrap more">
                     <IconButton

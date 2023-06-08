@@ -14,7 +14,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import Link from "next/link";
+import NextLink from "next/link";
 import { FC, useCallback } from "react";
 import useAddressName from "../../hooks/useAddressName";
 import { getAddress } from "../../utils/memoizedEthersUtils";
@@ -179,7 +179,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
                 )}
 
                 {hasClaimedTokens && claimTestTokensResponse.isError && (
-                  <Link href="/wrap">
+                  <NextLink legacyBehavior href="/wrap">
                     <Button
                       data-cy={"wrap-button"}
                       size="xl"
@@ -189,7 +189,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
                     >
                       Wrap into super tokens! ➜
                     </Button>
-                  </Link>
+                  </NextLink>
                 )}
               </Stack>
             </ConnectionBoundaryButton>

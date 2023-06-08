@@ -38,7 +38,7 @@ const TokenSnapshotEmptyCard = () => (
         Wrap some tokens to start streaming payments in real time.
       </Typography>
     </Box>
-    <NextLink href={"/wrap?upgrade"} passHref>
+    <NextLink href={"/wrap?upgrade"} passHref legacyBehavior> 
       <Button
         data-cy={"no-balance-wrap-button"}
         variant="contained"

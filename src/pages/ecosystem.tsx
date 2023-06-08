@@ -8,7 +8,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { NextPage } from "next";
-import Link from "next/link";
+import NextLink from "next/link";
 import { Fragment } from "react";
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import { EcosystemApp } from "../features/ecosystem/EcosystemItem";
@@ -483,9 +483,10 @@ const Ecosystem: NextPage = () => {
           <Typography variant="h3" component="h1" translate="yes">
             Explore the Superfluid ecosystem
           </Typography>
-          <Link
+          <NextLink
             href="https://github.com/superfluid-finance/ecosystem/"
             passHref
+            legacyBehavior
             target="_blank"
           >
             <Button
@@ -498,7 +499,7 @@ const Ecosystem: NextPage = () => {
             >
               Add New App
             </Button>
-          </Link>
+          </NextLink>
         </Stack>
 
         {ECOSYSTEM_SECTIONS.map((section) => (

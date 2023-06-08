@@ -18,7 +18,7 @@ import {
   TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
 import { format } from "date-fns";
-import Link from "next/link";
+import NextLink from "next/link";
 import { FC, useState } from "react";
 import shortenHex from "../../utils/shortenHex";
 import NetworkBadge from "../network/NetworkBadge";
@@ -153,14 +153,15 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
                   placement="top"
                 >
                   <span>
-                    <Link
+                    <NextLink
                       href={network.getLinkForTransaction(transaction.hash)}
                       passHref
+                      legacyBehavior
                     >
                       <IconButton component="a" size="small" target="_blank">
                         <LaunchRoundedIcon />
                       </IconButton>
-                    </Link>
+                    </NextLink>
                   </span>
                 </Tooltip>
               )}

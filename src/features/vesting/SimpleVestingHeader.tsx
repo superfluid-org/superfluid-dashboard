@@ -19,7 +19,7 @@ const SimpleVestingHeader: FC = () => {
         Vesting
       </Typography>
       {accountAddress && (
-        <NextLink href="/vesting/create" passHref>
+        <NextLink href="/vesting/create" passHref legacyBehavior>
           <Button
             data-cy="create-schedule-button"
             color="primary"

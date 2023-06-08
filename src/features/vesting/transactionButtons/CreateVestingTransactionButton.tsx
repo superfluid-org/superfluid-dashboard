@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import Link from "next/link";
+import NextLink from "next/link";
 import { FC } from "react";
 import { useFormContext } from "react-hook-form";
 import { useAnalytics } from "../../analytics/useAnalytics";
@@ -95,14 +95,14 @@ export const CreateVestingTransactionButton: FC<Props> = ({
 
                   setDialogSuccessActions(
                     <TransactionDialogActions>
-                      <Link href="/vesting" passHref>
+                      <NextLink href="/vesting" passHref legacyBehavior>
                         <TransactionDialogButton
                           data-cy="ok-button"
                           color="primary"
                         >
                           OK
                         </TransactionDialogButton>
-                      </Link>
+                      </NextLink>
                     </TransactionDialogActions>
                   );
                 },

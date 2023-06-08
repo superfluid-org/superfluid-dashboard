@@ -1,12 +1,9 @@
 import {
   Avatar,
   Box,
-  Button,
   Divider,
-  FormControlLabel,
   Paper,
   Stack,
-  Switch,
   Typography,
   useMediaQuery,
   useTheme,
@@ -18,7 +15,6 @@ import { CopyIconBtn } from "../../features/common/CopyIconBtn";
 
 import ConnectWallet from "../../features/wallet/ConnectWallet";
 import { useNotificationChannels } from "../../hooks/useNotificationChannels";
-import Link from "next/link";
 import shortenHex from "../../utils/shortenHex";
 import { LoadingButton } from "@mui/lab";
 import { useImpersonation } from "../../features/impersonation/ImpersonationContext";

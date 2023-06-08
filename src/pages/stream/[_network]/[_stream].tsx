@@ -23,7 +23,7 @@ import { BigNumber } from "ethers";
 import { isString } from "lodash";
 import { NextPage } from "next";
 import Image from "next/legacy/image";
-import Link from "next/link";
+import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { FC, useEffect, useMemo, useState } from "react";
 import AddressAvatar from "../../../components/Avatar/AddressAvatar";
@@ -148,15 +148,16 @@ const StreamAccountCard: FC<StreamAccountCardProps> = ({
             <CopyTooltip content={addressChecksummed} copyText="Copy address" />
             <Tooltip title="View on blockchain explorer" arrow placement="top">
               <span>
-                <Link
+                <NextLink
                   data-cy="sender-and-receiver-explorer-links"
                   href={network.getLinkForAddress(addressChecksummed)}
                   passHref
+                  legacyBehavior
                 >
                   <IconButton component="a" size="small" target="_blank">
                     <LaunchRoundedIcon />
                   </IconButton>
-                </Link>
+                </NextLink>
               </span>
             </Tooltip>
           </Stack>
@@ -873,12 +874,13 @@ const StreamPageContent: FC<{
                           placement="top"
                         >
                           <span>
-                            <Link
+                            <NextLink
                               data-cy={"tx-hash-link"}
                               href={network.getLinkForTransaction(
                                 streamCreationEvent.transactionHash
                               )}
                               passHref
+                              legacyBehavior
                             >
                               <IconButton
                                 component="a"
@@ -887,7 +889,7 @@ const StreamPageContent: FC<{
                               >
                                 <LaunchRoundedIcon />
                               </IconButton>
-                            </Link>
+                            </NextLink>
                           </span>
                         </Tooltip>
                       </Stack>

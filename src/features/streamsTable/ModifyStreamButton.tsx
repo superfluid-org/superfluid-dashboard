@@ -6,12 +6,12 @@ import {
   TooltipProps,
 } from "@mui/material";
 import { Stream } from "@superfluid-finance/sdk-core";
-import Link from "next/link";
 import { FC, useMemo } from "react";
 import { useAccount } from "wagmi";
 import { getSendPagePath } from "../../pages/send";
 import { getPrettyEtherFlowRate } from "../../utils/tokenUtils";
 import { Network } from "../network/networks";
+import Link from "../common/Link";
 
 interface ModifyStreamButtonProps {
   stream: Stream;
@@ -58,7 +58,7 @@ const ModifyStreamButton: FC<ModifyStreamButtonProps> = ({
       {...TooltipProps}
     >
       <span>
-        <Link href={modifyStreamUrl} passHref>
+        <Link href={modifyStreamUrl}>
           <IconButton
             color="primary"
             disabled={!isConnected}
