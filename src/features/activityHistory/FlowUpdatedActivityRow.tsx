@@ -231,16 +231,15 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
             <Stack direction="row" alignItems="center" gap={0.5}>
               <TxHashLink txHash={transactionHash} network={network} />
               {stream && (
-                <Link
+                <IconButton
+                  component={Link}
                   href={getStreamPagePath({
                     network: network.slugName,
                     stream: stream.id,
                   })}
                 >
-                  <IconButton>
-                    <ArrowForwardRoundedIcon color="inherit" />
-                  </IconButton>
-                </Link>
+                  <ArrowForwardRoundedIcon color="inherit" />
+                </IconButton>
               )}
             </Stack>
 

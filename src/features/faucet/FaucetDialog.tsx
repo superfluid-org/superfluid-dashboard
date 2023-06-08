@@ -28,6 +28,7 @@ import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import ConnectionBoundaryButton from "../transactionBoundary/ConnectionBoundaryButton";
 import faucetApi from "./faucetApi.slice";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import Link from "../common/Link";
 
 interface PrefilledAddressInputProps {
   address: Address;
@@ -88,7 +89,9 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
       PaperProps={{ sx: { borderRadius: "20px", maxWidth: 520 } }}
     >
       <DialogTitle sx={{ p: 4 }}>
-        <Typography data-cy={"faucet-title"} variant="h4">Get Testnet Tokens</Typography>
+        <Typography data-cy={"faucet-title"} variant="h4">
+          Get Testnet Tokens
+        </Typography>
         <Typography data-cy={"faucet-message"}>
           This faucet sends you a bunch of tokens to wrap and streams to try out
           Superfluid.
@@ -179,17 +182,16 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
                 )}
 
                 {hasClaimedTokens && claimTestTokensResponse.isError && (
-                  <NextLink legacyBehavior href="/wrap">
-                    <Button
-                      data-cy={"wrap-button"}
-                      size="xl"
-                      fullWidth
-                      variant="contained"
-                      href="/wrap"
-                    >
-                      Wrap into super tokens! ➜
-                    </Button>
-                  </NextLink>
+                  <Button
+                    LinkComponent={Link}
+                    data-cy={"wrap-button"}
+                    size="xl"
+                    fullWidth
+                    variant="contained"
+                    href="/wrap"
+                  >
+                    Wrap into super tokens! ➜
+                  </Button>
                 )}
               </Stack>
             </ConnectionBoundaryButton>

@@ -41,13 +41,11 @@ const NotificationHeader: FC<NotificationHeaderProps> = ({
           alignItems="center"
         >
           <Typography variant="h5">Notifications</Typography>
-          <Link href="/settings">
-            <Tooltip title="Open Settings">
-              <IconButton size="medium">
-                <SettingsIcon sx={{ ycolor: "GrayText" }} />
-              </IconButton>
-            </Tooltip>
-          </Link>
+          <Tooltip title="Open Settings">
+            <IconButton component={Link} href="/settings" size="medium">
+              <SettingsIcon sx={{ ycolor: "GrayText" }} />
+            </IconButton>
+          </Tooltip>
         </Stack>
         <Tabs
           value={delayedActiveTabRender ? activeTab : false}

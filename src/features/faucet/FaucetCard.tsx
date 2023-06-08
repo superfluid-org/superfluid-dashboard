@@ -12,17 +12,16 @@ import { FC } from "react";
 import Link from "../common/Link";
 
 const ClaimTokensBtn = () => (
-  <Link href="/?showFaucet=true">
-    <Button
-      data-cy={"dashboard-claim-button"}
-      variant="contained"
-      color="primary"
-      href="/?showFaucet=true"
-      sx={{ width: 88 }}
-    >
-      Claim
-    </Button>
-  </Link>
+  <Button
+    LinkComponent={Link}
+    data-cy={"dashboard-claim-button"}
+    variant="contained"
+    color="primary"
+    href="/?showFaucet=true"
+    sx={{ width: 88 }}
+  >
+    Claim
+  </Button>
 );
 
 const FaucetCard: FC = () => {

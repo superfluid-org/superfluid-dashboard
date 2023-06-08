@@ -30,6 +30,7 @@ import { TransactionListItemRestoreButton } from "./TransactionListItemRestoreBu
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { allNetworks, tryFindNetwork } from "../network/networks";
+import Link from "../common/Link";
 
 export const getTransactionStatusColor = (status: TransactionStatus) => {
   switch (status) {
@@ -153,15 +154,14 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
                   placement="top"
                 >
                   <span>
-                    <NextLink
+                    <IconButton
+                      component={Link}
                       href={network.getLinkForTransaction(transaction.hash)}
-                      passHref
-                      legacyBehavior
+                      size="small"
+                      target="_blank"
                     >
-                      <IconButton component="a" size="small" target="_blank">
-                        <LaunchRoundedIcon />
-                      </IconButton>
-                    </NextLink>
+                      <LaunchRoundedIcon />
+                    </IconButton>
                   </span>
                 </Tooltip>
               )}

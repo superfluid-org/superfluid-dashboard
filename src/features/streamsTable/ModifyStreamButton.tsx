@@ -16,14 +16,14 @@ import Link from "../common/Link";
 interface ModifyStreamButtonProps {
   stream: Stream;
   network: Network;
-  IconButtonProps?: Partial<IconButtonProps>;
+  size?: IconButtonProps["size"];
   TooltipProps?: Partial<TooltipProps>;
 }
 
 const ModifyStreamButton: FC<ModifyStreamButtonProps> = ({
   stream,
   network,
-  IconButtonProps = {},
+  size,
   TooltipProps = {},
 }) => {
   const { address: accountAddress, isConnected } = useAccount();
@@ -58,15 +58,15 @@ const ModifyStreamButton: FC<ModifyStreamButtonProps> = ({
       {...TooltipProps}
     >
       <span>
-        <Link href={modifyStreamUrl}>
-          <IconButton
-            color="primary"
-            disabled={!isConnected}
-            {...IconButtonProps}
-          >
-            <EditRoundedIcon />
-          </IconButton>
-        </Link>
+        <IconButton
+          size={size}
+          component={Link}
+          href={modifyStreamUrl}
+          color="primary"
+          disabled={!isConnected}
+        >
+          <EditRoundedIcon />
+        </IconButton>
       </span>
     </Tooltip>
   );

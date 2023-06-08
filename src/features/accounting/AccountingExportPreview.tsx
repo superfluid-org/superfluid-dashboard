@@ -229,11 +229,9 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
             params.row.startedAtEvent
           );
           return (
-            <Link href={linkUrl} target="_blank">
-              <IconButton component="a">
-                <OpenInNewRoundedIcon />
-              </IconButton>
-            </Link>
+            <IconButton component={Link} href={linkUrl} target="_blank">
+              <OpenInNewRoundedIcon />
+            </IconButton>
           );
         },
       },
