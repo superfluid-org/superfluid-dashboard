@@ -1,6 +1,7 @@
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import {
+  ButtonProps,
   Box,
   Button,
   Collapse,
@@ -23,6 +24,7 @@ import {
   useMediaQuery,
   Avatar,
 } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 import { useTheme } from "@mui/material/styles";
 import { BigNumber } from "ethers";
 import { FC, useCallback, useMemo, useState } from "react";
@@ -50,6 +52,7 @@ import AutoWrapAllowanceTransactionButton from "../transactionButtons/AutoWrapAl
 import CloseIcon from "@mui/icons-material/Close";
 import { Token } from "@superfluid-finance/sdk-core";
 import { toVestingToken } from "../useVestingToken";
+import { useConnectionBoundary } from "../../transactionBoundary/ConnectionBoundary";
 
 export const EditIconWrapper = styled(Avatar)(({ theme }) => ({
   width: "50px",
@@ -188,14 +191,81 @@ const AutoWrapEnableDialogSection: FC<{ closeEnableAutoWrapDialog: () => void, i
           isDisabled={isAutoWrapLoading}
         />
         {activeStep == 2 &&
-            <Button fullWidth={true}
-                    data-cy={"enable-auto-wrap-button"}
-                    variant="contained"
-                    size="medium" onClick={closeEnableAutoWrapDialog}>Close</Button>}
+          <Button fullWidth={true}
+            data-cy={"enable-auto-wrap-button"}
+            variant="contained"
+            size="medium" onClick={closeEnableAutoWrapDialog}>Close</Button>}
       </Stack>
     </DialogContent>
   </ResponsiveDialog>
 };
+
+const EnableAutoWrapTransactionButton: FC<{ ButtonProps?: ButtonProps, openEnableAutoWrapDialog: () => void }> = ({ ButtonProps = {}, openEnableAutoWrapDialog }) => {
+  const {
+    allowImpersonation,
+    isImpersonated,
+    stopImpersonation,
+    isConnected,
+    isConnecting,
+    connectWallet,
+    isCorrectNetwork,
+    switchNetwork,
+  } = useConnectionBoundary();
+
+  if (isImpersonated && !allowImpersonation) {
+    return (
+      <Button
+        data-cy={"view-mode-button"}
+        {...ButtonProps}
+        color="warning"
+        onClick={stopImpersonation}
+      >
+        Stop viewing
+      </Button>
+    );
+  }
+
+  if (!(isConnected || (isImpersonated && allowImpersonation))) {
+    return (
+      <LoadingButton
+        data-cy={"connect-wallet-button"}
+        {...ButtonProps}
+        loading={isConnecting}
+        color="primary"
+        onClick={connectWallet}
+      >
+        <span>Connect Wallet</span>
+      </LoadingButton>
+    );
+  }
+
+  if (!isCorrectNetwork && !allowImpersonation) {
+    return (
+      <Button
+        data-cy={"change-network-button"}
+        {...ButtonProps}
+        color="primary"
+        disabled={!switchNetwork}
+        onClick={() => switchNetwork?.()}
+      >
+        <span translate="no">
+          Change Network
+        </span>
+      </Button>
+    );
+  }
+
+  return <Button
+    fullWidth={true}
+    data-cy={"enable-auto-wrap-button"}
+    variant="contained"
+    size="medium"
+    onClick={openEnableAutoWrapDialog}
+    {...ButtonProps || {}}
+  >
+    Enable
+  </Button>
+}
 
 const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   isLast,
@@ -289,16 +359,6 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
 
   const tokenSymbol = token?.symbol || "";
 
-  const EnableAutoWrapTransactionButton = () => <Button
-    fullWidth={true}
-    data-cy={"enable-auto-wrap-button"}
-    variant="contained"
-    size="medium"
-    onClick={openEnableAutoWrapDialog}
-  >
-    Enable
-  </Button>
-
   return (
     <>
       <TableRow
@@ -382,14 +442,14 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                 ) : isAutoWrappable ? (
                   <RemoveCircleRoundedIcon
                     data-cy={`${tokenSymbol}-auto-wrap-status`}
-                    color="warning"
+                    color="disabled"
                   />
                 ) : null}
               </TableCell>
             )}
           </>
         )}
-        <TableCell>
+        <TableCell align="right">
           <IconButton onClick={() => setIsExpanded(!isExpanded)}>
             <OpenIcon open={isExpanded} />
           </IconButton>
@@ -505,14 +565,14 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                         }
                       />
                     </TableCell>
-                    <TableCell width={"160px"} align={"center"} sx={{padding: "25px"}}>
+                    <TableCell width={"160px"} align={"center"} sx={{ padding: "25px" }}>
                       {token && network.autoWrap ? (
                         isAutoWrapLoading ? (
                           <Skeleton variant="rectangular" width={24} height={24} />
                         ) : isAutoWrapOK ? (
                           <DisableAutoWrapTransactionButton key={`auto-wrap-revoke-${tokenSymbol}`} isDisabled={false} isVisible={true} token={token as VestingToken} />
                         ) : isAutoWrappable ? (
-                          <EnableAutoWrapTransactionButton />
+                          <EnableAutoWrapTransactionButton openEnableAutoWrapDialog={openEnableAutoWrapDialog} />
                         ) : null
                       ) : null
                       }</TableCell>
@@ -523,7 +583,26 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
             ) : (
               <Stack gap={2} sx={{ px: 2, py: 2 }}>
                 <Box>
-                  <Typography variant="h7">Token Allowance</Typography>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+
+                    <Typography variant="h7">Token Allowance</Typography>
+                    {isEnoughTokenAllowance ? (
+                      <CheckCircleRoundedIcon
+
+                        data-cy={`${tokenSymbol}-allowance-status`}
+                        color="primary"
+                      />
+                    ) : (
+                      <CancelRoundedIcon
+                        data-cy={`${tokenSymbol}-allowance-status`}
+                        color="error"
+                      />
+                    )}
+                  </Stack>
                   <Stack
                     gap={1}
                     direction="row"
@@ -553,7 +632,24 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                   </Stack>
                 </Box>
                 <Box>
-                  <Typography variant="h7">Stream Permissions</Typography>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <Typography variant="h7">Stream Permissions</Typography>
+                    {isEnoughFlowOperatorPermissions ? (
+                      <CheckCircleRoundedIcon
+                        data-cy={`${tokenSymbol}-permission-status`}
+                        color="primary"
+                      />
+                    ) : (
+                      <CancelRoundedIcon
+                        data-cy={`${tokenSymbol}-permission-status`}
+                        color="error"
+                      />
+                    )}
+                  </Stack>
                   <Stack
                     direction="row"
                     justifyContent="space-between"
@@ -574,7 +670,25 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                   </Stack>
                 </Box>
                 <Box>
-                  <Typography variant="h7">Stream Allowance</Typography>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <Typography variant="h7">Stream Allowance</Typography>
+                    {isEnoughFlowRateAllowance ? (
+                      <CheckCircleRoundedIcon
+                        data-cy={`${tokenSymbol}-flow-allowance-status`}
+                        color="primary"
+                      />
+                    ) : (
+                      <CancelRoundedIcon
+                        data-cy={`${tokenSymbol}-flow-allowance-status`}
+                        color="error"
+                      />
+                    )}
+                  </Stack>
+
                   <Stack
                     direction="row"
                     justifyContent="space-between"
@@ -607,6 +721,38 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                   </Stack>
 
                 </Box>
+
+                <Box>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <Typography variant="h7">Auto-Wrap</Typography>
+                    {token && network.autoWrap ? (
+                      isAutoWrapLoading ? (
+                        <Skeleton variant="rectangular" width={24} height={24} />
+                      ) : isAutoWrapOK ? (
+                        <DisableAutoWrapTransactionButton key={`auto-wrap-revoke-${tokenSymbol}`} isDisabled={false} isVisible={true} token={token as VestingToken} ButtonProps={{ fullWidth: false }} />
+                      ) : isAutoWrappable ? (
+                        <EnableAutoWrapTransactionButton ButtonProps={{ fullWidth: false }} openEnableAutoWrapDialog={openEnableAutoWrapDialog} />
+                      ) : null
+                    ) : null
+                    }
+                  </Stack>
+                </Box>
+                {showFixRequiredAccessButton && (
+                  <FixVestingPermissionsBtn
+                    network={network}
+                    senderAddress={senderAddress}
+                    tokenAddress={tokenAddress}
+                    recommendedTokenAllowance={recommendedTokenAllowance}
+                    requiredFlowOperatorPermissions={
+                      requiredFlowOperatorPermissions
+                    }
+                    requiredFlowRateAllowance={requiredFlowRateAllowance}
+                  />
+                )}
               </Stack>
             )}
           </Collapse>
