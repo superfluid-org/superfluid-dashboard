@@ -70,9 +70,9 @@ const moduleExports = {
       transform: "@mui/icons-material/{{member}}",
     },
   },
-  experimental: {
-    forceSwcTransforms: !shouldInstrumentCode, // .babelrc.js existence is because of code instrumentation. 
-  },
+  // experimental: {
+  //   forceSwcTransforms: !shouldInstrumentCode, // .babelrc.js existence is because of code instrumentation. 
+  // },
 };
 
 module.exports = withSentryIfNecessary(moduleExports);
