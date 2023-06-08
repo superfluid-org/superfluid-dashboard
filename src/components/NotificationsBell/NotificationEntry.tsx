@@ -7,9 +7,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import Link from "next/link";
 import { FC } from "react";
-import { NextLinkComposed } from "../../features/common/Link";
 import NetworkBadge from "../../features/network/NetworkBadge";
 import {
   allNetworks,
@@ -19,6 +17,7 @@ import { Notification } from "../../hooks/useNotificationChannels";
 import { createMessage, getNotificationIcon } from "../../utils/notification";
 import { getWrapPagePath } from "../../utils/URLUtils";
 import { NotificationTab } from "./NotificationsBell";
+import Link from "../../features/common/Link";
 
 type NotificationProps = {
   notification: Notification;

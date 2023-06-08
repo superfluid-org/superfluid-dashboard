@@ -8,10 +8,9 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import Link from "next/link";
 import { FC, useEffect, useState } from "react";
-import { NextLinkComposed } from "../../features/common/Link";
 import { NotificationTab } from "./NotificationsBell";
+import Link from "next/link";
 
 type NotificationHeaderProps = {
   activeTab: NotificationTab;
@@ -42,13 +41,13 @@ const NotificationHeader: FC<NotificationHeaderProps> = ({
           alignItems="center"
         >
           <Typography variant="h5">Notifications</Typography>
-          <NextLinkComposed passHref={true} to="/settings">
+          <Link href="/settings">
             <Tooltip title="Open Settings">
               <IconButton size="medium">
                 <SettingsIcon sx={{ ycolor: "GrayText" }} />
               </IconButton>
             </Tooltip>
-          </NextLinkComposed>
+          </Link>
         </Stack>
         <Tabs
           value={delayedActiveTabRender ? activeTab : false}

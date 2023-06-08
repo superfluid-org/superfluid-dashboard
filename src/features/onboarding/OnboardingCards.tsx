@@ -14,12 +14,12 @@ import {
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import Image from "next/legacy/image";
-import Link from "next/link";
 import { FC, PropsWithChildren, useState } from "react";
 import { useAccount } from "wagmi";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import TokenIcon from "../token/TokenIcon";
 import { useConnectButton } from "../wallet/ConnectButtonProvider";
+import Link, { NextLinkComposed } from "../common/Link";
 
 interface OnboardingItemProps {
   title: string;
@@ -44,10 +44,9 @@ const OnboardingItem: FC<PropsWithChildren<OnboardingItemProps>> = ({
   const onMouseLeave = () => setIsHovering(false);
 
   return (
-    <Link href={href} passHref>
+    <Link href={href}>
       <Card
         elevation={isHovering ? 3 : 1}
-        component="a"
         onClick={onClick}
         sx={{
           textDecoration: "none",
