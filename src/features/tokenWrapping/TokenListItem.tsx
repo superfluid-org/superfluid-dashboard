@@ -9,7 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import Link from "next/link";
 import { FC } from "react";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
@@ -22,6 +21,7 @@ import { rpcApi } from "../redux/store";
 import Amount from "../token/Amount";
 import FlowingBalance from "../token/FlowingBalance";
 import TokenIcon from "../token/TokenIcon";
+import Link from "../common/Link";
 
 interface TokenListItemProps {
   chainId?: number;
@@ -129,16 +129,15 @@ export const TokenListItem: FC<TokenListItemProps> = ({
             />
           ))}
         {showUpgrade && isWrappableSuperToken && (
-          <Link
-            href={`/wrap?upgrade&token=${token.address}&network=${network.slugName}`}
-            passHref
-          >
-            <Tooltip title="Wrap">
-              <IconButton data-cy={"wrap-button"}>
-                <AddCircleOutline></AddCircleOutline>
-              </IconButton>
-            </Tooltip>
-          </Link>
+          <Tooltip title="Wrap">
+            <IconButton
+              component={Link}
+              href={`/wrap?upgrade&token=${token.address}&network=${network.slugName}`}
+              data-cy={"wrap-button"}
+            >
+              <AddCircleOutline />
+            </IconButton>
+          </Tooltip>
         )}
       </Typography>
     </ListItemButton>

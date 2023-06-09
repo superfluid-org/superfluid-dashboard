@@ -11,7 +11,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { Token } from "@superfluid-finance/sdk-core";
-import Link from "next/link";
+import NextLink from "next/link";
 import { FC, useMemo } from "react";
 import { useAccount } from "wagmi";
 import { getAddress } from "../../utils/memoizedEthersUtils";
@@ -134,17 +134,18 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
           )}
           {wrappable && (
             <>
-              <Link
+              <NextLink
                 href={`/wrap?upgrade&token=${token.id}&network=${network.slugName}`}
                 passHref
+                legacyBehavior
               >
                 <Tooltip title="Wrap">
                   <IconButton data-cy={"wrap-button"} color="primary">
                     <AddIcon />
                   </IconButton>
                 </Tooltip>
-              </Link>
-              <Link
+              </NextLink>
+              <NextLink
                 href={`/wrap?downgrade&token=${token.id}&network=${network.slugName}`}
                 passHref
               >
@@ -153,7 +154,7 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
                     <RemoveIcon />
                   </IconButton>
                 </Tooltip>
-              </Link>
+              </NextLink>
             </>
           )}
         </Stack>

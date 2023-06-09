@@ -90,7 +90,7 @@ export function estimateFrequency(startDate: Date, endDate: Date): UnitOfTime {
   const normalizedFrequency =
     Object.values(UnitOfTime)
       .reverse()
-      .find((s) => s <= frequency) || UnitOfTime.Second;
+      .find((s) => Number(s) <= frequency) || UnitOfTime.Second;
 
   return normalizedFrequency as UnitOfTime;
 }

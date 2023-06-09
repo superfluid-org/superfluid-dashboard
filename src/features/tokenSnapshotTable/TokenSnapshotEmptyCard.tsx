@@ -11,6 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import NextLink from "next/link";
+import Link from "../common/Link";
 
 const WrapperAvatar = styled(Avatar)(({ theme }) => ({
   width: 70,
@@ -38,17 +39,17 @@ const TokenSnapshotEmptyCard = () => (
         Wrap some tokens to start streaming payments in real time.
       </Typography>
     </Box>
-    <NextLink href={"/wrap?upgrade"} passHref>
-      <Button
-        data-cy={"no-balance-wrap-button"}
-        variant="contained"
-        color="primary"
-        size="large"
-        endIcon={<AddIcon />}
-      >
-        Wrap
-      </Button>
-    </NextLink>
+    <Button
+      LinkComponent={Link}
+      href={"/wrap?upgrade"}
+      data-cy={"no-balance-wrap-button"}
+      variant="contained"
+      color="primary"
+      size="large"
+      endIcon={<AddIcon />}
+    >
+      Wrap
+    </Button>
   </Card>
 );
 

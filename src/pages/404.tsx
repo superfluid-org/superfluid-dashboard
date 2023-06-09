@@ -1,8 +1,9 @@
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import { Button, Container, Typography } from "@mui/material";
 import { NextPage } from "next";
-import Link from "next/link";
+import NextLink from "next/link";
 import withStaticSEO from "../components/SEO/withStaticSEO";
+import Link from "../features/common/Link";
 
 const HELP_CENTER_URL = "https://help.superfluid.finance/";
 
@@ -23,24 +24,28 @@ const Page404: NextPage = () => {
         Page Not Found
       </Typography>
 
-      <Link href="/" passHref>
-        <Button
-          data-cy={"return-to-dashboard-button"}
-          variant="contained"
-          color="primary"
-          size="large"
-          component="a"
-          startIcon={<ArrowBackRoundedIcon />}
-          sx={{ my: 4.5 }}
-          href="/"
-        >
-          Return to Dashboard
-        </Button>
-      </Link>
+      <Button
+        LinkComponent={Link}
+        data-cy={"return-to-dashboard-button"}
+        variant="contained"
+        color="primary"
+        size="large"
+        component="a"
+        startIcon={<ArrowBackRoundedIcon />}
+        sx={{ my: 4.5 }}
+        href="/"
+      >
+        Return to Dashboard
+      </Button>
 
       <Typography variant="h5">
         Need support? Visit our{" "}
-        <Link href={HELP_CENTER_URL} passHref target="_blank">
+        <NextLink
+          href={HELP_CENTER_URL}
+          passHref
+          target="_blank"
+          legacyBehavior
+        >
           <Typography
             data-cy={"help-center-link"}
             color="primary"
@@ -52,7 +57,7 @@ const Page404: NextPage = () => {
           >
             Help Center
           </Typography>
-        </Link>
+        </NextLink>
       </Typography>
     </Container>
   );

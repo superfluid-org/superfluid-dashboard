@@ -10,8 +10,8 @@ import {
   Popover,
   useTheme,
 } from "@mui/material";
-import Image from "next/image";
-import Link from "next/link";
+import Image from "next/legacy/image";
+import NextLink from "next/link";
 import { FC, MouseEvent, useState } from "react";
 
 interface MenuItemImageProps {
@@ -69,7 +69,12 @@ const MoreNavigationItem: FC = () => {
           square: true,
         }}
       >
-        <Link href="https://www.superfluid.finance" target="_blank" passHref>
+        <NextLink
+          href="https://www.superfluid.finance"
+          target="_blank"
+          passHref
+          legacyBehavior
+        >
           <ListItemButton data-cy={"more-website-btn"} href="" target="_blank">
             <MenuItemImage
               src={
@@ -81,36 +86,47 @@ const MoreNavigationItem: FC = () => {
             />
             <ListItemText>Website</ListItemText>
           </ListItemButton>
-        </Link>
+        </NextLink>
 
-        <Link href="https://v1.superfluid.finance" target="_blank" passHref>
+        <NextLink
+          href="https://v1.superfluid.finance"
+          target="_blank"
+          passHref
+          legacyBehavior
+        >
           <ListItemButton data-cy={"more-v1-btn"} href="" target="_blank">
             <ListItemIcon>
               <GridViewRoundedIcon sx={{ color: theme.palette.text.primary }} />
             </ListItemIcon>
             <ListItemText>Dashboard V1</ListItemText>
           </ListItemButton>
-        </Link>
+        </NextLink>
 
-        <Link href="https://discord.gg/XsK7nahanQ" target="_blank" passHref>
+        <NextLink
+          href="https://discord.gg/XsK7nahanQ"
+          target="_blank"
+          passHref
+          legacyBehavior
+        >
           <ListItemButton data-cy={"more-discord-btn"} href="" target="_blank">
             <MenuItemImage src="/icons/social/discord.svg" alt="Discord logo" />
             <ListItemText>Discord</ListItemText>
           </ListItemButton>
-        </Link>
+        </NextLink>
 
-        <Link
+        <NextLink
           href="https://twitter.com/intent/follow?screen_name=Superfluid_HQ"
           target="_blank"
           passHref
+          legacyBehavior
         >
           <ListItemButton data-cy={"more-twitter-btn"} href="" target="_blank">
             <MenuItemImage src="/icons/social/twitter.svg" alt="Twitter logo" />
             <ListItemText>Twitter</ListItemText>
           </ListItemButton>
-        </Link>
+        </NextLink>
 
-        <Link href="/?showFaucet=true">
+        <NextLink href="/?showFaucet=true" legacyBehavior>
           <ListItemButton
             data-cy={"more-faucet-btn"}
             href=""
@@ -121,20 +137,9 @@ const MoreNavigationItem: FC = () => {
             </ListItemIcon>
             <ListItemText>Testnet Faucet</ListItemText>
           </ListItemButton>
-        </Link>
-        <Link href="/auto-wrap">
-          <ListItemButton
-            data-cy={"wrap-utility-btn"}
-            href=""
-            onClick={closeMoreMenu}
-          >
-            <ListItemIcon>
-              <AutoModeOutlined sx={{ color: theme.palette.text.primary }} />
-            </ListItemIcon>
-            <ListItemText>Auto-Wrap</ListItemText>
-          </ListItemButton>
-        </Link>
-        <Link href="/accounting">
+        </NextLink>
+
+        <NextLink href="/accounting" legacyBehavior>
           <ListItemButton
             data-cy={"more-export-btn"}
             href=""
@@ -147,7 +152,19 @@ const MoreNavigationItem: FC = () => {
             </ListItemIcon>
             <ListItemText>Export Stream Data</ListItemText>
           </ListItemButton>
-        </Link>
+        </NextLink>
+        <NextLink href="/auto-wrap">
+          <ListItemButton
+              data-cy={"wrap-utility-btn"}
+              href=""
+              onClick={closeMoreMenu}
+          >
+            <ListItemIcon>
+              <AutoModeOutlined sx={{ color: theme.palette.text.primary }} />
+            </ListItemIcon>
+            <ListItemText>Auto-Wrap</ListItemText>
+          </ListItemButton>
+        </NextLink>
       </Popover>
     </>
   );

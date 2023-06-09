@@ -1,13 +1,13 @@
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 import {
-    Box,
-    IconButton,
-    Skeleton,
-    Stack,
-    Tooltip,
-    Typography,
-    useMediaQuery,
-    useTheme,
+  Box,
+  IconButton,
+  Skeleton,
+  Stack,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC, useMemo } from "react";
@@ -15,7 +15,6 @@ import NoContentPaper from "../../components/NoContent/NoContentPaper";
 import { getAddress } from "../../utils/memoizedEthersUtils";
 import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
 import { CopyIconBtn } from "../common/CopyIconBtn";
-import { NextLinkComposed } from "../common/Link";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { Network } from "../network/networks";
 import {
@@ -27,75 +26,80 @@ import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import AggregatedVestingSchedules from "./AggregatedVestingSchedules";
 import VestingSchedulerAllowancesTable from "./VestingSchedulesAllowancesTable/VestingSchedulerAllowancesTable";
 import VestingScheduleTable from "./VestingScheduleTable";
+import Link from "../common/Link";
 
 interface ExecutionWhitelistInfoProps {
   whitelisted: boolean;
   network: Network;
 }
 
-const AutoWrapContractInfo: FC<{ network: Network }> = ({network}) => {
-    const theme = useTheme();
-    const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-    if (!network || !network.autoWrap) return null;
-    return <Stack direction="column" alignSelf={isBelowMd ? "flex-start" : "flex-end"}>
-        <Stack direction="row" gap={0.5}>
-            <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
-                Auto-Wrap Manager Smart Contract
-            </Typography>
-            <Stack
-                data-cy="auto-wrap-manager-contract-buttons"
-                direction="row"
-                alignItems="center"
+const AutoWrapContractInfo: FC<{ network: Network }> = ({ network }) => {
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+  if (!network || !network.autoWrap) return null;
+  return (
+    <Stack direction="column" alignSelf={isBelowMd ? "flex-start" : "flex-end"}>
+      <Stack direction="row" gap={0.5}>
+        <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
+          Auto-Wrap Manager Smart Contract
+        </Typography>
+        <Stack
+          data-cy="auto-wrap-manager-contract-buttons"
+          direction="row"
+          alignItems="center"
+        >
+          <CopyIconBtn
+            TooltipProps={{ placement: "top" }}
+            copyText={getAddress(network.autoWrap.managerContractAddress)}
+            description="Copy address to clipboard"
+            IconButtonProps={{ size: "small" }}
+          />
+          <Tooltip arrow title="View on blockchain explorer" placement="top">
+            <IconButton
+              component={Link}
+              href={network.getLinkForAddress(
+                network.autoWrap.managerContractAddress
+              )}
+              target="_blank"
+              size="small"
             >
-                <CopyIconBtn
-                    TooltipProps={{placement: "top"}}
-                    copyText={getAddress(network.autoWrap.managerContractAddress)}
-                    description="Copy address to clipboard"
-                    IconButtonProps={{size: "small"}}
-                />
-                <Tooltip arrow title="View on blockchain explorer" placement="top">
-                    <NextLinkComposed
-                        passHref
-                        to={network.getLinkForAddress(network.autoWrap.managerContractAddress)}
-                        target="_blank"
-                    >
-                        <IconButton size="small">
-                            <LaunchRoundedIcon color="inherit"/>
-                        </IconButton>
-                    </NextLinkComposed>
-                </Tooltip>
-            </Stack>
+              <LaunchRoundedIcon color="inherit" />
+            </IconButton>
+          </Tooltip>
         </Stack>
-        <Stack direction="row" gap={0.8}>
-            <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
-                Auto-Wrap Strategy Smart Contract
-            </Typography>
-            <Stack
-                data-cy="auto-wrap-strategy-contract-buttons"
-                direction="row"
-                alignItems="center"
+      </Stack>
+      <Stack direction="row" gap={0.8}>
+        <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
+          Auto-Wrap Strategy Smart Contract
+        </Typography>
+        <Stack
+          data-cy="auto-wrap-strategy-contract-buttons"
+          direction="row"
+          alignItems="center"
+        >
+          <CopyIconBtn
+            TooltipProps={{ placement: "top" }}
+            copyText={getAddress(network.autoWrap.strategyContractAddress)}
+            description="Copy address to clipboard"
+            IconButtonProps={{ size: "small" }}
+          />
+          <Tooltip arrow title="View on blockchain explorer" placement="top">
+            <Link
+              href={network.getLinkForAddress(
+                network.autoWrap.strategyContractAddress
+              )}
+              target="_blank"
             >
-                <CopyIconBtn
-                    TooltipProps={{placement: "top"}}
-                    copyText={getAddress(network.autoWrap.strategyContractAddress)}
-                    description="Copy address to clipboard"
-                    IconButtonProps={{size: "small"}}
-                />
-                <Tooltip arrow title="View on blockchain explorer" placement="top">
-                    <NextLinkComposed
-                        passHref
-                        to={network.getLinkForAddress(network.autoWrap.strategyContractAddress)}
-                        target="_blank"
-                    >
-                        <IconButton size="small">
-                            <LaunchRoundedIcon color="inherit"/>
-                        </IconButton>
-                    </NextLinkComposed>
-                </Tooltip>
-            </Stack>
+              <IconButton size="small">
+                <LaunchRoundedIcon color="inherit" />
+              </IconButton>
+            </Link>
+          </Tooltip>
         </Stack>
+      </Stack>
     </Stack>
-}
+  );
+};
 
 const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
   whitelisted,
@@ -105,58 +109,70 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
-   <Stack>
+    <Stack>
       <Stack
-      direction={isBelowMd ? "column" : "row"}
-      justifyContent="space-between"
-      spacing={1}
-    >
-      <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
-        {whitelisted ? (
-          <>
-            Your wallet address <strong>is</strong> on the allowlist.
-          </>
-        ) : (
-          <>
-            Your wallet address is <strong>not</strong> on the allowlist.
-          </>
-        )}
-      </Typography>
-      <Stack direction="column" alignItems={isBelowMd ? "flex-start" : "flex-end"} gap={isBelowMd ? 0.5 : 0.2}>
-      {network.vestingContractAddress && (
-        <Stack direction="row" alignItems="center" gap={0.5}>
-          <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
-            Vesting Smart Contract
-          </Typography>
-          <Stack
-            data-cy="vesting-contract-buttons"
-            direction="row"
-            alignItems="center"
-          >
-            <CopyIconBtn
-              TooltipProps={{ placement: "top" }}
-              copyText={getAddress(network.vestingContractAddress)}
-              description="Copy address to clipboard"
-              IconButtonProps={{ size: "small" }}
-            />
-            <Tooltip arrow title="View on blockchain explorer" placement="top">
-              <NextLinkComposed
-                passHref
-                to={network.getLinkForAddress(network.vestingContractAddress)}
-                target="_blank"
+        direction={isBelowMd ? "column" : "row"}
+        justifyContent="space-between"
+        spacing={1}
+      >
+        <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
+          {whitelisted ? (
+            <>
+              Your wallet address <strong>is</strong> on the allowlist.
+            </>
+          ) : (
+            <>
+              Your wallet address is <strong>not</strong> on the allowlist.
+            </>
+          )}
+        </Typography>
+        <Stack
+          direction="column"
+          alignItems={isBelowMd ? "flex-start" : "flex-end"}
+          gap={isBelowMd ? 0.5 : 0.2}
+        >
+          {network.vestingContractAddress && (
+            <Stack direction="row" alignItems="center" gap={0.5}>
+              <Typography
+                variant={isBelowMd ? "body2" : "body1"}
+                color="secondary"
               >
-                <IconButton size="small">
-                  <LaunchRoundedIcon color="inherit" />
-                </IconButton>
-              </NextLinkComposed>
-            </Tooltip>
-          </Stack>
+                Vesting Smart Contract
+              </Typography>
+              <Stack
+                data-cy="vesting-contract-buttons"
+                direction="row"
+                alignItems="center"
+              >
+                <CopyIconBtn
+                  TooltipProps={{ placement: "top" }}
+                  copyText={getAddress(network.vestingContractAddress)}
+                  description="Copy address to clipboard"
+                  IconButtonProps={{ size: "small" }}
+                />
+                <Tooltip
+                  arrow
+                  title="View on blockchain explorer"
+                  placement="top"
+                >
+                  <IconButton
+                    component={Link}
+                    href={network.getLinkForAddress(
+                      network.vestingContractAddress
+                    )}
+                    target="_blank"
+                    size="small"
+                  >
+                    <LaunchRoundedIcon color="inherit" />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+            </Stack>
+          )}
+          <AutoWrapContractInfo network={network} />
         </Stack>
-      )}
-      <AutoWrapContractInfo network={network} />
       </Stack>
     </Stack>
-  </Stack>
   );
 };
 

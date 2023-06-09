@@ -8,12 +8,13 @@ import {
   useTheme,
 } from "@mui/material";
 import { NextPage } from "next";
-import Link from "next/link";
+import NextLink from "next/link";
 import { Fragment } from "react";
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import { EcosystemApp } from "../features/ecosystem/EcosystemItem";
 import EcosystemSection from "../features/ecosystem/EcosystemSection";
 import { networkDefinition } from "../features/network/networks";
+import Link from "../features/common/Link";
 
 const AUTOMATE_CRYPTO_PAYROLL: EcosystemApp[] = [
   {
@@ -77,10 +78,7 @@ const INVEST_IN_REALTIME: EcosystemApp[] = [
     href: "https://ricochet-exchange.eth.limo/",
     description: `An exchange for effortless real-time crypto investing and streaming`,
     icon: "/icons/ecosystem/ricochet.svg",
-    chains: [
-      networkDefinition.polygon.id,
-      networkDefinition.optimism.id,
-    ],
+    chains: [networkDefinition.polygon.id, networkDefinition.optimism.id],
     colors: {
       primary: "#1B2733",
       secondary: "#254D5A",
@@ -185,10 +183,7 @@ const SUPERFLUID_INTEGRATIONS: EcosystemApp[] = [
     href: "https://app.push.org/#/channels?channel=0xa947E9cFc724f05D83b995e53572c4bcCB00D7Aa",
     icon: "/icons/ecosystem/push.png",
     description: `Cross-chain notifications and messaging for dapps, wallets, and services`,
-    chains: [
-      networkDefinition.ethereum.id,
-      networkDefinition.polygon.id,
-    ],
+    chains: [networkDefinition.ethereum.id, networkDefinition.polygon.id],
     colors: {
       primary: "#DD44B9",
       secondary: "#8E71F3",
@@ -483,22 +478,18 @@ const Ecosystem: NextPage = () => {
           <Typography variant="h3" component="h1" translate="yes">
             Explore the Superfluid ecosystem
           </Typography>
-          <Link
+
+          <Button
+            LinkComponent={Link}
+            data-cy={"add-new-app-button"}
             href="https://github.com/superfluid-finance/ecosystem/"
-            passHref
+            variant="contained"
+            color="primary"
+            endIcon={<AddIcon />}
             target="_blank"
           >
-            <Button
-              data-cy={"add-new-app-button"}
-              href=""
-              variant="contained"
-              color="primary"
-              endIcon={<AddIcon />}
-              target="_blank"
-            >
-              Add New App
-            </Button>
-          </Link>
+            Add New App
+          </Button>
         </Stack>
 
         {ECOSYSTEM_SECTIONS.map((section) => (

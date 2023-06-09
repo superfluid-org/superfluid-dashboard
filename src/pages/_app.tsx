@@ -36,7 +36,7 @@ const clientSideEmotionCache = createEmotionCache();
 
 initializeSuperfluidDashboardGlobalObject();
 
-interface MyAppProps extends AppProps {
+export interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
 }
 

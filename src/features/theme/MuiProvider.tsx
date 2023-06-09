@@ -23,7 +23,7 @@ const MuiProvider: FC<{ children: (theme: Theme) => ReactNode }> = ({
 
   useEffect(() => {
     setMounted(true);
-    setMuiThemeMode(themeMode);
+    setMuiThemeMode(themeMode as "light" | "dark");
   }, [themeMode]);
 
   return (
