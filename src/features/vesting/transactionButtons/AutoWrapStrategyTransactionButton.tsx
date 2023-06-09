@@ -45,6 +45,7 @@ const AutoWrapStrategyTransactionButton: FC<{
   };
 
   const disabled = isDisabled_ && !!network.autoWrap;
+
   const { config } = usePrepareAutoWrapManagerCreateWrapSchedule(
     disabled
       ? undefined
@@ -63,6 +64,22 @@ const AutoWrapStrategyTransactionButton: FC<{
         }
   );
 
+  console.log("config", config,  disabled
+  ? undefined
+  : {
+      args: [
+        primaryArgs.superToken,
+        primaryArgs.strategy,
+        primaryArgs.liquidityToken,
+        primaryArgs.expiry,
+        primaryArgs.lowerLimit,
+        primaryArgs.upperLimit,
+      ],
+      chainId: network.id as keyof typeof autoWrapManagerAddress,
+      signer,
+      overrides,
+    })
+
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
   const isDisabled = isDisabled_ && !config;
 
@@ -80,6 +97,13 @@ const AutoWrapStrategyTransactionButton: FC<{
                   tokens when balance reaches low.
                 </Typography>
               );
+
+              console.log("hey", {signer,
+              config: {
+                ...config,
+                chainId: network.id,
+              },
+              transactionTitle: TX_TITLE});
 
               write({
                 signer,

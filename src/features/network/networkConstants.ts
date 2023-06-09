@@ -92,6 +92,13 @@ export const flowSchedulerSubgraphUrls = {
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-xdai-mainnet",
 } as const;
 
+
+export const autoWrapSubgraphUrls = {
+  mumbai:
+    "https://api.thegraph.com/subgraphs/name/msoni89/auto-wrap-v1-mumbai-test", // TODO We will replace it with superfliud deployed subgraph
+} as const;
+
+
 export const superfluidRpcUrls = {
   goerli: "https://rpc-endpoints.superfluid.dev/eth-goerli",
   gnosis: "https://rpc-endpoints.superfluid.dev/xdai-mainnet",

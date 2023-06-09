@@ -8,12 +8,10 @@ import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { rpcApi, subgraphApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
-import { VestingToken } from "../CreateVestingSection";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
 import { Token } from "@superfluid-finance/sdk-core";
 import { toVestingToken } from "../useVestingToken";
-import { useConnectionBoundary } from "../../transactionBoundary/ConnectionBoundary";
 
 const TX_TITLE: TransactionTitle = "Disable Auto-Wrap";
 

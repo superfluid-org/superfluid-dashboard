@@ -1,0 +1,15 @@
+sources:
+  - name: vesting
+    handler:
+      graphql:
+        endpoint: '{context.url:https://api.thegraph.com/subgraphs/name/msoni89/auto-wrap-v1-mumbai-test}'
+        retry: 5
+documents:
+  - './*.graphql'
+codegen:
+  namingConvention: change-case-all#pascalCase
+  scalars:
+    BigInt: string
+    Bytes: string
+    BigDecimal: string
+  maybeValue: T | undefined

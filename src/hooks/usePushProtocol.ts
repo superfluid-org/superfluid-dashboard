@@ -18,7 +18,7 @@ export const usePushProtocol = () => {
   const { data: signer } = useSigner();
   const { chain } = useNetwork();
   const { switchNetworkAsync } = useSwitchNetwork();
-
+  
   const [changeSubscription, subscriptionStatus] =
     pushApi.useChangeSubscriptionMutation();
 

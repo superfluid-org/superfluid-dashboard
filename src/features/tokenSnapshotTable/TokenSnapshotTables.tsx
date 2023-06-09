@@ -20,7 +20,7 @@ export interface FetchingStatus {
   hasContent: boolean;
 }
 
-interface NetworkFetchingStatuses {
+export interface NetworkFetchingStatuses {
   [networkId: number]: FetchingStatus;
 }
 

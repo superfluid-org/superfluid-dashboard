@@ -14,6 +14,7 @@
     "generate-eth-sdk": "del-cli ./src/eth-sdk/client && del-cli ./src/eth-sdk/abis && eth-sdk -p ./src/eth-sdk",
     "generate-platform-api-template": "npx @rtk-query/codegen-openapi ./src/features/redux/platformApi/platformApiCodegenConfig.ts",
     "vesting-graphql-codegen": "graphclient build --dir ./src/vesting-subgraph",
+    "auto-wrap-graphql-codegen": "graphclient build --dir ./src/auto-wrap-subgraph",
     "scheduling-graphql-codegen": "graphclient build --dir ./src/scheduling-subgraph",
     "wagmi-generate": "wagmi generate"
   },

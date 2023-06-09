@@ -16,7 +16,9 @@ export interface PendingUpdate {
     | "IndexSubscriptionApprove"
     | "IndexSubscriptionRevoke"
     | "VestingScheduleCreate"
-    | "VestingScheduleDelete";
+    | "VestingScheduleDelete"
+    | "AutoWrapScheduleCreate"
+    | "AutoWrapScheduleDelete";
   transactionHash: string;
   chainId: number;
   timestamp: number;
@@ -27,5 +29,5 @@ export interface PendingUpdate {
   /**
    * Quick solution for knowing which Subgraph to wait for before deleting the pending update entry.
    */
-  relevantSubgraph: "Protocol" | "Vesting" | "Scheduler";
+  relevantSubgraph: "Protocol" | "Vesting" | "Scheduler" | "Auto-Wrap";
 }

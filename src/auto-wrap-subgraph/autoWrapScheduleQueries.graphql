@@ -1,0 +1,40 @@
+query getWrapSchedule($id: ID!) {
+  wrapSchedule(id: $id) {
+    ...WrapSchedulePart
+  }
+}
+
+query getWrapSchedules(
+  $where: WrapSchedule_filter = {}
+  $orderBy: WrapSchedule_orderBy = id
+  $orderDirection: OrderDirection = asc
+) {
+  wrapSchedules(
+    first: 1000
+    where: $where
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+  ) {
+    ...WrapSchedulePart
+  }
+}
+
+fragment WrapSchedulePart on WrapSchedule {
+  id
+  account
+  wrapScheduleId
+  deletedAt
+  updatedAt
+  expiredAt
+  createdAt 
+  lastExecutedAt
+  strategy
+  manager
+  superToken
+  liquidityToken
+  amount
+  upperLimit
+  lowerLimit
+  createdBlockNumber
+  updatedBlockNumber
+}
