@@ -2,7 +2,6 @@ import { defineConfig } from "cypress";
 import { addCucumberPreprocessorPlugin } from "@badeball/cypress-cucumber-preprocessor";
 import webpackPreprocessor from "@cypress/webpack-preprocessor";
 import webpack from "webpack";
-import { defineConfig } from "cypress";
 import { cloudPlugin } from "cypress-cloud/plugin";
 
 async function setupNodeEvents(

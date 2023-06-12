@@ -77,7 +77,7 @@ jobs:
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
-          command: yarn cypress-cloud run --record --key VoGkdJBfcuV6V8aD --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}}
+          command: yarn cypress-cloud run --record --parallel --key VoGkdJBfcuV6V8aD --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}}
           working-directory: tests
           env: network=${{ matrix.network }},TAGS=@rejected,STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=${{ secrets.TX_ACCOUNT_PRIVATE_KEY4 }}
         env:
@@ -108,7 +108,7 @@ jobs:
           working-directory: tests
           config: chromeWebSecurity=false
           env: TAGS=@Gnosis
-          command: yarn cypress-cloud run --record --key VoGkdJBfcuV6V8aD --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}}
+          command: yarn cypress-cloud run --record --parallel --key VoGkdJBfcuV6V8aD --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}}
         env:
           CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
 #          #https://github.com/cypress-io/github-action/issues/124
