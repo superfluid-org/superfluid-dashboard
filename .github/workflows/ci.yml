@@ -43,7 +43,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Use Node.js 16.x
-      - uses: actions/setup-node@v3
+        uses: actions/setup-node@v3
         with:
           node-version: 16.x
           cache: "yarn"
@@ -74,9 +74,11 @@ jobs:
         network: ["goerli","gnosis","polygon-mumbai","polygon","optimism","arbitrum-one","avalanche","avalanche-fuji","bsc","ethereum","arbitrum-goerli","optimism-goerli"]
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Use Node.js 16.x
-      - uses: actions/setup-node@v3
+        uses: actions/setup-node@v3
         with:
           node-version: 16.x
           cache: "yarn"
@@ -111,7 +113,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Use Node.js 16.x
-      - uses: actions/setup-node@v3
+        uses: actions/setup-node@v3
         with:
           node-version: 16.x
           cache: "yarn"
