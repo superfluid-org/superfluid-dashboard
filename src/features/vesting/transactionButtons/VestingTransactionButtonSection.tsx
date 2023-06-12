@@ -71,11 +71,13 @@ export function VestingTransactionButtonSection({
           token={token}
           isVisible={activeStep == 0}
           isDisabled={isAutoWrapLoading}
+          network={network}
         />
         <AutoWrapAllowanceTransactionButton
           token={token}
           isVisible={activeStep == 1}
           isDisabled={isAutoWrapLoading}
+          network={network}
         />
         <CreateVestingTransactionButton
           setView={setView}

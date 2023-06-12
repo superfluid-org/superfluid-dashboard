@@ -6,8 +6,8 @@ import { DialogContent, DialogTitle, IconButton, Stack, Typography, useTheme } f
 import CloseIcon from "@mui/icons-material/Close";
 import AutoWrapEnableDialogContentSection from "./AutoWrapEnableDialogContentSection";
 
-const AutoWrapEnableDialogSection: FC<{ closeEnableAutoWrapDialog: () => void, isEnableAutoWrapDialogOpen: boolean, isActiveAutoWrapSchedule: boolean, isAutoWrapAllowanceSufficient: boolean, isAutoWrapLoading: boolean, token: Token, network: Network }> = (
-  { closeEnableAutoWrapDialog, isEnableAutoWrapDialogOpen, isAutoWrapAllowanceSufficient, isActiveAutoWrapSchedule, isAutoWrapLoading, token, network }) => {
+const AutoWrapEnableDialogSection: FC<{ closeEnableAutoWrapDialog: () => void, isEnableAutoWrapDialogOpen: boolean, token: Token, network: Network }> = (
+  { closeEnableAutoWrapDialog, isEnableAutoWrapDialogOpen, token, network }) => {
   const theme = useTheme();
 
   return <ResponsiveDialog
@@ -36,9 +36,6 @@ const AutoWrapEnableDialogSection: FC<{ closeEnableAutoWrapDialog: () => void, i
     <DialogContent>
       <AutoWrapEnableDialogContentSection
         closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}
-        isAutoWrapAllowanceSufficient={isAutoWrapAllowanceSufficient}
-        isActiveAutoWrapSchedule={isActiveAutoWrapSchedule}
-        isAutoWrapLoading={isAutoWrapLoading}
         token={token}
         network={network} />
     </DialogContent>

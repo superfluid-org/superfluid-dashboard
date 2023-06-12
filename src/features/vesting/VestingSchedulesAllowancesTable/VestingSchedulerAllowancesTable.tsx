@@ -117,7 +117,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
   }
 
   return (
-    <ConnectionBoundary >
+    <ConnectionBoundary>
       <TableContainer
         component={Paper}
         sx={{

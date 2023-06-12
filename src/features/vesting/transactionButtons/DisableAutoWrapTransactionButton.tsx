@@ -22,17 +22,13 @@ const DisableAutoWrapTransactionButton: FC<{
   ButtonProps?: ButtonProps;
 }> = ({ token, isVisible, isDisabled: isDisabled_, ButtonProps = {} }) => {
   const { network } = useExpectedNetwork();
-
   const { data: signer } = useSigner();
-
   const vestingToken = toVestingToken(token, network);
-
   const getGasOverrides = useGetTransactionOverrides();
   const { data: overrides } = useQuery(
     ["gasOverrides", TX_TITLE, network.id],
     async () => convertOverridesForWagmi(await getGasOverrides(network))
   );
-
   const primaryArgs = {
     spender: network.autoWrap!.strategyContractAddress,
     amount: constants.Zero,

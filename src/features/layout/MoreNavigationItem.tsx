@@ -138,7 +138,18 @@ const MoreNavigationItem: FC = () => {
             <ListItemText>Testnet Faucet</ListItemText>
           </ListItemButton>
         </NextLink>
-
+        <NextLink href="/auto-wrap" legacyBehavior>
+          <ListItemButton
+              data-cy={"wrap-utility-btn"}
+              href=""
+              onClick={closeMoreMenu}
+          >
+            <ListItemIcon>
+              <AutoModeOutlined sx={{ color: theme.palette.text.primary }} />
+            </ListItemIcon>
+            <ListItemText>Auto-Wrap</ListItemText>
+          </ListItemButton>
+        </NextLink>
         <NextLink href="/accounting" legacyBehavior>
           <ListItemButton
             data-cy={"more-export-btn"}
@@ -153,18 +164,7 @@ const MoreNavigationItem: FC = () => {
             <ListItemText>Export Stream Data</ListItemText>
           </ListItemButton>
         </NextLink>
-        <NextLink href="/auto-wrap">
-          <ListItemButton
-              data-cy={"wrap-utility-btn"}
-              href=""
-              onClick={closeMoreMenu}
-          >
-            <ListItemIcon>
-              <AutoModeOutlined sx={{ color: theme.palette.text.primary }} />
-            </ListItemIcon>
-            <ListItemText>Auto-Wrap</ListItemText>
-          </ListItemButton>
-        </NextLink>
+
       </Popover>
     </>
   );

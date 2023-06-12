@@ -19,7 +19,6 @@ const AutoWrapAddTokenButtonSection: FC<{ ButtonProps?: ButtonProps }> = ({ Butt
     return <>
         <AutoWrapTokenAddButton ButtonProps={ButtonProps} openEnableAutoWrapDialog={openEnableAutoWrapDialog} />
         <AutoWrapAddTokenDialogSection
-            account={visibleAddress}
             closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}
             isEnableAutoWrapDialogOpen={isEnableAutoWrapDialogOpen}
         />

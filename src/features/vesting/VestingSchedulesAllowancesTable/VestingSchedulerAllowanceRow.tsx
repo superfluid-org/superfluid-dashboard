@@ -642,11 +642,6 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
           key={"auto-wrap-enable-dialog-section"}
           closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}
           isEnableAutoWrapDialogOpen={isEnableAutoWrapDialogOpen}
-          isActiveAutoWrapSchedule={!activeAutoWrapSchedule as boolean}
-          isAutoWrapAllowanceSufficient={
-            !isAutoWrapAllowanceSufficient as boolean
-          }
-          isAutoWrapLoading={isAutoWrapLoading}
           token={token}
           network={network}
         />

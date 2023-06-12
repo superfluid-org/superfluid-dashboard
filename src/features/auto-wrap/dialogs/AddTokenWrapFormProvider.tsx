@@ -78,10 +78,6 @@ const AddTokenWrapFormProvider: FC<
   const [isInitialized, setIsInitialized] = useState(!initialFormValues);
 
   useEffect(() => {
-    console.log("not", initialFormValues, {
-      network: initialFormValues.network ?? defaultFormValues.data.network,
-      token: initialFormValues.token ?? defaultFormValues.data.token,
-    },)
     if (initialFormValues) {
       setValue(
         "data",

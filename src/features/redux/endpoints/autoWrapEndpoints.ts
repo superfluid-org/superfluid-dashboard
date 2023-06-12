@@ -43,7 +43,9 @@ const getActiveWrapScheduleEndpoint = (builder: RpcEndpointBuilder) =>
         lowerLimit: rawWrapSchedule.lowerLimit.toString(), // Should have been `number`, not `BigNumber`.
         upperLimit: rawWrapSchedule.upperLimit.toString(), // Should have been `number`, not `BigNumber`.
       };
-      const isExpired = rawWrapSchedule.expiry.lt(BigNumber.from(dateNowSeconds()));
+      const isExpired = rawWrapSchedule.expiry.lt(
+        BigNumber.from(dateNowSeconds())
+      );
 
       return {
         data:
@@ -92,9 +94,48 @@ const isAutoWrapAllowanceSufficientEndpoint = (builder: RpcEndpointBuilder) =>
     ],
   });
 
+const getUnderlyingTokenAllowanceEndpoint = (builder: RpcEndpointBuilder) =>
+  builder.query<
+    string,
+    {
+      chainId: number;
+      accountAddress: string;
+      underlyingTokenAddress: string;
+    }
+  >({
+    queryFn: async (arg) => {
+      const framework = await getFramework(arg.chainId);
+      const tokenContract = ERC20__factory.connect(
+        arg.underlyingTokenAddress,
+        framework.settings.provider
+      );
+
+      const { strategy } = getAutoWrap(
+        arg.chainId,
+        framework.settings.provider
+      );
+
+      const allowance = await tokenContract.allowance(
+        arg.accountAddress,
+        strategy.address
+      );
+
+      return {
+        data: allowance.toString(),
+      };
+    },
+    providesTags: (_result, _error, arg) => [
+      {
+        type: "GENERAL",
+        id: arg.chainId,
+      },
+    ],
+  });
+
 export const autoWrapEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
     getActiveWrapSchedule: getActiveWrapScheduleEndpoint(builder),
+    getUnderlyingTokenAllowance: getUnderlyingTokenAllowanceEndpoint(builder),
     isAutoWrapAllowanceSufficient:
       isAutoWrapAllowanceSufficientEndpoint(builder),
   }),

@@ -41,7 +41,8 @@ const NetworkSelect: FC<{
     onChange: (network: Network) => void;
     placeholder?: string;
     disabled: boolean;
-}> = ({ network: selectedNetwork, onChange, placeholder, disabled }) => {
+    predicate?: (network: Network) => boolean
+}> = ({ network: selectedNetwork, onChange, placeholder, disabled, predicate = (network: Network) => true }) => {
     const theme = useTheme();
 
     const { availableMainNetworks, availableTestNetworks } =
@@ -104,7 +105,7 @@ const NetworkSelect: FC<{
                 sx={{ marginTop: theme.spacing(1.5) }}
             >
                 <Collapse in={!showTestnets} timeout="auto" unmountOnExit>
-                    {availableMainNetworks.map((network) => (
+                    {availableMainNetworks.filter((n) => n.autoWrap?.managerContractAddress).map((network) => (
                         <NetworkItem
                             key={network.id}
                             onClick={() => {
@@ -118,17 +119,19 @@ const NetworkSelect: FC<{
                 </Collapse>
 
                 <Collapse in={showTestnets} timeout="auto" unmountOnExit>
-                    {availableTestNetworks.map((network) => (
-                        <NetworkItem
-                            key={network.id}
-                            onClick={() => {
-                                onChange(network);
-                                handleClose();
-                            }}
-                            selected={network.id === selectedNetwork?.id}
-                            network={network}
-                        />
-                    ))}
+                    {availableTestNetworks
+                        .filter(predicate)
+                        .map((network) => (
+                            <NetworkItem
+                                key={network.id}
+                                onClick={() => {
+                                    onChange(network);
+                                    handleClose();
+                                }}
+                                selected={network.id === selectedNetwork?.id}
+                                network={network}
+                            />
+                        ))}
                 </Collapse>
 
                 <Box sx={{ margin: "6px 16px" }}>

@@ -5,75 +5,88 @@ import { Button, Stack, Step, StepLabel, Stepper } from "@mui/material";
 import AutoWrapStrategyTransactionButton from "../transactionButtons/AutoWrapStrategyTransactionButton";
 import AutoWrapAllowanceTransactionButton from "../transactionButtons/AutoWrapAllowanceTransactionButton";
 import { toVestingToken } from "../useVestingToken";
-import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
+import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
+import { getSuperTokenType } from "../../redux/endpoints/adHocSubgraphEndpoints";
+import { TokenType } from "../../redux/endpoints/tokenTypes";
+import useActiveAutoWrap from "../useActiveAutoWrap";
 
 const AutoWrapEnableDialogContentSection: FC<{
-    closeEnableAutoWrapDialog: () => void,
-    isActiveAutoWrapSchedule: boolean,
-    isAutoWrapAllowanceSufficient: boolean,
-    isAutoWrapLoading: boolean,
-    token: Token | undefined,
-    network: Network | undefined
-}> = ({
-    isAutoWrapAllowanceSufficient,
-    isActiveAutoWrapSchedule,
+  closeEnableAutoWrapDialog: () => void;
+  token: Token;
+  network: Network;
+}> = ({ token, network, closeEnableAutoWrapDialog }) => {
+  const { visibleAddress } = useVisibleAddress();
+
+  const isAutoWrappable =
+    getSuperTokenType({
+      network,
+      address: token.id,
+      underlyingAddress: token.underlyingAddress,
+    }) === TokenType.WrapperSuperToken;
+
+  const {
     isAutoWrapLoading,
-    token,
-    network,
-    closeEnableAutoWrapDialog
-}) => {
-        const activeStep = useMemo(() => {
-            if (isActiveAutoWrapSchedule) {
-                return 0;
-            } else if (isAutoWrapAllowanceSufficient) {
-                return 1;
-            } else {
-                return 2;
-            }
-        }, [isActiveAutoWrapSchedule, isAutoWrapAllowanceSufficient]);
-
-        const autoWrapSteps = [
-            { label: "Auto-Wrap" },
-            { label: "Allowance" },
-        ] as const;
-
-        const isDisabled = !network || !token;
-
-        if (isDisabled) {
-            return <Button fullWidth={true}
-                data-cy={"enable-auto-wrap-button"}
-                variant="contained"
-                disabled={true}
-                size="large">Add</Button>
+    activeAutoWrapSchedule: isActiveAutoWrapSchedule,
+    isAutoWrapAllowanceSufficient,
+  } = useActiveAutoWrap(
+    isAutoWrappable
+      ? {
+          chainId: network.id,
+          accountAddress: visibleAddress!,
+          superTokenAddress: token.id,
+          underlyingTokenAddress: token.underlyingAddress,
         }
+      : "skip"
+  );
 
-        console.log(network, token)
-        return <ConnectionBoundary expectedNetwork={network}>
-            <Stack spacing={3}>
-                <Stepper activeStep={activeStep}>
-                    {autoWrapSteps.map((step) => (
-                        <Step key={step.label}>
-                            <StepLabel>{step.label}</StepLabel>
-                        </Step>
-                    ))}
-                </Stepper>
-                <AutoWrapStrategyTransactionButton
-                    token={toVestingToken(token, network)}
-                    isVisible={activeStep == 0}
-                    isDisabled={isAutoWrapLoading }
-                />
-                <AutoWrapAllowanceTransactionButton
-                    token={toVestingToken(token, network)}
-                    isVisible={activeStep == 1}
-                    isDisabled={isAutoWrapLoading}
-                />
-                {activeStep == 2 &&
-                    <Button fullWidth={true}
-                        data-cy={"enable-auto-wrap-button"}
-                        variant="contained"
-                        size="medium" onClick={closeEnableAutoWrapDialog}>Close</Button>}
-            </Stack>
-        </ConnectionBoundary>
+  const activeStep = useMemo(() => {
+    if (!isActiveAutoWrapSchedule) {
+      return 0;
+    } else if (!isAutoWrapAllowanceSufficient) {
+      return 1;
+    } else {
+      return 2;
     }
+  }, [isActiveAutoWrapSchedule, isAutoWrapAllowanceSufficient]);
+  const autoWrapSteps = [
+    { label: "Auto-Wrap" },
+    { label: "Allowance" },
+  ] as const;
+
+  return (
+    <Stack spacing={3}>
+      <Stepper activeStep={activeStep}>
+        {autoWrapSteps.map((step) => (
+          <Step key={step.label}>
+            <StepLabel>{step.label}</StepLabel>
+          </Step>
+        ))}
+      </Stepper>
+      <AutoWrapStrategyTransactionButton
+        token={toVestingToken(token, network)}
+        isVisible={activeStep == 0}
+        isDisabled={isAutoWrapLoading}
+        network={network}
+      />
+      <AutoWrapAllowanceTransactionButton
+        token={toVestingToken(token, network)}
+        isVisible={activeStep == 1}
+        isDisabled={isAutoWrapLoading}
+        network={network}
+      />
+      {activeStep == 2 && (
+        <Button
+          fullWidth={true}
+          data-cy={"enable-auto-wrap-button"}
+          variant="contained"
+          size="medium"
+          onClick={closeEnableAutoWrapDialog}
+        >
+          Close
+        </Button>
+      )}
+    </Stack>
+  );
+};
 
 export default memo(AutoWrapEnableDialogContentSection);

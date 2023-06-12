@@ -14,7 +14,7 @@ import { useNetworkCustomTokens } from "../../customTokens/customTokens.slice";
 import { subgraphApi } from "../../redux/store";
 import { Network } from "../../network/networks";
 import { getSuperTokenType } from "../../redux/endpoints/adHocSubgraphEndpoints";
-import { Token } from "@superfluid-finance/sdk-core";
+import { Token, Token_Filter } from "@superfluid-finance/sdk-core";
 
 interface ItemProps {
     token: Token;
@@ -31,15 +31,16 @@ const TokenMenu: FC<{
     anchorEl: HTMLElement | null;
     onChange: (token: Token) => void;
     token: Token | undefined;
-}> = ({ network, anchorEl, open, handleClose, onChange, token }) => {
+    filterArgs: Token_Filter;
+}> = ({ network, anchorEl, open, handleClose, onChange, token, filterArgs}) => {
     const theme = useTheme();
-
     const networkCustomTokens = useNetworkCustomTokens(network.id);
     const listedSuperTokensQuery = subgraphApi.useTokensQuery({
         chainId: network.id,
         filter: {
             isSuperToken: true,
             isListed: true,
+            ...filterArgs
         },
     });
 
@@ -129,7 +130,8 @@ const TokenSelect: FC<{
     onChange: (token: Token) => void;
     placeholder?: string;
     disabled: boolean;
-}> = ({ network, token, onChange, placeholder, disabled }) => {
+    filterArgs?: Token_Filter | undefined;
+}> = ({ network, token, onChange, placeholder, disabled, filterArgs = {} }) => {
     const theme = useTheme();
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -177,6 +179,7 @@ const TokenSelect: FC<{
                     open={open}
                     handleClose={handleClose}
                     anchorEl={anchorEl}
+                    filterArgs={filterArgs}
                 />
             ) : null}
         </>

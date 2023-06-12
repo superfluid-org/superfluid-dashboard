@@ -33,7 +33,7 @@ interface ExecutionWhitelistInfoProps {
   network: Network;
 }
 
-const AutoWrapContractInfo: FC<{ network: Network }> = ({ network }) => {
+export const AutoWrapContractInfo: FC<{ network: Network }> = ({ network }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   if (!network || !network.autoWrap) return null;

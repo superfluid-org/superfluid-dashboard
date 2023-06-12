@@ -2,7 +2,7 @@ import { Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { BigNumber } from "ethers";
 import { FC, memo } from "react";
-import { useQuery, useSigner } from "wagmi";
+import { useChainId, useQuery, useSigner } from "wagmi";
 import {
   autoWrapManagerAddress,
   usePrepareAutoWrapManagerCreateWrapSchedule,
@@ -14,6 +14,8 @@ import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { VestingToken } from "../CreateVestingSection";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
+import { Network } from "../../network/networks";
+import { isEqual } from "lodash";
 
 const TX_TITLE: TransactionTitle = "Enable Auto-Wrap";
 
@@ -21,13 +23,13 @@ const AutoWrapStrategyTransactionButton: FC<{
   token: VestingToken;
   isVisible: boolean;
   isDisabled: boolean;
+  network: Network;
   // TODO We can use callbacks to hide/show the parent modal.
   // onSuccessCallback?: () => void;
   // onFailureCallback?: () => void;
   // onClickCallback?: () => void;
-}> = ({ token, isVisible, isDisabled: isDisabled_ }) => {
+}> = ({ token, isVisible, isDisabled: isDisabled_, network }) => {
   const { data: signer } = useSigner();
-  const { network } = useExpectedNetwork();
 
   const getGasOverrides = useGetTransactionOverrides();
   const { data: overrides } = useQuery(
@@ -44,7 +46,10 @@ const AutoWrapStrategyTransactionButton: FC<{
     upperLimit: BigNumber.from(network.autoWrap!.upperLimit),
   };
 
-  const disabled = isDisabled_ && !!network.autoWrap;
+  const walletChainId = useChainId();
+
+  const disabled =
+    isDisabled_ || !network.autoWrap || network.id !== walletChainId;
 
   const { config } = usePrepareAutoWrapManagerCreateWrapSchedule(
     disabled
@@ -64,28 +69,12 @@ const AutoWrapStrategyTransactionButton: FC<{
         }
   );
 
-  console.log("config", config,  disabled
-  ? undefined
-  : {
-      args: [
-        primaryArgs.superToken,
-        primaryArgs.strategy,
-        primaryArgs.liquidityToken,
-        primaryArgs.expiry,
-        primaryArgs.lowerLimit,
-        primaryArgs.upperLimit,
-      ],
-      chainId: network.id as keyof typeof autoWrapManagerAddress,
-      signer,
-      overrides,
-    })
-
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
   const isDisabled = isDisabled_ && !config;
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
-      {({ network, setDialogLoadingInfo, txAnalytics }) =>
+      {({ setDialogLoadingInfo, txAnalytics }) =>
         isVisible && (
           <TransactionButton
             disabled={isDisabled}
@@ -97,13 +86,6 @@ const AutoWrapStrategyTransactionButton: FC<{
                   tokens when balance reaches low.
                 </Typography>
               );
-
-              console.log("hey", {signer,
-              config: {
-                ...config,
-                chainId: network.id,
-              },
-              transactionTitle: TX_TITLE});
 
               write({
                 signer,

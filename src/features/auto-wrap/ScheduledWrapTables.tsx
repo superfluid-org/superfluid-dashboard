@@ -82,7 +82,7 @@ const ScheduledWrapTables: FC<ScheduledWrapTablesProps> = ({ address }) => {
         }
     );
 
-    if ((!isWhitelistLoading && !isPlatformWhitelisted)) {
+    if (((!isLoading || !isWhitelistLoading) && !isPlatformWhitelisted)) {
         return <ScheduledWrapApplyCard />
     }
 
@@ -125,7 +125,7 @@ const ScheduledWrapTables: FC<ScheduledWrapTablesProps> = ({ address }) => {
                 </Stack>
             )}
 
-            <Stack gap={4}>
+            <Stack gap={2}>
                 {activeNetworks.map((network) => (
                     <ScheduledWrapTable
                         key={network.id}

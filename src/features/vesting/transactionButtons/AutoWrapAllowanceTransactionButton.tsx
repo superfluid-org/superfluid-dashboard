@@ -2,15 +2,15 @@ import { Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { constants } from "ethers";
 import { FC, memo } from "react";
-import { useQuery, useSigner } from "wagmi";
+import { useChainId, useQuery, useSigner } from "wagmi";
 import { usePrepareErc20Approve } from "../../../generated";
-import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { rpcApi, subgraphApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { VestingToken } from "../CreateVestingSection";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
+import { Network } from "../../network/networks";
 
 const TX_TITLE: TransactionTitle = "Approve Allowance";
 
@@ -18,11 +18,10 @@ const AutoWrapAllowanceTransactionButton: FC<{
   token: VestingToken;
   isVisible: boolean;
   isDisabled: boolean;
-}> = ({ token, isVisible, isDisabled: isDisabled_ }) => {
-  const { network } = useExpectedNetwork();
-
+  network: Network;
+}> = ({ token, isVisible, isDisabled: isDisabled_, network }) => {
   const { data: signer } = useSigner();
-
+  const walletChainId = useChainId();
   const getGasOverrides = useGetTransactionOverrides();
   const { data: overrides } = useQuery(
     ["gasOverrides", TX_TITLE, network.id],
@@ -34,7 +33,9 @@ const AutoWrapAllowanceTransactionButton: FC<{
     amount: constants.MaxUint256,
   };
 
-  const disabled = isDisabled_ && !!network.autoWrap;
+  const disabled =
+    isDisabled_ || !network.autoWrap || network.id !== walletChainId;
+
   const { config } = usePrepareErc20Approve(
     disabled
       ? undefined
@@ -58,7 +59,7 @@ const AutoWrapAllowanceTransactionButton: FC<{
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
-      {({ network, setDialogLoadingInfo, txAnalytics }) =>
+      {({ setDialogLoadingInfo, txAnalytics }) =>
         isVisible && (
           <TransactionButton
             disabled={isDisabled}
