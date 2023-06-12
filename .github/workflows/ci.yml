@@ -124,8 +124,6 @@ jobs:
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
-          config: chromeWebSecurity=false
-          env: TAGS=@Gnosis
           command: yarn cypress-cloud run --browser chrome --config chromeWebSecurity=false --record --parallel --key VoGkdJBfcuV6V8aD --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env TAGS=@Gnosis
         env:
           CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}

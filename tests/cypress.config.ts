@@ -73,6 +73,7 @@ export default defineConfig({
   e2e: {
     specPattern: "**/*.feature",
     env: {
+      batchSize: 11,
       vesting: "",
       TAGS: "not @ignore",
       codeCoverage: {
