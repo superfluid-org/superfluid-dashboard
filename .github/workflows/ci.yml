@@ -51,7 +51,7 @@ jobs:
       # Install Currents
       - name: Install dependencies
         run: |
-          yarn install --frozen-lockfile
+          cd tests && yarn install --frozen-lockfile
 
       - name: Cypress tests
         uses: cypress-io/github-action@v4
@@ -86,7 +86,7 @@ jobs:
       # Install Currents
       - name: Install dependencies
         run: |
-          yarn install --frozen-lockfile
+          cd tests && yarn install --frozen-lockfile
 
       - name: Cypress tests
         uses: cypress-io/github-action@v4
@@ -121,7 +121,7 @@ jobs:
       # Install Currents
       - name: Install dependencies
         run: |
-          yarn install --frozen-lockfile
+          cd tests && yarn install --frozen-lockfile
 
       - name: Cypress tests
         uses: cypress-io/github-action@v4
