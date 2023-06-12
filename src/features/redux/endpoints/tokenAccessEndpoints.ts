@@ -8,18 +8,22 @@ import {
   TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
 import { BigNumber } from "ethers";
-import { UnitOfTime } from "../../send/FlowRateInput";
-import { TokenAccessProps } from "../../tokenAccess/dialog/UpsertTokenAccessForm";
+
+type TokenAccess = {
+  flowRateAllowanceWei: string;
+  flowOperatorPermissions: number;
+  tokenAllowanceWei: string; // Note: no need to account for decimals because 18 always for Super Tokens.
+};
 
 interface UpdateAccessMutation extends BaseSuperTokenMutation {
   operatorAddress: string;
-  initialAccess: TokenAccessProps;
-  editedAccess: TokenAccessProps;
+  initialAccess: TokenAccess;
+  editedAccess: TokenAccess;
 }
 
 interface RevokeAccessMutation extends BaseSuperTokenMutation {
   operatorAddress: string;
-  initialAccess: TokenAccessProps;
+  initialAccess: TokenAccess;
 }
 
 export const tokenAccessMutationEndpoints = {
@@ -51,34 +55,37 @@ export const tokenAccessMutationEndpoints = {
 
         // # Flow Operator Permissions & Flow Rate Allowance
 
-        if (
-          !editedAccess.flowRateAllowance.amountEther.eq(
-            initialAccess.flowRateAllowance.amountEther
-          ) ||
-          editedAccess.flowOperatorPermissions !==
-            initialAccess.flowOperatorPermissions ||
-          editedAccess.flowRateAllowance.unitOfTime !==
-            initialAccess.flowRateAllowance.unitOfTime
-        ) {
-          const flowRateAllowance =
-            editedAccess.flowRateAllowance.unitOfTime === UnitOfTime.Second
-              ? editedAccess.flowRateAllowance.amountEther
-              : editedAccess.flowRateAllowance.amountEther.div(
-                  editedAccess.flowRateAllowance.unitOfTime
-                );
+        const initalFlowRateAllowance = BigNumber.from(
+          initialAccess.flowRateAllowanceWei
+        );
+        const editedFlowRateAllowance = BigNumber.from(
+          editedAccess.flowRateAllowanceWei
+        );
 
+        if (
+          !initalFlowRateAllowance.eq(editedFlowRateAllowance) ||
+          editedAccess.flowOperatorPermissions !==
+            initialAccess.flowOperatorPermissions
+        ) {
           batchedOperations.push({
-            title: "Update FlowOperator Permissions",
+            title: "Update FlowOperator Permissions", // TODO(KK): better title?
             operation: await superToken.updateFlowOperatorPermissions({
               flowOperator: operatorAddress,
-              flowRateAllowance: flowRateAllowance.toString(),
+              flowRateAllowance: editedFlowRateAllowance.toString(),
               permissions: editedAccess.flowOperatorPermissions,
               overrides: arg.overrides,
             }),
           });
         }
 
-        if (!editedAccess.tokenAllowance.eq(initialAccess.tokenAllowance)) {
+        const initalTokenAllowance = BigNumber.from(
+          initialAccess.tokenAllowanceWei
+        );
+        const editedTokenAllowance = BigNumber.from(
+          editedAccess.tokenAllowanceWei
+        );
+        
+        if (!editedTokenAllowance.eq(initalTokenAllowance)) {
           // # ERC-20 allowance ("token allowance")
           const superTokenContract = SuperToken__factory.connect(
             superToken.address,
@@ -88,7 +95,7 @@ export const tokenAccessMutationEndpoints = {
           const approveAllowancePromise =
             superTokenContract.populateTransaction.approve(
               operatorAddress,
-              editedAccess.tokenAllowance
+              editedTokenAllowance
             );
 
           batchedOperations.push({
@@ -112,7 +119,7 @@ export const tokenAccessMutationEndpoints = {
           chainId,
           dispatch,
           signerAddress: signerAddress,
-          title: "Update Permission and Allowances",
+          title: "Update Permission and Allowances", // TODO(KK): better title?
           extraData: {
             subTransactionTitles,
             ...(transactionExtraData ?? {}),
@@ -153,19 +160,25 @@ export const tokenAccessMutationEndpoints = {
 
         // # Flow Operator Permissions & Flow Rate Allowance
 
+        const initalFlowRateAllowance = BigNumber.from(
+          initialAccess.flowRateAllowanceWei
+        );
         if (
-          !initialAccess.flowRateAllowance.amountEther.isZero() ||
+          !initalFlowRateAllowance.isZero() ||
           initialAccess.flowOperatorPermissions > 0
         ) {
           batchedOperations.push({
-            title: "Revoke FlowOperator Permissions",
+            title: "Revoke FlowOperator Permissions", // TODO(KK): better title?
             operation: await superToken.revokeFlowOperatorWithFullControl({
               flowOperator: operatorAddress,
             }),
           });
         }
 
-        if (!initialAccess.tokenAllowance.isZero()) {
+        const initalTokenAllowance = BigNumber.from(
+          initialAccess.tokenAllowanceWei
+        );
+        if (!initalTokenAllowance.isZero()) {
           // # ERC-20 allowance ("token allowance")
           const superTokenContract = SuperToken__factory.connect(
             superToken.address,

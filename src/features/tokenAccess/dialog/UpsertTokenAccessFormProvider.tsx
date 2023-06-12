@@ -1,14 +1,13 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { mixed, number, object, string } from "yup";
+import { ObjectSchema, mixed, number, object, string } from "yup";
 import { UnitOfTime } from "../../send/FlowRateInput";
-import { testAddress, testEtherAmount } from "../../../utils/yupUtils";
-import { formRestorationOptions } from "../../transactionRestoration/transactionRestorations";
+import { testAddress, testWeiAmount } from "../../../utils/yupUtils";
 import { Network } from "../../network/networks";
 import { TokenType } from "../../redux/endpoints/tokenTypes";
-import { BigNumber } from "ethers";
 import { CommonFormEffects } from "../../common/CommonFormEffects";
+import { BigNumber } from "ethers";
 
 export interface Token {
   type: TokenType;
@@ -21,85 +20,71 @@ export interface Token {
 
 export type ValidUpsertTokenAccessForm = {
   data: {
-    network: Network | undefined;
-    token: Token | undefined;
+    network: Network;
+    token: Token;
     operatorAddress: string;
-    tokenAllowance: BigNumber;
+    tokenAllowanceWei: BigNumber;
     flowRateAllowance: {
-      amountEther: BigNumber;
+      amountWei: BigNumber;
       unitOfTime: UnitOfTime;
     };
-    flowPermissions: number;
+    flowOperatorPermissions: number;
   };
-};
-
-export const defaultFormValues = {
-  data: {
-    network: undefined,
-    token: undefined,
-    operatorAddress: "",
-    // Permission properties
-    tokenAllowance: BigNumber.from(0),
-    flowRateAllowance: {
-      amountEther: BigNumber.from(0),
-      unitOfTime: UnitOfTime.Second,
-    },
-    flowPermissions: 0,
-  },
 };
 
 export type PartialUpsertTokenAccessForm = {
   data: {
-    network:
-      | ValidUpsertTokenAccessForm["data"]["network"]
-      | typeof defaultFormValues.data.network;
-    token:
-      | ValidUpsertTokenAccessForm["data"]["token"]
-      | typeof defaultFormValues.data.token;
-    operatorAddress:
-      | ValidUpsertTokenAccessForm["data"]["operatorAddress"]
-      | typeof defaultFormValues.data.operatorAddress;
-    tokenAllowance:
-      | ValidUpsertTokenAccessForm["data"]["tokenAllowance"]
-      | typeof defaultFormValues.data.tokenAllowance;
-    flowRateAllowance:
-      | ValidUpsertTokenAccessForm["data"]["flowRateAllowance"]
-      | typeof defaultFormValues.data.flowRateAllowance;
-    flowPermissions:
-      | ValidUpsertTokenAccessForm["data"]["flowPermissions"]
-      | typeof defaultFormValues.data.flowPermissions;
+    network: ValidUpsertTokenAccessForm["data"]["network"] | null;
+    token: ValidUpsertTokenAccessForm["data"]["token"] | null;
+    operatorAddress: ValidUpsertTokenAccessForm["data"]["operatorAddress"];
+    tokenAllowanceWei: ValidUpsertTokenAccessForm["data"]["tokenAllowanceWei"];
+    flowRateAllowance: ValidUpsertTokenAccessForm["data"]["flowRateAllowance"];
+    flowOperatorPermissions: ValidUpsertTokenAccessForm["data"]["flowOperatorPermissions"];
   };
 };
 
+export const defaultFormData: PartialUpsertTokenAccessForm["data"] = {
+  network: null,
+  token: null,
+  operatorAddress: "",
+  // Permission properties
+  tokenAllowanceWei: BigNumber.from(0),
+  flowRateAllowance: {
+    amountWei: BigNumber.from(0),
+    unitOfTime: UnitOfTime.Second,
+  },
+  flowOperatorPermissions: 0,
+};
+
 export interface UpsertTokenAccessFormProviderProps {
-  initialFormValues: Partial<ValidUpsertTokenAccessForm["data"]>;
+  initialFormData: Partial<ValidUpsertTokenAccessForm["data"]>;
 }
 
 const UpsertTokenAccessFormProvider: FC<
   PropsWithChildren<UpsertTokenAccessFormProviderProps>
-> = ({ children, initialFormValues }) => {
-  const formSchema = useMemo(
+> = ({ children, initialFormData }) => {
+  const formSchema: ObjectSchema<ValidUpsertTokenAccessForm> = useMemo(
     () =>
       object({
         data: object().shape(
           {
-            token: object().required(),
+            token: mixed<Token>().required(),
             operatorAddress: string().required().test(testAddress()),
-            network: object().required(),
-            tokenAllowance: string()
+            network: mixed<Network>().required(),
+            tokenAllowanceWei: mixed<BigNumber>()
               .required()
-              .test(testEtherAmount({ notNegative: true })),
+              .test(testWeiAmount({ notNegative: true })),
             flowRateAllowance: object({
-              amountEther: string()
+              amountWei: mixed<BigNumber>()
                 .required()
-                .test(testEtherAmount({ notNegative: true, notZero: true })),
+                .test(testWeiAmount({ notNegative: true, notZero: true })),
               unitOfTime: mixed<UnitOfTime>()
                 .required()
                 .test((x) =>
                   Object.values(UnitOfTime).includes(x as UnitOfTime)
                 ),
             }),
-            flowPermissions: number().required(),
+            flowOperatorPermissions: number().required(),
           },
           []
         ),
@@ -109,24 +94,12 @@ const UpsertTokenAccessFormProvider: FC<
 
   const defaultValues = {
     data: {
-      tokenAllowance:
-        initialFormValues.tokenAllowance ??
-        defaultFormValues.data.tokenAllowance,
-      flowRateAllowance:
-        initialFormValues.flowRateAllowance ??
-        defaultFormValues.data.flowRateAllowance,
-      flowPermissions:
-        initialFormValues.flowPermissions ??
-        defaultFormValues.data.flowPermissions,
-      network: initialFormValues.network ?? defaultFormValues.data.network,
-      operatorAddress:
-        initialFormValues.operatorAddress ??
-        defaultFormValues.data.operatorAddress,
-      token: initialFormValues.token ?? defaultFormValues.data.token,
-    },
+      ...defaultFormData,
+      ...initialFormData
+    }
   };
 
-  const formMethods = useForm<ValidUpsertTokenAccessForm>({
+  const formMethods = useForm<PartialUpsertTokenAccessForm>({
     defaultValues,
     resolver: yupResolver(formSchema),
     mode: "onChange",

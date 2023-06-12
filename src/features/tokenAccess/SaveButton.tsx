@@ -7,7 +7,7 @@ import { rpcApi } from "../redux/store";
 import { TokenAccessProps } from "./dialog/UpsertTokenAccessForm";
 
 interface SaveButtonProps {
-  network: Network | undefined;
+  network: Network | null;
   tokenAddress: string | undefined;
   operatorAddress: string;
   initialAccess: TokenAccessProps;
@@ -28,7 +28,7 @@ const SaveButton: FC<SaveButtonProps> = ({
   const [updateAccess, updateAccessResult] = rpcApi.useUpdateAccessMutation();
 
   const isDisabled =
-    disabled_ || network === undefined || tokenAddress === undefined;
+    disabled_ || !network || !tokenAddress;
 
   return (
     <TransactionBoundary mutationResult={updateAccessResult}>
@@ -61,8 +61,16 @@ const SaveButton: FC<SaveButtonProps> = ({
               chainId: network.id,
               superTokenAddress: tokenAddress,
               operatorAddress: operatorAddress,
-              initialAccess,
-              editedAccess,
+              initialAccess: {
+                flowRateAllowanceWei: initialAccess.flowRateAllowance.amountWei.toString(),
+                flowOperatorPermissions: initialAccess.flowOperatorPermissions,
+                tokenAllowanceWei: initialAccess.tokenAllowanceWei.toString(),
+              },
+              editedAccess: {
+                flowRateAllowanceWei: editedAccess.flowRateAllowance.amountWei.toString(),
+                flowOperatorPermissions: editedAccess.flowOperatorPermissions,
+                tokenAllowanceWei: editedAccess.tokenAllowanceWei.toString(),
+              }
             };
 
             updateAccess({

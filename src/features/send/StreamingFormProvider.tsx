@@ -24,7 +24,6 @@ export type ValidStreamingForm = {
       unitOfTime: UnitOfTime;
     };
     understandLiquidationRisk: boolean;
-
     startTimestamp: number | null; // Unix timestamp
     endTimestamp: number | null; // Unix timestamp
   };

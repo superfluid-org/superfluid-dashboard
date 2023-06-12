@@ -41,8 +41,9 @@ const TokenMenu: FC<{
   handleClose: () => void;
   anchorEl: HTMLElement | null;
   onChange: (token: Token) => void;
-  token: Token | undefined;
-}> = ({ network, anchorEl, open, handleClose, onChange, token }) => {
+  onBlur: () => void;
+  token: Token | undefined | null;
+}> = ({ network, anchorEl, open, handleClose, onChange, onBlur, token }) => {
   const theme = useTheme();
 
   const networkCustomTokens = useNetworkCustomTokens(network.id);
@@ -87,6 +88,7 @@ const TokenMenu: FC<{
       anchorEl={anchorEl}
       open={open}
       onClose={handleClose}
+      onBlur={onBlur}
       transformOrigin={{ horizontal: "right", vertical: "top" }}
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       PaperProps={{ sx: { minWidth: 280 }, square: true }}
@@ -134,12 +136,13 @@ const TokenItem: FC<ItemProps> = ({ token, selected, onClick }) => (
 );
 
 const TokenSelect: FC<{
-  network: Network | undefined;
-  token: Token | undefined;
+  network: Network | undefined | null;
+  token: Token | undefined | null;
   onChange: (token: Token) => void;
+  onBlur: () => void;
   placeholder?: string;
   disabled: boolean;
-}> = ({ network, token, onChange, placeholder, disabled }) => {
+}> = ({ network, token, onChange, onBlur, placeholder, disabled }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -195,6 +198,7 @@ const TokenSelect: FC<{
         <TokenMenu
           token={token}
           onChange={onChange}
+          onBlur={onBlur}
           network={network}
           open={open}
           handleClose={handleClose}

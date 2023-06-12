@@ -48,10 +48,10 @@ const TokenAccessRow: FC<Props> = ({
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const [initialAccess, setInitialState] = useState({
-    tokenAllowance: BigNumber.from(tokenAllowance),
+    tokenAllowanceWei: BigNumber.from(tokenAllowance),
     flowOperatorPermissions: flowOperatorPermissions,
     flowRateAllowance: {
-      amountEther: BigNumber.from(flowRateAllowance),
+      amountWei: BigNumber.from(flowRateAllowance),
       unitOfTime: UnitOfTime.Second,
     },
   });
@@ -64,10 +64,10 @@ const TokenAccessRow: FC<Props> = ({
 
   useEffect(() => {
     setInitialState({
-      tokenAllowance: BigNumber.from(tokenAllowance),
+      tokenAllowanceWei: BigNumber.from(tokenAllowance),
       flowOperatorPermissions: flowOperatorPermissions,
       flowRateAllowance: {
-        amountEther: BigNumber.from(flowRateAllowance),
+        amountWei: BigNumber.from(flowRateAllowance),
         unitOfTime: UnitOfTime.Second,
       },
     });
@@ -97,9 +97,9 @@ const TokenAccessRow: FC<Props> = ({
         } as Token)
       : undefined,
     operatorAddress: address,
-    flowPermissions: initialAccess.flowOperatorPermissions,
+    flowOperatorPermissions: initialAccess.flowOperatorPermissions,
     flowRateAllowance: initialAccess.flowRateAllowance,
-    tokenAllowance: initialAccess.tokenAllowance,
+    tokenAllowanceWei: initialAccess.tokenAllowanceWei,
   };
 
   return (
@@ -165,14 +165,14 @@ const TokenAccessRow: FC<Props> = ({
                   <Stack direction="row" alignItems="center" gap={0.5}>
                     <Typography variant="h6">
                       {isCloseToUnlimitedTokenAllowance(
-                        initialAccess.tokenAllowance
+                        initialAccess.tokenAllowanceWei
                       ) ? (
                         <span>Unlimited</span>
                       ) : (
                         <>
                           <Amount
                             decimals={tokenInfo?.decimals}
-                            wei={initialAccess.tokenAllowance}
+                            wei={initialAccess.tokenAllowanceWei}
                           >{` ${tokenInfo?.symbol}`}</Amount>
                         </>
                       )}
@@ -202,14 +202,14 @@ const TokenAccessRow: FC<Props> = ({
                   <Stack direction="row" alignItems="center" gap={0.5}>
                     <Typography variant="h6">
                       {isCloseToUnlimitedFlowRateAllowance(
-                        initialAccess.flowRateAllowance.amountEther
+                        initialAccess.flowRateAllowance.amountWei
                       ) ? (
                         <span>Unlimited</span>
                       ) : (
                         <>
                           <Amount
                             decimals={tokenInfo?.decimals}
-                            wei={initialAccess.flowRateAllowance.amountEther}
+                            wei={initialAccess.flowRateAllowance.amountWei}
                           >{` ${tokenInfo?.symbol}/${
                             timeUnitShortFormMap[
                               initialAccess.flowRateAllowance.unitOfTime
@@ -282,14 +282,14 @@ const TokenAccessRow: FC<Props> = ({
               <Stack direction="row" alignItems="center" gap={0.5}>
                 <Typography variant="h6">
                   {isCloseToUnlimitedTokenAllowance(
-                    initialAccess.tokenAllowance
+                    initialAccess.tokenAllowanceWei
                   ) ? (
                     <span>Unlimited</span>
                   ) : (
                     <>
                       <Amount
                         decimals={tokenInfo?.decimals}
-                        wei={initialAccess.tokenAllowance}
+                        wei={initialAccess.tokenAllowanceWei}
                       >{` ${tokenInfo?.symbol}`}</Amount>
                     </>
                   )}
@@ -309,14 +309,14 @@ const TokenAccessRow: FC<Props> = ({
               <Stack direction="row" alignItems="center" gap={0.5}>
                 <Typography variant="h6">
                   {isCloseToUnlimitedFlowRateAllowance(
-                    initialAccess.flowRateAllowance.amountEther
+                    initialAccess.flowRateAllowance.amountWei
                   ) ? (
                     <span>Unlimited</span>
                   ) : (
                     <>
                       <Amount
                         decimals={tokenInfo?.decimals}
-                        wei={initialAccess.flowRateAllowance.amountEther}
+                        wei={initialAccess.flowRateAllowance.amountWei}
                       >{` ${tokenInfo?.symbol}/${
                         timeUnitShortFormMap[
                           initialAccess.flowRateAllowance.unitOfTime
@@ -334,7 +334,9 @@ const TokenAccessRow: FC<Props> = ({
               padding: "25px",
             }}
           >
-            <UpsertTokenAccessDialogProvider initialFormValues={initialFormValues}>
+            <UpsertTokenAccessDialogProvider
+              initialFormValues={initialFormValues}
+            >
               {({ openDialog }) => (
                 <Button
                   data-cy={"modify-access-button"}

@@ -28,7 +28,7 @@ export interface UpsertTokenAccessDialogProps {
   children: (
     contextValue: UpsertTokenAccessDialogContextValue
   ) => ReactNode;
-  initialFormValues: UpsertTokenAccessFormProviderProps["initialFormValues"];
+  initialFormValues: UpsertTokenAccessFormProviderProps["initialFormData"];
 }
 
 export const UpsertTokenAccessDialogProvider: FC<
@@ -61,7 +61,7 @@ export const UpsertTokenAccessDialogProvider: FC<
       >
         <Stack component={"form"}>
           <UpsertTokenAccessFormProvider
-            initialFormValues={initialFormValues}
+            initialFormData={initialFormValues}
           >
             <UpsertTokenAccessForm initialFormValues={initialFormValues} />
           </UpsertTokenAccessFormProvider>

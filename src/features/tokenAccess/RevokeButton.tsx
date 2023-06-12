@@ -6,6 +6,7 @@ import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { useAnalytics } from "../analytics/useAnalytics";
 import { rpcApi } from "../redux/store";
 import { TokenAccessProps } from "./dialog/UpsertTokenAccessForm";
+import { calculateTotalAmountWei } from "../send/FlowRateInput";
 
 interface RevokeButtonProps {
   network: Network;
@@ -34,8 +35,8 @@ const RevokeButton: FC<RevokeButtonProps> = ({
 
   const isRevokeAllowed =
     access.flowOperatorPermissions !== 0 ||
-    access.tokenAllowance.gt(0) ||
-    access.flowRateAllowance.amountEther.gt(0);
+    access.tokenAllowanceWei.gt(0) ||
+    access.flowRateAllowance.amountWei.gt(0);
 
   return (
     <TransactionBoundary mutationResult={revokeResult}>
@@ -51,6 +52,7 @@ const RevokeButton: FC<RevokeButtonProps> = ({
             fullWidth: true,
             variant: "outlined",
           }}
+          // TODO(KK): better title?
           onClick={async (signer) => {
             setDialogLoadingInfo(
               <Typography variant="h5" color="text.secondary" translate="yes">
@@ -62,7 +64,11 @@ const RevokeButton: FC<RevokeButtonProps> = ({
               chainId: network.id,
               superTokenAddress: tokenAddress,
               operatorAddress: operatorAddress,
-              initialAccess: access,
+              initialAccess: {
+                flowRateAllowanceWei: calculateTotalAmountWei(access.flowRateAllowance).toString(),
+                flowOperatorPermissions: access.flowOperatorPermissions,
+                tokenAllowanceWei: access.toString()
+              },
             };
 
             revoke({

@@ -38,7 +38,6 @@ import SaveButton from "../SaveButton";
 import { BigNumber } from "ethers";
 import { parseEtherOrZero } from "../../../utils/tokenUtils";
 import { formatEther } from "ethers/lib/utils.js";
-import { isEqual } from "lodash";
 import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
 
 interface Permission {
@@ -67,11 +66,11 @@ const permissions: Permission[] = [
 
 export type TokenAccessProps = {
   flowRateAllowance: {
-    amountEther: BigNumber;
+    amountWei: BigNumber;
     unitOfTime: UnitOfTime;
   };
   flowOperatorPermissions: number;
-  tokenAllowance: BigNumber;
+  tokenAllowanceWei: BigNumber;
 };
 
 const FlowPermissionSwitch: FC<{
@@ -109,13 +108,16 @@ const FlowPermissionSwitch: FC<{
 };
 
 export const UpsertTokenAccessForm: FC<{
-  initialFormValues: UpsertTokenAccessFormProviderProps["initialFormValues"];
+  initialFormValues: UpsertTokenAccessFormProviderProps["initialFormData"];
 }> = ({ initialFormValues }) => {
-  const { control, formState, watch, setValue, trigger } =
-    useFormContext<PartialUpsertTokenAccessForm>();
+  const {
+    control,
+    formState: { isDirty, isValid, isValidating, touchedFields },
+    watch,
+    setValue,
+  } = useFormContext<PartialUpsertTokenAccessForm>();
 
-  const { closeDialog } =
-    useUpsertTokenAccessDialog();
+  const { closeDialog } = useUpsertTokenAccessDialog();
 
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -123,16 +125,16 @@ export const UpsertTokenAccessForm: FC<{
   const [hasUnsavedChanges, setUnsavedChanges] = useState<boolean>(false);
 
   const [
-    flowPermissions,
+    flowOperatorPermissions,
     flowRateAllowance,
-    tokenAllowance,
+    tokenAllowanceWei,
     network,
     token,
     operatorAddress,
   ] = watch([
-    "data.flowPermissions",
+    "data.flowOperatorPermissions",
     "data.flowRateAllowance",
-    "data.tokenAllowance",
+    "data.tokenAllowanceWei",
     "data.network",
     "data.token",
     "data.operatorAddress",
@@ -143,37 +145,44 @@ export const UpsertTokenAccessForm: FC<{
     [initialFormValues]
   );
 
-  const [formTokenAllowance, setFormTokenAllowance] = useState(
-    formatEther(tokenAllowance)
+  const [tokenAllowanceEther, setTokenAllowanceEther] = useState(
+    formatEther(tokenAllowanceWei ?? BigNumber.from(0)) // TODO(KK): Why do I need to use null check here?
   );
-  const [formFlowRateAllowance, setFormFlowRateAllowance] = useState({
-    amountEther: formatEther(flowRateAllowance.amountEther),
+
+  const [flowRateAllowanceEther, setFlowRateAllowanceEther] = useState({
+    amountEther: formatEther(flowRateAllowance.amountWei ?? BigNumber.from(0)), // TODO(KK): Why do I need to use null check here?
     unitOfTime: flowRateAllowance.unitOfTime,
   });
 
   useEffect(() => {
-    setFormTokenAllowance(formatEther(tokenAllowance));
-    setFormFlowRateAllowance({
-      amountEther: formatEther(flowRateAllowance.amountEther),
+    setTokenAllowanceEther(formatEther(tokenAllowanceWei));
+    setFlowRateAllowanceEther({
+      amountEther: formatEther(flowRateAllowance.amountWei),
       unitOfTime: flowRateAllowance.unitOfTime,
     });
-  }, [tokenAllowance, flowRateAllowance]);
+  }, [
+    tokenAllowanceWei,
+    flowRateAllowance.amountWei,
+    flowRateAllowance.unitOfTime,
+  ]);
 
-  let isAnyFieldChanged = useMemo(
-    () =>
-      Object.keys(formState.touchedFields.data || {}).some((key) => {
-        const currentValue = watch(
-          `data.${key as keyof typeof initialFormValues}`
-        );
-        const initialValue =
-          initialFormValues[key as keyof typeof initialFormValues];
-        return !isEqual(currentValue, initialValue);
-      }),
-    [formState, initialFormValues]
-  );
+  // let isAnyFieldChanged = useMemo(
+  //   () =>
+  //     Object.keys(formState.touchedFields.data || {}).some((key) => {
+  //       const currentValue = watch(
+  //         `data.${key as keyof typeof initialFormValues}`
+  //       );
+  //       const initialValue =
+  //         initialFormValues[key as keyof typeof initialFormValues];
+  //       return !isEqual(currentValue, initialValue);
+  //     }),
+  //   [formState, initialFormValues]
+  // );
+
+  // const isAnyFieldChanged = isDirty;
 
   const handleOnCloseBtnClick = () => {
-    if (isAnyFieldChanged && formState.isValid) {
+    if (isAnyFieldChanged && isValid) {
       setUnsavedChanges(true);
     } else {
       closeDialog();
@@ -184,23 +193,22 @@ export const UpsertTokenAccessForm: FC<{
     <SaveButton
       initialAccess={{
         flowRateAllowance: initialFormValues.flowRateAllowance || {
-          amountEther: BigNumber.from(0),
+          amountWei: BigNumber.from(0),
           unitOfTime: UnitOfTime.Second,
         },
-        flowOperatorPermissions: initialFormValues.flowPermissions || 0,
-        tokenAllowance: initialFormValues.tokenAllowance || BigNumber.from(0),
+        flowOperatorPermissions: initialFormValues.flowOperatorPermissions || 0,
+        tokenAllowanceWei:
+          initialFormValues.tokenAllowanceWei || BigNumber.from(0),
       }}
       editedAccess={{
         flowRateAllowance: flowRateAllowance,
-        flowOperatorPermissions: flowPermissions,
-        tokenAllowance: tokenAllowance,
+        flowOperatorPermissions: flowOperatorPermissions,
+        tokenAllowanceWei: tokenAllowanceWei,
       }}
       network={network}
       operatorAddress={operatorAddress}
       tokenAddress={token?.address}
-      disabled={
-        !formState.isValid || formState.isValidating || !isAnyFieldChanged
-      }
+      disabled={!isValid || isValidating || !isAnyFieldChanged}
       title={isNewEntry ? "Add" : "Save changes"}
     />
   );
@@ -239,11 +247,10 @@ export const UpsertTokenAccessForm: FC<{
                           placeholder={"Select network"}
                           disabled={!isNewEntry}
                           onChange={(e) => {
+                            setValue("data.token", null);
                             onChange(e);
-                            setValue("data.token", undefined);
-                            onBlur();
-                            trigger();
                           }}
+                          onBlur={onBlur}
                         />
                       )}
                     />
@@ -258,14 +265,11 @@ export const UpsertTokenAccessForm: FC<{
                       render={({ field: { onChange, onBlur } }) => (
                         <TokenSelect
                           disabled={!isNewEntry}
-                          network={watch("data.network")}
-                          token={watch("data.token")}
+                          network={network}
+                          token={token}
                           placeholder={"Select token"}
-                          onChange={(e) => {
-                            onChange(e);
-                            onBlur();
-                            trigger();
-                          }}
+                          onChange={onChange}
+                          onBlur={onBlur}
                         />
                       )}
                     />
@@ -277,10 +281,10 @@ export const UpsertTokenAccessForm: FC<{
                 <Controller
                   control={control}
                   name="data.operatorAddress"
-                  render={({ field: { onChange, onBlur } }) => (
+                  render={({ field: { value, onChange, onBlur } }) => (
                     <TextField
                       disabled={!isNewEntry}
-                      value={watch("data.operatorAddress")}
+                      value={value}
                       placeholder={
                         "Enter the address you want to grant permission to"
                       }
@@ -294,22 +298,18 @@ export const UpsertTokenAccessForm: FC<{
                 <FormLabel>ERC-20 Allowance</FormLabel>
                 <Controller
                   control={control}
-                  name="data.tokenAllowance"
-                  render={({ field }) => (
+                  name="data.tokenAllowanceWei"
+                  render={({ field: { onChange, onBlur } }) => (
                     <TextField
                       sx={{ marginTop: "1px" }}
-                      {...field}
-                      value={formTokenAllowance}
+                      value={tokenAllowanceEther}
                       onChange={(event) => {
                         const newValue = event.target.value;
-                        setFormTokenAllowance(newValue);
+                        setTokenAllowanceEther(newValue);
                       }}
                       onBlur={() => {
-                        setValue(
-                          "data.tokenAllowance",
-                          parseEtherOrZero(formTokenAllowance)
-                        );
-                        field.onBlur();
+                        onChange(parseEtherOrZero(tokenAllowanceEther));
+                        onBlur();
                       }}
                     />
                   )}
@@ -320,18 +320,18 @@ export const UpsertTokenAccessForm: FC<{
                 <Controller
                   control={control}
                   name="data.flowRateAllowance"
-                  render={({ field: { onBlur } }) => (
+                  render={({ field: { onChange, onBlur } }) => (
                     <FlowRateInput
-                      flowRateEther={formFlowRateAllowance}
-                      onChange={(value) => {
-                        setFormFlowRateAllowance(value);
+                      flowRateEther={flowRateAllowanceEther}
+                      onChange={(v) => {
+                        setFlowRateAllowanceEther(v);
                       }}
                       onBlur={() => {
-                        setValue("data.flowRateAllowance", {
-                          amountEther: parseEtherOrZero(
-                            formFlowRateAllowance.amountEther
+                        onChange({
+                          amountWei: parseEtherOrZero(
+                            flowRateAllowanceEther.amountEther
                           ),
-                          unitOfTime: formFlowRateAllowance.unitOfTime,
+                          unitOfTime: flowRateAllowanceEther.unitOfTime,
                         });
                         onBlur();
                       }}
@@ -343,10 +343,10 @@ export const UpsertTokenAccessForm: FC<{
                 <FormLabel>Stream Permissions</FormLabel>
                 <Controller
                   control={control}
-                  name="data.flowPermissions"
-                  render={({ field: { onBlur, onChange } }) => (
+                  name="data.flowOperatorPermissions"
+                  render={({ field: { value, onBlur, onChange } }) => (
                     <FlowPermissionSwitch
-                      currentPermissions={watch("data.flowPermissions")}
+                      currentPermissions={value}
                       onBlur={onBlur}
                       onChange={onChange}
                     />
@@ -354,15 +354,15 @@ export const UpsertTokenAccessForm: FC<{
                 />
               </FormGroup>
               {SaveButtonComponent}
-              {!isNewEntry && network !== undefined && token !== undefined && (
+              {!isNewEntry && network && token && (
                 <RevokeButton
                   network={network}
                   operatorAddress={operatorAddress}
                   tokenAddress={token.address}
                   access={{
                     flowRateAllowance: flowRateAllowance,
-                    flowOperatorPermissions: flowPermissions,
-                    tokenAllowance: tokenAllowance,
+                    flowOperatorPermissions: flowOperatorPermissions,
+                    tokenAllowanceWei: tokenAllowanceWei,
                   }}
                   onRevokeButtonClick={closeDialog}
                 />

@@ -1,9 +1,9 @@
-import { BigNumber } from "ethers";
+import { BigNumber, BigNumberish } from "ethers";
 import { isAddress, parseEther } from "ethers/lib/utils";
 import { AnyObject, TestContext, TestFunction } from "yup";
 import { NATIVE_ASSET_ADDRESS } from "../features/redux/endpoints/tokenTypes";
 
-interface IsEtherAmountOptions {
+interface IsWeiOrEtherAmountOptions {
   notNegative?: boolean;
   notZero?: boolean;
 }
@@ -27,11 +27,38 @@ const validateAddress = (address: string, context: TestContext) => {
 };
 
 export const testEtherAmount: (
-  options: IsEtherAmountOptions
+  options: IsWeiOrEtherAmountOptions
 ) => TestFunction<string, AnyObject> = (options) => (value, context) => {
   let bigNumber: BigNumber;
   try {
     bigNumber = parseEther(value);
+  } catch (error) {
+    throw context.createError({
+      message: "Not a number.",
+    });
+  }
+
+  if (options.notNegative && bigNumber.isNegative()) {
+    throw context.createError({
+      message: "May not be negative.",
+    });
+  }
+
+  if (options.notZero && bigNumber.isZero()) {
+    throw context.createError({
+      message: "May not be zero.",
+    });
+  }
+
+  return true;
+};
+
+export const testWeiAmount: (
+  options: IsWeiOrEtherAmountOptions
+) => TestFunction<BigNumberish, AnyObject> = (options) => (value, context) => {
+  let bigNumber: BigNumber;
+  try {
+    bigNumber = BigNumber.from(value);
   } catch (error) {
     throw context.createError({
       message: "Not a number.",

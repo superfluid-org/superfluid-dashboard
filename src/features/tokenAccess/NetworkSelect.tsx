@@ -37,11 +37,12 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
 );
 
 const NetworkSelect: FC<{
-  network: Network | undefined;
+  network: Network | undefined | null;
   onChange: (network: Network) => void;
+  onBlur: () => void;
   placeholder?: string;
   disabled: boolean;
-}> = ({ network: selectedNetwork, onChange, placeholder, disabled }) => {
+}> = ({ network: selectedNetwork, onChange, onBlur, placeholder, disabled }) => {
   const theme = useTheme();
 
   const { availableMainNetworks, availableTestNetworks } =
@@ -98,6 +99,7 @@ const NetworkSelect: FC<{
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
+        onBlur={onBlur}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         PaperProps={{ sx: { minWidth: 280 }, square: true }}

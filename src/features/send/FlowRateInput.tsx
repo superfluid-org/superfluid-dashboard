@@ -66,7 +66,7 @@ export type ScheduledFlowRate = {
 };
 
 export type FlowRateWei = {
-  amountWei: string;
+  amountWei: BigNumberish;
   unitOfTime: UnitOfTime;
 };
 

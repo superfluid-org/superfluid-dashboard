@@ -29,7 +29,7 @@ type FunctionChildType = (arg: ConnectionBoundaryContextValue) => ReactNode;
 
 interface ConnectionBoundaryProps {
   children: ReactNode | FunctionChildType;
-  expectedNetwork?: Network;
+  expectedNetwork?: Network | null;
   allowImpersonation?: boolean;
 }
 
