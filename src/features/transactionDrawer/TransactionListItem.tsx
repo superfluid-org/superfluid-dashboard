@@ -18,7 +18,7 @@ import {
   TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
 import { format } from "date-fns";
-import Link from "next/link";
+import NextLink from "next/link";
 import { FC, useState } from "react";
 import shortenHex from "../../utils/shortenHex";
 import NetworkBadge from "../network/NetworkBadge";
@@ -30,6 +30,7 @@ import { TransactionListItemRestoreButton } from "./TransactionListItemRestoreBu
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { allNetworks, tryFindNetwork } from "../network/networks";
+import Link from "../common/Link";
 
 export const getTransactionStatusColor = (status: TransactionStatus) => {
   switch (status) {
@@ -153,14 +154,14 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
                   placement="top"
                 >
                   <span>
-                    <Link
+                    <IconButton
+                      component={Link}
                       href={network.getLinkForTransaction(transaction.hash)}
-                      passHref
+                      size="small"
+                      target="_blank"
                     >
-                      <IconButton component="a" size="small" target="_blank">
-                        <LaunchRoundedIcon />
-                      </IconButton>
-                    </Link>
+                      <LaunchRoundedIcon />
+                    </IconButton>
                   </span>
                 </Tooltip>
               )}

@@ -5,26 +5,23 @@ import {
   ListItemIcon,
   ListItemText,
   Paper,
-  Stack,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import Link from "next/link";
 import { FC } from "react";
-import WarningDialog from "../send/WarningDialog";
+import Link from "../common/Link";
 
 const ClaimTokensBtn = () => (
-  <Link href="/?showFaucet=true" passHref>
-    <Button
-      data-cy={"dashboard-claim-button"}
-      variant="contained"
-      color="primary"
-      href="/?showFaucet=true"
-      sx={{ width: 88 }}
-    >
-      Claim
-    </Button>
-  </Link>
+  <Button
+    LinkComponent={Link}
+    data-cy={"dashboard-claim-button"}
+    variant="contained"
+    color="primary"
+    href="/?showFaucet=true"
+    sx={{ width: 88 }}
+  >
+    Claim
+  </Button>
 );
 
 const FaucetCard: FC = () => {

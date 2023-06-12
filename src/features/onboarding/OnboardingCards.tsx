@@ -13,13 +13,13 @@ import {
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import Image from "next/image";
-import Link from "next/link";
+import Image from "next/legacy/image";
 import { FC, PropsWithChildren, useState } from "react";
 import { useAccount } from "wagmi";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import TokenIcon from "../token/TokenIcon";
 import { useConnectButton } from "../wallet/ConnectButtonProvider";
+import Link, { NextLinkComposed } from "../common/Link";
 
 interface OnboardingItemProps {
   title: string;
@@ -44,38 +44,37 @@ const OnboardingItem: FC<PropsWithChildren<OnboardingItemProps>> = ({
   const onMouseLeave = () => setIsHovering(false);
 
   return (
-    <Link href={href} passHref>
-      <Card
-        elevation={isHovering ? 3 : 1}
-        component="a"
-        onClick={onClick}
-        sx={{
-          textDecoration: "none",
-          [theme.breakpoints.down("md")]: {
-            textAlign: "center",
-            scrollSnapAlign: "center",
-          },
-        }}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
+    <Card
+      component={Link}
+      href={href}
+      elevation={isHovering ? 3 : 1}
+      onClick={onClick}
+      sx={{
+        textDecoration: "none",
+        [theme.breakpoints.down("md")]: {
+          textAlign: "center",
+          scrollSnapAlign: "center",
+        },
+      }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      <CardHeader
+        title={title}
+        subheader={subheader}
+        sx={{ textAlign: "center" }}
+      />
+      <CardContent
+        component={Stack}
+        direction="row"
+        alignItems="center"
+        justifyContent="center"
+        gap={childrenGap}
+        sx={{ pointerEvents: "none" }}
       >
-        <CardHeader
-          title={title}
-          subheader={subheader}
-          sx={{ textAlign: "center" }}
-        />
-        <CardContent
-          component={Stack}
-          direction="row"
-          alignItems="center"
-          justifyContent="center"
-          gap={childrenGap}
-          sx={{ pointerEvents: "none" }}
-        >
-          {children}
-        </CardContent>
-      </Card>
-    </Link>
+        {children}
+      </CardContent>
+    </Card>
   );
 };
 

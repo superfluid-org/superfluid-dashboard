@@ -282,7 +282,7 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
                   <ModifyStreamButton
                     stream={stream as Stream}
                     network={network}
-                    IconButtonProps={{ size: "small" }}
+                    size="small"
                   />
                 )}
                 <CancelStreamButton

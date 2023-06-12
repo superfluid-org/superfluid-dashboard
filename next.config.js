@@ -5,9 +5,6 @@
 
 const { withSentryConfig } = require("@sentry/nextjs");
 
-// This is used to transpile lifi widget so we can add it dom dynamically.
-const withTM = require("next-transpile-modules")(["@lifi/widget"]);
-
 const SENTRY_ENVIRONMENT =
   process.env.SENTRY_ENVIRONMENT || process.env.CONTEXT;
 
@@ -39,6 +36,8 @@ function withSentryIfNecessary(nextConfig) {
   return withSentryConfig(nextConfig, sentryWebpackPluginOptions);
 }
 
+const shouldInstrumentCode = "INSTRUMENT_CODE" in process.env;
+
 /** @type {import('next').NextConfig} */
 const moduleExports = {
   reactStrictMode: true,
@@ -51,6 +50,7 @@ const moduleExports = {
     NEXT_PUBLIC_SENTRY_ENVIRONMENT: SENTRY_ENVIRONMENT,
     NEXT_PUBLIC_NETLIFY_CONTEXT: process.env.CONTEXT, // https://docs.netlify.com/configure-builds/environment-variables/#build-metadata
   },
+  transpilePackages: ["@lifi/widget", "@lifi/wallet-management"],
   swcMinify: false, // Recommended by next-transpile-modules... BUT Chart.js has problems with it so it needs to be turned off: https://github.com/chartjs/Chart.js/issues/10673
   productionBrowserSourceMaps: true, // NOTE: If this is set to `false` then be careful -- Sentry might still override this to `true`...
   sentry: {
@@ -58,19 +58,20 @@ const moduleExports = {
   },
   // Modularize imports to prevent compilation of unused modules.
   // More info here: https://nextjs.org/docs/advanced-features/compiler
-  experimental: {
-    modularizeImports: {
-      lodash: {
-        transform: "lodash/{{member}}",
-      },
-      "date-fns": {
-        transform: "date-fns/{{member}}",
-      },
-      "@mui/icons-material": {
-        transform: "@mui/icons-material/{{member}}",
-      },
+  modularizeImports: {
+    lodash: {
+      transform: "lodash/{{member}}",
     },
+    "date-fns": {
+      transform: "date-fns/{{member}}",
+    },
+    "@mui/icons-material": {
+      transform: "@mui/icons-material/{{member}}",
+    },
+  },
+  experimental: {
+    forceSwcTransforms: !shouldInstrumentCode, // .babelrc.js existence is because of code instrumentation. 
   },
 };
 
-module.exports = withTM(withSentryIfNecessary(moduleExports));
+module.exports = withSentryIfNecessary(moduleExports);

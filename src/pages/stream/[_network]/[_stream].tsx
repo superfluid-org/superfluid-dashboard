@@ -22,8 +22,7 @@ import { format, fromUnixTime } from "date-fns";
 import { BigNumber } from "ethers";
 import { isString } from "lodash";
 import { NextPage } from "next";
-import Image from "next/image";
-import Link from "next/link";
+import Image from "next/legacy/image";
 import { useRouter } from "next/router";
 import { FC, useEffect, useMemo, useState } from "react";
 import AddressAvatar from "../../../components/Avatar/AddressAvatar";
@@ -62,6 +61,7 @@ import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi
 import Page404 from "../../404";
 import { useVisibleAddress } from "../../../features/wallet/VisibleAddressContext";
 import AddressName from "../../../components/AddressName/AddressName";
+import Link from "../../../features/common/Link";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -148,15 +148,15 @@ const StreamAccountCard: FC<StreamAccountCardProps> = ({
             <CopyTooltip content={addressChecksummed} copyText="Copy address" />
             <Tooltip title="View on blockchain explorer" arrow placement="top">
               <span>
-                <Link
-                  data-cy="sender-and-receiver-explorer-links"
+                <IconButton
+                  component={Link}
                   href={network.getLinkForAddress(addressChecksummed)}
-                  passHref
+                  target="_blank"
+                  size="small"
+                  data-cy="sender-and-receiver-explorer-links"
                 >
-                  <IconButton component="a" size="small" target="_blank">
-                    <LaunchRoundedIcon />
-                  </IconButton>
-                </Link>
+                  <LaunchRoundedIcon />
+                </IconButton>
               </span>
             </Tooltip>
           </Stack>
@@ -475,439 +475,430 @@ const StreamPageContent: FC<{
   const isOutgoing = visibleAddress?.toLowerCase() === sender.toLowerCase();
 
   // TODO: This container max width should be configured in theme. Something between small and medium
-  return <SEO ogUrl={urlToShare}>
-        <Container maxWidth="lg">
+  return (
+    <SEO ogUrl={urlToShare}>
+      <Container maxWidth="lg">
+        <Stack
+          alignItems="center"
+          gap={3}
+          sx={{ maxWidth: "760px", margin: "0 auto" }}
+        >
           <Stack
             alignItems="center"
-            gap={3}
-            sx={{ maxWidth: "760px", margin: "0 auto" }}
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "1fr auto 1fr",
+              mb: 7,
+              mt: 3,
+              width: "100%",
+              [theme.breakpoints.down("md")]: {
+                my: 0,
+              },
+            }}
           >
-            <Stack
-              alignItems="center"
-              sx={{
-                display: "grid",
-                gridTemplateColumns: "1fr auto 1fr",
-                mb: 7,
-                mt: 3,
-                width: "100%",
-                [theme.breakpoints.down("md")]: {
-                  my: 0,
-                },
-              }}
-            >
-              <Box>
-                <IconButton
-                  data-cy={"back-button"}
-                  color="inherit"
-                  onClick={navigateBack}
-                >
-                  <ArrowBackIcon />
-                </IconButton>
-              </Box>
+            <Box>
+              <IconButton
+                data-cy={"back-button"}
+                color="inherit"
+                onClick={navigateBack}
+              >
+                <ArrowBackIcon />
+              </IconButton>
+            </Box>
 
-              <Box flex={1}>
-                {!isBelowMd && !isActive && updatedAtTimestamp && (
-                  <CancelledIndicator updatedAtTimestamp={updatedAtTimestamp} />
-                )}
-              </Box>
-
-              <Stack direction="row" justifyContent="flex-end" gap={1}>
-                {!!visibleAddress && (
-                  <>
-                    {isOutgoing && (
-                      <ModifyStreamButton
-                        stream={scheduledStream}
-                        network={network}
-                      />
-                    )}
-                    {isActive && (
-                      <CancelStreamButton
-                        data-cy={"cancel-button"}
-                        stream={scheduledStream}
-                        network={network}
-                      />
-                    )}
-                  </>
-                )}
-              </Stack>
-            </Stack>
-
-            <Stack alignItems="center" gap={1} sx={{ mb: 4 }}>
-              {isBelowMd && !isActive && updatedAtTimestamp && (
+            <Box flex={1}>
+              {!isBelowMd && !isActive && updatedAtTimestamp && (
                 <CancelledIndicator updatedAtTimestamp={updatedAtTimestamp} />
               )}
+            </Box>
 
-              <Typography variant="h5" translate="yes">
-                Total Amount Streamed
-              </Typography>
-
-              <Stack direction="row" alignItems="center" gap={2}>
-                {!isBelowMd && (
-                  <TokenIcon
-                    isSuper
-                    tokenSymbol={tokenSymbol}
-                    isUnlisted={!isTokenListed}
-                    isLoading={isTokenListedLoading}
-                    size={isBelowMd ? 32 : 60}
-                  />
-                )}
-                <Stack
-                  direction="row"
-                  alignItems="end"
-                  flexWrap="wrap"
-                  columnGap={2}
-                >
-                  <Typography
-                    variant={isBelowMd ? "h2mono" : "h1mono"}
-                    sx={{
-                      [theme.breakpoints.up("md")]: {
-                        lineHeight: "48px",
-                      },
-                    }}
-                  >
-                    <FlowingBalance
-                      data-cy={"streamed-so-far"}
-                      balance={streamedUntilUpdatedAt}
-                      flowRate={currentFlowRate}
-                      balanceTimestamp={updatedAtTimestamp}
-                      disableRoundingIndicator
+            <Stack direction="row" justifyContent="flex-end" gap={1}>
+              {!!visibleAddress && (
+                <>
+                  {isOutgoing && (
+                    <ModifyStreamButton
+                      stream={scheduledStream}
+                      network={network}
                     />
-                  </Typography>
-                  {!isBelowMd && (
-                    <Typography
-                      data-cy={"streamed-token"}
-                      variant="h3"
-                      color="primary"
-                      sx={{ lineHeight: "28px" }}
-                    >
-                      {tokenSymbol}
-                    </Typography>
                   )}
-                </Stack>
-              </Stack>
-              {isBelowMd && (
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="center"
-                  gap={1}
+                  {isActive && (
+                    <CancelStreamButton
+                      data-cy={"cancel-button"}
+                      stream={scheduledStream}
+                      network={network}
+                    />
+                  )}
+                </>
+              )}
+            </Stack>
+          </Stack>
+
+          <Stack alignItems="center" gap={1} sx={{ mb: 4 }}>
+            {isBelowMd && !isActive && updatedAtTimestamp && (
+              <CancelledIndicator updatedAtTimestamp={updatedAtTimestamp} />
+            )}
+
+            <Typography variant="h5" translate="yes">
+              Total Amount Streamed
+            </Typography>
+
+            <Stack direction="row" alignItems="center" gap={2}>
+              {!isBelowMd && (
+                <TokenIcon
+                  isSuper
+                  tokenSymbol={tokenSymbol}
+                  isUnlisted={!isTokenListed}
+                  isLoading={isTokenListedLoading}
+                  size={isBelowMd ? 32 : 60}
+                />
+              )}
+              <Stack
+                direction="row"
+                alignItems="end"
+                flexWrap="wrap"
+                columnGap={2}
+              >
+                <Typography
+                  variant={isBelowMd ? "h2mono" : "h1mono"}
+                  sx={{
+                    [theme.breakpoints.up("md")]: {
+                      lineHeight: "48px",
+                    },
+                  }}
                 >
-                  <TokenIcon
-                    isSuper
-                    tokenSymbol={tokenSymbol}
-                    isUnlisted={!isTokenListed}
-                    isLoading={isTokenListedLoading}
-                    size={isBelowMd ? 32 : 60}
+                  <FlowingBalance
+                    data-cy={"streamed-so-far"}
+                    balance={streamedUntilUpdatedAt}
+                    flowRate={currentFlowRate}
+                    balanceTimestamp={updatedAtTimestamp}
+                    disableRoundingIndicator
                   />
+                </Typography>
+                {!isBelowMd && (
                   <Typography
-                    data-cy={"token-symbol"}
+                    data-cy={"streamed-token"}
                     variant="h3"
                     color="primary"
                     sx={{ lineHeight: "28px" }}
                   >
                     {tokenSymbol}
                   </Typography>
-                </Stack>
-              )}
-
-              <Typography variant="h4mono" color="text.secondary">
-                {tokenPrice && (
-                  <FlowingFiatBalance
-                    balance={streamedUntilUpdatedAt}
-                    flowRate={currentFlowRate}
-                    balanceTimestamp={updatedAtTimestamp}
-                    price={tokenPrice}
-                  />
                 )}
-              </Typography>
+              </Stack>
             </Stack>
-
-            <Stack
-              alignItems="center"
-              sx={{
-                display: "grid",
-                gridTemplateColumns: "1fr 88px 1fr",
-                rowGap: 2,
-                width: "100%",
-                [theme.breakpoints.down("md")]: {
-                  gridTemplateColumns: "1fr 32px 1fr",
-                  rowGap: 1,
-                },
-              }}
-            >
-              <Typography variant="h6" sx={{ pl: 1 }} translate="yes">
-                Sender
-              </Typography>
-              <Box />
-              <Typography variant="h6" sx={{ pl: 1 }} translate="yes">
-                Receiver
-              </Typography>
-
-              <StreamAccountCard address={sender} network={network} />
-
-              {isActive ? (
-                <Box
-                  sx={{
-                    mx: -0.25,
-                    height: isBelowMd ? 24 : 48,
-                    zIndex:  -1,
-                    cursor: "auto",
-                  }}
+            {isBelowMd && (
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="center"
+                gap={1}
+              >
+                <TokenIcon
+                  isSuper
+                  tokenSymbol={tokenSymbol}
+                  isUnlisted={!isTokenListed}
+                  isLoading={isTokenListedLoading}
+                  size={isBelowMd ? 32 : 60}
+                />
+                <Typography
+                  data-cy={"token-symbol"}
+                  variant="h3"
+                  color="primary"
+                  sx={{ lineHeight: "28px" }}
                 >
-                  <Image
-                    unoptimized
-                    src="/gifs/stream-loop.gif"
-                    width={isBelowMd ? 46 : 92}
-                    height={isBelowMd ? 24 : 48}
-                    layout="fixed"
-                    alt="Superfluid stream"
-                  />
-                </Box>
-              ) : (
-                <CancelRoundedIcon
-                  color="error"
-                  sx={{ justifySelf: "center", width: "32px", height: "32px" }}
+                  {tokenSymbol}
+                </Typography>
+              </Stack>
+            )}
+
+            <Typography variant="h4mono" color="text.secondary">
+              {tokenPrice && (
+                <FlowingFiatBalance
+                  balance={streamedUntilUpdatedAt}
+                  flowRate={currentFlowRate}
+                  balanceTimestamp={updatedAtTimestamp}
+                  price={tokenPrice}
                 />
               )}
+            </Typography>
+          </Stack>
 
-              <StreamAccountCard address={receiver} network={network} />
-            </Stack>
+          <Stack
+            alignItems="center"
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "1fr 88px 1fr",
+              rowGap: 2,
+              width: "100%",
+              [theme.breakpoints.down("md")]: {
+                gridTemplateColumns: "1fr 32px 1fr",
+                rowGap: 1,
+              },
+            }}
+          >
+            <Typography variant="h6" sx={{ pl: 1 }} translate="yes">
+              Sender
+            </Typography>
+            <Box />
+            <Typography variant="h6" sx={{ pl: 1 }} translate="yes">
+              Receiver
+            </Typography>
 
-            {currentFlowRate !== "0" && (
-              <Stack alignItems="center" gap={1}>
-                {totalToBeStreamedIfScheduled && (
-                  <Stack direction="row" alignItems="center" gap={0.5}>
-                    <Typography
-                      variant="h6"
-                      color="text.secondary"
-                      translate="yes"
-                    >
-                      Total scheduled amount
-                    </Typography>
+            <StreamAccountCard address={sender} network={network} />
 
-                    <Typography data-cy={"scheduled-amount"} variant="h6">
-                      <Amount
-                        wei={totalToBeStreamedIfScheduled}
-                      >{` ${tokenSymbol}`}</Amount>
-                    </Typography>
-                  </Stack>
-                )}
+            {isActive ? (
+              <Box
+                sx={{
+                  mx: -0.25,
+                  height: isBelowMd ? 24 : 48,
+                  zIndex: -1,
+                  cursor: "auto",
+                }}
+              >
+                <Image
+                  unoptimized
+                  src="/gifs/stream-loop.gif"
+                  width={isBelowMd ? 46 : 92}
+                  height={isBelowMd ? 24 : 48}
+                  layout="fixed"
+                  alt="Superfluid stream"
+                />
+              </Box>
+            ) : (
+              <CancelRoundedIcon
+                color="error"
+                sx={{ justifySelf: "center", width: "32px", height: "32px" }}
+              />
+            )}
+
+            <StreamAccountCard address={receiver} network={network} />
+          </Stack>
+
+          {currentFlowRate !== "0" && (
+            <Stack alignItems="center" gap={1}>
+              {totalToBeStreamedIfScheduled && (
                 <Stack direction="row" alignItems="center" gap={0.5}>
-                  <Typography data-cy={"amount-per-month"} variant="h6">
-                    <Amount
-                      wei={BigNumber.from(currentFlowRate).mul(
-                        UnitOfTime.Month
-                      )}
-                    >
-                      {` ${tokenSymbol}`}
-                    </Amount>
-                  </Typography>
-
                   <Typography
                     variant="h6"
                     color="text.secondary"
                     translate="yes"
                   >
-                    per month
+                    Total scheduled amount
+                  </Typography>
+
+                  <Typography data-cy={"scheduled-amount"} variant="h6">
+                    <Amount
+                      wei={totalToBeStreamedIfScheduled}
+                    >{` ${tokenSymbol}`}</Amount>
                   </Typography>
                 </Stack>
+              )}
+              <Stack direction="row" alignItems="center" gap={0.5}>
+                <Typography data-cy={"amount-per-month"} variant="h6">
+                  <Amount
+                    wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
+                  >
+                    {` ${tokenSymbol}`}
+                  </Amount>
+                </Typography>
+
+                <Typography variant="h6" color="text.secondary" translate="yes">
+                  per month
+                </Typography>
               </Stack>
-            )}
+            </Stack>
+          )}
 
-            <Stack
-              rowGap={0.5}
-              columnGap={6}
-              sx={{
-                maxWidth: "740px",
-                width: "100%",
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                mt: 7,
-                [theme.breakpoints.down("md")]: {
-                  gridTemplateColumns: "1fr",
-                  mt: 4,
-                },
-              }}
-            >
-              {vestingSchedule ? (
-                <OverviewItem
-                  dataCy={"cliff-date"}
-                  label="Cliff Date"
-                  value={
-                    vestingSchedule.cliffDate
-                      ? format(
-                          fromUnixTime(Number(vestingSchedule.cliffDate)),
-                          "LLL d, yyyy HH:mm"
-                        )
-                      : "-"
-                  }
-                />
-              ) : (
-                <OverviewItem
-                  dataCy={"start-date"}
-                  label="Start Date:"
-                  value={format(startDate.getTime(), "d MMM. yyyy H:mm")}
-                />
-              )}
-              {vestingSchedule ? (
-                <OverviewItem
-                  dataCy={"cliff-amount"}
-                  label="Cliff Amount"
-                  value={
-                    vestingSchedule.cliffDate ? (
-                      <>
-                        <Amount wei={vestingSchedule.cliffAmount} />{" "}
-                        {tokenSymbol}
-                      </>
-                    ) : (
-                      "-"
-                    )
-                  }
-                />
-              ) : (
-                <OverviewItem
-                  dataCy={"buffer"}
-                  label="Buffer:"
-                  value={
-                    bufferSize ? (
-                      <>
-                        <Amount wei={bufferSize} /> {tokenSymbol}
-                      </>
-                    ) : (
-                      "-"
-                    )
-                  }
-                />
-              )}
-              {!endDate && updatedAtTimestamp > createdAtTimestamp && (
-                <OverviewItem
-                  label={`Updated Date:`}
-                  value={format(updatedAtTimestamp * 1000, "d MMM. yyyy H:mm")}
-                />
-              )}
-
-              {vestingSchedule ? (
-                <OverviewItem
-                  dataCy={"vesting-start-date"}
-                  label="Vesting Start Date:"
-                  value={format(
-                    fromUnixTime(Number(vestingSchedule.startDate)),
-                    "LLL d, yyyy HH:mm"
-                  )}
-                />
-              ) : endDateScheduled ? (
-                <OverviewItem
-                  label={`End Date:`}
-                  value={
-                    <Stack direction="row" alignItems="center" gap={0.5}>
-                      <ScheduledStreamIcon
-                        scheduledStart
-                        IconProps={{ fontSize: "small" }}
-                      />
-                      {format(endDateScheduled.getTime(), "d MMM. yyyy H:mm")}
-                    </Stack>
-                  }
-                />
-              ) : endDate ? (
-                <OverviewItem
-                  label={`End Date:`}
-                  value={format(endDate.getTime(), "d MMM. yyyy H:mm")}
-                />
-              ) : (
-                <OverviewItem
-                  label={`End Date:`}
-                  value={<AllInclusiveIcon sx={{ display: "block" }} />}
-                />
-              )}
-
+          <Stack
+            rowGap={0.5}
+            columnGap={6}
+            sx={{
+              maxWidth: "740px",
+              width: "100%",
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              mt: 7,
+              [theme.breakpoints.down("md")]: {
+                gridTemplateColumns: "1fr",
+                mt: 4,
+              },
+            }}
+          >
+            {vestingSchedule ? (
               <OverviewItem
-                dataCy={"network-name"}
-                label="Network Name:"
+                dataCy={"cliff-date"}
+                label="Cliff Date"
                 value={
-                  <Stack direction="row" alignItems="center" gap={0.5}>
-                    <NetworkIcon network={network} size={16} fontSize={12} />
-                    <Typography variant="h6">{network.name}</Typography>
-                  </Stack>
+                  vestingSchedule.cliffDate
+                    ? format(
+                        fromUnixTime(Number(vestingSchedule.cliffDate)),
+                        "LLL d, yyyy HH:mm"
+                      )
+                    : "-"
                 }
               />
-              {vestingSchedule ? (
-                <OverviewItem
-                  dataCy={"vesting-end-date"}
-                  label="Vesting End Date:"
-                  value={format(
-                    fromUnixTime(Number(vestingSchedule.endDate)),
-                    "LLL d, yyyy HH:mm"
-                  )}
-                />
-              ) : (
-                <OverviewItem
-                  dataCy={"projected-liquidation"}
-                  label="Projected Liquidation:"
-                  value={
-                    isActive && liquidationDate
-                      ? format(liquidationDate, "d MMM. yyyy H:mm")
-                      : "-"
-                  }
-                />
-              )}
+            ) : (
               <OverviewItem
-                dataCy={"tx-hash"}
-                label="Transaction Hash:"
+                dataCy={"start-date"}
+                label="Start Date:"
+                value={format(startDate.getTime(), "d MMM. yyyy H:mm")}
+              />
+            )}
+            {vestingSchedule ? (
+              <OverviewItem
+                dataCy={"cliff-amount"}
+                label="Cliff Amount"
                 value={
-                  streamCreationEvent && (
-                    <Stack direction="row" alignItems="center" gap={0.5}>
-                      {shortenHex(streamCreationEvent.transactionHash)}
-                      <Stack
-                        direction="row"
-                        alignItems="center"
-                        sx={{ color: theme.palette.text.secondary }}
-                      >
-                        <CopyTooltip
-                          content={streamCreationEvent.transactionHash}
-                          copyText="Copy transaction hash"
-                        />
-
-                        <Tooltip
-                          title="View on blockchain explorer"
-                          arrow
-                          placement="top"
-                        >
-                          <span>
-                            <Link
-                              data-cy={"tx-hash-link"}
-                              href={network.getLinkForTransaction(
-                                streamCreationEvent.transactionHash
-                              )}
-                              passHref
-                            >
-                              <IconButton
-                                component="a"
-                                size="small"
-                                target="_blank"
-                              >
-                                <LaunchRoundedIcon />
-                              </IconButton>
-                            </Link>
-                          </span>
-                        </Tooltip>
-                      </Stack>
-                    </Stack>
+                  vestingSchedule.cliffDate ? (
+                    <>
+                      <Amount wei={vestingSchedule.cliffAmount} /> {tokenSymbol}
+                    </>
+                  ) : (
+                    "-"
                   )
                 }
               />
-            </Stack>
+            ) : (
+              <OverviewItem
+                dataCy={"buffer"}
+                label="Buffer:"
+                value={
+                  bufferSize ? (
+                    <>
+                      <Amount wei={bufferSize} /> {tokenSymbol}
+                    </>
+                  ) : (
+                    "-"
+                  )
+                }
+              />
+            )}
+            {!endDate && updatedAtTimestamp > createdAtTimestamp && (
+              <OverviewItem
+                label={`Updated Date:`}
+                value={format(updatedAtTimestamp * 1000, "d MMM. yyyy H:mm")}
+              />
+            )}
 
-            <Divider sx={{ maxWidth: "375px", width: "100%", my: 1 }} />
+            {vestingSchedule ? (
+              <OverviewItem
+                dataCy={"vesting-start-date"}
+                label="Vesting Start Date:"
+                value={format(
+                  fromUnixTime(Number(vestingSchedule.startDate)),
+                  "LLL d, yyyy HH:mm"
+                )}
+              />
+            ) : endDateScheduled ? (
+              <OverviewItem
+                label={`End Date:`}
+                value={
+                  <Stack direction="row" alignItems="center" gap={0.5}>
+                    <ScheduledStreamIcon
+                      scheduledStart
+                      IconProps={{ fontSize: "small" }}
+                    />
+                    {format(endDateScheduled.getTime(), "d MMM. yyyy H:mm")}
+                  </Stack>
+                }
+              />
+            ) : endDate ? (
+              <OverviewItem
+                label={`End Date:`}
+                value={format(endDate.getTime(), "d MMM. yyyy H:mm")}
+              />
+            ) : (
+              <OverviewItem
+                label={`End Date:`}
+                value={<AllInclusiveIcon sx={{ display: "block" }} />}
+              />
+            )}
 
-            <SharingSection
-              url={urlToShare}
-              twitterText={TEXT_TO_SHARE()}
-              telegramText={TEXT_TO_SHARE(true)}
-              twitterHashtags={HASHTAGS_TO_SHARE}
+            <OverviewItem
+              dataCy={"network-name"}
+              label="Network Name:"
+              value={
+                <Stack direction="row" alignItems="center" gap={0.5}>
+                  <NetworkIcon network={network} size={16} fontSize={12} />
+                  <Typography variant="h6">{network.name}</Typography>
+                </Stack>
+              }
+            />
+            {vestingSchedule ? (
+              <OverviewItem
+                dataCy={"vesting-end-date"}
+                label="Vesting End Date:"
+                value={format(
+                  fromUnixTime(Number(vestingSchedule.endDate)),
+                  "LLL d, yyyy HH:mm"
+                )}
+              />
+            ) : (
+              <OverviewItem
+                dataCy={"projected-liquidation"}
+                label="Projected Liquidation:"
+                value={
+                  isActive && liquidationDate
+                    ? format(liquidationDate, "d MMM. yyyy H:mm")
+                    : "-"
+                }
+              />
+            )}
+            <OverviewItem
+              dataCy={"tx-hash"}
+              label="Transaction Hash:"
+              value={
+                streamCreationEvent && (
+                  <Stack direction="row" alignItems="center" gap={0.5}>
+                    {shortenHex(streamCreationEvent.transactionHash)}
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      sx={{ color: theme.palette.text.secondary }}
+                    >
+                      <CopyTooltip
+                        content={streamCreationEvent.transactionHash}
+                        copyText="Copy transaction hash"
+                      />
+
+                      <Tooltip
+                        title="View on blockchain explorer"
+                        arrow
+                        placement="top"
+                      >
+                        <span>
+                          <IconButton
+                            component={Link}
+                            data-cy={"tx-hash-link"}
+                            href={network.getLinkForTransaction(
+                              streamCreationEvent.transactionHash
+                            )}
+                            size="small"
+                            target="_blank"
+                          >
+                            <LaunchRoundedIcon />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
+                    </Stack>
+                  </Stack>
+                )
+              }
             />
           </Stack>
-        </Container>
+
+          <Divider sx={{ maxWidth: "375px", width: "100%", my: 1 }} />
+
+          <SharingSection
+            url={urlToShare}
+            twitterText={TEXT_TO_SHARE()}
+            telegramText={TEXT_TO_SHARE(true)}
+            twitterHashtags={HASHTAGS_TO_SHARE}
+          />
+        </Stack>
+      </Container>
     </SEO>
+  );
 };
 
 export default withStaticSEO(

@@ -1,5 +1,4 @@
 import { Divider, Typography } from "@mui/material";
-import Link from "next/link";
 import { FC, Fragment, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { useAccount } from "wagmi";

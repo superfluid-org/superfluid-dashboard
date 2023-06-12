@@ -9,8 +9,8 @@ import {
   useMediaQuery,
   Link as MuiLink,
 } from "@mui/material";
-import Image from "next/image";
-import Link from "next/link";
+import Image from "next/legacy/image";
+import NextLink from "next/link";
 import { FC, useMemo } from "react";
 import NetworkIcon from "../network/NetworkIcon";
 import { Network, tryFindNetwork, allNetworks } from "../network/networks";
@@ -47,7 +47,7 @@ const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
   );
 
   return (
-    <Link passHref href={app.href}>
+    <NextLink passHref legacyBehavior href={app.href}>
       <Paper
         data-cy={`${app.name}-section`}
         elevation={1}
@@ -131,7 +131,7 @@ const EcosystemItem: FC<EcosystemItemProps> = ({ app }) => {
           </Stack>
         </Stack>
       </Paper>
-    </Link>
+    </NextLink>
   );
 };
 

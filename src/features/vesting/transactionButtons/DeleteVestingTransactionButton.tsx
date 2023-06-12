@@ -15,7 +15,7 @@ import {
   TransactionDialogActions,
   TransactionDialogButton,
 } from "../../transactionBoundary/TransactionDialog";
-import Link from "next/link";
+import NextLink from "next/link";
 import { Typography } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { useAnalytics } from "../../analytics/useAnalytics";
@@ -126,14 +126,14 @@ export const DeleteVestingTransactionButton: FC<{
 
               setDialogSuccessActions(
                 <TransactionDialogActions>
-                  <Link href="/vesting" passHref>
+                  <NextLink href="/vesting" passHref legacyBehavior>
                     <TransactionDialogButton
                       data-cy={"ok-button"}
                       color="primary"
                     >
                       OK
                     </TransactionDialogButton>
-                  </Link>
+                  </NextLink>
                 </TransactionDialogActions>
               );
             }}

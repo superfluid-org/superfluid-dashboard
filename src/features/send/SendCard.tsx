@@ -229,17 +229,20 @@ export default memo(function SendCard() {
   const shouldSearchForActiveFlow =
     !!visibleAddress && !!receiverAddress && !!tokenAddress;
 
-  const { currentData: activeFlow, isFetching: isActiveFlowFetching, data: _discard } =
-    rpcApi.useGetActiveFlowQuery(
-      shouldSearchForActiveFlow
-        ? {
-            chainId: network.id,
-            tokenAddress: tokenAddress,
-            senderAddress: visibleAddress,
-            receiverAddress: receiverAddress,
-          }
-        : skipToken
-    );
+  const {
+    currentData: activeFlow,
+    isFetching: isActiveFlowFetching,
+    data: _discard,
+  } = rpcApi.useGetActiveFlowQuery(
+    shouldSearchForActiveFlow
+      ? {
+          chainId: network.id,
+          tokenAddress: tokenAddress,
+          senderAddress: visibleAddress,
+          receiverAddress: receiverAddress,
+        }
+      : skipToken
+  );
 
   const ReceiverAddressController = (
     <Controller
@@ -703,7 +706,11 @@ export default memo(function SendCard() {
     (!activeFlow && !scheduledStream && flowRateEther.amountEther !== "");
 
   const isSendDisabled =
-    formState.isValidating || !formState.isValid || !hasAnythingChanged || isFlowScheduleFetching || isActiveFlowFetching;
+    formState.isValidating ||
+    !formState.isValid ||
+    !hasAnythingChanged ||
+    isFlowScheduleFetching ||
+    isActiveFlowFetching;
 
   const [upsertFlow, upsertFlowResult] =
     rpcApi.useUpsertFlowWithSchedulingMutation();
@@ -774,7 +781,7 @@ export default memo(function SendCard() {
                 restoration: transactionRestoration,
               },
               signer,
-              overrides: await getTransactionOverrides(network)
+              overrides: await getTransactionOverrides(network),
             })
               .unwrap()
               .then(
@@ -805,6 +812,7 @@ export default memo(function SendCard() {
                       token: formData.tokenAddress,
                     })}
                     passHref
+                    legacyBehavior
                   >
                     <TransactionDialogButton
                       data-cy={"go-to-token-page-button"}
@@ -832,6 +840,7 @@ export default memo(function SendCard() {
                         token: formData.tokenAddress,
                       })}
                       passHref
+                      legacyBehavior
                     >
                       <TransactionDialogButton
                         data-cy="go-to-token-page-button"
@@ -1128,20 +1137,17 @@ export default memo(function SendCard() {
                 />
               </Stack>
               {isWrappableSuperToken && (
-                <NextLink
-                  href={`/wrap?upgrade&token=${tokenAddress}&network=${network.slugName}`}
-                  passHref
-                >
-                  <Tooltip title="Wrap more">
-                    <IconButton
-                      data-cy={"balance-wrap-button"}
-                      color="primary"
-                      size="small"
-                    >
-                      <AddRounded />
-                    </IconButton>
-                  </Tooltip>
-                </NextLink>
+                <Tooltip title="Wrap more">
+                  <IconButton
+                    component={Link}
+                    href={`/wrap?upgrade&token=${tokenAddress}&network=${network.slugName}`}
+                    data-cy={"balance-wrap-button"}
+                    color="primary"
+                    size="small"
+                  >
+                    <AddRounded />
+                  </IconButton>
+                </Tooltip>
               )}
             </Stack>
             <Divider />

@@ -20,15 +20,14 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import Image from "next/image";
-import NextLink from "next/link";
+import Image from "next/legacy/image";
 import { useRouter } from "next/router";
 import { FC, memo, useCallback } from "react";
-import Link from "../common/Link";
 import ThemeChanger from "../theme/ThemeChanger";
 import ConnectWallet from "../wallet/ConnectWallet";
 import { useLayoutContext } from "./LayoutContext";
 import MoreNavigationItem from "./MoreNavigationItem";
+import Link from "../common/Link";
 
 export const menuDrawerWidth = 260;
 
@@ -49,18 +48,18 @@ const NavigationItem: FC<NavigationItemProps> = ({
   icon: Icon,
   onClick,
 }) => (
-  <NextLink href={href} passHref>
-    <ListItemButton
-      sx={{ borderRadius: "10px" }}
-      selected={active}
-      onClick={onClick}
-    >
-      <ListItemIcon>
-        <Icon />
-      </ListItemIcon>
-      <ListItemText data-cy={id} primary={title} />
-    </ListItemButton>
-  </NextLink>
+  <ListItemButton
+    component={Link}
+    href={href}
+    sx={{ borderRadius: "10px" }}
+    selected={active}
+    onClick={onClick}
+  >
+    <ListItemIcon>
+      <Icon />
+    </ListItemIcon>
+    <ListItemText data-cy={id} primary={title} />
+  </ListItemButton>
 );
 
 export default memo(function NavigationDrawer() {

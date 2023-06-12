@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Box,
   Divider,
   Paper,
   Stack,

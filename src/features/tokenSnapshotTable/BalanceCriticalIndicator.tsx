@@ -2,9 +2,9 @@ import ErrorRoundedIcon from "@mui/icons-material/ErrorRounded";
 import { Button, Stack, Tooltip, Typography } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { format } from "date-fns";
-import Link from "next/link";
 import { FC, MouseEvent, useMemo } from "react";
 import { Network } from "../network/networks";
+import Link from "../common/Link";
 
 interface BalanceCriticalIndicatorProps {
   tokenAddress: Address;
@@ -45,17 +45,16 @@ const BalanceCriticalIndicator: FC<BalanceCriticalIndicatorProps> = ({
             </Typography>
           </Typography>
 
-          <Link href={href} passHref>
-            <Button
-              href={href}
-              fullWidth
-              size="medium"
-              variant="contained"
-              onClick={onClick}
-            >
-              Wrap Tokens
-            </Button>
-          </Link>
+          <Button
+            LinkComponent={Link}
+            href={href}
+            fullWidth
+            size="medium"
+            variant="contained"
+            onClick={onClick}
+          >
+            Wrap Tokens
+          </Button>
         </Stack>
       }
     >

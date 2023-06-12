@@ -4,6 +4,7 @@ import NextLink from "next/link";
 import { useAccount } from "wagmi";
 
 import { FC } from "react";
+import Link from "../common/Link";
 
 const SimpleVestingHeader: FC = () => {
   const { address: accountAddress } = useAccount();
@@ -19,16 +20,16 @@ const SimpleVestingHeader: FC = () => {
         Vesting
       </Typography>
       {accountAddress && (
-        <NextLink href="/vesting/create" passHref>
-          <Button
-            data-cy="create-schedule-button"
-            color="primary"
-            variant="contained"
-            endIcon={<AddRoundedIcon />}
-          >
-            Create Vesting Schedule
-          </Button>
-        </NextLink>
+        <Button
+          LinkComponent={Link}
+          href="/vesting/create"
+          data-cy="create-schedule-button"
+          color="primary"
+          variant="contained"
+          endIcon={<AddRoundedIcon />}
+        >
+          Create Vesting Schedule
+        </Button>
       )}
     </Stack>
   );
