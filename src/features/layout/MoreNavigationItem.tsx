@@ -164,7 +164,6 @@ const MoreNavigationItem: FC = () => {
             <ListItemText>Export Stream Data</ListItemText>
           </ListItemButton>
         </NextLink>
-
       </Popover>
     </>
   );
