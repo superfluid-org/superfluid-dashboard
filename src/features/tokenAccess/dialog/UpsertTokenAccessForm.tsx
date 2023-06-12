@@ -179,7 +179,7 @@ export const UpsertTokenAccessForm: FC<{
   //   [formState, initialFormValues]
   // );
 
-  // const isAnyFieldChanged = isDirty;
+  const isAnyFieldChanged = isDirty;
 
   const handleOnCloseBtnClick = () => {
     if (isAnyFieldChanged && isValid) {
