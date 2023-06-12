@@ -14,8 +14,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        #In order to change the default behaviour and checkout the triggering commit ,
-        #e.g. don't show Merge 23452345234523452345 into 34563456345634563456 but the actual commit that triggered the workflow in the test results
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -37,12 +35,23 @@ jobs:
       matrix:
         container: [1,2,3,4,5,6,7,8,9,10,11]
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+        #In order to change the default behaviour and checkout the triggering commit ,
+        #e.g. don't show Merge 23452345234523452345 into 34563456345634563456 but the actual commit that triggered the workflow in the test results
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Use Node.js 16.x
-        uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
           node-version: 16.x
+          cache: "yarn"
+
+      # Install Currents
+      - name: Install dependencies
+        run: |
+          yarn install --frozen-lockfile
 
       - name: Cypress tests
         uses: cypress-io/github-action@v4
@@ -52,9 +61,6 @@ jobs:
           env: TAGS="not @ignoreDuringUI",STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=9793263ec38f85238966c17c809bb96695a80d5693f8fd1132f3cb2292b32a31
         env:
           CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
-#          #https://github.com/cypress-io/github-action/issues/124
-#          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
-#          COMMIT_INFO_SHA: ${{ github.event.pull_request.head.sha }}
 
 
   rejected-tests:
@@ -70,9 +76,15 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Use Node.js 16.x
-        uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
           node-version: 16.x
+          cache: "yarn"
+
+      # Install Currents
+      - name: Install dependencies
+        run: |
+          yarn install --frozen-lockfile
 
       - name: Cypress tests
         uses: cypress-io/github-action@v4
@@ -82,9 +94,6 @@ jobs:
           env: network=${{ matrix.network }},TAGS=@rejected,STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=${{ secrets.TX_ACCOUNT_PRIVATE_KEY4 }}
         env:
           CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
-#          #https://github.com/cypress-io/github-action/issues/124
-#          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
-#          COMMIT_INFO_SHA: ${{ github.event.pull_request.head.sha }}
 
   gnosis-safe-tests:
     timeout-minutes: 30
@@ -94,12 +103,23 @@ jobs:
     strategy:
       fail-fast: false
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+        #In order to change the default behaviour and checkout the triggering commit ,
+        #e.g. don't show Merge 23452345234523452345 into 34563456345634563456 but the actual commit that triggered the workflow in the test results
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Use Node.js 16.x
-        uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
           node-version: 16.x
+          cache: "yarn"
+
+      # Install Currents
+      - name: Install dependencies
+        run: |
+          yarn install --frozen-lockfile
 
       - name: Cypress tests
         uses: cypress-io/github-action@v4
@@ -111,6 +131,3 @@ jobs:
           command: yarn cypress-cloud run --record --parallel --key VoGkdJBfcuV6V8aD --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}}
         env:
           CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
-#          #https://github.com/cypress-io/github-action/issues/124
-#          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
-#          COMMIT_INFO_SHA: ${{ github.event.pull_request.head.sha }}
