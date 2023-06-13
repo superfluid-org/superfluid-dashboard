@@ -1,5 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
+import { FC, PropsWithChildren, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { ObjectSchema, mixed, number, object, string } from "yup";
 import { UnitOfTime } from "../../send/FlowRateInput";
@@ -66,28 +66,23 @@ const UpsertTokenAccessFormProvider: FC<
   const formSchema: ObjectSchema<ValidUpsertTokenAccessForm> = useMemo(
     () =>
       object({
-        data: object().shape(
-          {
-            token: mixed<Token>().required(),
-            operatorAddress: string().required().test(testAddress()),
-            network: mixed<Network>().required(),
-            tokenAllowanceWei: mixed<BigNumber>()
+        data: object({
+          token: mixed<Token>().required(),
+          operatorAddress: string().required().test(testAddress()),
+          network: mixed<Network>().required(),
+          tokenAllowanceWei: mixed<BigNumber>()
+            .required()
+            .test(testWeiAmount({ notNegative: true })),
+          flowRateAllowance: object({
+            amountWei: mixed<BigNumber>()
               .required()
               .test(testWeiAmount({ notNegative: true })),
-            flowRateAllowance: object({
-              amountWei: mixed<BigNumber>()
-                .required()
-                .test(testWeiAmount({ notNegative: true, notZero: true })),
-              unitOfTime: mixed<UnitOfTime>()
-                .required()
-                .test((x) =>
-                  Object.values(UnitOfTime).includes(x as UnitOfTime)
-                ),
-            }),
-            flowOperatorPermissions: number().required(),
-          },
-          []
-        ),
+            unitOfTime: mixed<UnitOfTime>()
+              .required()
+              .test((x) => Object.values(UnitOfTime).includes(x as UnitOfTime)),
+          }),
+          flowOperatorPermissions: number().required(),
+        }),
       }),
     []
   );
@@ -95,8 +90,8 @@ const UpsertTokenAccessFormProvider: FC<
   const defaultValues = {
     data: {
       ...defaultFormData,
-      ...initialFormData
-    }
+      ...initialFormData,
+    },
   };
 
   const formMethods = useForm<PartialUpsertTokenAccessForm>({
