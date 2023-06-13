@@ -31,12 +31,21 @@ import { formatEther } from "ethers/lib/utils.js";
 import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
 import { FlowOperatorPermissionSwitch } from "./FlowOperatorPermissionSwitch";
 
+export type TokenAccessProps = {
+  flowRateAllowance: {
+    amountWei: BigNumber;
+    unitOfTime: UnitOfTime;
+  };
+  flowOperatorPermissions: number;
+  tokenAllowanceWei: BigNumber;
+};
+
 export const UpsertTokenAccessForm: FC<{
   initialFormValues: UpsertTokenAccessFormProviderProps["initialFormData"];
 }> = ({ initialFormValues }) => {
   const {
     control,
-    formState: { isDirty, isValid, isValidating, touchedFields },
+    formState: { isDirty, isValid, isValidating },
     watch,
     setValue,
   } = useFormContext<PartialUpsertTokenAccessForm>();
@@ -247,9 +256,7 @@ export const UpsertTokenAccessForm: FC<{
                   render={({ field: { onChange, onBlur } }) => (
                     <FlowRateInput
                       flowRateEther={flowRateAllowanceEther}
-                      onChange={(v) => {
-                        setFlowRateAllowanceEther(v);
-                      }}
+                      onChange={setFlowRateAllowanceEther}
                       onBlur={() => {
                         onChange({
                           amountWei: parseEtherOrZero(

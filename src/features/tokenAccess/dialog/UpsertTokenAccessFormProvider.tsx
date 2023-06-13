@@ -103,7 +103,7 @@ const UpsertTokenAccessFormProvider: FC<
   return (
     <FormProvider {...formMethods}>
       {children}
-      <CommonFormEffects />
+      <CommonFormEffects autoSwitchToWalletNetworkWhenDirty />
     </FormProvider>
   );
 };

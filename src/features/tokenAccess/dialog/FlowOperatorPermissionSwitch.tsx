@@ -15,8 +15,6 @@ import {
   ACL_DELETE_PERMISSION,
   ACL_UPDATE_PERMISSION,
 } from "../../redux/endpoints/flowSchedulerEndpoints";
-import { BigNumber } from "ethers";
-import { UnitOfTime } from "../../send/FlowRateInput";
 import { FC } from "react";
 
 interface Permission {
@@ -42,15 +40,6 @@ const permissions: Permission[] = [
     label: ACL_DELETE_PERMISSION_LABEL,
   },
 ];
-
-export type TokenAccessProps = {
-  flowRateAllowance: {
-    amountWei: BigNumber;
-    unitOfTime: UnitOfTime;
-  };
-  flowOperatorPermissions: number;
-  tokenAllowanceWei: BigNumber;
-};
 
 export const FlowOperatorPermissionSwitch: FC<{
   currentPermissions: number;
