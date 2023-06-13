@@ -1,5 +1,5 @@
 module.exports = {
-  projectId: "Syn44i",
+  projectId: "Y3SGCk",
   e2e: {
     batchSize: 1,
   },
