@@ -83,6 +83,14 @@ const UpsertTokenAccessFormProvider: FC<
           }),
           flowOperatorPermissions: number().required(),
         }),
+      }).test({
+        name: "no-permissions",
+        exclusive: true,
+        message: "Use revoke when removing all permissions.",
+        test: (x) =>
+          x.data.flowRateAllowance.amountWei.gt(0) ||
+          x.data.tokenAllowanceWei.gt(0) ||
+          x.data.flowOperatorPermissions !== 0,
       }),
     []
   );
