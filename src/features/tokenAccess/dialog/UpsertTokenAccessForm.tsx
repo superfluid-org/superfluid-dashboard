@@ -30,6 +30,7 @@ import { parseEtherOrZero } from "../../../utils/tokenUtils";
 import { formatEther } from "ethers/lib/utils.js";
 import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
 import { FlowOperatorPermissionSwitch } from "./FlowOperatorPermissionSwitch";
+import AddressSearch from "../../send/AddressSearch";
 
 export type TokenAccessProps = {
   flowRateAllowance: {
@@ -214,15 +215,20 @@ export const UpsertTokenAccessForm: FC<{
                 <Controller
                   control={control}
                   name="data.operatorAddress"
-                  render={({ field: { value, onChange, onBlur } }) => (
-                    <TextField
-                      disabled={!isNewEntry}
-                      value={value}
-                      placeholder={
-                        "Enter the address you want to grant permission to"
-                      }
+                  render={({ field: { onChange, onBlur } }) => (
+                    <AddressSearch
+                      address={operatorAddress}
                       onChange={onChange}
                       onBlur={onBlur}
+                      addressLength={isBelowMd ? "medium" : "long"}
+                      ButtonProps={{
+                        fullWidth: true,
+                        disabled: !isNewEntry,
+                        ...(!isNewEntry && { endIcon: undefined }),
+                      }}
+                      AddressSearchDialogProps={{
+                        title: "Select the operator address",
+                      }}
                     />
                   )}
                 />
