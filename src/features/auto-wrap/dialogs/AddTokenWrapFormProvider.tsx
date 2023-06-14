@@ -51,8 +51,8 @@ const AddTokenWrapFormProvider: FC<
       object({
         data: object().shape(
           {
-            token: object().required(),
             network: object().required(),
+            token: object().required(),
           },
           []
         ),

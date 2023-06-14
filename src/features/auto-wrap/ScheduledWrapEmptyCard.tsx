@@ -11,15 +11,12 @@ import {
   Typography,
 } from "@mui/material";
 import AutoWrapAddTokenButtonSection from "./AutoWrapAddTokenButtonSection";
+import { PlatformWhitelistedStatuses } from "./ScheduledWrapTables";
+import { FC } from "react";
 
-const WrapperAvatar = styled(Avatar)(({ theme }) => ({
-  width: 70,
-  height: 70,
-  borderRadius: "50%",
-  background: alpha(theme.palette.primary.main, 0.08),
-}));
-
-const ScheduledWrapEmptyCard = () => (
+const ScheduledWrapEmptyCard: FC<{
+  platformWhitelistedStatuses: PlatformWhitelistedStatuses;
+}> = ({ platformWhitelistedStatuses }) => (
   <Card
     sx={{ py: 5, textAlign: "center" }}
     component={Stack}
@@ -31,11 +28,11 @@ const ScheduledWrapEmptyCard = () => (
       <Typography data-cy={"no-scheduled-wrap-message"} variant="h5">
         Nothing to see here
       </Typography>
-      <Typography>
-        Add your first Auto-Wrap configuration
-      </Typography>
+      <Typography>Add your first Auto-Wrap configuration</Typography>
     </Box>
-      <AutoWrapAddTokenButtonSection />
+    <AutoWrapAddTokenButtonSection
+      platformWhitelistedStatuses={platformWhitelistedStatuses}
+    />
   </Card>
 );
 

@@ -17,12 +17,15 @@ import useBodyScrolled from "../../hooks/useBodyScrolled";
 import ImpersonationChip from "../impersonation/ImpersonationChip";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 import SelectNetwork from "../network/SelectNetwork";
+
 import { transactionDrawerWidth } from "../transactionDrawer/TransactionDrawer";
 import TransactionBell from "../transactions/TransactionBell";
 import ConnectWallet from "../wallet/ConnectWallet";
 import { useLayoutContext } from "./LayoutContext";
 import { menuDrawerWidth } from "./NavigationDrawer";
-
+import { Network } from "../network/networks";
+import { useAccount, useSwitchNetwork } from "wagmi";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 interface CustomAppBarProps {
   transactionDrawerOpen: boolean;
   navigationDrawerOpen: boolean;
@@ -69,6 +72,10 @@ export default memo(function TopBar() {
   const theme = useTheme();
   const isBelowLg = useMediaQuery(theme.breakpoints.down("lg"));
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const { address: accountAddress } = useAccount();
+  const { switchNetwork } = useSwitchNetwork();
+  const { network: selectedNetwork, setExpectedNetwork: setSelectedNetwork } =
+    useExpectedNetwork();
 
   const { isImpersonated } = useImpersonation();
 
@@ -80,6 +87,13 @@ export default memo(function TopBar() {
   } = useLayoutContext();
 
   const openNavigationDrawer = () => setNavigationDrawerOpen(true);
+
+  const onNetworkChange = (network: Network) => () => {
+    setSelectedNetwork(network.id);
+    if (accountAddress && switchNetwork) {
+      switchNetwork(network.id);
+    }
+  };
 
   return (
     <CustomAppBar
@@ -103,7 +117,12 @@ export default memo(function TopBar() {
             <ConnectWallet ButtonProps={{ size: "small" }} />
           )}
           <ImpersonationChip />
-          <SelectNetwork />
+          <SelectNetwork
+            disabled={!selectedNetwork}
+            network={selectedNetwork}
+            onChange={onNetworkChange}
+            placeholder={"Select Network"}
+          />
           <NotificationsBell />
           <TransactionBell />
         </Stack>

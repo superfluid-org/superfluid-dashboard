@@ -1,9 +1,11 @@
 import {
+  Box,
   Skeleton,
   Stack,
   TableCell,
   TableRow,
   Typography,
+  colors,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -23,9 +25,9 @@ import { differenceInWeeks } from "date-fns";
 import { isCloseToUnlimitedTokenAllowance } from "../../utils/isCloseToUnlimitedAllowance";
 import Amount from "../token/Amount";
 import { BigNumber } from "ethers";
-import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { formatEther } from "ethers/lib/utils.js";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import TooltipWithIcon from "../common/TooltipWithIcon";
 
 interface ScheduledWrapRowProps {
   network: Network;
@@ -41,8 +43,12 @@ const secondsToWeeks = (seconds: number): number => {
 const calculateRequiredTokenAmount = (
   limit: number,
   netFlowRate: string
-): number => {
-  return Number(formatEther(netFlowRate || 0)) * limit;
+): string => {
+  const calculateRequiredTokenAmount = Number(formatEther(netFlowRate || 0)) * limit;
+  if (calculateRequiredTokenAmount === 0) {
+    return "0";
+  }
+  return Math.abs(calculateRequiredTokenAmount).toFixed(2);
 };
 
 const TokenLimitComponent: FC<{
@@ -163,7 +169,156 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
   return (
     <>
       {isBelowMd ? (
-        <>Mobile view</>
+        <Stack gap={2} sx={{ px: 2, py: 2 }}>
+          <Box>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Typography variant="h7">Asset</Typography>
+              <Stack
+                data-cy={"token-header"}
+                direction="row"
+                alignItems="center"
+                gap={2}
+              >
+                <TokenIcon
+                  isSuper
+                  tokenSymbol={superTokenQueryData?.symbol}
+                  isLoading={isTokenLoading}
+                />
+                <Typography variant="h6" data-cy={"token-symbol"}>
+                  {superTokenQueryData?.symbol}
+                </Typography>
+              </Stack>
+            </Stack>
+          </Box>
+          <Box>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Stack direction="row" gap={0.5} alignItems="center">
+                ERC-20 Allowance
+                <TooltipWithIcon
+                  title="The allowance cap you’ve set up for the underlying ERC-20 tokens."
+                  IconProps={{
+                    sx: {
+                      fontSize: "16px",
+                      color: colors.grey[700],
+                    },
+                  }}
+                />
+              </Stack>
+              {isUnderlyingTokenAllowanceLoading ? (
+                <Skeleton variant="rectangular" width={24} height={24} />
+              ) : isCloseToUnlimitedTokenAllowance(
+                  underlyingTokenAllowance || 0
+                ) ? (
+                <span>Unlimited</span>
+              ) : (
+                <>
+                  <Amount wei={underlyingTokenAllowance || 0} />{" "}
+                  {underlyingToken?.symbol}
+                </>
+              )}
+            </Stack>
+          </Box>
+          <Box>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Stack direction="row" gap={0.5} alignItems="center">
+                Lower Limit
+                <TooltipWithIcon
+                  title="The amount of time left until your stream hits zero at which an automatic top up should be triggered."
+                  IconProps={{
+                    sx: {
+                      fontSize: "16px",
+                      color: colors.grey[700],
+                    },
+                  }}
+                />
+              </Stack>
+              <TokenLimitComponent
+                limit={schedule.lowerLimit}
+                netFlowRate={accountTokenSnapshot?.totalNetFlowRate}
+                tokenSymbol={superTokenQueryData?.symbol}
+              />
+            </Stack>
+          </Box>
+
+          <Box>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Stack direction="row" gap={0.5} alignItems="center">
+                Upper Limit
+                <TooltipWithIcon
+                  title="The amount of time worth of streaming that the wrapped tokens will cover."
+                  IconProps={{
+                    sx: {
+                      fontSize: "16px",
+                      color: colors.grey[700],
+                    },
+                  }}
+                />
+              </Stack>
+              <Typography variant="h6">
+                <TokenLimitComponent
+                  limit={schedule.upperLimit}
+                  netFlowRate={accountTokenSnapshot?.totalNetFlowRate}
+                  tokenSymbol={superTokenQueryData?.symbol}
+                />
+              </Typography>
+            </Stack>
+          </Box>
+          <Box alignContent={"center"}>
+            <ConnectionBoundary>
+              {superTokenQueryData && network.autoWrap ? (
+                isAutoWrapLoading ? (
+                  <Skeleton variant="rectangular" width={24} height={24} />
+                ) : isAutoWrapOK ? (
+                  <DisableAutoWrapTransactionButton
+                    key={`auto-wrap-revoke-${superTokenQueryData?.symbol}`}
+                    isDisabled={false}
+                    isVisible={true}
+                    token={superTokenQueryData}
+                    ButtonProps={{
+                      size: "small",
+                      variant: "outlined",
+                      fullWidth: false,
+                    }}
+                  />
+                ) : isAutoWrappable ? (
+                  <EnableAutoWrapButton
+                    openEnableAutoWrapDialog={openEnableAutoWrapDialog}
+                    ButtonProps={{
+                      size: "small",
+                      variant: "contained",
+                      fullWidth: false,
+                    }}
+                  />
+                ) : null
+              ) : null}
+              {superTokenQueryData && (
+                <AutoWrapEnableDialogSection
+                  key={"auto-wrap-enable-dialog-section"}
+                  closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}
+                  isEnableAutoWrapDialogOpen={isEnableAutoWrapDialogOpen}
+                  token={superTokenQueryData}
+                  network={network}
+                />
+              )}
+            </ConnectionBoundary>
+          </Box>
+        </Stack>
       ) : (
         <TableRow>
           <TableCell align="left">

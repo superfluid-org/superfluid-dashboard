@@ -24,17 +24,24 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import ScheduledWrapRow from "./ScheduledWrapRow";
 import TooltipWithIcon from "../common/TooltipWithIcon";
 import { AutoWrapContractInfo } from "../vesting/VestingScheduleTables";
+import { PlatformWhitelistedStatus } from "./ScheduledWrapTables";
+import { platformApi } from "../redux/platformApi/platformApi";
 
 interface TokenSnapshotTableProps {
   address: Address;
   network: Network;
   fetchingCallback: (networkId: number, fetchingStatus: FetchingStatus) => void;
+  whitelistedCallback: (
+    networkId: number,
+    status: PlatformWhitelistedStatus
+  ) => void;
 }
 
 const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
   address,
   network,
   fetchingCallback,
+  whitelistedCallback,
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -61,7 +68,6 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
       }
     );
 
-
   const memonizedWrapSchedules = useMemo(() => wrapSchedules, [wrapSchedules]);
 
   const paginatedWrapSchedules = useMemo(
@@ -73,12 +79,36 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
     [page.contract, rowsPerPage, memonizedWrapSchedules]
   );
 
+  const { isPlatformWhitelisted, isLoading: isWhitelistLoading } =
+    platformApi.useIsAccountWhitelistedQuery(
+      address && network?.platformUrl
+        ? {
+            chainId: network.id,
+            baseUrl: network.platformUrl,
+            account: address?.toLowerCase(),
+          }
+        : skipToken,
+      {
+        selectFromResult: (queryResult) => ({
+          ...queryResult,
+          isPlatformWhitelisted: !!queryResult.data,
+        }),
+      }
+    );
+
   useEffect(() => {
     fetchingCallback(network.id, {
       isLoading: isLoading,
       hasContent: !!wrapSchedules.length,
     });
   }, [network.id, isLoading, wrapSchedules.length, fetchingCallback]);
+
+  useEffect(() => {
+    whitelistedCallback(network.id, {
+      isLoading: isWhitelistLoading,
+      isWhitelisted: isPlatformWhitelisted,
+    });
+  }, [isWhitelistLoading, isPlatformWhitelisted, whitelistedCallback]);
 
   const handleChangePage =
     (table: "schedules") => (_e: unknown, newPage: number) => {
@@ -98,7 +128,6 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
 
   return (
     <>
-      {" "}
       <TableContainer
         data-cy={network.slugName + "-token-snapshot-table"}
         component={Paper}
@@ -121,22 +150,13 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
                 <TableCell width="200">
                   <Stack direction="row" gap={0.5} alignItems="center">
                     Asset
-                    <TooltipWithIcon
-                      title="No Info available."
-                      IconProps={{
-                        sx: {
-                          fontSize: "16px",
-                          color: colors.grey[700],
-                        },
-                      }}
-                    />
                   </Stack>
                 </TableCell>
                 <TableCell width="300">
                   <Stack direction="row" gap={0.5} alignItems="center">
                     ERC-20 Allowance
                     <TooltipWithIcon
-                      title="No Info available."
+                      title="The allowance cap you’ve set up for the underlying ERC-20 tokens."
                       IconProps={{
                         sx: {
                           fontSize: "16px",
@@ -150,7 +170,7 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
                   <Stack direction="row" gap={0.5} alignItems="center">
                     Lower Limit
                     <TooltipWithIcon
-                      title="No Info available."
+                      title="The amount of time left until your stream hits zero at which an automatic top up should be triggered."
                       IconProps={{
                         sx: {
                           fontSize: "16px",
@@ -164,7 +184,7 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
                   <Stack direction="row" gap={0.5} alignItems="center">
                     Upper Limit
                     <TooltipWithIcon
-                      title="No Info available."
+                      title="The amount of time worth of streaming that the wrapped tokens will cover."
                       IconProps={{
                         sx: {
                           fontSize: "16px",
@@ -181,7 +201,7 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
             )}
           </TableHead>
           <TableBody>
-            {paginatedWrapSchedules.map((schedule, index) => (
+            {paginatedWrapSchedules.map((schedule) => (
               <ScheduledWrapRow
                 key={schedule.id}
                 network={network}
