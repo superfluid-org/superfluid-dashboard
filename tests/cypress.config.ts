@@ -2,6 +2,7 @@ import { defineConfig } from "cypress";
 import { addCucumberPreprocessorPlugin } from "@badeball/cypress-cucumber-preprocessor";
 import webpackPreprocessor from "@cypress/webpack-preprocessor";
 import webpack from "webpack";
+import { cloudPlugin } from "cypress-cloud/plugin";
 
 async function setupNodeEvents(
   on: Cypress.PluginEvents,
@@ -65,7 +66,7 @@ async function setupNodeEvents(
   );
 
   // Make sure to return the config object as it might have been modified by the plugin.
-  return config;
+  return cloudPlugin(on, config);
 }
 
 export default defineConfig({
