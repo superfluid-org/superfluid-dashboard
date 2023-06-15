@@ -24,8 +24,8 @@ const gasApi = createApi({
           );
           return {
             data: {
-              maxFeeGwei: maxFee,
-              maxPriorityFeeGwei: maxPriorityFee,
+              maxFeeGwei: Number(maxFee),
+              maxPriorityFeeGwei: Number(maxPriorityFee),
             } as GasRecommendation,
           };
         }
@@ -41,8 +41,8 @@ const gasApi = createApi({
           );
           return {
             data: {
-              maxFeeGwei: maxFee,
-              maxPriorityFeeGwei: maxPriorityFee,
+              maxFeeGwei: Number(maxFee),
+              maxPriorityFeeGwei: Number(maxPriorityFee),
             } as GasRecommendation,
           };
         }
