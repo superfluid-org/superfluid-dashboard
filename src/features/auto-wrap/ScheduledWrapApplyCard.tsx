@@ -28,7 +28,7 @@ const ScheduledWrapApplyCard = () => (
     </Box>
     <Link
       data-cy={"auto-wrap-allowlist-link"}
-      href="https://use.superfluid.finance/schedulestreams"
+      href="https://use.superfluid.finance/autowrap"
       target="_blank"
     >
       <Button variant="contained" color="primary" size="large">
