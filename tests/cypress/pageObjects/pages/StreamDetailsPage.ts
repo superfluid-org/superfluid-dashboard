@@ -332,7 +332,8 @@ export class StreamDetailsPage extends BasePage {
 
   static validateCloseEndedStreamData() {
     cy.fixture("streamData").then((streamData) => {
-      const closeEndedStream = streamData["accountWithLotsOfData"]["goerli"][0];
+      const closeEndedStream =
+        streamData["accountWithLotsOfData"]["polygon"][0];
       this.hasText(TOKEN_STREAMED, closeEndedStream.token);
       this.hasText(
         SENDER_AND_RECEIVER,

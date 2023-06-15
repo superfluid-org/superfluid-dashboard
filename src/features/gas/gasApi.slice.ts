@@ -11,11 +11,15 @@ const gasApi = createApi({
   reducerPath: "gas_price",
   baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
-    recommendedGas: builder.query<GasRecommendation | null, { chainId: number }>({
+    recommendedGas: builder.query<
+      GasRecommendation | null,
+      { chainId: number }
+    >({
       queryFn: async ({ chainId }) => {
         const endpointMap: { [key: number]: string } = {
-          [chain.polygon.id]: "https://gasstation-mainnet.matic.network/v2",
-          [chain.polygonMumbai.id]: "https://gasstation-mumbai.matic.today/v2",
+          [chain.polygon.id]: "https://gasstation.polygon.technology/v2",
+          [chain.polygonMumbai.id]:
+            "https://gasstation-testnet.polygon.technology/v2",
         };
 
         const endpoint = endpointMap[chainId];
@@ -29,8 +33,8 @@ const gasApi = createApi({
 
         return {
           data: {
-            maxFeeGwei: maxFee,
-            maxPriorityFeeGwei: maxPriorityFee,
+            maxFeeGwei: Number(maxFee),
+            maxPriorityFeeGwei: Number(maxPriorityFee),
           } as GasRecommendation,
         };
       },

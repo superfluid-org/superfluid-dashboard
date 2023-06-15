@@ -1029,7 +1029,7 @@ export class Common extends BasePage {
           "v1 ended stream details page":
             streamData["staticBalanceAccount"]["polygon"][0].v1Link,
           "close-ended stream details page":
-            streamData["accountWithLotsOfData"]["goerli"][0].v2Link,
+            streamData["accountWithLotsOfData"]["polygon"][0].v2Link,
           "vesting details page": `/vesting/goerli/${vestingData.goerli.fUSDCx.schedule.id}`,
           "vesting stream details page": `/stream/polygon/${vestingData.polygon.USDCx.vestingStream.id}`,
         };

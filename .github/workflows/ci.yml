@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Wait for Netlify
         uses: probablyup/wait-for-netlify-action@3.2.0 # Check the source code before updating version because it uses personal Netlify access token which does not have granular access control.
@@ -22,6 +24,7 @@ jobs:
           site_id: "aa82cf1e-ce5d-432f-99bf-77a0b8c13277"
         env:
           NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+
   ui-tests:
     timeout-minutes: 30
     needs: ["test_setup"]
@@ -32,26 +35,26 @@ jobs:
       matrix:
         container: [1,2,3,4,5,6,7,8,9,10,11]
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+        #In order to change the default behaviour and checkout the triggering commit ,
+        #e.g. don't show Merge 23452345234523452345 into 34563456345634563456 but the actual commit that triggered the workflow in the test results
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Use Node.js 16.x
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: 16.x
+          cache: "yarn"
 
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
+          command: yarn cypress-cloud run --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --ci-build-id ui-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env TAGS="not @ignoreDuringUI",STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=${{ secrets.TX_ACCOUNT_PRIVATE_KEY4 }}
           working-directory: tests
-          parallel: true
-          record: true
-          env: TAGS="not @ignoreDuringUI",STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=9793263ec38f85238966c17c809bb96695a80d5693f8fd1132f3cb2292b32a31
         env:
-          CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
           CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
-          #https://github.com/cypress-io/github-action/issues/124
-          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
-          COMMIT_INFO_SHA: ${{ github.event.pull_request.head.sha }}
 
 
   rejected-tests:
@@ -65,25 +68,22 @@ jobs:
         network: ["goerli","gnosis","polygon-mumbai","polygon","optimism","arbitrum-one","avalanche","avalanche-fuji","bsc","ethereum","arbitrum-goerli","optimism-goerli"]
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Use Node.js 16.x
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: 16.x
+          cache: "yarn"
 
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
+          command: yarn cypress-cloud run --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --ci-build-id rejected-${{ matrix.network }}-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env network=${{ matrix.network }},TAGS=@rejected,STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=${{ secrets.TX_ACCOUNT_PRIVATE_KEY4 }}
           working-directory: tests
-          parallel: false
-          record: true
-          env: network=${{ matrix.network }},TAGS=@rejected,STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=${{ secrets.TX_ACCOUNT_PRIVATE_KEY4 }}
         env:
-          CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
           CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
-          #https://github.com/cypress-io/github-action/issues/124
-          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
-          COMMIT_INFO_SHA: ${{ github.event.pull_request.head.sha }}
 
   gnosis-safe-tests:
     timeout-minutes: 30
@@ -93,25 +93,23 @@ jobs:
     strategy:
       fail-fast: false
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+        #In order to change the default behaviour and checkout the triggering commit ,
+        #e.g. don't show Merge 23452345234523452345 into 34563456345634563456 but the actual commit that triggered the workflow in the test results
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Use Node.js 16.x
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: 16.x
+          cache: "yarn"
 
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
-          browser: chrome
           working-directory: tests
-          parallel: false
-          record: true
-          config: chromeWebSecurity=false
-          env: TAGS=@Gnosis
+          command: yarn cypress-cloud run --browser chrome --config chromeWebSecurity=false --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --ci-build-id gnosis-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env TAGS=@Gnosis
         env:
-          CYPRESS_RECORD_KEY: ${{ secrets.V2_CYPRESS_RECORD_KEY }}
           CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
-          #https://github.com/cypress-io/github-action/issues/124
-          COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
-          COMMIT_INFO_SHA: ${{ github.event.pull_request.head.sha }}
