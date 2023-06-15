@@ -20,7 +20,7 @@ const gasApi = createApi({
               fast: { maxFee, maxPriorityFee },
             },
           } = await axios.get<MaticGasStationResponse>(
-            "https://gasstation-mainnet.matic.network/v2"
+            "https://gasstation.polygon.technology/v2"
           );
           return {
             data: {
@@ -37,7 +37,7 @@ const gasApi = createApi({
               fast: { maxFee, maxPriorityFee },
             },
           } = await axios.get<MaticGasStationResponse>(
-            "https://gasstation-mumbai.matic.today/v2"
+            "https://gasstation-testnet.polygon.technology/v2"
           );
           return {
             data: {
