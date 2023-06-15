@@ -1,4 +1,3 @@
-import { Notifications } from "@mui/icons-material";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import {
   alpha,
@@ -88,7 +87,7 @@ export default memo(function TopBar() {
 
   const openNavigationDrawer = () => setNavigationDrawerOpen(true);
 
-  const onNetworkChange = (network: Network) => () => {
+  const onNetworkChange = (network: Network) => {
     setSelectedNetwork(network.id);
     if (accountAddress && switchNetwork) {
       switchNetwork(network.id);

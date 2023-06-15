@@ -26,6 +26,7 @@ import TooltipWithIcon from "../common/TooltipWithIcon";
 import { AutoWrapContractInfo } from "../vesting/VestingScheduleTables";
 import { PlatformWhitelistedStatus } from "./ScheduledWrapTables";
 import { platformApi } from "../redux/platformApi/platformApi";
+import ScheduledWrapLoadingTable from "./ScheduledWrapLoadingTable";
 
 interface TokenSnapshotTableProps {
   address: Address;
@@ -124,6 +125,8 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
       setPage((page) => ({ ...page, address: 0 }));
     };
 
+  if (isLoading && isWhitelistLoading) 
+    return <ScheduledWrapLoadingTable />
   if (!isLoading && wrapSchedules.length === 0) return null;
 
   return (

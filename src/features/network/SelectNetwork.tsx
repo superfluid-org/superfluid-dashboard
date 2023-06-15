@@ -166,9 +166,8 @@ const SelectNetwork: FC<{
   const handleClose = () => setAnchorEl(null);
 
   const onNetworkSelected = (network: Network) => {
-    console.log("clicked network", network);
-    handleClose();
     onChange(network);
+    handleClose();
   };
 
   return (

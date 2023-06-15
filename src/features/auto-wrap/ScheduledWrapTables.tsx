@@ -140,11 +140,9 @@ const ScheduledWrapTables: FC<ScheduledWrapTablesProps> = ({ address }) => {
           />
         </Stack>
       </Stack>
-      {isLoading && isWhitelistLoading ? (
-        <ScheduledWrapLoadingTable />
-      ) : !isLoading && !isWhitelistLoading && !isPlatformWhitelisted ? (
+      {!isLoading && !isWhitelistLoading && !isPlatformWhitelisted ? (
         <ScheduledWrapApplyCard />
-      ) : !isLoading && !isWhitelistLoading && !hasContent ? (
+      ) : !isLoading && !isWhitelistLoading && isPlatformWhitelisted && !hasContent ? (
         <ScheduledWrapEmptyCard
           platformWhitelistedStatuses={platformWhitelistedStatuses}
         />
