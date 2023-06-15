@@ -7,6 +7,7 @@ import {
 import { Common } from "./Common";
 import { format } from "date-fns";
 import { DataTable } from "@badeball/cypress-cucumber-preprocessor";
+import superfluidMetadata from "@superfluid-finance/metadata";
 
 const ACTIVITY_TYPE = "[data-cy=activity]";
 const ACTIVITY_NAME = `${ACTIVITY_TYPE} h6`;
@@ -214,34 +215,37 @@ export class ActivityPage extends BasePage {
 
   static mockActivityRequestTo(activity: string, network: string) {
     cy.fixture("activityHistoryEvents").then((activities) => {
-      cy.intercept(
-        "POST",
-        `*protocol-**-${networksBySlug.get(network).v1ShortName}`,
-        (req) => {
-          if (req.body.operationName === "events") {
-            req.continue((res) => {
-              if (activity == "all activities") {
-                let allEvents = [];
-                Object.keys(activities).forEach((activity, i) => {
-                  activities[activity].forEach((event) => {
-                    event.timestamp = NOW_TIMESTAMP / 1000 + i * 60;
-                    allEvents.push(event);
-                  });
-                });
-                res.body.data.events = allEvents;
-              } else {
-                if (!activities[activity]) {
-                  throw new Error(`Unknown activity type: ${activity}`);
-                }
-                res.body.data.events = activities[activity];
-                res.body.data.events.forEach((event) => {
-                  event.timestamp = NOW_TIMESTAMP;
-                });
-              }
-            });
-          }
-        }
+      const networkFromMetadata = superfluidMetadata.getNetworkByChainId(
+        networksBySlug.get(network).id
       );
+      const subgraphEndpoint =
+        networkFromMetadata?.subgraphV1?.satsumaEndpoint ??
+        networkFromMetadata?.subgraphV1?.hostedEndpoint;
+
+      cy.intercept("POST", subgraphEndpoint, (req) => {
+        if (req.body.operationName === "events") {
+          req.continue((res) => {
+            if (activity == "all activities") {
+              let allEvents = [];
+              Object.keys(activities).forEach((activity, i) => {
+                activities[activity].forEach((event) => {
+                  event.timestamp = NOW_TIMESTAMP / 1000 + i * 60;
+                  allEvents.push(event);
+                });
+              });
+              res.body.data.events = allEvents;
+            } else {
+              if (!activities[activity]) {
+                throw new Error(`Unknown activity type: ${activity}`);
+              }
+              res.body.data.events = activities[activity];
+              res.body.data.events.forEach((event) => {
+                event.timestamp = NOW_TIMESTAMP;
+              });
+            }
+          });
+        }
+      });
     });
   }
 

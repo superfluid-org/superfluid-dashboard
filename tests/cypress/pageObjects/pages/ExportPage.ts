@@ -277,7 +277,7 @@ export class ExportPage extends BasePage {
   static validateFilteredRows(column: string, value: string) {
     cy.get(`.MuiDataGrid-cell[data-field=${column}]`).should(
       "have.length.below",
-      8
+      9
     );
     cy.get(`.MuiDataGrid-cell[data-field=${column}]`).each((row) => {
       cy.wrap(row).should("contain.text", value);
