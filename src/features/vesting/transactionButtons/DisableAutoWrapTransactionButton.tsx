@@ -1,10 +1,9 @@
-import { Button, ButtonProps, Typography } from "@mui/material";
+import { ButtonProps, Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { constants } from "ethers";
 import { FC, memo } from "react";
-import { useQuery, useSigner } from "wagmi";
+import {  useQuery, useSigner } from "wagmi";
 import { usePrepareErc20Approve } from "../../../generated";
-import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { rpcApi, subgraphApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
@@ -12,6 +11,7 @@ import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverride
 import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
 import { Token } from "@superfluid-finance/sdk-core";
 import { toVestingToken } from "../useVestingToken";
+import { Network } from "../../network/networks";
 
 const TX_TITLE: TransactionTitle = "Disable Auto-Wrap";
 
@@ -20,8 +20,9 @@ const DisableAutoWrapTransactionButton: FC<{
   isVisible: boolean;
   isDisabled: boolean;
   ButtonProps?: ButtonProps;
-}> = ({ token, isVisible, isDisabled: isDisabled_, ButtonProps = {} }) => {
-  const { network } = useExpectedNetwork();
+  network: Network;
+}> = ({ token, isVisible, isDisabled: isDisabled_, ButtonProps = {}, network }) => {
+
   const { data: signer } = useSigner();
   const vestingToken = toVestingToken(token, network);
   const getGasOverrides = useGetTransactionOverrides();
@@ -29,21 +30,20 @@ const DisableAutoWrapTransactionButton: FC<{
     ["gasOverrides", TX_TITLE, network.id],
     async () => convertOverridesForWagmi(await getGasOverrides(network))
   );
-  const primaryArgs = {
-    spender: network.autoWrap!.strategyContractAddress,
-    amount: constants.Zero,
-  };
+
+  const disabled =
+    isDisabled_ || !network.autoWrap;
 
   const { config } = usePrepareErc20Approve(
-    network.autoWrap
-      ? {
+    !network.autoWrap
+      ? undefined
+      : {
           address: vestingToken.underlyingAddress as `0x${string}`,
           chainId: network.id,
-          args: [primaryArgs.spender, primaryArgs.amount],
+          args: [network.autoWrap!.strategyContractAddress, constants.Zero],
           signer,
           overrides,
         }
-      : undefined
   );
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
@@ -54,7 +54,7 @@ const DisableAutoWrapTransactionButton: FC<{
   });
 
   const underlyingToken = underlyingTokenQuery.data;
-  const isDisabled = isDisabled_ && !config;
+  const isDisabled = disabled || !config;
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
@@ -68,7 +68,7 @@ const DisableAutoWrapTransactionButton: FC<{
             disabled={isDisabled}
             ButtonProps={{
               size: "medium",
-              ...ButtonProps
+              ...ButtonProps,
             }}
             onClick={async (signer) => {
               if (!config) throw new Error("This should never happen!");
@@ -89,7 +89,12 @@ const DisableAutoWrapTransactionButton: FC<{
                 transactionTitle: "Disable Auto-Wrap",
               })
                 .unwrap()
-                .then(...txAnalytics("Disable Auto-Wrap", primaryArgs))
+                .then(
+                  ...txAnalytics("Disable Auto-Wrap", {
+                    spender: network.autoWrap!.strategyContractAddress,
+                    amount: constants.Zero,
+                  })
+                )
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}
           >

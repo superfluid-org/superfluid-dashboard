@@ -40,7 +40,7 @@ import { TokenType } from "../../redux/endpoints/tokenTypes";
 import DisableAutoWrapTransactionButton from "../transactionButtons/DisableAutoWrapTransactionButton";
 import { VestingToken } from "../CreateVestingSection";
 import AutoWrapEnableDialogSection from "../dialogs/AutoWrapEnableDialogSection";
-import EnableAutoWrapTransactionButton from "../transactionButtons/EnableAutoWrapTransactionButton";
+import EnableAutoWrapButton from "../transactionButtons/EnableAutoWrapButton";
 
 export const EditIconWrapper = styled(Avatar)(({ theme }) => ({
   width: "50px",
@@ -438,10 +438,11 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                             key={`auto-wrap-revoke-${tokenSymbol}`}
                             isDisabled={false}
                             isVisible={true}
+                            network={network}
                             token={token as VestingToken}
                           />
                         ) : isAutoWrappable ? (
-                          <EnableAutoWrapTransactionButton
+                          <EnableAutoWrapButton
                             openEnableAutoWrapDialog={openEnableAutoWrapDialog}
                           />
                         ) : null
@@ -609,11 +610,12 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                           key={`auto-wrap-revoke-${tokenSymbol}`}
                           isDisabled={false}
                           isVisible={true}
+                          network={network}
                           token={token as VestingToken}
                           ButtonProps={{ fullWidth: false }}
                         />
                       ) : isAutoWrappable ? (
-                        <EnableAutoWrapTransactionButton
+                        <EnableAutoWrapButton
                           ButtonProps={{ fullWidth: false }}
                           openEnableAutoWrapDialog={openEnableAutoWrapDialog}
                         />

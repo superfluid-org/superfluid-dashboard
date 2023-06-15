@@ -21,28 +21,23 @@ const AutoWrapAllowanceTransactionButton: FC<{
   network: Network;
 }> = ({ token, isVisible, isDisabled: isDisabled_, network }) => {
   const { data: signer } = useSigner();
-  const walletChainId = useChainId();
   const getGasOverrides = useGetTransactionOverrides();
   const { data: overrides } = useQuery(
     ["gasOverrides", TX_TITLE, network.id],
     async () => convertOverridesForWagmi(await getGasOverrides(network))
   );
 
-  const primaryArgs = {
-    spender: network.autoWrap!.strategyContractAddress,
-    amount: constants.MaxUint256,
-  };
-
   const disabled =
-    isDisabled_ || !network.autoWrap || network.id !== walletChainId;
-
+    isDisabled_ || !network?.autoWrap;
   const { config } = usePrepareErc20Approve(
-    disabled
-      ? undefined
-      : {
+    !network?.autoWrap
+      ?  undefined :{
           address: token.underlyingAddress as `0x${string}`,
           chainId: network.id,
-          args: [primaryArgs.spender, primaryArgs.amount],
+          args: [
+            network.autoWrap.strategyContractAddress,
+            constants.MaxUint256,
+          ],
           signer,
           overrides,
         }
@@ -55,7 +50,7 @@ const AutoWrapAllowanceTransactionButton: FC<{
     id: token.underlyingAddress,
   });
   const underlyingToken = underlyingTokenQuery.data;
-  const isDisabled = isDisabled_ && !config;
+  const isDisabled = disabled && !config;
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
@@ -82,7 +77,10 @@ const AutoWrapAllowanceTransactionButton: FC<{
               })
                 .unwrap()
                 .then(
-                  ...txAnalytics("Approve Auto-Wrap Allowance", primaryArgs)
+                  ...txAnalytics("Approve Auto-Wrap Allowance", {
+                    spender: network.autoWrap!.strategyContractAddress,
+                    amount: constants.MaxUint256,
+                  })
                 )
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}

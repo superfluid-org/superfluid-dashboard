@@ -4,7 +4,8 @@ import { useConnectionBoundary } from "../../transactionBoundary/ConnectionBound
 import { LoadingButton } from "@mui/lab";
 
 const EnableAutoWrapButton: FC<{ ButtonProps?: ButtonProps, openEnableAutoWrapDialog: () => void }> = ({ ButtonProps = {}, openEnableAutoWrapDialog }) => {
-    const {
+    
+  const {
       allowImpersonation,
       isImpersonated,
       stopImpersonation,

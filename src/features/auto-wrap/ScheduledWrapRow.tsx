@@ -19,7 +19,7 @@ import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { TokenType } from "../redux/endpoints/tokenTypes";
 import useActiveAutoWrap from "../vesting/useActiveAutoWrap";
-import EnableAutoWrapButton from "../vesting/transactionButtons/EnableAutoWrapTransactionButton";
+import EnableAutoWrapButton from "../vesting/transactionButtons/EnableAutoWrapButton";
 import AutoWrapEnableDialogSection from "../vesting/dialogs/AutoWrapEnableDialogSection";
 import { differenceInWeeks } from "date-fns";
 import { isCloseToUnlimitedTokenAllowance } from "../../utils/isCloseToUnlimitedAllowance";
@@ -290,6 +290,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                     isDisabled={false}
                     isVisible={true}
                     token={superTokenQueryData}
+                    network={network}
                     ButtonProps={{
                       size: "small",
                       variant: "outlined",
@@ -373,7 +374,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
             </Typography>
           </TableCell>
           <TableCell align="center">
-            <ConnectionBoundary>
+            <ConnectionBoundary expectedNetwork={network}>
               {superTokenQueryData && network.autoWrap ? (
                 isAutoWrapLoading ? (
                   <Skeleton variant="rectangular" width={24} height={24} />
@@ -382,6 +383,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                     key={`auto-wrap-revoke-${superTokenQueryData?.symbol}`}
                     isDisabled={false}
                     isVisible={true}
+                    network={network}
                     token={superTokenQueryData}
                     ButtonProps={{
                       size: "small",

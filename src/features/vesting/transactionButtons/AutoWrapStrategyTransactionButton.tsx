@@ -37,31 +37,19 @@ const AutoWrapStrategyTransactionButton: FC<{
     async () => convertOverridesForWagmi(await getGasOverrides(network))
   );
 
-  const primaryArgs = {
-    superToken: token.address as `0x${string}`,
-    strategy: network.autoWrap!.strategyContractAddress,
-    liquidityToken: token.underlyingAddress as `0x${string}`,
-    expiry: BigNumber.from("3000000000"),
-    lowerLimit: BigNumber.from(network.autoWrap!.lowerLimit),
-    upperLimit: BigNumber.from(network.autoWrap!.upperLimit),
-  };
-
-  const walletChainId = useChainId();
-
-  const disabled =
-    isDisabled_ || !network.autoWrap || network.id !== walletChainId;
+  const disabled = isDisabled_ || !network.autoWrap;
 
   const { config } = usePrepareAutoWrapManagerCreateWrapSchedule(
-    disabled
+   !network.autoWrap
       ? undefined
       : {
           args: [
-            primaryArgs.superToken,
-            primaryArgs.strategy,
-            primaryArgs.liquidityToken,
-            primaryArgs.expiry,
-            primaryArgs.lowerLimit,
-            primaryArgs.upperLimit,
+            token.address as `0x${string}`,
+            network.autoWrap.strategyContractAddress,
+            token.underlyingAddress as `0x${string}`,
+            BigNumber.from("3000000000"),
+            BigNumber.from(network.autoWrap.lowerLimit),
+            BigNumber.from(network.autoWrap.upperLimit),
           ],
           chainId: network.id as keyof typeof autoWrapManagerAddress,
           signer,
@@ -70,7 +58,7 @@ const AutoWrapStrategyTransactionButton: FC<{
   );
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
-  const isDisabled = isDisabled_ && !config;
+  const isDisabled = disabled || !config;
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
@@ -96,7 +84,16 @@ const AutoWrapStrategyTransactionButton: FC<{
                 transactionTitle: TX_TITLE,
               })
                 .unwrap()
-                .then(...txAnalytics("Enable Auto-Wrap", primaryArgs))
+                .then(
+                  ...txAnalytics("Enable Auto-Wrap", {
+                    superToken: token.address as `0x${string}`,
+                    strategy: network.autoWrap!.strategyContractAddress,
+                    liquidityToken: token.underlyingAddress as `0x${string}`,
+                    expiry: BigNumber.from("3000000000"),
+                    lowerLimit: BigNumber.from(network.autoWrap!.lowerLimit),
+                    upperLimit: BigNumber.from(network.autoWrap!.upperLimit),
+                  })
+                )
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}
           >
