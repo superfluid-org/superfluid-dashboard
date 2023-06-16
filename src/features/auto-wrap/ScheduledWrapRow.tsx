@@ -304,8 +304,9 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                     impersonationTitle={"Stop viewing"}
                     changeNetworkTitle={"Change Network"}
                     ButtonProps={{
-                      fullWidth: true,
+                      fullWidth: false,
                       variant: "contained",
+                      size:"small"
                     }}
                   >
                     <Button
@@ -406,6 +407,11 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                   <ConnectionBoundaryButton
                     impersonationTitle={"Stop viewing"}
                     changeNetworkTitle={"Change Network"}
+                    ButtonProps={{
+                      fullWidth: true,
+                      variant: "contained",
+                      size:"small"
+                    }}
                   >
                     <Button
                       fullWidth={true}
