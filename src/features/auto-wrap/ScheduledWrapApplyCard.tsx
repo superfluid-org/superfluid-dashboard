@@ -16,7 +16,6 @@ const ScheduledWrapApplyCard = () => (
     component={Stack}
     gap={4}
     alignItems="center"
-    elevation={1}
   >
     <Box>
       <Typography data-cy={"no-scheduled-wrap-message"} variant="h4">
