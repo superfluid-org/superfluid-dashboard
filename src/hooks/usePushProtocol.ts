@@ -1,9 +1,10 @@
 import { useCallback } from "react";
-import { useAccount, useNetwork, useSigner, useSwitchNetwork } from "wagmi";
+import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import { SignerType } from "@pushprotocol/restapi";
 import { pushApi } from "../features/notifications/pushApi.slice";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { isProduction } from "../utils/config";
+import useSigner from "./useSigner";
 
 export const superfluidChannelAddress =
   process.env.NEXT_PUBLIC_PUSH_SUPERFLUID_CHANNEL ?? "";
@@ -15,7 +16,7 @@ const developmentFetchFrequency = 15000; // 15seconds
 
 export const usePushProtocol = () => {
   const { address } = useAccount();
-  const { data: signer } = useSigner();
+  const signer = useSigner();
   const { chain } = useNetwork();
   const { switchNetworkAsync } = useSwitchNetwork();
 

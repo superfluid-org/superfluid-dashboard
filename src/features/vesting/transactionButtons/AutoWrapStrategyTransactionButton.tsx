@@ -2,7 +2,7 @@ import { Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { BigNumber } from "ethers";
 import { FC, memo } from "react";
-import { useQuery, useSigner } from "wagmi";
+import { useQuery, useWalletClient } from "wagmi";
 import {
   autoWrapManagerAddress,
   usePrepareAutoWrapManagerCreateWrapSchedule,
@@ -21,12 +21,8 @@ const AutoWrapStrategyTransactionButton: FC<{
   token: VestingToken;
   isVisible: boolean;
   isDisabled: boolean;
-  // TODO We can use callbacks to hide/show the parent modal.
-  // onSuccessCallback?: () => void;
-  // onFailureCallback?: () => void;
-  // onClickCallback?: () => void;
 }> = ({ token, isVisible, isDisabled: isDisabled_ }) => {
-  const { data: signer } = useSigner();
+  const { data: walletClient } = useWalletClient();
   const { network } = useExpectedNetwork();
 
   const getGasOverrides = useGetTransactionOverrides();
@@ -39,9 +35,9 @@ const AutoWrapStrategyTransactionButton: FC<{
     superToken: token.address as `0x${string}`,
     strategy: network.autoWrap!.strategyContractAddress,
     liquidityToken: token.underlyingAddress as `0x${string}`,
-    expiry: BigNumber.from("3000000000"),
-    lowerLimit: BigNumber.from(network.autoWrap!.lowerLimit),
-    upperLimit: BigNumber.from(network.autoWrap!.upperLimit),
+    expiry: BigInt(BigNumber.from("3000000000").toString()),
+    lowerLimit: BigInt(BigNumber.from(network.autoWrap!.lowerLimit).toString()),
+    upperLimit: BigInt(BigNumber.from(network.autoWrap!.upperLimit).toString()),
   };
 
   const disabled = isDisabled_ && !!network.autoWrap;
@@ -58,8 +54,8 @@ const AutoWrapStrategyTransactionButton: FC<{
             primaryArgs.upperLimit,
           ],
           chainId: network.id as keyof typeof autoWrapManagerAddress,
-          signer,
-          overrides,
+          walletClient,
+          ...overrides,
         }
   );
 
@@ -81,17 +77,18 @@ const AutoWrapStrategyTransactionButton: FC<{
                 </Typography>
               );
 
-              write({
-                signer,
-                config: {
-                  ...config,
-                  chainId: network.id,
-                },
-                transactionTitle: TX_TITLE,
-              })
-                .unwrap()
-                .then(...txAnalytics("Enable Auto-Wrap", primaryArgs))
-                .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
+              // TODO(KK): wagmi migration
+              // write({
+              //   signer,
+              //   config: {
+              //     ...config,
+              //     chainId: network.id,
+              //   },
+              //   transactionTitle: TX_TITLE,
+              // })
+              //   .unwrap()
+              //   .then(...txAnalytics("Enable Auto-Wrap", primaryArgs))
+              //   .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}
           >
             {TX_TITLE}

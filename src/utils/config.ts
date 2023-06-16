@@ -39,6 +39,9 @@ const config = {
     : isDeployPreview
     ? segmentWriteKeyForDeployPreview
     : undefined,
-};
+  walletConnectProjectId:
+    process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ??
+    "8fcff23b035b115b5c1324ad717589ab",
+} as const;
 
 export default Object.freeze(config);

@@ -1,6 +1,5 @@
 import { Typography } from "@mui/material";
-import { Signer } from "@wagmi/core";
-import { BigNumber } from "ethers";
+import { BigNumber, Signer } from "ethers";
 import { FC, ReactNode, useCallback } from "react";
 import { useAnalytics } from "../../analytics/useAnalytics";
 import { Network } from "../../network/networks";

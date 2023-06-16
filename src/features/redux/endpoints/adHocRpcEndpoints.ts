@@ -68,7 +68,8 @@ const writeContractEndpoint = (builder: RpcEndpointBuilder) =>
         title: transactionTitle,
         transactionResponse: {
           chainId: config.chainId,
-          ...result
+          hash: result.hash,
+          wait: () => signer.provider!.waitForTransaction(result.hash),
         },
         extraData: transactionExtraData,
       });

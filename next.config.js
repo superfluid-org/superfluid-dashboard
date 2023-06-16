@@ -70,7 +70,7 @@ const moduleExports = {
     },
   },
   experimental: {
-    forceSwcTransforms: !shouldInstrumentCode, // .babelrc.js existence is because of code instrumentation. 
+    forceSwcTransforms: !shouldInstrumentCode, // .babelrc.js existence is because of code instrumentation.
   },
 };
 

@@ -2,7 +2,7 @@ import { Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { constants } from "ethers";
 import { FC, memo } from "react";
-import { useQuery, useSigner } from "wagmi";
+import { useQuery, useWalletClient } from "wagmi";
 import { usePrepareErc20Approve } from "../../../generated";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { rpcApi, subgraphApi } from "../../redux/store";
@@ -21,7 +21,7 @@ const AutoWrapAllowanceTransactionButton: FC<{
 }> = ({ token, isVisible, isDisabled: isDisabled_ }) => {
   const { network } = useExpectedNetwork();
 
-  const { data: signer } = useSigner();
+  const { data: walletClient } = useWalletClient();
 
   const getGasOverrides = useGetTransactionOverrides();
   const { data: overrides } = useQuery(
@@ -31,7 +31,7 @@ const AutoWrapAllowanceTransactionButton: FC<{
 
   const primaryArgs = {
     spender: network.autoWrap!.strategyContractAddress,
-    amount: constants.MaxUint256,
+    amount: BigInt(constants.MaxUint256.toString()),
   };
 
   const disabled = isDisabled_ && !!network.autoWrap;
@@ -42,8 +42,8 @@ const AutoWrapAllowanceTransactionButton: FC<{
           address: token.underlyingAddress as `0x${string}`,
           chainId: network.id,
           args: [primaryArgs.spender, primaryArgs.amount],
-          signer,
-          overrides,
+          walletClient,
+          ...overrides,
         }
   );
 
@@ -71,19 +71,21 @@ const AutoWrapAllowanceTransactionButton: FC<{
                 </Typography>
               );
 
-              write({
-                signer,
-                config: {
-                  ...config,
-                  chainId: network.id,
-                },
-                transactionTitle: "Approve Allowance",
-              })
-                .unwrap()
-                .then(
-                  ...txAnalytics("Approve Auto-Wrap Allowance", primaryArgs)
-                )
-                .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
+              
+              // TODO(KK): wagmi migration
+              // write({
+              //   signer,
+              //   config: {
+              //     ...config,
+              //     chainId: network.id,
+              //   },
+              //   transactionTitle: "Approve Allowance",
+              // })
+              //   .unwrap()
+              //   .then(
+              //     ...txAnalytics("Approve Auto-Wrap Allowance", primaryArgs)
+              //   )
+              //   .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}
           >
             Approve {underlyingToken && underlyingToken.symbol} Allowance

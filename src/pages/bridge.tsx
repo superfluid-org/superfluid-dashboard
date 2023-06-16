@@ -5,11 +5,7 @@ import LIFI from "@lifi/sdk";
 import { Container, useTheme } from "@mui/material";
 import { NextPage } from "next";
 import { useEffect, useMemo } from "react";
-import {
-  useDisconnect,
-  useSigner,
-  useSwitchNetwork,
-} from "wagmi";
+import { useDisconnect, useSwitchNetwork, useWalletClient } from "wagmi";
 import useFeaturedTokens from "../features/bridge/useFeaturedTokens";
 import { ELEVATION1_BG } from "../features/theme/theme";
 import { useConnectButton } from "../features/wallet/ConnectButtonProvider";
@@ -17,6 +13,8 @@ import withStaticSEO from "../components/SEO/withStaticSEO";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import { useAvailableNetworks } from "../features/network/AvailableNetworksContext";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
+import useSigner from "../hooks/useSigner";
+import { signerFromWalletClient } from "../utils/wagmiMigration";
 
 const LiFiWidgetDynamic = dynamic(
   () => import("@lifi/widget").then((module) => module.LiFiWidget) as any,
@@ -33,7 +31,8 @@ const Bridge: NextPage = () => {
     stopAutoSwitchToWalletNetwork(); // We don't know when the Li.Fi widget form is filled and we don't want to automatically switch the expected network because that would re-render the Li.Fi widget.
   }, []);
 
-  const { data: signer, refetch: fetchSigner } = useSigner();
+  const { refetch } = useWalletClient();
+  const signer = useSigner();
   const { isEOA } = useVisibleAddress();
   const { disconnectAsync } = useDisconnect();
   const { switchNetworkAsync } = useSwitchNetwork();
@@ -47,7 +46,9 @@ const Bridge: NextPage = () => {
       walletManagement: {
         switchChain: async (chainId) => {
           await switchNetworkAsync?.(chainId);
-          return fetchSigner().then((x) => x.data!);
+          return refetch().then((x) =>
+            x.data ? signerFromWalletClient(x.data) : signer!
+          );
         },
         disconnect: disconnectAsync,
         connect: async () => {
@@ -122,7 +123,7 @@ const Bridge: NextPage = () => {
           letterSpacing: "0.17px",
         },
       }}
-    > 
+    >
       <LiFiWidgetDynamic config={widgetConfig} />
     </Container>
   );
