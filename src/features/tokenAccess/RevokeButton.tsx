@@ -13,7 +13,6 @@ interface RevokeButtonProps {
   tokenAddress: string;
   operatorAddress: string;
   access: TokenAccessProps;
-  onRevokeButtonClick: () => void;
 }
 
 const RevokeButton: FC<RevokeButtonProps> = ({
@@ -21,17 +20,9 @@ const RevokeButton: FC<RevokeButtonProps> = ({
   tokenAddress,
   operatorAddress,
   access,
-  onRevokeButtonClick,
 }) => {
   const { txAnalytics } = useAnalytics();
   const [revoke, revokeResult] = rpcApi.useRevokeAccessMutation();
-
-  // TODO(KK): What is this for?
-  useEffect(() => {
-    if (revokeResult.status === "fulfilled") {
-      onRevokeButtonClick();
-    }
-  }, [revokeResult]);
 
   const isRevokeAllowed =
     access.flowOperatorPermissions !== 0 ||
