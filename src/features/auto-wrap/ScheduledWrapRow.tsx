@@ -303,6 +303,11 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                   <ConnectionBoundaryButton
                     impersonationTitle={"Stop viewing"}
                     changeNetworkTitle={"Change Network"}
+                    ButtonProps={{
+                      size: "large",
+                      fullWidth: true,
+                      variant: "outlined",
+                    }}
                   >
                     <Button
                       data-cy={"enable-auto-wrap-button"}
