@@ -22,7 +22,6 @@ const ScheduledWrapEmptyCard: FC<{
     component={Stack}
     gap={3}
     alignItems="center"
-    elevation={1}
   >
     <Box>
       <Typography data-cy={"no-scheduled-wrap-message"} variant="h5">
