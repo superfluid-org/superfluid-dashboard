@@ -281,6 +281,11 @@ export const UpsertTokenAccessForm: FC<{
               <ConnectionBoundaryButton
                 impersonationTitle={"Stop viewing"}
                 changeNetworkTitle={"Change Network"}
+                ButtonProps={{
+                  size: "large",
+                  fullWidth: true,
+                  variant: "outlined",
+                }}
               >
                 {SaveButtonComponent}
                 {!isNewEntry && network && token && (
@@ -289,9 +294,13 @@ export const UpsertTokenAccessForm: FC<{
                     operatorAddress={operatorAddress}
                     tokenAddress={token.address}
                     access={{
-                      flowRateAllowance: flowRateAllowance,
-                      flowOperatorPermissions: flowOperatorPermissions,
-                      tokenAllowanceWei: tokenAllowanceWei,
+                      flowRateAllowance: initialFormValues.flowRateAllowance || {
+                        amountWei: BigNumber.from(0),
+                        unitOfTime: UnitOfTime.Second,
+                      },
+                      flowOperatorPermissions: initialFormValues.flowOperatorPermissions || 0,
+                      tokenAllowanceWei:
+                        initialFormValues.tokenAllowanceWei || BigNumber.from(0),
                     }}
                     onRevokeButtonClick={closeDialog}
                   />
