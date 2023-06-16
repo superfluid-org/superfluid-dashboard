@@ -15,7 +15,7 @@ import { FC, MouseEvent, memo, useEffect, useState } from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { useAvailableNetworks } from "./AvailableNetworksContext";
 import NetworkIcon from "./NetworkIcon";
-import { Network } from "./networks";
+import { Network, allNetworks } from "./networks";
 
 const applyPredicates = (
   item: Network,
@@ -115,13 +115,10 @@ const ListedMenu: FC<{
   network: Network | undefined;
   onNetworkSelected: (network: Network) => void;
 }> = ({ predicates = [], network: selectedNetwork, onNetworkSelected }) => {
-  const { availableMainNetworks, availableTestNetworks } =
-    useAvailableNetworks();
-
+  
   return (
     <>
-      {availableMainNetworks
-        .concat(availableTestNetworks)
+      {allNetworks
         .filter((network) => applyPredicates(network, predicates))
         .map((network) => (
           <NetworkItem

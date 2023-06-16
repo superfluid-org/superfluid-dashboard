@@ -1,11 +1,11 @@
 
 
-import { ButtonProps } from "@mui/material";
-import { FC, memo, useCallback, useState } from "react";
-import AutoWrapTokenAddButton from "./transactionButtons/AutoWrapTokenAddButton";
+import { Button, ButtonProps } from "@mui/material";
+import { FC, memo, useState } from "react";
 import AutoWrapAddTokenDialogSection from "./dialogs/AutoWrapAddTokenDialogSection";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { PlatformWhitelistedStatuses } from "./ScheduledWrapTables";
+import AddIcon from "@mui/icons-material/Add";
 
 const AutoWrapAddTokenButtonSection: FC<{ ButtonProps?: ButtonProps, platformWhitelistedStatuses:PlatformWhitelistedStatuses }> = ({ ButtonProps = {}, platformWhitelistedStatuses }) => {
     const [isEnableAutoWrapDialogOpen, setEnableAutoWrapDialogOpen] = useState(false);
@@ -19,7 +19,17 @@ const AutoWrapAddTokenButtonSection: FC<{ ButtonProps?: ButtonProps, platformWhi
     }
     
     return <>
-        <AutoWrapTokenAddButton ButtonProps={ButtonProps} openEnableAutoWrapDialog={openEnableAutoWrapDialog} />
+        <Button
+            data-cy={"add-token-auto-wrap-button"}
+            variant="contained"
+            color="primary"
+            size="medium"
+            endIcon={<AddIcon />}
+            onClick={openEnableAutoWrapDialog}
+            {...ButtonProps || {}}
+        >
+            Add Token
+        </Button>
         <AutoWrapAddTokenDialogSection
             platformWhitelistedStatuses={platformWhitelistedStatuses}
             closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}
