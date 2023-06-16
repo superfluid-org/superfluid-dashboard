@@ -302,7 +302,6 @@ export const UpsertTokenAccessForm: FC<{
                       tokenAllowanceWei:
                         initialFormValues.tokenAllowanceWei || BigNumber.from(0),
                     }}
-                    onRevokeButtonClick={closeDialog}
                   />
                 )}
               </ConnectionBoundaryButton>
