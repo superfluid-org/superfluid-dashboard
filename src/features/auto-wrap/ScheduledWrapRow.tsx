@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Skeleton,
   Stack,
   TableCell,
@@ -19,7 +20,6 @@ import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { TokenType } from "../redux/endpoints/tokenTypes";
 import useActiveAutoWrap from "../vesting/useActiveAutoWrap";
-import EnableAutoWrapButton from "../vesting/transactionButtons/EnableAutoWrapButton";
 import AutoWrapEnableDialogSection from "../vesting/dialogs/AutoWrapEnableDialogSection";
 import { differenceInWeeks } from "date-fns";
 import { isCloseToUnlimitedTokenAllowance } from "../../utils/isCloseToUnlimitedAllowance";
@@ -28,6 +28,7 @@ import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils.js";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import TooltipWithIcon from "../common/TooltipWithIcon";
+import ConnectionBoundaryButton from "../transactionBoundary/ConnectionBoundaryButton";
 
 interface ScheduledWrapRowProps {
   network: Network;
@@ -44,7 +45,8 @@ const calculateRequiredTokenAmount = (
   limit: number,
   netFlowRate: string
 ): string => {
-  const calculateRequiredTokenAmount = Number(formatEther(netFlowRate || 0)) * limit;
+  const calculateRequiredTokenAmount =
+    Number(formatEther(netFlowRate || 0)) * limit;
   if (calculateRequiredTokenAmount === 0) {
     return "0";
   }
@@ -298,14 +300,20 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                     }}
                   />
                 ) : isAutoWrappable ? (
-                  <EnableAutoWrapButton
-                    openEnableAutoWrapDialog={openEnableAutoWrapDialog}
-                    ButtonProps={{
-                      size: "small",
-                      variant: "contained",
-                      fullWidth: false,
-                    }}
-                  />
+                  <ConnectionBoundaryButton
+                    impersonationTitle={"Stop viewing"}
+                    changeNetworkTitle={"Change Network"}
+                  >
+                    <Button
+                      data-cy={"enable-auto-wrap-button"}
+                      variant="contained"
+                      size="small"
+                      fullWidth={false}
+                      onClick={openEnableAutoWrapDialog}
+                    >
+                      Enable
+                    </Button>
+                  </ConnectionBoundaryButton>
                 ) : null
               ) : null}
               {superTokenQueryData && (
@@ -391,13 +399,20 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                     }}
                   />
                 ) : isAutoWrappable ? (
-                  <EnableAutoWrapButton
-                    openEnableAutoWrapDialog={openEnableAutoWrapDialog}
-                    ButtonProps={{
-                      size: "small",
-                      variant: "contained",
-                    }}
-                  />
+                  <ConnectionBoundaryButton
+                    impersonationTitle={"Stop viewing"}
+                    changeNetworkTitle={"Change Network"}
+                  >
+                    <Button
+                      fullWidth={true}
+                      data-cy={"enable-auto-wrap-button"}
+                      variant="contained"
+                      size="small"
+                      onClick={openEnableAutoWrapDialog}
+                    >
+                      Enable
+                    </Button>
+                  </ConnectionBoundaryButton>
                 ) : null
               ) : null}
               {superTokenQueryData && (

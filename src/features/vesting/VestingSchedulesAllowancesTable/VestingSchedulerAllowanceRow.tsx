@@ -16,7 +16,7 @@ import {
   alpha,
   useMediaQuery,
   Avatar,
-  ButtonProps,
+  Button,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { BigNumber } from "ethers";
@@ -40,7 +40,7 @@ import { TokenType } from "../../redux/endpoints/tokenTypes";
 import DisableAutoWrapTransactionButton from "../transactionButtons/DisableAutoWrapTransactionButton";
 import { VestingToken } from "../CreateVestingSection";
 import AutoWrapEnableDialogSection from "../dialogs/AutoWrapEnableDialogSection";
-import EnableAutoWrapButton from "../transactionButtons/EnableAutoWrapButton";
+import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
 
 export const EditIconWrapper = styled(Avatar)(({ theme }) => ({
   width: "50px",
@@ -442,9 +442,20 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                             token={token as VestingToken}
                           />
                         ) : isAutoWrappable ? (
-                          <EnableAutoWrapButton
-                            openEnableAutoWrapDialog={openEnableAutoWrapDialog}
-                          />
+                          <ConnectionBoundaryButton
+                            impersonationTitle={"Stop viewing"}
+                            changeNetworkTitle={"Change Network"}
+                          >
+                            <Button
+                              data-cy={"enable-auto-wrap-button"}
+                              variant="contained"
+                              size="small"
+                              fullWidth={true}
+                              onClick={openEnableAutoWrapDialog}
+                            >
+                              Enable
+                            </Button>
+                          </ConnectionBoundaryButton>
                         ) : null
                       ) : null}
                     </TableCell>
@@ -615,10 +626,20 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                           ButtonProps={{ fullWidth: false }}
                         />
                       ) : isAutoWrappable ? (
-                        <EnableAutoWrapButton
-                          ButtonProps={{ fullWidth: false }}
-                          openEnableAutoWrapDialog={openEnableAutoWrapDialog}
-                        />
+                        <ConnectionBoundaryButton
+                          impersonationTitle={"Stop viewing"}
+                          changeNetworkTitle={"Change Network"}
+                        >
+                          <Button
+                            data-cy={"enable-auto-wrap-button"}
+                            variant="contained"
+                            size="small"
+                            fullWidth={false}
+                            onClick={openEnableAutoWrapDialog}
+                          >
+                            Enable
+                          </Button>
+                        </ConnectionBoundaryButton>
                       ) : null
                     ) : null}
                   </Stack>
