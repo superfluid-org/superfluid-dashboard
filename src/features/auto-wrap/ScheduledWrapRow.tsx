@@ -282,7 +282,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
             </Stack>
           </Box>
           <Box alignContent={"center"}>
-            <ConnectionBoundary>
+            <ConnectionBoundary expectedNetwork={network}>
               {superTokenQueryData && network.autoWrap ? (
                 isAutoWrapLoading ? (
                   <Skeleton variant="rectangular" width={24} height={24} />
