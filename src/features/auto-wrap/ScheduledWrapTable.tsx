@@ -69,15 +69,13 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
       }
     );
 
-  const memonizedWrapSchedules = useMemo(() => wrapSchedules, [wrapSchedules]);
-
   const paginatedWrapSchedules = useMemo(
     () =>
-      memonizedWrapSchedules.slice(
+    wrapSchedules.slice(
         page.contract * rowsPerPage.contract,
         (page.contract + 1) * rowsPerPage.contract
       ),
-    [page.contract, rowsPerPage, memonizedWrapSchedules]
+    [page.contract, rowsPerPage, wrapSchedules]
   );
 
   const { isPlatformWhitelisted, isLoading: isWhitelistLoading } =
@@ -216,7 +214,7 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={memonizedWrapSchedules.length}
+          count={wrapSchedules.length}
           rowsPerPage={rowsPerPage.wallet}
           page={page.wallet}
           onPageChange={handleChangePage("schedules")}
@@ -224,7 +222,7 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
           sx={{
             "> *": {
               visibility:
-                memonizedWrapSchedules.length <= rowsPerPage.wallet
+              wrapSchedules.length <= rowsPerPage.wallet
                   ? "hidden"
                   : "visible",
             },

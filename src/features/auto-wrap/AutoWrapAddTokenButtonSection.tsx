@@ -10,8 +10,9 @@ import { PlatformWhitelistedStatuses } from "./ScheduledWrapTables";
 const AutoWrapAddTokenButtonSection: FC<{ ButtonProps?: ButtonProps, platformWhitelistedStatuses:PlatformWhitelistedStatuses }> = ({ ButtonProps = {}, platformWhitelistedStatuses }) => {
     const [isEnableAutoWrapDialogOpen, setEnableAutoWrapDialogOpen] = useState(false);
     const { visibleAddress } = useVisibleAddress();
-    const openEnableAutoWrapDialog = useCallback(() => setEnableAutoWrapDialogOpen(true), [setEnableAutoWrapDialogOpen]);
-    const closeEnableAutoWrapDialog = useCallback(() => setEnableAutoWrapDialogOpen(false), [setEnableAutoWrapDialogOpen]);
+    
+    const openEnableAutoWrapDialog = () => setEnableAutoWrapDialogOpen(true);
+    const closeEnableAutoWrapDialog = () => setEnableAutoWrapDialogOpen(false);
 
     if (!visibleAddress) {
         return null;

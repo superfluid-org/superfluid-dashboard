@@ -187,10 +187,7 @@ const SelectNetwork: FC<{
           endIcon={<OpenIcon open={open} />}
           onClick={handleOpen}
           sx={{
-            minWidth: "200px",
-            justifyContent: "flex-start",
             ".MuiButton-startIcon > *:nth-of-type(1)": { fontSize: "16px" },
-            ".MuiButton-endIcon": { marginLeft: "auto" },
           }}
           translate="no"
         >
