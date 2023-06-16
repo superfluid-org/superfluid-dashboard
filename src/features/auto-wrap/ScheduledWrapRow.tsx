@@ -305,7 +305,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                     changeNetworkTitle={"Change Network"}
                     ButtonProps={{
                       fullWidth: false,
-                      variant: "contained",
+                      variant: "outlined",
                       size:"small"
                     }}
                   >
@@ -409,7 +409,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                     changeNetworkTitle={"Change Network"}
                     ButtonProps={{
                       fullWidth: true,
-                      variant: "contained",
+                      variant: "outlined",
                       size:"small"
                     }}
                   >
