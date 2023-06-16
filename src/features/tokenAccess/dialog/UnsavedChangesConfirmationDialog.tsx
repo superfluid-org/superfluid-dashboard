@@ -6,10 +6,10 @@ import {
   alpha,
   useTheme,
   styled,
+  DialogContent,
 } from "@mui/material";
 import { ErrorRounded } from "@mui/icons-material";
 import EditDialogTitle from "./DialogTitle";
-import EditDialogContent from "./DialogContent";
 import { FC, ReactNode } from "react";
 
 export const EditIconWrapper = styled(Avatar)(({ theme }) => ({
@@ -46,7 +46,7 @@ const UnsavedChangesConfirmationDialog: FC<{
           </Typography>
         </Stack>
       </EditDialogTitle>
-      <EditDialogContent>
+      <Stack component={DialogContent} sx={{ p: 4 }}>
         <Stack gap={2}>
           {SaveButtonComponent}
           <Button
@@ -58,7 +58,7 @@ const UnsavedChangesConfirmationDialog: FC<{
             Leave
           </Button>
         </Stack>
-      </EditDialogContent>
+      </Stack>
     </>
   );
 };

@@ -1,5 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { FC, PropsWithChildren, useMemo } from "react";
+import { FC, PropsWithChildren } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { ObjectSchema, mixed, number, object, string } from "yup";
 import { UnitOfTime } from "../../send/FlowRateInput";
@@ -60,41 +60,37 @@ export interface UpsertTokenAccessFormProviderProps {
   initialFormData: Partial<ValidUpsertTokenAccessForm["data"]>;
 }
 
+const formSchema: ObjectSchema<ValidUpsertTokenAccessForm> = object({
+      data: object({
+        token: mixed<Token>().required(),
+        operatorAddress: string().required().test(testAddress()),
+        network: mixed<Network>().required(),
+        tokenAllowanceWei: mixed<BigNumber>()
+          .required()
+          .test(testWeiAmount({ notNegative: true })),
+        flowRateAllowance: object({
+          amountWei: mixed<BigNumber>()
+            .required()
+            .test(testWeiAmount({ notNegative: true })),
+          unitOfTime: mixed<UnitOfTime>()
+            .required()
+            .test((x) => Object.values(UnitOfTime).includes(x as UnitOfTime)),
+        }),
+        flowOperatorPermissions: number().required(),
+      }),
+    }).test({
+      name: "no-permissions",
+      exclusive: true,
+      message: "Use revoke when removing all permissions.",
+      test: (x) =>
+        x.data.flowRateAllowance.amountWei.gt(0) ||
+        x.data.tokenAllowanceWei.gt(0) ||
+        x.data.flowOperatorPermissions !== 0,
+    });
 const UpsertTokenAccessFormProvider: FC<
   PropsWithChildren<UpsertTokenAccessFormProviderProps>
 > = ({ children, initialFormData }) => {
-  const formSchema: ObjectSchema<ValidUpsertTokenAccessForm> = useMemo(
-    () =>
-      object({
-        data: object({
-          token: mixed<Token>().required(),
-          operatorAddress: string().required().test(testAddress()),
-          network: mixed<Network>().required(),
-          tokenAllowanceWei: mixed<BigNumber>()
-            .required()
-            .test(testWeiAmount({ notNegative: true })),
-          flowRateAllowance: object({
-            amountWei: mixed<BigNumber>()
-              .required()
-              .test(testWeiAmount({ notNegative: true })),
-            unitOfTime: mixed<UnitOfTime>()
-              .required()
-              .test((x) => Object.values(UnitOfTime).includes(x as UnitOfTime)),
-          }),
-          flowOperatorPermissions: number().required(),
-        }),
-      }).test({
-        name: "no-permissions",
-        exclusive: true,
-        message: "Use revoke when removing all permissions.",
-        test: (x) =>
-          x.data.flowRateAllowance.amountWei.gt(0) ||
-          x.data.tokenAllowanceWei.gt(0) ||
-          x.data.flowOperatorPermissions !== 0,
-      }),
-    []
-  );
-
+  
   const defaultValues = {
     data: {
       ...defaultFormData,

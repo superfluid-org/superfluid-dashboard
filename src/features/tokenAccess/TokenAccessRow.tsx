@@ -277,7 +277,7 @@ const TokenAccessRow: FC<Props> = ({
               </AddressCopyTooltip>
             </Stack>
           </TableCell>
-          <TableCell style={{ overflowWrap: "anywhere" }} align="left">
+          <TableCell sx={{ overflowWrap: "anywhere" }} align="left">
             {tokenInfo && (
               <Stack direction="row" alignItems="center" gap={0.5}>
                 <Typography variant="h6">
@@ -304,7 +304,7 @@ const TokenAccessRow: FC<Props> = ({
               )}
             </Typography>
           </TableCell>
-          <TableCell align="left" style={{ overflowWrap: "anywhere" }}>
+          <TableCell align="left" sx={{ overflowWrap: "anywhere" }}>
             {tokenInfo && (
               <Stack direction="row" alignItems="center" gap={0.5}>
                 <Typography variant="h6">
@@ -331,7 +331,7 @@ const TokenAccessRow: FC<Props> = ({
           <TableCell
             align="left"
             sx={{
-              padding: "25px",
+              p: 3
             }}
           >
             <UpsertTokenAccessDialogProvider

@@ -184,16 +184,6 @@ const TokenSelect: FC<{
       >
         {token?.symbol || placeholder}
       </Button>
-      {/* ) : (
-                <IconButton onClick={handleOpen} size="small">
-                    {token && <TokenIcon
-                        size={TOKEN_SIZE}
-                        isSuper
-                        tokenSymbol={token.symbol}
-                        isUnlisted={!token.isListed}
-                    />}
-                </IconButton>
-            )} */}
       {network ? (
         <TokenMenu
           token={token}

@@ -1,5 +1,6 @@
 import {
   Box,
+  DialogContent,
   FormGroup,
   FormLabel,
   Grid,
@@ -18,7 +19,6 @@ import { FC, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import UnsavedChangesConfirmationDialog from "./UnsavedChangesConfirmationDialog";
 import EditDialogTitle from "./DialogTitle";
-import EditDialogContent from "./DialogContent";
 import { FlowRateInput, UnitOfTime } from "../../send/FlowRateInput";
 
 import NetworkSelect from "../NetworkSelect";
@@ -31,6 +31,7 @@ import { formatEther } from "ethers/lib/utils.js";
 import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
 import { FlowOperatorPermissionSwitch } from "./FlowOperatorPermissionSwitch";
 import AddressSearch from "../../send/AddressSearch";
+import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
 
 export type TokenAccessProps = {
   flowRateAllowance: {
@@ -80,11 +81,11 @@ export const UpsertTokenAccessForm: FC<{
   );
 
   const [tokenAllowanceEther, setTokenAllowanceEther] = useState(
-    formatEther(tokenAllowanceWei ?? BigNumber.from(0)) // TODO(KK): Why do I need to use null check here?
+    formatEther(tokenAllowanceWei)
   );
 
   const [flowRateAllowanceEther, setFlowRateAllowanceEther] = useState({
-    amountEther: formatEther(flowRateAllowance.amountWei ?? BigNumber.from(0)), // TODO(KK): Why do I need to use null check here?
+    amountEther: formatEther(flowRateAllowance.amountWei),
     unitOfTime: flowRateAllowance.unitOfTime,
   });
 
@@ -99,19 +100,6 @@ export const UpsertTokenAccessForm: FC<{
     flowRateAllowance.amountWei,
     flowRateAllowance.unitOfTime,
   ]);
-
-  // let isAnyFieldChanged = useMemo(
-  //   () =>
-  //     Object.keys(formState.touchedFields.data || {}).some((key) => {
-  //       const currentValue = watch(
-  //         `data.${key as keyof typeof initialFormValues}`
-  //       );
-  //       const initialValue =
-  //         initialFormValues[key as keyof typeof initialFormValues];
-  //       return !isEqual(currentValue, initialValue);
-  //     }),
-  //   [formState, initialFormValues]
-  // );
 
   const isAnyFieldChanged = isDirty;
 
@@ -161,7 +149,7 @@ export const UpsertTokenAccessForm: FC<{
               {isNewEntry ? "Add Permission" : "Modify Permission"}
             </Typography>
           </EditDialogTitle>
-          <EditDialogContent>
+          <Stack component={DialogContent} sx={{ p: 4 }}>
             <Stack gap={2}>
               <Grid
                 direction={isBelowMd ? "column" : "row"}
@@ -290,22 +278,27 @@ export const UpsertTokenAccessForm: FC<{
                   )}
                 />
               </FormGroup>
-              {SaveButtonComponent}
-              {!isNewEntry && network && token && (
-                <RevokeButton
-                  network={network}
-                  operatorAddress={operatorAddress}
-                  tokenAddress={token.address}
-                  access={{
-                    flowRateAllowance: flowRateAllowance,
-                    flowOperatorPermissions: flowOperatorPermissions,
-                    tokenAllowanceWei: tokenAllowanceWei,
-                  }}
-                  onRevokeButtonClick={closeDialog}
-                />
-              )}
+              <ConnectionBoundaryButton
+                impersonationTitle={"Stop viewing"}
+                changeNetworkTitle={"Change Network"}
+              >
+                {SaveButtonComponent}
+                {!isNewEntry && network && token && (
+                  <RevokeButton
+                    network={network}
+                    operatorAddress={operatorAddress}
+                    tokenAddress={token.address}
+                    access={{
+                      flowRateAllowance: flowRateAllowance,
+                      flowOperatorPermissions: flowOperatorPermissions,
+                      tokenAllowanceWei: tokenAllowanceWei,
+                    }}
+                    onRevokeButtonClick={closeDialog}
+                  />
+                )}
+              </ConnectionBoundaryButton>
             </Stack>
-          </EditDialogContent>
+          </Stack>
         </Box>
       )}
     </ConnectionBoundary>
