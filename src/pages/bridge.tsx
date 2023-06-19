@@ -13,7 +13,7 @@ import withStaticSEO from "../components/SEO/withStaticSEO";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import { useAvailableNetworks } from "../features/network/AvailableNetworksContext";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
-import { signerFromWalletClient, useEthersSigner } from "../utils/wagmiEthersAdapters";
+import { walletClientToSigner, useEthersSigner } from "../utils/wagmiEthersAdapters";
 
 const LiFiWidgetDynamic = dynamic(
   () => import("@lifi/widget").then((module) => module.LiFiWidget) as any,
@@ -46,7 +46,7 @@ const Bridge: NextPage = () => {
         switchChain: async (chainId) => {
           await switchNetworkAsync?.(chainId);
           return refetch().then((x) =>
-            x.data ? signerFromWalletClient(x.data) : signer!
+            x.data ? walletClientToSigner(x.data) : signer!
           );
         },
         disconnect: disconnectAsync,

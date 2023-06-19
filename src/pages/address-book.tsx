@@ -47,7 +47,7 @@ import { getAddress } from "../utils/memoizedEthersUtils";
 import { wagmiPublicClient } from "../features/wallet/WagmiManager";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { LoadingButton } from "@mui/lab";
-import { providerFromPublicClient } from "../utils/wagmiEthersAdapters";
+import { publicClientToProvider } from "../utils/wagmiEthersAdapters";
 
 const AddressBook: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -187,7 +187,7 @@ const AddressBook: NextPage = () => {
               isContract: false,
             };
 
-            const provider = providerFromPublicClient(
+            const provider = publicClientToProvider(
               wagmiPublicClient({ chainId: chainIds[0] })
             );
 

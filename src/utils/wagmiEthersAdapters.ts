@@ -10,7 +10,7 @@ import { type HttpTransport } from "viem";
 
 // Inspired by: https://wagmi.sh/react/ethers-adapters
 
-export function providerFromPublicClient(publicClient: PublicClient) {
+export function publicClientToProvider(publicClient: PublicClient) {
   const { chain, transport } = publicClient;
   const network = {
     chainId: chain.id,
@@ -30,12 +30,12 @@ export function providerFromPublicClient(publicClient: PublicClient) {
 export function useEthersProvider({ chainId }: { chainId?: number } = {}) {
   const publicClient = usePublicClient({ chainId });
   return React.useMemo(
-    () => providerFromPublicClient(publicClient),
+    () => publicClientToProvider(publicClient),
     [publicClient]
   );
 }
 
-export function signerFromWalletClient(walletClient: WalletClient) {
+export function walletClientToSigner(walletClient: WalletClient) {
   const { account, chain, transport } = walletClient;
   const network = {
     chainId: chain.id,
@@ -51,7 +51,7 @@ export function signerFromWalletClient(walletClient: WalletClient) {
 export function useEthersSigner({ chainId }: { chainId?: number } = {}) {
   const { data: walletClient } = useWalletClient({ chainId });
   return React.useMemo(
-    () => (walletClient ? signerFromWalletClient(walletClient) : undefined),
+    () => (walletClient ? walletClientToSigner(walletClient) : undefined),
     [walletClient]
   );
 }
