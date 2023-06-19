@@ -92,10 +92,25 @@ export const flowSchedulerSubgraphUrls = {
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-xdai-mainnet",
 } as const;
 
-
 export const autoWrapSubgraphUrls = {
   mumbai:
-    "https://api.thegraph.com/subgraphs/name/msoni89/auto-wrap-v1-mumbai-test", // TODO We will replace it with superfliud deployed subgraph
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-polygon-mainnet",
+    goerli:
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-eth-goerli",
+  arbitrum:
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-arbitrum-one",
+  avalancheC:
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-avalanche-c",
+  bnbSmartChain:
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-bsc-mainnet",
+  ethereum:
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-eth-mainnet",
+  optimism:
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-optimism-mainnet",
+  polygon:
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-polygon-mainnet",
+  gnosis:
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-xdai-mainnet",
 } as const;
 
 
