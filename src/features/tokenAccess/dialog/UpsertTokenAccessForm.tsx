@@ -14,7 +14,7 @@ import {
   UpsertTokenAccessFormProviderProps,
   PartialUpsertTokenAccessForm,
 } from "./UpsertTokenAccessFormProvider";
-import { FC, memo, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import UnsavedChangesConfirmationDialog from "./UnsavedChangesConfirmationDialog";
 import EditDialogTitle from "./DialogTitle";
@@ -44,7 +44,7 @@ export type TokenAccessProps = {
 export const UpsertTokenAccessForm: FC<{
   closeDialog: () => void;
   initialFormValues: UpsertTokenAccessFormProviderProps["initialFormData"];
-}> = memo(({ initialFormValues, closeDialog }) => {
+}> = ({ initialFormValues, closeDialog }) => {
   const {
     control,
     formState: { isDirty, isValid, isValidating, touchedFields },
@@ -109,14 +109,21 @@ export const UpsertTokenAccessForm: FC<{
       data: {
         network: initialFormValues.network || network || undefined,
         token: initialFormValues.token || token || undefined,
-        operatorAddress: initialFormValues.operatorAddress || operatorAddress || undefined,
-        flowRateAllowance: initialFormValues.flowRateAllowance  || flowRateAllowance || {
-          amountWei: BigNumber.from(0),
-          unitOfTime: UnitOfTime.Second,
-        },
-        flowOperatorPermissions: initialFormValues.flowOperatorPermissions || flowOperatorPermissions || 0,
+        operatorAddress:
+          initialFormValues.operatorAddress || operatorAddress || undefined,
+        flowRateAllowance: initialFormValues.flowRateAllowance ||
+          flowRateAllowance || {
+            amountWei: BigNumber.from(0),
+            unitOfTime: UnitOfTime.Second,
+          },
+        flowOperatorPermissions:
+          initialFormValues.flowOperatorPermissions ||
+          flowOperatorPermissions ||
+          0,
         tokenAllowanceWei:
-          initialFormValues.tokenAllowanceWei || tokenAllowanceWei || BigNumber.from(0),
+          initialFormValues.tokenAllowanceWei ||
+          tokenAllowanceWei ||
+          BigNumber.from(0),
       },
     });
   }, [initialFormValues]);
@@ -334,4 +341,4 @@ export const UpsertTokenAccessForm: FC<{
       )}
     </ConnectionBoundary>
   );
-});
+};
