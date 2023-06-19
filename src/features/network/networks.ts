@@ -459,7 +459,7 @@ export const networkDefinition = {
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.avalancheC,
     vestingContractAddress: vestingContractAddresses.avalancheC,
     vestingSubgraphUrl: vestingSubgraphUrls.avalancheC,
-    autoWrapSubgraphUrl: undautoWrapSubgraphUrls.avalancheC,
+    autoWrapSubgraphUrl: autoWrapSubgraphUrls.avalancheC,
     platformUrl: superfluidPlatformUrls.avalancheC,
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.avalanche.id],
