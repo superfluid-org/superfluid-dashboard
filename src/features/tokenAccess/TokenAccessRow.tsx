@@ -51,9 +51,7 @@ export const UpsertTokenAccessButton: FC<{
   return (
     <>
       <Button
-        sx={{
-          height: "40px",
-        }}
+        size={"medium"}
         variant={isEditingExistingRecord ?  "outlined" : "contained" }
         endIcon={isEditingExistingRecord ? null : <Add />}
         onClick={() => setDialogOpen(true)}
