@@ -2,7 +2,7 @@ import { Chain, Wallet } from "@rainbow-me/rainbowkit";
 import { MockConnector } from "wagmi/connectors/mock";
 import { createWalletClient, custom } from "viem";
 import { providers } from "ethers";
-import { Eip1193Bridge } from "../../../EIP1193Bridge";
+import { Eip1193Bridge } from "@ethersproject/experimental";
 
 export interface MockConnectorOptions {
   chains: Chain[];
