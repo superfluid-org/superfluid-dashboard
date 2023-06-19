@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import { allNetworks } from "../network/networks";
 import { wagmiPublicClient } from "../wallet/WagmiManager";
 import { isAddress } from "../../utils/memoizedEthersUtils";
-import { providerFromPublicClient } from "../../utils/wagmiMigration";
+import { providerFromPublicClient } from "../../utils/wagmiEthersAdapters";
 
 const addressBookRpcApi = createApi({
   reducerPath: "addressBookRpcApi",

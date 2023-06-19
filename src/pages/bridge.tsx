@@ -13,8 +13,7 @@ import withStaticSEO from "../components/SEO/withStaticSEO";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import { useAvailableNetworks } from "../features/network/AvailableNetworksContext";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
-import useSigner from "../hooks/useSigner";
-import { signerFromWalletClient } from "../utils/wagmiMigration";
+import { signerFromWalletClient, useEthersSigner } from "../utils/wagmiEthersAdapters";
 
 const LiFiWidgetDynamic = dynamic(
   () => import("@lifi/widget").then((module) => module.LiFiWidget) as any,
@@ -32,7 +31,7 @@ const Bridge: NextPage = () => {
   }, []);
 
   const { refetch } = useWalletClient();
-  const signer = useSigner();
+  const signer = useEthersSigner();
   const { isEOA } = useVisibleAddress();
   const { disconnectAsync } = useDisconnect();
   const { switchNetworkAsync } = useSwitchNetwork();

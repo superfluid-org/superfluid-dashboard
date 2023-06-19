@@ -14,7 +14,7 @@ import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import { reduxStore, useAppDispatch } from "./store";
 import { useSchedulerTransactionTracking } from "./UseSchedulerTransactionTracking";
 import { useVestingTransactionTracking } from "./UseVestingTransactionTracking";
-import useSigner from "../../hooks/useSigner";
+import { useEthersSigner } from "../../utils/wagmiEthersAdapters";
 
 // Initialize SDK-core Frameworks for SDK-redux.
 readOnlyFrameworks.forEach(
@@ -24,7 +24,7 @@ readOnlyFrameworks.forEach(
 const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
   const { connector: activeConnector } = useAccount();
 
-  const signer = useSigner();
+  const signer = useEthersSigner();
 
   const dispatch = useAppDispatch();
 

@@ -4,7 +4,7 @@ import { SignerType } from "@pushprotocol/restapi";
 import { pushApi } from "../features/notifications/pushApi.slice";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { isProduction } from "../utils/config";
-import useSigner from "./useSigner";
+import { useEthersSigner } from "../utils/wagmiEthersAdapters";
 
 export const superfluidChannelAddress =
   process.env.NEXT_PUBLIC_PUSH_SUPERFLUID_CHANNEL ?? "";
@@ -16,7 +16,7 @@ const developmentFetchFrequency = 15000; // 15seconds
 
 export const usePushProtocol = () => {
   const { address } = useAccount();
-  const signer = useSigner();
+  const signer = useEthersSigner();
   const { chain } = useNetwork();
   const { switchNetworkAsync } = useSwitchNetwork();
 

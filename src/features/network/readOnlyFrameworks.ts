@@ -3,7 +3,7 @@ import promiseRetry from "promise-retry";
 import { wagmiPublicClient } from "../wallet/WagmiManager";
 import { allNetworks } from "./networks";
 import superfluidMetadata from "@superfluid-finance/metadata";
-import { providerFromPublicClient } from "../../utils/wagmiMigration";
+import { providerFromPublicClient } from "../../utils/wagmiEthersAdapters";
 
 const readOnlyFrameworks = allNetworks.map((network) => {
   const networkFromMetadata = superfluidMetadata.getNetworkByChainId(

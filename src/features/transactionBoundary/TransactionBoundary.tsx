@@ -20,7 +20,7 @@ import { useAppSelector } from "../redux/store";
 import { useConnectionBoundary } from "./ConnectionBoundary";
 import { TransactionDialog } from "./TransactionDialog";
 import { TxAnalyticsFn, useAnalytics } from "../analytics/useAnalytics";
-import useSigner from "../../hooks/useSigner";
+import { useEthersSigner } from "../../utils/wagmiEthersAdapters";
 
 interface TransactionBoundaryContextValue {
   signer: Signer | null | undefined;
@@ -54,7 +54,7 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
   mutationResult,
   ...props
 }) => {
-  const signer = useSigner();
+  const signer = useEthersSigner();
   const { expectedNetwork } = useConnectionBoundary();
   const getTransactionOverrides = useGetTransactionOverrides();
   const { txAnalytics } = useAnalytics();
