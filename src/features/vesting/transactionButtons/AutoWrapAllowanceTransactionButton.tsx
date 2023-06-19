@@ -2,8 +2,10 @@ import { Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { constants } from "ethers";
 import { FC, memo } from "react";
-import { useQuery, useWalletClient } from "wagmi";
-import { usePrepareErc20Approve } from "../../../generated";
+import {
+  useQuery,
+  useWalletClient,
+} from "wagmi";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { rpcApi, subgraphApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
@@ -11,6 +13,7 @@ import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { VestingToken } from "../CreateVestingSection";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
+import { usePrepareErc20Approve } from "../../../generated";
 
 const TX_TITLE: TransactionTitle = "Approve Allowance";
 
@@ -71,21 +74,19 @@ const AutoWrapAllowanceTransactionButton: FC<{
                 </Typography>
               );
 
-              
-              // TODO(KK): wagmi migration
-              // write({
-              //   signer,
-              //   config: {
-              //     ...config,
-              //     chainId: network.id,
-              //   },
-              //   transactionTitle: "Approve Allowance",
-              // })
-              //   .unwrap()
-              //   .then(
-              //     ...txAnalytics("Approve Auto-Wrap Allowance", primaryArgs)
-              //   )
-              //   .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
+              write({
+                signer,
+                request: {
+                  ...config.request,
+                  chainId: network.id,
+                },
+                transactionTitle: "Approve Allowance",
+              })
+                .unwrap()
+                .then(
+                  ...txAnalytics("Approve Auto-Wrap Allowance", primaryArgs)
+                )
+                .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}
           >
             Approve {underlyingToken && underlyingToken.symbol} Allowance

@@ -77,18 +77,17 @@ const AutoWrapStrategyTransactionButton: FC<{
                 </Typography>
               );
 
-              // TODO(KK): wagmi migration
-              // write({
-              //   signer,
-              //   config: {
-              //     ...config,
-              //     chainId: network.id,
-              //   },
-              //   transactionTitle: TX_TITLE,
-              // })
-              //   .unwrap()
-              //   .then(...txAnalytics("Enable Auto-Wrap", primaryArgs))
-              //   .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
+              write({
+                signer,
+                request: {
+                  ...config.request,
+                  chainId: network.id,
+                },
+                transactionTitle: TX_TITLE,
+              })
+                .unwrap()
+                .then(...txAnalytics("Enable Auto-Wrap", primaryArgs))
+                .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}
           >
             {TX_TITLE}

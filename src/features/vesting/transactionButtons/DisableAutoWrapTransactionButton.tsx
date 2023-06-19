@@ -83,18 +83,17 @@ const DisableAutoWrapTransactionButton: FC<{
                 </Typography>
               );
 
-              // TODO(KK): wagmi migration
-            //   write({
-            //     signer,
-            //     config: {
-            //       ...config,
-            //       chainId: network.id,
-            //     },
-            //     transactionTitle: "Disable Auto-Wrap",
-            //   })
-            //     .unwrap()
-            //     .then(...txAnalytics("Disable Auto-Wrap", primaryArgs))
-            //     .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
+              write({
+                signer,
+                request: {
+                  ...config.request,
+                  chainId: network.id,
+                },
+                transactionTitle: "Disable Auto-Wrap",
+              })
+                .unwrap()
+                .then(...txAnalytics("Disable Auto-Wrap", primaryArgs))
+                .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}
           >
             Disable
