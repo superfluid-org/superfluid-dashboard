@@ -16,7 +16,7 @@ import {
 } from "./balanceFetcher";
 import { NATIVE_ASSET_ADDRESS } from "./tokenTypes";
 import { WalletClient } from "wagmi";
-import { ContractFunctionConfig, createPublicClient, custom } from "viem";
+import { ContractFunctionConfig, createPublicClient } from "viem";
 
 declare module "@superfluid-finance/sdk-redux" {
   interface TransactionTitleOverrides {
@@ -50,7 +50,7 @@ const writeContractEndpoint = (builder: RpcEndpointBuilder) =>
   builder.mutation<
     TransactionInfo,
     {
-      walletClient: WalletClient;
+      signer: Signer; // TODO(KK): Remove this at some point...
       request: ContractFunctionConfig & {
         chainId: number;
       };
@@ -59,16 +59,11 @@ const writeContractEndpoint = (builder: RpcEndpointBuilder) =>
     }
   >({
     queryFn: async (
-      { walletClient, request, transactionTitle, transactionExtraData },
+      { signer, request, transactionTitle, transactionExtraData },
       { dispatch }
     ) => {
       const result = await writeContract(request);
       const framework = await getFramework(request.chainId);
-      
-      const publicClient = createPublicClient({
-        chain: walletClient.chain,
-        transport: custom(walletClient.transport)
-      });
 
       return registerNewTransactionAndReturnQueryFnResult({
         dispatch,
