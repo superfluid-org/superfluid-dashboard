@@ -14,6 +14,7 @@ interface SaveButtonProps {
   editedAccess: TokenAccessProps;
   disabled: boolean;
   title: string;
+  onSuccessCallback: () => void;
 }
 
 const SaveButton: FC<SaveButtonProps> = ({
@@ -24,6 +25,7 @@ const SaveButton: FC<SaveButtonProps> = ({
   editedAccess,
   disabled: disabled_,
   title = "Save changes",
+  onSuccessCallback,
 }) => {
   const [updateAccess, updateAccessResult] = rpcApi.useUpdateAccessMutation();
 
@@ -81,7 +83,7 @@ const SaveButton: FC<SaveButtonProps> = ({
               .unwrap()
               .then(
                 ...txAnalytics("Updated Permissions & Allowances", primaryArgs)
-              )
+              ).then(onSuccessCallback)
               .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
           }}
         >

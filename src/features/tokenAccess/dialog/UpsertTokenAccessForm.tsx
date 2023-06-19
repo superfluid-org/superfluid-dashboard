@@ -31,7 +31,6 @@ import { FlowOperatorPermissionSwitch } from "./FlowOperatorPermissionSwitch";
 import AddressSearch from "../../send/AddressSearch";
 import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
 import SelectNetwork from "../../network/SelectNetwork";
-import { isEqual } from "lodash";
 
 export type TokenAccessProps = {
   flowRateAllowance: {
@@ -103,26 +102,6 @@ export const UpsertTokenAccessForm: FC<{
 
   let isAnyFieldChanged = isDirty;
 
-  useEffect(() => {
-    setUnsavedChanges(false);
-    // reset form to check isDirty,touched
-    reset({
-      data: {
-        network: initialFormValues.network || network || undefined,
-        token: initialFormValues.token || token || undefined,
-        operatorAddress:
-          initialFormValues.operatorAddress || operatorAddress || undefined,
-        flowRateAllowance: initialFormValues.flowRateAllowance || {
-          amountWei: BigNumber.from(0),
-          unitOfTime: UnitOfTime.Second,
-        },
-        flowOperatorPermissions: initialFormValues.flowOperatorPermissions || 0,
-        tokenAllowanceWei:
-          initialFormValues.tokenAllowanceWei || BigNumber.from(0),
-      },
-    });
-  }, [initialFormValues]);
-
   const handleOnCloseBtnClick = () => {
     if (isAnyFieldChanged && isValid) {
       setUnsavedChanges(true);
@@ -131,8 +110,46 @@ export const UpsertTokenAccessForm: FC<{
     }
   };
 
+  useEffect(() => {
+    if (isNewEntry) {
+      return;
+    }
+
+    setUnsavedChanges(false);
+    reset({
+      data: {
+        network: initialFormValues.network,
+        token: initialFormValues.token,
+        operatorAddress: initialFormValues.operatorAddress,
+        flowRateAllowance: initialFormValues.flowRateAllowance,
+        flowOperatorPermissions: initialFormValues.flowOperatorPermissions,
+        tokenAllowanceWei: initialFormValues.tokenAllowanceWei,
+      },
+    });
+  }, [initialFormValues]);
+
+  const onSuccessCallback = (isNewEntry: Boolean) => {
+    isNewEntry
+      ? reset({
+          data: {
+            network: initialFormValues.network || undefined,
+            token: initialFormValues.token || undefined,
+            operatorAddress: initialFormValues.operatorAddress || undefined,
+            flowRateAllowance: initialFormValues.flowRateAllowance || {
+              amountWei: BigNumber.from(0),
+              unitOfTime: UnitOfTime.Second,
+            },
+            flowOperatorPermissions:
+              initialFormValues.flowOperatorPermissions || 0,
+            tokenAllowanceWei:
+              initialFormValues.tokenAllowanceWei || BigNumber.from(0),
+          },
+        })
+      : () => {};
+  };
   const SaveButtonComponent = (
     <SaveButton
+      onSuccessCallback={() => onSuccessCallback(isNewEntry)}
       initialAccess={{
         flowRateAllowance: initialFormValues.flowRateAllowance || {
           amountWei: BigNumber.from(0),
