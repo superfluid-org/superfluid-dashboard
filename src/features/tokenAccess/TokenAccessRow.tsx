@@ -6,7 +6,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { Address } from "@superfluid-finance/sdk-core";
 import TokenIcon from "../token/TokenIcon";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
@@ -23,9 +23,14 @@ import {
 } from "../../utils/isCloseToUnlimitedAllowance";
 import { flowOperatorPermissionsToString } from "../../utils/flowOperatorPermissionsToString";
 import { useTheme } from "@mui/material/styles";
-import { UpsertTokenAccessDialogProvider } from "./dialog/UpsertTokenAccessDialogProvider";
-import { Token } from "./dialog/UpsertTokenAccessFormProvider";
+import UpsertTokenAccessFormProvider, {
+  Token,
+  UpsertTokenAccessFormProviderProps,
+} from "./dialog/UpsertTokenAccessFormProvider";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
+import { Add } from "@mui/icons-material";
+import ResponsiveDialog from "../common/ResponsiveDialog";
+import { UpsertTokenAccessForm } from "./dialog/UpsertTokenAccessForm";
 
 interface Props {
   address: Address;
@@ -35,6 +40,46 @@ interface Props {
   flowOperatorPermissions: number;
   flowRateAllowance: string;
 }
+
+export const UpsertTokenAccessButton: FC<{
+  initialFormValues: UpsertTokenAccessFormProviderProps["initialFormData"];
+}> = ({ initialFormValues }) => {
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const isEditingExistingRecord = Object.keys(initialFormValues).length > 0;
+
+  return (
+    <>
+      <Button
+        sx={{
+          height: "40px",
+        }}
+        variant={isEditingExistingRecord ?  "outlined" : "contained" }
+        endIcon={isEditingExistingRecord ? null : <Add />}
+        onClick={() => setDialogOpen(true)}
+      >
+        {isEditingExistingRecord ? "Modify" : "Add"}
+      </Button>
+      <ResponsiveDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        PaperProps={{
+          sx: { borderRadius: "20px", maxHeight: "100%", maxWidth: 500 },
+        }}
+        translate="yes"
+      >
+        <Stack component={"form"}>
+          <UpsertTokenAccessFormProvider initialFormData={initialFormValues}>
+            <UpsertTokenAccessForm
+              initialFormValues={initialFormValues}
+              closeDialog={() => setDialogOpen(false)}
+            />
+          </UpsertTokenAccessFormProvider>
+        </Stack>
+      </ResponsiveDialog>
+    </>
+  );
+};
 
 const TokenAccessRow: FC<Props> = ({
   address,
@@ -80,27 +125,29 @@ const TokenAccessRow: FC<Props> = ({
     flowRateAllowance,
   ]);
 
-  const initialFormValues = {
-    network: network,
-    token: tokenInfo
-      ? ({
-          address: tokenInfo.id,
-          decimals: tokenInfo.decimals,
-          isListed: tokenInfo.isListed,
-          name: tokenInfo.name,
-          symbol: tokenInfo.symbol,
-          type: getSuperTokenType({
-            network,
+  const initialFormValues = useMemo(() => {
+    return {
+      network: network,
+      token: tokenInfo
+        ? ({
             address: tokenInfo.id,
-            underlyingAddress: tokenInfo.underlyingAddress,
-          }),
-        } as Token)
-      : undefined,
-    operatorAddress: address,
-    flowOperatorPermissions: initialAccess.flowOperatorPermissions,
-    flowRateAllowance: initialAccess.flowRateAllowance,
-    tokenAllowanceWei: initialAccess.tokenAllowanceWei,
-  };
+            decimals: tokenInfo.decimals,
+            isListed: tokenInfo.isListed,
+            name: tokenInfo.name,
+            symbol: tokenInfo.symbol,
+            type: getSuperTokenType({
+              network,
+              address: tokenInfo.id,
+              underlyingAddress: tokenInfo.underlyingAddress,
+            }),
+          } as Token)
+        : undefined,
+      operatorAddress: address,
+      flowOperatorPermissions: initialAccess.flowOperatorPermissions,
+      flowRateAllowance: initialAccess.flowRateAllowance,
+      tokenAllowanceWei: initialAccess.tokenAllowanceWei,
+    };
+  }, [initialAccess, address, network]);
 
   return (
     <>
@@ -222,22 +269,9 @@ const TokenAccessRow: FC<Props> = ({
                 )}
               </Stack>
               <Stack gap={2} direction="column">
-                <UpsertTokenAccessDialogProvider
+                <UpsertTokenAccessButton
                   initialFormValues={initialFormValues}
-                >
-                  {({ openDialog }) => (
-                    <Button
-                      data-cy={"modify-access-button"}
-                      size="medium"
-                      fullWidth={true}
-                      variant="contained"
-                      color="primary"
-                      onClick={() => openDialog()}
-                    >
-                      Modify
-                    </Button>
-                  )}
-                </UpsertTokenAccessDialogProvider>
+                />
               </Stack>
             </Stack>
           </TableCell>
@@ -329,27 +363,12 @@ const TokenAccessRow: FC<Props> = ({
             )}
           </TableCell>
           <TableCell
-            align="left"
+            align="center"
             sx={{
-              p: 3
+              p: 3,
             }}
           >
-            <UpsertTokenAccessDialogProvider
-              initialFormValues={initialFormValues}
-            >
-              {({ openDialog }) => (
-                <Button
-                  data-cy={"modify-access-button"}
-                  size="medium"
-                  fullWidth={true}
-                  variant="contained"
-                  color="primary"
-                  onClick={() => openDialog()}
-                >
-                  Modify
-                </Button>
-              )}
-            </UpsertTokenAccessDialogProvider>
+            <UpsertTokenAccessButton initialFormValues={initialFormValues} />
           </TableCell>
         </TableRow>
       )}

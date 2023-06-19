@@ -7,7 +7,7 @@ import { rpcApi } from "../redux/store";
 import { TokenAccessProps } from "./dialog/UpsertTokenAccessForm";
 
 interface SaveButtonProps {
-  network: Network | null;
+  network: Network | undefined;
   tokenAddress: string | undefined;
   operatorAddress: string;
   initialAccess: TokenAccessProps;

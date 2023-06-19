@@ -14,14 +14,12 @@ import {
   UpsertTokenAccessFormProviderProps,
   PartialUpsertTokenAccessForm,
 } from "./UpsertTokenAccessFormProvider";
-import { useUpsertTokenAccessDialog } from "./UpsertTokenAccessDialogProvider";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, memo, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import UnsavedChangesConfirmationDialog from "./UnsavedChangesConfirmationDialog";
 import EditDialogTitle from "./DialogTitle";
 import { FlowRateInput, UnitOfTime } from "../../send/FlowRateInput";
 
-import NetworkSelect from "../NetworkSelect";
 import TokenSelect from "../TokenSelect";
 import RevokeButton from "../RevokeButton";
 import SaveButton from "../SaveButton";
@@ -32,6 +30,7 @@ import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
 import { FlowOperatorPermissionSwitch } from "./FlowOperatorPermissionSwitch";
 import AddressSearch from "../../send/AddressSearch";
 import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
+import SelectNetwork from "../../network/SelectNetwork";
 
 export type TokenAccessProps = {
   flowRateAllowance: {
@@ -43,21 +42,19 @@ export type TokenAccessProps = {
 };
 
 export const UpsertTokenAccessForm: FC<{
+  closeDialog: () => void;
   initialFormValues: UpsertTokenAccessFormProviderProps["initialFormData"];
-}> = ({ initialFormValues }) => {
+}> = memo(({ initialFormValues, closeDialog }) => {
   const {
     control,
-    formState: { isDirty, isValid, isValidating },
+    formState: { isDirty, isValid, isValidating, touchedFields },
     watch,
     setValue,
+    reset,
   } = useFormContext<PartialUpsertTokenAccessForm>();
-
-  const { closeDialog } = useUpsertTokenAccessDialog();
 
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-
-  const [hasUnsavedChanges, setUnsavedChanges] = useState<boolean>(false);
 
   const [
     flowOperatorPermissions,
@@ -74,6 +71,8 @@ export const UpsertTokenAccessForm: FC<{
     "data.token",
     "data.operatorAddress",
   ]);
+
+  const [hasUnsavedChanges, setUnsavedChanges] = useState<boolean>(false);
 
   const isNewEntry = useMemo(
     () => Object.keys(initialFormValues).length === 0,
@@ -101,7 +100,26 @@ export const UpsertTokenAccessForm: FC<{
     flowRateAllowance.unitOfTime,
   ]);
 
-  const isAnyFieldChanged = isDirty;
+  let isAnyFieldChanged = isDirty;
+
+  useEffect(() => {
+    setUnsavedChanges(false);
+    // reset form to check isDirty,touched
+    reset({
+      data: {
+        network: initialFormValues.network || network || undefined,
+        token: initialFormValues.token || token || undefined,
+        operatorAddress: initialFormValues.operatorAddress || operatorAddress || undefined,
+        flowRateAllowance: initialFormValues.flowRateAllowance  || flowRateAllowance || {
+          amountWei: BigNumber.from(0),
+          unitOfTime: UnitOfTime.Second,
+        },
+        flowOperatorPermissions: initialFormValues.flowOperatorPermissions || flowOperatorPermissions || 0,
+        tokenAllowanceWei:
+          initialFormValues.tokenAllowanceWei || tokenAllowanceWei || BigNumber.from(0),
+      },
+    });
+  }, [initialFormValues]);
 
   const handleOnCloseBtnClick = () => {
     if (isAnyFieldChanged && isValid) {
@@ -164,12 +182,14 @@ export const UpsertTokenAccessForm: FC<{
                       control={control}
                       name="data.network"
                       render={({ field: { value, onChange, onBlur } }) => (
-                        <NetworkSelect
+                        <SelectNetwork
+                          isIconButton={false}
+                          isCollapsable={true}
+                          disabled={!isNewEntry}
                           network={value}
                           placeholder={"Select network"}
-                          disabled={!isNewEntry}
                           onChange={(e) => {
-                            setValue("data.token", null);
+                            setValue("data.token", undefined);
                             onChange(e);
                           }}
                           onBlur={onBlur}
@@ -294,13 +314,16 @@ export const UpsertTokenAccessForm: FC<{
                     operatorAddress={operatorAddress}
                     tokenAddress={token.address}
                     access={{
-                      flowRateAllowance: initialFormValues.flowRateAllowance || {
-                        amountWei: BigNumber.from(0),
-                        unitOfTime: UnitOfTime.Second,
-                      },
-                      flowOperatorPermissions: initialFormValues.flowOperatorPermissions || 0,
+                      flowRateAllowance:
+                        initialFormValues.flowRateAllowance || {
+                          amountWei: BigNumber.from(0),
+                          unitOfTime: UnitOfTime.Second,
+                        },
+                      flowOperatorPermissions:
+                        initialFormValues.flowOperatorPermissions || 0,
                       tokenAllowanceWei:
-                        initialFormValues.tokenAllowanceWei || BigNumber.from(0),
+                        initialFormValues.tokenAllowanceWei ||
+                        BigNumber.from(0),
                     }}
                   />
                 )}
@@ -311,4 +334,4 @@ export const UpsertTokenAccessForm: FC<{
       )}
     </ConnectionBoundary>
   );
-};
+});

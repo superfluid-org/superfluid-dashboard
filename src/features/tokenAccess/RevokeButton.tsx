@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { Network } from "../network/networks";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
@@ -58,10 +58,10 @@ const RevokeButton: FC<RevokeButtonProps> = ({
               initialAccess: {
                 flowRateAllowanceWei: calculateTotalAmountWei(access.flowRateAllowance).toString(),
                 flowOperatorPermissions: access.flowOperatorPermissions,
-                tokenAllowanceWei: access.toString()
+                tokenAllowanceWei: access.tokenAllowanceWei.toString()
               },
             };
-
+            
             revoke({
               ...primaryArgs,
               signer,

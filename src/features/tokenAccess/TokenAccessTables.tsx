@@ -10,8 +10,7 @@ import { FC, useCallback, useMemo, useState } from "react";
 import TokenAccessTable from "./TokenAccessTable";
 import { useAvailableNetworks } from "../network/AvailableNetworksContext";
 import TokenAccessLoadingTable from "./TokenAccessLoadingTable";
-import { Add } from "@mui/icons-material";
-import { UpsertTokenAccessDialogProvider } from "./dialog/UpsertTokenAccessDialogProvider";
+import { UpsertTokenAccessButton } from "./TokenAccessRow";
 
 export interface FetchingStatus {
   isLoading: boolean;
@@ -73,20 +72,7 @@ const TokenAccessTables: FC<Props> = ({ address }) => {
             Manage your Permissions and Allowances in one place.
           </Typography>
         </Stack>
-        <UpsertTokenAccessDialogProvider initialFormValues={{}}>
-          {({ openDialog }) => (
-            <Button
-              sx={{
-                height: "40px",
-              }}
-              variant="contained"
-              endIcon={<Add />}
-              onClick={() => openDialog()}
-            >
-              Add
-            </Button>
-          )}
-        </UpsertTokenAccessDialogProvider>
+        <UpsertTokenAccessButton initialFormValues={{}} />
       </Stack>
       <Stack gap={4}>
         {availableNetworks.map((network) => (

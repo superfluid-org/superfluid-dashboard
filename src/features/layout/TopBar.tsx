@@ -1,4 +1,3 @@
-import { Notifications } from "@mui/icons-material";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import {
   alpha,
@@ -22,6 +21,9 @@ import TransactionBell from "../transactions/TransactionBell";
 import ConnectWallet from "../wallet/ConnectWallet";
 import { useLayoutContext } from "./LayoutContext";
 import { menuDrawerWidth } from "./NavigationDrawer";
+import { useAccount, useSwitchNetwork } from "wagmi";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
+import { Network } from "../network/networks";
 
 interface CustomAppBarProps {
   transactionDrawerOpen: boolean;
@@ -69,8 +71,19 @@ export default memo(function TopBar() {
   const theme = useTheme();
   const isBelowLg = useMediaQuery(theme.breakpoints.down("lg"));
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const { address: accountAddress } = useAccount();
+  const { switchNetwork } = useSwitchNetwork();
+  const { network: selectedNetwork, setExpectedNetwork: setSelectedNetwork } =
+    useExpectedNetwork();
 
   const { isImpersonated } = useImpersonation();
+
+  const onNetworkChange = (network: Network) => {
+    setSelectedNetwork(network.id);
+    if (accountAddress && switchNetwork) {
+      switchNetwork(network.id);
+    }
+  };
 
   const isScrolled = useBodyScrolled();
   const {
@@ -103,7 +116,12 @@ export default memo(function TopBar() {
             <ConnectWallet ButtonProps={{ size: "small" }} />
           )}
           <ImpersonationChip />
-          <SelectNetwork />
+          <SelectNetwork
+            disabled={!selectedNetwork}
+            network={selectedNetwork}
+            onChange={onNetworkChange}
+            placeholder={"Select Network"}
+          />
           <NotificationsBell />
           <TransactionBell />
         </Stack>
