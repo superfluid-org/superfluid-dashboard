@@ -31,6 +31,7 @@ import { FlowOperatorPermissionSwitch } from "./FlowOperatorPermissionSwitch";
 import AddressSearch from "../../send/AddressSearch";
 import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
 import SelectNetwork from "../../network/SelectNetwork";
+import { isEqual } from "lodash";
 
 export type TokenAccessProps = {
   flowRateAllowance: {
@@ -100,7 +101,14 @@ export const UpsertTokenAccessForm: FC<{
     flowRateAllowance.unitOfTime,
   ]);
 
-  let isAnyFieldChanged = isDirty;
+  let isAnyFieldChanged = Object.keys(touchedFields.data || {}).some((key) => {
+    const currentValue = watch(
+      `data.${key as keyof typeof initialFormValues}`
+    );
+    const initialValue =
+      initialFormValues[key as keyof typeof initialFormValues];
+    return !isEqual(currentValue, initialValue);
+  });
 
   useEffect(() => {
     setUnsavedChanges(false);
@@ -111,19 +119,13 @@ export const UpsertTokenAccessForm: FC<{
         token: initialFormValues.token || token || undefined,
         operatorAddress:
           initialFormValues.operatorAddress || operatorAddress || undefined,
-        flowRateAllowance: initialFormValues.flowRateAllowance ||
-          flowRateAllowance || {
-            amountWei: BigNumber.from(0),
-            unitOfTime: UnitOfTime.Second,
-          },
-        flowOperatorPermissions:
-          initialFormValues.flowOperatorPermissions ||
-          flowOperatorPermissions ||
-          0,
+        flowRateAllowance: initialFormValues.flowRateAllowance || {
+          amountWei: BigNumber.from(0),
+          unitOfTime: UnitOfTime.Second,
+        },
+        flowOperatorPermissions: initialFormValues.flowOperatorPermissions || 0,
         tokenAllowanceWei:
-          initialFormValues.tokenAllowanceWei ||
-          tokenAllowanceWei ||
-          BigNumber.from(0),
+          initialFormValues.tokenAllowanceWei || BigNumber.from(0),
       },
     });
   }, [initialFormValues]);
@@ -183,12 +185,13 @@ export const UpsertTokenAccessForm: FC<{
                 justifyContent={"space-between"}
               >
                 <Grid>
-                  <FormGroup sx={{
-                        ".MuiButtonBase-root": { minWidth: "200px" },
-                      }}>
+                  <FormGroup
+                    sx={{
+                      ".MuiButtonBase-root": { minWidth: "200px" },
+                    }}
+                  >
                     <FormLabel>Network</FormLabel>
                     <Controller
-                      
                       control={control}
                       name="data.network"
                       render={({ field: { value, onChange, onBlur } }) => (
