@@ -48,7 +48,7 @@ export const UpsertTokenAccessForm: FC<{
 }> = ({ initialFormValues, closeDialog }) => {
   const {
     control,
-    formState: { isDirty, isValid, isValidating, touchedFields },
+    formState: { isDirty, isValid, isValidating },
     watch,
     setValue,
     reset,
@@ -101,14 +101,7 @@ export const UpsertTokenAccessForm: FC<{
     flowRateAllowance.unitOfTime,
   ]);
 
-  let isAnyFieldChanged = Object.keys(touchedFields.data || {}).some((key) => {
-    const currentValue = watch(
-      `data.${key as keyof typeof initialFormValues}`
-    );
-    const initialValue =
-      initialFormValues[key as keyof typeof initialFormValues];
-    return !isEqual(currentValue, initialValue);
-  });
+  let isAnyFieldChanged = isDirty;
 
   useEffect(() => {
     setUnsavedChanges(false);
