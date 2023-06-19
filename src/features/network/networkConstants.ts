@@ -94,8 +94,8 @@ export const flowSchedulerSubgraphUrls = {
 
 export const autoWrapSubgraphUrls = {
   mumbai:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-polygon-mainnet",
-    goerli:
+    "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-polygon-mumbai",
+  goerli:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-eth-goerli",
   arbitrum:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-arbitrum-one",
