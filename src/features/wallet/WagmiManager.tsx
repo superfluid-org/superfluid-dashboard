@@ -16,13 +16,22 @@ import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 
 export const { chains: wagmiChains, publicClient: wagmiPublicClient } =
-  configureChains(allNetworks, [
-    jsonRpcProvider({
-      rpc: (chain) => ({
-        http: findNetworkOrThrow(allNetworks, chain.id).rpcUrls.superfluid.http[0],
+  configureChains(
+    allNetworks,
+    [
+      jsonRpcProvider({
+        rpc: (chain) => ({
+          http: findNetworkOrThrow(allNetworks, chain.id).rpcUrls.superfluid
+            .http[0],
+        }),
       }),
-    }),
-  ]);
+    ],
+    {
+      batch: {
+        multicall: true,
+      },
+    }
+  );
 
 const { connectors } = getAppWallets({
   appName: "Superfluid Dashboard",
