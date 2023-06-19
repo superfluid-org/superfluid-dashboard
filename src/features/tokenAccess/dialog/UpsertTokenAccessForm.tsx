@@ -183,9 +183,12 @@ export const UpsertTokenAccessForm: FC<{
                 justifyContent={"space-between"}
               >
                 <Grid>
-                  <FormGroup>
+                  <FormGroup sx={{
+                        ".MuiButtonBase-root": { minWidth: "200px" },
+                      }}>
                     <FormLabel>Network</FormLabel>
                     <Controller
+                      
                       control={control}
                       name="data.network"
                       render={({ field: { value, onChange, onBlur } }) => (
