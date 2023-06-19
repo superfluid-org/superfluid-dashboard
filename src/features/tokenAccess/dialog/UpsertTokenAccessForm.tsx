@@ -128,7 +128,7 @@ export const UpsertTokenAccessForm: FC<{
     });
   }, [initialFormValues]);
 
-  const onSuccessCallback = (isNewEntry: Boolean) => {
+  const onSuccessCallback = () => {
     isNewEntry
       ? reset({
           data: {
@@ -147,9 +147,10 @@ export const UpsertTokenAccessForm: FC<{
         })
       : () => {};
   };
+
   const SaveButtonComponent = (
     <SaveButton
-      onSuccessCallback={() => onSuccessCallback(isNewEntry)}
+      onSuccessCallback={() => onSuccessCallback()}
       initialAccess={{
         flowRateAllowance: initialFormValues.flowRateAllowance || {
           amountWei: BigNumber.from(0),
