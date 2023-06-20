@@ -424,7 +424,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                     <TableCell
                       width={"160px"}
                       align={"center"}
-                      sx={{ padding: "25px" }}
+                      sx={{ padding: "10px" }}
                     >
                       {token && network.autoWrap ? (
                         isAutoWrapLoading ? (
@@ -445,15 +445,20 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                           <ConnectionBoundaryButton
                             impersonationTitle={"Stop viewing"}
                             changeNetworkTitle={"Change Network"}
+                            ButtonProps={{
+                              fullWidth: true,
+                              variant: "outlined",
+                              size: "medium"
+                            }}
                           >
                             <Button
                               data-cy={"enable-auto-wrap-button"}
                               variant="contained"
-                              size="small"
+                              size="medium"
                               fullWidth={true}
                               onClick={openEnableAutoWrapDialog}
                             >
-                              Enable
+                              <span>Enable</span>
                             </Button>
                           </ConnectionBoundaryButton>
                         ) : null
@@ -629,15 +634,20 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                         <ConnectionBoundaryButton
                           impersonationTitle={"Stop viewing"}
                           changeNetworkTitle={"Change Network"}
+                          ButtonProps={{
+                            fullWidth: false,
+                            variant: "outlined",
+                            size: "medium"
+                          }}
                         >
                           <Button
                             data-cy={"enable-auto-wrap-button"}
                             variant="contained"
-                            size="small"
+                            size="medium"
                             fullWidth={false}
                             onClick={openEnableAutoWrapDialog}
                           >
-                            Enable
+                            <span>Enable</span>
                           </Button>
                         </ConnectionBoundaryButton>
                       ) : null

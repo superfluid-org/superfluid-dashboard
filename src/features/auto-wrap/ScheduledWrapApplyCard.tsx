@@ -18,7 +18,7 @@ const ScheduledWrapApplyCard = () => (
     alignItems="center"
   >
     <Box>
-      <Typography data-cy={"no-scheduled-wrap-message"} variant="h4">
+      <Typography data-cy={"no-scheduled-wrap-message"} variant="h5">
         You are not on the allow list.
       </Typography>
       <Typography variant="h7">

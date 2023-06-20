@@ -316,7 +316,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                       fullWidth={false}
                       onClick={openEnableAutoWrapDialog}
                     >
-                      Enable
+                      <span>Enable</span>
                     </Button>
                   </ConnectionBoundaryButton>
                 ) : null
@@ -420,7 +420,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                       size="small"
                       onClick={openEnableAutoWrapDialog}
                     >
-                      Enable
+                      <span>Enable</span>
                     </Button>
                   </ConnectionBoundaryButton>
                 ) : null
