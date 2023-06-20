@@ -13,7 +13,7 @@ import { type HttpTransport } from "viem";
 export function publicClientToProvider(publicClient: PublicClient) {
   const { chain, transport } = publicClient;
   const network = {
-    chainId: chain.id,
+    chainId: chain?.id,
     name: chain.name,
     ensAddress: chain.contracts?.ensRegistry?.address,
   };

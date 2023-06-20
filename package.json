@@ -23,8 +23,6 @@
     "@emotion/react": "^11.11.1",
     "@emotion/server": "^11.11.0",
     "@emotion/styled": "^11.11.0",
-    "@ethersproject/experimental": "^5.7.0",
-    "@ethersproject/networks": "^5.7.1",
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^3.1.0",
     "@lifi/sdk": "^1.7.2",

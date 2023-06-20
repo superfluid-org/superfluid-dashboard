@@ -10,6 +10,7 @@
     "@cypress/browserify-preprocessor": "^3.0.2",
     "@cypress/code-coverage": "^3.10.5",
     "@cypress/webpack-preprocessor": "^5.17.0",
+    "@ethersproject/experimental": "^5.7.0",
     "@rsksmart/mock-web3-provider": "1.0.0",
     "@superfluid-finance/sdk-core": "0.6.5",
     "@truffle/hdwallet-provider": "^2.1.7",
@@ -40,6 +41,7 @@
     "filterSpecs": true
   },
   "scripts": {
+    "build": "tsc --noEmit --project ./tsconfig.json",
     "lint:check-no-focused-tests": "grep -FR @only cypress/integration || { echo 'No test is focused.';exit 0; } && { echo '✘ You have focused tests.'; exit 1; }",
     "prepare": "cd .. && husky install tests/.husky"
   },

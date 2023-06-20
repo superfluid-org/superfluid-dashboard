@@ -1,12 +1,13 @@
 import { Chain, Wallet } from "@rainbow-me/rainbowkit";
 import { MockConnector } from "wagmi/connectors/mock";
-import { createWalletClient, custom } from "viem";
-import { providers } from "ethers";
-import { Eip1193Bridge } from "@ethersproject/experimental";
+import { Address, createWalletClient, custom } from "viem";
+import { allNetworks, findNetworkOrThrow } from "../../network/networks";
 
 export interface MockConnectorOptions {
   chains: Chain[];
 }
+
+type EthereumProvider = Parameters<typeof custom>[0];
 
 const mockConnector = ({ chains }: MockConnectorOptions): Wallet => ({
   id: "mock",
@@ -15,17 +16,21 @@ const mockConnector = ({ chains }: MockConnectorOptions): Wallet => ({
   iconUrl: "/icons/icon-96x96.png",
   iconBackground: "#000000",
   createConnector: () => {
-    const mockSigner = (window as any).mockSigner as providers.JsonRpcSigner;
-    const mockProvider = mockSigner.provider as providers.Web3Provider;
+    const mockBridge = (window as any).mockBridge as EthereumProvider;
+    const mockWallet = (window as any).mockWallet as {
+      chainId: number;
+      getAddress(): Address,
+    };
+    const chain = findNetworkOrThrow(allNetworks, mockWallet.chainId);
 
-    const eip1193Bridge = new Eip1193Bridge(mockSigner, mockProvider);
     return {
       connector: new MockConnector({
         chains,
         options: {
           walletClient: createWalletClient({
-            account: mockSigner._address as `0x${string}`,
-            transport: custom(eip1193Bridge),
+            chain,
+            account: mockWallet.getAddress(),
+            transport: custom(mockBridge),
           }),
         },
       }),
