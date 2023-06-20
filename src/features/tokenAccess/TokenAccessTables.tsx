@@ -93,7 +93,7 @@ const TokenAccessTables: FC<{}> = () => {
         {hasContent && !isLoading && <UpsertTokenAccessButton initialFormValues={{}} />}
       </Stack>
       {!hasContent && !isLoading ? <EmptyCard /> :  <Stack gap={4}>
-        {availableNetworks.map((network) => (
+        {visibleAddress && availableNetworks.map((network) => (
           <TokenAccessTable
             key={network.id}
             address={visibleAddress}
