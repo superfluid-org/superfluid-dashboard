@@ -1,13 +1,44 @@
-
-# Created by https://www.toptal.com/developers/gitignore/api/react,nextjs,webstorm,visualstudiocode,dotenv
-# Edit at https://www.toptal.com/developers/gitignore?templates=react,nextjs,webstorm,visualstudiocode,dotenv
+# Created by https://www.toptal.com/developers/gitignore/api/react,dotenv,nextjs,webstorm,visualstudiocode,vercel
+# Edit at https://www.toptal.com/developers/gitignore?templates=react,dotenv,nextjs,webstorm,visualstudiocode,vercel
 
 ### dotenv ###
 .env
 
 ### NextJS ###
-# Next build dir
-.next/
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# local env files
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
 
 ### react ###
 .DS_*
@@ -24,6 +55,8 @@ bower_components
 psd
 thumb
 sketch
+
+### Vercel ###
 
 ### VisualStudioCode ###
 .vscode/*
@@ -43,8 +76,6 @@ sketch
 # Ignore all local history of files
 .history
 .ionide
-
-# Support for Project snippet scope
 
 ### WebStorm ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
@@ -155,7 +186,11 @@ fabric.properties
 # https://plugins.jetbrains.com/plugin/12206-codestream
 .idea/codestream.xml
 
-# End of https://www.toptal.com/developers/gitignore/api/react,nextjs,webstorm,visualstudiocode,dotenv
+# Azure Toolkit for IntelliJ plugin
+# https://plugins.jetbrains.com/plugin/8053-azure-toolkit-for-intellij
+.idea/**/azureSettings.xml
+
+# End of https://www.toptal.com/developers/gitignore/api/react,dotenv,nextjs,webstorm,visualstudiocode,vercel
 
 # Sentry
 .sentryclirc
