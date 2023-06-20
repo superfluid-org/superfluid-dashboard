@@ -1,5 +1,4 @@
 import {
-  IconButton,
   Paper,
   Stack,
   Table,
@@ -9,7 +8,6 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Typography,
   colors,
   useMediaQuery,
   useTheme,
@@ -27,6 +25,7 @@ import { AutoWrapContractInfo } from "../vesting/VestingScheduleTables";
 import { PlatformWhitelistedStatus } from "./ScheduledWrapTables";
 import { platformApi } from "../redux/platformApi/platformApi";
 import ScheduledWrapLoadingTable from "./ScheduledWrapLoadingTable";
+import { uniqBy } from "lodash";
 
 interface TokenSnapshotTableProps {
   address: Address;
@@ -47,8 +46,8 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const [page, setPage] = useState({ wallet: 0, contract: 0 });
-  const [rowsPerPage, setRowsPerPage] = useState({ wallet: 25, contract: 25 });
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const { wrapSchedules, isLoading } =
     autoWrapSubgraphApi.useGetWrapSchedulesQuery(
@@ -64,7 +63,7 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
         refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
         selectFromResult: (result) => ({
           ...result,
-          wrapSchedules: result.data?.wrapSchedules ?? [],
+          wrapSchedules: uniqBy(result.data?.wrapSchedules, "wrapScheduleId") ?? [],
         }),
       }
     );
@@ -72,10 +71,10 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
   const paginatedWrapSchedules = useMemo(
     () =>
     wrapSchedules.slice(
-        page.contract * rowsPerPage.contract,
-        (page.contract + 1) * rowsPerPage.contract
+        page * rowsPerPage,
+        (page + 1) * rowsPerPage
       ),
-    [page.contract, rowsPerPage, wrapSchedules]
+    [page, rowsPerPage, wrapSchedules]
   );
 
   const { isPlatformWhitelisted, isLoading: isWhitelistLoading } =
@@ -109,18 +108,13 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
     });
   }, [isWhitelistLoading, isPlatformWhitelisted, whitelistedCallback]);
 
-  const handleChangePage =
-    (table: "schedules") => (_e: unknown, newPage: number) => {
-      setPage((page) => ({ ...page, [table]: newPage }));
+  const handleChangePage = () => (_e: unknown, newPage: number) => {
+      setPage(newPage);
     };
 
-  const handleChangeRowsPerPage =
-    (table: "schedules") => (event: ChangeEvent<HTMLInputElement>) => {
-      setRowsPerPage((rowsPerPage) => ({
-        ...rowsPerPage,
-        [table]: parseInt(event.target.value, 10),
-      }));
-      setPage((page) => ({ ...page, address: 0 }));
+  const handleChangeRowsPerPage = () => (event: ChangeEvent<HTMLInputElement>) => {
+      setRowsPerPage(parseInt(event.target.value, 10));
+      setPage(page);
     };
 
   if (isLoading && isWhitelistLoading) 
@@ -215,14 +209,14 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
           count={wrapSchedules.length}
-          rowsPerPage={rowsPerPage.wallet}
-          page={page.wallet}
-          onPageChange={handleChangePage("schedules")}
-          onRowsPerPageChange={handleChangeRowsPerPage("schedules")}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage()}
+          onRowsPerPageChange={handleChangeRowsPerPage()}
           sx={{
             "> *": {
               visibility:
-              wrapSchedules.length <= rowsPerPage.wallet
+              wrapSchedules.length <= rowsPerPage
                   ? "hidden"
                   : "visible",
             },
