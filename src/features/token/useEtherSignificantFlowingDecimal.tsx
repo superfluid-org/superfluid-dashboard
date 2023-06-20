@@ -36,10 +36,8 @@ const useSignificantFlowingDecimal = (flowRate: string, price = 1) =>
       .toString()
       .replace(numberAfterDecimalWithoutLeadingZeroes.toString(), "").length; // We're basically counting the zeroes.
 
-    if (lengthToFirstSignificatDecimal === 17) return 18; // Don't go over 18.
-
     // This will usually have the last 3 numbers flowing smoothly.
-    return lengthToFirstSignificatDecimal + 2;
+    return Math.min(lengthToFirstSignificatDecimal + 2, 18); // Don't go over 18.
   }, [flowRate, price]);
 
 export default useSignificantFlowingDecimal;
