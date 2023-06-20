@@ -17,6 +17,7 @@ import { FetchingStatus } from "./TokenAccessTables";
 import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
 import NetworkHeadingRow from "../../components/Table/NetworkHeadingRow";
+import TokenAccessLoadingTable from "./TokenAccessLoadingTable";
 
 interface Props {
   address: Address;
@@ -92,7 +93,9 @@ const TokenAccessTable: FC<Props> = ({
     [page, rowsPerPage, flowOperators]
   );
 
-  if (flowOperatorsQuery.isLoading || flowOperators.length === 0) return null;
+  if(flowOperatorsQuery.isLoading) return  <TokenAccessLoadingTable />
+  
+  if (flowOperators.length === 0) return null;
 
   return (
     <TableContainer

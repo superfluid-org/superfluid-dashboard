@@ -1,5 +1,7 @@
 import {
+  Box,
   Button,
+  Card,
   Stack,
   Typography,
   useMediaQuery,
@@ -11,6 +13,7 @@ import TokenAccessTable from "./TokenAccessTable";
 import { useAvailableNetworks } from "../network/AvailableNetworksContext";
 import TokenAccessLoadingTable from "./TokenAccessLoadingTable";
 import { UpsertTokenAccessButton } from "./TokenAccessRow";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 export interface FetchingStatus {
   isLoading: boolean;
@@ -21,11 +24,27 @@ interface NetworkFetchingStatuses {
   [networkId: number]: FetchingStatus;
 }
 
-interface Props {
-  address: Address;
-}
+const EmptyCard: FC<{
+}> = ({}) => (
+  <Card
+    sx={{ py: 4, textAlign: "center" }}
+    component={Stack}
+    gap={3}
+    alignItems="center"
+  >
+    <Box>
+      <Typography data-cy={"no-scheduled-wrap-message"} variant="h5">
+        Nothing to see here
+      </Typography>
+      <Typography>You currently don’t have any ACL permissions set</Typography>
+    </Box>
+    <UpsertTokenAccessButton initialFormValues={{}} />
+  </Card>
+);
 
-const TokenAccessTables: FC<Props> = ({ address }) => {
+const TokenAccessTables: FC<{}> = () => {
+  const { visibleAddress } = useVisibleAddress();
+
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { availableNetworks } = useAvailableNetworks();
@@ -57,8 +76,7 @@ const TokenAccessTables: FC<Props> = ({ address }) => {
     [availableNetworks, fetchingStatuses]
   );
 
-  return !hasContent && !isLoading ? null : (
-    <>
+  return <>
       <Stack
         direction="row"
         justifyContent="space-between"
@@ -72,21 +90,20 @@ const TokenAccessTables: FC<Props> = ({ address }) => {
             Manage your Permissions and Allowances in one place.
           </Typography>
         </Stack>
-        <UpsertTokenAccessButton initialFormValues={{}} />
+        {hasContent && !isLoading && <UpsertTokenAccessButton initialFormValues={{}} />}
       </Stack>
-      <Stack gap={4}>
+      {!hasContent && !isLoading ? <EmptyCard /> :  <Stack gap={4}>
         {availableNetworks.map((network) => (
           <TokenAccessTable
             key={network.id}
-            address={address}
+            address={visibleAddress}
             network={network}
             fetchingCallback={fetchingCallback}
           />
         ))}
-        {isLoading && <TokenAccessLoadingTable />}
-      </Stack>
+      </Stack>  
+      }
     </>
-  );
 };
 
 export default TokenAccessTables;
