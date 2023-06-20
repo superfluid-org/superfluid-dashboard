@@ -230,7 +230,7 @@ export const UpsertTokenAccessForm: FC<{
                       name="data.token"
                       render={({ field: { onChange, onBlur } }) => (
                         <TokenSelect
-                          disabled={!isNewEntry}
+                          disabled={!isNewEntry || !network}
                           network={network}
                           token={token}
                           placeholder={"Select token"}
