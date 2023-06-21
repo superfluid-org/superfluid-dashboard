@@ -1,4 +1,4 @@
-import { isString } from "lodash";
+import { isString, orderBy } from "lodash";
 import memoize from "lodash/memoize";
 import * as chain from "wagmi/chains";
 import { Chain } from "wagmi/chains";
@@ -657,21 +657,25 @@ export const networkDefinition = {
   } as const,
 };
 
-export const allNetworks: Network[] = [
-  networkDefinition.ethereum,
-  networkDefinition.goerli,
-  networkDefinition.gnosis,
-  networkDefinition.polygon,
-  networkDefinition.polygonMumbai,
-  networkDefinition.avalancheFuji,
-  networkDefinition.optimism,
-  networkDefinition.arbitrum,
-  networkDefinition.avalancheC,
-  networkDefinition.bsc,
-  networkDefinition.celoMainnet,
-  networkDefinition.optimismGoerli,
-  networkDefinition.arbitrumGoerli,
-];
+export const allNetworks: Network[] = orderBy(
+  [
+    networkDefinition.ethereum,
+    networkDefinition.goerli,
+    networkDefinition.gnosis,
+    networkDefinition.polygon,
+    networkDefinition.polygonMumbai,
+    networkDefinition.avalancheFuji,
+    networkDefinition.optimism,
+    networkDefinition.arbitrum,
+    networkDefinition.avalancheC,
+    networkDefinition.bsc,
+    networkDefinition.celoMainnet,
+    networkDefinition.optimismGoerli,
+    networkDefinition.arbitrumGoerli,
+  ],
+  (x) => !(x as { testnet?: boolean }).testnet // Put non-testnets first
+);
+
 export const mainNetworks = allNetworks.filter((x) => !x.testnet);
 export const testNetworks = allNetworks.filter((x) => x.testnet);
 
