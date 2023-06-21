@@ -75,7 +75,7 @@ const NotificationSettings: FC = () => {
         >
           <Blockies seed={address.toLowerCase()} />
         </Avatar>
-        <Stack direction="row">
+        <Stack direction="row" spacing={0.5}>
           <Typography data-cy={"wallet-address"} variant="body1">
             {isBelowMd ? shortenHex(address) : address}
           </Typography>
