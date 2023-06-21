@@ -121,7 +121,7 @@ const TokenAccessTable: FC<Props> = ({
                 Asset
               </TableCell>
               <TableCell width="183px">Address</TableCell>
-              <TableCell width="186px">ERC-20 Allowance</TableCell>
+              <TableCell width="186px">Token Allowance</TableCell>
               <TableCell width="183px">Stream Permissions</TableCell>
               <TableCell width="232px">Stream Allowance</TableCell>
               <TableCell width="139px" align="center">Actions</TableCell>

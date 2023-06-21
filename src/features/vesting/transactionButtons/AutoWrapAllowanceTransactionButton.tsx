@@ -66,7 +66,7 @@ const AutoWrapAllowanceTransactionButton: FC<{
               if (!config) throw new Error("This should never happen!");
               setDialogLoadingInfo(
                 <Typography variant="h5" color="text.secondary" translate="yes">
-                  You are approving Auto-Wrap ERC-20 allowance for the
+                  You are approving Auto-Wrap token allowance for the
                   underlying token.
                 </Typography>
               );

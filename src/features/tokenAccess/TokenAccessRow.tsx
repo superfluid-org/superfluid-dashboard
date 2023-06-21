@@ -205,7 +205,7 @@ const TokenAccessRow: FC<Props> = ({
                 justifyContent="space-between"
                 sx={{ width: "auto" }}
               >
-                <Typography variant="subtitle1">ERC-20 Allowance</Typography>
+                <Typography variant="subtitle1">Token Allowance</Typography>
                 {tokenInfo && (
                   <Stack direction="row" alignItems="center" gap={0.5}>
                     <Typography variant="h6">

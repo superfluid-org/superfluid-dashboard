@@ -81,7 +81,7 @@ const DisableAutoWrapTransactionButton: FC<{
 
               setDialogLoadingInfo(
                 <Typography variant="h5" color="text.secondary" translate="yes">
-                  You are revoking Auto-Wrap ERC-20 allowance for the underlying{" "}
+                  You are revoking Auto-Wrap token allowance for the underlying{" "}
                   {underlyingToken && underlyingToken.symbol} token.
                 </Typography>
               );

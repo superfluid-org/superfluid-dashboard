@@ -266,7 +266,7 @@ export const UpsertTokenAccessForm: FC<{
                 />
               </FormGroup>
               <FormGroup>
-                <FormLabel>ERC-20 Allowance</FormLabel>
+                <FormLabel>Token Allowance</FormLabel>
                 <Controller
                   control={control}
                   name="data.tokenAllowanceWei"
