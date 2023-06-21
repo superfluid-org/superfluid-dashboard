@@ -79,21 +79,18 @@ export const UpsertTokenAccessForm: FC<{
     [initialFormValues]
   );
 
-  const [tokenAllowanceEther, setTokenAllowanceEther] = useState(
-    formatEther(tokenAllowanceWei)
-  );
-
-  const [flowRateAllowanceEther, setFlowRateAllowanceEther] = useState({
-    amountEther: formatEther(flowRateAllowance.amountWei),
+  const initialTokenAllowanceEther = removeTrailingZero(formatEther(tokenAllowanceWei));
+  const [tokenAllowanceEther, setTokenAllowanceEther] = useState(initialTokenAllowanceEther);
+  
+  const initialFlowRateAllowance = {
+    amountEther: removeTrailingZero(formatEther(flowRateAllowance.amountWei)),
     unitOfTime: flowRateAllowance.unitOfTime,
-  });
-
+  };
+  const [flowRateAllowanceEther, setFlowRateAllowanceEther] = useState(initialFlowRateAllowance);
+  
   useEffect(() => {
-    setTokenAllowanceEther(formatEther(tokenAllowanceWei));
-    setFlowRateAllowanceEther({
-      amountEther: formatEther(flowRateAllowance.amountWei),
-      unitOfTime: flowRateAllowance.unitOfTime,
-    });
+    setTokenAllowanceEther(initialTokenAllowanceEther);
+    setFlowRateAllowanceEther(initialFlowRateAllowance);
   }, [
     tokenAllowanceWei,
     flowRateAllowance.amountWei,
@@ -359,3 +356,7 @@ export const UpsertTokenAccessForm: FC<{
     </ConnectionBoundary>
   );
 };
+
+function removeTrailingZero(str: string): string {
+  return str.replace(/\.0$/, "");
+}

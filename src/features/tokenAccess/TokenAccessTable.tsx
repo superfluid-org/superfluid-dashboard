@@ -120,7 +120,7 @@ const TokenAccessTable: FC<Props> = ({
               <TableCell width="136px" sx={{ pl: 5 }}>
                 Asset
               </TableCell>
-              <TableCell width="183px">Address</TableCell>
+              <TableCell width="183px">Addrasdess</TableCell>
               <TableCell width="186px">Token Allowance</TableCell>
               <TableCell width="183px">Stream Permissions</TableCell>
               <TableCell width="232px">Stream Allowance</TableCell>
