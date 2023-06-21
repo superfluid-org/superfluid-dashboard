@@ -240,7 +240,7 @@ export const UpsertTokenAccessForm: FC<{
                 </Grid>
               </Grid>
               <FormGroup>
-                <FormLabel>Address</FormLabel>
+                <FormLabel>Operator</FormLabel>
                 <Controller
                   control={control}
                   name="data.operatorAddress"
