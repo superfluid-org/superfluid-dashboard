@@ -16,7 +16,7 @@ const SettingsPage: NextPage = () => {
   const { visibleAddress } = useVisibleAddress();
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="lg" key={visibleAddress}>
       {!address ? (
         <NoWalletConnected />
       ) : (

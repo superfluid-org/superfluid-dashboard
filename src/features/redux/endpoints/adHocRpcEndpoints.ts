@@ -37,11 +37,11 @@ declare module "@superfluid-finance/sdk-redux" {
     "Delete Schedule": true;
     "Enable Auto-Wrap": true;
     "Revoke Token Allowance": true;
-    "Revoke FlowOperator Permissions": true;
+    "Revoke Flow Operator": true;
     "Revoke Access": true;
-    "Update Permission and Allowances": true;
+    "Modify Permissions & Allowances": true;
     "Update Token Allowance": true;
-    "Update FlowOperator Permissions": true;
+    "Update Flow Operator Permissions": true;
     "Disable Auto-Wrap": true;
   }
 }

@@ -52,7 +52,7 @@ export const UpsertTokenAccessButton: FC<{
     <>
       <Button
         size={"medium"}
-        variant={isEditingExistingRecord ?  "outlined" : "contained" }
+        variant={isEditingExistingRecord ? "outlined" : "contained"}
         endIcon={isEditingExistingRecord ? null : <Add />}
         onClick={() => setDialogOpen(true)}
       >
@@ -317,13 +317,13 @@ const TokenAccessRow: FC<Props> = ({
                     initialAccess.tokenAllowanceWei
                   ) ? (
                     <span>Unlimited</span>
+                  ) : initialAccess.tokenAllowanceWei.isZero() ? (
+                    <span>–</span>
                   ) : (
-                    <>
-                      <Amount
-                        decimals={tokenInfo?.decimals}
-                        wei={initialAccess.tokenAllowanceWei}
-                      >{` ${tokenInfo?.symbol}`}</Amount>
-                    </>
+                    <Amount
+                      decimals={tokenInfo?.decimals}
+                      wei={initialAccess.tokenAllowanceWei}
+                    >{` ${tokenInfo?.symbol}`}</Amount>
                   )}
                 </Typography>
               </Stack>
@@ -344,17 +344,17 @@ const TokenAccessRow: FC<Props> = ({
                     initialAccess.flowRateAllowance.amountWei
                   ) ? (
                     <span>Unlimited</span>
+                  ) : initialAccess.flowRateAllowance.amountWei.isZero() ? (
+                    <span>–</span>
                   ) : (
-                    <>
-                      <Amount
-                        decimals={tokenInfo?.decimals}
-                        wei={initialAccess.flowRateAllowance.amountWei}
-                      >{` ${tokenInfo?.symbol}/${
-                        timeUnitShortFormMap[
-                          initialAccess.flowRateAllowance.unitOfTime
-                        ]
-                      }`}</Amount>
-                    </>
+                    <Amount
+                      decimals={tokenInfo?.decimals}
+                      wei={initialAccess.flowRateAllowance.amountWei}
+                    >{` ${tokenInfo?.symbol}/${
+                      timeUnitShortFormMap[
+                        initialAccess.flowRateAllowance.unitOfTime
+                      ]
+                    }`}</Amount>
                   )}
                 </Typography>
               </Stack>

@@ -68,7 +68,7 @@ export const tokenAccessMutationEndpoints = {
             initialAccess.flowOperatorPermissions
         ) {
           batchedOperations.push({
-            title: "Update FlowOperator Permissions", // TODO(KK): better title?
+            title: "Update Flow Operator Permissions",
             operation: await superToken.updateFlowOperatorPermissions({
               flowOperator: operatorAddress,
               flowRateAllowance: editedFlowRateAllowance.toString(),
@@ -119,7 +119,7 @@ export const tokenAccessMutationEndpoints = {
           chainId,
           dispatch,
           signerAddress: signerAddress,
-          title: "Update Permission and Allowances", // TODO(KK): better title?
+          title: "Modify Permissions & Allowances",
           extraData: {
             subTransactionTitles,
             ...(transactionExtraData ?? {}),
@@ -168,7 +168,7 @@ export const tokenAccessMutationEndpoints = {
           initialAccess.flowOperatorPermissions > 0
         ) {
           batchedOperations.push({
-            title: "Revoke FlowOperator Permissions", // TODO(KK): better title?
+            title: "Revoke Flow Operator",
             operation: await superToken.revokeFlowOperatorWithFullControl({
               flowOperator: operatorAddress,
             }),
