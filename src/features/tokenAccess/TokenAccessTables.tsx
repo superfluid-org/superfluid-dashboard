@@ -33,9 +33,8 @@ const EmptyCard: FC<{}> = ({}) => (
       <Typography data-cy={"no-scheduled-wrap-message"} variant="h5">
         Nothing to see here
       </Typography>
-      <Typography>You currently don’t have any ACL permissions set</Typography>
+      <Typography>You currently don’t have any Super Token permissions and allowance set.</Typography>
     </Box>
-    <UpsertTokenAccessButton initialFormValues={{}} />
   </Card>
 );
 
@@ -95,10 +94,12 @@ const TokenAccessTables: FC<{}> = () => {
             Permissions & Allowances
           </Typography>
           <Typography variant="body1" color="secondary">
-            Manage your permissions and allowances in one place.
+            Manage your Super Token permissions and allowances in one place.
           </Typography>
         </Stack>
-        <UpsertTokenAccessButton initialFormValues={{}} />
+        <UpsertTokenAccessButton initialFormValues={{
+          network: expectedNetwork
+        }} />
       </Stack>
       {!hasContent && !isLoading ? (
         <EmptyCard />

@@ -75,7 +75,7 @@ export const UpsertTokenAccessForm: FC<{
   const [hasUnsavedChanges, setUnsavedChanges] = useState<boolean>(false);
 
   const isNewEntry = useMemo(
-    () => Object.keys(initialFormValues).length === 0,
+    () => Object.keys(initialFormValues).length <= 1, // Allow network to be passed in.
     [initialFormValues]
   );
 
@@ -184,7 +184,7 @@ export const UpsertTokenAccessForm: FC<{
         <Box>
           <EditDialogTitle onClose={handleOnCloseBtnClick}>
             <Typography variant="h4">
-              {isNewEntry ? "Add Permission" : "Modify Permission"}
+              {isNewEntry ? "Add Permissions" : "Modify Permissions"}
             </Typography>
           </EditDialogTitle>
           <Stack component={DialogContent} sx={{ p: 4 }}>

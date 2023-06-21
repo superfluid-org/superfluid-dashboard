@@ -46,7 +46,7 @@ export const UpsertTokenAccessButton: FC<{
 }> = ({ initialFormValues }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const isEditingExistingRecord = Object.keys(initialFormValues).length > 0;
+  const isEditingExistingRecord = Object.keys(initialFormValues).length > 1;
 
   return (
     <>
