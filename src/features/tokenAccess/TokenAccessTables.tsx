@@ -1,6 +1,4 @@
 import {
-  Box,
-  Card,
   Stack,
   Typography,
   useMediaQuery,
@@ -12,6 +10,7 @@ import { useAvailableNetworks } from "../network/AvailableNetworksContext";
 import { UpsertTokenAccessButton } from "./TokenAccessRow";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
+import NoContentPaper from "../../components/NoContent/NoContentPaper";
 
 export interface FetchingStatus {
   isLoading: boolean;
@@ -23,19 +22,11 @@ interface NetworkFetchingStatuses {
 }
 
 const EmptyCard: FC<{}> = ({}) => (
-  <Card
-    sx={{ py: 4, textAlign: "center" }}
-    component={Stack}
-    gap={3}
-    alignItems="center"
-  >
-    <Box>
-      <Typography data-cy={"no-scheduled-wrap-message"} variant="h5">
-        Nothing to see here
-      </Typography>
-      <Typography>You currently don’t have any Super Token permissions and allowance set.</Typography>
-    </Box>
-  </Card>
+  <NoContentPaper
+    dataCy={"no-scheduled-wrap-message"}
+    title="No Access Data"
+    description="You currently don’t have any Super Token permissions and allowance set."
+  />
 );
 
 const TokenAccessTables: FC<{}> = () => {
@@ -97,9 +88,11 @@ const TokenAccessTables: FC<{}> = () => {
             Manage your Super Token permissions and allowances in one place.
           </Typography>
         </Stack>
-        <UpsertTokenAccessButton initialFormValues={{
-          network: expectedNetwork
-        }} />
+        <UpsertTokenAccessButton
+          initialFormValues={{
+            network: expectedNetwork,
+          }}
+        />
       </Stack>
       {!hasContent && !isLoading ? (
         <EmptyCard />

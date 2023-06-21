@@ -21,10 +21,6 @@ const AutoWrapStrategyTransactionButton: FC<{
   token: VestingToken;
   isVisible: boolean;
   isDisabled: boolean;
-  // TODO We can use callbacks to hide/show the parent modal.
-  // onSuccessCallback?: () => void;
-  // onFailureCallback?: () => void;
-  // onClickCallback?: () => void;
 }> = ({ token, isVisible, isDisabled: isDisabled_ }) => {
   const { data: signer } = useSigner();
   const { network } = useExpectedNetwork();
