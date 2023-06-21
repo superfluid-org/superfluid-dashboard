@@ -8,7 +8,7 @@ const ResponsiveDialog: FC<DialogProps> = ({ children, ...props }) => {
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
-    <Dialog fullWidth={true} maxWidth={"sm"} fullScreen={fullScreen} {...props}>
+    <Dialog fullWidth maxWidth={"sm"} fullScreen={fullScreen} {...props}>
       {children}
     </Dialog>
   );

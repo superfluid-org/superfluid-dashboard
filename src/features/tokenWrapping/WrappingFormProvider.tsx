@@ -27,6 +27,7 @@ import {
 } from "../transactionRestoration/transactionRestorations";
 import { useTokenPairsQuery } from "./useTokenPairsQuery";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import { CommonFormEffects } from "../common/CommonFormEffects";
 
 export type WrappingForm = {
   type: RestorationType.Wrap | RestorationType.Unwrap;
@@ -312,20 +313,11 @@ The chain ID was: ${network.id}`);
     }
   }, [tokenQueryParam, tokenPairsQuery.data]);
 
-  useEffect(() => {
-    if (formState.isDirty) {
-      stopAutoSwitchToWalletNetwork();
-    }
-  }, [formState.isDirty]);
-
-  useEffect(() => {
-    if (formState.isDirty) {
-      trigger();
-    }
-  }, [visibleAddress]);
-
   return hasRestored ? (
-    <FormProvider {...formMethods}>{children}</FormProvider>
+    <FormProvider {...formMethods}>
+      {children}
+      <CommonFormEffects />
+    </FormProvider>
   ) : null;
 };
 

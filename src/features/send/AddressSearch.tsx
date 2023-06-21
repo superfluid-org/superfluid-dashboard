@@ -8,7 +8,7 @@ import AddressName, {
   AddressNameProps,
 } from "../../components/AddressName/AddressName";
 import AddressSearchDialog from "../../components/AddressSearchDialog/AddressSearchDialog";
-import AddressSearchIndex from "./AddressSearchIndex";
+import { AddressSearchDialogProps } from "../../components/AddressSearchDialog/AddressSearchDialog";
 
 export default memo(function AddressSearch({
   address,
@@ -17,6 +17,7 @@ export default memo(function AddressSearch({
   addressLength = "long",
   ButtonProps = {},
   onBlur = () => {},
+  AddressSearchDialogProps = {},
 }: {
   address: string | null;
   onChange: (address: string | null) => void; // TODO(KK): better name
@@ -24,6 +25,9 @@ export default memo(function AddressSearch({
   addressLength?: AddressNameProps["length"];
   ButtonProps?: ButtonProps;
   onBlur?: () => void;
+  AddressSearchDialogProps?: Partial<
+    Omit<AddressSearchDialogProps, "open" | "onClose" | "onSelectAddress">
+  >;
 }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -71,7 +75,7 @@ export default memo(function AddressSearch({
         {...ButtonProps}
       >
         {address ? (
-          <span translate="no">
+          <span translate="no" style={{ overflow: "hidden" }}>
             <AddressName address={address} length={addressLength} />
           </span>
         ) : (
@@ -80,7 +84,8 @@ export default memo(function AddressSearch({
       </Button>
 
       <AddressSearchDialog
-        title={"Select a receiver"}
+        title="Select a receiver"
+        {...AddressSearchDialogProps}
         open={dialogOpen}
         onClose={() => {
           setDialogOpen(false);

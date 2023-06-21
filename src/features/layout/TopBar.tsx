@@ -22,9 +22,10 @@ import TransactionBell from "../transactions/TransactionBell";
 import ConnectWallet from "../wallet/ConnectWallet";
 import { useLayoutContext } from "./LayoutContext";
 import { menuDrawerWidth } from "./NavigationDrawer";
-import { Network } from "../network/networks";
 import { useAccount, useSwitchNetwork } from "wagmi";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
+import { Network } from "../network/networks";
+
 interface CustomAppBarProps {
   transactionDrawerOpen: boolean;
   navigationDrawerOpen: boolean;
@@ -78,6 +79,13 @@ export default memo(function TopBar() {
 
   const { isImpersonated } = useImpersonation();
 
+  const onNetworkChange = (network: Network) => {
+    setSelectedNetwork(network.id);
+    if (accountAddress && switchNetwork) {
+      switchNetwork(network.id);
+    }
+  };
+
   const isScrolled = useBodyScrolled();
   const {
     transactionDrawerOpen,
@@ -86,13 +94,6 @@ export default memo(function TopBar() {
   } = useLayoutContext();
 
   const openNavigationDrawer = () => setNavigationDrawerOpen(true);
-
-  const onNetworkChange = (network: Network) => {
-    setSelectedNetwork(network.id);
-    if (accountAddress && switchNetwork) {
-      switchNetwork(network.id);
-    }
-  };
 
   return (
     <CustomAppBar

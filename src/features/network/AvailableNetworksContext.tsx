@@ -22,6 +22,7 @@ const AvailableNetworksContext = createContext<AvailableNetworksContextValue>(
 export const AvailableNetworksProvider: FC<PropsWithChildren> = ({
   children,
 }) => {
+
   const availableNetworksFiltered = useMemo(
     () => ({
       availableMainNetworks: allNetworks.filter((network) => !network.testnet),
