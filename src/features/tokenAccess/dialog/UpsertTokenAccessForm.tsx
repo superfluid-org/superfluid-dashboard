@@ -167,7 +167,7 @@ export const UpsertTokenAccessForm: FC<{
       }}
       network={network}
       operatorAddress={operatorAddress}
-      tokenAddress={token?.address}
+      superToken={token}
       disabled={!isValid || isValidating || !isAnyFieldChanged}
       title={isNewEntry ? "Add" : "Save changes"}
     />
@@ -336,7 +336,7 @@ export const UpsertTokenAccessForm: FC<{
                   <RevokeButton
                     network={network}
                     operatorAddress={operatorAddress}
-                    tokenAddress={token.address}
+                    superToken={token}
                     access={{
                       flowRateAllowance:
                         initialFormValues.flowRateAllowance || {

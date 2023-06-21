@@ -22,6 +22,7 @@ export const NoWalletConnected: FC = () => {
             <Typography
                 data-cy={"no-user-settings"}
                 variant={isBelowMd ? "h5" : "h4"}
+                component="h4"
                 textAlign="center"
             >
                 Wallet not connected

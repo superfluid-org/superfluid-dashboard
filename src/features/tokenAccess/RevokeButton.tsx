@@ -10,14 +10,17 @@ import { TokenAccessProps } from "./dialog/UpsertTokenAccessForm";
 
 interface RevokeButtonProps {
   network: Network;
-  tokenAddress: string;
+  superToken: {
+    address: string;
+    symbol: string;
+  }
   operatorAddress: string;
   access: TokenAccessProps;
 }
 
 const RevokeButton: FC<RevokeButtonProps> = ({
   network,
-  tokenAddress,
+  superToken,
   operatorAddress,
   access,
 }) => {
@@ -27,7 +30,7 @@ const RevokeButton: FC<RevokeButtonProps> = ({
   const isRevokeAllowed =
     access.flowOperatorPermissions !== 0 ||
     access.tokenAllowanceWei.gt(0) ||
-    access.flowRateAllowance.amountWei.gt(0);
+    access.flowRateAllowance.amountWei.gt(0);  
 
   return (
     <TransactionBoundary mutationResult={revokeResult}>
@@ -47,13 +50,13 @@ const RevokeButton: FC<RevokeButtonProps> = ({
           onClick={async (signer) => {
             setDialogLoadingInfo(
               <Typography variant="h5" color="text.secondary" translate="yes">
-                Permissions & Allowances to the token is being revoked.
+                You are revoking all permissions and allowances for the {superToken.symbol} token.
               </Typography>
             );
 
             const primaryArgs = {
               chainId: network.id,
-              superTokenAddress: tokenAddress,
+              superTokenAddress: superToken.address,
               operatorAddress: operatorAddress,
               initialAccess: {
                 flowRateAllowanceWei: calculateTotalAmountWei(access.flowRateAllowance).toString(),

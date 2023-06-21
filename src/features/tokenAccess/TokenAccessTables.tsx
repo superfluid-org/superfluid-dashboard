@@ -1,19 +1,17 @@
 import {
   Box,
-  Button,
   Card,
   Stack,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { Address } from "@superfluid-finance/sdk-core";
 import { FC, useCallback, useMemo, useState } from "react";
 import TokenAccessTable from "./TokenAccessTable";
 import { useAvailableNetworks } from "../network/AvailableNetworksContext";
-import TokenAccessLoadingTable from "./TokenAccessLoadingTable";
 import { UpsertTokenAccessButton } from "./TokenAccessRow";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 
 export interface FetchingStatus {
   isLoading: boolean;
@@ -24,8 +22,7 @@ interface NetworkFetchingStatuses {
   [networkId: number]: FetchingStatus;
 }
 
-const EmptyCard: FC<{
-}> = ({}) => (
+const EmptyCard: FC<{}> = ({}) => (
   <Card
     sx={{ py: 4, textAlign: "center" }}
     component={Stack}
@@ -47,7 +44,17 @@ const TokenAccessTables: FC<{}> = () => {
 
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-  const { availableNetworks } = useAvailableNetworks();
+
+  const { availableNetworks: availableNetworks_ } = useAvailableNetworks();
+  const { network: expectedNetwork } = useExpectedNetwork();
+  const availableNetworks = useMemo(
+    () => [
+      ...availableNetworks_.filter((x) => x === expectedNetwork), // Order the current network first.
+      ...availableNetworks_.filter((x) => x !== expectedNetwork),
+    ],
+    [availableNetworks_, expectedNetwork]
+  );
+
   const [fetchingStatuses, setFetchingStatuses] =
     useState<NetworkFetchingStatuses>({});
 
@@ -76,7 +83,8 @@ const TokenAccessTables: FC<{}> = () => {
     [availableNetworks, fetchingStatuses]
   );
 
-  return <>
+  return (
+    <>
       <Stack
         direction="row"
         justifyContent="space-between"
@@ -87,23 +95,28 @@ const TokenAccessTables: FC<{}> = () => {
             Permissions & Allowances
           </Typography>
           <Typography variant="body1" color="secondary">
-            Manage your Permissions and Allowances in one place.
+            Manage your permissions and allowances in one place.
           </Typography>
         </Stack>
-        {hasContent && !isLoading && <UpsertTokenAccessButton initialFormValues={{}} />}
+        <UpsertTokenAccessButton initialFormValues={{}} />
       </Stack>
-      {!hasContent && !isLoading ? <EmptyCard /> :  <Stack gap={4}>
-        {visibleAddress && availableNetworks.map((network) => (
-          <TokenAccessTable
-            key={network.id}
-            address={visibleAddress}
-            network={network}
-            fetchingCallback={fetchingCallback}
-          />
-        ))}
-      </Stack>  
-      }
+      {!hasContent && !isLoading ? (
+        <EmptyCard />
+      ) : (
+        <Stack gap={4}>
+          {visibleAddress &&
+            availableNetworks.map((network) => (
+              <TokenAccessTable
+                key={network.id}
+                address={visibleAddress}
+                network={network}
+                fetchingCallback={fetchingCallback}
+              />
+            ))}
+        </Stack>
+      )}
     </>
+  );
 };
 
 export default TokenAccessTables;

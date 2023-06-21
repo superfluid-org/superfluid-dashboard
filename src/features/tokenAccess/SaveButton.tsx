@@ -8,7 +8,7 @@ import { TokenAccessProps } from "./dialog/UpsertTokenAccessForm";
 
 interface SaveButtonProps {
   network: Network | undefined;
-  tokenAddress: string | undefined;
+  superToken?: { address: string, symbol: string };
   operatorAddress: string;
   initialAccess: TokenAccessProps;
   editedAccess: TokenAccessProps;
@@ -19,7 +19,7 @@ interface SaveButtonProps {
 
 const SaveButton: FC<SaveButtonProps> = ({
   network,
-  tokenAddress,
+  superToken,
   operatorAddress,
   initialAccess,
   editedAccess,
@@ -30,7 +30,7 @@ const SaveButton: FC<SaveButtonProps> = ({
   const [updateAccess, updateAccessResult] = rpcApi.useUpdateAccessMutation();
 
   const isDisabled =
-    disabled_ || !network || !tokenAddress;
+    disabled_ || !network || !superToken;
 
   return (
     <TransactionBoundary mutationResult={updateAccessResult}>
@@ -55,13 +55,13 @@ const SaveButton: FC<SaveButtonProps> = ({
 
             setDialogLoadingInfo(
               <Typography variant="h5" color="text.secondary" translate="yes">
-                Updating token permissions & allowances
+                You are modifying permissions and allowances for the {superToken.symbol} token.
               </Typography>
             );
 
             const primaryArgs = {
               chainId: network.id,
-              superTokenAddress: tokenAddress,
+              superTokenAddress: superToken.address,
               operatorAddress: operatorAddress,
               initialAccess: {
                 flowRateAllowanceWei: initialAccess.flowRateAllowance.amountWei.toString(),
