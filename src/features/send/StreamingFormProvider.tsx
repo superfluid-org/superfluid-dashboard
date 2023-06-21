@@ -1,9 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { add, getUnixTime } from "date-fns";
-import { parseEther } from "ethers/lib/utils";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useAccount } from "wagmi";
 import { bool, mixed, number, object, ObjectSchema, string } from "yup";
 import { dateNowSeconds } from "../../utils/dateUtils";
 import { getMinimumStreamTimeInMinutes } from "../../utils/tokenUtils";
@@ -15,6 +13,7 @@ import { calculateTotalAmountWei, UnitOfTime } from "./FlowRateInput";
 import { SCHEDULE_START_END_MIN_DIFF_S } from "./SendCard";
 import useCalculateBufferInfo from "./useCalculateBufferInfo";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import { CommonFormEffects } from "../common/CommonFormEffects";
 
 export type ValidStreamingForm = {
   data: {
@@ -25,7 +24,6 @@ export type ValidStreamingForm = {
       unitOfTime: UnitOfTime;
     };
     understandLiquidationRisk: boolean;
-
     startTimestamp: number | null; // Unix timestamp
     endTimestamp: number | null; // Unix timestamp
   };
@@ -303,20 +301,11 @@ const StreamingFormProvider: FC<
     }
   }, []);
 
-  useEffect(() => {
-    if (formState.isDirty) {
-      stopAutoSwitchToWalletNetwork();
-    }
-  }, [formState.isDirty]);
-
-  useEffect(() => {
-    if (formState.isDirty) {
-      trigger();
-    }
-  }, [visibleAddress]);
-
   return isInitialized ? (
-    <FormProvider {...formMethods}>{children}</FormProvider>
+    <FormProvider {...formMethods}>
+      {children}
+      <CommonFormEffects />
+    </FormProvider>
   ) : null;
 };
 

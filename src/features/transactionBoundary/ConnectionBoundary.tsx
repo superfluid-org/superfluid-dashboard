@@ -29,13 +29,15 @@ type FunctionChildType = (arg: ConnectionBoundaryContextValue) => ReactNode;
 
 interface ConnectionBoundaryProps {
   children: ReactNode | FunctionChildType;
-  expectedNetwork?: Network;
+  expectedNetwork?: Network | null;
   allowImpersonation?: boolean;
+  instantlyForceGlobalExpectedNetworkOnSwitch?: boolean; // Note: might not be the best UX. Better to set once the wallet internally changes the network.
 }
 
 const ConnectionBoundary: FC<ConnectionBoundaryProps> = ({
   children,
   allowImpersonation = false,
+  instantlyForceGlobalExpectedNetworkOnSwitch,
   ...props
 }) => {
   const { isImpersonated, stopImpersonation } = useImpersonation();
@@ -44,7 +46,7 @@ const ConnectionBoundary: FC<ConnectionBoundaryProps> = ({
   const { isConnecting, isConnected } = useAccount();
   const { isAutoConnecting } = useAutoConnect();
   const { openConnectModal } = useConnectButton();
-  const { network } = useExpectedNetwork();
+  const { network, setExpectedNetwork } = useExpectedNetwork();
   const expectedNetwork = props.expectedNetwork ?? network;
 
   const isCorrectNetwork = useMemo(() => {
@@ -67,7 +69,12 @@ const ConnectionBoundary: FC<ConnectionBoundaryProps> = ({
       connectWallet: () => openConnectModal(),
       isCorrectNetwork: isCorrectNetwork,
       switchNetwork: switchNetwork
-        ? () => void switchNetwork(expectedNetwork.id)
+        ? () => {
+            switchNetwork(expectedNetwork.id);
+            if (instantlyForceGlobalExpectedNetworkOnSwitch) {
+              setExpectedNetwork(expectedNetwork.id);
+            }
+          }
         : undefined,
       expectedNetwork,
     }),

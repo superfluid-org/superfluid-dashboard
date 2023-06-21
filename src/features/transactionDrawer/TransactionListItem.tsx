@@ -18,7 +18,6 @@ import {
   TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
 import { format } from "date-fns";
-import NextLink from "next/link";
 import { FC, useState } from "react";
 import shortenHex from "../../utils/shortenHex";
 import NetworkBadge from "../network/NetworkBadge";

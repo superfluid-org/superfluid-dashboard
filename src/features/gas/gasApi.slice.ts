@@ -11,44 +11,31 @@ const gasApi = createApi({
   reducerPath: "gas_price",
   baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
-    recommendedGas: builder.query<GasRecommendation | null, { chainId: number }>({
+    recommendedGas: builder.query<
+      GasRecommendation | null,
+      { chainId: number }
+    >({
       queryFn: async ({ chainId }) => {
-        // Polygon
-        if (chainId === chain.polygon.id) {
-          const {
-            data: {
-              fast: { maxFee, maxPriorityFee },
-            },
-          } = await axios.get<MaticGasStationResponse>(
-            "https://gasstation.polygon.technology/v2"
-          );
-          return {
-            data: {
-              maxFeeGwei: Number(maxFee),
-              maxPriorityFeeGwei: Number(maxPriorityFee),
-            } as GasRecommendation,
-          };
+        const endpointMap: { [key: number]: string } = {
+          [chain.polygon.id]: "https://gasstation.polygon.technology/v2",
+          [chain.polygonMumbai.id]:
+            "https://gasstation-testnet.polygon.technology/v2",
+        };
+
+        const endpoint = endpointMap[chainId];
+
+        if (!endpoint) {
+          return { data: null };
         }
 
-        // Polygon Mumbai
-        if (chainId === chain.polygonMumbai.id) {
-          const {
-            data: {
-              fast: { maxFee, maxPriorityFee },
-            },
-          } = await axios.get<MaticGasStationResponse>(
-            "https://gasstation-testnet.polygon.technology/v2"
-          );
-          return {
-            data: {
-              maxFeeGwei: Number(maxFee),
-              maxPriorityFeeGwei: Number(maxPriorityFee),
-            } as GasRecommendation,
-          };
-        }
+        const response = await axios.get<MaticGasStationResponse>(endpoint);
+        const { maxFee, maxPriorityFee } = response.data.fast;
 
         return {
-          data: null,
+          data: {
+            maxFeeGwei: Number(maxFee),
+            maxPriorityFeeGwei: Number(maxPriorityFee),
+          } as GasRecommendation,
         };
       },
     }),

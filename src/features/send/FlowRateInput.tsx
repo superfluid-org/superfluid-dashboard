@@ -20,6 +20,16 @@ export enum UnitOfTime {
   Year = 31536000,
 }
 
+export const timeUnitShortFormMap: Record<UnitOfTime, string> = {
+  [UnitOfTime.Second]: "sec",
+  [UnitOfTime.Minute]: "min",
+  [UnitOfTime.Hour]: "hr",
+  [UnitOfTime.Day]: "day",
+  [UnitOfTime.Week]: "wk",
+  [UnitOfTime.Month]: "mon",
+  [UnitOfTime.Year]: "yr",
+};
+
 export const unitOfTimeList = [
   UnitOfTime.Second,
   UnitOfTime.Minute,
@@ -56,7 +66,7 @@ export type ScheduledFlowRate = {
 };
 
 export type FlowRateWei = {
-  amountWei: string;
+  amountWei: BigNumberish;
   unitOfTime: UnitOfTime;
 };
 

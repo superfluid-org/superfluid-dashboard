@@ -11,25 +11,29 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { FC, memo, MouseEvent, useEffect, useState } from "react";
-import { useAccount, useSwitchNetwork } from "wagmi";
+import { FC, MouseEvent, memo, useEffect, useState } from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { useAvailableNetworks } from "./AvailableNetworksContext";
-import { useExpectedNetwork } from "./ExpectedNetworkContext";
 import NetworkIcon from "./NetworkIcon";
-import { Network } from "./networks";
+import { Network, allNetworks } from "./networks";
+
+const applyPredicates = (
+  item: Network,
+  predicates: ((item: Network) => boolean)[]
+): boolean =>
+  predicates.length === 0 || predicates.every((predicate) => predicate(item));
 
 interface NetworkItemProps {
   network: Network;
   selected: boolean;
-  onClick: () => void;
+  onClick: (network: Network) => void;
 }
 
 const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
   <MenuItem
     data-cy={`${network.slugName}-button`}
     key={network.id}
-    onClick={onClick}
+    onClick={() => onClick(network)}
     selected={selected}
     sx={{ height: 50 }}
   >
@@ -40,41 +44,15 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, selected, onClick }) => (
   </MenuItem>
 );
 
-export default memo(function SelectNetwork() {
-  const theme = useTheme();
-  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+const CollapsableMenu: FC<{
+  predicates?: [(network: Network) => boolean];
+  network: Network | undefined;
+  onNetworkSelected: (network: Network) => void;
+}> = ({ predicates = [], network: selectedNetwork, onNetworkSelected }) => {
+  const [showTestnets, setShowTestnets] = useState(!!selectedNetwork?.testnet);
 
   const { availableMainNetworks, availableTestNetworks } =
     useAvailableNetworks();
-
-  const { address: accountAddress } = useAccount();
-  const { switchNetwork } = useSwitchNetwork();
-
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const [showTestnets, setShowTestnets] = useState(false);
-
-  const open = Boolean(anchorEl);
-
-  const { network: selectedNetwork, setExpectedNetwork: setSelectedNetwork } =
-    useExpectedNetwork();
-
-  useEffect(() => {
-    setShowTestnets(!!selectedNetwork.testnet);
-  }, [selectedNetwork]);
-
-  const handleOpen = (event: MouseEvent<HTMLButtonElement>) =>
-    setAnchorEl(event.currentTarget);
-
-  const handleClose = () => setAnchorEl(null);
-
-  const onNetworkSelected = (chainId: number) => () => {
-    handleClose();
-    setSelectedNetwork(chainId);
-
-    if (accountAddress && switchNetwork) {
-      switchNetwork(chainId);
-    }
-  };
 
   const handleShowTestnetsChange = (
     _e: unknown,
@@ -85,27 +63,142 @@ export default memo(function SelectNetwork() {
 
   return (
     <>
-      {!isBelowMd ? (
+      <Collapse in={!showTestnets} timeout="auto" unmountOnExit>
+        {availableMainNetworks
+          .filter((network) => applyPredicates(network, predicates))
+          .map((network) => (
+            <NetworkItem
+              key={network.id}
+              onClick={onNetworkSelected}
+              selected={network.id === selectedNetwork?.id}
+              network={network}
+            />
+          ))}
+      </Collapse>
+
+      <Collapse in={showTestnets} timeout="auto" unmountOnExit>
+        {availableTestNetworks
+          .filter((network) => applyPredicates(network, predicates))
+          .map((network) => (
+            <NetworkItem
+              key={network.id}
+              onClick={onNetworkSelected}
+              selected={network.id === selectedNetwork?.id}
+              network={network}
+            />
+          ))}
+      </Collapse>
+
+      <Box sx={{ margin: "6px 16px" }}>
+        <ToggleButtonGroup
+          exclusive
+          fullWidth
+          size="small"
+          color="primary"
+          value={showTestnets}
+          onChange={handleShowTestnetsChange}
+        >
+          <ToggleButton data-cy={"mainnets-button"} value={false}>
+            Mainnets
+          </ToggleButton>
+          <ToggleButton data-cy={"testnets-button"} value={true}>
+            Testnets
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
+    </>
+  );
+};
+
+const ListedMenu: FC<{
+  predicates?: [(network: Network) => boolean];
+  network: Network | undefined;
+  onNetworkSelected: (network: Network) => void;
+}> = ({ predicates = [], network: selectedNetwork, onNetworkSelected }) => {
+  
+  return (
+    <>
+      {allNetworks
+        .filter((network) => applyPredicates(network, predicates))
+        .map((network) => (
+          <NetworkItem
+            key={network.id}
+            onClick={onNetworkSelected}
+            selected={network.id === selectedNetwork?.id}
+            network={network}
+          />
+        ))}
+    </>
+  );
+};
+
+const SelectNetwork: FC<{
+  network: Network | undefined;
+  onChange: (network: Network) => void;
+  placeholder?: string;
+  disabled: boolean;
+  predicates?: [(network: Network) => boolean];
+  isCollapsable?: boolean;
+  isIconButton?: boolean;
+  onBlur?: () => void;
+}> = ({
+  network: selectedNetwork,
+  onChange,
+  placeholder,
+  disabled,
+  predicates,
+  isCollapsable = true,
+  isIconButton = true,
+  onBlur = () => {},
+}) => {
+  const theme = useTheme();
+
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
+  const open = Boolean(anchorEl);
+
+  const handleOpen = (event: MouseEvent<HTMLButtonElement>) =>
+    setAnchorEl(event.currentTarget);
+
+  const handleClose = () => setAnchorEl(null);
+
+  const onNetworkSelected = (network: Network) => {
+    onChange(network);
+    handleClose();
+  };
+
+  return (
+    <>
+      {!isBelowMd || !isIconButton ? (
         <Button
+          disabled={disabled}
           data-cy={"top-bar-network-button"}
           variant="outlined"
           color="secondary"
           size="large"
           startIcon={
-            <NetworkIcon network={selectedNetwork} size={24} fontSize={16} />
+            selectedNetwork && (
+              <NetworkIcon network={selectedNetwork} size={24} fontSize={16} />
+            )
           }
           endIcon={<OpenIcon open={open} />}
           onClick={handleOpen}
           sx={{
+            justifyContent: "flex-start",
             ".MuiButton-startIcon > *:nth-of-type(1)": { fontSize: "16px" },
+            ".MuiButton-endIcon": { marginLeft: "auto" },
           }}
           translate="no"
         >
-          {selectedNetwork.name}
+          {selectedNetwork?.name || placeholder}
         </Button>
       ) : (
         <IconButton onClick={handleOpen} size="small">
-          <NetworkIcon network={selectedNetwork} size={28} fontSize={16} />
+          {selectedNetwork && (
+            <NetworkIcon network={selectedNetwork} size={28} fontSize={16} />
+          )}
         </IconButton>
       )}
 
@@ -117,47 +210,24 @@ export default memo(function SelectNetwork() {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         PaperProps={{ sx: { minWidth: 280 }, square: true }}
         sx={{ marginTop: theme.spacing(1.5) }}
+        onBlur={onBlur}
       >
-        <Collapse in={!showTestnets} timeout="auto" unmountOnExit>
-          {availableMainNetworks.map((network) => (
-            <NetworkItem
-              key={network.id}
-              onClick={onNetworkSelected(network.id)}
-              selected={network.id === selectedNetwork.id}
-              network={network}
-            />
-          ))}
-        </Collapse>
-
-        <Collapse in={showTestnets} timeout="auto" unmountOnExit>
-          {availableTestNetworks.map((network) => (
-            <NetworkItem
-              key={network.id}
-              onClick={onNetworkSelected(network.id)}
-              selected={network.id === selectedNetwork.id}
-              network={network}
-            />
-          ))}
-        </Collapse>
-
-        <Box sx={{ margin: "6px 16px" }}>
-          <ToggleButtonGroup
-            exclusive
-            fullWidth
-            size="small"
-            color="primary"
-            value={showTestnets}
-            onChange={handleShowTestnetsChange}
-          >
-            <ToggleButton data-cy={"mainnets-button"} value={false}>
-              Mainnets
-            </ToggleButton>
-            <ToggleButton data-cy={"testnets-button"} value={true}>
-              Testnets
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </Box>
+        {isCollapsable ? (
+          <CollapsableMenu
+            network={selectedNetwork}
+            onNetworkSelected={onNetworkSelected}
+            predicates={predicates}
+          />
+        ) : (
+          <ListedMenu
+            network={selectedNetwork}
+            onNetworkSelected={onNetworkSelected}
+            predicates={predicates}
+          />
+        )}
       </Menu>
     </>
   );
-});
+};
+
+export default memo(SelectNetwork);
