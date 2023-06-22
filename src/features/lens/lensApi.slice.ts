@@ -78,7 +78,7 @@ export const lensApi = createApi({
           return {
             data: address
               ? {
-                  name,
+                  name: name.toLowerCase(),
                   address,
                 }
               : null,
