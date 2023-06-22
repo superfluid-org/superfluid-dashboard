@@ -1,7 +1,6 @@
 import { NextPage } from "next";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
-import { useRouter } from "next/router";
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import { Box, Container, Paper, Typography, useMediaQuery, useTheme } from "@mui/material";
 import ConnectWallet from "../features/wallet/ConnectWallet";
 import withStaticSEO from "../components/SEO/withStaticSEO";
@@ -48,29 +47,6 @@ const NoWalletConnected: FC = () => {
 
 const AutoWrap: NextPage = () => {
   const { visibleAddress } = useVisibleAddress();
-  const router = useRouter();
-
-  const [faucetDialogOpen, setFaucetDialogOpen] = useState(false);
-
-  useEffect(() => {
-    const { showFaucet, ...remainingQuery } = router.query;
-
-    if (!faucetDialogOpen && Boolean(showFaucet)) {
-      setFaucetDialogOpen(true);
-
-      router.replace(
-        {
-          query: remainingQuery,
-        },
-        undefined,
-        {
-          shallow: true,
-        }
-      );
-    }
-  }, [faucetDialogOpen, router]);
-
-  const closeFaucetDialog = () => setFaucetDialogOpen(false);
 
   return (
     <Container maxWidth="lg">
@@ -83,4 +59,4 @@ const AutoWrap: NextPage = () => {
   );
 };
 
-export default withStaticSEO({ title: "AutoWrap | Superfluid" }, AutoWrap);
+export default withStaticSEO({ title: "Auto-Wrap | Superfluid" }, AutoWrap);

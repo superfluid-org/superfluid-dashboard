@@ -11,7 +11,6 @@ import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { useActiveNetworks } from "../network/ActiveNetworksContext";
 import NetworkSelectionFilter from "../network/NetworkSelectionFilter";
 import ScheduledWrapEmptyCard from "./ScheduledWrapEmptyCard";
-import ScheduledWrapLoadingTable from "./ScheduledWrapLoadingTable";
 import ScheduledWrapApplyCard from "./ScheduledWrapApplyCard";
 import {
   FetchingStatus,
@@ -114,7 +113,7 @@ const ScheduledWrapTables: FC<ScheduledWrapTablesProps> = ({ address }) => {
         translate="yes"
       >
         <Typography variant={isBelowMd ? "h3" : "h4"} component="h1">
-          Auto Wrap
+          Auto-Wrap
         </Typography>
 
         <Stack direction={"row"} gap={1.5}>
