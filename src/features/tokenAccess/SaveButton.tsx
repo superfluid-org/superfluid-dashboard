@@ -5,10 +5,11 @@ import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary"
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { rpcApi } from "../redux/store";
 import { TokenAccessProps } from "./dialog/UpsertTokenAccessForm";
+import { Token } from "@superfluid-finance/sdk-core";
 
 interface SaveButtonProps {
-  network: Network | undefined | null;
-  superToken?: { address: string, symbol: string } | null;
+  network: Network | null;
+  superToken: Token | null;
   operatorAddress: string;
   initialAccess: TokenAccessProps;
   editedAccess: TokenAccessProps;
@@ -61,7 +62,7 @@ const SaveButton: FC<SaveButtonProps> = ({
 
             const primaryArgs = {
               chainId: network.id,
-              superTokenAddress: superToken.address,
+              superTokenAddress: superToken.id,
               operatorAddress: operatorAddress,
               initialAccess: {
                 flowRateAllowanceWei: initialAccess.flowRateAllowance.amountWei.toString(),

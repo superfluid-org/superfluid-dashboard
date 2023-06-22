@@ -33,6 +33,7 @@ const TokenMenu: FC<{
   onChange: (token: Token) => void;
   token: Token | undefined | null;
   filterArgs: Token_Filter;
+  onBlur: () => void;
 }> = ({
   network,
   anchorEl,
@@ -41,6 +42,7 @@ const TokenMenu: FC<{
   onChange,
   token,
   filterArgs,
+  onBlur,
 }) => {
   const theme = useTheme();
   const networkCustomTokens = useNetworkCustomTokens(network.id);
@@ -88,6 +90,7 @@ const TokenMenu: FC<{
       anchorEl={anchorEl}
       open={open}
       onClose={handleClose}
+      onBlur={onBlur}
       transformOrigin={{ horizontal: "right", vertical: "top" }}
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       PaperProps={{ sx: { minWidth: 280 }, square: true }}
@@ -141,7 +144,16 @@ const TokenSelect: FC<{
   placeholder?: string;
   disabled: boolean;
   filterArgs?: Token_Filter | undefined;
-}> = ({ network, token, onChange, placeholder, disabled, filterArgs = {} }) => {
+  onBlur: () => void;
+}> = ({
+  network,
+  token,
+  onChange,
+  placeholder,
+  disabled,
+  onBlur,
+  filterArgs = {},
+}) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const open = Boolean(anchorEl);
@@ -189,12 +201,14 @@ const TokenSelect: FC<{
           handleClose={handleClose}
           anchorEl={anchorEl}
           filterArgs={filterArgs}
+          onBlur={onBlur}
         />
       ) : (
         <EmptyNetworkMenu
           open={open}
           handleClose={handleClose}
           anchorEl={anchorEl}
+          onBlur={onBlur}
         />
       )}
     </>
@@ -205,13 +219,15 @@ const EmptyNetworkMenu: FC<{
   open: boolean;
   handleClose: () => void;
   anchorEl: HTMLElement | null;
-}> = ({ anchorEl, open, handleClose }) => {
+  onBlur: () => void;
+}> = ({ anchorEl, open, handleClose, onBlur }) => {
   const theme = useTheme();
   return (
     <Menu
       anchorEl={anchorEl}
       open={open}
       onClose={handleClose}
+      onBlur={onBlur}
       transformOrigin={{ horizontal: "right", vertical: "top" }}
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       PaperProps={{ sx: { minWidth: 280 }, square: true }}

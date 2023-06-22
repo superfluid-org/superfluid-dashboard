@@ -20,7 +20,6 @@ import UnsavedChangesConfirmationDialog from "./UnsavedChangesConfirmationDialog
 import EditDialogTitle from "./DialogTitle";
 import { FlowRateInput, UnitOfTime } from "../../send/FlowRateInput";
 
-import TokenSelect from "../TokenSelect";
 import RevokeButton from "../RevokeButton";
 import SaveButton from "../SaveButton";
 import { BigNumber } from "ethers";
@@ -31,6 +30,7 @@ import { FlowOperatorPermissionSwitch } from "./FlowOperatorPermissionSwitch";
 import AddressSearch from "../../send/AddressSearch";
 import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
 import SelectNetwork from "../../network/SelectNetwork";
+import TokenSelect from "../../auto-wrap/dialogs/TokenSelect";
 
 export type TokenAccessProps = {
   flowRateAllowance: {

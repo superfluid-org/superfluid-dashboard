@@ -24,6 +24,7 @@ import { Network } from "../../network/networks";
 import AutoWrapEnableDialogContentSection from "../../vesting/dialogs/AutoWrapEnableDialogContentSection";
 import { PlatformWhitelistedStatuses } from "../ScheduledWrapTables";
 import SelectNetwork from "../../network/SelectNetwork";
+import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 
 const AutoWrapAddTokenForm: FC<{
   closeEnableAutoWrapDialog: () => void;
@@ -101,12 +102,12 @@ const AutoWrapAddTokenForm: FC<{
                     placeholder={"Select token"}
                     onChange={(e) => {
                       onChange(e);
-                      onBlur();
                     }}
                     filterArgs={{
                       underlyingAddress_not:
                         "0x0000000000000000000000000000000000000000",
                     }}
+                    onBlur={onBlur}
                   />
                 )}
               />
@@ -146,6 +147,7 @@ const AutoWrapAddTokenDialogSection: FC<{
   isEnableAutoWrapDialogOpen,
   platformWhitelistedStatuses,
 }) => {
+  const { network: expectedNetwork } = useExpectedNetwork();
   return (
     <ResponsiveDialog
       data-cy={"auto-wrap-add-token-dialog-section"}
@@ -154,7 +156,9 @@ const AutoWrapAddTokenDialogSection: FC<{
       PaperProps={{ sx: { borderRadius: "20px", maxWidth: 479 } }}
       keepMounted={true}
     >
-      <AddTokenWrapFormProvider initialFormValues={{}}>
+      <AddTokenWrapFormProvider initialFormValues={{
+         network: expectedNetwork,
+      }}>
         <AutoWrapAddTokenForm
           closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}
           platformWhitelistedStatuses={platformWhitelistedStatuses}

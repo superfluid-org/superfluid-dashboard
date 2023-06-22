@@ -8,15 +8,7 @@ import { Network } from "../../network/networks";
 import { TokenType } from "../../redux/endpoints/tokenTypes";
 import { CommonFormEffects } from "../../common/CommonFormEffects";
 import { BigNumber } from "ethers";
-
-export interface Token {
-  type: TokenType;
-  address: string;
-  name: string;
-  symbol: string;
-  decimals: number;
-  isListed: boolean;
-}
+import { Token } from "@superfluid-finance/sdk-core";
 
 export type ValidUpsertTokenAccessForm = {
   data: {
