@@ -380,7 +380,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                     <>
                       {!!lensData ? (
                         <AddressListItem
-                          dataCy={"ens-entry"}
+                          dataCy={"lens-entry"}
                           selected={addresses.includes(lensData.address)}
                           disabled={disabledAddresses.includes(
                             lensData.address
