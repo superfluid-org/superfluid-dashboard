@@ -306,7 +306,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                     ButtonProps={{
                       fullWidth: false,
                       variant: "outlined",
-                      size:"small"
+                      size: "small",
                     }}
                   >
                     <Button
@@ -410,7 +410,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                     ButtonProps={{
                       fullWidth: true,
                       variant: "outlined",
-                      size:"small"
+                      size: "small",
                     }}
                   >
                     <Button

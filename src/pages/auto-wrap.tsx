@@ -44,12 +44,11 @@ const NoWalletConnected: FC = () => {
   );
 };
 
-
 const AutoWrap: NextPage = () => {
   const { visibleAddress } = useVisibleAddress();
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="lg" key={visibleAddress}>
       {visibleAddress ? (
         <ScheduledWrapTables address={visibleAddress} />
       ) : (

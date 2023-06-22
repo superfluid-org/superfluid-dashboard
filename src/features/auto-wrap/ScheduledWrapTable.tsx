@@ -54,26 +54,22 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
       address
         ? {
             chainId: network.id,
-            where: { account: address?.toLowerCase(), deletedAt: undefined },
+            where: { account: address.toLowerCase(), deletedAt: null },
             orderBy: "createdAt",
             orderDirection: "desc",
           }
         : skipToken,
       {
-        refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
         selectFromResult: (result) => ({
           ...result,
-          wrapSchedules: uniqBy(result.data?.wrapSchedules, "wrapScheduleId") ?? [],
+          wrapSchedules:
+            uniqBy(result.data?.wrapSchedules, "wrapScheduleId") ?? [],
         }),
       }
     );
 
   const paginatedWrapSchedules = useMemo(
-    () =>
-    wrapSchedules.slice(
-        page * rowsPerPage,
-        (page + 1) * rowsPerPage
-      ),
+    () => wrapSchedules.slice(page * rowsPerPage, (page + 1) * rowsPerPage),
     [page, rowsPerPage, wrapSchedules]
   );
 
@@ -109,16 +105,16 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
   }, [isWhitelistLoading, isPlatformWhitelisted, whitelistedCallback]);
 
   const handleChangePage = () => (_e: unknown, newPage: number) => {
-      setPage(newPage);
-    };
+    setPage(newPage);
+  };
 
-  const handleChangeRowsPerPage = () => (event: ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage =
+    () => (event: ChangeEvent<HTMLInputElement>) => {
       setRowsPerPage(parseInt(event.target.value, 10));
       setPage(page);
     };
 
-  if (isLoading && isWhitelistLoading) 
-    return <ScheduledWrapLoadingTable />
+  if (isLoading && isWhitelistLoading) return <ScheduledWrapLoadingTable />;
   if (!isLoading && wrapSchedules.length === 0) return null;
 
   return (
@@ -216,9 +212,7 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
           sx={{
             "> *": {
               visibility:
-              wrapSchedules.length <= rowsPerPage
-                  ? "hidden"
-                  : "visible",
+                wrapSchedules.length <= rowsPerPage ? "hidden" : "visible",
             },
           }}
         />

@@ -37,7 +37,6 @@ const AutoWrapAddTokenForm: FC<{
 
   return (
     <>
-      {" "}
       <Stack component={DialogTitle} sx={{ p: 3 }}>
         <Typography variant="h4">Add Token</Typography>
         <IconButton
@@ -79,7 +78,8 @@ const AutoWrapAddTokenForm: FC<{
                       trigger();
                     }}
                     predicates={[
-                      (network: Network) => !!platformWhitelistedStatuses[network.id]
+                      (network: Network) =>
+                        !!platformWhitelistedStatuses[network.id]
                           ?.isWhitelisted,
                     ]}
                   />
@@ -105,7 +105,8 @@ const AutoWrapAddTokenForm: FC<{
                       trigger();
                     }}
                     filterArgs={{
-                      underlyingAddress_not: "0x0000000000000000000000000000000000000000",
+                      underlyingAddress_not:
+                        "0x0000000000000000000000000000000000000000",
                     }}
                   />
                 )}

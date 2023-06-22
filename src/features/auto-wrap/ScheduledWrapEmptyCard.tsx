@@ -1,13 +1,7 @@
-import AddIcon from "@mui/icons-material/Add";
-import InboxIcon from "@mui/icons-material/Inbox";
 import {
-  alpha,
-  Avatar,
   Box,
-  Button,
   Card,
   Stack,
-  styled,
   Typography,
 } from "@mui/material";
 import AutoWrapAddTokenButtonSection from "./AutoWrapAddTokenButtonSection";

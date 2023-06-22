@@ -7,6 +7,7 @@ import { Token } from "@superfluid-finance/sdk-core";
 import { formRestorationOptions } from "../../transactionRestoration/transactionRestorations";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
+import { CommonFormEffects } from "../../common/CommonFormEffects";
 
 export type ValidAddTokenWrapForm = {
   data: {
@@ -25,11 +26,11 @@ export const defaultFormValues = {
 export type PartialAddTokenWrapForm = {
   data: {
     network:
-    | ValidAddTokenWrapForm["data"]["network"]
-    | typeof defaultFormValues.data.network;
+      | ValidAddTokenWrapForm["data"]["network"]
+      | typeof defaultFormValues.data.network;
     token:
-    | ValidAddTokenWrapForm["data"]["token"]
-    | typeof defaultFormValues.data.token;
+      | ValidAddTokenWrapForm["data"]["token"]
+      | typeof defaultFormValues.data.token;
   };
 };
 
@@ -37,14 +38,11 @@ export interface AddTokenWrapFormProviderProps {
   initialFormValues: Partial<ValidAddTokenWrapForm["data"]>;
 }
 
-
 const AddTokenWrapFormProvider: FC<
   PropsWithChildren<AddTokenWrapFormProviderProps>
 > = ({ children, initialFormValues }) => {
-
-
   const { visibleAddress } = useVisibleAddress();
-  const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
+  const { network } = useExpectedNetwork();
 
   const formSchema = useMemo(
     () =>
@@ -73,7 +71,7 @@ const AddTokenWrapFormProvider: FC<
     mode: "onChange",
   });
 
-  const { formState, setValue, trigger } =  formMethods;
+  const { setValue } = formMethods;
 
   const [isInitialized, setIsInitialized] = useState(!initialFormValues);
 
@@ -91,20 +89,11 @@ const AddTokenWrapFormProvider: FC<
     }
   }, [initialFormValues]);
 
-  useEffect(() => {
-    if (formState.isDirty) {
-      stopAutoSwitchToWalletNetwork();
-    }
-  }, [formState.isDirty]);
-
-  useEffect(() => {
-    if (formState.isDirty) {
-      trigger();
-    }
-  }, [visibleAddress]);
-
   return isInitialized ? (
-    <FormProvider {...formMethods}>{children}</FormProvider>
+    <FormProvider {...formMethods}>
+      {children}
+      <CommonFormEffects />
+    </FormProvider>
   ) : null;
 };
 

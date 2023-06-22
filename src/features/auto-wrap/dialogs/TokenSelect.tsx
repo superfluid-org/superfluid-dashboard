@@ -42,7 +42,6 @@ const TokenMenu: FC<{
   token,
   filterArgs,
 }) => {
-
   const theme = useTheme();
   const networkCustomTokens = useNetworkCustomTokens(network.id);
   const listedSuperTokensQuery = subgraphApi.useTokensQuery({

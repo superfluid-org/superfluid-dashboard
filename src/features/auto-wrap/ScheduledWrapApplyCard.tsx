@@ -1,11 +1,8 @@
 import {
-  alpha,
-  Avatar,
   Box,
   Button,
   Card,
   Stack,
-  styled,
   Typography,
 } from "@mui/material";
 import Link from "next/link";
