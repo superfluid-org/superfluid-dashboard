@@ -52,7 +52,7 @@ const useAddressNames = (addresses: string[]): AddressNames => {
           return {
             ...ensNamesMap,
             [lensResult.value.data.address.toLowerCase()]:
-              lensResult.value.data.names[0],
+              lensResult.value.data.name,
           };
         }, {})
       );
