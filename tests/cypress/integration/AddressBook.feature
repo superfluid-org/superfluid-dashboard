@@ -14,7 +14,7 @@ Feature: Address Book test cases
         And User removes the last address book entry
         Then No addresses added message is shown
         And User adds "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" as "-" on "polygon" to their address book
-        Then The last address book entry name is "0x0000...0000"
+        Then The last address book entry name is "0x618a...DE40"
         And Last added address book entry network is "polygon"
 
     Scenario: Adding an address with ENS name
