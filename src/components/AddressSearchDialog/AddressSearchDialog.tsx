@@ -179,7 +179,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
 
   const lensQuery = lensApi.useResolveNameQuery(searchTermDebounced);
   const lensData = lensQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!lensQuery.data` means that the data is not undefined nor null.
-  console.log({ lensData });
+
   const showEnsAndLens =
     !!searchTermDebounced &&
     !isAddress(searchTermDebounced) &&
@@ -380,7 +380,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                     <>
                       {!!lensData ? (
                         <AddressListItem
-                          dataCy={"ens-entry"}
+                          dataCy={"lens-entry"}
                           selected={addresses.includes(lensData.address)}
                           disabled={disabledAddresses.includes(
                             lensData.address
