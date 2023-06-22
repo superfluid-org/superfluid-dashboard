@@ -73,11 +73,10 @@ const AutoWrapAddTokenForm: FC<{
                     network={value}
                     placeholder={"Select network"}
                     onChange={(e) => {
-                      onChange(e);
                       setValue("data.token", null);
-                      onBlur();
-                      trigger();
+                      onChange(e);
                     }}
+                    onBlur={onBlur}
                     predicates={[
                       (network: Network) =>
                         !!platformWhitelistedStatuses[network.id]

@@ -103,7 +103,7 @@ const ScheduledWrapLoadingTable = () => {
           {!isBelowMd && (
             <TableRow>
               <TableCell width="200">Asset</TableCell>
-              <TableCell width="300">ERC-20 Allowance</TableCell>
+              <TableCell width="300">Underlying Token Allowance</TableCell>
               <TableCell width="300">Lower Limit</TableCell>
               <TableCell width="120" align="center">
                 Upper Limit

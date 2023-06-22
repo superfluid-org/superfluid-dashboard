@@ -203,7 +203,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
               alignItems="center"
             >
               <Stack direction="row" gap={0.5} alignItems="center">
-                ERC-20 Allowance
+                Underlying Token Allowance
                 <TooltipWithIcon
                   title="The allowance cap you’ve set up for the underlying ERC-20 tokens."
                   IconProps={{
