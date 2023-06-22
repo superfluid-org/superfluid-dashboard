@@ -11,6 +11,7 @@ export interface ResolveNameResult {
 
 const LENS_API_URL = "https://api.lens.dev/";
 
+// Lens API profile documentation - https://docs.lens.xyz/docs/get-profile
 const LensAddressQuery = gql`
   query Profile($handle: Handle) {
     profile(request: { handle: $handle }) {
