@@ -73,7 +73,7 @@ const AutoWrapAddTokenForm: FC<{
                     placeholder={"Select network"}
                     onChange={(e) => {
                       onChange(e);
-                      setValue("data.token", undefined);
+                      setValue("data.token", null);
                       onBlur();
                       trigger();
                     }}
@@ -96,13 +96,12 @@ const AutoWrapAddTokenForm: FC<{
                 render={({ field: { onChange, onBlur } }) => (
                   <TokenSelect
                     disabled={!network}
-                    network={watch("data.network")}
+                    network={network}
                     token={token}
                     placeholder={"Select token"}
                     onChange={(e) => {
                       onChange(e);
                       onBlur();
-                      trigger();
                     }}
                     filterArgs={{
                       underlyingAddress_not:

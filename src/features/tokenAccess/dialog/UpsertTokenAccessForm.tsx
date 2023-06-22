@@ -129,9 +129,9 @@ export const UpsertTokenAccessForm: FC<{
     isNewEntry
       ? reset({
           data: {
-            network: initialFormValues.network || undefined,
-            token: initialFormValues.token || undefined,
-            operatorAddress: initialFormValues.operatorAddress || undefined,
+            network: initialFormValues.network || null,
+            token: initialFormValues.token || null,
+            operatorAddress: initialFormValues.operatorAddress || "",
             flowRateAllowance: initialFormValues.flowRateAllowance || {
               amountWei: BigNumber.from(0),
               unitOfTime: UnitOfTime.Second,
@@ -210,7 +210,7 @@ export const UpsertTokenAccessForm: FC<{
                           network={value}
                           placeholder={"Select network"}
                           onChange={(e) => {
-                            setValue("data.token", undefined);
+                            setValue("data.token", null);
                             onChange(e);
                           }}
                           onBlur={onBlur}

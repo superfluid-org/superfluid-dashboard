@@ -31,7 +31,7 @@ const TokenMenu: FC<{
   handleClose: () => void;
   anchorEl: HTMLElement | null;
   onChange: (token: Token) => void;
-  token: Token | undefined;
+  token: Token | undefined | null;
   filterArgs: Token_Filter;
 }> = ({
   network,
@@ -135,8 +135,8 @@ const TokenItem: FC<ItemProps> = ({ token, selected, onClick }) => (
 );
 
 const TokenSelect: FC<{
-  network: Network | undefined;
-  token: Token | undefined;
+  network: Network | undefined | null;
+  token: Token | undefined | null;
   onChange: (token: Token) => void;
   placeholder?: string;
   disabled: boolean;

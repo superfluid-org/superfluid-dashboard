@@ -34,8 +34,8 @@ export type ValidUpsertTokenAccessForm = {
 
 export type PartialUpsertTokenAccessForm = {
   data: {
-    network: ValidUpsertTokenAccessForm["data"]["network"] | undefined;
-    token: ValidUpsertTokenAccessForm["data"]["token"] | undefined;
+    network: ValidUpsertTokenAccessForm["data"]["network"] | null;
+    token: ValidUpsertTokenAccessForm["data"]["token"] | null;
     operatorAddress: ValidUpsertTokenAccessForm["data"]["operatorAddress"];
     tokenAllowanceWei: ValidUpsertTokenAccessForm["data"]["tokenAllowanceWei"];
     flowRateAllowance: ValidUpsertTokenAccessForm["data"]["flowRateAllowance"];
@@ -44,8 +44,8 @@ export type PartialUpsertTokenAccessForm = {
 };
 
 export const defaultFormData: PartialUpsertTokenAccessForm["data"] = {
-  network: undefined,
-  token: undefined,
+  network: null,
+  token: null,
   operatorAddress: "",
   // Permission properties
   tokenAllowanceWei: BigNumber.from(0),

@@ -1,37 +1,31 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { object } from "yup";
+import { ObjectSchema, mixed, object } from "yup";
 import { Network } from "../../network/networks";
 import { Token } from "@superfluid-finance/sdk-core";
 import { formRestorationOptions } from "../../transactionRestoration/transactionRestorations";
-import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
-import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { CommonFormEffects } from "../../common/CommonFormEffects";
 
 export type ValidAddTokenWrapForm = {
   data: {
-    network: Network | undefined;
-    token: Token | undefined;
+    network: Network;
+    token: Token;
   };
-};
-
-export const defaultFormValues = {
-  data: {
-    network: undefined,
-    token: undefined,
-  },
 };
 
 export type PartialAddTokenWrapForm = {
   data: {
-    network:
-      | ValidAddTokenWrapForm["data"]["network"]
-      | typeof defaultFormValues.data.network;
-    token:
-      | ValidAddTokenWrapForm["data"]["token"]
-      | typeof defaultFormValues.data.token;
+    network: ValidAddTokenWrapForm["data"]["network"] | null;
+    token: ValidAddTokenWrapForm["data"]["token"] | null;
   };
+};
+
+export const defaultFormValues: PartialAddTokenWrapForm = {
+  data: {
+    network: null,
+    token: null,
+  },
 };
 
 export interface AddTokenWrapFormProviderProps {
@@ -41,21 +35,15 @@ export interface AddTokenWrapFormProviderProps {
 const AddTokenWrapFormProvider: FC<
   PropsWithChildren<AddTokenWrapFormProviderProps>
 > = ({ children, initialFormValues }) => {
-  const { visibleAddress } = useVisibleAddress();
-  const { network } = useExpectedNetwork();
-
-  const formSchema = useMemo(
+  const formSchema: ObjectSchema<ValidAddTokenWrapForm> = useMemo(
     () =>
       object({
-        data: object().shape(
-          {
-            network: object().required(),
-            token: object().required(),
-          },
-          []
-        ),
+        data: object({
+          network: mixed<Network>().required(),
+          token: mixed<Token>().required(),
+        }),
       }),
-    [network, visibleAddress]
+    []
   );
 
   const defaultValues = {
@@ -65,7 +53,7 @@ const AddTokenWrapFormProvider: FC<
     },
   };
 
-  const formMethods = useForm<ValidAddTokenWrapForm>({
+  const formMethods = useForm<PartialAddTokenWrapForm>({
     defaultValues,
     resolver: yupResolver(formSchema),
     mode: "onChange",
