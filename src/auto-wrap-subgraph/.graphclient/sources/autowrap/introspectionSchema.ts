@@ -233,7 +233,7 @@ const schemaAST = {
           "kind": "FieldDefinition",
           "description": {
             "kind": "StringValue",
-            "value": "Holds the addresses for sender and receiver.\n",
+            "value": "Holds the addresses for strategy.\n",
             "block": true
           },
           "name": {
@@ -4021,7 +4021,7 @@ const schemaAST = {
           "kind": "FieldDefinition",
           "description": {
             "kind": "StringValue",
-            "value": "Holds the addresses for sender and receiver.\n",
+            "value": "Holds the addresses for manager.\n",
             "block": true
           },
           "name": {
@@ -8301,7 +8301,7 @@ const schemaAST = {
           "kind": "FieldDefinition",
           "description": {
             "kind": "StringValue",
-            "value": "Holds the addresses for sender and receiver.\n",
+            "value": "Holds the addresses for strategy.\n",
             "block": true
           },
           "name": {
@@ -13334,7 +13334,7 @@ const schemaAST = {
           "kind": "FieldDefinition",
           "description": {
             "kind": "StringValue",
-            "value": "Holds the addresses for sender and receiver.\n",
+            "value": "Holds the hex id.\n",
             "block": true
           },
           "name": {
@@ -15842,7 +15842,7 @@ const schemaAST = {
           "kind": "FieldDefinition",
           "description": {
             "kind": "StringValue",
-            "value": "Holds the addresses for sender and receiver.\n",
+            "value": "Holds the addresses for superToken, liquidityToken, strategy and account.\n",
             "block": true
           },
           "name": {
@@ -18999,7 +18999,7 @@ const schemaAST = {
           "kind": "FieldDefinition",
           "description": {
             "kind": "StringValue",
-            "value": "Holds the addresses for sender and receiver.\n",
+            "value": "Holds the addresses for account, strategy, liquidityToken and superToken.\n",
             "block": true
           },
           "name": {

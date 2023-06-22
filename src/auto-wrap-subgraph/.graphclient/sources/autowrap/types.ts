@@ -3,7 +3,7 @@
 import { InContextSdkMethod } from '@graphql-mesh/types';
 import { MeshContext } from '@graphql-mesh/runtime';
 
-export namespace VestingTypes {
+export namespace AutowrapTypes {
   export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -29,7 +29,7 @@ export type AddedApprovedStrategyEvent = Event & {
   order: Scalars['BigInt'];
   name: Scalars['String'];
   /**
-   * Holds the addresses for sender and receiver.
+   * Holds the addresses for strategy.
    *
    */
   addresses: Array<Scalars['Bytes']>;
@@ -293,7 +293,7 @@ export type LimitsChangedEvent = Event & {
   order: Scalars['BigInt'];
   name: Scalars['String'];
   /**
-   * Holds the addresses for sender and receiver.
+   * Holds the addresses for manager.
    *
    */
   addresses: Array<Scalars['Bytes']>;
@@ -626,7 +626,7 @@ export type RemovedApprovedStrategyEvent = Event & {
   order: Scalars['BigInt'];
   name: Scalars['String'];
   /**
-   * Holds the addresses for sender and receiver.
+   * Holds the addresses for strategy.
    *
    */
   addresses: Array<Scalars['Bytes']>;
@@ -1020,7 +1020,7 @@ export type WrapExecutedEvent = Event & {
   order: Scalars['BigInt'];
   name: Scalars['String'];
   /**
-   * Holds the addresses for sender and receiver.
+   * Holds the hex id.
    *
    */
   addresses: Array<Scalars['Bytes']>;
@@ -1190,7 +1190,7 @@ export type WrapScheduleCreatedEvent = Event & {
   order: Scalars['BigInt'];
   name: Scalars['String'];
   /**
-   * Holds the addresses for sender and receiver.
+   * Holds the addresses for superToken, liquidityToken, strategy and account.
    *
    */
   addresses: Array<Scalars['Bytes']>;
@@ -1398,7 +1398,7 @@ export type WrapScheduleDeletedEvent = Event & {
   order: Scalars['BigInt'];
   name: Scalars['String'];
   /**
-   * Holds the addresses for sender and receiver.
+   * Holds the addresses for account, strategy, liquidityToken and superToken.
    *
    */
   addresses: Array<Scalars['Bytes']>;
@@ -1881,7 +1881,7 @@ export type _SubgraphErrorPolicy_ =
   };
 
   export type Context = {
-      ["vesting"]: { Query: QuerySdk, Mutation: MutationSdk, Subscription: SubscriptionSdk },
+      ["autowrap"]: { Query: QuerySdk, Mutation: MutationSdk, Subscription: SubscriptionSdk },
       ["url"]: Scalars['ID']
     };
 }

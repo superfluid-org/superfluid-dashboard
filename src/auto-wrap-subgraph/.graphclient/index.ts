@@ -20,10 +20,10 @@ import { getMesh, ExecuteMeshFn, SubscribeMeshFn, MeshContext as BaseMeshContext
 import { MeshStore, FsStoreStorageAdapter } from '@graphql-mesh/store';
 import { path as pathModule } from '@graphql-mesh/cross-helpers';
 import { ImportFn } from '@graphql-mesh/types';
-import type { VestingTypes } from './sources/vesting/types';
-import * as importedModule$0 from "./sources/vesting/introspectionSchema";
-export type Maybe<T> = T | undefined;
-export type InputMaybe<T> = T | undefined;
+import type { AutowrapTypes } from './sources/autowrap/types';
+import * as importedModule$0 from "./sources/autowrap/introspectionSchema";
+export type Maybe<T> = T | null | undefined;
+export type InputMaybe<T> = T | null | undefined;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
@@ -51,7 +51,7 @@ export type AddedApprovedStrategyEvent = Event & {
   order: Scalars['BigInt'];
   name: Scalars['String'];
   /**
-   * Holds the addresses for sender and receiver.
+   * Holds the addresses for strategy.
    *
    */
   addresses: Array<Scalars['Bytes']>;
@@ -315,7 +315,7 @@ export type LimitsChangedEvent = Event & {
   order: Scalars['BigInt'];
   name: Scalars['String'];
   /**
-   * Holds the addresses for sender and receiver.
+   * Holds the addresses for manager.
    *
    */
   addresses: Array<Scalars['Bytes']>;
@@ -648,7 +648,7 @@ export type RemovedApprovedStrategyEvent = Event & {
   order: Scalars['BigInt'];
   name: Scalars['String'];
   /**
-   * Holds the addresses for sender and receiver.
+   * Holds the addresses for strategy.
    *
    */
   addresses: Array<Scalars['Bytes']>;
@@ -1042,7 +1042,7 @@ export type WrapExecutedEvent = Event & {
   order: Scalars['BigInt'];
   name: Scalars['String'];
   /**
-   * Holds the addresses for sender and receiver.
+   * Holds the hex id.
    *
    */
   addresses: Array<Scalars['Bytes']>;
@@ -1212,7 +1212,7 @@ export type WrapScheduleCreatedEvent = Event & {
   order: Scalars['BigInt'];
   name: Scalars['String'];
   /**
-   * Holds the addresses for sender and receiver.
+   * Holds the addresses for superToken, liquidityToken, strategy and account.
    *
    */
   addresses: Array<Scalars['Bytes']>;
@@ -1420,7 +1420,7 @@ export type WrapScheduleDeletedEvent = Event & {
   order: Scalars['BigInt'];
   name: Scalars['String'];
   /**
-   * Holds the addresses for sender and receiver.
+   * Holds the addresses for account, strategy, liquidityToken and superToken.
    *
    */
   addresses: Array<Scalars['Bytes']>;
@@ -2239,7 +2239,7 @@ export type DirectiveResolvers<ContextType = MeshContext> = ResolversObject<{
   derivedFrom?: DerivedFromDirectiveResolver<any, any, ContextType>;
 }>;
 
-export type MeshContext = VestingTypes.Context & BaseMeshContext;
+export type MeshContext = AutowrapTypes.Context & BaseMeshContext;
 
 
 import { fileURLToPath } from '@graphql-mesh/utils';
@@ -2248,7 +2248,7 @@ const baseDir = pathModule.join(pathModule.dirname(fileURLToPath(import.meta.url
 const importFn: ImportFn = <T>(moduleId: string) => {
   const relativeModuleId = (pathModule.isAbsolute(moduleId) ? pathModule.relative(baseDir, moduleId) : moduleId).split('\\').join('/').replace(baseDir + '/', '');
   switch(relativeModuleId) {
-    case ".graphclient/sources/vesting/introspectionSchema":
+    case ".graphclient/sources/autowrap/introspectionSchema":
       return Promise.resolve(importedModule$0) as T;
     
     default:
@@ -2281,22 +2281,22 @@ const cache = new (MeshCache as any)({
 const sources: MeshResolvedSource[] = [];
 const transforms: MeshTransform[] = [];
 const additionalEnvelopPlugins: MeshPlugin<any>[] = [];
-const vestingTransforms = [];
+const autowrapTransforms = [];
 const additionalTypeDefs = [] as any[];
-const vestingHandler = new GraphqlHandler({
-              name: "vesting",
-              config: {"endpoint":"{context.url:https://api.thegraph.com/subgraphs/name/msoni89/auto-wrap-v1-mumbai-test}","retry":5},
+const autowrapHandler = new GraphqlHandler({
+              name: "autowrap",
+              config: {"endpoint":"{context.url:https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-polygon-mainnet}","retry":5},
               baseDir,
               cache,
               pubsub,
-              store: sourcesStore.child("vesting"),
-              logger: logger.child("vesting"),
+              store: sourcesStore.child("autowrap"),
+              logger: logger.child("autowrap"),
               importFn,
             });
 sources[0] = {
-          name: 'vesting',
-          handler: vestingHandler,
-          transforms: vestingTransforms
+          name: 'autowrap',
+          handler: autowrapHandler,
+          transforms: autowrapTransforms
         }
 const additionalResolvers = [] as any[]
 const merger = new(BareMerger as any)({

@@ -19,7 +19,7 @@ type AddedApprovedStrategyEvent implements Event {
   order: BigInt!
   name: String!
   """
-  Holds the addresses for sender and receiver.
+  Holds the addresses for strategy.
   
   """
   addresses: [Bytes!]!
@@ -297,7 +297,7 @@ type LimitsChangedEvent implements Event {
   order: BigInt!
   name: String!
   """
-  Holds the addresses for sender and receiver.
+  Holds the addresses for manager.
   
   """
   addresses: [Bytes!]!
@@ -681,7 +681,7 @@ type RemovedApprovedStrategyEvent implements Event {
   order: BigInt!
   name: String!
   """
-  Holds the addresses for sender and receiver.
+  Holds the addresses for strategy.
   
   """
   addresses: [Bytes!]!
@@ -1126,7 +1126,7 @@ type WrapExecutedEvent implements Event {
   order: BigInt!
   name: String!
   """
-  Holds the addresses for sender and receiver.
+  Holds the hex id.
   
   """
   addresses: [Bytes!]!
@@ -1288,7 +1288,7 @@ type WrapScheduleCreatedEvent implements Event {
   order: BigInt!
   name: String!
   """
-  Holds the addresses for sender and receiver.
+  Holds the addresses for superToken, liquidityToken, strategy and account.
   
   """
   addresses: [Bytes!]!
@@ -1497,7 +1497,7 @@ type WrapScheduleDeletedEvent implements Event {
   order: BigInt!
   name: String!
   """
-  Holds the addresses for sender and receiver.
+  Holds the addresses for account, strategy, liquidityToken and superToken.
   
   """
   addresses: [Bytes!]!
