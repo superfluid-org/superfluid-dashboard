@@ -2,10 +2,12 @@ import { useMediaQuery, useTheme } from "@mui/material";
 import { useRouter } from "next/router";
 import {
   FC,
+  MutableRefObject,
   PropsWithChildren,
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 
@@ -14,7 +16,7 @@ const LayoutContext = createContext<{
   setTransactionDrawerOpen: (open: boolean) => void;
   navigationDrawerOpen: boolean;
   setNavigationDrawerOpen: (open: boolean) => void;
-  previousRouterPath: string | null;
+  previousRouterPathRef: MutableRefObject<string | null>;
 }>(undefined!);
 
 export const LayoutContextProvider: FC<PropsWithChildren> = ({ children }) => {
@@ -22,9 +24,7 @@ export const LayoutContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("lg"));
 
   const router = useRouter();
-  const [previousRouterPath, setPreviousRouterPath] = useState<string | null>(
-    null
-  );
+  const previousRouterPathRef = useRef<string | null>(null);
 
   // When user navigates to a new page then enable automatic switching to user wallet's network again.
   useEffect(() => {
@@ -33,7 +33,7 @@ export const LayoutContextProvider: FC<PropsWithChildren> = ({ children }) => {
       { shallow }: { shallow: boolean }
     ) => {
       if (!shallow) {
-        setPreviousRouterPath(router.asPath);
+        previousRouterPathRef.current = router.asPath;
       }
     };
     router.events.on("routeChangeStart", onRouteChange);
@@ -56,7 +56,7 @@ export const LayoutContextProvider: FC<PropsWithChildren> = ({ children }) => {
         setTransactionDrawerOpen,
         navigationDrawerOpen,
         setNavigationDrawerOpen,
-        previousRouterPath,
+        previousRouterPathRef,
       }}
     >
       {children}
