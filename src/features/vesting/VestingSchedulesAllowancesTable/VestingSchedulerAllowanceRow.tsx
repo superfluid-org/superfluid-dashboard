@@ -819,7 +819,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
           </Collapse>
         </TableCell>
       </TableRow>
-      {token && (
+      {isAutoWrappable && (
         <AutoWrapEnableDialogSection
           key={"auto-wrap-enable-dialog-section"}
           closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}
