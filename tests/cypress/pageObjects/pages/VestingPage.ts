@@ -179,10 +179,7 @@ export class VestingPage extends BasePage {
   }
 
   static validateVestingSchedulePreview() {
-    this.hasText(
-      PREVIEW_RECEIVER,
-      this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2")
-    );
+    this.hasText(PREVIEW_RECEIVER, "elvijs.lens");
     this.validateSchedulePreviewDetails(cliffDate, startDate, endDate);
     this.hasText(PREVIEW_TOTAL_AMOUNT, "2 fTUSDx");
     this.hasText(PREVIEW_CLIFF_AMOUNT, "1 fTUSDx");

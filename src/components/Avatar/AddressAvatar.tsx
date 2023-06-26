@@ -2,6 +2,7 @@ import { Avatar, AvatarProps } from "@mui/material";
 import { memo } from "react";
 import Blockies from "react-blockies";
 import { ensApi } from "../../features/ens/ensApi.slice";
+import { lensApi } from "../../features/lens/lensApi.slice";
 
 interface BlockiesProps {
   size?: number;
@@ -25,13 +26,25 @@ export default memo(function AddressAvatar({
   AvatarProps = {},
   BlockiesProps = { size: 12, scale: 3 },
 }: AddressAvatarProps & RainbowKitAvatarComponentProps) {
-  const { data: ensAvatarUrl } = ensApi.useGetAvatarQuery(address);
+  const { data: ensAvatarUrl, isFetching: ensFetching } =
+    ensApi.useGetAvatarQuery(address);
+  const { data: lensData } = lensApi.useLookupAddressQuery(address);
+
   if (ensAvatarUrl) {
     return (
       <Avatar
         alt="ens avatar"
         variant="rounded"
         src={ensAvatarUrl}
+        {...AvatarProps}
+      />
+    );
+  } else if (!ensFetching && lensData?.avatarUrl) {
+    return (
+      <Avatar
+        alt="lens avatar"
+        variant="rounded"
+        src={lensData.avatarUrl}
         {...AvatarProps}
       />
     );

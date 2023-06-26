@@ -6,15 +6,15 @@ Feature: Address Book test cases
 
     Scenario: Adding, editing and removing an address book entry
         Given "Address book Page" is open without connecting a wallet
-        And User adds "0x0000000000000000000000000000000000000000" as "Testing" on "-" to their address book
+        And User adds "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" as "Testing" on "-" to their address book
         Then The last address book entry name is "Testing"
         And Last added address book entry network is "-"
         And User edits the name of the last address book entry to "testing"
         Then The last address book entry name is "testing"
         And User removes the last address book entry
         Then No addresses added message is shown
-        And User adds "0x0000000000000000000000000000000000000000" as "-" on "polygon" to their address book
-        Then The last address book entry name is "0x0000...0000"
+        And User adds "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" as "-" on "polygon" to their address book
+        Then The last address book entry name is "0x618a...DE40"
         And Last added address book entry network is "polygon"
 
     Scenario: Adding an address with ENS name

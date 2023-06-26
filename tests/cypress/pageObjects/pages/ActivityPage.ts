@@ -8,6 +8,7 @@ import { Common } from "./Common";
 import { format } from "date-fns";
 import { DataTable } from "@badeball/cypress-cucumber-preprocessor";
 import superfluidMetadata from "@superfluid-finance/metadata";
+import { ethers } from "ethers";
 
 const ACTIVITY_TYPE = "[data-cy=activity]";
 const ACTIVITY_NAME = `${ACTIVITY_TYPE} h6`;
@@ -194,10 +195,13 @@ export class ActivityPage extends BasePage {
   }
 
   static validateActivityVisibleByAddress(address: string) {
-    this.hasLength(AMOUNT_TO_FROM, 2);
+    let assertableString = ethers.utils.isAddress(address)
+      ? BasePage.shortenHex(address)
+      : address;
     cy.get(AMOUNT_TO_FROM).each((el) => {
-      cy.wrap(el).should("have.text", `From${BasePage.shortenHex(address)}`);
+      cy.wrap(el).should("have.text", `From${assertableString}`);
     });
+    this.hasLength(AMOUNT_TO_FROM, 2);
   }
 
   static waitForSkeletonsToDisappear() {

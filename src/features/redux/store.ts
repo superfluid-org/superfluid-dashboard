@@ -8,7 +8,10 @@ import {
   Middleware,
   MiddlewareAPI,
 } from "@reduxjs/toolkit";
-import { defaultSerializeQueryArgs, setupListeners } from "@reduxjs/toolkit/query";
+import {
+  defaultSerializeQueryArgs,
+  setupListeners,
+} from "@reduxjs/toolkit/query";
 import * as Sentry from "@sentry/react";
 import {
   allRpcEndpoints,
@@ -37,6 +40,7 @@ import accountingApi from "../accounting/accountingApi.slice";
 import { addressBookSlice } from "../addressBook/addressBook.slice";
 import { customTokensSlice } from "../customTokens/customTokens.slice";
 import { ensApi } from "../ens/ensApi.slice";
+import { lensApi } from "../lens/lensApi.slice";
 import faucetApi from "../faucet/faucetApi.slice";
 import { flagsSlice } from "../flags/flags.slice";
 import gasApi from "../gas/gasApi.slice";
@@ -188,6 +192,7 @@ export const reduxStore = configureStore({
     [transactionTracker.reducerPath]: transactionTrackerPersistedReducer,
     [assetApiSlice.reducerPath]: assetApiSlice.reducer,
     [ensApi.reducerPath]: ensApi.reducer,
+    [lensApi.reducerPath]: lensApi.reducer,
     [gasApi.reducerPath]: gasApi.reducer,
     [platformApi.reducerPath]: platformApi.reducer,
     [faucetApi.reducerPath]: faucetApi.reducer,
@@ -230,6 +235,7 @@ export const reduxStore = configureStore({
       .concat(subgraphApi.middleware)
       .concat(assetApiSlice.middleware)
       .concat(ensApi.middleware)
+      .concat(lensApi.middleware)
       .concat(gasApi.middleware)
       .concat(platformApi.middleware)
       .concat(faucetApi.middleware)

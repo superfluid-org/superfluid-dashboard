@@ -2,6 +2,7 @@ import { BasePage } from "../BasePage";
 import { format } from "date-fns";
 import { networksBySlug } from "../../superData/networks";
 import { Common, TOKEN_ANIMATION, TOKEN_BALANCE } from "./Common";
+import { ethers } from "ethers";
 
 const TOKEN_GRAPH = "[data-cy=token-graph]";
 const LIQUIDATION_DATE = "[data-cy=liquidation-date]";
@@ -75,9 +76,12 @@ export class IndividualTokenPage extends BasePage {
     amount: string,
     fromTo: string
   ) {
+    let assertableString = ethers.utils.isAddress(address)
+      ? BasePage.shortenHex(address)
+      : address;
     this.hasText(
       `${STREAM_ROWS} ${SENDER_RECEIVER_ADDRESSES}`,
-      BasePage.shortenHex(address),
+      assertableString,
       0
     );
     let plusOrMinus;
