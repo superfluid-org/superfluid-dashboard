@@ -328,6 +328,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   });
 
   const isAutoWrappable =
+    network.autoWrap &&
     token &&
     getSuperTokenType({
       network,
@@ -469,19 +470,20 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
             </TableCell>
             {network.autoWrap && (
               <TableCell align="center">
-                {isAutoWrapLoading ? (
-                  <Skeleton variant="circular" width={24} height={24} />
-                ) : isAutoWrapOK ? (
-                  <CheckCircleRoundedIcon
-                    data-cy={`${tokenSymbol}-auto-wrap-status`}
-                    color="primary"
-                  />
-                ) : isAutoWrappable ? (
-                  <RemoveCircleRoundedIcon
-                    data-cy={`${tokenSymbol}-auto-wrap-status`}
-                    color="disabled"
-                  />
-                ) : null}
+                {isAutoWrappable &&
+                  (isAutoWrapLoading ? (
+                    <Skeleton variant="circular" width={24} height={24} />
+                  ) : isAutoWrapOK ? (
+                    <CheckCircleRoundedIcon
+                      data-cy={`${tokenSymbol}-auto-wrap-status`}
+                      color="primary"
+                    />
+                  ) : (
+                    <RemoveCircleRoundedIcon
+                      data-cy={`${tokenSymbol}-auto-wrap-status`}
+                      color="disabled"
+                    />
+                  ))}
               </TableCell>
             )}
           </>
@@ -607,8 +609,8 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                       align={"center"}
                       sx={{ padding: "25px" }}
                     >
-                      {token && network.autoWrap ? (
-                        isAutoWrapLoading ? (
+                      {isAutoWrappable &&
+                        (isAutoWrapLoading ? (
                           <Skeleton
                             variant="rectangular"
                             width={24}
@@ -621,12 +623,11 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                             isVisible={true}
                             token={token as VestingToken}
                           />
-                        ) : isAutoWrappable ? (
+                        ) : (
                           <EnableAutoWrapTransactionButton
                             openEnableAutoWrapDialog={openEnableAutoWrapDialog}
                           />
-                        ) : null
-                      ) : null}
+                        ))}
                     </TableCell>
                     <TableCell width={isBelowMd ? "68px" : "100px"} />
                   </TableRow>
@@ -778,8 +779,8 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                     alignItems="center"
                   >
                     <Typography variant="h7">Auto-Wrap</Typography>
-                    {token && network.autoWrap ? (
-                      isAutoWrapLoading ? (
+                    {isAutoWrappable &&
+                      (isAutoWrapLoading ? (
                         <Skeleton
                           variant="rectangular"
                           width={24}
@@ -793,13 +794,12 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                           token={token as VestingToken}
                           ButtonProps={{ fullWidth: false }}
                         />
-                      ) : isAutoWrappable ? (
+                      ) : (
                         <EnableAutoWrapTransactionButton
                           ButtonProps={{ fullWidth: false }}
                           openEnableAutoWrapDialog={openEnableAutoWrapDialog}
                         />
-                      ) : null
-                    ) : null}
+                      ))}
                   </Stack>
                 </Box>
                 {showFixRequiredAccessButton && (
