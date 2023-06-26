@@ -2,8 +2,7 @@ import { ButtonProps, Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { constants } from "ethers";
 import { FC, memo } from "react";
-import { useQuery, useWalletClient } from "wagmi";
-import { usePrepareErc20Approve } from "../../../generated";
+import { usePrepareContractWrite, useQuery, useWalletClient } from "wagmi";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { rpcApi, subgraphApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
@@ -12,6 +11,7 @@ import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverride
 import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
 import { Token } from "@superfluid-finance/sdk-core";
 import { toVestingToken } from "../useVestingToken";
+import { erc20ABI } from "../../../generated";
 
 const TX_TITLE: TransactionTitle = "Disable Auto-Wrap";
 
@@ -37,16 +37,20 @@ const DisableAutoWrapTransactionButton: FC<{
     amount: BigInt(constants.Zero.toString()),
   };
 
-  const { config } = usePrepareErc20Approve(
-    network.autoWrap
-      ? {
+  const disabled = isDisabled_ && !!network.autoWrap && walletClient;
+
+  const { config } = usePrepareContractWrite(
+    disabled
+      ? undefined
+      : {
+          abi: erc20ABI,
+          functionName: "approve",
           address: vestingToken.underlyingAddress as `0x${string}`,
           chainId: network.id,
           args: [primaryArgs.spender, primaryArgs.amount],
           walletClient,
           ...overrides,
         }
-      : undefined
   );
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();

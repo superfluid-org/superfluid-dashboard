@@ -2,10 +2,7 @@ import { Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { constants } from "ethers";
 import { FC, memo } from "react";
-import {
-  useQuery,
-  useWalletClient,
-} from "wagmi";
+import { usePrepareContractWrite, useQuery, useWalletClient } from "wagmi";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { rpcApi, subgraphApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
@@ -13,7 +10,7 @@ import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { VestingToken } from "../CreateVestingSection";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
-import { usePrepareErc20Approve } from "../../../generated";
+import { erc20ABI } from "../../../generated";
 
 const TX_TITLE: TransactionTitle = "Approve Allowance";
 
@@ -37,11 +34,13 @@ const AutoWrapAllowanceTransactionButton: FC<{
     amount: BigInt(constants.MaxUint256.toString()),
   };
 
-  const disabled = isDisabled_ && !!network.autoWrap;
-  const { config } = usePrepareErc20Approve(
+  const disabled = isDisabled_ && !!network.autoWrap && walletClient;
+  const { config } = usePrepareContractWrite(
     disabled
       ? undefined
       : {
+          abi: erc20ABI,
+          functionName: "approve",
           address: token.underlyingAddress as `0x${string}`,
           chainId: network.id,
           args: [primaryArgs.spender, primaryArgs.amount],
@@ -69,8 +68,8 @@ const AutoWrapAllowanceTransactionButton: FC<{
               if (!config) throw new Error("This should never happen!");
               setDialogLoadingInfo(
                 <Typography variant="h5" color="text.secondary" translate="yes">
-                  You are approving Auto-Wrap token allowance for the
-                  underlying token.
+                  You are approving Auto-Wrap token allowance for the underlying
+                  token.
                 </Typography>
               );
 

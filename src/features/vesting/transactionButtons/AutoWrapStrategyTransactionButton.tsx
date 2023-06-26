@@ -2,11 +2,8 @@ import { Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { BigNumber } from "ethers";
 import { FC, memo } from "react";
-import { useQuery, useWalletClient } from "wagmi";
-import {
-  autoWrapManagerAddress,
-  usePrepareAutoWrapManagerCreateWrapSchedule,
-} from "../../../generated";
+import { usePrepareContractWrite, useQuery, useWalletClient } from "wagmi";
+import { autoWrapManagerABI, autoWrapManagerAddress } from "../../../generated";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { rpcApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
@@ -40,11 +37,13 @@ const AutoWrapStrategyTransactionButton: FC<{
     upperLimit: BigInt(BigNumber.from(network.autoWrap!.upperLimit).toString()),
   };
 
-  const disabled = isDisabled_ && !!network.autoWrap;
-  const { config } = usePrepareAutoWrapManagerCreateWrapSchedule(
+  const disabled = isDisabled_ && !!network.autoWrap && walletClient;
+  const { config } = usePrepareContractWrite(
     disabled
       ? undefined
       : {
+          abi: autoWrapManagerABI,
+          functionName: "createWrapSchedule",
           args: [
             primaryArgs.superToken,
             primaryArgs.strategy,
