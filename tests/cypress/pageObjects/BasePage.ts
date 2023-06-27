@@ -426,7 +426,6 @@ export class BasePage {
   }
 
   static generateNewWallet() {
-    const { default: Wallet } = require("ethereumjs-wallet");
     const wallet = Wallet.generate();
     const privateKey = wallet.getPrivateKeyString();
     const publicKey = wallet.getChecksumAddressString();

@@ -390,7 +390,6 @@ export class Common extends BasePage {
   }
 
   static checkThatSuperfluidRPCisNotBehind(minutes: number, network: string) {
-    const Web3 = require("web3");
     const web3 = new Web3(
       new Web3.providers.HttpProvider(
         networksBySlug.get(network).superfluidRpcUrl
@@ -399,7 +398,7 @@ export class Common extends BasePage {
     cy.wrap(null).then(() => {
       return web3.eth.getBlock("latest").then((block) => {
         let blockVsTimeNowDifferenceInMinutes =
-          (Date.now() - block.timestamp * 1000) / 1000 / 60;
+          (Date.now() - Number(block.timestamp) * 1000) / 1000 / 60;
         expect(blockVsTimeNowDifferenceInMinutes).to.be.lessThan(
           minutes,
           `${

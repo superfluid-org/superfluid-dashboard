@@ -2,8 +2,9 @@ import { defineConfig } from "cypress";
 import { addCucumberPreprocessorPlugin } from "@badeball/cypress-cucumber-preprocessor";
 import webpackPreprocessor from "@cypress/webpack-preprocessor";
 import webpack from "webpack";
-import { cloudPlugin } from "cypress-cloud/plugin";
 import synpressPlugins from "@synthetixio/synpress/plugins";
+import fs from "fs";
+import codeCoverageTask from "@cypress/code-coverage/task";
 
 async function setupNodeEvents(
   on: Cypress.PluginEvents,
@@ -12,10 +13,8 @@ async function setupNodeEvents(
   await addCucumberPreprocessorPlugin(on, config);
 
   if (config.env.coverage) {
-    require("@cypress/code-coverage/task")(on, config);
+    codeCoverageTask(on, config);
   }
-
-  const fs = require("fs");
 
   on("task", {
     downloads: (downloadspath) => {

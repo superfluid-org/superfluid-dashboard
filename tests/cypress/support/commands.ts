@@ -1,1 +1,1 @@
-require("cypress-iframe");
+import "cypress-iframe";

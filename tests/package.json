@@ -50,5 +50,8 @@
     "*.{ts,tsx,feature,json,js}": [
       "prettier --write"
     ]
+  },
+  "devDependencies": {
+    "webpack-cli": "^5.1.4"
   }
 }
