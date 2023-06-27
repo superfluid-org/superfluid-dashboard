@@ -40,14 +40,14 @@ import {
   useAppDispatch,
   useAppSelector,
 } from "../features/redux/store";
-import AddressSearchIndex from "../features/send/AddressSearchIndex";
 import StreamActiveFilter, {
   StreamActiveType,
 } from "../features/streamsTable/StreamActiveFilter";
 import { getAddress } from "../utils/memoizedEthersUtils";
-import { wagmiRpcProvider } from "../features/wallet/WagmiManager";
+import { wagmiPublicClient } from "../features/wallet/WagmiManager";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { LoadingButton } from "@mui/lab";
+import { publicClientToProvider } from "../utils/wagmiEthersAdapters";
 
 const AddressBook: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -187,7 +187,9 @@ const AddressBook: NextPage = () => {
               isContract: false,
             };
 
-            const provider = wagmiRpcProvider({ chainId: chainIds[0] });
+            const provider = publicClientToProvider(
+              wagmiPublicClient({ chainId: chainIds[0] })
+            );
 
             if ((await provider.getCode(parsedItem.address)) !== "0x") {
               parsedItem.isContract = true;

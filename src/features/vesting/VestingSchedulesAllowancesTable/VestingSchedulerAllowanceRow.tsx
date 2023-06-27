@@ -147,6 +147,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   });
 
   const isAutoWrappable =
+    network.autoWrap &&
     token &&
     getSuperTokenType({
       network,
@@ -288,19 +289,20 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
             </TableCell>
             {network.autoWrap && (
               <TableCell align="center">
-                {isAutoWrapLoading ? (
-                  <Skeleton variant="circular" width={24} height={24} />
-                ) : isAutoWrapOK ? (
-                  <CheckCircleRoundedIcon
-                    data-cy={`${tokenSymbol}-auto-wrap-status`}
-                    color="primary"
-                  />
-                ) : isAutoWrappable ? (
-                  <RemoveCircleRoundedIcon
-                    data-cy={`${tokenSymbol}-auto-wrap-status`}
-                    color="disabled"
-                  />
-                ) : null}
+                {isAutoWrappable &&
+                  (isAutoWrapLoading ? (
+                    <Skeleton variant="circular" width={24} height={24} />
+                  ) : isAutoWrapOK ? (
+                    <CheckCircleRoundedIcon
+                      data-cy={`${tokenSymbol}-auto-wrap-status`}
+                      color="primary"
+                    />
+                  ) : (
+                    <RemoveCircleRoundedIcon
+                      data-cy={`${tokenSymbol}-auto-wrap-status`}
+                      color="disabled"
+                    />
+                  ))}
               </TableCell>
             )}
           </>
@@ -426,8 +428,8 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                       align={"center"}
                       sx={{ padding: "10px" }}
                     >
-                      {token && network.autoWrap ? (
-                        isAutoWrapLoading ? (
+                      {isAutoWrappable &&
+                        (isAutoWrapLoading ? (
                           <Skeleton
                             variant="rectangular"
                             width={24}
@@ -441,7 +443,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                             network={network}
                             token={token as VestingToken}
                           />
-                        ) : isAutoWrappable ? (
+                        ) : (
                           <ConnectionBoundaryButton
                             impersonationTitle={"Stop viewing"}
                             changeNetworkTitle={"Change Network"}
@@ -461,8 +463,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                               <span>Enable</span>
                             </Button>
                           </ConnectionBoundaryButton>
-                        ) : null
-                      ) : null}
+                        ))}
                     </TableCell>
                     <TableCell width={isBelowMd ? "68px" : "100px"} />
                   </TableRow>
@@ -614,8 +615,8 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                     alignItems="center"
                   >
                     <Typography variant="h7">Auto-Wrap</Typography>
-                    {token && network.autoWrap ? (
-                      isAutoWrapLoading ? (
+                    {isAutoWrappable &&
+                      (isAutoWrapLoading ? (
                         <Skeleton
                           variant="rectangular"
                           width={24}
@@ -630,7 +631,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                           token={token as VestingToken}
                           ButtonProps={{ fullWidth: false }}
                         />
-                      ) : isAutoWrappable ? (
+                      ) : (
                         <ConnectionBoundaryButton
                           impersonationTitle={"Stop viewing"}
                           changeNetworkTitle={"Change Network"}
@@ -650,8 +651,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                             <span>Enable</span>
                           </Button>
                         </ConnectionBoundaryButton>
-                      ) : null
-                    ) : null}
+                      ))}
                   </Stack>
                 </Box>
                 {showFixRequiredAccessButton && (
@@ -671,7 +671,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
           </Collapse>
         </TableCell>
       </TableRow>
-      {token && (
+      {isAutoWrappable && (
         <AutoWrapEnableDialogSection
           key={"auto-wrap-enable-dialog-section"}
           closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}

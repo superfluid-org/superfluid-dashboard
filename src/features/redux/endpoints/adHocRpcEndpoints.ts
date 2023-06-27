@@ -1,7 +1,4 @@
-import {
-  ERC20Token,
-  WrapperSuperToken,
-} from "@superfluid-finance/sdk-core";
+import { ERC20Token, WrapperSuperToken } from "@superfluid-finance/sdk-core";
 import {
   getFramework,
   registerNewTransactionAndReturnQueryFnResult,
@@ -18,6 +15,8 @@ import {
   UnderlyingBalance,
 } from "./balanceFetcher";
 import { NATIVE_ASSET_ADDRESS } from "./tokenTypes";
+import { WalletClient } from "wagmi";
+import { ContractFunctionConfig, createPublicClient } from "viem";
 
 declare module "@superfluid-finance/sdk-redux" {
   interface TransactionTitleOverrides {
@@ -57,24 +56,31 @@ const writeContractEndpoint = (builder: RpcEndpointBuilder) =>
   builder.mutation<
     TransactionInfo,
     {
-      signer: Signer;
-      config: WriteContractPreparedArgs<unknown[], string> & {
+      signer: Signer; // TODO(KK): Remove this at some point...
+      request: ContractFunctionConfig & {
         chainId: number;
       };
       transactionExtraData?: Record<string, unknown>;
-      transactionTitle: TransactionTitle,
+      transactionTitle: TransactionTitle;
     }
   >({
-    queryFn: async ({ signer, config, transactionTitle, transactionExtraData }, { dispatch }) => {
-      const result = await writeContract(config);
+    queryFn: async (
+      { signer, request, transactionTitle, transactionExtraData },
+      { dispatch }
+    ) => {
+      const result = await writeContract(request);
+      const framework = await getFramework(request.chainId);
+
       return registerNewTransactionAndReturnQueryFnResult({
         dispatch,
         signerAddress: await signer.getAddress(),
-        chainId: config.chainId,
+        chainId: request.chainId,
         title: transactionTitle,
         transactionResponse: {
-          chainId: config.chainId,
-          ...result
+          chainId: request.chainId,
+          hash: result.hash,
+          wait: () =>
+            framework.settings.provider.waitForTransaction(result.hash), // TODO(KK): This might not work the best with Gnosis Safe.
         },
         extraData: transactionExtraData,
       });
@@ -264,7 +270,10 @@ export const adHocRpcEndpoints = {
         },
       ],
     }),
-    isEOA: builder.query<boolean | null, { chainId: number; accountAddress: string }>({
+    isEOA: builder.query<
+      boolean | null,
+      { chainId: number; accountAddress: string }
+    >({
       keepUnusedDataFor: Number.MAX_VALUE,
       queryFn: async ({ chainId, accountAddress }) => {
         const framework = await getFramework(chainId);
@@ -279,7 +288,7 @@ export const adHocRpcEndpoints = {
         } catch (e) {
           console.error("Error while checking if account is EOA", e);
           return {
-            data: null
+            data: null,
           };
         }
       },

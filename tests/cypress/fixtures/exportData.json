@@ -6815,13 +6815,13 @@
     "amount": ["$0.02", "$0.01", "$0.01", "$0", "$0", "$0", "$0.01", "$0"],
     "counterparty": [
       "0xEb85888b31FADF79CB264d065EdcB4a14551c28d",
-      "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2",
-      "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2",
-      "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2",
-      "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2",
-      "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2",
+      "elvijs.lens",
+      "elvijs.lens",
+      "elvijs.lens",
+      "elvijs.lens",
+      "elvijs.lens",
       "0xEb85888b31FADF79CB264d065EdcB4a14551c28d",
-      "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"
+      "elvijs.lens"
     ],
     "counterpartyAddress": [
       "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
@@ -6856,13 +6856,13 @@
     "transaction": ["", "", "", "", "", "", "", ""],
     "sender": [
       "0xEb85...c28d",
-      "0xF9Ce...3Ff2",
-      "0xF9Ce...3Ff2",
-      "0xF9Ce...3Ff2",
-      "0xF9Ce...3Ff2",
-      "0xF9Ce...3Ff2",
+      "elvijs.lens",
+      "elvijs.lens",
+      "elvijs.lens",
+      "elvijs.lens",
+      "elvijs.lens",
       "0xEb85...c28d",
-      "0xF9Ce...3Ff2"
+      "elvijs.lens"
     ],
     "receiver": [
       "0x618a...DE40",

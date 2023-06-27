@@ -183,7 +183,7 @@ export class SendPage extends BasePage {
 
   static clearReceiverField() {
     this.clickFirstVisible(RECEIVER_CLEAR_BUTTON);
-    this.hasText(RECEIVER_BUTTON, "Public Address or ENS");
+    this.hasText(RECEIVER_BUTTON, "Public Address, ENS or Lens");
   }
 
   static receiverDialog() {

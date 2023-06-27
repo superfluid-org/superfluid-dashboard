@@ -4,7 +4,7 @@ import {
 } from "@superfluid-finance/sdk-redux";
 import { FC, PropsWithChildren, useCallback, useEffect } from "react";
 import { Provider } from "react-redux";
-import { useAccount, useSigner } from "wagmi";
+import { useAccount } from "wagmi";
 import { parseV1AddressBookEntries } from "../../utils/addressBookUtils";
 import { parseV1CustomTokens } from "../../utils/customTokenUtils";
 import { addAddressBookEntries } from "../addressBook/addressBook.slice";
@@ -14,6 +14,7 @@ import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import { reduxStore, useAppDispatch } from "./store";
 import { useSchedulerTransactionTracking } from "./UseSchedulerTransactionTracking";
 import { useVestingTransactionTracking } from "./UseVestingTransactionTracking";
+import { useEthersSigner } from "../../utils/wagmiEthersAdapters";
 
 // Initialize SDK-core Frameworks for SDK-redux.
 readOnlyFrameworks.forEach(
@@ -22,7 +23,9 @@ readOnlyFrameworks.forEach(
 
 const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
   const { connector: activeConnector } = useAccount();
-  const { data: signer } = useSigner();
+
+  const signer = useEthersSigner();
+
   const dispatch = useAppDispatch();
 
   /**

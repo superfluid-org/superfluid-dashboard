@@ -76,7 +76,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   const [editableName, setEditableName] = useState(name);
   const [isEditing, setIsEditing] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
-  const { ensName } = useAddressName(address);
+  const { ensName, lensName } = useAddressName(address);
 
   const trimmedName = useMemo(() => editableName.trim(), [editableName]);
 
@@ -207,15 +207,32 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
           </Stack>
 
           {ensName && (
-            <Typography data-cy={"ens-name"} variant="tooltip" sx={{ fontSize: 12 }}>
+            <Typography
+              data-cy={"ens-name"}
+              variant="tooltip"
+              sx={{ fontSize: 12 }}
+            >
               {ensName}
+            </Typography>
+          )}
+
+          {lensName && (
+            <Typography
+              data-cy={"lens-name"}
+              variant="tooltip"
+              sx={{ fontSize: 12 }}
+            >
+              {lensName}
             </Typography>
           )}
         </Stack>
       </TableCell>
 
       <TableCell>
-        <Box data-cy="networks" sx={{ overflow: "auto", scrollbarWidth: "none" }}>
+        <Box
+          data-cy="networks"
+          sx={{ overflow: "auto", scrollbarWidth: "none" }}
+        >
           {chainIds?.length ? (
             <Stack direction="row">
               {chainIds.map((networkId, i) => {

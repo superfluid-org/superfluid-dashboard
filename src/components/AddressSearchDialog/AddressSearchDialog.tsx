@@ -43,6 +43,7 @@ import { ensApi } from "../../features/ens/ensApi.slice";
 import AddressSearchIndex from "../../features/send/AddressSearchIndex";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import addressBookRpcApi from "../../features/addressBook/addressBookRpcApi.slice";
+import { lensApi } from "../../features/lens/lensApi.slice";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
@@ -50,7 +51,7 @@ interface AddressListItemProps {
   address: string;
   selected?: boolean;
   disabled?: boolean;
-  namePlaceholder?: string;
+  name?: string;
   dataCy?: string;
   onClick: () => void;
   showRemove?: boolean;
@@ -63,13 +64,14 @@ export const AddressListItem: FC<AddressListItemProps> = ({
   disabled = false,
   dataCy,
   onClick,
-  namePlaceholder,
+  name,
   showRemove = false,
   displayAvatar = true,
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-  const { name, addressChecksummed: checksumHex } = useAddressName(address);
+  const { name: resolvedName, addressChecksummed: checksumHex } =
+    useAddressName(address);
 
   return (
     <ListItemButton
@@ -89,11 +91,11 @@ export const AddressListItem: FC<AddressListItemProps> = ({
         {...(dataCy ? { "data-cy": dataCy } : {})}
         primary={
           name ||
-          namePlaceholder ||
+          resolvedName ||
           (isBelowMd ? shortenHex(checksumHex, 8) : checksumHex)
         }
         secondary={
-          (name || namePlaceholder) &&
+          (name || resolvedName) &&
           (isBelowMd ? shortenHex(checksumHex, 8) : checksumHex)
         }
       />
@@ -174,7 +176,11 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
 
   const ensQuery = ensApi.useResolveNameQuery(searchTermDebounced);
   const ensData = ensQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!ensQuery.data` means that the data is not undefined nor null.
-  const showEns =
+
+  const lensQuery = lensApi.useResolveNameQuery(searchTermDebounced);
+  const lensData = lensQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!lensQuery.data` means that the data is not undefined nor null.
+
+  const showEnsAndLens =
     !!searchTermDebounced &&
     !isAddress(searchTermDebounced) &&
     mode === "addressSearch";
@@ -225,7 +231,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
               disabled={disabledAddresses.includes(address)}
               address={address}
               onClick={() => onSelectAddress({ address })}
-              namePlaceholder={name}
+              name={name}
             />
           </Stack>
         )),
@@ -267,7 +273,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
               fullWidth
               autoFocus
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Address or ENS"
+              placeholder="Address, ENS or Lens"
               value={searchTermVisible}
             />
           </Stack>
@@ -321,7 +327,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
           )
         ) : (
           <List sx={{ pt: 0, pb: 0 }}>
-            {showEns ? (
+            {showEnsAndLens ? (
               <>
                 <ListSubheader sx={{ px: 3 }}>ENS</ListSubheader>
                 {(ensQuery.isFetching || !searchSynced) && (
@@ -334,26 +340,64 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                     <ListItemText translate="yes" primary="Error" />
                   </ListItem>
                 )}
-                {!ensQuery.isLoading && !ensQuery.isFetching && searchSynced && (
-                  <>
-                    {!!ensData ? (
-                      <AddressListItem
-                        dataCy={"ens-entry"}
-                        selected={addresses.includes(ensData.address)}
-                        disabled={disabledAddresses.includes(ensData.address)}
-                        address={ensData.address}
-                        onClick={() =>
-                          onSelectAddress({ address: ensData.address })
-                        }
-                        namePlaceholder={ensData.name}
-                      />
-                    ) : (
-                      <ListItem sx={LIST_ITEM_STYLE}>
-                        <ListItemText translate="yes" primary="No results" />
-                      </ListItem>
-                    )}
-                  </>
+                {!ensQuery.isLoading &&
+                  !ensQuery.isFetching &&
+                  searchSynced && (
+                    <>
+                      {!!ensData ? (
+                        <AddressListItem
+                          dataCy={"ens-entry"}
+                          selected={addresses.includes(ensData.address)}
+                          disabled={disabledAddresses.includes(ensData.address)}
+                          address={ensData.address}
+                          onClick={() =>
+                            onSelectAddress({ address: ensData.address })
+                          }
+                          name={ensData.name}
+                        />
+                      ) : (
+                        <ListItem sx={LIST_ITEM_STYLE}>
+                          <ListItemText translate="yes" primary="No results" />
+                        </ListItem>
+                      )}
+                    </>
+                  )}
+
+                <ListSubheader sx={{ px: 3 }}>Lens</ListSubheader>
+                {(lensQuery.isFetching || !searchSynced) && (
+                  <ListItem sx={LIST_ITEM_STYLE}>
+                    <ListItemText translate="yes" primary="Loading..." />
+                  </ListItem>
                 )}
+                {lensQuery.isError && (
+                  <ListItem sx={LIST_ITEM_STYLE}>
+                    <ListItemText translate="yes" primary="Error" />
+                  </ListItem>
+                )}
+                {!lensQuery.isLoading &&
+                  !lensQuery.isFetching &&
+                  searchSynced && (
+                    <>
+                      {!!lensData ? (
+                        <AddressListItem
+                          dataCy={"lens-entry"}
+                          selected={addresses.includes(lensData.address)}
+                          disabled={disabledAddresses.includes(
+                            lensData.address
+                          )}
+                          address={lensData.address}
+                          onClick={() =>
+                            onSelectAddress({ address: lensData.address })
+                          }
+                          name={lensData.name}
+                        />
+                      ) : (
+                        <ListItem sx={LIST_ITEM_STYLE}>
+                          <ListItemText translate="yes" primary="No results" />
+                        </ListItem>
+                      )}
+                    </>
+                  )}
               </>
             ) : null}
             {mode === "addressSearch" && checksummedSearchedAddress && (
@@ -380,7 +424,11 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                   addressBookList
                 ) : (
                   <ListItem sx={LIST_ITEM_STYLE}>
-                    <ListItemText data-cy={"no-address-book-results"} translate="yes" primary="No results" />
+                    <ListItemText
+                      data-cy={"no-address-book-results"}
+                      translate="yes"
+                      primary="No results"
+                    />
                   </ListItem>
                 )}
               </>
@@ -395,13 +443,16 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
               disabled={
                 isContractDetectionLoading ||
                 !Boolean(searchTermVisible) ||
-                !(ensData || checksummedSearchedAddress)
+                !(ensData || lensData || checksummedSearchedAddress)
               }
               fullWidth
               variant="contained"
               onClick={() => {
                 onSelectAddress({
-                  address: ensData?.address ?? checksummedSearchedAddress!,
+                  address:
+                    ensData?.address ??
+                    lensData?.address ??
+                    checksummedSearchedAddress!,
                   associatedNetworks: contractData?.isContract
                     ? contractData.associatedNetworks
                     : selectedNetworks.map(({ id }) => id),

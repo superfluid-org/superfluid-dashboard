@@ -5,7 +5,7 @@ import {
   lightTheme,
   DisclaimerComponent,
 } from "@rainbow-me/rainbowkit";
-import { createClient as createWagmiClient, WagmiConfig } from "wagmi";
+import { createConfig as createWagmiConfig, WagmiConfig } from "wagmi";
 import "@rainbow-me/rainbowkit/styles.css";
 import { useTheme } from "@mui/material";
 import { allNetworks, findNetworkOrThrow } from "../network/networks";
@@ -15,28 +15,37 @@ import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 
-export const { chains: wagmiChains, provider: wagmiRpcProvider } =
-  configureChains(allNetworks, [
-    jsonRpcProvider({
-      rpc: (chain) => ({
-        http: findNetworkOrThrow(allNetworks, chain.id).rpcUrls.superfluid.http[0],
+export const { chains: wagmiChains, publicClient: wagmiPublicClient } =
+  configureChains(
+    allNetworks,
+    [
+      jsonRpcProvider({
+        rpc: (chain) => ({
+          http: findNetworkOrThrow(allNetworks, chain.id).rpcUrls.superfluid
+            .http[0],
+        }),
       }),
-    }),
-  ]);
+    ],
+    {
+      batch: {
+        multicall: true,
+      },
+    }
+  );
 
 const { connectors } = getAppWallets({
   appName: "Superfluid Dashboard",
   chains: wagmiChains,
 });
 
-export const wagmiClient = createWagmiClient({
+export const wagmiConfig = createWagmiConfig({
   autoConnect: false, // Disable because of special Gnosis Safe handling in useAutoConnect.
   connectors,
-  provider: wagmiRpcProvider,
+  publicClient: wagmiPublicClient,
 });
 
 const WagmiManager: FC<PropsWithChildren> = ({ children }) => {
-  return <WagmiConfig client={wagmiClient}>{children}</WagmiConfig>;
+  return <WagmiConfig config={wagmiConfig}>{children}</WagmiConfig>;
 };
 
 export default WagmiManager;

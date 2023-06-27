@@ -4,6 +4,7 @@ import { ensApi } from "../features/ens/ensApi.slice";
 import { useAppSelector } from "../features/redux/store";
 import { getAddress } from "../utils/memoizedEthersUtils";
 import { AddressNameResult } from "./useAddressName";
+import { lensApi } from "../features/lens/lensApi.slice";
 
 interface AddressNames {
   [any: string]: AddressNameResult;
@@ -11,7 +12,10 @@ interface AddressNames {
 
 const useAddressNames = (addresses: string[]): AddressNames => {
   const [ensLookupQueryTrigger] = ensApi.useLazyLookupAddressQuery();
+  const [lensLookupQueryTrigger] = lensApi.useLazyLookupAddressQuery();
+
   const [ensNames, setEnsNames] = useState<{ [any: string]: string }>({});
+  const [lensNames, setLensNames] = useState<{ [any: string]: string }>({});
 
   const addressBookNames = useAppSelector((state) =>
     addressBookSelectors.selectByAddresses(state, addresses)
@@ -35,7 +39,25 @@ const useAddressNames = (addresses: string[]): AddressNames => {
         }, {})
       );
     });
-  }, [addresses, ensLookupQueryTrigger]);
+
+    Promise.allSettled(
+      addresses.map((address) => lensLookupQueryTrigger(address, true))
+    ).then((lensResults) => {
+      setLensNames(
+        lensResults.reduce((ensNamesMap, lensResult) => {
+          if (lensResult.status === "rejected" || !lensResult.value.data) {
+            return ensNamesMap;
+          }
+
+          return {
+            ...ensNamesMap,
+            [lensResult.value.data.address.toLowerCase()]:
+              lensResult.value.data.name,
+          };
+        }, {})
+      );
+    });
+  }, [addresses, ensLookupQueryTrigger, lensLookupQueryTrigger]);
 
   return addresses.reduce((mappedAddresses, address) => {
     const addressBookName =
@@ -44,13 +66,15 @@ const useAddressNames = (addresses: string[]): AddressNames => {
           addressBookName.address.toLowerCase() === address.toLowerCase()
       )?.name || "";
     const ensName = ensNames[address.toLowerCase()];
+    const lensName = lensNames[address.toLowerCase()];
 
     return {
       ...mappedAddresses,
       [address]: {
         addressChecksummed: getAddress(address),
-        name: addressBookName || ensName || "",
+        name: addressBookName || ensName || lensName || "",
         ensName,
+        lensName,
       },
     };
   }, {} as AddressNames);

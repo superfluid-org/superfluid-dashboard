@@ -13,7 +13,6 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useSigner } from "wagmi";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import MutationResult from "../../MutationResult";
 import { Network } from "../network/networks";
@@ -21,6 +20,7 @@ import { useAppSelector } from "../redux/store";
 import { useConnectionBoundary } from "./ConnectionBoundary";
 import { TransactionDialog } from "./TransactionDialog";
 import { TxAnalyticsFn, useAnalytics } from "../analytics/useAnalytics";
+import { useEthersSigner } from "../../utils/wagmiEthersAdapters";
 
 interface TransactionBoundaryContextValue {
   signer: Signer | null | undefined;
@@ -54,7 +54,7 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
   mutationResult,
   ...props
 }) => {
-  const { data: signer } = useSigner();
+  const signer = useEthersSigner();
   const { expectedNetwork } = useConnectionBoundary();
   const getTransactionOverrides = useGetTransactionOverrides();
   const { txAnalytics } = useAnalytics();

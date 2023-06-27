@@ -32,7 +32,8 @@ export default defineConfig({
       useContractFunctionRead: false,
       useContractEvent: false,
       useContractFunctionWrite: false,
-      usePrepareContractWrite: true,
+      usePrepareContractWrite: false,
+      usePrepareContractFunctionWrite: false
     }),
   ],
 });

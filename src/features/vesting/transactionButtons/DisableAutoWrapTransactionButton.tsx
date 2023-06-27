@@ -2,8 +2,7 @@ import { ButtonProps, Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { constants } from "ethers";
 import { FC, memo } from "react";
-import {  useQuery, useSigner } from "wagmi";
-import { usePrepareErc20Approve } from "../../../generated";
+import { usePrepareContractWrite, useQuery, useWalletClient } from "wagmi";
 import { rpcApi, subgraphApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
@@ -11,6 +10,7 @@ import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverride
 import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
 import { Token } from "@superfluid-finance/sdk-core";
 import { toVestingToken } from "../useVestingToken";
+import { erc20ABI } from "../../../generated";
 import { Network } from "../../network/networks";
 
 const TX_TITLE: TransactionTitle = "Disable Auto-Wrap";
@@ -21,9 +21,8 @@ const DisableAutoWrapTransactionButton: FC<{
   isDisabled: boolean;
   ButtonProps?: ButtonProps;
   network: Network;
-}> = ({ token, isVisible, isDisabled: isDisabled_, ButtonProps = {}, network }) => {
-
-  const { data: signer } = useSigner();
+}> = ({ token, isVisible, ButtonProps = {}, network, ...props }) => {
+  const { data: walletClient } = useWalletClient();
   const vestingToken = toVestingToken(token, network);
   const getGasOverrides = useGetTransactionOverrides();
   const { data: overrides } = useQuery(
@@ -31,19 +30,24 @@ const DisableAutoWrapTransactionButton: FC<{
     async () => convertOverridesForWagmi(await getGasOverrides(network))
   );
 
-  const disabled =
-    isDisabled_ || !network.autoWrap;
+  const primaryArgs = {
+    spender: network.autoWrap!.strategyContractAddress,
+    amount: BigInt(constants.Zero.toString()),
+  };
 
-  const { config } = usePrepareErc20Approve(
-    !network.autoWrap
-      ? undefined
-      : {
+  const prepare = !props.isDisabled && network.autoWrap && walletClient;
+  const { config } = usePrepareContractWrite(
+    prepare
+      ? {
+          abi: erc20ABI,
+          functionName: "approve",
           address: vestingToken.underlyingAddress as `0x${string}`,
           chainId: network.id,
-          args: [network.autoWrap!.strategyContractAddress, constants.Zero],
-          signer,
-          overrides,
+          args: [primaryArgs.spender, primaryArgs.amount],
+          walletClient,
+          ...overrides,
         }
+      : undefined
   );
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
@@ -52,9 +56,10 @@ const DisableAutoWrapTransactionButton: FC<{
     chainId: network.id,
     id: vestingToken.underlyingAddress,
   });
-
   const underlyingToken = underlyingTokenQuery.data;
-  const isDisabled = disabled || !config;
+
+  const isButtonEnabled = prepare && config.request;
+  const isButtonDisabled = !isButtonEnabled;
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
@@ -65,13 +70,14 @@ const DisableAutoWrapTransactionButton: FC<{
               impersonationTitle: "Stop viewing",
               changeNetworkTitle: "Change Network",
             }}
-            disabled={isDisabled}
+            disabled={isButtonDisabled}
             ButtonProps={{
               size: "medium",
               ...ButtonProps,
             }}
             onClick={async (signer) => {
-              if (!config) throw new Error("This should never happen!");
+              if (isButtonDisabled)
+                throw new Error("This should never happen!");
 
               setDialogLoadingInfo(
                 <Typography variant="h5" color="text.secondary" translate="yes">
@@ -82,18 +88,15 @@ const DisableAutoWrapTransactionButton: FC<{
 
               write({
                 signer,
-                config: {
-                  ...config,
+                request: {
+                  ...config.request,
                   chainId: network.id,
                 },
                 transactionTitle: "Disable Auto-Wrap",
               })
                 .unwrap()
                 .then(
-                  ...txAnalytics("Disable Auto-Wrap", {
-                    spender: network.autoWrap!.strategyContractAddress,
-                    amount: constants.Zero,
-                  })
+                  ...txAnalytics("Disable Auto-Wrap", primaryArgs)
                 )
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}

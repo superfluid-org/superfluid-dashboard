@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import { allNetworks } from "../network/networks";
-import { wagmiRpcProvider } from "../wallet/WagmiManager";
+import { wagmiPublicClient } from "../wallet/WagmiManager";
 import { isAddress } from "../../utils/memoizedEthersUtils";
+import { publicClientToProvider } from "../../utils/wagmiEthersAdapters";
 
 const addressBookRpcApi = createApi({
   reducerPath: "addressBookRpcApi",
@@ -25,7 +26,8 @@ const addressBookRpcApi = createApi({
         const result = (
           await Promise.all(
             allNetworks.map(async (network) => {
-              const provider = wagmiRpcProvider({ chainId: network.id });
+              const publicClient = wagmiPublicClient({ chainId: network.id });
+              const provider = publicClientToProvider(publicClient);
               const code = await provider.getCode(address);
 
               return { network, code };

@@ -321,7 +321,10 @@ export class ExportPage extends BasePage {
 
   static validateSelectedAddressBookEntry(nameOrAddress: string) {
     cy.get(SELECTED_ADDRESSES).contains(nameOrAddress).should("be.visible");
-    cy.get(ADDRESS_BOOK_ENTRIES).contains(nameOrAddress).should("be.visible");
+    cy.get(ADDRESS_BOOK_ENTRIES)
+      .contains(nameOrAddress)
+      .scrollIntoView()
+      .should("be.visible");
   }
 
   static validateSelectedAddressInForm(nameOrAddress: string, index = 0) {

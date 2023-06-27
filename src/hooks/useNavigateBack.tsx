@@ -4,14 +4,14 @@ import { useLayoutContext } from "../features/layout/LayoutContext";
 
 const useNavigateBack = (fallbackPath = "/") => {
   const router = useRouter();
-  const { previousRouterPath } = useLayoutContext();
+  const { previousRouterPathRef } = useLayoutContext();
 
   return useCallback(
     () =>
-      previousRouterPath
-        ? void router.push(previousRouterPath)
+      previousRouterPathRef.current
+        ? void router.push(previousRouterPathRef.current)
         : void router.push(fallbackPath),
-    [router, previousRouterPath, fallbackPath]
+    [router, previousRouterPathRef, fallbackPath]
   );
 };
 
