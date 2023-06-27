@@ -34,7 +34,7 @@ const AutoWrapAllowanceTransactionButton: FC<{
     amount: BigInt(constants.MaxUint256.toString()),
   };
 
-  const prepare = props.isDisabled && network.autoWrap && walletClient;
+  const prepare = !props.isDisabled && network.autoWrap && walletClient;
   const { config } = usePrepareContractWrite(
     prepare
       ? {
