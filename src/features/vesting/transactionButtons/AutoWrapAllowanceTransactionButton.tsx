@@ -18,7 +18,7 @@ const AutoWrapAllowanceTransactionButton: FC<{
   token: VestingToken;
   isVisible: boolean;
   isDisabled: boolean;
-}> = ({ token, isVisible, isDisabled: isDisabled_ }) => {
+}> = ({ token, isVisible, ...props }) => {
   const { network } = useExpectedNetwork();
 
   const { data: walletClient } = useWalletClient();
@@ -34,19 +34,18 @@ const AutoWrapAllowanceTransactionButton: FC<{
     amount: BigInt(constants.MaxUint256.toString()),
   };
 
-  const disabled = isDisabled_ && !!network.autoWrap && walletClient;
+  const prepare = props.isDisabled && network.autoWrap && walletClient;
   const { config } = usePrepareContractWrite(
-    disabled
-      ? undefined
-      : {
+    prepare
+      ? {
           abi: erc20ABI,
           functionName: "approve",
           address: token.underlyingAddress as `0x${string}`,
           chainId: network.id,
           args: [primaryArgs.spender, primaryArgs.amount],
-          walletClient,
           ...overrides,
         }
+      : undefined
   );
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
@@ -56,16 +55,19 @@ const AutoWrapAllowanceTransactionButton: FC<{
     id: token.underlyingAddress,
   });
   const underlyingToken = underlyingTokenQuery.data;
-  const isDisabled = isDisabled_ && !config;
+
+  const isButtonEnabled = prepare && config.request;
+  const isButtonDisabled = !isButtonEnabled;
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
       {({ network, setDialogLoadingInfo, txAnalytics }) =>
         isVisible && (
           <TransactionButton
-            disabled={isDisabled}
+            disabled={isButtonDisabled}
             onClick={async (signer) => {
-              if (!config) throw new Error("This should never happen!");
+              if (isButtonDisabled)
+                throw new Error("This should never happen!");
               setDialogLoadingInfo(
                 <Typography variant="h5" color="text.secondary" translate="yes">
                   You are approving Auto-Wrap token allowance for the underlying

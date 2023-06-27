@@ -20,7 +20,7 @@ const DisableAutoWrapTransactionButton: FC<{
   isVisible: boolean;
   isDisabled: boolean;
   ButtonProps?: ButtonProps;
-}> = ({ token, isVisible, isDisabled: isDisabled_, ButtonProps = {} }) => {
+}> = ({ token, isVisible, ButtonProps = {}, ...props }) => {
   const { network } = useExpectedNetwork();
   const { data: walletClient } = useWalletClient();
 
@@ -37,12 +37,10 @@ const DisableAutoWrapTransactionButton: FC<{
     amount: BigInt(constants.Zero.toString()),
   };
 
-  const disabled = isDisabled_ && !!network.autoWrap && walletClient;
-
+  const prepare = !props.isDisabled && network.autoWrap && walletClient;
   const { config } = usePrepareContractWrite(
-    disabled
-      ? undefined
-      : {
+    prepare
+      ? {
           abi: erc20ABI,
           functionName: "approve",
           address: vestingToken.underlyingAddress as `0x${string}`,
@@ -51,6 +49,7 @@ const DisableAutoWrapTransactionButton: FC<{
           walletClient,
           ...overrides,
         }
+      : undefined
   );
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
@@ -61,7 +60,9 @@ const DisableAutoWrapTransactionButton: FC<{
   });
 
   const underlyingToken = underlyingTokenQuery.data;
-  const isDisabled = isDisabled_ && !config;
+
+  const isButtonEnabled = prepare && config.request;
+  const isButtonDisabled = !isButtonEnabled;
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
@@ -72,13 +73,14 @@ const DisableAutoWrapTransactionButton: FC<{
               impersonationTitle: "Stop viewing",
               changeNetworkTitle: "Change Network",
             }}
-            disabled={isDisabled}
+            disabled={isButtonDisabled}
             ButtonProps={{
               size: "medium",
               ...ButtonProps,
             }}
             onClick={async (signer) => {
-              if (!config) throw new Error("This should never happen!");
+              if (isButtonDisabled)
+                throw new Error("This should never happen!");
 
               setDialogLoadingInfo(
                 <Typography variant="h5" color="text.secondary" translate="yes">

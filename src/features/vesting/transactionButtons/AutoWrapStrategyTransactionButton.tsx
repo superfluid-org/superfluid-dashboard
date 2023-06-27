@@ -18,7 +18,7 @@ const AutoWrapStrategyTransactionButton: FC<{
   token: VestingToken;
   isVisible: boolean;
   isDisabled: boolean;
-}> = ({ token, isVisible, isDisabled: isDisabled_ }) => {
+}> = ({ token, isVisible, ...props }) => {
   const { data: walletClient } = useWalletClient();
   const { network } = useExpectedNetwork();
 
@@ -37,13 +37,13 @@ const AutoWrapStrategyTransactionButton: FC<{
     upperLimit: BigInt(BigNumber.from(network.autoWrap!.upperLimit).toString()),
   };
 
-  const disabled = isDisabled_ && !!network.autoWrap && walletClient;
+  const prepare = !props.isDisabled && network.autoWrap && walletClient;
   const { config } = usePrepareContractWrite(
-    disabled
-      ? undefined
-      : {
+    prepare
+      ? {
           abi: autoWrapManagerABI,
           functionName: "createWrapSchedule",
+          address: network.autoWrap!.managerContractAddress,
           args: [
             primaryArgs.superToken,
             primaryArgs.strategy,
@@ -53,22 +53,24 @@ const AutoWrapStrategyTransactionButton: FC<{
             primaryArgs.upperLimit,
           ],
           chainId: network.id as keyof typeof autoWrapManagerAddress,
-          walletClient,
           ...overrides,
         }
+      : undefined
   );
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
-  const isDisabled = isDisabled_ && !config;
+  const isButtonEnabled = prepare && config.request;
+  const isButtonDisabled = !isButtonEnabled;
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
       {({ network, setDialogLoadingInfo, txAnalytics }) =>
         isVisible && (
           <TransactionButton
-            disabled={isDisabled}
+            disabled={isButtonDisabled}
             onClick={async (signer) => {
-              if (!config) throw new Error("This should never happen!");
+              if (isButtonDisabled)
+                throw new Error("This should never happen!");
               setDialogLoadingInfo(
                 <Typography variant="h5" color="text.secondary" translate="yes">
                   You are enabling Auto-Wrap to top up your {token.symbol}{" "}
