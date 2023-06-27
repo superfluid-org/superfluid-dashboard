@@ -3,7 +3,7 @@ import { addCucumberPreprocessorPlugin } from "@badeball/cypress-cucumber-prepro
 import webpackPreprocessor from "@cypress/webpack-preprocessor";
 import webpack from "webpack";
 import { cloudPlugin } from "cypress-cloud/plugin";
-const synpressPlugins = require("@synthetixio/synpress/plugins");
+import synpressPlugins from "@synthetixio/synpress/plugins";
 
 async function setupNodeEvents(
   on: Cypress.PluginEvents,
