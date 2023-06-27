@@ -131,25 +131,39 @@ export class Common extends BasePage {
     }
 
     let chainId = networksBySlug.get(selectedNetwork)?.id;
-    let isSelectedNetworkTestnet = networksBySlug.get(selectedNetwork)?.testnet;
-    let networkNativeAsset =
-      networksBySlug.get(selectedNetwork)?.nativeCurrency.symbol;
+
     let networkRpc = networksBySlug.get(selectedNetwork)?.superfluidRpcUrl;
 
     cy.visit(page, {
       onBeforeLoad: (win: any) => {
-        cy.setupMetamask(
-          usedAccountPrivateKey,
-          {
-            networkName: selectedNetwork,
-            rpcUrl: networkRpc,
-            chainId: chainId,
-            symbol: networkNativeAsset,
-            blockExplorer: "https://does.not.matter.com",
-            isTestnet: isSelectedNetworkTestnet,
-          },
-          "also does not matter"
-        );
+        const hdwallet = new HDWalletProvider({
+          privateKeys: [usedAccountPrivateKey],
+          url: networkRpc,
+          chainId: chainId,
+          pollingInterval: 1000,
+        });
+
+        if (Cypress.env("rejected")) {
+          // Make HDWallet automatically reject transaction.
+          // Inspired by: https://github.com/MetaMask/web3-provider-engine/blob/e835b80bf09e76d92b785d797f89baa43ae3fd60/subproviders/hooked-wallet.js#L326
+          for (const provider of hdwallet.engine["_providers"]) {
+            if (provider.checkApproval) {
+              provider.checkApproval = function (type, didApprove, cb) {
+                cb(new Error(`User denied ${type} signature.`));
+              };
+            }
+          }
+        }
+
+        const mockProvider = new ethers.providers.Web3Provider(hdwallet);
+        const mockSigner = mockProvider.getSigner();
+        const mockBridge = new Eip1193Bridge(mockSigner, mockProvider);
+
+        win.mockBridge = mockBridge;
+
+        // @ts-ignore
+        win.mockSigner = mockSigner;
+        win.mockWallet = hdwallet;
       },
     });
     if (Cypress.env("dev")) {

@@ -3,7 +3,6 @@ import { addCucumberPreprocessorPlugin } from "@badeball/cypress-cucumber-prepro
 import webpackPreprocessor from "@cypress/webpack-preprocessor";
 import webpack from "webpack";
 import { cloudPlugin } from "cypress-cloud/plugin";
-const synpressPlugins = require("@synthetixio/synpress/plugins");
 
 async function setupNodeEvents(
   on: Cypress.PluginEvents,
@@ -66,9 +65,8 @@ async function setupNodeEvents(
     })
   );
 
-  return synpressPlugins(on, config);
   // Make sure to return the config object as it might have been modified by the plugin.
-  //return cloudPlugin(on, config);
+  return cloudPlugin(on, config);
 }
 
 export default defineConfig({
@@ -81,7 +79,6 @@ export default defineConfig({
         url: "http://localhost:3000/__coverage__",
       },
     },
-    userAgent: "synpress",
     projectId: "2aaadn",
     baseUrl: "http://localhost:3000",
     excludeSpecPattern: "*.js",
