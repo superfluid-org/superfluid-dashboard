@@ -4,7 +4,6 @@ import { BigNumber, ethers } from "ethers";
 import HDWalletProvider from "@truffle/hdwallet-provider";
 import { MockProvider } from "@rsksmart/mock-web3-provider";
 import Web3 from "web3";
-import { Eip1193Bridge } from "@ethersproject/experimental";
 
 export const TOP_BAR_NETWORK_BUTTON = "[data-cy=top-bar-network-button]";
 export const CONNECTED_WALLET = "[data-cy=wallet-connection-status] h6";
