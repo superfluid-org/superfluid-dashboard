@@ -3,6 +3,7 @@
     "target": "es5",
     "lib": ["esnext", "dom"],
     "types": ["cypress", "node", "@synthetixio/synpress/support"],
+    "allowJs": true,
     "esModuleInterop": true,
     "skipLibCheck": true
   },
