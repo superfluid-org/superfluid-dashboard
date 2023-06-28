@@ -33,7 +33,7 @@ const mockConnector = ({ chains }: MockConnectorOptions): Wallet => ({
             transport: custom(mockBridge),
           }),
         },
-      }),
+      }) as any,
     };
   },
 });

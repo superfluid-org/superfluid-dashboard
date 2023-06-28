@@ -658,22 +658,25 @@ export const networkDefinition = {
 };
 
 export const allNetworks: Network[] = orderBy(
-  [
-    networkDefinition.ethereum,
-    networkDefinition.goerli,
-    networkDefinition.gnosis,
-    networkDefinition.polygon,
-    networkDefinition.polygonMumbai,
-    networkDefinition.avalancheFuji,
-    networkDefinition.optimism,
-    networkDefinition.arbitrum,
-    networkDefinition.avalancheC,
-    networkDefinition.bsc,
-    networkDefinition.celoMainnet,
-    networkDefinition.optimismGoerli,
-    networkDefinition.arbitrumGoerli,
-  ],
-  (x) => !(x as { testnet?: boolean }).testnet // Put non-testnets first
+  orderBy(
+    [
+      networkDefinition.ethereum,
+      networkDefinition.goerli,
+      networkDefinition.gnosis,
+      networkDefinition.polygon,
+      networkDefinition.polygonMumbai,
+      networkDefinition.avalancheFuji,
+      networkDefinition.optimism,
+      networkDefinition.arbitrum,
+      networkDefinition.avalancheC,
+      networkDefinition.bsc,
+      networkDefinition.celoMainnet,
+      networkDefinition.optimismGoerli,
+      networkDefinition.arbitrumGoerli,
+    ],
+    (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
+  ),
+  (x) => !!(x as { testnet?: boolean }).testnet // Put non-testnets first
 );
 
 export const mainNetworks = allNetworks.filter((x) => !x.testnet);

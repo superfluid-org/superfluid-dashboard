@@ -19,7 +19,7 @@ const gnosisSafe = ({ chains }: GnosisSafeOptions): Wallet => {
           allowedDomains: [/gnosis-safe.io$/, /app.safe.global$/],
           debug: false,
         },
-      }),
+      }) as any,
     }),
   };
 };

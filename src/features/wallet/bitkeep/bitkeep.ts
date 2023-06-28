@@ -33,7 +33,7 @@ const bitkeep = ({
           name: "BitKeep",
           getProvider: () => typeof window !== "undefined" ? window.bitkeep?.ethereum : undefined,
         },
-      }),
+      }) as any,
     }),
   };
 };
