@@ -436,13 +436,24 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                             height={24}
                           />
                         ) : isAutoWrapOK ? (
-                          <DisableAutoWrapTransactionButton
-                            key={`auto-wrap-revoke-${tokenSymbol}`}
-                            isDisabled={false}
-                            isVisible={true}
-                            network={network}
-                            token={token as VestingToken}
-                          />
+                          <ConnectionBoundaryButton
+                            impersonationTitle={"Stop viewing"}
+                            changeNetworkTitle={"Change Network"}
+                            ButtonProps={{
+                              fullWidth: true,
+                              variant: "outlined",
+                              size: "medium",
+                            }}
+                          >
+                            {" "}
+                            <DisableAutoWrapTransactionButton
+                              key={`auto-wrap-revoke-${tokenSymbol}`}
+                              isDisabled={false}
+                              isVisible={true}
+                              network={network}
+                              token={token as VestingToken}
+                            />
+                          </ConnectionBoundaryButton>
                         ) : (
                           <ConnectionBoundaryButton
                             impersonationTitle={"Stop viewing"}
@@ -450,7 +461,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                             ButtonProps={{
                               fullWidth: true,
                               variant: "outlined",
-                              size: "medium"
+                              size: "medium",
                             }}
                           >
                             <Button
@@ -623,14 +634,25 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                           height={24}
                         />
                       ) : isAutoWrapOK ? (
-                        <DisableAutoWrapTransactionButton
-                          key={`auto-wrap-revoke-${tokenSymbol}`}
-                          isDisabled={false}
-                          isVisible={true}
-                          network={network}
-                          token={token as VestingToken}
-                          ButtonProps={{ fullWidth: false }}
-                        />
+                        <ConnectionBoundaryButton
+                          impersonationTitle={"Stop viewing"}
+                          changeNetworkTitle={"Change Network"}
+                          ButtonProps={{
+                            fullWidth: true,
+                            variant: "outlined",
+                            size: "medium",
+                          }}
+                        >
+                          {" "}
+                          <DisableAutoWrapTransactionButton
+                            key={`auto-wrap-revoke-${tokenSymbol}`}
+                            isDisabled={false}
+                            isVisible={true}
+                            network={network}
+                            token={token as VestingToken}
+                            ButtonProps={{ fullWidth: false }}
+                          />
+                        </ConnectionBoundaryButton>
                       ) : (
                         <ConnectionBoundaryButton
                           impersonationTitle={"Stop viewing"}
@@ -638,7 +660,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                           ButtonProps={{
                             fullWidth: false,
                             variant: "outlined",
-                            size: "medium"
+                            size: "medium",
                           }}
                         >
                           <Button
