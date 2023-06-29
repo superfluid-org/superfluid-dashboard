@@ -13,7 +13,7 @@ import {
   useTheme,
 } from "@mui/material";
 
-const ScheduledWrapRowSkeleton = () => {
+export const ScheduledWrapRowSkeleton = () => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -24,7 +24,6 @@ const ScheduledWrapRowSkeleton = () => {
           <Skeleton variant="circular" width={36} height={36} />
           <Stack justifyContent="center">
             {!isBelowMd && <Skeleton width={80} />}
-            <Skeleton width={40} />
           </Stack>
         </Stack>
       </TableCell>
@@ -32,13 +31,11 @@ const ScheduledWrapRowSkeleton = () => {
         <>
           <TableCell>
             <Skeleton width={80} />
-            <Skeleton width={40} />
           </TableCell>
           <TableCell>
             <Skeleton width={80} />
           </TableCell>
           <TableCell>
-            <Skeleton width={60} />
             <Skeleton width={60} />
           </TableCell>
         </>
@@ -46,12 +43,11 @@ const ScheduledWrapRowSkeleton = () => {
         <TableCell>
           <Stack alignItems="end">
             <Skeleton width={60} />
-            <Skeleton width={30} />
           </Stack>
         </TableCell>
       )}
       <TableCell>
-        <Skeleton variant="rectangular" width={24} height={24} />
+        <Skeleton variant="rectangular" width={116} height={22} />
       </TableCell>
     </TableRow>
   );

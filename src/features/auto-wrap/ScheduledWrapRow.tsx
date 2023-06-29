@@ -98,18 +98,16 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
       chainId: network.id,
     });
 
-  const {
-    isLoading: isAccountTokenSnapshotLoading,
-    data: accountTokenSnapshot,
-  } = subgraphApi.useAccountTokenSnapshotQuery(
-    {
-      chainId: network.id,
-      id: `${account.toLowerCase()}-${superToken.toLowerCase()}`,
-    },
-    {
-      refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
-    }
-  );
+  const { data: accountTokenSnapshot } =
+    subgraphApi.useAccountTokenSnapshotQuery(
+      {
+        chainId: network.id,
+        id: `${account.toLowerCase()}-${superToken.toLowerCase()}`,
+      },
+      {
+        refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
+      }
+    );
 
   const isNativeAssetSuperToken =
     network.nativeCurrency.superToken.address.toLowerCase() ===
@@ -215,7 +213,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                 />
               </Stack>
               {isUnderlyingTokenAllowanceLoading ? (
-                <Skeleton variant="rectangular" width={24} height={24} />
+                <Skeleton width={80} />
               ) : isCloseToUnlimitedTokenAllowance(
                   underlyingTokenAllowance || 0
                 ) ? (
@@ -285,20 +283,31 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
             <ConnectionBoundary expectedNetwork={network}>
               {superTokenQueryData && network.autoWrap ? (
                 isAutoWrapLoading ? (
-                  <Skeleton variant="rectangular" width={24} height={24} />
+                  <Skeleton variant="rectangular" width={60} height={22} />
                 ) : isAutoWrapOK ? (
-                  <DisableAutoWrapTransactionButton
-                    key={`auto-wrap-revoke-${superTokenQueryData?.symbol}`}
-                    isDisabled={false}
-                    isVisible={true}
-                    token={superTokenQueryData}
-                    network={network}
+                  <ConnectionBoundaryButton
+                    impersonationTitle={"Stop viewing"}
+                    changeNetworkTitle={"Change Network"}
                     ButtonProps={{
-                      size: "small",
+                      fullWidth: true,
                       variant: "outlined",
-                      fullWidth: false,
+                      size: "small",
                     }}
-                  />
+                  >
+                    {" "}
+                    <DisableAutoWrapTransactionButton
+                      key={`auto-wrap-revoke-${superTokenQueryData?.symbol}`}
+                      isDisabled={false}
+                      isVisible={true}
+                      token={superTokenQueryData}
+                      network={network}
+                      ButtonProps={{
+                        size: "small",
+                        variant: "outlined",
+                        fullWidth: false,
+                      }}
+                    />
+                  </ConnectionBoundaryButton>
                 ) : isAutoWrappable ? (
                   <ConnectionBoundaryButton
                     impersonationTitle={"Stop viewing"}
@@ -355,7 +364,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
           <TableCell>
             <Typography variant="h6">
               {isUnderlyingTokenAllowanceLoading ? (
-                <Skeleton variant="rectangular" width={24} height={24} />
+                <Skeleton width={80} />
               ) : isCloseToUnlimitedTokenAllowance(
                   underlyingTokenAllowance || 0
                 ) ? (
@@ -390,19 +399,29 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
             <ConnectionBoundary expectedNetwork={network}>
               {superTokenQueryData && network.autoWrap ? (
                 isAutoWrapLoading ? (
-                  <Skeleton variant="rectangular" width={24} height={24} />
+                  <Skeleton variant="rectangular" width={116} height={22} />
                 ) : isAutoWrapOK ? (
-                  <DisableAutoWrapTransactionButton
-                    key={`auto-wrap-revoke-${superTokenQueryData?.symbol}`}
-                    isDisabled={false}
-                    isVisible={true}
-                    network={network}
-                    token={superTokenQueryData}
+                  <ConnectionBoundaryButton
+                    impersonationTitle={"Stop viewing"}
+                    changeNetworkTitle={"Change Network"}
                     ButtonProps={{
-                      size: "small",
+                      fullWidth: true,
                       variant: "outlined",
+                      size: "small",
                     }}
-                  />
+                  >
+                    <DisableAutoWrapTransactionButton
+                      key={`auto-wrap-revoke-${superTokenQueryData?.symbol}`}
+                      isDisabled={false}
+                      isVisible={true}
+                      network={network}
+                      token={superTokenQueryData}
+                      ButtonProps={{
+                        size: "small",
+                        variant: "outlined",
+                      }}
+                    />
+                  </ConnectionBoundaryButton>
                 ) : isAutoWrappable ? (
                   <ConnectionBoundaryButton
                     impersonationTitle={"Stop viewing"}

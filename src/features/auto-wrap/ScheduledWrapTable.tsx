@@ -114,7 +114,7 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
       setPage(page);
     };
 
-  if (isLoading && isWhitelistLoading) return <ScheduledWrapLoadingTable />;
+  if (isLoading) return <ScheduledWrapLoadingTable />;
   if (!isLoading && wrapSchedules.length === 0) return null;
 
   return (
